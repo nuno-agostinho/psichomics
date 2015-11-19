@@ -130,41 +130,50 @@ parseSuppaEventE <- function(event) {
 parseSuppaJunctions <- function(event_type, strand, junctions) {
   # Split junctions by the hyphen
   junctions <- strsplit(junctions, "-")
-  junctions <- unlist(junctions)       
+  junctions <- unlist(junctions)
   
   # If minus strand, reverse junctions
   if(strand == "-") junctions <- rev(junctions)
   
   # Fill list of parsed junctions with NAs
   parsed_junctions <- as.list(rep(NA, 8))
-  names(parsed_junctions) <- c("C1 start",
-                               "C1 end",
-                               "A1 start",
-                               "A1 end",
-                               "A2 start",
-                               "A2 end",
-                               "C2 start",
-                               "C2 end"
+  names(parsed_junctions) <- c("C1 start", "C1 end",
+                               "A1 start", "A1 end",
+                               "A2 start", "A2 end",
+                               "C2 start", "C2 end"
   )
   
   # Parse junction positions according to event type
-  parseJunctionsByType <- switch(
-    event_type,
-    "A3" = parseSuppaJunctionsA3,
-    "A5" = parseSuppaJunctionsA5,
-    "SE" = parseSuppaJunctionsSE,
-    "MX" = parseSuppaJunctionsMX,
-    "RI" = parseSuppaJunctionsRI,
-    "AF" = parseSuppaJunctionsAF,
-    "AL" = parseSuppaJunctionsAL
+  switch(event_type,
+         "A3" = {
+           parsed_junctions[["C1 end"]]   <- junctions[1]
+           parsed_junctions[["C2 start"]] <- junctions[c(2,4)]
+         },
+         "A5" = {
+           parsed_junctions[["C1 end"]]   <- junctions[c(3,1)]
+           parsed_junctions[["C2 start"]] <- junctions[2]
+         },
+         "SE" =
+           parsed_junctions[c("C1 end", "A1 start", "A1 end",
+                              "C2 start")] <- junctions,
+         "MX" =
+           parsed_junctions[c("C1 end", "A1 start", "A1 end", "A2 start",
+                              "A2 end", "C2 start")] <- junctions,
+         "RI" =
+           parsed_junctions[c("C1 start", "C1 end",
+                              "C2 start", "C2 end")] <- junctions,
+         "AF" =
+           parsed_junctions[c("C1 start", "C1 end", "C2 end",
+                              "A1 start", "A1 end")] <- junctions[1:5],
+         "AL" = 
+           parsed_junctions[c("C2 start", "C2 end", "C1 start",
+                              "A1 start", "A1 end")] <- junctions[2:6]
   )
-  parsed_junctions <- parseJunctionsByType(junctions, parsed_junctions)
-  return(parsed_junctions)
-}
-
-parseSuppaJunctionsA3 <- function(junctions, parsed_junctions) {
-  parsed_junctions[["C1 end"]] <- junctions[1]
-  parsed_junctions[["C2 start"]] <- c(junctions[c(2,4)])
+  
+  ## NOTE: In case the -b V (Variable) option is selected (see below), some
+  ## variability is allowed in some of the boundaries. This is not parsed at the
+  ## moment.
+  
   return(parsed_junctions)
 }
 
