@@ -1,0 +1,173 @@
+---
+title: "Parsing splicing events"
+author: "Nuno Agostinho"
+date: "20 November 2015"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 2
+---
+
+# Splicing events identifiers
+
+The splicing events IDs are different according to the program that creates it,
+whether it is [MISO](https://miso.readthedocs.org/en/fastmiso/),
+[SUPPA](https://bitbucket.org/regulatorygenomicsupf/suppa),
+[VAST-TOOLS](https://github.com/vastgroup/vast-tools) or
+[MATS](http://rnaseq-mats.sourceforge.net).
+
+It's also important to understand that the event IDs may vary slightly according
+to the splicing event type. The most common splicing event types annotated
+across the aforementioned programs are described in the following image
+(retrieved from the
+[SUPPA website](https://bitbucket.org/regulatorygenomicsupf/suppa)).
+
+![Splicing event types](https://bitbucket.org/repo/4gEBMd/images/2185438774-Slide1.jpg)
+
+To conciliate the output from the different programs, it was decided to parse
+the splicing event ID to a list with all the important attributes of an event,
+including:
+
+* Chromosome
+* Strand
+* Gene
+* mRNA
+* Splicing event type
+
+In order to store the events themselves, it's possible to characterise all the
+represented splicing event types by using the boundaries of the following 4
+exons:
+
+* Upstream constitutive exon (C1)
+* Upstram alternative exon (A1)
+* Downstream alternative exon (A2)
+* Downstream constitutive exon (C2)
+
+The following table describes which positions should be stored to identify each
+splicing event type:
+
+Splicing event type        | C1 start | C1 end | A1 start | A1 end | A2 start | A2 end | C2 start | C2 end |
+-------------------------- | :------: | :----: | :------: | :----: | :------: | :----: | :------: | :----: |
+Exon skipping              |          | •      | •        | •      |          |        | •        |        |
+Mutually exclusive exons   |          | •      | •        | •      | •        | •      | •        |        |
+Alternative 5' splice site |          | • •    |          |        |          |        | •        |        |
+Alternative 3' splice site |          | •      |          |        |          |        | • •      |        |
+Retained intron            |          | •      |          |        |          |        | •        |        |
+Alternative first exon     | •        | •      | •        | •      |          |        | •        |        |
+Alternative last exon      |          | •      | •        | •      |          |        | •        | •      | 
+
+# Measuring performance
+
+## Rprof
+There are many ways to measure the performance of a chunk of code in R. The one 
+which is already built-in is the `Rprof`. To use it, you simply need to
+something like:
+```{r}
+x <- c(2,3)
+Rprof()
+## Code to be profiled
+mean(x)
+
+Rprof(NULL)
+## Code NOT to be profiled
+mean2 <- function(x) sum(x)/length(x)
+
+Rprof(append = TRUE)
+## Code to be profiled
+mean2(x)
+
+Rprof(NULL)
+
+# Produce a summary of the usage information
+summaryRprof()
+```
+
+Unfortunately, the output is a bit enigmatic. Fortunately for us, there are
+tools that are easier to use: we just need to install the `profVis`,
+`microbenchmark` or `rbenchmark` library.
+
+## profVis
+This one is pretty great: it visually shows the time spent in each line of code
+in your program. Just run it like this:
+```{r}
+library(profvis)
+profvis(
+  mean(c(2,3))
+)
+```
+
+## microbenchmark
+To compare times between chunks of code, we can use `microbenchmark`. It uses
+the most accurate timing functions from the operating system and ensures minimal
+overhead. Use the `time` argument to modify the number of times an expression is
+evaluated.
+
+```{r microbenchmark}
+x <- c(2,3)
+
+library(microbenchmark)
+microbenchmark(times = 100,
+	mean(x),
+	sum(x)/length(x)
+)
+```
+
+## rbenchmark
+This one is great to compare man
+
+# Proposed solutions
+First, let's start to parse SUPPA event IDs from different splicing event types
+since they seem to be the easiest to parse. But now there's a question: how to
+parse them? The proposed method should work fast on thousands of thousands of
+events, so it's crucial to measure the performance of our proposed solutions.
+
+Don't mind the parsing of the events at the moment, let's just think on how to
+parse the attributes of the event . If we are going to receive a character
+vector of events, (maybe) we should be ready to parse each event. So, how about
+if we create a for loop to store each event's attribute in their own vector?
+
+```{r}
+parseSuppaEventB <- function(event) {
+  # split event ID by semicolon and colon symbols
+  tmp <- strsplit(event, ";|:")
+  
+  # initialize empty character vectors to store event attributes
+  gene <- character()
+  event_type <- character()
+  chromosome <- character()
+  strand <- character()
+  for (each in tmp) {
+    gene <- c(gene, each[[1]])
+    event_type <- c(event_type, each[[2]])
+    chromosome <- c(chromosome, each[[3]])
+    
+    len <- length(each)
+    strand <- c(strand, each[[len]])
+    # TODO: parse event itself
+  }
+  return(gene)
+}
+```
+
+Okay, let's try the same but with a vector having of a defined length:
+
+```{r}
+parseSuppaEventC <- function(event) {
+  # split event ID by semicolon and colon symbols
+  tmp <- strsplit(event, ";|:")
+  gene <- character()
+  event_type <- character()
+  chromosome <- character()
+  strand <- character()
+  for (each in tmp) {
+    gene <- c(gene, each[[1]])
+    event_type <- c(event_type, each[[2]])
+    chromosome <- c(chromosome, each[[3]])
+    
+    len <- length(each)
+    strand <- c(strand, each[[len]])
+    # TODO: parse event itself
+  }
+  return(gene)
+}
+```

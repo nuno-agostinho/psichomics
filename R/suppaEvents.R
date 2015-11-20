@@ -1,15 +1,6 @@
 # Load PSI files
 # source("R/readPSIfiles.R")
 
-# What is important to keep from each event?
-# Attributes of interest:
-#   chromosome
-#   strand
-#   gene / mRNA
-#   event type
-#   psi
-#   exon 1 to 4 (start, end)
-
 parseSuppaEventA <- function(event) {
   # create vector in the end resorting to many applies
   
@@ -46,9 +37,6 @@ parseSuppaEventB <- function(event) {
     strand <- c(strand, each[[len]])
   }
   return(gene)
-  
-  # split string by minus symbol (which indicates the span of an exon)
-  # tmp <- strsplit(tmp, "-")
 }
 
 parseSuppaEventC <- function(event) {
@@ -85,9 +73,10 @@ parseSuppaEventD <- function(event) {
   # tmp <- strsplit(tmp, "-")
 }
 
-#' Parses an event ID from SUPPA
+#' Parses a splicing event ID from SUPPA (more information available at
+#' https://bitbucket.org/regulatorygenomicsupf/suppa)
 #'
-#' @param event Event ID
+#' @param event Chracter: Splicing event ID
 #'
 #' @return List with the event attributes (chromosome, strand, event type and
 #' the position of the exon boundaries)
@@ -99,8 +88,8 @@ parseSuppaEventD <- function(event) {
 #' 
 #' events <- c("ENSG00000000419;A3:20:49557492-49557642:49557470-49557642:-",
 #'             "ENSG00000000419;A3:20:49557492-49558568:49557470-49558568:-",
-#'             "ENSG00000000457;A3:1:69838269-69839396:69838180-69839396:-")
-#' t(sapply(events, parseSuppaEventE))
+#'             "ENSG00000000003;A5:X:99890743-99891188:99890743-99891605:-")
+#' lapply(events, parseSuppaEventE)
 parseSuppaEventE <- function(event) {
   # Split event ID by semicolons and colons
   tmp <- strsplit(event, ";|:")[[1]]
@@ -118,10 +107,14 @@ parseSuppaEventE <- function(event) {
   return(c(event_attrs, parsed_junctions))
 }
 
-#' Parses junctions
+#' Parses splicing junctions
 #'
-#' @param event_type 
-#' @param junctions 
+#' NOTE: In case the -b V (Variable) option is selected (see below), some
+#' variability is allowed in some of the boundaries. This is not accounted at
+#' the moment.
+#' 
+#' @param event_type Chatacter: Type of the splicing event
+#' @param junctions Character vector: Splicing junctions 
 #'
 #' @return
 #' @export
@@ -136,8 +129,8 @@ parseSuppaJunctions <- function(event_type, strand, junctions) {
   if(strand == "-") junctions <- rev(junctions)
   
   # Fill list of parsed junctions with NAs
-  parsed_junctions <- as.list(rep(NA, 8))
-  names(parsed_junctions) <- c("C1 start", "C1 end",
+  parsed <- as.list(rep(NA, 8))
+  names(parsed) <- c("C1 start", "C1 end",
                                "A1 start", "A1 end",
                                "A2 start", "A2 end",
                                "C2 start", "C2 end"
@@ -146,36 +139,33 @@ parseSuppaJunctions <- function(event_type, strand, junctions) {
   # Parse junction positions according to event type
   switch(event_type,
          "A3" = {
-           parsed_junctions[["C1 end"]]   <- junctions[1]
-           parsed_junctions[["C2 start"]] <- junctions[c(2,4)]
+           parsed[["C1 end"]]   <- junctions[1]
+           parsed[["C2 start"]] <- junctions[c(2,4)]
          },
          "A5" = {
-           parsed_junctions[["C1 end"]]   <- junctions[c(3,1)]
-           parsed_junctions[["C2 start"]] <- junctions[2]
+           parsed[["C1 end"]]   <- junctions[c(3,1)]
+           parsed[["C2 start"]] <- junctions[2]
          },
          "SE" =
-           parsed_junctions[c("C1 end", "A1 start", "A1 end",
+           parsed[c("C1 end", "A1 start", "A1 end",
                               "C2 start")] <- junctions,
          "MX" =
-           parsed_junctions[c("C1 end", "A1 start", "A1 end", "A2 start",
-                              "A2 end", "C2 start")] <- junctions,
+           parsed[c("C1 end", "A1 start", "A1 end", "A2 start",
+                              "A2 end", "C2 start")] <- junctions[-c(4,5)],
          "RI" =
-           parsed_junctions[c("C1 start", "C1 end",
+           parsed[c("C1 start", "C1 end",
                               "C2 start", "C2 end")] <- junctions,
          "AF" =
-           parsed_junctions[c("C1 start", "C1 end", "C2 end",
+           parsed[c("C1 start", "C1 end", "C2 end",
                               "A1 start", "A1 end")] <- junctions[1:5],
          "AL" = 
-           parsed_junctions[c("C2 start", "C2 end", "C1 start",
+           parsed[c("C2 start", "C2 end", "C1 start",
                               "A1 start", "A1 end")] <- junctions[2:6]
   )
-  
-  ## NOTE: In case the -b V (Variable) option is selected (see below), some
-  ## variability is allowed in some of the boundaries. This is not parsed at the
-  ## moment.
-  
-  return(parsed_junctions)
+  return(parsed)
 }
+
+
 
 #### BENCHMARKING
 benchmarking <- function() {
