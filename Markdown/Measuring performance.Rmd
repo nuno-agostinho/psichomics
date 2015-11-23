@@ -1,0 +1,89 @@
+---
+title: "Measuring performance"
+author: "Nuno Agostinho"
+date: "22 November 2015"
+output: html_document
+---
+
+Let's discuss a bit the tools we have to compare different solutions that solve
+the same problem and how to measure performance on R.
+
+## Rprof
+There are many ways to measure the performance of a chunk of code in R. `Rprof`
+comes already built-in. To use it, you simply need to something like:
+
+```{r}
+x <- c(2,3)
+Rprof()
+## Code to be profiled
+mean(x)
+
+Rprof(NULL)
+## Code NOT to be profiled
+mean2 <- function(x) sum(x)/length(x)
+
+Rprof(append = TRUE)
+## Code to be profiled
+mean2(x)
+
+Rprof(NULL)
+
+# Produce a summary of the usage information
+summaryRprof()
+```
+
+The output is a bit enigmatic but fortunately for us there are other tools that
+are easier to use.
+
+## profVis
+This one is pretty great: it visually shows the time spent in each line of code
+in your program so you know which lines are responsible for slowing you down.
+Just run it like this:
+
+```{r eval=F}
+library(profvis)
+profvis(
+  # complex function you'd like to profile
+)
+```
+
+## microbenchmark
+To compare times between chunks of code, we can use `microbenchmark`. It uses
+the most accurate timing functions from the operating system and ensures minimal
+overhead. Use the `time` argument to modify the number of times an expression is
+evaluated and the `unit` argument to decide on the time unit: ns, us, ms, s, t, 
+hz, khz, mhz, eps or f.
+
+```{r}
+x <- c(2,3)
+
+library(microbenchmark)
+microbenchmark(
+  times = 100, # number of times to repeat
+  unit = "ms", # unit of time to be displayed
+  mean(x),
+  sum(x)/length(x)
+)
+```
+
+See how faster it is to use `sum(x)/length(x)` over `mean(x)`? Yeah, R functions
+aren't that well optimised, unfortunately.
+
+## rbenchmark
+Although it also allows to compare times between chunks of code, it can be more
+useful than `microbenchmark` to check the elapsed time of a program over
+multiple iterations since it shows the real elapsed time. Note however that this
+method is less precise than `microbenchmark`. You can modify the `replications`
+argument to alter the number of times an expression is evaluated.
+
+```{r}
+x <- c(2,3)
+
+library(rbenchmark)
+benchmark(
+  replications = 100, # number of times to repeat
+  mean(x),
+  sum(x)/length(x)
+)
+```
+

@@ -5,34 +5,39 @@ date: "20 November 2015"
 output:
   html_document:
     toc: yes
-    toc_depth: 2
+    toc_depth: 3
 ---
 
 # Splicing events identifiers
 
-The splicing events IDs are different according to the program that creates it,
-whether it is [MISO](https://miso.readthedocs.org/en/fastmiso/),
-[SUPPA](https://bitbucket.org/regulatorygenomicsupf/suppa),
-[VAST-TOOLS](https://github.com/vastgroup/vast-tools) or
-[MATS](http://rnaseq-mats.sourceforge.net).
+The splicing events ID's are different according to the program that creates it.
+The programs which allow to quantify expression levels of alternative
+splicing events and that are studied in this report are:
 
-It's also important to understand that the event IDs may vary slightly according
-to the splicing event type. The most common splicing event types annotated
-across the aforementioned programs are described in the following image
-(retrieved from the
+* [MISO](https://miso.readthedocs.org/en/fastmiso/)
+* [SUPPA](https://bitbucket.org/regulatorygenomicsupf/suppa)
+* [VAST-TOOLS](https://github.com/vastgroup/vast-tools)
+* [MATS](http://rnaseq-mats.sourceforge.net)
+
+It's also important to understand that the splicing event ID's may vary
+according to the splicing event type. The most common splicing event types
+annotated across the aforementioned programs are described in the following
+image (retrieved from the
 [SUPPA website](https://bitbucket.org/regulatorygenomicsupf/suppa)).
 
 ![Splicing event types](https://bitbucket.org/repo/4gEBMd/images/2185438774-Slide1.jpg)
 
 To conciliate the output from the different programs, it was decided to parse
-the splicing event ID to a list with all the important attributes of an event,
-including:
+each splicing event ID to a R data type known as list with all the important
+attributes of an event, including:
 
+* Species
 * Chromosome
 * Strand
 * Gene
 * mRNA
 * Splicing event type
+<!-- * Inclusion level (PSI) -->
 
 In order to store the events themselves, it's possible to characterise all the
 represented splicing event types by using the boundaries of the following 4
@@ -52,82 +57,52 @@ Exon skipping              |          | •      | •        | •      |      
 Mutually exclusive exons   |          | •      | •        | •      | •        | •      | •        |        |
 Alternative 5' splice site |          | • •    |          |        |          |        | •        |        |
 Alternative 3' splice site |          | •      |          |        |          |        | • •      |        |
-Retained intron            |          | •      |          |        |          |        | •        |        |
+Retained intron            | •        | •      |          |        |          |        | •        | •      |
 Alternative first exon     | •        | •      | •        | •      |          |        | •        |        |
 Alternative last exon      |          | •      | •        | •      |          |        | •        | •      | 
 
-# Measuring performance
+Note there are two glyphs in some cases. That means two alternative positions
+are stored (for example, in the case of the alternative 5' splice site, the C1
+end can alternatively be one of the two positions).
 
-## Rprof
-There are many ways to measure the performance of a chunk of code in R. The one 
-which is already built-in is the `Rprof`. To use it, you simply need to
-something like:
-```{r}
-x <- c(2,3)
-Rprof()
-## Code to be profiled
-mean(x)
+Before discussing how to parse thousands and thousands of events, we should
+reflect a bit on the tools available to compare different solutions that solve
+the same problem and how to measure performance on R. You can read about it
+in the article [Measuring performance](Measuring_performance.html).
 
-Rprof(NULL)
-## Code NOT to be profiled
-mean2 <- function(x) sum(x)/length(x)
+# Parsing splicing events from SUPPA
+Let's start to parse the splicing event types from SUPPA since they seem to be
+the easiest to parse. Below you can see for each type of event how SUPPA
+presents the respective event ID (includes gene, splicing event type,
+chromosome, positions of the exon junctions and strand).
 
-Rprof(append = TRUE)
-## Code to be profiled
-mean2(x)
+Splicing event type        | Splicing event ID example from SUPPA |
+-------------------------- | ------------------------------------------------------------------------------------ |
+Exon skipping              | ENSG00000000419;SE:20:49557470-49557642:49557746-49558568:- |
+Mutually exclusive exons   | ENSG00000000419;MX:20:49557470-49557666:49557746-49562274:49557470-49558568:49558663-49562274:- |
+Alternative 5' splice site | ENSG00000000003;A5:X:99890743-99891188:99890743-99891605:- |
+Alternative 3' splice site | ENSG00000000419;A3:20:49557492-49557642:49557470-49557642:- |
+Retained intron            | ENSG00000000971;RI:1:196709749:196709922-196711005:196711181:+ |
+Alternative first exon     | ENSG00000000457;AF:1:169858031-169862929:169863076:169858031-169863148:169863408:- |
+Alternative last exon      | ENSG00000001461;AL:1:24790610-24792494:24792800:24790610-24795476:24795797:+
 
-Rprof(NULL)
+Note that these splicing event ID's can differ if SUPPA is run using the **-b V 
+(variable)** option, where ["some variability is allowed in some of the
+boundaries"](https://bitbucket.org/regulatorygenomicsupf/suppa).
 
-# Produce a summary of the usage information
-summaryRprof()
-```
+> TODO: account for the "variable" option in SUPPA events
 
-Unfortunately, the output is a bit enigmatic. Fortunately for us, there are
-tools that are easier to use: we just need to install the `profVis`,
-`microbenchmark` or `rbenchmark` library.
+But now there's a question: how to parse them?
 
-## profVis
-This one is pretty great: it visually shows the time spent in each line of code
-in your program. Just run it like this:
-```{r}
-library(profvis)
-profvis(
-  mean(c(2,3))
-)
-```
-
-## microbenchmark
-To compare times between chunks of code, we can use `microbenchmark`. It uses
-the most accurate timing functions from the operating system and ensures minimal
-overhead. Use the `time` argument to modify the number of times an expression is
-evaluated.
-
-```{r microbenchmark}
-x <- c(2,3)
-
-library(microbenchmark)
-microbenchmark(times = 100,
-	mean(x),
-	sum(x)/length(x)
-)
-```
-
-## rbenchmark
-This one is great to compare man
-
-# Proposed solutions
-First, let's start to parse SUPPA event IDs from different splicing event types
-since they seem to be the easiest to parse. But now there's a question: how to
-parse them? The proposed method should work fast on thousands of thousands of
-events, so it's crucial to measure the performance of our proposed solutions.
-
+## Parsing the event attributes
+### For loop
 Don't mind the parsing of the events at the moment, let's just think on how to
-parse the attributes of the event . If we are going to receive a character
-vector of events, (maybe) we should be ready to parse each event. So, how about
-if we create a for loop to store each event's attribute in their own vector?
+parse the attributes of an event. If we are going to receive a character vector
+of events, (maybe) we should be ready to parse each event. So, how about if we
+create a for loop to store each event's attribute in their own vector?
 
-```{r}
-parseSuppaEventB <- function(event) {
+```{r suppa-for-loop}
+parseSuppaEventA <- function(event) {
   # split event ID by semicolon and colon symbols
   tmp <- strsplit(event, ";|:")
   
@@ -137,6 +112,7 @@ parseSuppaEventB <- function(event) {
   chromosome <- character()
   strand <- character()
   for (each in tmp) {
+    # append value to vectors
     gene <- c(gene, each[[1]])
     event_type <- c(event_type, each[[2]])
     chromosome <- c(chromosome, each[[3]])
@@ -145,29 +121,329 @@ parseSuppaEventB <- function(event) {
     strand <- c(strand, each[[len]])
     # TODO: parse event itself
   }
-  return(gene)
+  ret <- list(gene, event_type, chromosome, strand)
+  names(ret) <- c("Gene", "Event type", "Chromosome", "Strand")
+  return(ret)
 }
 ```
 
-Okay, let's try the same but with a vector having of a defined length:
+### For loop with pre-filled vectors
+Let's try the same but using vectors already filled with NAs.
 
-```{r}
+```{r suppa-pre-filled}
+parseSuppaEventB <- function(event) {
+  # split event ID by semicolon and colon symbols
+  tmp <- strsplit(event, ";|:")
+  
+  # initialize empty character vectors to store event attributes
+  empty      <- rep(NA, length(event))
+  gene       <- empty
+  event_type <- empty
+  chromosome <- empty
+  strand     <- empty
+  
+  i <- 1
+  for (each in tmp) {
+    # replace value in vectors
+    gene[i]       <- each[[1]]
+    event_type[i] <- each[[2]]
+    chromosome[i] <- each[[3]]
+    
+    len <- length(each)
+    strand[i] <- each[[len]]
+    i <- i+1
+    # TODO: parse event itself
+  }
+  ret <- list(gene, event_type, chromosome, strand)
+  names(ret) <- c("Gene", "Event type", "Chromosome", "Strand")
+  return(ret)
+}
+```
+
+Now, let's compare the two methods.
+
+```{r benchmark-for-loops}
+eventSE <- "ENSG00000000419;SE:20:49557470-49557642:49557746-49558568:-"
+library(microbenchmark)
+microbenchmark(
+  parseSuppaEventA(eventSE),
+  parseSuppaEventB(eventSE)
+)
+```
+
+Hum, seems the first method is faster. I wasn't expecting that...
+
+### Apply function
+Anyway, let's adapt our code to use an apply function instead of a for loop.
+Since apply functions rely on C code, they ought to be faster than for loops.
+
+```{r apply-function}
 parseSuppaEventC <- function(event) {
   # split event ID by semicolon and colon symbols
   tmp <- strsplit(event, ";|:")
-  gene <- character()
-  event_type <- character()
-  chromosome <- character()
-  strand <- character()
-  for (each in tmp) {
-    gene <- c(gene, each[[1]])
-    event_type <- c(event_type, each[[2]])
-    chromosome <- c(chromosome, each[[3]])
-    
+  
+  # create a list of lists containing event information
+  ret <- lapply(tmp, function(each) {
     len <- length(each)
-    strand <- c(strand, each[[len]])
+    # create list with event attributes
+    event_attrs <- list("Gene" = each[1],
+                        "Event type" = each[2],
+                        "Chromosome" = each[3],
+                        "Strand" = each[len])
     # TODO: parse event itself
-  }
-  return(gene)
+    return(event_attrs)
+  })
+  return(ret)
 }
+```
+
+```{r benchmark-apply-function}
+eventSE <- "ENSG00000000419;SE:20:49557470-49557642:49557746-49558568:-"
+microbenchmark(
+  parseSuppaEventA(eventSE),
+  parseSuppaEventB(eventSE),
+  parseSuppaEventC(eventSE)
+)
+```
+
+Seems this method is the fastest yet. Yay!
+
+### One event at a time
+Maybe we can also improve the code performance if our function only parses
+one event at a time. Let's see...
+
+```{r one-at-a-time}
+parseSuppaEventD <- function(event) {
+  # Split event ID by semicolons and colons
+  tmp <- strsplit(event, ";|:")[[1]]
+  len <- length(tmp)
+  
+  # Get the attributes of the event
+  event_attrs <- as.list(tmp[c(1:3, len)])
+  names(event_attrs) <- c("Gene", "Event type", "Chromosome", "Strand")
+  
+  # TODO: parse event itself
+  return(event_attrs)
+}
+```
+
+```{r benchmark-one-at-a-time}
+eventSE <- "ENSG00000000419;SE:20:49557470-49557642:49557746-49558568:-"
+microbenchmark(
+  parseSuppaEventA(eventSE),
+  parseSuppaEventB(eventSE),
+  parseSuppaEventC(eventSE),
+  parseSuppaEventD(eventSE)
+)
+```
+
+Nope, it seems this doesn't work. Anyway, let's see how our functions behave 
+when dealing with 10000 events.
+
+```{r benchmark-all-events}
+events <- rep(eventSE, 10000)
+library(rbenchmark)
+benchmark(replications = 1,
+          #for (e in events) t <-c(t,parseSuppaEventA(e)), ## too slow
+          #for (e in events) t <-c(t,parseSuppaEventB(e)), ## too slow
+          #for (e in events) t <-c(t,parseSuppaEventC(e)), ## too slow
+          #for (e in events) t <-c(t,parseSuppaEventD(e)), ## too slow
+          lapply(events, parseSuppaEventA),
+          lapply(events, parseSuppaEventB),
+          lapply(events, parseSuppaEventC),
+          lapply(events, parseSuppaEventD),
+          parseSuppaEventA(events),
+          parseSuppaEventB(events),
+          parseSuppaEventC(events)
+)
+```
+
+Interesting. It seems **parsing method C** is the fastest if we hand all the
+events as an argument (i.e. without using an exterior apply function).
+
+## Parsing the junctions
+The following function shows one way we could use to parse junctions. It simply
+splits junctions by the "-", it reverses the junctions if it's the minus strand,
+fills a list of parsed junctions with NAs and parses junction positions
+according to event type. Simple, right?
+
+```{r parse-junctions}
+parseSuppaJunctions <- function(event_type, strand, junctions) {
+  # Split junctions by the hyphen symbol
+  junctions <- strsplit(junctions, "-")
+  junctions <- unlist(junctions)
+  
+  # If minus strand, reverse junctions
+  if(strand == "-") junctions <- rev(junctions)
+  
+  # Fill list of parsed junctions with NAs
+  parsed = list("C1 start" = NA, "C1 end" = NA,
+                "A1 start" = NA, "A1 end" = NA,
+                "A2 start" = NA, "A2 end" = NA,
+                "C2 start" = NA, "C2 end" = NA)
+  
+  # Parse junction positions according to event type
+  switch(event_type,
+         "A3" = {
+           parsed[["C1 end"]]   <- junctions[1]
+           parsed[["C2 start"]] <- junctions[c(2,4)]
+         },
+         "A5" = {
+           parsed[["C1 end"]]   <- junctions[c(3,1)]
+           parsed[["C2 start"]] <- junctions[2]
+         },
+         "SE" = parsed[c("C1 end", "A1 start", "A1 end",
+                         "C2 start")] <- junctions,
+         "MX" = parsed[c("C1 end", "A1 start", "A1 end", "A2 start",
+                         "A2 end", "C2 start")] <- junctions[-c(4,5)],
+         "RI" = parsed[c("C1 start", "C1 end",
+                         "C2 start", "C2 end")] <- junctions,
+         "AF" = parsed[c("C1 start", "C1 end", "C2 end",
+                         "A1 start", "A1 end")] <- junctions[1:5],
+         "AL" = parsed[c("C2 start", "C2 end", "C1 start",
+                         "A1 start", "A1 end")] <- junctions[2:6]
+  )
+  return(parsed)
+}
+```
+
+Now, let's use this function to complete parsing method C (henceforth mentioned
+as **parseSuppaEventC1**).
+
+```{r parse-all}
+parseSuppaEventC1 <- function(event) {
+  # Split event ID by semicolon and colon symbols
+  tmp <- strsplit(event, ";|:")
+  
+  # Create a list of lists containing event information
+  ret <- lapply(tmp, function(each) {
+    len <- length(each)
+    # Create list with event attributes
+    event_attrs <- list("Gene" = each[1],
+                        "Event type" = each[2],
+                        "Chromosome" = each[3],
+                        "Strand" = each[len])
+    
+    # Get the junction positions for each exon and parse them
+    junctions <- each[4:(len-1)]
+    parsed_junctions <- parseSuppaJunctions(event_attrs[["Event type"]],
+                                            event_attrs[["Strand"]],
+                                            junctions)
+    return(c(event_attrs, parsed_junctions))
+  })
+  return(ret)
+}
+```
+
+How much slower is our function with this addition? Let's find out.
+
+```{r benchmark-parse-all}
+benchmark(replications = 1,
+  parseSuppaEventC(events),
+  parseSuppaEventC1(events)
+)
+```
+
+Well, it takes about four times more time to complete. Maybe we should try to
+optimise the code we just add. What if we used the classic if/else instead of
+the switch?
+
+```{r parse-junctions-2}
+parseSuppaJunctions <- function(event_type, strand, junctions) {
+  # Split junctions by the hyphen
+  junctions <- strsplit(junctions, "-")
+  junctions <- unlist(junctions)
+  
+  # If minus strand, reverse junctions
+  if(strand == "-") junctions <- rev(junctions)
+  
+  # Fill list of parsed junctions with NAs
+  parsed = list("C1 start" = NA, "C1 end" = NA,
+                "A1 start" = NA, "A1 end" = NA,
+                "A2 start" = NA, "A2 end" = NA,
+                "C2 start" = NA, "C2 end" = NA
+  )
+  
+  # Parse junction positions according to event type
+  if (event_type == "A3") {
+    parsed[["C1 end"]]   <- junctions[1]
+    parsed[["C2 start"]] <- junctions[c(2,4)]
+  } else if (event_type == "A5") {
+    parsed[["C1 end"]]   <- junctions[c(3,1)]
+    parsed[["C2 start"]] <- junctions[2]
+  } else if (event_type == "SE") {
+    parsed[c("C1 end", "A1 start", "A1 end",
+             "C2 start")] <- junctions
+  } else if (event_type == "MX") {
+    parsed[c("C1 end", "A1 start", "A1 end", "A2 start",
+             "A2 end", "C2 start")] <- junctions[-c(4,5)]
+  } else if (event_type == "RI") {
+    parsed[c("C1 start", "C1 end",
+             "C2 start", "C2 end")] <- junctions
+  } else if (event_type == "AF") {
+    parsed[c("C1 start", "C1 end", "C2 end",
+             "A1 start", "A1 end")] <- junctions[1:5]
+  } else if (event_type == "AL") {
+    parsed[c("C2 start", "C2 end", "C1 start",
+             "A1 start", "A1 end")] <- junctions[2:6]
+  }
+  return(parsed)
+}
+```
+
+```{r benchmark-parse-all-2}
+benchmark(replications = 1,
+  parseSuppaEventC(events),
+  parseSuppaEventC1(events)
+)
+```
+
+The if/else doesn't seem to make much difference, the difference is still about
+four times slower. Maybe we don't need to `unlist` the result of `strsplit`?
+Maybe we should try to rewrite the function without using the `unlist` function?
+Let's do it in another day, shall we?
+
+> TODO: more performance tweaks
+
+# Parsing splicing events from MISO
+To get expression levels using MISO, you only need to give it alternative events
+annotation files (in the GFF3 format) and a sample BAM file.
+
+Splicing event ID's from MISO don't differ that much from those in SUPPA,
+although they don't contain gene names nor type of event, as you can see from 
+the following table (notice that Tandem UTR is a type of event which is not
+present in SUPPA).
+
+Splicing event type        | Splicing event ID example from SUPPA |
+-------------------------- | ------------------------------------------------------------------------------------ |
+Exon skipping              | chr19:14069173:14069295:-\@chr19:14065440:14065604:-\@chr19:14063500:14065049:- |
+Mutually exclusive exons   | chr2:261866:261939:+\@chr2:262037:262150:+\@chr2:262192:262305:+\@chr2:265140:265630:+ |
+Alternative 5' splice site | chr22:41353339:41353254|41353250:-\@chr22:41349739:41349838:- |
+Alternative 3' splice site | chr4:156848838:156848896:+\@chr4:156851144|156851147:156851853:+ |
+Retained intron            | chr3:151768379:151768406:+\@chr3:151768494:151768523:+ |
+Alternative first exon     | 2217\@uc002poi.1\@uc002poe.1 |
+Alternative last exon      | 55814\@uc003msh.1uc003msk.1\@uc003msj.1 |
+Tandem UTR                 | chr17:53778273:53778604:-\@chr17:53777536:53778272:- |
+
+The splicing event ID's were originally attributed using the Human genome's 18th
+assembly or the Mouse genome's 8th assembly. To create the GFF3 annotation files
+relative to the newer assemblies of the Human and Mouse genomes, they used
+[UCSC's liftOver](https://genome.ucsc.edu/cgi-bin/hgLiftOver) to change 
+the positions (but the ID's stayed the same). Therefore, we need to cross-ref
+the annotation files with the splicing event ID's to parse the splicing events
+and to get the expression levels.
+
+Another thing to note is that MISO can also return isoform-centric analyses and
+may be important to expect and parse isoform-centric events.
+
+> TODO: parse MISO's isoform-centric events
+
+## Cross-referencing the splicing event ID's
+This one seems easy enough. For each splicing event ID, just get any matches in
+the alternative splicing annotation files.
+
+```{r eval=F}
+# Get lines matching to a given MISO splicing event ID
+match <- grep(event, annotationFile[[9]])
+annotationFile[match,]
 ```
