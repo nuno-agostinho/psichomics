@@ -80,7 +80,13 @@ img {
 <li><a href="#parsing-the-junctions">Parsing the junctions</a></li>
 </ul></li>
 <li><a href="#parsing-splicing-events-from-miso">Parsing splicing events from MISO</a><ul>
-<li><a href="#cross-referencing-the-splicing-event-ids">Cross-referencing the splicing event ID’s</a></li>
+<li><a href="#cross-referencing-the-splicing-event-ids">Cross-referencing the splicing event ID’s</a><ul>
+<li><a href="#grep">grep</a></li>
+<li><a href="#pmatch">pmatch</a></li>
+<li><a href="#match">match</a></li>
+<li><a href="#which">which</a></li>
+<li><a href="#using-liftover">Using liftOver</a></li>
+</ul></li>
 </ul></li>
 </ul>
 </div>
@@ -323,9 +329,9 @@ microbenchmark(
   parseSuppaEventB(eventSE)
 )</code></pre>
 <pre><code>## Unit: microseconds
-##                       expr    min     lq     mean  median      uq     max
-##  parseSuppaEventA(eventSE) 28.208 29.750 32.53345 30.4965 32.4605  49.017
-##  parseSuppaEventB(eventSE) 31.263 32.796 36.47458 33.6625 35.9875 106.605
+##                       expr    min      lq     mean  median      uq     max
+##  parseSuppaEventA(eventSE) 29.018 31.5675 35.28547 32.7130 35.1995 101.705
+##  parseSuppaEventB(eventSE) 31.968 33.9470 37.48129 35.1435 37.2705  58.631
 ##  neval cld
 ##    100  a 
 ##    100   b</code></pre>
@@ -350,22 +356,23 @@ microbenchmark(
     return(event_attrs)
   })
   return(ret)
-}</code></pre>
-<pre class="r"><code>eventSE &lt;- &quot;ENSG00000000419;SE:20:49557470-49557642:49557746-49558568:-&quot;
+}
+
+eventSE &lt;- &quot;ENSG00000000419;SE:20:49557470-49557642:49557746-49558568:-&quot;
 microbenchmark(
   parseSuppaEventA(eventSE),
   parseSuppaEventB(eventSE),
   parseSuppaEventC(eventSE)
 )</code></pre>
 <pre><code>## Unit: microseconds
-##                       expr    min      lq     mean median     uq      max
-##  parseSuppaEventA(eventSE) 28.872 31.5445 35.10929 32.843 34.324   69.989
-##  parseSuppaEventB(eventSE) 32.913 34.6585 75.65653 35.808 38.397 2175.650
-##  parseSuppaEventC(eventSE) 27.568 29.4035 32.10885 30.325 31.868  118.163
+##                       expr    min     lq     mean  median      uq     max
+##  parseSuppaEventA(eventSE) 29.607 33.417 36.95901 35.2260 38.1520  59.703
+##  parseSuppaEventB(eventSE) 34.802 36.738 41.36605 38.1165 40.4435  69.593
+##  parseSuppaEventC(eventSE) 27.930 30.863 33.30335 31.8185 33.4340 102.237
 ##  neval cld
-##    100   a
-##    100   a
-##    100   a</code></pre>
+##    100  b 
+##    100   c
+##    100 a</code></pre>
 <p>Seems this method is the fastest yet. Yay!</p>
 </div>
 <div id="one-event-at-a-time" class="section level3">
@@ -391,16 +398,16 @@ microbenchmark(
   parseSuppaEventD(eventSE)
 )</code></pre>
 <pre><code>## Unit: microseconds
-##                       expr    min      lq     mean  median      uq
-##  parseSuppaEventA(eventSE) 29.027 32.2490 66.75842 33.6185 35.3620
-##  parseSuppaEventB(eventSE) 32.525 35.5285 38.18543 36.2690 37.6265
-##  parseSuppaEventC(eventSE) 27.744 29.7490 33.23312 31.3410 33.2025
-##  parseSuppaEventD(eventSE) 32.527 34.0810 39.12513 35.0715 36.6415
-##       max neval cld
-##  1522.585   100   a
-##    58.845   100   a
-##    59.079   100   a
-##   161.512   100   a</code></pre>
+##                       expr    min      lq     mean  median      uq    max
+##  parseSuppaEventA(eventSE) 31.468 34.0060 38.25262 35.7380 37.9785 98.938
+##  parseSuppaEventB(eventSE) 34.376 36.8045 40.12843 38.3640 40.2165 78.691
+##  parseSuppaEventC(eventSE) 28.851 31.5145 34.38984 33.1220 34.8345 89.079
+##  parseSuppaEventD(eventSE) 33.260 36.0215 39.28335 37.8095 39.6675 71.283
+##  neval cld
+##    100   b
+##    100   b
+##    100  a 
+##    100   b</code></pre>
 <p>Nope, it seems this doesn’t work. Anyway, let’s see how our functions behave when dealing with 10000 events.</p>
 <pre class="r"><code>events &lt;- rep(eventSE, 10000)
 library(rbenchmark)
@@ -418,20 +425,20 @@ benchmark(replications = 1,
           parseSuppaEventC(events)
 )</code></pre>
 <pre><code>##                               test replications elapsed relative user.self
-## 1 lapply(events, parseSuppaEventA)            1   0.395    2.616     0.395
-## 2 lapply(events, parseSuppaEventB)            1   0.413    2.735     0.413
-## 3 lapply(events, parseSuppaEventC)            1   0.352    2.331     0.352
-## 4 lapply(events, parseSuppaEventD)            1   0.398    2.636     0.397
-## 5         parseSuppaEventA(events)            1   2.164   14.331     2.147
-## 6         parseSuppaEventB(events)            1   0.186    1.232     0.186
-## 7         parseSuppaEventC(events)            1   0.151    1.000     0.150
+## 1 lapply(events, parseSuppaEventA)            1   0.349    3.455     0.349
+## 2 lapply(events, parseSuppaEventB)            1   0.378    3.743     0.378
+## 3 lapply(events, parseSuppaEventC)            1   0.322    3.188     0.322
+## 4 lapply(events, parseSuppaEventD)            1   0.374    3.703     0.373
+## 5         parseSuppaEventA(events)            1   1.621   16.050     1.613
+## 6         parseSuppaEventB(events)            1   0.132    1.307     0.129
+## 7         parseSuppaEventC(events)            1   0.101    1.000     0.102
 ##   sys.self user.child sys.child
 ## 1    0.000          0         0
 ## 2    0.000          0         0
 ## 3    0.000          0         0
 ## 4    0.000          0         0
-## 5    0.016          0         0
-## 6    0.000          0         0
+## 5    0.008          0         0
+## 6    0.004          0         0
 ## 7    0.000          0         0</code></pre>
 <p>Interesting. It seems <strong>parsing method C</strong> is the fastest if we hand all the events as an argument (i.e. without using an exterior apply function).</p>
 </div>
@@ -476,8 +483,8 @@ benchmark(replications = 1,
   )
   return(parsed)
 }</code></pre>
-<p>Now, let’s use this function to complete parsing method C (henceforth mentioned as <strong>parseSuppaEventC1</strong>).</p>
-<pre class="r"><code>parseSuppaEventC1 &lt;- function(event) {
+<p>Now, let’s use this function to complete parsing method C (henceforth mentioned as <strong>parseSuppaEvent</strong>).</p>
+<pre class="r"><code>parseSuppaEvent &lt;- function(event) {
   # Split event ID by semicolon and colon symbols
   tmp &lt;- strsplit(event, &quot;;|:&quot;)
   
@@ -498,19 +505,19 @@ benchmark(replications = 1,
     return(c(event_attrs, parsed_junctions))
   })
   return(ret)
-}</code></pre>
-<p>How much slower is our function with this addition? Let’s find out.</p>
-<pre class="r"><code>benchmark(replications = 1,
-  parseSuppaEventC(events),
-  parseSuppaEventC1(events)
+}
+
+benchmark(replications = 1,
+          parseSuppaEventC(events),
+          parseSuppaEvent(events)
 )</code></pre>
-<pre><code>##                        test replications elapsed relative user.self
-## 2 parseSuppaEventC1(events)            1   0.613    4.033     0.612
-## 1  parseSuppaEventC(events)            1   0.152    1.000     0.152
+<pre><code>##                       test replications elapsed relative user.self
+## 1 parseSuppaEventC(events)            1   0.103    1.000     0.103
+## 2  parseSuppaEvent(events)            1   0.408    3.961     0.408
 ##   sys.self user.child sys.child
-## 2        0          0         0
-## 1        0          0         0</code></pre>
-<p>Well, it takes about four times more time to complete. Maybe we should try to optimise the code we just add. What if we used the classic if/else instead of the switch?</p>
+## 1        0          0         0
+## 2        0          0         0</code></pre>
+<p>Well, our function with the addition takes about four times more to complete. Maybe we should try to optimise the code we just add. What if we used the classic if/else instead of the switch?</p>
 <pre class="r"><code>parseSuppaJunctions &lt;- function(event_type, strand, junctions) {
   # Split junctions by the hyphen
   junctions &lt;- strsplit(junctions, &quot;-&quot;)
@@ -550,17 +557,18 @@ benchmark(replications = 1,
              &quot;A1 start&quot;, &quot;A1 end&quot;)] &lt;- junctions[2:6]
   }
   return(parsed)
-}</code></pre>
-<pre class="r"><code>benchmark(replications = 1,
-  parseSuppaEventC(events),
-  parseSuppaEventC1(events)
+}
+
+benchmark(replications = 1,
+          parseSuppaEventC(events),
+          parseSuppaEvent(events)
 )</code></pre>
-<pre><code>##                        test replications elapsed relative user.self
-## 2 parseSuppaEventC1(events)            1   0.640    4.129     0.639
-## 1  parseSuppaEventC(events)            1   0.155    1.000     0.155
+<pre><code>##                       test replications elapsed relative user.self
+## 1 parseSuppaEventC(events)            1   0.132    1.000     0.133
+## 2  parseSuppaEvent(events)            1   0.551    4.174     0.531
 ##   sys.self user.child sys.child
-## 2        0          0         0
-## 1        0          0         0</code></pre>
+## 1     0.00          0         0
+## 2     0.02          0         0</code></pre>
 <p>The if/else doesn’t seem to make much difference, the difference is still about four times slower. Maybe we don’t need to <code>unlist</code> the result of <code>strsplit</code>? Maybe we should try to rewrite the function without using the <code>unlist</code> function? Let’s do it in another day, shall we?</p>
 <blockquote>
 <p>TODO: more performance tweaks</p>
@@ -621,9 +629,300 @@ benchmark(replications = 1,
 <div id="cross-referencing-the-splicing-event-ids" class="section level2">
 <h2>Cross-referencing the splicing event ID’s</h2>
 <p>This one seems easy enough. For each splicing event ID, just get any matches in the alternative splicing annotation files.</p>
-<pre class="r"><code># Get lines matching to a given MISO splicing event ID
-match &lt;- grep(event, annotationFile[[9]])
-annotationFile[match,]</code></pre>
+<div id="grep" class="section level3">
+<h3>grep</h3>
+<pre class="r"><code>eventID &lt;- &quot;2217@uc002poi.1@uc002poe.1&quot;
+annotation &lt;- read.delim(
+  &quot;/genedata/Resources/Annotations/MISO/hg19/AFE.hg19.gff3&quot;,
+  header=FALSE, comment.char=&quot;#&quot;)
+IDindex &lt;- 9 # index of the column with the event ID's in the annotation file
+
+matchMisoEvent1 &lt;- function(eventID, annotation, IDindex) {
+  # Get lines matching to a given MISO splicing event ID
+  match &lt;- grep(eventID, annotation[[IDindex]], fixed = TRUE)
+  annotation[match,]
+}</code></pre>
+<p>The resulting output is shown in the table below.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">V1</th>
+<th align="left">V2</th>
+<th align="left">V3</th>
+<th align="right">V4</th>
+<th align="right">V5</th>
+<th align="left">V6</th>
+<th align="left">V7</th>
+<th align="left">V8</th>
+<th align="left">V9</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">chr19</td>
+<td align="left">AFE</td>
+<td align="left">gene</td>
+<td align="right">50015886</td>
+<td align="right">50028830</td>
+<td align="left">.</td>
+<td align="left">+</td>
+<td align="left">.</td>
+<td align="left">ID=2217@uc002poi.1@uc002poe.1;Name=2217@uc002poi.1@uc002poe.1;gid=2217@uc002poi.1@uc002poe.1</td>
+</tr>
+<tr class="even">
+<td align="left">chr19</td>
+<td align="left">AFE</td>
+<td align="left">mRNA</td>
+<td align="right">50028313</td>
+<td align="right">50028830</td>
+<td align="left">.</td>
+<td align="left">+</td>
+<td align="left">.</td>
+<td align="left">ID=2217@uc002poi.1@uc002poe.1.A;Parent=2217@uc002poi.1@uc002poe.1;Name=2217@uc002poi.1@uc002poe.1.A;gid=2217@uc002poi.1@uc002poe.1</td>
+</tr>
+<tr class="odd">
+<td align="left">chr19</td>
+<td align="left">AFE</td>
+<td align="left">exon</td>
+<td align="right">50028313</td>
+<td align="right">50028830</td>
+<td align="left">.</td>
+<td align="left">+</td>
+<td align="left">.</td>
+<td align="left">ID=2217@uc002poi.1@uc002poe.1.A.0;Parent=2217@uc002poi.1@uc002poe.1.A;Name=2217@uc002poi.1@uc002poe.1.A.0;gid=2217@uc002poi.1@uc002poe.1</td>
+</tr>
+<tr class="even">
+<td align="left">chr19</td>
+<td align="left">AFE</td>
+<td align="left">mRNA</td>
+<td align="right">50015886</td>
+<td align="right">50016730</td>
+<td align="left">.</td>
+<td align="left">+</td>
+<td align="left">.</td>
+<td align="left">ID=2217@uc002poi.1@uc002poe.1.B;Parent=2217@uc002poi.1@uc002poe.1;Name=2217@uc002poi.1@uc002poe.1.B;gid=2217@uc002poi.1@uc002poe.1</td>
+</tr>
+<tr class="odd">
+<td align="left">chr19</td>
+<td align="left">AFE</td>
+<td align="left">exon</td>
+<td align="right">50015886</td>
+<td align="right">50016007</td>
+<td align="left">.</td>
+<td align="left">+</td>
+<td align="left">.</td>
+<td align="left">ID=2217@uc002poi.1@uc002poe.1.B.0;Parent=2217@uc002poi.1@uc002poe.1.B;Name=2217@uc002poi.1@uc002poe.1.B.0;gid=2217@uc002poi.1@uc002poe.1</td>
+</tr>
+<tr class="even">
+<td align="left">chr19</td>
+<td align="left">AFE</td>
+<td align="left">exon</td>
+<td align="right">50016644</td>
+<td align="right">50016730</td>
+<td align="left">.</td>
+<td align="left">+</td>
+<td align="left">.</td>
+<td align="left">ID=2217@uc002poi.1@uc002poe.1.B.1;Parent=2217@uc002poi.1@uc002poe.1.B;Name=2217@uc002poi.1@uc002poe.1.B.1;gid=2217@uc002poi.1@uc002poe.1</td>
+</tr>
+</tbody>
+</table>
+<p>Let’s see how long it takes to get one event:</p>
+<pre class="r"><code>microbenchmark(times = 1,
+               matchMisoEvent1(eventID, annotation, IDindex),
+               lapply(rep(eventID,3), matchMisoEvent1, annotation, IDindex))</code></pre>
+<pre><code>## Unit: milliseconds
+##                                                           expr      min
+##                  matchMisoEvent1(eventID, annotation, IDindex) 138.5971
+##  lapply(rep(eventID, 3), matchMisoEvent1, annotation, IDindex) 414.7152
+##        lq     mean   median       uq      max neval
+##  138.5971 138.5971 138.5971 138.5971 138.5971     1
+##  414.7152 414.7152 414.7152 414.7152 414.7152     1</code></pre>
+<p>Cross-refering three MISO events with the alternative splicing annotation takes the same time needed to parse 10000 events from SUPPA. If the annotation file has the annotation of all event types from MISO (and not just one event type as in this test), it can take as long as 3 seconds to match each event.</p>
+</div>
+<div id="pmatch" class="section level3">
+<h3>pmatch</h3>
+<p>Maybe <code>grep</code> is just too slow and we should look for another function. As we can see in the table above, column V9 has the ID we’d like after <code>ID=</code>. Maybe we could try to use <code>pmatch</code>. But since this function doesn’t return more than one finding, let’s use it to find the first matching ID and from there we can look for the others.</p>
+<pre class="r"><code>getMisoEvent &lt;- function(index, annotation) {
+  # Get all lines before next gene
+  next_index &lt;- match(&quot;gene&quot;, tail(annotation[[3]], index))
+  seq &lt;- seq(index, index + next_index + 1)
+  return(annotation[seq, ])
+}
+
+matchMisoEvent2 &lt;- function(eventID, annotation, IDindex) {
+  # Get first line matching a given splicing event ID
+  match &lt;- pmatch(paste0(&quot;ID=&quot;, eventID, &quot;;&quot;),
+                  annotation[[IDindex]], duplicates.ok = TRUE)
+  # Get all lines related to a given splicing event
+  lapply(match, getMisoEvent, annotation)
+}
+
+microbenchmark(times = 1,
+               matchMisoEvent2(rep(eventID,1), annotation, IDindex),
+               matchMisoEvent2(rep(eventID,100), annotation, IDindex))</code></pre>
+<pre><code>## Unit: milliseconds
+##                                                     expr       min
+##    matchMisoEvent2(rep(eventID, 1), annotation, IDindex)  16.01357
+##  matchMisoEvent2(rep(eventID, 100), annotation, IDindex) 842.42521
+##         lq      mean    median        uq       max neval
+##   16.01357  16.01357  16.01357  16.01357  16.01357     1
+##  842.42521 842.42521 842.42521 842.42521 842.42521     1</code></pre>
+<div id="calculate-next-gene-index" class="section level4">
+<h4>Calculate next gene index</h4>
+<p>What if instead of looking for the index of the next gene each time, the index of all genes is found at once? Then we could ask for the index of the next gene.</p>
+<pre class="r"><code>getMisoEventB &lt;- function(index, annotation, genes_index) {
+  # Get all lines before next gene
+  next_gene &lt;- genes_index[genes_index &gt; index][1]
+  seq &lt;- seq(index, next_gene - 1)
+  return(annotation[seq, ])
+}
+
+matchMisoEvent2B &lt;- function(eventID, annotation, IDcolumn) {
+  # Get first line matching a given splicing event ID
+  index &lt;- pmatch(paste0(&quot;ID=&quot;, eventID, &quot;;&quot;),
+                  annotation[[IDcolumn]], duplicates.ok = TRUE)
+  # Get all lines related to a given splicing event
+  genes_index &lt;- which(annotation[[&quot;V3&quot;]] == &quot;gene&quot;)
+  # Get index of the next gene
+  next_index &lt;- genes_index[match(index, genes_index) + 1]
+  lapply(index, getMisoEventB, annotation, genes_index)
+}
+
+microbenchmark(times = 1,
+               matchMisoEvent2B(rep(eventID,1), annotation, IDindex),
+               matchMisoEvent2B(rep(eventID,100), annotation, IDindex))</code></pre>
+<pre><code>## Unit: milliseconds
+##                                                      expr       min
+##    matchMisoEvent2B(rep(eventID, 1), annotation, IDindex)  24.18106
+##  matchMisoEvent2B(rep(eventID, 100), annotation, IDindex) 735.67040
+##         lq      mean    median        uq       max neval
+##   24.18106  24.18106  24.18106  24.18106  24.18106     1
+##  735.67040 735.67040 735.67040 735.67040 735.67040     1</code></pre>
+</div>
+<div id="match-each-gene-to-get-the-index-of-the-following-gene" class="section level4">
+<h4>Match each gene to get the index of the following gene</h4>
+<p>To get faster times, how about looking for our index of interest in the genes index and incrementing one to get the next gene index?</p>
+<pre class="r"><code>getMisoEventC &lt;- function(index, annotation, genes_index) {
+  # Get all lines before next gene
+  next_index &lt;- genes_index[match(index, genes_index) + 1]
+  seq &lt;- seq(index, next_index - 1)
+  return(annotation[seq, ])
+}
+
+matchMisoEvent2C &lt;- function(eventID, annotation, IDcolumn) {
+  # Get first line matching a given splicing event ID
+  index &lt;- pmatch(paste0(&quot;ID=&quot;, eventID, &quot;;&quot;),
+                  annotation[[IDcolumn]], duplicates.ok = TRUE)
+  # Get all lines related to a given splicing event
+  genes_index &lt;- which(annotation[[&quot;V3&quot;]] == &quot;gene&quot;)
+  lapply(index, getMisoEventC, annotation, genes_index)
+}
+
+microbenchmark(times = 1,
+               matchMisoEvent2C(rep(eventID,1), annotation, IDindex),
+               matchMisoEvent2C(rep(eventID,100), annotation, IDindex))</code></pre>
+<pre><code>## Unit: milliseconds
+##                                                      expr       min
+##    matchMisoEvent2C(rep(eventID, 1), annotation, IDindex)  31.35312
+##  matchMisoEvent2C(rep(eventID, 100), annotation, IDindex) 726.70679
+##         lq      mean    median        uq       max neval
+##   31.35312  31.35312  31.35312  31.35312  31.35312     1
+##  726.70679 726.70679 726.70679 726.70679 726.70679     1</code></pre>
+</div>
+<div id="match-all-genes-at-once-to-get-the-index-of-the-following-genes" class="section level4">
+<h4>Match all genes at once to get the index of the following genes</h4>
+<p>Better yet, let’s find all next genes index at the same time!</p>
+<pre class="r"><code>getMisoEventD &lt;- function(i, annotation, index, next_index) {
+  # Get all lines before next gene
+  seq &lt;- seq(index[i], next_index[i] - 1)
+  return(annotation[seq, ])
+}
+
+matchMisoEvent2D &lt;- function(eventID, annotation, IDcolumn) {
+  # Get first line matching a given splicing event ID
+  index &lt;- pmatch(paste0(&quot;ID=&quot;, eventID, &quot;;&quot;),
+                  annotation[[IDcolumn]], duplicates.ok = TRUE)
+  # Get all lines related to a given splicing event
+  genes_index &lt;- which(annotation[[&quot;V3&quot;]] == &quot;gene&quot;)
+  # Get index of the next gene
+  next_index &lt;- genes_index[match(index, genes_index) + 1]
+  lapply(1:length(index), getMisoEventD, annotation, index, next_index)
+}
+
+microbenchmark(times = 1,
+               matchMisoEvent2D(rep(eventID,1), annotation, IDindex),
+               matchMisoEvent2D(rep(eventID,100), annotation, IDindex))</code></pre>
+<pre><code>## Unit: milliseconds
+##                                                      expr       min
+##    matchMisoEvent2D(rep(eventID, 1), annotation, IDindex)  30.91202
+##  matchMisoEvent2D(rep(eventID, 100), annotation, IDindex) 650.13988
+##         lq      mean    median        uq       max neval
+##   30.91202  30.91202  30.91202  30.91202  30.91202     1
+##  650.13988 650.13988 650.13988 650.13988 650.13988     1</code></pre>
+<p>Seems this method is the fastest.</p>
+</div>
+</div>
+<div id="match" class="section level3">
+<h3>match</h3>
+<p>Since the first matching ID is a common expression, we’ll see if the <code>match</code> function is faster than <code>pmatch</code>.</p>
+<pre class="r"><code>matchMisoEvent3 &lt;- function(eventID, annotation, IDindex) {
+  # Get first line matching a given splicing event ID
+  match &lt;- match(paste0(&quot;ID=&quot;, eventID, &quot;;Name=&quot;, eventID, &quot;;gid=&quot;, eventID),
+                 annotation[[IDindex]])
+  # Get all lines related to a given splicing event
+  lapply(match, getMisoEvent, annotation)
+}
+
+microbenchmark(times = 1,
+               matchMisoEvent3(rep(eventID,1), annotation, IDindex),
+               matchMisoEvent3(rep(eventID,100), annotation, IDindex),
+               matchMisoEvent3(rep(eventID,10000), annotation, IDindex))</code></pre>
+<pre><code>## Unit: milliseconds
+##                                                       expr         min
+##      matchMisoEvent3(rep(eventID, 1), annotation, IDindex)    13.32418
+##    matchMisoEvent3(rep(eventID, 100), annotation, IDindex)   253.46697
+##  matchMisoEvent3(rep(eventID, 10000), annotation, IDindex) 26756.99912
+##           lq        mean      median          uq         max neval
+##     13.32418    13.32418    13.32418    13.32418    13.32418     1
+##    253.46697   253.46697   253.46697   253.46697   253.46697     1
+##  26756.99912 26756.99912 26756.99912 26756.99912 26756.99912     1</code></pre>
+<p>Another thing we could try is to create a vector exclusively with the ID in the column V9 from the annotation file and do a simple <code>match</code>.</p>
+<blockquote>
+<p>TODO</p>
+</blockquote>
+</div>
+<div id="which" class="section level3">
+<h3>which</h3>
+<p>Let’s also check if <code>which</code> is faster than <code>match</code>.</p>
+<pre class="r"><code>matchMisoEvent4 &lt;- function(eventID, annotation, IDindex) {
+  # Get first line matching a given splicing event ID
+  match &lt;- which(annotation[[IDindex]] == paste0(&quot;ID=&quot;, eventID,
+                                                     &quot;;Name=&quot;, eventID,
+                                                     &quot;;gid=&quot;, eventID))
+  # Get all lines related to a given splicing event
+  lapply(match, getMisoEvent, annotation)
+}
+
+microbenchmark(times = 1,
+               lapply(rep(eventID,1), matchMisoEvent4, annotation, IDindex),
+               lapply(rep(eventID,10), matchMisoEvent4, annotation, IDindex)
+)</code></pre>
+<pre><code>## Unit: milliseconds
+##                                                            expr       min
+##   lapply(rep(eventID, 1), matchMisoEvent4, annotation, IDindex)  17.59248
+##  lapply(rep(eventID, 10), matchMisoEvent4, annotation, IDindex) 185.45568
+##         lq      mean    median        uq       max neval
+##   17.59248  17.59248  17.59248  17.59248  17.59248     1
+##  185.45568 185.45568 185.45568 185.45568 185.45568     1</code></pre>
+<p>Well, it seems that it takes too much just for 10 events. Nevermind about using this function.</p>
+</div>
+<div id="using-liftover" class="section level3">
+<h3>Using liftOver</h3>
+<p>Yet another way to parse MISO splicing event IDs is to do it just like we parsed SUPPA IDs and then use <code>liftOver</code> to convert the coordinates from the Human genome’s 18th assembly or Mouse genome’s 8th assembly to the correct one. This may be a problem if the ID doesn’t mean anything like in the cases of two splicing event types: alternative first and last exon.</p>
+<blockquote>
+<p>TODO</p>
+</blockquote>
+</div>
 </div>
 </div>
 
