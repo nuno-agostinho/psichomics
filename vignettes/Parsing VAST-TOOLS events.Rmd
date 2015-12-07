@@ -1,0 +1,187 @@
+---
+title: "Parsing VAST-TOOLS events"
+author: "Nuno Agostinho"
+date: "4 December 2015"
+output: html_document
+---
+
+VAST-TOOLS compares alternative splicing between two given samples. The
+resulting file containing the each event's inclusion levels for both samples
+has a column that needs to be parsed in order to get the exon boundaries. The
+event type is specified in another column, where the possible values are:
+
+- **S, C1, C2, C3:** skipping exons with increasing degrees of complexity
+- **MIC**: skipping exons (microexon pipeline)
+- **Alt3, Alt5**: alternative 3/5' splice site (ALTA and ALTD, respectively)
+- **IR-C, IR-S**: intron retention (IR-C includes overlapping AS events)
+
+More information on VAST-TOOLS is available at
+<https://github.com/vastgroup/vast-tools>.
+
+# Exon skipping
+In the table below you can see the S, C1, C2, C3 and MIC event types, which are
+all exon skipping events (EX).
+
+|GENE   |EVENT        |COORD                  | LENGTH|FullCO                                   |COMPLEX | CTmerged|CTmerged.Q     | PDmerged|PDmerged.Q     |
+|:------|:------------|:----------------------|------:|:----------------------------------------|:-------|--------:|:--------------|--------:|:--------------|
+|TSPAN6 |HsaEX0067680 |chrX:99885756-99885863 |    108|chrX:99887482,99885756-99885863,99884983 |S       |        0|N,N,N,Bn,S@0,0 |        0|N,N,N,Bn,S@0,0 |
+|DPM1 |HsaEX0020814 |chr20:49557666-49557746 |     81|chr20:49558568,49557642+49557666-49557746,49557470+49557492+49557495 |C1      |        0|N,N,N,Bn,S@0,0 |        0|N,N,N,Bn,S@0,0 |
+|NFYA |HsaEX0042823 |chr6:41046768-41046903 |    136|chr6:41040823,41046768-41046903,41051785 |C2      |        0|N,N,N,Bn,S@0,0 |        0|N,N,N,Bn,S@0,0 |
+|FUCA2 |HsaEX0026578 |chr6:143825050-143825211 |    162|chr6:143828374,143825050-143825211+143825222+143825389,143823259 |C3      |        0|N,N,N,Bn,S@0,0 |        0|N,N,N,Bn,S@0,0 |
+|KDM1A |HsaEX0033219 |chr1:23392553-23392564 |     12|chr1:23385660,23392553-23392564,23395032 |MIC     |       NA|N,N,N,na,na@0,0 |       NA|N,N,N,na,na@0,0 |
+
+```{r}
+parseVastToolsEvent <- function(event) {
+  # Create list with event attributes
+  event_attrs <- list("Program" = "VAST-TOOLS",
+                      "Gene symbol" = as.character(event[[1]]),
+                      "Event ID" = as.character(event[[2]]),
+                      "Event type" = as.character(event[[6]]),
+                      "Inclusion level A" = as.numeric(event[[7]]),
+                      "Inclusion level B" = as.numeric(event[[9]]))
+  
+  # Parse junction positions
+  eventID <- as.character(event[[5]])
+  junctions <- parseVastToolsJunctions(eventID, event_type)
+  return(c(event_attrs, junctions))
+}
+```
+
+We'll use the column 5 (named "FullCO") to parse the junctions. This column 
+holds the full set of genomic coordinates of the alternative splicing event. For 
+an exon skipping event, it shows chromosome, C1 donor, A exon and C2 acceptor. 
+The strand is "+" if the value of C1 donor is lower than the value of C2 
+acceptor. Multiple acceptors and donors are shown separated by "+".
+
+```{r}
+parseVastToolsJunctions <- function(eventID, event_type) {
+  # Fill list of parsed junctions with NAs
+  parsed <- list("C1 start" = NA, "C1 end" = NA,
+                 "A1 start" = NA, "A1 end" = NA,
+                 "A2 start" = NA, "A2 end" = NA,
+                 "C2 start" = NA, "C2 end" = NA)
+  
+  # Get information
+  eventID <- strsplit(eventID, ":|,|-|=")[[1]]
+  parsed[["Chromosome"]] <- eventID[[1]]
+  junctions <- eventID[2:length(eventID)]
+  
+  # Split junctions by multiple acceptors/donors
+  junctions <- strsplit(junctions, "+", fixed = TRUE)
+  
+  if (is.element(event_type, c("S", "C1", "C2", "C3", "MIC"))) {
+    parsed[["C1 end"]]   <- junctions[[1]]
+    parsed[["C2 start"]] <- junctions[[4]]
+    # Strand is plus if C1 end is lower than C2 start
+    if (junctions[[1]][[1]] < junctions[[4]][[1]]) {
+      parsed[["Strand"]]   <- "+"
+      parsed[["A1 start"]] <- junctions[[2]]
+      parsed[["A1 end"]]   <- junctions[[3]]
+    } else {
+      parsed[["Strand"]]   <- "-"
+      parsed[["A1 start"]] <- junctions[[3]]
+      parsed[["A1 end"]]   <- junctions[[2]]
+    }
+  } else if (is.element(event_type, c("IR-C", "IR-S"))) {
+    # TODO
+  } else if (event_type == "Alt3") {
+    # TODO
+  } else if (event_type == "Alt5") {
+    # TODO
+  }
+  return(parsed)
+}
+```
+
+Finally, let's just compare if there are faster ways to split a string.
+```{r}
+# TODO: why can't I use gsub?
+
+# eventID <- "chrX:99887482,99885756-99885863,99884983"
+# 
+# gsub <- function(eventID) {
+#   eventID <- gsub(":", " ", eventID)
+#   eventID <- gsub(",", " ", eventID)
+#   eventID <- gsub("-", " ", eventID)
+#   eventID <- strsplit(eventID, " ")[[1]]
+# }
+# 
+# library(microbenchmark)
+# microbenchmark(strsplit(eventID, ":|,|-")[[1]],
+#                gsub(eventID))
+```
+
+# Intron retention
+Intron retention events are shown in the following table (both IR-C and IR-S).
+See <https://github.com/vastgroup/vast-tools> for more information.
+
+|GENE |EVENT         |COORD                   | LENGTH|FullCO                                      |COMPLEX | CTmerged|CTmerged.Q            | PDmerged|PDmerged.Q            |
+|:------|:----|:-------------|:-----------------------|------:|:-------------------------------------------|:-------|--------:|:---------------------|--------:|:---------------------|
+|A1BG |HsaINT0000001 |chr19:58864564-58864657 |     94|chr19:58864658-58864693=58864294-58864563:- |IR-S    |       NA|N,N,NA,0=0=0,NA@NA,NA |       NA|N,N,NA,0=0=0,NA@NA,NA |
+|A1BG |HsaINT0000004 |chr19:58859007-58861735 |   2729|chr19:58861736-58862017=58858719-58859006:- |IR-C    |       NA|N,N,NA,0=0=0,NA@NA,NA |       NA|N,N,NA,0=0=0,NA@NA,NA |
+
+```{r}
+parseVastToolsJunctions <- function(eventID, event_type) {
+  # Fill list of parsed junctions with NAs
+  parsed <- list("C1 start" = NA, "C1 end" = NA,
+                 "A1 start" = NA, "A1 end" = NA,
+                 "A2 start" = NA, "A2 end" = NA,
+                 "C2 start" = NA, "C2 end" = NA)
+  
+  # Get strand for intron retention
+  len <- nchar(eventID)
+  last <- substr(eventID, len, len)
+  
+  # Split event information
+  eventID <- strsplit(eventID, ":|,|-|=")[[1]]
+  parsed[["Chromosome"]] <- eventID[[1]]
+  junctions <- eventID[2:length(eventID)]
+  
+  # Split junctions by multiple acceptors/donors
+  junctions <- strsplit(junctions, "+", fixed = TRUE)
+  
+  if (is.element(event_type, c("S", "C1", "C2", "C3", "MIC"))) {
+    parsed[["C1 end"]]   <- junctions[[1]]
+    parsed[["C2 start"]] <- junctions[[4]]
+    # Strand is plus if C1 end is lower than C2 start
+    if (junctions[[1]][[1]] < junctions[[4]][[1]]) {
+      parsed[["Strand"]]   <- "+"
+      parsed[["A1 start"]] <- junctions[[2]]
+      parsed[["A1 end"]]   <- junctions[[3]]
+    } else {
+      parsed[["Strand"]]   <- "-"
+      parsed[["A1 start"]] <- junctions[[3]]
+      parsed[["A1 end"]]   <- junctions[[2]]
+    }
+  } else if (is.element(event_type, c("IR-C", "IR-S"))) {
+    if (last == "+") {
+      parsed["Strand"] <- "+"
+      parsed[["C1 start"]] <- junctions[[1]]
+      parsed[["C1 end"]]   <- junctions[[2]]
+      parsed[["C2 start"]] <- junctions[[3]]
+      parsed[["C2 end"]]   <- junctions[[4]]
+    } else if (last == "-") {
+      parsed["Strand"] <- "-"
+      parsed[["C1 start"]] <- junctions[[2]]
+      parsed[["C1 end"]]   <- junctions[[1]]
+      parsed[["C2 start"]] <- junctions[[4]]
+      parsed[["C2 end"]]   <- junctions[[3]]
+    }
+  } else if (event_type == "Alt3") {
+    # TODO
+  } else if (event_type == "Alt5") {
+    # TODO
+  }
+  return(parsed)
+}
+```
+
+# Alternative 3' or 5' splice site
+Alternative splice sites events are shown in the following tables (A3SS above 
+and A5SS below).
+
+|GENE |EVENT              |COORD                   | LENGTH|FullCO                                    |COMPLEX | CTmerged|CTmerged.Q      | PDmerged|PDmerged.Q      |
+|:-----|:----|:------------------|:-----------------------|------:|:-----------------------------------------|:-------|--------:|:---------------|--------:|:---------------|
+|DPM1 |HsaALTA0002631-2/2 |chr20:49557402-49557492 |     22|chr20:49558568,49557402-49557492+49557470 |Alt3    |       NA|N,N,N,0=0,S@0,0 |       NA|N,N,N,0=0,S@0,0 |
+|TSPAN6 |HsaALTD0006854-1/2 |chrX:99891605-99891686 |      0|chrX:99891605+99891188-99891686,99890743 |Alt5    |       NA|N,N,N,0=0,S@0,0 |       NA|N,N,N,0=0,S@0,0 |
+
