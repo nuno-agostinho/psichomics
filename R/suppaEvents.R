@@ -70,10 +70,12 @@ parseSuppaEvent <- function(event) {
 #' allowed in some of the boundaries. This is not accounted at the moment.
 #'
 #' @examples
+#' junctionsA5 <- c("99890743-99891188", "99890743-99891605")
+#' parseSuppaJunctions(event_type = "A5", strand = "-", junctions = junctionsA5)
 parseSuppaJunctions <- function(event_type, strand, junctions) {
   # Split junctions by the hyphen
   junctions <- strsplit(junctions, "-")
-  junctions <- unlist(junctions)
+  junctions <- as.numeric(unlist(junctions))
   
   # If minus strand, reverse junctions
   if(strand == "-") junctions <- rev(junctions)
@@ -104,10 +106,10 @@ parseSuppaJunctions <- function(event_type, strand, junctions) {
          "RI" = parsed[c("C1 start", "C1 end",
                          "C2 start", "C2 end")] <- junctions,
          "AF" = parsed[c("C1 start", "C1 end",
-                         "C2 end",
+                         "C2 start",
                          "A1 start", "A1 end")] <- junctions[1:5],
          "AL" = parsed[c("C2 start", "C2 end",
-                         "C1 start",
+                         "C1 end",
                          "A1 start", "A1 end")] <- junctions[2:6]
   )
   return(parsed)
