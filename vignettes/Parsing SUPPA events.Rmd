@@ -1,0 +1,332 @@
+---
+title: "Parsing SUPPA events"
+author: "Nuno Agostinho"
+date: "27 November 2015"
+output: html_document
+---
+
+Let's start to parse the splicing event types from SUPPA since they seem to be
+the easiest to parse. Below you can see for each type of event how SUPPA
+presents the respective event ID (includes gene, splicing event type,
+chromosome, positions of the exon junctions and strand).
+
+Splicing event type        | Splicing event ID example from SUPPA |
+-------------------------- | ------------------------------------------------------------------------------------ |
+Exon skipping              | ENSG00000000419;SE:20:49557470-49557642:49557746-49558568:- |
+Mutually exclusive exons   | ENSG00000000419;MX:20:49557470-49557666:49557746-49562274:49557470-49558568:49558663-49562274:- |
+Alternative 5' splice site | ENSG00000000003;A5:X:99890743-99891188:99890743-99891605:- |
+Alternative 3' splice site | ENSG00000000419;A3:20:49557492-49557642:49557470-49557642:- |
+Retained intron            | ENSG00000000971;RI:1:196709749:196709922-196711005:196711181:+ |
+Alternative first exon     | ENSG00000000457;AF:1:169858031-169862929:169863076:169858031-169863148:169863408:- |
+Alternative last exon      | ENSG00000001461;AL:1:24790610-24792494:24792800:24790610-24795476:24795797:+
+
+Note that these splicing event ID's can differ if SUPPA is run using the **-b V 
+(variable)** option, where ["some variability is allowed in some of the
+boundaries"](https://bitbucket.org/regulatorygenomicsupf/suppa).
+
+> TODO: account for the "variable" option in SUPPA events
+
+But now there's a question: how to parse them?
+
+# Parsing the event attributes
+## For loop
+Don't mind the parsing of the events at the moment, let's just think on how to
+parse the attributes of an event. If we are going to receive a character vector
+of events, (maybe) we should be ready to parse each event. So, how about if we
+create a for loop to store each event's attribute in their own vector?
+
+```{r suppa-for-loop}
+parseSuppaEventA <- function(event) {
+  # split event ID by semicolon and colon symbols
+  tmp <- strsplit(event, ";|:")
+  
+  # initialize empty character vectors to store event attributes
+  gene <- character()
+  event_type <- character()
+  chromosome <- character()
+  strand <- character()
+  for (each in tmp) {
+    # append value to vectors
+    gene <- c(gene, each[[1]])
+    event_type <- c(event_type, each[[2]])
+    chromosome <- c(chromosome, each[[3]])
+    
+    len <- length(each)
+    strand <- c(strand, each[[len]])
+    # TODO: parse event itself
+  }
+  ret <- list(gene, event_type, chromosome, strand)
+  names(ret) <- c("Gene", "Event type", "Chromosome", "Strand")
+  return(ret)
+}
+```
+
+## For loop with pre-filled vectors
+Let's try the same but using vectors already filled with NAs.
+
+```{r suppa-pre-filled}
+parseSuppaEventB <- function(event) {
+  # split event ID by semicolon and colon symbols
+  tmp <- strsplit(event, ";|:")
+  
+  # initialize empty character vectors to store event attributes
+  empty      <- rep(NA, length(event))
+  gene       <- empty
+  event_type <- empty
+  chromosome <- empty
+  strand     <- empty
+  
+  i <- 1
+  for (each in tmp) {
+    # replace value in vectors
+    gene[i]       <- each[[1]]
+    event_type[i] <- each[[2]]
+    chromosome[i] <- each[[3]]
+    
+    len <- length(each)
+    strand[i] <- each[[len]]
+    i <- i+1
+    # TODO: parse event itself
+  }
+  ret <- list(gene, event_type, chromosome, strand)
+  names(ret) <- c("Gene", "Event type", "Chromosome", "Strand")
+  return(ret)
+}
+```
+
+Now, let's compare the two methods.
+
+```{r benchmark-for-loops}
+eventSE <- "ENSG00000000419;SE:20:49557470-49557642:49557746-49558568:-"
+library(microbenchmark)
+microbenchmark(
+  parseSuppaEventA(eventSE),
+  parseSuppaEventB(eventSE)
+)
+```
+
+Hum, seems the first method is faster. I wasn't expecting that...
+
+## Apply function
+Anyway, let's adapt our code to use an apply function instead of a for loop.
+Since apply functions rely on C code, they ought to be faster than for loops.
+
+```{r suppa-apply}
+parseSuppaEventC <- function(event) {
+  # split event ID by semicolon and colon symbols
+  tmp <- strsplit(event, ";|:")
+  
+  # create a list of lists containing event information
+  ret <- lapply(tmp, function(each) {
+    len <- length(each)
+    # create list with event attributes
+    event_attrs <- list("Gene" = each[1],
+                        "Event type" = each[2],
+                        "Chromosome" = each[3],
+                        "Strand" = each[len])
+    # TODO: parse event itself
+    return(event_attrs)
+  })
+  return(ret)
+}
+
+eventSE <- "ENSG00000000419;SE:20:49557470-49557642:49557746-49558568:-"
+microbenchmark(
+  parseSuppaEventA(eventSE),
+  parseSuppaEventB(eventSE),
+  parseSuppaEventC(eventSE)
+)
+```
+
+Seems this method is the fastest yet. Yay!
+
+## One event at a time
+Maybe we can also improve the code performance if our function only parses
+one event at a time. Let's see...
+
+```{r suppa-one-event-at-a-time}
+parseSuppaEventD <- function(event) {
+  # Split event ID by semicolons and colons
+  tmp <- strsplit(event, ";|:")[[1]]
+  len <- length(tmp)
+  
+  # Get the attributes of the event
+  event_attrs <- as.list(tmp[c(1:3, len)])
+  names(event_attrs) <- c("Gene", "Event type", "Chromosome", "Strand")
+  
+  # TODO: parse event itself
+  return(event_attrs)
+}
+```
+
+```{r benchmark-suppa-one-event-at-a-time}
+eventSE <- "ENSG00000000419;SE:20:49557470-49557642:49557746-49558568:-"
+microbenchmark(
+  parseSuppaEventA(eventSE),
+  parseSuppaEventB(eventSE),
+  parseSuppaEventC(eventSE),
+  parseSuppaEventD(eventSE)
+)
+```
+
+Nope, it seems this doesn't work. Anyway, let's see how our functions behave 
+when dealing with 10000 events.
+
+```{r benchmark-suppa-events}
+events <- rep(eventSE, 10000)
+library(rbenchmark)
+benchmark(replications = 1,
+          #for (e in events) t <-c(t,parseSuppaEventA(e)), ## too slow
+          #for (e in events) t <-c(t,parseSuppaEventB(e)), ## too slow
+          #for (e in events) t <-c(t,parseSuppaEventC(e)), ## too slow
+          #for (e in events) t <-c(t,parseSuppaEventD(e)), ## too slow
+          lapply(events, parseSuppaEventA),
+          lapply(events, parseSuppaEventB),
+          lapply(events, parseSuppaEventC),
+          lapply(events, parseSuppaEventD),
+          parseSuppaEventA(events),
+          parseSuppaEventB(events),
+          parseSuppaEventC(events)
+)
+```
+
+Interesting. It seems **parsing method C** is the fastest if we hand all the
+events as an argument (i.e. without using an exterior apply function).
+
+# Parsing the junctions
+The following function shows one way we could use to parse junctions. It simply
+splits junctions by the "-", it reverses the junctions if it's the minus strand,
+fills a list of parsed junctions with NAs and parses junction positions
+according to event type. Simple, right?
+
+```{r suppa-junctions-switch}
+parseSuppaJunctions <- function(event_type, strand, junctions) {
+  # Split junctions by the hyphen symbol
+  junctions <- strsplit(junctions, "-")
+  junctions <- unlist(junctions)
+  
+  # If minus strand, reverse junctions
+  if(strand == "-") junctions <- rev(junctions)
+  
+  # Fill list of parsed junctions with NAs
+  parsed = list("C1 start" = NA, "C1 end" = NA,
+                "A1 start" = NA, "A1 end" = NA,
+                "A2 start" = NA, "A2 end" = NA,
+                "C2 start" = NA, "C2 end" = NA)
+  
+  # Parse junction positions according to event type
+  switch(event_type,
+         "A3" = {
+           parsed[["C1 end"]]   <- junctions[1]
+           parsed[["C2 start"]] <- junctions[c(2,4)]
+         },
+         "A5" = {
+           parsed[["C1 end"]]   <- junctions[c(3,1)]
+           parsed[["C2 start"]] <- junctions[2]
+         },
+         "SE" = parsed[c("C1 end", "A1 start", "A1 end",
+                         "C2 start")] <- junctions,
+         "MX" = parsed[c("C1 end", "A1 start", "A1 end", "A2 start",
+                         "A2 end", "C2 start")] <- junctions[-c(4,5)],
+         "RI" = parsed[c("C1 start", "C1 end",
+                         "C2 start", "C2 end")] <- junctions,
+         "AF" = parsed[c("C1 start", "C1 end", "C2 end",
+                         "A1 start", "A1 end")] <- junctions[1:5],
+         "AL" = parsed[c("C2 start", "C2 end", "C1 start",
+                         "A1 start", "A1 end")] <- junctions[2:6]
+  )
+  return(parsed)
+}
+```
+
+Now, let's use this function to complete parsing method C (henceforth mentioned
+as **parseSuppaEvent**).
+
+```{r suppa-event}
+parseSuppaEvent <- function(event) {
+  # Split event ID by semicolon and colon symbols
+  tmp <- strsplit(event, ";|:")
+  
+  # Create a list of lists containing event information
+  ret <- lapply(tmp, function(each) {
+    len <- length(each)
+    # Create list with event attributes
+    event_attrs <- list("Gene" = each[1],
+                        "Event type" = each[2],
+                        "Chromosome" = each[3],
+                        "Strand" = each[len])
+    
+    # Get the junction positions for each exon and parse them
+    junctions <- each[4:(len-1)]
+    parsed_junctions <- parseSuppaJunctions(event_attrs[["Event type"]],
+                                            event_attrs[["Strand"]],
+                                            junctions)
+    return(c(event_attrs, parsed_junctions))
+  })
+  return(ret)
+}
+
+benchmark(replications = 1,
+          parseSuppaEventC(events),
+          parseSuppaEvent(events)
+)
+```
+
+Well, our function with the addition takes about four times more to complete.
+Maybe we should try to optimise the code we just add. What if we used the
+classic if/else instead of the switch?
+
+```{r suppa-junctions-if-else}
+parseSuppaJunctions <- function(event_type, strand, junctions) {
+  # Split junctions by the hyphen
+  junctions <- strsplit(junctions, "-")
+  junctions <- unlist(junctions)
+  
+  # If minus strand, reverse junctions
+  if(strand == "-") junctions <- rev(junctions)
+  
+  # Fill list of parsed junctions with NAs
+  parsed = list("C1 start" = NA, "C1 end" = NA,
+                "A1 start" = NA, "A1 end" = NA,
+                "A2 start" = NA, "A2 end" = NA,
+                "C2 start" = NA, "C2 end" = NA
+  )
+  
+  # Parse junction positions according to event type
+  if (event_type == "A3") {
+    parsed[["C1 end"]]   <- junctions[1]
+    parsed[["C2 start"]] <- junctions[c(2,4)]
+  } else if (event_type == "A5") {
+    parsed[["C1 end"]]   <- junctions[c(3,1)]
+    parsed[["C2 start"]] <- junctions[2]
+  } else if (event_type == "SE") {
+    parsed[c("C1 end", "A1 start", "A1 end",
+             "C2 start")] <- junctions
+  } else if (event_type == "MX") {
+    parsed[c("C1 end", "A1 start", "A1 end", "A2 start",
+             "A2 end", "C2 start")] <- junctions[-c(4,5)]
+  } else if (event_type == "RI") {
+    parsed[c("C1 start", "C1 end",
+             "C2 start", "C2 end")] <- junctions
+  } else if (event_type == "AF") {
+    parsed[c("C1 start", "C1 end", "C2 end",
+             "A1 start", "A1 end")] <- junctions[1:5]
+  } else if (event_type == "AL") {
+    parsed[c("C2 start", "C2 end", "C1 start",
+             "A1 start", "A1 end")] <- junctions[2:6]
+  }
+  return(parsed)
+}
+
+benchmark(replications = 1,
+          parseSuppaEventC(events),
+          parseSuppaEvent(events)
+)
+```
+
+The if/else doesn't seem to make much difference, the difference is still about
+four times slower. Maybe we don't need to `unlist` the result of `strsplit`?
+Maybe we should try to rewrite the function without using the `unlist` function?
+Let's do it in another day, shall we?
+
+> TODO: more performance tweaks

@@ -1,0 +1,80 @@
+---
+title: "Splicing events identifiers"
+author: "Nuno Agostinho"
+date: "20 November 2015"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 3
+---
+
+The splicing events ID's are different according to the program that creates it.
+The programs which allow to quantify expression levels of alternative
+splicing events and that are studied in this report are:
+
+* [MISO](https://miso.readthedocs.org/en/fastmiso/)
+* [SUPPA](https://bitbucket.org/regulatorygenomicsupf/suppa)
+* [VAST-TOOLS](https://github.com/vastgroup/vast-tools)
+* [MATS](http://rnaseq-mats.sourceforge.net)
+
+It's also important to understand that the splicing event ID's may vary
+according to the splicing event type. The most common splicing event types
+annotated across the aforementioned programs are described in the following
+image (retrieved from the
+[SUPPA website](https://bitbucket.org/regulatorygenomicsupf/suppa)).
+
+![Splicing event types](https://bitbucket.org/repo/4gEBMd/images/2185438774-Slide1.jpg)
+
+To conciliate the output from the different programs, it was decided to parse
+each splicing event ID to a R data type known as list with all the important
+attributes of an event, including:
+
+* Species
+* Chromosome
+* Strand
+* Gene
+* mRNA
+* Splicing event type
+<!-- * Inclusion level (PSI) -->
+
+In order to store the events themselves, it's possible to characterise all the
+represented splicing event types by using the boundaries of the following 4
+exons:
+
+* Upstream constitutive exon (C1)
+* Upstram alternative exon (A1)
+* Downstream alternative exon (A2)
+* Downstream constitutive exon (C2)
+
+The following table describes which positions should be stored to identify each
+splicing event type:
+
+Splicing event type        | C1 start | C1 end | A1 start | A1 end | A2 start | A2 end | C2 start | C2 end |
+-------------------------- | :------: | :----: | :------: | :----: | :------: | :----: | :------: | :----: |
+Exon skipping              |          | •      | •        | •      |          |        | •        |        |
+Mutually exclusive exons   |          | •      | •        | •      | •        | •      | •        |        |
+Alternative 5' splice site |          | • •    |          |        |          |        | •        |        |
+Alternative 3' splice site |          | •      |          |        |          |        | • •      |        |
+Retained intron            | •        | •      |          |        |          |        | •        | •      |
+Alternative first exon     | •        | •      | •        | •      |          |        | •        |        |
+Alternative last exon      |          | •      | •        | •      |          |        | •        | •      | 
+Tandem UTR                 |          |        |          |        |          |        | •        | • •    | 
+
+Note there are two glyphs in some cases. That means two alternative positions
+are stored (for example, in the case of the alternative 5' splice site, the C1
+end can alternatively be one of the two positions).
+
+Before discussing how to parse thousands and thousands of events, we should
+reflect a bit on the tools available to compare different solutions that solve
+the same problem and how to measure performance on R. You can read about it
+in the article [Measuring performance](Measuring_performance.html).
+
+Another thing to consider is whether we should be using a list or an object to
+store the information pertaining to each event. I'll try to create a list at
+first but maybe it would be better to have a class for events. This way, the
+attributes would be much clearer to others. But really, would it be that
+different if we take into account that the documentation explains the data
+structure anyway? And is there any impact in the performance of the same script
+using objects instead of lists?
+
+> TODO: event data structure - list VS object

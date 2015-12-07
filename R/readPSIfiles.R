@@ -1,29 +1,51 @@
+read_path <- function(path, item)
+  read.delim(sprintf(path, item))
+
 # MATS
-mats_JC.SE <- read.delim("/genedata/NunoA/psi_files/mats_JC.SE.txt")
-mats_JC.A3SS <- read.delim("/genedata/NunoA/psi_files/mats_JC.A3SS.txt")
-mats_JC.A5SS <- read.delim("/genedata/NunoA/psi_files/mats_JC.A5SS.txt")
-mats_JC.MXE <- read.delim("/genedata/NunoA/psi_files/mats_JC.MXE.txt")
-mats_JC.RI <- read.delim("/genedata/NunoA/psi_files/mats_JC.RI.txt")
+mats_path    <- "/genedata/NunoA/psi_files/mats_JC.%s.txt"
+mats_JC.SE   <- read_path(mats_path, "SE")
+mats_JC.A3SS <- read_path(mats_path, "A3SS")
+mats_JC.A5SS <- read_path(mats_path, "A5SS")
+mats_JC.MXE  <- read_path(mats_path, "MXE")
+mats_JC.RI   <- read_path(mats_path, "RI")
 
 # VAST-TOOLS
 vast_all <- read.delim("/genedata/NunoA/psi_files/vast_all.tab")
 
 # MISO
-miso_A3SS <- read.delim("/genedata/NunoA/psi_files/miso_A3SS.miso_summary")
-miso_A5SS <- read.delim("/genedata/NunoA/psi_files/miso_A5SS.miso_summary")
-miso_SE <- read.delim("/genedata/NunoA/psi_files/miso_SE.miso_summary")
-miso_AFE <- read.delim("/genedata/NunoA/psi_files/miso_AFE.miso_summary")
-miso_ALE <- read.delim("/genedata/NunoA/psi_files/miso_ALE.miso_summary")
-miso_MXE <- read.delim("/genedata/NunoA/psi_files/miso_MXE.miso_summary")
-miso_RI <- read.delim("/genedata/NunoA/psi_files/miso_RI.miso_summary")
-miso_TandemUTR <- read.delim("/genedata/NunoA/psi_files/miso_TandemUTR.miso_summary")
-miso_isoforms <- read.delim("/genedata/NunoA/psi_files/miso_isoforms.miso_summary")
+miso_path <- "/genedata/NunoA/psi_files/miso_%s.miso_summary"
+miso_A3SS <- read_path(miso_path, "A3SS")
+miso_A5SS <- read_path(miso_path, "A5SS")
+miso_SE   <- read_path(miso_path, "SE")
+miso_AFE  <- read_path(miso_path, "AFE")
+miso_ALE  <- read_path(miso_path, "ALE")
+miso_MXE  <- read_path(miso_path, "MXE")
+miso_RI   <- read_path(miso_path, "RI")
+miso_TandemUTR <- read_path(miso_path, "TandemUTR")
+miso_isoforms  <- read_path(miso_path, "isoforms")
+
+# MISO (annotation files)
+types <-
+  sprintf("/genedata/Resources/Annotations/MISO/hg19/%s.hg19.gff3",
+          c("AFE", "ALE", "SE", "MXE", "A5SS", "A3SS", "RI", "TandemUTR"))
+hg19.all <- NULL
+for (type in types) {
+  hg19.all <- rbind(hg19.all,
+                    read.delim(type, header = F, comment.char = "#"))
+  print(paste("MISO", type, "is ready"))
+}
+
+# MISO event to UCSC genome browser
+ucsc <- function(df) {
+  write.table(format(df[c(1,4,5,3)]), row.names = F, col.names = F, quote = F)
+}
 
 # SUPPA
-suppa_A3.tab <- read.delim("/genedata/NunoA/psi_files/suppa_A3.tab.psi")
-suppa_A5.tab <- read.delim("/genedata/NunoA/psi_files/suppa_A5.tab.psi")
-suppa_AF.tab <- read.delim("/genedata/NunoA/psi_files/suppa_AF.tab.psi")
-suppa_AL.tab <- read.delim("/genedata/NunoA/psi_files/suppa_AL.tab.psi")
-suppa_MX.tab <- read.delim("/genedata/NunoA/psi_files/suppa_MX.tab.psi")
-suppa_RI.tab <- read.delim("/genedata/NunoA/psi_files/suppa_RI.tab.psi")
-suppa_SE.tab <- read.delim("/genedata/NunoA/psi_files/suppa_SE.tab.psi")
+suppa_path   <- "/genedata/NunoA/psi_files/suppa_%s.tab.psi"
+suppa_A3.tab <- read_path(suppa_path, "A3")
+suppa_A5.tab <- read_path(suppa_path, "A5")
+suppa_AF.tab <- read_path(suppa_path, "AF")
+suppa_AL.tab <- read_path(suppa_path, "AL")
+suppa_MX.tab <- read_path(suppa_path, "MX")
+suppa_RI.tab <- read_path(suppa_path, "RI")
+suppa_SE.tab <- read_path(suppa_path, "SE")

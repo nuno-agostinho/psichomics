@@ -36,10 +36,12 @@ test_that("parseSuppaJunctions correctly parses junctions by event type", {
   parseSuppaJunctions("RI", "+", junctionsRI)
 })
 
-parsed_eventA3 <- parseSuppaEvent(eventA3)
-parsed_eventA5 <- parseSuppaEvent(eventA5)
-parsed_eventAF <- parseSuppaEvent(eventAF)
-parsed_eventAL <- parseSuppaEvent(eventAL)
-parsed_eventSE <- parseSuppaEvent(eventSE)
-parsed_eventMX <- parseSuppaEvent(eventMX)
-parsed_eventRI <- parseSuppaEvent(eventRI)
+## TODO: test parseSuppaEvent
+## TODO: test parseSuppaEventID
+parsed_eventA3 <- parseSuppaEventID(eventA3)
+parsed_eventA5 <- parseSuppaEventID(eventA5)
+parsed_eventAF <- parseSuppaEventID(eventAF)
+parsed_eventAL <- parseSuppaEventID(eventAL)
+parsed_eventSE <- parseSuppaEventID(eventSE)
+parsed_eventMX <- parseSuppaEventID(eventMX)
+parsed_eventRI <- parseSuppaEventID(eventRI)
