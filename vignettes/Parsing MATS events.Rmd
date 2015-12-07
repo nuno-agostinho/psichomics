@@ -1,0 +1,241 @@
+---
+title: "Parsing splicing events from MATS"
+author: "Nuno Agostinho"
+date: "4 December 2015"
+output: html_document
+---
+
+MATS outputs inclusion levels to a folder (`MATS_output`) which contain two
+files: one of them only takes into account junction counts to calculate the 
+inclusion levels while the other uses junction counts and reads on target
+(read more about it at <http://rnaseq-mats.sourceforge.net>). Both these files
+present the same columns with the exception of four that only differ in the
+definition of the value.
+
+Splicing events from MATS seem easy to parse. Each event type has specific 
+columns that allow us to retrieve the needed information. A table with the MATS 
+inclusion levels doesn't state event types. We could, however, infer them from 
+the names of specific columns used or through the name of the file. Either way,
+the functions created for now will simply use event type as an argument.
+
+# Skipping exon (SE)
+
+Below we represent the `head` of a MATS output file pertaining to junction 
+counts for a skipping exon event.
+
+|    ID|GeneID          |geneSymbol |chr   |strand | exonStart_0base|   exonEnd| upstreamES| upstreamEE| downstreamES| downstreamEE|  ID.1| IJC_SAMPLE_1| SJC_SAMPLE_1| IJC_SAMPLE_2| SJC_SAMPLE_2| IncFormLen| SkipFormLen|    PValue|       FDR| IncLevel1| IncLevel2| IncLevelDifference|
+|-----:|:---------------|:----------|:-----|:------|---------------:|---------:|----------:|----------:|------------:|------------:|-----:|------------:|------------:|------------:|------------:|----------:|-----------:|---------:|---------:|---------:|---------:|------------------:|
+|  4626|ENSG00000151422 |FER        |chr5  |+      |       108168470| 108168644|  108133824|  108134090|    108171408|    108171508|  4626|           16|            0|            0|            4|        112|          56| 0.0001641| 0.0164083|     1.000|     0.000|              1.000|
+| 12265|ENSG00000025293 |PHF20      |chr20 |+      |        34487291|  34487570|   34459571|   34459751|     34501170|     34501238| 12265|           13|            3|           13|            0|        112|          56| 0.1035554| 0.7965801|     0.684|     1.000|             -0.316|
+| 12456|ENSG00000172915 |NBEA       |chr13 |+      |        35758112|  35758208|   35756496|   35756665|     35770000|     35770439| 12456|           12|            4|            9|            0|        112|          56| 0.0986621| 0.7965801|     0.600|     1.000|             -0.400|
+| 16170|ENSG00000151914 |DST        |chr6  |-      |        56463273|  56463507|   56462537|   56462804|     56464866|     56465019| 16170|           53|            7|           64|            2|        112|          56| 0.0629493| 0.7965801|     0.791|     0.941|             -0.150|
+| 19573|ENSG00000112701 |SENP6      |chr6  |+      |        76332466|  76332574|   76331247|   76331341|     76333615|     76333676| 19573|            0|            8|            1|            0|        110|          54| 0.0692354| 0.7965801|     0.000|     1.000|             -1.000|
+| 20142|ENSG00000244754 |N4BP2L2    |chr13 |-      |        33054726|  33054774|   33018102|   33018263|     33091993|     33092057| 20142|            7|            9|            0|            4|         82|          56| 0.0999055| 0.7965801|     0.347|     0.000|              0.347|
+
+```{r}
+parseMatsEvent <- function(event, event_type) {
+  # Create list with event attributes
+  event_attrs <- list("Program" = "MATS",
+                      "Gene" = as.character(event[[2]]),
+                      "Gene symbol" = as.character(event[[3]]),
+                      "Chromosome" = as.character(event[[4]]),
+                      "Strand" = as.character(event[[5]]),
+                      "P value" = as.numeric(event[[len - 4]]),
+                      "FDR" = as.numeric(event[[len - 3]]),
+                      "Inclusion level A" = as.numeric(event[[len - 2]]),
+                      "Inclusion level B" = as.numeric(event[[len - 1]]),
+                      "Event type" = event_type)
+  
+  # Parse junction positions according to event type
+  parsed <- parseMatsJunctions(event, event_type)
+  return(c(event_attrs, parsed))
+}
+
+parseMatsJunctions <- function(event, event_type) {
+  # Fill list of parsed junctions with NAs
+  parsed <- list("C1 start" = NA, "C1 end" = NA,
+                 "A1 start" = NA, "A1 end" = NA,
+                 "A2 start" = NA, "A2 end" = NA,
+                 "C2 start" = NA, "C2 end" = NA)
+  
+  switch(event_type,
+         "SE" = parsed[c("A1 start", "A1 end",
+                         "C1 start", "C1 end",
+                         "C2 start", "C2 end")] <- as.numeric(event[6:11])
+  ) # end of switch
+  return(parsed)
+}
+```
+
+# Mutually exclusive exons (MXE)
+
+Next follows the `head` of the MXE events output file (junction counts only).
+
+|   ID|GeneID          |geneSymbol |chr   |strand | X1stExonStart_0base| X1stExonEnd| X2ndExonStart_0base| X2ndExonEnd| upstreamES| upstreamEE| downstreamES| downstreamEE| ID.1| IJC_SAMPLE_1| SJC_SAMPLE_1| IJC_SAMPLE_2| SJC_SAMPLE_2| IncFormLen| SkipFormLen|    PValue|       FDR| IncLevel1| IncLevel2| IncLevelDifference|
+|----:|:---------------|:----------|:-----|:------|-------------------:|-----------:|-------------------:|-----------:|----------:|----------:|------------:|------------:|----:|------------:|------------:|------------:|------------:|----------:|-----------:|---------:|---------:|---------:|---------:|------------------:|
+| 1388|ENSG00000138468 |SENP7      |chr3  |-      |           101117704|   101117899|           101136436|   101136634|  101090851|  101090970|    101177798|    101177896| 1388|            0|            5|            1|            3|        112|         112| 0.3275101| 0.5591681|     0.000|     0.250|             -0.250|
+| 2136|ENSG00000128989 |ARPP19     |chr15 |-      |            52856386|    52856443|            52861044|    52861097|   52849296|   52849419|     52861312|     52861364| 2136|            1|            1|            2|            0|         81|          89| 0.3733155| 0.5591681|     0.524|     1.000|             -0.476|
+|  217|ENSG00000120251 |GRIA2      |chr4  |+      |           158282161|   158282276|           158282689|   158282804|  158281047|  158281295|    158283950|    158284199|  217|           10|            0|            7|            1|        112|         112| 0.3211077| 0.5591681|     1.000|     0.875|              0.125|
+|  473|ENSG00000172262 |ZNF131     |chr5  |+      |            43139266|    43139411|            43161350|    43162033|   43123310|   43123412|     43173419|     43173550|  473|            7|            1|            6|            0|        112|         112| 0.4390366| 0.5591681|     0.875|     1.000|             -0.125|
+|  799|ENSG00000108848 |LUC7L3     |chr17 |+      |            48814647|    48814840|            48815501|    48815560|   48814320|   48814387|     48817666|     48817706|  799|            0|            1|            1|            0|         89|          81| 0.3405525| 0.5591681|     0.000|     1.000|             -1.000|
+|  922|ENSG00000198363 |ASPH       |chr8  |-      |            62531536|    62531578|            62546241|    62546286|   62496502|   62496588|     62550505|     62550562|  922|           15|            2|           20|            0|         70|          64| 0.1310090| 0.5591681|     0.873|     1.000|             -0.127|
+
+```{r}
+parseMatsJunctions <- function(event, event_type) {
+  # Fill list of parsed junctions with NAs
+  parsed = list("C1 start" = NA, "C1 end" = NA,
+                "A1 start" = NA, "A1 end" = NA,
+                "A2 start" = NA, "A2 end" = NA,
+                "C2 start" = NA, "C2 end" = NA)
+  
+  # Parse junction positions according to event type
+  switch(event_type,
+         "SE"  = parsed[c("A1 start", "A1 end",
+                          "C1 start", "C1 end",
+                          "C2 start", "C2 end")] <- as.numeric(event[6:11]),
+         "MXE" = parsed[c("A1 start", "A1 end",
+                          "A2 start", "A2 end",
+                          "C1 start", "C1 end",
+                          "C2 start", "C2 end")] <- as.numeric(event[6:13])
+  ) # end of switch
+  return(parsed)
+}
+```
+
+# Retained intron (RI)
+Here follows the `head` of the RI events output file (junction counts only).
+
+|   ID|GeneID          |geneSymbol |chr   |strand | riExonStart_0base| riExonEnd| upstreamES| upstreamEE| downstreamES| downstreamEE| ID.1| IJC_SAMPLE_1| SJC_SAMPLE_1| IJC_SAMPLE_2| SJC_SAMPLE_2| IncFormLen| SkipFormLen|    PValue|       FDR| IncLevel1| IncLevel2| IncLevelDifference|
+|----:|:---------------|:----------|:-----|:------|-----------------:|---------:|----------:|----------:|------------:|------------:|----:|------------:|------------:|------------:|------------:|----------:|-----------:|---------:|---------:|---------:|---------:|------------------:|
+| 2287|ENSG00000011295 |TTC19      |chr17 |+      |          15929853|  15932100|   15929853|   15930016|     15930687|     15932100| 2287|            0|            4|            1|            0|        112|          56| 0.1223216| 0.8424614|     0.000|     1.000|             -1.000|
+| 4305|ENSG00000126777 |KTN1       |chr14 |+      |          56138283|  56138595|   56138283|   56138373|     56138502|     56138595| 4305|            2|          110|            3|           39|        112|          56| 0.1296094| 0.8424614|     0.009|     0.037|             -0.028|
+| 1324|ENSG00000121851 |POLR3GL    |chr1  |-      |         145456990| 145457309|  145456990|  145457104|    145457235|    145457309| 1324|            1|           12|            0|            5|        112|          56| 0.5886144| 0.9201026|     0.040|     0.000|              0.040|
+| 1595|ENSG00000122545 |SEPT7      |chr7  |+      |          35937857|  35942825|   35937857|   35937993|     35942685|     35942825| 1595|            1|           47|            0|           30|        112|          56| 0.6828881| 0.9201026|     0.011|     0.000|              0.011|
+| 2482|ENSG00000172995 |ARPP21     |chr3  |+      |          35725217|  35727379|   35725217|   35725307|     35725512|     35727379| 2482|            1|            9|            1|            4|        112|          56| 0.6310504| 0.9201026|     0.053|     0.111|             -0.058|
+| 2805|ENSG00000131051 |RBM39      |chr20 |-      |          34326889|  34328809|   34326889|   34326939|     34328745|     34328809| 2805|            8|            4|            2|            2|         99|          43| 0.5946066| 0.9201026|     0.465|     0.303|              0.162|
+
+```{r}
+parseMatsJunctions <- function(event, event_type) {
+  # Fill list of parsed junctions with NAs
+  parsed = list("C1 start" = NA, "C1 end" = NA,
+                "A1 start" = NA, "A1 end" = NA,
+                "A2 start" = NA, "A2 end" = NA,
+                "C2 start" = NA, "C2 end" = NA)
+  
+  # Parse junction positions according to event type
+  switch(event_type,
+         "SE"  = parsed[c("A1 start", "A1 end",
+                          "C1 start", "C1 end",
+                          "C2 start", "C2 end")] <- as.numeric(event[6:11]),
+         "MXE" = parsed[c("A1 start", "A1 end",
+                          "A2 start", "A2 end",
+                          "C1 start", "C1 end",
+                          "C2 start", "C2 end")] <- as.numeric(event[6:13]),
+         "RI"  = parsed[c("C1 start", "C1 end",
+                          "C2 start", "C2 end")] <- as.numeric(event[8:11])
+  ) # end of switch
+  return(parsed)
+}
+```
+
+# Alternative 3' splice site (A3SS)
+Next follows the `head` of the A3SS events output file (junction counts only).
+
+|   ID|GeneID          |geneSymbol |chr   |strand | longExonStart_0base| longExonEnd|   shortES|   shortEE| flankingES| flankingEE| ID.1| IJC_SAMPLE_1| SJC_SAMPLE_1| IJC_SAMPLE_2| SJC_SAMPLE_2| IncFormLen| SkipFormLen|    PValue|       FDR| IncLevel1| IncLevel2| IncLevelDifference|
+|----:|:---------------|:----------|:-----|:------|-------------------:|-----------:|---------:|---------:|----------:|----------:|----:|------------:|------------:|------------:|------------:|----------:|-----------:|---------:|---------:|---------:|---------:|------------------:|
+| 1234|ENSG00000076108 |BAZ2A      |chr12 |-      |            57000030|    57000179|  57000030|  57000096|   57000416|   57000517| 1234|            0|           18|            2|            0|        112|          56| 0.0033800| 0.0540799|     0.000|     1.000|             -1.000|
+| 3658|ENSG00000067715 |SYT1       |chr12 |+      |            79685787|    79685910|  79685796|  79685910|   79679566|   79679751| 3658|          252|          102|           73|           16|         58|          56| 0.0342916| 0.2743332|     0.705|     0.815|             -0.110|
+| 2056|ENSG00000137941 |TTLL7      |chr1  |-      |            84383286|    84383373|  84383286|  84383369|   84385381|   84385517| 2056|            6|            0|            2|            1|         56|          56| 0.2373837| 0.5345543|     1.000|     0.667|              0.333|
+| 2177|ENSG00000141027 |NCOR1      |chr17 |-      |            16029395|    16029523|  16029395|  16029520|   16040624|   16040726| 2177|           50|           68|           15|           12|         56|          56| 0.2219590| 0.5345543|     0.424|     0.556|             -0.132|
+| 2406|ENSG00000164985 |PSIP1      |chr9  |-      |            15470633|    15471309|  15470633|  15471229|   15472629|   15472748| 2406|           34|            4|           10|            3|        112|          56| 0.3006868| 0.5345543|     0.810|     0.625|              0.185|
+| 3805|ENSG00000151923 |TIAL1      |chr10 |-      |           121339982|   121340358| 121339982| 121340050|  121341433|  121341521| 3805|            1|            0|            0|            2|        112|          56| 0.2084218| 0.5345543|     1.000|     0.000|              1.000|
+
+```{r}
+parseMatsJunctions <- function(event, event_type) {
+  # Fill list of parsed junctions with NAs
+  parsed <- list("C1 start" = NA, "C1 end" = NA,
+                 "A1 start" = NA, "A1 end" = NA,
+                 "A2 start" = NA, "A2 end" = NA,
+                 "C2 start" = NA, "C2 end" = NA)
+  
+  # Parse junction positions according to event type
+  switch(event_type,
+         "SE"   = parsed[c("A1 start", "A1 end",
+                           "C1 start", "C1 end",
+                           "C2 start", "C2 end")] <- as.numeric(event[6:11]),
+         "MXE"  = parsed[c("A1 start", "A1 end",
+                           "A2 start", "A2 end",
+                           "C1 start", "C1 end",
+                           "C2 start", "C2 end")] <- as.numeric(event[6:13]),
+         "RI"   = parsed[c("C1 start", "C1 end",
+                           "C2 start", "C2 end")] <- as.numeric(event[8:11]),
+         "A3SS" = {
+           parsed[c("C1 start", "C1 end")] <- as.numeric(event[10:11])
+           if (strand == "+") {
+             parsed[["C2 start"]] <- as.numeric(event[c(6, 8)])
+             parsed[["C2 end"]]   <- as.numeric(event[7])
+           } else if (strand == "-") {
+             parsed[["C2 start"]]   <- as.numeric(event[c(7, 9)])
+             parsed[["C2 end"]]  <- as.numeric(event[8])
+           }
+         }
+  ) # end of switch
+  return(parsed)
+}
+```
+
+# Alternative 5' splice site (A5SS)
+Next follows the `head` of the A5SS events output file (junction counts only).
+
+|   ID|GeneID          |geneSymbol |chr   |strand | longExonStart_0base| longExonEnd|   shortES|   shortEE| flankingES| flankingEE| ID.1| IJC_SAMPLE_1| SJC_SAMPLE_1| IJC_SAMPLE_2| SJC_SAMPLE_2| IncFormLen| SkipFormLen|    PValue|       FDR| IncLevel1| IncLevel2| IncLevelDifference|
+|----:|:---------------|:----------|:-----|:------|-------------------:|-----------:|---------:|---------:|----------:|----------:|----:|------------:|------------:|------------:|------------:|----------:|-----------:|---------:|---------:|---------:|---------:|------------------:|
+| 1366|ENSG00000172465 |TCEAL1     |chrX  |+      |           102884421|   102884501| 102884421| 102884489|  102884812|  102885881| 1366|            2|            2|            1|            0|         61|          56| 0.4896737| 0.4981328|     0.479|     1.000|             -0.521|
+| 1883|ENSG00000068796 |KIF2A      |chr5  |+      |            61648414|    61648537|  61648414|  61648480|   61649101|   61649202| 1883|           64|           10|           35|            3|        106|          56| 0.3823749| 0.4981328|     0.772|     0.860|             -0.088|
+|  311|ENSG00000112851 |ERBB2IP    |chr5  |+      |            65339964|    65340138|  65339964|  65340126|   65342180|   65342366|  311|           76|            4|           41|            1|         61|          56| 0.4981328| 0.4981328|     0.946|     0.974|             -0.028|
+| 3785|ENSG00000038295 |TLL1       |chr4  |+      |           166913955|   166914074| 166913955| 166914036|  166915532|  166915685| 3785|            0|            2|            1|            0|         87|          56| 0.2139080| 0.4981328|     0.000|     1.000|             -1.000|
+| 4064|ENSG00000077782 |FGFR1      |chr8  |-      |            38285863|    38285953|  38285869|  38285953|   38285438|   38285611| 4064|            2|            1|            1|            3|         56|          56| 0.3447976| 0.4981328|     0.667|     0.250|              0.417|
+| 4266|ENSG00000101745 |ANKRD12    |chr18 |+      |             9208654|     9208801|   9208654|   9208795|    9211581|    9211782| 4266|            3|            2|            5|            1|         56|          56| 0.4416986| 0.4981328|     0.600|     0.833|             -0.233|
+
+```{r}
+parseMatsJunctions <- function(event, event_type) {
+  # Fill list of parsed junctions with NAs
+  parsed <- list("C1 start" = NA, "C1 end" = NA,
+                 "A1 start" = NA, "A1 end" = NA,
+                 "A2 start" = NA, "A2 end" = NA,
+                 "C2 start" = NA, "C2 end" = NA)
+  
+  # Parse junction positions according to event type
+  switch(event_type,
+         "SE"   = parsed[c("A1 start", "A1 end",
+                           "C1 start", "C1 end",
+                           "C2 start", "C2 end")] <- as.numeric(event[6:11]),
+         "MXE"  = parsed[c("A1 start", "A1 end",
+                           "A2 start", "A2 end",
+                           "C1 start", "C1 end",
+                           "C2 start", "C2 end")] <- as.numeric(event[6:13]),
+         "RI"   = parsed[c("C1 start", "C1 end",
+                           "C2 start", "C2 end")] <- as.numeric(event[8:11]),
+         "A3SS" = {
+           parsed[c("C1 start", "C1 end")] <- as.numeric(event[10:11])
+           if (strand == "+") {
+             parsed[["C2 start"]] <- as.numeric(event[c(6, 8)])
+             parsed[["C2 end"]]   <- as.numeric(event[7])
+           } else if (strand == "-") {
+             parsed[["C2 start"]]   <- as.numeric(event[c(7, 9)])
+             parsed[["C2 end"]]  <- as.numeric(event[6])
+           }
+         },
+         "A5SS" = {
+           parsed[c("C2 start", "C2 end")] <- as.numeric(event[10:11])
+           if (strand == "+") {
+             parsed[["C1 start"]] <- as.numeric(event[6])
+             parsed[["C1 end"]]   <- as.numeric(event[c(7,9)])
+           } else if (strand == "-") {
+             parsed[["C1 start"]]  <- as.numeric(event[7])
+             parsed[["C1 end"]]    <- as.numeric(event[c(6, 8)])
+           }
+         }
+  ) # end of switch
+  return(parsed)
+}
+```
