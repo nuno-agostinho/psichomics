@@ -1,0 +1,1136 @@
+---
+title: "Parsing splicing events from MISO"
+author: "Nuno Agostinho"
+date: "26 November 2015"
+output: 
+  html_document: 
+    toc: yes
+---
+
+To get expression levels using MISO, you only need to give it alternative events
+annotation files (in the GFF3 format) and a sample BAM file.
+
+Splicing event ID's from MISO don't differ that much from those in SUPPA,
+although they don't contain gene names nor type of event, as you can see from 
+the following table (notice that Tandem UTR is a type of event which is not
+present in SUPPA).
+
+Splicing event type        | Splicing event ID example from MISO |
+-------------------------- | ------------------------------------------------------------------------------------ |
+Exon skipping              | chr19:14069173:14069295:-\@chr19:14065440:14065604:-\@chr19:14063500:14065049:- |
+Mutually exclusive exons   | chr2:261866:261939:+\@chr2:262037:262150:+\@chr2:262192:262305:+\@chr2:265140:265630:+ |
+Alternative 5' splice site | chr22:41353339:41353254|41353250:-\@chr22:41349739:41349838:- |
+Alternative 3' splice site | chr4:156848838:156848896:+\@chr4:156851144|156851147:156851853:+ |
+Retained intron            | chr3:151768379:151768406:+\@chr3:151768494:151768523:+ |
+Alternative first exon     | 2217\@uc002poi.1\@uc002poe.1 |
+Alternative last exon      | 55814\@uc003msh.1uc003msk.1\@uc003msj.1 |
+Tandem UTR                 | chr17:53778273:53778604:-\@chr17:53777536:53778272:- |
+
+The splicing event ID's were originally attributed using the Human genome's 18th
+assembly or the Mouse genome's 8th assembly. To create the GFF3 annotation files
+relative to the newer assemblies of the Human and Mouse genomes, they used
+[UCSC's liftOver](https://genome.ucsc.edu/cgi-bin/hgLiftOver) to change the
+positions (but the ID's stayed the same). Therefore, we need to cross-ref the
+annotation files with the splicing event ID's to parse the splicing events.
+
+Another thing to note is that MISO can also return isoform-centric analyses and
+may be important to expect and parse isoform-centric events.
+
+> TODO: parse MISO's isoform-centric events
+
+# Cross-referencing the splicing event ID's
+This one seems easy enough. For each splicing event ID, just get any matches in
+the alternative splicing annotation files.
+
+## grep
+```{r miso-grep}
+eventID <- "2217@uc002poi.1@uc002poe.1"
+annotation <- read.delim(
+  "/genedata/Resources/Annotations/MISO/hg19/AFE.hg19.gff3",
+  header=FALSE, comment.char="#")
+IDcolumn <- 9 # index of the column with the event ID's in the annotation file
+
+matchMisoEvent1 <- function(eventID, annotation, IDcolumn) {
+  # Get lines matching to a given MISO splicing event ID
+  match <- grep(eventID, annotation[[IDcolumn]], fixed = TRUE)
+  annotation[match,]
+}
+```
+
+The resulting output is shown in the table below.
+
+|V1    |V2  |V3   |       V4|       V5|V6 |V7 |V8 |V9|
+|:-----|:---|:----|--------:|--------:|:--|:--|:--|:-|
+|chr19 |AFE |gene | 50015886| 50028830|.  |+  |. |ID=2217\@uc002poi.1\@uc002poe.1;Name=2217\@uc002poi.1\@uc002poe.1;gid=2217\@uc002poi.1\@uc002poe.1 |
+|chr19 |AFE |mRNA | 50028313| 50028830|.  |+  |.  |ID=2217\@uc002poi.1\@uc002poe.1.A;Parent=2217\@uc002poi.1\@uc002poe.1;Name=2217\@uc002poi.1\@uc002poe.1.A;gid=2217\@uc002poi.1\@uc002poe.1 |
+|chr19 |AFE |exon | 50028313| 50028830|.  |+  |.  |ID=2217\@uc002poi.1\@uc002poe.1.A.0;Parent=2217\@uc002poi.1\@uc002poe.1.A;Name=2217\@uc002poi.1\@uc002poe.1.A.0;gid=2217\@uc002poi.1\@uc002poe.1 |
+|chr19 |AFE |mRNA | 50015886| 50016730|.  |+  |.  |ID=2217\@uc002poi.1\@uc002poe.1.B;Parent=2217\@uc002poi.1\@uc002poe.1;Name=2217\@uc002poi.1\@uc002poe.1.B;gid=2217\@uc002poi.1\@uc002poe.1 |
+|chr19 |AFE |exon | 50015886| 50016007|.  |+  |.  |ID=2217\@uc002poi.1\@uc002poe.1.B.0;Parent=2217\@uc002poi.1\@uc002poe.1.B;Name=2217\@uc002poi.1\@uc002poe.1.B.0;gid=2217\@uc002poi.1\@uc002poe.1 |
+|chr19 |AFE |exon | 50016644| 50016730|.  |+  |.  |ID=2217\@uc002poi.1\@uc002poe.1.B.1;Parent=2217\@uc002poi.1\@uc002poe.1.B;Name=2217\@uc002poi.1\@uc002poe.1.B.1;gid=2217\@uc002poi.1\@uc002poe.1 |
+
+Let's see how long it takes to get one event:
+```{r benchmark-miso-grep}
+library(microbenchmark)
+microbenchmark(times = 1,
+               no_lapply=matchMisoEvent1(eventID, annotation, IDcolumn),
+               lapply=lapply(rep(eventID,3), matchMisoEvent1, annotation, IDcolumn))
+```
+
+Cross-refering three MISO events with the alternative splicing annotation takes
+the same time needed to parse 10000 events from SUPPA. If the annotation file
+has the annotation of all event types from MISO (and not just one event type as
+in this test), it can take as long as 3 seconds to match each event.
+
+## pmatch
+Maybe `grep` is just too slow and we should look for another function. As we can
+see in the table above, column V9 has the ID we'd like after `ID=`. Maybe we
+could try to use `pmatch`. But since this function doesn't return more than one
+finding, let's use it to find the first matching ID and from there we can look
+for the others.
+
+```{r miso-pmatch}
+getMisoEvent <- function(index, annotation) {
+  # Get all lines before next gene
+  next_index <- match("gene", tail(annotation[[3]], index))
+  seq <- seq(index, index + next_index + 1)
+  return(annotation[seq, ])
+}
+
+matchMisoEvent2 <- function(eventID, annotation, IDcolumn) {
+  # Get first line matching a given splicing event ID
+  match <- pmatch(paste0("ID=", eventID, ";"),
+                  annotation[[IDcolumn]], duplicates.ok = TRUE)
+  # Get all lines related to a given splicing event
+  lapply(match, getMisoEvent, annotation)
+}
+
+microbenchmark(times = 1,
+               event_1=matchMisoEvent2(rep(eventID,1), annotation, IDcolumn),
+               events_100=matchMisoEvent2(rep(eventID,100), annotation, IDcolumn))
+```
+
+### Calculate next gene index
+What if instead of looking for the index of the next gene each time, the index
+of all genes is found at once? Then we could ask for the index of the next gene.
+
+```{r miso-genes-index-B}
+getMisoEventB <- function(index, annotation, genes_index) {
+  # Get all lines before next gene
+  next_gene <- genes_index[genes_index > index][1]
+  seq <- seq(index, next_gene - 1)
+  return(annotation[seq, ])
+}
+
+matchMisoEvent2B <- function(eventID, annotation, IDcolumn) {
+  # Get first line matching a given splicing event ID
+  index <- pmatch(paste0("ID=", eventID, ";"),
+                  annotation[[IDcolumn]], duplicates.ok = TRUE)
+  # Get all lines related to a given splicing event
+  genes_index <- which(annotation[["V3"]] == "gene")
+  # Get index of the next gene
+  lapply(index, getMisoEventB, annotation, genes_index)
+}
+
+microbenchmark(times = 1,
+               event_1=matchMisoEvent2B(rep(eventID,1), annotation, IDcolumn),
+               events_100=matchMisoEvent2B(rep(eventID,100), annotation, IDcolumn))
+```
+
+### Match each gene to get the index of the following gene
+To get faster times, how about looking for our index of interest in the genes
+index and incrementing one to get the next gene index?
+
+```{r miso-genes-index-C}
+getMisoEventC <- function(index, annotation, genes_index) {
+  # Get all lines before next gene
+  next_index <- genes_index[match(index, genes_index) + 1]
+  seq <- seq(index, next_index - 1)
+  return(annotation[seq, ])
+}
+
+matchMisoEvent2C <- function(eventID, annotation, IDcolumn) {
+  # Get first line matching a given splicing event ID
+  index <- pmatch(paste0("ID=", eventID, ";"),
+                  annotation[[IDcolumn]], duplicates.ok = TRUE)
+  # Get all lines related to a given splicing event
+  genes_index <- which(annotation[["V3"]] == "gene")
+  lapply(index, getMisoEventC, annotation, genes_index)
+}
+
+microbenchmark(times = 1,
+               event_1=matchMisoEvent2C(rep(eventID,1), annotation, IDcolumn),
+               events_100=matchMisoEvent2C(rep(eventID,100), annotation, IDcolumn))
+```
+
+### Match all genes to get the index of the following genes at once
+Better yet, let's find all next genes index at the same time!
+
+```{r miso-genes-index-D}
+getMisoEventD <- function(i, annotation, index, next_index) {
+  # Get all lines before next gene
+  seq <- seq(index[i], next_index[i] - 1)
+  return(annotation[seq, ])
+}
+
+matchMisoEvent2D <- function(eventID, annotation, IDcolumn) {
+  # Get first line matching a given splicing event ID
+  index <- pmatch(paste0("ID=", eventID, ";"),
+                  annotation[[IDcolumn]], duplicates.ok = TRUE)
+  # Get all lines related to a given splicing event
+  genes_index <- which(annotation[["V3"]] == "gene")
+  # Get index of the next gene
+  next_index <- genes_index[match(index, genes_index) + 1]
+  lapply(1:length(index), getMisoEventD, annotation, index, next_index)
+}
+
+microbenchmark(times = 1,
+               event_1=matchMisoEvent2D(rep(eventID,1), annotation, IDcolumn),
+               events_100=matchMisoEvent2D(rep(eventID,100), annotation, IDcolumn))
+```
+
+Seems this method is the fastest. What if we try to use `subset` instead of
+`which` to get all genes index?
+
+```{r subset-vs-which}
+microbenchmark(times = 1,
+               which  = which(annotation[["V3"]] == "gene"),
+               subset = subset(annotation, V3 == "gene")
+)
+```
+
+Nevermind about using `subset`.
+
+## match
+Since the first matching ID is a common expression, we'll see if the `match` 
+function is faster than `pmatch`.
+
+```{r miso-match}
+matchMisoEvent3 <- function(eventID, annotation, IDcolumn) {
+  # Get first line matching a given splicing event ID
+  index <- match(paste0("ID=", eventID, ";Name=", eventID, ";gid=", eventID),
+                 annotation[[IDcolumn]])
+  # Get all lines related to a given splicing event
+  genes_index <- which(annotation[["V3"]] == "gene")
+  # Get index of the next gene
+  next_index <- genes_index[match(index, genes_index) + 1]
+  lapply(1:length(index), getMisoEventD, annotation, index, next_index)
+}
+
+microbenchmark(times = 1,
+               events_1=matchMisoEvent3(rep(eventID,1), annotation, IDcolumn),
+               events_100=matchMisoEvent3(rep(eventID,100), annotation, IDcolumn),
+               events_10000=matchMisoEvent3(rep(eventID,10000), annotation, IDcolumn))
+```
+
+Another thing we could try is to create a vector exclusively with the ID in the
+column V9 from the annotation file and do a simple `match`.
+
+> TODO
+
+## which
+Checking if `which` is faster than `match`: it is not.
+
+```{r miso-which}
+event <- paste0("ID=", eventID, ";Name=", eventID, ";gid=", eventID)
+
+microbenchmark(times = 1,
+               match = match(event, annotation[[IDcolumn]]),
+               which = which(annotation[[IDcolumn]] == event)
+)
+```
+
+## Using liftOver
+Yet another way to parse MISO splicing event IDs is to do it just like we parsed
+SUPPA IDs and then use `liftOver` to convert the coordinates from the Human
+genome's 18th assembly or Mouse genome's 8th assembly to the correct one. This
+may be a problem if the ID doesn't mean anything like in the cases of two
+splicing event types: alternative first and last exon.
+
+> TODO
+
+# Parse MISO event lines
+After retrieving the lines for each event in the alternative splicing annotation
+file, we need to parse the events themselves. Let's check how to parse each 
+event type.
+
+## Skipping exon
+Below, there is a tabular representation of a Skipping Exon events. The first
+thing we should note is that the terminology is used is confusing: they are
+calling "gene" to an event and "mRNA" to groups of exons of each isoform.
+
+As we can see for skipping events, MISO describes one line with the "gene"
+positions, two lines with alternative "mRNAs" and many lines with the exons that
+belong to each "mRNA". The first mRNA includes the alternative exon (the one in 
+the middle) while the second mRNA only includes the two constitutive exons.
+
+|V1   |V2 |V3   |    V4|    V5|V6 |V7 |V8 |V9 |
+|:----|:--|:----|-----:|-----:|:--|:--|:--|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|chr1 |SE |gene | 16854| 18061|.  |-  |.  |ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-;Name=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-          |
+|chr1 |SE |mRNA | 16854| 18061|.  |-  |.  |ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A;Parent=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-      |
+|chr1 |SE |exon | 16854| 17055|.  |-  |.  |ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A.dn;Parent=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:- |
+|chr1 |SE |exon | 17233| 17742|.  |-  |.  |ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A.se;Parent=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:- |
+|chr1 |SE |exon | 17915| 18061|.  |-  |.  |ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A.up;Parent=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:- |
+|chr1 |SE |mRNA | 16854| 18061|.  |-  |.  |ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.B;Parent=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-      |
+|chr1 |SE |exon | 16854| 17055|.  |-  |.  |ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.B.dn;Parent=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.B;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:- |
+|chr1 |SE |exon | 17915| 18061|.  |-  |.  |ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.B.up;Parent=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.B;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:- |
+
+Before continuing to parse the event based on this information, let's check if
+all SE events have these same lines (gene, mRNA, 3 exons, mRNA, 2 exons).
+
+```{r miso-SE, eval=FALSE}
+validate_event <- function(i, annotation, genes_index, validator, progress) {
+  progress <- setTxtProgressBar(progress, i)
+  event <- annotation[genes_index[i]:(genes_index[i+1]-1), ]
+  # return event if event does not pass the validator
+  if (length(event[ , 3]) != length(validator) || !all(event[ , 3] == validator))
+    return(event)
+}
+
+validate_df <- function(annotation, genes_index, validator) {
+  outliers <- list()
+  # Show progress bar
+  pb <- txtProgressBar(min = 1, max = (length(genes_index)-1), style = 3)
+  for(i in 1:(length(genes_index)-1)) {
+    event <- validate_event(i, annotation, genes_index, validator, pb)
+    # If event does not match with validator, return it
+    if (!is.null(event))
+      outliers <- c(outliers, list(event))
+  }
+  return(outliers)
+}
+
+annotation.SE <- read.delim(header=FALSE, comment.char="#",
+                            "/genedata/Resources/Annotations/MISO/hg19/SE.hg19.gff3")
+genes_index <- which(annotation.SE[["V3"]] == "gene")
+validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 2))
+outliers <- validate_df(annotation.SE, genes_index, validator)
+
+# How many events differ from the validator
+length(outliers)
+# RESULT: 15
+
+# How many events in total
+length(genes_index)
+# RESULT: 39222
+```
+
+15 outliers out of 39222 events. THey don't look like a big problem. The
+outliers seem to share the same lines, let's check it.
+```{r miso-SE-outliers, eval=FALSE}
+validate_list <- function(annotation, validator) {
+  for(event in annotation) {
+    if (length(event[ , 3]) != length(validator) || !all(event[ , 3] == validator))
+      return(event)
+  }
+}
+
+validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 7))
+validate_list(outliers, validator)
+```
+The outliers share the same validator with one exception that has 8 exons in the
+second mRNA instead of 7 exons. Unfortunately, I can't understand how these 
+lines represent a SE event, so I won't parse them.
+
+Anyway, parsing seems easy enough for most SE events. We just need to get the
+chromosme, strand, event type and the positions of interest.
+```{r parse-miso-se, eval=F}
+parseMisoEvent <- function(event) {
+  event_attrs <- list("Chromosome" = as.character(event[1, 1]),
+                      "Event type" = as.character(event[1, 2]),
+                      "Strand"     = as.character(event[1, 7]))
+  
+  strand     <- event_attrs[["Strand"]]
+  event_type <- event_attrs[["Event type"]]
+  
+  parsed = list("C1 start" = NA, "C1 end" = NA,
+                "A1 start" = NA, "A1 end" = NA,
+                "A2 start" = NA, "A2 end" = NA,
+                "C2 start" = NA, "C2 end" = NA)
+
+  parseEventType <- switch(event_type,
+                           "SE"   = parseSE,
+                           "MXE"  = parseMXE,
+                           "RI"   = parseRI,
+                           "A5SS" = parseA5SS,
+                           "A3SS" = parseA3SS,
+                           "AFE"  = parseAFE,
+                           "ALE"  = parseALE)
+  parsed <- parseEventType(event, strand, parsed)
+  return(c(event_attrs, parsed))
+}
+
+parseSE <- function(event, strand, parsed) {
+  if (strand == "+") {
+    parsed[c("C1 start", "C1 end")] <- event[3, 4:5]
+    parsed[c("A1 start", "A1 end")] <- event[4, 4:5]
+    parsed[c("C2 start", "C2 end")] <- event[5, 4:5]
+  } else if (strand == "-") {
+    parsed[c("C1 start", "C1 end")] <- event[5, 5:4]
+    parsed[c("A1 start", "A1 end")] <- event[4, 5:4]
+    parsed[c("C2 start", "C2 end")] <- event[3, 5:4]
+  }
+  return(parsed)
+}
+```
+
+## Mutually exclusive exon
+Below, there is a tabular representation of a Multiple Exlusive Exon event. It
+has one line for the gene and two lines for the mRNAs where each mRNA contains
+three exons. The exons in the middle are different in both mRNAs.
+
+|V1   |V2  |V3   |      V4|      V5|V6 |V7 |V8 |V9 |
+|:----|:---|:----|-------:|-------:|:--|:--|:--|:--|
+|chr1 |MXE |gene |  764383|  788090|.  |+  |.  |ID=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+;Name=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+;gid=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+                         |
+|chr1 |MXE |mRNA |  764383|  788090|.  |+  |.  |ID=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+.A;Parent=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+;gid=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+                     |
+|chr1 |MXE |exon |  764383|  764484|.  |+  |.  |ID=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+.A.up;Parent=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+.A;gid=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+                |
+|chr1 |MXE |exon |  776580|  776753|.  |+  |.  |ID=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+.A.mxe1;Parent=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+.A;gid=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+              |
+|chr1 |MXE |exon |  787307|  788090|.  |+  |.  |ID=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+.A.dn;Parent=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+.A;gid=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+                |
+|chr1 |MXE |mRNA |  764383|  788090|.  |+  |.  |ID=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+.B;Parent=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+;gid=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+                     |
+|chr1 |MXE |exon |  764383|  764484|.  |+  |.  |ID=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+.B.up;Parent=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+.B;gid=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+                |
+|chr1 |MXE |exon |  783034|  783186|.  |+  |.  |ID=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+.B.mxe2;Parent=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+.B;gid=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+              |
+|chr1 |MXE |exon |  787307|  788090|.  |+  |.  |ID=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+.B.dn;Parent=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+.B;gid=chr1:754246:754347:+\@chr1:766443:766616:+\@chr1:772897:773049:+\@chr1:777170:777953:+                |
+
+Let's check how many outliers to this rule.
+
+```{r miso-mxe, eval=F}
+annotation.MXE <- read.delim(
+  header=FALSE, comment.char="#",
+  "/genedata/Resources/Annotations/MISO/hg19/MXE.hg19.gff3")
+genes_index <- which(annotation.MXE[["V3"]] == "gene")
+validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 3))
+outliers <- validate_df(annotation.MXE, genes_index, validator)
+
+# How many events differ from the validator
+length(outliers)
+# RESULT: 1
+
+# How many events in total
+length(genes_index)
+# RESULT: 2722
+```
+
+Only one outlier in 2722 events! Let's discard it and parse all the other MXE
+events.
+```{r parse-miso-MXE, eval=F}
+parseMXE <- function(event, strand, parsed) {
+  if (strand == "+") {
+    parsed[c("C1 start", "C1 end")] <- event[3, 4:5]
+    parsed[c("A1 start", "A1 end")] <- event[4, 4:5]
+    parsed[c("A2 start", "A2 end")] <- event[8, 4:5]
+    parsed[c("C2 start", "C2 end")] <- event[5, 4:5]
+  } else if (strand == "-") {
+    parsed[c("C1 start", "C1 end")] <- event[9, 5:4]
+    parsed[c("A1 start", "A1 end")] <- event[8, 5:4]
+    parsed[c("A2 start", "A2 end")] <- event[4, 5:4]
+    parsed[c("C2 start", "C2 end")] <- event[7, 5:4]
+  }
+  return(parsed)
+}
+```
+
+## Retained Introns
+The table below exemplifies a RI event from MISO. These type of event contains
+the gene and two mRNAs where the first has one exon (it contains the
+constitutive exons and the intron) and the second mRNA only has the constitutive
+exons.
+
+|V1   |V2 |V3   |    V4|    V5|V6 |V7 |V8 |V9 |
+|:----|:--|:----|-----:|-----:|:--|:--|:--|:--|
+|chr1 |RI |gene | 17233| 17742|.  |-  |.  |ID=chr1:7464:7605:-\@chr1:7096:7227:-;Name=chr1:7464:7605:-\@chr1:7096:7227:-;gid=chr1:7464:7605:-\@chr1:7096:7227:-              |
+|chr1 |RI |mRNA | 17233| 17742|.  |-  |.  |ID=chr1:7464:7605:-\@chr1:7096:7227:-.A;Parent=chr1:7464:7605:-\@chr1:7096:7227:-;gid=chr1:7464:7605:-\@chr1:7096:7227:-          |
+|chr1 |RI |exon | 17233| 17742|.  |-  |.  |ID=chr1:7464:7605:-\@chr1:7096:7227:-.A.withRI;Parent=chr1:7464:7605:-\@chr1:7096:7227:-.A;gid=chr1:7464:7605:-\@chr1:7096:7227:- |
+|chr1 |RI |mRNA | 17233| 17742|.  |-  |.  |ID=chr1:7464:7605:-\@chr1:7096:7227:-.B;Parent=chr1:7464:7605:-\@chr1:7096:7227:-;gid=chr1:7464:7605:-\@chr1:7096:7227:-          |
+|chr1 |RI |exon | 17233| 17364|.  |-  |.  |ID=chr1:7464:7605:-\@chr1:7096:7227:-.B.dn;Parent=chr1:7464:7605:-\@chr1:7096:7227:-.B;gid=chr1:7464:7605:-\@chr1:7096:7227:-     |
+|chr1 |RI |exon | 17601| 17742|.  |-  |.  |ID=chr1:7464:7605:-\@chr1:7096:7227:-.B.up;Parent=chr1:7464:7605:-\@chr1:7096:7227:-.B;gid=chr1:7464:7605:-\@chr1:7096:7227:-     |
+
+```{r miso-ri, eval=F}
+annotation.RI <- read.delim(
+  header=FALSE, comment.char="#",
+  "/genedata/Resources/Annotations/MISO/hg19/RI.hg19.gff3")
+genes_index <- which(annotation.RI[["V3"]] == "gene")
+validator <- c("gene", "mRNA", rep("exon", 1), "mRNA", rep("exon", 2))
+outliers <- validate_df(annotation.RI, genes_index, validator)
+
+# How many events differ from the validator
+length(outliers)
+# RESULT: 1
+
+# How many events in total
+length(genes_index)
+# RESULT: 5987
+```
+
+Only one outlier out of 5987 RI events!
+
+```{r parse-miso-RI, eval=F}
+parseRI <- function(event, strand, parsed) {
+  if (strand == "+") {
+    parsed[c("C1 start", "C1 end")] <- event[5, 4:5]
+    parsed[c("C2 start", "C2 end")] <- event[6, 4:5]
+  } else if (strand == "-") {
+    parsed[c("C1 start", "C1 end")] <- event[6, 5:4]
+    parsed[c("C2 start", "C2 end")] <- event[5, 5:4]
+  }
+  return(parsed)
+}
+```
+
+## Alternative 3' Splice Site
+Let's check an example of an A3SS event. As shown below, an A3SS event shows two
+mRNAs, both with two exons. The downstream exon has two different 3' acceptor
+sites, thus being shorter in one of the two isoforms.
+
+|V1   |V2   |V3   |    V4|    V5|V6 |V7 |V8 |V9 |
+|:----|:----|:----|-----:|-----:|:--|:--|:--|:--|
+|chr1 |A3SS |gene | 15796| 16765|.  |-  |.  |ID=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-;Name=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-;gid=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-                  |
+|chr1 |A3SS |mRNA | 15796| 16765|.  |-  |.  |ID=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-.A;Parent=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-;gid=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-              |
+|chr1 |A3SS |exon | 15796| 15947|.  |-  |.  |ID=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-.A.coreAndExt;Parent=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-.A;gid=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:- |
+|chr1 |A3SS |exon | 16607| 16765|.  |-  |.  |ID=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-.A.up;Parent=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-.A;gid=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-         |
+|chr1 |A3SS |mRNA | 15796| 16765|.  |-  |.  |ID=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-.B;Parent=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-;gid=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-              |
+|chr1 |A3SS |exon | 15796| 15942|.  |-  |.  |ID=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-.B.core;Parent=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-.B;gid=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-       |
+|chr1 |A3SS |exon | 16607| 16765|.  |-  |.  |ID=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-.B.up;Parent=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-.B;gid=chr1:6470:6628:-\@chr1:5805&#124;5810:5659:-         |
+
+```{r miso-a3ss, eval=F}
+annotation.A3SS <- read.delim(
+  header=FALSE, comment.char="#",
+  "/genedata/Resources/Annotations/MISO/hg19/A3SS.hg19.gff3")
+genes_index <- which(annotation.A3SS[["V3"]] == "gene")
+validator <- c("gene", "mRNA", rep("exon", 2), "mRNA", rep("exon", 2))
+outliers <- validate_df(annotation.A3SS, genes_index, validator)
+
+# How many events differ from the validator
+length(outliers)
+# RESULT: 6
+
+# How many events in total
+length(genes_index)
+# RESULT: 14957
+```
+
+All right, there are six outliers from the 14957 A3SS events.
+
+```{r parse-miso-a3ss, eval=F}
+parseA3SS <- function(event, strand, parsed) {
+  if (strand == "+") {
+    parsed[c("C1 start", "C1 end")] <- event[3, 4:5]
+    parsed[["C2 start"]] <- event[c(4, 7), 4]
+    parsed[["C2 end"]]   <- event[4, 5]
+  } else if (strand == "-") {
+    parsed[c("C1 start", "C1 end")] <- event[4, 5:4]
+    parsed[["C2 start"]] <- event[c(3, 6), 5]
+    parsed[["C2 end"]]   <- event[3, 4]
+  }
+  return(parsed)
+}
+```
+
+## Alternative 5' Splice Site
+
+The A5SS event is similar to the A3SS but with the upstream exon having two
+alternative ends instead. Just like it is the case with A3SS, each event shows
+two mRNAs, both with two exons.
+
+|V1   |V2   |V3   |    V4|    V5|V6 |V7 |V8 |V9 |
+|:----|:----|:----|-----:|-----:|:--|:--|:--|:--|
+|chr1 |A5SS |gene | 17233| 17742|.  |-  |.  |ID=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-;Name=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-;gid=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-                  |
+|chr1 |A5SS |mRNA | 17233| 17742|.  |-  |.  |ID=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-.A;Parent=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-;gid=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-              |
+|chr1 |A5SS |exon | 17233| 17368|.  |-  |.  |ID=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-.A.dn;Parent=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-.A;gid=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-         |
+|chr1 |A5SS |exon | 17526| 17742|.  |-  |.  |ID=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-.A.coreAndExt;Parent=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-.A;gid=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:- |
+|chr1 |A5SS |mRNA | 17233| 17742|.  |-  |.  |ID=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-.B;Parent=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-;gid=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-              |
+|chr1 |A5SS |exon | 17233| 17368|.  |-  |.  |ID=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-.B.dn;Parent=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-.B;gid=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-         |
+|chr1 |A5SS |exon | 17606| 17742|.  |-  |.  |ID=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-.B.core;Parent=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-.B;gid=chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-       |
+
+```{r miso-a5ss, eval=F}
+annotation.A5SS <- read.delim(
+  header=FALSE, comment.char="#",
+  "/genedata/Resources/Annotations/MISO/hg19/A5SS.hg19.gff3")
+genes_index <- which(annotation.A5SS[["V3"]] == "gene")
+validator <- c("gene", "mRNA", rep("exon", 2), "mRNA", rep("exon", 2))
+outliers <- validate_df(annotation.A5SS, genes_index, validator)
+
+# How many events differ from the validator
+length(outliers)
+# RESULT: 2
+
+# How many events in total
+length(genes_index)
+# RESULT: 12807
+```
+
+There are 2 outliers out of 12807 A5SS events.
+
+```{r parse-miso-a5ss, eval=F}
+parseA5SS <- function(event, strand, parsed) {
+  if (strand == "+") {
+    parsed[["C1 start"]] <- event[3, 4]
+    parsed[["C1 end"]]   <- event[c(3, 6), 5]
+    parsed[c("C2 start", "C2 end")] <- event[4, 4:5]
+  } else if (strand == "-") {
+    parsed[["C1 start"]] <- event[4, 5]
+    parsed[["C1 end"]]   <- event[c(4, 7), 4]
+    parsed[c("C2 start", "C2 end")] <- event[3, 5:4]
+  }
+  return(parsed)
+}
+```
+
+## Alternative First Exon
+AFE events are kind of weird. They don't share the same line numbers per event
+as it happens with other types of events so far.
+```{r miso-afe-A}
+annotation.AFE <- read.delim(
+  header=FALSE, comment.char="#",
+  "/genedata/Resources/Annotations/MISO/hg19/AFE.hg19.gff3")
+genes_index <- which(annotation.AFE[["V3"]] == "gene")
+next_index  <- genes_index[2:length(genes_index)] - 1
+
+# get number of lines of each event
+len <- next_index - genes_index[1:(length(genes_index)-1)] + 1
+
+# check the frequency of number of lines per event
+plot(table(len))
+```
+
+To easily evaluate what's going on, we could try to create a list with all
+events, but since the list is gigantic, RStudio just crashes or it simply takes 
+too much time processing it.
+```{r, eval=FALSE}
+# CREATED LIST IS TOO LARGE
+#pb <- txtProgressBar(min = 1, max = length(genes_index)-1, style = 3)
+#events <- lapply(1:(length(genes_index)-1),
+#                 function(i) {
+#                   setTxtProgressBar(pb, i)
+#                   ret <- annotation.AFE[genes_index[i]:next_index[i], ]
+#                   return(ret)
+#                 })
+```
+
+Instead, let's check if all events with the same length have the same validator.
+
+```{r miso-afe-B, eval=FALSE}
+# check if event with the same number of lines share the same validator
+validate.AFE <- function(i, validator) {
+  types <- annotation.AFE[genes_index[[i]]:next_index[[i]], 3]
+  if(length(types) != length(validator))
+    return(FALSE)
+  else
+    return(all(types == validator))
+}
+
+# check if all events with 7 lines have the same line types
+index <- which(len == 7)
+
+# number of events with 7 lines
+length(index) # RESULT: 3692
+
+# number of events with 7 lines and the first validator
+validator1 <- c("gene", "mRNA", rep("exon", 1), "mRNA", rep("exon", 3))
+val1 <- sapply(index, validate.AFE, validator1)
+length(which(val1 == TRUE)) # RESULT: 584
+
+# number of events with 7 lines and the second validator
+validator2 <- c("gene", "mRNA", rep("exon", 2), "mRNA", rep("exon", 2))
+val2 <- sapply(index, validate.AFE, validator2)
+length(which(val2 == TRUE)) # RESULT: 1523
+
+# number of events with 7 lines and the third validator
+validator3 <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 1))
+val3 <- sapply(index, validate.AFE, validator3)
+length(which(val3 == TRUE)) # RESULT: 1556
+```
+
+No, they don't. This is getting hard... Let's stop to think. What MISO calls a
+"mRNA" is actually a span of a region that includes some exons that may or may
+not be present.
+
+After some hours of thinking, I suppose that the AFE events may have, at most, 3 
+unique mRNAs. Going with this, maybe the last mRNA contains the constitutive
+exon and the other two contain the alternative first exons. There can also be
+only 2 unique mRNAs (one with the constitutive exon and the other with the
+alternative first exon). OR... maybe the constitutive exon is not being shown.
+That way, 2 unique mRNAs should be shown (this is, two groups of alternative 
+first exons).
+
+```{r, eval=FALSE}
+pb <- txtProgressBar(min = 1, max = length(genes_index) - 1, style = 3)
+# for each index
+unique_mRNAs <- sapply(1:(length(genes_index)-1),
+       function(i) {
+         pb <- setTxtProgressBar(pb, i)
+         types <- unique(annotation.AFE[genes_index[i]:(next_index[i]), 1:8])
+         sum(types[[3]] == "mRNA")
+       }
+)
+table(unique_mRNAs)
+```
+
+| 1  | 2     | 3   | 4   | 5  | 6  | 7  | 8 | 9 | 10 | 12 | 13 | 
+|----|-------|-----|-----|----|----|----|---|---|----|----|----|
+| 17 | 19099 | 295 | 185 | 69 | 25 | 20 | 3 | 3 | 1  | 1  | 1  |
+
+It seems 97% of the AFE events only have 2 unique mRNAs. Anyway, what's going on
+with with more than 3 unique mRNAs?
+
+> TODO
+
+### Parsing the event
+To parse AFE events, we should do the following for each event:
+
+1. Clear mRNAs with the same exons
+  + Get a list of each mRNA and respective exons
+  + Remove duplicate entries from list
+2. Check if there is a duplicated exon in different mRNAs (this would probably
+be the constitutive exon) and save the start/ending positions of the
+constitutive and alternative exons
+3. If not, check if there are only two (unique?) mRNAs and save the alternative
+exon ending
+4. If not, save the event somehow... the whole event as item? Is that usable for
+anything later on?
+
+Another thing to think about: should the other exons be saved as well? They are
+information that could be important in the future after all.
+
+```{r duplicated-mRNAs, eval=FALSE}
+#' Get a list of each mRNA and respective exons (1st try)
+list_mRNA1 <- function(event) {
+  mRNA_index <- which(event[ , 3] == "mRNA")
+  if (length(mRNA_index) == 1) {
+    next_index <- nrow(event)  
+  } else {
+    next_index <- c(mRNA_index[2:length(mRNA_index)] - 1, nrow(event))
+  }
+  
+  # Get each mRNA and respective exons as a new element of a list
+  mRNA <- lapply(1:(length(mRNA_index)), function(i)
+    return(event[mRNA_index[i]:next_index[i], 1:8])
+  )
+  return(mRNA)
+}
+
+#' Get a list of each mRNA and respective exons (2nd try)
+#' NOTE: raises many warnings related to the use of the split function
+list_mRNA2 <- function(event) {
+  # Get the length of each mRNA element
+  mRNA_index <- which(event[ , 3] == "mRNA")
+  if (length(mRNA_index) == 1) {
+    next_index <- nrow(event)  
+  } else {
+    next_index <- c(mRNA_index[2:length(mRNA_index)] - 1, nrow(event))
+  }
+  mRNA_len <- next_index - mRNA_index
+
+  # Assign a different number to each mRNA element and respective exons
+  group <- rep(1:length(mRNA_len), mRNA_len)
+  group <- c(group, length(mRNA_len))
+  
+  # Ignore the first line (gene) and don't use the last column (which is
+  # different for each mRNA)
+  mRNA <- event[2:nrow(event), 1:8]
+  
+  # Create a list where each element is a mRNA with its respective exons
+  mRNA <- split(mRNA, group)
+  return(mRNA)
+}
+
+library(microbenchmark)
+event <- annotation.AFE[1:7, ]
+microbenchmark(list_mRNA1(event), # median: 490 microseconds
+               list_mRNA2(event)) # median: 812 microseconds
+list_mRNA <- list_mRNA1
+
+#' Clear mRNAs with the same exons from a given list of mRNAs
+clear_duplicated_mRNA <- function(mRNA) {
+  # Remove duplicates
+  #mRNAs <- unique(mRNAs)     # DOES NOTHING
+  #mRNAs <- duplicated(mRNAs) # DOES NOTHING
+  
+  # Get first occurence of each mRNA and remove duplicated index
+  uniq <- unique(match(mRNA, mRNA))
+  # Show mRNAs with no duplicates
+  mRNA <- mRNA[uniq]
+  return(mRNA)
+}
+```
+
+Let's check how many events have more than two unique mRNAs (this time, checking
+if each mRNA have the exact same exons instead of just looking for identical
+start and end positions).
+
+```{r eval=FALSE}
+pb <- txtProgressBar(min = 1, max = length(genes_index), style = 3)
+len <- function(i) {
+  setTxtProgressBar(pb, i)
+  event <- annotation.AFE[genes_index[i]:next_index[i], ]
+  
+  # Get a list of each mRNA and respective exons
+  mRNA <- list_mRNA(event)
+  mRNA <- clear_duplicated_mRNA(mRNA)
+  return(length(mRNA))
+}
+a <- sapply(1:(length(genes_index) - 1), len)
+table(a)
+```
+
+| 1  | 2     | 3   | 4   | 5  | 6  | 7  | 8 | 9 | 10 | 11 | 12 | 14 | 
+|----|-------|-----|-----|----|----|----|---|---|----|----|----|----|
+| 17 | 19077 | 287 | 200 | 70 | 25 | 25 | 9 | 3 | 2  | 1  | 1  | 2  |
+
+Seems many still do. Let's try to remove errors in the annotation then to reduce
+these numbers, starting by removing mRNAs from the same event that belong to
+different chromosomes. Also, we'll remove exons outside the event start and end
+positions.
+
+```{r, eval=FALSE}
+#' Removes wrong mRNAs from a given event
+clean_wrong_mRNA <- function(event) {
+  # clear mRNA and exons with different chromosome identifier
+  chr      <- event[1, 1]
+  same_chr <- event[ , 1] == chr
+  event <- event[same_chr, ]
+  
+  # clear mRNA and exons outside event boundaries
+  start <- event[1, 4]
+  end   <- event[1, 5]
+  inside <- event[ , 4] >= start & event[ , 5] <= end
+  event <- event[inside, ]
+  
+  return(event)
+}
+```
+
+Let's count unique mRNAs again.
+
+```{r, eval=FALSE}
+pb <- txtProgressBar(min = 1, max = length(genes_index), style = 3)
+len <- function(i) {
+  setTxtProgressBar(pb, i)
+  event <- annotation.AFE[genes_index[i]:next_index[i], ]
+  event <- clean_wrong_mRNA(event)
+  
+  # Get a list of each mRNA and respective exons
+  mRNA <- list_mRNA(event)
+  mRNA <- clear_duplicated_mRNA(mRNA)
+  return(length(mRNA))
+}
+b <- sapply(1:(length(genes_index) - 1), len)
+table(b)
+```
+
+| 1  | 2     | 3   | 4  | 5  | 6  | 7 | 8 | 10 |
+|----|-------|-----|----|----|----|---|---|----|
+| 18 | 19399 | 209 | 55 | 23 | 10 | 2 | 2 | 1  |
+
+Seems we have an additional 322 events with 2 unique mRNAs compared to before. 
+It's a tiny bit better.
+
+Let's check if there are any events with repeated exons (this would probably be
+the constitutive exon if in different mRNAs).
+```{r, eval=FALSE}
+# Check what's faster to determine duplicates
+test <- rbind(1:5, 4, 6, 1:5, 7:3)
+test <- data.frame(test)
+
+library(microbenchmark)
+microbenchmark(anyDuplicated(test) != 0, # median: 43 microseconds
+               any(duplicated(test)))    # median: 47 microseconds
+# anyDuplicated(test) != 0 is faster
+
+# Get events with duplicated exons
+pb <- txtProgressBar(min = 0, max = length(genes_index) - 1, style = 3)
+dups <- NULL
+for(i in 1:(length(genes_index) - 1)) {
+  setTxtProgressBar(pb, i)
+  event <- annotation.AFE[genes_index[i]:next_index[i], ]
+  event <- clean_wrong_mRNA(event)
+  # Check if there are duplicated exons
+  exons <- subset(event, V3 == "exon", 1:8)
+  if (anyDuplicated(exons) != 0 && sum(event[3] == "mRNA") == 2)
+    dups <- c(dups, list(event))
+}
+
+length(dups)
+# RESULT: 650 for any number of unique mRNAs
+# RESULT: 203 for 2 unique mRNAs
+```
+
+203 events with 2 unique mRNAs that have duplicated exons in a total of 19720
+events. That's not much. Anyway, let's still take them into consideration.
+
+```{r}
+parseMisoAFE <- function(event, strand, parsed) {
+  # Remove mRNAs from different chromosomes and mark event
+  len <- nrow(event)
+  event <- remove_wrong_mRNA(event)
+  if (len < nrow(event)) {
+    parsed[["MISO condition"]] <- "wrong mRNAs"
+  }
+  
+  # Get a list of each mRNA and respective exons
+  mRNA <- list_mRNA(event)
+  
+  # Remove mRNAs with the same exons and mark event
+  len <- length(mRNA)
+  mRNA <- remove_duplicated_mRNA(mRNA)
+  if (len < length(mRNA)) {
+    parsed[["MISO condition"]] <- "duplicated mRNAs"
+  }
+  
+  if (length(mRNA) != 2) {
+    # Store (but don't parse) events with more than two mRNAs or only one mRNA
+    parsed[["MISO condition"]] <- "unrecognized event"
+    parsed[["MISO event"]] <- event
+  } else if (strand == "+") {
+    mRNA1 <- mRNA[[1]]
+    exon1 <- mRNA1[nrow(mRNA1), 4:5]
+    mRNA2 <- mRNA[[2]]
+    exon2 <- mRNA2[nrow(mRNA2), 4:5]
+    # Check if the most downstream exons are equal in both mRNAs
+    if (all(exon1 == exon2)) {
+      # Save positions of shared (constitutive) exon and alternative
+      # first exons
+      parsed[c("C1 start", "C1 end")] <- mRNA1[nrow(mRNA2) - 1, 4:5]
+      parsed[c("A1 start", "A1 end")] <- mRNA1[nrow(mRNA2) - 1, 4:5]
+      parsed[c("C2 start", "C2 end")] <- exon1
+    } else {
+      # Save the positions of the downstream exons
+      parsed[c("C1 start", "C1 end")] <- exon1
+      parsed[c("A1 start", "A1 end")] <- exon2
+    }
+  } else if (strand == "-") {
+    mRNA1 <- mRNA[[1]]
+    exon1 <- mRNA1[2, 5:4]
+    mRNA2 <- mRNA[[2]]
+    exon2 <- mRNA2[2, 5:4]
+    # Check if the most downstream exons are equal in both mRNAs
+    if (all(exon1 == exon2)) {
+      # Save positions of shared (constitutive) exon and alternative
+      # first exons
+      parsed[c("C1 start", "C1 end")] <- mRNA1[3, 5:4]
+      parsed[c("A1 start", "A1 end")] <- mRNA2[3, 5:4]
+      parsed[c("C2 start", "C2 end")] <- exon1
+    } else {
+      # Save the positions of the downstream exons
+      parsed[c("C1 start", "C1 end")] <- exon1
+      parsed[c("A1 start", "A1 end")] <- exon2
+    }
+  }
+  return(parsed)
+}
+```
+
+Let's see if all AFE events run with no problem!
+
+```{r, eval=FALSE}
+pb <- txtProgressBar(min = 1, max = length(genes_index), style = 3)
+events <- lapply(1:(length(genes_index) - 1),
+                 function (i) {
+                   setTxtProgressBar(pb, i)
+                   event <- annotation.AFE[genes_index[i]:next_index[i], ]
+                   return(parseMisoEvent(event))
+                 })
+```
+
+All right, looks like we're good to go!
+
+## Alternative Last Exon
+Just like Alternative First Exon events, alternative last exon (ALE) events are
+a bit strange, but they don't appear as much (see plot below).
+
+```{r miso-afe-A}
+annotation.ALE <- read.delim(
+  header=FALSE, comment.char="#",
+  "/genedata/Resources/Annotations/MISO/hg19/ALE.hg19.gff3")
+genes_index <- which(annotation.ALE[["V3"]] == "gene")
+next_index  <- genes_index[2:length(genes_index)] - 1
+
+# get number of lines of each event
+len <- next_index - genes_index[1:(length(genes_index)-1)] + 1
+
+# check the frequency of number of lines per event
+plot(table(len))
+```
+
+Let's check if all those events with length 5 and 6 have the same lines.
+
+```{r miso-afe-B, eval=FALSE}
+# check if event with the same number of lines share the same validator
+validate.ALE <- function(i, validator) {
+  types <- annotation.ALE[genes_index[i]:next_index[i], 3]
+  if(length(types) != length(validator))
+    return(FALSE)
+  else
+    return(all(types == validator))
+}
+
+# check if all events with 5 lines have the same line types
+index <- which(len == 5)
+
+# number of events with 5 lines
+length(index) # RESULT: 8801
+
+# number of events with 5 lines and the validator
+validator <- c("gene", "mRNA", rep("exon", 1), "mRNA", rep("exon", 1))
+val <- sapply(index, validate.ALE, validator)
+sum(val) # RESULT: 8801
+
+# check if all events with 6 lines have the same line types
+index <- which(len == 6)
+
+# number of events with 6 lines
+length(index) # RESULT: 886
+
+# number of events with 6 lines and the validator 1
+validator1 <- c("gene", "mRNA", rep("exon", 1), "mRNA", rep("exon", 2))
+val1 <- sapply(index, validate.ALE, validator1)
+sum(val1) # RESULT: 338
+
+# number of events with 6 lines and the validator 2
+validator2 <- c("gene", "mRNA", rep("exon", 2), "mRNA", rep("exon", 1))
+val2 <- sapply(index, validate.ALE, validator2)
+sum(val2) # RESULT: 548
+```
+
+Seems that once more that the lines may differ in events with the same number of
+lines. At least most ALE events only have one exon. That's great, actually and
+we'll create a special condition (if event has a length of 5, immediately parse
+it).
+
+### Parsing the event
+
+To parse ALE events, we'll first check their length. If it's 5, simply parse the
+event (faster for most cases). If not, the events will be parsed similarly to
+AFE events.
+
+```{r, eval=FALSE}
+parseMisoALE <- function(event, strand, parsed) {
+  len <- nrow(event)
+  if (len == 1) {
+    parsed[["MISO condition"]] <- "zero mRNAs"
+    parsed[["MISO event"]] <- event
+  } else if (len == 5) {
+    # Most ALE events have length of 5, so let's avoid wasting time
+    if (strand == "+") {
+      parsed[c("A1 start", "A1 end")] <- event[3, 4:5]
+      parsed[c("C2 start", "C2 end")] <- event[5, 4:5]
+    } else if (strand == "-") {
+      parsed[c("A1 start", "A1 end")] <- event[5, 5:4]
+      parsed[c("C2 start", "C2 end")] <- event[3, 5:4]
+    }
+  } else {
+    event <- remove_wrong_mRNA(event)
+    if (len < nrow(event)) {
+      parsed[["MISO condition"]] <- "wrong mRNAs"
+    }
+    
+    # Get a list of each mRNA and respective exons
+    mRNA <- list_mRNA(event)
+    
+    # Remove mRNAs with the same exons and mark event
+    len <- length(mRNA)
+    mRNA <- remove_duplicated_mRNA(mRNA)
+    if (len < length(mRNA)) {
+      parsed[["MISO condition"]] <- "duplicated mRNAs"
+    }
+    
+    if (length(mRNA) != 2) {
+      # Store (but don't parse) events with more than two mRNAs or only one mRNA
+      parsed[["MISO condition"]] <- "unrecognized event"
+      parsed[["MISO event"]] <- event
+    } else if (strand == "+") {
+      mRNA1 <- mRNA[[1]]
+      exon1 <- mRNA1[2, 4:5]
+      mRNA2 <- mRNA[[2]]
+      exon2 <- mRNA2[2, 4:5]
+      if (all(exon1 == exon2)) {
+        parsed[c("C1 start", "C1 end")] <- exon1
+        parsed[c("A1 start", "A1 end")] <- mRNA1[3, 4:5]
+        parsed[c("C2 start", "C2 end")] <- mRNA2[3, 4:5]
+      } else {
+        parsed[c("A1 start", "A1 end")] <- exon1
+        parsed[c("C2 start", "C2 end")] <- exon2
+      }
+    } else if (strand == "-") {
+      mRNA1 <- mRNA[[1]]
+      exon1 <- mRNA1[nrow(mRNA1), 5:4]
+      mRNA2 <- mRNA[[2]]
+      exon2 <- mRNA2[nrow(mRNA2), 5:4]
+      if (all(exon1 == exon2)) {
+        parsed[c("C1 start", "C1 end")] <- exon1
+        parsed[c("A1 start", "A1 end")] <- mRNA1[nrow(mRNA2) - 1, 5:4]
+        parsed[c("C2 start", "C2 end")] <- mRNA2[nrow(mRNA2) - 1, 5:4]
+      } else {
+        parsed[c("A1 start", "A1 end")] <- exon1
+        parsed[c("C2 start", "C2 end")] <- exon2
+      }
+    }
+  }
+  return(parsed)
+}
+```
+
+Let's see if all ALE events run with no problem!
+
+```{r, eval=FALSE}
+pb <- txtProgressBar(min = 1, max = length(genes_index), style = 3)
+events <- lapply(1:(length(genes_index) - 1),
+                 function (i) {
+                   setTxtProgressBar(pb, i)
+                   event <- annotation.ALE[genes_index[i]:next_index[i], ]
+                   return(parseMisoEvent(event))
+                 })
+```
+All right, looks like it's done! One thing that could be better though: there is
+many repeated code in both AFE and ALE. Maybe we should try reusing code.
+
+> TODO
+
+## TandemUTR
+A Tandem UTR event happens when the polyA-tail may be shorter or longer. Let's
+check if all events are like the one represented in the table below.
+
+|V1    |V2        |V3   |       V4|       V5|V6 |V7 |V8 |V9 |
+|:-----|:---------|:----|--------:|--------:|:--|:--|:--|:--|
+|chr19 |TandemUTR |gene | 10663759| 10664625|.  |-  |.  |ID=chr19:10525223:10525625:-\@chr19:10524759:10525222:-;Name=chr19:10525223:10525625:-\@chr19:10524759:10525222:-;gid=chr19:10525223:10525625:-\@chr19:10524759:10525222:-                  |
+|chr19 |TandemUTR |mRNA | 10663759| 10664625|.  |-  |.  |ID=chr19:10525223:10525625:-\@chr19:10524759:10525222:-.A;Parent=chr19:10525223:10525625:-\@chr19:10524759:10525222:-;gid=chr19:10525223:10525625:-\@chr19:10524759:10525222:-              |
+|chr19 |TandemUTR |exon | 10663759| 10664625|.  |-  |.  |ID=chr19:10525223:10525625:-\@chr19:10524759:10525222:-.A.coreAndExt;Parent=chr19:10525223:10525625:-\@chr19:10524759:10525222:-.A;gid=chr19:10525223:10525625:-\@chr19:10524759:10525222:- |
+|chr19 |TandemUTR |mRNA | 10664223| 10664625|.  |-  |.  |ID=chr19:10525223:10525625:-\@chr19:10524759:10525222:-.B;Parent=chr19:10525223:10525625:-\@chr19:10524759:10525222:-;gid=chr19:10525223:10525625:-\@chr19:10524759:10525222:-              |
+|chr19 |TandemUTR |exon | 10664223| 10664625|.  |-  |.  |ID=chr19:10525223:10525625:-\@chr19:10524759:10525222:-.B.core;Parent=chr19:10525223:10525625:-\@chr19:10524759:10525222:-.B;gid=chr19:10525223:10525625:-\@chr19:10524759:10525222:-       |
+
+```{r}
+annotation.TandemUTR <- read.delim(
+  header=FALSE, comment.char="#",
+  "/genedata/Resources/Annotations/MISO/hg19/TandemUTR.hg19.gff3")
+genes_index <- which(annotation.TandemUTR[["V3"]] == "gene")
+validator <- c("gene", "mRNA", rep("exon", 1), "mRNA", rep("exon", 1))
+outliers <- validate_df(annotation.TandemUTR, genes_index, validator)
+
+# How many events differ from the validator
+length(outliers)
+# RESULT: 0
+
+# How many events in total
+length(genes_index)
+# RESULT: 2656
+```
+
+With 0 outliers, it seems there are no problems! Let's parse this event type.
+
+```{r}
+parseMisoTandemUTR <- function(event, strand, parsed) {
+  if (strand == "+") {
+    parsed[["C2 start"]] <- event[3, 4]
+    parsed[["C2 end"]]   <- event[c(3, 5), 5]
+  } else if (strand == "-") {
+    parsed[["C2 start"]] <- event[3, 5]
+    parsed[["C2 end"]]   <- event[c(3, 5), 4]
+  }
+  return(parsed)
+}
+```
+
+## Isoforms
+
+> TODO
+
+# Version 2 of MISO annotation
+> TODO: Does the aforementioned methods still work with version 2?
