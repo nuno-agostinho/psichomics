@@ -51,30 +51,41 @@ profvis(
 To compare times between chunks of code, we can use `microbenchmark`. It uses
 the most accurate timing functions from the operating system and ensures minimal
 overhead. Use the `time` argument to modify the number of times an expression is
-evaluated and the `unit` argument to decide on the time unit: ns, us, ms, s, t, 
-hz, khz, mhz, eps or f.
+evaluated and the `unit` argument to choose the time unit: ns, us, ms, s, t, hz,
+khz, mhz, eps or f.
 
 ```{r}
 x <- c(2,3)
 
 library(microbenchmark)
-microbenchmark(
+res <- microbenchmark(
   times = 100, # number of times to repeat
   unit = "ms", # unit of time to be displayed
   mean(x),
   sum(x)/length(x)
 )
+
+# Print results
+print(res)
+
+# Results in boxplot
+boxplot(res)
+
+# Results in ggplot2 (prettier)
+library("ggplot2")
+autoplot(res)
 ```
 
 See how faster it is to use `sum(x)/length(x)` over `mean(x)`? Yeah, R functions
 aren't that well optimised, unfortunately.
 
 ## rbenchmark
-Although it also allows to compare times between chunks of code, it can be more
-useful than `microbenchmark` to check the elapsed time of a program over
-multiple iterations since it shows the real elapsed time. Note however that this
-method is less precise than `microbenchmark`. You can modify the `replications`
-argument to alter the number of times an expression is evaluated.
+Although it also allows to compare times between chunks of code, `rbenchmark` 
+can be more useful than `microbenchmark` to check the elapsed time of a program 
+over multiple iterations since it shows the real elapsed time. Note however that 
+this method is less precise than `microbenchmark` and has higher overhead. You
+can modify the `replications` argument to alter the number of times an 
+expression is evaluated.
 
 ```{r}
 x <- c(2,3)
