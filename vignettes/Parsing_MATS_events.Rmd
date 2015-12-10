@@ -1,8 +1,12 @@
 ---
 title: "Parsing splicing events from MATS"
 author: "Nuno Agostinho"
-date: "4 December 2015"
-output: html_document
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Parsing splicing events from MATS}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 MATS outputs inclusion levels to a folder (`MATS_output`) which contains two

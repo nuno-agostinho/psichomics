@@ -1,10 +1,12 @@
 ---
 title: "Parsing splicing events from SUPPA"
 author: "Nuno Agostinho"
-date: "20 November 2015"
-output:
-  html_document:
-    toc: yes
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Parsing splicing events from SUPPA}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 Let's start to parse the splicing event types from SUPPA since they seem to be

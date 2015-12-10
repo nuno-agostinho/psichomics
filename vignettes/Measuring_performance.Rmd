@@ -1,10 +1,12 @@
 ---
 title: "Measuring performance"
 author: "Nuno Agostinho"
-date: "22 November 2015"
-output: 
-  html_document: 
-    toc: yes
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Measuring performance}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 Let's discuss a bit the tools we have to compare different solutions that solve
