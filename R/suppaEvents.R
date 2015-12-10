@@ -90,19 +90,39 @@ parseSuppaJunctions <- function(event_type, strand, junctions) {
   switch(event_type,
          "A3" = {
            parsed[["C1 end"]]   <- junctions[1]
-           parsed[["C2 start"]] <- junctions[c(2,4)]
-         },
+           # it's important to conserve the order of which exon appears first
+           if (strand == "+") {
+            parsed[["C2 start"]] <- junctions[c(2, 4)]
+           } else if (strand == "-") {
+             parsed[["C2 start"]] <- junctions[c(4, 2)]
+           }
+         }, # end A3
          "A5" = {
-           parsed[["C1 end"]]   <- junctions[c(3,1)]
+           # it's important to conserve the order of which exon appears first
+           if (strand == "+") {
+             parsed[["C1 end"]]   <- junctions[c(1, 3)]
+           } else if (strand == "-") {
+             parsed[["C1 end"]]   <- junctions[c(3, 1)]
+           }
            parsed[["C2 start"]] <- junctions[2]
-         },
+         }, # end A5
          "SE" = parsed[c("C1 end",
                          "A1 start", "A1 end",
                          "C2 start")] <- junctions,
-         "MX" = parsed[c("C1 end",
-                         "A1 start", "A1 end",
-                         "A2 start", "A2 end",
-                         "C2 start")] <- junctions[-c(4,5)],
+         "MX" = {
+           # it's important to conserve the order of which exon appears first
+           if (strand == "+") {
+             parsed[c("C1 end",
+                      "A1 start", "A1 end",
+                      "A2 start", "A2 end",
+                      "C2 start")] <- junctions[-c(4,5)]
+           } else if (strand == "-"){
+             parsed[c("C1 end",
+                      "A2 start", "A2 end",
+                      "A1 start", "A1 end",
+                      "C2 start")] <- junctions[-c(4,5)]
+           }
+         }, # end MX
          "RI" = parsed[c("C1 start", "C1 end",
                          "C2 start", "C2 end")] <- junctions,
          "AF" = parsed[c("C1 start", "C1 end",
@@ -111,6 +131,6 @@ parseSuppaJunctions <- function(event_type, strand, junctions) {
          "AL" = parsed[c("C2 start", "C2 end",
                          "C1 end",
                          "A1 start", "A1 end")] <- junctions[2:6]
-  )
+  ) # end switch
   return(parsed)
 }
