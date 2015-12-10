@@ -2,7 +2,9 @@
 title: "Measuring performance"
 author: "Nuno Agostinho"
 date: "22 November 2015"
-output: html_document
+output: 
+  html_document: 
+    toc: yes
 ---
 
 Let's discuss a bit the tools we have to compare different solutions that solve
@@ -98,3 +100,17 @@ benchmark(
 )
 ```
 
+# Comparing apply functions
+
+> TODO: compare apply, by, eapply, lapply, mapply, rapply, tapply, vapply
+
+```{r}
+l <- list(a = 1:10, b = 11:20)
+expect <- c(Min.=0, "1st Qu."=0, Median=0, "3rd Qu."=0, Max.=0)
+
+res <- microbenchmark(lapply = lapply(l, fivenum),
+                      sapply = sapply(l, fivenum),
+                      vapply = vapply(l, fivenum, expect))
+res
+autoplot(res)
+```
