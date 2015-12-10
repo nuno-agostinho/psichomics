@@ -23,4 +23,8 @@ Parses splicing junctions from SUPPA
 In case the -b V (Variable) option is selected, some variability is
 allowed in some of the boundaries. This is not accounted at the moment.
 }
+\examples{
+junctionsA5 <- c("99890743-99891188", "99890743-99891605")
+parseSuppaJunctions(event_type = "A5", strand = "-", junctions = junctionsA5)
+}
 

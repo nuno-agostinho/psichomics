@@ -2,31 +2,28 @@
 % Please edit documentation in R/suppaEvents.R
 \name{parseSuppaEvent}
 \alias{parseSuppaEvent}
-\title{Parses a splicing event ID from SUPPA}
+\title{Parses splicing event from SUPPA}
 \usage{
 parseSuppaEvent(event)
 }
 \arguments{
-\item{event}{Chracter: Splicing event ID}
+\item{event}{Character vector: Splicing event attributes and junction
+positions}
 }
 \value{
 List with the event attributes (chromosome, strand, event type and
 the position of the exon boundaries)
 }
 \description{
-Parses a splicing event ID from SUPPA
+Parses splicing event from SUPPA
 }
 \details{
-More information on SUPPA available at
+More information about SUPPA available at
 \url{https://bitbucket.org/regulatorygenomicsupf/suppa}
 }
 \examples{
-event <- "ENSG00000000419;A3:20:49557492-49557642:49557470-49557642:-"
+event <- c("ENSG00000000419", "A3", "20",
+           "49557492-49557642", "49557470-49557642", "-")
 parseSuppaEvent(event)
-
-events <- c("ENSG00000000419;A3:20:49557492-49557642:49557470-49557642:-",
-            "ENSG00000000419;A3:20:49557492-49558568:49557470-49558568:-",
-            "ENSG00000000003;A5:X:99890743-99891188:99890743-99891605:-")
-parseSuppaEvent(events)
 }
 
