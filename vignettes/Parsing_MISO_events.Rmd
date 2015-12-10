@@ -1,10 +1,12 @@
 ---
 title: "Parsing splicing events from MISO"
 author: "Nuno Agostinho"
-date: "26 November 2015"
-output: 
-  html_document: 
-    toc: yes
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Parsing splicing events from MISO}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 Splicing event ID's from MISO don't differ that much from those in SUPPA,

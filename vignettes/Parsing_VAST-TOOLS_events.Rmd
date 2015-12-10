@@ -1,8 +1,12 @@
 ---
 title: "Parsing splicing events from VAST-TOOLS"
 author: "Nuno Agostinho"
-date: "4 December 2015"
-output: html_document
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Parsing splicing events from VAST-TOOLS}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 VAST-TOOLS compares alternative splicing between two given samples. The
