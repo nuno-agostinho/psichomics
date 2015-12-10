@@ -1,0 +1,10 @@
+---
+title: "AS events annotation"
+author: "Nuno Agostinho"
+date: "10 December 2015"
+output: html_document
+---
+
+To get the most complete annotation of alternative splicing events, we'll
+combine the annotation from many programs like MISO, VAST-TOOLS, SUPPA and MATS.
+Others may be added later on.

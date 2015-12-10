@@ -7,9 +7,6 @@ output:
     toc: yes
 ---
 
-To get expression levels using MISO, you only need to give it alternative events
-annotation files (in the GFF3 format) and a sample BAM file.
-
 Splicing event ID's from MISO don't differ that much from those in SUPPA,
 although they don't contain gene names nor type of event, as you can see from 
 the following table (notice that Tandem UTR is a type of event which is not
@@ -27,16 +24,42 @@ Alternative last exon      | 55814\@uc003msh.1uc003msk.1\@uc003msj.1 |
 Tandem UTR                 | chr17:53778273:53778604:-\@chr17:53777536:53778272:- |
 
 The splicing event ID's were originally attributed using the Human genome's 18th
-assembly or the Mouse genome's 8th assembly. To create the GFF3 annotation files
-relative to the newer assemblies of the Human and Mouse genomes, they used
-[UCSC's liftOver](https://genome.ucsc.edu/cgi-bin/hgLiftOver) to change the
-positions (but the ID's stayed the same). Therefore, we need to cross-ref the
-annotation files with the splicing event ID's to parse the splicing events.
+assembly or the Mouse genome's 8th assembly. For the newer assemblies of the 
+Human and Mouse genomes, they simply used
+[UCSC's liftOver](https://genome.ucsc.edu/cgi-bin/hgLiftOver) on the previous 
+alternative splicing events' annotation files to update the positions. Since the
+ID's stayed the same, we can't use those to parse the splicing events: instead,
+we need to cross-ref the annotation files with the splicing event ID's to parse
+the splicing events. Either that or we could run liftOver tool on the positions 
+of the ID, whichever is faster.
 
 Another thing to note is that MISO can also return isoform-centric analyses and
 may be important to expect and parse isoform-centric events.
 
 > TODO: parse MISO's isoform-centric events
+
+# Alternative splicing events' annotation files
+The annotation files from MISO are in the GFF3 format created with the Python
+package [`gffutils`](https://pythonhosted.org/gffutils/index.html). Below is an
+example of a exon skipping (SE) event as described in the annotation file.
+
+The columns used for Score and Frame seem to always be filled with a dot for all
+events so there is no use for them. Also, keep in mind that the column names
+were added and that they're not named in the original files.
+
+|Chromosome|Event type|Feature|Start|End|Score|Strand|Frame|Attributes|
+|:---------|:---------|:------|----:|--:|:----|:-----|:----|:---------|
+|chr1 |SE |gene | 16854| 18061|.  |-  |.  |ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-;Name=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-          |
+|chr1 |SE |mRNA | 16854| 18061|.  |-  |.  |ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A;Parent=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-      |
+|chr1 |SE |exon | 16854| 17055|.  |-  |.  |ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A.dn;Parent=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:- |
+|chr1 |SE |exon | 17233| 17742|.  |-  |.  |ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A.se;Parent=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:- |
+|chr1 |SE |exon | 17915| 18061|.  |-  |.  |ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A.up;Parent=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:- |
+|chr1 |SE |mRNA | 16854| 18061|.  |-  |.  |ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.B;Parent=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-      |
+|chr1 |SE |exon | 16854| 17055|.  |-  |.  |ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.B.dn;Parent=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.B;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:- |
+|chr1 |SE |exon | 17915| 18061|.  |-  |.  |ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.B.up;Parent=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.B;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:- |
+
+## Version 2 of MISO annotation
+> TODO: Does the aforementioned methods still work with version 2?
 
 # Cross-referencing the splicing event ID's
 This one seems easy enough. For each splicing event ID, just get any matches in
@@ -222,6 +245,8 @@ microbenchmark(times = 1,
                events_10000=matchMisoEvent3(rep(eventID,10000), annotation, IDcolumn))
 ```
 
+Probably, it would be better to get all events' index outside this function (we
+only need to get the index once for each annotation).
 Another thing we could try is to create a vector exclusively with the ID in the
 column V9 from the annotation file and do a simple `match`.
 
@@ -239,7 +264,7 @@ microbenchmark(times = 1,
 )
 ```
 
-## Using liftOver
+# Using liftOver
 Yet another way to parse MISO splicing event IDs is to do it just like we parsed
 SUPPA IDs and then use `liftOver` to convert the coordinates from the Human
 genome's 18th assembly or Mouse genome's 8th assembly to the correct one. This
@@ -253,8 +278,8 @@ After retrieving the lines for each event in the alternative splicing annotation
 file, we need to parse the events themselves. Let's check how to parse each 
 event type.
 
-## Skipping exon
-Below, there is a tabular representation of a Skipping Exon events. The first
+## Exon skipping
+Below, there is a tabular representation of a Exon Skipping events. The first
 thing we should note is that the terminology is used is confusing: they are
 calling "gene" to an event and "mRNA" to groups of exons of each isoform.
 
@@ -936,7 +961,7 @@ All right, looks like we're good to go!
 Just like Alternative First Exon events, alternative last exon (ALE) events are
 a bit strange, but they don't appear as much (see plot below).
 
-```{r miso-afe-A}
+```{r miso-ale-A}
 annotation.ALE <- read.delim(
   header=FALSE, comment.char="#",
   "/genedata/Resources/Annotations/MISO/hg19/ALE.hg19.gff3")
@@ -952,7 +977,7 @@ plot(table(len))
 
 Let's check if all those events with length 5 and 6 have the same lines.
 
-```{r miso-afe-B, eval=FALSE}
+```{r miso-ale-B, eval=FALSE}
 # check if event with the same number of lines share the same validator
 validate.ALE <- function(i, validator) {
   types <- annotation.ALE[genes_index[i]:next_index[i], 3]
@@ -1096,7 +1121,7 @@ check if all events are like the one represented in the table below.
 |chr19 |TandemUTR |mRNA | 10664223| 10664625|.  |-  |.  |ID=chr19:10525223:10525625:-\@chr19:10524759:10525222:-.B;Parent=chr19:10525223:10525625:-\@chr19:10524759:10525222:-;gid=chr19:10525223:10525625:-\@chr19:10524759:10525222:-              |
 |chr19 |TandemUTR |exon | 10664223| 10664625|.  |-  |.  |ID=chr19:10525223:10525625:-\@chr19:10524759:10525222:-.B.core;Parent=chr19:10525223:10525625:-\@chr19:10524759:10525222:-.B;gid=chr19:10525223:10525625:-\@chr19:10524759:10525222:-       |
 
-```{r}
+```{r, eval=FALSE}
 annotation.TandemUTR <- read.delim(
   header=FALSE, comment.char="#",
   "/genedata/Resources/Annotations/MISO/hg19/TandemUTR.hg19.gff3")
@@ -1129,8 +1154,4 @@ parseMisoTandemUTR <- function(event, strand, parsed) {
 ```
 
 ## Isoforms
-
 > TODO
-
-# Version 2 of MISO annotation
-> TODO: Does the aforementioned methods still work with version 2?

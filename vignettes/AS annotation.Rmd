@@ -1,23 +1,22 @@
 ---
-title: "Splicing events identifiers"
+title: "Splicing event annotation"
 author: "Nuno Agostinho"
-date: "20 November 2015"
-output:
-  html_document:
+date: "10 December 2015"
+output: 
+  html_document: 
     toc: yes
-    toc_depth: 3
 ---
 
-The splicing events ID's are different according to the program that creates it.
-The programs which allow to quantify expression levels of alternative
-splicing events and that are studied in this report are:
+The splicing events annotation is different according to the program that
+creates it. The programs which allow to quantify expression levels of
+alternative splicing events studied in this report are:
 
 * [MISO](https://miso.readthedocs.org/en/fastmiso/)
 * [SUPPA](https://bitbucket.org/regulatorygenomicsupf/suppa)
 * [VAST-TOOLS](https://github.com/vastgroup/vast-tools)
 * [MATS](http://rnaseq-mats.sourceforge.net)
 
-It's also important to understand that the splicing event ID's may vary
+It's also important to understand that the splicing events annotation may vary
 according to the splicing event type. The most common splicing event types
 annotated across the aforementioned programs are described in the following
 image (retrieved from the
@@ -35,7 +34,7 @@ attributes of an event, including:
 * Gene
 * mRNA
 * Splicing event type
-<!-- * Inclusion level (PSI) -->
+* Inclusion level (PSI)
 
 In order to store the events themselves, it's possible to characterise all the
 represented splicing event types by using the boundaries of the following 4
@@ -67,7 +66,7 @@ end can alternatively be one of the two positions).
 Before discussing how to parse thousands and thousands of events, we should
 reflect a bit on the tools available to compare different solutions that solve
 the same problem and how to measure performance on R. You can read about it
-in the article [Measuring performance](Measuring_performance.html).
+in the article [Measuring performance](Measuring performance.Rmd).
 
 Another thing to consider is whether we should be using a list or an object to
 store the information pertaining to each event. I'll try to create a list at
@@ -78,3 +77,12 @@ structure anyway? And is there any impact in the performance of the same script
 using objects instead of lists?
 
 > TODO: event data structure - list VS object
+
+# Parsing annotation from the different programs
+The annotation originated from different programs was parsed. Read more about it
+in the following articles:
+
+* [MISO](Parsing MISO events.Rmd)
+* [SUPPA](Parsing SUPPA events.Rmd)
+* [VAST-TOOLS](Parsing VAST-TOOLS events.Rmd)
+* [MATS](Parsing MATS events.Rmd)

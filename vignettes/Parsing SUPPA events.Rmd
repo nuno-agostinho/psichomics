@@ -1,8 +1,10 @@
 ---
-title: "Parsing SUPPA events"
+title: "Parsing splicing events from SUPPA"
 author: "Nuno Agostinho"
-date: "27 November 2015"
-output: html_document
+date: "20 November 2015"
+output:
+  html_document:
+    toc: yes
 ---
 
 Let's start to parse the splicing event types from SUPPA since they seem to be
@@ -199,11 +201,17 @@ splits junctions by the "-", it reverses the junctions if it's the minus strand,
 fills a list of parsed junctions with NAs and parses junction positions
 according to event type. Simple, right?
 
+Note that it's important to keep the order of appearance of alternative
+isoforms. The inclusion levels (represented by $\Psi$ and shown in percentage
+or between 0 and 1) are supposed to refer to the first alternative isoform. The 
+inclusion level of the other isoform is calculated with $100\% - \Psi$ or
+$1 - \Psi$.
+
 ```{r suppa-junctions-switch}
 parseSuppaJunctions <- function(event_type, strand, junctions) {
-  # Split junctions by the hyphen symbol
+  # Split junctions by the hyphen
   junctions <- strsplit(junctions, "-")
-  junctions <- unlist(junctions)
+  junctions <- as.numeric(unlist(junctions))
   
   # If minus strand, reverse junctions
   if(strand == "-") junctions <- rev(junctions)
@@ -218,21 +226,46 @@ parseSuppaJunctions <- function(event_type, strand, junctions) {
   switch(event_type,
          "A3" = {
            parsed[["C1 end"]]   <- junctions[1]
-           parsed[["C2 start"]] <- junctions[c(2,4)]
+           # it's important to conserve the order of which exon appears first
+           if (strand == "+") {
+            parsed[["C2 start"]] <- junctions[c(2, 4)]
+           } else if (strand == "-") {
+             parsed[["C2 start"]] <- junctions[c(4, 2)]
+           }
          },
          "A5" = {
-           parsed[["C1 end"]]   <- junctions[c(3,1)]
+           # it's important to conserve the order of which exon appears first
+           if (strand == "+") {
+             parsed[["C1 end"]]   <- junctions[c(1, 3)]
+           } else if (strand == "-") {
+             parsed[["C1 end"]]   <- junctions[c(3, 1)]
+           }
            parsed[["C2 start"]] <- junctions[2]
          },
-         "SE" = parsed[c("C1 end", "A1 start", "A1 end",
+         "SE" = parsed[c("C1 end",
+                         "A1 start", "A1 end",
                          "C2 start")] <- junctions,
-         "MX" = parsed[c("C1 end", "A1 start", "A1 end", "A2 start",
-                         "A2 end", "C2 start")] <- junctions[-c(4,5)],
+         "MX" = {
+           # it's important to conserve the order of which exon appears first
+           if (strand == "+") {
+             parsed[c("C1 end",
+                      "A1 start", "A1 end",
+                      "A2 start", "A2 end",
+                      "C2 start")] <- junctions[-c(4,5)]
+           } else if (strand == "-"){
+             parsed[c("C1 end",
+                      "A2 start", "A2 end",
+                      "A1 start", "A1 end",
+                      "C2 start")] <- junctions[-c(4,5)]
+           }
+         },
          "RI" = parsed[c("C1 start", "C1 end",
                          "C2 start", "C2 end")] <- junctions,
-         "AF" = parsed[c("C1 start", "C1 end", "C2 end",
+         "AF" = parsed[c("C1 start", "C1 end",
+                         "C2 start",
                          "A1 start", "A1 end")] <- junctions[1:5],
-         "AL" = parsed[c("C2 start", "C2 end", "C1 start",
+         "AL" = parsed[c("C2 start", "C2 end",
+                         "C1 end",
                          "A1 start", "A1 end")] <- junctions[2:6]
   )
   return(parsed)
@@ -295,16 +328,36 @@ parseSuppaJunctions <- function(event_type, strand, junctions) {
   # Parse junction positions according to event type
   if (event_type == "A3") {
     parsed[["C1 end"]]   <- junctions[1]
-    parsed[["C2 start"]] <- junctions[c(2,4)]
+    # it's important to conserve the order of which exon appears first
+    if (strand == "+") {
+      parsed[["C2 start"]] <- junctions[c(2, 4)]
+    } else if (strand == "-") {
+      parsed[["C2 start"]] <- junctions[c(4, 2)]
+    }
   } else if (event_type == "A5") {
-    parsed[["C1 end"]]   <- junctions[c(3,1)]
+    # it's important to conserve the order of which exon appears first
+    if (strand == "+") {
+      parsed[["C1 end"]]   <- junctions[c(1, 3)]
+    } else if (strand == "-") {
+      parsed[["C1 end"]]   <- junctions[c(3, 1)]
+    }
     parsed[["C2 start"]] <- junctions[2]
   } else if (event_type == "SE") {
     parsed[c("C1 end", "A1 start", "A1 end",
              "C2 start")] <- junctions
   } else if (event_type == "MX") {
-    parsed[c("C1 end", "A1 start", "A1 end", "A2 start",
-             "A2 end", "C2 start")] <- junctions[-c(4,5)]
+    # it's important to conserve the order of which exon appears first
+    if (strand == "+") {
+      parsed[c("C1 end",
+               "A1 start", "A1 end",
+               "A2 start", "A2 end",
+               "C2 start")] <- junctions[-c(4,5)]
+    } else if (strand == "-"){
+      parsed[c("C1 end",
+               "A2 start", "A2 end",
+               "A1 start", "A1 end",
+               "C2 start")] <- junctions[-c(4,5)]
+    }
   } else if (event_type == "RI") {
     parsed[c("C1 start", "C1 end",
              "C2 start", "C2 end")] <- junctions
