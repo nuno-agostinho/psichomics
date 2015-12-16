@@ -2,11 +2,13 @@
 title: "Parsing splicing events from MISO"
 author: "Nuno Agostinho"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  html_document: 
+    toc: yes
 vignette: >
   %\VignetteIndexEntry{Parsing splicing events from MISO}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 Splicing event ID's from MISO don't differ that much from those in SUPPA,
@@ -266,6 +268,29 @@ microbenchmark(times = 1,
 )
 ```
 
+# Parsing multiple MISO event ID's
+
+To simplify the process of parsing multiple MISO events, we'll want a function
+that parses many event lines annotation at once.
+
+```{r}
+parseMultipleMisoEvents <- function(events) {
+  firstIndex <- which(events[ , 3] == "gene")
+  if (length(firstIndex) > 1) {
+    # if there are many events, get each event's last index
+    lastIndex <- c(firstIndex[2:length(firstIndex)] - 1, nrow(events))
+  } else {
+    # if there is only one event, get last index
+    lastIndex <- nrow(events)
+  }
+  res <- lapply(1:length(firstIndex), function(i, data) {
+    event <- data[firstIndex[i]:lastIndex[i], ]
+    parseMisoEvent(event)
+  }, events)
+  return(res)
+}
+```
+
 # Using liftOver
 Yet another way to parse MISO splicing event IDs is to do it just like we parsed
 SUPPA IDs and then use `liftOver` to convert the coordinates from the Human
@@ -305,11 +330,20 @@ Before continuing to parse the event based on this information, let's check if
 all SE events have these same lines (gene, mRNA, 3 exons, mRNA, 2 exons).
 
 ```{r miso-SE, eval=FALSE}
+# check which method of comparison is faster
+validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 2))
+event <- factor(validator)
+res <- microbenchmark(all(event == validator),
+               all(as.character(event) == validator),
+               identical(as.character(event), validator),
+               all.equal(as.character(event), validator))
+autoplot(res)
+
 validate_event <- function(i, annotation, genes_index, validator, progress) {
   progress <- setTxtProgressBar(progress, i)
   event <- annotation[genes_index[i]:(genes_index[i+1]-1), ]
   # return event if event does not pass the validator
-  if (length(event[ , 3]) != length(validator) || !all(event[ , 3] == validator))
+  if (length(event[ , 3]) != length(validator) || !all(as.character(event[ , 3]) == validator))
     return(event)
 }
 
@@ -346,7 +380,7 @@ outliers seem to share the same lines, let's check it.
 ```{r miso-SE-outliers, eval=FALSE}
 validate_list <- function(annotation, validator) {
   for(event in annotation) {
-    if (length(event[ , 3]) != length(validator) || !all(event[ , 3] == validator))
+    if (length(event[ , 3]) != length(validator) || !all(as.character(event[ , 3]) == validator))
       return(event)
   }
 }
@@ -641,7 +675,7 @@ validate.AFE <- function(i, validator) {
   if(length(types) != length(validator))
     return(FALSE)
   else
-    return(all(types == validator))
+    return(all(as.character(types) == validator))
 }
 
 # check if all events with 7 lines have the same line types
@@ -986,7 +1020,7 @@ validate.ALE <- function(i, validator) {
   if(length(types) != length(validator))
     return(FALSE)
   else
-    return(all(types == validator))
+    return(all(as.character(types) == validator))
 }
 
 # check if all events with 5 lines have the same line types
@@ -1157,3 +1191,6 @@ parseMisoTandemUTR <- function(event, strand, parsed) {
 
 ## Isoforms
 > TODO
+
+## Outliers
+To not parse outliers

@@ -2,7 +2,7 @@
 title: "Measuring performance"
 author: "Nuno Agostinho"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: html_document
 vignette: >
   %\VignetteIndexEntry{Measuring performance}
   %\VignetteEngine{knitr::rmarkdown}
@@ -106,7 +106,7 @@ benchmark(
 
 > TODO: compare apply, by, eapply, lapply, mapply, rapply, tapply, vapply
 
-```{r}
+```{r apply}
 l <- list(a = 1:10, b = 11:20)
 expect <- c(Min.=0, "1st Qu."=0, Median=0, "3rd Qu."=0, Max.=0)
 
@@ -114,5 +114,22 @@ res <- microbenchmark(lapply = lapply(l, fivenum),
                       sapply = sapply(l, fivenum),
                       vapply = vapply(l, fivenum, expect))
 res
+autoplot(res)
+```
+
+# Comparing comparison methods
+
+```{r comparison}
+validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 2))
+event <- factor(validator)
+res <- microbenchmark(
+  all(event == validator),
+  all(as.character(event) == validator),
+  identical(as.character(event), validator),
+  all.equal(as.character(event), validator),
+  all(as.character(event) == as.character(validator)),
+  identical(as.character(event), as.character(validator)),
+  all.equal(as.character(event), as.character(validator))
+)
 autoplot(res)
 ```
