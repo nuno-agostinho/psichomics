@@ -1,0 +1,25 @@
+---
+title: "The project itself"
+author: "Nuno Agostinho"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Parsing splicing events from SUPPA}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# TODO
+- Obter anotação de eventos alternativos a partir dos vários programas
+- Fazer calculos de PSI atraves de formulas + contagem de reads
+- Base: tabelas de PSIs
+- Parte gráfica: barplots com 2 tipos de amostras para eventos
+- Testar com grande volume de dados
+
+Another thing I have considered is that maybe it'd be best if we used always the
+same name for functions belonging to different modules but that doesn't work in
+R since each function needs to have its own different name. Another way we maybe
+could  accomplish this is by using classes instead. Maybe two methods with the
+same name in different classes are allowed?
+
+> TODO: check if methods with identical names from different classes are allowed
