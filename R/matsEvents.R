@@ -28,22 +28,22 @@
 #' 
 #' parseMatsEvent(mats_A3SS, "A3SS")
 parseMatsEvent <- function(event, event_type) {
-  len <- length(event)
-  # Create list with event attributes
-  event_attrs <- list("Program" = "MATS",
-                      "Gene" = as.character(event[[2]]),
-                      "Gene symbol" = as.character(event[[3]]),
-                      "Chromosome" = as.character(event[[4]]),
-                      "Strand" = as.character(event[[5]]),
-                      "P value" = as.numeric(event[[len - 4]]),
-                      "FDR" = as.numeric(event[[len - 3]]),
-                      "Inclusion level A" = as.numeric(event[[len - 2]]),
-                      "Inclusion level B" = as.numeric(event[[len - 1]]),
-                      "Event type" = event_type)
-  
-  # Parse junction positions according to event type
-  parsed <- parseMatsJunctions(event, event_type)
-  return(c(event_attrs, parsed))
+    len <- length(event)
+    # Create list with event attributes
+    event_attrs <- list("Program" = "MATS",
+                        "Gene" = as.character(event[[2]]),
+                        "Gene symbol" = as.character(event[[3]]),
+                        "Chromosome" = as.character(event[[4]]),
+                        "Strand" = as.character(event[[5]]),
+                        "P value" = as.numeric(event[[len - 4]]),
+                        "FDR" = as.numeric(event[[len - 3]]),
+                        "Inclusion level A" = as.numeric(event[[len - 2]]),
+                        "Inclusion level B" = as.numeric(event[[len - 1]]),
+                        "Event type" = event_type)
+    
+    # Parse junction positions according to event type
+    parsed <- parseMatsJunctions(event, event_type)
+    return(c(event_attrs, parsed))
 }
 
 
@@ -75,73 +75,73 @@ parseMatsEvent <- function(event, event_type) {
 #' 
 #' parseMatsJunctions(mats_A3SS, "A3SS")
 parseMatsJunctions <- function(event, event_type) {
-  # Fill list of parsed junctions with NAs
-  parsed <- list("C1 start" = NA, "C1 end" = NA,
-                 "A1 start" = NA, "A1 end" = NA,
-                 "A2 start" = NA, "A2 end" = NA,
-                 "C2 start" = NA, "C2 end" = NA)
-  
-  strand <- as.character(event[[5]])
-  
-  # Parse junction positions according to event type
-  switch(event_type,
-         "SE" = {
-           if (strand == "+") {
-             parsed[c("A1 start", "A1 end",
-                      "C1 start", "C1 end",
-                      "C2 start", "C2 end")] <- as.numeric(event[6:11])
-           } else if (strand == "-") {
-             parsed[c("A1 end", "A1 start",
-                      "C2 end", "C2 start",
-                      "C1 end", "C1 start")] <- as.numeric(event[6:11])
+    # Fill list of parsed junctions with NAs
+    parsed <- list("C1 start" = NA, "C1 end" = NA,
+                   "A1 start" = NA, "A1 end" = NA,
+                   "A2 start" = NA, "A2 end" = NA,
+                   "C2 start" = NA, "C2 end" = NA)
+    
+    strand <- as.character(event[[5]])
+    
+    # Parse junction positions according to event type
+    switch(event_type,
+           "SE" = {
+               if (strand == "+") {
+                   parsed[c("A1 start", "A1 end",
+                            "C1 start", "C1 end",
+                            "C2 start", "C2 end")] <- as.numeric(event[6:11])
+               } else if (strand == "-") {
+                   parsed[c("A1 end", "A1 start",
+                            "C2 end", "C2 start",
+                            "C1 end", "C1 start")] <- as.numeric(event[6:11])
+               }
+           },
+           "MXE" = {
+               if (strand == "+") {
+                   parsed[c("A1 start", "A1 end",
+                            "A2 start", "A2 end",
+                            "C1 start", "C1 end",
+                            "C2 start", "C2 end")] <- as.numeric(event[6:13])
+               } else if (strand == "-") {
+                   parsed[c("A1 end", "A1 start",
+                            "A2 end", "A2 start",
+                            "C2 end", "C2 start",
+                            "C1 end", "C1 start")] <- as.numeric(event[6:13])
+               }
+           },
+           "RI" = {
+               if (strand == "+") {
+                   parsed[c("C1 start", "C1 end",
+                            "C2 start", "C2 end")] <- as.numeric(event[8:11])
+               } else if (strand == "-") {
+                   parsed[c("C1 start", "C1 end",
+                            "C2 start", "C2 end")] <- as.numeric(event[11:8])
+               }
+           },
+           "A3SS" = {
+               junctions <- as.numeric(event[6:11])
+               if (strand == "+") {
+                   parsed[c("C1 start", "C1 end")] <- junctions[5:6]
+                   parsed[["C2 start"]] <- junctions[c(1, 3)]
+                   parsed[["C2 end"]]   <- junctions[2]
+               } else if (strand == "-") {
+                   parsed[c("C1 start", "C1 end")] <- junctions[6:5]
+                   parsed[["C2 start"]]   <- junctions[c(2, 4)]
+                   parsed[["C2 end"]]  <- junctions[1]
+               }
+           },
+           "A5SS" = {
+               junctions <- as.numeric(event[6:11])
+               if (strand == "+") {
+                   parsed[["C1 start"]] <- junctions[1]
+                   parsed[["C1 end"]]   <- junctions[c(2,4)]
+                   parsed[c("C2 start", "C2 end")] <- junctions[5:6]
+               } else if (strand == "-") {
+                   parsed[["C1 start"]]  <- junctions[2]
+                   parsed[["C1 end"]]    <- junctions[c(1, 3)]
+                   parsed[c("C2 start", "C2 end")] <- junctions[6:5]
+               }
            }
-         },
-         "MXE" = {
-           if (strand == "+") {
-             parsed[c("A1 start", "A1 end",
-                      "A2 start", "A2 end",
-                      "C1 start", "C1 end",
-                      "C2 start", "C2 end")] <- as.numeric(event[6:13])
-           } else if (strand == "-") {
-             parsed[c("A1 end", "A1 start",
-                      "A2 end", "A2 start",
-                      "C2 end", "C2 start",
-                      "C1 end", "C1 start")] <- as.numeric(event[6:13])
-           }
-         },
-         "RI" = {
-           if (strand == "+") {
-             parsed[c("C1 start", "C1 end",
-                      "C2 start", "C2 end")] <- as.numeric(event[8:11])
-           } else if (strand == "-") {
-             parsed[c("C1 start", "C1 end",
-                      "C2 start", "C2 end")] <- as.numeric(event[11:8])
-           }
-         },
-         "A3SS" = {
-           junctions <- as.numeric(event[6:11])
-           if (strand == "+") {
-             parsed[c("C1 start", "C1 end")] <- junctions[5:6]
-             parsed[["C2 start"]] <- junctions[c(1, 3)]
-             parsed[["C2 end"]]   <- junctions[2]
-           } else if (strand == "-") {
-             parsed[c("C1 start", "C1 end")] <- junctions[6:5]
-             parsed[["C2 start"]]   <- junctions[c(2, 4)]
-             parsed[["C2 end"]]  <- junctions[1]
-           }
-         },
-         "A5SS" = {
-           junctions <- as.numeric(event[6:11])
-           if (strand == "+") {
-             parsed[["C1 start"]] <- junctions[1]
-             parsed[["C1 end"]]   <- junctions[c(2,4)]
-             parsed[c("C2 start", "C2 end")] <- junctions[5:6]
-           } else if (strand == "-") {
-             parsed[["C1 start"]]  <- junctions[2]
-             parsed[["C1 end"]]    <- junctions[c(1, 3)]
-             parsed[c("C2 start", "C2 end")] <- junctions[6:5]
-           }
-         }
-  ) # end of switch
-  return(parsed)
+    ) # end of switch
+    return(parsed)
 }
