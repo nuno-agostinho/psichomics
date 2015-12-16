@@ -1,7 +1,7 @@
 context("Parse MATS splicing events")
 
 ## parseMatsEvent tests also cover the function parseMatsJunctions
-test_that("parseMatsEvent parses alt. 3' splice site event (positive strand)", {
+test_that("parseMatsEvent parses alt. 3' splice site event (+ strand)", {
   mats_A3SS <- c(ID = "3658", GeneID = "ENSG00000067715", geneSymbol = "SYT1", 
                  chr = "chr12", strand = "+", longExonStart_0base = "79685787",
                  longExonEnd = "79685910", shortES = "79685796", 
@@ -20,7 +20,7 @@ test_that("parseMatsEvent parses alt. 3' splice site event (positive strand)", {
   expect_equal(parsed$`C2 end`,     79685910)
 })
 
-test_that("parseMatsEvent parses alt. 3' splice site event (negative strand)", {
+test_that("parseMatsEvent parses alt. 3' splice site event (- strand)", {
   mats_A3SS <- c(ID = "1234", GeneID = "ENSG00000076108", geneSymbol = "BAZ2A", 
                  chr = "chr12", strand = "-", longExonStart_0base = "57000030", 
                  longExonEnd = "57000179", shortES = "57000030", 
@@ -38,7 +38,7 @@ test_that("parseMatsEvent parses alt. 3' splice site event (negative strand)", {
   expect_equal(parsed$`C2 end`,   57000030)
 })
 
-test_that("parseMatsEvent parses alt. 5' splice event (positive strand)", {
+test_that("parseMatsEvent parses alt. 5' splice event (+ strand)", {
   mats_A5SS <- c(ID = "1366", GeneID = "ENSG00000172465", geneSymbol = "TCEAL1", 
                  chr = "chrX", strand = "+", longExonStart_0base = "102884421", 
                  longExonEnd = "102884501", shortES = "102884421", shortEE = 
@@ -56,7 +56,7 @@ test_that("parseMatsEvent parses alt. 5' splice event (positive strand)", {
   expect_equal(parsed$`C2 end`,   102885881)
 })
 
-test_that("parseMatsEvent parses alt. 5' splice event (negative strand)", {
+test_that("parseMatsEvent parses alt. 5' splice event (- strand)", {
   mats_A5SS <- c(ID = "4064", GeneID = "ENSG00000077782", geneSymbol = "FGFR1", 
                  chr = "chr8", strand = "-", longExonStart_0base = "38285863", 
                  longExonEnd = "38285953", shortES = "38285869",
@@ -75,7 +75,7 @@ test_that("parseMatsEvent parses alt. 5' splice event (negative strand)", {
   expect_equal(parsed$`C2 end`,   38285438)
 })
 
-test_that("parseMatsEvent parses skipping exon event (positive strand)", {
+test_that("parseMatsEvent parses skipping exon event (+ strand)", {
   mats_SE <- c(ID = "4626", GeneID = "ENSG00000151422", geneSymbol = "FER", 
                chr = "chr5", strand = "+", exonStart_0base = "108168470", 
                exonEnd = "108168644", upstreamES = "108133824", 
@@ -95,7 +95,7 @@ test_that("parseMatsEvent parses skipping exon event (positive strand)", {
   expect_equal(parsed$`C2 end`,   108171508)
 })
 
-test_that("parseMatsEvent parses skipping exon event (negative strand)", {
+test_that("parseMatsEvent parses skipping exon event (- strand)", {
   mats_SE <- c(ID = "16170", GeneID = "ENSG00000151914", geneSymbol = "DST",
                chr = "chr6", strand = "-", exonStart_0base = "56463273", 
                exonEnd = "56463507", upstreamES = "56462537", 
@@ -116,7 +116,7 @@ test_that("parseMatsEvent parses skipping exon event (negative strand)", {
   expect_equal(parsed$`C2 end`,   56462537)
 })
 
-test_that("parseMatsEvent parses intron retention event (positive strand)", {
+test_that("parseMatsEvent parses intron retention event (+ strand)", {
   mats_RI <- c(ID = "2287", GeneID = "ENSG00000011295", geneSymbol = "TTC19",
                chr = "chr17", strand = "+", riExonStart_0base = "15929853",
                riExonEnd = "15932100", upstreamES = "15929853",
@@ -134,7 +134,7 @@ test_that("parseMatsEvent parses intron retention event (positive strand)", {
   expect_equal(parsed$`C2 end`,   15932100)
 })
 
-test_that("parseMatsEvent parses intron retention event (negative strand)", {
+test_that("parseMatsEvent parses intron retention event (- strand)", {
   mats_RI <- c(ID = "1324", GeneID = "ENSG00000121851", geneSymbol = "POLR3GL", 
                chr = "chr1", strand = "-", riExonStart_0base = "145456990", 
                riExonEnd = "145457309", upstreamES = "145456990",
@@ -152,7 +152,7 @@ test_that("parseMatsEvent parses intron retention event (negative strand)", {
   expect_equal(parsed$`C2 end`,   145456990)
 })
 
-test_that("parseMatsEvent parses mutually exc. exons event (positive strand)", {
+test_that("parseMatsEvent parses mutually exc. exons event (+ strand)", {
   mats_MXE <- c(ID = "217", GeneID = "ENSG00000120251", geneSymbol = "GRIA2", 
                 chr = "chr4", strand = "+", X1stExonStart_0base = "158282161", 
                 X1stExonEnd = "158282276", X2ndExonStart_0base = "158282689", 
@@ -176,7 +176,7 @@ test_that("parseMatsEvent parses mutually exc. exons event (positive strand)", {
   expect_equal(parsed$`C2 end`,   158284199)
 })
 
-test_that("parseMatsEvent parses mutually exc. exons event (negative strand)", {
+test_that("parseMatsEvent parses mutually exc. exons event (- strand)", {
   mats_MXE <- c(ID = "1388", GeneID = "ENSG00000138468", geneSymbol = "SENP7", 
                 chr = "chr3", strand = "-", X1stExonStart_0base = "101117704", 
                 X1stExonEnd = "101117899", X2ndExonStart_0base = "101136436", 

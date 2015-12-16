@@ -1,35 +1,35 @@
 context("Parse SUPPA splicing events")
 ## parseSuppaEvent is tested by testing parseSuppaEventID
 
-test_that("parseSuppaJunctions parses alt. 3' splice site (positive strand)", {
+test_that("parseSuppaJunctions parses alt. 3' splice site (+ strand)", {
   junctionsA3 <- c("169772450-169773216", "169772450-169773253")
   res <- parseSuppaJunctions("A3", "+", junctionsA3)
   expect_equal(res$"C1 end",     169772450)
   expect_equal(res$"C2 start", c(169773216, 169773253))
 })
 
-test_that("parseSuppaJunctions parses alt. 3' splice site (negative strand)", {
+test_that("parseSuppaJunctions parses alt. 3' splice site (- strand)", {
   junctionsA3 <- c("49557492-49557642", "49557470-49557642")
   res <- parseSuppaJunctions("A3", "-", junctionsA3)
   expect_equal(res$"C1 end",     49557642)
   expect_equal(res$"C2 start", c(49557492, 49557470))
 })
 
-test_that("parseSuppaJunctions parses alt. 5' splice site (positive strand)", {
+test_that("parseSuppaJunctions parses alt. 5' splice site (+ strand)", {
   junctionsA5 <- c("50193276-50197008", "50192997-50197008")
   res <- parseSuppaJunctions("A5", "+", junctionsA5)
   expect_equal(res$"C1 end", c(50193276, 50192997))
   expect_equal(res$"C2 start", 50197008)
 })
 
-test_that("parseSuppaJunctions parses alt. 5' splice site (negative strand)", { 
+test_that("parseSuppaJunctions parses alt. 5' splice site (- strand)", { 
   junctionsA5 <- c("99890743-99891188", "99890743-99891605")
   res <- parseSuppaJunctions("A5", "-", junctionsA5)
   expect_equal(res$"C1 end", c(99891188, 99891605))
   expect_equal(res$"C2 start", 99890743)
 })
 
-test_that("parseSuppaJunctions parses alt. first exon (positive strand)", {
+test_that("parseSuppaJunctions parses alt. first exon (+ strand)", {
   junctionsAF <- c("169763871", "169764046-169767998", "169764550",
                    "169765124-169767998")
   res <- parseSuppaJunctions("AF", "+", junctionsAF)
@@ -40,7 +40,7 @@ test_that("parseSuppaJunctions parses alt. first exon (positive strand)", {
   expect_equal(res$`C2 start`, 169767998)
 })
 
-test_that("parseSuppaJunctions parses alt. first exon (negative strand)", {
+test_that("parseSuppaJunctions parses alt. first exon (- strand)", {
   junctionsAF <- c("169858031-169862929", "169863076", "169858031-169863148",
                    "169863408")
   res <- parseSuppaJunctions("AF", "-", junctionsAF)
@@ -51,7 +51,7 @@ test_that("parseSuppaJunctions parses alt. first exon (negative strand)", {
   expect_equal(res$`C2 start`, 169858031)
 })
 
-test_that("parseSuppaJunctions parses alt. last exon (positive strand)", {
+test_that("parseSuppaJunctions parses alt. last exon (+ strand)", {
   junctionsAL <- c("24790610-24792494", "24792800", "24790610-24795476",
                    "24795797")
   res <- parseSuppaJunctions("AL", "+", junctionsAL)
@@ -62,7 +62,7 @@ test_that("parseSuppaJunctions parses alt. last exon (positive strand)", {
   expect_equal(res$`C2 end`,   24792800)
 })
 
-test_that("parseSuppaJunctions parses alt. last exon (negative strand)", {
+test_that("parseSuppaJunctions parses alt. last exon (- strand)", {
   junctionsAL <- c("64037473", "64037809-64051654", "64044233",
                    "64044515-64051654")
   res <- parseSuppaJunctions("AL", "-", junctionsAL)
@@ -73,7 +73,7 @@ test_that("parseSuppaJunctions parses alt. last exon (negative strand)", {
   expect_equal(res$`C2 end`,   64044233)
 })
 
-test_that("parseSuppaJunctions parses skipping exon (positive strand)", {
+test_that("parseSuppaJunctions parses skipping exon (+ strand)", {
   junctionsSE <- c("169768099-169770024", "169770112-169771762")
   res <- parseSuppaJunctions("SE", "+", junctionsSE)
   expect_equal(res$`C1 end`,   169768099)
@@ -82,7 +82,7 @@ test_that("parseSuppaJunctions parses skipping exon (positive strand)", {
   expect_equal(res$`C2 start`, 169771762)
 })
 
-test_that("parseSuppaJunctions parses skipping exon (negative strand)", {
+test_that("parseSuppaJunctions parses skipping exon (- strand)", {
   junctionsSE <- c("49557470-49557642", "49557746-49558568")
   res <- parseSuppaJunctions("SE", "-", junctionsSE)
   expect_equal(res$`C1 end`,   49558568)
@@ -91,7 +91,7 @@ test_that("parseSuppaJunctions parses skipping exon (negative strand)", {
   expect_equal(res$`C2 start`, 49557470)
 })
 
-test_that("parseSuppaJunctions parses mutually excl. exon (positive strand)", {
+test_that("parseSuppaJunctions parses mutually excl. exon (+ strand)", {
   junctionsMX <- c("202060671-202068453", "202068489-202073793",
                    "202060671-202072798", "202072906-202073793")
   res <- parseSuppaJunctions("MX", "+", junctionsMX)
@@ -103,7 +103,7 @@ test_that("parseSuppaJunctions parses mutually excl. exon (positive strand)", {
   expect_equal(res$`C2 start`, 202073793)
 })
 
-test_that("parseSuppaJunctions parses mutually excl. exon (negative strand)", {
+test_that("parseSuppaJunctions parses mutually excl. exon (- strand)", {
   junctionsMX <- c("49557470-49557666", "49557746-49562274",
                    "49557470-49558568", "49558663-49562274")
   res <- parseSuppaJunctions("MX", "-", junctionsMX)
@@ -115,7 +115,7 @@ test_that("parseSuppaJunctions parses mutually excl. exon (negative strand)", {
   expect_equal(res$`C2 start`, 49557470)
 })
 
-test_that("parseSuppaJunctions parses retained intron (positive strand)", {
+test_that("parseSuppaJunctions parses retained intron (+ strand)", {
   junctionsRI <- c("196709749", "196709922-196711005", "196711181")
   res <- parseSuppaJunctions("RI", "+", junctionsRI)
   expect_equal(res$`C1 start`, 196709749)
@@ -124,7 +124,7 @@ test_that("parseSuppaJunctions parses retained intron (positive strand)", {
   expect_equal(res$`C2 end`,   196711181)
 })
 
-test_that("parseSuppaJunctions parses retained intron (negative strand)", {
+test_that("parseSuppaJunctions parses retained intron (- strand)", {
   junctionsRI <- c("1038930", "1039052-1039217", "1039310")
   res <- parseSuppaJunctions("RI", "-", junctionsRI)
   expect_equal(res$`C1 start`, 1039310)
