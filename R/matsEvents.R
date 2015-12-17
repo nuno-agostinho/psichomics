@@ -1,3 +1,12 @@
+parseMultipleMatsEvents <- function(events, event_type) {
+    return(lapply(1:nrow(events),
+                  function(k) {
+                      print(events[k, ])
+                      parseMatsEvent(events[k, ], event_type
+                      )}
+                  ))
+}
+
 #' Parse MATS alternative splicing events
 #'
 #' @param event Data frame: MATS splicing event
@@ -35,15 +44,21 @@ parseMatsEvent <- function(event, event_type) {
                         "Gene symbol" = as.character(event[[3]]),
                         "Chromosome" = as.character(event[[4]]),
                         "Strand" = as.character(event[[5]]),
-                        "P value" = as.numeric(event[[len - 4]]),
-                        "FDR" = as.numeric(event[[len - 3]]),
-                        "Inclusion level A" = as.numeric(event[[len - 2]]),
-                        "Inclusion level B" = as.numeric(event[[len - 1]]),
                         "Event type" = event_type)
+    
+    # Add these attributes only if the event has a given length
+    if (len > 13) {
+        more_attrs <- list("P value" = as.numeric(event[[len - 4]]),
+                           "FDR" = as.numeric(event[[len - 3]]),
+                           "Inclusion level A" = as.numeric(event[[len - 2]]),
+                           "Inclusion level B" = as.numeric(event[[len - 1]]))
+    } else {
+        more_attrs <- list()
+    }
     
     # Parse junction positions according to event type
     parsed <- parseMatsJunctions(event, event_type)
-    return(c(event_attrs, parsed))
+    return(c(event_attrs, more_attrs, parsed))
 }
 
 
@@ -140,6 +155,30 @@ parseMatsJunctions <- function(event, event_type) {
                    parsed[["C1 start"]]  <- junctions[2]
                    parsed[["C1 end"]]    <- junctions[c(1, 3)]
                    parsed[c("C2 start", "C2 end")] <- junctions[6:5]
+               }
+           },
+           "AFE" = {
+               junctions <- as.numeric(event[6:11])
+               if (strand == "+") {
+                   parsed[c("C1 start", "C1 end")] <- junctions[1:2]
+                   parsed[c("A1 start", "A1 end")] <- junctions[3:4]
+                   parsed[c("C2 start", "C2 end")] <- junctions[5:6]
+               } else if (strand == "-") {
+                   parsed[c("C1 start", "C1 end")] <- junctions[2:1]
+                   parsed[c("A1 start", "A1 end")] <- junctions[4:3]
+                   parsed[c("C2 start", "C2 end")] <- junctions[6:5]
+               }
+           },
+           "ALE" = {
+               junctions <- as.numeric(event[6:11])
+               if (strand == "+") {
+                   parsed[c("C1 start", "C1 end")] <- junctions[5:6]
+                   parsed[c("A1 start", "A1 end")] <- junctions[1:2]
+                   parsed[c("C2 start", "C2 end")] <- junctions[3:4]
+               } else if (strand == "-") {
+                   parsed[c("C1 start", "C1 end")] <- junctions[6:5]
+                   parsed[c("A1 start", "A1 end")] <- junctions[2:1]
+                   parsed[c("C2 start", "C2 end")] <- junctions[4:3]
                }
            }
     ) # end of switch
