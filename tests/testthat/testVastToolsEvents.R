@@ -1,5 +1,20 @@
 context("Parse VAST-TOOLS splicing events")
 
+test_that("parseMultipleVastToolsEvents parses multiple events", {
+    events <- read.table(text = "
+        NFYA HsaEX0042823 chr6:41046768-41046903 136 chr6:41040823,41046768-41046903,41051785 C2 0 N,N,N,Bn,S@0,0 0 N,N,N,Bn,S@0,0
+        SCYL3   HsaEX0056691    chr1:169839396-169839498        103     chr1:169842837,169839396-169839498,169838180+169838269  S       0.00    N,N,N,Bn,S@0,0  0.00    N,N,N,Bn,S@0,0
+        LAP3    HsaEX0035325    chr4:17587574-17587861  288     chr4:17586759,17587574-17587861,17590442        S       0.00    N,N,N,Bn,S@0,0  0.00    N,N,N,Bn,S@0,0
+    ")
+    parsed <- parseMultipleVastToolsEvents(events)
+    expect_is(parsed, "list")
+    expect_equal(length(parsed), 3)
+    expect_equal(parsed[[1]]$Program, "VAST-TOOLS")
+    expect_equal(parsed[[1]]$`C1 end`, 41040823)
+    expect_equal(parsed[[2]]$`C1 end`, 169842837)
+    expect_equal(parsed[[3]]$`C1 end`, 17586759)
+})
+
 test_that("parseVastToolsEvent parses an alternative splicing event", {
     event <- c("NFYA", "HsaEX0042823", "chr6:41046768-41046903", "136", 
                "chr6:41040823,41046768-41046903,41051785", "C2", "0", 
@@ -11,10 +26,15 @@ test_that("parseVastToolsEvent parses an alternative splicing event", {
     expect_equal(parsed$`Event type`, "SE")
     expect_equal(parsed$`Inclusion level A`, 0)
     expect_equal(parsed$`Inclusion level B`, 0)
-    # other list elements are tested through parseVastToolsJunctions
+    expect_equal(parsed$Chromosome, "chr6")
+    expect_equal(parsed$Strand, "+")
+    expect_equal(parsed$`C1 end`,   41040823)
+    expect_equal(parsed$`A1 start`, 41046768)
+    expect_equal(parsed$`A1 end`,   41046903)
+    expect_equal(parsed$`C2 start`, 41051785)
 })
 
-test_that("parseVastToolsEvent parses an event annotation", {
+test_that("parseVastToolsEvent parses an event annotation (event type: SE)", {
     event <- c("NFYA", "HsaEX0042823", "chr6:41046768-41046903", "136", 
                "chr6:41040823,41046768-41046903,41051785", "C2")
     parsed <- parseVastToolsEvent(event)
@@ -24,7 +44,12 @@ test_that("parseVastToolsEvent parses an event annotation", {
     expect_equal(parsed$`Event type`, "SE")
     expect_null(parsed$`Inclusion level A`)
     expect_null(parsed$`Inclusion level B`)
-    # other list elements are tested through parseVastToolsJunctions
+    expect_equal(parsed$Chromosome, "chr6")
+    expect_equal(parsed$Strand, "+")
+    expect_equal(parsed$`C1 end`,   41040823)
+    expect_equal(parsed$`A1 start`, 41046768)
+    expect_equal(parsed$`A1 end`,   41046903)
+    expect_equal(parsed$`C2 start`, 41051785)
 })
 
 test_that("parseVastToolsJunctions parses S junctions (+ strand)", {
@@ -220,11 +245,3 @@ test_that("parseVastToolsJunctions parses Alt5 junctions (- strand)", {
     expect_equal(parsed$`C1 end`,   c(49557666, 49557642))
     expect_equal(parsed$`C2 end`,   49557470)
 })
-
-# test_that("parseMultipleVastToolsEvents parses multiple events", {
-#     events <- read.table(text = "
-#         NFYA HsaEX0042823 chr6:41046768-41046903 136 chr6:41040823,41046768-41046903,41051785 C2 0 N,N,N,Bn,S@0,0 0 N,N,N,Bn,S@0,0
-#         NFYA HsaEX0042823 chr6:41046768-41046903 136 chr6:41040823,41046768-41046903,41051785 C2 0 N,N,N,Bn,S@0,0 0 N,N,N,Bn,S@0,0
-#                          ")
-#     parsed <- parseMultipleVastToolsEvents(events)
-# })
