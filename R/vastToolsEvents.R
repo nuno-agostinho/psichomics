@@ -12,7 +12,8 @@
 #' @export
 #' events <- read.table(text = "
 #' NFYA HsaEX0042823 chr6:41046768-41046903 136 chr6:41040823,41046768-41046903,41051785 C2 0 N,N,N,Bn,S@0,0 0 N,N,N,Bn,S@0,0
-#' NFYA HsaEX0042823 chr6:41046768-41046903 136 chr6:41040823,41046768-41046903,41051785 C2 0 N,N,N,Bn,S@0,0 0 N,N,N,Bn,S@0,0
+#' SCYL3   HsaEX0056691    chr1:169839396-169839498        103     chr1:169842837,169839396-169839498,169838180+169838269  S       0.00    N,N,N,Bn,S@0,0  0.00    N,N,N,Bn,S@0,0
+#' LAP3    HsaEX0035325    chr4:17587574-17587861  288     chr4:17586759,17587574-17587861,17590442        S       0.00    N,N,N,Bn,S@0,0  0.00    N,N,N,Bn,S@0,0
 #' ")
 #' parseMultipleVastToolsEvents(events)
 parseMultipleVastToolsEvents <- function(events, progress = FALSE) {

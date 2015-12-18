@@ -35,5 +35,6 @@ event <- read.table(text = "
   chr1 SE exon 20 25 . - .
   chr7 SE mRNA 16854 18061 . - .
   chr7 SE exon 16854 17955 . - .")
+remove_wrong_mRNA(event)
 }
 

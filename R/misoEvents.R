@@ -628,19 +628,16 @@ remove_duplicated_mRNA <- function (mRNA) {
 #'   chr1 SE exon 20 25 . - .
 #'   chr7 SE mRNA 16854 18061 . - .
 #'   chr7 SE exon 16854 17955 . - .")
+#' remove_wrong_mRNA(event)
 remove_wrong_mRNA <- function(event) {
-    ## TODO (NunoA): join these together for faster execution
-
     # Clear mRNA and exons with different chromosome identifier
     chr      <- event[1, 1]
     same_chr <- event[ , 1] == chr
-    event <- event[same_chr, ]
     
     # Clear mRNA and exons outside event boundaries
     start  <- event[1, 4]
     end    <- event[1, 5]
     inside <- event[ , 4] >= start & event[ , 5] <= end
-    event  <- event[inside, ]
     
-    return(event)
+    return(event[same_chr & inside, ])
 }
