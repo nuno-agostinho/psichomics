@@ -75,6 +75,13 @@ parseMisoEventID <- function(eventID, annotation, IDcolumn) {
 #' 
 #' Expects the annotation for many events at once and parses each event.
 #' 
+#' @param events Data.frame containing one or more events with at least 7
+#' columns as  retrieved from the alternative splicing annotation files from
+#' MISO (GFF3 files)
+#' @param progress Boolean: show progress?
+#' 
+#' @seealso \code{\link{parseMisoEvent}}
+#' 
 #' @export
 #' @examples 
 #' # example of alternative splicing events: skipped exon (SE)
@@ -96,7 +103,7 @@ parseMisoEventID <- function(eventID, annotation, IDcolumn) {
 #'   chr2 SE exon 6854 7955 . + .
 #'   chr2 SE exon 7915 8061 . + .")
 #' parseMultipleMisoEvents(events)
-parseMultipleMisoEvents <- function(events) {
+parseMultipleMisoEvents <- function(events, progress=FALSE) {
     firstIndex <- which(events[ , 3] == "gene")
     if (length(firstIndex) > 1) {
         # if there are many events, get each event's last index
@@ -105,7 +112,12 @@ parseMultipleMisoEvents <- function(events) {
         # if there is only one event, get last index
         lastIndex <- nrow(events)
     }
+    
+    if (progress) pb <- txtProgressBar(min=1, max=length(firstIndex), style=3)
+    
     res <- lapply(1:length(firstIndex), function(i, data) {
+        if (progress) setTxtProgressBar(pb, i)
+            
         event <- data[firstIndex[i]:lastIndex[i], ]
         parseMisoEvent(event)
     }, events)
@@ -170,7 +182,7 @@ parseMisoEvent <- function(event) {
 #' @param strand Character: strand of the event
 #' @param parsed Named list with NAs (for faster execution)
 #'
-#' @details The following event types are available to parse MISO events:
+#' @details The following event types are available to be parsed:
 #' \itemize{
 #'  \item{\bold{SE} (exon skipping)}
 #'  \item{\bold{MXE} (mutually exclusive exon)}
@@ -237,7 +249,6 @@ isEqual <- function(x, y) {
 }
 
 #' @rdname parseMisoSE
-#' 
 #' @examples
 #' 
 #' # mutually exclusive exon (MXE) event
