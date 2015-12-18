@@ -1,3 +1,31 @@
+#' Parses multiple alternative splicing events from VAST-TOOLS
+#' 
+#' Expects the annotation for many events at once and parses each event.
+#' 
+#' @param events Data.frame: Vast-Tools events containing gene symbol, event ID,
+#' length, junctions coordinates, event type and inclusion levels for both 
+#' samples
+#' @param progress Boolean: show progress?
+#' 
+#' @seealso \code{\link{parseVastToolsEvent}}
+#' 
+#' @export
+#' events <- read.table(text = "
+#' NFYA HsaEX0042823 chr6:41046768-41046903 136 chr6:41040823,41046768-41046903,41051785 C2 0 N,N,N,Bn,S@0,0 0 N,N,N,Bn,S@0,0
+#' NFYA HsaEX0042823 chr6:41046768-41046903 136 chr6:41040823,41046768-41046903,41051785 C2 0 N,N,N,Bn,S@0,0 0 N,N,N,Bn,S@0,0
+#' ")
+#' parseMultipleVastToolsEvents(events)
+parseMultipleVastToolsEvents <- function(events, progress = FALSE) {
+    if (progress) pb <- txtProgressBar(min=1, max=nrow(events), style=3)
+    parsedEvents <- lapply(1:nrow(events),
+                           function(k) {
+                               if (progress) setTxtProgressBar(pb, k)
+                               parsed <- parseVastToolsEvent(events[k, ])
+                               return(parsed)
+                           })
+    return(parsedEvents)
+}
+
 #' Parses an alternative splicing event from VAST-TOOLS
 #'
 #' @details Junctions are parsed from 
@@ -20,20 +48,39 @@ parseVastToolsEvent <- function(event) {
     event_type <- as.character(event[[6]])
     event_attrs <- list("Program" = "VAST-TOOLS",
                         "Gene symbol" = as.character(event[[1]]),
-                        "Event ID" = as.character(event[[2]]),
-                        "Event type" = event_type,
-                        "Inclusion level A" = as.numeric(event[[7]]),
-                        "Inclusion level B" = as.numeric(event[[9]]))
+                        "Event ID" = as.character(event[[2]]))
     
+    if (length(event) > 7) {
+        more_attrs <- list("Inclusion level A" = as.numeric(event[[7]]),
+                           "Inclusion level B" = as.numeric(event[[9]]))
+    } else {
+        more_attrs <- list()
+    }
+    
+    event_type <- switch(event_type,
+                         "S"   = "SE",
+                         "C1"  = "SE",
+                         "C2"  = "SE",
+                         "C3"  = "SE",
+                         "MIC" = "SE",
+                         "IR-C" = "RI",
+                         "IR-S" = "RI",
+                         "Alt3" = "A3SS",
+                         "Alt5" = "A5SS")
+    
+    event_attrs[["Event type"]] <- event_type
     # Parse junction positions
     junctions <- as.character(event[[5]])
     junctions <- parseVastToolsJunctions(junctions, event_type)
-    return(c(event_attrs, junctions))
+    return(c(event_attrs, more_attrs, junctions))
 }
+
+
 
 #' Parse junctions from a VAST-TOOLS event
 #'
-#' @param coord Character: junction coordinates as returned by VAST-TOOLS
+#' @param coord Character: junction coordinates as returned by VAST-TOOLS;
+#' something like \emph{chr6:chr6:41040823,41046768-41046903,41051785}
 #' @param event_type Chracter: Type of alternative splicing event
 #'
 #' @details The currently supported types of alternative splicing events are:
@@ -55,7 +102,7 @@ parseVastToolsEvent <- function(event) {
 #'
 #' @examples
 #' coord <- "chr6:41040823,41046768-41046903,41051785"
-#' parseVastToolsJunctions(coord, event_type = "C2")
+#' parseVastToolsJunctions(coord, event_type = "SE")
 parseVastToolsJunctions <- function(coord, event_type) {
     # Fill list of parsed junctions with NAs
     parsed <- list("C1 start" = NA, "C1 end" = NA,
@@ -64,8 +111,11 @@ parseVastToolsJunctions <- function(coord, event_type) {
                    "C2 start" = NA, "C2 end" = NA)
     
     # Get strand for intron retention
-    len <- nchar(coord)
-    last <- substr(coord, len, len)
+    if (event_type == "RI") {
+        len <- nchar(coord)
+        last <- substr(coord, len, len)
+        parsed["Strand"] <- last
+    }
     
     # Split event information
     coord <- strsplit(coord, ":|,|-|=")[[1]]
@@ -76,57 +126,109 @@ parseVastToolsJunctions <- function(coord, event_type) {
     junctions <- strsplit(junctions, "+", fixed = TRUE)
     junctions <- lapply(junctions, as.numeric)
     
-    if (is.element(event_type, c("S", "C1", "C2", "C3", "MIC"))) {
+    parse <- switch(
+        event_type,
+        "SE" = parseVastToolsSE,
+        "RI" = parseVastToolsRI,
+        "A3SS" = parseVastToolsA3SS,
+        "A5SS" = parseVastToolsA5SS)
+    parsed <- parse(junctions, parsed)
+    return(parsed)
+}
+
+#' Parse junctions of an event from VAST-TOOLS according to event type
+#'
+#' @param junctions List of integers: exon-exon junctions of an event
+#' @param parsed Named list filled with NAs for faster execution (optional)
+#'
+#' @details The following event types are available to be parsed:
+#' \itemize{
+#'  \item{\bold{SE} (exon skipping)}
+#'  \item{\bold{RI} (intron retention)}
+#'  \item{\bold{A5SS} (alternative 5' splice site)}
+#'  \item{\bold{A3SS} (alternative 3' splice site)}
+#' }
+#'
+#' @seealso \code{\link{parseVastToolsEvent}}
+#'
+#' @return List of parsed junctions
+#' @export
+#'
+#' @examples
+#' junctions <- list(41040823, 41046768, 41046903, 41051785)
+#' parseVastToolsSE(junctions)
+parseVastToolsSE <- function (junctions, parsed=list()) {
+  parsed[["C1 end"]]   <- junctions[[1]]
+  parsed[["C2 start"]] <- junctions[[4]]
+  # Strand is plus if C1 end is lower than C2 start
+  if (junctions[[1]][[1]] < junctions[[4]][[1]]) {
+      parsed[["Strand"]]   <- "+"
+      parsed[["A1 start"]] <- junctions[[2]]
+      parsed[["A1 end"]]   <- junctions[[3]]
+  } else {
+      parsed[["Strand"]]   <- "-"
+      parsed[["A1 start"]] <- junctions[[3]]
+      parsed[["A1 end"]]   <- junctions[[2]]
+  }
+  return(parsed)
+}
+
+#' @rdname parseVastToolsSE
+#' @examples 
+#' 
+#' junctions <- list(58861736, 58862017, 58858719, 58859006)
+#' parseVastToolsRI(junctions)
+parseVastToolsRI <- function (junctions, parsed=list()) {
+    if (parsed["Strand"] == "+") {
+        parsed[["C1 start"]] <- junctions[[1]]
+        parsed[["C1 end"]]   <- junctions[[2]]
+        parsed[["C2 start"]] <- junctions[[3]]
+        parsed[["C2 end"]]   <- junctions[[4]]
+    } else if (parsed["Strand"] == "-") {
+        parsed[["C1 start"]] <- junctions[[2]]
         parsed[["C1 end"]]   <- junctions[[1]]
         parsed[["C2 start"]] <- junctions[[4]]
-        # Strand is plus if C1 end is lower than C2 start
-        if (junctions[[1]][[1]] < junctions[[4]][[1]]) {
-            parsed[["Strand"]]   <- "+"
-            parsed[["A1 start"]] <- junctions[[2]]
-            parsed[["A1 end"]]   <- junctions[[3]]
-        } else {
-            parsed[["Strand"]]   <- "-"
-            parsed[["A1 start"]] <- junctions[[3]]
-            parsed[["A1 end"]]   <- junctions[[2]]
-        }
-    } else if (is.element(event_type, c("IR-C", "IR-S"))) {
-        if (last == "+") {
-            parsed["Strand"] <- "+"
-            parsed[["C1 start"]] <- junctions[[1]]
-            parsed[["C1 end"]]   <- junctions[[2]]
-            parsed[["C2 start"]] <- junctions[[3]]
-            parsed[["C2 end"]]   <- junctions[[4]]
-        } else if (last == "-") {
-            parsed["Strand"] <- "-"
-            parsed[["C1 start"]] <- junctions[[2]]
-            parsed[["C1 end"]]   <- junctions[[1]]
-            parsed[["C2 start"]] <- junctions[[4]]
-            parsed[["C2 end"]]   <- junctions[[3]]
-        }
-    } else if (event_type == "Alt3") {
-        parsed[["C1 end"]]   <- junctions[[1]]
-        # Strand is plus if C1 end is lower than C2 start
-        if (junctions[[1]][[1]] < junctions[[2]][[1]]) {
-            parsed["Strand"] <- "+"
-            parsed[["C2 start"]] <- junctions[[2]]
-            parsed[["C2 end"]]   <- junctions[[3]]
-        } else {
-            parsed["Strand"] <- "-"
-            parsed[["C2 start"]] <- junctions[[3]]
-            parsed[["C2 end"]]   <- junctions[[2]]
-        }
-    } else if (event_type == "Alt5") {
         parsed[["C2 end"]]   <- junctions[[3]]
-        # Strand is plus if C1 end is lower than C2 start
-        if (junctions[[1]][[1]] < junctions[[3]][[1]]) {
-            parsed["Strand"] <- "+"
-            parsed[["C1 start"]] <- junctions[[1]]
-            parsed[["C1 end"]]   <- junctions[[2]]
-        } else {
-            parsed["Strand"] <- "-"
-            parsed[["C1 start"]] <- junctions[[2]]
-            parsed[["C1 end"]]   <- junctions[[1]]
-        }
     }
     return(parsed)
+}
+
+#' @rdname parseVastToolsSE
+#' @examples 
+#' 
+#' junctions <- list(49558568, 49557402, c(49557492, 49557470))
+#' parseVastToolsA3SS(junctions)
+parseVastToolsA3SS <- function (junctions, parsed=list()) {
+    parsed[["C1 end"]]   <- junctions[[1]]
+    # Strand is plus if C1 end is lower than C2 start
+    if (junctions[[1]][[1]] < junctions[[2]][[1]]) {
+        parsed["Strand"] <- "+"
+        parsed[["C2 start"]] <- junctions[[2]]
+        parsed[["C2 end"]]   <- junctions[[3]]
+    } else {
+        parsed["Strand"] <- "-"
+        parsed[["C2 start"]] <- junctions[[3]]
+        parsed[["C2 end"]]   <- junctions[[2]]
+    }
+    return(parsed)
+}
+
+#' @rdname parseVastToolsSE
+#' @examples 
+#' 
+#' junctions <- list(c(99891605, 99891188), 99891686, 99890743)
+#' parseVastToolsA5SS(junctions)
+parseVastToolsA5SS <- function (junctions, parsed=list()) {
+  parsed[["C2 end"]]   <- junctions[[3]]
+  # Strand is plus if C1 end is lower than C2 start
+  if (junctions[[1]][[1]] < junctions[[3]][[1]]) {
+      parsed["Strand"] <- "+"
+      parsed[["C1 start"]] <- junctions[[1]]
+      parsed[["C1 end"]]   <- junctions[[2]]
+  } else {
+      parsed["Strand"] <- "-"
+      parsed[["C1 start"]] <- junctions[[2]]
+      parsed[["C1 end"]]   <- junctions[[1]]
+  }
+  return(parsed)
 }
