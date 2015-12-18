@@ -21,11 +21,11 @@ parseMisoA5SS(event, strand, parsed)
 
 parseMisoA3SS(event, strand, parsed)
 
+parseMisoTandemUTR(event, strand, parsed)
+
 parseMisoAFE(event, strand, parsed)
 
 parseMisoALE(event, strand, parsed)
-
-parseMisoTandemUTR(event, strand, parsed)
 }
 \arguments{
 \item{event}{Data.frame containing only one event with at least 7 columns as 
@@ -43,7 +43,7 @@ List of parsed junctions
 Parse junctions of an event from MISO according to event type
 }
 \details{
-The following event types are available to parse MISO events:
+The following event types are available to be parsed:
 \itemize{
  \item{\bold{SE} (exon skipping)}
  \item{\bold{MXE} (mutually exclusive exon)}
@@ -113,6 +113,15 @@ event <- read.table(text = "
  chr1 A3SS exon 16607 16765 . - .")
 parseMisoA3SS(event, strand = "-", parsed = list())
 
+# Tandem UTR event
+event <- read.table(text = "
+ chr19 TandemUTR gene  10663759  10664625  .  -  .
+ chr19 TandemUTR mRNA  10663759  10664625  .  -  .
+ chr19 TandemUTR exon  10663759  10664625  .  -  .
+ chr19 TandemUTR mRNA  10664223  10664625  .  -  .
+ chr19 TandemUTR exon  10664223  10664625  .  -  .")
+parseMisoTandemUTR(event, strand = "-", parsed = list())
+
 # alternative first exon (AFE) event
 event <- read.table(text = "
  chr12 AFE gene 57916659 57920171  .  +  .
@@ -132,15 +141,6 @@ event <- read.table(text = "
  chr6 ALE mRNA 30620579 30620982  .  +  .
  chr6 ALE exon 30620579 30620982  .  +  .")
 parseMisoALE(event, strand = "+", parsed = list())
-
-# Tandem UTR event
-event <- read.table(text = "
- chr19 TandemUTR gene  10663759  10664625  .  -  .
- chr19 TandemUTR mRNA  10663759  10664625  .  -  .
- chr19 TandemUTR exon  10663759  10664625  .  -  .
- chr19 TandemUTR mRNA  10664223  10664625  .  -  .
- chr19 TandemUTR exon  10664223  10664625  .  -  .")
-parseMisoTandemUTR(event, strand = "-", parsed = list())
 }
 \seealso{
 \code{\link{parseMisoEvent}}

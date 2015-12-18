@@ -17,6 +17,9 @@ Boolean indicating whether both character vectors are identical
 \description{
 Validates if a character vector is equal to another
 }
+\details{
+The conversion to character allows faster execution times
+}
 \examples{
 isEqual(1:10, factor(1:10))
 }

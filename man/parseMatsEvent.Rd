@@ -2,20 +2,20 @@
 % Please edit documentation in R/matsEvents.R
 \name{parseMatsEvent}
 \alias{parseMatsEvent}
-\title{Parse MATS alternative splicing events}
+\title{Parse a single MATS alternative splicing event}
 \usage{
 parseMatsEvent(event, event_type)
 }
 \arguments{
-\item{event}{Data frame: MATS splicing event}
+\item{event}{Data frame row: MATS splicing event}
 
-\item{event_type}{Character: Type of event to be parsed (see details)}
+\item{event_type}{Character: Type of event to parse (see details)}
 }
 \value{
 List containing the event attributes and junctions
 }
 \description{
-Parse MATS alternative splicing events
+Parse a single MATS alternative splicing event
 }
 \details{
 The following event types can be parsed:

@@ -7,7 +7,8 @@
 parseVastToolsJunctions(coord, event_type)
 }
 \arguments{
-\item{coord}{Character: junction coordinates as returned by VAST-TOOLS}
+\item{coord}{Character: junction coordinates as returned by VAST-TOOLS;
+something like \emph{chr6:chr6:41040823,41046768-41046903,41051785}}
 
 \item{event_type}{Chracter: Type of alternative splicing event}
 }
@@ -34,6 +35,6 @@ For more information on VAST-TOOLS, please check out the GitHub repository:
 }
 \examples{
 coord <- "chr6:41040823,41046768-41046903,41051785"
-parseVastToolsJunctions(coord, event_type = "C2")
+parseVastToolsJunctions(coord, event_type = "SE")
 }
 

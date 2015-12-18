@@ -7,9 +7,9 @@
 parseMatsJunctions(event, event_type)
 }
 \arguments{
-\item{event}{Data frame: MATS splicing event}
+\item{event}{Data frame row: MATS splicing event}
 
-\item{event_type}{Character: Type of event to be parsed (see details)}
+\item{event_type}{Character: Type of event to parse (see details)}
 }
 \value{
 List containing the junctions of the event
