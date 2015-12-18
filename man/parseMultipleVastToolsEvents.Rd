@@ -16,4 +16,7 @@ samples}
 \description{
 Expects the annotation for many events at once and parses each event.
 }
+\seealso{
+\code{\link{parseVastToolsEvent}}
+}
 
