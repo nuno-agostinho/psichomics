@@ -4,7 +4,14 @@
 \alias{parseMultipleMisoEvents}
 \title{Parses multiple alternative splicing events from MISO}
 \usage{
-parseMultipleMisoEvents(events)
+parseMultipleMisoEvents(events, progress = FALSE)
+}
+\arguments{
+\item{events}{Data.frame containing one or more events with at least 7
+columns as  retrieved from the alternative splicing annotation files from
+MISO (GFF3 files)}
+
+\item{progress}{Boolean: show progress?}
 }
 \description{
 Expects the annotation for many events at once and parses each event.
@@ -29,5 +36,8 @@ events <- read.table(text = "
   chr2 SE exon 6854 7955 . + .
   chr2 SE exon 7915 8061 . + .")
 parseMultipleMisoEvents(events)
+}
+\seealso{
+\code{\link{parseMisoEvent}}
 }
 

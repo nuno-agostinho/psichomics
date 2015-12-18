@@ -8,8 +8,8 @@ parseVastToolsEvent(event)
 }
 \arguments{
 \item{event}{Data.frame row, list or character: Vast-Tools event containing
-gene symbol, event ID, length, junctions coordinates, event type and inclusion 
-levels plus  for both samples}
+gene symbol, event ID, length, junctions coordinates, event type and 
+inclusion levels for both samples}
 }
 \value{
 List with the event attributes (chromosome, strand, event type and
