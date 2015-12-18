@@ -28,27 +28,27 @@ test_that("parseMultipleMisoEvents parses one event", {
     expect_equal(length(parsed), 1)
 })
 
-test_that("getRowsData retrieves rows of a data frame", {
-    ret <- getRowsData(1, annotation, event, next_event)
+test_that("getDataRows retrieves rows of a data frame", {
+    ret <- getDataRows(1, annotation, event, next_event)
     expect_is(ret, "data.frame")
     expect_equal(ret, annotation[1:6, 1:8])
     
-    ret <- getRowsData(3, annotation, event, next_event)
+    ret <- getDataRows(3, annotation, event, next_event)
     expect_is(ret, "data.frame")
     expect_equal(ret, annotation[7:11, 1:8])
 })
 
-test_that("getRowsData returns NA if value is outside data frame", {
-    ret <- getRowsData(2, annotation, event, next_event)
+test_that("getDataRows returns NA if value is outside data frame", {
+    ret <- getDataRows(2, annotation, event, next_event)
     expect_true(is.na(ret))
 })
 
-test_that("matchMisoEventID matches events ID (returns NA if not possible)", {
+test_that("parseMisoEventID matches events ID (returns NA if not possible)", {
     eventID <- c("2217@uc002poi.1@uc002poe.1", "57705@uc009xob.1@uc001jgy.2", 
                  "2217@uc002poh.1@uc002pog.1")
     columnID <- 9
     
-    events <- matchMisoEventID(eventID, annotation, columnID)
+    events <- parseMisoEventID(eventID, annotation, columnID)
     expect_equal(length(events), 3)
     expect_equal(events[[1]], annotation[1:6, 1:8])
     expect_true(is.na(events[[2]]))
@@ -516,3 +516,5 @@ test_that("remove_duplicated_mRNA removes duplicated mRNAs", {
     expect_equal(length(new), 2)
     expect_equal(new, mRNA[1:2])
 })
+
+## TODO: test parsing multiple events at once
