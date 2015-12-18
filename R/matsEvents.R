@@ -1,16 +1,34 @@
+#' Parses multiple alternative splicing events from MATS
+#' 
+#' Expects the annotation for many events at once and parses each event.
+#' 
+#' @param events Data frame: MATS splicing events
+#' @param event_type Character: Type of event to parse (see details)
+#' @param progress Boolean: show progress?
+#' 
+#' @details The following event types can be parsed:
+#' \itemize{
+#'  \item{\strong{SE}: Skipping exon}
+#'  \item{\strong{MXE}: Mutually exclusive exons}
+#'  \item{\strong{RI}:Retained intron}
+#'  \item{\strong{A3SS}: Alternative 3' splice site}
+#'  \item{\strong{A5SS}: Alternative 5' splice site}
+#' }
+#' 
+#' @return List of lists containing each event's attributes and junctions
+#' @export
+#' @examples 
+#' # TODO: put events here
+#' parseMultipleMatsEvents(events)
 parseMultipleMatsEvents <- function(events, event_type) {
     return(lapply(1:nrow(events),
-                  function(k) {
-                      print(events[k, ])
-                      parseMatsEvent(events[k, ], event_type
-                      )}
-                  ))
+                  function(k) parseMatsEvent(events[k, ], event_type)))
 }
 
-#' Parse MATS alternative splicing events
+#' Parse a single MATS alternative splicing event
 #'
-#' @param event Data frame: MATS splicing event
-#' @param event_type Character: Type of event to be parsed (see details)
+#' @param event Data frame row: MATS splicing event
+#' @param event_type Character: Type of event to parse (see details)
 #'
 #' @details The following event types can be parsed:
 #' \itemize{
