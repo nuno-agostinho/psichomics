@@ -127,13 +127,12 @@ parseVastToolsJunctions <- function(coord, event_type) {
     junctions <- strsplit(junctions, "+", fixed = TRUE)
     junctions <- lapply(junctions, as.numeric)
     
-    parse <- switch(
-        event_type,
-        "SE" = parseVastToolsSE,
-        "RI" = parseVastToolsRI,
-        "A3SS" = parseVastToolsA3SS,
-        "A5SS" = parseVastToolsA5SS)
-    parsed <- parse(junctions, parsed)
+    parseJunctions <- switch(event_type,
+                             "SE" = parseVastToolsSE,
+                             "RI" = parseVastToolsRI,
+                             "A3SS" = parseVastToolsA3SS,
+                             "A5SS" = parseVastToolsA5SS)
+    parsed <- parseJunctions(junctions, parsed)
     return(parsed)
 }
 

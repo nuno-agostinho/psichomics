@@ -202,6 +202,9 @@ GeneID | geneSymbol | chr | strand | exonStart_0base | exonEnd | upstreamES | up
 
 Generating a list of events from the annotation is easy:
 ```{r, eval=FALSE}
+read_path <- function(path, item, ...)
+    read.delim(sprintf(path, item), ...)
+
 mats.path <- "/genedata/NunoA/psi_calculation/mats_out/ASEvents/fromGTF.%s.txt"
 types <- c("A3SS", "A5SS", "AFE", "ALE", "MXE", "RI", "SE")
 mats.hg19 <- lapply(c(types, paste0("novelEvents.", types)), 
