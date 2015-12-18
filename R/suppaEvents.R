@@ -95,50 +95,136 @@ parseSuppaJunctions <- function(event_type, strand, junctions) {
                   "C2 start" = NA, "C2 end" = NA)
     
     # Parse junction positions according to event type
-    switch(event_type,
-           "A3SS" = {
-               parsed[["C1 end"]]   <- junctions[1]
-               # PSI value is related to the first alternative isoform
-               if (strand == "+") {
-                   parsed[["C2 start"]] <- junctions[c(2, 4)]
-               } else if (strand == "-") {
-                   parsed[["C2 start"]] <- junctions[c(4, 2)]
-               }
-           }, # end A3
-           "A5SS" = {
-               # PSI value is related to the first alternative isoform
-               if (strand == "+") {
-                   parsed[["C1 end"]]   <- junctions[c(1, 3)]
-               } else if (strand == "-") {
-                   parsed[["C1 end"]]   <- junctions[c(3, 1)]
-               }
-               parsed[["C2 start"]] <- junctions[2]
-           }, # end A5
-           "SE"  = parsed[c("C1 end",
-                           "A1 start", "A1 end",
-                           "C2 start")] <- junctions,
-           "MXE" = {
-               # PSI value is related to the first alternative isoform
-               if (strand == "+") {
-                   parsed[c("C1 end",
-                            "A1 start", "A1 end",
-                            "A2 start", "A2 end",
-                            "C2 start")] <- junctions[-c(4,5)]
-               } else if (strand == "-"){
-                   parsed[c("C1 end",
-                            "A2 start", "A2 end",
-                            "A1 start", "A1 end",
-                            "C2 start")] <- junctions[-c(4,5)]
-               }
-           }, # end MX
-           "RI"  = parsed[c("C1 start", "C1 end",
-                           "C2 start", "C2 end")] <- junctions,
-           "AFE" = parsed[c("C1 start", "C1 end",
-                           "C2 start",
-                           "A1 start", "A1 end")] <- junctions[1:5],
-           "ALE" = parsed[c("C2 start", "C2 end",
-                           "C1 end",
-                           "A1 start", "A1 end")] <- junctions[2:6]
-    ) # end switch
+    parse <- switch(event_type,
+                    "A3SS" = parseSuppaA3SS,
+                    "A5SS" = parseSuppaA5SS,
+                    "SE"   = parseSuppaSE,
+                    "MXE"  = parseSuppaMXE,
+                    "RI"   = parseSuppaRI,
+                    "AFE"  = parseSuppaAFE,
+                    "ALE"  = parseSuppaALE)
+    parsed <- parse(junctions, strand, parsed)
+    return(parsed)
+}
+
+#' Parse junctions of an event from SUPPA according to event type
+#'
+#' @param junctions List of integers: exon-exon junctions of an event
+#' @param strand Character: positive ("+") or negative ("-") strand
+#' @param parsed Named list filled with NAs for faster execution (optional)
+#'
+#' @details The following event types are available to be parsed:
+#' \itemize{
+#'  \item{\bold{SE} (exon skipping)}
+#'  \item{\bold{RI} (intron retention)}
+#'  \item{\bold{MXE} (mutually exclusive exons)}
+#'  \item{\bold{A5SS} (alternative 5' splice site)}
+#'  \item{\bold{A3SS} (alternative 3' splice site)}
+#'  \item{\bold{ALE} (alternative last exon)}
+#'  \item{\bold{AFE} (alternative first exon)}
+#' }
+#'
+#' @seealso \code{\link{parseSuppaEvent}}
+#'
+#' @return List of parsed junctions
+#' @export
+#'
+#' @examples
+#' junctions <- c(169768099, 169770024, 169770112, 169771762)
+#' parseSuppaSE(junctions, "+")
+parseSuppaSE <- function (junctions, strand, parsed=list()) {
+    parsed[c("C1 end",
+             "A1 start", "A1 end",
+             "C2 start")] <- junctions
+    return(parsed)
+}
+
+#' @rdname parseSuppaSE
+#' @examples 
+#' 
+#' junctions <- c(196709749, 196709922, 196711005, 196711181)
+#' parseSuppaRI(junctions, "+")
+parseSuppaRI <- function (junctions, strand, parsed=list()) {
+    parsed[c("C1 start", "C1 end",
+             "C2 start", "C2 end")] <- junctions
+    return(parsed)
+}
+
+#' @rdname parseSuppaSE
+#' @examples 
+#' 
+#' junctions <- c(24790610, 24792494, 24792800, 24790610, 24795476, 24795797)
+#' parseSuppaALE(junctions, "+")
+parseSuppaALE <- function (junctions, strand, parsed=list()) {
+    parsed[c("C2 start", "C2 end",
+             "C1 end",
+             "A1 start", "A1 end")] <- junctions[2:6]
+    return(parsed)
+}
+
+#' @rdname parseSuppaSE
+#' @examples 
+#' 
+#' junctions <- c(169763871, 169764046, 169767998, 169764550, 169765124,
+#'                169767998)
+#' parseSuppaAFE(junctions, "+")
+parseSuppaAFE <- function (junctions, strand, parsed=list()) {
+    parsed[c("C1 start", "C1 end",
+             "C2 start",
+             "A1 start", "A1 end")] <- junctions[1:5]
+    return(parsed)
+}
+
+#' @rdname parseSuppaSE
+#' @examples 
+#' 
+#' junctions <- c(202060671, 202068453, 202068489, 202073793, 202060671, 
+#'                202072798, 202072906, 202073793)
+#' parseSuppaMXE(junctions, "+")
+parseSuppaMXE <- function (junctions, strand, parsed=list()) {
+    # PSI value is related to the first alternative isoform
+    if (strand == "+") {
+        parsed[c("C1 end",
+                 "A1 start", "A1 end",
+                 "A2 start", "A2 end",
+                 "C2 start")] <- junctions[-c(4,5)]
+    } else if (strand == "-"){
+        parsed[c("C1 end",
+                 "A2 start", "A2 end",
+                 "A1 start", "A1 end",
+                 "C2 start")] <- junctions[-c(4,5)]
+    }
+    return(parsed)
+}
+
+#' @rdname parseSuppaSE
+#' @examples 
+#' 
+#' junctions <- c(169772450, 169773216, 169772450, 169773253)
+#' parseSuppaA3SS(junctions, "+")
+parseSuppaA3SS <- function (junctions, strand, parsed=list()) {
+    parsed[["C1 end"]] <- junctions[1]
+    # PSI value is related to the first alternative isoform
+    if (strand == "+") {
+        parsed[["C2 start"]] <- junctions[c(2, 4)]
+    } else if (strand == "-") {
+        parsed[["C2 start"]] <- junctions[c(4, 2)]
+    }
+    return(parsed)
+}
+
+#' @rdname parseSuppaSE
+#' @examples 
+#' 
+#' junctions <- c(99890743, 99891188, 99890743, 99891605)
+#' parseSuppaA5SS(junctions, "+")
+parseSuppaA5SS <- function (junctions, strand, parsed=list()) {
+    # PSI value is related to the first alternative isoform
+    if (strand == "+") {
+        parsed[["C1 end"]]   <- junctions[c(1, 3)]
+    } else if (strand == "-") {
+        parsed[["C1 end"]]   <- junctions[c(3, 1)]
+    }
+    parsed[["C2 start"]] <- junctions[2]
     return(parsed)
 }
