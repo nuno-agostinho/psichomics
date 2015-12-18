@@ -95,15 +95,15 @@ parseSuppaJunctions <- function(event_type, strand, junctions) {
                   "C2 start" = NA, "C2 end" = NA)
     
     # Parse junction positions according to event type
-    parse <- switch(event_type,
-                    "A3SS" = parseSuppaA3SS,
-                    "A5SS" = parseSuppaA5SS,
-                    "SE"   = parseSuppaSE,
-                    "MXE"  = parseSuppaMXE,
-                    "RI"   = parseSuppaRI,
-                    "AFE"  = parseSuppaAFE,
-                    "ALE"  = parseSuppaALE)
-    parsed <- parse(junctions, strand, parsed)
+    parseJunctions <- switch(event_type,
+                             "A3SS" = parseSuppaA3SS,
+                             "A5SS" = parseSuppaA5SS,
+                             "SE"   = parseSuppaSE,
+                             "MXE"  = parseSuppaMXE,
+                             "RI"   = parseSuppaRI,
+                             "AFE"  = parseSuppaAFE,
+                             "ALE"  = parseSuppaALE)
+    parsed <- parseJunctions(junctions, strand, parsed)
     return(parsed)
 }
 
