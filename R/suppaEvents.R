@@ -45,9 +45,17 @@ parseSuppaEvent <- function(event) {
     # Create list with event attributes
     event_attrs <- list("Program" = "SUPPA",
                         "Gene" = event[1],
-                        "Event type" = event[2],
                         "Chromosome" = event[3],
                         "Strand" = event[len])
+    
+    type <- event[2]
+    event_attrs[["Event type"]] <- switch(type,
+                                          "MX" = "MXE",
+                                          "A5" = "A5SS",
+                                          "A3" = "A3SS",
+                                          "AF" = "AFE",
+                                          "AL" = "ALE",
+                                          type)
     
     # Get the junction positions for each exon and parse them
     junctions <- event[4:(len-1)]
@@ -88,7 +96,7 @@ parseSuppaJunctions <- function(event_type, strand, junctions) {
     
     # Parse junction positions according to event type
     switch(event_type,
-           "A3" = {
+           "A3SS" = {
                parsed[["C1 end"]]   <- junctions[1]
                # PSI value is related to the first alternative isoform
                if (strand == "+") {
@@ -97,7 +105,7 @@ parseSuppaJunctions <- function(event_type, strand, junctions) {
                    parsed[["C2 start"]] <- junctions[c(4, 2)]
                }
            }, # end A3
-           "A5" = {
+           "A5SS" = {
                # PSI value is related to the first alternative isoform
                if (strand == "+") {
                    parsed[["C1 end"]]   <- junctions[c(1, 3)]
@@ -106,10 +114,10 @@ parseSuppaJunctions <- function(event_type, strand, junctions) {
                }
                parsed[["C2 start"]] <- junctions[2]
            }, # end A5
-           "SE" = parsed[c("C1 end",
+           "SE"  = parsed[c("C1 end",
                            "A1 start", "A1 end",
                            "C2 start")] <- junctions,
-           "MX" = {
+           "MXE" = {
                # PSI value is related to the first alternative isoform
                if (strand == "+") {
                    parsed[c("C1 end",
@@ -123,12 +131,12 @@ parseSuppaJunctions <- function(event_type, strand, junctions) {
                             "C2 start")] <- junctions[-c(4,5)]
                }
            }, # end MX
-           "RI" = parsed[c("C1 start", "C1 end",
+           "RI"  = parsed[c("C1 start", "C1 end",
                            "C2 start", "C2 end")] <- junctions,
-           "AF" = parsed[c("C1 start", "C1 end",
+           "AFE" = parsed[c("C1 start", "C1 end",
                            "C2 start",
                            "A1 start", "A1 end")] <- junctions[1:5],
-           "AL" = parsed[c("C2 start", "C2 end",
+           "ALE" = parsed[c("C2 start", "C2 end",
                            "C1 end",
                            "A1 start", "A1 end")] <- junctions[2:6]
     ) # end switch
