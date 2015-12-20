@@ -9,6 +9,8 @@
 #' 
 #' @seealso \code{\link{parseVastToolsEvent}}
 #' 
+#' @return List of lists with the event attributes (chromosome, strand, event 
+#' type and the position of the exon boundaries)
 #' @export
 #' events <- read.table(text = "
 #' NFYA HsaEX0042823 chr6:41046768-41046903 136 chr6:41040823,41046768-41046903,41051785 C2 0 N,N,N,Bn,S@0,0 0 N,N,N,Bn,S@0,0
@@ -71,6 +73,7 @@ parseVastToolsEvent <- function(event) {
     
     event_attrs[["Event type"]] <- event_type
     # Parse junction positions
+    print(event)
     junctions <- as.character(event[[5]])
     junctions <- parseVastToolsJunctions(junctions, event_type)
     return(c(event_attrs, more_attrs, junctions))
@@ -126,6 +129,10 @@ parseVastToolsJunctions <- function(coord, event_type) {
     # Split junctions by multiple acceptors/donors
     junctions <- strsplit(junctions, "+", fixed = TRUE)
     junctions <- lapply(junctions, as.numeric)
+    
+    print("---------------")
+    print(junctions)
+    print(coord)
     
     parseJunctions <- switch(event_type,
                              "SE" = parseVastToolsSE,
@@ -204,10 +211,10 @@ parseVastToolsA3SS <- function (junctions, parsed=list()) {
     if (junctions[[1]][[1]] < junctions[[2]][[1]]) {
         parsed["Strand"] <- "+"
         parsed[["C2 start"]] <- junctions[[2]]
-        parsed[["C2 end"]]   <- junctions[[3]]
+        if (length(junctions) == 3) parsed[["C2 end"]]   <- junctions[[3]]
     } else {
         parsed["Strand"] <- "-"
-        parsed[["C2 start"]] <- junctions[[3]]
+        if (length(junctions) == 3) parsed[["C2 start"]] <- junctions[[3]]
         parsed[["C2 end"]]   <- junctions[[2]]
     }
     return(parsed)
