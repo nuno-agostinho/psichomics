@@ -262,3 +262,13 @@ parseVastToolsJunctions <- function(coord, event_type) {
   return(parsed)
 }
 ```
+
+Another thing to note is that there may be alt. 3' or 5' splice site events
+without the C2 start, although this isn't present in the VAST-TOOLS annotation.
+So, the C2 end may be or not be present.
+
+Also... the alternative exon end may be missing instead, like in this case:
+
+GENE | EVENT | COORD | dLENGTH | FullCO | COMPLEX
+-----|-------|-------|---------|--------|--------
+PAF1 | ENSG00000006712-13-14,13-13-1/2 | chr19:-39876859 | 0 | chr19:39877122,-39877043+39876859 | Alt3

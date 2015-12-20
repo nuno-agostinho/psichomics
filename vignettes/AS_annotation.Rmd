@@ -279,7 +279,7 @@ num <- c(rep("", 6), rep(".2", 2))
 vastTools.hg19 <- lapply(1:length(types), 
                          function(i) read_path(vastTools.path, types[i], num[i], row.names=NULL))
 
-vastToolsEvents <- parseMultipleVastToolsEvents(vastTools.hg19, progress = TRUE)
+vastToolsEvents <- lapply(vastTools.hg19, parseMultipleVastToolsEvents, progress = TRUE)
 
 number <- function(annotation, type)
   sum(sapply(annotation, "[[", "Event type") == type)
