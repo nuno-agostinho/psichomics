@@ -277,7 +277,8 @@ vastTools.path <- "/genedata/Resources/Software/vast-tools/VASTDB/Hsa/TEMPLATES/
 types <- c("ALT3", "ALT5", "COMBI", "IR", "MERGE3m", "MIC", "EXSK", "MULTI")
 num <- c(rep("", 6), rep(".2", 2))
 vastTools.hg19 <- lapply(1:length(types), 
-                         function(i) read_path(vastTools.path, types[i], num[i], row.names=NULL))
+                         function(i) read_path(vastTools.path, types[i], num[i],
+                                               row.names=NULL))
 
 vastToolsEvents <- parseMultipleVastToolsEvents(vastTools.hg19, progress = TRUE)
 
