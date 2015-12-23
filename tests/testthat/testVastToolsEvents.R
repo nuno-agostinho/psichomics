@@ -227,15 +227,26 @@ test_that("parseVastToolsJunctions parses Alt3 junctions (- strand)", {
 })
 
 test_that("parseVastToolsJunctions parses Alt3 junctions without downstream
-          constitutive exon start", {
-    coord <- "chr2:74652618,74652767+74652697-"
-    parsed <- parseVastToolsJunctions(coord, "A3SS")
-    expect_equal(parsed$Chromosome, "chr2")
-    expect_equal(parsed$Strand, "+")
-    expect_equal(parsed$`C1 end`,   74652618)
-    expect_equal(parsed$`C2 start`, c(74652767, 74652697))
-    expect_true(is.na(parsed$`C2 end`))
-})
+          constitutive exon end (+ strand)", {
+              coord <- "chr2:74652618,74652767+74652697-"
+              parsed <- parseVastToolsJunctions(coord, "A3SS")
+              expect_equal(parsed$Chromosome, "chr2")
+              expect_equal(parsed$Strand, "+")
+              expect_equal(parsed$`C1 end`,   74652618)
+              expect_equal(parsed$`C2 start`, c(74652767, 74652697))
+              expect_true(is.na(parsed$`C2 end`))
+          })
+
+test_that("parseVastToolsJunctions parses Alt3 junctions without downstream
+          constitutive exon end (- strand)", {
+              coord <- "chr19:39877122,-39877043+39876859"
+              parsed <- parseVastToolsJunctions(coord, "A3SS")
+              expect_equal(parsed$Chromosome, "chr19")
+              expect_equal(parsed$Strand, "-")
+              expect_equal(parsed$`C1 end`,   39877122)
+              expect_equal(parsed$`C2 start`, c(39877043, 39876859))
+              expect_true(is.na(parsed$`C2 end`))
+          })
 
 test_that("parseVastToolsJunctions parses Alt5 junctions (+ strand)", {
     coord <- "chr2:74650610-74650654+74650658,74650982"
@@ -256,3 +267,25 @@ test_that("parseVastToolsJunctions parses Alt5 junctions (- strand)", {
     expect_equal(parsed$`C1 end`,   c(49557666, 49557642))
     expect_equal(parsed$`C2 end`,   49557470)
 })
+
+test_that("parseVastToolsJunctions parses Alt5 junctions without upstream
+          constitutive exon start (+ strand)", {
+              coord <- "chr7:-150497916+150498056,150498624"
+              parsed <- parseVastToolsJunctions(coord, "A5SS")
+              expect_equal(parsed$Chromosome, "chr7")
+              expect_equal(parsed$Strand, "+")
+              expect_true(is.na(parsed$`C1 start`))
+              expect_equal(parsed$`C1 end`, c(150497916, 150498056))
+              expect_equal(parsed$`C2 end`, 150498624)
+          })
+
+test_that("parseVastToolsJunctions parses Alt5 junctions without upstream
+          constitutive exon start (- strand)", {
+              coord <- "chr12:1058772+1058768-,1042242"
+              parsed <- parseVastToolsJunctions(coord, "A5SS")
+              expect_equal(parsed$Chromosome, "chr12")
+              expect_equal(parsed$Strand, "-")
+              expect_true(is.na(parsed$`C1 start`))
+              expect_equal(parsed$`C1 end`, c(1058772, 1058768))
+              expect_equal(parsed$`C2 end`, 1042242)
+          })

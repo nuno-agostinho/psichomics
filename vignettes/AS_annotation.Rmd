@@ -112,7 +112,6 @@ miso.hg19 <- lapply(c("AFE", "ALE", "SE", "MXE", "A5SS", "A3SS", "RI", "TandemUT
                         read.delim(type, header=F, comment.char="#")
                     }
 )
-library(plyr)
 miso.hg19 <- rbind.fill(miso.hg19)
 misoEvents <- parseMultipleMisoEvents(miso.hg19, progress = T)
 ```
@@ -133,6 +132,19 @@ number(misoEvents, "A3SS")      # alt. 3 splice site:  14957
 number(misoEvents, "RI")        # intron retention:     5987
 number(misoEvents, "TandemUTR") # tandem UTR:           2656
 ```
+
+One thing important to note is that ```misoEvents``` is using 11.2GB of memory.
+Why is that? We're holding all unparseable events as character strings and AFE
+and ALE events have many unrecognisable events. If we don't store those (by
+commenting the command ```parsed[["MISO event"]] <- event```), ```misoEvents``` 
+has now lowered to 3GB of memory. And what if we don't save any unrecognised
+events? It's now using 23.9 MB of memory. Much better!
+
+Also, this is slow. Mainly because getting two indices from a data frame is slow
+in R. One way to improve time performance is to use the package ```data.table```
+instead.
+
+> TODO: try with data.table
 
 ## SUPPA
 We need to run the SUPPA's command generateEvents to get the alternative 
@@ -161,12 +173,13 @@ Let's generate a list of events from the SUPPA annotated events.
 read_path <- function(path, item, ...)
     read.delim(sprintf(path, item), ...)
 
-suppa.path <- "/genedata/NunoA/psi_output/suppa_%s.tab.psi"
+suppa.path <- "/genedata/NunoA/psi_calculation/suppa/suppaEvents/hg19_%s.ioe"
 suppa.hg19 <- lapply(c("A3", "A5", "AF", "AL", "MX", "RI", "SE"), 
-                     function(type) read_path(suppa.path, type, row.names=NULL))
-suppa.hg19 <- rbind.fill(suppa.hg19)[[1]] # discard inclusion levels
-suppaEvents <- parseSuppaEventID(suppa.hg19)
+                     function(type) read_path(suppa.path, type))
+suppa.hg19 <- rbind.fill(suppa.hg19)
+suppaEvents <- parseSuppaEventID(as.character(suppa.hg19$event_id))
 
+# Let's check the numbers
 number <- function(annotation, type)
   sum(sapply(annotation, "[[", "Event type") == type)
 
@@ -227,6 +240,7 @@ for(i in matsEvents)
     j <- c(j, i)
 matsEvents <- j
 
+# Let's check the numbers
 number <- function(annotation, type)
   sum(sapply(annotation, "[[", "Event type") == type)
 
@@ -274,14 +288,21 @@ read_path <- function(path, item1, item2, ...)
     read.delim(sprintf(path, item1, item2), ...)
 
 vastTools.path <- "/genedata/Resources/Software/vast-tools/VASTDB/Hsa/TEMPLATES/Hsa.%s.Template%s.txt"
-types <- c("ALT3", "ALT5", "COMBI", "IR", "MERGE3m", "MIC", "EXSK", "MULTI")
-num <- c(rep("", 6), rep(".2", 2))
+types <- c("ALT3", "ALT5", "COMBI", "IR", "MERGE3m", "MIC", rep(c("EXSK", "MULTI"), 2))
+num <- c(rep("", 6), rep(".1", 2), rep(".2", 2))
 vastTools.hg19 <- lapply(1:length(types), 
                          function(i) read_path(vastTools.path, types[i], num[i],
                                                row.names=NULL))
 
-vastToolsEvents <- lapply(vastTools.hg19, parseMultipleVastToolsEvents, progress = TRUE)
+vastToolsEvents <- lapply(vastTools.hg19, parseMultipleVastToolsEvents,
+                          progress = TRUE)
+v <- list()
+for (i in 1:length(vastToolsEvents))
+    v <- c(v, vastToolsEvents[[i]])
+vastToolsEvents <- v
+rm(i, v)
 
+# Let's check the numbers
 number <- function(annotation, type)
   sum(sapply(annotation, "[[", "Event type") == type)
 

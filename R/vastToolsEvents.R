@@ -60,26 +60,20 @@ parseVastToolsEvent <- function(event) {
         more_attrs <- list()
     }
     
+    # By default, assumes things may be parsable as a skipping exon
     event_type <- switch(event_type,
-                         "S"   = "SE",
-                         "C1"  = "SE",
-                         "C2"  = "SE",
-                         "C3"  = "SE",
-                         "MIC" = "SE",
                          "IR-C" = "RI",
                          "IR-S" = "RI",
                          "Alt3" = "A3SS",
-                         "Alt5" = "A5SS")
+                         "Alt5" = "A5SS",
+                         "SE")
     
     event_attrs[["Event type"]] <- event_type
     # Parse junction positions
-    print(event)
     junctions <- as.character(event[[5]])
     junctions <- parseVastToolsJunctions(junctions, event_type)
     return(c(event_attrs, more_attrs, junctions))
 }
-
-
 
 #' Parse junctions from a VAST-TOOLS event
 #'
@@ -130,10 +124,6 @@ parseVastToolsJunctions <- function(coord, event_type) {
     junctions <- strsplit(junctions, "+", fixed = TRUE)
     junctions <- lapply(junctions, as.numeric)
     
-    print("---------------")
-    print(junctions)
-    print(coord)
-    
     parseJunctions <- switch(event_type,
                              "SE" = parseVastToolsSE,
                              "RI" = parseVastToolsRI,
@@ -165,19 +155,19 @@ parseVastToolsJunctions <- function(coord, event_type) {
 #' junctions <- list(41040823, 41046768, 41046903, 41051785)
 #' parseVastToolsSE(junctions)
 parseVastToolsSE <- function (junctions, parsed=list()) {
-  parsed[["C1 end"]]   <- junctions[[1]]
-  parsed[["C2 start"]] <- junctions[[4]]
-  # Strand is plus if C1 end is lower than C2 start
-  if (junctions[[1]][[1]] < junctions[[4]][[1]]) {
-      parsed[["Strand"]]   <- "+"
-      parsed[["A1 start"]] <- junctions[[2]]
-      parsed[["A1 end"]]   <- junctions[[3]]
-  } else {
-      parsed[["Strand"]]   <- "-"
-      parsed[["A1 start"]] <- junctions[[3]]
-      parsed[["A1 end"]]   <- junctions[[2]]
-  }
-  return(parsed)
+    parsed[["C1 end"]]   <- junctions[[1]]
+    parsed[["C2 start"]] <- junctions[[4]]
+    # Strand is plus if C1 end is lower than C2 start
+    if (junctions[[1]][[1]] < junctions[[4]][[1]]) {
+        parsed[["Strand"]]   <- "+"
+        parsed[["A1 start"]] <- junctions[[2]]
+        parsed[["A1 end"]]   <- junctions[[3]]
+    } else {
+        parsed[["Strand"]]   <- "-"
+        parsed[["A1 start"]] <- junctions[[3]]
+        parsed[["A1 end"]]   <- junctions[[2]]
+    }
+    return(parsed)
 }
 
 #' @rdname parseVastToolsSE
@@ -208,14 +198,20 @@ parseVastToolsRI <- function (junctions, parsed=list()) {
 parseVastToolsA3SS <- function (junctions, parsed=list()) {
     parsed[["C1 end"]]   <- junctions[[1]]
     # Strand is plus if C1 end is lower than C2 start
-    if (junctions[[1]][[1]] < junctions[[2]][[1]]) {
+    if (length(junctions[[2]]) > 0 && junctions[[1]][[1]] < junctions[[2]][[1]]) {
         parsed["Strand"] <- "+"
         parsed[["C2 start"]] <- junctions[[2]]
-        if (length(junctions) == 3) parsed[["C2 end"]]   <- junctions[[3]]
+        if (length(junctions) == 3) {
+            # if there's C2 end information, save it
+            parsed[["C2 end"]] <- junctions[[3]]
+        }
     } else {
         parsed["Strand"] <- "-"
-        if (length(junctions) == 3) parsed[["C2 start"]] <- junctions[[3]]
-        parsed[["C2 end"]]   <- junctions[[2]]
+        parsed[["C2 start"]] <- junctions[[3]]
+        if (length(junctions[[2]]) > 0) {
+            # if there's C2 end information, save it
+            parsed[["C2 end"]] <- junctions[[2]]
+        }
     }
     return(parsed)
 }
@@ -226,16 +222,22 @@ parseVastToolsA3SS <- function (junctions, parsed=list()) {
 #' junctions <- list(c(99891605, 99891188), 99891686, 99890743)
 #' parseVastToolsA5SS(junctions)
 parseVastToolsA5SS <- function (junctions, parsed=list()) {
-  parsed[["C2 end"]]   <- junctions[[3]]
-  # Strand is plus if C1 end is lower than C2 start
-  if (junctions[[1]][[1]] < junctions[[3]][[1]]) {
-      parsed["Strand"] <- "+"
-      parsed[["C1 start"]] <- junctions[[1]]
-      parsed[["C1 end"]]   <- junctions[[2]]
-  } else {
-      parsed["Strand"] <- "-"
-      parsed[["C1 start"]] <- junctions[[2]]
-      parsed[["C1 end"]]   <- junctions[[1]]
-  }
-  return(parsed)
+    parsed[["C2 end"]] <- junctions[[3]]
+    # Strand is plus if C1 end is lower than C2 start
+    if (length(junctions[[2]]) > 0 && junctions[[2]][[1]] < junctions[[3]][[1]]) {
+        parsed["Strand"] <- "+"
+        if (length(junctions[[1]]) > 0) {
+            # if there's C1 start information, save it
+            parsed[["C1 start"]] <- junctions[[1]]
+        }
+        parsed[["C1 end"]] <- junctions[[2]]
+    } else {
+        parsed["Strand"] <- "-"
+        if (length(junctions[[2]]) > 0) {
+            # if there's C1 start information, save it
+            parsed[["C1 start"]] <- junctions[[2]]
+        }
+        parsed[["C1 end"]] <- junctions[[1]]
+    }
+    return(parsed)
 }
