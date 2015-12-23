@@ -264,11 +264,17 @@ parseVastToolsJunctions <- function(coord, event_type) {
 ```
 
 Another thing to note is that there may be alt. 3' or 5' splice site events
-without the C2 start, although this isn't present in the VAST-TOOLS annotation.
-So, the C2 end may be or not be present.
+without the C2 end, although this isn't stated in the VAST-TOOLS documentation.
+Here follows two cases: the first corresponds to an A3SS with a + strand while
+the other exemplefies an A3SS with a - strand. The third and forth are relative
+to an A5SS event.
 
-Also... the alternative exon end may be missing instead, like in this case:
+GENE  | EVENT | COORD | dLENGTH | FullCO | COMPLEX
+------|-------|-------|---------|--------|--------
+WDR54 | ENSG00000005448-15-15,15-14-1/2 | chr2:74652767-  | 0 | chr2:74652618,74652767+74652697- | Alt3
+PAF1  | ENSG00000006712-13-14,13-13-1/2 | chr19:-39876859 | 0 | chr19:39877122,-39877043+39876859 | Alt3
+TMEM176A | ENSG00000002933-0-1,1-1-1/2 | chr7:-150497916 | 0 | chr7:-150497916+150498056,150498624 | Alt5
 
-GENE | EVENT | COORD | dLENGTH | FullCO | COMPLEX
------|-------|-------|---------|--------|--------
-PAF1 | ENSG00000006712-13-14,13-13-1/2 | chr19:-39876859 | 0 | chr19:39877122,-39877043+39876859 | Alt3
+
+A thing I don't understand... why do some event types have an asterik? Like S*
+and C2*? What does it mean?

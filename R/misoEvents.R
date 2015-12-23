@@ -218,7 +218,7 @@ parseMisoSE <- function(event, strand, parsed) {
     if (!valid) {
         # If the event is invalid, just return it without parsing
         parsed[["MISO condition"]] <- "unrecognized event"
-        parsed[["MISO event"]] <- event
+        #parsed[["MISO event"]] <- event
     } else if (strand == "+") {
         parsed[c("C1 start", "C1 end")] <- event[3, 4:5]
         parsed[c("A1 start", "A1 end")] <- event[4, 4:5]
@@ -270,7 +270,7 @@ parseMisoMXE <- function(event, strand, parsed) {
     if (!valid) {
         # If the event is invalid, just return it without parsing
         parsed[["MISO condition"]] <- "unrecognized event"
-        parsed[["MISO event"]] <- event
+        #parsed[["MISO event"]] <- event
     } else if (strand == "+") {
         parsed[c("C1 start", "C1 end")] <- event[3, 4:5]
         parsed[c("A1 start", "A1 end")] <- event[4, 4:5]
@@ -305,7 +305,7 @@ parseMisoRI <- function(event, strand, parsed) {
     if (!valid) {
         # If the event is invalid, just return it without parsing
         parsed[["MISO condition"]] <- "unrecognized event"
-        parsed[["MISO event"]] <- event
+        #parsed[["MISO event"]] <- event
     } else if (strand == "+") {
         parsed[c("C1 start", "C1 end")] <- event[5, 4:5]
         parsed[c("C2 start", "C2 end")] <- event[6, 4:5]
@@ -336,7 +336,7 @@ parseMisoA5SS <- function(event, strand, parsed) {
     if (!valid) {
         # If the event is invalid, just return it without parsing
         parsed[["MISO condition"]] <- "unrecognized event"
-        parsed[["MISO event"]] <- event
+        #parsed[["MISO event"]] <- event
     } else if (strand == "+") {
         parsed[["C1 start"]] <- event[3, 4]
         parsed[["C1 end"]]   <- event[c(3, 6), 5]
@@ -369,7 +369,7 @@ parseMisoA3SS <- function(event, strand, parsed) {
     if (!valid) {
         # If the event is invalid, just return it without parsing
         parsed[["MISO condition"]] <- "unrecognized event"
-        parsed[["MISO event"]] <- event
+        #parsed[["MISO event"]] <- event
     } else if (strand == "+") {
         parsed[c("C1 start", "C1 end")] <- event[3, 4:5]
         parsed[["C2 start"]] <- event[c(4, 7), 4]
@@ -400,7 +400,7 @@ parseMisoTandemUTR <- function(event, strand, parsed) {
     if (!valid) {
         # If the event is invalid, just return it without parsing
         parsed[["MISO condition"]] <- "unrecognized event"
-        parsed[["MISO event"]] <- event
+        #parsed[["MISO event"]] <- event
     } else if (strand == "+") {
         parsed[["C2 start"]] <- event[3, 4]
         parsed[["C2 end"]]   <- event[c(3, 5), 5]
@@ -445,7 +445,7 @@ parseMisoAFE <- function(event, strand, parsed) {
     if (length(mRNA) != 2) {
         # Store (but don't parse) events with more than two mRNAs or only one mRNA
         parsed[["MISO condition"]] <- "unrecognized event"
-        parsed[["MISO event"]] <- event
+        #parsed[["MISO event"]] <- event
     } else if (strand == "+") {
         mRNA1 <- mRNA[[1]]
         exon1 <- mRNA1[nrow(mRNA1), 4:5]
@@ -509,7 +509,7 @@ parseMisoALE <- function(event, strand, parsed) {
     } else if (len < 5) {
         # A GFF3 valid event needs at least 5 lines to be described
         parsed[["MISO condition"]] <- "unrecognized event"
-        parsed[["MISO event"]] <- event
+        #parsed[["MISO event"]] <- event
     } else {
         event <- remove_wrong_mRNA(event)
         if (len < nrow(event)) {
@@ -529,7 +529,7 @@ parseMisoALE <- function(event, strand, parsed) {
         if (length(mRNA) != 2) {
             # Store (but don't parse) events with more than two mRNAs or only one mRNA
             parsed[["MISO condition"]] <- "unrecognized event"
-            parsed[["MISO event"]] <- event
+            #parsed[["MISO event"]] <- event
         } else if (strand == "+") {
             mRNA1 <- mRNA[[1]]
             exon1 <- mRNA1[2, 4:5]
