@@ -37,6 +37,8 @@ parseMultipleVastToolsEvents <- function(events, progress = FALSE) {
 #' gene symbol, event ID, length, junctions coordinates, event type and 
 #' inclusion levels for both samples
 #'
+#' @note Don't use strings as factors.
+#'
 #' @return List with the event attributes (chromosome, strand, event type and
 #' the position of the exon boundaries)
 #' @export
@@ -48,7 +50,7 @@ parseMultipleVastToolsEvents <- function(events, progress = FALSE) {
 #' parseVastToolsEvent(event)
 parseVastToolsEvent <- function(event) {
     # Create list with event attributes
-    event_type <- as.character(event[[6]])
+    event_type <- event[[6]]
     event_attrs <- list("Program" = "VAST-TOOLS",
                         "Gene symbol" = as.character(event[[1]]),
                         "Event ID" = as.character(event[[2]]))
