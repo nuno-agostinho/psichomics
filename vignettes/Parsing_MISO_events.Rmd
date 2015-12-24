@@ -264,9 +264,23 @@ event <- paste0("ID=", eventID, ";Name=", eventID, ";gid=", eventID)
 
 microbenchmark(times = 1,
                match = match(event, annotation[[IDcolumn]]),
-               which = which(annotation[[IDcolumn]] == event)
-)
+               which = which(annotation[[IDcolumn]] == event))
 ```
+
+## fmatch
+The package ```fastmatch``` provides a faster match than R's built-in function.
+Let's test if this is true.
+
+```{r miso-fmatch}
+library(fastmatch)
+event <- paste0("ID=", eventID, ";Name=", eventID, ";gid=", eventID)
+
+microbenchmark(times = 1,
+               match  = match (event, annotation[[IDcolumn]]),
+               fmatch = fmatch(event, annotation[[IDcolumn]]))
+```
+
+Yup, it's true! :)
 
 # Parsing multiple MISO event ID's
 
