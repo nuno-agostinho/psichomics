@@ -82,10 +82,18 @@ using objects instead of lists?
 
 > TODO: event data structure - list VS object
 
-# Retrieving alternative splicing annotation
+# Retrieving and parsing alternative splicing annotation
 To get the most complete annotation of alternative splicing events, we'll
 combine the alternative splicing annotation from many programs like MISO,
 VAST-TOOLS, SUPPA and MATS. Others programs' annotation may be added later on.
+
+The parsing of the annotation originated from different programs is explained
+in the following articles:
+
+* [MISO](Parsing MISO events.Rmd)
+* [SUPPA](Parsing SUPPA events.Rmd)
+* [VAST-TOOLS](Parsing VAST-TOOLS events.Rmd)
+* [MATS](Parsing MATS events.Rmd)
 
 ## MISO
 It's really easy to get the alternative splicing annotation used by
@@ -285,7 +293,7 @@ have 7 or less columns (since there isn't data with that info... duh).
 
 ```{r, eval=FALSE}
 read_path <- function(path, item1, item2, ...)
-    read.delim(sprintf(path, item1, item2), ...)
+    read.delim(sprintf(path, item1, item2), stringsAsFactors = F, ...)
 
 vastTools.path <- "/genedata/Resources/Software/vast-tools/VASTDB/Hsa/TEMPLATES/Hsa.%s.Template%s.txt"
 types <- c("ALT3", "ALT5", "COMBI", "IR", "MERGE3m", "MIC", rep(c("EXSK", "MULTI"), 2))
@@ -296,32 +304,29 @@ vastTools.hg19 <- lapply(1:length(types),
 
 vastToolsEvents <- lapply(vastTools.hg19, parseMultipleVastToolsEvents,
                           progress = TRUE)
-v <- list()
+tmp <- list()
 for (i in 1:length(vastToolsEvents))
-    v <- c(v, vastToolsEvents[[i]])
-vastToolsEvents <- v
-rm(i, v)
+    tmp <- c(tmp, vastToolsEvents[[i]])
+vastToolsEvents <- tmp
 
 # Let's check the numbers
 number <- function(annotation, type)
   sum(sapply(annotation, "[[", "Event type") == type)
 
-length(vastToolsEvents)               # all event types:    
-number(vastToolsEvents, "SE")         # skipped exons:       
-number(vastToolsEvents, "AFE")        # alt. first exons:    
-number(vastToolsEvents, "ALE")        # alt. last exons:      
-number(vastToolsEvents, "MXE")        # mutually exclusive:   
-number(vastToolsEvents, "A5SS")       # alt. 5 splice site:   
-number(vastToolsEvents, "A3SS")       # alt. 3 splice site:   
-number(vastToolsEvents, "RI")         # intron retention:     
+length(vastToolsEvents)               # all event types:    504494
+number(vastToolsEvents, "SE")         # skipped exons:      301155
+number(vastToolsEvents, "AFE")        # alt. first exons:        0
+number(vastToolsEvents, "ALE")        # alt. last exons:         0
+number(vastToolsEvents, "MXE")        # mutually exclusive:      0  
+number(vastToolsEvents, "A5SS")       # alt. 5 splice site:  15835
+number(vastToolsEvents, "A3SS")       # alt. 3 splice site:  20860
+number(vastToolsEvents, "RI")         # intron retention:   166644
 number(vastToolsEvents, "TandemUTR")  # tandem UTR:              0
 ```
 
-# Parsing alternative splicing annotation
-The annotation originated from different programs was parsed. You can read more
-about it in the following articles:
-
-* [MISO](Parsing MISO events.Rmd)
-* [SUPPA](Parsing SUPPA events.Rmd)
-* [VAST-TOOLS](Parsing VAST-TOOLS events.Rmd)
-* [MATS](Parsing MATS events.Rmd)
+# Getting TCGA's read counts for the annotated splicing junctions
+[The Cancer Genome Atlas (TCGA)](https://tcga-data.nci.nih.gov/tcga/) is a
+data repository containing clinical information, genomic characterization data, 
+and high level sequence analysis of many types of tumor genomes. It's possible
+to obtain read counts for splicing junctions just as read counts for exons and
+isoforms.
