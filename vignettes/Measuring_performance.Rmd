@@ -123,13 +123,35 @@ autoplot(res)
 validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 2))
 event <- factor(validator)
 res <- microbenchmark(
-  all(event == validator),
-  all(as.character(event) == validator),
-  identical(as.character(event), validator),
-  all.equal(as.character(event), validator),
-  all(as.character(event) == as.character(validator)),
-  identical(as.character(event), as.character(validator)),
-  all.equal(as.character(event), as.character(validator))
+  a=all(event == validator),
+  b=all(as.character(event) == validator),
+  c=identical(as.character(event), validator),
+  d=all.equal(as.character(event), validator),
+  e=all(as.character(event) == as.character(validator)),
+  f=identical(as.character(event), as.character(validator)),
+  g=all.equal(as.character(event), as.character(validator))
 )
 autoplot(res)
 ```
+
+# Faster subsetting
+```{r}
+set.seed(1)  # for reproducible example
+df <- data.frame(age=sample(1:65, 1e6, replace=TRUE), x=rnorm(1e6), y=rpois(1e6,25))
+
+library(data.table)
+dt <- as.data.table(df)
+
+library(microbenchmark)
+res <- microbenchmark(times=10,
+    df[which(df$age>5),],
+    subset(df, age>5), 
+    df[df$age>5,],
+    dt[age > 5])
+autoplot(res)
+```
+
+However, we can't use data table instead of data frame without modifying the
+source code. To get a column from a data table, we need to either get it by its
+name like ```dt[ , V3]``` or by its index with an added argument 
+```dt[ , 3, with=FALSE]```.

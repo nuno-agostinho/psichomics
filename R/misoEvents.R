@@ -1,3 +1,5 @@
+library(fastmatch)
+
 #' Get rows of a data frame between two row indexes
 #'
 #' @details For a given iteration i, returns data from first_row[i] to
@@ -56,14 +58,14 @@ getDataRows <- function(i, data, first_row, last_row) {
 #' parseMisoEventID(eventID, annotation, IDcolumn)
 parseMisoEventID <- function(eventID, annotation, IDcolumn) {
     # Get first row from annotation matching a given splicing event ID
-    index <- match(paste0("ID=", eventID,
-                          ";Name=", eventID,
-                          ";gid=", eventID),
-                   annotation[[IDcolumn]])
+    index <- fmatch(paste0("ID=", eventID,
+                           ";Name=", eventID,
+                           ";gid=", eventID),
+                    annotation[[IDcolumn]])
     # Get every index of splicing events present in the annotation
     events <- which(annotation[["V3"]] == "gene")
     # Get the index of the next gene
-    next_index <- events[match(index, events) + 1]
+    next_index <- events[fmatch(index, events) + 1]
     
     # Get the rows relative to each event
     ret <- lapply(1:(length(index)), getDataRows, annotation, index,
@@ -116,8 +118,8 @@ parseMultipleMisoEvents <- function(events, progress=FALSE) {
     if (progress) pb <- txtProgressBar(min=1, max=length(firstIndex), style=3)
     
     res <- lapply(1:length(firstIndex), function(i, data) {
-        if (progress) setTxtProgressBar(pb, i)
-            
+        if (progress)
+            setTxtProgressBar(pb, i)
         event <- data[firstIndex[i]:lastIndex[i], ]
         parseMisoEvent(event)
     }, events)
@@ -597,7 +599,7 @@ list_mRNA <- function(event) {
 #' @return Non-redundant list of mRNAs and respective exons
 remove_duplicated_mRNA <- function (mRNA) {
     # Get first occurence of each mRNA and remove duplicated index
-    uniq <- unique(match(mRNA, mRNA))
+    uniq <- unique(fmatch(mRNA, mRNA))
     
     # Return a non-redundant list of mRNAs
     return(mRNA[uniq])
