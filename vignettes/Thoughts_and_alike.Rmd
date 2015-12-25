@@ -11,7 +11,7 @@ vignette: >
 
 # TODO
 - Obter anotação de eventos alternativos a partir dos vários programas
-- Fazer calculos de PSI atraves de formulas + contagem de reads
+- Fazer cálculos de PSI atraves de fórmulas + contagem de reads
 - Base: tabelas de PSIs
 - Parte gráfica: barplots com 2 tipos de amostras para eventos
 - Testar com grande volume de dados

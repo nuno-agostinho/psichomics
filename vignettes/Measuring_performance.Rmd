@@ -110,10 +110,22 @@ benchmark(
 l <- list(a = 1:10, b = 11:20)
 expect <- c(Min.=0, "1st Qu."=0, Median=0, "3rd Qu."=0, Max.=0)
 
-res <- microbenchmark(lapply = lapply(l, fivenum),
-                      sapply = sapply(l, fivenum),
-                      vapply = vapply(l, fivenum, expect))
-res
+res <- microbenchmark(
+    lapply = lapply(l, fivenum),
+    sapply = sapply(l, fivenum),
+    vapply = vapply(l, fivenum, expect))
+autoplot(res)
+```
+
+```{r}
+l <- list(a = as.character(1:10), b = as.character(11:20))
+res <- microbenchmark(
+    lapply1=lapply(l, "[[", 1), 
+    sapply1=sapply(l, "[[", 1),
+    vapply1=vapply(l, "[[", 1, FUN.VALUE = character(1)),
+    lapply2=lapply(l, function(x) x[[1]]), 
+    sapply2=sapply(l, function(x) x[[1]]),
+    vapply2=vapply(l, function(x) x[[1]], character(1)))
 autoplot(res)
 ```
 
