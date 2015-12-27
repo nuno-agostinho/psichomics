@@ -17,11 +17,17 @@
 #'             "ENSG00000000419;A3:20:49557492-49558568:49557470-49558568:-",
 #'             "ENSG00000000003;A5:X:99890743-99891188:99890743-99891605:-")
 #' parseSuppaEventID(events)
-parseSuppaEventID <- function(event) {
+parseSuppaEventID <- function(event, progress=FALSE) {
+    if (progress)
+        pb <- txtProgressBar(min=1, max=length(event), style=3)
     # Split event ID by semicolon and colon symbols
     event <- strsplit(event, ";|:")
     # Create a list of lists containing event information
-    return(lapply(event, parseSuppaEvent))
+    res <- lapply(1:length(event), function(e) {
+        if (progress) setTxtProgressBar(pb, e)
+        parseSuppaEvent(event[[e]])
+    })
+    return(res)
 }
 
 #' Parses splicing event from SUPPA

@@ -12,6 +12,8 @@
 #' @return List of lists with the event attributes (chromosome, strand, event 
 #' type and the position of the exon boundaries)
 #' @export
+#' 
+#' @examples
 #' events <- read.table(text = "
 #' NFYA HsaEX0042823 chr6:41046768-41046903 136 chr6:41040823,41046768-41046903,41051785 C2 0 N,N,N,Bn,S@0,0 0 N,N,N,Bn,S@0,0
 #' SCYL3   HsaEX0056691    chr1:169839396-169839498        103     chr1:169842837,169839396-169839498,169838180+169838269  S       0.00    N,N,N,Bn,S@0,0  0.00    N,N,N,Bn,S@0,0
