@@ -1,4 +1,5 @@
 context("Parse MISO splicing events")
+library(fastmatch)
 
 annotation <- read.table(text="
     chr19 AFE gene 50015886 50028830  .  +  . ID=2217@uc002poi.1@uc002poe.1;Name=2217@uc002poi.1@uc002poe.1;gid=2217@uc002poi.1@uc002poe.1

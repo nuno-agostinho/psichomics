@@ -1,5 +1,3 @@
-library(fastmatch)
-
 #' Get rows of a data frame between two row indexes
 #'
 #' @details For a given iteration i, returns data from first_row[i] to
@@ -16,6 +14,7 @@ library(fastmatch)
 #' 
 #' @return Data frame subset givne two row indexes (returns NA if the first row 
 #' index is NA)
+#' @export
 getDataRows <- function(i, data, first_row, last_row) {
     first <- first_row[i]
     last  <- last_row[i]
@@ -46,6 +45,8 @@ getDataRows <- function(i, data, first_row, last_row) {
 #' events' annotation instead of all data for faster runs. For example, when
 #' trying to match only skipped exons event IDs, only use the annotation of
 #' skipped exons instead of using a mega annotation with all event types.
+#'
+#' @importFrom fastmatch fmatch
 #'
 #' @return Data frame of the matching events (or NA when nothing is matched)
 #' @export
@@ -288,7 +289,6 @@ parseMisoMXE <- function(event, strand, parsed) {
 }
 
 #' @rdname parseMisoSE
-#' 
 #' @examples
 #'
 #' # intron retention (RI) event
@@ -573,6 +573,7 @@ parseMisoALE <- function(event, strand, parsed) {
 #' @inheritParams parseMisoEvent
 #' 
 #' @return List of mRNAs and respective exons
+#' @export
 list_mRNA <- function(event) {
     mRNA_index <- which(event[ , 3] == "mRNA")
     if (length(mRNA_index) == 1) {
@@ -596,7 +597,10 @@ list_mRNA <- function(event) {
 #' 
 #' @param mRNA List of mRNAs and respective exons
 #' 
+#' @importFrom fastmatch fmatch
+#' 
 #' @return Non-redundant list of mRNAs and respective exons
+#' @export
 remove_duplicated_mRNA <- function (mRNA) {
     # Get first occurence of each mRNA and remove duplicated index
     uniq <- unique(fmatch(mRNA, mRNA))
@@ -614,6 +618,8 @@ remove_duplicated_mRNA <- function (mRNA) {
 #' @inheritParams parseMisoEvent
 #' 
 #' @return Data frame with incorrect rows removed
+#' @export
+#' 
 #' @examples
 #' # skipping exon (SE) event with incorrect mRNAs
 #' event <- read.table(text = "
