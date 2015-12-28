@@ -28,14 +28,10 @@ The following event types can be parsed:
 }
 }
 \examples{
-mats_A3SS <- c(ID = "1234", GeneID = "ENSG00000076108", geneSymbol = "BAZ2A", 
-  chr = "chr12", strand = "-", longExonStart_0base = "57000030", 
-  longExonEnd = "57000179", shortES = "57000030", shortEE = "57000096",
-  flankingES = "57000416", flankingEE = "57000517", ID.1 = "1234", 
-  IJC_SAMPLE_1 = "0", SJC_SAMPLE_1 = "18", IJC_SAMPLE_2 = "2",
-  SJC_SAMPLE_2 = "0", IncFormLen = "112", SkipFormLen = "56",
-  PValue = "0.00337999081157", FDR = "0.0540798529851", IncLevel1 = "0",
-  IncLevel2 = "1", IncLevelDifference = "-1")
+# MATS event (alternative 3' splice site)
+event <- read.table(text = "
+     3658 ENSG00000067715 SYT1 chr12 + 79685787 79685910 79685796 79685910 79679566 79679751 3658 252 102 73 16 58 56 0.0342916452301 0.274333161841 0.705 0.815 -0.11
+")
 
 parseMatsJunctions(mats_A3SS, "A3SS")
 }

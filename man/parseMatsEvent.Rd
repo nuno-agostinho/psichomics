@@ -2,7 +2,7 @@
 % Please edit documentation in R/matsEvents.R
 \name{parseMatsEvent}
 \alias{parseMatsEvent}
-\title{Parse a single MATS alternative splicing event}
+\title{Parse alternative splicing events from MATS}
 \usage{
 parseMatsEvent(event, event_type)
 }
@@ -15,7 +15,7 @@ parseMatsEvent(event, event_type)
 List containing the event attributes and junctions
 }
 \description{
-Parse a single MATS alternative splicing event
+Parse alternative splicing events from MATS
 }
 \details{
 The following event types can be parsed:
@@ -29,15 +29,11 @@ The following event types can be parsed:
 }
 \examples{
 # MATS event (alternative 3' splice site)
-mats_A3SS <- c(ID = "1234", GeneID = "ENSG00000076108", geneSymbol = "BAZ2A", 
-  chr = "chr12", strand = "-", longExonStart_0base = "57000030", 
-  longExonEnd = "57000179", shortES = "57000030", shortEE = "57000096",
-  flankingES = "57000416", flankingEE = "57000517", ID.1 = "1234", 
-  IJC_SAMPLE_1 = "0", SJC_SAMPLE_1 = "18", IJC_SAMPLE_2 = "2",
-  SJC_SAMPLE_2 = "0", IncFormLen = "112", SkipFormLen = "56",
-  PValue = "0.00337999081157", FDR = "0.0540798529851", IncLevel1 = "0",
-  IncLevel2 = "1", IncLevelDifference = "-1")
-
+event <- read.table(text = "
+     2 ENSG00000166012 TAF1D chr11 - 93466515 93466671 93466515 93466563 93467790 93467826
+     5 ENSG00000166012 TAF1D chr11 - 93466515 93466671 93466515 93466585 93467790 93467826
+     6 ENSG00000166012 TAF1D chr11 - 93466515 93466585 93466515 93466563 93467790 93467826
+")
 parseMatsEvent(mats_A3SS, "A3SS")
 }
 
