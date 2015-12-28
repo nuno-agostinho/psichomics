@@ -122,14 +122,12 @@ miso.hg19 <- lapply(c("AFE", "ALE", "SE", "MXE", "A5SS", "A3SS", "RI", "TandemUT
 )
 miso.hg19 <- rbind.fill(miso.hg19)
 misoEvents <- parseMultipleMisoEvents(miso.hg19, progress = T)
+# List of lists: 308 seconds // 191 Mb (commit 3e70215)
 ```
 
 Let's check the numbers. And let's not forget that there are unrecognized events
 (i.e. badly-formatted events) in these numbers as well.
 ```{r, eval=FALSE}
-number <- function(annotation, type)
-  sum(sapply(annotation, "[[", "Event type") == type)
-
 length(misoEvents)              # all event types:    108340
 number(misoEvents, "SE")        # skipped exons:       39222
 number(misoEvents, "AFE")       # alt. first exons:    19720
@@ -185,7 +183,9 @@ suppa.path <- "/genedata/NunoA/psi_calculation/suppa/suppaEvents/hg19_%s.ioe"
 suppa.hg19 <- lapply(c("A3", "A5", "AF", "AL", "MX", "RI", "SE"), 
                      function(type) read_path(suppa.path, type))
 suppa.hg19 <- rbind.fill(suppa.hg19)
-suppaEvents <- parseSuppaEventID(as.character(suppa.hg19$event_id))
+eventsID <- as.character(suppa.hg19$event_id)
+suppaEvents <- parseSuppaEventID(eventsID, progress = TRUE)
+# List of lists: 20.5 seconds // 342 Mb (commit 3e70215)
 
 # Let's check the numbers
 number <- function(annotation, type)
@@ -237,10 +237,12 @@ matsEvents <- lapply(1:length(mats.hg19),
                          print(type)
                          annotation <- mats.hg19[[i]]
                          if (nrow(annotation) > 0)
-                            return(parseMultipleMatsEvents(annotation, type))
+                            return(parseMatsEvent(annotation, type))
                          else
                              return(NULL)
                      })
+# List of lists: 63.3 seconds // 243.2 Mb (commit 3e70215)
+# Data frame:    0.42 seconds //  17.9 Mb
 
 matsEvents <- matsEvents[!sapply(matsEvents, is.null)]
 j <- list()
@@ -249,18 +251,19 @@ for(i in matsEvents)
 matsEvents <- j
 
 # Let's check the numbers
-number <- function(annotation, type)
-  sum(sapply(annotation, "[[", "Event type") == type)
+nrow(matsEvents)                          
+sapply(types, function(type)
+    sum(matsEvents$Event.type == type))
 
-length(matsEvents)               # all event types:    118417
-number(matsEvents, "SE")         # skipped exons:       37935
-number(matsEvents, "AFE")        # alt. first exons:    51062
-number(matsEvents, "ALE")        # alt. last exons:      8951
-number(matsEvents, "MXE")        # mutually exclusive:   2333
-number(matsEvents, "A5SS")       # alt. 5 splice site:   4890
-number(matsEvents, "A3SS")       # alt. 3 splice site:   7706
-number(matsEvents, "RI")         # intron retention:     5540
-number(matsEvents, "TandemUTR")  # tandem UTR:              0
+# all event types:    118417
+# skipped exons:       37935
+# alt. first exons:    51062
+# alt. last exons:      8951
+# mutually exclusive:   2333
+# alt. 5 splice site:   4890
+# alt. 3 splice site:   7706
+# intron retention:     5540
+# tandem UTR:              0
 ```
 
 ## VAST-TOOLS
@@ -304,6 +307,8 @@ vastTools.hg19 <- lapply(1:length(types),
 
 vastToolsEvents <- lapply(vastTools.hg19, parseMultipleVastToolsEvents,
                           progress = TRUE)
+# List of lists: 377.7 seconds // 1 Gb (commit 3e70215)
+
 tmp <- list()
 for (i in 1:length(vastToolsEvents))
     tmp <- c(tmp, vastToolsEvents[[i]])
@@ -323,6 +328,24 @@ number(vastToolsEvents, "A3SS")       # alt. 3 splice site:  20860
 number(vastToolsEvents, "RI")         # intron retention:   166644
 number(vastToolsEvents, "TandemUTR")  # tandem UTR:              0
 ```
+
+# Event representation: list, data frame, data table or object
+To represent an event we started to use a list with many attributes. However,
+this is not practical. A much more natural way to represent information in R is
+by using a data frame. Even better, we could use a data table (a package which
+makes most operations on data frames faster). Another way more akin to saving
+information in object-oriented languages is by using objects. So, which of these 
+ways is the best considering both memory and time?
+
+Before anything, all time and memory was registred.
+
+So, let's first try to get MATS events to a data frame instead of a list of 
+lists since MATS is the easiest to parse. There's a clearer improvement!
+# Times of parseMatsEvent(event) and memory size of result
+# List of lists: 63.3 seconds // 243.2 Mb (commit 3e70215)
+# Data frame:    0.42 seconds //  17.9 Mb
+
+> TODO
 
 # Getting TCGA's read counts for the annotated splicing junctions
 [The Cancer Genome Atlas (TCGA)](https://tcga-data.nci.nih.gov/tcga/) is a
