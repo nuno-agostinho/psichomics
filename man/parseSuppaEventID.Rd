@@ -4,7 +4,7 @@
 \alias{parseSuppaEventID}
 \title{Parses splicing event IDs from SUPPA}
 \usage{
-parseSuppaEventID(event)
+parseSuppaEventID(event, progress = FALSE)
 }
 \arguments{
 \item{event}{Character: Splicing event ID}
@@ -22,7 +22,7 @@ More information about SUPPA available at
 }
 \examples{
 event <- "ENSG00000000419;A3:20:49557492-49557642:49557470-49557642:-"
-parseSuppaEvent(event)
+parseSuppaEventID(event)
 
 events <- c("ENSG00000000419;A3:20:49557492-49557642:49557470-49557642:-",
             "ENSG00000000419;A3:20:49557492-49558568:49557470-49558568:-",
