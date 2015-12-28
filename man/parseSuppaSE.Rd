@@ -10,26 +10,26 @@
 \alias{parseSuppaSE}
 \title{Parse junctions of an event from SUPPA according to event type}
 \usage{
-parseSuppaSE(junctions, parsed = list())
+parseSuppaSE(junctions, strand, parsed = list())
 
-parseSuppaRI(junctions, parsed = list())
+parseSuppaRI(junctions, strand, parsed = list())
 
-parseSuppaALE(junctions, parsed = list())
+parseSuppaALE(junctions, strand, parsed = list())
 
-parseSuppaAFE(junctions, parsed = list())
+parseSuppaAFE(junctions, strand, parsed = list())
 
-parseSuppaMXE(strand, junctions, parsed = list())
+parseSuppaMXE(junctions, strand, parsed = list())
 
-parseSuppaA3SS(strand, junctions, parsed = list())
+parseSuppaA3SS(junctions, strand, parsed = list())
 
-parseSuppaA5SS(strand, junctions, parsed = list())
+parseSuppaA5SS(junctions, strand, parsed = list())
 }
 \arguments{
 \item{junctions}{List of integers: exon-exon junctions of an event}
 
-\item{parsed}{Named list filled with NAs for faster execution (optional)}
-
 \item{strand}{Character: positive ("+") or negative ("-") strand}
+
+\item{parsed}{Named list filled with NAs for faster execution (optional)}
 }
 \value{
 List of parsed junctions
@@ -50,28 +50,28 @@ The following event types are available to be parsed:
 }
 }
 \examples{
-junctions <- c(99891605, 99890743, 99891188, 99890743)
-parseSuppaSE(junctions)
+junctions <- c(169768099, 169770024, 169770112, 169771762)
+parseSuppaSE(junctions, "+")
 
 junctions <- c(196709749, 196709922, 196711005, 196711181)
-parseSuppaRI(junctions)
+parseSuppaRI(junctions, "+")
 
 junctions <- c(24790610, 24792494, 24792800, 24790610, 24795476, 24795797)
-parseSuppaALE(junctions)
+parseSuppaALE(junctions, "+")
 
 junctions <- c(169763871, 169764046, 169767998, 169764550, 169765124,
                169767998)
-parseSuppaAFE(junctions)
+parseSuppaAFE(junctions, "+")
 
 junctions <- c(202060671, 202068453, 202068489, 202073793, 202060671, 
                202072798, 202072906, 202073793)
-parseSuppaMXE(junctions)
+parseSuppaMXE(junctions, "+")
 
 junctions <- c(169772450, 169773216, 169772450, 169773253)
-parseSuppaA3SS(junctions)
+parseSuppaA3SS(junctions, "+")
 
 junctions <- c(99890743, 99891188, 99890743, 99891605)
-parseSuppaA5SS(junctions)
+parseSuppaA5SS(junctions, "+")
 }
 \seealso{
 \code{\link{parseSuppaEvent}}

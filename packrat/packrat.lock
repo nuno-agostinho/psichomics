@@ -1,16 +1,38 @@
 PackratFormat: 1.4
 PackratVersion: 0.4.6.1
 RVersion: 3.2.2
-Repos: BioCsoft=https://bioconductor.org/packages/3.2/bioc,
-    BioCann=https://bioconductor.org/packages/3.2/data/annotation,
-    BioCexp=https://bioconductor.org/packages/3.2/data/experiment,
-    BioCextra=https://bioconductor.org/packages/3.2/extra,
+Repos: BioCsoft=http://bioconductor.org/packages/3.1/bioc,
+    BioCann=http://bioconductor.org/packages/3.1/data/annotation,
+    BioCexp=http://bioconductor.org/packages/3.1/data/experiment,
+    BioCextra=http://bioconductor.org/packages/3.1/extra,
     CRAN=https://cran.rstudio.com/
 
 Package: BH
 Source: CRAN
 Version: 1.58.0-1
 Hash: 4f6db3b5311bb006f536a2e67278d058
+
+Package: BiocGenerics
+Source: Bioconductor
+Version: 0.16.1
+Hash: c66deb506ef217896ce7d2ee347c95ff
+
+Package: GenomeInfoDb
+Source: CRAN
+Version: 1.6.1
+Requires: BiocGenerics, IRanges, S4Vectors
+
+Package: GenomicRanges
+Source: Bioconductor
+Version: 1.22.2
+Hash: 0f8ddbee9c92d1e9850347e96099d097
+Requires: BiocGenerics, GenomeInfoDb, IRanges, S4Vectors, XVector
+
+Package: IRanges
+Source: Bioconductor
+Version: 2.4.6
+Hash: 88444693c067f14702f1234c00d0960d
+Requires: BiocGenerics, S4Vectors
 
 Package: R6
 Source: CRAN
@@ -26,6 +48,18 @@ Package: Rcpp
 Source: CRAN
 Version: 0.12.2
 Hash: 1928c2b7372e3f033217335f3fad25a3
+
+Package: S4Vectors
+Source: Bioconductor
+Version: 0.8.5
+Hash: 2219da44f6292b716079333ccace2d93
+Requires: BiocGenerics
+
+Package: XVector
+Source: Bioconductor
+Version: 0.10.0
+Hash: 5aae86776000f3ce8b3cad1a801f1e5f
+Requires: BiocGenerics, IRanges, S4Vectors, zlibbioc
 
 Package: bitops
 Source: CRAN
@@ -297,3 +331,8 @@ Package: yaml
 Source: CRAN
 Version: 2.1.13
 Hash: 4854ccabebc225e8a7309fb4a74980de
+
+Package: zlibbioc
+Source: Bioconductor
+Version: 1.16.0
+Hash: a62f7415c8f5f7330ef25f3490b75b6b

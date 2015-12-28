@@ -21,6 +21,9 @@ Parses an alternative splicing event from VAST-TOOLS
 \details{
 Junctions are parsed from
 }
+\note{
+Don't use strings as factors.
+}
 \examples{
 event <- c("NFYA", "HsaEX0042823", "chr6:41046768-41046903", "136", 
            "chr6:41040823,41046768-41046903,41051785", "C2", "0", 
