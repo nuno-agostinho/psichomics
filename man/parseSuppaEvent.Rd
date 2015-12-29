@@ -2,28 +2,43 @@
 % Please edit documentation in R/suppaEvents.R
 \name{parseSuppaEvent}
 \alias{parseSuppaEvent}
-\title{Parses splicing event from SUPPA}
+\title{Parses splicing events of a specific event type from SUPPA}
 \usage{
 parseSuppaEvent(event)
 }
 \arguments{
 \item{event}{Character vector: Splicing event attributes and junction
 positions}
+
+\item{event_type}{Character: Alternative splicing event type (see details)}
 }
 \value{
 List with the event attributes (chromosome, strand, event type and
 the position of the exon boundaries)
 }
 \description{
-Parses splicing event from SUPPA
+Parses splicing events of a specific event type from SUPPA
 }
 \details{
 More information about SUPPA available at
 \url{https://bitbucket.org/regulatorygenomicsupf/suppa}
+
+The following event types are available to be parsed:
+\itemize{
+ \item{\bold{SE} (exon skipping)}
+ \item{\bold{RI} (intron retention)}
+ \item{\bold{MX} (mutually exclusive exons)}
+ \item{\bold{A5} (alternative 5' splice site)}
+ \item{\bold{A3} (alternative 3' splice site)}
+ \item{\bold{AL} (alternative last exon)}
+ \item{\bold{AF} (alternative first exon)}
+}
+}
+\note{
+It only allows to parse one event type at once.
 }
 \examples{
-event <- c("ENSG00000000419", "A3", "20",
-           "49557492-49557642", "49557470-49557642", "-")
+event <- "ENSG00000000419;A3:20:49557492-49557642:49557470-49557642:-"
 parseSuppaEvent(event)
 }
 
