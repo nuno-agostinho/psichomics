@@ -26,7 +26,7 @@ annotated across the aforementioned programs are described in the following
 image (retrieved from the
 [SUPPA website](https://bitbucket.org/regulatorygenomicsupf/suppa)).
 
-![Splicing event types](https://bitbucket.org/repo/4gEBMd/images/2185438774-Slide1.jpg)
+![Splicing event types](https://bitbucket-assetroot.s3.amazonaws.com/repository/4gEBMd/2185438774-Slide1.jpg?Signature=Xm%2BJUUkZqW3lYXqpecgLsZIbr4A%3D&Expires=1451355558&AWSAccessKeyId=0EMWEFSGA12Z1HF1TZ82)
 
 To conciliate the output from the different programs, it was decided to parse
 each splicing event ID to a R data type known as list with all the important
@@ -180,26 +180,33 @@ read_path <- function(path, item, ...)
     read.delim(sprintf(path, item), ...)
 
 suppa.path <- "/genedata/NunoA/psi_calculation/suppa/suppaEvents/hg19_%s.ioe"
-suppa.hg19 <- lapply(c("A3", "A5", "AF", "AL", "MX", "RI", "SE"), 
-                     function(type) read_path(suppa.path, type))
-suppa.hg19 <- rbind.fill(suppa.hg19)
-eventsID <- as.character(suppa.hg19$event_id)
-suppaEvents <- parseSuppaEventID(eventsID, progress = TRUE)
-# List of lists: 20.5 seconds // 342 Mb (commit 3e702152)
+types <- c("SE", "AF", "AL", "MX", "A5", "A3", "RI")
+suppa.hg19 <- lapply(types, function(type) read_path(suppa.path, type))
+
+suppaEvents <- lapply(1:length(suppa.hg19),
+                      function(i) {
+                          type <- types[i]
+                          print(type)
+                          annotation <- as.character(suppa.hg19[[i]]$event_id)
+                          if (length(annotation) > 0)
+                              return(parseSuppaEvent(annotation))
+                      })
+suppaEvents <- rbind.fill(suppaEvents)
 
 # Let's check the numbers
-number <- function(annotation, type)
-  sum(sapply(annotation, "[[", "Event type") == type)
+nrow(suppaEvents)
+sapply(c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI"), function(type)
+    sum(suppaEvents$Event.type == type))
 
-length(suppaEvents)               # all event types:    179108
-number(suppaEvents, "SE")         # skipped exons:       40419
-number(suppaEvents, "AFE")        # alt. first exons:    75548
-number(suppaEvents, "ALE")        # alt. last exons:     18741
-number(suppaEvents, "MXE")        # mutually exclusive:   5114
-number(suppaEvents, "A5SS")       # alt. 5 splice site:  15651
-number(suppaEvents, "A3SS")       # alt. 3 splice site:  16861
-number(suppaEvents, "RI")         # intron retention:     6774
-number(suppaEvents, "TandemUTR")  # tandem UTR:              0
+# all event types:    179108
+# skipped exons:       40419
+# alt. first exons:    75548
+# alt. last exons:     18741
+# mutually exclusive:   5114
+# alt. 5 splice site:  15651
+# alt. 3 splice site:  16861
+# intron retention:     6774
+# tandem UTR:              0
 ```
 
 ## MATS
@@ -227,7 +234,7 @@ read_path <- function(path, item, ...)
     read.delim(sprintf(path, item), ...)
 
 mats.path <- "/genedata/NunoA/psi_calculation/mats_out/ASEvents/fromGTF.%s.txt"
-types <- c("A3SS", "A5SS", "AFE", "ALE", "MXE", "RI", "SE")
+types <- c("SE", "AFE", "ALE", "MXE", "A3SS", "A5SS", "RI")
 mats.hg19 <- lapply(c(types, paste0("novelEvents.", types)), 
                      function(type) read_path(mats.path, type, row.names=NULL))
 
@@ -238,20 +245,11 @@ matsEvents <- lapply(1:length(mats.hg19),
                          annotation <- mats.hg19[[i]]
                          if (nrow(annotation) > 0)
                             return(parseMatsEvent(annotation, type))
-                         else
-                             return(NULL)
                      })
-# List of lists: 63.3 seconds // 243.2 Mb (commit 3e702152)
-# Data frame:    0.42 seconds //  17.9 Mb
-
-matsEvents <- matsEvents[!sapply(matsEvents, is.null)]
-j <- list()
-for(i in matsEvents)
-    j <- c(j, i)
-matsEvents <- j
+matsEvents <- rbind.fill(matsEvents)
 
 # Let's check the numbers
-nrow(matsEvents)                          
+nrow(matsEvents)
 sapply(types, function(type)
     sum(matsEvents$Event.type == type))
 
@@ -341,9 +339,18 @@ Before anything, all time and memory was registred.
 
 So, let's first try to get MATS events to a data frame instead of a list of 
 lists since MATS is the easiest to parse. There's a clearer improvement!
-# Times of parseMatsEvent(event) and memory size of result
-# List of lists: 63.3 seconds // 243.2 Mb (commit 3e702152)
-# Data frame:    0.42 seconds //  17.9 Mb (commit f903e2f3)
+
+Type          | Time   | Memory   | Commit
+--------------|--------|----------|---------
+List of lists | 63.3 s | 30.4  MB | 3e702152
+Data frame    |  0.4 s | 26.2  MB | 4f596587
+
+Doing the same thing for SUPPA events:
+
+Type          | Time   | Memory   | Commit
+--------------|--------|----------|---------
+List of lists | 20.5 s | 42.75 MB | 3e702152
+Data frame    |  2.2 s | 40.2  MB | 
 
 > TODO
 

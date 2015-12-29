@@ -7,7 +7,7 @@
 parseSuppaJunctions(event_type, strand, junctions)
 }
 \arguments{
-\item{event_type}{Character: Type of the splicing event}
+\item{event_type}{Character: Type of the splicing event (see details)}
 
 \item{strand}{Character: Strand (+ or -)}
 
@@ -19,12 +19,24 @@ List of parsed junctions
 \description{
 Parses splicing junctions from SUPPA
 }
+\details{
+The following event types are available to be parsed:
+\itemize{
+ \item{\bold{SE} (exon skipping)}
+ \item{\bold{RI} (intron retention)}
+ \item{\bold{MXE} (mutually exclusive exons)}
+ \item{\bold{A5SS} (alternative 5' splice site)}
+ \item{\bold{A3SS} (alternative 3' splice site)}
+ \item{\bold{ALE} (alternative last exon)}
+ \item{\bold{AFE} (alternative first exon)}
+}
+}
 \note{
 In case the -b V (Variable) option is selected, some variability is
 allowed in some of the boundaries. This is not accounted at the moment.
 }
 \examples{
-junctionsA5 <- c("99890743-99891188", "99890743-99891605")
-parseSuppaJunctions(event_type = "A5", strand = "-", junctions = junctionsA5)
+junctions <- c("99890743-99891188", "99890743-99891605")
+parseSuppaJunctions(event_type = "A5SS", strand = "-", junctions = junctions)
 }
 
