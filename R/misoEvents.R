@@ -116,7 +116,8 @@ parseMultipleMisoEvents <- function(events, progress=FALSE) {
         lastIndex <- nrow(events)
     }
     
-    if (progress) pb <- txtProgressBar(min=1, max=length(firstIndex), style=3)
+    if (progress)
+        pb <- txtProgressBar(min=1, max=length(firstIndex), style=3)
     
     res <- lapply(1:length(firstIndex), function(i, data) {
         if (progress)
