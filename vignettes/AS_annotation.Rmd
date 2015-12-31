@@ -117,12 +117,12 @@ miso.hg19 <- lapply(c("AFE", "ALE", "SE", "MXE", "A5SS", "A3SS", "RI", "TandemUT
                     function(x) {
                         type <- paste0("/genedata/Resources/Annotations/MISO/hg19/", x, ".hg19.gff3")
                         print(type)
-                        read.delim(type, header=F, comment.char="#")
-                    }
-)
+                        read.delim(type, header=FALSE, comment.char="#",
+                                   stringsAsFactors = FALSE)
+                    })
 miso.hg19 <- rbind.fill(miso.hg19)
+miso.hg19 <- data.table(miso.hg19)
 misoEvents <- parseMultipleMisoEvents(miso.hg19, progress = T)
-# List of lists: 308 seconds // 191 Mb (commit 3e702152)
 ```
 
 Let's check the numbers. And let's not forget that there are unrecognized events
@@ -234,7 +234,7 @@ read_path <- function(path, item, ...)
     read.delim(sprintf(path, item), ...)
 
 mats.path <- "/genedata/NunoA/psi_calculation/mats_out/ASEvents/fromGTF.%s.txt"
-types <- c("SE", "AFE", "ALE", "MXE", "A3SS", "A5SS", "RI")
+types <- c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI")
 mats.hg19 <- lapply(c(types, paste0("novelEvents.", types)), 
                      function(type) read_path(mats.path, type, row.names=NULL))
 
@@ -335,22 +335,149 @@ makes most operations on data frames faster). Another way more akin to saving
 information in object-oriented languages is by using objects. So, which of these 
 ways is the best considering both memory and time?
 
-Before anything, all time and memory was registred.
+Before anything, the time needed and memory occupied of many functions was
+registred for comparison.
+
+## MATS
 
 So, let's first try to get MATS events to a data frame instead of a list of 
-lists since MATS is the easiest to parse. There's a clearer improvement!
+lists since MATS is the easiest to parse. There's just one thing: we need to
+vectorise as much as we can! But how do we vectorise based on a condition (for
+example, we want to return different based on the strand). The regular ```if```
+is not vectorised, but ```ifelse``` is. The problem with this command is that 
+it MUST return a value with the same length as the arguments... This is bad for
+example if we want to do ```ifelse(strand == "+", junctions, rev(junctions))```
+because this will return a list of junctions where the list has the same length
+as the ```strand``` vector (yay!) but each element of the list has the same
+length as the number of rows in junctions since it is repeating the junctions to
+forcely reach that length (wait... what?).
+
+So let's just use something simpler. The data frame will be asked for events
+with plus strand and act on them accordingly. Then, the data frame will act on
+the events with minus strand. Like this:
+```{r, eval=FALSE}
+plus <- event$Strand == "+"
+event[plus, c("C1.end", "C2.start")] <- junctions[plus, ]
+event[!plus, c("C1.end", "C2.start")] <- rev(junctions[!plus, ])
+
+# maybe it's faster to fill everything and edit what's different?
+# it's not much faste... actually, it takes about the same time
+event[c("C1.end", "C2.start")] <- junctions
+minus <- event$Strand == "-"
+event[minus, c("C2.start", "C1.end")] <- junctions[minus, ]
+```
+
+Simple. But is it fast?
 
 Type          | Time   | Memory   | Commit
 --------------|--------|----------|---------
-List of lists | 63.3 s | 30.4  MB | 3e702152
-Data frame    |  0.4 s | 26.2  MB | 4f596587
+List of lists | 63.3 s | 30.4  MB | 8d9defa5
+Data frame    |  0.3 s | 26.2  MB | 450f891c
+
+There's a clearer improvement!
+
+## SUPPA
 
 Doing the same thing for SUPPA events:
 
 Type          | Time   | Memory   | Commit
 --------------|--------|----------|---------
-List of lists | 20.5 s | 42.75 MB | 3e702152
-Data frame    |  2.2 s | 40.2  MB | 
+List of lists | 20.5 s | 42.75 MB | 8d9defa5
+Data frame    |  2.0 s | 36.4  MB | acf23a6c
+
+Parsing MISO events is the second slowest of the bunch, taking around 300
+seconds to parse everything. The problem here is that we need to parse the lines 
+from the annotation files and to get those lines. We could try to vectorise 
+any apply functions.
+
+Let's try something like...
+```{r, eval=F}
+gene <- which(miso.hg19$V3 == "gene")
+diff <- c(gene, nrow(miso.hg19) + 1)[2:(length(gene)+1)] - gene
+groups <- unlist(sapply(1:length(diff), function(i) rep(i, c[i])))
+
+microbenchmark(miso.split <- split(miso.hg19, groups), times = 1) # 162 seconds
+```
+Since it took it 308 seconds before (almost everything just for this step), we
+reduced the time needed to half. But what if instead of splitting a giant data
+frame we try to split minor data frames?
+
+```{r, eval=F}
+types <- c("AFE", "ALE", "SE", "MXE", "A5SS", "A3SS", "RI", "TandemUTR")
+miso.hg19 <- lapply(types,
+                    function(x) {
+                        type <- paste0("/genedata/Resources/Annotations/MISO/hg19/", x, ".hg19.gff3")
+                        print(type)
+                        read.delim(type, header=FALSE, comment.char="#",
+                                   stringsAsFactors = FALSE)
+                    })
+
+library(data.table)
+misoEvents <- lapply(1:length(miso.hg19),
+                     function(x) {
+                         print(types[x])
+                         read <- miso.hg19[[x]]
+                         gene <- which(read$V3 == "gene")
+                         diff <- c(gene, nrow(read) + 1)[2:(length(gene)+1)] - gene
+                         groups <- unlist(sapply(1:length(diff), function(i) rep(i, diff[i])))
+                         a <- split(read, groups)
+                     })
+```
+Now the time has decreased to 53 seconds. Better! But still...
+Another thing which was tried (and failed) was to convert to data frame in
+separate.
+
+```{r, eval=FALSE}
+file <- "/genedata/Resources/Annotations/MISO/hg19/TandemUTR.hg19.gff3"
+#' Get data frame from file and split it
+test1 <- function() {
+    read <- read.delim(file, header=FALSE, comment.char="#",
+                       stringsAsFactors = FALSE)                            # nrow:   13280
+    gene <- which(read$V3 == "gene")                                        # length:  2656
+    diff <- c(gene, nrow(read) + 1)[2:(length(gene)+1)] - gene              # length:  2656
+    groups <- unlist(sapply(1:length(diff), function(i) rep(i, diff[i])))   # length: 13280
+    res <- split(read, groups)
+}
+
+#' Get character vector from file, convert to data frame and split it
+test2 <- function() {
+    read <- readLines(file)
+    read <- read[2:length(read)]                                            # length: 13280
+    gene <- grep("\tgene\t", g, fixed = T)                                  # length:  2656
+    diff <- c(gene, length(read) + 1)[2:(length(gene)+1)] - gene            # length:  2656
+    groups <- unlist(sapply(1:length(diff), function(i) rep(i, diff[i])))   
+    groups <- c(groups, tail(groups, 1))                                    # length: 13280
+    read <- read.table(text = read)
+    res <- split(read, groups)
+}
+
+#' Get character vector from file, split them and convert to data frame
+test3 <- function() {
+    read <- readLines(file)
+    read <- read[2:length(read)]                                            # length: 13280
+    gene <- grep("\tgene\t", g, fixed = T)                                  # length:  2656
+    diff <- c(gene, length(read) + 1)[2:(length(gene)+1)] - gene            # length:  2656
+    groups <- unlist(sapply(1:length(diff), function(i) rep(i, diff[i])))   
+    groups <- c(groups, tail(groups, 1))                                    # length: 13280
+    res <- split(read, groups)
+    res <- lapply(res, function(i) read.table(text =i))
+}
+
+microbenchmark(times = 1, test1(), test2(), test3())
+# expr    time (ms)
+# test1()  764.8314
+# test2() 3201.7124
+# test3() 3274.0744
+```
+
+Yet another thing we could try is to use a data table instead.
+
+> TODO
+
+Type          | Time   | Memory   | Commit
+--------------|--------|----------|---------
+List of lists | 308 s  | 83.7 MB  | 8d9defa5
+Data frame    |        |          |
 
 > TODO
 

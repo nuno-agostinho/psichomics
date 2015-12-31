@@ -1,6 +1,5 @@
 context("Parse MATS splicing events")
 
-## parseMatsEvent tests also cover the function parseMatsJunctions
 test_that("parseMatsEvent parses alt. 3' splice site event (+ strand)", {
     event <- read.table(text = "
         3658 ENSG00000067715 SYT1 chr12 + 79685787 79685910 79685796 79685910 79679566 79679751 3658 252 102 73 16 58 56 0.0342916452301 0.274333161841 0.705 0.815 -0.11
@@ -431,13 +430,17 @@ test_that("parseMatsEvent parses multiple MATS alt. splicing events", {
     events <- read.table(text = "
     1 ENSG00000166012 TAF1D chr11 - 93466515 93466671 93466515 93466563 93467790 93467826
     2 ENSG00000166012 TAF1D chr11 - 93466515 93466671 93466515 93466585 93467790 93467826
-    3 ENSG00000166012 TAF1D chr11 - 93466515 93466585 93466515 93466563 93467790 93467826
+    4 ENSG00000151422 FER chr5 + 108168470 108168644 108133824 108134090 108171408 108171508
     ")
     parsed <- parseMatsEvent(events, event_type="SE")
     expect_equal(parsed$C1.start[[1]], 93467826)
     expect_equal(parsed$C1.end[[1]],   93467790)
     expect_equal(parsed$C2.start[[2]], 93466585)
     expect_equal(parsed$C1.end[[2]],   93467790)
-    expect_equal(parsed$A1.start[[3]], 93466585)
-    expect_equal(parsed$C1.end[[3]],   93467790)
+    expect_equal(parsed$C1.start[[3]], 108133824)
+    expect_equal(parsed$C1.end[[3]],   108134090)
+    expect_equal(parsed$A1.start[[3]], 108168470)
+    expect_equal(parsed$A1.end[[3]],   108168644)
+    expect_equal(parsed$C2.start[[3]], 108171408)
+    expect_equal(parsed$C2.end[[3]],   108171508)
 })

@@ -35,9 +35,21 @@ parseMatsEvent <- function(event, event_type) {
                               stringsAsFactors = FALSE)
     
     # Parse junction positions according to event type
-    parsed <- parseMatsJunctions(event, event_type)
+    strand <- as.character(event[[5]])
     
-    # Add more attributes only if the event has them
+    # Parse junction positions according to event type
+    parseJunctions <- switch(event_type,
+                             "SE"   = parseMatsSE,
+                             "MXE"  = parseMatsMXE,
+                             "RI"   = parseMatsRI,
+                             "A3SS" = parseMatsA3SS,
+                             "A5SS" = parseMatsA5SS,
+                             "AFE"  = parseMatsAFE,
+                             "ALE"  = parseMatsALE)
+    junctions <- event[6:length(event)]
+    parsed <- parseJunctions(junctions, strand)
+    
+    # Add additional attributes if they exist
     if (len > 13) {
         more_attrs <- data.frame(
             "P value" = as.numeric(event[[len - 4]]),
@@ -51,61 +63,11 @@ parseMatsEvent <- function(event, event_type) {
     }
 }
 
-
-#' Parse MATS alternative splicing junctions
-#'
-#' @inheritParams parseMatsEvent
-#' 
-#' @details The following event types can be parsed:
-#' \itemize{
-#'  \item{\strong{SE}: Skipping exon}
-#'  \item{\strong{MXE}: Mutually exclusive exons}
-#'  \item{\strong{RI}:Retained intron}
-#'  \item{\strong{A3SS}: Alternative 3' splice site}
-#'  \item{\strong{A5SS}: Alternative 5' splice site}
-#' }
-#' 
-#' @return List containing the junctions of the event
-#' @export
-#'
-#' @examples
-#' # MATS event (alternative 3' splice site)
-#' event <- read.table(text = "
-#'      3658 ENSG00000067715 SYT1 chr12 + 79685787 79685910 79685796 79685910 79679566 79679751 3658 252 102 73 16 58 56 0.0342916452301 0.274333161841 0.705 0.815 -0.11
-#' ")
-#' 
-#' parseMatsJunctions(mats_A3SS, "A3SS")
-parseMatsJunctions <- function(event, event_type) {
-    # Fill list of parsed junctions with NAs
-    parsed <- as.data.frame(matrix(NA, nrow = nrow(event), ncol = 8),
-                            stringsAsFactors = FALSE)
-    names(parsed) <- c("C1.start", "C1.end",
-                       "A1.start", "A1.end",
-                       "A2.start", "A2.end",
-                       "C2.start", "C2.end")
-    strand <- as.character(event[[5]])
-    
-    # Parse junction positions according to event type
-    parseJunctions <- switch(event_type,
-                             "SE"   = parseMatsSE,
-                             "MXE"  = parseMatsMXE,
-                             "RI"   = parseMatsRI,
-                             "A3SS" = parseMatsA3SS,
-                             "A5SS" = parseMatsA5SS,
-                             "AFE"  = parseMatsAFE,
-                             "ALE"  = parseMatsALE)
-    junctions <- event[6:length(event)]
-    parsed <- parseJunctions(junctions, strand, parsed)
-    return(parsed)
-}
-
 #' Parse junctions of an alternative splicing event from MATS according to event 
 #' type
 #'
 #' @param junctions Vector of integers with the event's junctions
 #' @param strand Character: strand of the event
-#' @param parsed Named data frame filled with NAs for faster execution
-#' (optional)
 #' 
 #' @details The following event types are available to be parsed:
 #' \itemize{
@@ -126,16 +88,19 @@ parseMatsJunctions <- function(event, event_type) {
 #' @examples 
 #' junctions <- read.table(text="79685787 79685910 79685796 79685910 79679566 79679751")
 #' parseMatsSE(junctions, strand = "+")
-parseMatsSE <- function(junctions, strand, parsed=data.frame("A1.start"=NA)) {
-    ifelse(strand == "+", 
-           { # strand is plus
-               parsed[c("A1.start", "A1.end",
-                        "C1.start", "C1.end",
-                        "C2.start", "C2.end")] <- junctions[1:6]},
-           { # strand is minus
-               parsed[c("A1.end", "A1.start",
-                        "C2.end", "C2.start",
-                        "C1.end", "C1.start")] <- junctions[1:6]})
+parseMatsSE <- function(junctions, strand) {
+    # Creates a data frame of parsed junctions filled with NAs
+    parsed <- createFilledJunctions(nrow(junctions))
+    
+    plus <- strand == "+"
+    # Plus strand
+    parsed[plus, c("A1.start", "A1.end",
+                   "C1.start", "C1.end",
+                   "C2.start", "C2.end")] <- junctions[plus, ]
+    # Minus strand
+    parsed[!plus, c("A1.end", "A1.start",
+                    "C2.end", "C2.start",
+                    "C1.end", "C1.start")] <- junctions[!plus, ]
     return(parsed)
 }
 
@@ -144,19 +109,21 @@ parseMatsSE <- function(junctions, strand, parsed=data.frame("A1.start"=NA)) {
 #' 
 #' junctions <- read.table(text="158282161 158282276 158282689 158282804 158281047 158281295 158283950 158284199")
 #' parseMatsMXE(junctions, strand = "+")
-parseMatsMXE <- function(junctions, strand, parsed=data.frame("A1.start"=NA)) {
-    ifelse (strand == "+",
-            # if strand is plus
-            parsed[c("A1.start", "A1.end",
-                     "A2.start", "A2.end",
-                     "C1.start", "C1.end",
-                     "C2.start", "C2.end")] <- junctions[1:8],
-            # if strand is minus
-            parsed[c("A1.end", "A1.start",
-                     "A2.end", "A2.start",
-                     "C2.end", "C2.start",
-                     "C1.end", "C1.start")] <- junctions[1:8]
-    )
+parseMatsMXE <- function(junctions, strand) {
+    # Creates a data frame of parsed junctions filled with NAs
+    parsed <- createFilledJunctions(nrow(junctions))
+    
+    plus <- strand == "+"
+    # Plus strand
+    parsed[plus, c("A1.start", "A1.end",
+                   "A2.start", "A2.end",
+                   "C1.start", "C1.end",
+                   "C2.start", "C2.end")] <- junctions[plus, ]
+    # Minus strand
+    parsed[!plus, c("A1.end", "A1.start",
+                    "A2.end", "A2.start",
+                    "C2.end", "C2.start",
+                    "C1.end", "C1.start")] <- junctions[!plus, ]
     return(parsed)
 }
 
@@ -165,15 +132,21 @@ parseMatsMXE <- function(junctions, strand, parsed=data.frame("A1.start"=NA)) {
 #' 
 #' junctions <- read.table(text="15929853 15932100 15929853 15930016 15930687 15932100")
 #' parseMatsRI(junctions, strand = "+")
-parseMatsRI <- function(junctions, strand, parsed=data.frame("C1.start"=NA)) {
-    ifelse (strand == "+",
-            # if strand is plus
-            parsed[c("C1.start", "C1.end",
-                     "C2.start", "C2.end")] <- junctions[3:6],
-            # if strand is minus
-            parsed[c("C1.start", "C1.end",
-                     "C2.start", "C2.end")] <- junctions[6:3]
-    )
+parseMatsRI <- function(junctions, strand) {
+    # Creates a data frame of parsed junctions filled with NAs
+    parsed <- createFilledJunctions(nrow(junctions))
+    
+    plus <- strand == "+"
+    # Plus strand
+    parsed[plus, c("C1.start", "C1.end",
+                   "C2.start", "C2.end")] <- junctions[plus, ]
+    parsed[plus, c("C1.start", "C1.end",
+                   "C2.start", "C2.end")] <- junctions[plus, 3:6]
+    # Minus strand
+    parsed[!plus, c("C2.end", "C2.start",
+                    "C1.end", "C1.start")] <- junctions[!plus, ]
+    parsed[!plus, c("C1.start", "C1.end",
+                    "C2.start", "C2.end")] <- junctions[!plus, 6:3]
     return(parsed)
 }
 
@@ -182,18 +155,22 @@ parseMatsRI <- function(junctions, strand, parsed=data.frame("C1.start"=NA)) {
 #' 
 #' junctions <- read.table(text="79685787 79685910 79685796 79685910 79679566 79679751")
 #' parseMatsA3SS(junctions, strand = "+")
-parseMatsA3SS <- function(junctions, strand, parsed=data.frame(NA)) {
-    ifelse (strand == "+",
-            { # if strand is plus
-                parsed[c("C1.start", "C1.end")] <- junctions[5:6]
-                parsed[["C2.start"]] <- apply(junctions[c(1, 3)], 1, as.list)
-                parsed[["C2.end"]]   <- junctions[[2]]
-            }, { # if strand is minus
-                parsed[c("C1.start", "C1.end")] <- junctions[6:5]
-                parsed[["C2.start"]] <- apply(junctions[c(2, 4)], 1, as.list)
-                parsed[["C2.end"]]   <- junctions[[1]]
-            }
-    )
+parseMatsA3SS <- function(junctions, strand) {
+    # Creates a data frame of parsed junctions filled with NAs
+    parsed <- createFilledJunctions(nrow(junctions))
+    
+    # Note that inclusion values are related to the first alternative isoform
+    plus <- strand == "+"
+    # Plus strand
+    parsed[plus, c("C1.start", "C1.end",
+                   "C2.end")] <- junctions[plus, c(5:6, 2)]
+    parsed[plus, ][["C2.start"]] <- apply(junctions[plus, c(1, 3)],
+                                        1, numericList)
+    # Minus strand
+    parsed[!plus, c("C1.start", "C1.end",
+                    "C2.end")] <- junctions[!plus, c(6:5, 1)]
+    parsed[!plus, ][["C2.start"]] <- apply(junctions[!plus, c(2, 4)],
+                                         1, numericList)
     return(parsed)
 }
 
@@ -202,17 +179,22 @@ parseMatsA3SS <- function(junctions, strand, parsed=data.frame(NA)) {
 #' 
 #' junctions <- read.table(text="102884421 102884501 102884421 102884489 102884812 102885881")
 #' parseMatsA5SS(junctions, strand = "+")
-parseMatsA5SS <- function(junctions, strand, parsed=data.frame("C1.start"=NA)) {
-    ifelse (strand == "+",
-            { # if strand is plus
-                parsed[["C1.start"]] <- junctions[[1]]
-                parsed[["C1.end"]]   <- apply(junctions[c(2, 4)], 1, as.list)
-                parsed[c("C2.start", "C2.end")] <- junctions[5:6]
-            }, { # if strand is minus
-                parsed[["C1.start"]]  <- junctions[[2]]
-                parsed[["C1.end"]]    <- apply(junctions[c(1, 3)], 1, as.list)
-                parsed[c("C2.start", "C2.end")] <- junctions[6:5]
-            })
+parseMatsA5SS <- function(junctions, strand) {
+    # Creates a data frame of parsed junctions filled with NAs
+    parsed <- createFilledJunctions(nrow(junctions))
+    
+    # Note that inclusion values are related to the first alternative isoform
+    plus <- strand == "+"
+    # Plus strand
+    parsed[plus, c("C1.start",
+                   "C2.start", "C2.end")] <- junctions[plus, c(1, 5:6)]
+    parsed[plus, ][["C1.end"]] <- apply(junctions[plus, c(2, 4)],
+                                        1, numericList)
+    # Minus strand
+    parsed[!plus, c("C1.start",
+                    "C2.start", "C2.end")] <- junctions[!plus, c(2, 6, 5)]
+    parsed[!plus, ][["C1.end"]] <- apply(junctions[!plus, c(1, 3)],
+                                           1, numericList)
     return(parsed)
 }
 
@@ -221,17 +203,19 @@ parseMatsA5SS <- function(junctions, strand, parsed=data.frame("C1.start"=NA)) {
 #' 
 #' junctions <- read.table(text="16308723 16308879 16308967 16309119 16314269 16314426")
 #' parseMatsAFE(junctions, strand = "+")
-parseMatsAFE <- function(junctions, strand, parsed=data.frame("A1.start"=NA)) {
-    ifelse (strand == "+", {
-        # if strand is plus
-        parsed[c("C1.start", "C1.end")] <- junctions[1:2]
-        parsed[c("A1.start", "A1.end")] <- junctions[3:4]
-        parsed[c("C2.start", "C2.end")] <- junctions[5:6]
-    }, { # if strand is minus
-        parsed[c("C1.start", "C1.end")] <- junctions[2:1]
-        parsed[c("A1.start", "A1.end")] <- junctions[4:3]
-        parsed[c("C2.start", "C2.end")] <- junctions[6:5]
-    })
+parseMatsAFE <- function(junctions, strand) {
+    # Creates a data frame of parsed junctions filled with NAs
+    parsed <- createFilledJunctions(nrow(junctions))
+    
+    plus <- strand == "+"
+    # Plus strand
+    parsed[plus, c("C1.start", "C1.end",
+                   "A1.start", "A1.end",
+                   "C2.start", "C2.end")] <- junctions[plus, 1:6]
+    # Minus strand
+    parsed[!plus, c("C1.start", "C1.end",
+                    "A1.start", "A1.end",
+                    "C2.start", "C2.end")] <- junctions[!plus, c(2:1, 4:3, 6:5)]
     return(parsed)
 }
 
@@ -240,16 +224,18 @@ parseMatsAFE <- function(junctions, strand, parsed=data.frame("A1.start"=NA)) {
 #' 
 #' junctions <- read.table(text="111858645 111858828 111851063 111851921 111850441 111850543")
 #' parseMatsAFE(junctions, strand = "+")
-parseMatsALE <- function(junctions, strand, parsed=data.frame("A1.start"=NA)) {
-    ifelse (strand == "+", {
-        # if strand is plus
-        parsed[c("C1.start", "C1.end")] <- junctions[5:6]
-        parsed[c("A1.start", "A1.end")] <- junctions[1:2]
-        parsed[c("C2.start", "C2.end")] <- junctions[3:4]
-    }, { # if strand is minus
-        parsed[c("C1.start", "C1.end")] <- junctions[6:5]
-        parsed[c("A1.start", "A1.end")] <- junctions[2:1]
-        parsed[c("C2.start", "C2.end")] <- junctions[4:3]
-    })
+parseMatsALE <- function(junctions, strand) {
+    # Creates a data frame of parsed junctions filled with NAs
+    parsed <- createFilledJunctions(nrow(junctions))
+    
+    plus <- strand == "+"
+    # Plus strand
+    parsed[plus, c("C1.start", "C1.end",
+                   "A1.start", "A1.end",
+                   "C2.start", "C2.end")] <- junctions[plus, c(5:6, 1:2, 3:4)]
+    # Minus strand
+    parsed[!plus, c("C1.start", "C1.end",
+                    "A1.start", "A1.end",
+                    "C2.start", "C2.end")] <- junctions[!plus, c(6:5, 2:1, 4:3)]
     return(parsed)
 }

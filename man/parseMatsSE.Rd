@@ -11,27 +11,24 @@
 \title{Parse junctions of an alternative splicing event from MATS according to event 
 type}
 \usage{
-parseMatsSE(junctions, strand, parsed = data.frame(A1.start = NA))
+parseMatsSE(junctions, strand)
 
-parseMatsMXE(junctions, strand, parsed = data.frame(A1.start = NA))
+parseMatsMXE(junctions, strand)
 
-parseMatsRI(junctions, strand, parsed = data.frame(C1.start = NA))
+parseMatsRI(junctions, strand)
 
-parseMatsA3SS(junctions, strand, parsed = data.frame(NA))
+parseMatsA3SS(junctions, strand)
 
-parseMatsA5SS(junctions, strand, parsed = data.frame(C1.start = NA))
+parseMatsA5SS(junctions, strand)
 
-parseMatsAFE(junctions, strand, parsed = data.frame(A1.start = NA))
+parseMatsAFE(junctions, strand)
 
-parseMatsALE(junctions, strand, parsed = data.frame(A1.start = NA))
+parseMatsALE(junctions, strand)
 }
 \arguments{
 \item{junctions}{Vector of integers with the event's junctions}
 
 \item{strand}{Character: strand of the event}
-
-\item{parsed}{Named data frame filled with NAs for faster execution
-(optional)}
 }
 \value{
 Data frame with parsed junctions
