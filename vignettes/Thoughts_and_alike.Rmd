@@ -23,3 +23,42 @@ could  accomplish this is by using classes instead. Maybe two methods with the
 same name in different classes are allowed?
 
 > TODO: check if methods with identical names from different classes are allowed
+
+> TODO: change examples documentation (most are pre-vectorised versions)
+
+
+
+
+
+
+
+
+
+
+```{r, eval=FALSE}
+read <- read.delim(file, header=FALSE, comment.char="#",
+                   stringsAsFactors = FALSE)                            # nrow:   13280
+gene <- which(read$V3 == "gene")                                        # length:  2656
+diff <- c(gene, nrow(read) + 1)[2:(length(gene)+1)] - gene              # length:  2656
+
+pb <- txtProgressBar(min = 1, max = length(gene), style = 3)
+res <- lapply(1:length(gene), function(i) {
+    setTxtProgressBar(pb, i)
+    read[gene[i]:diff[i], ]
+})
+
+# getting indexes for data tables the same way as for data frames... 1 second
+# less, but it still takes 4 seconds...
+library(data.table)
+read <- data.table(read)
+res <- lapply(1:length(gene), function(i) {
+    setTxtProgressBar(pb, i)
+    read[gene[i]:diff[i]]
+})
+
+# trying to split by gid...
+v <- function() {
+    str <- read[, tstrsplit(V9, "gid=", fixed=TRUE)]
+    res <- split(read, str$V2) # try to use data table split instead!
+}
+```
