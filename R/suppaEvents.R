@@ -53,46 +53,8 @@ parseSuppaEvent <- function(event) {
     event_attrs[["Strand"]] <- ifelse(event[[strand]] == "+", "+", "-")
     # Get the junction positions for each exon and parse them
     junctions <- event[4:(strand-1)]
-    parsed_junctions <- parseSuppaJunctions(event_attrs[["Event.type"]][[1]],
-                                            event[[strand]], junctions)
-    return(cbind(event_attrs, parsed_junctions))
-}
-
-#' Parses splicing junctions from SUPPA
-#' 
-#' @param event_type Character: Type of the splicing event (see details)
-#' @param strand Character: Strand (+ or -)
-#' @param junctions Character vector: Splicing junctions 
-#'
-#' @details The following event types are available to be parsed:
-#' \itemize{
-#'  \item{\bold{SE} (exon skipping)}
-#'  \item{\bold{RI} (intron retention)}
-#'  \item{\bold{MXE} (mutually exclusive exons)}
-#'  \item{\bold{A5SS} (alternative 5' splice site)}
-#'  \item{\bold{A3SS} (alternative 3' splice site)}
-#'  \item{\bold{ALE} (alternative last exon)}
-#'  \item{\bold{AFE} (alternative first exon)}
-#' }
-#'
-#' @return List of parsed junctions
-#' @export
-#' 
-#' @note In case the -b V (Variable) option is selected, some variability is
-#' allowed in some of the boundaries. This is not accounted at the moment.
-#'
-#' @examples
-#' junctions <- c("99890743-99891188", "99890743-99891605")
-#' parseSuppaJunctions(event_type = "A5SS", strand = "-", junctions = junctions)
-parseSuppaJunctions <- function(event_type, strand, junctions) {
-    # Fill list of parsed junctions with NAs
-    parsed <- as.data.frame(matrix(NA, nrow = nrow(junctions), ncol = 8),
-                            stringsAsFactors = FALSE)
-    names(parsed) <- c("C1.start", "C1.end",
-                       "A1.start", "A1.end",
-                       "A2.start", "A2.end",
-                       "C2.start", "C2.end")
     
+    event_type <- event_attrs[["Event.type"]][[1]]
     # Parse junction positions according to event type
     parseJunctions <- switch(event_type,
                              "A3SS" = parseSuppaA3SS,
@@ -102,15 +64,14 @@ parseSuppaJunctions <- function(event_type, strand, junctions) {
                              "RI"   = parseSuppaRI,
                              "AFE"  = parseSuppaAFE,
                              "ALE"  = parseSuppaALE)
-    parsed <- parseJunctions(junctions, strand, parsed)
-    return(parsed)
+    parsed <- parseJunctions(junctions, event[[strand]])
+    return(cbind(event_attrs, parsed))
 }
 
 #' Parse junctions of an event from SUPPA according to event type
 #'
 #' @param junctions List of integers: exon-exon junctions of an event
 #' @param strand Character: positive ("+") or negative ("-") strand
-#' @param parsed Named list filled with NAs for faster execution (optional)
 #'
 #' @details The following event types are available to be parsed:
 #' \itemize{
@@ -125,22 +86,44 @@ parseSuppaJunctions <- function(event_type, strand, junctions) {
 #'
 #' @seealso \code{\link{parseSuppaEvent}}
 #'
-#' @return List of parsed junctions
+#' @return Data frame of parsed junctions
 #' @export
 #'
 #' @examples
 #' junctions <- c(169768099, 169770024, 169770112, 169771762)
 #' parseSuppaSE(junctions, "+")
-parseSuppaSE <- function (junctions, strand, parsed=data.frame("C1.end"=NA)) {
-    ifelse (strand == "+",
-            { # if strand is plus
-                parsed[c("C1.end",
-                         "A1.start", "A1.end",
-                         "C2.start")] <- junctions},
-            { # if strand is minus
-                parsed[c("C2.start",
-                         "A1.end", "A1.start",
-                         "C1.end")] <- junctions})
+parseSuppaSE <- function (junctions, strand) {
+    # Creates a data frame of parsed junctions filled with NAs
+    parsed <- createFilledJunctions(nrow(junctions))
+    
+    plus <- strand == "+"
+    # Plus strand
+    parsed[plus, c("C1.end",
+                   "A1.start", "A1.end",
+                   "C2.start")] <- junctions[plus, ]
+    # Minus strand
+    parsed[!plus, c("C2.start",
+                    "A1.end", "A1.start",
+                    "C1.end")] <- junctions[!plus, ]
+    return(parsed)
+}
+
+#' Creates a data frame of parsed junctions filled with NAs
+#' 
+#' @param nrow Integer: Number of rows
+#' 
+#' @return A data frame with the junctions coordinate names pre-filled with NAs
+#' @export
+#' 
+#' @examples
+#' createFilledJunctions(nrow = 8)
+createFilledJunctions <- function(nrow) {
+    parsed <- as.data.frame(matrix(NA, nrow = nrow, ncol = 8),
+                            stringsAsFactors = FALSE)
+    names(parsed) <- c("C1.start", "C1.end",
+                       "A1.start", "A1.end",
+                       "A2.start", "A2.end",
+                       "C2.start", "C2.end")
     return(parsed)
 }
 
@@ -149,14 +132,17 @@ parseSuppaSE <- function (junctions, strand, parsed=data.frame("C1.end"=NA)) {
 #' 
 #' junctions <- c(196709749, 196709922, 196711005, 196711181)
 #' parseSuppaRI(junctions, "+")
-parseSuppaRI <- function (junctions, strand, parsed=data.frame("C1.end"=NA)) {
-    ifelse (strand == "+",
-            { # if strand is plus
-                parsed[c("C1.start", "C1.end",
-                         "C2.start", "C2.end")] <- junctions},
-            { # if strand is minus
-                parsed[c("C2.end", "C2.start",
-                         "C1.end", "C1.start")] <- junctions})
+parseSuppaRI <- function (junctions, strand) {
+    # Creates a data frame of parsed junctions filled with NAs
+    parsed <- createFilledJunctions(nrow(junctions))
+    
+    plus <- strand == "+"
+    # Plus strand
+    parsed[plus, c("C1.start", "C1.end",
+                   "C2.start", "C2.end")] <- junctions[plus, ]
+    # Minus strand
+    parsed[!plus, c("C2.end", "C2.start",
+                    "C1.end", "C1.start")] <- junctions[!plus, ]
     return(parsed)
 }
 
@@ -165,16 +151,19 @@ parseSuppaRI <- function (junctions, strand, parsed=data.frame("C1.end"=NA)) {
 #' 
 #' junctions <- c(24790610, 24792494, 24792800, 24790610, 24795476, 24795797)
 #' parseSuppaALE(junctions, "+")
-parseSuppaALE <- function (junctions, strand, parsed=data.frame("C1.end"=NA)) {
-    ifelse (strand == "+",
-            { # if strand is plus
-                parsed[c("C2.start", "C2.end",
-                         "C1.end",
-                         "A1.start", "A1.end")] <- junctions[2:6]},
-            { # if strand is minus
-                parsed[c("C2.start", "C2.end",
-                         "C1.end",
-                         "A1.start", "A1.end")] <- junctions[5:1]})
+parseSuppaALE <- function (junctions, strand) {
+    # Creates a data frame of parsed junctions filled with NAs
+    parsed <- createFilledJunctions(nrow(junctions))
+    
+    plus <- strand == "+"
+    # Plus strand
+    parsed[plus, c("C2.start", "C2.end",
+                   "C1.end",
+                   "A1.start", "A1.end")] <- junctions[plus, 2:6]
+    # Minus strand
+    parsed[!plus, c("C2.start", "C2.end",
+                    "C1.end",
+                    "A1.start", "A1.end")] <- junctions[!plus, 5:1]
     return(parsed)
 }
 
@@ -184,16 +173,19 @@ parseSuppaALE <- function (junctions, strand, parsed=data.frame("C1.end"=NA)) {
 #' junctions <- c(169763871, 169764046, 169767998, 169764550, 169765124,
 #'                169767998)
 #' parseSuppaAFE(junctions, "+")
-parseSuppaAFE <- function (junctions, strand, parsed=data.frame("C1.end"=NA)) {
-    ifelse (strand == "+",
-            { # if strand is plus
-                parsed[c("C1.start", "C1.end",
-                         "C2.start",
-                         "A1.start", "A1.end")] <- junctions[1:5]},
-            { # if strand is minus
-                parsed[c("C1.start", "C1.end",
-                         "C2.start",
-                         "A1.start", "A1.end")] <- junctions[6:2]})
+parseSuppaAFE <- function (junctions, strand) {
+    # Creates a data frame of parsed junctions filled with NAs
+    parsed <- createFilledJunctions(nrow(junctions))
+    
+    plus <- strand == "+"
+    # Plus strand
+    parsed[plus, c("C1.start", "C1.end",
+                   "C2.start",
+                   "A1.start", "A1.end")] <- junctions[plus, 1:5]
+    # Minus strand
+    parsed[!plus, c("C1.start", "C1.end",
+                    "C2.start",
+                    "A1.start", "A1.end")] <- junctions[!plus, 6:2]
     return(parsed)
 }
 
@@ -203,19 +195,22 @@ parseSuppaAFE <- function (junctions, strand, parsed=data.frame("C1.end"=NA)) {
 #' junctions <- c(202060671, 202068453, 202068489, 202073793, 202060671, 
 #'                202072798, 202072906, 202073793)
 #' parseSuppaMXE(junctions, "+")
-parseSuppaMXE <- function (junctions, strand, parsed=data.frame("C1.end"=NA)) {
-    # PSI value is related to the first alternative isoform
-    ifelse (strand == "+",
-            { # if strand is plus
-                parsed[c("C1.end",
-                         "A1.start", "A1.end",
-                         "A2.start", "A2.end",
-                         "C2.start")] <- junctions[-c(4,5)]},
-            { # if strand is minus
-                parsed[c("C2.start",
-                         "A1.end", "A1.start",
-                         "A2.end", "A2.start",
-                         "C1.end")] <- junctions[-c(4,5)]})
+parseSuppaMXE <- function (junctions, strand) {
+    # Creates a data frame of parsed junctions filled with NAs
+    parsed <- createFilledJunctions(nrow(junctions))
+    
+    # Note that inclusion values are related to the first alternative isoform
+    plus <- strand == "+"
+    # Plus strand
+    parsed[plus, c("C1.end",
+                   "A1.start", "A1.end",
+                   "A2.start", "A2.end",
+                   "C2.start")] <- junctions[plus, -c(4:5)]
+    # Minus strand
+    parsed[!plus, c("C2.start",
+                    "A1.end", "A1.start",
+                    "A2.end", "A2.start",
+                    "C1.end")] <- junctions[!plus, -c(4:5)]
     return(parsed)
 }
 
@@ -224,15 +219,20 @@ parseSuppaMXE <- function (junctions, strand, parsed=data.frame("C1.end"=NA)) {
 #' 
 #' junctions <- c(169772450, 169773216, 169772450, 169773253)
 #' parseSuppaA3SS(junctions, "+")
-parseSuppaA3SS <- function (junctions, strand, parsed=data.frame("C1.end"=NA)) {
-    # inclusion value is related to the first alternative isoform
-    ifelse (strand == "+",
-            { # if strand is plus
-                parsed[["C1.end"]] <- junctions[[1]]
-                parsed[["C2.start"]] <- apply(junctions[c(2, 4)], 1, as.list)},
-            { # if strand is minus
-                parsed[["C1.end"]] <- junctions[[4]]
-                parsed[["C2.start"]] <- apply(junctions[c(1, 3)], 1, as.list)})
+parseSuppaA3SS <- function (junctions, strand) {
+    # Creates a data frame of parsed junctions filled with NAs
+    parsed <- createFilledJunctions(nrow(junctions))
+    
+    # Note that inclusion values are related to the first alternative isoform
+    plus <- strand == "+"
+    # Plus strand
+    parsed[plus, "C1.end"]     <- junctions[plus, 1]
+    parsed[plus, ][["C2.start"]] <- apply(junctions[plus, c(2, 4)], 1,
+                                          function(i) as.list(as.numeric(i)))
+    # Minus strand
+    parsed[!plus, "C1.end"]       <- junctions[!plus, 4]
+    parsed[!plus, ][["C2.start"]] <- apply(junctions[!plus, c(1, 3)], 1,
+                                           function(i) as.list(as.numeric(i)))
     return(parsed)
 }
 
@@ -241,14 +241,19 @@ parseSuppaA3SS <- function (junctions, strand, parsed=data.frame("C1.end"=NA)) {
 #' 
 #' junctions <- c(99890743, 99891188, 99890743, 99891605)
 #' parseSuppaA5SS(junctions, "+")
-parseSuppaA5SS <- function (junctions, strand, parsed=data.frame("C1.end"=NA)) {
-    # PSI value is related to the first alternative isoform
-    ifelse (strand == "+",
-            { # if strand is plus
-                parsed[["C2.start"]] <- junctions[[2]]
-                parsed[["C1.end"]] <- apply(junctions[c(1, 3)], 1, as.list)},
-            { # if strand is minus
-                parsed[["C2.start"]] <- junctions[[3]]
-                parsed[["C1.end"]] <- apply(junctions[c(2, 4)], 1, as.list)})
+parseSuppaA5SS <- function (junctions, strand) {
+    # Creates a data frame of parsed junctions filled with NAs
+    parsed <- createFilledJunctions(nrow(junctions))
+    
+    # Note that inclusion values are related to the first alternative isoform
+    plus <- strand == "+"
+    # Plus strand
+    parsed[plus, "C2.start"]   <- junctions[plus, 2]
+    parsed[plus, ][["C1.end"]] <- apply(junctions[plus, c(1, 3)], 1,
+                                        function(i) as.list(as.numeric(i)))
+    # Minus strand
+    parsed[!plus, "C2.start"]   <- junctions[!plus, 3]
+    parsed[!plus, ][["C1.end"]] <- apply(junctions[!plus, c(2, 4)], 1,
+                                         function(i) as.list(as.numeric(i)))
     return(parsed)
 }

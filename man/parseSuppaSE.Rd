@@ -10,29 +10,27 @@
 \alias{parseSuppaSE}
 \title{Parse junctions of an event from SUPPA according to event type}
 \usage{
-parseSuppaSE(junctions, strand, parsed = data.frame(C1.end = NA))
+parseSuppaSE(junctions, strand)
 
-parseSuppaRI(junctions, strand, parsed = data.frame(C1.end = NA))
+parseSuppaRI(junctions, strand)
 
-parseSuppaALE(junctions, strand, parsed = data.frame(C1.end = NA))
+parseSuppaALE(junctions, strand)
 
-parseSuppaAFE(junctions, strand, parsed = data.frame(C1.end = NA))
+parseSuppaAFE(junctions, strand)
 
-parseSuppaMXE(junctions, strand, parsed = data.frame(C1.end = NA))
+parseSuppaMXE(junctions, strand)
 
-parseSuppaA3SS(junctions, strand, parsed = data.frame(C1.end = NA))
+parseSuppaA3SS(junctions, strand)
 
-parseSuppaA5SS(junctions, strand, parsed = data.frame(C1.end = NA))
+parseSuppaA5SS(junctions, strand)
 }
 \arguments{
 \item{junctions}{List of integers: exon-exon junctions of an event}
 
 \item{strand}{Character: positive ("+") or negative ("-") strand}
-
-\item{parsed}{Named list filled with NAs for faster execution (optional)}
 }
 \value{
-List of parsed junctions
+Data frame of parsed junctions
 }
 \description{
 Parse junctions of an event from SUPPA according to event type
