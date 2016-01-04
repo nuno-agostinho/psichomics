@@ -96,11 +96,11 @@ parseMatsSE <- function(junctions, strand) {
     # Plus strand
     parsed[plus, c("A1.start", "A1.end",
                    "C1.start", "C1.end",
-                   "C2.start", "C2.end")] <- junctions[plus, ]
+                   "C2.start", "C2.end")] <- junctions[plus, 1:6]
     # Minus strand
     parsed[!plus, c("A1.end", "A1.start",
                     "C2.end", "C2.start",
-                    "C1.end", "C1.start")] <- junctions[!plus, ]
+                    "C1.end", "C1.start")] <- junctions[!plus, 1:6]
     return(parsed)
 }
 
@@ -118,12 +118,12 @@ parseMatsMXE <- function(junctions, strand) {
     parsed[plus, c("A1.start", "A1.end",
                    "A2.start", "A2.end",
                    "C1.start", "C1.end",
-                   "C2.start", "C2.end")] <- junctions[plus, ]
+                   "C2.start", "C2.end")] <- junctions[plus, 1:8]
     # Minus strand
     parsed[!plus, c("A1.end", "A1.start",
                     "A2.end", "A2.start",
                     "C2.end", "C2.start",
-                    "C1.end", "C1.start")] <- junctions[!plus, ]
+                    "C1.end", "C1.start")] <- junctions[!plus, 1:8]
     return(parsed)
 }
 
