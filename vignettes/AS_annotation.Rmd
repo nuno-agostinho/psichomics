@@ -26,7 +26,7 @@ annotated across the aforementioned programs are described in the following
 image (retrieved from the
 [SUPPA website](https://bitbucket.org/regulatorygenomicsupf/suppa)).
 
-![Splicing event types](https://bitbucket-assetroot.s3.amazonaws.com/repository/4gEBMd/2185438774-Slide1.jpg?Signature=Xm%2BJUUkZqW3lYXqpecgLsZIbr4A%3D&Expires=1451355558&AWSAccessKeyId=0EMWEFSGA12Z1HF1TZ82)
+![Splicing event types](https://bitbucket-assetroot.s3.amazonaws.com/repository/4gEBMd/1362804745-Slide2.jpg?Signature=OjMcjIPORDWJxu0EAeO9SMl%2BDnA%3D&Expires=1451777771&AWSAccessKeyId=0EMWEFSGA12Z1HF1TZ82)
 
 To conciliate the output from the different programs, it was decided to parse
 each splicing event ID to a R data type known as list with all the important
@@ -297,34 +297,36 @@ read_path <- function(path, item1, item2, ...)
     read.delim(sprintf(path, item1, item2), stringsAsFactors = F, ...)
 
 vastTools.path <- "/genedata/Resources/Software/vast-tools/VASTDB/Hsa/TEMPLATES/Hsa.%s.Template%s.txt"
-types <- c("ALT3", "ALT5", "COMBI", "IR", "MERGE3m", "MIC", rep(c("EXSK", "MULTI"), 2))
-num <- c(rep("", 6), rep(".1", 2), rep(".2", 2))
+types <- c("ALT3", "ALT5", "COMBI", "IR", "MERGE3m", "MIC", rep(c("EXSK", "MULTI"), 1))
+num <- c(rep("", 6), rep(".2", 2))#, rep(".2", 2))
 vastTools.hg19 <- lapply(1:length(types), 
                          function(i) read_path(vastTools.path, types[i], num[i],
                                                row.names=NULL))
 
-vastToolsEvents <- lapply(vastTools.hg19, parseMultipleVastToolsEvents,
-                          progress = TRUE)
-# List of lists: 377.7 seconds // 1 Gb (commit 3e702152)
-
-tmp <- list()
-for (i in 1:length(vastToolsEvents))
-    tmp <- c(tmp, vastToolsEvents[[i]])
-vastToolsEvents <- tmp
+vastToolsEvents <- lapply(1:length(vastTools.hg19),
+                     function(i) {
+                         type <- types[i]
+                         print(type)
+                         annotation <- vastTools.hg19[[i]]
+                         if (nrow(annotation) > 0)
+                            return(parseVastToolsEvent(annotation))
+                     })
+vastToolsEvents <- rbind.fill(vastToolsEvents)
 
 # Let's check the numbers
-number <- function(annotation, type)
-  sum(sapply(annotation, "[[", "Event type") == type)
+nrow(vastToolsEvents)
+sapply(c("SE", "A5SS", "A3SS", "RI"), function(type)
+    sum(vastToolsEvents$Event.type == type))
 
-length(vastToolsEvents)               # all event types:    504494
-number(vastToolsEvents, "SE")         # skipped exons:      301155
-number(vastToolsEvents, "AFE")        # alt. first exons:        0
-number(vastToolsEvents, "ALE")        # alt. last exons:         0
-number(vastToolsEvents, "MXE")        # mutually exclusive:      0  
-number(vastToolsEvents, "A5SS")       # alt. 5 splice site:  15835
-number(vastToolsEvents, "A3SS")       # alt. 3 splice site:  20860
-number(vastToolsEvents, "RI")         # intron retention:   166644
-number(vastToolsEvents, "TandemUTR")  # tandem UTR:              0
+# all event types:    444455
+# skipped exons:      241116
+# alt. first exons:        0
+# alt. last exons:         0
+# mutually exclusive:      0
+# alt. 5 splice site:  15835
+# alt. 3 splice site:  20860
+# intron retention:   166644
+# tandem UTR:              0
 ```
 
 # Event representation: list, data frame, data table or object
@@ -377,7 +379,6 @@ Data frame    |  0.3 s | 26.2  MB | 450f891c
 There's a clearer improvement!
 
 ## SUPPA
-
 Doing the same thing for SUPPA events:
 
 Type          | Time   | Memory   | Commit
@@ -385,6 +386,17 @@ Type          | Time   | Memory   | Commit
 List of lists | 20.5 s | 42.75 MB | 8d9defa5
 Data frame    |  2.0 s | 36.4  MB | acf23a6c
 
+## VAST-TOOLS
+Now for VAST-TOOLS.
+
+Type          | Time    | Memory   | Commit
+--------------|---------|----------|---------
+List of lists | 377.7 s | 1   Gb   | 8d9defa5
+Data frame    |  12.9 s | 0.2 Gb   | 
+
+# List of lists: 377.7 seconds // 1 Gb (commit 3e702152)
+
+## MISO
 Parsing MISO events is the second slowest of the bunch, taking around 300
 seconds to parse everything. The problem here is that we need to parse the lines 
 from the annotation files and to get those lines. We could try to vectorise 
@@ -409,10 +421,9 @@ miso.hg19 <- lapply(types,
                         type <- paste0("/genedata/Resources/Annotations/MISO/hg19/", x, ".hg19.gff3")
                         print(type)
                         read.delim(type, header=FALSE, comment.char="#",
-                                   stringsAsFactors = FALSE)
+                                   stringsAsFactors = FALSE)[1:8]
                     })
 
-library(data.table)
 misoEvents <- lapply(1:length(miso.hg19),
                      function(x) {
                          print(types[x])
@@ -423,7 +434,7 @@ misoEvents <- lapply(1:length(miso.hg19),
                          a <- split(read, groups)
                      })
 ```
-Now the time has decreased to 53 seconds. Better! But still...
+Now the time has decreased to 53 seconds. Better but still...
 Another thing which was tried (and failed) was to convert to data frame in
 separate.
 
@@ -470,9 +481,55 @@ microbenchmark(times = 1, test1(), test2(), test3())
 # test3() 3274.0744
 ```
 
-Yet another thing we could try is to use a data table instead.
+It's interesting to note that split can be made faster if we subset the data.
+For example...
+```{r, eval=FALSE}
+file <- "/genedata/Resources/Annotations/MISO/hg19/SE.hg19.gff3"
+read <- read.delim(file, header=FALSE, comment.char="#",
+                       stringsAsFactors = FALSE)
+gene <- which(read$V3 == "gene")                                    
+diff <- c(gene, nrow(read) + 1)[2:(length(gene)+1)] - gene           
+groups <- unlist(sapply(1:length(diff), function(i) rep(i, diff[i])))
+
+library(microbenchmark)
+res <- microbenchmark(times=1,
+                      split(read[[1]], groups),
+                      split(read[, 1:7], groups),
+                      split(read[1:7], groups),
+                      split(read, groups))
+library(ggplot2)
+autoplot(res)
+```
+We could try to split indeces and access them when needed like this
+```split(seq_len(nrow(read)), groups)```. This implies that we get each row
+when needed but isn't that the same problem?
 
 > TODO
+
+Yet another thing we could try is to use a data table instead.
+
+```{r, eval=FALSE}
+file <- "/genedata/Resources/Annotations/MISO/hg19/SE.hg19.gff3"
+read <- read.delim(file, header=FALSE, comment.char="#",
+                       stringsAsFactors = FALSE)
+gene <- which(read$V3 == "gene")
+next_gene <- c(gene, nrow(read) + 1)[2:(length(gene)+1)]
+diff <- next_gene - gene           
+groups <- unlist(sapply(1:length(diff), function(i) rep(i, diff[i])))
+
+library(data.table)
+dt <- data.table(read)
+# setkey(dt, "V9")
+
+max_test = 1000
+
+library(microbenchmark)
+res <- microbenchmark(times=20,
+                      data.frame=lapply(1:max_test, function(i) read[gene[i]:next_gene[i], ]),
+                      data.table=lapply(1:max_test, function(i) dt[gene[i]:next_gene[i]]))
+library(ggplot2)
+autoplot(res)
+```
 
 Type          | Time   | Memory   | Commit
 --------------|--------|----------|---------

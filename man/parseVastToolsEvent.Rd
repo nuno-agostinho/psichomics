@@ -7,9 +7,9 @@
 parseVastToolsEvent(event)
 }
 \arguments{
-\item{event}{Data.frame row, list or character: Vast-Tools event containing
-gene symbol, event ID, length, junctions coordinates, event type and 
-inclusion levels for both samples}
+\item{event}{Data.frame: VAST-TOOLS event containing gene symbol, event ID,
+length, junctions coordinates, event type and inclusion levels for both
+samples}
 }
 \value{
 List with the event attributes (chromosome, strand, event type and
@@ -22,12 +22,12 @@ Parses an alternative splicing event from VAST-TOOLS
 Junctions are parsed from
 }
 \note{
-Don't use strings as factors.
+Only supports to parse one event at a time.
 }
 \examples{
-event <- c("NFYA", "HsaEX0042823", "chr6:41046768-41046903", "136", 
-           "chr6:41040823,41046768-41046903,41051785", "C2", "0", 
-           "N,N,N,Bn,S@0,0", "0", "N,N,N,Bn,S@0,0")
+event <- read.table(text = 
+    "NFYA HsaEX0042823 chr6:41046768-41046903 136 chr6:41040823,41046768-41046903,41051785 C2 0 N,N,N,Bn,S@0,0 0 N,N,N,Bn,S@0,0"
+)
 parseVastToolsEvent(event)
 }
 
