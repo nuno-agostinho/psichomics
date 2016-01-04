@@ -139,12 +139,8 @@ parseMatsRI <- function(junctions, strand) {
     plus <- strand == "+"
     # Plus strand
     parsed[plus, c("C1.start", "C1.end",
-                   "C2.start", "C2.end")] <- junctions[plus, ]
-    parsed[plus, c("C1.start", "C1.end",
                    "C2.start", "C2.end")] <- junctions[plus, 3:6]
     # Minus strand
-    parsed[!plus, c("C2.end", "C2.start",
-                    "C1.end", "C1.start")] <- junctions[!plus, ]
     parsed[!plus, c("C1.start", "C1.end",
                     "C2.start", "C2.end")] <- junctions[!plus, 6:3]
     return(parsed)
