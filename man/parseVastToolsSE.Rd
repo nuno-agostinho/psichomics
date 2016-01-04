@@ -7,18 +7,19 @@
 \alias{parseVastToolsSE}
 \title{Parse junctions of an event from VAST-TOOLS according to event type}
 \usage{
-parseVastToolsSE(junctions, parsed = list())
+parseVastToolsSE(junctions)
 
-parseVastToolsRI(junctions, parsed = list())
+parseVastToolsRI(junctions, strand)
 
-parseVastToolsA3SS(junctions, parsed = list())
+parseVastToolsA3SS(junctions)
 
-parseVastToolsA5SS(junctions, parsed = list())
+parseVastToolsA5SS(junctions)
 }
 \arguments{
-\item{junctions}{List of integers: exon-exon junctions of an event}
+\item{junctions}{Data.frame or matrix: exon-exon junctions of alternative
+splicing events (it must have 4 columns)}
 
-\item{parsed}{Named list filled with NAs for faster execution (optional)}
+\item{strand}{Character: positive (+) or negative (-) strand}
 }
 \value{
 List of parsed junctions
@@ -36,16 +37,27 @@ The following event types are available to be parsed:
 }
 }
 \examples{
-junctions <- list(41040823, 41046768, 41046903, 41051785)
+junctions <- read.table(text = "41040823 41046768 41046903 41051785")
 parseVastToolsSE(junctions)
 
-junctions <- list(58861736, 58862017, 58858719, 58859006)
-parseVastToolsRI(junctions)
+# these functions are vectorised!
+junctions <- read.table(text = "41040823 41046768 41046903 41051785
+                                58864658 58864693 58864294 58864563")
+parseVastToolsSE(junctions)
 
-junctions <- list(49558568, 49557402, c(49557492, 49557470))
+junctions <- read.table(text = "58864658 58864693 58864294 58864563")
+parseVastToolsRI(junctions, strand = "+")
+
+junctions <- rbind(
+    c(36276385, list(c(36277798, 36277315)), 36277974),
+    c(7133604, 7133377, list(c(7133474, 7133456)))
+)
 parseVastToolsA3SS(junctions)
 
-junctions <- list(c(99891605, 99891188), 99891686, 99890743)
+junctions <- rbind(
+    c(74650610, list(c(74650654, 74650658)), 74650982),
+    c(list(c(49557666, 49557642), 49557746, 49557470))
+)
 parseVastToolsA5SS(junctions)
 }
 \seealso{
