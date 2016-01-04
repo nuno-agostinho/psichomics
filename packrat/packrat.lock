@@ -17,6 +17,11 @@ Source: Bioconductor
 Version: 0.16.1
 Hash: c66deb506ef217896ce7d2ee347c95ff
 
+Package: DBI
+Source: CRAN
+Version: 0.3.1
+Hash: 096699d1ac1cf530acfc646a0c90ee5d
+
 Package: GenomeInfoDb
 Source: CRAN
 Version: 1.6.1
@@ -60,6 +65,11 @@ Source: Bioconductor
 Version: 0.10.0
 Hash: 5aae86776000f3ce8b3cad1a801f1e5f
 Requires: BiocGenerics, IRanges, S4Vectors, zlibbioc
+
+Package: assertthat
+Source: CRAN
+Version: 0.1
+Hash: 0afb92b59b02593c70ff8046700ba9d3
 
 Package: bitops
 Source: CRAN
@@ -120,6 +130,12 @@ Package: digest
 Source: CRAN
 Version: 0.6.8
 Hash: de202f956596a476d09304e3a2ebf1e5
+
+Package: dplyr
+Source: CRAN
+Version: 0.4.3
+Hash: 6747c41888a187a26ac4b03789b52a06
+Requires: BH, DBI, R6, Rcpp, assertthat, lazyeval, magrittr
 
 Package: evaluate
 Source: CRAN
@@ -191,6 +207,11 @@ Package: labeling
 Source: CRAN
 Version: 0.3
 Hash: ecf589b42cd284b03a4beb9665482d3e
+
+Package: lazyeval
+Source: CRAN
+Version: 0.1.10
+Hash: 9679f1ac7f6bc07bc79755f34cd15e1f
 
 Package: magrittr
 Source: CRAN
