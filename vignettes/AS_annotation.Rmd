@@ -379,7 +379,7 @@ Data frame    |  0.3 s | 26.2  MB | 450f891c
 There's a clearer improvement!
 
 ## SUPPA
-Doing the same thing for SUPPA events:
+Doing the same thing for SUPPA events.
 
 Type          | Time   | Memory   | Commit
 --------------|--------|----------|---------
@@ -389,12 +389,10 @@ Data frame    |  2.0 s | 36.4  MB | acf23a6c
 ## VAST-TOOLS
 Now for VAST-TOOLS.
 
-Type          | Time    | Memory   | Commit
---------------|---------|----------|---------
-List of lists | 377.7 s | 1   Gb   | 8d9defa5
-Data frame    |  12.9 s | 0.2 Gb   | 
-
-# List of lists: 377.7 seconds // 1 Gb (commit 3e702152)
+Type          | Time    | Memory | Commit
+--------------|---------|--------|---------
+List of lists | 377.7 s | 1   Gb | 3e702152
+Data frame    |  12.9 s | 0.2 Gb | 0eb2c879
 
 ## MISO
 Parsing MISO events is the second slowest of the bunch, taking around 300
@@ -460,7 +458,7 @@ test2 <- function() {
     groups <- c(groups, tail(groups, 1))                                    # length: 13280
     read <- read.table(text = read)
     res <- split(read, groups)
-}
+}N
 
 #' Get character vector from file, split them and convert to data frame
 test3 <- function() {

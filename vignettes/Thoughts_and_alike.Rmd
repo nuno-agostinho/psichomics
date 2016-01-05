@@ -36,6 +36,7 @@ same name in different classes are allowed?
 
 
 ```{r, eval=FALSE}
+file <- "/genedata/Resources/Annotations/MISO/hg19/TandemUTR.hg19.gff3"
 read <- read.delim(file, header=FALSE, comment.char="#",
                    stringsAsFactors = FALSE)                            # nrow:   13280
 gene <- which(read$V3 == "gene")                                        # length:  2656
@@ -47,8 +48,8 @@ res <- lapply(1:length(gene), function(i) {
     read[gene[i]:diff[i], ]
 })
 
-# getting indexes for data tables the same way as for data frames... 1 second
-# less, but it still takes 4 seconds...
+# getting indexes for data tables the same way as for data frames...
+# it takes 4 seconds so it's 1 second faster
 library(data.table)
 read <- data.table(read)
 res <- lapply(1:length(gene), function(i) {
