@@ -4,10 +4,20 @@
 \alias{createFilledJunctions}
 \title{Creates a data frame of parsed junctions filled with NAs}
 \usage{
-createFilledJunctions(nrow)
+createFilledJunctions(nrow, program = character(0),
+  event.type = character(0), chromosome = character(0),
+  strand = character(0))
 }
 \arguments{
 \item{nrow}{Integer: Number of rows}
+
+\item{program}{Character: Program used to get the junctions}
+
+\item{event.type}{Character: Event type of the respective events}
+
+\item{chromosome}{Character: Chromosome of the junctions}
+
+\item{strand}{Strand: positive ("+") or negative ("-") strand of the event}
 }
 \value{
 A data frame with the junctions coordinate names pre-filled with NAs

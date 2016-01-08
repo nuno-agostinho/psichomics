@@ -1206,5 +1206,141 @@ parseMisoTandemUTR <- function(event, strand, parsed) {
 ## Isoforms
 > TODO
 
-## Outliers
-To not parse outliers
+# Rethinking it
+Maybe one thing we could do instead... is to get the valid rows and manipulate
+those. Let's try with an example with three exon skipping events.
+
+```{r, eval=FALSE}
+events <- read.table(text = "
+    chr1 SE gene 16854 18061  .  -  .
+    chr1 SE mRNA 16854 18061  .  -  .
+    chr1 SE exon 16854 17055  .  -  .
+    chr1 SE exon 17233 17742  .  -  .
+    chr1 SE exon 17915 18061  .  -  .
+    chr1 SE mRNA 16854 18061  .  -  .
+    chr1 SE exon 16854 17055  .  -  .
+    chr1 SE exon 17915 18061  .  -  .
+
+    chr1 SE gene 17233 18061  .  -  .
+    chr1 SE mRNA 17233 18061  .  -  .
+    chr1 SE exon 17233 17368  .  -  .
+    chr1 SE exon 17606 17742  .  -  .
+    chr1 SE exon 17915 18061  .  -  .
+    chr1 SE mRNA 17233 18061  .  -  .
+    chr1 SE exon 17233 17368  .  -  .
+    chr1 SE exon 17915 18061  .  -  .
+
+    chr1 SE gene 17233 18061  .  -  .
+    chr1 SE mRNA 17233 18061  .  -  .
+    chr1 SE exon 17233 17368  .  -  .
+    chr1 SE exon 17526 17742  .  -  .
+    chr1 SE exon 17915 18061  .  -  .
+    chr1 SE mRNA 17233 18061  .  -  .
+    chr1 SE exon 17233 17368  .  -  .
+    chr1 SE exon 17915 18061  .  -  .
+")
+
+# Get the beginning index of each event
+gene <- which(events[[3]] == "gene")
+
+# Create an data frame filled with NAs
+parsed <- createFilledJunctions(length(gene))
+
+# Get event junctions
+parsed[c("C1.start", "C1.end")] <- events[gene + 4, 5:4]
+parsed[c("A1.start", "A1.end")] <- events[gene + 3, 5:4]
+parsed[c("C2.start", "C2.end")] <- events[gene + 2, 5:4]
+```
+
+This works! Of course, we'll need to filter out the outliers before.
+```{r, eval=FALSE}
+events <- read.table(text = "
+    chr1 SE gene 16854 18061  .  -  .
+    chr1 SE mRNA 16854 18061  .  -  .
+    chr1 SE exon 16854 17055  .  -  .
+    chr1 SE exon 17233 17742  .  -  .
+    chr1 SE exon 17915 18061  .  -  .
+    chr1 SE mRNA 16854 18061  .  -  .
+    chr1 SE exon 16854 17055  .  -  .
+    chr1 SE exon 17915 18061  .  -  .
+    chr1 SE gene 17233 18061  .  -  .
+    chr1 SE mRNA 17233 18061  .  -  .
+    chr1 SE exon 17233 17368  .  -  .
+    chr1 SE exon 17606 17742  .  -  .
+    chr1 SE exon 17915 18061  .  -  .
+    chr1 SE mRNA 17233 18061  .  -  .
+    chr1 SE exon 17233 17368  .  -  .
+    chr1 SE exon 17915 18061  .  -  .
+    chr1 SE gene 17233 18061  .  -  .
+    chr1 SE dkfd 00000 30000  .  -  .
+    chr1 SE mRNA 17233 18061  .  -  .
+    chr1 SE exon 17233 17368  .  -  .
+    chr1 SE exon 17526 17742  .  -  .
+    chr1 SE exon 17915 18061  .  -  .
+    chr1 SE mRNA 17233 18061  .  -  .
+    chr1 SE exon 17233 17368  .  -  .
+    chr1 SE exon 17915 18061  .  -  .
+    chr1 SE gene 17233 18061  .  -  .
+    chr1 SE mRNA 17233 18061  .  -  .
+    chr1 SE exon 17233 17368  .  -  .
+    chr1 SE exon 17606 17742  .  -  .
+    chr1 SE exon 17915 18061  .  -  .
+    chr1 SE mRNA 17233 18061  .  -  .
+    chr1 SE exon 17233 17368  .  -  .
+    chr1 SE exon 17915 18061  .  -  .
+")
+
+# Get starting position of each event
+gene <- which(events[3] == "gene")
+next_gene <- c(gene[2:length(gene)], nrow(events) + 1)
+
+# Get the elements composing each event
+elem <- lapply(1:length(gene), function(i)
+    as.character(events[gene[i]:(next_gene[i]-1), 3]))
+
+# Validate those elements
+validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 2))
+valid <- vapply(elem, function(e) identical(e, validator), logical(1))
+
+# Return valid events
+valid_index <- as.vector(sapply(1:sum(valid), function(i)
+    gene[valid][i]:(next_gene[valid][i]-1)))
+events <- events[valid_index, ]
+```
+
+Great! This will do for most of types of events. Some exceptions include AFE and
+ALE events where the validator is not always the same.
+
+There's just something that takes more time than I'd like. After using
+```profvis``` while running parseMisoSE on all skipping exon events from the 
+MISO annotation, it seems most of the time of the function is spent doing:
+```{r, eval=F}
+# Get the elements composing each event
+elem <- lapply(1:length(gene), function(i)
+    as.character(events[gene[i]:(next_gene[i]-1), 3]))
+```
+
+But there's a better way to do it! ```split``` to the rescue!
+```{r, eval=FALSE}
+type <- paste0("/genedata/Resources/Annotations/MISO/hg19/SE.hg19.gff3")
+print(type)
+events <- read.delim(type, header=FALSE, comment.char="#",
+                     stringsAsFactors = FALSE)[1:8]
+
+gene <- which(events[3] == "gene")
+next_gene <- c(gene[2:length(gene)], nrow(events) + 1)
+
+diff <- next_gene - gene
+groups <- unlist(lapply(1:length(diff), function(i, diff)
+    rep.int(i, times = diff[i]), diff))
+
+microbenchmark(times=5,
+               lapply=elem <- lapply(1:length(gene), function(i)
+                   as.character(events[gene[i]:(next_gene[i]-1), 3])),
+               split=split(events[[3]], groups))
+
+#Unit: milliseconds
+#   expr       min        lq      mean    median         uq        max neval
+# lapply 1138.70381 1165.90964 1230.48925 1169.69689 1277.77345 1400.36245     5
+#  split   59.92351   60.71383   61.31336   61.57555   62.03469   62.31923     5
+```
