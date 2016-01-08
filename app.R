@@ -5,7 +5,6 @@ tabsFolder <- "R/"
 
 loadScripts <- function(folder, vars, exclude = "", ...){
     envs <- list()
-    
     # Exclude unwanted files
     exclude.regex <- paste(exclude, collapse = "|")
     if (exclude != "")
@@ -37,12 +36,10 @@ server <- function(input, output, session) {
     lapply(tabs.server, do.call, list(input, output, session))
     
     # Stop Shiny app when session ends (e.g. closing the window)
-    # TODO(NunoA): maybe it'd be better if the app DIDN'T stop... either that
-    # or make it easy to resume app
     session$onSessionEnded(function() {
         # Stop app and print message to console
         suppressMessages(stopped <- stopApp(returnValue=TRUE))
-        if (stopped) cat("\nShiny app was exited ")
+        if (stopped) cat("\nShiny app was closed ")
     })
 }
 
@@ -64,8 +61,9 @@ ui <- shinyUI(
                 tags$style(type = "text/css", ".sbs-alert {position: fixed; right: 10px; z-index:9;}")
             )
         ),
-        # Loads the interface from each tab
-        tabs.ui
+        # Loads the interface for each tab
+        lapply(tabs.ui,
+               do.call, list())
     ))
 )
 
