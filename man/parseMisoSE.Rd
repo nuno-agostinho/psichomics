@@ -11,21 +11,21 @@
 \alias{parseMisoTandemUTR}
 \title{Parse junctions of an event from MISO according to event type}
 \usage{
-parseMisoSE(event, strand, parsed)
+parseMisoSE(event)
 
-parseMisoMXE(event, strand, parsed)
+parseMisoMXE(event)
 
-parseMisoRI(event, strand, parsed)
+parseMisoRI(event, strand)
 
-parseMisoA5SS(event, strand, parsed)
+parseMisoA5SS(event)
 
-parseMisoA3SS(event, strand, parsed)
+parseMisoA3SS(event, strand)
 
-parseMisoTandemUTR(event, strand, parsed)
+parseMisoTandemUTR(event, strand)
 
-parseMisoAFE(event, strand, parsed)
+parseMisoAFE(event)
 
-parseMisoALE(event, strand, parsed)
+parseMisoALE(event, strand)
 }
 \arguments{
 \item{event}{Data.frame containing only one event with at least 7 columns as 
@@ -33,8 +33,6 @@ retrieved from the alternative splicing annotation files from MISO (GFF3
 files)}
 
 \item{strand}{Character: strand of the event}
-
-\item{parsed}{Named list with NAs (for faster execution)}
 }
 \value{
 List of parsed junctions
@@ -66,7 +64,7 @@ event <- read.table(text = "
   chr1 SE mRNA 16854 18061 . - .
   chr1 SE exon 16854 17955 . - .
   chr1 SE exon 17915 18061 . - .")
-parseMisoSE(event, strand = "-", parsed = list())
+parseMisoSE(event)
 
 # mutually exclusive exon (MXE) event
 event <- read.table(text = "
@@ -79,7 +77,7 @@ event <- read.table(text = "
  chr1 MXE exon 764383 764484 . + .
  chr1 MXE exon 783034 783186 . + .
  chr1 MXE exon 787307 788090 . + .")
-parseMisoMXE(event, strand = "+", parsed = list())
+parseMisoMXE(event)
 
 # intron retention (RI) event
 event <- read.table(text = "
@@ -89,7 +87,7 @@ event <- read.table(text = "
  chr1 RI mRNA 17233 17742 . - .
  chr1 RI exon 17233 17364 . - .
  chr1 RI exon 17601 17742 . - .")
-parseMisoRI(event, strand = "-", parsed = list())
+parseMisoRI(event)
 
 # alternative 5' splice site (A5SS) event
 event <- read.table(text = "
@@ -100,7 +98,7 @@ event <- read.table(text = "
  chr1 A5SS mRNA 17233 17742 . - .
  chr1 A5SS exon 17233 17368 . - .
  chr1 A5SS exon 17606 17742 . - .")
-parseMisoA5SS(event, strand = "-", parsed = list())
+parseMisoA5SS(event)
 
 # alternative 3' splice site (A3SS) event
 event <- read.table(text = "
@@ -111,7 +109,7 @@ event <- read.table(text = "
  chr1 A3SS mRNA 15796 16765 . - .
  chr1 A3SS exon 15796 15942 . - .
  chr1 A3SS exon 16607 16765 . - .")
-parseMisoA3SS(event, strand = "-", parsed = list())
+parseMisoA3SS(event)
 
 # Tandem UTR event
 event <- read.table(text = "
@@ -120,7 +118,7 @@ event <- read.table(text = "
  chr19 TandemUTR exon  10663759  10664625  .  -  .
  chr19 TandemUTR mRNA  10664223  10664625  .  -  .
  chr19 TandemUTR exon  10664223  10664625  .  -  .")
-parseMisoTandemUTR(event, strand = "-", parsed = list())
+parseMisoTandemUTR(event)
 
 # alternative first exon (AFE) event
 event <- read.table(text = "
@@ -131,7 +129,7 @@ event <- read.table(text = "
  chr12 AFE exon 57916659 57916794  .  +  .
  chr12 AFE exon 57917812 57917875  .  +  .
  chr12 AFE exon 57918063 57918199  .  +  .")
-parseMisoAFE(event, strand = "+", parsed = list())
+parseMisoAFE(event)
 
 # alternative last exon (ALE) event
 event <- read.table(text = "
@@ -140,7 +138,7 @@ event <- read.table(text = "
  chr6 ALE exon 30822190 30822593  .  +  .
  chr6 ALE mRNA 30620579 30620982  .  +  .
  chr6 ALE exon 30620579 30620982  .  +  .")
-parseMisoALE(event, strand = "+", parsed = list())
+parseMisoALE(event)
 }
 \seealso{
 \code{\link{parseMisoEvent}}
