@@ -4,7 +4,7 @@
 \alias{getValidEvents}
 \title{Parses multiple alternative splicing events from MISO}
 \usage{
-getValidEvents(events, validator, isRunLengthValid = FALSE)
+getValidEvents(events, validator, areMultipleExonsValid = FALSE)
 }
 \arguments{
 \item{events}{Data.frame containing one or more events with at least 7
@@ -13,8 +13,8 @@ MISO (GFF3 files)}
 
 \item{validator}{Character: valid elements for each event}
 
-\item{isRunLengthValid}{Boolean: consider runs of equal elements as valid
-when comparing with the validator? Default if FALSE (see details)}
+\item{areMultipleExonsValid}{Boolean: consider runs of exons as valid when
+comparing with the validator? Default is FALSE (see details)}
 
 \item{progress}{Boolean: show progress?}
 
@@ -27,12 +27,12 @@ Data.frame with valid events
 Expects the annotation for many events at once and parses each event.
 }
 \details{
-\code{isRunLengthValid} allows to consider runs of equal elements
-(i.e. sequences where the same element consecutively occurs) as valid when
-comparing with a given validator. For example, if the validator is
-\code{c("gene", "mRNA", "exon")} and \code{isRunLengthValid = FALSE}, this
-function will only considerate events as valid if they have the exact same 
-elements. If \code{isRunLengthValid = TRUE}, a valid events could include the
+\code{areMultipleExonsValid} allows to consider runs of exons (i.e. 
+sequences where "exon" occurs consecutively) as valid when comparing with 
+given validator. For example, if the validator is \code{c("gene", "mRNA",
+"exon")} and \code{areMultipleExonsValid = FALSE}, this function will only
+considerate events as valid if they have the exact same elements. If
+\code{areMultipleExonsValid = TRUE}, a valid events could include the
 elements \code{c("gene", "mRNA", "exon", "exon", "exon")}.
 }
 \examples{

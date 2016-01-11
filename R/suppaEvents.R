@@ -208,12 +208,10 @@ parseSuppaA3SS <- function (junctions, strand) {
     plus <- strand == "+"
     # Plus strand
     parsed[plus, "C1.end"]     <- junctions[plus, 1]
-    parsed[plus, ][["C2.start"]] <- apply(junctions[plus, c(2, 4)], 1,
-                                          function(i) as.list(as.numeric(i)))
+    parsed[plus, ][["C2.start"]] <- listJunctions(junctions, plus, c(2, 4))
     # Minus strand
     parsed[!plus, "C1.end"]       <- junctions[!plus, 4]
-    parsed[!plus, ][["C2.start"]] <- apply(junctions[!plus, c(1, 3)], 1,
-                                           function(i) as.list(as.numeric(i)))
+    parsed[!plus, ][["C2.start"]] <- listJunctions(junctions, !plus, c(1, 3))
     return(parsed)
 }
 
@@ -230,11 +228,9 @@ parseSuppaA5SS <- function (junctions, strand) {
     plus <- strand == "+"
     # Plus strand
     parsed[plus, "C2.start"]   <- junctions[plus, 2]
-    parsed[plus, ][["C1.end"]] <- apply(junctions[plus, c(1, 3)], 1,
-                                        function(i) as.list(as.numeric(i)))
+    parsed[plus, ][["C1.end"]] <- listJunctions(junctions, plus, c(1, 3))
     # Minus strand
     parsed[!plus, "C2.start"]   <- junctions[!plus, 3]
-    parsed[!plus, ][["C1.end"]] <- apply(junctions[!plus, c(2, 4)], 1,
-                                         function(i) as.list(as.numeric(i)))
+    parsed[!plus, ][["C1.end"]] <- listJunctions(junctions, !plus, c(2, 4))
     return(parsed)
 }

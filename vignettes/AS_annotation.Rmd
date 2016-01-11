@@ -567,10 +567,10 @@ inside a list
 
 > TODO: increase number of AFE and ALE events included in the parsing
 
-Type          | Time     | Memory   | Commit
---------------|----------|----------|---------
-List of lists | 308   s  | 83.7  MB | 8d9defa5
-Data frame    |   3.6 s  |  8.45 MB |
+Type          | Time     | Memory  | Commit
+--------------|----------|---------|---------
+List of lists | 308.0 s  | 83.7 MB | 8d9defa5
+Data frame    |   3.6 s  |  8.5 MB | 891a972b
 
 # Getting TCGA's read counts for the annotated splicing junctions
 [The Cancer Genome Atlas (TCGA)](https://tcga-data.nci.nih.gov/tcga/) is a

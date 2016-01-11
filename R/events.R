@@ -22,19 +22,21 @@ createFilledJunctions <- function(nrow, program = character(0),
                        "A2.start", "A2.end",
                        "C2.start", "C2.end")
     
-    if (length(program) > 0) parsed[["Program"]] <- "MISO"
+    if (length(program) > 0)    parsed[["Program"]] <- "MISO"
     if (length(event.type) > 0) parsed[["Event.type"]] <- event.type
     if (length(chromosome) > 0) parsed[["Chromosome"]] <- chromosome
-    if (length(strand) > 0) parsed[["Strand"]] <- strand
+    if (length(strand) > 0)     parsed[["Strand"]] <- strand
     return(parsed)
 }
 
-#' Converts a vector of numeric characters to a list of vectors of integers
+#' Converts a data frame of junctions to a list of numeric junctions
 #'
-#' @param i Numeric character vector
+#' @param junctions Data frame of junctions
+#' @param rows Rows of the junctions
+#' @param cols Columns of the junctions
 #'
-#' @return List of numeric vectors
+#' @return List of numeric junctions
 #' @export
-numericList <- function(i) {
-    return(as.list(as.numeric(i)))
+listJunctions <- function(junctions, rows, cols) {
+    apply(junctions[rows, cols], 1, function(i) as.list(as.numeric(i)))
 }

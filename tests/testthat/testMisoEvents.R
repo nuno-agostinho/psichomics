@@ -556,68 +556,68 @@ test_that("parseMisoALE doesn't parse unrecognized events", {
     expect_null(parsed)
 })
 
-test_that("remove_wrong_mRNA removes mRNAs from other chromosomes", {
-    event <- read.table(text = "
-                        chr6 ALE gene 30620579 30822593  .  +  .
-                        chr7 ALE mRNA 30620579 30620982  .  +  .
-                        chr7 ALE exon 30620579 30620982  .  +  .
-                        chr6 ALE mRNA 30822190 30822593  .  +  .
-                        chr6 ALE exon 30822190 30822593  .  +  .")
-    new <- remove_wrong_mRNA(event)
-    expect_is(new, "data.frame")
-    expect_equal(nrow(new), 3)
-    expect_equal(new, event[c(1, 4, 5), ])
-})
-
-test_that("remove_wrong_mRNA removes mRNAs outside the event boundary", {
-    event <- read.table(text = "
-                        chr6 ALE gene 30620579 30822593  .  +  .
-                        chr6 ALE mRNA 30822190 30822593  .  +  .
-                        chr6 ALE exon 30822190 30822593  .  +  .
-                        chr6 ALE mRNA 40620579 40620982  .  +  .
-                        chr6 ALE exon 40620579 40620982  .  +  .
-                        chr6 ALE mRNA 20620579 20620982  .  +  .
-                        chr6 ALE exon 20620579 20620982  .  +  .")
-    new <- remove_wrong_mRNA(event)
-    expect_is(new, "data.frame")
-    expect_equal(nrow(new), 3)
-    expect_equal(new, event[1:3, ])
-})
-
-test_that("list_mRNA creates a list with mRNAs and respective exons", {
-    event <- read.table(text = "
-                        chr19 TandemUTR gene  10663759  10664625  .  -  .
-                        chr19 TandemUTR mRNA  10663759  10664625  .  -  .
-                        chr19 TandemUTR exon  10663759  10664625  .  -  .
-                        chr19 TandemUTR mRNA  10664223  10664625  .  -  .
-                        chr19 TandemUTR exon  10664223  10664625  .  -  .
-                        chr19 TandemUTR mRNA  10664223  10664625  .  -  .
-                        chr19 TandemUTR exon  10664223  10664625  .  -  .
-                        chr19 TandemUTR mRNA  10664223  10664625  .  -  .
-                        chr19 TandemUTR exon  10664223  10664625  .  -  .")
-    mRNA <- list_mRNA(event)
-    expect_is(mRNA, "list")
-    expect_equal(length(mRNA), 4)
-    expect_equal(mRNA[[1]], event[2:3, ])
-    expect_equal(mRNA[[2]], event[4:5, ])
-    expect_equal(mRNA[[3]], event[6:7, ])
-    expect_equal(mRNA[[4]], event[8:9, ])
-})
-
-test_that("remove_duplicated_mRNA removes duplicated mRNAs", {
-    event <- read.table(text = "
-                        chr19 TandemUTR gene  10663759  10664625  .  -  .
-                        chr19 TandemUTR mRNA  10663759  10664625  .  -  .
-                        chr19 TandemUTR exon  10663759  10664625  .  -  .
-                        chr19 TandemUTR mRNA  10664223  10664625  .  -  .
-                        chr19 TandemUTR exon  10664223  10664625  .  -  .
-                        chr19 TandemUTR mRNA  10664223  10664625  .  -  .
-                        chr19 TandemUTR exon  10664223  10664625  .  -  .
-                        chr19 TandemUTR mRNA  10664223  10664625  .  -  .
-                        chr19 TandemUTR exon  10664223  10664625  .  -  .")
-    mRNA <- list_mRNA(event)
-    new <- remove_duplicated_mRNA(mRNA)
-    expect_is(new, "list")
-    expect_equal(length(new), 2)
-    expect_equal(new, mRNA[1:2])
-})
+# test_that("remove_wrong_mRNA removes mRNAs from other chromosomes", {
+#     event <- read.table(text = "
+#                         chr6 ALE gene 30620579 30822593  .  +  .
+#                         chr7 ALE mRNA 30620579 30620982  .  +  .
+#                         chr7 ALE exon 30620579 30620982  .  +  .
+#                         chr6 ALE mRNA 30822190 30822593  .  +  .
+#                         chr6 ALE exon 30822190 30822593  .  +  .")
+#     new <- remove_wrong_mRNA(event)
+#     expect_is(new, "data.frame")
+#     expect_equal(nrow(new), 3)
+#     expect_equal(new, event[c(1, 4, 5), ])
+# })
+# 
+# test_that("remove_wrong_mRNA removes mRNAs outside the event boundary", {
+#     event <- read.table(text = "
+#                         chr6 ALE gene 30620579 30822593  .  +  .
+#                         chr6 ALE mRNA 30822190 30822593  .  +  .
+#                         chr6 ALE exon 30822190 30822593  .  +  .
+#                         chr6 ALE mRNA 40620579 40620982  .  +  .
+#                         chr6 ALE exon 40620579 40620982  .  +  .
+#                         chr6 ALE mRNA 20620579 20620982  .  +  .
+#                         chr6 ALE exon 20620579 20620982  .  +  .")
+#     new <- remove_wrong_mRNA(event)
+#     expect_is(new, "data.frame")
+#     expect_equal(nrow(new), 3)
+#     expect_equal(new, event[1:3, ])
+# })
+# 
+# test_that("list_mRNA creates a list with mRNAs and respective exons", {
+#     event <- read.table(text = "
+#                         chr19 TandemUTR gene  10663759  10664625  .  -  .
+#                         chr19 TandemUTR mRNA  10663759  10664625  .  -  .
+#                         chr19 TandemUTR exon  10663759  10664625  .  -  .
+#                         chr19 TandemUTR mRNA  10664223  10664625  .  -  .
+#                         chr19 TandemUTR exon  10664223  10664625  .  -  .
+#                         chr19 TandemUTR mRNA  10664223  10664625  .  -  .
+#                         chr19 TandemUTR exon  10664223  10664625  .  -  .
+#                         chr19 TandemUTR mRNA  10664223  10664625  .  -  .
+#                         chr19 TandemUTR exon  10664223  10664625  .  -  .")
+#     mRNA <- list_mRNA(event)
+#     expect_is(mRNA, "list")
+#     expect_equal(length(mRNA), 4)
+#     expect_equal(mRNA[[1]], event[2:3, ])
+#     expect_equal(mRNA[[2]], event[4:5, ])
+#     expect_equal(mRNA[[3]], event[6:7, ])
+#     expect_equal(mRNA[[4]], event[8:9, ])
+# })
+# 
+# test_that("remove_duplicated_mRNA removes duplicated mRNAs", {
+#     event <- read.table(text = "
+#                         chr19 TandemUTR gene  10663759  10664625  .  -  .
+#                         chr19 TandemUTR mRNA  10663759  10664625  .  -  .
+#                         chr19 TandemUTR exon  10663759  10664625  .  -  .
+#                         chr19 TandemUTR mRNA  10664223  10664625  .  -  .
+#                         chr19 TandemUTR exon  10664223  10664625  .  -  .
+#                         chr19 TandemUTR mRNA  10664223  10664625  .  -  .
+#                         chr19 TandemUTR exon  10664223  10664625  .  -  .
+#                         chr19 TandemUTR mRNA  10664223  10664625  .  -  .
+#                         chr19 TandemUTR exon  10664223  10664625  .  -  .")
+#     mRNA <- list_mRNA(event)
+#     new <- remove_duplicated_mRNA(mRNA)
+#     expect_is(new, "list")
+#     expect_equal(length(new), 2)
+#     expect_equal(new, mRNA[1:2])
+# })
