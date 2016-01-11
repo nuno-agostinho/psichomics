@@ -25,7 +25,7 @@ parseMisoTandemUTR(event, strand)
 
 parseMisoAFE(event)
 
-parseMisoALE(event, strand)
+parseMisoALE(event)
 }
 \arguments{
 \item{event}{Data.frame containing only one event with at least 7 columns as 

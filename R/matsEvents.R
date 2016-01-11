@@ -160,13 +160,11 @@ parseMatsA3SS <- function(junctions, strand) {
     # Plus strand
     parsed[plus, c("C1.start", "C1.end",
                    "C2.end")] <- junctions[plus, c(5:6, 2)]
-    parsed[plus, ][["C2.start"]] <- apply(junctions[plus, c(1, 3)],
-                                        1, numericList)
+    parsed[plus, ][["C2.start"]] <- listJunctions(junctions, plus, c(1, 3))
     # Minus strand
     parsed[!plus, c("C1.start", "C1.end",
                     "C2.end")] <- junctions[!plus, c(6:5, 1)]
-    parsed[!plus, ][["C2.start"]] <- apply(junctions[!plus, c(2, 4)],
-                                         1, numericList)
+    parsed[!plus, ][["C2.start"]] <- listJunctions(junctions, !plus, c(2, 4))
     return(parsed)
 }
 
@@ -184,13 +182,11 @@ parseMatsA5SS <- function(junctions, strand) {
     # Plus strand
     parsed[plus, c("C1.start",
                    "C2.start", "C2.end")] <- junctions[plus, c(1, 5:6)]
-    parsed[plus, ][["C1.end"]] <- apply(junctions[plus, c(2, 4)],
-                                        1, numericList)
+    parsed[plus, ][["C1.end"]] <- listJunctions(junctions, plus, c(2, 4))
     # Minus strand
     parsed[!plus, c("C1.start",
                     "C2.start", "C2.end")] <- junctions[!plus, c(2, 6, 5)]
-    parsed[!plus, ][["C1.end"]] <- apply(junctions[!plus, c(1, 3)],
-                                           1, numericList)
+    parsed[!plus, ][["C1.end"]] <- listJunctions(junctions, !plus, c(1, 3))
     return(parsed)
 }
 

@@ -676,10 +676,9 @@ parseMisoAFE <- function(event) {
 #     mRNA <- remove_duplicated_mRNA(mRNA)
 #     if (len < length(mRNA))
 #         parsed[["comment"]] <- "duplicated mRNAs"
-#     
+#    
 #     if (length(mRNA) != 2) {
-#         # Store (but don't parse) events with more than two mRNAs or only one mRNA
-#         parsed[["comment"]] <- "unrecognized event"
+#         # Don't parse events with more than two mRNAs or only one mRNA
 #     } else if (strand == "+") {
 #         mRNA1 <- mRNA[[1]]
 #         exon1 <- mRNA1[nrow(mRNA1), 4:5]
@@ -776,28 +775,13 @@ parseMisoALE <- function(event) {
         return(parsed)
     }
     
-    
-#     # Creates a data frame of parsed junctions filled with NAs
-#     parsed <- createFilledJunctions(1)
-#     
 #     len <- nrow(event)
-#     if (len == 5) {
-#         # Most ALE events have length of 5, so let's avoid wasting time
-#         if (strand == "+") { 
-#             parsed[c("A1.start", "A1.end")] <- event[3, 4:5]
-#             parsed[c("C2.start", "C2.end")] <- event[5, 4:5]
-#         } else if (strand == "-") {
-#             parsed[c("A1.start", "A1.end")] <- event[5, 5:4]
-#             parsed[c("C2.start", "C2.end")] <- event[3, 5:4]
-#         }   
-#     } else if (len < 5) {
+#     if (len < 5) {
 #         # A GFF3 valid event needs at least 5 lines to be described
-#         parsed[["comment"]] <- "unrecognized event"
 #     } else {
 #         event <- remove_wrong_mRNA(event)
-#         if (len < nrow(event)) {
+#         if (len < nrow(event))
 #             parsed[["comment"]] <- "wrong mRNAs"
-#         }
 #         
 #         # Get a list of each mRNA and respective exons
 #         mRNA <- list_mRNA(event)
@@ -809,8 +793,8 @@ parseMisoALE <- function(event) {
 #             parsed[["comment"]] <- "duplicated mRNAs"
 #         
 #         if (length(mRNA) != 2) {
-#             # Store (but don't parse) events with more than two mRNAs or only one mRNA
-#             parsed[["comment"]] <- "unrecognized event"
+#             # Don't parse events with more than two mRNAs or only one mRNA
+#             # parsed[["comment"]] <- "unrecognized event"
 #         } else if (strand == "+") {
 #             mRNA1 <- mRNA[[1]]
 #             exon1 <- mRNA1[2, 4:5]
@@ -844,86 +828,86 @@ parseMisoALE <- function(event) {
 #     return(parsed)
 }
 
-#' Get a list of each mRNA and respective exons
-#' 
-#' From a given alternative splicing event, put each mRNA and respective exons
-#' in a list to be returned.
-#' 
-#' @inheritParams parseMisoEvent
-#' 
-#' @return List of mRNAs and respective exons
-#' @export
-list_mRNA <- function(event) {
-    mRNA_index <- which(event[ , 3] == "mRNA")
-    
-    next_index <- nrow(event)
-    if (length(mRNA_index) > 1)
-        next_index <- c(mRNA_index[2:length(mRNA_index)], next_index + 1)
-    
-    # Get each mRNA and respective exons as a new element of a list
-    mRNA <- lapply(1:(length(mRNA_index)), getDataRows,
-                   event, mRNA_index, next_index - 1)
-    return(mRNA)
-}
-
-#' Clear mRNAs with the same exons from a given list of mRNAs and respective
-#' exons
-#' 
-#' For a given list where each element contains one mRNA and respective exons,
-#' compare if there are identical elements and only return each unique element
-#' once.
-#' 
-#' @param mRNA List of mRNAs and respective exons
-#' 
-#' @importFrom fastmatch fmatch
-#' 
-#' @return Non-redundant list of mRNAs and respective exons
-#' @export
-remove_duplicated_mRNA <- function (mRNA) {
-    # Get first occurence of each mRNA and remove duplicated index
-    uniq <- unique(fmatch(mRNA, mRNA))
-    
-    # Return a non-redundant list of mRNAs
-    return(mRNA[uniq])
-}
-
-#' Remove wrong mRNAs of a given alternative splicing event
-#'
-#' For a given event, checks if each mRNA and respective exons are located in 
-#' the same chromosome and in the same region as the alternative splicing event
-#' (this information is in the first row of the data frame)
-#'
-#' @inheritParams parseMisoEvent
-#' 
-#' @return Data frame with incorrect rows removed
-#' @export
-#' 
-#' @examples
-#' # skipping exon (SE) event with incorrect mRNAs
-#' event <- read.table(text = "
-#'   chr1 SE gene 16854	18061	. - .
-#'   chr1 SE mRNA 16854 18061 . - .
-#'   chr1 SE exon 16854 17055 . - .
-#'   chr1 SE exon 17233 17742 . - .
-#'   chr1 SE exon 17915 18061 . - .
-#'   chr1 SE mRNA 16854 18061 . - .
-#'   chr1 SE exon 16854 17955 . - .
-#'   chr1 SE exon 17915 18061 . - .
-#'   chr1 SE mRNA 10 25 . - .
-#'   chr1 SE exon 10 16 . - .
-#'   chr1 SE exon 20 25 . - .
-#'   chr7 SE mRNA 16854 18061 . - .
-#'   chr7 SE exon 16854 17955 . - .")
-#' remove_wrong_mRNA(event)
-remove_wrong_mRNA <- function(event) {
-    # Clear mRNA and exons with different chromosome identifier
-    chr      <- event[1, 1]
-    same_chr <- event[ , 1] == chr
-    
-    # Clear mRNA and exons outside event boundaries
-    start  <- event[1, 4]
-    end    <- event[1, 5]
-    inside <- event[ , 4] >= start & event[ , 5] <= end
-    
-    return(event[same_chr & inside, ])
-}
+# #' Get a list of each mRNA and respective exons
+# #' 
+# #' From a given alternative splicing event, put each mRNA and respective exons
+# #' in a list to be returned.
+# #' 
+# #' @inheritParams parseMisoEvent
+# #' 
+# #' @return List of mRNAs and respective exons
+# #' @export
+# list_mRNA <- function(event) {
+#     mRNA_index <- which(event[ , 3] == "mRNA")
+#     
+#     next_index <- nrow(event)
+#     if (length(mRNA_index) > 1)
+#         next_index <- c(mRNA_index[2:length(mRNA_index)], next_index + 1)
+#     
+#     # Get each mRNA and respective exons as a new element of a list
+#     mRNA <- lapply(1:(length(mRNA_index)), getDataRows,
+#                    event, mRNA_index, next_index - 1)
+#     return(mRNA)
+# }
+# 
+# #' Clear mRNAs with the same exons from a given list of mRNAs and respective
+# #' exons
+# #' 
+# #' For a given list where each element contains one mRNA and respective exons,
+# #' compare if there are identical elements and only return each unique element
+# #' once.
+# #' 
+# #' @param mRNA List of mRNAs and respective exons
+# #' 
+# #' @importFrom fastmatch fmatch
+# #' 
+# #' @return Non-redundant list of mRNAs and respective exons
+# #' @export
+# remove_duplicated_mRNA <- function (mRNA) {
+#     # Get first occurence of each mRNA and remove duplicated index
+#     uniq <- unique(fmatch(mRNA, mRNA))
+#     
+#     # Return a non-redundant list of mRNAs
+#     return(mRNA[uniq])
+# }
+# 
+# #' Remove wrong mRNAs of a given alternative splicing event
+# #'
+# #' For a given event, checks if each mRNA and respective exons are located in 
+# #' the same chromosome and in the same region as the alternative splicing event
+# #' (this information is in the first row of the data frame)
+# #'
+# #' @inheritParams parseMisoEvent
+# #' 
+# #' @return Data frame with incorrect rows removed
+# #' @export
+# #' 
+# #' @examples
+# #' # skipping exon (SE) event with incorrect mRNAs
+# #' event <- read.table(text = "
+# #'   chr1 SE gene 16854	18061	. - .
+# #'   chr1 SE mRNA 16854 18061 . - .
+# #'   chr1 SE exon 16854 17055 . - .
+# #'   chr1 SE exon 17233 17742 . - .
+# #'   chr1 SE exon 17915 18061 . - .
+# #'   chr1 SE mRNA 16854 18061 . - .
+# #'   chr1 SE exon 16854 17955 . - .
+# #'   chr1 SE exon 17915 18061 . - .
+# #'   chr1 SE mRNA 10 25 . - .
+# #'   chr1 SE exon 10 16 . - .
+# #'   chr1 SE exon 20 25 . - .
+# #'   chr7 SE mRNA 16854 18061 . - .
+# #'   chr7 SE exon 16854 17955 . - .")
+# #' remove_wrong_mRNA(event)
+# remove_wrong_mRNA <- function(event) {
+#     # Clear mRNA and exons with different chromosome identifier
+#     chr      <- event[1, 1]
+#     same_chr <- event[ , 1] == chr
+#     
+#     # Clear mRNA and exons outside event boundaries
+#     start  <- event[1, 4]
+#     end    <- event[1, 5]
+#     inside <- event[ , 4] >= start & event[ , 5] <= end
+#     
+#     return(event[same_chr & inside, ])
+# }
