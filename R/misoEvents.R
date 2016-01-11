@@ -132,15 +132,15 @@ parseMisoEventID <- function(eventID, annotation, IDcolumn) {
 #'
 #' @param events Data.frame: events annotation from MISO  
 #' @param validator Character: valid elements for each event
-#' @param isRunLengthValid Boolean: consider runs of equal elements as valid
-#' when comparing with the validator? Default if FALSE (see details)
+#' @param areMultipleExonsValid Boolean: consider runs of exons as valid when
+#' comparing with the validator? Default is FALSE (see details)
 #'
-#' @details \code{isRunLengthValid} allows to consider runs of equal elements
-#' (i.e. sequences where the same element consecutively occurs) as valid when
-#' comparing with a given validator. For example, if the validator is
-#' \code{c("gene", "mRNA", "exon")} and \code{isRunLengthValid = FALSE}, this
-#' function will only considerate events as valid if they have the exact same 
-#' elements. If \code{isRunLengthValid = TRUE}, a valid events could include the
+#' @details \code{areMultipleExonsValid} allows to consider runs of exons (i.e. 
+#' sequences where "exon" occurs consecutively) as valid when comparing with 
+#' given validator. For example, if the validator is \code{c("gene", "mRNA",
+#' "exon")} and \code{areMultipleExonsValid = FALSE}, this function will only
+#' considerate events as valid if they have the exact same elements. If
+#' \code{areMultipleExonsValid = TRUE}, a valid events could include the
 #' elements \code{c("gene", "mRNA", "exon", "exon", "exon")}.
 #'
 #' @return Data.frame with valid events
@@ -168,13 +168,13 @@ parseMisoEventID <- function(eventID, annotation, IDcolumn) {
 #' ")
 #' validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 2))
 #' getValidEvents(event, validator)
-getValidEvents <- function(events, validator, isRunLengthValid = FALSE) {
+getValidEvents <- function(events, validator, areMultipleExonsValid = FALSE) {
     elem <- events[[3]]
     
     # If run length is valid, consider runs of equal elements as one element
-    if (isRunLengthValid)
-        # TODO(NunoA): rle should only consider exons (if there are two
-        # consecutive mRNA), there could be problems
+    if (areMultipleExonsValid)
+        # TODO(NunoA): rle should only consider exons (there are problems when
+        # finding two consecutive "gene" or "mRNA")
         elem <- rle(as.character(elem))$values
     
     # Get starting position of each event
@@ -193,14 +193,14 @@ getValidEvents <- function(events, validator, isRunLengthValid = FALSE) {
     
     # Check if those elements are valid
     valid <- vapply(splitElems, function(e)
-        identical(as.character(e), validator), logical(1))
+        identical(as.character(e), validator), logical(1), USE.NAMES = FALSE)
     
     if (sum(!valid) == 0) {
         # If all events are valid, return all events
         return(events)
     } else if (sum(valid) > 0) {
         # If there are invalid events, return only valid events
-        if (isRunLengthValid) {
+        if (areMultipleExonsValid) {
             # If run length is valid, consider runs of equal elements as one
             
             # Get starting position of each event
@@ -618,7 +618,7 @@ parseMisoTandemUTR <- function(event, strand) {
 parseMisoAFE <- function(event) {
     # Filter out events that aren't valid
     validator <- c("gene", "mRNA", "exon", "mRNA", "exon")
-    event <- getValidEvents(event, validator, isRunLengthValid = TRUE)
+    event <- getValidEvents(event, validator, areMultipleExonsValid = TRUE)
     
     # If there are valid events
     if (!is.null(event)) {
@@ -729,10 +729,10 @@ parseMisoAFE <- function(event) {
 #'  chr6 ALE mRNA 30620579 30620982  .  +  .
 #'  chr6 ALE exon 30620579 30620982  .  +  .")
 #' parseMisoALE(event)
-parseMisoALE <- function(event, strand) {
+parseMisoALE <- function(event) {
     # Filter out events that aren't valid
     validator <- c("gene", "mRNA", "exon", "mRNA", "exon")
-    event <- getValidEvents(event, validator, isRunLengthValid = TRUE)
+    event <- getValidEvents(event, validator, areMultipleExonsValid = TRUE)
     
     # If there are valid events
     if (!is.null(event)) {

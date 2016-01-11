@@ -75,7 +75,7 @@ test_that("getValidEvents returns NULL when there are no valid events", {
     res <- getValidEvents(event, validator)
     expect_null(res)
 })
-# 
+
 # annotation <- read.table(text="
 #     chr19 AFE gene 50015886 50028830  .  +  . ID=2217@uc002poi.1@uc002poe.1;Name=2217@uc002poi.1@uc002poe.1;gid=2217@uc002poi.1@uc002poe.1
 #     chr19 AFE mRNA 50028313 50028830  .  +  . ID=2217@uc002poi.1@uc002poe.1.A;Parent=2217@uc002poi.1@uc002poe.1;Name=2217@uc002poi.1@uc002poe.1.A;gid=2217@uc002poi.1@uc002poe.1
@@ -91,18 +91,6 @@ test_that("getValidEvents returns NULL when there are no valid events", {
 # 
 # event <- c(1, NA, 7)
 # next_event <- c(6, NA, NA)
-# 
-# test_that("parseMultipleMisoEvents parses two different events", {
-#     parsed <- parseMultipleMisoEvents(annotation)
-#     expect_is(parsed, "list")
-#     expect_equal(length(parsed), 2)
-# })
-# 
-# test_that("parseMultipleMisoEvents parses one event", {
-#     parsed <- parseMultipleMisoEvents(annotation[1:6, ])
-#     expect_is(parsed, "list")
-#     expect_equal(length(parsed), 1)
-# })
 # 
 # test_that("getDataRows retrieves rows of a data frame", {
 #     ret <- getDataRows(1, annotation, event, next_event)
