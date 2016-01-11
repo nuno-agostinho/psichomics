@@ -137,10 +137,10 @@ nrow(misoEvents)
 sapply(types, function(type)
     sum(misoEvents$Event.type == type))
 
-# all event types:    
+# all event types:    107178
 # skipped exons:       39207
 # alt. first exons:    18989
-# alt. last exons:     
+# alt. last exons:      9863
 # mutually exclusive:   2721
 # alt. 5 splice site:  12805
 # alt. 3 splice site:  14951
@@ -560,14 +560,17 @@ v <- function() {
 }
 ```
 
-Everything tried until now
+Everything tried until now takes too much time. Let's just vectorise the
+functions. It should be much faster this way. By vectorising, I mean to parse
+all events at the same time, instead of splitting each event and putting them
+inside a list
 
-Type          | Time   | Memory   | Commit
---------------|--------|----------|---------
-List of lists | 308 s  | 83.7 MB  | 8d9defa5
-Data frame    |        |          |
+> TODO: increase number of AFE and ALE events included in the parsing
 
-> TODO
+Type          | Time     | Memory   | Commit
+--------------|----------|----------|---------
+List of lists | 308   s  | 83.7  MB | 8d9defa5
+Data frame    |   3.6 s  |  8.45 MB |
 
 # Getting TCGA's read counts for the annotated splicing junctions
 [The Cancer Genome Atlas (TCGA)](https://tcga-data.nci.nih.gov/tcga/) is a
