@@ -308,7 +308,7 @@ parseMisoSE <- function(event) {
         strand <- as.character(event[index, 7])
         
         # Creates a data frame of parsed junctions filled with NAs
-        parsed <- createFilledJunctions(length(index),
+        parsed <- createJunctionsTemplate(length(index),
                                         program = "MISO",
                                         event.type = "SE",
                                         chromosome = chr,
@@ -365,7 +365,7 @@ parseMisoMXE <- function(event) {
         strand <- as.character(event[index, 7])
         
         # Creates a data frame of parsed junctions filled with NAs
-        parsed <- createFilledJunctions(length(index),
+        parsed <- createJunctionsTemplate(length(index),
                                         program = "MISO",
                                         event.type = "MXE",
                                         chromosome = chr,
@@ -423,7 +423,7 @@ parseMisoRI <- function(event, strand) {
         strand <- as.character(event[index, 7])
         
         # Creates a data frame of parsed junctions filled with NAs
-        parsed <- createFilledJunctions(length(index),
+        parsed <- createJunctionsTemplate(length(index),
                                         program = "MISO",
                                         event.type = "RI",
                                         chromosome = chr,
@@ -474,7 +474,7 @@ parseMisoA5SS <- function(event) {
         strand <- as.character(event[index, 7])
         
         # Creates a data frame of parsed junctions filled with NAs
-        parsed <- createFilledJunctions(length(index),
+        parsed <- createJunctionsTemplate(length(index),
                                         program = "MISO",
                                         event.type = "A5SS",
                                         chromosome = chr,
@@ -527,7 +527,7 @@ parseMisoA3SS <- function(event, strand) {
         strand <- as.character(event[index, 7])
         
         # Creates a data frame of parsed junctions filled with NAs
-        parsed <- createFilledJunctions(length(index),
+        parsed <- createJunctionsTemplate(length(index),
                                         program = "MISO",
                                         event.type = "A3SS",
                                         chromosome = chr,
@@ -579,7 +579,7 @@ parseMisoTandemUTR <- function(event, strand) {
         strand <- as.character(event[index, 7])
         
         # Creates a data frame of parsed junctions filled with NAs
-        parsed <- createFilledJunctions(length(index),
+        parsed <- createJunctionsTemplate(length(index),
                                         program = "MISO",
                                         event.type = "TandemUTR",
                                         chromosome = chr,
@@ -638,7 +638,7 @@ parseMisoAFE <- function(event) {
         mRNA2 <- splitting$`FALSE`
         
         # Create a data frame of parsed junctions filled with NAs
-        parsed <- createFilledJunctions(length(index),
+        parsed <- createJunctionsTemplate(length(index),
                                         program = "MISO",
                                         event.type = "AFE",
                                         chromosome = chr,
@@ -751,7 +751,7 @@ parseMisoALE <- function(event) {
         mRNA2 <- splitting$`FALSE`
         
         # Creates a data frame of parsed junctions filled with NAs
-        parsed <- createFilledJunctions(length(index),
+        parsed <- createJunctionsTemplate(length(index),
                                         program = "MISO",
                                         event.type = "ALE",
                                         chromosome = chr,

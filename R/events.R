@@ -1,4 +1,4 @@
-#' Creates a data frame of parsed junctions filled with NAs
+#' Creates a template of alternative splicing junctions
 #' 
 #' @param nrow Integer: Number of rows
 #' @param program Character: Program used to get the junctions
@@ -10,8 +10,8 @@
 #' @export
 #' 
 #' @examples
-#' createFilledJunctions(nrow = 8)
-createFilledJunctions <- function(nrow, program = character(0),
+#' createJunctionsTemplate(nrow = 8)
+createJunctionsTemplate <- function(nrow, program = character(0),
                                   event.type = character(0),
                                   chromosome = character(0),
                                   strand = character(0)) {

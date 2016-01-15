@@ -106,7 +106,7 @@ parseVastToolsEvent <- function(event) {
 #' parseVastToolsSE(junctions)
 parseVastToolsSE <- function (junctions) {
     # Creates a data frame of parsed junctions filled with NAs
-    parsed <- createFilledJunctions(nrow(junctions))
+    parsed <- createJunctionsTemplate(nrow(junctions))
     
     # Strand is plus if the first junction is lower than the last junction
     plus <- sapply(junctions[, 1], "[[", 1) < sapply(junctions[, 4], "[[", 1)
@@ -133,7 +133,7 @@ parseVastToolsSE <- function (junctions) {
 #' parseVastToolsRI(junctions, strand = "+")
 parseVastToolsRI <- function (junctions, strand) {
     # Creates a data frame of parsed junctions filled with NAs
-    parsed <- createFilledJunctions(nrow(junctions))
+    parsed <- createJunctionsTemplate(nrow(junctions))
     
     plus <- strand == "+"
     parsed[["Strand"]] <- strand
@@ -160,7 +160,7 @@ parseVastToolsRI <- function (junctions, strand) {
 #' parseVastToolsA3SS(junctions)
 parseVastToolsA3SS <- function (junctions) {
     # Creates a data frame of parsed junctions filled with NAs
-    parsed <- createFilledJunctions(nrow(junctions))
+    parsed <- createJunctionsTemplate(nrow(junctions))
     
     # Check if there aren't junctions missing
     is2Available <- sapply(junctions[,2], length) > 0
@@ -193,7 +193,7 @@ parseVastToolsA3SS <- function (junctions) {
 #' parseVastToolsA5SS(junctions)
 parseVastToolsA5SS <- function (junctions) {
     # Creates a data frame of parsed junctions filled with NAs
-    parsed <- createFilledJunctions(nrow(junctions))
+    parsed <- createJunctionsTemplate(nrow(junctions))
     
     # Check if there aren't junctions missing
     is1Available <- sapply(junctions[,1], length) > 0

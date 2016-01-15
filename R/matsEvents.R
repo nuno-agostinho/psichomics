@@ -90,7 +90,7 @@ parseMatsEvent <- function(event, event_type) {
 #' parseMatsSE(junctions, strand = "+")
 parseMatsSE <- function(junctions, strand) {
     # Creates a data frame of parsed junctions filled with NAs
-    parsed <- createFilledJunctions(nrow(junctions))
+    parsed <- createJunctionsTemplate(nrow(junctions))
     
     plus <- strand == "+"
     # Plus strand
@@ -111,7 +111,7 @@ parseMatsSE <- function(junctions, strand) {
 #' parseMatsMXE(junctions, strand = "+")
 parseMatsMXE <- function(junctions, strand) {
     # Creates a data frame of parsed junctions filled with NAs
-    parsed <- createFilledJunctions(nrow(junctions))
+    parsed <- createJunctionsTemplate(nrow(junctions))
     
     plus <- strand == "+"
     # Plus strand
@@ -134,7 +134,7 @@ parseMatsMXE <- function(junctions, strand) {
 #' parseMatsRI(junctions, strand = "+")
 parseMatsRI <- function(junctions, strand) {
     # Creates a data frame of parsed junctions filled with NAs
-    parsed <- createFilledJunctions(nrow(junctions))
+    parsed <- createJunctionsTemplate(nrow(junctions))
     
     plus <- strand == "+"
     # Plus strand
@@ -153,7 +153,7 @@ parseMatsRI <- function(junctions, strand) {
 #' parseMatsA3SS(junctions, strand = "+")
 parseMatsA3SS <- function(junctions, strand) {
     # Creates a data frame of parsed junctions filled with NAs
-    parsed <- createFilledJunctions(nrow(junctions))
+    parsed <- createJunctionsTemplate(nrow(junctions))
     
     # Note that inclusion values are related to the first alternative isoform
     plus <- strand == "+"
@@ -175,7 +175,7 @@ parseMatsA3SS <- function(junctions, strand) {
 #' parseMatsA5SS(junctions, strand = "+")
 parseMatsA5SS <- function(junctions, strand) {
     # Creates a data frame of parsed junctions filled with NAs
-    parsed <- createFilledJunctions(nrow(junctions))
+    parsed <- createJunctionsTemplate(nrow(junctions))
     
     # Note that inclusion values are related to the first alternative isoform
     plus <- strand == "+"
@@ -197,7 +197,7 @@ parseMatsA5SS <- function(junctions, strand) {
 #' parseMatsAFE(junctions, strand = "+")
 parseMatsAFE <- function(junctions, strand) {
     # Creates a data frame of parsed junctions filled with NAs
-    parsed <- createFilledJunctions(nrow(junctions))
+    parsed <- createJunctionsTemplate(nrow(junctions))
     
     plus <- strand == "+"
     # Plus strand
@@ -218,7 +218,7 @@ parseMatsAFE <- function(junctions, strand) {
 #' parseMatsAFE(junctions, strand = "+")
 parseMatsALE <- function(junctions, strand) {
     # Creates a data frame of parsed junctions filled with NAs
-    parsed <- createFilledJunctions(nrow(junctions))
+    parsed <- createJunctionsTemplate(nrow(junctions))
     
     plus <- strand == "+"
     # Plus strand
