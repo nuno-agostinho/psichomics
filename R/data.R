@@ -16,6 +16,7 @@ addFileCollapse <- function(number) {
         selectInput("sep", "Choose separator", 
                     choices = list("Tab" = "\t", "Comma"=",", "Space"=" "),
                     selected = "\t"),
+        uiOutput("testing"),
         actionButton(paste0("acceptFile", number), "Send file")
     ) # end of bsCollapsePanel
 }
@@ -48,6 +49,16 @@ server <- function(input, output, session){
     thisData <- reactiveValues(data=NULL)
     
     observeEvent(input$acceptFile1, {
+        output$testing <- renderUI({
+            list(
+                badge(inputId="badge1", Sys.time()),
+                buttonGroups(actionButton("test111", "Left"),
+                             actionButton("test222", "Middle"),
+                             actionButton("test333", "Right")),
+                progressbar(sample(1:100, 1)),
+                dropdown(inputId="dropdownMenu1")
+            )
+        })
         validate(need(input$dataFile1, label="No file selected"))
         inFile <- input$dataFile1
         thisData$data <- read.table(inFile$datapath, sep = input$sep)
