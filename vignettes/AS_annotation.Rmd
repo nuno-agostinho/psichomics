@@ -113,7 +113,7 @@ chr1 | SE | exon | 16854 | 17055 | . | - | . | ID=chr1:7778:7924:-\@chr1:7096:76
 
 To generate a list of events from MISO's annotation file, we'll use:
 ```{r, eval=FALSE}
-types <- c("AFE", "ALE", "SE", "MXE", "A5SS", "A3SS", "RI", "TandemUTR")
+types <- c("AFE", "SE", "MXE", "A5SS", "A3SS", "RI", "TandemUTR")
 miso.hg19 <- lapply(types,
                     function(x) {
                         type <- paste0(
@@ -123,7 +123,6 @@ miso.hg19 <- lapply(types,
                         read.delim(type, header=FALSE, comment.char="#",
                                    stringsAsFactors = FALSE)
                     })
-
 misoEvents <- lapply(1:length(miso.hg19),
                      function(i) {
                          type <- types[i]
@@ -181,7 +180,7 @@ Let's generate a list of events from the SUPPA annotated events.
 read_path <- function(path, item, ...)
     read.delim(sprintf(path, item), ...)
 
-suppa.path <- "/genedata/NunoA/psi_calculation/suppa/suppaEvents/hg19_%s.ioe"
+suppa.path <- "~/Documents/psi_calculation/suppa/suppaEvents/hg19_%s.ioe"
 types <- c("SE", "AF", "AL", "MX", "A5", "A3", "RI")
 suppa.hg19 <- lapply(types, function(type) read_path(suppa.path, type))
 
@@ -235,7 +234,7 @@ Generating a list of events from the annotation is easy:
 read_path <- function(path, item, ...)
     read.delim(sprintf(path, item), ...)
 
-mats.path <- "/genedata/NunoA/psi_calculation/mats_out/ASEvents/fromGTF.%s.txt"
+mats.path <- "~/Documents/psi_calculation/mats_out/ASEvents/fromGTF.%s.txt"
 types <- c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI")
 mats.hg19 <- lapply(c(types, paste0("novelEvents.", types)), 
                      function(type) read_path(mats.path, type, row.names=NULL))
@@ -283,9 +282,10 @@ exons, MULTI for multi AS exons and MIC for microexons), intron retention (IR)
 and alternative 3' and 5' splice site (ALT3 and ALT5). There are other
 VAST-TOOLS files:
 
-- **MERGE3m** files merge all exon skipping events (those from EXSK, MULTI and MIC)
-- **COMBI** files are used for the *a posteriori* pipeline; it uses all exon-exon
-junctions and calls AS events based on read maps to exon-exon junctions
+- **MERGE3m** files merge all exon skipping events (those from EXSK, MULTI and 
+MIC)
+- **COMBI** files are used for the *a posteriori* pipeline which uses all 
+exon-exon (EE) junctions and calls AS events based on read maps to EE junctions
 - **FULL** is used to decide what to print
 
 Now, let's just generate a list of events from the annotation files. Just don't 
@@ -299,7 +299,8 @@ read_path <- function(path, item1, item2, ...)
     read.delim(sprintf(path, item1, item2), stringsAsFactors = F, ...)
 
 vastTools.path <- "/genedata/Resources/Software/vast-tools/VASTDB/Hsa/TEMPLATES/Hsa.%s.Template%s.txt"
-types <- c("ALT3", "ALT5", "COMBI", "IR", "MERGE3m", "MIC", rep(c("EXSK", "MULTI"), 1))
+types <- c("ALT3", "ALT5", "COMBI", "IR", "MERGE3m", "MIC",
+           rep(c("EXSK", "MULTI"), 1))
 num <- c(rep("", 6), rep(".2", 2))#, rep(".2", 2))
 vastTools.hg19 <- lapply(1:length(types), 
                          function(i) read_path(vastTools.path, types[i], num[i],
@@ -418,7 +419,9 @@ frame we try to split minor data frames?
 types <- c("AFE", "ALE", "SE", "MXE", "A5SS", "A3SS", "RI", "TandemUTR")
 miso.hg19 <- lapply(types,
                     function(x) {
-                        type <- paste0("/genedata/Resources/Annotations/MISO/hg19/", x, ".hg19.gff3")
+                        type <- paste0(
+                            "/genedata/Resources/Annotations/MISO/hg19/",
+                            x, ".hg19.gff3")
                         print(type)
                         read.delim(type, header=FALSE, comment.char="#",
                                    stringsAsFactors = FALSE)[1:8]
@@ -430,7 +433,8 @@ misoEvents <- lapply(1:length(miso.hg19),
                          read <- miso.hg19[[x]]
                          gene <- which(read$V3 == "gene")
                          diff <- c(gene, nrow(read) + 1)[2:(length(gene)+1)] - gene
-                         groups <- unlist(sapply(1:length(diff), function(i) rep(i, diff[i])))
+                         groups <- unlist(sapply(1:length(diff),
+                                                 function(i) rep(i, diff[i])))
                          a <- split(read, groups)
                      })
 ```
@@ -525,8 +529,10 @@ max_test = 1000
 
 library(microbenchmark)
 res <- microbenchmark(times=20,
-                      data.frame=lapply(1:max_test, function(i) read[gene[i]:next_gene[i], ]),
-                      data.table=lapply(1:max_test, function(i) dt[gene[i]:next_gene[i]]))
+                      data.frame=lapply(1:max_test, function(i)
+                          read[gene[i]:next_gene[i], ]),
+                      data.table=lapply(1:max_test, function(i)
+                          dt[gene[i]:next_gene[i]]))
 library(ggplot2)
 autoplot(res)
 
@@ -534,9 +540,9 @@ autoplot(res)
 
 file <- "/genedata/Resources/Annotations/MISO/hg19/TandemUTR.hg19.gff3"
 read <- read.delim(file, header=FALSE, comment.char="#",
-                   stringsAsFactors = FALSE)                            # nrow:   13280
-gene <- which(read$V3 == "gene")                                        # length:  2656
-diff <- c(gene, nrow(read) + 1)[2:(length(gene)+1)] - gene              # length:  2656
+                   stringsAsFactors = FALSE)               # nrow:   13280
+gene <- which(read$V3 == "gene")                           # length:  2656
+diff <- c(gene, nrow(read) + 1)[2:(length(gene)+1)] - gene # length:  2656
 
 pb <- txtProgressBar(min = 1, max = length(gene), style = 3)
 res <- lapply(1:length(gene), function(i) {
@@ -572,9 +578,53 @@ Type          | Time     | Memory  | Commit
 List of lists | 308.0 s  | 83.7 MB | 8d9defa5
 Data frame    |   3.6 s  |  8.5 MB | 891a972b
 
+# Match events from different programs
+To easily match events coming from different programs, we simply need to look at
+specific columns. For example, to check if an exon skipping is the same, we just
+need to check C1 end, A1 start + end and A2 start (for other event types, check
+table at the top of this document).
+
+A simple approach would be for each group of columns, look at the other group.
+First of all, let's try with skipping events.
+```{r}
+# Timing the subset of one specifing event type
+microbenchmark(
+    matsEvents[matsEvents$Event.type == "SE", ],
+    filter(matsEvents, Event.type == "SE")
+)
+
+# More interestingly, let's see how fast can we subset each event type
+microbenchmark(mats <- split(matsEvents, matsEvents$Event.type),
+               mats <- dlply(matsEvents, .(Event.type)))
+
+# All right... let's separate all events 
+events <- list(matsEvents, misoEvents, suppaEvents, vastToolsEvents)
+events <- rbind.fill(events)
+events <- dlply(events, .(Program, Event.type))
+names(events)
+
+# mats$A1.start <- as.integer(mats$A1.start) + 1
+
+a <- dplyr::full_join(suppa, mats, by=c("Strand",
+                                        "C1.end", "A1.end", "A1.start"))
+# merge(suppa, mats, by = c("C1.end", "A1.end", "A1.start"), all = TRUE)
+```
+
 # Getting TCGA's read counts for the annotated splicing junctions
 [The Cancer Genome Atlas (TCGA)](https://tcga-data.nci.nih.gov/tcga/) is a
 data repository containing clinical information, genomic characterization data, 
 and high level sequence analysis of many types of tumor genomes. It's possible
 to obtain read counts for splicing junctions just as read counts for exons and
-isoforms.
+isoforms. Unfortunately, these reads are separated in individual files per
+sample... which means we need to join these files into one.
+
+Let's try to do something with the junction quantification files inside the
+`data/junctions` folder. First of all, let's read the files:
+
+```{r}
+path <- "data/junctions/"
+junctions <- paste0(path, list.files(path))
+junctions.files <- lapply(junctions, read.delim2)
+```
+
+> TODO: match junctions from junction files with events from all those programs
