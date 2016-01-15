@@ -1,6 +1,14 @@
 library(shiny)
 library(shinyBS)
 
+# TODO(NunoA): increase allowed size and warn the user to wait for large files
+# refuses files with size greater than the specified
+MB = 3000# file size in MB
+options(shiny.maxRequestSize = MB * 1024^2) #
+
+# TODO(NunoA): remove this (it's only for documentation purposes)
+# options(shiny.trace=TRUE)
+
 tabsFolder <- "R/"
 
 loadScripts <- function(folder, vars, exclude = "", ...){
@@ -56,9 +64,11 @@ ui <- shinyUI(
             collapsible = TRUE, position = "fixed-top",
             header = list(
                 # Avoids fixed-top navbar from obscuring content
-                tags$style(type = "text/css", "body {padding-top: 70px;}"),
+                tags$style(type = "text/css",
+                           "body {padding-top: 70px;}"),
                 # Alert appears fixed on the right at the top of other elements
-                tags$style(type = "text/css", ".sbs-alert {position: fixed; right: 10px; z-index:9;}")
+                tags$style(type = "text/css",
+                           ".sbs-alert {position: fixed; right: 10px; z-index:9;}")
             )
         ),
         # Loads the interface for each tab
