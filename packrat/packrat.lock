@@ -1,10 +1,10 @@
 PackratFormat: 1.4
 PackratVersion: 0.4.6.1
 RVersion: 3.2.3
-Repos: BioCsoft=http://bioconductor.org/packages/3.1/bioc,
-    BioCann=http://bioconductor.org/packages/3.1/data/annotation,
-    BioCexp=http://bioconductor.org/packages/3.1/data/experiment,
-    BioCextra=http://bioconductor.org/packages/3.1/extra,
+Repos: BioCsoft=https://bioconductor.org/packages/3.2/bioc,
+    BioCann=https://bioconductor.org/packages/3.2/data/annotation,
+    BioCexp=https://bioconductor.org/packages/3.2/data/experiment,
+    BioCextra=https://bioconductor.org/packages/3.2/extra,
     CRAN=https://cran.rstudio.com/
 
 Package: BH
@@ -21,6 +21,15 @@ Package: DBI
 Source: CRAN
 Version: 0.3.1
 Hash: 096699d1ac1cf530acfc646a0c90ee5d
+
+Package: FirebrowseR
+Source: github
+Version: 0.2.21
+Hash: 1d5a64b44e95a8fd42379ee21d202af3
+GithubRepo: FirebrowseR
+GithubUsername: mariodeng
+GithubRef: master
+GithubSha1: 03b40fde7feef08754b33dc47ce7a6f22c16738f
 
 Package: Formula
 Source: CRAN
@@ -71,6 +80,12 @@ Package: RJSONIO
 Source: CRAN
 Version: 1.3-0
 Hash: fb672e20eb6f3010a3639f855d8ef6de
+
+Package: RSQLite
+Source: CRAN
+Version: 1.0.0
+Hash: 3df52a54766f420d257debad962146c0
+Requires: DBI
 
 Package: Rcpp
 Source: CRAN
