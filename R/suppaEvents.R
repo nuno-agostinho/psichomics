@@ -94,7 +94,7 @@ parseSuppaEvent <- function(event) {
 #' parseSuppaSE(junctions, "+")
 parseSuppaSE <- function (junctions, strand) {
     # Creates a data frame of parsed junctions filled with NAs
-    parsed <- createFilledJunctions(nrow(junctions))
+    parsed <- createJunctionsTemplate(nrow(junctions))
     
     plus <- strand == "+"
     # Plus strand
@@ -115,7 +115,7 @@ parseSuppaSE <- function (junctions, strand) {
 #' parseSuppaRI(junctions, "+")
 parseSuppaRI <- function (junctions, strand) {
     # Creates a data frame of parsed junctions filled with NAs
-    parsed <- createFilledJunctions(nrow(junctions))
+    parsed <- createJunctionsTemplate(nrow(junctions))
     
     plus <- strand == "+"
     # Plus strand
@@ -134,7 +134,7 @@ parseSuppaRI <- function (junctions, strand) {
 #' parseSuppaALE(junctions, "+")
 parseSuppaALE <- function (junctions, strand) {
     # Creates a data frame of parsed junctions filled with NAs
-    parsed <- createFilledJunctions(nrow(junctions))
+    parsed <- createJunctionsTemplate(nrow(junctions))
     
     plus <- strand == "+"
     # Plus strand
@@ -156,7 +156,7 @@ parseSuppaALE <- function (junctions, strand) {
 #' parseSuppaAFE(junctions, "+")
 parseSuppaAFE <- function (junctions, strand) {
     # Creates a data frame of parsed junctions filled with NAs
-    parsed <- createFilledJunctions(nrow(junctions))
+    parsed <- createJunctionsTemplate(nrow(junctions))
     
     plus <- strand == "+"
     # Plus strand
@@ -178,7 +178,7 @@ parseSuppaAFE <- function (junctions, strand) {
 #' parseSuppaMXE(junctions, "+")
 parseSuppaMXE <- function (junctions, strand) {
     # Creates a data frame of parsed junctions filled with NAs
-    parsed <- createFilledJunctions(nrow(junctions))
+    parsed <- createJunctionsTemplate(nrow(junctions))
     
     # Note that inclusion values are related to the first alternative isoform
     plus <- strand == "+"
@@ -202,7 +202,7 @@ parseSuppaMXE <- function (junctions, strand) {
 #' parseSuppaA3SS(junctions, "+")
 parseSuppaA3SS <- function (junctions, strand) {
     # Creates a data frame of parsed junctions filled with NAs
-    parsed <- createFilledJunctions(nrow(junctions))
+    parsed <- createJunctionsTemplate(nrow(junctions))
     
     # Note that inclusion values are related to the first alternative isoform
     plus <- strand == "+"
@@ -222,7 +222,7 @@ parseSuppaA3SS <- function (junctions, strand) {
 #' parseSuppaA5SS(junctions, "+")
 parseSuppaA5SS <- function (junctions, strand) {
     # Creates a data frame of parsed junctions filled with NAs
-    parsed <- createFilledJunctions(nrow(junctions))
+    parsed <- createJunctionsTemplate(nrow(junctions))
     
     # Note that inclusion values are related to the first alternative isoform
     plus <- strand == "+"
