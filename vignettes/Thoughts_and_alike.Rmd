@@ -26,4 +26,5 @@ same name in different classes are allowed?
 > TODO: check if methods with identical names from different classes are allowed
 > TODO: change examples documentation (most are pre-vectorised versions)
 > TODO: increase number of AFE and ALE events parsed
-> TODO: create test units for createFilledJunctions
+> TODO: validate if all events are of the same type (else, they are wrongly
+parsed)... OR parse correctly different event types
