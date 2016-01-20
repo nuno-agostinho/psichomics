@@ -56,14 +56,15 @@ server <- function(input, output, session){
                              actionButton("test222", "Middle"),
                              actionButton("test333", "Right")),
                 progressbar(sample(1:100, 1)),
-                dropdown(inputId="dropdownMenu1")
+                dropdown(inputId="dropdownMenu1"),
+                alertNew(progressbar(sample(1:100, 1)))
             )
         })
         validate(need(input$dataFile1, label="No file selected"))
         inFile <- input$dataFile1
         thisData$data <- read.table(inFile$datapath, sep = input$sep)
         createAlert(session, anchorId = "alert2", title = "Yay!",
-                    content = "File successfully imported",
+                    content = list(progressbar(sample(1:100, 1))),
                     style = "success", append = FALSE)
     }) # end of observeEvent
     
