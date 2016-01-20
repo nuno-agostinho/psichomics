@@ -67,13 +67,15 @@ test_that("parseSuppaA3SS parses an alt. 3' splice site event junctions", {
     junctions <- read.table(text = "169772450 169773216 169772450 169773253")
     parsed <- parseSuppaA3SS(junctions, "+")
     expect_equal(parsed$C1.end,   169772450)
-    expect_equivalent(parsed$C2.start, list(c(169773216, 169773253)))
+    expect_equal(parsed$C2.start, 169773216)
+    expect_equal(parsed$A1.start, 169773253)
 })
 
 test_that("parseSuppaA5SS parses an alt. 5' splice site event junctions", {
     junctions <- read.table(text = "50193276 50197008 50192997 50197008")
     parsed <- parseSuppaA5SS(junctions, "+")
-    expect_equivalent(parsed$C1.end, list(c(50193276, 50192997)))
+    expect_equal(parsed$C1.end,   50193276)
+    expect_equal(parsed$A1.end,   50192997)
     expect_equal(parsed$C2.start, 50197008)
 })
 
