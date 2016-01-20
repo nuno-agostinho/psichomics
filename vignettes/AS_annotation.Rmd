@@ -2,13 +2,7 @@
 title: "Splicing event annotation"
 author: "Nuno Agostinho"
 date: "`r Sys.Date()`"
-output: 
-  html_document: 
-    toc: yes
-vignette: >
-  %\VignetteIndexEntry{Splicing event annotation}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
+output: html_document
 ---
 
 The splicing events annotation is different according to the program that
@@ -26,7 +20,7 @@ annotated across the aforementioned programs are described in the following
 image (retrieved from the
 [SUPPA website](https://bitbucket.org/regulatorygenomicsupf/suppa)).
 
-![Splicing event types](https://bitbucket-assetroot.s3.amazonaws.com/repository/4gEBMd/1362804745-Slide2.jpg?Signature=OjMcjIPORDWJxu0EAeO9SMl%2BDnA%3D&Expires=1451777771&AWSAccessKeyId=0EMWEFSGA12Z1HF1TZ82)
+![Splicing event types](https://bitbucket-assetroot.s3.amazonaws.com/repository/4gEBMd/2185438774-Slide1.jpg?Signature=a%2Bb%2FZ7ElgJAgUqweGpPNSP%2FPP0Y%3D&Expires=1452974150&AWSAccessKeyId=AKIAIWY5XSVPZPDQYRQQ)
 
 To conciliate the output from the different programs, it was decided to parse
 each splicing event ID to a R data type known as list with all the important
@@ -56,31 +50,42 @@ Splicing event type        | C1 start | C1 end | A1 start | A1 end | A2 start | 
 -------------------------- | :------: | :----: | :------: | :----: | :------: | :----: | :------: | :----: |
 Exon skipping              |          | •      | •        | •      |          |        | •        |        |
 Mutually exclusive exons   |          | •      | •        | •      | •        | •      | •        |        |
-Alternative 5' splice site |          | • •    |          |        |          |        | •        |        |
-Alternative 3' splice site |          | •      |          |        |          |        | • •      |        |
+Alternative 5' splice site |          | •      |          | •      |          |        | •        |        |
+Alternative 3' splice site |          | •      | •        |        |          |        | •        |        |
 Retained intron            | •        | •      |          |        |          |        | •        | •      |
 Alternative first exon     | •        | •      | •        | •      |          |        | •        |        |
 Alternative last exon      |          | •      | •        | •      |          |        | •        | •      | 
-Tandem UTR                 |          |        |          |        |          |        | •        | • •    | 
+Tandem UTR                 |          |        |          |        |          | •      | •        | •      | 
 
-Note there are two glyphs in some cases. That means two alternative positions
+Before my thinking was like:
+> Note there are two glyphs in some cases. That means two alternative positions
 are stored (for example, in the case of the alternative 5' splice site, the C1
-end can alternatively be one of the two positions).
+end can alternatively be one of the two positions; same goes for the alt. 3'
+splice site's C2 start and for the C2 end's tandem UTR).
+
+Scratch that. It's way harder to put and manage lists inside data frames then
+what I thought before. Now those cases have separate coordinates for the
+alternative start/end positions. The alt. 5' splice site alternative junctions
+are reported by C1 end and A1 end; the alt. 3' splice site alternative
+junctions are reported by C2 start and A1 start; the Tandem UTR alternative
+junctions are reported by C2 end and A2 end (inclusion levels are always
+relative to the constitutive positions first).
 
 Before discussing how to parse thousands and thousands of events, we should
 reflect a bit on the tools available to compare different solutions that solve
 the same problem and how to measure performance on R. You can read about it
 in the article [Measuring performance](Measuring performance.Rmd).
 
-Another thing to consider is whether we should be using a list or an object to
-store the information pertaining to each event. I'll try to create a list at
-first but maybe it would be better to have a class for events. This way, the
-attributes would be much clearer to others. But really, would it be that
-different if we take into account that the documentation explains the data
-structure anyway? And is there any impact in the performance of the same script
-using objects instead of lists?
+> Another thing to consider is whether we should be using a list, an object or a
+> data frame to store the information pertaining to each event. I'll try to create
+> a list at first but maybe it would be better to have a class for events. This
+> way, the attributes would be much clearer to others. But really, would it be
+> that different if we take into account that the documentation explains the data
+> structure anyway? And is there any impact in the performance of the same script
+> using objects instead of lists? Besides, data frames are the natural way to
+> manipulate information in R. We'll see which is better.
 
-> TODO: event data structure - list VS object
+Data frames are better in terms of performance :)
 
 # Retrieving and parsing alternative splicing annotation
 To get the most complete annotation of alternative splicing events, we'll
@@ -106,35 +111,29 @@ alternative first and last exon (AFE and ALE) and tandem UTR. Each event type
 is contained in a file with the respective acronym shown in parenthesis.
 
 Here follows an example of an AS annotation file used in MISO:
-    
+
 chr1 | SE | gene | 16854 | 18061 | . | - | . | ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-;Name=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-
 chr1 | SE | mRNA | 16854 | 18061 | . | - | . | ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A;Parent=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-
 chr1 | SE | exon | 16854 | 17055 | . | - | . | ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A.dn;Parent=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-
 
 To generate a list of events from MISO's annotation file, we'll use:
-```{r, eval=FALSE}
-types <- c("AFE", "SE", "MXE", "A5SS", "A3SS", "RI", "TandemUTR")
-miso.hg19 <- lapply(types,
-                    function(x) {
-                        type <- paste0(
-                            "/genedata/Resources/Annotations/MISO/hg19/",
-                            x, ".hg19.gff3")
-                        print(type)
-                        read.delim(type, header=FALSE, comment.char="#",
-                                   stringsAsFactors = FALSE)
-                    })
-misoEvents <- lapply(1:length(miso.hg19),
-                     function(i) {
-                         type <- types[i]
-                         print(type)
-                         return(parseMisoEvent(miso.hg19[[i]]))
-                     })
+```{r miso-events, eval=FALSE}
+types <- c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI", "TandemUTR")
+types_file <- sprintf("/genedata/Resources/Annotations/MISO/hg19/%s.hg19.gff3",
+                      types)
+miso.hg19 <- lapply(types_file, read.delim, stringsAsFactors = FALSE,
+                    comment.char="#", header=FALSE)
+## TODO: ALE events are baldy formatted... they have two consecutive gene lines
+## for now, remove them with miso.hg19[[3]] <- miso.hg19[[3]][-c(49507, 49508), ]
+
+misoEvents <- lapply(miso.hg19, parseMisoEvent)
 misoEvents <- plyr::rbind.fill(misoEvents)
 
 # Let's check the numbers
 nrow(misoEvents)
 sapply(types, function(type)
     sum(misoEvents$Event.type == type))
+rm(types, types_file)
 
 # all event types:    107178
 # skipped exons:       39207
@@ -156,7 +155,7 @@ events, it'll only use 23.9 MB of memory.
 ## SUPPA
 We need to run the SUPPA's command generateEvents to get the alternative 
 splicing annotation from a GTF file, like this:
- 
+
 ```
 python suppa.py generateEvents -i $GTF -o suppaEvents -e SE SS MX RI FL
 ```
@@ -176,28 +175,22 @@ exon (MX), intron retention (RI), alternative 3' and 5' splice site (A3 and A5)
 and alternative first and last exon (AF and AL).
 
 Let's generate a list of events from the SUPPA annotated events.
-```{r, eval=FALSE}
-read_path <- function(path, item, ...)
-    read.delim(sprintf(path, item), ...)
-
-suppa.path <- "~/Documents/psi_calculation/suppa/suppaEvents/hg19_%s.ioe"
+```{r suppa-events, eval=FALSE}
 types <- c("SE", "AF", "AL", "MX", "A5", "A3", "RI")
-suppa.hg19 <- lapply(types, function(type) read_path(suppa.path, type))
+types_file <- sprintf(
+    "~/Documents/psi_calculation/suppa/suppaEvents/hg19_%s.ioe", types)
+suppa.hg19 <- lapply(types_file, read.delim, stringsAsFactors = FALSE,
+                     comment.char="#", header=TRUE)
 
-suppaEvents <- lapply(1:length(suppa.hg19),
-                      function(i) {
-                          type <- types[i]
-                          print(type)
-                          annotation <- as.character(suppa.hg19[[i]]$event_id)
-                          if (length(annotation) > 0)
-                              return(parseSuppaEvent(annotation))
-                      })
-suppaEvents <- rbind.fill(suppaEvents)
+eventsID <- lapply(suppa.hg19, "[[", "event_id")
+suppaEvents <- lapply(eventsID, parseSuppaEvent)
+suppaEvents <- plyr::rbind.fill(suppaEvents)
 
 # Let's check the numbers
 nrow(suppaEvents)
 sapply(c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI"), function(type)
     sum(suppaEvents$Event.type == type))
+rm(types, types_file, eventsID)
 
 # all event types:    179108
 # skipped exons:       40419
@@ -230,14 +223,13 @@ GeneID | geneSymbol | chr | strand | exonStart_0base | exonEnd | upstreamES | up
 "ENSG00000146263" | "MMS22L" | chr6 | - | 97711210 | 97711324 | 97702432 | 97702609 | 97715747 | 97715878
 
 Generating a list of events from the annotation is easy:
-```{r, eval=FALSE}
-read_path <- function(path, item, ...)
-    read.delim(sprintf(path, item), ...)
-
-mats.path <- "~/Documents/psi_calculation/mats_out/ASEvents/fromGTF.%s.txt"
+```{r mats-events, eval=FALSE}
 types <- c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI")
-mats.hg19 <- lapply(c(types, paste0("novelEvents.", types)), 
-                     function(type) read_path(mats.path, type, row.names=NULL))
+types_file <- sprintf(
+    "~/Documents/psi_calculation/mats_out/ASEvents/fromGTF.%s.txt",
+    c(types, paste0("novelEvents.", types)))
+mats.hg19 <- lapply(types_file, read.delim, stringsAsFactors = FALSE,
+                    comment.char="#", header=TRUE)
 
 matsEvents <- lapply(1:length(mats.hg19),
                      function(i) {
@@ -245,14 +237,15 @@ matsEvents <- lapply(1:length(mats.hg19),
                          print(type)
                          annotation <- mats.hg19[[i]]
                          if (nrow(annotation) > 0)
-                            return(parseMatsEvent(annotation, type))
+                             return(parseMatsEvent(annotation, type))
                      })
-matsEvents <- rbind.fill(matsEvents)
+matsEvents <- plyr::rbind.fill(matsEvents)
 
 # Let's check the numbers
 nrow(matsEvents)
 sapply(types, function(type)
     sum(matsEvents$Event.type == type))
+rm(types, types_file)
 
 # all event types:    118417
 # skipped exons:       37935
@@ -294,33 +287,32 @@ document with more columns is RI event's annotation file with 7 columns while
 all the others have 6 columns, parsed events won't show inclusion levels if they
 have 7 or less columns (since there isn't data with that info... duh).
 
-```{r, eval=FALSE}
-read_path <- function(path, item1, item2, ...)
-    read.delim(sprintf(path, item1, item2), stringsAsFactors = F, ...)
-
-vastTools.path <- "/genedata/Resources/Software/vast-tools/VASTDB/Hsa/TEMPLATES/Hsa.%s.Template%s.txt"
+```{r vast-tools-events, eval=FALSE}
 types <- c("ALT3", "ALT5", "COMBI", "IR", "MERGE3m", "MIC",
            rep(c("EXSK", "MULTI"), 1))
-num <- c(rep("", 6), rep(".2", 2))#, rep(".2", 2))
-vastTools.hg19 <- lapply(1:length(types), 
-                         function(i) read_path(vastTools.path, types[i], num[i],
-                                               row.names=NULL))
+types_file <- sprintf(
+    "/genedata/Resources/Software/vast-tools/VASTDB/Hsa/TEMPLATES/Hsa.%s.Template%s.txt",
+    types, c(rep("", 6), rep(".2", 2))#, rep(".2", 2))
+)
+
+vastTools.hg19 <- lapply(types_file, read.delim, stringsAsFactors = FALSE,
+                         comment.char="#", header=TRUE)
 
 vastToolsEvents <- lapply(1:length(vastTools.hg19),
-                     function(i) {
-                         type <- types[i]
-                         print(type)
-                         annotation <- vastTools.hg19[[i]]
-                         if (nrow(annotation) > 0)
-                            return(parseVastToolsEvent(annotation))
-                     })
-vastToolsEvents <- rbind.fill(vastToolsEvents)
+                          function(i) {
+                              type <- types[i]
+                              print(type)
+                              annotation <- vastTools.hg19[[i]]
+                              if (nrow(annotation) > 0)
+                                  return(parseVastToolsEvent(annotation))
+                          })
+vastToolsEvents <- plyr::rbind.fill(vastToolsEvents)
 
 # Let's check the numbers
 nrow(vastToolsEvents)
 sapply(c("SE", "A5SS", "A3SS", "RI"), function(type)
     sum(vastToolsEvents$Event.type == type))
-
+rm(types, types_file)
 # all event types:    444455
 # skipped exons:      241116
 # alt. first exons:        0
@@ -490,7 +482,7 @@ For example...
 ```{r, eval=FALSE}
 file <- "/genedata/Resources/Annotations/MISO/hg19/SE.hg19.gff3"
 read <- read.delim(file, header=FALSE, comment.char="#",
-                       stringsAsFactors = FALSE)
+                   stringsAsFactors = FALSE)
 gene <- which(read$V3 == "gene")                                    
 diff <- c(gene, nrow(read) + 1)[2:(length(gene)+1)] - gene           
 groups <- unlist(sapply(1:length(diff), function(i) rep(i, diff[i])))
@@ -515,7 +507,7 @@ Yet another thing we could try is to use a data table instead.
 ```{r, eval=FALSE}
 file <- "/genedata/Resources/Annotations/MISO/hg19/SE.hg19.gff3"
 read <- read.delim(file, header=FALSE, comment.char="#",
-                       stringsAsFactors = FALSE)
+                   stringsAsFactors = FALSE)
 gene <- which(read$V3 == "gene")
 next_gene <- c(gene, nrow(read) + 1)[2:(length(gene)+1)]
 diff <- next_gene - gene           
@@ -584,31 +576,117 @@ specific columns. For example, to check if an exon skipping is the same, we just
 need to check C1 end, A1 start + end and A2 start (for other event types, check
 table at the top of this document).
 
-A simple approach would be for each group of columns, look at the other group.
-First of all, let's try with skipping events.
-```{r}
+```{r match-events, eval = FALSE}
 # Timing the subset of one specifing event type
 microbenchmark(
     matsEvents[matsEvents$Event.type == "SE", ],
     filter(matsEvents, Event.type == "SE")
 )
 
-# More interestingly, let's see how fast can we subset each event type
+# More interestingly, let's see how fast can we subset all event types
 microbenchmark(mats <- split(matsEvents, matsEvents$Event.type),
                mats <- dlply(matsEvents, .(Event.type)))
 
-# All right... let's separate all events 
-events <- list(matsEvents, misoEvents, suppaEvents, vastToolsEvents)
-events <- rbind.fill(events)
-events <- dlply(events, .(Program, Event.type))
-names(events)
+# SUPPA events' chromosome identifier differs from the rest (let's add "chr")
+suppaEvents$Chromosome <- paste0("chr", suppaEvents$Chromosome)
 
-# mats$A1.start <- as.integer(mats$A1.start) + 1
+# MATS' skipping exon events don't match if we don't add one
+matsEvents[matsEvents$Event.type == "SE", ]$C2.start <- as.numeric(
+    matsEvents[matsEvents$Event.type == "SE", ]$C2.start) + 1
 
-a <- dplyr::full_join(suppa, mats, by=c("Strand",
-                                        "C1.end", "A1.end", "A1.start"))
-# merge(suppa, mats, by = c("C1.end", "A1.end", "A1.start"), all = TRUE)
+# All right... let's separate all events based on program and event type
+library(dplyr)
+events <- list(matsEvents, suppaEvents, misoEvents, vastToolsEvents)
+events <- plyr::rbind.fill(events)
+events <- dlply(events, .(Event.type))
+events <- lapply(events, dlply, .(Program))
+id <- names(events)
+
+# Now, for each event type, get the matching indexes based on the common attributes of each event type
+
+#' a <- fullJoinTables(events$SE,
+#'     c("Strand", "C1.end", "A1.end", "A1.start"), c(F,T,T,T))
+fullJoinTables <- function(tables, by = NULL, toNumeric = FALSE) {
+    # If there's only one table, there's no need to full join...
+    if (length(tables) == 1) return(tables[[1]])
+    
+    joined <- getNumerics(tables[[1]], by, toNumeric)
+    for (i in 2:length(tables)) {
+        table <- getNumerics(tables[[i]], by, toNumeric)
+        joined <- full_join(joined, table, by)
+    }
+    return(joined)
+}
+
+#' getNumerics(vast, by = c("Strand", "C1.end", "A1.end", "A1.start"),
+#'     toNumeric = c(F,T,T,T))
+getNumerics <- function(table, by = NULL, toNumeric = FALSE) {
+    # Check which elements are lists of specified length
+    bool <- TRUE
+    for (each in by)
+        bool <- bool & vapply(table[[each]], length, integer(1)) == 1
+    
+    table <- table[bool, ]
+    # Convert elements to numeric
+    conv <- by[toNumeric]
+    table[conv] <- as.numeric(as.character(unlist(table[conv])))
+    return(table)
+}
+
+# Join all given tables together based on given parameters
+types <- names(events)
+joint <- lapply(types, function(type, events) {
+    print(type)
+    join <- function(...) fullJoinTables(events[[type]], ...)
+    
+    res <- switch(type,
+                  "SE"   = join(c("Strand", "Chromosome", "C1.end", "A1.start",
+                                  "A1.end", "C2.start"),
+                                c(rep(FALSE, 2), rep(TRUE, 4))),
+                  "A3SS" = join(c("Strand", "Chromosome", "C1.end", "C2.start",
+                                  "A1.start"), c(rep(FALSE, 2), rep(TRUE, 3))),
+                  "A5SS" = join(c("Strand", "Chromosome", "C1.end",
+                                  "C2.start", "A1.end"),
+                                c(rep(FALSE, 2), rep(TRUE, 3))),
+                  "AFE"  = join(c("Strand", "Chromosome", "C1.start",
+                                  "C1.end", "A1.start", "A1.end",
+                                  "C2.start"), c(rep(FALSE, 2), rep(TRUE, 5))),
+                  "ALE"  = join(c("Strand", "Chromosome", "C1.end",
+                                  "A1.start", "A1.end", "C2.start",
+                                  "C2.end"), c(rep(FALSE, 2), rep(TRUE, 5))),
+                  "MXE"  = join(c("Strand", "Chromosome", "C1.end",
+                                  "A1.start", "A1.end",
+                                  "A2.start", "A2.end", "C2.start"), 
+                                c(rep(FALSE, 2), rep(TRUE, 6))),
+                  "TandemUTR" = join(c("Strand", "Chromosome", "C2.start",
+                                       "C2.end", "A1.end"),
+                                     c(rep(FALSE, 2), rep(TRUE, 3))),
+                  "RI"   = join(c("Strand", "Chromosome", "C1.start",
+                                  "C1.end", "C2.start", "C2.end"), 
+                                c(rep(FALSE, 2), rep(TRUE, 4))))
+    return(res)
+}, events)
+names(joint) <- types
+
+# Okay! Let's check how many overlaps there are and how many events are unique
+j <- joint$SE[grep("Program", names(joint$SE))]
+nas <- !is.na(j)
+mats <- which(nas[,1])
+miso <- which(nas[,2])
+suppa <- which(nas[,3])
+vast <- which(nas[,4])
+
+es <- list(mats = mats, miso = miso, suppa = suppa, vast = vast)
+for (e1 in 1:length(es)) {
+    for (e2 in 1:length(es)) {
+        print(paste(names(es)[[e1]], names(es)[[e2]]))
+        print(length(intersect(es[[e1]], es[[e2]])))
+    }
+}
 ```
+
+A note of interest... `````` should be added
+or else MATS events aren't matched.
 
 # Getting TCGA's read counts for the annotated splicing junctions
 [The Cancer Genome Atlas (TCGA)](https://tcga-data.nci.nih.gov/tcga/) is a
@@ -621,10 +699,54 @@ sample... which means we need to join these files into one.
 Let's try to do something with the junction quantification files inside the
 `data/junctions` folder. First of all, let's read the files:
 
-```{r}
+```{r TCGA junctions, eval = FALSE}
 path <- "data/junctions/"
 junctions <- paste0(path, list.files(path))
-junctions.files <- lapply(junctions, read.delim2)
+junctions.files <- lapply(junctions, read.delim2, stringsAsFactors = FALSE)
+
+# It's important to note the first column is always the same in these files
+all(junctions.files[[1]]$junction == junctions.files[[2]]$junction)
+all(junctions.files[[1]]$junction == junctions.files[[3]]$junction)
+
+# Let's parse the junction identifiers
+# parseTCGAJunctions <- function(junctions) {
+#     parsed <- stringr::str_split_fixed(junctions, ":|,", 6)
+#     parsed <- data.frame(parsed, stringsAsFactors = FALSE)
+#     parsed[[2]] <- as.numeric(parsed[[2]])
+#     parsed[[5]] <- as.numeric(parsed[[5]])
+#     return(parsed[ , c(1, 3, 2, 5)])
+# }
+
+junctionsID <- junctions.files[[1]]$junction
+#parsed <- parseTCGAJunctions(junctionsID)
+
+junctions <- cbind(junctions.files[[1]]$raw_counts,
+                   junctions.files[[2]]$raw_counts,
+                   junctions.files[[2]]$raw_counts)
+names(junctions) <- junctionsID
+junctions <- data.frame(junctions, stringsAsFactors = FALSE)
+```
+
+All right! Now let's search for pairs!
+```{r TCGA/events match, eval=FALSE}
+chr <- joint$SE$Chromosome
+strand <- joint$SE$Strand
+c1 <- joint$SE$C1.end
+a1 <- joint$SE$A1.start
+a2 <- joint$SE$A1.end
+c2 <- joint$SE$C2.start
+
+id_incA <- paste0(chr, ":", ifelse(c1<a1, c1, a1), ":", strand, ",", chr, ":", ifelse(c1>a1, c1, a1), ":", strand)
+id_incB <- paste0(chr, ":", ifelse(a2<c2, a2, c2), ":", strand, ",", chr, ":", ifelse(c2>a2, c2, a2), ":", strand)
+id_excl <- paste0(chr, ":", ifelse(c1<c2, c1, c2), ":", strand, ",", chr, ":", ifelse(c2>c1, c2, c1), ":", strand)
+
+index_incA <- fastmatch::fmatch(id_incA, names(junctions))
+index_incB <- fastmatch::fmatch("chr1:12697:+,chr1:13221:+", names(junctions))
+index_excl <- fastmatch::fmatch("chr1:12697:+,chr1:13221:+", names(junctions))
+
+inclusion <- (junctions[index_incA, ] + junctions[index_incB, ]) / 2
+total <- junctions[index_excl] + inclusion
+psi <- inclusion/total
 ```
 
 > TODO: match junctions from junction files with events from all those programs
