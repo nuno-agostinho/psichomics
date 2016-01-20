@@ -13,3 +13,4 @@ Suggests: testthat,
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+LinkingTo: Rcpp

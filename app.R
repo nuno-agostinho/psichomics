@@ -72,8 +72,7 @@ ui <- shinyUI(
             )
         ),
         # Loads the interface for each tab
-        lapply(tabs.ui,
-               do.call, list())
+        lapply(tabs.ui, do.call, list())
     ))
 )
 
