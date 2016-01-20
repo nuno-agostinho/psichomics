@@ -207,11 +207,11 @@ parseSuppaA3SS <- function (junctions, strand) {
     # Note that inclusion values are related to the first alternative isoform
     plus <- strand == "+"
     # Plus strand
-    parsed[plus, "C1.end"]     <- junctions[plus, 1]
-    parsed[plus, ][["C2.start"]] <- listJunctions(junctions, plus, c(2, 4))
+    parsed[plus, c("C1.end",
+                   "C2.start", "A1.start")] <- junctions[plus, c(1, 2, 4)]
     # Minus strand
-    parsed[!plus, "C1.end"]       <- junctions[!plus, 4]
-    parsed[!plus, ][["C2.start"]] <- listJunctions(junctions, !plus, c(1, 3))
+    parsed[!plus, c("C1.end",
+                    "C2.start", "A1.start")] <- junctions[!plus, c(4, 1, 3)]
     return(parsed)
 }
 
@@ -227,10 +227,10 @@ parseSuppaA5SS <- function (junctions, strand) {
     # Note that inclusion values are related to the first alternative isoform
     plus <- strand == "+"
     # Plus strand
-    parsed[plus, "C2.start"]   <- junctions[plus, 2]
-    parsed[plus, ][["C1.end"]] <- listJunctions(junctions, plus, c(1, 3))
+    parsed[plus, c("C2.start",
+                   "C1.end", "A1.end")] <- junctions[plus, c(2:1, 3)]
     # Minus strand
-    parsed[!plus, "C2.start"]   <- junctions[!plus, 3]
-    parsed[!plus, ][["C1.end"]] <- listJunctions(junctions, !plus, c(2, 4))
+    parsed[!plus, c("C2.start",
+                    "C1.end", "A1.end")] <- junctions[!plus, c(3:2, 4)]
     return(parsed)
 }

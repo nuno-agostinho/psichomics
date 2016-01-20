@@ -483,8 +483,8 @@ parseMisoA5SS <- function(event) {
         # Plus strand
         if (nrow(event[plus, ]) > 0) {
             parsed[plus, ]["C1.start"] <- event[index[plus] + 2, 4]
-            parsed[plus, ][["C1.end"]] <-
-                lapply(index[plus], function(i) event[i + c(2, 5), 5])
+            parsed[plus, ]["C1.end"] <- event[index[plus] + 2, 5]
+            parsed[plus, ]["A1.end"] <- event[index[plus] + 5, 5]
             parsed[plus, ][c("C2.start", "C2.end")] <- 
                 event[index[plus] + 3, 4:5]
         }
@@ -492,10 +492,10 @@ parseMisoA5SS <- function(event) {
         minus <- !plus
         if (nrow(event[minus, ]) > 0) {
             parsed[minus, ]["C1.start"] <- event[index[minus] + 3, 5]
-            parsed[minus, ][["C1.end"]] <-
-                lapply(index[minus], function(i) event[i + c(3, 6), 4])
+            parsed[minus, ]["C1.end"] <- event[index[minus] + 3, 4]
+            parsed[minus, ]["A1.end"] <- event[index[minus] + 6, 4]
             parsed[minus, ][c("C2.start", "C2.end")] <- 
-                event[index[minus]+2, 5:4]
+                event[index[minus] + 2, 5:4]
         }
         return(parsed)
     }
@@ -538,8 +538,8 @@ parseMisoA3SS <- function(event, strand) {
         if (nrow(event[plus, ]) > 0) {
             parsed[plus, ][c("C1.start", "C1.end")] <- 
                 event[index[plus] + 2, 4:5]
-            parsed[plus, ][["C2.start"]] <-
-                lapply(index[plus], function(i) event[i + c(3, 6), 4])
+            parsed[plus, ]["C2.start"] <- event[index[plus] + 3, 4]
+            parsed[plus, ]["A1.start"] <- event[index[plus] + 6, 4]
             parsed[plus, ]["C2.end"] <- event[index[plus] + 3, 5]
         }
         # Minus strand
@@ -547,8 +547,8 @@ parseMisoA3SS <- function(event, strand) {
         if (nrow(event[minus, ]) > 0) {
             parsed[minus, ][c("C1.start", "C1.end")] <- 
                 event[index[minus] + 3, 5:4]
-            parsed[minus, ][["C2.start"]] <-
-                lapply(index[minus], function(i) event[i + c(2, 5), 5])
+            parsed[minus, ]["C2.start"] <- event[index[minus] + 2, 5]
+            parsed[minus, ]["A1.start"] <- event[index[minus] + 5, 5]
             parsed[minus, ]["C2.end"] <- event[index[minus] + 2, 4]
         }
         return(parsed)
@@ -588,15 +588,15 @@ parseMisoTandemUTR <- function(event, strand) {
         # Plus strand
         if (nrow(event[plus, ]) > 0) {
             parsed[plus, ]["C2.start"] <- event[index[plus] + 2, 4]
-            parsed[plus, ][["C2.end"]] <-
-                lapply(index[plus], function(i) event[i + c(2, 4), 5])
+            parsed[plus, ][c("C2.end",
+                             "A1.end")] <- event[index[plus] + c(2, 4), 5]
         }
         # Minus strand
         minus <- !plus
         if (nrow(event[minus, ]) > 0) {
             parsed[minus, ]["C2.start"] <- event[index[minus] + 2, 5]
-            parsed[minus, ][["C2.end"]] <-
-                lapply(index[minus], function(i) event[i + c(2, 4), 4])
+            parsed[minus, ][c("C2.end",
+                              "A1.end")] <- event[index[minus] + c(2, 4), 4]
         }
         return(parsed)
     }
@@ -760,17 +760,17 @@ parseMisoALE <- function(event) {
         # Plus strand
         if (nrow(event[plus, ]) > 0) {
             parsed[plus, ][c("A1.start",
-                             "A1.end")] <- event[mRNA1+1, 4:5][plus, ]
+                             "A1.end")] <- event[mRNA1 + 1, 4:5][plus, ]
             parsed[plus, ][c("C2.start",
-                             "C2.end")] <- event[mRNA2+1, 4:5][plus, ]
+                             "C2.end")] <- event[mRNA2 + 1, 4:5][plus, ]
         }
         # Minus strand
         minus <- !plus
         if (nrow(event[minus, ]) > 0) {
             parsed[minus, ][c("A1.start", 
-                              "A1.end")] <- event[mRNA2-1, 5:4][minus, ]
+                              "A1.end")] <- event[mRNA2 - 1, 5:4][minus, ]
             parsed[minus, ][c("C2.start", 
-                              "C2.end")] <- event[next_index-1, 5:4][minus, ]
+                              "C2.end")] <- event[next_index - 1, 5:4][minus, ]
         }
         return(parsed)
     }

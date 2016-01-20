@@ -28,15 +28,3 @@ createJunctionsTemplate <- function(nrow, program = character(0),
     if (length(strand) > 0)     parsed[["Strand"]] <- strand
     return(parsed)
 }
-
-#' Converts a data frame of junctions to a list of numeric junctions
-#'
-#' @param junctions Data frame of junctions
-#' @param rows Rows of the junctions
-#' @param cols Columns of the junctions
-#'
-#' @return List of numeric junctions
-#' @export
-listJunctions <- function(junctions, rows, cols) {
-    apply(junctions[rows, cols], 1, function(i) as.list(as.numeric(i)))
-}

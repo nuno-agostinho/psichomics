@@ -3,7 +3,6 @@
 export(createJunctionsTemplate)
 export(getDataRows)
 export(getValidEvents)
-export(listJunctions)
 export(parseMatsEvent)
 export(parseMatsSE)
 export(parseMisoEvent)

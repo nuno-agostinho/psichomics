@@ -158,13 +158,11 @@ parseMatsA3SS <- function(junctions, strand) {
     # Note that inclusion values are related to the first alternative isoform
     plus <- strand == "+"
     # Plus strand
-    parsed[plus, c("C1.start", "C1.end",
-                   "C2.end")] <- junctions[plus, c(5:6, 2)]
-    parsed[plus, ][["C2.start"]] <- listJunctions(junctions, plus, c(1, 3))
+    parsed[plus, c("C1.start", "C1.end", "A1.start",
+                   "C2.start", "C2.end")] <- junctions[plus, c(5:6, 3, 1, 2)]
     # Minus strand
-    parsed[!plus, c("C1.start", "C1.end",
-                    "C2.end")] <- junctions[!plus, c(6:5, 1)]
-    parsed[!plus, ][["C2.start"]] <- listJunctions(junctions, !plus, c(2, 4))
+    parsed[!plus, c("C1.start", "C1.end", "A1.start",
+                    "C2.start", "C2.end")] <- junctions[!plus, c(6:4, 2:1)]
     return(parsed)
 }
 
@@ -180,13 +178,11 @@ parseMatsA5SS <- function(junctions, strand) {
     # Note that inclusion values are related to the first alternative isoform
     plus <- strand == "+"
     # Plus strand
-    parsed[plus, c("C1.start",
-                   "C2.start", "C2.end")] <- junctions[plus, c(1, 5:6)]
-    parsed[plus, ][["C1.end"]] <- listJunctions(junctions, plus, c(2, 4))
+    parsed[plus, c("C1.start", "C1.end", "A1.end",
+                   "C2.start", "C2.end")] <- junctions[plus, c(1:2, 4:6)]
     # Minus strand
-    parsed[!plus, c("C1.start",
-                    "C2.start", "C2.end")] <- junctions[!plus, c(2, 6, 5)]
-    parsed[!plus, ][["C1.end"]] <- listJunctions(junctions, !plus, c(1, 3))
+    parsed[!plus, c("C1.start", "C1.end", "A1.end",
+                    "C2.start", "C2.end")] <- junctions[!plus, c(2:1, 3, 6, 5)]
     return(parsed)
 }
 
