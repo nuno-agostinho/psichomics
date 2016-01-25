@@ -477,8 +477,8 @@ Requires: RColorBrewer, Rcpp, dichromat, labeling, munsell, plyr
 
 Package: shiny
 Source: CRAN
-Version: 0.12.2
-Hash: 31cd1fe3028ac7ef846adacf8ed5bfd2
+Version: 0.13.0
+Hash: b4e074e7ffd1281dc9eaa83f91ee6e86
 Requires: R6, digest, htmltools, httpuv, jsonlite, mime, xtable
 
 Package: shinyBS
