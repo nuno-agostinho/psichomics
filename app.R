@@ -41,6 +41,7 @@ loadScripts <- function(folder, vars, exclude = "", ...){
 server <- function(input, output, session) {
     tabs2 <- loadScripts(tabsFolder, c("name", "server"))
     tabs.server <- lapply(tabs2, "[[", "server")
+    tabs.server <- Filter(Negate(is.null), tabs.server)
     lapply(tabs.server, do.call, list(input, output, session))
     
     # Stop Shiny app when session ends (e.g. closing the window)
@@ -56,6 +57,7 @@ server <- function(input, output, session) {
 # Loads the interface from each tab
 tabs <- loadScripts(tabsFolder, c("name", "ui"))
 tabs.ui <- lapply(tabs, "[[", "ui")
+tabs.ui <- Filter(Negate(is.null), tabs.ui)
 
 ui <- shinyUI(
     do.call(navbarPage, append(
