@@ -4,11 +4,13 @@ Version: 0.0.0.9000
 Authors@R: person("Nuno", "Agostinho", email = "nunodanielagostinho@gmail.com", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
 Depends: 
-    R (>= 3.2.2)
+    R (>= 3.2.2),
+    shiny
 License: What license is it under?
 LazyData: true
 RoxygenNote: 5.0.1
-Imports: fastmatch
+Imports: fastmatch,
+    shiny
 Suggests: testthat,
     knitr,
     rmarkdown
