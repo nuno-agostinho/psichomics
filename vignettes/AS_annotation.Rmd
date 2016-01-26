@@ -124,7 +124,8 @@ types_file <- sprintf("/genedata/Resources/Annotations/MISO/hg19/%s.hg19.gff3",
 miso.hg19 <- lapply(types_file, read.delim, stringsAsFactors = FALSE,
                     comment.char="#", header=FALSE)
 ## TODO: ALE events are baldy formatted... they have two consecutive gene lines
-## for now, remove them with miso.hg19[[3]] <- miso.hg19[[3]][-c(49507, 49508), ]
+## for now, remove them with this:
+miso.hg19[[3]] <- miso.hg19[[3]][-c(49507, 49508), ]
 
 misoEvents <- lapply(miso.hg19, parseMisoEvent)
 misoEvents <- plyr::rbind.fill(misoEvents)
@@ -234,7 +235,6 @@ mats.hg19 <- lapply(types_file, read.delim, stringsAsFactors = FALSE,
 matsEvents <- lapply(1:length(mats.hg19),
                      function(i) {
                          type <- rep(types, 2)[i]
-                         print(type)
                          annotation <- mats.hg19[[i]]
                          if (nrow(annotation) > 0)
                              return(parseMatsEvent(annotation, type))
@@ -591,13 +591,16 @@ microbenchmark(mats <- split(matsEvents, matsEvents$Event.type),
 suppaEvents$Chromosome <- paste0("chr", suppaEvents$Chromosome)
 
 # MATS' skipping exon events don't match if we don't add one
+matsEvents[matsEvents$Event.type == "SE", ]$A1.start <- as.numeric(
+    matsEvents[matsEvents$Event.type == "SE", ]$A1.start) + 1
 matsEvents[matsEvents$Event.type == "SE", ]$C2.start <- as.numeric(
     matsEvents[matsEvents$Event.type == "SE", ]$C2.start) + 1
 
 # All right... let's separate all events based on program and event type
 library(dplyr)
-events <- list(matsEvents, suppaEvents, misoEvents, vastToolsEvents)
-events <- plyr::rbind.fill(events)
+library(plyr)
+events <- list(suppaEvents, matsEvents, misoEvents, vastToolsEvents)
+events <- rbind.fill(events)
 events <- dlply(events, .(Event.type))
 events <- lapply(events, dlply, .(Program))
 id <- names(events)
@@ -607,13 +610,13 @@ id <- names(events)
 #' a <- fullJoinTables(events$SE,
 #'     c("Strand", "C1.end", "A1.end", "A1.start"), c(F,T,T,T))
 fullJoinTables <- function(tables, by = NULL, toNumeric = FALSE) {
-    # If there's only one table, there's no need to full join...
-    if (length(tables) == 1) return(tables[[1]])
-    
     joined <- getNumerics(tables[[1]], by, toNumeric)
-    for (i in 2:length(tables)) {
-        table <- getNumerics(tables[[i]], by, toNumeric)
-        joined <- full_join(joined, table, by)
+    # Only join tables if there are more than one
+    if (length(tables) > 1) {
+        for (i in 2:length(tables)) {
+            table <- getNumerics(tables[[i]], by, toNumeric)
+            joined <- full_join(joined, table, by)
+        }
     }
     return(joined)
 }
@@ -640,29 +643,34 @@ joint <- lapply(types, function(type, events) {
     join <- function(...) fullJoinTables(events[[type]], ...)
     
     res <- switch(type,
-                  "SE"   = join(c("Strand", "Chromosome", "C1.end", "A1.start",
+                  "SE"   = join(c("Strand", "Chromosome", 
+                                  "C1.end", "A1.start",
                                   "A1.end", "C2.start"),
                                 c(rep(FALSE, 2), rep(TRUE, 4))),
-                  "A3SS" = join(c("Strand", "Chromosome", "C1.end", "C2.start",
+                  "A3SS" = join(c("Strand", "Chromosome",
+                                  "C1.end", "C2.start",
                                   "A1.start"), c(rep(FALSE, 2), rep(TRUE, 3))),
-                  "A5SS" = join(c("Strand", "Chromosome", "C1.end",
-                                  "C2.start", "A1.end"),
+                  "A5SS" = join(c("Strand", "Chromosome",
+                                  "C1.end", "C2.start", "A1.end"),
                                 c(rep(FALSE, 2), rep(TRUE, 3))),
-                  "AFE"  = join(c("Strand", "Chromosome", "C1.start",
-                                  "C1.end", "A1.start", "A1.end",
+                  "AFE"  = join(c("Strand", "Chromosome", 
+                                  "C1.start", "C1.end",
+                                  "A1.start", "A1.end",
                                   "C2.start"), c(rep(FALSE, 2), rep(TRUE, 5))),
                   "ALE"  = join(c("Strand", "Chromosome", "C1.end",
-                                  "A1.start", "A1.end", "C2.start",
-                                  "C2.end"), c(rep(FALSE, 2), rep(TRUE, 5))),
+                                  "A1.start", "A1.end",
+                                  "C2.start", "C2.end"), c(rep(FALSE, 2), rep(TRUE, 5))),
                   "MXE"  = join(c("Strand", "Chromosome", "C1.end",
                                   "A1.start", "A1.end",
                                   "A2.start", "A2.end", "C2.start"), 
                                 c(rep(FALSE, 2), rep(TRUE, 6))),
-                  "TandemUTR" = join(c("Strand", "Chromosome", "C2.start",
-                                       "C2.end", "A1.end"),
+                  "TandemUTR" = join(c("Strand", "Chromosome",
+                                       "C2.start", "C2.end",
+                                       "A1.end"),
                                      c(rep(FALSE, 2), rep(TRUE, 3))),
-                  "RI"   = join(c("Strand", "Chromosome", "C1.start",
-                                  "C1.end", "C2.start", "C2.end"), 
+                  "RI"   = join(c("Strand", "Chromosome", 
+                                  "C1.start", "C1.end",
+                                  "C2.start", "C2.end"), 
                                 c(rep(FALSE, 2), rep(TRUE, 4))))
     return(res)
 }, events)
@@ -671,10 +679,10 @@ names(joint) <- types
 # Okay! Let's check how many overlaps there are and how many events are unique
 j <- joint$SE[grep("Program", names(joint$SE))]
 nas <- !is.na(j)
-mats <- which(nas[,1])
-miso <- which(nas[,2])
-suppa <- which(nas[,3])
-vast <- which(nas[,4])
+mats <- which(nas[ , 1])
+miso <- which(nas[ , 2])
+suppa <- which(nas[ , 3])
+vast <- which(nas[ , 4])
 
 es <- list(mats = mats, miso = miso, suppa = suppa, vast = vast)
 for (e1 in 1:length(es)) {
@@ -684,9 +692,6 @@ for (e1 in 1:length(es)) {
     }
 }
 ```
-
-A note of interest... `````` should be added
-or else MATS events aren't matched.
 
 # Getting TCGA's read counts for the annotated splicing junctions
 [The Cancer Genome Atlas (TCGA)](https://tcga-data.nci.nih.gov/tcga/) is a
@@ -705,26 +710,14 @@ junctions <- paste0(path, list.files(path))
 junctions.files <- lapply(junctions, read.delim2, stringsAsFactors = FALSE)
 
 # It's important to note the first column is always the same in these files
-all(junctions.files[[1]]$junction == junctions.files[[2]]$junction)
-all(junctions.files[[1]]$junction == junctions.files[[3]]$junction)
-
-# Let's parse the junction identifiers
-# parseTCGAJunctions <- function(junctions) {
-#     parsed <- stringr::str_split_fixed(junctions, ":|,", 6)
-#     parsed <- data.frame(parsed, stringsAsFactors = FALSE)
-#     parsed[[2]] <- as.numeric(parsed[[2]])
-#     parsed[[5]] <- as.numeric(parsed[[5]])
-#     return(parsed[ , c(1, 3, 2, 5)])
-# }
-
 junctionsID <- junctions.files[[1]]$junction
-#parsed <- parseTCGAJunctions(junctionsID)
+all(junctionsID == junctions.files[[2]]$junction)
+all(junctionsID == junctions.files[[3]]$junction)
 
 junctions <- cbind(junctions.files[[1]]$raw_counts,
                    junctions.files[[2]]$raw_counts,
                    junctions.files[[2]]$raw_counts)
-names(junctions) <- junctionsID
-junctions <- data.frame(junctions, stringsAsFactors = FALSE)
+row.names(junctions) <- junctionsID
 ```
 
 All right! Now let's search for pairs!
@@ -736,17 +729,25 @@ a1 <- joint$SE$A1.start
 a2 <- joint$SE$A1.end
 c2 <- joint$SE$C2.start
 
-id_incA <- paste0(chr, ":", ifelse(c1<a1, c1, a1), ":", strand, ",", chr, ":", ifelse(c1>a1, c1, a1), ":", strand)
-id_incB <- paste0(chr, ":", ifelse(a2<c2, a2, c2), ":", strand, ",", chr, ":", ifelse(c2>a2, c2, a2), ":", strand)
-id_excl <- paste0(chr, ":", ifelse(c1<c2, c1, c2), ":", strand, ",", chr, ":", ifelse(c2>c1, c2, c1), ":", strand)
+id_incA <- sprintf("%s:%s:%s,%s:%s:%s", chr, ifelse(c1<a1, c1, a1), strand,
+                   chr, ifelse(c1<a1, a1, c1), strand)
+id_incB <- sprintf("%s:%s:%s,%s:%s:%s", chr, ifelse(a2<c2, a2, c2), strand,
+                   chr, ifelse(a2<c2, c2, a2), strand)
+id_excl <- sprintf("%s:%s:%s,%s:%s:%s", chr, ifelse(c1<c2, c1, c2), strand, 
+                   chr, ifelse(c1<c2, c2, c1), strand)
 
-index_incA <- fastmatch::fmatch(id_incA, names(junctions))
-index_incB <- fastmatch::fmatch("chr1:12697:+,chr1:13221:+", names(junctions))
-index_excl <- fastmatch::fmatch("chr1:12697:+,chr1:13221:+", names(junctions))
+index_incA <- fastmatch::fmatch(id_incA, junctionsID)
+index_incB <- fastmatch::fmatch(id_incB, junctionsID)
+index_excl <- fastmatch::fmatch(id_excl, junctionsID)
 
 inclusion <- (junctions[index_incA, ] + junctions[index_incB, ]) / 2
-total <- junctions[index_excl] + inclusion
+total <- junctions[index_excl, ] + inclusion
 psi <- inclusion/total
+
+# How many pairs?
+nrow(psi[complete.cases(psi), ])
 ```
 
-> TODO: match junctions from junction files with events from all those programs
+Only a few paired, it seems. We got the inclusion levels of 16711 out of 271998
+skipping exon events. My PI says that is quite all right but I was expecting for
+a number a bit higher.
