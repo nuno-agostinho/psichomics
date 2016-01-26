@@ -16,6 +16,9 @@ addFileCollapse <- function(number) {
         selectInput("sep", "Choose separator", 
                     choices = list("Tab" = "\t", "Comma"=",", "Space"=" "),
                     selected = "\t"),
+        checkboxInput("header", "Has header", value = FALSE),
+        textInput("species", label = "Species", placeholder = "Required"),
+        textInput("common.name", label = "Common name"),
         uiOutput("testing"),
         actionButton(paste0("acceptFile", number), "Send file")
     ) # end of bsCollapsePanel
@@ -46,23 +49,30 @@ ui <- function() {
 #' 
 #' @return Part of the server logic related to this tab
 server <- function(input, output, session){
-    thisData <- reactiveValues(data=NULL)
-    
     observeEvent(input$acceptFile1, {
-        output$testing <- renderUI({
-            list(
-                badge(inputId="badge1", Sys.time()),
-                buttonGroups(actionButton("test111", "Left"),
-                             actionButton("test222", "Middle"),
-                             actionButton("test333", "Right")),
-                progressbar(sample(1:100, 1)),
-                dropdown(inputId="dropdownMenu1"),
-                alertNew(progressbar(sample(1:100, 1)))
-            )
-        })
-        validate(need(input$dataFile1, label="No file selected"))
+#         output$testing <- renderUI({
+#             list(
+#                 badge(inputId="badge1", Sys.time()),
+#                 buttonGroups(actionButton("test111", "Left"),
+#                              actionButton("test222", "Middle"),
+#                              actionButton("test333", "Right")),
+#                 progressbar(sample(1:100, 1)),
+#                 dropdown(inputId="dropdownMenu1"),
+#                 alertNew(progressbar(sample(1:100, 1)))
+#             )
+#         })
+                 
+        error <- function(msg) { print(msg); return(NULL) }
+        if(is.null(input$dataFile1)) return(error("No data input selected"))
+        if(input$species == "") return(error("Species field can't be empty"))
+        
         inFile <- input$dataFile1
-        thisData$data <- read.table(inFile$datapath, sep = input$sep)
+        info <- read.table(inFile$datapath, sep = input$sep,
+                           header = input$header)
+        data$a <<- new("Organism",
+                       species = input$species,
+                       common.name = input$common.name,
+                       inclusion.levels = info)
         createAlert(session, anchorId = "alert2", title = "Yay!",
                     content = list(progressbar(sample(1:100, 1))),
                     style = "success", append = FALSE)
@@ -70,14 +80,11 @@ server <- function(input, output, session){
     
     output$tableOrAbout <- renderUI({
         # If no data file is loaded, show welcome screen
-        if(is.null(thisData$data))
+        if(is.null(data$a))
             includeMarkdown("about.md")
         else
             dataTableOutput("dataTable")
     })
     
-    output$dataTable <- renderDataTable({
-        validate(if(is.null(thisData$data)) return(NULL))
-        thisData$data
-    })
+    output$dataTable <- renderDataTable(inclusion.levels(data$a))
 }
