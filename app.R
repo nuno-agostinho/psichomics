@@ -1,10 +1,14 @@
 library(shiny)
 library(shinyBS)
+library(ggplot2)
+
+# Global variable with all the data inside combos!
+data <- reactiveValues(combos = list())
 
 # TODO(NunoA): increase allowed size and warn the user to wait for large files
-# refuses files with size greater than the specified
-MB = 3000# file size in MB
-options(shiny.maxRequestSize = MB * 1024^2) #
+# Refuse files with size greater than the specified
+MB = 5000 # File size in MB
+options(shiny.maxRequestSize = MB * 1024^2)
 
 # TODO(NunoA): remove this (it's only for documentation purposes)
 # options(shiny.trace=TRUE)

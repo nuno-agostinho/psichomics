@@ -1,17 +1,13 @@
 name <- "Plots"
 
-ui <- function() {
-    tabPanel(
-        name,
-        uiOutput("selectUI"),
-        uiOutput("chosenUI")
-    )
-}
+ui <- function()
+    tabPanel(name,
+             uiOutput("selectUI"),
+             uiOutput("chosenUI"))
 
 server <- function(input, output, session) {
     # loads valid scripts from the indicated folder
-    plotsFolder <- paste0(tabsFolder, "plots/")
-    envs <- loadScripts(folder = plotsFolder,
+    envs <- loadScripts(folder = paste0(tabsFolder, "plots/"),
                         vars = c("name", "ui"))
     envs.server <- lapply(envs, "[[", "server")
     lapply(envs.server, do.call, list(input, output, session))
@@ -27,11 +23,10 @@ server <- function(input, output, session) {
     
     output$chosenUI <- renderUI({
         # if no option is avaliable, this section is not shown
-        validate( need(input$selectizePlot, label = "A plot") )
+        validate( need(input$selectizePlot, "No plots are available.") )
         # each UI set is loaded depending on the value of selectizePlot
         # WARNING: each script needs a unique name
-        for (env in envs) {
-            if (input$selectizePlot == env$name) { return(env$ui) }
-        }
+        for (env in envs)
+            if (input$selectizePlot == env$name) return(env$ui)
     })
 }
