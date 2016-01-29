@@ -2,11 +2,17 @@
 name <- "plot3"
 
 ui <- list(sidebarLayout(
-    sidebarPanel("Hey"), 
+    sidebarPanel("Hey",
+                 uiOutput("v")), 
     mainPanel(plotOutput(name))))
 
 server <- function(input, output, session) {
-    output[[name]] <- renderPlot(
-        plot(inclusion.levels(data$a)$age)
-    )
+    output[["v"]] <- renderUI({
+        selectInput("var", "Choose the dataset variable to plot",
+                    choices = names(inclusion.levels(data$a)))
+    })
+        
+    output[[name]] <- renderPlot({
+        plot(inclusion.levels(data$a)[[input$var]])
+    })
 }
