@@ -25,11 +25,11 @@ Hash: 096699d1ac1cf530acfc646a0c90ee5d
 Package: FirebrowseR
 Source: github
 Version: 0.2.21
-Hash: 1d5a64b44e95a8fd42379ee21d202af3
+Hash: 4f7a42ea1f5fa28a014cbf05c74fc1b6
 GithubRepo: FirebrowseR
 GithubUsername: mariodeng
 GithubRef: master
-GithubSha1: 03b40fde7feef08754b33dc47ce7a6f22c16738f
+GithubSha1: 00ccdc3661e13785576cdb4f6a28bb4a3b2efc28
 
 Package: Formula
 Source: CRAN
@@ -327,6 +327,11 @@ Source: CRAN
 Version: 0.7.7
 Hash: fea2343a1119d61b0cc5c0a950d103a3
 Requires: mime
+
+Package: mefa
+Source: CRAN
+Version: 3.2-7
+Hash: 8c51155e82825f2434ebb5375aaab0b2
 
 Package: memoise
 Source: CRAN
