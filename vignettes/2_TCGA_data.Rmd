@@ -1,0 +1,134 @@
+---
+title: "Retrieving TCGA data"
+author: "Nuno Agostinho"
+date: "28 January 2016"
+output: html_document
+---
+
+There are a lot of first-party and third-party ways of retrieving the data from
+TCGA (https://tcga-data.nci.nih.gov/tcga/). Let's jump on TCGA first!
+
+Note: TCGA holds controlled-access data which prompts for login credentials and
+that are off premises for regular users. We'll focus our attention on retrieving
+public data only.
+
+# TCGA
+TCGA allows to retrieve data in a graphical manner using the following ways:
+
+* **Data Matrix** allows to select subsets of data based on criteria such as
+cancer type (every attribute of interest corresponds to one downloaded file per
+sample, resulting in many repeated information present in many files; also, it
+only allows to query one cancer type at a time)
+* **Bulk download** returns a list of archives according to the criteria
+(despite its name, it only allows to download one result at a time)
+* **HTTP directory** allows to access the file system directly and is organised
+by cancer type, then by center type, center name, data type, platform name and
+finally by data files.
+* **File search** allows to download data from from multiple diseases (unlike
+the other methods mentioned).
+
+TCGA also supports RESTful web services that reply to data queries with either 
+XML or JSON.
+
+* **Annotations** allows for programmatic querying of annotations data (useful
+for cross-linking data of different files)
+* **Data Matrix** allows to query the data matrix (with the same limitations of
+the graphical interface, e.g. it returns one file per sample)
+* **Data Reports** refers to metadata useful to cross-link the data between
+different files. These services include:
+    * **Sample Counts for TCGA Data Report**
+    * **Aliquot ID Breakdown Report**
+    * **Latest Archive Report**
+    * **Data Coordinating Center** to query project metadata such as center and
+    platform codes
+    * **Barcode-UUID Mapping** to query the mapping between TCGA barcodes and
+    their corresponding UUIDs. This web service is primarily used to facilitate 
+    the project-wide primary identifier transition from TCGA barcodes to UUID.
+    * **Biospecimen Metadata** to query TCGA's biospecimen metadata, as produced
+    by the Biospecimen Metadata Browser.
+
+However, note there are limitations on the connection to these web services:
+only one connection to the Data Matrix Web Service is allowed every 10 seconds 
+and there's a limit of 1000 connections every 3 minutes to DDCWS, Annotations
+and UUID. Exceeding these quotas will cause the system to return *HTTP Status
+Code 413*.
+
+# [Firehose](http://gdac.broadinstitute.org)
+As stated in the website, "Born of the desire to systematize analyses from The 
+Cancer Genome Atlas pilot and scale their execution to the dozens of remaining 
+diseases to be studied, GDAC Firehose now sits atop ~55 terabytes of 
+analysis-ready TCGA data and reliably executes thousands of pipelines per month.
+
+## [Firebrowse](http://firebrowse.org) (currently in beta)
+Firebrowse purpose is to easily access the inputs and/or results of runs in
+Firehose. Luckily, they process the TCGA individual sample files into unique
+files with the information condensed, resulting in much less space occupied and
+less memory/time needed to join those files.
+
+[Firebrowse Web API](http://firebrowse.org/api-docs/) is the respective RESTful
+service that allows to access merged TCGA data. There's also a R package called
+([FirebrowseR](https://github.com/mariodeng/FirebrowseR)) which is not yet
+available in CRAN (according to the developers, it will only be available in
+CRAN once Firebrowse goes out of beta). This is unfortunate since packages in
+Bioconductor/CRAN may not use packages outside these repositories (citation
+needed).
+
+### API
+Anyway, let's just use the RESTful API. Easily enough, we can just use the
+built-in package `jsonlite` to parse a JSON response from a RESTful web service. 
+It's as easy as running
+
+```{r}
+library(jsonlite)
+cohort <- "ACC"
+protocol <- "junction_quantification"
+query <- sprintf(
+    "http://firebrowse.org/api/v1/Archives/StandardData?format=json&cohort=%s&protocol=%s",
+    cohort, protocol)
+fromJSON(query)
+```
+
+To check types of cohorts available, just do:
+```{r}
+query <- "http://firebrowse.org/api/v1/Metadata/Cohorts?format=json"
+cohorts <- fromJSON(query)
+```
+
+By default, if no date is indicated in the queries, Firehose returns the latest
+data. To check all dates, type:
+```{r}
+query <- "http://firebrowse.org/api/v1/Metadata/Dates?format=json"
+dates <- fromJSON(query)
+```
+
+It's also useful to check whether Firehose is up or not:
+```{r}
+query <- "http://firebrowse.org/api/v1/Metadata/HeartBeat?format=json"
+heartbeat <- fromJSON(query)
+```
+
+To download data, we first need to query Firehose to give URLs of interest
+(including md5 files if we want to check file integrity using `md5sum`):
+```{r, eval = FALSE}
+cohort <- "ACC"
+protocol <- "junction_quantification"
+query <- sprintf(paste0("http://firebrowse.org/api/v1/Archives/StandardData?",
+                        "format=json&cohort=%s&protocol=%s"),
+                 cohort, protocol)
+urls <- fromJSON(query)[[1]]$urls[[1]]
+download.file(urls[[1]],
+              destfile=paste0("~/Downloads/", "junction_quant.tar.gz"))
+download.file(urls[[2]],
+              destfile=paste0("~/Downloads/", "junction_quant.tar.gz.md5"))
+```
+
+### File integrity
+Since all downloadable files contain an MD5 file that allows to check for file
+integrety, we can use the function `tools::md5sum` to check the MD5 hash of a
+file and check if it matches any MD5 hash inside the MD5 file. We even could do
+a name match but it's hard to match a random hash and only to check if the MD5
+value is in the file has a real high probability of being the same file.
+
+### Extracting the content
+All files come archived (as `.tar.gz`). Fortunately, it's easy to extract the
+content using `utils::untar("some_file.tar.gz")`.
