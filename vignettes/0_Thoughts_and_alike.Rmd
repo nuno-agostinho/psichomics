@@ -14,8 +14,8 @@ same name for functions belonging to different modules but that doesn't work in
 R since each function needs to have its own different name. Another way we maybe
 could  accomplish this is by using classes instead. Maybe two methods with the
 same name in different classes are allowed? They are definitely allowed in
-different environments (creating a list of environments is currently the way
-dealt with them.)
+different environments (creating a list of environments is currently the way I
+deal with them).
 
 > TODO: check if methods with identical names from different classes are allowed
 > TODO: change examples documentation (most are pre-vectorised versions)
