@@ -1,6 +1,3 @@
-library(jsonlite)
-library(httr)
-
 #' Check if the Firehose API is running
 #'
 #' The Firehose API is running if it returns the status condition 200; if
@@ -39,7 +36,7 @@ isFirehoseUp <- function() {
 #' @param sort_by String: column used to sort the data (by default, it sorts by
 #' cohort)
 #'
-#' @return
+#' @return Response from the Firehose API (it needs to be parsed)
 #' @export
 #'
 #' @examples

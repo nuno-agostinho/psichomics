@@ -5,11 +5,15 @@ Authors@R: person("Nuno", "Agostinho", email = "nunodanielagostinho@gmail.com", 
 Description: What the package does (one paragraph).
 Depends: 
     R (>= 3.2.2),
+    jsonlite,
+    httr,
     shiny
 License: What license is it under?
 LazyData: true
 RoxygenNote: 5.0.1
 Imports: fastmatch,
+    jsonlite,
+    httr,
     shiny
 Suggests: testthat,
     knitr,
