@@ -119,7 +119,7 @@ parseMisoEventID <- function(eventID, annotation, IDcolumn) {
 #     if (progress)
 #         pb <- txtProgressBar(min=1, max=length(firstIndex), style=3)
 #     
-#     res <- lapply(1:length(firstIndex), function(i, data) {
+#     res <- lapply(seq_along(firstIndex), function(i, data) {
 #         if (progress)
 #             setTxtProgressBar(pb, i)
 #         event <- data[firstIndex[i]:lastIndex[i], ]
@@ -187,7 +187,7 @@ getValidEvents <- function(events, validator, areMultipleExonsValid = FALSE) {
     
     # Get the elements composing each event as elements of a list
     diff <- next_index - index
-    groups <- unlist(lapply(1:length(diff), function(i, diff)
+    groups <- unlist(lapply(seq_along(diff), function(i, diff)
         rep.int(i, times = diff[i]), diff))
     splitElems <- split(elem, groups)
     
