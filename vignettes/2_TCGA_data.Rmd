@@ -1,18 +1,19 @@
 ---
-title: "Retrieving TCGA data"
+title: "TCGA data"
 author: "Nuno Agostinho"
 date: "28 January 2016"
 output: html_document
 ---
+
+# Retrieving TCGA data
 
 There are a lot of first-party and third-party ways of retrieving the data from
 TCGA (https://tcga-data.nci.nih.gov/tcga/). Let's jump on TCGA first!
 
 Note: TCGA holds controlled-access data which prompts for login credentials and
 that are off premises for regular users. We'll focus our attention on retrieving
-public data only.
+public data at the moment.
 
-# TCGA
 TCGA allows to retrieve data in a graphical manner using the following ways:
 
 * **Data Matrix** allows to select subsets of data based on criteria such as
@@ -36,16 +37,16 @@ for cross-linking data of different files)
 the graphical interface, e.g. it returns one file per sample)
 * **Data Reports** refers to metadata useful to cross-link the data between
 different files. These services include:
-    * **Sample Counts for TCGA Data Report**
-    * **Aliquot ID Breakdown Report**
-    * **Latest Archive Report**
-    * **Data Coordinating Center** to query project metadata such as center and
-    platform codes
-    * **Barcode-UUID Mapping** to query the mapping between TCGA barcodes and
-    their corresponding UUIDs. This web service is primarily used to facilitate 
-    the project-wide primary identifier transition from TCGA barcodes to UUID.
-    * **Biospecimen Metadata** to query TCGA's biospecimen metadata, as produced
-    by the Biospecimen Metadata Browser.
+* **Sample Counts for TCGA Data Report**
+* **Aliquot ID Breakdown Report**
+* **Latest Archive Report**
+* **Data Coordinating Center** to query project metadata such as center and
+platform codes
+* **Barcode-UUID Mapping** to query the mapping between TCGA barcodes and
+their corresponding UUIDs. This web service is primarily used to facilitate 
+the project-wide primary identifier transition from TCGA barcodes to UUID.
+* **Biospecimen Metadata** to query TCGA's biospecimen metadata, as produced
+by the Biospecimen Metadata Browser.
 
 However, note there are limitations on the connection to these web services:
 only one connection to the Data Matrix Web Service is allowed every 10 seconds 
@@ -53,13 +54,13 @@ and there's a limit of 1000 connections every 3 minutes to DDCWS, Annotations
 and UUID. Exceeding these quotas will cause the system to return *HTTP Status
 Code 413*.
 
-# [Firehose](http://gdac.broadinstitute.org)
+## [Firehose](http://gdac.broadinstitute.org)
 As stated in the website, "Born of the desire to systematize analyses from The 
 Cancer Genome Atlas pilot and scale their execution to the dozens of remaining 
 diseases to be studied, GDAC Firehose now sits atop ~55 terabytes of 
 analysis-ready TCGA data and reliably executes thousands of pipelines per month.
 
-## [Firebrowse](http://firebrowse.org) (currently in beta)
+### [Firebrowse](http://firebrowse.org) (currently in beta)
 Firebrowse purpose is to easily access the inputs and/or results of runs in
 Firehose. Luckily, they process the TCGA individual sample files into unique
 files with the information condensed, resulting in much less space occupied and
@@ -73,7 +74,7 @@ CRAN once Firebrowse goes out of beta). This is unfortunate since packages in
 Bioconductor/CRAN may not use packages outside these repositories (citation
 needed).
 
-### API
+#### API
 Anyway, let's just use the RESTful API. Easily enough, we can just use the
 built-in package `jsonlite` to parse a JSON response from a RESTful web service. 
 It's as easy as running
@@ -122,13 +123,115 @@ download.file(urls[[2]],
               destfile=paste0("~/Downloads/", "junction_quant.tar.gz.md5"))
 ```
 
-### File integrity
+#### File integrity
 Since all downloadable files contain an MD5 file that allows to check for file
 integrety, we can use the function `tools::md5sum` to check the MD5 hash of a
 file and check if it matches any MD5 hash inside the MD5 file. We even could do
 a name match but it's hard to match a random hash and only to check if the MD5
 value is in the file has a real high probability of being the same file.
 
-### Extracting the content
+#### Extracting the content
 All files come archived (as `.tar.gz`). Fortunately, it's easy to extract the
 content using `utils::untar("some_file.tar.gz")`.
+
+# Linking different Firehose/TCGA tables
+All the previous discussion resulted in the creation of the file `firehose.R`
+containing functions to query and parse the information from Firehose API, as
+well as functions to download files and check file integrity.
+
+Now, let's try to link the information provenient from different tables. Let's
+start by trying to cross-link the information from junction files and clinical
+data (the most important aspects of the project for now).
+
+```{r, message = FALSE, eval = FALSE}
+library(PSIcalc)
+if (isFirehoseUp()) {
+    # Let's get clinical data and mRNA-Seq files for Sarcoma (SARC)
+    resp <- queryFirehoseData(cohort = "SARC",
+                              data_type = c("Clinical", "mRNASeq"))
+    parsed <- fromJSON(content(resp, "text"))$StandardData
+    
+    # Let's see what's available...
+    split(parsed$tool, parsed$data_type)
+    
+    # The only thing we want for now from the mRNA-Seq file is the junction
+    # quantification data
+    index <- grep("junction_quantification", parsed$tool)
+    urls <- parsed$urls[[index]]
+    
+    # Regarding the clinical data, let's just download all information
+    # available
+    urls <- c(urls, unlist(subset(parsed, data_type == "Clinical")$urls))
+}
+```
+
+Some of the files have an "aux" and a "mage-tab" tags in the folders. I'm still 
+not sure what's their purpose... The
+[Firehose FAQ](https://confluence.broadinstitute.org/display/GDAC/FAQ) states:
+
+> Each pipeline we execute results in a set of 6 archive files being submitted 
+to the DCC: primary results in the Level_* archive; auxiliary data (e.g.
+debugging information) in the **aux** archive, tracking information in the
+**mage-tab** archive; and an MD5 checksum file for each. In most cases you will 
+only need the primary results in the Level_* archives.
+
+Well, let's ignore these files for now then.
+
+```{r, eval = FALSE}
+if (isFirehoseUp()) {
+    # Don't download aux and mage-tab files
+    urls <- urls[!grepl(".aux.", urls, fixed = TRUE)]
+    urls <- urls[!grepl(".mage-tab.", urls, fixed = TRUE)]
+    # Now download and extract the content of these files to ~/Downloads
+    files <- downloadFiles(urls, "~/Downloads")
+    # No need to decompress MD5 files (use them to check file integrity later)
+    files <- files[!grepl(".md5", files, fixed = TRUE)]
+    for (each in files)
+        untar(each, exdir = dirname(each))
+    # Finally, clean the originally compressed files
+    file.remove(files)
+}
+```
+
+
+Okay, now let's load the downloaded files.
+```{r}
+# Read files in a folder
+readFiles <- function(base, folder, ...) {
+    location <- file.path(base, folder)
+    files <- lapply(dir(location, full.names = TRUE),
+                    readr::read_tsv, ...)
+    # name each item with the basename of interest
+    names(files) <- rep(basename(location), length(files))
+    return(files)
+}
+
+base <- "~/Downloads"
+clinical_pick <- readFiles(
+    base,
+    "gdac.broadinstitute.org_SARC.Clinical_Pick_Tier1.Level_4.2015110100.0.0/")
+
+merge_clinical <- readFiles(
+    base,
+    "gdac.broadinstitute.org_SARC.Merge_Clinical.Level_1.2015110100.0.0/")
+
+junction_quantification <- readFiles(base, "gdac.broadinstitute.org_SARC.Merge_rnaseqv2__illuminahiseq_rnaseqv2__unc_edu__Level_3__junction_quantification__data.Level_3.2015110100.0.0/")
+
+# Let's check if all junction quantification identifiers are found in the clinical data tables
+nn <- tolower(names(junction_quantification[[2]])[-1])
+row.names(merge_clinical[[2]]) <- merge_clinical[[2]][[1]]
+rows <- row.names(merge_clinical[[2]])
+aliq_barcode <- grep("bcr_aliquot_barcode", rows)
+
+library(fastmatch)
+s <- sapply(nn,
+            function(k) {
+                data <- merge_clinical[[2]][aliq_barcode, ]
+                print (k)
+                i <- grep(k, data)
+                a <- grep(k, data[[i]])
+                return(a)
+            })
+```
+
+> TODO: find how to match clinical data with junction quantification data
