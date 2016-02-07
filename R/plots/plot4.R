@@ -16,7 +16,7 @@ ui <- list(
 
 server <- function(input, output, session) {
     output[[name]] <- renderPlot(
-        ggplot(data=h, aes(Region, Life.Expectancy)) +
+        ggplot(data=mtcars, aes(gears, carb)) +
             geom_bar(stat = "identity", colour = input$colours)
     )
 }

@@ -23,10 +23,13 @@ server <- function(input, output, session) {
     
     output$chosenUI <- renderUI({
         # if no option is avaliable, this section is not shown
-        validate( need(input$selectizePlot, "No plots are available.") )
-        # each UI set is loaded depending on the value of selectizePlot
-        # WARNING: each script needs a unique name
-        for (env in envs)
-            if (input$selectizePlot == env$name) return(env$ui)
+        print(input$selectizePlot)
+        # validate( need(input$selectizePlot, "No plots are available.") )
+        if (!is.null(input$selectizePlot)) {
+            # each UI set is loaded depending on the value of selectizePlot
+            # WARNING: each script needs a unique name
+            for (env in envs)
+                if (input$selectizePlot == env$name) return(env$ui)
+        }
     })
 }

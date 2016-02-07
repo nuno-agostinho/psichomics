@@ -6,10 +6,10 @@ ui <- list(
         sidebarPanel(
             selectizeInput("x",
                            "Pick x axis",
-                           choices = names(h)),
+                           choices = names(mtcars)),
             selectizeInput("y",
                            "Pick y axis",
-                           choices = names(h))
+                           choices = names(mtcars))
         ), 
         mainPanel( plotOutput(name) )
     )
@@ -17,6 +17,7 @@ ui <- list(
 
 server <- function(input, output, session) {
     output[[name]] <- renderPlot({
-        ggplot(data=h, aes_string(input$x, input$y)) + geom_bin2d()
+        ggplot(data=mtcars, aes_string("mpg", "cyl")) + geom_bin2d()
+               #aes_string(input$x, input$y)) + geom_bin2d()
     })
 }
