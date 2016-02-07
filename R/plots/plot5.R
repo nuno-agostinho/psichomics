@@ -5,6 +5,6 @@ ui <- plotOutput(name)
 
 server <- function(input, output, session) {
     output[[name]] <- renderPlot(
-        ggplot(data=h, aes(Region, Life.Expectancy)) + geom_dotplot()
+        ggplot(data=mtcars, aes(gear, carb)) + geom_dotplot()
     )
 }
