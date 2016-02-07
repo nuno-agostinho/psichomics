@@ -148,7 +148,7 @@ getFirehoseCohorts <- function(cohort = NULL) {
 #' downloadFiles(urls, "~/Pictures", quiet = TRUE)
 downloadFiles <- function(urls, folder, ...) {
     destination <- file.path(folder, basename(urls))
-    for (i in 1:length(urls))
+    for (i in seq_along(urls))
         download.file(urls[i], destination[i], ...)
     return(destination)
 }
