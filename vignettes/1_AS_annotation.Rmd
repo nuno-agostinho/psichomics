@@ -17,10 +17,11 @@ alternative splicing events studied in this report are:
 It's also important to understand that the splicing events annotation may vary
 according to the splicing event type. The most common splicing event types
 annotated across the aforementioned programs are described in the following
-image (retrieved from the
-[SUPPA website](https://bitbucket.org/regulatorygenomicsupf/suppa)).
+image (adapted image from the
+[SUPPA website](https://bitbucket.org/regulatorygenomicsupf/suppa)). One event
+type that is missing from the image is the **Tandem UTR**.
 
-![Splicing event types](https://bitbucket-assetroot.s3.amazonaws.com/repository/4gEBMd/2185438774-Slide1.jpg?Signature=a%2Bb%2FZ7ElgJAgUqweGpPNSP%2FPP0Y%3D&Expires=1452974150&AWSAccessKeyId=AKIAIWY5XSVPZPDQYRQQ)
+![Splicing event types](http://i.imgur.com/NaRrwji.jpg)
 
 To conciliate the output from the different programs, it was decided to parse
 each splicing event ID to a R data type known as list with all the important
@@ -57,14 +58,15 @@ Alternative first exon     | •        | •      | •        | •      |    
 Alternative last exon      |          | •      | •        | •      |          |        | •        | •      | 
 Tandem UTR                 |          |        |          |        |          | •      | •        | •      | 
 
-Before my thinking was like:
+Before, I though something along the lines of:
+
 > Note there are two glyphs in some cases. That means two alternative positions
 are stored (for example, in the case of the alternative 5' splice site, the C1
 end can alternatively be one of the two positions; same goes for the alt. 3'
 splice site's C2 start and for the C2 end's tandem UTR).
 
 Scratch that. It's way harder to put and manage lists inside data frames then
-what I thought before. Now those cases have separate coordinates for the
+I figured. Now those cases have separate coordinates for the
 alternative start/end positions. The alt. 5' splice site alternative junctions
 are reported by C1 end and A1 end; the alt. 3' splice site alternative
 junctions are reported by C2 start and A1 start; the Tandem UTR alternative
@@ -77,15 +79,17 @@ the same problem and how to measure performance on R. You can read about it
 in the article [Measuring performance](Measuring performance.Rmd).
 
 > Another thing to consider is whether we should be using a list, an object or a
-> data frame to store the information pertaining to each event. I'll try to create
-> a list at first but maybe it would be better to have a class for events. This
-> way, the attributes would be much clearer to others. But really, would it be
-> that different if we take into account that the documentation explains the data
-> structure anyway? And is there any impact in the performance of the same script
-> using objects instead of lists? Besides, data frames are the natural way to
-> manipulate information in R. We'll see which is better.
+data frame to store the information pertaining to each event.
 
-Data frames are better in terms of performance :)
+Procedure: I'll try to create a list at first but maybe it would be better to
+have a class for events. This way, the attributes would be much clearer to
+others. But really, would it be that different if we take into account that the
+documentation explains the data structure anyway? And is there any impact in the
+performance of the same script using objects instead of lists? Besides, data 
+frames are the natural way to manipulate information in R. We'll see which is
+better.
+
+Answer: Data frames are better in terms of performance. :)
 
 # Retrieving and parsing alternative splicing annotation
 To get the most complete annotation of alternative splicing events, we'll
@@ -112,6 +116,8 @@ is contained in a file with the respective acronym shown in parenthesis.
 
 Here follows an example of an AS annotation file used in MISO:
 
+Chr | Event type | Element | Start | End | . | Strand | . | Attributes
+-----|----|------|-------|-------|---|---|---|-------
 chr1 | SE | gene | 16854 | 18061 | . | - | . | ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-;Name=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-
 chr1 | SE | mRNA | 16854 | 18061 | . | - | . | ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A;Parent=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-
 chr1 | SE | exon | 16854 | 17055 | . | - | . | ID=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A.dn;Parent=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-.A;gid=chr1:7778:7924:-\@chr1:7096:7605:-\@chr1:6717:6918:-
@@ -232,7 +238,7 @@ types_file <- sprintf(
 mats.hg19 <- lapply(types_file, read.delim, stringsAsFactors = FALSE,
                     comment.char="#", header=TRUE)
 
-matsEvents <- lapply(1:length(mats.hg19),
+matsEvents <- lapply(seq_along(mats.hg19),
                      function(i) {
                          type <- rep(types, 2)[i]
                          annotation <- mats.hg19[[i]]
@@ -298,7 +304,7 @@ types_file <- sprintf(
 vastTools.hg19 <- lapply(types_file, read.delim, stringsAsFactors = FALSE,
                          comment.char="#", header=TRUE)
 
-vastToolsEvents <- lapply(1:length(vastTools.hg19),
+vastToolsEvents <- lapply(seq_along(vastTools.hg19),
                           function(i) {
                               type <- types[i]
                               print(type)
@@ -399,7 +405,7 @@ Let's try something like...
 ```{r, eval=F}
 gene <- which(miso.hg19$V3 == "gene")
 diff <- c(gene, nrow(miso.hg19) + 1)[2:(length(gene)+1)] - gene
-groups <- unlist(sapply(1:length(diff), function(i) rep(i, c[i])))
+groups <- unlist(sapply(seq_along(diff), function(i) rep(i, c[i])))
 
 microbenchmark(miso.split <- split(miso.hg19, groups), times = 1) # 162 seconds
 ```
@@ -419,13 +425,13 @@ miso.hg19 <- lapply(types,
                                    stringsAsFactors = FALSE)[1:8]
                     })
 
-misoEvents <- lapply(1:length(miso.hg19),
+misoEvents <- lapply(seq_along(miso.hg19),
                      function(x) {
                          print(types[x])
                          read <- miso.hg19[[x]]
                          gene <- which(read$V3 == "gene")
                          diff <- c(gene, nrow(read) + 1)[2:(length(gene)+1)] - gene
-                         groups <- unlist(sapply(1:length(diff),
+                         groups <- unlist(sapply(seq_along(diff),
                                                  function(i) rep(i, diff[i])))
                          a <- split(read, groups)
                      })
@@ -442,7 +448,7 @@ test1 <- function() {
                        stringsAsFactors = FALSE)                            # nrow:   13280
     gene <- which(read$V3 == "gene")                                        # length:  2656
     diff <- c(gene, nrow(read) + 1)[2:(length(gene)+1)] - gene              # length:  2656
-    groups <- unlist(sapply(1:length(diff), function(i) rep(i, diff[i])))   # length: 13280
+    groups <- unlist(sapply(seq_along(diff), function(i) rep(i, diff[i])))   # length: 13280
     res <- split(read, groups)
 }
 
@@ -452,7 +458,7 @@ test2 <- function() {
     read <- read[2:length(read)]                                            # length: 13280
     gene <- grep("\tgene\t", g, fixed = T)                                  # length:  2656
     diff <- c(gene, length(read) + 1)[2:(length(gene)+1)] - gene            # length:  2656
-    groups <- unlist(sapply(1:length(diff), function(i) rep(i, diff[i])))   
+    groups <- unlist(sapply(seq_along(diff), function(i) rep(i, diff[i])))   
     groups <- c(groups, tail(groups, 1))                                    # length: 13280
     read <- read.table(text = read)
     res <- split(read, groups)
@@ -464,7 +470,7 @@ test3 <- function() {
     read <- read[2:length(read)]                                            # length: 13280
     gene <- grep("\tgene\t", g, fixed = T)                                  # length:  2656
     diff <- c(gene, length(read) + 1)[2:(length(gene)+1)] - gene            # length:  2656
-    groups <- unlist(sapply(1:length(diff), function(i) rep(i, diff[i])))   
+    groups <- unlist(sapply(seq_along(diff), function(i) rep(i, diff[i])))   
     groups <- c(groups, tail(groups, 1))                                    # length: 13280
     res <- split(read, groups)
     res <- lapply(res, function(i) read.table(text =i))
@@ -485,7 +491,7 @@ read <- read.delim(file, header=FALSE, comment.char="#",
                    stringsAsFactors = FALSE)
 gene <- which(read$V3 == "gene")                                    
 diff <- c(gene, nrow(read) + 1)[2:(length(gene)+1)] - gene           
-groups <- unlist(sapply(1:length(diff), function(i) rep(i, diff[i])))
+groups <- unlist(sapply(seq_along(diff), function(i) rep(i, diff[i])))
 
 library(microbenchmark)
 res <- microbenchmark(times=1,
@@ -511,7 +517,7 @@ read <- read.delim(file, header=FALSE, comment.char="#",
 gene <- which(read$V3 == "gene")
 next_gene <- c(gene, nrow(read) + 1)[2:(length(gene)+1)]
 diff <- next_gene - gene           
-groups <- unlist(sapply(1:length(diff), function(i) rep(i, diff[i])))
+groups <- unlist(sapply(seq_along(diff), function(i) rep(i, diff[i])))
 
 library(data.table)
 dt <- data.table(read)
@@ -537,7 +543,7 @@ gene <- which(read$V3 == "gene")                           # length:  2656
 diff <- c(gene, nrow(read) + 1)[2:(length(gene)+1)] - gene # length:  2656
 
 pb <- txtProgressBar(min = 1, max = length(gene), style = 3)
-res <- lapply(1:length(gene), function(i) {
+res <- lapply(seq_along(gene), function(i) {
     setTxtProgressBar(pb, i)
     read[gene[i]:diff[i], ]
 })
@@ -546,7 +552,7 @@ res <- lapply(1:length(gene), function(i) {
 # it takes 4 seconds so it's 1 second faster
 library(data.table)
 read <- data.table(read)
-res <- lapply(1:length(gene), function(i) {
+res <- lapply(seq_along(gene), function(i) {
     setTxtProgressBar(pb, i)
     read[gene[i]:diff[i]]
 })
@@ -685,8 +691,8 @@ suppa <- which(nas[ , 3])
 vast <- which(nas[ , 4])
 
 es <- list(mats = mats, miso = miso, suppa = suppa, vast = vast)
-for (e1 in 1:length(es)) {
-    for (e2 in 1:length(es)) {
+for (e1 in seq_along(es)) {
+    for (e2 in seq_along(es)) {
         print(paste(names(es)[[e1]], names(es)[[e2]]))
         print(length(intersect(es[[e1]], es[[e2]])))
     }
@@ -720,7 +726,7 @@ junctions <- cbind(junctions.files[[1]]$raw_counts,
 row.names(junctions) <- junctionsID
 ```
 
-All right! Now let's search for pairs!
+All right! Now let's search for pairs (only in skipping exon events, for now)!
 ```{r TCGA/events match, eval=FALSE}
 chr <- joint$SE$Chromosome
 strand <- joint$SE$Strand
@@ -751,3 +757,7 @@ nrow(psi[complete.cases(psi), ])
 Only a few paired, it seems. We got the inclusion levels of 16711 out of 271998
 skipping exon events. My PI says that is quite all right but I was expecting for
 a number a bit higher.
+
+To learn about data retrieval from TCGA, head to the vignette `TCGA data.Rmd`.
+It also discusses how to integrate the different types of data available, like
+cross-linking clinical data with sequentiation files.
