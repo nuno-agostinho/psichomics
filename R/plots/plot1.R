@@ -17,7 +17,7 @@ ui <- list(
 
 server <- function(input, output, session) {
     output[[name]] <- renderPlot({
-        ggplot(data=mtcars, aes_string("mpg", "cyl")) + geom_bin2d()
+        ggplot(data=mtcars, aes_string(input$x, input$y)) + geom_bin2d()
                #aes_string(input$x, input$y)) + geom_bin2d()
     })
 }
