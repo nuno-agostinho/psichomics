@@ -102,7 +102,11 @@ benchmark(
 )
 ```
 
-# Comparing apply functions
+# Some comparisons
+
+This section is dedicated to the comparison of functions of interest.
+
+## Comparing apply functions
 
 > TODO: compare apply, by, eapply, lapply, mapply, rapply, tapply, vapply
 
@@ -129,7 +133,7 @@ res <- microbenchmark(
 autoplot(res)
 ```
 
-# Comparing comparison methods
+## Comparing comparison methods
 
 ```{r comparison}
 validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 2))
@@ -146,7 +150,7 @@ res <- microbenchmark(
 autoplot(res)
 ```
 
-# Faster subsetting
+## Faster subsetting
 ```{r}
 set.seed(1)  # for reproducible example
 df <- data.frame(age=sample(1:65, 1e6, replace=TRUE), x=rnorm(1e6), y=rpois(1e6,25))
