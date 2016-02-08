@@ -3,7 +3,7 @@ library(shinyBS)
 library(ggplot2)
 
 # Global variable with all the data inside combos!
-data <- reactiveValues(combos = list())
+shared.data <- reactiveValues(combos = list())
 
 # TODO(NunoA): increase allowed size and warn the user to wait for large files
 # Refuse files with size greater than the specified
