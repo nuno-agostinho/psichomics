@@ -319,6 +319,7 @@ nrow(vastToolsEvents)
 sapply(c("SE", "A5SS", "A3SS", "RI"), function(type)
     sum(vastToolsEvents$Event.type == type))
 rm(types, types_file)
+
 # all event types:    444455
 # skipped exons:      241116
 # alt. first exons:        0
@@ -613,17 +614,9 @@ id <- names(events)
 
 # Now, for each event type, get the matching indexes based on the common attributes of each event type
 
-#' a <- fullJoinTables(events$SE,
-#'     c("Strand", "C1.end", "A1.end", "A1.start"), c(F,T,T,T))
 fullJoinTables <- function(tables, by = NULL, toNumeric = FALSE) {
-    joined <- getNumerics(tables[[1]], by, toNumeric)
-    # Only join tables if there are more than one
-    if (length(tables) > 1) {
-        for (i in 2:length(tables)) {
-            table <- getNumerics(tables[[i]], by, toNumeric)
-            joined <- full_join(joined, table, by)
-        }
-    }
+    tables <- lapply(tables, getNumerics, by, toNumeric)
+    joined <- Reduce(function(x, y) full_join(x, y, by), tables)
     return(joined)
 }
 
@@ -691,12 +684,12 @@ suppa <- which(nas[ , 3])
 vast <- which(nas[ , 4])
 
 es <- list(mats = mats, miso = miso, suppa = suppa, vast = vast)
-for (e1 in seq_along(es)) {
-    for (e2 in seq_along(es)) {
-        print(paste(names(es)[[e1]], names(es)[[e2]]))
-        print(length(intersect(es[[e1]], es[[e2]])))
-    }
-}
+p <- data.frame()
+for (e1 in seq_along(es))
+    for (e2 in seq_along(es))
+        p[e1, e2] <- length(intersect(es[[e1]], es[[e2]]))
+names(p) <- names(es)
+rownames(p) <- names(es)
 ```
 
 # Getting TCGA's read counts for the annotated splicing junctions
