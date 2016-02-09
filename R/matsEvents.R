@@ -63,6 +63,17 @@ parseMatsEvent <- function(event, event_type) {
     }
 }
 
+# parseMatsGeneric <- function(junctions, strand, coords, plus_pos, minus_pos) {
+#     # Creates a data frame of parsed junctions filled with NAs
+#     parsed <- createJunctionsTemplate(nrow(junctions))
+#     
+#     plus <- strand == "+"
+#     parsed[plus, coords] <- junctions[plus, plus_pos]       # Plus strand
+#     parsed[!plus, coords] <- junctions[!plus, minus_pos]    # Minus strand
+#     return(parsed)
+# }
+
+
 #' Parse junctions of an alternative splicing event from MATS according to event 
 #' type
 #'
