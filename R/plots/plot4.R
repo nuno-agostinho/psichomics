@@ -15,8 +15,12 @@ ui <- list(
 )
 
 server <- function(input, output, session) {
-    output[[name]] <- renderPlot(
-        ggplot(data=mtcars, aes(gears, carb)) +
-            geom_bar(stat = "identity", colour = input$colours)
-    )
+    output[[name]] <- renderPlot({
+        f <- rep(NA, nrow(mtcars))
+        f[match(input$selectizeEvent, rownames(mtcars))] <- "color"
+        ggplot(mtcars, aes(x = rownames(mtcars), y = hp, fill = f)) + 
+            geom_bar(stat = "identity",
+                     colour = input$colours,
+                     show.legend = FALSE)
+    })
 }
