@@ -66,17 +66,21 @@ tabs.ui <- Filter(Negate(is.null), tabs.ui)
 
 ui <- shinyUI(
     do.call(navbarPage, append(
-        list(
-            title = "spliced canceR", id = "nav",
-            collapsible = TRUE, position = "fixed-top",
-            header = list(
-                # Avoids fixed-top navbar from obscuring content
-                tags$style(type = "text/css",
-                           "body {padding-top: 70px;}"),
-                # Alert appears fixed on the right at the top of other elements
-                tags$style(type = "text/css",
-                           ".sbs-alert {position: fixed; right: 10px; z-index:9;}")
-            )
+        list(title = "spliced canceR", id = "nav",
+             collapsible = TRUE, position = "fixed-top",
+             header = list(
+                 useShinyjs(),
+                 # Avoids fixed-top navbar from obscuring content
+                 tags$style(type = "text/css",
+                            "body {padding-top: 70px;}"),
+                 # Alert appears fixed on the top right above other elements
+                 tags$style(type = "text/css", ".sbs-alert{
+                                                   position:fixed;
+                                                   right:10px;
+                                                   z-index:9;
+                                                   -webkit-filter: opacity(80%);
+                                                   filter: opacity(80%); }")
+             )
         ),
         # Loads the interface for each tab
         lapply(tabs.ui, do.call, list())
