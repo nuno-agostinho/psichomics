@@ -9,7 +9,8 @@ ui <- list(
                            choices = names(mtcars)),
             selectizeInput("y",
                            "Pick y axis",
-                           choices = names(mtcars))
+                           choices = names(mtcars)),
+            shiny::actionButton("change", "Change to plot2")
         ), 
         mainPanel( plotOutput(name) )
     )
@@ -19,5 +20,9 @@ server <- function(input, output, session) {
     output[[name]] <- renderPlot({
         ggplot(data=mtcars, aes_string(input$x, input$y)) + geom_bin2d()
                #aes_string(input$x, input$y)) + geom_bin2d()
+    })
+    
+    observeEvent(input$change, {
+        updateSelectizeInput(session, "selectizePlot", selected = "plot2")
     })
 }
