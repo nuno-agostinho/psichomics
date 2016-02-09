@@ -2,34 +2,42 @@ name <- "Plots"
 
 ui <- function()
     tabPanel(name,
-             uiOutput("selectUI"),
-             uiOutput("chosenUI"))
+             # allows the user to choose which UI set is shown
+             fluidRow(
+                 shiny::column(
+                     2, selectizeInput("selectizePlot", "Select plot type:",
+                                       choices = NULL,
+                                       options = list(
+                                           placeholder = "Select a plot type"))),
+                 shiny::column(
+                     2, selectizeInput("selectizeEvent", "Select event:",
+                                       choices = sort(rownames(mtcars)),
+                                       options = list(
+                                           placeholder = "Select an event")))),
+             lapply(plotEnvs, function(env) {
+                 conditionalPanel(
+                     condition = sprintf("input.selectizePlot=='%s'", env$name),
+                     env$ui)
+             }))
+
+# loads valid scripts from the indicated folder
+plotEnvs <- loadScripts(folder = paste0(tabsFolder, "plots/"),
+                        vars = c("name", "ui"))
+plotEnvs.server <- lapply(plotEnvs, "[[", "server")
+# get name of the loaded scripts
+names <- sapply(plotEnvs, "[[", "name")
 
 server <- function(input, output, session) {
-    # loads valid scripts from the indicated folder
-    envs <- loadScripts(folder = paste0(tabsFolder, "plots/"),
-                        vars = c("name", "ui"))
-    envs.server <- lapply(envs, "[[", "server")
-    lapply(envs.server, do.call, list(input, output, session))
+    # Runs server logic from the scripts
+    lapply(plotEnvs.server, do.call, list(input, output, session))
+    # Updates selectize input to show available plots
+    updateSelectizeInput(session, "selectizePlot", choices = names)
     
-    output$selectUI <- renderUI({
-        # get name of the loaded scripts
-        names <- sapply(envs, "[[", "name")
-        
-        # allows the user to choose which UI set is shown
-        selectizeInput("selectizePlot", "Select plot type:", choices = names,
-                       options = list(placeholder = "Select a plot type"))
-    })
-    
-    output$chosenUI <- renderUI({
-        # if no option is avaliable, this section is not shown
-        print(input$selectizePlot)
-        # validate( need(input$selectizePlot, "No plots are available.") )
-        if (!is.null(input$selectizePlot)) {
-            # each UI set is loaded depending on the value of selectizePlot
-            # WARNING: each script needs a unique name
-            for (env in envs)
-                if (input$selectizePlot == env$name) return(env$ui)
-        }
+    observe({
+        # Hide selectizeEvent when showing datatable; in other cases, show it
+        events <- function(f) f("selectizeEvent",
+                                anim = TRUE, animType = "fade")
+        if(input$selectizePlot == "datatable") events(hide)
+        else events(show)
     })
 }
