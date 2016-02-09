@@ -134,7 +134,7 @@ getFirehoseCohorts <- function(cohort = NULL) {
 #' Download files to a given directory
 #'
 #' @param urls Chareacter: download links
-#' @param folder Character: directory to store the downloaded files
+#' @param folder Character: directory to store the downloaded archives
 #' @param ... Extra parameters passed to the function download.file
 #'
 #' @return Invisible TRUE if every file was successfully downloaded
