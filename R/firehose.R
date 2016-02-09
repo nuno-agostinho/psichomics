@@ -167,3 +167,44 @@ checkIntegrity <- function(filesToCheck, md5file) {
     md5table <- read.table(md5file, stringsAsFactors = FALSE)[[1]]
     return(md5sums %in% md5table)
 }
+
+#' Downloads and processes data from the Firehose API and loads it into R
+#' 
+#' @param folder Character: directory to store the downloaded archives (by
+#' default, it saves in the user's "Downloads" folder)
+#' @param ... Extra parameters to be passed to \code{\link{queryFirehoseData}}
+#' 
+#' @export
+#' @examples 
+#' loadFirehoseData
+loadFirehoseData <- function(folder = "~/Downloads", ...) {
+    ## TODO(NunoA): Check if the default folder works in Windows
+    # Query Firehose with the user query
+    res <- queryFirehoseData(...)
+    stop_for_status(res)
+    
+    # Parse the query
+    res <- fromJSON(content(res, "text"))[[1]]
+    id <- paste(res$cohort, res$data_type, res$protocol)
+    urls <- res$urls
+    names(urls) <- id
+    
+    # Download the appropriate archives into a specific location
+    archives <- downloadFiles(unlist(urls), folder)
+    
+    # Check integrety of the downloaded archives
+    filesOfInterest <- archives[tools::file_ext(archives) != "md5"]
+    print(filesOfInterest)
+    return(filesOfInterest)
+    filesAreValid <- all(
+        vapply(filesOfInterest,
+               function(i) checkIntegrity(i, paste0(i, ".md5")),
+               logical(1)))
+    
+    if (filesAreValid){
+        print(filesOfInterest)
+        # Extract the contents of the archives
+        # Remove the original archives
+        # Load the files into R using readr (faster and shows progress)
+    } else stop("Error: files are not valid according to the MD5 hashes.")
+}
