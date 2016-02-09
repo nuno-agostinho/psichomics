@@ -9,7 +9,7 @@ downloadFiles(urls, folder, ...)
 \arguments{
 \item{urls}{Chareacter: download links}
 
-\item{folder}{Character: directory to store the downloaded files}
+\item{folder}{Character: directory to store the downloaded archives}
 
 \item{...}{Extra parameters passed to the function download.file}
 }
