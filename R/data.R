@@ -32,6 +32,7 @@ ui <- function() {
                 h3("File input"),
                 shinyBS::bsCollapse(
                     id = "addFiles",
+                    open = "Add file",
                     addFileCollapse(1)
                     # addFileCollapse(2)
                 )
