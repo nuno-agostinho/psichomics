@@ -171,3 +171,11 @@ However, we can't use data table instead of data frame without modifying the
 source code. To get a column from a data table, we need to either get it by its
 name like ```dt[ , V3]``` or by its index with an added argument 
 ```dt[ , 3, with=FALSE]```.
+
+## Comparing a sequence of numbers from 1 to y
+```{r}
+up <- sample(10**10)
+res <- microbenchmark(1:length(up),
+                      seq_along(up))
+autoplot(res)
+```
