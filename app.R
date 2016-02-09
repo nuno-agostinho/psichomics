@@ -1,5 +1,6 @@
 library(shiny)
 library(shinyBS)
+library(shinyjs)
 library(ggplot2)
 
 # Global variable with all the data inside combos!
