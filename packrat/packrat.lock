@@ -22,12 +22,6 @@ Source: CRAN
 Version: 0.3.1
 Hash: 096699d1ac1cf530acfc646a0c90ee5d
 
-Package: DT
-Source: CRAN
-Version: 0.1
-Hash: 66d3d04d40c505e567c1328eae0409ee
-Requires: htmltools, htmlwidgets, magrittr
-
 Package: FirebrowseR
 Source: github
 Version: 0.2.21
@@ -497,6 +491,12 @@ Source: CRAN
 Version: 0.61
 Hash: 4644935bd93e62a0b82686b26af7efc2
 Requires: htmltools, shiny
+
+Package: shinyjs
+Source: CRAN
+Version: 0.4.0
+Hash: d8c48d8f86be1c442b27e493ab3521c9
+Requires: digest, htmltools, shiny
 
 Package: statmod
 Source: CRAN
