@@ -50,6 +50,12 @@ ui <- function() {
 #' 
 #' @return Part of the server logic related to this tab
 server <- function(input, output, session){
+    observe({
+        # The button is only enabled if it meets the conditions that follow
+        toggleState("acceptFile1",
+                    input$species != "")
+    })
+    
     observeEvent(input$acceptFile1, {
         #         output$testing <- renderUI({
         #             list(
