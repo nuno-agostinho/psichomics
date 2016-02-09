@@ -1,0 +1,15 @@
+---
+title: "User Interface"
+author: "Nuno Agostinho"
+date: "28 January 2016"
+output: html_document
+---
+
+# Conditional panels VS renderUI
+
+It seems that renderUI has a problem that conditionalPanel do not: when trying
+to reload the same code, renderUI reloads everything, not loading any previous
+state from the user. On the other hand, conditionalPanel does save and restores
+the objects state when reloading the same section. The only drawback to
+conditionalPanel is that it the condition must be a JavaScript expression while
+renderUI is all in R.
