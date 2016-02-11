@@ -9,8 +9,6 @@ parseSuppaEvent(event)
 \arguments{
 \item{event}{Character vector: Splicing event attributes and junction
 positions}
-
-\item{event_type}{Character: Alternative splicing event type (see details)}
 }
 \value{
 List with the event attributes (chromosome, strand, event type and

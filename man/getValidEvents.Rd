@@ -2,29 +2,23 @@
 % Please edit documentation in R/misoEvents.R
 \name{getValidEvents}
 \alias{getValidEvents}
-\title{Parses multiple alternative splicing events from MISO}
+\title{Filters the events with valid elements according to the given validator}
 \usage{
 getValidEvents(events, validator, areMultipleExonsValid = FALSE)
 }
 \arguments{
-\item{events}{Data.frame containing one or more events with at least 7
-columns as  retrieved from the alternative splicing annotation files from
-MISO (GFF3 files)}
+\item{events}{Data.frame: events annotation from MISO}
 
 \item{validator}{Character: valid elements for each event}
 
 \item{areMultipleExonsValid}{Boolean: consider runs of exons as valid when
 comparing with the validator? Default is FALSE (see details)}
-
-\item{progress}{Boolean: show progress?}
-
-\item{events}{Data.frame: events annotation from MISO}
 }
 \value{
 Data.frame with valid events
 }
 \description{
-Expects the annotation for many events at once and parses each event.
+Filters the events with valid elements according to the given validator
 }
 \details{
 \code{areMultipleExonsValid} allows to consider runs of exons (i.e. 
@@ -36,29 +30,26 @@ considerate events as valid if they have the exact same elements. If
 elements \code{c("gene", "mRNA", "exon", "exon", "exon")}.
 }
 \examples{
-# example of alternative splicing events: skipped exon (SE)
-events <- read.table(text = "
-  chr1 SE gene 16854	18061	. - .
-  chr1 SE mRNA 16854 18061 . - .
-  chr1 SE exon 16854 17055 . - .
-  chr1 SE exon 17233 17742 . - .
-  chr1 SE exon 17915 18061 . - .
-  chr1 SE mRNA 16854 18061 . - .
-  chr1 SE exon 16854 17955 . - .
-  chr1 SE exon 17915 18061 . - .
-  chr2 SE gene 6854 8061	. + .
-  chr2 SE mRNA 6854 8061 . + .
-  chr2 SE exon 6854 7055 . + .
-  chr2 SE exon 7233 7742 . + .
-  chr2 SE exon 7915 8061 . + .
-  chr2 SE mRNA 6854 8061 . + .
-  chr2 SE exon 6854 7955 . + .
-  chr2 SE exon 7915 8061 . + .")
-parseMultipleMisoEvents(events)
-Filters the events with valid elements according to the given validator
-
-}
-\seealso{
-\code{\link{parseMisoEvent}}
+event <- read.table(text = "
+ chr1 SE gene 17233 18061  .  -  .
+ chr1 SE dkfd 00000 30000  .  -  .
+ chr1 SE mRNA 17233 18061  .  -  .
+ chr1 SE exon 17233 17368  .  -  .
+ chr1 SE exon 17526 17742  .  -  .
+ chr1 SE exon 17915 18061  .  -  .
+ chr1 SE mRNA 17233 18061  .  -  .
+ chr1 SE exon 17233 17368  .  -  .
+ chr1 SE exon 17915 18061  .  -  .
+ chr1 SE gene 17233 18061  .  -  .
+ chr1 SE mRNA 17233 18061  .  -  .
+ chr1 SE exon 17233 17368  .  -  .
+ chr1 SE exon 17606 17742  .  -  .
+ chr1 SE exon 17915 18061  .  -  .
+ chr1 SE mRNA 17233 18061  .  -  .
+ chr1 SE exon 17233 17368  .  -  .
+ chr1 SE exon 17915 18061  .  -  .
+")
+validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 2))
+getValidEvents(event, validator)
 }
 
