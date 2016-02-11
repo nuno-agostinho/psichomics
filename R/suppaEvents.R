@@ -1,3 +1,6 @@
+#' @import stringr
+NULL
+
 #' Parses splicing events of a specific event type from SUPPA
 #'
 #' @details More information about SUPPA available at
@@ -29,7 +32,7 @@
 #' parseSuppaEvent(event)
 parseSuppaEvent <- function(event) {
     # Split event ID by semicolon and colon symbols
-    event <- stringr::str_split_fixed(event, pattern = ";|:|-", n = 12)
+    event <- str_split_fixed(event, pattern = ";|:|-", n = 12)
     event <- data.frame(event, stringsAsFactors = FALSE)
     
     # Create list with event attributes

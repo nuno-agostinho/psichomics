@@ -1,3 +1,7 @@
+#' @import httr
+#' @importFrom jsonlite fromJSON
+NULL
+
 #' Check if the Firehose API is running
 #'
 #' The Firehose API is running if it returns the status condition 200; if

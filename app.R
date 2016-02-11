@@ -1,7 +1,4 @@
-library(shiny)
-library(shinyBS)
-library(shinyjs)
-library(ggplot2)
+#' @import shiny shinyBS shinyjs ggplot2
 
 # Global variable with all the data inside combos!
 shared.data <- reactiveValues(combos = list())

@@ -1,3 +1,4 @@
+#' @import shiny shinyBS shinyjs
 name <- "Data"
 
 #' Creates a collapsible UI set with options to add a file from the local
