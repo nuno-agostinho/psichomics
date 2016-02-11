@@ -68,16 +68,16 @@ setMethod("inclusion.levels", "Organism", function(object)
 #' Sets the inclusion levels of an organism
 #'
 #' @param object Organism
-#' @param inclusion.levels Data.frame
+#' @param value Data.frame
 #' @export
 #'
 #' @examples
 #' org <- new("Organism")
 #' inclusion.levels(org) <- data.frame(1,2,3)
-setGeneric("inclusion.levels<-", function(object, inclusion.levels)
+setGeneric("inclusion.levels<-", function(object, value)
     standardGeneric("inclusion.levels<-"))
 
 #' @rdname inclusion.levels-set
 setReplaceMethod("inclusion.levels", "Organism",
-                 function(object, inclusion.levels)
-                     initialize(object, inclusion.levels = inclusion.levels))
+                 function(object, value)
+                     initialize(object, inclusion.levels = value))
