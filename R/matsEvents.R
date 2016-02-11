@@ -22,7 +22,7 @@
 #'      5 ENSG00000166012 TAF1D chr11 - 93466515 93466671 93466515 93466585 93467790 93467826
 #'      6 ENSG00000166012 TAF1D chr11 - 93466515 93466585 93466515 93466563 93467790 93467826
 #' ")
-#' parseMatsEvent(mats_A3SS, "A3SS")
+#' parseMatsEvent(event, "A3SS")
 parseMatsEvent <- function(event, event_type) {
     len <- ncol(event)
     # Create list with event attributes
@@ -118,7 +118,8 @@ parseMatsSE <- function(junctions, strand) {
 #' @rdname parseMatsSE
 #' @examples 
 #' 
-#' junctions <- read.table(text="158282161 158282276 158282689 158282804 158281047 158281295 158283950 158284199")
+#' junctions <- read.table(text=
+#' "158282161 158282276 158282689 158282804 158281047 158281295 158283950 158284199")
 #' parseMatsMXE(junctions, strand = "+")
 parseMatsMXE <- function(junctions, strand) {
     # Creates a data frame of parsed junctions filled with NAs
