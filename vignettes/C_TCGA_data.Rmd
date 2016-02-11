@@ -195,7 +195,7 @@ if (isFirehoseUp()) {
 
 
 Okay, now let's load the downloaded files.
-```{r}
+```{r, eval=F}
 # Read files in a folder
 readFiles <- function(base, folder, ...) {
     location <- file.path(base, folder)

@@ -18,14 +18,21 @@ different environments (creating a list of environments is currently the way I
 deal with them).
 
 > TODO: check if methods with identical names from different classes are allowed
+
 > TODO: change examples documentation (most are pre-vectorised versions)
+
 > TODO: increase number of AFE and ALE events parsed
+
 > TODO: validate if all events are of the same type (else, they are wrongly
 parsed)... or better yet, parse all different event types (just using split
 should be easy, no?)
 
 > TODO: calculate inclusion levels from read counts for all event types
+
 > TODO: save and restore Shiny session... else the page must NOT be reloaded! :(
 
 > TODO: create generics for all event types in MATS/SUPPA (reuse code => less
 bugs, easier to understand, easier to debug, easier to do anything)
+
+> TODO: use Travis CL in the project (only available for GitHub); more
+information is available at http://r-pkgs.had.co.nz/check.html
