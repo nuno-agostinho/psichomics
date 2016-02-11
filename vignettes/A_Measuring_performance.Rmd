@@ -16,7 +16,7 @@ the same problem and how to measure performance on R.
 There are many ways to measure the performance of a chunk of code in R. `Rprof`
 comes already built-in. To use it, you simply need to something like:
 
-```{r}
+```{r Rprof, eval=F}
 x <- c(2,3)
 Rprof()
 ## Code to be profiled
@@ -44,7 +44,7 @@ This one is pretty great: it visually shows the time spent in each line of code
 in your program so you know which lines are responsible for slowing you down.
 Just run it like this:
 
-```{r eval=F}
+```{r provis, eval=F}
 library(profvis)
 profvis(
   # complex function you'd like to profile
@@ -58,7 +58,7 @@ overhead. Use the `time` argument to modify the number of times an expression is
 evaluated and the `unit` argument to choose the time unit: ns, us, ms, s, t, hz,
 khz, mhz, eps or f.
 
-```{r}
+```{r microbenchmark}
 x <- c(2,3)
 
 library(microbenchmark)
@@ -91,7 +91,7 @@ this method is less precise than `microbenchmark` and has higher overhead. You
 can modify the `replications` argument to alter the number of times an 
 expression is evaluated.
 
-```{r}
+```{r rbenchmark}
 x <- c(2,3)
 
 library(rbenchmark)
@@ -121,7 +121,7 @@ res <- microbenchmark(
 autoplot(res)
 ```
 
-```{r}
+```{r apply2}
 l <- list(a = as.character(1:10), b = as.character(11:20))
 res <- microbenchmark(
     lapply1=lapply(l, "[[", 1), 
@@ -151,30 +151,38 @@ autoplot(res)
 ```
 
 ## Faster subsetting
-```{r}
-set.seed(1)  # for reproducible example
-df <- data.frame(age=sample(1:65, 1e6, replace=TRUE), x=rnorm(1e6), y=rpois(1e6,25))
-
-library(data.table)
-dt <- as.data.table(df)
-
-library(microbenchmark)
-res <- microbenchmark(times=10,
-    df[which(df$age>5),],
-    subset(df, age>5), 
-    df[df$age>5,],
-    dt[age > 5])
-autoplot(res)
+```{r subsetting}
+subsetting <- function(size) {
+    df <- data.frame(age=sample(1:65, 1e2, replace=TRUE),
+                     x=rnorm(size), y=rpois(size, 25))
+    
+    library(data.table)
+    dt <- as.data.table(df)
+    
+    library(microbenchmark)
+    res <- microbenchmark(times=10,
+                          which=df[which(df$age>5),],
+                          subset=subset(df, age>5), 
+                          dataframe=df[df$age>5,],
+                          datatable=dt[age > 5])
+    ggplot2::autoplot(res)
+}
+# testing with a smaller dataframe
+subsetting(size = 1e2)
+# testing with a larger dataframe
+subsetting(size = 1e4)
 ```
 
+It seems datatables only bring an improvement when subsetting larger dataframes.
 However, we can't use data table instead of data frame without modifying the
 source code. To get a column from a data table, we need to either get it by its
 name like ```dt[ , V3]``` or by its index with an added argument 
-```dt[ , 3, with=FALSE]```.
+```dt[ , 3, with=FALSE]```. That's rather laborious, so we need to be sure we
+want to support datatables in the code or not.
 
 ## Comparing a sequence of numbers from 1 to y
-```{r}
-up <- sample(10**10)
+```{r number_sequence}
+up <- sample(10**3)
 res <- microbenchmark(1:length(up),
                       seq_along(up))
 autoplot(res)

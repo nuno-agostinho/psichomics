@@ -176,7 +176,7 @@ microbenchmark(
 Nope, it seems this doesn't work. Anyway, let's see how our functions behave 
 when dealing with 10000 events.
 
-```{r benchmark-suppa-events}
+```{r benchmark-suppa-events, eval=FALSE}
 events <- rep(eventSE, 10000)
 library(rbenchmark)
 benchmark(replications = 1,
@@ -277,7 +277,8 @@ parseSuppaJunctions <- function(event_type, strand, junctions) {
 Now, let's use this function to complete parsing method C (henceforth mentioned
 as **parseSuppaEvent**).
 
-```{r suppa-event}
+```{r suppa-event, eval=F}
+library(rbenchmark)
 parseSuppaEvent <- function(event) {
   # Split event ID by semicolon and colon symbols
   tmp <- strsplit(event, ";|:")
@@ -311,7 +312,7 @@ Well, our function with the addition takes about four times more to complete.
 Maybe we should try to optimise the code we just add. What if we used the
 classic if/else instead of the switch?
 
-```{r suppa-junctions-if-else}
+```{r suppa-junctions-if-else, eval=F}
 parseSuppaJunctions <- function(event_type, strand, junctions) {
   # Split junctions by the hyphen
   junctions <- strsplit(junctions, "-")

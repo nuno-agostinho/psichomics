@@ -1,0 +1,49 @@
+---
+title: "User Interface"
+author: "Nuno Agostinho"
+date: "28 January 2016"
+output: html_document
+---
+
+# Conditional panels VS renderUI
+It seems that renderUI has a problem that conditionalPanel do not: when trying
+to reload the same code, renderUI reloads everything, not loading any previous
+state from the user. On the other hand, conditionalPanel does save and restores
+the objects state when reloading the same section. The only drawback to
+conditionalPanel is that it the condition must be a JavaScript expression while
+renderUI is all in R.
+
+# Running the Shiny interface
+Simple run the command `shiny::runApp()`.
+
+# Saving and loading the state of a session
+For a similar effort, check https://github.com/jcheng5/shiny-resume
+
+The `session` object seems to be the one holding all the information of a Shiny
+session Besides, it even includes the variables `input` (`session$input`) and
+`output` (`session$output`) which hold the information of every element in the
+app.
+
+An idea would then be to save and load this `session` variable whenever there's
+a change by the user.
+
+Detecting a change by the user is easy. Simply put this in the `server`:
+```{r, eval = F}
+observe({
+    # Observe all available input changes
+    lapply(names(input),
+           function(each) {
+               observeEvent(input[[each]], {
+                   # What to do when a change is detected?
+                   print(paste(each, input[[each]]))
+               })
+           })
+})
+```
+
+Now here's the tricky part: how to restore a previous session? One way could be
+to save the object after any change and load it afterwards using the functions
+`saveRDS` and `readRDS`. But using `readRDS` in the beginning of the server
+function does nothing... Either because the UI part is loaded first or they are
+independent. So either way, I need to load the `session` object in the UI itself
+and not in session or find a way to modify the `session` directly.

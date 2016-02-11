@@ -70,7 +70,7 @@ This one seems easy enough. For each splicing event ID, just get any matches in
 the alternative splicing annotation files.
 
 ## grep
-```{r miso-grep}
+```{r miso-grep, eval=F}
 eventID <- "2217@uc002poi.1@uc002poe.1"
 annotation <- read.delim(
   "/genedata/Resources/Annotations/MISO/hg19/AFE.hg19.gff3",
@@ -96,11 +96,12 @@ The resulting output is shown in the table below.
 |chr19 |AFE |exon | 50016644| 50016730|.  |+  |.  |ID=2217\@uc002poi.1\@uc002poe.1.B.1;Parent=2217\@uc002poi.1\@uc002poe.1.B;Name=2217\@uc002poi.1\@uc002poe.1.B.1;gid=2217\@uc002poi.1\@uc002poe.1 |
 
 Let's see how long it takes to get one event:
-```{r benchmark-miso-grep}
+```{r benchmark-miso-grep, eval=F}
 library(microbenchmark)
 microbenchmark(times = 1,
                no_lapply=matchMisoEvent1(eventID, annotation, IDcolumn),
-               lapply=lapply(rep(eventID,3), matchMisoEvent1, annotation, IDcolumn))
+               lapply=lapply(rep(eventID,3),
+                             matchMisoEvent1, annotation, IDcolumn))
 ```
 
 Cross-refering three MISO events with the alternative splicing annotation takes
@@ -115,7 +116,7 @@ could try to use `pmatch`. But since this function doesn't return more than one
 finding, let's use it to find the first matching ID and from there we can look
 for the others.
 
-```{r miso-pmatch}
+```{r miso-pmatch, eval=F}
 getMisoEvent <- function(index, annotation) {
   # Get all lines before next gene
   next_index <- match("gene", tail(annotation[[3]], index))
@@ -140,7 +141,7 @@ microbenchmark(times = 1,
 What if instead of looking for the index of the next gene each time, the index
 of all genes is found at once? Then we could ask for the index of the next gene.
 
-```{r miso-genes-index-B}
+```{r miso-genes-index-B, eval=F}
 getMisoEventB <- function(index, annotation, genes_index) {
   # Get all lines before next gene
   next_gene <- genes_index[genes_index > index][1]
@@ -167,7 +168,7 @@ microbenchmark(times = 1,
 To get faster times, how about looking for our index of interest in the genes
 index and incrementing one to get the next gene index?
 
-```{r miso-genes-index-C}
+```{r miso-genes-index-C, eval=F}
 getMisoEventC <- function(index, annotation, genes_index) {
   # Get all lines before next gene
   next_index <- genes_index[match(index, genes_index) + 1]
@@ -192,7 +193,7 @@ microbenchmark(times = 1,
 ### Match all genes to get the index of the following genes at once
 Better yet, let's find all next genes index at the same time!
 
-```{r miso-genes-index-D}
+```{r miso-genes-index-D, eval=F}
 getMisoEventD <- function(i, annotation, index, next_index) {
   # Get all lines before next gene
   seq <- seq(index[i], next_index[i] - 1)
@@ -218,7 +219,7 @@ microbenchmark(times = 1,
 Seems this method is the fastest. What if we try to use `subset` instead of
 `which` to get all genes index?
 
-```{r subset-vs-which}
+```{r subset-vs-which, eval=F}
 microbenchmark(times = 1,
                which  = which(annotation[["V3"]] == "gene"),
                subset = subset(annotation, V3 == "gene")
@@ -231,7 +232,7 @@ Nevermind about using `subset`.
 Since the first matching ID is a common expression, we'll see if the `match` 
 function is faster than `pmatch`.
 
-```{r miso-match}
+```{r miso-match, eval=F}
 matchMisoEvent3 <- function(eventID, annotation, IDcolumn) {
   # Get first line matching a given splicing event ID
   index <- match(paste0("ID=", eventID, ";Name=", eventID, ";gid=", eventID),
@@ -259,7 +260,7 @@ column V9 from the annotation file and do a simple `match`.
 ## which
 Checking if `which` is faster than `match`: it is not.
 
-```{r miso-which}
+```{r miso-which, eval=F}
 event <- paste0("ID=", eventID, ";Name=", eventID, ";gid=", eventID)
 
 microbenchmark(times = 1,
@@ -271,7 +272,7 @@ microbenchmark(times = 1,
 The package ```fastmatch``` provides a faster match than R's built-in function.
 Let's test if this is true.
 
-```{r miso-fmatch}
+```{r miso-fmatch, eval=F}
 library(fastmatch)
 event <- paste0("ID=", eventID, ";Name=", eventID, ";gid=", eventID)
 
@@ -287,7 +288,7 @@ Yup, it's true! :)
 To simplify the process of parsing multiple MISO events, we'll want a function
 that parses many event lines annotation at once.
 
-```{r}
+```{r, eval=F}
 parseMultipleMisoEvents <- function(events) {
   firstIndex <- which(events[ , 3] == "gene")
   if (length(firstIndex) > 1) {
@@ -652,7 +653,7 @@ parseA5SS <- function(event, strand, parsed) {
 ## Alternative First Exon
 AFE events are kind of weird. They don't share the same line numbers per event
 as it happens with other types of events so far.
-```{r miso-afe-A}
+```{r miso-afe-A, eval=F}
 annotation.AFE <- read.delim(
   header=FALSE, comment.char="#",
   "/genedata/Resources/Annotations/MISO/hg19/AFE.hg19.gff3")
@@ -1011,7 +1012,7 @@ All right, looks like we're good to go!
 Just like Alternative First Exon events, alternative last exon (ALE) events are
 a bit strange, but they don't appear as much (see plot below).
 
-```{r miso-ale-A}
+```{r miso-ale-A, eval=F}
 annotation.ALE <- read.delim(
   header=FALSE, comment.char="#",
   "/genedata/Resources/Annotations/MISO/hg19/ALE.hg19.gff3")
@@ -1190,7 +1191,7 @@ length(genes_index)
 
 With 0 outliers, it seems there are no problems! Let's parse this event type.
 
-```{r}
+```{r, eval=F}
 parseMisoTandemUTR <- function(event, strand, parsed) {
   if (strand == "+") {
     parsed[["C2 start"]] <- event[3, 4]
