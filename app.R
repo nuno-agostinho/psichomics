@@ -25,9 +25,8 @@ loadScripts <- function(folder, vars, exclude = "", ...){
     envs <- lapply(files, function(file) {
         env <- new.env()
         sys.source(paste0(folder, file), env)
-        if (all(sapply(vars, exists, envir = env))) {
+        if (all(sapply(vars, exists, envir = env)))
             return(env)
-        }
     })
     envs <- Filter(Negate(is.null), envs)
     return(envs)
@@ -37,9 +36,9 @@ loadScripts <- function(folder, vars, exclude = "", ...){
 #' 
 #' This function has the instructions to build the Shiny app
 #'
-#' @param input 
-#' @param output 
-#' @param session 
+#' @param input Input object
+#' @param output Output object
+#' @param session Session object
 server <- function(input, output, session) {
     tabs2 <- loadScripts(tabsFolder, c("name", "server"))
     tabs.server <- lapply(tabs2, "[[", "server")
@@ -68,17 +67,16 @@ ui <- shinyUI(
              header = list(
                  useShinyjs(),
                  # Avoids fixed-top navbar from obscuring content
-                 tags$style(type = "text/css",
-                            "body {padding-top: 70px;}"),
+                 tags$style(type = "text/css", "body {padding-top: 70px;}"),
                  # Alert appears fixed on the top right above other elements
-                 tags$style(type = "text/css", ".sbs-alert{
-                                                   position:fixed;
-                                                   right:10px;
-                                                   z-index:9;
-                                                   -webkit-filter: opacity(80%);
-                                                   filter: opacity(80%); }")
+                 tags$style(type = "text/css",
+                            ".sbs-alert{ position:fixed;
+                                         right:10px;
+                                         z-index:9;
+                                         -webkit-filter: opacity(80%);
+                                         filter: opacity(80%); }")
              )
-        ),
+        ), # end of list
         # Loads the interface for each tab
         lapply(tabs.ui, do.call, list())
     ))
