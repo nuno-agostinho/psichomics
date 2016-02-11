@@ -36,3 +36,5 @@ bugs, easier to understand, easier to debug, easier to do anything)
 
 > TODO: use Travis CL in the project (only available for GitHub); more
 information is available at http://r-pkgs.had.co.nz/check.html
+
+> TODO: Pass R CMD build, R CMD check, and R CMD BiocCheck
