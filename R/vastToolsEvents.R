@@ -17,7 +17,7 @@ NULL
 #'
 #' @examples
 #' event <- read.table(text = 
-#'     "NFYA HsaEX0042823 chr6:41046768-41046903 136 chr6:41040823,41046768-41046903,41051785 C2 0 N,N,N,Bn,S@0,0 0 N,N,N,Bn,S@0,0"
+#' "NFYA HsaEX0042823 chr6:41046768-41046903 136 chr6:41040823,41046768-41046903,41051785 C2 0 N 0 N"
 #' )
 #' parseVastToolsEvent(event)
 parseVastToolsEvent <- function(event) {

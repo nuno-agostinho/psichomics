@@ -8,7 +8,6 @@ NULL
 #' 
 #' @param event Character vector: Splicing event attributes and junction
 #' positions
-#' @param event_type Character: Alternative splicing event type (see details)
 #'
 #' @details The following event types are available to be parsed:
 #' \itemize{
