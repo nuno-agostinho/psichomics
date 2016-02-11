@@ -1,3 +1,6 @@
+#' @import plyr
+NULL
+
 #' Parses an alternative splicing event from VAST-TOOLS
 #'
 #' @details Junctions are parsed from 
@@ -176,7 +179,7 @@ parseVastToolsA3SS <- function (junctions) {
     plus3 <- plus & is3Available
     bigList <- sapply(junctions[, 2], length) > 2 # filter unrecognised events
     parsed[plus & !bigList, ][c("C2.start", "A1.start")] <-
-        plyr::ldply(junctions[plus & !bigList, 2])
+        ldply(junctions[plus & !bigList, 2])
     parsed[plus & bigList, ][["C2.start"]] <- junctions[plus & bigList, 2]
     parsed[plus3, ][["C2.end"]] <- junctions[plus3, 3]
     
@@ -184,7 +187,7 @@ parseVastToolsA3SS <- function (junctions) {
     minus2 <- !plus & is2Available
     bigList <- sapply(junctions[, 3], length) > 2 # filter unrecognised events
     parsed[!plus & !bigList, ][c("C2.start", "A1.start")] <-
-        plyr::ldply(junctions[!plus & !bigList, 3])
+        ldply(junctions[!plus & !bigList, 3])
     parsed[!plus & bigList, ][["C2.start"]] <- junctions[!plus & bigList, 3]
     parsed[minus2, ][["C2.end"]] <- junctions[minus2, 2]
     return(parsed)
@@ -217,7 +220,7 @@ parseVastToolsA5SS <- function (junctions) {
     bigList <- sapply(junctions[, 2], length) > 2 # filter unrecognised events
     parsed[plus1, ][["C1.start"]] <- junctions[plus1, 1]
     parsed[plus & !bigList, ][c("C1.end", "A1.end")] <-
-        plyr::ldply(junctions[plus & !bigList, 2])
+        ldply(junctions[plus & !bigList, 2])
     parsed[plus & bigList, ][["C1.end"]] <- junctions[plus & bigList, 2]
     
     # Minus strand
@@ -225,7 +228,7 @@ parseVastToolsA5SS <- function (junctions) {
     bigList <- sapply(junctions[, 1], length) > 2 # filter unrecognised events
     parsed[minus2, ][["C1.start"]] <- junctions[minus2, 2]
     parsed[!plus & !bigList, ][c("C1.end", "A1.end")] <-
-        plyr::ldply(junctions[!plus & !bigList, 1])
+        ldply(junctions[!plus & !bigList, 1])
     parsed[!plus & bigList, ][["C1.end"]] <- junctions[!plus & bigList, 1]
     return(parsed)
 }

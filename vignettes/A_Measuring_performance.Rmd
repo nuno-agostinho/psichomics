@@ -152,6 +152,7 @@ autoplot(res)
 
 ## Faster subsetting
 ```{r subsetting}
+library("ggplot2")
 subsetting <- function(size) {
     df <- data.frame(age=sample(1:65, 1e2, replace=TRUE),
                      x=rnorm(size), y=rpois(size, 25))
@@ -165,7 +166,7 @@ subsetting <- function(size) {
                           subset=subset(df, age>5), 
                           dataframe=df[df$age>5,],
                           datatable=dt[age > 5])
-    ggplot2::autoplot(res)
+    autoplot(res)
 }
 # testing with a smaller dataframe
 subsetting(size = 1e2)

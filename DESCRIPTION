@@ -1,22 +1,28 @@
 Package: PSIcalc
-Title: What the Package Does (one line, title case)
+Title: Analyze Alternative Splicing Data in Cancer
 Version: 0.0.0.9000
 Authors@R: person("Nuno", "Agostinho", email = "nunodanielagostinho@gmail.com", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
 Depends: 
     R (>= 3.2.2),
+    shiny,
+    shinyBS,
+    shinyjs,
     jsonlite,
-    httr,
-    shiny
+    httr
 License: What license is it under?
 LazyData: true
 RoxygenNote: 5.0.1
 Imports: fastmatch,
-    jsonlite,
-    httr,
-    shiny
+    stringr,
+    plyr,
+    methods
 Suggests: testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    data.table,
+    ggplot2,
+    microbenchmark,
+    rbenchmark
 VignetteBuilder: knitr
 LinkingTo: Rcpp
