@@ -4,14 +4,18 @@
 \alias{loadFirehoseData}
 \title{Downloads and processes data from the Firehose API and loads it into R}
 \usage{
-loadFirehoseData(folder, ...)
+loadFirehoseData(folder = "~/Downloads", ...)
 }
 \arguments{
-\item{folder}{Character: directory to store the downloaded archives}
+\item{folder}{Character: directory to store the downloaded archives (by
+default, it saves in the user's "Downloads" folder)}
 
 \item{...}{Extra parameters to be passed to \code{\link{queryFirehoseData}}}
 }
 \description{
 Downloads and processes data from the Firehose API and loads it into R
+}
+\examples{
+loadFirehoseData
 }
 

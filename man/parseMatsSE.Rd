@@ -53,7 +53,8 @@ The following event types are available to be parsed:
 junctions <- read.table(text="79685787 79685910 79685796 79685910 79679566 79679751")
 parseMatsSE(junctions, strand = "+")
 
-junctions <- read.table(text="158282161 158282276 158282689 158282804 158281047 158281295 158283950 158284199")
+junctions <- read.table(text=
+"158282161 158282276 158282689 158282804 158281047 158281295 158283950 158284199")
 parseMatsMXE(junctions, strand = "+")
 
 junctions <- read.table(text="15929853 15932100 15929853 15930016 15930687 15932100")

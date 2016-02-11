@@ -6,14 +6,14 @@
 \alias{inclusion.levels<-,Organism-method}
 \title{Sets the inclusion levels of an organism}
 \usage{
-inclusion.levels(object, inclusion.levels) <- value
+inclusion.levels(object) <- value
 
-\S4method{inclusion.levels}{Organism}(object, inclusion.levels) <- value
+\S4method{inclusion.levels}{Organism}(object) <- value
 }
 \arguments{
 \item{object}{Organism}
 
-\item{inclusion.levels}{Data.frame}
+\item{value}{Data.frame}
 }
 \description{
 Sets the inclusion levels of an organism
