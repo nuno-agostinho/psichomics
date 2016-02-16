@@ -49,7 +49,7 @@ Parse junctions of an alternative splicing event from MATS according to event
 type
 }
 \details{
-The following event types are available to be parsed:
+The following event types are ready to be parsed:
 \itemize{
  \item{\bold{SE} (exon skipping)}
  \item{\bold{MXE} (mutually exclusive exon)}
