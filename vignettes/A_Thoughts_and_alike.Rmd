@@ -38,3 +38,6 @@ bugs, easier to understand, easier to debug, easier to do anything)
 information is available at http://r-pkgs.had.co.nz/check.html
 
 > TODO: Pass R CMD build, R CMD check, and R CMD BiocCheck
+
+> TODO: Remove "character(0)" warnings related to using NULL right below a
+roxygen's @import
