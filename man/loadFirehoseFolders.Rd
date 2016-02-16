@@ -4,24 +4,19 @@
 \alias{loadFirehoseFolders}
 \title{Load Firehose folders}
 \usage{
-loadFirehoseFolders(folder, name = NULL, exclude = "", rm.empty = TRUE)
+loadFirehoseFolders(folder, name = NULL, exclude = "")
 }
 \arguments{
 \item{folder}{Character: folder(s) in which to look for Firehose files}
 
 \item{name}{Character: names for the returned list with loaded data.frames;
 this must be of the same length as the list returned}
-
-\item{rm.empty}{Boolean: if TRUE, filters out data.frames with 0 rows;
-otherwise, it doesn't filter these data.frames}
 }
 \value{
 List with loaded data.frames
 }
 \description{
-Loads the files present in each folder as a data.frame. Files which result in
-a data.frame of 0 may be filtered by setting the argument \code{rm.empty} to
-TRUE.
+Loads the files present in each folder as a data.frame.
 }
 \note{
 For faster execution, this function uses the \code{readr} library. This

@@ -4,7 +4,7 @@
 \alias{callScriptsFunction}
 \title{Call a given function from valid scripts}
 \usage{
-callScriptsFunction(folder, check, func, ... = list())
+callScriptsFunction(folder, check, func, ...)
 }
 \arguments{
 \item{folder}{Character: folder where the scripts are located}
@@ -13,7 +13,7 @@ callScriptsFunction(folder, check, func, ... = list())
 
 \item{func}{Character: function to call}
 
-\item{...}{Arguments of the given function to call}
+\item{...}{Arguments to pass to the given function call}
 }
 \value{
 Variable from valid script
@@ -23,6 +23,7 @@ Scripts from a given folder are checked to see if they have the given
 objects. If they do, a given function will be called.
 }
 \note{
-It's a good idea that the function is tested with the other objects.
+It's a good idea to check if the function is also included as an object
+in a script.
 }
 

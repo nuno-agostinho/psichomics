@@ -13,6 +13,16 @@ options(shiny.maxRequestSize = MB * 1024^2)
 
 tabsFolder <- "R/"
 
+#' Filter NULL elements from vector or list
+#' 
+#' @param v Vector or list
+#' 
+#' @return Filtered vector or list with no NULL elements; if the input is a
+#' vector composed of only NULL elements, it returns a NULL (note that it will
+#' returns an empty list if the input is a list with only NULL elements)
+#' @export
+rm.null <- function(v) Filter(Negate(is.null), v)
+
 #' Checks if a given script defines the given objects
 #'
 #' Loads the script into a new environment and checks if all the given objects
@@ -74,4 +84,101 @@ callScriptsFunction <- function(folder, check, func, ...) {
     # Calls the function of each script with the given parameters
     loaded <- lapply(f, do.call, args)
     return(loaded)
+}
+
+
+#' Checks the format of many files
+#'
+#' @param format Environment: format of the file
+#' @param head Data.frame: head of the file to check
+#'
+#' @return TRUE if the file is of the given format; otherwise, returns FALSE
+#' @export
+checkFileFormat <- function(format, head) {
+    ## TODO(NunoA): account for comments
+    # Transpose data
+    if (!is.null(format$transpose) && format$transpose) head <- t(head)
+    
+    # Check if header is comparable
+    if (ncol(head) < length(format$header)) return(FALSE)
+    
+    # Check if headers match
+    headerCheck <- ifelse(!is.null(format$headerCheck), format$headerCheck, 1)
+    fileHeader <- head[headerCheck, 1:length(format$header)]
+    valid <- all(fileHeader == format$header)
+    return(valid)
+}
+
+#' Loads a file according to its format
+#' 
+#' @inheritParams checkFileFormat
+#' @param file Character: file to load
+#' 
+#' @return Named list of one data.frame with the loaded file
+#' @export
+loadFile <- function(format, file) {
+    ## TODO(NunoA): account for the comment character
+    delim <- ifelse(!is.null(format$delim), format$delim, "\t")
+    loaded <- readr::read_delim(file, delim=delim, col_names = FALSE)
+    
+    # Transpose data
+    if (!is.null(format$transpose) && format$transpose)
+        loaded <- data.frame(t(loaded),
+                             stringsAsFactors = FALSE,
+                             row.names = NULL)
+    
+    # Column names
+    headerUse <- ifelse(!is.null(format$headerUse), format$headerUse, 1)
+    names(loaded) <- loaded[headerUse, ]
+    
+    # Filter in only content of interest
+    contentStart <- ifelse(!is.null(format$contentStart),
+                           format$contentStart, 2)
+    loaded <- loaded[contentStart:nrow(loaded), ]
+    
+    res <- list(loaded)
+    names(res) <- format$tablename
+    return(res)
+}
+
+#' Parse file given a folder with recognised formats
+#' 
+#' Tries to recognise the file format and parses the content of the given file
+#' accordingly.
+#' 
+#' @param file Character: file to parse
+#' @param formatsFolder Character: folder with recognised file formats
+#' 
+#' @return Named list of one element with the loaded file if the file format is
+#' recognised; otherwise, returns NULL
+parseValidFiles <- function(file, formatsFolder) {
+    # Get all available formats information
+    formats <- sourceScripts(formatsFolder,
+                             c("name", "header"))
+    
+    # The number of rows to read will be the maximum value asked by all the file
+    # formats; if no format aks for a specific number of rows, the default is 6
+    headRows <- lapply(formats, "[[", "header_rows")
+    headRows <- unlist(rm.null(headRows))
+    headRows <- ifelse(!is.null(headRows), max(headRows), 6)
+    
+    ## TODO(NunoA): Allow to change the delimiter
+    head <- readr::read_delim(file, delim="\t", n_max=headRows,
+                              col_names = FALSE)
+    
+    # Check if the file is recognised by at least one file format
+    recognised <- lapply(formats, checkFileFormat, head)
+    recognised <- unlist(recognised)
+    
+    if (sum(recognised) > 1) {
+        ## TODO(NunoA): If more than one format is recognised, check if the
+        # filename is helpful in distinguishing the file
+        stop("Error: more than one file format was recognised.")
+        ## TODO(NunoA): if there is still a conflict, ask the user which file
+        ## format to use
+    } else if (sum(recognised) == 1) {
+        format <- formats[recognised][[1]]
+        loaded <- loadFile(format, file)
+        return(loaded)
+    } 
 }
