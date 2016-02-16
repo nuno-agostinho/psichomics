@@ -7,7 +7,6 @@ Depends:
     R (>= 3.2.2),
     shiny,
     shinyBS,
-    shinyjs,
     jsonlite,
     httr
 License: What license is it under?
@@ -15,6 +14,7 @@ LazyData: true
 RoxygenNote: 5.0.1
 Imports: fastmatch,
     stringr,
+    shinyjs,
     plyr,
     methods
 Suggests: testthat,
