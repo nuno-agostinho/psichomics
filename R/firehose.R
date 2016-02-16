@@ -218,9 +218,7 @@ prepareFirehoseArchives <- function (url, folder, quiet = FALSE) {
 
 #' Load Firehose folders
 #'
-#' Loads the files present in each folder as a data.frame. Files which result in
-#' a data.frame of 0 may be filtered by setting the argument \code{rm.empty} to
-#' TRUE.
+#' Loads the files present in each folder as a data.frame.
 #' 
 #' @note For faster execution, this function uses the \code{readr} library. This
 #' function ignores subfolders of the given folder (which means that files 
@@ -229,8 +227,6 @@ prepareFirehoseArchives <- function (url, folder, quiet = FALSE) {
 #' @param folder Character: folder(s) in which to look for Firehose files
 #' @param name Character: names for the returned list with loaded data.frames;
 #' this must be of the same length as the list returned
-#' @param rm.empty Boolean: if TRUE, filters out data.frames with 0 rows;
-#' otherwise, it doesn't filter these data.frames
 #'
 #' @return List with loaded data.frames
 #' @export
@@ -245,7 +241,7 @@ prepareFirehoseArchives <- function (url, folder, quiet = FALSE) {
 #' 
 #' # Exclude certain files from being loaded
 #' loadFirehoseFolders(folders, exclude = c("pink.txt", "panther.txt"))
-loadFirehoseFolders <- function (folder, name=NULL, exclude="", rm.empty=TRUE) {
+loadFirehoseFolders <- function (folder, name=NULL, exclude="") {
     exclude <- paste(exclude, collapse = "|")
     # Retrieve full path of the files inside the given folders
     dataFiles <- lapply(folder, dir, full.names=TRUE)
@@ -256,16 +252,18 @@ loadFirehoseFolders <- function (folder, name=NULL, exclude="", rm.empty=TRUE) {
         # Filter subdirectories
         each <- each[!dir.exists(each)]
         
-        # Load each file in the given folder
-        files <- lapply(each, function(file) {
-            print(paste("Loading", basename(file)))
-            readr::read_delim(file, delim = "\t")
-        })
-        
-        # Remove data.frames with no content
-        if (rm.empty) files <- Filter(nrow, files)
+        # Load valid files from the given folder
+        data <- list()
+        for (e in each) {
+            parsed <- parseValidFiles(e, "R/filesFormat")
+            if (!is.null(parsed))
+                data <- c(data, parsed)
+        }
+        return(data)
     })
     names(loaded) <- name
+    loaded <- Filter(Negate(is.null), loaded)
+    loaded <- Filter(length, loaded)
     return(loaded)
 }
 
