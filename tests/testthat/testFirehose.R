@@ -83,4 +83,18 @@ if (isFirehoseUp()) {
         expect_equal(parsed, c("Adrenocortical carcinoma" = "ACC",
                                "Brain Lower Grade Glioma" = "LGG"))
     })
+    
+    test_that("prepareFirehoseArchives prepares archives to be loaded", {
+        folder <- "~/Downloads"
+        f <- "gdac.broadinstitute.org_ACC.Merge_Clinical.Level_1.2015110100.0.0"
+        url <- paste0("http://gdac.broadinstitute.org/runs/stddata__2015_11_01",
+                      "/data/ACC/20151101/", f, ".tar.gz", c("", ".md5"))
+        res <- prepareFirehoseArchives(url, folder, quiet = TRUE)
+        expect_true(res)
+        # Check if prepared folder exists at indicated destination
+        file <- file.path(folder, f)
+        expect_true(file.exists(file))
+        # Remove folder after testing
+        unlink(file, recursive = TRUE)
+    })
 }
