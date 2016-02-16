@@ -7,7 +7,7 @@
 downloadFiles(url, folder, ...)
 }
 \arguments{
-\item{url}{Chareacter: download links}
+\item{url}{Character: download links}
 
 \item{folder}{Character: directory to store the downloaded archives}
 
