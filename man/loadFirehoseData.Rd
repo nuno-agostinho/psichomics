@@ -4,7 +4,8 @@
 \alias{loadFirehoseData}
 \title{Downloads and processes data from the Firehose API and loads it into R}
 \usage{
-loadFirehoseData(folder = "~/Downloads", ...)
+loadFirehoseData(folder = "~/Downloads", exclude = c(".aux.", ".mage-tab.",
+  "MANIFEST.txt"), ...)
 }
 \arguments{
 \item{folder}{Character: directory to store the downloaded archives (by
@@ -16,6 +17,6 @@ default, it saves in the user's "Downloads" folder)}
 Downloads and processes data from the Firehose API and loads it into R
 }
 \examples{
-loadFirehoseData
+loadFirehoseData()
 }
 

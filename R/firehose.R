@@ -174,6 +174,101 @@ checkIntegrity <- function(filesToCheck, md5file) {
     return(md5sums %in% md5table)
 }
 
+#' Prepares Firehose archives in a given directory
+#'
+#' Downloads Firehose archives, checks their integrety using the MD5 files,
+#' extracts the content of the archives and removes the original downloaded
+#' archives.
+#'
+#' @inheritParams utils::download.file
+#' @param url Character: links to the downloadable archives
+#' @param folder Character: local folder where the archives should be stored
+#'
+#' @return Invisible TRUE if successful
+#' @export
+#'
+#' @examples
+#' prepareFirehoseArchives(folder = "~/Downloads", url = paste0(
+#'     "http://gdac.broadinstitute.org/runs/stddata__2015_11_01/data/",
+#'     "ACC/20151101/gdac.broadinstitute.org_ACC.",
+#'     "Merge_Clinical.Level_1.2015110100.0.0.tar.gz", c("", ".md5")))
+prepareFirehoseArchives <- function (url, folder, quiet = FALSE) {
+    downloaded <- downloadFiles(url, folder, quiet = quiet)
+    
+    # Check integrety of the downloaded archives with the MD5 files
+    downloadedFolders <- downloaded[tools::file_ext(downloaded) != "md5"]
+    validFiles <- simplify2array(Map(checkIntegrity, downloadedFolders,
+                                     paste0(downloadedFolders, ".md5")))
+    
+    ## TODO(NunoA): Should we try to download the invalid archives again?
+    ## What if they're constantly invalid? Only try n times before giving up?
+    if (!all(validFiles))
+        stop(paste("Error: at least one file is not valid according to the",
+                   "MD5 hashes."))
+    
+    ## TODO(NunoA): Check if path.expand works in Windows
+    # Extract the contents of the archives to the same folder
+    invisible(lapply(downloadedFolders,
+                     untar, exdir = path.expand(folder)))
+    
+    # Remove the original downloaded files
+    invisible(file.remove(downloaded))
+    return(invisible(TRUE))
+}
+
+#' Load Firehose folders
+#'
+#' Loads the files present in each folder as a data.frame. Files which result in
+#' a data.frame of 0 may be filtered by setting the argument \code{rm.empty} to
+#' TRUE.
+#' 
+#' @note For faster execution, this function uses the \code{readr} library. This
+#' function ignores subfolders of the given folder (which means that files 
+#' inside subfolders are NOT loaded).
+#'
+#' @param folder Character: folder(s) in which to look for Firehose files
+#' @param name Character: names for the returned list with loaded data.frames;
+#' this must be of the same length as the list returned
+#' @param rm.empty Boolean: if TRUE, filters out data.frames with 0 rows;
+#' otherwise, it doesn't filter these data.frames
+#'
+#' @return List with loaded data.frames
+#' @export
+#'
+#' @examples
+#' # Load files from "~/Downloads"
+#' loadFirehoseFolders("~/Downloads")
+#' 
+#' # Load files from folders inside "~/Downloads"
+#' folders <- list.dirs("~/Downloads")
+#' loadFirehoseFolders(folders)
+#' 
+#' # Exclude certain files from being loaded
+#' loadFirehoseFolders(folders, exclude = c("pink.txt", "panther.txt"))
+loadFirehoseFolders <- function (folder, name=NULL, exclude="", rm.empty=TRUE) {
+    exclude <- paste(exclude, collapse = "|")
+    # Retrieve full path of the files inside the given folders
+    dataFiles <- lapply(folder, dir, full.names=TRUE)
+    loaded <- lapply(dataFiles, function(each) {
+        # Filter files to be excluded
+        if (exclude != "") each <- each[!grepl(exclude, each)]
+        
+        # Filter subdirectories
+        each <- each[!dir.exists(each)]
+        
+        # Load each file in the given folder
+        files <- lapply(each, function(file) {
+            print(paste("Loading", basename(file)))
+            readr::read_delim(file, delim = "\t")
+        })
+        
+        # Remove data.frames with no content
+        if (rm.empty) files <- Filter(nrow, files)
+    })
+    names(loaded) <- name
+    return(loaded)
+}
+
 #' Downloads and processes data from the Firehose API and loads it into R
 #' 
 #' @param folder Character: directory to store the downloaded archives (by
@@ -207,19 +302,20 @@ loadFirehoseData <- function(folder = "~/Downloads",
     urls <- lapply(urls, ignoreURLs, exclude)
     urls <- Filter(length, urls)
     
-    # Check integrety of the downloaded archives
-    filesOfInterest <- archives[tools::file_ext(archives) != "md5"]
-    print(filesOfInterest)
-    return(filesOfInterest)
-    filesAreValid <- all(
-        vapply(filesOfInterest,
-               function(i) checkIntegrity(i, paste0(i, ".md5")),
-               logical(1)))
+    # Check which folders have already been downloaded to the given directory
+    dataFolders <- unlist(urls)[tools::file_ext(unlist(urls)) != "md5"]
+    dataFolders <- file.path(
+        folder, tools::file_path_sans_ext(
+            basename(dataFolders), compression = TRUE))
+    missing <- urls[!file.exists(dataFolders)]
+    names(missing) <- NULL
     
-    if (filesAreValid){
-        print(filesOfInterest)
-        # Extract the contents of the archives
-        # Remove the original archives
-        # Load the files into R using readr (faster and shows progress)
-    } else stop("Error: files are not valid according to the MD5 hashes.")
+    # Prepare archives not present in the given directory
+    if (length(missing) > 0)
+        prepareFirehoseArchives(unlist(missing), folder)
+    
+    ## TODO(NunoA): Check if it's possible to show READR progress in a Shiny app
+    # Load the files using readr (faster and can show progress)
+    loaded <- loadFirehoseFolders(dataFolders, names(urls))
+    return(loaded)
 }
