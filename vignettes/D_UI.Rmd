@@ -11,7 +11,7 @@ to reload the same code, renderUI reloads everything, not loading any previous
 state from the user. On the other hand, conditionalPanel does save and restores
 the objects state when reloading the same section. The only drawback to
 conditionalPanel is that it the condition must be a JavaScript expression while
-renderUI is all in R.
+renderUI is all in R. Another solution would be to use both! :)
 
 # Running the Shiny interface
 Simple run the command `shiny::runApp()`.
@@ -25,9 +25,11 @@ session Besides, it even includes the variables `input` (`session$input`) and
 app.
 
 An idea would then be to save and load this `session` variable whenever there's
-a change by the user.
+a change by the user. You could also use `session$onSessionEnded` to save only
+when the session ends (how would this behave in case of reload?).
 
-Detecting a change by the user is easy. Simply put this in the `server`:
+Detecting a change by the user is easy. Simply create a global variable (let's
+call it `savedSession`) and observe all input changes in the `server`:
 ```{r, eval = F}
 observe({
     # Observe all available input changes
@@ -35,7 +37,8 @@ observe({
            function(each) {
                observeEvent(input[[each]], {
                    # What to do when a change is detected?
-                   print(paste(each, input[[each]]))
+                   savedSession <- session
+                   saveRDS(savedSession file = "~/Documents")
                })
            })
 })
@@ -47,3 +50,56 @@ to save the object after any change and load it afterwards using the functions
 function does nothing... Either because the UI part is loaded first or they are
 independent. So either way, I need to load the `session` object in the UI itself
 and not in session or find a way to modify the `session` directly.
+
+Well, there's a way to at least load all input values directly. Since some (if
+not all) Shiny update* functions seem to be wrappers around
+`session$sendInputMessage`, we could try using that function directly:
+
+```{r, eval = FALSE}
+# Instead of using
+# updateSelectInput(session, input_id, selected = "hist")
+session$sendInputMessage(input_id, value = "hist")
+```
+
+If the command is the same for most (if for all) input types, then we only need
+to iterate by all input values and changed them to the ones we want. Will this
+work in a complex app? We'll see...
+
+Basically, we only need to run this command to load all the saved results (let's
+say we have a button `load` that loads the input values when desired):
+```{r, eval = FALSE}
+observeEvent(input$load, {
+    input <- readRDS(file = "~/Dropbox/session.RDS")
+    lapply(names(input),
+           function(each) {
+             # print(paste(each, input[[each]]))
+             value <- list(value = input[[each]])
+             session$sendInputMessage(each, value)
+           })
+  })
+```
+
+It seems that there is some issue when using fileInput that doesn't allow to
+load all the input values for some reason. The fastest way to fix this is to not
+use fileInput.
+
+# Packages of interest
+
+## shinyFiles
+File input is slow because it copies the files to a temporary folder. The
+package `shinyFiles` removes this step which is better when using a local app.
+
+## shinyRGL
+Shiny wrapper for RGL (WebGL) in R
+
+## sparkline
+Sparkline allows to make plots in tables (does it support datatables?)
+
+## htmlwidgets
+"Easy" way to port JavaScript packages to R/Shiny.
+
+# Internationalisation
+There aren't many reasons to translate this package to other languages. English
+is the most used language in the scientific community, after all. More about
+this topic is available at
+https://cran.rstudio.com/doc/manuals/r-devel/R-exts.html#Internationalization
