@@ -4,10 +4,10 @@
 \alias{downloadFiles}
 \title{Download files to a given directory}
 \usage{
-downloadFiles(urls, folder, ...)
+downloadFiles(url, folder, ...)
 }
 \arguments{
-\item{urls}{Chareacter: download links}
+\item{url}{Chareacter: download links}
 
 \item{folder}{Character: directory to store the downloaded archives}
 
@@ -20,10 +20,10 @@ Invisible TRUE if every file was successfully downloaded
 Download files to a given directory
 }
 \examples{
-urls <- paste0("https://unsplash.it/400/300/?image=", 570:572)
-downloadFiles(urls, "~/Pictures")
+url <- paste0("https://unsplash.it/400/300/?image=", 570:572)
+downloadFiles(url, "~/Pictures")
 
 # Download without printing to console
-downloadFiles(urls, "~/Pictures", quiet = TRUE)
+downloadFiles(url, "~/Pictures", quiet = TRUE)
 }
 
