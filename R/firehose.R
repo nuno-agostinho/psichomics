@@ -182,21 +182,30 @@ checkIntegrity <- function(filesToCheck, md5file) {
 #' 
 #' @export
 #' @examples 
-#' loadFirehoseData
-loadFirehoseData <- function(folder = "~/Downloads", ...) {
+#' loadFirehoseData()
+loadFirehoseData <- function(folder = "~/Downloads",
+                             exclude = c(".aux.", ".mage-tab.",
+                                         "MANIFEST.txt"), ...) {
     ## TODO(NunoA): Check if the default folder works in Windows
-    # Query Firehose with the user query
+    # Query Firehose
     res <- queryFirehoseData(...)
     stop_for_status(res)
     
     # Parse the query
-    res <- fromJSON(content(res, "text"))[[1]]
-    id <- paste(res$cohort, res$data_type, res$protocol)
+    res <- content(res, "text", encoding = "UTF8")
+    res <- fromJSON(res)[[1]]
     urls <- res$urls
-    names(urls) <- id
+    names(urls) <- paste(res$cohort, res$data_type,
+                         ifelse(is.na(res$protocol), res$tool, res$protocol))
     
-    # Download the appropriate archives into a specific location
-    archives <- downloadFiles(unlist(urls), folder)
+    # Ignore specific archives
+    exclude <- paste(exclude, collapse = "|")
+    ignoreURLs <- function(links, exclude) {
+        toExclude <- grepl(exclude, links)
+        return(links[!toExclude])
+    }
+    urls <- lapply(urls, ignoreURLs, exclude)
+    urls <- Filter(length, urls)
     
     # Check integrety of the downloaded archives
     filesOfInterest <- archives[tools::file_ext(archives) != "md5"]
