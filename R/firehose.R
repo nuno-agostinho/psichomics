@@ -169,7 +169,7 @@ downloadFiles <- function(url, folder, ...) {
 #' for files with non-matching md5sums
 #' @export
 checkIntegrity <- function(filesToCheck, md5file) {
-    md5sums <- tools::md5sum(filesToCheck)
+    md5sums <- digest::digest(file = filesToCheck)
     md5table <- read.table(md5file, stringsAsFactors = FALSE)[[1]]
     return(md5sums %in% md5table)
 }
