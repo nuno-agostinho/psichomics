@@ -1,4 +1,4 @@
-#' @import httr
+#' @import httr tools
 #' @importFrom jsonlite fromJSON
 NULL
 
@@ -99,7 +99,7 @@ parseFirehoseMetadata <- function(type, ...) {
     # Query multiple items by collapsing them with a comma
     if (length(args) > 0)
         args <- lapply(args, paste, collapse = ",")
-        
+    
     # Query the given link and parse the response
     link <- paste0("http://firebrowse.org/api/v1/Metadata/", type)
     response <- GET(link, query = c(format = "json", args))
@@ -137,10 +137,9 @@ getFirehoseCohorts <- function(cohort = NULL) {
     return(cohorts)
 }
 
-
 #' Download files to a given directory
 #'
-#' @param urls Chareacter: download links
+#' @param url Character: download links
 #' @param folder Character: directory to store the downloaded archives
 #' @param ... Extra parameters passed to the function download.file
 #'
@@ -148,15 +147,15 @@ getFirehoseCohorts <- function(cohort = NULL) {
 #' @export
 #'
 #' @examples
-#' urls <- paste0("https://unsplash.it/400/300/?image=", 570:572)
-#' downloadFiles(urls, "~/Pictures")
+#' url <- paste0("https://unsplash.it/400/300/?image=", 570:572)
+#' downloadFiles(url, "~/Pictures")
 #' 
 #' # Download without printing to console
-#' downloadFiles(urls, "~/Pictures", quiet = TRUE)
-downloadFiles <- function(urls, folder, ...) {
-    destination <- file.path(folder, basename(urls))
-    for (i in seq_along(urls))
-        download.file(urls[i], destination[i], ...)
+#' downloadFiles(url, "~/Pictures", quiet = TRUE)
+downloadFiles <- function(url, folder, ...) {
+    destination <- file.path(folder, basename(url))
+    for (i in seq_along(url))
+        download.file(url[i], destination[i], ...)
     return(destination)
 }
 
