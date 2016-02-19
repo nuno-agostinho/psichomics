@@ -1,4 +1,4 @@
-tablename <- "junction.quantification" # Name of the created table
+tablename <- "Junction quantification" # Name of the created table
 filename <- "junction_quantification" # Name of the file
 delim <- "\t"                   # Delimiter used to separate fields
 transpose <- FALSE              # Tranpose data
