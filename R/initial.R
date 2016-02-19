@@ -162,9 +162,10 @@ parseValidFiles <- function(file, formatsFolder) {
     headRows <- unlist(rm.null(headRows))
     headRows <- ifelse(!is.null(headRows), max(headRows), 6)
     
-    ## TODO(NunoA): Allow to change the delimiter
-    head <- readr::read_delim(file, delim="\t", n_max=headRows,
-                              col_names = FALSE)
+    ## TODO(NunoA): readr can't be used because it gives an error for
+    ## col_names=FALSE if the first line isn't the same data type of the rest
+    ## of the file; e.g. if the first line is character and the rest is integer
+    head <- read.delim(file, header = FALSE, nrows = 6, stringsAsFactors = F)
     
     # Check if the file is recognised by at least one file format
     recognised <- lapply(formats, checkFileFormat, head)
