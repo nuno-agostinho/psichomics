@@ -2,6 +2,25 @@
 #' @importFrom jsonlite fromJSON
 NULL
 
+#' Returns the date format used by the Firehose API
+#'
+#' @return Named list with Firehose API's date formats
+#' @export
+#'
+#' @examples
+#' format <- getFirehoseDateFormat()
+#' 
+#' # date format to use in a query to Firehose API
+#' format$query
+#' 
+#' # date format to parse a date in a response from Firehose API
+#' format$response
+getFirehoseDateFormat <- function() {
+    query <- "%Y_%m_%d"
+    response <- "%a, %d %b %Y %H:%M:%S" 
+    return(list(query=query, response=response))
+}
+
 #' Check if the Firehose API is running
 #'
 #' The Firehose API is running if it returns the status condition 200; if
