@@ -122,7 +122,7 @@ parseFirehoseMetadata <- function(type, ...) {
     # Query the given link and parse the response
     link <- paste0("http://firebrowse.org/api/v1/Metadata/", type)
     response <- GET(link, query = c(format = "json", args))
-    response <- fromJSON(content(response, "text"))
+    response <- fromJSON(content(response, "text", encoding = "UTF8"))
     return(response)
 }
 
