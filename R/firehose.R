@@ -135,8 +135,10 @@ parseFirehoseMetadata <- function(type, ...) {
 #' @examples
 #' getFirehoseDates()
 getFirehoseDates <- function() {
-    dates <- parseFirehoseMetadata("Dates")
-    return(dates$Dates)
+    dates <- parseFirehoseMetadata("Dates")$Dates
+    format <- getFirehoseDateFormat()
+    dates <- as.Date(dates, format$query)
+    return(dates)
 }
 
 #' Query the Firehose API for the cohorts available
