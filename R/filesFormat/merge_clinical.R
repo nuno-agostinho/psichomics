@@ -1,4 +1,4 @@
-tablename <- "clinical"         # Name of the created table
+tablename <- "Clinical data"         # Name of the created table
 filename <- "clin.merged.txt"   # Name of the file
 delim <- "\t"                   # Delimiter used to separate fields
 transpose <- TRUE               # Tranpose data
