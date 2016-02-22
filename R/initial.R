@@ -64,8 +64,7 @@ sourceScripts <- function(folder, check, ...){
 #' Scripts from a given folder are checked to see if they have the given
 #' objects. If they do, a given function will be called.
 #' 
-#' @note It's a good idea to check if the function is also included as an object
-#' in a script.
+#' @note It's a good idea to check if the function is included in the script.
 #'
 #' @inheritParams sourceScripts
 #' @param func Character: function to call
@@ -73,8 +72,7 @@ sourceScripts <- function(folder, check, ...){
 #'
 #' @return Variable from valid script
 #' @export
-callScriptsFunction <- function(folder, check, func, ...) {
-    args <- list(...)
+callScriptsFunction <- function(func, ..., check = func, folder = "R/") {
     # Get scripts given the variables of interest
     scripts <- sourceScripts(folder, check)
     # Get a given variable from those script
@@ -82,7 +80,7 @@ callScriptsFunction <- function(folder, check, func, ...) {
     # Remove nulls (needed?)
     f <- Filter(Negate(is.null), f)
     # Calls the function of each script with the given parameters
-    loaded <- lapply(f, do.call, args)
+    loaded <- lapply(f, do.call, list(...))
     return(loaded)
 }
 

@@ -66,11 +66,14 @@ isFirehoseUp <- function() {
 #' @export
 #'
 #' @examples
-#' queryFirehoseData(cohort = "ACC", data_type = "mRNASeq")
+#' cohort <- getFirehoseCohorts()[1]
+#' queryFirehoseData(cohort = cohort, data_type = "mRNASeq")
 #' 
 #' # Querying for data from a specific date
 #' dates <- getFirehoseDates()
-#' queryFirehoseData(date = dates[2], cohort = "ACC")
+#' dates <- format(dates, getFirehoseDateFormat()$query)
+#' 
+#' queryFirehoseData(date = dates[2], cohort = cohort)
 queryFirehoseData <- function(format = "json", date = NULL, cohort = NULL, 
                               data_type = NULL, tool = NULL, platform = NULL,
                               center = NULL, level = NULL, protocol = NULL,
@@ -130,7 +133,7 @@ parseFirehoseMetadata <- function(type, ...) {
 #' Query the Firehose API for the datestamps of the data available and parse the
 #' response
 #'
-#' @return Character with datestamps of the data available
+#' @return Date with datestamps of the data available
 #' @export
 #'
 #' @examples

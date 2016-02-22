@@ -8,10 +8,9 @@ source("R/initial.R")
 #' @param output Output object
 #' @param session Session object
 server <- function(input, output, session) {
-    callScriptsFunction(tabsFolder, c("name", "server"), "server",
-                        input, output, session)
+    callScriptsFunction(func = "server", input, output, session,
+                        check = c("name", "server"))
     
-    # Stop Shiny app when session ends (e.g. closing the window)
     session$onSessionEnded(function() {
         # Stop app and print message to console
         suppressMessages(stopped <- stopApp(returnValue=TRUE))
@@ -38,7 +37,7 @@ ui <- shinyUI(
              collapsible = TRUE, position = "fixed-top",
              header = header),
         # Loads the interface of each tab
-        callScriptsFunction(tabsFolder, c("name", "ui"), "ui")
+        callScriptsFunction(func = "ui", check = c("name", "ui"), tabPanel)
     ))
 )
 
