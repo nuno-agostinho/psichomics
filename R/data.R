@@ -118,13 +118,13 @@ server <- function(input, output, session){
         #         })
         
         error <- function(msg) { print(msg); return(NULL) }
-        if(is.null(input$dataFile1)) return(error("No data input selected"))
-        if(input$species == "") return(error("Species field can't be empty"))
+        if(is.null(input$dataFile)) error("No data input selected")
+        if(input$species == "") error("Species field can't be empty")
         
-        inFile <- input$dataFile1
+        inFile <- input$dataFile
         info <- read.table(inFile$datapath, sep = input$sep,
                            header = input$header)
-        shared.data$a <<- new("Organism",
+        shared.data$a <<- new("Classification",
                               species = input$species,
                               common.name = input$common.name,
                               inclusion.levels = info)
@@ -133,13 +133,5 @@ server <- function(input, output, session){
                     style = "success", append = FALSE)
     }) # end of observeEvent
     
-    output$tableOrAbout <- renderUI({
-        # If no data file is loaded, show welcome screen
-        if(is.null(shared.data$a))
-            includeMarkdown("about.md")
-        else
-            dataTableOutput("dataTable")
-    })
-    
-    output$dataTable <- renderDataTable(inclusion.levels(data$a))
+    output$dataTable <- renderDataTable(mtcars)
 }

@@ -28,9 +28,9 @@ server <- function(input, output, session) {
     updateSelectizeInput(session, "selectizePlot", choices = names)
     
     observe({
-        # Hide selectizeEvent when showing datatable; in other cases, show it
-        events <- function(f) f("selectizeEvent",
-                                anim = TRUE, animType = "fade")
+        # If showing datatable, hide selectizeEvent; otherwise, show it
+        events <- function(func) func("selectizeEvent",
+                                      anim = TRUE, animType = "fade")
         if(input$selectizePlot == "datatable") events(hide)
         else events(show)
     })
