@@ -1,13 +1,11 @@
 name <- "Widgets"
 
-ui <- function() {
-    tabPanel(
-        name,
+ui <- function(tab) {
+    tab(name,
         fluidRow(
             bsAlert(anchorId = "alert"),
             shiny::column(3, h3("Buttons"),
                           actionButton("action", label = "Action")),
-            #br(), br(), 
             #submitButton("Submit")), # DOESN'T ALLOW TO UPDATE VALUES...
             shiny::column(3, h3("Single checkbox"),
                           checkboxInput("checkbox", label = "Choice A",

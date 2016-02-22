@@ -1,20 +1,18 @@
 name <- "Plots"
 
-ui <- function()
-    tabPanel(name,
-             # allows the user to choose which UI set is shown
-             fluidRow(
-                 shiny::column(
-                     2, selectizeInput("selectizePlot", "Select plot type:",
-                                       choices = NULL,
-                                       options = list(
-                                           placeholder = "Select a plot type"))),
-                 shiny::column(
-                     2, selectizeInput("selectizeEvent", "Select event:",
-                                       choices = sort(rownames(mtcars)),
-                                       options = list(
-                                           placeholder = "Select an event")))),
-             uiOutput("plots"))
+ui <- function(tab)
+    tab(name,
+        # allows the user to choose which UI set is shown
+        fluidRow(
+            column(2, selectizeInput("selectizePlot", "Select plot type:",
+                                     choices = NULL,
+                                     options = list(
+                                         placeholder = "Select a plot type"))),
+            column(2, selectizeInput("selectizeEvent", "Select event:",
+                                     choices = sort(rownames(mtcars)),
+                                     options = list(
+                                         placeholder = "Select an event")))),
+        uiOutput("plots"))
 
 server <- function(input, output, session) {
     # loads valid scripts from the indicated folder

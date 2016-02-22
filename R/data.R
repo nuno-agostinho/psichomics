@@ -1,50 +1,83 @@
 #' @import shiny shinyBS shinyjs
 name <- "Data"
 
-#' Creates a collapsible UI set with options to add a file from the local
-#' storage or from TCGA.
+#' Creates a UI set with options to add a file from the local storage
 #' 
-#' @param number Integer: A number to identify the set
-#' 
-#' @return A collapse panel that can be added to a UI definition.
-addFileCollapse <- function(number) {
-    shinyBS::bsCollapsePanel(
-        style = "info",
-        title = "Add file", #list(img(src = "add-button-16px.png"),
-        #     paste("Add file", number)),
-        h4("Add local files"),
-        fileInput(paste0("dataFile", number), "Choose folder", multiple = T),
-        selectInput("sep", "Choose separator", 
-                    choices = list("Tab" = "\t", "Comma"=",", "Space"=" "),
-                    selected = "\t"),
-        checkboxInput("header", "Has header", value = FALSE),
-        textInput("species", label = "Species", placeholder = "Required"),
-        textInput("common.name", label = "Common name"),
-        uiOutput("testing"),
-        actionButton(paste0("acceptFile", number), "Send file")
-    ) # end of bsCollapsePanel
+#' @return A UI set that can be added to a UI definition
+addLocalFile <- function() {
+    list(h4("Add local files"),
+         fileInput("dataFile", "Choose folder", multiple = T),
+         # selectInput("sep", "Choose separator", 
+                     # choices = list("Tab" = "\t", "Comma"=",", "Space"=" "),
+                     # selected = "\t"),
+         # checkboxInput("header", "Has header", value = FALSE),
+         textInput("species", label = "Species", placeholder = "Required"),
+         textInput("common.name", label = "Common name"),
+         uiOutput("testing"),
+         actionButton("acceptFile", "Send file")
+    ) # end of list
 }
 
-ui <- function() {
-    tabPanel(
-        name,
+#' Creates a UI set with options to add data from TCGA/Firehose
+#' 
+#' @return A UI set that can be added to a UI definition
+addTCGAdata <- function() {
+    if (isFirehoseUp()) {
+        list(h4("TCGA/Firehose data"),
+             selectInput("firehoseCohort", "Cohort",
+                         getFirehoseCohorts(), multiple = TRUE),
+             selectInput("firehoseDate", "Date",
+                         as.character(getFirehoseDates()), multiple = TRUE),
+             textInput("firehoseExclude",
+                       "Files/archives to exclude (separated by comma)"),
+             actionButton("acceptFile", "Get data"))
+    } else {
+        list(h4("TCGA/Firehose data"),
+             p("Not able to reach Firehose."))
+    }
+}
+
+ui <- function(tab) {
+    tab(name,
         sidebarLayout(
             sidebarPanel(
-                h3("File input"),
+                h3("Data input"),
                 shinyBS::bsCollapse(
-                    id = "addFiles",
-                    open = "Add file",
-                    addFileCollapse(1)
-                    # addFileCollapse(2)
+                    id = "addData",
+                    open = "Add data",
+                    shinyBS::bsCollapsePanel(
+                        style = "info",
+                        title = "Add data",
+                        #list(img(src = "add-button-16px.png"))
+                        addLocalFile(),
+                        hr(),
+                        addTCGAdata())
                 )
             ),
             mainPanel(
                 # TODO(NunoA): Show alerts from renderUI
                 bsAlert(anchorId = "alert2"),
-                uiOutput("tableOrAbout")
+                uiOutput("tablesOrAbout")
             )
         )
     )
+}
+
+#' Creates a tabPanel template for a datatable with a title and description
+#'
+#' @param title Character: tab title
+#' @param tableId Character: id of the datatable
+#' @param description Character: description of the table (optional)
+#' @param ... Extra arguments to pass to the function dataTableOutput
+#'
+#' @return The HTML code for a tabPanel template
+#' @export
+tabTable <- function(title, tableId, description = NULL, ...) {
+    if(!is.null(description))
+        d <- p(tags$strong("Table description:"), description)
+    else
+        d <- NULL
+    tabPanel(title, br(), d, dataTableOutput(tableId, ...))
 }
 
 #' Server logic
@@ -53,11 +86,25 @@ ui <- function() {
 server <- function(input, output, session){
     observe({
         # The button is only enabled if it meets the conditions that follow
-        toggleState("acceptFile1",
+        toggleState("acceptFile",
                     input$species != "")
     })
     
-    observeEvent(input$acceptFile1, {
+    output$tablesOrAbout <- renderUI({
+        # If no data file is loaded, show welcome screen
+        if(!is.null(shared.data$a)) {
+            includeMarkdown("about.md")
+        } else {
+            tabsetPanel(
+                tabTable("Test", "dataTable2",
+                         "this is a pretty table with interesting info."),
+                tabTable("Another", "dataTable"),
+                tabTable("More", "dataTable3")
+            )
+        }
+    }) # end of renderUI
+    
+    observeEvent(input$acceptFile, {
         #         output$testing <- renderUI({
         #             list(
         #                 badge(inputId="badge1", Sys.time()),
