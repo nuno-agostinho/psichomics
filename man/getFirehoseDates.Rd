@@ -8,7 +8,7 @@ response}
 getFirehoseDates()
 }
 \value{
-Character with datestamps of the data available
+Date with datestamps of the data available
 }
 \description{
 Query the Firehose API for the datestamps of the data available and parse the

@@ -12,9 +12,13 @@ loadFile(format, file)
 \item{file}{Character: file to load}
 }
 \value{
-Named list of one data.frame with the loaded file
+Data frame with the loaded file
 }
 \description{
 Loads a file according to its format
+}
+\details{
+The resulting data frame includes the attribute "tablename" with the
+name of the data frame
 }
 

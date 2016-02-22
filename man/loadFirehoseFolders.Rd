@@ -4,13 +4,12 @@
 \alias{loadFirehoseFolders}
 \title{Load Firehose folders}
 \usage{
-loadFirehoseFolders(folder, name = NULL, exclude = "")
+loadFirehoseFolders(folder, exclude = "")
 }
 \arguments{
 \item{folder}{Character: folder(s) in which to look for Firehose files}
 
-\item{name}{Character: names for the returned list with loaded data.frames;
-this must be of the same length as the list returned}
+\item{exclude}{Character: files to exclude from the loading}
 }
 \value{
 List with loaded data.frames

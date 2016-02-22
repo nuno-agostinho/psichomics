@@ -11,6 +11,9 @@ loadFirehoseData(folder = "~/Downloads", exclude = c(".aux.", ".mage-tab.",
 \item{folder}{Character: directory to store the downloaded archives (by
 default, it saves in the user's "Downloads" folder)}
 
+\item{exclude}{Character: files and folders to exclude from downloading and
+from loading into R}
+
 \item{...}{Extra parameters to be passed to \code{\link{queryFirehoseData}}}
 }
 \description{

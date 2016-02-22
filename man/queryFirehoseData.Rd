@@ -46,10 +46,13 @@ Response from the Firehose API (it needs to be parsed)
 Query the Firehose API for TCGA data
 }
 \examples{
-queryFirehoseData(cohort = "ACC", data_type = "mRNASeq")
+cohort <- getFirehoseCohorts()[1]
+queryFirehoseData(cohort = cohort, data_type = "mRNASeq")
 
 # Querying for data from a specific date
 dates <- getFirehoseDates()
-queryFirehoseData(date = dates[2], cohort = "ACC")
+dates <- format(dates, getFirehoseDateFormat()$query)
+
+queryFirehoseData(date = dates[2], cohort = cohort)
 }
 

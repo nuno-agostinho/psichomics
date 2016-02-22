@@ -2,7 +2,7 @@
 % Please edit documentation in R/initial.R
 \name{checkFileFormat}
 \alias{checkFileFormat}
-\title{Checks the format of many files}
+\title{Checks the format of a file}
 \usage{
 checkFileFormat(format, head)
 }
@@ -15,6 +15,6 @@ checkFileFormat(format, head)
 TRUE if the file is of the given format; otherwise, returns FALSE
 }
 \description{
-Checks the format of many files
+Checks the format of a file
 }
 
