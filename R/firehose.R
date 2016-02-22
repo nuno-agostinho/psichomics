@@ -85,12 +85,13 @@ queryFirehoseData <- function(format = "json", date = NULL, cohort = NULL,
     query <- lapply(labels, dynGet)
     names(query) <- labels
     query <- Filter(Negate(is.null), query)
+    
     # Collapse items with a comma to query for multiple items
     query <- lapply(query, paste, collapse = ",") 
     
     # Query the API
-    response <- GET("http://firebrowse.org",
-                    path = "api/v1/Archives/StandardData", query = query)
+    response <- GET("http://firebrowse.org", query = query,
+                    path = "api/v1/Archives/StandardData")
     return(response)
 }
 
@@ -237,6 +238,33 @@ prepareFirehoseArchives <- function (url, folder, quiet = FALSE) {
     return(invisible(TRUE))
 }
 
+#' Retrieve URLs from a response to a Firehose data query
+#'
+#' @param res Response from httr::GET to a Firehose data query
+#'
+#' @return Named character with URLs
+#' @export
+#'
+#' @examples
+#' res <- queryFirehoseData(cohort = "ACC")
+#' url <- parseUrlsFromResponse(res)
+parseUrlsFromFirehoseResponse <- function(res) {
+    # Parse the query response
+    parsed <- content(res, "text", encoding = "UTF8")
+    parsed <- fromJSON(parsed)[[1]]
+    parsed$date <- as.Date(parsed$date,
+                           format = getFirehoseDateFormat()$response)
+    
+    ## TODO(NunoA): maybe this could be simplified?
+    # Split URLs from response by cohort and datestamp
+    url <- split(parsed$url,
+                 paste(parsed$cohort, format(parsed$date, "%Y-%m-%d")))
+    url <- lapply(url, unlist)
+    link <- unlist(url)
+    names(link) <- rep(names(url), vapply(url, length, numeric(1)))
+    return(link)
+}
+
 #' Load Firehose folders
 #'
 #' Loads the files present in each folder as a data.frame.
@@ -246,9 +274,8 @@ prepareFirehoseArchives <- function (url, folder, quiet = FALSE) {
 #' inside subfolders are NOT loaded).
 #'
 #' @param folder Character: folder(s) in which to look for Firehose files
-#' @param name Character: names for the returned list with loaded data.frames;
-#' this must be of the same length as the list returned
-#'
+#' @param exclude Character: files to exclude from the loading
+#' 
 #' @return List with loaded data.frames
 #' @export
 #'
@@ -262,28 +289,20 @@ prepareFirehoseArchives <- function (url, folder, quiet = FALSE) {
 #' 
 #' # Exclude certain files from being loaded
 #' loadFirehoseFolders(folders, exclude = c("pink.txt", "panther.txt"))
-loadFirehoseFolders <- function (folder, name=NULL, exclude="") {
-    exclude <- paste(exclude, collapse = "|")
+loadFirehoseFolders <- function (folder, exclude="") {
     # Retrieve full path of the files inside the given folders
-    dataFiles <- lapply(folder, dir, full.names=TRUE)
-    loaded <- lapply(dataFiles, function(each) {
-        # Filter files to be excluded
-        if (exclude != "") each <- each[!grepl(exclude, each)]
-        
-        # Filter subdirectories
-        each <- each[!dir.exists(each)]
-        
-        # Load valid files from the given folder
-        data <- list()
-        for (e in each) {
-            parsed <- parseValidFiles(e, "R/filesFormat")
-            if (!is.null(parsed))
-                data <- c(data, parsed)
-        }
-        return(data)
-    })
-    names(loaded) <- name
-    loaded <- Filter(Negate(is.null), loaded)
+    files <- dir(folder, full.names=TRUE)
+    
+    # Exclude subdirectories and undesired files
+    files <- files[!dir.exists(files)]
+    exclude <- paste(exclude, collapse = "|")
+    if (exclude != "") files <- files[!grepl(exclude, files)]
+    
+    # Try to load files and remove those with 0 rows
+    loaded <- list()
+    for (each in seq_along(files))
+        loaded[[each]] <- parseValidFile(files[each], "R/filesFormat")
+    names(loaded) <- sapply(loaded, attr, "tablename")
     loaded <- Filter(length, loaded)
     return(loaded)
 }
@@ -292,49 +311,38 @@ loadFirehoseFolders <- function (folder, name=NULL, exclude="") {
 #' 
 #' @param folder Character: directory to store the downloaded archives (by
 #' default, it saves in the user's "Downloads" folder)
+#' @param exclude Character: files and folders to exclude from downloading and
+#' from loading into R
 #' @param ... Extra parameters to be passed to \code{\link{queryFirehoseData}}
 #' 
 #' @export
 #' @examples 
 #' loadFirehoseData()
 loadFirehoseData <- function(folder = "~/Downloads",
-                             exclude = c(".aux.", ".mage-tab.",
-                                         "MANIFEST.txt"), ...) {
+                             exclude = c(".aux.", ".mage-tab.", "MANIFEST.txt"),
+                             ...) {
     ## TODO(NunoA): Check if the default folder works in Windows
-    # Query Firehose
+    # Query Firehose and get URLs for archives
     res <- queryFirehoseData(...)
     stop_for_status(res)
-    
-    # Parse the query
-    res <- content(res, "text", encoding = "UTF8")
-    res <- fromJSON(res)[[1]]
-    urls <- res$urls
-    names(urls) <- paste(res$cohort, res$data_type,
-                         ifelse(is.na(res$protocol), res$tool, res$protocol))
+    url <- parseUrlsFromFirehoseResponse(res)
     
     # Ignore specific archives
     exclude <- paste(exclude, collapse = "|")
-    ignoreURLs <- function(links, exclude) {
-        toExclude <- grepl(exclude, links)
-        return(links[!toExclude])
-    }
-    urls <- lapply(urls, ignoreURLs, exclude)
-    urls <- Filter(length, urls)
+    url <- url[!grepl(exclude, url)]
     
     # Check which folders have already been downloaded to the given directory
-    dataFolders <- unlist(urls)[tools::file_ext(unlist(urls)) != "md5"]
-    dataFolders <- file.path(
-        folder, tools::file_path_sans_ext(
-            basename(dataFolders), compression = TRUE))
-    missing <- urls[!file.exists(dataFolders)]
-    names(missing) <- NULL
+    noMD5 <- url[file_ext(url) != "md5"]
+    base <- file_path_sans_ext(basename(noMD5), compression = TRUE)
+    archives <- file.path(folder, base)
+    missing <- url[!file.exists(archives)]
     
-    # Prepare archives not present in the given directory
-    if (length(missing) > 0)
-        prepareFirehoseArchives(unlist(missing), folder)
+    # Retrieve and prepare archives not present in the given directory
+    if (length(missing) > 0) prepareFirehoseArchives(missing, folder)
     
     ## TODO(NunoA): Check if it's possible to show READR progress in a Shiny app
     # Load the files using readr (faster and can show progress)
-    loaded <- loadFirehoseFolders(dataFolders, names(urls))
+    archives <- split(archives, names(noMD5))
+    loaded <- lapply(archives, loadFirehoseFolders, exclude)
     return(loaded)
 }
