@@ -87,7 +87,7 @@ callScriptsFunction <- function(folder, check, func, ...) {
 }
 
 
-#' Checks the format of many files
+#' Checks the format of a file
 #'
 #' @param format Environment: format of the file
 #' @param head Data.frame: head of the file to check
@@ -114,7 +114,10 @@ checkFileFormat <- function(format, head) {
 #' @inheritParams checkFileFormat
 #' @param file Character: file to load
 #' 
-#' @return Named list of one data.frame with the loaded file
+#' @details The resulting data frame includes the attribute "tablename" with the
+#' name of the data frame
+#' 
+#' @return Data frame with the loaded file
 #' @export
 loadFile <- function(format, file) {
     ## TODO(NunoA): account for the comment character
@@ -135,10 +138,8 @@ loadFile <- function(format, file) {
     contentStart <- ifelse(!is.null(format$contentStart),
                            format$contentStart, 2)
     loaded <- loaded[contentStart:nrow(loaded), ]
-    
-    res <- list(loaded)
-    names(res) <- format$tablename
-    return(res)
+    attr(loaded, "tablename") <- format$tablename
+    return(loaded)
 }
 
 #' Parse file given a folder with recognised formats
@@ -149,9 +150,12 @@ loadFile <- function(format, file) {
 #' @param file Character: file to parse
 #' @param formatsFolder Character: folder with recognised file formats
 #' 
-#' @return Named list of one element with the loaded file if the file format is
+#' @details The resulting data frame includes the attribute "tablename" with the
+#' name of the data frame
+#' 
+#' @return Data frame with the contents of the given file if the file format is
 #' recognised; otherwise, returns NULL
-parseValidFiles <- function(file, formatsFolder) {
+parseValidFile <- function(file, formatsFolder) {
     # Get all available formats information
     formats <- sourceScripts(formatsFolder,
                              c("name", "header"))
