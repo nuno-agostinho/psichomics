@@ -104,14 +104,13 @@ server <- function(input, output, session){
     
     output$tablesOrAbout <- renderUI({
         # If no data file is loaded, show welcome screen
-        if(!is.null(shared.data$a)) {
+        if(is.null(shared.data$data)) {
             includeMarkdown("about.md")
         } else {
-            tabsetPanel(
-                tabTable("Test", "dataTable2",
-                         "this is a pretty table with interesting info."),
-                tabTable("Another", "dataTable"),
-                tabTable("More", "dataTable3")
+            list(#div(class = "pull-right", position = "absolute",
+                     selectInput("category", NULL,#"Select category",
+                                 choices = names(shared.data$data)),#),
+                 uiOutput("datatabs")
             )
         }
     }) # end of renderUI
@@ -133,17 +132,53 @@ server <- function(input, output, session){
         if(is.null(input$dataFile)) error("No data input selected")
         if(input$species == "") error("Species field can't be empty")
         
-        inFile <- input$dataFile
-        info <- read.table(inFile$datapath, sep = input$sep,
-                           header = input$header)
-        shared.data$a <<- new("Classification",
-                              species = input$species,
-                              common.name = input$common.name,
-                              inclusion.levels = info)
-        createAlert(session, anchorId = "alert2", title = "Yay!",
-                    content = list(progressbar(sample(1:100, 1))),
-                    style = "success", append = FALSE)
+        # inFile <- input$dataFile
+        # info <- read.table(inFile$datapath, sep = input$sep,
+        #                    header = input$header)
+        # createAlert(session, anchorId = "alert2", title = "Yay!",
+        #             content = list(progressbar(sample(1:100, 1))),
+        #             style = "success", append = FALSE)
     }) # end of observeEvent
     
-    output$dataTable <- renderDataTable(mtcars)
+    # Load Firehose data
+    observeEvent(input$getFirehoseData, {
+        if (!is.null(shared.data$data)) {
+            toggleModal(session, "modalExample", "open")
+        } else {
+            exclude <- strsplit(input$firehoseExclude, ",")[[1]]
+            exclude <- trimWhitespace(exclude)
+            
+            progressbar(sample(1:100, 1))
+            
+            shared.data$data <- loadFirehoseData(
+                folder = input$dataFolder,
+                cohort = input$firehoseCohort,
+                date = gsub("-", "_", input$firehoseDate),
+                data_type = input$dataType,
+                exclude = exclude)
+            
+        }
+    }) # end of observeEvent
+    
+    # Render tabs with data tables
+    output$datatabs <- renderUI({
+        data <- shared.data$data[[input$category]]
+        do.call(tabsetPanel,
+                lapply(seq_along(names(data)), function(i) {
+                    tabTable(names(data)[i], number = i,
+                             description = attr(data[[i]], "description"))
+                })
+        )
+    }) # end of renderUI
+    
+    # Render data tables every time the data changes
+    observeEvent(input$category, {
+        if (!is.null(input$category)) {
+            data <- shared.data$data[[input$category]]
+            lapply(seq_along(data), function(i) {
+                output[[paste0("dataTable", i)]] <- renderDataTable(
+                    data[[i]], options = list(pageLength = 10, scrollX=TRUE))
+            })
+        }
+    }) # end of observe
 }
