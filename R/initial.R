@@ -113,16 +113,22 @@ callScriptsFunction <- function(func, ..., check = func, folder = "R/") {
 checkFileFormat <- function(format, head) {
     ## TODO(NunoA): account for comments
     # Transpose data
-    if (!is.null(format$transpose) && format$transpose) head <- t(head)
+    if (!is.null(format$transpose) && format$transpose)
+        head <- t(head)
     
-    # Check if header is comparable
-    if (ncol(head) < length(format$header)) return(FALSE)
-    
-    # Check if headers match
-    headerCheck <- ifelse(!is.null(format$headerCheck), format$headerCheck, 1)
-    fileHeader <- head[headerCheck, 1:length(format$header)]
-    valid <- all(fileHeader == format$header)
-    return(valid)
+    lenCheck <- length(format$check)
+    # See whether using row or column to check format
+    if (is.null(format$rowCheck) | !format$rowCheck) {
+        # Check if length is not satisfatory
+        if (nrow(head) < lenCheck) return(FALSE)
+        # Select wanted row and check for a match
+        return(all(head[1:lenCheck, format$checkIndex] == format$check))
+    } else {
+        # Check if length is not satisfatory
+        if (ncol(head) < lenCheck) return(FALSE)
+        # Select wanted column and check for a match
+        return(all(head[format$checkIndex, 1:lenCheck] == format$check))
+    }
 }
 
 #' Loads a file according to its format
@@ -142,19 +148,20 @@ loadFile <- function(format, file) {
     
     # Transpose data
     if (!is.null(format$transpose) && format$transpose)
-        loaded <- data.frame(t(loaded),
-                             stringsAsFactors = FALSE,
+        loaded <- data.frame(t(loaded), stringsAsFactors = FALSE, 
                              row.names = NULL)
     
-    # Column names
-    headerUse <- ifelse(!is.null(format$headerUse), format$headerUse, 1)
-    names(loaded) <- loaded[headerUse, ]
+    # Add column and row names
+    if (!is.null(format$colNames)) names(loaded) <- loaded[format$colNames, ]
+    if (!is.null(format$rowNames)) rownames(loaded) <- loaded[, format$rowNames]
     
-    # Filter in only content of interest
-    contentStart <- ifelse(!is.null(format$contentStart),
-                           format$contentStart, 2)
-    loaded <- loaded[contentStart:nrow(loaded), ]
+    # Filter out unwanted columns and rows
+    if (!is.null(format$ignoreRows)) loaded <- loaded[-format$ignoreRows, ]
+    if (!is.null(format$ignoreCols)) loaded <- loaded[ , -format$ignoreCols]
+    
+    # Add table name and description
     attr(loaded, "tablename") <- format$tablename
+    attr(loaded, "description") <- format$description
     return(loaded)
 }
 
