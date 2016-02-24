@@ -31,7 +31,7 @@ server <- function(input, output, session) {
         # If showing datatable, hide selectizeEvent; otherwise, show it
         events <- function(func) func("selectizeEvent",
                                       anim = TRUE, animType = "fade")
-        if(input$selectizePlot == "datatable") events(hide)
+        if(input$selectizePlot == "Inclusion levels") events(hide)
         else events(show)
     })
     
