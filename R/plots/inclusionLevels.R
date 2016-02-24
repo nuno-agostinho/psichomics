@@ -1,5 +1,5 @@
 # The name used for the plot must be unique
-name <- "datatable"
+name <- "Inclusion levels"
 
 ui <- list(
     dataTableOutput(name)
