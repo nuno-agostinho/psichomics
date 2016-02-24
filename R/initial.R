@@ -13,6 +13,24 @@ options(shiny.maxRequestSize = MB * 1024^2)
 
 tabsFolder <- "R/"
 
+#' Trims whitespace from a word
+#'
+#' @param word Character to trim
+#'
+#' @return Character without whitespace
+#' @export
+#'
+#' @examples
+#' trimWhitespace("    hey   there     ")
+#' trimWhitespace(c("pineapple    ", "one two three", " sunken    ship   "))
+trimWhitespace <- function(word) {
+    # Remove leading and trailing whitespace
+    word <- gsub("^\\s+|\\s+$", "", word)
+    # Replace multiple spaces between words with one single space
+    word <- gsub("\\s+", " ", word)
+    return(word)
+}
+
 #' Filter NULL elements from vector or list
 #' 
 #' @param v Vector or list
