@@ -1,5 +1,20 @@
 context("Test general functions")
 
+test_that("trimWhitespace does nothing when there's no need to trim", {
+    word <- "this is a test"
+    expect_equal(trimWhitespace(word), word)
+})
+
+test_that("trimWhitespace trims whitespace from a character vector", {
+    word <- c("     this         is    a     test         ",
+              "another     simple test     right here  ",
+              "one               final                 test,          yay")
+    res <- c("this is a test", 
+             "another simple test right here",
+             "one final test, yay")
+    expect_equal(trimWhitespace(word), res)
+})
+
 test_that("rm.null removes NULL elements from a vector or a list", {
     v1 <- c(1:6, NULL, 2, NULL, 6, 9)
     v2 <- rm.null(v1)
