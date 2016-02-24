@@ -166,8 +166,11 @@ getFirehoseCohorts <- function(cohort = NULL) {
 #'
 #' @param url Character: download links
 #' @param folder Character: directory to store the downloaded archives
-#' @param ... Extra parameters passed to the function download.file
-#'
+#' @param ... Extra parameters passed to the download function
+#' @param download Function to use to download files
+#' @param message Function to show the messages (default is function(...) 
+#' print(paste(...)))
+#' 
 #' @return Invisible TRUE if every file was successfully downloaded
 #' @export
 #'
@@ -177,10 +180,13 @@ getFirehoseCohorts <- function(cohort = NULL) {
 #' 
 #' # Download without printing to console
 #' downloadFiles(url, "~/Pictures", quiet = TRUE)
-downloadFiles <- function(url, folder, ...) {
+downloadFiles <- function(url, folder, message = function(...) print(paste(...)),
+                          download = download.file, ...) {
     destination <- file.path(folder, basename(url))
-    for (i in seq_along(url))
-        download.file(url[i], destination[i], ...)
+    for (i in seq_along(url)) {
+        message("Downloading file", i, length(url))
+        download(url[i], destination[i], ...)
+    }
     return(destination)
 }
 
@@ -201,14 +207,14 @@ checkIntegrity <- function(filesToCheck, md5file) {
 
 #' Prepares Firehose archives in a given directory
 #'
-#' Downloads Firehose archives, checks their integrety using the MD5 files,
-#' extracts the content of the archives and removes the original downloaded
-#' archives.
+#' Checks Firehose archives' integrity using the MD5 files, extracts the content
+#' of the archives and removes the original downloaded archives.
 #'
-#' @inheritParams utils::download.file
-#' @param url Character: links to the downloadable archives
+#' @param downloaded Character: path to downloaded archives
 #' @param folder Character: local folder where the archives should be stored
-#'
+#' @param message Function to show the messages (default is function(...) 
+#' print(paste(...)))
+#' 
 #' @return Invisible TRUE if successful
 #' @export
 #'
@@ -217,11 +223,11 @@ checkIntegrity <- function(filesToCheck, md5file) {
 #'     "http://gdac.broadinstitute.org/runs/stddata__2015_11_01/data/",
 #'     "ACC/20151101/gdac.broadinstitute.org_ACC.",
 #'     "Merge_Clinical.Level_1.2015110100.0.0.tar.gz", c("", ".md5")))
-prepareFirehoseArchives <- function (url, folder, quiet = FALSE) {
-    downloaded <- downloadFiles(url, folder, quiet = quiet)
-    
+prepareFirehoseArchives <- function (downloaded, folder,
+                                     message = function(...) print(paste(...))) {
     # Check integrety of the downloaded archives with the MD5 files
     downloadedFolders <- downloaded[tools::file_ext(downloaded) != "md5"]
+    ## TODO(NunoA): don't assume every file has the respective MD5 file
     validFiles <- simplify2array(Map(checkIntegrity, downloadedFolders,
                                      paste0(downloadedFolders, ".md5")))
     
@@ -278,6 +284,8 @@ parseUrlsFromFirehoseResponse <- function(res) {
 #'
 #' @param folder Character: folder(s) in which to look for Firehose files
 #' @param exclude Character: files to exclude from the loading
+#' @param message Function to show the messages (default is function(...) 
+#' print(paste(...)))
 #' 
 #' @return List with loaded data.frames
 #' @export
@@ -292,7 +300,8 @@ parseUrlsFromFirehoseResponse <- function(res) {
 #' 
 #' # Exclude certain files from being loaded
 #' loadFirehoseFolders(folders, exclude = c("pink.txt", "panther.txt"))
-loadFirehoseFolders <- function (folder, exclude="") {
+loadFirehoseFolders <- function (folder, exclude="",
+                                 message = function(...) print(paste(...))) {
     # Retrieve full path of the files inside the given folders
     files <- dir(folder, full.names=TRUE)
     
@@ -303,8 +312,10 @@ loadFirehoseFolders <- function (folder, exclude="") {
     
     # Try to load files and remove those with 0 rows
     loaded <- list()
-    for (each in seq_along(files))
+    for (each in seq_along(files)) {
+        message("Processing file", each, length(files))
         loaded[[each]] <- parseValidFile(files[each], "R/filesFormat")
+    }
     names(loaded) <- sapply(loaded, attr, "tablename")
     loaded <- Filter(length, loaded)
     return(loaded)
@@ -315,15 +326,23 @@ loadFirehoseFolders <- function (folder, exclude="") {
 #' @param folder Character: directory to store the downloaded archives (by
 #' default, it saves in the user's "Downloads" folder)
 #' @param exclude Character: files and folders to exclude from downloading and
-#' from loading into R
+#' from loading into R (by default, it excludes ".aux.", ".mage-tab." and
+#' "MANIFEST.TXT" files)
 #' @param ... Extra parameters to be passed to \code{\link{queryFirehoseData}}
+#' @param message Function to show the messages (default is function(...) 
+#' print(paste(...)))
+#' @param download Function to download the files (default is download.file)
 #' 
 #' @export
 #' @examples 
 #' loadFirehoseData()
 loadFirehoseData <- function(folder = "~/Downloads",
                              exclude = c(".aux.", ".mage-tab.", "MANIFEST.txt"),
-                             ...) {
+                             ..., message = function(...) print(paste(...)),
+                             download = download.file) {
+    # Check if folder exists
+    if (!dir.exists(folder)) stop("Directory doesn't exist!")
+    
     ## TODO(NunoA): Check if the default folder works in Windows
     # Query Firehose and get URLs for archives
     res <- queryFirehoseData(...)
@@ -335,17 +354,21 @@ loadFirehoseData <- function(folder = "~/Downloads",
     url <- url[!grepl(exclude, url)]
     
     # Check which folders have already been downloaded to the given directory
-    noMD5 <- url[file_ext(url) != "md5"]
+    noMD5 <- gsub(".md5", "", url)
     base <- file_path_sans_ext(basename(noMD5), compression = TRUE)
     archives <- file.path(folder, base)
     missing <- url[!file.exists(archives)]
     
-    # Retrieve and prepare archives not present in the given directory
-    if (length(missing) > 0) prepareFirehoseArchives(missing, folder)
+    # Download and prepare archives not present in the given directory
+    if (length(missing) > 0) {
+        downloaded <- downloadFiles(missing, folder, message)
+        prepareFirehoseArchives(downloaded, folder, message)
+    }
     
     ## TODO(NunoA): Check if it's possible to show READR progress in a Shiny app
     # Load the files using readr (faster and can show progress)
-    archives <- split(archives, names(noMD5))
-    loaded <- lapply(archives, loadFirehoseFolders, exclude)
+    md5 <- grepl(".md5", url)
+    archives <- split(archives[!md5], names(url[!md5]))
+    loaded <- lapply(archives, loadFirehoseFolders, exclude, message)
     return(loaded)
 }

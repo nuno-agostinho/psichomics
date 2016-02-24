@@ -103,3 +103,9 @@ There aren't many reasons to translate this package to other languages. English
 is the most used language in the scientific community, after all. More about
 this topic is available at
 https://cran.rstudio.com/doc/manuals/r-devel/R-exts.html#Internationalization
+
+# Passing messages
+A simple way to pass messages to any kind of interface would be to allow to
+choose the function that passes messages. For example, when in the interactive
+shell, the function could be the print function. While in a Shiny app, the
+function would show the message in a more appropriate fashion.
