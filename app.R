@@ -33,9 +33,8 @@ header <- list(
 # The user interface (ui) controls the layout and appearance of the app
 ui <- shinyUI(
     do.call(navbarPage, c(
-        list(title = "spliced canceR", id = "nav",
-             collapsible = TRUE, position = "fixed-top",
-             header = header),
+        list(title = "spliced canceR", id = "nav", collapsible = TRUE,
+             position = "fixed-top", header = header),
         # Loads the interface of each tab
         callScriptsFunction(func = "ui", check = c("name", "ui"), tabPanel)
     ))

@@ -84,12 +84,12 @@ ui <- function(tab) {
 #'
 #' @return The HTML code for a tabPanel template
 #' @export
-tabTable <- function(title, tableId, description = NULL, ...) {
+tabTable <- function(title, number, description = NULL, ...) {
     if(!is.null(description))
-        d <- p(tags$strong("Table description:"), description)
+        d <- p(tags$strong("Table description:"), description, hr())
     else
         d <- NULL
-    tabPanel(title, br(), d, dataTableOutput(tableId, ...))
+    tabPanel(title, br(), d, dataTableOutput(paste0("dataTable", number), ...))
 }
 
 #' Server logic
