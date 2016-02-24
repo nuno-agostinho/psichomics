@@ -16,7 +16,7 @@ progressbar <- function(value, min = 0, max = 100, label = paste0(value, "%"),
             "aria-valuemax"=max,
             style=paste0("width: ", value, "%;"),
             label
-            )
+        )
     )
 }
 
@@ -37,5 +37,5 @@ dropdown <- function(inputId) {
                 tags$li(a(href="#", "Another action")),
                 tags$li(role="separator", class="divider"),
                 tags$li(a(href="#", "Something else")))
-        )
+    )
 }
