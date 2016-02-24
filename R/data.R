@@ -5,12 +5,7 @@ name <- "Data"
 #' 
 #' @return A UI set that can be added to a UI definition
 addLocalFile <- function() {
-    list(h4("Add local files"),
-         fileInput("dataFile", "Choose folder", multiple = T),
-         # selectInput("sep", "Choose separator", 
-                     # choices = list("Tab" = "\t", "Comma"=",", "Space"=" "),
-                     # selected = "\t"),
-         # checkboxInput("header", "Has header", value = FALSE),
+    list(fileInput("dataFile", "Choose folder", multiple = T),
          textInput("species", label = "Species", placeholder = "Required"),
          textInput("common.name", label = "Common name"),
          uiOutput("testing"),
@@ -22,18 +17,26 @@ addLocalFile <- function() {
 #' 
 #' @return A UI set that can be added to a UI definition
 addTCGAdata <- function() {
+    cohorts <- getFirehoseCohorts()
+    names(cohorts) <- sprintf("%s (%s)", names(cohorts), cohorts)
+    
     if (isFirehoseUp()) {
-        list(h4("TCGA/Firehose data"),
-             selectInput("firehoseCohort", "Cohort",
-                         getFirehoseCohorts(), multiple = TRUE),
+        list(selectInput("firehoseCohort", "Cohort", cohorts,
+                         multiple = TRUE, selected = c("ACC", "BLCA")),
              selectInput("firehoseDate", "Date",
-                         as.character(getFirehoseDates()), multiple = TRUE),
+                         as.character(getFirehoseDates()), multiple = TRUE,
+                         selected = "2015-11-01"),
+             selectInput("dataType", "Data type",
+                         c("Clinical", "mRNASeq"), multiple = TRUE,
+                         selected = "Clinical"),
              textInput("firehoseExclude",
-                       "Files/archives to exclude (separated by comma)"),
-             actionButton("acceptFile", "Get data"))
+                       "Files/archives to exclude (separated by comma)",
+                       value = "RSEM_isoforms, .aux., .mage-tab., MANIFEST.txt, exon_quantification"),
+             textInput("dataFolder", "Folder where the data is located",
+                       value = "~/Downloads"),
+             actionButton("getFirehoseData", "Get data"))
     } else {
-        list(h4("TCGA/Firehose data"),
-             p("Not able to reach Firehose."))
+        list(p("Not able to reach Firehose."))
     }
 }
 
@@ -47,16 +50,25 @@ ui <- function(tab) {
                     open = "Add data",
                     shinyBS::bsCollapsePanel(
                         style = "info",
-                        title = "Add data",
+                        title = "Add local files",
                         #list(img(src = "add-button-16px.png"))
-                        addLocalFile(),
-                        hr(),
+                        addLocalFile())
+                ),
+                shinyBS::bsCollapse(
+                    id = "addTCGA",
+                    open = "Add TCGA/Firehose data",
+                    shinyBS::bsCollapsePanel(
+                        style = "info",
+                        title = "Add TCGA/Firehose data",
+                        #list(img(src = "add-button-16px.png"))
                         addTCGAdata())
                 )
             ),
             mainPanel(
                 # TODO(NunoA): Show alerts from renderUI
                 bsAlert(anchorId = "alert2"),
+                bsModal("modalExample", "There's already data, dumb!",
+                        "tabBut", size = "large", p("Yeah! Dumb!")),
                 uiOutput("tablesOrAbout")
             )
         )
