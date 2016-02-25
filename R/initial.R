@@ -179,9 +179,9 @@ loadFile <- function(format, file) {
 #' @return Data frame with the contents of the given file if the file format is
 #' recognised; otherwise, returns NULL
 parseValidFile <- function(file, formatsFolder) {
-    # Get all available formats information
-    formats <- sourceScripts(formatsFolder,
-                             c("name", "header"))
+    
+    # Get all information from available formats
+    formats <- sourceScripts(formatsFolder, c("tablename", "check"))
     
     # The number of rows to read will be the maximum value asked by all the file
     # formats; if no format aks for a specific number of rows, the default is 6
