@@ -107,9 +107,8 @@ server <- function(input, output, session){
         if(is.null(shared.data$data)) {
             includeMarkdown("about.md")
         } else {
-            list(#div(class = "pull-right", position = "absolute",
-                     selectInput("category", NULL,#"Select category",
-                                 choices = names(shared.data$data)),#),
+            list(selectInput("category", "Select category:",
+                             choices = names(shared.data$data)),
                  uiOutput("datatabs")
             )
         }
@@ -148,15 +147,12 @@ server <- function(input, output, session){
             exclude <- strsplit(input$firehoseExclude, ",")[[1]]
             exclude <- trimWhitespace(exclude)
             
-            progressbar(sample(1:100, 1))
-            
             shared.data$data <- loadFirehoseData(
                 folder = input$dataFolder,
                 cohort = input$firehoseCohort,
                 date = gsub("-", "_", input$firehoseDate),
                 data_type = input$dataType,
                 exclude = exclude)
-            
         }
     }) # end of observeEvent
     
@@ -177,7 +173,8 @@ server <- function(input, output, session){
             data <- shared.data$data[[input$category]]
             lapply(seq_along(data), function(i) {
                 output[[paste0("dataTable", i)]] <- renderDataTable(
-                    data[[i]], options = list(pageLength = 10, scrollX=TRUE))
+                    cbind(names = rownames(data[[i]]), data[[i]]),
+                    options = list(pageLength = 10, scrollX=TRUE))
             })
         }
     }) # end of observe
