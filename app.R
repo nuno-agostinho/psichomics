@@ -18,17 +18,18 @@ server <- function(input, output, session) {
     })
 }
 
+addCSS <- function(...) tags$style(type = "text/css", ...)
+
 header <- list(
     useShinyjs(),
     # Avoids fixed-top navbar from obscuring content
-    tags$style(type = "text/css", "body {padding-top: 70px;}"),
+    addCSS("body {padding-top: 70px;}"),
     # Alert appears fixed on the top right above other elements
-    tags$style(type = "text/css",
-               ".sbs-alert{ position:fixed;
-               right:10px;
-               z-index:9;
-               -webkit-filter: opacity(80%);
-               filter: opacity(80%); }"))
+    addCSS(".sbs-alert{ position:fixed;
+                        right:10px;
+                        z-index:9;
+                        -webkit-filter: opacity(80%);
+                        filter: opacity(80%); }"))
 
 # The user interface (ui) controls the layout and appearance of the app
 ui <- shinyUI(
