@@ -109,3 +109,35 @@ A simple way to pass messages to any kind of interface would be to allow to
 choose the function that passes messages. For example, when in the interactive
 shell, the function could be the print function. While in a Shiny app, the
 function would show the message in a more appropriate fashion.
+
+# How to make Shiny update an object in real-time?
+There's a problem in Shiny: if you pile up a bunch of instructions in an
+observer, the output will only be shown when every single calculation ends. This
+means we can't change the UI in the same observer where we're crunching big data
+or else the user will only see the progress when the calculation ends... For
+example, imagine you have a message showing asking to replace the data. The user
+clicks "replace data" so the message should go away and the data should laod.
+The problem is the message only goes away AFTER the data loads... which sucks.
+
+What has been already tried? I already tried to put the lengthy expression in
+another observer waiting to see when the button is pressed (doesn't work) and
+tried to create a boolean variable so the lengthy expression would only begin
+when that variable changed to TRUE (nope, it didn't work).
+
+To see how could I resolve this, I remembered that Shiny add a progress bar. Of
+course, the progress bar progresses while the calculation is going, so maybe I
+could try to use the same mechanism the progress bar uses to update its UI.
+Unfortunately, I can't: the progress bar uses a special stack only made to store
+the progress bar values. Isn't that cheating or something? Oh, well, now what?
+
+Actually, shinyjs seems to execute the actions immediately. When asked to
+disable the "GO" button so people can't change the input while the data is being
+loaded, it has no problems doing it. How is that possible? Let's check the code!
+
+```{r}
+shinyjs::disable
+shinyjs:::jsFuncHelper
+```
+
+Seems we can do it by sending a custom JavaScript message. Besides, shinyjs also
+has some wrapper functions to allow us to run JavaScript functions. Nice.
