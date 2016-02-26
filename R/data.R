@@ -67,8 +67,11 @@ ui <- function(tab) {
             mainPanel(
                 # TODO(NunoA): Show alerts from renderUI
                 bsAlert(anchorId = "alert2"),
-                bsModal("modalExample", "There's already data, dumb!",
-                        "tabBut", size = "large", p("Yeah! Dumb!")),
+                bsModal2("modalExample", "Data already loaded",
+                         "tabBut", size = "small",
+                         "Would you like to replace the loaded data?",
+                         footer = list(
+                             actionButton("replace", "data-dismiss"="modal", label = "Replace"))),
                 uiOutput("tablesOrAbout")
             )
         )
@@ -139,20 +142,66 @@ server <- function(input, output, session){
         #             style = "success", append = FALSE)
     }) # end of observeEvent
     
+    loadAllData <- reactive({
+        shinyjs::disable("getFirehoseData")
+        exclude <- strsplit(input$firehoseExclude, ",")[[1]]
+        exclude <- trimWhitespace(exclude)
+        
+        # Create a Progress object
+        progress <- shiny::Progress$new()
+        progress$set(message = "Computing data", value = 0)
+        # Close the progress when this reactive exits (even if there's an error)
+        on.exit(progress$close())
+        
+        updateProgress <- function(detail, value = NULL, max = NULL,
+                                   divisions = NULL) {
+            if (!is.null(divisions)) {
+                shared.data$progress.divisions <- divisions
+                return(NULL)
+            }
+            divisions <- shared.data$progress.divisions
+            if (is.null(value)) {
+                value <- progress$getValue()
+                value <- value + (progress$getMax() - value)
+            }
+            if (is.null(max)) {
+                print(paste(detail, value))
+                progress$inc(amount = value/divisions, detail = detail)
+            } else {
+                print(paste(detail, value, max))
+                progress$inc(amount = 1/max/divisions, detail = detail)
+            }
+            print(progress$getValue())
+        }
+        
+        shared.data$data <- loadFirehoseData(
+            folder = input$dataFolder,
+            cohort = input$firehoseCohort,
+            date = gsub("-", "_", input$firehoseDate),
+            data_type = input$dataType,
+            exclude = exclude,
+            progress = updateProgress)
+        shared.data$progress.divisions <- NULL
+        shinyjs::enable("getFirehoseData")
+    })
+    
+    observeEvent(input$replace, {
+        shared.data$loadData <- TRUE
+    })
+    
+    observe({
+        if (isTRUE(shared.data$loadData)) {
+            loadAllData()
+            shared.data$loadData <- FALSE
+        }
+    })
+    
     # Load Firehose data
     observeEvent(input$getFirehoseData, {
         if (!is.null(shared.data$data)) {
             toggleModal(session, "modalExample", "open")
         } else {
-            exclude <- strsplit(input$firehoseExclude, ",")[[1]]
-            exclude <- trimWhitespace(exclude)
-            
-            shared.data$data <- loadFirehoseData(
-                folder = input$dataFolder,
-                cohort = input$firehoseCohort,
-                date = gsub("-", "_", input$firehoseDate),
-                data_type = input$dataType,
-                exclude = exclude)
+            shared.data$loadData <- TRUE
         }
     }) # end of observeEvent
     
