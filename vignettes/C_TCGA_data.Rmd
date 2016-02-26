@@ -240,32 +240,34 @@ s <- sapply(nn,
 It's easy to load the files from folders. Specially if we use the faster and
 more friendly library `readr` (more friendly because it shows a progress bar
 when the file takes more than 5 seconds to load). The functions in this package
-work more or less like the built-in `read` functions with minor changes.
+work more or less like the built-in `read` functions with minor changes (there
+is a problem when trying to not assign a header if the header is not of the same
+type as the content of the text... weird bug).
 
 So we simply need to load each file. But how do we recognise what file we have?
 The simplest way would be to ask to the user. But really, who likes to point out
-stuff to a computer? Specially when there can be dozens of files to identify?
-All right then, what if we can separate the files by the header? Seems simple
+stuff to a computer specially when there can be dozens of files to identify?
+All right then, what if we separate the files by their beginning? Seems simple
 enough but there are certain files that have similar headers. In those cases,
 we could also check the name of the file for hints or we could ask the user to
 decide what happens upon conflicts. I'm really against boring the user unless
 it's absolutly required, so that will only be the extreme case.
 
 Anyway, we'll create this in a modular way. There will be one script for each
-file or type of files of interest. That script will contain an expression
-representing the header of the file (a regular expression or something alike), 
+format of interest. That script will contain an expression representing the
+header of the file (maybe a regular expression or the content of the header), 
 the name of the file and how to load it (for example, if there is a header for
 the data.frame or if the data needs to be transposed).
 
-The format of these files should be in R. It's easier for anyone if it's in R.
-But there's advantages to using other language. We could then use subfolders in
-other R folders... So what other language could we use? XML? JSON? Or we could
-make one up. Like this:
+The format of these files could be in R. But there's advantages to using other 
+language. We could then use subfolders in other R folders... So what other 
+language could we use? XML? JSON? Or we could create a specific domain-specific
+language like this:
 
 ```
-tablename: clinical
+tablename: Clinical
 filename: clin.merged.txt
-header: admin.bcr, admin.file_uuid
+check: admin.bcr, admin.file_uuid
 ```
 
-> TODO: decide which language to use...
+Let's do it in R first of all and we'll see later on.
