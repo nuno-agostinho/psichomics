@@ -13,9 +13,7 @@ createLink <- function(val) {
 
 server <- function(input, output, session) {
     output[[name]] <- renderDataTable({
-        tmp <- cbind(cars = createLink(rownames(mtcars)),
-                     mtcars)
-        tmp
+        cbind(cars = createLink(rownames(mtcars)), mtcars)
     }, escape = FALSE, options = list(pageLength = 10))
     
     lapply(gsub(" ", "_", rownames(mtcars)), function(i) {
