@@ -1,0 +1,12 @@
+/* Avoids fixed-top navbar from obscuring content */
+body { padding-top: 70px; }
+
+/* Changes alert to appear fixed on the top right above other elements */
+.sbs-alert { position:fixed;
+    right:10px;
+    z-index:9;
+    -webkit-filter: opacity(80%);
+    filter: opacity(80%); }
+
+/* Change the position of the progress bar */
+.shiny-progress-container { top: 48px; }
