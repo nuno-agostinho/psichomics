@@ -105,8 +105,8 @@ server <- function(input, output, session){
                     input$species != "")
     })
     
+    # Show welcome screen when there's no data loaded
     output$tablesOrAbout <- renderUI({
-        # If no data file is loaded, show welcome screen
         if(is.null(shared.data$data)) {
             includeMarkdown("about.md")
         } else {
@@ -143,8 +143,6 @@ server <- function(input, output, session){
     
     loadAllData <- reactive({
         shinyjs::disable("getFirehoseData")
-        exclude <- strsplit(input$firehoseExclude, ",")[[1]]
-        exclude <- trimWhitespace(exclude)
         
         # Create a Progress object
         progress <- shiny::Progress$new()
@@ -173,6 +171,11 @@ server <- function(input, output, session){
             print(progress$getValue())
         }
         
+        # Parse exclude
+        exclude <- strsplit(input$firehoseExclude, ",")[[1]]
+        exclude <- trimWhitespace(exclude)
+        
+        # Load data from Firehose
         shared.data$data <- loadFirehoseData(
             folder = input$dataFolder,
             cohort = input$firehoseCohort,
@@ -184,23 +187,14 @@ server <- function(input, output, session){
         shinyjs::enable("getFirehoseData")
     })
     
-    observeEvent(input$replace, {
-        shared.data$loadData <- TRUE
-    })
-    
-    observe({
-        if (isTRUE(shared.data$loadData)) {
-            loadAllData()
-            shared.data$loadData <- FALSE
-        }
-    })
+    observeEvent(input$replace, { loadAllData() })
     
     # Load Firehose data
     observeEvent(input$getFirehoseData, {
         if (!is.null(shared.data$data)) {
             toggleModal(session, "modalExample", "open")
         } else {
-            shared.data$loadData <- TRUE
+            loadAllData()
         }
     }) # end of observeEvent
     
