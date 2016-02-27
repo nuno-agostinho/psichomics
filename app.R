@@ -22,14 +22,16 @@ addCSS <- function(...) tags$style(type = "text/css", ...)
 
 header <- list(
     useShinyjs(),
+    ## TODO(NunoA): put all CSS info in a CSS file and import with "includeCSS"
     # Avoids fixed-top navbar from obscuring content
-    addCSS("body {padding-top: 70px;}"),
+    addCSS("body { padding-top: 70px; }"),
     # Alert appears fixed on the top right above other elements
-    addCSS(".sbs-alert{ position:fixed;
-                        right:10px;
-                        z-index:9;
-                        -webkit-filter: opacity(80%);
-                        filter: opacity(80%); }"))
+    addCSS(".sbs-alert { position:fixed;
+                         right:10px;
+                         z-index:9;
+                         -webkit-filter: opacity(80%);
+                         filter: opacity(80%); }"),
+    addCSS(".shiny-progress-container { top: 48px; }"))
 
 # The user interface (ui) controls the layout and appearance of the app
 ui <- shinyUI(
