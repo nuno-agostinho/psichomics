@@ -112,8 +112,7 @@ server <- function(input, output, session){
         } else {
             list(selectInput("category", "Select category:",
                              choices = names(shared.data$data)),
-                 uiOutput("datatabs")
-            )
+                 uiOutput("datatabs"))
         }
     }) # end of renderUI
     
