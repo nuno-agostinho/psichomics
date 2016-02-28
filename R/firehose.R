@@ -184,7 +184,7 @@ downloadFiles <- function(url, folder, progress = function(...) print(paste(...)
                           download = download.file, ...) {
     destination <- file.path(folder, basename(url))
     for (i in seq_along(url)) {
-        progress("Downloading file", i, length(url))
+        progress("Downloading file", detail = basename(url[i]), i, length(url))
         download(url[i], destination[i], ...)
     }
     print("Downloading completed")
@@ -314,7 +314,8 @@ loadFirehoseFolders <- function (folder, exclude="",
     # Try to load files and remove those with 0 rows
     loaded <- list()
     for (each in seq_along(files)) {
-        progress("Processing file", each, length(files))
+        progress("Processing file", detail = basename(files[each]),
+                 each, length(files))
         loaded[[each]] <- parseValidFile(files[each], "R/formats")
     }
     names(loaded) <- sapply(loaded, attr, "tablename")

@@ -87,12 +87,13 @@ ui <- function(tab) {
 #'
 #' @return The HTML code for a tabPanel template
 #' @export
-tabTable <- function(title, number, description = NULL, ...) {
+tabTable <- function(title, id, description = NULL, ...) {
     if(!is.null(description))
         d <- p(tags$strong("Table description:"), description, hr())
     else
         d <- NULL
-    tabPanel(title, br(), d, dataTableOutput(paste0("dataTable", number), ...))
+    tablename <- paste("table", id, sep = ".")
+    tabPanel(title, br(), d, dataTableOutput(tablename, ...))
 }
 
 #' Server logic
@@ -146,12 +147,12 @@ server <- function(input, output, session){
         
         # Create a Progress object
         progress <- shiny::Progress$new()
-        progress$set(message = "Computing data", value = 0)
+        progress$set(message = "Hang in there...", value = 0)
         # Close the progress when this reactive exits (even if there's an error)
         on.exit(progress$close())
         
-        updateProgress <- function(detail, value = NULL, max = NULL,
-                                   divisions = NULL) {
+        updateProgress <- function(message, value = NULL, max = NULL,
+                                   divisions = NULL, detail = NULL) {
             if (!is.null(divisions)) {
                 shared.data$progress.divisions <- divisions
                 return(NULL)
@@ -162,13 +163,15 @@ server <- function(input, output, session){
                 value <- value + (progress$getMax() - value)
             }
             if (is.null(max)) {
-                print(paste(detail, value))
-                progress$inc(amount = value/divisions, detail = detail)
+                # print(paste(message, value))
+                progress$inc(amount = value/divisions, message = message,
+                             detail = detail)
             } else {
-                print(paste(detail, value, max))
-                progress$inc(amount = 1/max/divisions, detail = detail)
+                # print(paste(message, value, max))
+                progress$inc(amount = 1/max/divisions, message = message,
+                             detail = detail)
             }
-            print(progress$getValue())
+            # print(progress$getValue())
         }
         
         # Parse exclude
@@ -203,21 +206,26 @@ server <- function(input, output, session){
         data <- shared.data$data[[input$category]]
         do.call(tabsetPanel,
                 lapply(seq_along(names(data)), function(i) {
-                    tabTable(names(data)[i], number = i,
+                    tabTable(names(data)[i], id = paste(input$category, i, sep = "."),
                              description = attr(data[[i]], "description"))
                 })
         )
     }) # end of renderUI
     
     # Render data tables every time the data changes
-    observeEvent(input$category, {
-        if (!is.null(input$category)) {
-            data <- shared.data$data[[input$category]]
-            lapply(seq_along(data), function(i) {
-                output[[paste0("dataTable", i)]] <- renderDataTable(
-                    cbind(names = rownames(data[[i]]), data[[i]]),
-                    options = list(pageLength = 10, scrollX=TRUE))
-            })
+    observe({
+        # For better performance, try to use conditional panels
+        if (!is.null(shared.data$data)) {
+            for (k in seq_along(shared.data$data)) {
+                data <- shared.data$data[[k]]
+                lapply(seq_along(data), function(i) {
+                    tablename <- paste("table", names(shared.data$data)[k],
+                                       i, sep = ".")
+                    output[[tablename]] <- renderDataTable(
+                        cbind(names = rownames(data[[i]]), data[[i]]),
+                        options = list(pageLength = 10, scrollX=TRUE))
+                })
+            }
         }
     }) # end of observe
 }
