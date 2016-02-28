@@ -2,7 +2,9 @@
 title: "User Interface"
 author: "Nuno Agostinho"
 date: "28 January 2016"
-output: html_document
+output: 
+  html_document: 
+    toc: yes
 ---
 
 # Conditional panels VS renderUI
@@ -20,7 +22,7 @@ Simple run the command `shiny::runApp()`.
 For a similar effort, check https://github.com/jcheng5/shiny-resume
 
 The `session` object seems to be the one holding all the information of a Shiny
-session Besides, it even includes the variables `input` (`session$input`) and
+session. Besides, it even includes the variables `input` (`session$input`) and
 `output` (`session$output`) which hold the information of every element in the
 app.
 
@@ -108,7 +110,8 @@ https://cran.rstudio.com/doc/manuals/r-devel/R-exts.html#Internationalization
 A simple way to pass messages to any kind of interface would be to allow to
 choose the function that passes messages. For example, when in the interactive
 shell, the function could be the print function. While in a Shiny app, the
-function would show the message in a more appropriate fashion.
+function would show the message in a more appropriate fashion. This would be
+useful to show the progress of some functions of interest (read: slow).
 
 # How to make Shiny update an object in real-time?
 There's a problem in Shiny: if you pile up a bunch of instructions in an
