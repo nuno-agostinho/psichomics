@@ -221,8 +221,12 @@ server <- function(input, output, session){
                 lapply(seq_along(data), function(i) {
                     tablename <- paste("table", names(shared.data$data)[k],
                                        i, sep = ".")
-                    output[[tablename]] <- renderDataTable(
-                        cbind(names = rownames(data[[i]]), data[[i]]),
+                    print(attributes(data[[i]]))
+                    if (isTRUE(attr(data[[i]], "rowNames")))
+                        d <- cbind(names = rownames(data[[i]]), data[[i]])
+                    else
+                        d <- data[[i]]
+                    output[[tablename]] <- renderDataTable(d,
                         options = list(pageLength = 10, scrollX=TRUE))
                 })
             }
