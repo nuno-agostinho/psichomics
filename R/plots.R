@@ -15,11 +15,11 @@ ui <- function(tab)
         uiOutput("plots"))
 
 server <- function(input, output, session) {
-    # loads valid scripts from the indicated folder
-    plotEnvs <- loadScripts(folder = paste0(tabsFolder, "plots/"),
-                            vars = c("name", "ui"))
+    # Loads valid scripts from the indicated folder
+    plotEnvs <- sourceScripts(folder = paste0(tabsFolder, "plots/"),
+                              check = c("name", "ui"))
     plotEnvs.server <- lapply(plotEnvs, "[[", "server")
-    # get name of the loaded scripts
+    # Get name of the loaded scripts
     names <- sapply(plotEnvs, "[[", "name")
     
     # Runs server logic from the scripts
