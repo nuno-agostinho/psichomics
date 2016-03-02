@@ -153,7 +153,10 @@ loadFile <- function(format, file) {
     
     # Add column and row names
     if (!is.null(format$colNames)) names(loaded) <- loaded[format$colNames, ]
-    if (!is.null(format$rowNames)) rownames(loaded) <- loaded[, format$rowNames]
+    if (!is.null(format$rowNames))
+        rowNames <- unlist(loaded[, format$rowNames])
+    else
+        rowNames <- NULL
     
     # Filter out unwanted columns and rows
     if (!is.null(format$ignoreRows)) loaded <- loaded[-format$ignoreRows, ]
@@ -162,6 +165,10 @@ loadFile <- function(format, file) {
     # Add table name and description
     attr(loaded, "tablename") <- format$tablename
     attr(loaded, "description") <- format$description
+    
+    # Add row names (it doesn't work placed before for some reason...)
+    rownames(loaded) <- rowNames
+    attr(loaded, "rowNames") <- !is.null(rowNames)
     return(loaded)
 }
 
