@@ -245,6 +245,7 @@ parseMisoSE <- function(event) {
     # Filter out events that aren't valid
     validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 2))
     event <- getValidEvents(event, validator)
+    eventType <- "SE"
     
     # If there are valid events
     if (!is.null(event)) {
@@ -256,7 +257,7 @@ parseMisoSE <- function(event) {
         # Creates a data frame of parsed junctions filled with NAs
         parsed <- createJunctionsTemplate(length(index),
                                         program = "MISO",
-                                        event.type = "SE",
+                                        event.type = eventType,
                                         chromosome = chr,
                                         strand = strand)
         plus <- strand == "+"
@@ -302,6 +303,7 @@ parseMisoMXE <- function(event) {
     # Filter out events that aren't valid
     validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 3))
     event <- getValidEvents(event, validator)
+    eventType <- "MXE"
     
     # If there are valid events
     if (!is.null(event)) {
@@ -313,7 +315,7 @@ parseMisoMXE <- function(event) {
         # Creates a data frame of parsed junctions filled with NAs
         parsed <- createJunctionsTemplate(length(index),
                                         program = "MISO",
-                                        event.type = "MXE",
+                                        event.type = eventType,
                                         chromosome = chr,
                                         strand = strand)
         plus <- strand == "+"
@@ -360,6 +362,7 @@ parseMisoRI <- function(event, strand) {
     # Filter out events that aren't valid
     validator <- c("gene", "mRNA", "exon", "mRNA", rep("exon", 2))
     event <- getValidEvents(event, validator)
+    eventType <- "RI"
     
     # If there are valid events
     if (!is.null(event)) {
@@ -371,7 +374,7 @@ parseMisoRI <- function(event, strand) {
         # Creates a data frame of parsed junctions filled with NAs
         parsed <- createJunctionsTemplate(length(index),
                                         program = "MISO",
-                                        event.type = "RI",
+                                        event.type = eventType,
                                         chromosome = chr,
                                         strand = strand)
         plus <- strand == "+"
@@ -411,6 +414,7 @@ parseMisoA5SS <- function(event) {
     # Filter out events that aren't valid
     validator <- c("gene", "mRNA", rep("exon", 2), "mRNA", rep("exon", 2))
     event <- getValidEvents(event, validator)
+    eventType <- "A5SS"
     
     # If there are valid events
     if (!is.null(event)) {
@@ -422,7 +426,7 @@ parseMisoA5SS <- function(event) {
         # Creates a data frame of parsed junctions filled with NAs
         parsed <- createJunctionsTemplate(length(index),
                                         program = "MISO",
-                                        event.type = "A5SS",
+                                        event.type = eventType,
                                         chromosome = chr,
                                         strand = strand)
         plus <- strand == "+"
@@ -464,6 +468,7 @@ parseMisoA3SS <- function(event, strand) {
     # Filter out events that aren't valid
     validator <- c("gene", "mRNA", rep("exon", 2), "mRNA", rep("exon", 2))
     event <- getValidEvents(event, validator)
+    eventType <- "A3SS"
     
     # If there are valid events
     if (!is.null(event)) {
@@ -475,7 +480,7 @@ parseMisoA3SS <- function(event, strand) {
         # Creates a data frame of parsed junctions filled with NAs
         parsed <- createJunctionsTemplate(length(index),
                                         program = "MISO",
-                                        event.type = "A3SS",
+                                        event.type = eventType,
                                         chromosome = chr,
                                         strand = strand)
         
@@ -516,6 +521,7 @@ parseMisoTandemUTR <- function(event, strand) {
     # Filter out events that aren't valid
     validator <- c("gene", "mRNA", "exon", "mRNA", rep("exon", 1))
     event <- getValidEvents(event, validator)
+    eventType <- "TandemUTR"
     
     # If there are valid events
     if (!is.null(event)) {
@@ -527,7 +533,7 @@ parseMisoTandemUTR <- function(event, strand) {
         # Creates a data frame of parsed junctions filled with NAs
         parsed <- createJunctionsTemplate(length(index),
                                         program = "MISO",
-                                        event.type = "TandemUTR",
+                                        event.type = eventType,
                                         chromosome = chr,
                                         strand = strand)
         plus <- strand == "+"
@@ -565,6 +571,7 @@ parseMisoAFE <- function(event) {
     # Filter out events that aren't valid
     validator <- c("gene", "mRNA", "exon", "mRNA", "exon")
     event <- getValidEvents(event, validator, areMultipleExonsValid = TRUE)
+    eventType <- "AFE"
     
     # If there are valid events
     if (!is.null(event)) {
@@ -586,7 +593,7 @@ parseMisoAFE <- function(event) {
         # Create a data frame of parsed junctions filled with NAs
         parsed <- createJunctionsTemplate(length(index),
                                         program = "MISO",
-                                        event.type = "AFE",
+                                        event.type = eventType,
                                         chromosome = chr,
                                         strand = strand)
         plus <- strand == "+"
@@ -678,6 +685,7 @@ parseMisoALE <- function(event) {
     # Filter out events that aren't valid
     validator <- c("gene", "mRNA", "exon", "mRNA", "exon")
     event <- getValidEvents(event, validator, areMultipleExonsValid = TRUE)
+    eventType <- "ALE"
     
     # If there are valid events
     if (!is.null(event)) {
@@ -699,7 +707,7 @@ parseMisoALE <- function(event) {
         # Creates a data frame of parsed junctions filled with NAs
         parsed <- createJunctionsTemplate(length(index),
                                         program = "MISO",
-                                        event.type = "ALE",
+                                        event.type = eventType,
                                         chromosome = chr,
                                         strand = strand)
         plus <- strand == "+"
