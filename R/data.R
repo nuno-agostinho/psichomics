@@ -41,8 +41,9 @@ addTCGAdata <- function() {
                        placeholder = "Input files to exclude"),
              textInput("dataFolder", "Folder to store the data",
                        value = "~/Downloads", placeholder = "Insert data folder"),
-             bsTooltip("dataFolder", "Data not available in this folder will be downloaded.",
-                       "right", options = list(container = "body")),
+             bsTooltip("dataFolder", placement = "right", 
+                       options = list(container = "body"),
+                       "Data not available in this folder will be downloaded."),
              actionButton("getFirehoseData", "Get data"))
     } else {
         list(p("Not able to reach Firehose."))
