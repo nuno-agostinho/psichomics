@@ -2,7 +2,9 @@
 title: "Splicing event annotation"
 author: "Nuno Agostinho"
 date: "`r Sys.Date()`"
-output: html_document
+output: 
+  html_document: 
+    toc: yes
 ---
 
 The splicing events annotation is different according to the program that
@@ -58,7 +60,7 @@ Alternative first exon     | •        | •      | •        | •      |    
 Alternative last exon      |          | •      | •        | •      |          |        | •        | •      | 
 Tandem UTR                 |          |        |          |        |          | •      | •        | •      | 
 
-Before, I though something along the lines of:
+Before, I thought something along the lines of:
 
 > Note there are two glyphs in some cases. That means two alternative positions
 are stored (for example, in the case of the alternative 5' splice site, the C1
@@ -89,7 +91,8 @@ performance of the same script using objects instead of lists? Besides, data
 frames are the natural way to manipulate information in R. We'll see which is
 better.
 
-Answer: Data frames are better in terms of performance. :)
+** Answer: Data frames are better in terms of performance. :) **
+** See section "Event representation" for more information. **
 
 # Retrieving and parsing alternative splicing annotation
 To get the most complete annotation of alternative splicing events, we'll
@@ -331,7 +334,7 @@ rm(types, types_file)
 # tandem UTR:              0
 ```
 
-# Event representation: list, data frame, data table or object
+# Event representation
 To represent an event we started to use a list with many attributes. However,
 this is not practical. A much more natural way to represent information in R is
 by using a data frame. Even better, we could use a data table (a package which
@@ -347,9 +350,9 @@ registred for comparison.
 So, let's first try to get MATS events to a data frame instead of a list of 
 lists since MATS is the easiest to parse. There's just one thing: we need to
 vectorise as much as we can! But how do we vectorise based on a condition (for
-example, we want to return different based on the strand). The regular ```if```
-is not vectorised, but ```ifelse``` is. The problem with this command is that 
-it MUST return a value with the same length as the arguments... This is bad for
+example, the result is different based on the strand). The regular ```if``` is
+not vectorised, but ```ifelse``` is. The problem with this command is that it
+MUST return a value with the same length as the arguments... This is bad for
 example if we want to do ```ifelse(strand == "+", junctions, rev(junctions))```
 because this will return a list of junctions where the list has the same length
 as the ```strand``` vector (yay!) but each element of the list has the same
@@ -364,8 +367,8 @@ plus <- event$Strand == "+"
 event[plus, c("C1.end", "C2.start")] <- junctions[plus, ]
 event[!plus, c("C1.end", "C2.start")] <- rev(junctions[!plus, ])
 
-# maybe it's faster to fill everything and edit what's different?
-# it's not much faste... actually, it takes about the same time
+# maybe it's faster to fill everything and edit what's different? it's not much
+# faster... actually, it takes about the same time and it's less clear
 event[c("C1.end", "C2.start")] <- junctions
 minus <- event$Strand == "-"
 event[minus, c("C2.start", "C1.end")] <- junctions[minus, ]
@@ -378,7 +381,13 @@ Type          | Time   | Memory   | Commit
 List of lists | 63.3 s | 30.4  MB | 8d9defa5
 Data frame    |  0.3 s | 26.2  MB | 450f891c
 
-There's a clearer improvement!
+There's a clearer improvement! Still, I can't fathom if there's an even better,
+faster way of doing this. We are separating the plus and minus operations but
+maybe there's a way to do it in a single operation. Of course, we only care
+about using a single operation if it's faster else there's no need to use it.
+
+> TODO: maybe we can use `ifelse` after all! We could return a list with all the
+elements instead of just the elements themselves. Would this be faster?
 
 ## SUPPA
 Doing the same thing for SUPPA events.
@@ -395,6 +404,9 @@ Type          | Time    | Memory | Commit
 --------------|---------|--------|---------
 List of lists | 377.7 s | 1   Gb | 3e702152
 Data frame    |  12.9 s | 0.2 Gb | 0eb2c879
+
+> TODO: This didn't turn out as fast as expected. Why's that? Don't forget that
+VAST-TOOLS handles a greater quantity of events relative to others.
 
 ## MISO
 Parsing MISO events is the second slowest of the bunch, taking around 300
@@ -568,7 +580,7 @@ v <- function() {
 Everything tried until now takes too much time. Let's just vectorise the
 functions. It should be much faster this way. By vectorising, I mean to parse
 all events at the same time, instead of splitting each event and putting them
-inside a list
+inside a list.
 
 > TODO: increase number of AFE and ALE events included in the parsing
 
@@ -603,7 +615,7 @@ matsEvents[matsEvents$Event.type == "SE", ]$A1.start <- as.numeric(
 matsEvents[matsEvents$Event.type == "SE", ]$C2.start <- as.numeric(
     matsEvents[matsEvents$Event.type == "SE", ]$C2.start) + 1
 
-# All right... let's separate all events based on program and event type
+# All right... let's separate all events based on event type and then program
 library(dplyr)
 library(plyr)
 events <- list(suppaEvents, matsEvents, misoEvents, vastToolsEvents)
@@ -674,22 +686,19 @@ joint <- lapply(types, function(type, events) {
     return(res)
 }, events)
 names(joint) <- types
+```
 
+
+```{r}
 # Okay! Let's check how many overlaps there are and how many events are unique
-j <- joint$SE[grep("Program", names(joint$SE))]
-nas <- !is.na(j)
-mats <- which(nas[ , 1])
-miso <- which(nas[ , 2])
-suppa <- which(nas[ , 3])
-vast <- which(nas[ , 4])
-
-es <- list(mats = mats, miso = miso, suppa = suppa, vast = vast)
-p <- data.frame()
-for (e1 in seq_along(es))
-    for (e2 in seq_along(es))
-        p[e1, e2] <- length(intersect(es[[e1]], es[[e2]]))
-names(p) <- names(es)
-rownames(p) <- names(es)
+# for skipping exons events (just change)
+j <- joint$SE
+programs <- j[grep("Program", names(j))]
+nas <- !is.na(programs)
+nas <- ifelse(nas, row(nas), NA)
+p <- lapply(1:ncol(nas), function(col) nas[!is.na(nas[ , col]), col])
+names(p) <- sapply(programs, function(x) unique(x[!is.na(x)]))
+gplots::venn(p)
 ```
 
 # Getting TCGA's read counts for the annotated splicing junctions
