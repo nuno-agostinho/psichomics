@@ -4,14 +4,19 @@
 \alias{downloadFiles}
 \title{Download files to a given directory}
 \usage{
-downloadFiles(url, folder, ...)
+downloadFiles(url, folder, progress = printPaste, download = download.file,
+  ...)
 }
 \arguments{
 \item{url}{Character: download links}
 
 \item{folder}{Character: directory to store the downloaded archives}
 
-\item{...}{Extra parameters passed to the function download.file}
+\item{progress}{Function to show the progress (default is printPaste)}
+
+\item{download}{Function to use to download files}
+
+\item{...}{Extra parameters passed to the download function}
 }
 \value{
 Invisible TRUE if every file was successfully downloaded

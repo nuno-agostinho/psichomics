@@ -4,12 +4,14 @@
 \alias{loadFirehoseFolders}
 \title{Load Firehose folders}
 \usage{
-loadFirehoseFolders(folder, exclude = "")
+loadFirehoseFolders(folder, exclude = "", progress = printPaste)
 }
 \arguments{
 \item{folder}{Character: folder(s) in which to look for Firehose files}
 
 \item{exclude}{Character: files to exclude from the loading}
+
+\item{progress}{Function to show the progress (default is printPaste)}
 }
 \value{
 List with loaded data.frames
