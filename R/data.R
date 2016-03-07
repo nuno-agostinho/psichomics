@@ -21,19 +21,28 @@ addTCGAdata <- function() {
     names(cohorts) <- sprintf("%s (%s)", names(cohorts), cohorts)
     
     if (isFirehoseUp()) {
-        list(selectInput("firehoseCohort", "Cohort", cohorts,
-                         multiple = TRUE, selected = c("ACC", "BLCA")),
-             selectInput("firehoseDate", "Date",
+        list(selectizeInput("firehoseCohort", "Cohort", cohorts,
+                         multiple = TRUE, selected = c("ACC", "BLCA"),
+                         options = list(placeholder = "Select cohort(s)")),
+             selectizeInput("firehoseDate", "Date",
                          as.character(getFirehoseDates()), multiple = TRUE,
-                         selected = "2015-11-01"),
-             selectInput("dataType", "Data type",
+                         selected = "2015-11-01", options = list(
+                             placeholder = "Select sample date")),
+             selectizeInput("dataType", "Data type",
                          c("Clinical", "mRNASeq"), multiple = TRUE,
-                         selected = "Clinical"),
+                         selected = "Clinical", options = list(
+                             placeholder = "Select data types")),
              textInput("firehoseExclude",
                        "Files/archives to exclude (separated by comma)",
-                       value = "RSEM_isoforms, .aux., .mage-tab., MANIFEST.txt, exon_quantification"),
-             textInput("dataFolder", "Folder where the data is located",
-                       value = "~/Downloads"),
+                       value = paste(
+                           "RSEM_isoforms", ".aux.", ".mage-tab.",
+                           "MANIFEST.txt", "exon_quantification",
+                           sep = ", "),
+                       placeholder = "Input files to exclude"),
+             textInput("dataFolder", "Folder to store the data",
+                       value = "~/Downloads", placeholder = "Insert data folder"),
+             bsTooltip("dataFolder", "Data not available in this folder will be downloaded.",
+                       "right", options = list(container = "body")),
              actionButton("getFirehoseData", "Get data"))
     } else {
         list(p("Not able to reach Firehose."))
@@ -163,15 +172,12 @@ server <- function(input, output, session){
                 value <- value + (progress$getMax() - value)
             }
             if (is.null(max)) {
-                # print(paste(message, value))
                 progress$inc(amount = value/divisions, message = message,
                              detail = detail)
             } else {
-                # print(paste(message, value, max))
                 progress$inc(amount = 1/max/divisions, message = message,
                              detail = detail)
             }
-            # print(progress$getValue())
         }
         
         # Parse exclude
@@ -221,7 +227,6 @@ server <- function(input, output, session){
                 lapply(seq_along(data), function(i) {
                     tablename <- paste("table", names(shared.data$data)[k],
                                        i, sep = ".")
-                    print(attributes(data[[i]]))
                     if (isTRUE(attr(data[[i]], "rowNames")))
                         d <- cbind(names = rownames(data[[i]]), data[[i]])
                     else
