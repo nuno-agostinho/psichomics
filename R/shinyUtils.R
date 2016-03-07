@@ -40,6 +40,7 @@ dropdown <- function(inputId) {
     )
 }
 
+#' @export
 bsModal2 <- function (id, title, trigger, ..., size, footer = NULL)  {
     if (!missing(size)) {
         if (size == "large") size = "modal-lg"
