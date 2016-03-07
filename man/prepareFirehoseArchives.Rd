@@ -4,23 +4,21 @@
 \alias{prepareFirehoseArchives}
 \title{Prepares Firehose archives in a given directory}
 \usage{
-prepareFirehoseArchives(url, folder, quiet = FALSE)
+prepareFirehoseArchives(downloaded, folder, progress = printPaste)
 }
 \arguments{
-\item{url}{Character: links to the downloadable archives}
+\item{downloaded}{Character: path to downloaded archives}
 
 \item{folder}{Character: local folder where the archives should be stored}
 
-\item{quiet}{If \code{TRUE}, suppress status messages (if any), and
-    the progress bar.}
+\item{progress}{Function to show the progress (default is printPaste)}
 }
 \value{
 Invisible TRUE if successful
 }
 \description{
-Downloads Firehose archives, checks their integrety using the MD5 files,
-extracts the content of the archives and removes the original downloaded
-archives.
+Checks Firehose archives' integrity using the MD5 files, extracts the content
+of the archives and removes the original downloaded archives.
 }
 \examples{
 prepareFirehoseArchives(folder = "~/Downloads", url = paste0(
