@@ -1,6 +1,9 @@
 #' @import httr tools
 #' @importFrom jsonlite fromJSON
 NULL
+#> NULL
+
+printPaste <- function(...) print(paste(...))
 
 #' Returns the date format used by the Firehose API
 #'
@@ -168,8 +171,7 @@ getFirehoseCohorts <- function(cohort = NULL) {
 #' @param folder Character: directory to store the downloaded archives
 #' @param ... Extra parameters passed to the download function
 #' @param download Function to use to download files
-#' @param progress Function to show the progress (default is function(...) 
-#' print(paste(...)))
+#' @param progress Function to show the progress (default is printPaste)
 #' 
 #' @return Invisible TRUE if every file was successfully downloaded
 #' @export
@@ -180,7 +182,7 @@ getFirehoseCohorts <- function(cohort = NULL) {
 #' 
 #' # Download without printing to console
 #' downloadFiles(url, "~/Pictures", quiet = TRUE)
-downloadFiles <- function(url, folder, progress = function(...) print(paste(...)),
+downloadFiles <- function(url, folder, progress = printPaste,
                           download = download.file, ...) {
     destination <- file.path(folder, basename(url))
     for (i in seq_along(url)) {
@@ -213,8 +215,7 @@ checkIntegrity <- function(filesToCheck, md5file) {
 #'
 #' @param downloaded Character: path to downloaded archives
 #' @param folder Character: local folder where the archives should be stored
-#' @param progress Function to show the progress (default is function(...) 
-#' print(paste(...)))
+#' @param progress Function to show the progress (default is printPaste)
 #' 
 #' @return Invisible TRUE if successful
 #' @export
@@ -225,7 +226,7 @@ checkIntegrity <- function(filesToCheck, md5file) {
 #'     "ACC/20151101/gdac.broadinstitute.org_ACC.",
 #'     "Merge_Clinical.Level_1.2015110100.0.0.tar.gz", c("", ".md5")))
 prepareFirehoseArchives <- function (downloaded, folder,
-                                     progress = function(...) print(paste(...))) {
+                                     progress = printPaste) {
     # Check integrety of the downloaded archives with the MD5 files
     downloadedFolders <- downloaded[tools::file_ext(downloaded) != "md5"]
     ## TODO(NunoA): don't assume every file has the respective MD5 file
@@ -285,8 +286,7 @@ parseUrlsFromFirehoseResponse <- function(res) {
 #'
 #' @param folder Character: folder(s) in which to look for Firehose files
 #' @param exclude Character: files to exclude from the loading
-#' @param progress Function to show the progress (default is function(...) 
-#' print(paste(...)))
+#' @param progress Function to show the progress (default is printPaste)
 #' 
 #' @return List with loaded data.frames
 #' @export
@@ -301,8 +301,7 @@ parseUrlsFromFirehoseResponse <- function(res) {
 #' 
 #' # Exclude certain files from being loaded
 #' loadFirehoseFolders(folders, exclude = c("pink.txt", "panther.txt"))
-loadFirehoseFolders <- function (folder, exclude="",
-                                 progress = function(...) print(paste(...))) {
+loadFirehoseFolders <- function (folder, exclude="", progress = printPaste) {
     # Retrieve full path of the files inside the given folders
     files <- dir(folder, full.names=TRUE)
     
@@ -331,8 +330,7 @@ loadFirehoseFolders <- function (folder, exclude="",
 #' from loading into R (by default, it excludes ".aux.", ".mage-tab." and
 #' "MANIFEST.TXT" files)
 #' @param ... Extra parameters to be passed to \code{\link{queryFirehoseData}}
-#' @param progress Function to show the progress (default is function(...) 
-#' print(paste(...)))
+#' @param progress Function to show the progress (default is printPaste)
 #' @param download Function to download the files (default is download.file)
 #' 
 #' @export
@@ -340,7 +338,7 @@ loadFirehoseFolders <- function (folder, exclude="",
 #' loadFirehoseData()
 loadFirehoseData <- function(folder = "~/Downloads",
                              exclude = c(".aux.", ".mage-tab.", "MANIFEST.txt"),
-                             ..., progress = function(...) print(paste(...)),
+                             ..., progress = printPaste,
                              download = download.file) {
     # Check if folder exists
     if (!dir.exists(folder)) stop("Directory doesn't exist!")
