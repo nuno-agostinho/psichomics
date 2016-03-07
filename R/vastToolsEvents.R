@@ -1,5 +1,6 @@
 #' @import plyr
 NULL
+#> NULL
 
 #' Parses an alternative splicing event from VAST-TOOLS
 #'
