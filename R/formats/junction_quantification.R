@@ -10,13 +10,19 @@ transpose   <- FALSE
 rowCheck    <- TRUE  # Check format using a row (TRUE) or a column (FALSE)
 checkIndex  <- 2     # Index of the row or column used to check the format
 
+# File string to check
+check <- c("junction", "raw_counts", "raw_counts", "raw_counts", "raw_counts")
+
 # Parsing information
 delim       <- "\t"  # Delimiter used to separate fields
 colNames    <- 1     # Row to use for column names
-rowNames    <- NULL  # Column to use for row names
-ignoreCols  <- NULL  # Columns to ignore
+rowNames    <- 1     # Column to use for row names
+ignoreCols  <- 1     # Columns to ignore
 ignoreRows  <- 1:2   # Rows to ignore
 commentChar <- NULL  # String to identify comments (these lines will be ignored)
 
-# File string to check
-check <- c("junction", "raw_counts", "raw_counts", "raw_counts", "raw_counts")
+# Other options
+unique <- TRUE    # Remove duplicated rows
+
+# Default columns to show in the app (NULL to show all)
+show <- NULL

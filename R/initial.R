@@ -153,6 +153,9 @@ loadFile <- function(format, file) {
         loaded <- data.frame(t(loaded), stringsAsFactors = FALSE, 
                              row.names = NULL)
     
+    # Remove duplicated rows
+    if (!is.null(format$unique) && format$unique) loaded <- unique(loaded)
+    
     # Add column and row names
     if (!is.null(format$colNames)) names(loaded) <- loaded[format$colNames, ]
     if (!is.null(format$rowNames))
@@ -161,12 +164,16 @@ loadFile <- function(format, file) {
         rowNames <- NULL
     
     # Filter out unwanted columns and rows
-    if (!is.null(format$ignoreRows)) loaded <- loaded[-format$ignoreRows, ]
     if (!is.null(format$ignoreCols)) loaded <- loaded[ , -format$ignoreCols]
+    if (!is.null(format$ignoreRows)) {
+        rowNames <- rowNames[-format$ignoreRows]
+        loaded <- loaded[-format$ignoreRows, ]
+    }
     
     # Add table name and description
     attr(loaded, "tablename") <- format$tablename
     attr(loaded, "description") <- format$description
+    attr(loaded, "show") <- format$show
     
     # Add row names (it doesn't work placed before for some reason...)
     rownames(loaded) <- rowNames
