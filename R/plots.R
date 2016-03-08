@@ -29,10 +29,11 @@ server <- function(input, output, session) {
     
     observe({
         # If showing datatable, hide selectizeEvent; otherwise, show it
-        events <- function(func) func("selectizeEvent",
-                                      anim = TRUE, animType = "fade")
-        if(input$selectizePlot == "Inclusion levels") events(hide)
-        else events(show)
+        vis <- function(func, ...) {
+            func("selectizeEvent", anim = TRUE, animType = "fade")
+        }
+        if(input$selectizePlot == "Inclusion levels") vis(shinyjs::hide)
+        else vis(shinyjs::show)
     })
     
     output$plots <- renderUI({
