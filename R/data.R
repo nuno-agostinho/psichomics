@@ -186,6 +186,7 @@ server <- function(input, output, session){
         exclude <- trimWhitespace(exclude)
         
         # Load data from Firehose
+        #print(microbenchmark::microbenchmark(times = 1,
         shared.data$data <- loadFirehoseData(
             folder = input$dataFolder,
             cohort = input$firehoseCohort,
@@ -193,6 +194,7 @@ server <- function(input, output, session){
             data_type = input$dataType,
             exclude = exclude,
             progress = updateProgress)
+        #))
         shared.data$progress.divisions <- NULL
         shinyjs::enable("getFirehoseData")
     })
@@ -232,6 +234,11 @@ server <- function(input, output, session){
                         d <- cbind(names = rownames(data[[i]]), data[[i]])
                     else
                         d <- data[[i]]
+                    
+                    # Subset to show default columns if any
+                    if (!is.null(attr(data[[i]], "show")))
+                        d <- subset(d, select = attr(data[[i]], "show"))
+                        
                     output[[tablename]] <- renderDataTable(d,
                         options = list(pageLength = 10, scrollX=TRUE))
                 })
