@@ -7,6 +7,16 @@
 writeAnnotation(jointEvents, eventType, filename = paste0("data/annotation_",
   eventType, ".txt"))
 }
+\arguments{
+\item{eventType}{Character: type of event}
+
+\item{filename}{Character: path to the annotation file}
+
+\item{join}{List of lists of data frame}
+}
+\value{
+Invisible TRUE if everything's okay
+}
 \description{
 Write the annotation of an event type to a file
 }

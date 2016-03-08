@@ -688,8 +688,7 @@ joint <- lapply(types, function(type, events) {
 names(joint) <- types
 ```
 
-
-```{r}
+```{r, eval=FALSE}
 # Okay! Let's check how many overlaps there are and how many events are unique
 # for skipping exons events (just change)
 j <- joint$SE
@@ -732,17 +731,17 @@ All right! Now let's search for pairs (only in skipping exon events, for now)!
 ```{r TCGA/events match, eval=FALSE}
 chr <- joint$SE$Chromosome
 strand <- joint$SE$Strand
-c1 <- joint$SE$C1.end
-a1 <- joint$SE$A1.start
-a2 <- joint$SE$A1.end
-c2 <- joint$SE$C2.start
+c1e <- joint$SE$C1.end
+a1s <- joint$SE$A1.start
+a1e <- joint$SE$A1.end
+c2s <- joint$SE$C2.start
 
-id_incA <- sprintf("%s:%s:%s,%s:%s:%s", chr, ifelse(c1<a1, c1, a1), strand,
-                   chr, ifelse(c1<a1, a1, c1), strand)
-id_incB <- sprintf("%s:%s:%s,%s:%s:%s", chr, ifelse(a2<c2, a2, c2), strand,
-                   chr, ifelse(a2<c2, c2, a2), strand)
-id_excl <- sprintf("%s:%s:%s,%s:%s:%s", chr, ifelse(c1<c2, c1, c2), strand, 
-                   chr, ifelse(c1<c2, c2, c1), strand)
+id_incA <- sprintf("%s:%s:%s,%s:%s:%s", chr, ifelse(c1e<a1s, c1e, a1s), strand,
+                   chr, ifelse(c1e<a1s, a1s, c1e), strand)
+id_incB <- sprintf("%s:%s:%s,%s:%s:%s", chr, ifelse(a1e<c2s, a1e, c2s), strand,
+                   chr, ifelse(a1e<c2s, c2s, a1e), strand)
+id_excl <- sprintf("%s:%s:%s,%s:%s:%s", chr, ifelse(c1e<c2s, c1e, c2s), strand, 
+                   chr, ifelse(c1e<c2s, c2s, c1e), strand)
 
 index_incA <- fastmatch::fmatch(id_incA, junctionsID)
 index_incB <- fastmatch::fmatch(id_incB, junctionsID)

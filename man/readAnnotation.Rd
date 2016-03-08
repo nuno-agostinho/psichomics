@@ -7,6 +7,14 @@
 readAnnotation(eventType, filename = paste0("data/annotation_", eventType,
   ".txt"))
 }
+\arguments{
+\item{eventType}{Character: type of event}
+
+\item{filename}{Character: path to the annotation file}
+}
+\value{
+Data frame with the annotation
+}
 \description{
 Read the annotation of an event type from a file
 }
