@@ -35,11 +35,13 @@ ui <- function(tab) {
                                "Choice 3" = 3), selected = 1)),
             shiny::column(3, selectizeInput(
                 "select", label = h3("Selectize box"),
-                choices = list("Homo sapiens (human)" = 1,
-                               "Mus musculus (mouse)" = 2,
-                               "Canis lupus (wolf)" = 3),
-                selected = 1,
-                multiple = T)),
+                choices = list("Primates" = c("Homo sapiens (human)" = 1),
+                               "Rodents" = c("Mus musculus (mouse)" = 2),
+                               "Carnivora" = c("Canis lupus (wolf)" = 3)),
+                # more options: https://github.com/brianreavis/selectize.js/blob/master/docs/usage.md
+                options = list(create = TRUE, createOnBlur = TRUE,
+                               addPrecedence = TRUE),
+                selected = 1, multiple = TRUE, size = 2)),
             shiny::column(3,
                           sliderInput("slider1", label = h3("Sliders"), min = 0,
                                       max = 100, value = 50),
