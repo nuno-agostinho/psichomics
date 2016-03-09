@@ -24,5 +24,5 @@ commentChar <- NULL  # String to identify comments (these lines will be ignored)
 # Other options
 unique <- TRUE    # Remove duplicated rows
 
-# Default columns to show in the app (NULL to show all)
+# Default columns to show (NULL to show all)
 show <- NULL
