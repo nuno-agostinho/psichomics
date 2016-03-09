@@ -2,11 +2,9 @@
 title: "The project itself"
 author: "Nuno Agostinho"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Parsing splicing events from SUPPA}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output: 
+  html_document: 
+    toc: yes
 ---
 
 Another thing I have considered is that maybe it'd be best if we used always the
@@ -16,6 +14,26 @@ could  accomplish this is by using classes instead. Maybe two methods with the
 same name in different classes are allowed? They are definitely allowed in
 different environments (creating a list of environments is currently the way I
 deal with them).
+
+## Reading data
+
+Reading data should be as fast as possible.
+There are two packages that are very fast loading files: `readr` and
+`data.table`.
+
+Compared to fread, readr:
+* is ~1.2-2x slower. For best performance, use data.table::fread()
+* readr has a slightly more sophisticated parser, recognising both doubled
+("""") and backslash escapes ("""); readr allows to read factors and date times
+directly from disk
+* fread() automatically guesses the delimiter, header, lines to skip by default
+and more; readr asks for these
+* readr is designed to be general, and dealing with new types of rectangular
+data just requires implementing a new tokenizer; fread() is designed to be as
+fast as possible; fread() is pure C, readr is C++ and Rcpp
+
+Using readr to load a big junction quantification file from BLCA Firehose
+cohort took 30 seconds vs fread's 13 seconds.
 
 > TODO: check if methods with identical names from different classes are allowed
 
