@@ -49,9 +49,6 @@ should be easy, no?)
 
 > TODO: save and restore Shiny session... else the page must NOT be reloaded! :(
 
-> TODO: create generics for all event types in MATS/SUPPA (reuse code => less
-bugs, easier to understand, easier to debug, easier to do anything)
-
 > TODO: use Travis CL in the project (only available for GitHub); more
 information is available at http://r-pkgs.had.co.nz/check.html
 
@@ -59,3 +56,7 @@ information is available at http://r-pkgs.had.co.nz/check.html
 
 > TODO: Remove "character(0)" warnings related to using NULL right below a
 roxygen's @import
+
+> TODO: Allow to choose visible columns in data tables
+
+> TODO: Allow to search columns that are not visible
