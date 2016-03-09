@@ -32,13 +32,15 @@ addTCGAdata <- function() {
                          c("Clinical", "mRNASeq"), multiple = TRUE,
                          selected = "Clinical", options = list(
                              placeholder = "Select data types")),
-             textInput("firehoseExclude",
-                       "Files/archives to exclude (separated by comma)",
-                       value = paste(
-                           "RSEM_isoforms", ".aux.", ".mage-tab.",
-                           "MANIFEST.txt", "exon_quantification",
-                           sep = ", "),
-                       placeholder = "Input files to exclude"),
+             selectizeInput("firehoseExclude",
+                            "Files/archives to exclude", multiple = TRUE,
+                            choices = c("RSEM_isoforms", ".aux.", ".mage-tab.",
+                                        "MANIFEST.txt", "exon_quantification"),
+                            selected = c("RSEM_isoforms", ".aux.", ".mage-tab.",
+                                         "MANIFEST.txt", "exon_quantification"),
+                            # Allow to add new items
+                            options = list(create = TRUE, createOnBlur=TRUE,
+                                placeholder = "Input files to exclude")),
              textInput("dataFolder", "Folder to store the data",
                        value = "~/Downloads", placeholder = "Insert data folder"),
              bsTooltip("dataFolder", placement = "right", 
@@ -181,20 +183,14 @@ server <- function(input, output, session){
             }
         }
         
-        # Parse exclude
-        exclude <- strsplit(input$firehoseExclude, ",")[[1]]
-        exclude <- trimWhitespace(exclude)
-        
         # Load data from Firehose
-        #print(microbenchmark::microbenchmark(times = 1,
         shared.data$data <- loadFirehoseData(
             folder = input$dataFolder,
             cohort = input$firehoseCohort,
             date = gsub("-", "_", input$firehoseDate),
             data_type = input$dataType,
-            exclude = exclude,
+            exclude = input$firehoseExclude,
             progress = updateProgress)
-        #))
         shared.data$progress.divisions <- NULL
         shinyjs::enable("getFirehoseData")
     })
