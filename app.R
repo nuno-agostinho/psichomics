@@ -11,10 +11,10 @@ server <- function(input, output, session) {
     callScriptsFunction(func = "server", input, output, session,
                         check = c("name", "server"))
     
-    session$onSessionEnded(function() {
-        # Stop app and print message to console
-        suppressMessages(stopped <- stopApp(returnValue="Shiny app was closed"))
-    })
+    # session$onSessionEnded(function() {
+    #     # Stop app and print message to console
+    #     suppressMessages(stopped <- stopApp(returnValue="Shiny app was closed"))
+    # })
 }
 
 # The user interface (ui) controls the layout and appearance of the app
