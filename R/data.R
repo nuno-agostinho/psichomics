@@ -130,18 +130,6 @@ server <- function(input, output, session){
     }) # end of renderUI
     
     observeEvent(input$acceptFile, {
-        #         output$testing <- renderUI({
-        #             list(
-        #                 badge(inputId="badge1", Sys.time()),
-        #                 buttonGroups(actionButton("test111", "Left"),
-        #                              actionButton("test222", "Middle"),
-        #                              actionButton("test333", "Right")),
-        #                 progressbar(sample(1:100, 1)),
-        #                 dropdown(inputId="dropdownMenu1"),
-        #                 alertNew(progressbar(sample(1:100, 1)))
-        #             )
-        #         })
-        
         error <- function(msg) { print(msg); return(NULL) }
         if(is.null(input$dataFile)) error("No data input selected")
         if(input$species == "") error("Species field can't be empty")
@@ -195,7 +183,7 @@ server <- function(input, output, session){
         shinyjs::enable("getFirehoseData")
     })
     
-    observeEvent(input$replace, { loadAllData() })
+    observeEvent(input$replace, loadAllData())
     
     # Load Firehose data
     observeEvent(input$getFirehoseData, {
@@ -232,8 +220,8 @@ server <- function(input, output, session){
                         d <- data[[i]]
                     
                     # Subset to show default columns if any
-                    if (!is.null(attr(data[[i]], "show")))
-                        d <- subset(d, select = attr(data[[i]], "show"))
+                    if (!is.null(attr(d, "show")))
+                        d <- subset(d, select = attr(d, "show"))
                         
                     output[[tablename]] <- renderDataTable(d,
                         options = list(pageLength = 10, scrollX=TRUE))
