@@ -26,6 +26,9 @@ commentChar <- NULL  # String to identify comments (these lines will be ignored)
 # Other options
 unique <- FALSE   # Remove duplicated rows
 
-# Default columns to show in the app (NULL to show all)
-show <- c("admin.batch_number", "admin.bcr", "admin.day_of_dcc_upload",
-          "patient.bcr_patient_barcode")
+# Default columns to show (NULL to show all)
+show <- c("patient.bcr_patient_barcode", "patient.stage_event.pathologic_stage",
+          "patient.vital_status", "patient.days_to_death",
+          "patient.days_to_last_followup", "patient.radiation_therapy",
+          "patient.gender", "patient.clinical_cqcf.histological_type",
+          "patient.race", "patient.ethnicity")
