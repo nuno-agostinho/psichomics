@@ -22,16 +22,16 @@ addTCGAdata <- function() {
     
     if (isFirehoseUp()) {
         list(selectizeInput("firehoseCohort", "Cohort", cohorts,
-                         multiple = TRUE, selected = c("ACC", "BLCA"),
-                         options = list(placeholder = "Select cohort(s)")),
+                            multiple = TRUE, selected = c("ACC", "BLCA"),
+                            options = list(placeholder = "Select cohort(s)")),
              selectizeInput("firehoseDate", "Date",
-                         as.character(getFirehoseDates()), multiple = TRUE,
-                         selected = "2015-11-01", options = list(
-                             placeholder = "Select sample date")),
+                            as.character(getFirehoseDates()), multiple = TRUE,
+                            selected = "2015-11-01", options = list(
+                                placeholder = "Select sample date")),
              selectizeInput("dataType", "Data type",
-                         c("Clinical", "mRNASeq"), multiple = TRUE,
-                         selected = "Clinical", options = list(
-                             placeholder = "Select data types")),
+                            c("Clinical", "mRNASeq"), multiple = TRUE,
+                            selected = "Clinical", options = list(
+                                placeholder = "Select data types")),
              selectizeInput("firehoseExclude",
                             "Files/archives to exclude", multiple = TRUE,
                             choices = c("RSEM_isoforms", ".aux.", ".mage-tab.",
@@ -39,10 +39,12 @@ addTCGAdata <- function() {
                             selected = c("RSEM_isoforms", ".aux.", ".mage-tab.",
                                          "MANIFEST.txt", "exon_quantification"),
                             # Allow to add new items
-                            options = list(create = TRUE, createOnBlur=TRUE,
+                            options = list(
+                                create = TRUE, createOnBlur=TRUE,
                                 placeholder = "Input files to exclude")),
              textInput("dataFolder", "Folder to store the data",
-                       value = "~/Downloads", placeholder = "Insert data folder"),
+                       value = "~/Downloads",
+                       placeholder = "Insert data folder"),
              bsTooltip("dataFolder", placement = "right", 
                        options = list(container = "body"),
                        "Data not available in this folder will be downloaded."),
@@ -79,11 +81,13 @@ ui <- function(tab) {
             mainPanel(
                 # TODO(NunoA): Show alerts from renderUI
                 bsAlert(anchorId = "alert2"),
-                bsModal2("modalExample", "Data already loaded",
-                         "tabBut", size = "small",
+                bsModal2("dataReplace", "Data already loaded", NULL,
+                         size = "small",
                          "Would you like to replace the loaded data?",
                          footer = list(
-                             actionButton("replace", "data-dismiss"="modal", label = "Replace"))),
+                             actionButton("replace",
+                                          "data-dismiss"="modal", 
+                                          label = "Replace"))),
                 uiOutput("tablesOrAbout")
             )
         )
@@ -188,7 +192,7 @@ server <- function(input, output, session){
     # Load Firehose data
     observeEvent(input$getFirehoseData, {
         if (!is.null(shared.data$data)) {
-            toggleModal(session, "modalExample", "open")
+            toggleModal(session, "dataReplace", "open")
         } else {
             loadAllData()
         }
