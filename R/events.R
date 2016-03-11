@@ -293,37 +293,34 @@ junctionString <- function(chr, strand, junc5, junc3) {
 #' @return Matrix with inclusion levels
 #' @export
 calculateInclusionLevels <- function(eventType, junctionQuant, annotation) {
-    # TODO(NunoA): Really? This should be unique by now
-    annotation <- unique(annotation)
     chr <- annotation$Chromosome
     strand <- annotation$Strand
     
     if (eventType == "SE") {
-        c1e <- annotation$C1.end
-        a1s <- annotation$A1.start
-        a1e <- annotation$A1.end
-        c2s <- annotation$C2.start
-        
-        # Convert junction quantification files to matrix
-        ## TODO(NunoA): shouldn't this be processed already?
-        junctionQuant <- unique(junctionQuant)
-        row.names(junctionQuant) <- junctionQuant$Hybridization.REF    
-        junctions <- data.matrix(junctionQuant[, 2:ncol(junctionQuant)])
+        # Create searchable strings for junctions
+        incAstr <- junctionString(chr, strand,
+                                  annotation$C1.end, annotation$A1.start)
+        incBstr <- junctionString(chr, strand,
+                                  annotation$A1.end, annotation$C2.start)
+        exclstr <- junctionString(chr, strand, 
+                                  annotation$C1.end, annotation$C2.start)
         
         # Get specific junctions
-        incAstr <- junctionString(chr, strand, c1e, a1s)
-        incBstr <- junctionString(chr, strand, a1e, c2s)
-        exclstr <- junctionString(chr, strand, c1e, c2s)
-        incA <- junctions[fmatch(incAstr, rownames(junctions)), ]
-        incB <- junctions[fmatch(incBstr, rownames(junctions)), ]
-        excl <- junctions[fmatch(exclstr, rownames(junctions)), ]
+        fmatch <- fastmatch::fmatch
+        coords <- rownames(junctionQuant)
+        incA <- junctionQuant[fmatch(incAstr, coords), ]
+        incB <- junctionQuant[fmatch(incBstr, coords), ]
+        excl <- junctionQuant[fmatch(exclstr, coords), ]
         
         # Calculate inclusion levels
         inc <- (incA + incB) / 2
         psi <- inc/(excl + inc)
+        rownames(psi) <- sprintf("%s_%s_%s_%s_%s_%s", chr, strand,
+                                 annotation$C1.end, annotation$A1.start,
+                                 annotation$A1.end, annotation$C2.start)
         
         # Clear rows with nothing but NAs
-        psi <- psi[complete.cases(psi), ]
-        return(psi)
+        naRows <- rowSums(!is.na(psi)) == 0
+        return(psi[!naRows, ])
     }
 }
