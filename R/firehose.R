@@ -372,8 +372,8 @@ loadFirehoseData <- function(folder = "~/Downloads",
         progress("Archives already downloaded")
     }
     
-    ## TODO(NunoA): Check if it's possible to show READR progress in a Shiny app
-    # Load the files using readr (faster and can show progress)
+    ## TODO(NunoA): Can we show file loading progress in a Shiny app?
+    # Load the files
     loaded <- lapply(archives, loadFirehoseFolders, exclude, progress)
     return(loaded)
 }

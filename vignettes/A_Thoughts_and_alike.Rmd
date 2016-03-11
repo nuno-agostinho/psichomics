@@ -59,4 +59,7 @@ roxygen's @import
 
 > TODO: Allow to choose visible columns in data tables
 
-> TODO: Allow to search columns that are not visible
+> TODO: Allow to search columns that are not visible in data tables
+
+> TODO: simplify format checkers... specially the virtual distinction between
+ignoreRows and skip
