@@ -242,7 +242,7 @@ writeAnnotation <- function(jointEvents, eventType,
 #' @export
 readAnnotation <- function(eventType, filename = paste0("data/annotation_",
                                                         eventType, ".txt")) {
-    res <- read.table(filename, header = TRUE)
+    res <- read.table(filename, header = TRUE, stringsAsFactors = FALSE)
     return(res)
 }
 
