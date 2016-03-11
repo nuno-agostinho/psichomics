@@ -4,6 +4,7 @@ description <- "Quantification of alternatively spliced junctions"
 
 # Transpose the data? This is the first step before parsing the information!
 # After transposition, a row of the current data equals a column of the original
+skip        <- 2     # Rows to skip when parsing file
 transpose   <- FALSE
 
 # Format checker information
@@ -18,7 +19,7 @@ delim       <- "\t"  # Delimiter used to separate fields
 colNames    <- 1     # Row to use for column names
 rowNames    <- 1     # Column to use for row names
 ignoreCols  <- 1     # Columns to ignore
-ignoreRows  <- 1:2   # Rows to ignore
+ignoreRows  <- NULL  # Rows to ignore
 commentChar <- NULL  # String to identify comments (these lines will be ignored)
 
 # Other options

@@ -20,7 +20,7 @@ delim       <- "\t"  # Delimiter used to separate fields
 colNames    <- 1     # Row to use for column names
 rowNames    <- NULL  # Column to use for row names
 ignoreCols  <- NULL  # Columns to ignore
-ignoreRows  <- 1     # Rows to ignore
+ignoreRows  <- 1:2   # Rows to ignore
 commentChar <- NULL  # String to identify comments (these lines will be ignored)
 
 # Other options
