@@ -201,36 +201,42 @@ server <- function(input, output, session){
     # Render tabs with data tables
     output$datatabs <- renderUI({
         data <- shared.data$data[[input$category]]
-        do.call(tabsetPanel,
-                lapply(seq_along(names(data)), function(i) {
-                    tabTable(names(data)[i], id = paste(input$category, i, sep = "."),
-                             description = attr(data[[i]], "description"))
-                })
+        do.call(
+            tabsetPanel,
+            lapply(seq_along(names(data)),
+                   function(i) {
+                       tabTable(names(data)[i],
+                                id = paste(input$category, i, sep = "."),
+                                description = attr(data[[i]], "description"))
+                   })
         )
     }) # end of renderUI
     
     # Render data tables every time the data changes
     observe({
-        # For better performance, try to use conditional panels
-        if (!is.null(shared.data$data)) {
-            for (k in seq_along(shared.data$data)) {
-                data <- shared.data$data[[k]]
-                lapply(seq_along(data), function(i) {
-                    tablename <- paste("table", names(shared.data$data)[k],
-                                       i, sep = ".")
-                    if (isTRUE(attr(data[[i]], "rowNames")))
-                        d <- cbind(names = rownames(data[[i]]), data[[i]])
-                    else
-                        d <- data[[i]]
-                    
-                    # Subset to show default columns if any
-                    if (!is.null(attr(d, "show")))
-                        d <- subset(d, select = attr(d, "show"))
-                        
-                    output[[tablename]] <- renderDataTable(d,
-                        options = list(pageLength = 10, scrollX=TRUE))
-                })
-            }
+        renderData <- function(index, data, group) {
+            tablename <- paste("table", names(shared.data$data)[group],
+                               index, sep = ".")
+            
+            if (isTRUE(attr(data[[index]], "rowNames")))
+                table <- cbind(names = rownames(data[[index]]), data[[index]])
+            else
+                table <- data[[index]]
+            
+            # Subset to show default columns if any
+            if (!is.null(attr(table, "show")))
+                table <- subset(table, select = attr(table, "show"))
+            
+            output[[tablename]] <- renderDataTable(
+                table, options = list(pageLength = 10, scrollX=TRUE))
         }
+        
+        # For better performance, try to use conditional panels
+        # if (!is.null(shared.data$data)) {
+        for (group in seq_along(shared.data$data)) {
+            data <- shared.data$data[[group]]
+            lapply(seq_along(data), renderData, data, group)
+        }
+        # }
     }) # end of observe
 }
