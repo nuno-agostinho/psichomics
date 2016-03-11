@@ -181,10 +181,22 @@ name like ```dt[ , V3]``` or by its index with an added argument
 ```dt[ , 3, with=FALSE]```. That's rather laborious, so we need to be sure we
 want to support datatables in the code or not.
 
-## Comparing a sequence of numbers from 1 to y
-```{r number_sequence}
+## Creating a sequence of numbers from 1 to y
+```{r number sequence}
 up <- sample(10**3)
 res <- microbenchmark(1:length(up),
                       seq_along(up))
+autoplot(res)
+```
+
+## Removing NAs from a data frame
+```{r remove NAs}
+df <- read.table(text = "1  2  3  NA 5
+                         a  b  c  d  e
+                         NA NA NA NA NA
+                         5  4  NA 2  1")
+res <- microbenchmark(
+    apply = apply(df, 1, function(x) all(is.na(x))),
+    rowSums = rowSums(!is.na(df)) == 0)
 autoplot(res)
 ```
