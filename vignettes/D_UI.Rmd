@@ -144,3 +144,65 @@ shinyjs:::jsFuncHelper
 
 Seems we can do it by sending a custom JavaScript message. Besides, shinyjs also
 has some wrapper functions to allow us to run JavaScript functions. Nice.
+
+# Automatically changing inputs
+
+There's an easy way to automatically change Shiny inputs: just use `shinyjs`
+and you can even do it in R code! Unfortunately, this isn't that great if you
+want to create thousands of JavaScript events... The case in question involved
+creating a datatable where each element in the first column has a link to
+another graph showing that element in detail. Easy enough to do with a subset of
+the data.
+
+First of all, we style the row names as links. This is important to distribute
+unique IDs to each element of the row name (since in R, data frames' row names
+MUST be unique, we know all IDs will be unique if we use the row name as the
+ID). Note that we replace spaces for underscores or else this wouldn't work.
+
+```{r, eval=FALSE}
+createLink <- function(val) {
+    html <- paste('<a id="%s" title="Get more information about this event"',
+                  'href="#" >%s</a>')
+    link <- sprintf(html, gsub("_", " ", val), val)
+    return(link)
+}
+```
+
+Next, we'll resort to `shinyjs` to create a `onclick` event for each element in
+the row names. This event will change the value of other inputs, allowing us
+to change the current view of the program.
+
+```{r, eval=FALSE}
+observe({
+    lapply(gsub(" ", "_", rownames(mtcars)), function(i) {
+        onclick(i, {
+            # Update plot presented
+            updateSelectizeInput(session, "selectizePlot",
+                                 selected = "plot4")
+            # Update event highlighted
+            updateSelectizeInput(session, "selectizeEvent",
+                                 selected = gsub("_", " ", i))
+        })
+    })
+})
+```
+
+All's good while using the standard data frame `mtcars`. However, when using a
+larger data farme with 15000 rows, the data takes eternities to show and the
+interface lags a lot. Instead, we'll just use JavaScript to accomplish the same
+thing by editing the earlier `createLink` function:
+
+```{r, eval=FALSE}
+createLink <- function(val) {
+    onclick <- sprintf('document.getElementById(\'%s\').selectize.setValue(\'%s\')',
+                      c("selectizePlot", "selectizeEvent"),
+                      c("plot4", "Valiant"))
+    onclick <- paste(onclick, collapse = "; ")
+    html <- paste('<a id="%s" title="Get more information about this event"',
+                  'href="#" onclick="%s">%s</a>')
+    link <- sprintf(html, gsub("_", " ", val), onclick, val)
+    return(link)
+}
+```
+
+A job well done, gentlemen!
