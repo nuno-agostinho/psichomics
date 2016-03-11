@@ -70,3 +70,54 @@ bsModal2 <- function (id, title, trigger, ..., size, footer = NULL)  {
                     footer))))
     htmltools::attachDependencies(bsTag, shinyBS:::shinyBSDep)
 }
+
+#' Create a progress object
+#' @export
+startProgress <- function(message, divisions, global = shared.data) {
+    print(message)
+    global$progress.divisions <- divisions
+    global$progress <- shiny::Progress$new()
+    global$progress$set(message = message, value = 0)
+}
+
+#' Update a progress object
+#' @export
+updateProgress <- function(message = "Hang in there", value = NULL, max = NULL,
+                           detail = NULL, divisions = NULL, 
+                           global = shared.data) {
+    if (!is.null(divisions)) {
+        startProgress(message, divisions, global)
+        return(NULL)
+    }
+    divisions <- global$progress.divisions
+    if (is.null(value)) {
+        value <- global$progress$getValue()
+        max <- global$progress$getMax()
+        value <- value + (max - value)
+    }
+    if (is.null(max)) {
+        global$progress$inc(amount = value/divisions,
+                            message = message, detail = detail)
+        print(paste(message, detail))
+    } else {
+        global$progress$inc(amount = 1/max/divisions,
+                            message = message, detail = detail)
+        print(paste(message, detail))
+    }
+}
+
+disableTab <- function(tab) {
+    # Style item as disabled
+    addClass(selector = paste0(".navbar li:has(a[data-value=", tab, "])"),
+             class = "disabled")
+    # Disable link itself
+    disable(selector = paste0(".navbar li a[data-value=", tab, "]"))
+}
+
+enableTab <- function(tab) {
+    # Style item as enabled
+    removeClass(selector = paste0(".navbar li:has(a[data-value=", tab, "])"),
+                class = "disabled")
+    # Enable link itself
+    enable(selector = paste0(".navbar li a[data-value=", tab, "]"))
+}

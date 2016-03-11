@@ -149,32 +149,6 @@ server <- function(input, output, session){
     loadAllData <- reactive({
         shinyjs::disable("getFirehoseData")
         
-        # Create a Progress object
-        progress <- shiny::Progress$new()
-        progress$set(message = "Hang in there...", value = 0)
-        # Close the progress when this reactive exits (even if there's an error)
-        on.exit(progress$close())
-        
-        updateProgress <- function(message, value = NULL, max = NULL,
-                                   divisions = NULL, detail = NULL) {
-            if (!is.null(divisions)) {
-                shared.data$progress.divisions <- divisions
-                return(NULL)
-            }
-            divisions <- shared.data$progress.divisions
-            if (is.null(value)) {
-                value <- progress$getValue()
-                value <- value + (progress$getMax() - value)
-            }
-            if (is.null(max)) {
-                progress$inc(amount = value/divisions, message = message,
-                             detail = detail)
-            } else {
-                progress$inc(amount = 1/max/divisions, message = message,
-                             detail = detail)
-            }
-        }
-        
         # Load data from Firehose
         shared.data$data <- loadFirehoseData(
             folder = input$dataFolder,
@@ -183,7 +157,9 @@ server <- function(input, output, session){
             data_type = input$dataType,
             exclude = input$firehoseExclude,
             progress = updateProgress)
-        shared.data$progress.divisions <- NULL
+        
+        # Close the progress even if there's an error
+        shared.data$progress$close()
         shinyjs::enable("getFirehoseData")
     })
     
