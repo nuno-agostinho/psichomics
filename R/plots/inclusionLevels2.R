@@ -31,7 +31,6 @@ server <- function(input, output, session) {
         
         updateProgress("Done!")
         closeProgress()
-        shared.data$progress$close()
     })
     
     observe({
