@@ -158,8 +158,7 @@ server <- function(input, output, session){
             exclude = input$firehoseExclude,
             progress = updateProgress)
         
-        # Close the progress even if there's an error
-        shared.data$progress$close()
+        closeProgress()
         shinyjs::enable("getFirehoseData")
     })
     

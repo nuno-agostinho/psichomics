@@ -30,7 +30,7 @@ server <- function(input, output, session) {
             "SE", junctionQuant, annot)
         
         updateProgress("Done!")
-        # Close the progress even if there's an error
+        closeProgress()
         shared.data$progress$close()
     })
     

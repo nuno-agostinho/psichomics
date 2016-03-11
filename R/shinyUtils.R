@@ -106,6 +106,16 @@ updateProgress <- function(message = "Hang in there", value = NULL, max = NULL,
     }
 }
 
+#' Close the progress even if there's an error
+#' @export
+closeProgress <- function(message=NULL, global = shared.data) {
+    # Close the progress even if there's an error
+    if (!is.null(message)) print(message)
+    global$progress$close()
+}
+
+#' Disable a tab from the navbar
+#' @export
 disableTab <- function(tab) {
     # Style item as disabled
     addClass(selector = paste0(".navbar li:has(a[data-value=", tab, "])"),
@@ -114,6 +124,8 @@ disableTab <- function(tab) {
     disable(selector = paste0(".navbar li a[data-value=", tab, "]"))
 }
 
+#' Enable a tab from the navbar
+#' @export
 enableTab <- function(tab) {
     # Style item as enabled
     removeClass(selector = paste0(".navbar li:has(a[data-value=", tab, "])"),
