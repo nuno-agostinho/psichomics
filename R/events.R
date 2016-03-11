@@ -228,6 +228,7 @@ writeAnnotation <- function(jointEvents, eventType,
     # Order by chromosome and coordinates
     orderBy <- lapply(c(1, 3:ncol(res)), function(x) return(res[[x]]))
     res <- res[do.call(order, orderBy), ]
+    res <- unique(res)
     
     write.table(res, file = filename, quote = FALSE, row.names = FALSE)
     return(invisible(TRUE))
