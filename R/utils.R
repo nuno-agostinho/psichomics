@@ -73,7 +73,7 @@ bsModal2 <- function (id, title, trigger, ..., size, footer = NULL)  {
 
 #' Create a progress object
 #' @export
-startProgress <- function(message, divisions, global = shared.data) {
+startProgress <- function(message, divisions, global = sharedData) {
     print(message)
     global$progress.divisions <- divisions
     global$progress <- shiny::Progress$new()
@@ -84,7 +84,7 @@ startProgress <- function(message, divisions, global = shared.data) {
 #' @export
 updateProgress <- function(message = "Hang in there", value = NULL, max = NULL,
                            detail = NULL, divisions = NULL, 
-                           global = shared.data) {
+                           global = sharedData) {
     if (!is.null(divisions)) {
         startProgress(message, divisions, global)
         return(NULL)
@@ -108,7 +108,7 @@ updateProgress <- function(message = "Hang in there", value = NULL, max = NULL,
 
 #' Close the progress even if there's an error
 #' @export
-closeProgress <- function(message=NULL, global = shared.data) {
+closeProgress <- function(message=NULL, global = sharedData) {
     # Close the progress even if there's an error
     if (!is.null(message)) print(message)
     global$progress$close()
