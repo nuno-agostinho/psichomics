@@ -116,19 +116,20 @@ tabTable <- function(title, id, description = NULL, ...) {
 #' 
 #' @return Part of the server logic related to this tab
 server <- function(input, output, session){
+    observeEvent(input$category, setCategory(input$category))
+    
     observe({
         # The button is only enabled if it meets the conditions that follow
-        toggleState("acceptFile",
-                    input$species != "")
+        toggleState("acceptFile", input$species != "")
     })
     
     # Show welcome screen when there's no data loaded
     output$tablesOrAbout <- renderUI({
-        if(is.null(shared.data$data)) {
+        if(is.null(getData())) {
             includeMarkdown("about.md")
         } else {
             list(selectInput("category", "Select category:",
-                             choices = names(shared.data$data)),
+                             choices = names(getData())),
                  uiOutput("datatabs"))
         }
     }) # end of renderUI
@@ -141,32 +142,31 @@ server <- function(input, output, session){
         # inFile <- input$dataFile
         # info <- read.table(inFile$datapath, sep = input$sep,
         #                    header = input$header)
-        # createAlert(session, anchorId = "alert2", title = "Yay!",
-        #             content = list(progressbar(sample(1:100, 1))),
-        #             style = "success", append = FALSE)
     }) # end of observeEvent
     
     loadAllData <- reactive({
         shinyjs::disable("getFirehoseData")
         
         # Load data from Firehose
-        shared.data$data <- loadFirehoseData(
-            folder = input$dataFolder,
-            cohort = input$firehoseCohort,
-            date = gsub("-", "_", input$firehoseDate),
-            data_type = input$dataType,
-            exclude = input$firehoseExclude,
-            progress = updateProgress)
+        setData(
+            loadFirehoseData(
+                folder = input$dataFolder,
+                cohort = input$firehoseCohort,
+                date = gsub("-", "_", input$firehoseDate),
+                data_type = input$dataType,
+                exclude = input$firehoseExclude,
+                progress = updateProgress))
         
         closeProgress()
         shinyjs::enable("getFirehoseData")
     })
     
+    # Load data when the user presses to replace data
     observeEvent(input$replace, loadAllData())
     
     # Load Firehose data
     observeEvent(input$getFirehoseData, {
-        if (!is.null(shared.data$data)) {
+        if (!is.null(getData())) {
             toggleModal(session, "dataReplace", "open")
         } else {
             loadAllData()
@@ -175,7 +175,7 @@ server <- function(input, output, session){
     
     # Render tabs with data tables
     output$datatabs <- renderUI({
-        data <- shared.data$data[[input$category]]
+        data <- getCategoryData()
         do.call(
             tabsetPanel,
             lapply(seq_along(names(data)),
@@ -187,31 +187,29 @@ server <- function(input, output, session){
         )
     }) # end of renderUI
     
+    # Render a specific data table from sharedData
+    renderData <- function(index, data, group) {
+        tablename <- paste("table", names(getData())[group],
+                           index, sep = ".")
+        
+        if (isTRUE(attr(data[[index]], "rowNames")))
+            table <- cbind(names = rownames(data[[index]]), data[[index]])
+        else
+            table <- data[[index]]
+        
+        # Subset to show default columns if any
+        if (!is.null(attr(table, "show")))
+            table <- subset(table, select = attr(table, "show"))
+        
+        output[[tablename]] <- renderDataTable(
+            table, options = list(pageLength = 10, scrollX=TRUE))
+    }
+    
     # Render data tables every time the data changes
     observe({
-        renderData <- function(index, data, group) {
-            tablename <- paste("table", names(shared.data$data)[group],
-                               index, sep = ".")
-            
-            if (isTRUE(attr(data[[index]], "rowNames")))
-                table <- cbind(names = rownames(data[[index]]), data[[index]])
-            else
-                table <- data[[index]]
-            
-            # Subset to show default columns if any
-            if (!is.null(attr(table, "show")))
-                table <- subset(table, select = attr(table, "show"))
-            
-            output[[tablename]] <- renderDataTable(
-                table, options = list(pageLength = 10, scrollX=TRUE))
-        }
-        
-        # For better performance, try to use conditional panels
-        # if (!is.null(shared.data$data)) {
-        for (group in seq_along(shared.data$data)) {
-            data <- shared.data$data[[group]]
+        for (group in seq_along(getData())) {
+            data <- getData()[[group]]
             lapply(seq_along(data), renderData, data, group)
         }
-        # }
-    }) # end of observe
+    })
 }

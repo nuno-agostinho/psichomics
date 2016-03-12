@@ -2,8 +2,23 @@
 NULL
 #> NULL
 
-# Global variable with all the data inside combos!
-shared.data <- reactiveValues(combos = list())
+# Global variable with all the data of a session
+sharedData <- reactiveValues()
+
+# Get data from sharedData
+getData <- reactive(sharedData$data)
+getCategory <- reactive(sharedData$category)
+getCategoryData <- reactive(
+    if(!is.null(getCategory())) getData()[[getCategory()]])
+getJunctionQuantification <- reactive(
+    getCategoryData()[["Junction quantification"]])
+getInclusionLevels <- reactive(sharedData[["psi"]])
+
+# Set data from sharedData (needs to be inside reactive functions)
+setElement <- function(item, value) sharedData[[item]] <- value
+setData <- function(value) setElement("data", value)
+setCategory <- function(value) setElement("category", value)
+setInclusionLevels <- function(value) setElement("psi", value)
 
 # TODO(NunoA): increase allowed size and warn the user to wait for large files
 # Refuse files with size greater than the specified
