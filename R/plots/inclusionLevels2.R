@@ -25,7 +25,7 @@ server <- function(input, output, session) {
         
         # Calculate inclusion levels with annotation and junction quantification
         updateProgress("Calculating inclusion levels")
-        junctionQuant <- shared.data$data[[1]][["Junction quantification"]]
+        junctionQuant <- getJunctionQuantification()
         shared.data$psi <- calculateInclusionLevels(
             "SE", junctionQuant, annot)
         
@@ -34,8 +34,7 @@ server <- function(input, output, session) {
     })
     
     observe({
-        if(is.null(shared.data$data) ||
-           is.null(shared.data$data[[1]][["Junction quantification"]]))
+        if(is.null(getData()) || is.null(getJunctionQuantification()))
             disableTab("Plots")
         else
             enableTab("Plots")
