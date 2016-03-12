@@ -32,7 +32,7 @@ server <- function(input, output, session) {
         vis <- function(func, ...) {
             func("selectizeEvent", anim = TRUE, animType = "fade")
         }
-        if(input$selectizePlot == "Inclusion levels") vis(shinyjs::hide)
+        if(grepl("Inclusion levels", input$selectizePlot)) vis(shinyjs::hide)
         else vis(shinyjs::show)
     })
     
