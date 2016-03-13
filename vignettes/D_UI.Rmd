@@ -206,3 +206,13 @@ createLink <- function(val) {
 ```
 
 A job well done, gentlemen!
+
+# Downloading files
+
+Currently, the files are downloaded using the function `download.file`.
+Unfortunately, R becomes unresponsive while using it and the Shiny app will
+crash if this takes too long... There are at least 2 solutions for this:
+
+* Delegate the browser to download the files and wait for the files to be
+completed
+* Use an extra core to download the data

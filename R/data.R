@@ -88,7 +88,8 @@ ui <- function(tab) {
                              actionButton("replace",
                                           "data-dismiss"="modal", 
                                           label = "Replace"))),
-                uiOutput("tablesOrAbout")
+                uiOutput("tablesOrAbout"),
+                uiOutput("iframe")
             )
         )
     )
@@ -146,6 +147,14 @@ server <- function(input, output, session){
     
     loadAllData <- reactive({
         shinyjs::disable("getFirehoseData")
+        
+        # # Direct download by the browser
+        # source = paste0("https://support.apple.com/library/APPLE/APPLECARE_ALLGEOS/HT1425/",
+        #                 c("sample_iTunes.mov.zip", "sample_iPod.m4v.zip",
+        #                   "sample_mpeg4.mp4.zip"))
+        # iframe <- function(s) tags$iframe(width=1, height=1, frameborder=0,
+        #                                   src=s)
+        # output$iframe <- renderUI(lapply(source, iframe))
         
         # Load data from Firehose
         setData(
