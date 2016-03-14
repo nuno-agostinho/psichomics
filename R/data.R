@@ -28,9 +28,9 @@ addTCGAdata <- function() {
                             as.character(getFirehoseDates()), multiple = TRUE,
                             selected = "2015-11-01", options = list(
                                 placeholder = "Select sample date")),
-             selectizeInput("dataType", "Data type",
-                            c("Clinical", "mRNASeq"), multiple = TRUE,
-                            selected = "Clinical", options = list(
+             selectizeInput("dataType", "Data type", c("Clinical", "mRNASeq"), 
+                            multiple = TRUE, selected = "Clinical",
+                            options = list(
                                 placeholder = "Select data types")),
              selectizeInput("firehoseExclude",
                             "Files/archives to exclude", multiple = TRUE,
