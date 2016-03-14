@@ -36,7 +36,9 @@ server <- function(input, output, session) {
             names(choices) <- gsub("_", " ", rownames(psi))
             updateSelectizeInput(session, "selectizeEvent", choices = choices)
         }
+    })
     
+    observe({
         # If showing datatable, hide selectizeEvent; otherwise, show it
         vis <- function(func, ...)
             func("selectizeEvent", anim = TRUE, animType = "fade")
