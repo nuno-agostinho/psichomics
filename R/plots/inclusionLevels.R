@@ -5,11 +5,10 @@ ui <- list( uiOutput(name) )
 
 createLink <- function(val) {
     id <- gsub(" ", "_", val)
-    onclick <- sprintf(
-        'document.getElementById(\'%s\').selectize.setValue(\'%s\')',
-        c("selectizePlot", "selectizeEvent"),
-        c(rep("plot4", length(id)), id))
-    onclick <- paste(onclick, collapse = "; ")
+    js <- 'document.getElementById(\'%s\').selectize.setValue(\'%s\')'
+    onclick <- paste(sprintf(js, "selectizePlot", "plot4"),
+                     sprintf(js, "selectizeEvent", id), sep = "; ")
+    
     html <- paste('<a id="%s" title="Get more information about this event"',
                   'href="#" onclick="%s">%s</a>')
     link <- sprintf(html, id, onclick, val)
