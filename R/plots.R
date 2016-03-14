@@ -9,7 +9,7 @@ ui <- function(tab)
                                      options = list(
                                          placeholder = "Select a plot type"))),
             column(2, selectizeInput("selectizeEvent", "Select event:",
-                                     choices = sort(rownames(mtcars)),
+                                     choices = NULL,
                                      options = list(
                                          placeholder = "Select an event")))),
         uiOutput("plots"))
@@ -24,10 +24,19 @@ server <- function(input, output, session) {
     
     # Runs server logic from the scripts
     lapply(plotEnvs.server, do.call, list(input, output, session))
+
     # Updates selectize input to show available plots
     updateSelectizeInput(session, "selectizePlot", choices = names)
     
     observe({
+        # Updates selectize event to show available events
+        psi <- getInclusionLevels()
+        if (!is.null(psi)) {
+            choices <- rownames(psi)
+            names(choices) <- gsub("_", " ", rownames(psi))
+            updateSelectizeInput(session, "selectizeEvent", choices = choices)
+        }
+    
         # If showing datatable, hide selectizeEvent; otherwise, show it
         vis <- function(func, ...)
             func("selectizeEvent", anim = TRUE, animType = "fade")
