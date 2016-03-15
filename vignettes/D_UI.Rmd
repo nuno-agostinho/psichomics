@@ -216,3 +216,16 @@ crash if this takes too long... There are at least 2 solutions for this:
 * Delegate the browser to download the files and wait for the files to be
 completed
 * Use an extra core to download the data
+
+# Naming the IDs
+
+You should be careful when naming IDs. They shouldn't be spaced according to
+[HTML 4.01 specification](http://www.w3.org/TR/html401/types.html#type-name),
+even though it's possible to use spaces (but you'll have trouble to use CSS
+selectors, afterwards). If you want to use input IDs in JavaScript expressions
+(which is useful when using a `conditionalPanel`), it's better to use
+`input[id='some.id.goes.here']` to allow to retrieve IDs with dots. The standard
+`input.some_id_goes_here` doesn't allow to retrieve IDs with dots.
+
+# Font Awesome
+We are able to easily use the FontAwesome pack for glyphs.

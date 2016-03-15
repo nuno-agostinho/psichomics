@@ -375,5 +375,6 @@ loadFirehoseData <- function(folder = "~/Downloads",
     ## TODO(NunoA): Can we show file loading progress in a Shiny app?
     # Load the files
     loaded <- lapply(archives, loadFirehoseFolders, exclude, progress)
+    names(loaded) <- gsub(" ", "-", names(loaded))
     return(loaded)
 }

@@ -7,10 +7,48 @@ name <- "Data"
 addLocalFile <- function() {
     list(fileInput("dataFile", "Choose folder", multiple = T),
          textInput("species", label = "Species", placeholder = "Required"),
-         textInput("common.name", label = "Common name"),
+         textInput("commonName", label = "Common name"),
          uiOutput("testing"),
          actionButton("acceptFile", "Send file")
     ) # end of list
+}
+
+groupsUI <- function(table, tablename) {
+    checkId <- function (sign, what)
+        sprintf("input[id='%s'] %s '%s'", "subsetBy", sign, what)
+    
+    list(
+        hr(),
+        fluidRow(
+            column(2, selectizeInput("subsetBy", "Subset by",
+                                     c("Column", "Rows", "Expression"))),
+            conditionalPanel(
+                checkId("==", "Column"),
+                column(3, selectizeInput("groupColumn", "Select column",
+                                         choices = names(table))),
+                column(1, icon2("info-circle", id = "info-circle"),
+                       bsTooltip("info-circle",
+                                 "Groups will be created automatically depending on the given column."))),
+            conditionalPanel(
+                checkId("==", "Rows"),
+                column(3, textInput("groupRows", "Select rows"),
+                       bsTooltip("groupRows",
+                                 "Select rows like in R. To create a group with rows 1 to 6, 8, 10 to 19, but not 17, insert 1:6, 8, 10:19, -17"))),
+            conditionalPanel(
+                checkId("==", "Expression"),
+                column(3, textInput("groupExpression", "Subset expression"),
+                       bsTooltip("groupExpression",
+                                 'To select rows where column X4 is higher than 8 and "alive" in X7, type X4 > 8 & X7 == "alive"'))),
+            column(2, conditionalPanel(checkId("!=", "Column"),
+                                       textInput("groupName", "Group name"))),
+            column(2, actionButton("createGroup", "Create group"))),
+        # Align the "create group" button with other inputs
+        tags$style(type='text/css', paste0(
+            "#createGroup{ width:100\\%; margin-top: 25px;}")),
+        tags$style(type='text/css',
+                   "#info-circle { width:100\\%; margin-top: 35px;}"),
+        tableOutput("groupsTable")
+    )
 }
 
 #' Creates a UI set with options to add data from TCGA/Firehose
@@ -89,10 +127,7 @@ ui <- function(tab) {
                                           "data-dismiss"="modal", 
                                           label = "Replace"))),
                 uiOutput("tablesOrAbout"),
-                uiOutput("iframe")
-            )
-        )
-    )
+                uiOutput("iframe"))))
 }
 
 #' Creates a tabPanel template for a datatable with a title and description
@@ -105,12 +140,15 @@ ui <- function(tab) {
 #' @return The HTML code for a tabPanel template
 #' @export
 tabTable <- function(title, id, description = NULL, ...) {
+    tablename <- paste("table", id, sep = "-")
     if(!is.null(description))
-        d <- p(tags$strong("Table description:"), description, hr())
+        d <- p(tags$strong("Table description:"), description,
+               uiOutput(paste0(tablename, "-groups")),
+               dataTableOutput(paste0(tablename, "-groupsList")), hr())
     else
         d <- NULL
-    tablename <- paste("table", id, sep = ".")
-    tabPanel(title, br(), d, dataTableOutput(tablename, ...))
+    tabPanel(title, br(), d,
+             dataTableOutput(tablename, ...))
 }
 
 #' Server logic
@@ -119,22 +157,17 @@ tabTable <- function(title, id, description = NULL, ...) {
 server <- function(input, output, session){
     observeEvent(input$category, setCategory(input$category))
     
-    observe({
-        # The button is only enabled if it meets the conditions that follow
-        toggleState("acceptFile", input$species != "")
-    })
-    
     # Show welcome screen when there's no data loaded
     output$tablesOrAbout <- renderUI({
-        if(is.null(getData())) {
+        if(is.null(getData()))
             includeMarkdown("about.md")
-        } else {
+        else
             list(selectInput("category", "Select category:",
                              choices = names(getData())),
                  uiOutput("datatabs"))
-        }
-    }) # end of renderUI
+    })
     
+    # User files
     observeEvent(input$acceptFile, {
         error <- function(msg) { print(msg); return(NULL) }
         if(is.null(input$dataFile)) error("No data input selected")
@@ -143,8 +176,12 @@ server <- function(input, output, session){
         # inFile <- input$dataFile
         # info <- read.table(inFile$datapath, sep = input$sep,
         #                    header = input$header)
-    }) # end of observeEvent
+    })
     
+    # The button is only enabled if it meets the conditions that follow
+    observe(toggleState("acceptFile", input$species != ""))
+    
+    # Load Firehose data
     loadAllData <- reactive({
         shinyjs::disable("getFirehoseData")
         
@@ -168,57 +205,89 @@ server <- function(input, output, session){
         
         closeProgress()
         shinyjs::enable("getFirehoseData")
-    })
+    }) # end of reactive
     
     # Load data when the user presses to replace data
     observeEvent(input$replace, loadAllData())
     
-    # Load Firehose data
+    # Render tables when data changes
+    observe({
+        data <- getData()
+        categoryData <- getCategoryData()
+        for (group in seq_along(data))
+            lapply(seq_along(categoryData), renderData,
+                   data = data[[group]], group)
+    })
+    
+    # Check if data is already loaded and ask the user if it should be replaced
     observeEvent(input$getFirehoseData, {
-        if (!is.null(getData())) {
+        if (!is.null(getData()))
             toggleModal(session, "dataReplace", "open")
-        } else {
+        else
             loadAllData()
-        }
-    }) # end of observeEvent
+    })
     
     # Render tabs with data tables
     output$datatabs <- renderUI({
-        data <- getCategoryData()
+        categoryData <- getCategoryData()
+        category <- getCategory()
         do.call(
             tabsetPanel,
-            lapply(seq_along(names(data)),
+            lapply(seq_along(names(categoryData)),
                    function(i) {
-                       tabTable(names(data)[i],
-                                id = paste(input$category, i, sep = "."),
-                                description = attr(data[[i]], "description"))
+                       tabTable(names(categoryData)[i],
+                                id = paste(category, i, sep = "-"),
+                                description = attr(categoryData[[i]], "description"))
                    })
         )
     }) # end of renderUI
     
-    # Render a specific data table from sharedData
+    # Render a specific data table
     renderData <- function(index, data, group) {
-        tablename <- paste("table", names(getData())[group],
-                           index, sep = ".")
+        tablename <- paste("table", getCategories()[group], index, sep = "-")
         
-        if (isTRUE(attr(data[[index]], "rowNames")))
-            table <- cbind(names = rownames(data[[index]]), data[[index]])
-        else
-            table <- data[[index]]
+        table <- data[[index]]
+        if (isTRUE(attr(table, "rowNames")))
+            table <- cbind(Row = rownames(table), table)
+        
+        output[[paste0(tablename, "-groups")]] <- renderUI(
+            groupsUI(table, tablename))
         
         # Subset to show default columns if any
         if (!is.null(attr(table, "show")))
-            table <- subset(table, select = attr(table, "show"))
+            showTable <- subset(table, select = attr(table, "show"))
+        else
+            showTable <- table
         
         output[[tablename]] <- renderDataTable(
-            table, options = list(pageLength = 10, scrollX=TRUE))
-    }
+            showTable, options = list(pageLength = 10, scrollX=TRUE))
+    } # end of renderData
     
-    # Render data tables every time the data changes
-    observe({
-        for (group in seq_along(getData())) {
-            data <- getData()[[group]]
-            lapply(seq_along(data), renderData, data, group)
+    ## TODO(NunoA): currently, groups are implemented for each data category,
+    ## but they should be implemented for each data type in a data category
+    # Create groups from a data table
+    observeEvent(input$createGroup, {
+        if (is.null(getGroups())) {
+            # Define initial matrix
+            groups <- matrix(ncol = 3)
+            colnames(groups) <- c("Names", "Subset", "Input")
+            setGroups(groups[-1, ])
         }
+        
+        if (input$subsetBy == "Column") {
+            categoryData <- getCategoryData()
+            names <- unique(categoryData[[input$groupColumn]])
+            groups <- cbind(names, input$subsetBy, input$groupColumn)
+        } else {
+            elem <- switch(input$subsetBy,
+                           "Rows" = input$groupRows,
+                           "Expression" = input$groupExpression)
+            row <- c(input$groupName, input$subsetBy, elem)
+            groups <- rbind(getGroups(), row)
+            rownames(groups) <- NULL
+        }
+        setGroups(groups)
     })
+    
+    output$groupsTable <- renderTable(getGroups())
 }
