@@ -1,7 +1,14 @@
 # The name used for the plot must be unique
 name <- "Inclusion levels"
 
-ui <- list( uiOutput(name) )
+ui <- list(
+    sidebarPanel(
+        selectizeInput("eventType", "Event type",
+                       choices = c("Skipping exon" = "SE"), selected = "SE",
+                       multiple = TRUE),
+        actionButton("calcIncLevels", "Calculate inclusion levels")),
+    mainPanel( dataTableOutput("incLevels") )
+)
 
 createLink <- function(val) {
     id <- gsub(" ", "_", val)
@@ -17,34 +24,33 @@ createLink <- function(val) {
 
 server <- function(input, output, session) {
     levels <- reactive({
+        eventType <- input$eventType
+        
         # Read annotation
         startProgress("Reading alternative splicing annotation",
                       divisions = 2)
-        annot <- readAnnotation("SE")
+        annot <- readAnnotation(eventType)
         
         # Calculate inclusion levels with annotation and junction quantification
         updateProgress("Calculating inclusion levels")
         junctionQuant <- getJunctionQuantification()
         setInclusionLevels(
-            calculateInclusionLevels("SE", junctionQuant, annot))
+            calculateInclusionLevels(eventType, junctionQuant, annot))
         
         updateProgress("Done!")
         closeProgress()
     })
     
-    observe({
+    observeEvent(input$calcIncLevels, {
         if(is.null(getData()) || is.null(getJunctionQuantification()))
-            disableTab("Plots")
+            print("No junction quantification data!")
         else
-            enableTab("Plots")
-        
-        if(input$nav == 'Plots') levels()
+            levels()
     })
-    
-    output[[name]] <- renderUI( dataTableOutput("incLevels") )
     
     output$incLevels <- renderDataTable({
         psi <- getInclusionLevels()
+        if (is.null(psi)) return(NULL)
         cbind(Events = createLink(rownames(psi)), psi)
     }, escape = FALSE, options = list(pageLength = 10, scrollX = TRUE))
 }
