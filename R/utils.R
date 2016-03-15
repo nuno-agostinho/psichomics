@@ -114,6 +114,29 @@ closeProgress <- function(message=NULL, global = sharedData) {
     global$progress$close()
 }
 
+#' Allows to add id to an image
+#' @export
+icon2 <- function (name, class = NULL, lib = "font-awesome", ...) {
+    prefixes <- list(`font-awesome` = "fa", glyphicon = "glyphicon")
+    prefix <- prefixes[[lib]]
+    if (is.null(prefix)) {
+        stop("Unknown font library '", lib, "' specified. Must be one of ", 
+             paste0("\"", names(prefixes), "\"", collapse = ", "))
+    }
+    iconClass <- ""
+    if (!is.null(name)) 
+        iconClass <- paste0(prefix, " ", prefix, "-", name)
+    if (!is.null(class)) 
+        iconClass <- paste(iconClass, class)
+    iconTag <- tags$i(class = iconClass, ...)
+    if (lib == "font-awesome") {
+        htmltools::htmlDependencies(iconTag) <- htmltools::htmlDependency(
+            "font-awesome", "4.5.0", c(href = "shared/font-awesome"), 
+            stylesheet = "css/font-awesome.min.css")
+    }
+    iconTag
+}
+
 #' Disable a tab from the navbar
 #' @export
 disableTab <- function(tab) {
