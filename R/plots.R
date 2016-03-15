@@ -28,8 +28,8 @@ server <- function(input, output, session) {
     # Updates selectize input to show available plots
     updateSelectizeInput(session, "selectizePlot", choices = names)
     
+    # Updates selectize event to show available events
     observe({
-        # Updates selectize event to show available events
         psi <- getInclusionLevels()
         if (!is.null(psi)) {
             choices <- rownames(psi)
@@ -38,8 +38,8 @@ server <- function(input, output, session) {
         }
     })
     
+    # If showing datatable, hide selectizeEvent; otherwise, show it
     observe({
-        # If showing datatable, hide selectizeEvent; otherwise, show it
         vis <- function(func, ...)
             func("selectizeEvent", anim = TRUE, animType = "fade")
         
@@ -47,6 +47,7 @@ server <- function(input, output, session) {
         else vis(shinyjs::show)
     })
     
+    # Render the respective UI of the requested plot
     output$plots <- renderUI({
         lapply(plotEnvs, function(env) {
             conditionalPanel(
