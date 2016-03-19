@@ -1,4 +1,4 @@
-Package: PSIcalc
+Package: psichomics
 Title: Analyze Alternative Splicing Data in Cancer
 Version: 0.0.0.9000
 Authors@R: person("Nuno", "Agostinho", email = "nunodanielagostinho@gmail.com", role = c("aut", "cre"))

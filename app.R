@@ -21,7 +21,7 @@ server <- function(input, output, session) {
 # All the CSS modifications are in the file "www/styles.css"
 ui <- shinyUI(
     do.call(navbarPage, c(
-        list(title = "spliced canceR", id = "nav", collapsible = TRUE,
+        list(title = "PSΨchomics", id = "nav", collapsible = TRUE,
              position = "fixed-top", header = includeCSS("www/styles.css"),
              footer = useShinyjs()),
         # Loads the interface of each tab
