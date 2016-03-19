@@ -108,22 +108,18 @@ ui <- function(tab) {
                 h3("Data input"),
                 shinyBS::bsCollapse(
                     id = id("addData"),
-                    open = "Add data",
-                    shinyBS::bsCollapsePanel(
-                        style = "info",
-                        title = "Add local files",
-                        #list(img(src = "add-button-16px.png"))
-                        addLocalFile())
-                ),
-                shinyBS::bsCollapse(
-                    id = id("addTCGA"),
                     open = "Add TCGA/Firehose data",
                     shinyBS::bsCollapsePanel(
                         style = "info",
+                        title = "Add local files",
+                        addLocalFile()),
+                    shinyBS::bsCollapsePanel(
+                        style = "info",
                         title = "Add TCGA/Firehose data",
-                        #list(img(src = "add-button-16px.png"))
-                        addTCGAdata())
-                )
+                        addTCGAdata())),
+                h3("Data grouping")#,
+                # shinyBS::bsCollapse(id = "testttt",
+                                    # )
             ),
             mainPanel(
                 # TODO(NunoA): Show alerts from renderUI
