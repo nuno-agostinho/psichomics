@@ -215,7 +215,9 @@ crash if this takes too long... There are at least 2 solutions for this:
 
 * Delegate the browser to download the files and wait for the files to be
 completed
-* Use an extra core to download the data
+* Use an extra core to download the data; this would be easy if Windows
+supported forking; since it doesn't, the only other solution would be starting
+the app with 2 cores, one for the interface and the other for calculations
 
 # Naming the IDs
 
