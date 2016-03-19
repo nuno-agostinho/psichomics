@@ -14,41 +14,48 @@ addLocalFile <- function() {
     ) # end of list
 }
 
-groupsUI <- function(table, tablename) {
+groupsUI <- function(tablename, columns) {
+    tabId <- function(value) id(paste(tablename, value, sep = "_"))
     checkId <- function (sign, what)
-        sprintf("input[id='%s'] %s '%s'", id("subsetBy"), sign, what)
+        sprintf("input[id='%s'] %s '%s'", tabId("subsetBy"), sign, what)
     
-    list(
-        hr(),
-        fluidRow(
-            column(2, selectizeInput(id("subsetBy"), "Subset by",
-                                     c("Column", "Rows", "Expression"))),
-            conditionalPanel(
-                checkId("==", "Column"),
-                column(4, selectizeInput(id("groupColumn"), "Select column",
-                                         choices = names(table))),
-                column(1, icon2("info-circle", id = id("info-circle")),
-                       bsTooltip(id("info-circle"),
-                                 "Groups will be created automatically depending on the given column."))),
-            conditionalPanel(
-                checkId("==", "Rows"),
-                column(3, textInput(id("groupRows"), "Select rows"),
-                       bsTooltip(id("groupRows"),
-                                 "Select rows like in R. To create a group with rows 1 to 6, 8, 10 to 19, but not 17, insert 1:6, 8, 10:19, -17"))),
-            conditionalPanel(
-                checkId("==", "Expression"),
-                column(3, textInput(id("groupExpression"), "Subset expression"),
-                       bsTooltip(id("groupExpression"),
-                                 'To select rows where column X4 is higher than 8 and "alive" in X7, type X4 > 8 & X7 == "alive"'))),
-            column(2, conditionalPanel(checkId("!=", "Column"),
-                                       textInput(id("groupName"), "Group name"))),
-            column(2, actionButton(id("createGroup"), "Create group"))),
+    list(fluidRow(
+        column(2,
+               selectizeInput(tabId("subsetBy"), "Subset by",
+                              c("Column", "Rows", "Expression", "Grep"))),
+        conditionalPanel(
+            checkId("==", "Column"),
+            column(4, selectizeInput(tabId("groupColumn"), "Select column",
+                                     choices = columns)),
+            column(1, icon2("info-circle", id = tabId("info-circle")),
+                   bsTooltip(tabId("info-circle"),
+                             "Groups will be created automatically depending on the given column."))),
+        conditionalPanel(
+            checkId("==", "Rows"),
+            column(3, textInput(tabId("groupRows"), "Select rows"),
+                   bsTooltip(tabId("groupRows"),
+                             "Select rows like in R. To create a group with rows 1 to 6, 8, 10 to 19, but not 17, insert 1:6, 8, 10:19, -17"))),
+        conditionalPanel(
+            checkId("==", "Expression"),
+            column(3, textInput(tabId("groupExpression"), "Subset expression"),
+                   bsTooltip(tabId("groupExpression"),
+                             'To select rows where column X4 is higher than 8 and "alive" in X7, type X4 > 8 & X7 == "alive"'))),
+        conditionalPanel(
+            checkId("==", "Grep"),
+            column(3, textInput(tabId("grepExpression"), "GREP expression")),
+            column(3, selectizeInput(tabId("grepColumn"),
+                                     "Select column to GREP",
+                                     choices = columns))),
+        conditionalPanel(checkId("!=", "Column"),
+                         column(2, textInput(tabId("groupName"), "Group name"))),
+        column(2, actionButton(tabId("createGroup"), "Create group")),
         # Align the "create group" button with other inputs
         tags$style(type='text/css', paste0(
-            "#", id("createGroup"), " { width:100\\%; margin-top: 25px;}")),
-        tags$style(type='text/css',
-                   "#", id("icon-circle"), " { width:100\\%; margin-top: 35px;}"),
-        tableOutput(id("groupsTable"))
+            "#", tabId("createGroup"), " { width:100\\%; margin-top: 25px;}")),
+        tags$style(type='text/css', paste0(
+            "#", tabId("info-circle"),
+            " { width:100\\%; margin-top: 35px;}"))),
+        dataTableOutput(tabId("groupsTable"))
     )
 }
 
@@ -141,16 +148,16 @@ ui <- function(tab) {
 #'
 #' @return The HTML code for a tabPanel template
 #' @export
-tabTable <- function(title, id, description = NULL, ...) {
+tabTable <- function(title, id, columns, description = NULL) {
     tablename <- id(paste("table", id, sep = "-"))
     if(!is.null(description))
-        d <- p(tags$strong("Table description:"), description,
-               uiOutput(paste0(tablename, "-groups")),
+        d <- p(tags$strong("Table description:"), description, hr(),
+               groupsUI(tablename, columns),
                dataTableOutput(paste0(tablename, "-groupsList")), hr())
     else
         d <- NULL
     tabPanel(title, br(), d,
-             dataTableOutput(tablename, ...))
+             dataTableOutput(tablename))
 }
 
 #' Server logic
@@ -217,7 +224,7 @@ server <- function(input, output, session){
         data <- getData()
         categoryData <- getCategoryData()
         for (group in seq_along(data))
-            lapply(seq_along(categoryData), renderData,
+            lapply(seq_along(categoryData), renderDataTab,
                    data = data[[group]], group)
     })
     
@@ -235,27 +242,34 @@ server <- function(input, output, session){
         category <- getCategory()
         do.call(
             tabsetPanel,
-            lapply(seq_along(names(categoryData)),
-                   function(i) {
-                       tabTable(names(categoryData)[i],
-                                id = paste(category, i, sep = "-"),
-                                description = attr(categoryData[[i]],
-                                                   "description"))
-                   })
+            c(id = id("dataTypeTab"),
+              lapply(seq_along(names(categoryData)),
+                     function(i)
+                         tabTable(names(categoryData)[i],
+                                  columns = names(categoryData[[i]]),
+                                  id = paste(category, i, sep = "-"),
+                                  description = attr(categoryData[[i]],
+                                                     "description"))
+                     )
+              )
         )
     }) # end of renderUI
     
-    # Render a specific data table
-    renderData <- function(index, data, group) {
+    # Render a specific data tab (including data table and related interface)
+    renderDataTab <- function(index, data, group) {
         tablename <- id(paste("table", getCategories()[group], 
                               index, sep = "-"))
+        
+        # group UI
+        tabId <- function(value) id(paste(tablename, value, sep = "_"))
+        observeEvent(input[[tabId("createGroup")]], { setGroups(input, tabId) })
+        output[[tabId("groupsTable")]] <- renderDataTable(
+            getGroupsFrom(input[[id("dataTypeTab")]]),
+            options = list(pageLength = 10, scrollX = TRUE))
         
         table <- data[[index]]
         if (isTRUE(attr(table, "rowNames")))
             table <- cbind(Row = rownames(table), table)
-        
-        # output[[paste0(tablename, "-groups")]] <- renderUI(
-            # groupsUI(table, tablename))
         
         # Subset to show default columns if any
         if (!is.null(attr(table, "show")))
@@ -265,35 +279,35 @@ server <- function(input, output, session){
         
         output[[tablename]] <- renderDataTable(
             showTable, options = list(pageLength = 10, scrollX=TRUE))
-    } # end of renderData
+    } # end of renderDataTab
+}
+
+setGroups <- function (input, tabId) {
+    # Get groups for the visible and active data table
+    active <- input[[id("dataTypeTab")]]
+    groups <- getGroupsFrom(active)
     
-    ## TODO(NunoA): currently, groups are implemented for each data category,
-    ## but they should be implemented for each data type in a data category
-    # Create groups from a data table
-    observeEvent(input$createGroup, {
-        if (is.null(getGroups())) {
-            # Define initial matrix
-            groups <- matrix(ncol = 3)
-            colnames(groups) <- c("Names", "Subset", "Input")
-            setGroups(groups[-1, ])
-        }
-        
-        subsetInput <- input[[id("subsetBy")]]
-        groupColumnInput <- input[[id("groupColumn")]]
-        if (subsetInput == "Column") {
-            categoryData <- getCategoryData()
-            names <- unique(categoryData[[groupColumnInput]])
-            groups <- cbind(names, subsetInput, groupColumnInput)
-        } else {
-            elem <- switch(subsetInput,
-                           "Rows" = input$groupRows,
-                           "Expression" = input$groupExpression)
-            row <- c(groupColumnInput, subsetInput, elem)
-            groups <- rbind(getGroups(), row)
-            rownames(groups) <- NULL
-        }
-        setGroups(groups)
-    })
+    if (is.null(groups)) {
+        # Define initial matrix
+        groups <- matrix(ncol = 3)
+        colnames(groups) <- c("Names", "Subset", "Input")
+        groups <- groups[-1, ]
+    }
     
-    output[[id("groupsTable")]] <- renderTable(getGroups())
+    subsetInput <- input[[tabId("subsetBy")]]
+    if (subsetInput == "Column") {
+        groupColumnInput <- input[[tabId("groupColumn")]]
+        categoryData <- getCategoryData()
+        names <- unique(categoryData[[active]][[groupColumnInput]])
+        each <- cbind(names, subsetInput, groupColumnInput)
+        groups <- rbind(groups, each)
+    } else {
+        elem <- switch(subsetInput,
+                       "Rows" = input[[tabId("groupRows")]],
+                       "Expression" = input[[tabId("groupExpression")]])
+        row <- c(input[[tabId("groupName")]], subsetInput, elem)
+        groups <- rbind(groups, row)
+        rownames(groups) <- NULL
+    }
+    setGroupsFrom(active, groups)
 }
