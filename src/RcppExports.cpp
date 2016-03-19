@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // timesTwo
 NumericVector timesTwo(NumericVector x);
-RcppExport SEXP PSIcalc_timesTwo(SEXP xSEXP) {
+RcppExport SEXP psichomics_timesTwo(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;

@@ -3,6 +3,6 @@
 
 #' @export
 timesTwo <- function(x) {
-    .Call('PSIcalc_timesTwo', PACKAGE = 'PSIcalc', x)
+    .Call('psichomics_timesTwo', PACKAGE = 'psichomics', x)
 }
 
