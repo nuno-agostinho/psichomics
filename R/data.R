@@ -111,11 +111,14 @@ ui <- function(tab) {
                     open = "Add TCGA/Firehose data",
                     shinyBS::bsCollapsePanel(
                         style = "info",
-                        title = "Add local files",
+                        title = list(icon("plus-circle"), "Add local files"),
+                        value = "Add local files",
                         addLocalFile()),
                     shinyBS::bsCollapsePanel(
                         style = "info",
-                        title = "Add TCGA/Firehose data",
+                        title = list(icon("plus-circle"),
+                                     "Add TCGA/Firehose data"),
+                        value = "Add TCGA/Firehose data",
                         addTCGAdata())),
                 h3("Data grouping")#,
                 # shinyBS::bsCollapse(id = "testttt",
