@@ -1,18 +1,19 @@
 name <- "Plots"
+id <- function(id) paste(name, id, sep = "_")
 
 ui <- function(tab)
     tab(name,
         # allows the user to choose which UI set is shown
         fluidRow(
-            column(2, selectizeInput("selectizePlot", "Select plot type:",
+            column(2, selectizeInput(id("selectizePlot"), "Select plot type:",
                                      choices = NULL,
                                      options = list(
                                          placeholder = "Select a plot type"))),
-            column(2, selectizeInput("selectizeEvent", "Select event:",
+            column(2, selectizeInput(id("selectizeEvent"), "Select event:",
                                      choices = NULL,
                                      options = list(
                                          placeholder = "Select an event")))),
-        uiOutput("plots"))
+        uiOutput(id("plots")))
 
 server <- function(input, output, session) {
     # Loads valid scripts from the indicated folder
@@ -26,7 +27,7 @@ server <- function(input, output, session) {
     lapply(plotEnvs.server, do.call, list(input, output, session))
 
     # Updates selectize input to show available plots
-    updateSelectizeInput(session, "selectizePlot", choices = names)
+    updateSelectizeInput(session, id("selectizePlot"), choices = names)
     
     # Updates selectize event to show available events
     observe({
@@ -34,25 +35,28 @@ server <- function(input, output, session) {
         if (!is.null(psi)) {
             choices <- rownames(psi)
             names(choices) <- gsub("_", " ", rownames(psi))
-            updateSelectizeInput(session, "selectizeEvent", choices = choices)
+            updateSelectizeInput(session, id("selectizeEvent"),
+                                 choices = choices)
         }
     })
     
     # If showing datatable, hide selectizeEvent; otherwise, show it
     observe({
         vis <- function(func, ...)
-            func("selectizeEvent", anim = TRUE, animType = "fade")
+            func(id("selectizeEvent"), anim = TRUE, animType = "fade")
         
-        if(grepl("Inclusion levels", input$selectizePlot)) vis(shinyjs::hide)
-        else vis(shinyjs::show)
+        if(grepl("Inclusion levels", input[[id("selectizePlot")]]))
+            vis(shinyjs::hide)
+        else
+            vis(shinyjs::show)
     })
     
     # Render the respective UI of the requested plot
-    output$plots <- renderUI({
+    output[[id("plots")]] <- renderUI({
         lapply(plotEnvs, function(env) {
-            conditionalPanel(
-                condition = sprintf("input.selectizePlot=='%s'", env$name),
-                env$ui)
+            conditionalPanel(condition = sprintf("input[id='%s']=='%s'",
+                                                 id("selectizePlot"), env$name),
+                             env$ui)
         })
     })
 }

@@ -1,40 +1,42 @@
 name <- "Widgets"
+id <- function(id) paste(name, id, sep = "_")
 
 ui <- function(tab) {
     tab(name,
         fluidRow(
-            bsAlert(anchorId = "alert"),
+            bsAlert(anchorId = id("alert")),
             shiny::column(3, h3("Buttons"),
-                          actionButton("action", label = "Action")),
+                          actionButton(id("action"), label = "Action")),
             #submitButton("Submit")), # DOESN'T ALLOW TO UPDATE VALUES...
             shiny::column(3, h3("Single checkbox"),
-                          checkboxInput("checkbox", label = "Choice A",
+                          checkboxInput(id("checkbox"), label = "Choice A",
                                         value = TRUE)),
             shiny::column(3, checkboxGroupInput(
-                "checkGroup", label = h3("Checkbox group"), 
+                id("checkGroup"), label = h3("Checkbox group"), 
                 choices = list("Choice 1" = 1, "Choice 2" = 2,
                                "Choice 3" = 3), selected = 1)),
-            shiny::column(3, dateInput("date", label = h3("Date input"),
+            shiny::column(3, dateInput(id("date"),
+                                       label = h3("Date input"),
                                        value = "2014-01-01"))   
         ),
         fluidRow(
-            shiny::column(3,dateRangeInput("dates", label = h3("Date range"))),
-            shiny::column(3,fileInput("file", label = h3("File input"))),
+            shiny::column(3, dateRangeInput(id("dates"), label = h3("Date range"))),
+            shiny::column(3, fileInput(id("file"), label = h3("File input"))),
             shiny::column(3, h3("Help text"),
                           helpText("Note: help text isn't a true widget,", 
                                    "but it provides an easy way to add text to",
                                    "accompany other widgets.")),
-            shiny::column(3, numericInput("num", label = h3("Numeric input"),
+            shiny::column(3, numericInput(id("num"), label = h3("Numeric input"),
                                           value = 1))   
         ),
         fluidRow(
             shiny::column(3, radioButtons(
-                "radio", label = h3("Radio buttons"),
+                id("radio"), label = h3("Radio buttons"),
                 choices = list("Choice 1" = 1,
                                "Choice 2" = 2,
                                "Choice 3" = 3), selected = 1)),
             shiny::column(3, selectizeInput(
-                "select", label = h3("Selectize box"),
+                id("select"), label = h3("Selectize box"),
                 choices = list("Primates" = c("Homo sapiens (human)" = 1),
                                "Rodents" = c("Mus musculus (mouse)" = 2),
                                "Carnivora" = c("Canis lupus (wolf)" = 3)),
@@ -43,11 +45,11 @@ ui <- function(tab) {
                                addPrecedence = TRUE),
                 selected = 1, multiple = TRUE, size = 2)),
             shiny::column(3,
-                          sliderInput("slider1", label = h3("Sliders"), min = 0,
+                          sliderInput(id("slider1"), label = h3("Sliders"), min = 0,
                                       max = 100, value = 50),
-                          sliderInput("slider2", "", min = 0, max = 100,
+                          sliderInput(id("slider2"), "", min = 0, max = 100,
                                       value = c(25, 75))),
-            shiny::column(3, textInput("text", label = h3("Text input"), 
+            shiny::column(3, textInput(id("text"), label = h3("Text input"), 
                                        value = "Enter text..."))   
         )
     )
@@ -56,16 +58,17 @@ ui <- function(tab) {
 server <- function(input, output, session) {
     obsB <- observe({
         # Dismiss the alert or it won't update afterwards
-        closeAlert(session, alertId = "exampleAlert")
-        if (input$slider1 > 90)
-            createAlert(session, anchorId = "alert", alertId = "exampleAlert",
+        closeAlert(session, alertId = id("exampleAlert"))
+        if (input[[id("slider1")]] > 90)
+            createAlert(session, anchorId = id("alert"),
+                        alertId = id("exampleAlert"),
                         title = "Awesome", content = "Over 90! Fantastic.",
                         style = "success")
-        else if (input$slider1 > 75)
-            createAlert(session, "alert", "exampleAlert", title = "Great",
+        else if (input[[id("slider1")]] > 75)
+            createAlert(session, id("alert"), id("exampleAlert"), title = "Great",
                         content = "Above 75!")
-        else if (input$slider1 < 25)
-            createAlert(session, "alert", "exampleAlert", title = "Too low",
+        else if (input[[id("slider1")]] < 25)
+            createAlert(session, id("alert"), id("exampleAlert"), title = "Too low",
                         content = "Turn it up a bit, please.", style = "danger")
     })
 }
