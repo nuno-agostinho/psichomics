@@ -230,4 +230,5 @@ selectors, afterwards). If you want to use input IDs in JavaScript expressions
 `input.some_id_goes_here` doesn't allow to retrieve IDs with dots.
 
 # Font Awesome
-We are able to easily use the FontAwesome pack for glyphs.
+We are able to easily use the FontAwesome pack for glyphs. It's free and has a
+lot of glyphs! Besides, it has a few extra options as well. :)
