@@ -20,9 +20,8 @@ progressbar <- function(value, min = 0, max = 100, label = paste0(value, "%"),
     )
 }
 
-alertNew <- function(...) {
+alertNew <- function(...)
     div(class="alert alert-warning alert-dismissible", role="alert", ...)
-}
 
 dropdown <- function(inputId) {
     div(class="dropdown",
