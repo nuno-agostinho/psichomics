@@ -1,6 +1,6 @@
 #' @import shiny shinyBS shinyjs
 name <- "Data"
-id <- function(id) paste(name, id, sep = "_")
+id <- function(...) paste(name, list(...), sep = "_")
 
 #' Creates a UI set with options to add a file from the local storage
 #' 
@@ -14,48 +14,49 @@ addLocalFile <- function() {
     ) # end of list
 }
 
-groupsUI <- function(tablename, columns) {
-    tabId <- function(value) id(paste(tablename, value, sep = "_"))
+groupsUI <- function() {
     checkId <- function (sign, what)
-        sprintf("input[id='%s'] %s '%s'", tabId("subsetBy"), sign, what)
+        sprintf("input[id='%s'] %s '%s'", id("subsetBy"), sign, what)
     
-    list(fluidRow(
-        column(2,
-               selectizeInput(tabId("subsetBy"), "Subset by",
-                              c("Column", "Rows", "Expression", "Grep"))),
+    list(
+        selectizeInput(id("subsetBy"), "Subset by",
+                       c("Column", "Rows", "Expression", "Grep")),
         conditionalPanel(
             checkId("==", "Column"),
-            column(4, selectizeInput(tabId("groupColumn"), "Select column",
-                                     choices = columns)),
-            column(1, icon2("info-circle", id = tabId("info-circle")),
-                   bsTooltip(tabId("info-circle"),
-                             "Groups will be created automatically depending on the given column."))),
+            selectizeInput(id("groupColumn"), "Select column", choices = NULL),
+            icon2("info-circle", id = id("info-circle")),
+            bsTooltip(id("info-circle"),
+                      paste("Groups will be created automatically depending on",
+                            "the given column."))),
         conditionalPanel(
             checkId("==", "Rows"),
-            column(3, textInput(tabId("groupRows"), "Select rows"),
-                   bsTooltip(tabId("groupRows"),
-                             "Select rows like in R. To create a group with rows 1 to 6, 8, 10 to 19, but not 17, insert 1:6, 8, 10:19, -17"))),
+            selectizeInput(id("groupRows"), "Select rows", choices = NULL,
+                           multiple = TRUE,
+                           # Allow to add new items
+                           options = list(
+                               create = TRUE, createOnBlur=TRUE,
+                               ## TODO(NunoA): only allow numbers (use selectize.js REGEX option)
+                               # Hide discarded user-created items in the dropdown
+                               persist = FALSE),
+                           bsTooltip(id("groupRows"),
+                                     paste("Select rows like in R. To create a group with rows",
+                                           "1 to 6, 8 and 10 to 19, insert 1:6, 8, 10:19")))),
         conditionalPanel(
             checkId("==", "Expression"),
-            column(3, textInput(tabId("groupExpression"), "Subset expression"),
-                   bsTooltip(tabId("groupExpression"),
-                             'To select rows where column X4 is higher than 8 and "alive" in X7, type X4 > 8 & X7 == "alive"'))),
+            textInput(id("groupExpression"), "Subset expression"),
+            bsTooltip(id("groupExpression"),
+                      paste('To select rows where column X4 is higher than 8',
+                            'and "alive" in X7, type X4 > 8 & X7 == "alive"'))),
         conditionalPanel(
             checkId("==", "Grep"),
-            column(3, textInput(tabId("grepExpression"), "GREP expression")),
-            column(3, selectizeInput(tabId("grepColumn"),
-                                     "Select column to GREP",
-                                     choices = columns))),
+            textInput(id("grepExpression"), "GREP expression"),
+            selectizeInput(id("grepColumn"),
+                           "Select column to GREP",
+                           choices = NULL)),
         conditionalPanel(checkId("!=", "Column"),
-                         column(2, textInput(tabId("groupName"), "Group name"))),
-        column(2, actionButton(tabId("createGroup"), "Create group")),
-        # Align the "create group" button with other inputs
-        tags$style(type='text/css', paste0(
-            "#", tabId("createGroup"), " { width:100\\%; margin-top: 25px;}")),
-        tags$style(type='text/css', paste0(
-            "#", tabId("info-circle"),
-            " { width:100\\%; margin-top: 35px;}"))),
-        dataTableOutput(tabId("groupsTable"))
+                         textInput(id("groupName"), "Group name")),
+        actionButton(id("createGroup"), "Create group"), hr(),
+        dataTableOutput(id("groupsTable"))
     )
 }
 
@@ -120,9 +121,12 @@ ui <- function(tab) {
                                      "Add TCGA/Firehose data"),
                         value = "Add TCGA/Firehose data",
                         addTCGAdata())),
-                h3("Data grouping")#,
-                # shinyBS::bsCollapse(id = "testttt",
-                                    # )
+                h3("Data grouping"),
+                shinyBS::bsCollapse(
+                    id = id("groupingData"),
+                    open = "Grouping",
+                    shinyBS::bsCollapsePanel(title = "Grouping", style = "info",
+                                             groupsUI()))
             ),
             mainPanel(
                 # TODO(NunoA): Show alerts from renderUI
@@ -150,21 +154,58 @@ ui <- function(tab) {
 tabTable <- function(title, id, columns, description = NULL) {
     tablename <- id(paste("table", id, sep = "-"))
     if(!is.null(description))
-        d <- p(tags$strong("Table description:"), description, hr(),
-               groupsUI(tablename, columns),
-               dataTableOutput(paste0(tablename, "-groupsList")), hr())
+        d <- p(tags$strong("Table description:"), description, hr())
     else
         d <- NULL
-    tabPanel(title, br(), d,
-             dataTableOutput(tablename))
+    tabPanel(title, br(), d, dataTableOutput(tablename))
+}
+
+#' Set new groups according to the user input
+#' 
+#' The groups are inserted in a matrix
+createGroupFromInput <- function (input) {
+    active <- input[[id("dataTypeTab")]]
+    type <- input[[id("subsetBy")]]
+    
+    columnInput <- input[[id("groupColumn")]]
+    data <- getCategoryData()[[active]]
+    
+    if (type == "Column") {
+        # Get all unique values for given column and its respective rows
+        colData <- data[[columnInput]]
+        
+        # Replace NAs for "NA" so they aren't discarded when splitting the data
+        colData[is.na(colData)] <- "NA"
+        
+        # Split data according to the chosen column
+        set <- split(data, colData, drop = FALSE)
+        groupNames <- names(set)
+        whichRows <- lapply(set, rownames)
+        group <- cbind(groupNames, type, columnInput, whichRows)
+    } else if (type == "Rows") {
+        # Convert the given string into a sequence of numbers
+        rows <- input[[id("groupRows")]]
+        strRows <- paste(rows, collapse = ", ")
+        rows <- unlist(lapply(rows, function(row) eval(parse(text = row))))
+        whichRows <- list(rownames(data[rows, ]))
+        group <- cbind(input[[id("groupName")]], type, strRows, whichRows)
+    } else if (type == "Expression") {
+        # Subset data using the given expression
+        expr <- input[[id("groupExpression")]]
+        set <- subset(data, eval(parse(text = expr)))
+        whichRows <- list(rownames(set))
+        group <- c(input[[id("groupName")]], type, expr, whichRows)
+    } else if (type == "Grep") {
+        ## TODO(NunoA): Subset data with the GREP expression for the given column
+        group <- rep(NA, 4)
+    } 
+    return(group)
 }
 
 #' Server logic
 #' 
 #' @return Part of the server logic related to this tab
-server <- function(input, output, session){
-    observeEvent(input[[id("category")]], setCategory(input[[id("category")]]))
-    
+server <- function(input, output, session) {
     # Show welcome screen when there's no data loaded
     output[[id("tablesOrAbout")]] <- renderUI({
         if(is.null(getData()))
@@ -175,11 +216,16 @@ server <- function(input, output, session){
                  uiOutput(id("datatabs")))
     })
     
-    # User files
+    # Set the category of the data when possible
+    observeEvent(input[[id("category")]], setCategory(input[[id("category")]]))
+    
+    # Load user files
     observeEvent(input[[id("acceptFile")]], {
         error <- function(msg) { print(msg); return(NULL) }
-        if(is.null(input[[id("dataFile")]])) error("No data input selected")
-        if(input[[id("species")]] == "") error("Species field can't be empty")
+        if(is.null(input[[id("dataFile")]]))
+            error("No data input selected")
+        if(input[[id("species")]] == "")
+            error("Species field can't be empty")
         
         # inFile <- input$dataFile
         # info <- read.table(inFile$datapath, sep = input$sep,
@@ -249,8 +295,8 @@ server <- function(input, output, session){
                                   id = paste(category, i, sep = "-"),
                                   description = attr(categoryData[[i]],
                                                      "description"))
-                     )
               )
+            )
         )
     }) # end of renderUI
     
@@ -259,18 +305,11 @@ server <- function(input, output, session){
         tablename <- id(paste("table", getCategories()[group], 
                               index, sep = "-"))
         
-        # group UI
-        tabId <- function(value) id(paste(tablename, value, sep = "_"))
-        observeEvent(input[[tabId("createGroup")]], { setGroups(input, tabId) })
-        output[[tabId("groupsTable")]] <- renderDataTable(
-            getGroupsFrom(input[[id("dataTypeTab")]]),
-            options = list(pageLength = 10, scrollX = TRUE))
-        
         table <- data[[index]]
         if (isTRUE(attr(table, "rowNames")))
             table <- cbind(Row = rownames(table), table)
         
-        # Subset to show default columns if any
+        # Only show default columns if they are defined
         if (!is.null(attr(table, "show")))
             showTable <- subset(table, select = attr(table, "show"))
         else
@@ -279,34 +318,50 @@ server <- function(input, output, session){
         output[[tablename]] <- renderDataTable(
             showTable, options = list(pageLength = 10, scrollX=TRUE))
     } # end of renderDataTab
-}
-
-setGroups <- function (input, tabId) {
-    # Get groups for the visible and active data table
-    active <- input[[id("dataTypeTab")]]
-    groups <- getGroupsFrom(active)
     
-    if (is.null(groups)) {
-        # Define initial matrix
-        groups <- matrix(ncol = 3)
-        colnames(groups) <- c("Names", "Subset", "Input")
-        groups <- groups[-1, ]
-    }
+    # Update columns available for creating groups when there's loaded data
+    observeEvent(input[[id("dataTypeTab")]], {
+        active <- input[[id("dataTypeTab")]]
+        for (i in id("groupColumn", "grepColumn")) {
+            updateSelectizeInput(session, i,
+                                 choices = names(getCategoryData()[[active]]))
+        }
+    })
     
-    subsetInput <- input[[tabId("subsetBy")]]
-    if (subsetInput == "Column") {
-        groupColumnInput <- input[[tabId("groupColumn")]]
-        categoryData <- getCategoryData()
-        names <- unique(categoryData[[active]][[groupColumnInput]])
-        each <- cbind(names, subsetInput, groupColumnInput)
-        groups <- rbind(groups, each)
-    } else {
-        elem <- switch(subsetInput,
-                       "Rows" = input[[tabId("groupRows")]],
-                       "Expression" = input[[tabId("groupExpression")]])
-        row <- c(input[[tabId("groupName")]], subsetInput, elem)
-        groups <- rbind(groups, row)
+    # Create a new group when clicking on the createGroup button
+    observeEvent(input[[id("createGroup")]], {
+        # Get groups for the data table that is visible and active
+        active <- input[[id("dataTypeTab")]]
+        groups <- getGroupsFrom(active)
+        
+        # Define initial matrix if there are no groups
+        if (is.null(groups)) {
+            groups <- matrix(ncol = 4)
+            colnames(groups) <- c("Names", "Subset", "Input", "Rows")
+            groups <- groups[-1, ]
+        }
+        
+        # Include new group(s) with the previous groups created
+        new <- createGroupFromInput(input)
+        groups <- rbind(groups, new)
         rownames(groups) <- NULL
-    }
-    setGroupsFrom(active, groups)
+        setGroupsFrom(active, groups)
+    })
+    
+    output[[id("groupsTable")]] <- renderDataTable({
+        ## TODO(NunoA): Allow to remove and merge selected rows from the groups
+        ## This could be done using checkboxes; how to retrieve which checkboxes
+        ## were checked? Possible with data table or javascript?
+        active <- input[[id("dataTypeTab")]]
+        groups <- getGroupsFrom(active)
+        
+        if (is.null(groups)) return(NULL)
+        
+        # Get number of rows using the row numbers
+        rows <- groups[ , 4]
+        rows <- lapply(rows, length)
+        return(cbind(groups[, 1:3], "Rows" = rows))
+    }, options = list(pageLength = 10, lengthChange = FALSE, scrollX = TRUE, 
+                      filter = FALSE, info = FALSE, paginationType = "simple"),
+    escape = FALSE)
 }
