@@ -16,6 +16,7 @@ RoxygenNote: 5.0.1
 Imports: fastmatch,
     stringr,
     plyr,
+    dplyr,
     methods
 Suggests: testthat,
     knitr,
