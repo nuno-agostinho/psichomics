@@ -14,16 +14,16 @@ getCategoryData <- reactive(
 getJunctionQuantification <- reactive(
     getCategoryData()[["Junction quantification"]])
 getInclusionLevels <- reactive(sharedData[["psi"]])
-getGroupsFrom <- function(dataType)
-    sharedData[[paste(getCategory(), dataType, "groups", sep = "_")]] 
+getGroupsFrom <- function(dataType, category = getCategory())
+    sharedData[[paste(category, dataType, "groups", sep = "_")]] 
 
 # Set data from sharedData (needs to be inside reactive functions)
 setElement <- function(item, value) sharedData[[item]] <- value
 setData <- function(value) setElement("data", value)
 setCategory <- function(value) setElement("category", value)
 setInclusionLevels <- function(value) setElement("psi", value)
-setGroupsFrom <- function(dataType, value)
-    setElement(paste(getCategory(), dataType, "groups", sep = "_"), value)
+setGroupsFrom <- function(dataType, value, category = getCategory())
+    setElement(paste(category, dataType, "groups", sep = "_"), value)
 
 # TODO(NunoA): increase allowed size and warn the user to wait for large files
 # Refuse files with size greater than the specified
