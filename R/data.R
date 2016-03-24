@@ -104,19 +104,6 @@ addTCGAdata <- function() {
 
 ui <- function(tab) {
     tab(name,
-        tags$script("
-                    Shiny.addCustomMessageHandler('getCheckedBoxes',
-                        function(variable) {
-                            var selected = [];
-                            $(\"input[name='checkGroups']:checked\").each(function() {
-                                selected.push($(this).attr('number'));
-                            });
-                            Shiny.onInputChange(variable, selected);
-                        });
-                    Shiny.addCustomMessageHandler('setZero',
-                        function(variable) {
-                            Shiny.onInputChange(variable, 0);
-                        });"),
         sidebarLayout(
             sidebarPanel(
                 tabsetPanel(type = "pill",

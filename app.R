@@ -22,7 +22,9 @@ server <- function(input, output, session) {
 ui <- shinyUI(
     do.call(navbarPage, c(
         list(title = "PSΨchomics", id = "nav", collapsible = TRUE,
-             position = "fixed-top", header = includeCSS("www/styles.css"),
+             position = "fixed-top",
+             header = list(includeCSS("www/styles.css"),
+                           includeScript("www/functions.js")),
              footer = useShinyjs()),
         # Loads the interface of each tab
         callScriptsFunction(func = "ui", check = c("name", "ui"), tabPanel)
