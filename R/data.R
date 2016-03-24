@@ -56,7 +56,9 @@ groupsUI <- function() {
         conditionalPanel(checkId("!=", "Column"),
                          textInput(id("groupName"), "Group name")),
         actionButton(id("createGroup"), "Create group"), hr(),
-        dataTableOutput(id("groupsTable"))
+        dataTableOutput(id("groupsTable")),
+        actionButton(id("mergeGroups"), "Merge selected groups"),
+        actionButton(id("removeGroups"), "Remove selected groups")
     )
 }
 
@@ -104,30 +106,47 @@ addTCGAdata <- function() {
 
 ui <- function(tab) {
     tab(name,
+        tags$script("
+                    Shiny.addCustomMessageHandler('getCheckedBoxes',
+                        function(variable) {
+                            var selected = [];
+                            $(\"input[name='checkGroups']:checked\").each(function() {
+                                selected.push($(this).attr('number'));
+                            });
+                            Shiny.onInputChange(variable, selected);
+                        });
+                    Shiny.addCustomMessageHandler('setZero',
+                        function(variable) {
+                            Shiny.onInputChange(variable, 0);
+                        });"),
         sidebarLayout(
             sidebarPanel(
-                h3("Data input"),
-                shinyBS::bsCollapse(
-                    id = id("addData"),
-                    open = "Add TCGA/Firehose data",
-                    shinyBS::bsCollapsePanel(
-                        style = "info",
-                        title = list(icon("plus-circle"), "Add local files"),
-                        value = "Add local files",
-                        addLocalFile()),
-                    shinyBS::bsCollapsePanel(
-                        style = "info",
-                        title = list(icon("plus-circle"),
-                                     "Add TCGA/Firehose data"),
-                        value = "Add TCGA/Firehose data",
-                        addTCGAdata())),
-                h3("Data grouping"),
-                shinyBS::bsCollapse(
-                    id = id("groupingData"),
-                    open = "Grouping",
-                    shinyBS::bsCollapsePanel(title = "Grouping", style = "info",
-                                             groupsUI()))
-            ),
+                tabsetPanel(type = "pill",
+                            tabPanel(
+                                "Data input", br(),
+                                shinyBS::bsCollapse(
+                                    id = id("addData"),
+                                    open = "Add TCGA/Firehose data",
+                                    shinyBS::bsCollapsePanel(
+                                        style = "info",
+                                        title = list(icon("plus-circle"), "Add local files"),
+                                        value = "Add local files",
+                                        addLocalFile()),
+                                    shinyBS::bsCollapsePanel(
+                                        style = "info",
+                                        title = list(icon("plus-circle"),
+                                                     "Add TCGA/Firehose data"),
+                                        value = "Add TCGA/Firehose data",
+                                        addTCGAdata()))
+                            ),
+                            tabPanel("Data grouping", br(),
+                                     shinyBS::bsCollapse(
+                                         id = id("groupingData"),
+                                         open = "Grouping",
+                                         shinyBS::bsCollapsePanel(title = "Grouping", style = "info",
+                                                                  groupsUI()))
+                            )
+                )),
             mainPanel(
                 # TODO(NunoA): Show alerts from renderUI
                 bsAlert(anchorId = id("alert2")),
@@ -199,6 +218,9 @@ createGroupFromInput <- function (input) {
         ## TODO(NunoA): Subset data with the GREP expression for the given column
         group <- rep(NA, 4)
     } 
+    # Standarise rows
+    colnames(group) <- c("Names", "Subset", "Input", "Rows")
+    rownames(groups) <- NULL
     return(group)
 }
 
@@ -330,24 +352,19 @@ server <- function(input, output, session) {
     
     # Create a new group when clicking on the createGroup button
     observeEvent(input[[id("createGroup")]], {
+        # Create new group(s) from user input
+        new <- createGroupFromInput(input)
+        
         # Get groups for the data table that is visible and active
         active <- input[[id("dataTypeTab")]]
         groups <- getGroupsFrom(active)
         
-        # Define initial matrix if there are no groups
-        if (is.null(groups)) {
-            groups <- matrix(ncol = 4)
-            colnames(groups) <- c("Names", "Subset", "Input", "Rows")
-            groups <- groups[-1, ]
-        }
-        
-        # Include new group(s) with the previous groups created
-        new <- createGroupFromInput(input)
+        # Append the new group(s) to the groups already created
         groups <- rbind(groups, new)
-        rownames(groups) <- NULL
         setGroupsFrom(active, groups)
     })
     
+    # Render groups list and add features to merge/remove groups
     output[[id("groupsTable")]] <- renderDataTable({
         ## TODO(NunoA): Allow to remove and merge selected rows from the groups
         ## This could be done using checkboxes; how to retrieve which checkboxes
@@ -355,13 +372,73 @@ server <- function(input, output, session) {
         active <- input[[id("dataTypeTab")]]
         groups <- getGroupsFrom(active)
         
-        if (is.null(groups)) return(NULL)
-        
-        # Get number of rows using the row numbers
-        rows <- groups[ , 4]
-        rows <- lapply(rows, length)
-        return(cbind(groups[, 1:3], "Rows" = rows))
+        # Don't show anything if there are no groups
+        if (!is.null(groups) && nrow(groups) > 0) {
+            # Show number of rows for each group
+            rows <- lapply(groups[ , 4], length)
+            groups[ , 4] <- unlist(rows)
+            # Add checkboxes
+            pick <- paste("<input number=", 1:nrow(groups),
+                          " name='checkGroups' type='checkbox'></input>")
+            return(cbind("Pick" = pick, groups))
+        }
     }, options = list(pageLength = 10, lengthChange = FALSE, scrollX = TRUE, 
                       filter = FALSE, info = FALSE, paginationType = "simple"),
     escape = FALSE)
+    
+    # Remove selected groups when pressing the button
+    observeEvent(input[[id("removeGroups")]], {
+        session$sendCustomMessage(type = "getCheckedBoxes", "removeGroups")
+        sharedData$removeTime <- TRUE
+    })
+    
+    # Remove selected groups when pressing the button
+    observe({
+        if (!is.null(input$removeGroups) && all(input$removeGroups > 0) &&
+            isTRUE(sharedData$removeTime)) {
+            # Set groups to remove to 0 and flag to FALSE
+            session$sendCustomMessage(type = "setZero", "removeGroups")
+            sharedData$removeTime <- FALSE
+            
+            # Get groups for the data table that is visible and active
+            active <- input[[id("dataTypeTab")]]
+            groups <- getGroupsFrom(active)
+            
+            # Remove selected groups
+            selected <- as.numeric(input$removeGroups)
+            setGroupsFrom(active, groups[-selected, , drop=FALSE])
+        }
+    })
+    
+    # Merge selected groups when pressing the button
+    observeEvent(input[[id("mergeGroups")]], {
+        session$sendCustomMessage(type = "getCheckedBoxes", "mergeGroups")
+        sharedData$mergeTime <- TRUE
+    })
+    
+    # Remove selected groups when pressing the button
+    observe({
+        if (!is.null(input$mergeGroups) && all(input$mergeGroups > 0) &&
+            isTRUE(sharedData$mergeTime)) {
+            # Set groups to remove to 0 and flag to FALSE
+            session$sendCustomMessage(type = "setZero", "mergeGroups")
+            sharedData$mergeTime <- FALSE
+            
+            # Get groups for the data table that is visible and active
+            active <- input[[id("dataTypeTab")]]
+            groups <- getGroupsFrom(active)
+            
+            # Create merged group
+            selected <- as.numeric(input$mergeGroups)
+            mergedFields <- lapply(1:3, function(i)
+                paste(groups[selected, i], collapse = " + "))
+            rowNumbers <- sort(Reduce(union, groups[selected, 4]))
+            new <- matrix(c(mergedFields, list(rowNumbers)), ncol = 4)
+            
+            # Remove selected groups and add new merged group
+            groups <- groups[-selected, , drop=FALSE]
+            groups <- rbind(groups, new)
+            setGroupsFrom(active, groups)
+        }
+    })
 }
