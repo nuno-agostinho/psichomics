@@ -14,52 +14,6 @@ addLocalFile <- function() {
     ) # end of list
 }
 
-groupsUI <- function() {
-    checkId <- function (sign, what)
-        sprintf("input[id='%s'] %s '%s'", id("subsetBy"), sign, what)
-    
-    list(
-        selectizeInput(id("subsetBy"), "Subset by",
-                       c("Column", "Rows", "Expression", "Grep")),
-        conditionalPanel(
-            checkId("==", "Column"),
-            selectizeInput(id("groupColumn"), "Select column", choices = NULL),
-            icon2("info-circle", id = id("info-circle")),
-            bsTooltip(id("info-circle"),
-                      paste("Groups will be created automatically depending on",
-                            "the given column."))),
-        conditionalPanel(
-            checkId("==", "Rows"),
-            selectizeInput(id("groupRows"), "Select rows", choices = NULL,
-                           multiple = TRUE,
-                           # Allow to add new items
-                           options = list(
-                               create = TRUE, createOnBlur=TRUE,
-                               ## TODO(NunoA): only allow numbers (use selectize.js REGEX option)
-                               # Hide discarded user-created items in the dropdown
-                               persist = FALSE),
-                           bsTooltip(id("groupRows"),
-                                     paste("Select rows like in R. To create a group with rows",
-                                           "1 to 6, 8 and 10 to 19, insert 1:6, 8, 10:19")))),
-        conditionalPanel(
-            checkId("==", "Expression"),
-            textInput(id("groupExpression"), "Subset expression"),
-            bsTooltip(id("groupExpression"),
-                      paste('To select rows where column X4 is higher than 8',
-                            'and "alive" in X7, type X4 > 8 & X7 == "alive"'))),
-        conditionalPanel(
-            checkId("==", "Grep"),
-            textInput(id("grepExpression"), "GREP expression"),
-            selectizeInput(id("grepColumn"),
-                           "Select column to GREP",
-                           choices = NULL)),
-        conditionalPanel(checkId("!=", "Column"),
-                         textInput(id("groupName"), "Group name")),
-        actionButton(id("createGroup"), "Create group"),
-        uiOutput(id("groupsList"))
-    )
-}
-
 #' Creates a UI set with options to add data from TCGA/Firehose
 #' 
 #' @return A UI set that can be added to a UI definition
@@ -100,6 +54,62 @@ addTCGAdata <- function() {
     } else {
         list(p("Not able to reach Firehose."))
     }
+}
+
+groupByColumn <- function() { list(
+    selectizeInput(id("groupColumn"), "Select column", choices = NULL),
+    icon2("info-circle", id = id("info-circle")),
+    bsTooltip(id("info-circle"),
+              paste("Groups will be created automatically depending on",
+                    "the given column."))
+)}
+
+groupByRow <- function() { list(
+    selectizeInput(
+        id("groupRows"), "Select rows", choices = NULL,
+        multiple = TRUE,
+        # Allow to add new items
+        options = list(
+            create = TRUE, createOnBlur=TRUE,
+            ## TODO(NunoA): only allow numbers (use selectize.js REGEX option)
+            # Hide discarded user-created items in the dropdown
+            persist = FALSE),
+        bsTooltip(id("groupRows"),
+                  paste("Select rows like in R. To create a group with rows",
+                        "1 to 6, 8 and 10 to 19, insert 1:6, 8, 10:19")))
+)}
+
+groupByExpression <- function() { list (
+    textInput(id("groupExpression"), "Subset expression"),
+    bsTooltip(id("groupExpression"),
+              paste('To select rows where column X4 is higher than 8',
+                    'and "alive" in X7, type X4 > 8 & X7 == "alive"'))
+)}
+
+groupByGrep <- function() { list (
+    textInput(id("grepExpression"), "GREP expression"),
+    selectizeInput(id("grepColumn"),
+                   "Select column to GREP",
+                   choices = NULL)
+)}
+
+#' Creates UI elements for the grouping feature
+groupsUI <- function() {
+    checkId <- function (sign, what)
+        sprintf("input[id='%s'] %s '%s'", id("subsetBy"), sign, what)
+    
+    list(
+        selectizeInput(id("subsetBy"), "Subset by",
+                       c("Column", "Rows", "Expression", "Grep")),
+        conditionalPanel(checkId("==", "Column"), groupByColumn()),
+        conditionalPanel(checkId("==", "Rows"), groupByRow()),
+        conditionalPanel(checkId("==", "Expression"), groupByExpression()),
+        conditionalPanel(checkId("==", "Grep"), groupByGrep()),
+        conditionalPanel(checkId("!=", "Column"),
+                         textInput(id("groupName"), "Group name")),
+        actionButton(id("createGroup"), "Create group"),
+        uiOutput(id("groupsList"))
+    )
 }
 
 ui <- function(tab) {
@@ -148,7 +158,6 @@ ui <- function(tab) {
 #' @param ... Extra arguments to pass to the function dataTableOutput
 #'
 #' @return The HTML code for a tabPanel template
-#' @export
 tabTable <- function(title, id, columns, description = NULL) {
     tablename <- id(paste("table", id, sep = "-"))
     if(!is.null(description))
@@ -198,7 +207,11 @@ createGroupFromInput <- function (input) {
         group <- rep(NA, 4)
     } 
     # Standarise rows
-    colnames(group) <- c("Names", "Subset", "Input", "Rows")
+    ns <- c("Names", "Subset", "Input", "Rows")
+    if (is.matrix(group))
+        colnames(group) <- ns
+    else
+        names(group) <- ns
     rownames(groups) <- NULL
     return(group)
 }
@@ -470,7 +483,7 @@ server <- function(input, output, session) {
         active <- input[[id("dataTypeTab")]]
         groups <- getGroupsFrom(active)
         
-        # Don't show anything if there are no groups
+        # Don't show anything when there are no groups
         if (!is.null(groups) && nrow(groups) > 0) {
             list(
                 hr(),
