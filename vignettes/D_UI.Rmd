@@ -305,3 +305,9 @@ be ready and change a flag to TRUE; when it's ready, we change it the value to 0
 (neutral state so it doesn't continually remove rows), set flag to FALSE so it
 only runs once per each click in the "remove selected groups" button and remove
 the rows. It works as intended! :)
+
+# Representing the groups interface
+There's a simple way to make this better. We could simply represent contextual
+Venn diagrams (i.e. when hovering over a group, it would show information about
+that group). Or maybe use a package like `UpSetR` to allow to show much more
+groups than simply 5 (up to 9?) groups.
