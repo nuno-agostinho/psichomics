@@ -440,6 +440,39 @@ server <- function(input, output, session) {
         }
     })
     
+    # Merge selected groups when pressing the button
+    observeEvent(input[[id("intersectGroups")]], {
+        session$sendCustomMessage(type = "getCheckedBoxes", "intersectGroups")
+        sharedData$intersectTime <- TRUE
+    })
+    
+    # Merge selected groups if there are groups to be merged
+    observe({
+        if (!is.null(input$intersectGroups) && all(input$intersectGroups > 0) &&
+            isTRUE(sharedData$intersectTime)) {
+            # Set groups to remove to 0 and flag to FALSE
+            session$sendCustomMessage(type = "setZero", "intersectGroups")
+            sharedData$intersectTime <- FALSE
+            
+            # Get groups for the data table that is visible and active
+            active <- input[[id("dataTypeTab")]]
+            groups <- getGroupsFrom(active)
+            
+            # Create merged group
+            selected <- as.numeric(input$intersectGroups)
+            mergedFields <- lapply(1:3, function(i)
+                paste(groups[selected, i], collapse = " ∩ "))
+            rowNumbers <- sort(Reduce(intersect, groups[selected, 4]))
+            new <- matrix(c(mergedFields, list(rowNumbers)), ncol = 4)
+            
+            # Remove selected groups and add new merged group
+            groups <- groups[-selected, , drop=FALSE]
+            groups <- rbind(groups, new)
+            setGroupsFrom(active, groups)
+        }
+    })
+    
+    # Render groups interface only if any group exists
     output[[id("groupsList")]] <- renderUI({
         active <- input[[id("dataTypeTab")]]
         groups <- getGroupsFrom(active)
@@ -450,7 +483,9 @@ server <- function(input, output, session) {
                 hr(),
                 dataTableOutput(id("groupsTable")),
                 actionButton(id("mergeGroups"), "Merge"),
-                actionButton(id("mergeGroups"), "Intersect"),
+                actionButton(id("intersectGroups"), "Intersect"),
+                # actionButton(id("complementGroups"), "Complement"),
+                # actionButton(id("subtractGroups"), "Subtract"),
                 actionButton(id("removeGroups"), "Remove", icon = icon("times"))
             )
         }
