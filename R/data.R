@@ -55,10 +55,8 @@ groupsUI <- function() {
                            choices = NULL)),
         conditionalPanel(checkId("!=", "Column"),
                          textInput(id("groupName"), "Group name")),
-        actionButton(id("createGroup"), "Create group"), hr(),
-        dataTableOutput(id("groupsTable")),
-        actionButton(id("mergeGroups"), "Merge selected groups"),
-        actionButton(id("removeGroups"), "Remove selected groups")
+        actionButton(id("createGroup"), "Create group"),
+        uiOutput(id("groupsList"))
     )
 }
 
@@ -392,7 +390,7 @@ server <- function(input, output, session) {
         sharedData$removeTime <- TRUE
     })
     
-    # Remove selected groups when pressing the button
+    # Remove selected groups if there are groups to be removed
     observe({
         if (!is.null(input$removeGroups) && all(input$removeGroups > 0) &&
             isTRUE(sharedData$removeTime)) {
@@ -416,7 +414,7 @@ server <- function(input, output, session) {
         sharedData$mergeTime <- TRUE
     })
     
-    # Remove selected groups when pressing the button
+    # Merge selected groups if there are groups to be merged
     observe({
         if (!is.null(input$mergeGroups) && all(input$mergeGroups > 0) &&
             isTRUE(sharedData$mergeTime)) {
@@ -439,6 +437,22 @@ server <- function(input, output, session) {
             groups <- groups[-selected, , drop=FALSE]
             groups <- rbind(groups, new)
             setGroupsFrom(active, groups)
+        }
+    })
+    
+    output[[id("groupsList")]] <- renderUI({
+        active <- input[[id("dataTypeTab")]]
+        groups <- getGroupsFrom(active)
+        
+        # Don't show anything if there are no groups
+        if (!is.null(groups) && nrow(groups) > 0) {
+            list(
+                hr(),
+                dataTableOutput(id("groupsTable")),
+                actionButton(id("mergeGroups"), "Merge"),
+                actionButton(id("mergeGroups"), "Intersect"),
+                actionButton(id("removeGroups"), "Remove", icon = icon("times"))
+            )
         }
     })
 }
