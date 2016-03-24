@@ -3,8 +3,8 @@ title: "User Interface"
 author: "Nuno Agostinho"
 date: "28 January 2016"
 output: 
-  html_document: 
-    toc: yes
+html_document: 
+toc: yes
 ---
 
 # Conditional panels VS renderUI
@@ -74,11 +74,11 @@ observeEvent(input$load, {
     input <- readRDS(file = "~/Dropbox/session.RDS")
     lapply(names(input),
            function(each) {
-             # print(paste(each, input[[each]]))
-             value <- list(value = input[[each]])
-             session$sendInputMessage(each, value)
+               # print(paste(each, input[[each]]))
+               value <- list(value = input[[each]])
+               session$sendInputMessage(each, value)
            })
-  })
+})
 ```
 
 It seems that there is some issue when using fileInput that doesn't allow to
@@ -195,8 +195,8 @@ thing by editing the earlier `createLink` function:
 ```{r, eval=FALSE}
 createLink <- function(val) {
     onclick <- sprintf('document.getElementById(\'%s\').selectize.setValue(\'%s\')',
-                      c("selectizePlot", "selectizeEvent"),
-                      c("plot4", "Valiant"))
+                       c("selectizePlot", "selectizeEvent"),
+                       c("plot4", "Valiant"))
     onclick <- paste(onclick, collapse = "; ")
     html <- paste('<a id="%s" title="Get more information about this event"',
                   'href="#" onclick="%s">%s</a>')
@@ -237,3 +237,71 @@ lot of glyphs! Besides, it has a few extra options as well. :)
 It's probably faster if we store the slowest files to load already processed in
 a RData file. Thus, we just need to load the already RData file instead! Also, 
 since the RData files are binary, they don't need as much space as text files.
+
+# Validating forms
+A cool thing we could have is a form validator: whenever the user writes on the
+form, it would have an indication whether it's writing something that it should
+or it shouldn't do. Such a thing is possible with JavaScript and a cool library
+is Bootstrap Validator. To use a JavaScript library like this, we simply need
+to download the JavaScript library, move the ".js" file to the `inst` folder,
+use the `shiny::includeScript` function to use it and add the attributes they
+ask to the input fields. Done!... almost. For some reason, it's not working in
+the current application. Why is that?
+
+# Using JavaScript to check the state of the checkboxes
+There's a problem with running JavaScript: the value returned is not immediate.
+I was using the following code to save the value of the checkboxes in the data
+table to the variable `input$removeGroups`:
+
+```{r, eval=FALSE}
+observeEvent(input[[id("removeGroups")]], {
+    session$sendCustomMessage(type = "getCheckedBoxes", "removeGroups")
+    
+    # Get groups for the data table that is visible and active
+    active <- input[[id("dataTypeTab")]]
+    groups <- getGroupsFrom(active)
+    
+    # Remove selected rows
+    selected <- as.numeric(input$removeGroups)
+    setGroupsFrom(active, groups[-selected, , drop=FALSE])
+})
+```
+
+This doesn't work. After checking some checkboxes, when pressing the remove
+button it would do nothing (1). Pressing again, it removed the selected row (2).
+Pressing once again with no checkbox selected, it would remove another row (3).
+What's happening? Well, when printing the value of `input$removeGroups`, it was
+obvious that the value was NULL for the step (1), the rows selected for step (2)
+and the same rows for step (3). So the value wasn't updated immediately, what
+now? I created an `observer` where we would wait for `input$removeGroups` to
+change from NULL. But now it's deleting row after row (e.g. selecting row 2
+would delete rows 2, 3, 4, etc. one at a time since all those rows become row 2
+after the previous row 2 is deleted). How stupid (of me)!
+
+Well, I figured, we only need to set input$removeGroups to NULL. Yeah... it
+seems Shiny doesn't allow us to do that.
+
+```
+Warning: Error in $<-.reactivevalues: Attempted to assign value to a read-only
+reactivevalues object
+```
+
+No direct modification in R means we can only modify that variable using...
+JavaScript! So we could maybe modify the variable to a neutral state (a state
+where we know the variable is not ready yet) after removing the selected rows.
+Since this solution has the same delay we were trying to solve in the beginning, 
+this simply means we still delete the same index when sequentially clicking the
+"remove selected groups" button.
+
+Another thing tried was to use a flag instead. When changing `input$removeGroups`,
+set flag to TRUE so the observer knows the input has changed and after removing
+the rows, set flag to FALSE and wait for it to be TRUE again. This presents the
+same problem, since the flag is set to TRUE before the input is ready, so the
+actual solution is a combination of using the flag and change the value of the
+variable to a state we know it's neutral.
+
+Therefore, to only remove the rows desired, we wait for `input$removeGroups` to 
+be ready and change a flag to TRUE; when it's ready, we change it the value to 0 
+(neutral state so it doesn't continually remove rows), set flag to FALSE so it
+only runs once per each click in the "remove selected groups" button and remove
+the rows. It works as intended! :)
