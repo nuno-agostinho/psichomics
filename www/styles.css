@@ -13,3 +13,8 @@ body { padding-top: 70px; }
 /* Change the position and display of the progress bar */
 .shiny-progress-container { top: 48px; }
 .shiny-progress .progress-text { width: auto; }
+
+/* Better contrast of odd elements of the table in the grouping section */
+.table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: rgb(237, 237, 237);
+}

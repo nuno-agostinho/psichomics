@@ -137,13 +137,7 @@ ui <- function(tab) {
                                         value = "Add TCGA/Firehose data",
                                         addTCGAdata()))
                             ),
-                            tabPanel("Data grouping", br(),
-                                     shinyBS::bsCollapse(
-                                         id = id("groupingData"),
-                                         open = "Grouping",
-                                         shinyBS::bsCollapsePanel(title = "Grouping", style = "info",
-                                                                  groupsUI()))
-                            )
+                            tabPanel("Data grouping", br(), groupsUI())
                 )),
             mainPanel(
                 # TODO(NunoA): Show alerts from renderUI
@@ -375,13 +369,25 @@ server <- function(input, output, session) {
             # Show number of rows for each group
             rows <- lapply(groups[ , 4], length)
             groups[ , 4] <- unlist(rows)
+            
+            # Ordering the groups (plus safety net for cases with one row)
+            ord <- c(1, 4, 2, 3)
+            ordered <- groups[ , ord]
+            if (!is.matrix(ordered)) {
+                ordered <- matrix(ordered, ncol = 4)
+                colnames(ordered) <- colnames(groups)[ord]
+            }
+            
             # Add checkboxes
-            pick <- paste("<input number=", 1:nrow(groups),
-                          " name='checkGroups' type='checkbox'></input>")
-            return(cbind("Pick" = pick, groups))
+            pick <- paste("<center><input number=", 1:nrow(ordered),
+                          "name='checkGroups' type='checkbox'/></center>")
+            res <- cbind(pick, ordered)
+            colnames(res)[1] <- "<input name='checkAllGroups' type='checkbox'/>"
+            return(res)
         }
     }, options = list(pageLength = 10, lengthChange = FALSE, scrollX = TRUE, 
-                      filter = FALSE, info = FALSE, paginationType = "simple"),
+                      #filter = FALSE, info = FALSE, paginationType = "simple",
+                      ordering = FALSE),
     escape = FALSE)
     
     # Remove selected groups when pressing the button
