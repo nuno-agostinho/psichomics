@@ -65,9 +65,3 @@ roxygen's @import
 ignoreRows and skip
 
 > TODO: Add grep functionality when choosing groups
-
-> TODO: Fix groups with only one row stupidly having a bad layout simply because
-you're including a list in a row (for some reason, there's no problem if there
-are 2 or more rows...)
-
-> TODO: Allow to merge and remove groups
