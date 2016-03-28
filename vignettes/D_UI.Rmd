@@ -310,4 +310,6 @@ the rows. It works as intended! :)
 There's a simple way to make this better. We could simply represent contextual
 Venn diagrams (i.e. when hovering over a group, it would show information about
 that group). Or maybe use a package like `UpSetR` to allow to show much more
-groups than simply 5 (up to 9?) groups.
+groups than simply 5 (up to 9?) groups. Also, check `d3vennr` which allows
+interactive Venn diagrams using d3.js. It even tells how to add contextual 
+tooltips at http://www.buildingwidgets.com/blog/2015/6/5/week-22-d3vennr
