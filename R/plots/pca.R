@@ -1,14 +1,13 @@
 # The name used for the plot must be unique
-name <- "PCA"
+name <- "PCA ggplot2"
 id <- function(id) paste(name, id, sep = "_")
 
 ui <- list(
     sidebarPanel(
-        fluidRow(
-            column(4,
-                   checkboxInput(id("center"), "Center values", value = TRUE)),
-            column(4,
-                   checkboxInput(id("scale"), "Scale values", value = TRUE))),
+        checkboxGroupInput(id("preprocess"), "Preprocessing",
+                           c("Center values" = "center",
+                             "Scale values" = "scale"),
+                           selected = c("center")),
         actionButton(id("calculate"), "Calculate PCA"),
         uiOutput(id("selectPCA"))
     ), mainPanel(
@@ -52,13 +51,16 @@ server <- function(input, output, session) {
     
     observeEvent(input[[id("calculate")]], {
         log.ir <- log(iris[,1:4])
+        preprocess <- input[[id("preprocess")]]
         ir.pca$data <- prcomp(log.ir,
-                              center = input[[id("center")]],
-                              scale. = input[[id("scale")]])
+                              center = "center" %in% preprocess,
+                              scale. = "scale" %in% preprocess)
     })
     
     output[[id("selectPCA")]] <- renderUI({
-        if (is.null(ir.pca$data)) return(NULL)
+        if (is.null(ir.pca$data)) 
+            return(NULL)
+        
         pcs <- colnames(ir.pca$data$x)
         list(
             hr(),
@@ -71,12 +73,23 @@ server <- function(input, output, session) {
     })
     
     output$scatterplot <- renderPlot({
-        if (is.null(ir.pca$data)) return(NULL)
+        if (is.null(ir.pca$data)) 
+            return(NULL)
+        
         xAxis <- input[[id("pcX")]]
         yAxis <- input[[id("pcY")]]
         
-        if (!is.null(xAxis) & !is.null(yAxis))
-            ggplot(data.frame(ir.pca$data$x), aes_string(x=xAxis, y=yAxis)) + geom_point()
+        if (!is.null(xAxis) & !is.null(yAxis)) {
+            perc <- (ir.pca$data$sdev)^2/sum((ir.pca$data$sdev)^2) * 100
+            names(perc) <- colnames(ir.pca$data$x)
+            
+            label <- sprintf("%s (%s%% explained variance)", 
+                             names(perc[c(xAxis, yAxis)]), 
+                             round(perc[c(xAxis, yAxis)], 2))
+            
+            ggplot(data.frame(ir.pca$data$x), aes_string(x=xAxis, y=yAxis)) + 
+                geom_point() + labs(x=label[1], y=label[2])
+        }
     })
     
     output$hoverInfo <- renderUI({
@@ -93,32 +106,33 @@ server <- function(input, output, session) {
         
         # Create tooltip from hover information
         createTooltip(hover, xDeviation = 19, yDeviation = 2,
-                      # tags$b("Point:"), rownames(point), br(),
                       tags$b(xAxis), point[[xAxis]], br(),
                       tags$b(yAxis), point[[yAxis]])
     })
     
     output[[id("variancePlot")]] <- renderHighchart({
         highchart() %>%
+            hc_title(text = "Explained variance by each Principal Component (PC)") %>%
             hc_add_series(name = "PCs", data = (ir.pca$data$sdev)^2,
                           type = "waterfall") %>%
-            hc_plotOptions(series = list(
-                dataLabels = list(
-                    enabled = TRUE, format = "{point.y:.2f}"))) %>%
+            hc_plotOptions(series = list(dataLabels = list(
+                align = "center",
+                verticalAlign = "top",
+                enabled = TRUE,
+                formatter = JS(
+                    paste0("function(){ var total = ",
+                           sum((ir.pca$data$sdev)^2),
+                           ";var perc = (this.y/total) * 100;",
+                           "return (Highcharts.numberFormat(this.y) +'<br/>'+",
+                           "Highcharts.numberFormat(perc) + '%')}"))))) %>%
             hc_xAxis(categories = colnames(ir.pca$data$x)) %>%
             hc_yAxis(title = list(text = "Explained variance")) %>%
             hc_legend(enabled = FALSE) %>%
-            hc_tooltip(formatter = JS("function(){
-                             if('Sunshine' == this.series.name){
-                             return  '<b>' + this.point.name + ': </b>' + this.y
-                             } else {
-                             unts = this.series.name == 'Rainfall' ? 'mm' : '&#176;C';
-                             return (this.x + ': ' + this.y + ' ' + unts)
-                             }}"),
-                       useHTML = TRUE) %>%
-            # hc_tooltip(pointFormat = '{point.name} {point.y:.5f}') %>%
-            hc_add_theme(hc_theme_538()) %>%
+            hc_tooltip(pointFormat = '{point.name} {point.y:.5f}') %>%
             hc_exporting(enabled = TRUE,
-                         buttons = list(contextButton = list(text = "Export")))
+                         buttons = list(
+                             contextButton = list(text = "Export",
+                                                  verticalAlign = "bottom", 
+                                                  y = -25)))
     })
 }
