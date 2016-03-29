@@ -141,6 +141,13 @@ Source: CRAN
 Version: 0.1.2
 Hash: 38a0f066373a60824cd3ade2362af363
 
+Package: highcharter
+Source: CRAN
+Version: 0.2.0
+Hash: d9e42e18c45de92590eb7a4b53c198a6
+Requires: assertthat, dplyr, htmlwidgets, magrittr, purrr, quantmod,
+    rlist, stringr, tidyr, viridisLite, xts, zoo
+
 Package: highr
 Source: CRAN
 Version: 0.5.1
@@ -251,6 +258,12 @@ Source: CRAN
 Version: 0.2.1
 Hash: 6cf4530f9dc63cbb1ba710053f15b121
 Requires: BH, Rcpp, dplyr, lazyeval, magrittr
+
+Package: quantmod
+Source: CRAN
+Version: 0.4-5
+Hash: 1c585e9754a71da8751a49573689f1b8
+Requires: TTR, xts, zoo
 
 Package: rbenchmark
 Source: CRAN
