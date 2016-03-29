@@ -70,12 +70,16 @@ rm.null <- function(v) Filter(Negate(is.null), v)
 #'
 #' @param script Character: file path to the script
 #' @param check Character: objects to check
+#' @param parentEnv Environment: enclosing environment inherited
 #'
 #' @return Environment with the loaded script if all the given objects are
 #' present; otherwise, returns NULL
 #' @export
-checkObjects <- function(script, check) {
-    env <- new.env()
+checkObjects <- function(script, check, parentEnv = NULL) {
+    if (is.null(parentEnv))
+        env <- new.env()
+    else
+        env <- new.env(parent = parentEnv)
     sys.source(script, env)
     # Check for the given variables
     varsDefined <- vapply(check, exists, logical(1), envir = env)
@@ -91,10 +95,10 @@ checkObjects <- function(script, check) {
 #'
 #' @return List of environments with sourced scripts
 #' @export
-sourceScripts <- function(folder, check, ...){
+sourceScripts <- function(folder, check, parentEnv = NULL, ...){
     files <- list.files(folder, full.names = TRUE, ...)
     # Get every script that defines the desired variables
-    envs <- lapply(files, checkObjects, check)
+    envs <- lapply(files, checkObjects, check, parentEnv)
     envs <- Filter(Negate(is.null), envs)
     return(envs)
 }
