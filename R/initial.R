@@ -25,6 +25,21 @@ setInclusionLevels <- function(value) setElement("psi", value)
 setGroupsFrom <- function(dataType, value, category = getCategory())
     setElement(paste(category, dataType, "groups", sep = "_"), value)
 
+#' Create an identifier for a given object
+#' 
+#' @param ... Arguments to identify an object
+#' 
+#' @details To make an object's identifier unique, use the names of the module,
+#' submodule, subsubmodule, ... as arguments before passing the name. Check the
+#' example.
+#' 
+#' @return Character with underscores instead of spaces
+#' @examples
+#' objectId("Exploratory analysis", "PCA", "plot")
+objectId <- function(...) {
+    return(gsub(" ", "_", paste(...)))
+}
+
 # TODO(NunoA): increase allowed size and warn the user to wait for large files
 # Refuse files with size greater than the specified
 MB = 5000 # File size in MB

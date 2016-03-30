@@ -1,5 +1,5 @@
 name <- "Widgets"
-id <- function(id) paste(name, id, sep = "_")
+id <- function(value) objectId(name, value)
 
 ui <- function(tab) {
     tab(name,

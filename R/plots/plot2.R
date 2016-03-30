@@ -1,10 +1,11 @@
 # The name used for the plot must be unique
-name <- "plot2"
+plot <- "plot2"
+id <- function(value) objectId(name, plot, value)
 
-ui <- plotOutput(name)
+ui <- plotOutput(id(plot))
 
 server <- function(input, output, session) {
-    output[[name]] <- renderPlot({
+    output[[id(plot)]] <- renderPlot({
         # validate(if(is.null(thisData$data)) return(NULL))
         ggplot(data=mtcars, aes(cyl, mpg)) + geom_bin2d()
     })
