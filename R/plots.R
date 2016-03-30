@@ -1,5 +1,5 @@
 name <- "Plots"
-id <- function(id) paste(name, id, sep = "_")
+id <- function(value) objectId(name, value)
 
 ui <- function(tab)
     tab(name,
@@ -16,16 +16,18 @@ ui <- function(tab)
         uiOutput(id("plots")))
 
 server <- function(input, output, session) {
+    plotName <- "plot"
     # Loads valid scripts from the indicated folder
     plotEnvs <- sourceScripts(folder = paste0(tabsFolder, "plots/"),
-                              check = c("name", "ui"))
+                              check = c(plotName, "ui"),
+                              parentEnv = environment())
     plotEnvs.server <- lapply(plotEnvs, "[[", "server")
     # Get name of the loaded scripts
-    names <- sapply(plotEnvs, "[[", "name")
+    names <- sapply(plotEnvs, "[[", plotName)
     
     # Runs server logic from the scripts
     lapply(plotEnvs.server, do.call, list(input, output, session))
-
+    
     # Updates selectize input to show available plots
     updateSelectizeInput(session, id("selectizePlot"), choices = names)
     
@@ -54,9 +56,9 @@ server <- function(input, output, session) {
     # Render the respective UI of the requested plot
     output[[id("plots")]] <- renderUI({
         lapply(plotEnvs, function(env) {
-            conditionalPanel(condition = sprintf("input[id='%s']=='%s'",
-                                                 id("selectizePlot"), env$name),
-                             env$ui)
+            conditionalPanel(
+                condition = sprintf("input[id='%s']=='%s'",
+                                    id("selectizePlot"), env[[plotName]]), env$ui)
         })
     })
 }

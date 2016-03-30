@@ -1,23 +1,25 @@
 # The name used for the plot must be unique
-name <- "plot1"
+plot <- "plot1"
+id <- function(value) objectId(name, plot, value)
 
 ui <- list(
     sidebarLayout(
         sidebarPanel(
-            selectizeInput("x", "Pick x axis", choices = names(mtcars)),
-            selectizeInput("y", "Pick y axis", choices = names(mtcars)),
-            shiny::actionButton("change", "Change to plot2")
+            selectizeInput(id("x"), "Pick x axis", choices = names(mtcars)),
+            selectizeInput(id("y"), "Pick y axis", choices = names(mtcars)),
+            shiny::actionButton(id("change"), "Change to plot2")
         ), 
-        mainPanel( plotOutput(name) )
+        mainPanel( plotOutput(id(plot)) )
     )
 )
 
 server <- function(input, output, session) {
-    output[[name]] <- renderPlot({
-        ggplot(data=mtcars, aes_string(input$x, input$y)) + geom_bin2d()
+    output[[id(plot)]] <- renderPlot({
+        ggplot(data=mtcars, aes_string(input[[id("x")]], input[[id("y")]])) +
+            geom_bin2d()
     })
     
-    observeEvent(input$change, {
-        updateSelectizeInput(session, "selectizePlot", selected = "plot2")
+    observeEvent(input[[id("change")]], {
+        updateSelectizeInput(session, "Plots_selectizePlot", selected = "plot2")
     })
 }

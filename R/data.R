@@ -1,6 +1,5 @@
-#' @import shiny shinyBS shinyjs
 name <- "Data"
-id <- function(...) paste(name, list(...), sep = "_")
+id <- function(value) objectId(name, value)
 
 #' Creates a UI set with options to add a file from the local storage
 #' 
@@ -336,7 +335,7 @@ server <- function(input, output, session) {
     # Update columns available for creating groups when there's loaded data
     observeEvent(input[[id("dataTypeTab")]], {
         active <- input[[id("dataTypeTab")]]
-        for (i in id("groupColumn", "grepColumn")) {
+        for (i in id(c("groupColumn", "grepColumn"))) {
             updateSelectizeInput(session, i,
                                  choices = names(getCategoryData()[[active]]))
         }
@@ -352,7 +351,7 @@ server <- function(input, output, session) {
         groups <- getGroupsFrom(active)
         
         # Append the new group(s) to the groups already created
-        groups <- rbind(groups, new)
+        groups <- rbind(new, groups)
         setGroupsFrom(active, groups)
     })
     
@@ -441,7 +440,7 @@ server <- function(input, output, session) {
             
             # Remove selected groups and add new merged group
             groups <- groups[-selected, , drop=FALSE]
-            groups <- rbind(groups, new)
+            groups <- rbind(new, groups)
             setGroupsFrom(active, groups)
         }
     })
@@ -473,7 +472,7 @@ server <- function(input, output, session) {
             
             # Remove selected groups and add new merged group
             groups <- groups[-selected, , drop=FALSE]
-            groups <- rbind(groups, new)
+            groups <- rbind(new, groups)
             setGroupsFrom(active, groups)
         }
     })
