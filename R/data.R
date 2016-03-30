@@ -57,10 +57,8 @@ addTCGAdata <- function() {
 
 groupByColumn <- function() { list(
     selectizeInput(id("groupColumn"), "Select column", choices = NULL),
-    icon2("info-circle", id = id("info-circle")),
-    bsTooltip(id("info-circle"),
-              paste("Groups will be created automatically depending on",
-                    "the given column."))
+    helpText(paste("Groups will be created automatically depending on the",
+                   "given column."))
 )}
 
 groupByRow <- function() { list(
@@ -72,17 +70,15 @@ groupByRow <- function() { list(
             create = TRUE, createOnBlur=TRUE,
             ## TODO(NunoA): only allow numbers (use selectize.js REGEX option)
             # Hide discarded user-created items in the dropdown
-            persist = FALSE),
-        bsTooltip(id("groupRows"),
-                  paste("Select rows like in R. To create a group with rows",
-                        "1 to 6, 8 and 10 to 19, insert 1:6, 8, 10:19")))
+            persist = FALSE)),
+    helpText(paste("Select rows like in R. To create a group with rows",
+                   "1 to 6, 8 and 10 to 19, insert 1:6, 8, 10:19"))
 )}
 
 groupByExpression <- function() { list (
     textInput(id("groupExpression"), "Subset expression"),
-    bsTooltip(id("groupExpression"),
-              paste('To select rows where column X4 is higher than 8',
-                    'and "alive" in X7, type X4 > 8 & X7 == "alive"'))
+    helpText(paste('To select rows with values higher than 8 for column X and', 
+                   'and "alive" for column Y, type X > 8 & Y == "alive"'))
 )}
 
 groupByGrep <- function() { list (
@@ -105,7 +101,8 @@ groupsUI <- function() {
         conditionalPanel(checkId("==", "Expression"), groupByExpression()),
         conditionalPanel(checkId("==", "Grep"), groupByGrep()),
         conditionalPanel(checkId("!=", "Column"),
-                         textInput(id("groupName"), "Group name")),
+                         textInput(id("groupName"), "Group name",
+                                   placeholder = "Unnamed")),
         actionButton(id("createGroup"), "Create group"),
         uiOutput(id("groupsList"))
     )
