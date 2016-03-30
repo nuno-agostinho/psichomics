@@ -1,5 +1,4 @@
 name <- "Data"
-
 id <- function(value) objectId(name, value)
 
 #' Creates a UI set with options to add a file from the local storage
