@@ -48,8 +48,10 @@ should be easy, no?)
 > TODO: calculate inclusion levels from read counts for all event types
 
 > TODO: save and restore Shiny session... else the page must NOT be reloaded! :(
+Everything that depends on the global variable is still loaded (data loaded and 
+data groups are intact, at least)
 
-> TODO: use Travis CL in the project (only available for GitHub); more
+> TODO: use Travis CI in the project (only available for GitHub); more
 information is available at http://r-pkgs.had.co.nz/check.html
 
 > TODO: Pass R CMD build, R CMD check, and R CMD BiocCheck
@@ -65,3 +67,6 @@ roxygen's @import
 ignoreRows and skip
 
 > TODO: Add grep functionality when choosing groups
+
+> TODO: (Un)check all checkboxes in the groups interface when (un)checking the
+checkbox in the header
