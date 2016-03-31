@@ -9,7 +9,7 @@ addLocalFile <- function() {
          textInput(id("species"), label = "Species", placeholder = "Required"),
          textInput(id("commonName"), label = "Common name"),
          uiOutput(id("testing")),
-         actionButton(id("acceptFile"), "Send file")
+         actionButton(id("acceptFile"), class = "btn-primary", "Send file")
     ) # end of list
 }
 
@@ -49,7 +49,8 @@ addTCGAdata <- function() {
              bsTooltip(id("dataFolder"), placement = "right", 
                        options = list(container = "body"),
                        "Data not available in this folder will be downloaded."),
-             actionButton(id("getFirehoseData"), "Get data"))
+             actionButton(class = "btn-primary",
+                          id("getFirehoseData"), "Get data"))
     } else {
         list(p("Not able to reach Firehose."))
     }
@@ -57,8 +58,8 @@ addTCGAdata <- function() {
 
 groupByColumn <- function() { list(
     selectizeInput(id("groupColumn"), "Select column", choices = NULL),
-    helpText(paste("Groups will be created automatically depending on the",
-                   "given column."))
+    helpText("Groups will be created automatically depending on the",
+             "given column.")
 )}
 
 groupByRow <- function() { list(
@@ -71,14 +72,14 @@ groupByRow <- function() { list(
             ## TODO(NunoA): only allow numbers (use selectize.js REGEX option)
             # Hide discarded user-created items in the dropdown
             persist = FALSE)),
-    helpText(paste("Select rows like in R. To create a group with rows",
-                   "1 to 6, 8 and 10 to 19, insert 1:6, 8, 10:19"))
+    helpText("Select rows like in R. Type ", tags$kbd("1:6, 8, 10:19"),
+             "to create a group with rows 1 to 6, 8 and 10 to 19.")
 )}
 
 groupByExpression <- function() { list (
     textInput(id("groupExpression"), "Subset expression"),
-    helpText(paste('To select rows with values higher than 8 for column X and', 
-                   'and "alive" for column Y, type X > 8 & Y == "alive"'))
+    helpText('Type ', tags$kbd('X > 8 & Y == "alive"'), ' to select rows with',
+             'values higher than 8 for column X and "alive" for column Y.')
 )}
 
 groupByGrep <- function() { list (
@@ -140,6 +141,7 @@ ui <- function(tab) {
                          "Would you like to replace the loaded data?",
                          footer = list(
                              actionButton(id("replace"),
+                                          class = "btn-primary",
                                           "data-dismiss"="modal", 
                                           label = "Replace"))),
                 uiOutput(id("tablesOrAbout")),
