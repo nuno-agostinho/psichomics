@@ -7,7 +7,8 @@ ui <- list(
         selectizeInput(id("eventType"), "Event type",
                        choices = c("Skipping exon" = "SE"), selected = "SE",
                        multiple = TRUE),
-        actionButton(id("calcIncLevels"), "Calculate inclusion levels")),
+        actionButton(id("calcIncLevels"), class = "btn-primary",
+                     "Calculate inclusion levels")),
     mainPanel( dataTableOutput(id("incLevels")) )
 )
 
