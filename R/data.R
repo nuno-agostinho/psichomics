@@ -5,11 +5,13 @@ id <- function(value) objectId(name, value)
 #' 
 #' @return A UI set that can be added to a UI definition
 addLocalFile <- function() {
-    list(fileInput(id("dataFile"), "Choose folder", multiple = T),
-         textInput(id("species"), label = "Species", placeholder = "Required"),
-         textInput(id("commonName"), label = "Common name"),
-         uiOutput(id("testing")),
-         actionButton(id("acceptFile"), class = "btn-primary", "Send file")
+    tags$form(fileInput(id("dataFile"), "Choose folder", multiple = T),
+              textInput(id("species"), label = "Species", 
+                        placeholder = "Required"),
+              textInput(id("commonName"), label = "Common name"),
+              uiOutput(id("testing")),
+              actionButton(id("acceptFile"), class = "btn-primary",
+                           "Send files")
     ) # end of list
 }
 
@@ -21,38 +23,39 @@ addTCGAdata <- function() {
     names(cohorts) <- sprintf("%s (%s)", names(cohorts), cohorts)
     
     if (isFirehoseUp()) {
-        list(selectizeInput(id("firehoseCohort"), "Cohort", cohorts,
-                            multiple = TRUE, selected = c("ACC", "BLCA"),
-                            options = list(placeholder = "Select cohort(s)")),
-             selectizeInput(id("firehoseDate"), "Date",
-                            as.character(getFirehoseDates()), multiple = TRUE,
-                            selected = "2015-11-01", options = list(
-                                placeholder = "Select sample date")),
-             selectizeInput(id("dataType"), "Data type",
-                            c("Clinical", "mRNASeq"), 
-                            multiple = TRUE, selected = "Clinical",
-                            options = list(
-                                placeholder = "Select data types")),
-             selectizeInput(id("firehoseExclude"),
-                            "Files/archives to exclude", multiple = TRUE,
-                            choices = c("RSEM_isoforms", ".aux.", ".mage-tab.",
+        tags$form(
+            selectizeInput(id("firehoseCohort"), "Cohort", cohorts,
+                           multiple = TRUE, selected = c("ACC", "BLCA"),
+                           options = list(placeholder = "Select cohort(s)")),
+            selectizeInput(id("firehoseDate"), "Date",
+                           as.character(getFirehoseDates()), multiple = TRUE,
+                           selected = "2015-11-01", options = list(
+                               placeholder = "Select sample date")),
+            selectizeInput(id("dataType"), "Data type",
+                           c("Clinical", "mRNASeq"), 
+                           multiple = TRUE, selected = "Clinical",
+                           options = list(
+                               placeholder = "Select data types")),
+            selectizeInput(id("firehoseExclude"),
+                           "Files/archives to exclude", multiple = TRUE,
+                           choices = c("RSEM_isoforms", ".aux.", ".mage-tab.",
+                                       "MANIFEST.txt", "exon_quantification"),
+                           selected = c("RSEM_isoforms", ".aux.", ".mage-tab.",
                                         "MANIFEST.txt", "exon_quantification"),
-                            selected = c("RSEM_isoforms", ".aux.", ".mage-tab.",
-                                         "MANIFEST.txt", "exon_quantification"),
-                            # Allow to add new items
-                            options = list(
-                                create = TRUE, createOnBlur=TRUE,
-                                placeholder = "Input files to exclude")),
-             textInput(id("dataFolder"), "Folder to store the data",
-                       value = "~/Downloads",
-                       placeholder = "Insert data folder"),
-             bsTooltip(id("dataFolder"), placement = "right", 
-                       options = list(container = "body"),
-                       "Data not available in this folder will be downloaded."),
-             actionButton(class = "btn-primary",
-                          id("getFirehoseData"), "Get data"))
+                           # Allow to add new items
+                           options = list(
+                               create = TRUE, createOnBlur=TRUE,
+                               placeholder = "Input files to exclude")),
+            textInput(id("dataFolder"), "Folder to store the data",
+                      value = "~/Downloads",
+                      placeholder = "Insert data folder"),
+            bsTooltip(id("dataFolder"), placement = "right", 
+                      options = list(container = "body"),
+                      "Data not available in this folder will be downloaded."),
+            actionButton(class = "btn-primary", type = "button",
+                         id("getFirehoseData"), "Get data"))
     } else {
-        list(p("Not able to reach Firehose."))
+        list(p("Firehose seems to be offline at the moment."))
     }
 }
 
