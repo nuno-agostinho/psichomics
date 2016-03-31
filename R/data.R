@@ -5,13 +5,14 @@ id <- function(value) objectId(name, value)
 #' 
 #' @return A UI set that can be added to a UI definition
 addLocalFile <- function() {
-    tags$form(fileInput(id("dataFile"), "Choose folder", multiple = T),
-              textInput(id("species"), label = "Species", 
-                        placeholder = "Required"),
-              textInput(id("commonName"), label = "Common name"),
-              uiOutput(id("testing")),
-              actionButton(id("acceptFile"), class = "btn-primary",
-                           "Send files")
+    list(
+        fileInput(id("dataFile"), "Choose folder", multiple = T),
+        textInput(id("species"), label = "Species", 
+                  placeholder = "Required"),
+        textInput(id("commonName"), label = "Common name"),
+        uiOutput(id("testing")),
+        actionButton(id("acceptFile"), class = "btn-primary",
+                     "Send files")
     ) # end of list
 }
 
@@ -23,7 +24,7 @@ addTCGAdata <- function() {
     names(cohorts) <- sprintf("%s (%s)", names(cohorts), cohorts)
     
     if (isFirehoseUp()) {
-        tags$form(
+        list(
             selectizeInput(id("firehoseCohort"), "Cohort", cohorts,
                            multiple = TRUE, selected = c("ACC", "BLCA"),
                            options = list(placeholder = "Select cohort(s)")),
