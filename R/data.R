@@ -441,8 +441,11 @@ server <- function(input, output, session) {
             rowNumbers <- sort(Reduce(union, groups[selected, 4]))
             new <- matrix(c(mergedFields, list(rowNumbers)), ncol = 4)
             
-            # Remove selected groups and add new merged group
-            groups <- groups[-selected, , drop=FALSE]
+            # Remove selected groups
+            if (input[[id("removeSetsUsed")]])
+                groups <- groups[-selected, , drop=FALSE]
+            
+            # Add new merged group
             groups <- rbind(new, groups)
             setGroupsFrom(active, groups)
         }
@@ -473,8 +476,11 @@ server <- function(input, output, session) {
             rowNumbers <- sort(Reduce(intersect, groups[selected, 4]))
             new <- matrix(c(mergedFields, list(rowNumbers)), ncol = 4)
             
-            # Remove selected groups and add new merged group
-            groups <- groups[-selected, , drop=FALSE]
+            # Remove selected groups
+            if (input[[id("removeSetsUsed")]])
+                groups <- groups[-selected, , drop=FALSE]
+            
+            # Add new merged group
             groups <- rbind(new, groups)
             setGroupsFrom(active, groups)
         }
@@ -490,11 +496,15 @@ server <- function(input, output, session) {
             list(
                 hr(),
                 dataTableOutput(id("groupsTable")),
-                actionButton(id("mergeGroups"), "Merge"),
-                actionButton(id("intersectGroups"), "Intersect"),
-                # actionButton(id("complementGroups"), "Complement"),
-                # actionButton(id("subtractGroups"), "Subtract"),
-                actionButton(id("removeGroups"), "Remove", icon = icon("times"))
+                div(class="btn-group",
+                    actionButton(id("mergeGroups"), "Merge"),
+                    actionButton(id("intersectGroups"), "Intersect"),
+                    # actionButton(id("complementGroups"), "Complement"),
+                    # actionButton(id("subtractGroups"), "Subtract"),
+                    actionButton(id("removeGroups"), "Remove",
+                                 icon = icon("times"))),
+                checkboxInput(id("removeSetsUsed"), "Remove original groups", 
+                              value = TRUE)
             )
         }
     })
