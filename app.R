@@ -25,7 +25,13 @@ ui <- shinyUI(
         list(title = "PSΨchomics", id = "nav", collapsible = TRUE,
              position = "fixed-top",
              header = list(includeCSS("www/styles.css"),
-                           includeScript("www/functions.js")),
+                           includeScript("www/functions.js"),
+                           conditionalPanel(
+                               condition="$('html').hasClass('shiny-busy')",
+                               div(icon("cog", "fa-spin"), "Working...",
+                                   class="text-right",
+                                   id="loadmessage")
+                           )),
              footer = useShinyjs()),
         # Loads the interface of each tab
         callScriptsFunction(func = "ui", check = c("name", "ui"), tabPanel)

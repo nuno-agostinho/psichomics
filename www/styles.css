@@ -18,3 +18,14 @@ body { padding-top: 70px; }
 .table-striped>tbody>tr:nth-of-type(odd) {
     background-color: rgb(237, 237, 237);
 }
+
+/* Styling the loading message */
+#loadmessage {
+    top: 15px;
+    left: -100px;
+    position: fixed;
+    width: 100%;
+    font-size: 100%;
+    color: gray;
+    z-index: 1050;
+}
