@@ -1,16 +1,16 @@
 /* Avoids fixed-top navbar from obscuring content */
 body { padding-top: 70px; }
 
-/* Changes alert to appear fixed on the top right above other elements */
+/* Alert appears fixed on the top right above other elements */
 .sbs-alert {
-    position:fixed;
-    right:10px;
-    z-index:9;
+    position: fixed;
+    right: 10px;
+    z-index: 9;
     -webkit-filter: opacity(80%);
     filter: opacity(80%);
 }
 
-/* Change the position and display of the progress bar */
+/* Progress bar right below navbar and text display */
 .shiny-progress-container { top: 48px; }
 .shiny-progress .progress-text { width: auto; }
 
@@ -19,13 +19,23 @@ body { padding-top: 70px; }
     background-color: rgb(237, 237, 237);
 }
 
-/* Styling the loading message */
+/* Loading message located in the navbar at the right */
 #loadmessage {
     top: 15px;
-    left: -100px;
+    left: -15px;
     position: fixed;
     width: 100%;
     font-size: 100%;
     color: gray;
     z-index: 1050;
+}
+
+/* Properly sets the loading message when the navbar is collapsed */
+@media (max-width: 768px) {
+    #loadmessage { left: -70px; }
+}
+
+/* Set the width of the navbar container to auto (better for bigger displays) */
+@media (min-width: 768px) {
+    .navbar .container { width: auto; }
 }
