@@ -39,3 +39,8 @@ body { padding-top: 70px; }
 @media (min-width: 768px) {
     .navbar .container { width: auto; }
 }
+
+/* Align element with selectize input */
+.inline_selectize { 
+    margin-top: 25px;
+}
