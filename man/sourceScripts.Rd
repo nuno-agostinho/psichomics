@@ -4,12 +4,14 @@
 \alias{sourceScripts}
 \title{Sources scripts containing the given variables from a given folder}
 \usage{
-sourceScripts(folder, check, ...)
+sourceScripts(folder, check, parentEnv = NULL, ...)
 }
 \arguments{
 \item{folder}{Character: folder where the scripts are located}
 
 \item{check}{Character: objects to check}
+
+\item{parentEnv}{Environment: enclosing environment inherited}
 
 \item{...}{Extra parameters to be passed to list.files}
 }

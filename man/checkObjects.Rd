@@ -4,12 +4,14 @@
 \alias{checkObjects}
 \title{Checks if a given script defines the given objects}
 \usage{
-checkObjects(script, check)
+checkObjects(script, check, parentEnv = NULL)
 }
 \arguments{
 \item{script}{Character: file path to the script}
 
 \item{check}{Character: objects to check}
+
+\item{parentEnv}{Environment: enclosing environment inherited}
 }
 \value{
 Environment with the loaded script if all the given objects are
