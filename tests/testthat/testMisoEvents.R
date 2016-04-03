@@ -1,4 +1,5 @@
 context("Parse MISO splicing events")
+
 library(fastmatch)
 
 test_that("getValidEvents returns valid events depending on the validator", {
