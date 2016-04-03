@@ -354,7 +354,13 @@ server <- function(input, output, session) {
         groups <- getGroupsFrom(active)
         
         # Append the new group(s) to the groups already created
+        old <- groups
         groups <- rbind(new, groups)
+        
+        #Rename duplicated group names
+        newNames <- unlist(new[ , "Names"])
+        oldNames <- unlist(old[ , "Names"])
+        groups[ , "Names"] <- renameDuplicated(newNames, oldNames)
         setGroupsFrom(active, groups)
     })
     

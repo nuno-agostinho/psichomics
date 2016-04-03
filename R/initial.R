@@ -1,6 +1,8 @@
-#' @import shiny shinyBS shinyjs ggplot2
+#' @import shiny shinyBS shinyjs ggplot2 highcharter
 NULL
 #> NULL
+
+library(highcharter)
 
 # Global variable with all the data of a session
 sharedData <- reactiveValues()
@@ -141,4 +143,43 @@ callScriptsFunction <- function(func, ..., check = func, folder = "R/") {
     # Calls the function of each script with the given parameters
     loaded <- lapply(f, do.call, list(...))
     return(loaded)
+}
+
+#' Rename new vector to avoid duplicated values with old vector
+#'
+#' Renames duplicated values by adding an index
+#'
+#' @param check Character: values to rename if duplicated
+#' @param comp Character: values to compare with
+#'
+#' @return Character vector with renamed values if duplicated; else, it
+#' returns the usual values
+#' @export
+#'
+#' @examples
+#' renameDuplicated(check = c("Nuno", "Carolina", "Mariana", "Teresa"),
+#'        comp = c("Nuno", "Lina", "Marie"))
+renameDuplicated <- function(check, comp) {
+    # If there's nothing to compare with, return the values
+    if (length(comp) == 0) return(check)
+    
+    repeated <- check %in% comp
+    uniq <- c(comp, check[!repeated])
+    
+    for (dup in check[repeated]) {
+        # Locate matches (don't forget the counter)
+        expr <- paste0(dup, " \\([0-9]+\\)|", dup)
+        locate <- grep(expr, uniq, value = TRUE)
+        
+        # Get the maximum counter and add one
+        counter <- sub(".* \\(([0-9]+)\\)", "\\1", locate)
+        
+        # Replace strings with 0
+        counter[grep("^[0-9]*$", counter, inver =TRUE)] <- 0
+        dup <- sprintf("%s (%i)", dup, max(as.numeric(counter)) + 1)
+        
+        # Append value to the unique group
+        uniq <- c(uniq, dup)
+    }
+    return(uniq)
 }
