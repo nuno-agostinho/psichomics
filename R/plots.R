@@ -1,6 +1,16 @@
 name <- "Plots"
 id <- function(value) objectId(name, value)
 
+plotName <- "plot"
+# Loads valid scripts from the indicated folder
+plotEnvs <- sourceScripts(folder = paste0(tabsFolder, "plots/"),
+                          check = c(plotName, "ui"),
+                          parentEnv = environment())
+plotEnvs.server <- lapply(plotEnvs, "[[", "server")
+
+# Get name of the loaded scripts
+names <- sapply(plotEnvs, "[[", plotName)
+
 ui <- function(tab)
     tab(name,
         # allows the user to choose which UI set is shown
@@ -13,18 +23,13 @@ ui <- function(tab)
                                      choices = NULL,
                                      options = list(
                                          placeholder = "Select an event")))),
-        uiOutput(id("plots")))
+        lapply(plotEnvs, function(env) {
+            conditionalPanel(
+                condition=sprintf("input[id='%s']=='%s'",
+                                  id("selectizePlot"), env[[plotName]]), env$ui)
+        }))
 
 server <- function(input, output, session) {
-    plotName <- "plot"
-    # Loads valid scripts from the indicated folder
-    plotEnvs <- sourceScripts(folder = paste0(tabsFolder, "plots/"),
-                              check = c(plotName, "ui"),
-                              parentEnv = environment())
-    plotEnvs.server <- lapply(plotEnvs, "[[", "server")
-    # Get name of the loaded scripts
-    names <- sapply(plotEnvs, "[[", plotName)
-    
     # Runs server logic from the scripts
     lapply(plotEnvs.server, do.call, list(input, output, session))
     
@@ -51,14 +56,5 @@ server <- function(input, output, session) {
             vis(shinyjs::hide)
         else
             vis(shinyjs::show)
-    })
-    
-    # Render the respective UI of the requested plot
-    output[[id("plots")]] <- renderUI({
-        lapply(plotEnvs, function(env) {
-            conditionalPanel(
-                condition = sprintf("input[id='%s']=='%s'",
-                                    id("selectizePlot"), env[[plotName]]), env$ui)
-        })
     })
 }
