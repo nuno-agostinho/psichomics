@@ -32,16 +32,20 @@ server <- function(input, output, session) {
         
         # Read annotation
         startProgress("Reading alternative splicing annotation",
-                      divisions = 2)
+                      divisions = 3)
         annot <- readAnnotation(eventType)
         
         # Calculate inclusion levels with annotation and junction quantification
         updateProgress("Calculating inclusion levels")
         junctionQuant <- getJunctionQuantification()
-        setInclusionLevels(
-            calculateInclusionLevels(eventType, junctionQuant, annot))
+        psi <- calculateInclusionLevels(eventType, junctionQuant, annot)
+        setInclusionLevels(psi)
         
-        updateProgress("Done!")
+        updateProgress("Matching clinical data")
+        match <- matchIdWithClinical(colnames(psi), getClinicalData())
+        # TODO: make sure this attribute allows to show row names in Data section
+        # attr(match, "rowNames") <- TRUE
+        setClinicalMatchFrom("Inclusion levels", match)
         closeProgress()
     })
     
