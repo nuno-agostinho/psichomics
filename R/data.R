@@ -111,7 +111,7 @@ groupsUI <- function() {
         conditionalPanel(checkId("!=", "Column"),
                          textInput(id("groupName"), "Group name",
                                    placeholder = "Unnamed")),
-        actionButton(id("createGroup"), "Create group"),
+        actionButton(id("createGroup"), "Create group", class ="btn-primary"),
         uiOutput(id("groupsList"))
     )
 }
@@ -122,7 +122,7 @@ ui <- function(tab) {
             sidebarPanel(
                 tabsetPanel(type = "pill",
                             tabPanel(
-                                "Data input", br(),
+                                "Input", br(),
                                 shinyBS::bsCollapse(
                                     id = id("addData"),
                                     open = "Add TCGA/Firehose data",
@@ -138,7 +138,8 @@ ui <- function(tab) {
                                         value = "Add TCGA/Firehose data",
                                         addTCGAdata()))
                             ),
-                            tabPanel("Data grouping", br(), groupsUI())
+                            tabPanel("Groups", br(), groupsUI()),
+                            tabPanel("Exon/intron inclusion", br(), p("Test"))
                 )),
             mainPanel(
                 # TODO(NunoA): Show alerts from renderUI
@@ -287,9 +288,10 @@ server <- function(input, output, session) {
     observe({
         data <- getData()
         categoryData <- getCategoryData()
-        for (group in seq_along(data))
+        for (group in seq_along(data)) {
             lapply(seq_along(categoryData), renderDataTab,
                    data = data[[group]], group)
+        }
     })
     
     # Check if data is already loaded and ask the user if it should be replaced
@@ -304,19 +306,15 @@ server <- function(input, output, session) {
     output[[id("datatabs")]] <- renderUI({
         categoryData <- getCategoryData()
         category <- getCategory()
-        do.call(
-            tabsetPanel,
-            c(id = id("dataTypeTab"),
-              lapply(seq_along(names(categoryData)),
-                     function(i)
-                         tabTable(names(categoryData)[i],
-                                  columns = names(categoryData[[i]]),
-                                  id = paste(category, i, sep = "-"),
-                                  description = attr(categoryData[[i]],
-                                                     "description"))
-              )
-            )
-        )
+        
+        dataTablesUI <- lapply(
+            seq_along(names(categoryData)),
+            function(i)
+                tabTable(names(categoryData)[i],
+                         columns = names(categoryData[[i]]),
+                         id = paste(category, i, sep = "-"),
+                         description = attr(categoryData[[i]], "description")))
+        do.call(tabsetPanel, c(id = id("dataTypeTab"), dataTablesUI))
     }) # end of renderUI
     
     # Render a specific data tab (including data table and related interface)

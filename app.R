@@ -29,8 +29,7 @@ ui <- shinyUI(
                            conditionalPanel(
                                condition="$('html').hasClass('shiny-busy')",
                                div(icon("cog", "fa-spin"), "Working...",
-                                   class="text-right",
-                                   id="loadmessage")
+                                   class="text-right", id="loadmessage")
                            )),
              footer = useShinyjs()),
         # Loads the interface of each tab
