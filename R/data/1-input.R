@@ -1,0 +1,147 @@
+name <- "Input"
+
+#' Creates a UI set with options to add a file from the local storage
+#' 
+#' @return A UI set that can be added to a UI definition
+addLocalFile <- function() {
+    list(
+        fileInput(id("dataFile"), "Choose folder", multiple = T),
+        textInput(id("species"), label = "Species", 
+                  placeholder = "Required"),
+        textInput(id("commonName"), label = "Common name"),
+        actionButton(id("acceptFile"), class = "btn-primary",
+                     "Send files")
+    ) # end of list
+}
+
+#' Creates a UI set with options to add data from TCGA/Firehose
+#' 
+#' @return A UI set that can be added to a UI definition
+addTCGAdata <- function() {
+    cohorts <- getFirehoseCohorts()
+    names(cohorts) <- sprintf("%s (%s)", names(cohorts), cohorts)
+    
+    if (isFirehoseUp()) {
+        list(
+            selectizeInput(id("firehoseCohort"), "Cohort", cohorts,
+                           multiple = TRUE, selected = c("ACC", "BLCA"),
+                           options = list(placeholder = "Select cohort(s)")),
+            selectizeInput(id("firehoseDate"), "Date",
+                           as.character(getFirehoseDates()), multiple = TRUE,
+                           selected = "2015-11-01", options = list(
+                               placeholder = "Select sample date")),
+            selectizeInput(id("dataType"), "Data type",
+                           c("Clinical", "mRNASeq"), 
+                           multiple = TRUE, selected = "Clinical",
+                           options = list(
+                               placeholder = "Select data types")),
+            selectizeInput(id("firehoseIgnore"), "Files/archives to ignore",
+                           choices = c("RSEM_isoforms", ".aux.", ".mage-tab.",
+                                       "MANIFEST.txt", "exon_quantification"),
+                           selected = c("RSEM_isoforms", ".aux.", ".mage-tab.",
+                                        "MANIFEST.txt", "exon_quantification"),
+                           multiple = TRUE, options = list(
+                               # Allow to add new items
+                               create = TRUE, createOnBlur=TRUE,
+                               placeholder = "Input files to exclude")),
+            bsTooltip(id("firehoseIgnore"), placement = "right",
+                      options = list(container = "body"),
+                      paste("Files which contain these terms won\\'t be",
+                            "either downloaded or loaded.")),
+            textInput(id("dataFolder"), "Folder to store the data",
+                      value = "~/Downloads",
+                      placeholder = "Insert data folder"),
+            bsTooltip(id("dataFolder"), placement = "right",
+                      options = list(container = "body"),
+                      "Data not available in this folder will be downloaded."),
+            actionButton(class = "btn-primary", type = "button",
+                         id("getFirehoseData"), "Get data"))
+    } else {
+        list(p("Firehose seems to be offline at the moment."))
+    }
+}
+
+ui <- function() {
+    list(
+        # TODO(NunoA): Show alerts from renderUI
+        bsAlert(anchorId = id("alert2")),
+        bsModal2(id("dataReplace"), "Data already loaded", NULL,
+                 size = "small",
+                 "Would you like to replace the loaded data?",
+                 footer = list(
+                     actionButton(id("replace"),
+                                  class = "btn-primary",
+                                  "data-dismiss"="modal", 
+                                  label = "Replace"))),
+        uiOutput(id("iframe")),
+        shinyBS::bsCollapse(
+            id = id("addData"),
+            open = "Add TCGA/Firehose data",
+            shinyBS::bsCollapsePanel(
+                style = "info",
+                title = list(icon("plus-circle"), "Add local files"),
+                value = "Add local files",
+                addLocalFile()),
+            shinyBS::bsCollapsePanel(
+                style = "info",
+                title = list(icon("plus-circle"),
+                             "Add TCGA/Firehose data"),
+                value = "Add TCGA/Firehose data",
+                addTCGAdata()))
+    )
+}
+
+server <- function(input, output, session) {
+    # Load user files
+    observeEvent(input[[id("acceptFile")]], {
+        error <- function(msg) { print(msg); return(NULL) }
+        if(is.null(input[[id("dataFile")]]))
+            error("No data input selected")
+        if(input[[id("species")]] == "")
+            error("Species field can't be empty")
+        
+        # inFile <- input$dataFile
+        # info <- read.table(inFile$datapath, sep = input$sep,
+        #                    header = input$header)
+    })
+    
+    # The button is only enabled if it meets the conditions that follow
+    observe(toggleState(id("acceptFile"), input[[id("species")]] != ""))
+    
+    # Load Firehose data
+    loadAllData <- reactive({
+        shinyjs::disable(id("getFirehoseData"))
+        
+        # # Direct download by the browser
+        # source = paste0("https://support.apple.com/library/APPLE/APPLECARE_ALLGEOS/HT1425/",
+        #                 c("sample_iTunes.mov.zip", "sample_iPod.m4v.zip",
+        #                   "sample_mpeg4.mp4.zip"))
+        # iframe <- function(s) tags$iframe(width=1, height=1, frameborder=0,
+        #                                   src=s)
+        # output$iframe <- renderUI(lapply(source, iframe))
+        
+        # Load data from Firehose
+        setData(
+            loadFirehoseData(
+                folder = input[[id("dataFolder")]],
+                cohort = input[[id("firehoseCohort")]],
+                date = gsub("-", "_", input[[id("firehoseDate")]]),
+                data_type = input[[id("dataType")]],
+                exclude = input[[id("firehoseIgnore")]],
+                progress = updateProgress))
+        
+        closeProgress()
+        shinyjs::enable(id("getFirehoseData"))
+    }) # end of reactive
+    
+    # Load data when the user presses to replace data
+    observeEvent(input[[id("replace")]], loadAllData())
+    
+    # Check if data is already loaded and ask the user if it should be replaced
+    observeEvent(input[[id("getFirehoseData")]], {
+        if (!is.null(getData()))
+            toggleModal(session, id("dataReplace"), "open")
+        else
+            loadAllData()
+    })
+}
