@@ -70,3 +70,6 @@ ignoreRows and skip
 
 > TODO: (Un)check all checkboxes in the groups interface when (un)checking the
 checkbox in the header
+
+> TODO: Allow to use Firehose even if the server is down (for example, if we
+only want to use the information we have already downloaded)
