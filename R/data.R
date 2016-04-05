@@ -326,13 +326,15 @@ server <- function(input, output, session) {
             table <- cbind(Row = rownames(table), table)
         
         # Only show default columns if they are defined
-        if (!is.null(attr(table, "show")))
-            showTable <- subset(table, select = attr(table, "show"))
-        else
-            showTable <- table
+        subsetToShow <- table
+        colsToShow <- attr(table, "show")
+        if (!is.null(colsToShow)) {
+            match <- colsToShow %in% colnames(table)
+            subsetToShow <- subset(table, select = colsToShow[match])
+        }
         
         output[[tablename]] <- renderDataTable(
-            showTable, options = list(pageLength = 10, scrollX=TRUE))
+            subsetToShow, options = list(pageLength = 10, scrollX=TRUE))
     } # end of renderDataTab
     
     # Update columns available for creating groups when there's loaded data
