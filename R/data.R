@@ -37,20 +37,23 @@ addTCGAdata <- function() {
                            multiple = TRUE, selected = "Clinical",
                            options = list(
                                placeholder = "Select data types")),
-            selectizeInput(id("firehoseExclude"),
-                           "Files/archives to exclude", multiple = TRUE,
+            selectizeInput(id("firehoseIgnore"), "Files/archives to ignore",
                            choices = c("RSEM_isoforms", ".aux.", ".mage-tab.",
                                        "MANIFEST.txt", "exon_quantification"),
                            selected = c("RSEM_isoforms", ".aux.", ".mage-tab.",
                                         "MANIFEST.txt", "exon_quantification"),
-                           # Allow to add new items
-                           options = list(
+                           multiple = TRUE, options = list(
+                               # Allow to add new items
                                create = TRUE, createOnBlur=TRUE,
                                placeholder = "Input files to exclude")),
+            bsTooltip(id("firehoseIgnore"), placement = "right",
+                      options = list(container = "body"),
+                      paste("Files which contain these terms won\\'t be",
+                            "either downloaded or loaded.")),
             textInput(id("dataFolder"), "Folder to store the data",
                       value = "~/Downloads",
                       placeholder = "Insert data folder"),
-            bsTooltip(id("dataFolder"), placement = "right", 
+            bsTooltip(id("dataFolder"), placement = "right",
                       options = list(container = "body"),
                       "Data not available in this folder will be downloaded."),
             actionButton(class = "btn-primary", type = "button",
@@ -270,7 +273,7 @@ server <- function(input, output, session) {
                 cohort = input[[id("firehoseCohort")]],
                 date = gsub("-", "_", input[[id("firehoseDate")]]),
                 data_type = input[[id("dataType")]],
-                exclude = input[[id("firehoseExclude")]],
+                exclude = input[[id("firehoseIgnore")]],
                 progress = updateProgress))
         
         closeProgress()
