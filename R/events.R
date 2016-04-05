@@ -274,9 +274,10 @@ vennEvents <- function(join, eventType) {
 #' @return Formatted character string
 junctionString <- function(chr, strand, junc5, junc3) {
     plus <- strand == "+"
+    first <- ifelse(plus, junc5, junc3)
+    last <- ifelse(plus, junc3, junc5)
     res <- sprintf("chr%s:%s:%s,chr%s:%s:%s",
-                   chr, ifelse(plus, junc5, junc3), strand,
-                   chr, ifelse(plus, junc3, junc5), strand)
+                   chr, first, strand, chr, last, strand)
     return(res)
 }
 

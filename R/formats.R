@@ -103,7 +103,6 @@ loadFile <- function(format, file) {
 #' @return Data frame with the contents of the given file if the file format is
 #' recognised; otherwise, returns NULL
 parseValidFile <- function(file, formatsFolder) {
-    
     # Get all information from available formats
     formats <- sourceScripts(formatsFolder, c("tablename", "check"))
     
