@@ -13,19 +13,26 @@ getCategory <- reactive(sharedData$category)
 getCategories <- reactive(names(getData()))
 getCategoryData <- reactive(
     if(!is.null(getCategory())) getData()[[getCategory()]])
+getClinicalData <- reactive(getCategoryData()[["Clinical data"]])
 getJunctionQuantification <- reactive(
     getCategoryData()[["Junction quantification"]])
-getInclusionLevels <- reactive(sharedData[["psi"]])
+getInclusionLevels <- reactive(
+    getCategoryData()[["Inclusion levels"]])
 getGroupsFrom <- function(dataType, category = getCategory())
     sharedData[[paste(category, dataType, "groups", sep = "_")]] 
+getClinicalMatchFrom <- function(dataType, category = getCategory())
+    sharedData[[paste(category, dataType, "clinicalMatch", sep = "_")]] 
 
 # Set data from sharedData (needs to be inside reactive functions)
 setElement <- function(item, value) sharedData[[item]] <- value
 setData <- function(value) setElement("data", value)
 setCategory <- function(value) setElement("category", value)
-setInclusionLevels <- function(value) setElement("psi", value)
+setInclusionLevels <- function(value, category = getCategory())
+    sharedData$data[[category]][["Inclusion levels"]] <- value
 setGroupsFrom <- function(dataType, value, category = getCategory())
     setElement(paste(category, dataType, "groups", sep = "_"), value)
+setClinicalMatchFrom <- function(dataType, value, category = getCategory())
+    setElement(paste(category, dataType, "clinicalMatch", sep = "_"), value)
 
 #' Create an identifier for a given object
 #' 
@@ -182,4 +189,34 @@ renameDuplicated <- function(check, comp) {
         uniq <- c(uniq, dup)
     }
     return(uniq)
+}
+
+#' Match given IDs with the clinical data
+#'
+#' @param ids Character: IDs of interest
+#' @param clinical Matrix or data.frame: clinical data 
+#'
+#' @return Integer vector of the row number in clinical data corresponding to 
+#' the given IDs (named with the ID)
+#' @export
+matchIdWithClinical <- function(ids, clinical) {
+    # All IDs are lower case in the clinical data
+    ids <- tolower(ids)
+    
+    # Get all possible identifiers starting in "tcga" from the clinical data
+    idsIndex <- sapply(1:ncol(clinical), 
+                       function(i) length(grep("^tcga", clinical[[i]])) != 0)
+    clinicalIds <- clinical[, idsIndex]
+    
+    # Get the clinical data row corresponding to the given IDs
+    clinicalRows <- rep(NA, length(ids))
+    names(clinicalRows) <- ids
+    for (col in 1:ncol(clinicalIds)) {
+        # Check if any ID matches the current column of clinical IDs
+        match <- sapply(ids, grep, clinicalIds[ , col], fixed = TRUE)
+        
+        # All matched IDs will save their respective rows
+        clinicalRows[lapply(match, length) != 0] <- unlist(match)
+    }
+    return(clinicalRows)
 }
