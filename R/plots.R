@@ -1,8 +1,8 @@
 name <- "Plots"
 id <- function(value) objectId(name, value)
 
-plotName <- "plot"
 # Loads valid scripts from the indicated folder
+plotName <- "plot"
 plotEnvs <- sourceScripts(folder = paste0(tabsFolder, "plots/"),
                           check = c(plotName, "ui"),
                           parentEnv = environment())
