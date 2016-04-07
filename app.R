@@ -1,5 +1,6 @@
 #' @import shiny shinyBS shinyjs
-source("R/initial.R")
+#' @include begin.R
+NULL
 
 #' Server function
 #' 
