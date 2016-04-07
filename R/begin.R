@@ -220,3 +220,13 @@ matchIdWithClinical <- function(ids, clinical) {
     }
     return(clinicalRows)
 }
+
+#' Start graphical interface of PSICHOMICS
+#' 
+#' @param ... Parameters to pass to the function runApp
+#' 
+#' @export
+psichomics <- function(..., reload = FALSE) {
+    if (reload) devtools::load_all()
+    runApp(...)
+}
