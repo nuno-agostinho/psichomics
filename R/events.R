@@ -22,7 +22,8 @@ source("R/suppaEvents.R")
 createJunctionsTemplate <- function(nrow, program = character(0),
                                     event.type = character(0),
                                     chromosome = character(0),
-                                    strand = character(0)) {
+                                    strand = character(0),
+                                    id = character(0)) {
     parsed <- as.data.frame(matrix(NA, nrow = nrow, ncol = 8),
                             stringsAsFactors = FALSE)
     names(parsed) <- c("C1.start", "C1.end",
@@ -34,6 +35,7 @@ createJunctionsTemplate <- function(nrow, program = character(0),
     if (length(event.type) > 0) parsed[["Event.type"]] <- event.type
     if (length(chromosome) > 0) parsed[["Chromosome"]] <- chromosome
     if (length(strand) > 0)     parsed[["Strand"]] <- strand
+    if (length(id) > 0)         parsed[["Event.ID"]] <- id
     return(parsed)
 }
 
@@ -41,28 +43,35 @@ getMisoAnnotation <- function() {
     types <- c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI", "TandemUTR")
     typesFile <- paste0("/genedata/Resources/Annotations/MISO/hg19/", types,
                         ".hg19.gff3")
-    miso.hg19 <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
-                        comment.char="#", header=FALSE)
+    annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
+                    comment.char="#", header=FALSE)
+    
     ## TODO: ALE events are baldy formatted, they have two consecutive gene
     ## lines... remove them for now
-    miso.hg19[[3]] <- miso.hg19[[3]][-c(49507, 49508), ]
-    
-    misoEvents <- lapply(miso.hg19, parseMisoEvent)
-    misoEvents <- plyr::rbind.fill(misoEvents)
-    return(misoEvents)
+    annot[[3]] <- annot[[3]][-c(49507, 49508), ]
+    return(annot)
+}
+
+parseMisoAnnotation <- function(annot) {
+    events <- lapply(annot, parseMisoEvent)
+    events <- plyr::rbind.fill(events)
+    return(events)
 }
 
 getSuppaAnnotation <- function() {
     types <- c("SE", "AF", "AL", "MX", "A5", "A3", "RI")
     typesFile <- paste0("~/Documents/psi_calculation/suppa/suppaEvents/hg19_", 
                         types, ".ioe")
-    suppa.hg19 <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
-                         comment.char="#", header=TRUE)
-    
-    eventsID <- lapply(suppa.hg19, "[[", "event_id")
-    suppaEvents <- lapply(eventsID, parseSuppaEvent)
-    suppaEvents <- plyr::rbind.fill(suppaEvents)
-    return(suppaEvents)
+    annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
+                    comment.char="#", header=TRUE)
+    return(annot)
+}
+
+parseSuppaAnnotation <- function(annot) {
+    eventsID <- lapply(annot, "[[", "event_id")
+    events <- lapply(eventsID, parseSuppaEvent)
+    events <- plyr::rbind.fill(events)
+    return(events)
 }
 
 getMatsAnnotation <- function() {
@@ -70,29 +79,30 @@ getMatsAnnotation <- function() {
     typesFile <- paste("~/Documents/psi_calculation/mats_out/ASEvents/fromGTF",
                        c(types, paste0("novelEvents.", types)), "txt",
                        sep = ".")
-    mats.hg19 <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
-                        comment.char="#", header=TRUE)
-    
-    matsEvents <- lapply(seq_along(mats.hg19),
-                         function(i) {
-                             type <- rep(types, 2)[i]
-                             annotation <- mats.hg19[[i]]
-                             if (nrow(annotation) > 0)
-                                 return(parseMatsEvent(annotation, type))
-                         })
-    matsEvents <- plyr::rbind.fill(matsEvents)
+    names(typesFile) <- rep(types, 2)
+    annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
+                    comment.char="#", header=TRUE)
+    return(annot)
+}
+
+parseMatsAnnotation <- function(annot) {
+    types <- names(annot)
+    events <- lapply(seq_along(annot), function(i)
+        if (nrow(annot[[i]]) > 0) 
+            return(parseMatsEvent(annot[[i]], types[[i]])))
+    events <- plyr::rbind.fill(events)
     
     # Sum 1 position to the start/end of MATS events (depending on the strand)
-    matsNames <- names(matsEvents)
-    plus <- matsEvents$Strand == "+"
+    matsNames <- names(events)
+    plus <- events$Strand == "+"
     # Plus
     start <- matsNames[grep(".start", matsNames)]
-    matsEvents[plus, start] <- matsEvents[plus, start] + 1
+    events[plus, start] <- events[plus, start] + 1
     # Minus
     end <- matsNames[grep(".end", matsNames)]
-    matsEvents[!plus, end] <- matsEvents[!plus, end] + 1
+    events[!plus, end] <- events[!plus, end] + 1
     
-    return(matsEvents)
+    return(events)
 }
 
 getVastToolsAnnotation <- function() {
@@ -102,20 +112,24 @@ getVastToolsAnnotation <- function() {
         "/genedata/Resources/Software/vast-tools/VASTDB/Hsa/TEMPLATES/Hsa.%s.Template%s.txt",
         types, c(rep("", 6), rep(".2", 2))#, rep(".2", 2))
     )
+    names(typesFile) <- types
     
-    vastTools.hg19 <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
-                             comment.char="#", header=TRUE)
-    
-    vastToolsEvents <- lapply(seq_along(vastTools.hg19),
-                              function(i) {
-                                  type <- types[i]
-                                  print(type)
-                                  annotation <- vastTools.hg19[[i]]
-                                  if (nrow(annotation) > 0)
-                                      return(parseVastToolsEvent(annotation))
-                              })
-    vastToolsEvents <- plyr::rbind.fill(vastToolsEvents)
-    return(vastToolsEvents)
+    annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
+                    comment.char="#", header=TRUE)
+    return(annot)
+}
+
+parseVastToolsAnnotation <- function(annot) {
+    types <- names(annot)
+    events <- lapply(seq_along(annot),
+                     function(i) {
+                         print(types[i])
+                         a <- annot[[i]]
+                         if (nrow(a) > 0)
+                             return(parseVastToolsEvent(a))
+                     })
+    events <- plyr::rbind.fill(events)
+    return(events)
 }
 
 #' Returns the coordinates of interest for a given event type
@@ -135,14 +149,32 @@ getCoordinates <- function(type) {
 
 #' Get the annotation for all event types
 #' @export
-getAnnotation <- function() {
-    events <- list("miso" = getMisoAnnotation(),
-                   "mats" = getMatsAnnotation(),
-                   "vast-tools" = getVastToolsAnnotation(),
-                   "suppa" = getSuppaAnnotation())
-    print("Annotation retrieved")
+getParsedAnnotation <- function() {
+    print("Retrieving MISO annotation...")
+    annot <- getMisoAnnotation()
+    print("Parsing MISO annotation...")
+    miso <- parseMisoAnnotation(annot)
+    
+    print("Retrieving SUPPA annotation...")
+    annot <- getSuppaAnnotation()
+    print("Parsing SUPPA annotation...")
+    suppa <- parseSuppaAnnotation(annot)
+    
+    print("Retrieving VAST-TOOLS annotation...")
+    annot <- getVastToolsAnnotation()
+    print("Parsing VAST-TOOLS annotation...")
+    vast <- parseVastToolsAnnotation(annot)
+    
+    print("Retrieving MATS annotation...")
+    annot <- getMatsAnnotation()
+    print("Parsing MATS annotation...")
+    mats <- parseMatsAnnotation(annot)
+    
+    events <- list(
+        "miso" = miso, "mats" = mats, "vast-tools" = vast, "suppa" = suppa)
     
     # Remove the "chr" prefix from the chromosome field
+    print("Standarising chromosome field")
     for (each in seq_along(events)) {
         chr <- grepl("chr", events[[each]]$Chromosome)
         events[[each]]$Chromosome[chr] <-
@@ -219,18 +251,30 @@ joinAnnotation <- function(annotation) {
 #' @export
 writeAnnotation <- function(jointEvents, eventType,
                             filename = paste0("data/annotation_",
-                                              eventType, ".txt")) {
+                                              eventType, ".txt"),
+                            showID = FALSE) {
     res <- jointEvents[[eventType]]
-    # Show only the columns Chromosome, Strand and coordinates of interest
+    # Show the columns Chromosome, Strand and coordinates of interest
     by <- c("Chromosome", "Strand", getCoordinates(eventType))
+    ord <- 0
+    
+    # Show the event IDs if desired
+    if (showID) {
+        cols <- grep("Event.ID", names(res), value = TRUE)
+        by <- c(cols, by)
+        ord <- length(cols)
+    }
     res <- subset(res, select = by)
     
+    ## TODO(NunoA): clean this mess
     # Order by chromosome and coordinates
-    orderBy <- lapply(c(1, 3:ncol(res)), function(x) return(res[[x]]))
+    orderBy <- lapply(c(1 + ord, (3 + ord):ncol(res)),
+                      function(x) return(res[[x]]))
     res <- res[do.call(order, orderBy), ]
-    res <- unique(res)
     
-    write.table(res, file = filename, quote = FALSE, row.names = FALSE)
+    res <- unique(res)
+    write.table(res, file = filename, quote = FALSE, row.names = FALSE,
+                sep = "\t")
     return(invisible(TRUE))
 }
 
