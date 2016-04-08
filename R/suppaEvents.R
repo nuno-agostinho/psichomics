@@ -32,12 +32,14 @@ NULL
 #' parseSuppaEvent(event)
 parseSuppaEvent <- function(event) {
     # Split event ID by semicolon and colon symbols
+    id <- event
     event <- str_split_fixed(event, pattern = ";|:|-", n = 12)
     event <- data.frame(event, stringsAsFactors = FALSE)
     
     # Create list with event attributes
     event_attrs <- data.frame("Program" = "SUPPA",
                               "Gene" = event[[1]],
+                              "Event ID" = id,
                               "Chromosome" = event[[3]],
                               stringsAsFactors = FALSE)
     
