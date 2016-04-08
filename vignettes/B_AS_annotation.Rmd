@@ -700,6 +700,18 @@ names(p) <- sapply(programs, function(x) unique(x[!is.na(x)]))
 gplots::venn(p)
 ```
 
+# Doing all the above but with way less code
+
+```{r}
+annotation <- getParsedAnnotation()
+join <- joinAnnotation(annotation)
+for (type in names(join)) {
+    print(type)
+    writeAnnotation(join, type, showID = TRUE,
+                    paste0("data/hg19_cross_annotation_", type, ".txt"))
+}
+```
+
 # Getting TCGA's read counts for the annotated splicing junctions
 [The Cancer Genome Atlas (TCGA)](https://tcga-data.nci.nih.gov/tcga/) is a
 data repository containing clinical information, genomic characterization data, 
