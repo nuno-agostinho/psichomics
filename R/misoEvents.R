@@ -249,17 +249,26 @@ parseMisoSE <- function(event) {
     
     # If there are valid events
     if (!is.null(event)) {
-        # Get first index, chromosome and strand of valids events
+        # Get first index, chromosome, strand and ID of valids events
         index <- which(event[[3]] == "gene")
         chr <- as.character(event[index, 1])
         strand <- as.character(event[index, 7])
+        if (ncol(event) >= 9) {
+            id <- as.character(event[index, 9])
+            semicolon <- gregexpr(";", id, fixed = T)
+            semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
+            id <- substr(id, 4, semicolon - 1)
+        } else {
+            id <- NULL
+        }
         
         # Creates a data frame of parsed junctions filled with NAs
         parsed <- createJunctionsTemplate(length(index),
                                         program = "MISO",
                                         event.type = eventType,
                                         chromosome = chr,
-                                        strand = strand)
+                                        strand = strand,
+                                        id = id)
         plus <- strand == "+"
         # Plus strand
         if (nrow(event[plus, ]) > 0) {
@@ -311,13 +320,22 @@ parseMisoMXE <- function(event) {
         index <- which(event[[3]] == "gene")
         chr <- as.character(event[index, 1])
         strand <- as.character(event[index, 7])
+        if (ncol(event) >= 9) {
+            id <- as.character(event[index, 9])
+            semicolon <- gregexpr(";", id, fixed = T)
+            semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
+            id <- substr(id, 4, semicolon - 1)
+        } else {
+            id <- NULL
+        }
         
         # Creates a data frame of parsed junctions filled with NAs
         parsed <- createJunctionsTemplate(length(index),
-                                        program = "MISO",
-                                        event.type = eventType,
-                                        chromosome = chr,
-                                        strand = strand)
+                                          program = "MISO",
+                                          event.type = eventType,
+                                          chromosome = chr,
+                                          strand = strand,
+                                          id = id)
         plus <- strand == "+"
         # Plus strand
         if (nrow(event[plus, ]) > 0) {
@@ -370,13 +388,22 @@ parseMisoRI <- function(event, strand) {
         index <- which(event[[3]] == "gene")
         chr <- as.character(event[index, 1])
         strand <- as.character(event[index, 7])
+        if (ncol(event) >= 9) {
+            id <- as.character(event[index, 9])
+            semicolon <- gregexpr(";", id, fixed = T)
+            semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
+            id <- substr(id, 4, semicolon - 1)
+        } else {
+            id <- NULL
+        }
         
         # Creates a data frame of parsed junctions filled with NAs
         parsed <- createJunctionsTemplate(length(index),
-                                        program = "MISO",
-                                        event.type = eventType,
-                                        chromosome = chr,
-                                        strand = strand)
+                                          program = "MISO",
+                                          event.type = eventType,
+                                          chromosome = chr,
+                                          strand = strand,
+                                          id = id)
         plus <- strand == "+"
         # Plus strand
         if (nrow(event[plus, ]) > 0) {
@@ -422,13 +449,22 @@ parseMisoA5SS <- function(event) {
         index <- which(event[[3]] == "gene")
         chr <- as.character(event[index, 1])
         strand <- as.character(event[index, 7])
+        if (ncol(event) >= 9) {
+            id <- as.character(event[index, 9])
+            semicolon <- gregexpr(";", id, fixed = T)
+            semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
+            id <- substr(id, 4, semicolon - 1)
+        } else {
+            id <- NULL
+        }
         
         # Creates a data frame of parsed junctions filled with NAs
         parsed <- createJunctionsTemplate(length(index),
-                                        program = "MISO",
-                                        event.type = eventType,
-                                        chromosome = chr,
-                                        strand = strand)
+                                          program = "MISO",
+                                          event.type = eventType,
+                                          chromosome = chr,
+                                          strand = strand,
+                                          id = id)
         plus <- strand == "+"
         # Plus strand
         if (nrow(event[plus, ]) > 0) {
@@ -476,13 +512,22 @@ parseMisoA3SS <- function(event, strand) {
         index <- which(event[[3]] == "gene")
         chr <- as.character(event[index, 1])
         strand <- as.character(event[index, 7])
+        if (ncol(event) >= 9) {
+            id <- as.character(event[index, 9])
+            semicolon <- gregexpr(";", id, fixed = T)
+            semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
+            id <- substr(id, 4, semicolon - 1)
+        } else {
+            id <- NULL
+        }
         
         # Creates a data frame of parsed junctions filled with NAs
         parsed <- createJunctionsTemplate(length(index),
-                                        program = "MISO",
-                                        event.type = eventType,
-                                        chromosome = chr,
-                                        strand = strand)
+                                          program = "MISO",
+                                          event.type = eventType,
+                                          chromosome = chr,
+                                          strand = strand,
+                                          id = id)
         
         plus <- strand == "+"
         # Plus strand
@@ -529,13 +574,22 @@ parseMisoTandemUTR <- function(event, strand) {
         index <- which(event[[3]] == "gene")
         chr <- as.character(event[index, 1])
         strand <- as.character(event[index, 7])
+        if (ncol(event) >= 9) {
+            id <- as.character(event[index, 9])
+            semicolon <- gregexpr(";", id, fixed = T)
+            semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
+            id <- substr(id, 4, semicolon - 1)
+        } else {
+            id <- NULL
+        }
         
         # Creates a data frame of parsed junctions filled with NAs
         parsed <- createJunctionsTemplate(length(index),
-                                        program = "MISO",
-                                        event.type = eventType,
-                                        chromosome = chr,
-                                        strand = strand)
+                                          program = "MISO",
+                                          event.type = eventType,
+                                          chromosome = chr,
+                                          strand = strand,
+                                          id = id)
         plus <- strand == "+"
         # Plus strand
         if (nrow(event[plus, ]) > 0) {
@@ -590,12 +644,22 @@ parseMisoAFE <- function(event) {
         mRNA1 <- splitting$`TRUE`
         mRNA2 <- splitting$`FALSE`
         
-        # Create a data frame of parsed junctions filled with NAs
+        if (ncol(event) >= 9) {
+            id <- as.character(event[index, 9])
+            semicolon <- gregexpr(";", id, fixed = T)
+            semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
+            id <- substr(id, 4, semicolon - 1)
+        } else {
+            id <- NULL
+        }
+        
+        # Creates a data frame of parsed junctions filled with NAs
         parsed <- createJunctionsTemplate(length(index),
-                                        program = "MISO",
-                                        event.type = eventType,
-                                        chromosome = chr,
-                                        strand = strand)
+                                          program = "MISO",
+                                          event.type = eventType,
+                                          chromosome = chr,
+                                          strand = strand,
+                                          id = id)
         plus <- strand == "+"
         # Plus strand
         if (nrow(event[plus, ]) > 0) {
@@ -704,12 +768,22 @@ parseMisoALE <- function(event) {
         mRNA1 <- splitting$`TRUE`
         mRNA2 <- splitting$`FALSE`
         
+        if (ncol(event) >= 9) {
+            id <- as.character(event[index, 9])
+            semicolon <- gregexpr(";", id, fixed = T)
+            semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
+            id <- substr(id, 4, semicolon - 1)
+        } else {
+            id <- NULL
+        }
+        
         # Creates a data frame of parsed junctions filled with NAs
         parsed <- createJunctionsTemplate(length(index),
-                                        program = "MISO",
-                                        event.type = eventType,
-                                        chromosome = chr,
-                                        strand = strand)
+                                          program = "MISO",
+                                          event.type = eventType,
+                                          chromosome = chr,
+                                          strand = strand,
+                                          id = id)
         plus <- strand == "+"
         # Plus strand
         if (nrow(event[plus, ]) > 0) {
