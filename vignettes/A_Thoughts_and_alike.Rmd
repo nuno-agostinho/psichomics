@@ -16,7 +16,6 @@ different environments (creating a list of environments is currently the way I
 deal with them).
 
 ## Reading data
-
 Reading data should be as fast as possible.
 There are two packages that are very fast loading files: `readr` and
 `data.table`.
@@ -34,6 +33,18 @@ fast as possible; fread() is pure C, readr is C++ and Rcpp
 
 Using readr to load a big junction quantification file from BLCA Firehose
 cohort took 30 seconds vs fread's 13 seconds.
+
+## Building error due to the file order
+When building a package, R goes through all the files alphabetically. Unless
+explicitely stated, you'll get an error if there are unloaded dependencies. To
+overcome these, I found four solutions:
+
+* "Collate" field in the DESCRIPTION file of the R package allows to state the
+order of ALL files (you can't write just the ones you want to load first)
+* roxygen's `include` keyword (`#' @include first.R`)
+* R's native function `source`
+* Rename the first file to be loaded so it's the first to load (renaming the
+file `initial.R` to `begin.R` solved the building error)
 
 > TODO: check if methods with identical names from different classes are allowed
 
