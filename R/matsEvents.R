@@ -32,6 +32,7 @@ parseMatsEvent <- function(event, event_type) {
                               "Chromosome"  = as.character(event[[4]]),
                               "Strand"      = as.character(event[[5]]),
                               "Event type"  = event_type, 
+                              "Event ID"    = "unassigned_id",
                               stringsAsFactors = FALSE)
     
     # Parse junction positions according to event type
