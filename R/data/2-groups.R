@@ -1,7 +1,9 @@
 name <- "Groups"
 
 groupByColumn <- function() { list(
-    selectizeInput(id("groupColumn"), "Select column", choices = NULL),
+    selectizeInput(id("groupColumn"), "Select column", choices = NULL,
+                   options = list(
+                       placeholder = "Start typing to search for columns")),
     helpText("Groups will be created automatically depending on the",
              "given column.")
 )}
@@ -30,7 +32,9 @@ groupByGrep <- function() { list (
     textInput(id("grepExpression"), "GREP expression"),
     selectizeInput(id("grepColumn"),
                    "Select column to GREP",
-                   choices = NULL)
+                   choices = NULL,
+                   options = list(
+                       placeholder = "Start typing to search for columns"))
 )}
 
 #' Creates UI elements for the grouping feature
@@ -108,6 +112,7 @@ server <- function(input, output, session) {
         active <- input[[id("dataTypeTab")]]
         for (i in id(c("groupColumn", "grepColumn"))) {
             updateSelectizeInput(session, i,
+                                 selected = NULL,
                                  choices = names(getCategoryData()[[active]]))
         }
     })

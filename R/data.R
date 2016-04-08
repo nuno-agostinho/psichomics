@@ -12,16 +12,13 @@ dataEnvs.server <- lapply(dataEnvs, "[[", "server")
 names <- sapply(dataEnvs, "[[", dataName)
 
 ui <- function(tab) {
-    tab(name,
-        sidebarLayout(sidebarPanel(
-            do.call(
-                tabsetPanel,
-                c(type = "pill",
-                  lapply(dataEnvs, function(pill)
-                      tabPanel(pill$name, br(), pill$ui()))
-                )
-            )
-        ),
+    tab(name, sidebarLayout(sidebarPanel(
+        do.call(
+            tabsetPanel,
+            c(type = "pill",
+              lapply(dataEnvs, function(pill)
+                  tabPanel(pill$name, br(), pill$ui()))
+            ))),
         mainPanel( uiOutput(id("tablesOrAbout")) )))
 }
 
