@@ -5,7 +5,7 @@
 \title{Write the annotation of an event type to a file}
 \usage{
 writeAnnotation(jointEvents, eventType, filename = paste0("data/annotation_",
-  eventType, ".txt"))
+  eventType, ".txt"), showID = FALSE)
 }
 \arguments{
 \item{eventType}{Character: type of event}
