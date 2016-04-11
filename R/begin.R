@@ -152,31 +152,40 @@ callScriptsFunction <- function(func, ..., check = func, folder = "R/") {
     return(loaded)
 }
 
-#' Rename new vector to avoid duplicated values with old vector
+#' Simple function to escape symbols for use in regular expressions
 #'
-#' Renames duplicated values by adding an index
+#' @param string Character
+#' 
+#' @return Escaped string
+escape <- function(string)
+    # return(gsub("/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]", "\\$&", string))
+    return(gsub("(\\W)", "\\\\\\1", string))
+
+#' Rename vector to avoid duplicated values with comparison
+#'
+#' Renames values by adding an index to the end of duplicates.
 #'
 #' @param check Character: values to rename if duplicated
 #' @param comp Character: values to compare with
 #'
 #' @return Character vector with renamed values if duplicated; else, it
-#' returns the usual values
+#' returns the usual values. Doesn't return the comparator values.
 #' @export
 #'
 #' @examples
-#' renameDuplicated(check = c("Nuno", "Carolina", "Mariana", "Teresa"),
-#'        comp = c("Nuno", "Lina", "Marie"))
+#' renameDuplicated(check = c("blue", "red"), comp = c("green", "blue"))
 renameDuplicated <- function(check, comp) {
     # If there's nothing to compare with, return the values
     if (length(comp) == 0) return(check)
     
     repeated <- check %in% comp
-    uniq <- c(comp, check[!repeated])
+    uniq <- check[!repeated]
     
     for (dup in check[repeated]) {
         # Locate matches (don't forget the counter)
-        expr <- paste0(dup, " \\([0-9]+\\)|", dup)
-        locate <- grep(expr, uniq, value = TRUE)
+        all <- c(comp, uniq)
+        expr <- paste0(escape(dup), " \\([0-9]+\\)|", escape(dup))
+        locate <- grep(expr, all, value = TRUE)
         
         # Get the maximum counter and add one
         counter <- sub(".* \\(([0-9]+)\\)", "\\1", locate)
