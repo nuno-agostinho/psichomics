@@ -40,7 +40,12 @@ dropdown <- function(inputId) {
 }
 
 #' @export
-bsModal2 <- function (id, title, trigger, ..., size, footer = NULL)  {
+bsModal2 <- function (id, title, trigger, ..., size, style, footer = NULL)  {
+    if (!missing(style)) {
+        modalHeader <- paste("modal-header", style, sep = "-")
+    } else {
+        modalHeader <- "modal-header"
+    }
     if (!missing(size)) {
         if (size == "large") size = "modal-lg"
         else if (size == "small") size = "modal-sm"
@@ -54,8 +59,9 @@ bsModal2 <- function (id, title, trigger, ..., size, footer = NULL)  {
             class = size, shiny::tags$div(
                 class = "modal-content", 
                 shiny::tags$div(
-                    class = "modal-header", shiny::tags$button(
-                        type = "button", 
+                    class = modalHeader,
+                    shiny::tags$button(
+                        type = "button",
                         class = "close", `data-dismiss` = "modal",
                         shiny::tags$span(shiny::HTML("&times;"))), 
                     shiny::tags$h4(class = "modal-title", title)), 
