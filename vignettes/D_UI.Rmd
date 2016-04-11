@@ -208,7 +208,6 @@ createLink <- function(val) {
 A job well done, gentlemen!
 
 # Downloading files
-
 Currently, the files are downloaded using the function `download.file`.
 Unfortunately, R becomes unresponsive while using it and the Shiny app will
 crash if this takes too long... There are at least 2 solutions for this:
@@ -220,7 +219,6 @@ supported forking; since it doesn't, the only other solution would be starting
 the app with 2 cores, one for the interface and the other for calculations
 
 # Naming the IDs
-
 You should be careful when naming IDs. They shouldn't be spaced according to
 [HTML 4.01 specification](http://www.w3.org/TR/html401/types.html#type-name),
 even though it's possible to use spaces (but you'll have trouble to use CSS
@@ -231,7 +229,10 @@ selectors, afterwards). If you want to use input IDs in JavaScript expressions
 
 # Font Awesome
 We are able to easily use the FontAwesome pack for glyphs. It's free and has a
-lot of glyphs! Besides, it has a few extra options as well. :)
+lot of glyphs! Besides, it has a few extra options as well. See the rotating
+gear in the top-right corner when something is loading? It's a FontAwesome
+glyph with the supported class `fa-spin` which animates the icon using CSS3.
+Note however that CSS3 animations aren't supported in IE 9 or older.
 
 # Storing files in local storage
 It's probably faster if we store the slowest files to load already processed in
@@ -313,3 +314,21 @@ that group). Or maybe use a package like `UpSetR` to allow to show much more
 groups than simply 5 (up to 9?) groups. Also, check `d3vennr` which allows
 interactive Venn diagrams using d3.js. It even tells how to add contextual 
 tooltips at http://www.buildingwidgets.com/blog/2015/6/5/week-22-d3vennr
+
+# Auto-completing suggestions as the user types
+One thing we allow users to do is to subset data directly using the `subset` 
+function from R. That's a very flexible method but the user needs to have access
+to the column names to properly use this feature. Of course, the user can read
+all the columns by viewing the data at the right of the grouping features but 
+really, what if the user wants to find a column in dozens? This could also be
+used to help the user navigate the file system, listing the subdirectories of
+the current directory (e.g. when asking for a download folder).
+
+A way we could handle this is by giving suggestions to the user while typing in 
+the text field along the lines of http://yuku-t.com/jquery-textcomplete/. This
+method even supports partial text completion, we just need to change the 
+callback function from the examples; see the following fiddle for a working demo
+of this: https://jsfiddle.net/danielagos/jk74yew0/
+
+Now, we'll have to consider how to implement this in our application in a way
+that the suggestions are updated according to the group names available.
