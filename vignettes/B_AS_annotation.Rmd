@@ -707,6 +707,9 @@ annotation <- getParsedAnnotation()
 join <- joinAnnotation(annotation)
 for (type in names(join)) {
     print(type)
+    # Make a Venn diagram of the matching events
+    vennEvents(join, type)
+    title(type)
     writeAnnotation(join, type, showID = TRUE,
                     paste0("data/hg19_cross_annotation_", type, ".txt"))
 }
