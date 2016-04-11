@@ -1,3 +1,12 @@
+## TODO(NunoA): Allow to select groups from different "pages" in the table;
+## maybe by memorising the ones selected in each page? Then always show the ones
+## selected as checked... try to do it by memorising when clicking to go on next
+## page or something and clean checkboxes when merging/intersect/removing groups
+
+## TODO(NunoA): Easily identify multiple operations by isolating each with
+## parenthesis; e.g. using A + B ∩ C + D, we don't know if the original
+## operations were either A + (B ∩ C) + D or (A + B) ∩ (C + D) or ...
+
 name <- "Groups"
 
 groupByColumn <- function() { list(
@@ -106,38 +115,99 @@ createGroupFromInput <- function (input) {
     return(group)
 }
 
+#' Rename duplicated names from a new group
+#' 
+#' @note The names of pre-existing groups are not modified.
+#' 
+#' @param new Matrix: new groups
+#' @param old Matrix: pre-existing groups
+#' 
+#' @return Character with no duplicated group names
+renameGroups <- function(new, old) {
+    groupNames <- 1
+    
+    # Rename duplicated names from a new group
+    if (!is.null(old) && nrow(old) != 0) {
+        newNames <- unlist(new[ , groupNames])
+        oldNames <- unlist(old[ , groupNames])
+        new[ , groupNames] <- renameDuplicated(newNames, oldNames)
+    }
+    
+    rownames(new) <- new[ , groupNames]
+    return(new)
+}
+
+operateOnGroups <- function(input, session, sharedData, FUN, name, 
+                            symbol = " ") {
+    # Operate on selected groups when pressing the corresponding button
+    observeEvent(input[[paste(name, "Button", sep = "_")]], {
+        session$sendCustomMessage(type = "getCheckedBoxes", name)
+        sharedData[[name]] <- TRUE
+    })
+    
+    observe({
+        if (!is.null(input[[name]]) && all(input[[name]] > 0) &&
+            isTRUE(sharedData[[name]])) {
+            # Set operation groups as 0 and flag to FALSE
+            session$sendCustomMessage(type = "setZero", name)
+            sharedData[[name]] <- FALSE
+            
+            # Get groups for the data table that is visible and active
+            active <- input[[id("dataTypeTab")]]
+            groups <- getGroupsFrom(active)
+            
+            # Create new set
+            new <- NULL
+            selected <- as.numeric(input[[name]])
+            if (!identical(FUN, "remove")) {
+                mergedFields <- lapply(1:3, function(i)
+                    paste(groups[selected, i], collapse = symbol))
+                rowNumbers <- sort(Reduce(FUN, groups[selected, 4]))
+                new <- matrix(c(mergedFields, list(rowNumbers)), ncol = 4)
+            }
+            
+            # Remove selected groups
+            if (identical(FUN, "remove") || input[[id("removeSetsUsed")]])
+                groups <- groups[-selected, , drop=FALSE]
+            
+            # Add new groups to top (if there are any)
+            if (!is.null(new)) {
+                new <- renameGroups(new, groups)
+                groups <- rbind(new, groups)
+            }
+            setGroupsFrom(active, groups)
+        }
+    })
+}
+
 server <- function(input, output, session) {
     # Update columns available for creating groups when there's loaded data
     observeEvent(input[[id("dataTypeTab")]], {
         active <- input[[id("dataTypeTab")]]
         for (i in id(c("groupColumn", "grepColumn"))) {
-            updateSelectizeInput(session, i,
-                                 selected = NULL,
+            updateSelectizeInput(session, i, selected = NULL,
                                  choices = names(getCategoryData()[[active]]))
         }
     })
     
     # Create a new group when clicking on the createGroup button
     observeEvent(input[[id("createGroup")]], {
-        # Create new group(s) from user input
-        new <- createGroupFromInput(input)
-        
         # Get groups for the data table that is visible and active
         active <- input[[id("dataTypeTab")]]
         groups <- getGroupsFrom(active)
         
-        # Append the new group(s) to the groups already created
-        old <- groups
-        groups <- rbind(new, groups)
+        # Create new group(s) from user input and append to existing groups
+        new <- createGroupFromInput(input)
         
-        #Rename duplicated group names
-        newNames <- unlist(new[ , "Names"])
-        oldNames <- unlist(old[ , "Names"])
-        groups[ , "Names"] <- renameDuplicated(newNames, oldNames)
+        # Rename duplicated group names
+        new <- renameGroups(new, groups)
+        
+        # Append the new group(s) to the groups already created
+        groups <- rbind(new, groups)
         setGroupsFrom(active, groups)
     })
     
-    # Render groups list and add features to merge/remove groups
+    # Render groups list and show interface to manage groups
     output[[id("groupsTable")]] <- renderDataTable({
         ## TODO(NunoA): Allow to remove and merge selected rows from the groups
         ## This could be done using checkboxes; how to retrieve which checkboxes
@@ -145,7 +215,7 @@ server <- function(input, output, session) {
         active <- input[[id("dataTypeTab")]]
         groups <- getGroupsFrom(active)
         
-        # Don't show anything if there are no groups
+        # Show groups only if there is at least one group
         if (!is.null(groups) && nrow(groups) > 0) {
             # Show number of rows for each group
             rows <- lapply(groups[ , 4], length)
@@ -171,104 +241,26 @@ server <- function(input, output, session) {
                       ordering = FALSE),
     escape = FALSE)
     
-    # Remove selected groups when pressing the button
-    observeEvent(input[[id("removeGroups")]], {
-        session$sendCustomMessage(type = "getCheckedBoxes", "removeGroups")
-        sharedData$removeTime <- TRUE
-    })
+    # Remove selected groups
+    removeId <- id("removeGroups")
+    operateOnGroups(input, session, sharedData, "remove", removeId)
     
-    # Remove selected groups if there are groups to be removed
-    observe({
-        if (!is.null(input$removeGroups) && all(input$removeGroups > 0) &&
-            isTRUE(sharedData$removeTime)) {
-            # Set groups to remove to 0 and flag to FALSE
-            session$sendCustomMessage(type = "setZero", "removeGroups")
-            sharedData$removeTime <- FALSE
-            
-            # Get groups for the data table that is visible and active
-            active <- input[[id("dataTypeTab")]]
-            groups <- getGroupsFrom(active)
-            
-            # Remove selected groups
-            selected <- as.numeric(input$removeGroups)
-            setGroupsFrom(active, groups[-selected, , drop=FALSE])
-        }
-    })
+    # Merge selected groups
+    mergeId <- id("mergeGroups")
+    operateOnGroups(input, session, sharedData, union, mergeId, " + ")
     
-    # Merge selected groups when pressing the button
-    observeEvent(input[[id("mergeGroups")]], {
-        session$sendCustomMessage(type = "getCheckedBoxes", "mergeGroups")
-        sharedData$mergeTime <- TRUE
-    })
-    
-    # Merge selected groups if there are groups to be merged
-    observe({
-        if (!is.null(input$mergeGroups) && all(input$mergeGroups > 0) &&
-            isTRUE(sharedData$mergeTime)) {
-            # Set groups to remove to 0 and flag to FALSE
-            session$sendCustomMessage(type = "setZero", "mergeGroups")
-            sharedData$mergeTime <- FALSE
-            
-            # Get groups for the data table that is visible and active
-            active <- input[[id("dataTypeTab")]]
-            groups <- getGroupsFrom(active)
-            
-            # Create merged group
-            selected <- as.numeric(input$mergeGroups)
-            mergedFields <- lapply(1:3, function(i)
-                paste(groups[selected, i], collapse = " + "))
-            rowNumbers <- sort(Reduce(union, groups[selected, 4]))
-            new <- matrix(c(mergedFields, list(rowNumbers)), ncol = 4)
-            
-            # Remove selected groups
-            if (input[[id("removeSetsUsed")]])
-                groups <- groups[-selected, , drop=FALSE]
-            
-            # Add new merged group
-            groups <- rbind(new, groups)
-            setGroupsFrom(active, groups)
-        }
-    })
-    
-    # Merge selected groups when pressing the button
-    observeEvent(input[[id("intersectGroups")]], {
-        session$sendCustomMessage(type = "getCheckedBoxes", "intersectGroups")
-        sharedData$intersectTime <- TRUE
-    })
-    
-    # Merge selected groups if there are groups to be merged
-    observe({
-        if (!is.null(input$intersectGroups) && all(input$intersectGroups > 0) &&
-            isTRUE(sharedData$intersectTime)) {
-            # Set groups to remove to 0 and flag to FALSE
-            session$sendCustomMessage(type = "setZero", "intersectGroups")
-            sharedData$intersectTime <- FALSE
-            
-            # Get groups for the data table that is visible and active
-            active <- input[[id("dataTypeTab")]]
-            groups <- getGroupsFrom(active)
-            
-            # Create merged group
-            selected <- as.numeric(input$intersectGroups)
-            mergedFields <- lapply(1:3, function(i)
-                paste(groups[selected, i], collapse = " ∩ "))
-            rowNumbers <- sort(Reduce(intersect, groups[selected, 4]))
-            new <- matrix(c(mergedFields, list(rowNumbers)), ncol = 4)
-            
-            # Remove selected groups
-            if (input[[id("removeSetsUsed")]])
-                groups <- groups[-selected, , drop=FALSE]
-            
-            # Add new merged group
-            groups <- rbind(new, groups)
-            setGroupsFrom(active, groups)
-        }
-    })
+    # Intersect selected groups
+    intersectId <- id("intersectGroups")
+    operateOnGroups(input, session, sharedData, intersect, intersectId, " ∩ ")
     
     # Render groups interface only if any group exists
     output[[id("groupsList")]] <- renderUI({
         active <- input[[id("dataTypeTab")]]
         groups <- getGroupsFrom(active)
+        
+        operationButton <- function(operation, operationId, ...)
+            actionButton(paste(operationId, "Button", sep = "_"),
+                         operation, ...)
         
         # Don't show anything when there are no groups
         if (!is.null(groups) && nrow(groups) > 0) {
@@ -276,12 +268,11 @@ server <- function(input, output, session) {
                 hr(),
                 dataTableOutput(id("groupsTable")),
                 div(class="btn-group",
-                    actionButton(id("mergeGroups"), "Merge"),
-                    actionButton(id("intersectGroups"), "Intersect"),
+                    operationButton("Merge", mergeId),
+                    operationButton("Intersect", intersectId),
                     # actionButton(id("complementGroups"), "Complement"),
                     # actionButton(id("subtractGroups"), "Subtract"),
-                    actionButton(id("removeGroups"), "Remove",
-                                 icon = icon("times"))),
+                    operationButton("Remove", removeId, icon = icon("times"))),
                 checkboxInput(id("removeSetsUsed"), "Remove original groups", 
                               value = TRUE)
             )
