@@ -7,6 +7,12 @@
 ## parenthesis; e.g. using A + B ∩ C + D, we don't know if the original
 ## operations were either A + (B ∩ C) + D or (A + B) ∩ (C + D) or ...
 
+## TODO(NunoA): isolate subset expression to give a warning on failure
+
+## TODO(NunoA): build GREP expressions
+
+## TODO(NunoA): isolate GREP expression to give a warning on failure
+
 name <- "Groups"
 
 groupByColumn <- function() { list(
@@ -52,6 +58,7 @@ ui <- function() {
         sprintf("input[id='%s'] %s '%s'", id("subsetBy"), sign, what)
     
     list(
+        uiOutput(id("showModal")),
         selectizeInput(id("subsetBy"), "Subset by",
                        c("Column", "Rows", "Expression", "Grep")),
         conditionalPanel(checkId("==", "Column"), groupByColumn()),
@@ -69,7 +76,7 @@ ui <- function() {
 #' Set new groups according to the user input
 #' 
 #' The groups are inserted in a matrix
-createGroupFromInput <- function (input) {
+createGroupFromInput <- function (input, output, session) {
     active <- input[[id("dataTypeTab")]]
     type <- input[[id("subsetBy")]]
     
@@ -95,12 +102,28 @@ createGroupFromInput <- function (input) {
         rows <- unlist(lapply(rows, function(row) eval(parse(text = row))))
         whichRows <- list(rownames(data[rows, ]))
         group <- cbind(input[[id("groupName")]], type, strRows, whichRows)
+        print(group)
     } else if (type == "Expression") {
         # Subset data using the given expression
         expr <- input[[id("groupExpression")]]
-        set <- subset(data, eval(parse(text = expr)))
-        whichRows <- list(rownames(set))
-        group <- c(input[[id("groupName")]], type, expr, whichRows)
+        
+        # Test expression before running
+        tried <- tryCatch(set <- subset(data, eval(parse(text = expr))),
+                          error = return)
+        
+        # If there's an error, show it to the user
+        if ("simpleError" %in% class(tried)) {
+            output[[id("showModal")]] <- renderUI(
+                bsModal2(id("expressionError"), style = "danger",
+                         div(icon("exclamation-circle"), "Expression error"),
+                         NULL, size = "small", tried$message))
+            toggleModal(session, id("expressionError"), toggle = "open")
+            print(tried$message)
+            return(NULL)
+        } else {
+            whichRows <- list(rownames(set))
+            group <- cbind(input[[id("groupName")]], type, expr, whichRows)
+        }
     } else if (type == "Grep") {
         ## TODO(NunoA): Subset data with the GREP expression for the given column
         group <- rep(NA, 4)
@@ -196,15 +219,17 @@ server <- function(input, output, session) {
         active <- input[[id("dataTypeTab")]]
         groups <- getGroupsFrom(active)
         
-        # Create new group(s) from user input and append to existing groups
-        new <- createGroupFromInput(input)
+        # Create new group(s) from user input
+        new <- createGroupFromInput(input, output, session)
         
-        # Rename duplicated group names
-        new <- renameGroups(new, groups)
-        
-        # Append the new group(s) to the groups already created
-        groups <- rbind(new, groups)
-        setGroupsFrom(active, groups)
+        if (!is.null(new)) {
+            # Rename duplicated group names
+            new <- renameGroups(new, groups)
+            
+            # Append the new group(s) to the groups already created
+            groups <- rbind(new, groups)
+            setGroupsFrom(active, groups)
+        }
     })
     
     # Render groups list and show interface to manage groups
