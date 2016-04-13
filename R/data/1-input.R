@@ -65,12 +65,13 @@ ui <- function() {
     list(
         # TODO(NunoA): Show alerts from renderUI
         bsAlert(anchorId = id("alert2")),
-        bsModal2(id("dataReplace"), "Data already loaded", NULL,
-                 size = "small",
+        bsModal2(id("dataReplace"),
+                 div(icon("exclamation-triangle"), "Data already loaded"),
+                 NULL, size = "small", style = "warning",
                  "Would you like to replace the loaded data?",
                  footer = list(
                      actionButton(id("replace"),
-                                  class = "btn-primary",
+                                  class = "btn-warning",
                                   "data-dismiss"="modal", 
                                   label = "Replace"))),
         uiOutput(id("iframe")),
