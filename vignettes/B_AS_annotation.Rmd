@@ -58,7 +58,7 @@ Alternative 3' splice site |          | •      | •        |        |        
 Retained intron            | •        | •      |          |        |          |        | •        | •      |
 Alternative first exon     | •        | •      | •        | •      |          |        | •        |        |
 Alternative last exon      |          | •      | •        | •      |          |        | •        | •      | 
-Tandem UTR                 |          |        |          |        |          | •      | •        | •      | 
+Tandem UTR                 | •        | •      |          | •      |          |        |          |        | 
 
 Before, I thought something along the lines of:
 
@@ -702,7 +702,7 @@ gplots::venn(p)
 
 # Doing all the above but with way less code
 
-```{r}
+```{r, eval=FALSE}
 annotation <- getParsedAnnotation()
 join <- joinAnnotation(annotation)
 for (type in names(join)) {
