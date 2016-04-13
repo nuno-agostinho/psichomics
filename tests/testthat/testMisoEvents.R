@@ -402,12 +402,12 @@ test_that("parseMisoTandemUTR parses tandem UTR junctions", {
     expect_equal(parsed$Event.type, rep("TandemUTR", 2))
     expect_equal(parsed$Strand, c("+", "-"))
     # Plus strand
-    expect_equal(parsed$C2.start[[1]], 28702106)
-    expect_equal(parsed$C2.end[[1]], 28703099)
+    expect_equal(parsed$C1.start[[1]], 28702106)
+    expect_equal(parsed$C1.end[[1]], 28703099)
     expect_equal(parsed$A1.end[[1]], 28702181)
     # Minus strand
-    expect_equal(parsed$C2.start[[2]], 10664625)
-    expect_equal(parsed$C2.end[[2]], 10663759)
+    expect_equal(parsed$C1.start[[2]], 10664625)
+    expect_equal(parsed$C1.end[[2]], 10663759)
     expect_equal(parsed$A1.end[[2]], 10664223)
 })
 

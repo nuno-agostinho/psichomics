@@ -593,15 +593,15 @@ parseMisoTandemUTR <- function(event, strand) {
         plus <- strand == "+"
         # Plus strand
         if (nrow(event[plus, ]) > 0) {
-            parsed[plus, ]["C2.start"] <- event[index[plus] + 2, 4]
-            parsed[plus, ][c("C2.end",
+            parsed[plus, ]["C1.start"] <- event[index[plus] + 2, 4]
+            parsed[plus, ][c("C1.end",
                              "A1.end")] <- event[index[plus] + c(2, 4), 5]
         }
         # Minus strand
         minus <- !plus
         if (nrow(event[minus, ]) > 0) {
-            parsed[minus, ]["C2.start"] <- event[index[minus] + 2, 5]
-            parsed[minus, ][c("C2.end",
+            parsed[minus, ]["C1.start"] <- event[index[minus] + 2, 5]
+            parsed[minus, ][c("C1.end",
                               "A1.end")] <- event[index[minus] + c(2, 4), 4]
         }
         return(parsed)

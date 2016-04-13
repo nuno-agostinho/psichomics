@@ -144,7 +144,7 @@ getCoordinates <- function(type) {
            "RI"   = c("C1.start", "C1.end", "C2.start", "C2.end"),
            "MXE"  = c("C1.end", "A1.start", "A1.end",
                       "A2.start", "A2.end", "C2.start"), 
-           "TandemUTR" = c("C2.start", "C2.end", "A1.end"))
+           "TandemUTR" = c("C1.start", "C1.end", "A1.end"))
 }
 
 #' Get the annotation for all event types
