@@ -31,7 +31,8 @@ ui <- shinyUI(
                                condition="$('html').hasClass('shiny-busy')",
                                div(icon("cog", "fa-spin"), "Working...",
                                    class="text-right", id="loadmessage")
-                           )),
+                           ),
+                           uiOutput("globalModal")),
              footer = useShinyjs()),
         # Loads the interface of each tab
         callScriptsFunction(func = "ui", check = c("name", "ui"), tabPanel)

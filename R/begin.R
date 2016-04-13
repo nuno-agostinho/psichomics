@@ -239,3 +239,24 @@ psichomics <- function(..., reload = FALSE) {
     if (reload) devtools::load_all()
     runApp(...)
 }
+
+#' Simply show a modal
+#' 
+#' @param session Current Shiny session
+#' @param title Character: modal title
+#' @param content Character: 
+#' @param style Character: style of the modal header; NULL (default), danger, 
+#' info or warning
+#' @param iconName Character: FontAwesome icon name to appear with the title
+#' @param footer List of interface elements: Custom modal footer
+#' @param printMessage Boolean: print to console? TRUE by default
+showModal <- function(session, title = "Howdy", content, style = NULL,
+                      iconName = "exclamation-circle", footer = NULL,
+                      printMessage = TRUE) {
+    session$output[["globalModal"]] <- renderUI(
+        bsModal2(id(title), style = style, div(icon(iconName), title),
+                 trigger = NULL, size = "small", content = content,
+                 footer = NULL))
+    toggleModal(session, id(title), toggle = "open")
+    if (printMessage) print(content)
+}
