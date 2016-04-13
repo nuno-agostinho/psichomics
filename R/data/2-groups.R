@@ -58,7 +58,6 @@ ui <- function() {
         sprintf("input[id='%s'] %s '%s'", id("subsetBy"), sign, what)
     
     list(
-        uiOutput(id("showModal")),
         selectizeInput(id("subsetBy"), "Subset by",
                        c("Column", "Rows", "Expression", "Grep")),
         conditionalPanel(checkId("==", "Column"), groupByColumn()),
@@ -113,12 +112,8 @@ createGroupFromInput <- function (input, output, session) {
         
         # If there's an error, show it to the user
         if ("simpleError" %in% class(tried)) {
-            output[[id("showModal")]] <- renderUI(
-                bsModal2(id("expressionError"), style = "danger",
-                         div(icon("exclamation-circle"), "Expression error"),
-                         NULL, size = "small", tried$message))
-            toggleModal(session, id("expressionError"), toggle = "open")
-            print(tried$message)
+            showModal(session, "Expression error", tried$message, 
+                   style = "danger", icon = "exclamation-circle")
             return(NULL)
         } else {
             whichRows <- list(rownames(set))
