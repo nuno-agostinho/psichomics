@@ -9,7 +9,7 @@
 \alias{parseSuppaMXE}
 \alias{parseSuppaRI}
 \alias{parseSuppaSE}
-\title{Parse junctions of an event from SUPPA according to event type}
+\title{Parse junctions of an event from SUPPA}
 \usage{
 parseSuppaGeneric(junctions, strand, coords, plus_pos, minus_pos)
 
@@ -36,7 +36,7 @@ parseSuppaA5SS(junctions, strand)
 Data frame of parsed junctions
 }
 \description{
-Parse junctions of an event from SUPPA according to event type
+Parse junctions of an event from SUPPA
 }
 \details{
 The following event types are available to be parsed:
@@ -77,7 +77,7 @@ parseSuppaMXE(junctions, "+")
 junctions <- c(169772450, 169773216, 169772450, 169773253)
 parseSuppaA3SS(junctions, "+")
 
-junctions <- c(99890743, 99891188, 99890743, 99891605)
+junctions <- c(50193276, 50197008, 50192997, 50197008)
 parseSuppaA5SS(junctions, "+")
 }
 \seealso{
