@@ -73,7 +73,7 @@ parseSuppaEvent <- function(event) {
     return(cbind(event_attrs, parsed))
 }
 
-#' Parse junctions of an event from SUPPA according to event type
+#' Parse junctions of an event from SUPPA
 #'
 #' @param junctions List of integers: exon-exon junctions of an event
 #' @param strand Character: positive ("+") or negative ("-") strand
@@ -144,11 +144,11 @@ parseSuppaRI <- function (junctions, strand) {
 #' junctions <- c(24790610, 24792494, 24792800, 24790610, 24795476, 24795797)
 #' parseSuppaALE(junctions, "+")
 parseSuppaALE <- function (junctions, strand) {
-    coords <- c("C2.start", "C2.end",
-                "C1.end",
-                "A1.start", "A1.end")
-    plus_pos  <- 2:6
-    minus_pos <- 5:1
+    coords <- c("C1.end",
+                "A1.start", "A1.end",
+                "C2.start", "C2.end")
+    plus_pos  <- c(1:3, 5:6)
+    minus_pos <- c(6:4, 2:1)
     parseSuppaGeneric(junctions, strand, coords, plus_pos, minus_pos)
 }
 
@@ -160,10 +160,10 @@ parseSuppaALE <- function (junctions, strand) {
 #' parseSuppaAFE(junctions, "+")
 parseSuppaAFE <- function (junctions, strand) {
     coords <- c("C1.start", "C1.end",
-                "C2.start",
-                "A1.start", "A1.end")
-    plus_pos  <- 1:5
-    minus_pos <- 6:2
+                "A1.start", "A1.end",
+                "C2.start")
+    plus_pos  <- c(4:5, 1:3)
+    minus_pos <- c(3:2, 6:4)
     parseSuppaGeneric(junctions, strand, coords, plus_pos, minus_pos)
 }
 
@@ -189,20 +189,20 @@ parseSuppaMXE <- function (junctions, strand) {
 #' junctions <- c(169772450, 169773216, 169772450, 169773253)
 #' parseSuppaA3SS(junctions, "+")
 parseSuppaA3SS <- function (junctions, strand) {
-    coords <- c("C1.end", "C2.start", "A1.start")
+    coords <- c("C1.end", "A1.start", "C2.start")
     plus_pos  <- c(1, 2, 4)
-    minus_pos <- c(4, 1, 3)
+    minus_pos <- c(4, 3, 1)
     parseSuppaGeneric(junctions, strand, coords, plus_pos, minus_pos)
 }
 
 #' @rdname parseSuppaGeneric
 #' @examples 
 #' 
-#' junctions <- c(99890743, 99891188, 99890743, 99891605)
+#' junctions <- c(50193276, 50197008, 50192997, 50197008)
 #' parseSuppaA5SS(junctions, "+")
 parseSuppaA5SS <- function (junctions, strand) {
-    coords <- c("A1.end", "C2.start", "C1.end")
-    plus_pos  <- c(3:1)
-    minus_pos <- c(4:2)
+    coords <- c("C1.end", "A1.end", "C2.start")
+    plus_pos  <- c(3, 1, 4)
+    minus_pos <- c(2, 4, 1)
     parseSuppaGeneric(junctions, strand, coords, plus_pos, minus_pos)
 }
