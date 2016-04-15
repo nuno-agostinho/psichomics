@@ -4,10 +4,12 @@
 \alias{getValidEvents}
 \title{Filters the events with valid elements according to the given validator}
 \usage{
-getValidEvents(events, validator, areMultipleExonsValid = FALSE)
+getValidEvents(event, validator, areMultipleExonsValid = FALSE)
 }
 \arguments{
-\item{events}{Data.frame: events annotation from MISO}
+\item{event}{Data.frame containing only one event with at least 7 columns as 
+retrieved from the alternative splicing annotation files from MISO (GFF3
+files)}
 
 \item{validator}{Character: valid elements for each event}
 

@@ -4,30 +4,30 @@
 \alias{getDataRows}
 \title{Get rows of a data frame between two row indexes}
 \usage{
-getDataRows(i, data, first_row, last_row)
+getDataRows(i, data, firstRow, lastRow)
 }
 \arguments{
 \item{i}{Integer: current iteration}
 
 \item{data}{Data.frame: contains the data of interest}
 
-\item{first_row}{Vector of integers: First row index of interest; value must
+\item{firstRow}{Vector of integers: First row index of interest; value must
 be less than the respective last row index and less than the number of rows
 in the data frame}
 
-\item{last_row}{Vector of integers: Last row index of interest; value must be 
+\item{lastRow}{Vector of integers: Last row index of interest; value must be 
 higher than the respective first row index and less than the number of rows
 in the data frame}
 }
 \value{
-Data frame subset givne two row indexes (returns NA if the first row 
+Data frame subset from two row indexes (returns NA if the first row 
 index is NA)
 }
 \description{
 Get rows of a data frame between two row indexes
 }
 \details{
-For a given iteration i, returns data from first_row[i] to
-last_row[i]
+For a given iteration i, returns data from firstRow[i] to
+lastRow[i]
 }
 

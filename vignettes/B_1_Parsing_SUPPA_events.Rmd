@@ -207,7 +207,10 @@ Note that it's important to keep the order of appearance of alternative
 isoforms. The inclusion levels (represented by $\Psi$ and shown in percentage
 or between 0 and 1) are supposed to refer to the first alternative isoform. The 
 inclusion level of the other isoform is calculated with $100\% - \Psi$ or
-$1 - \Psi$.
+$1 - \Psi$. The alternative isoform will always belong to the alternative
+exon (this may sound a bit odd for those cases where the second alternative
+isoform is the constitutive exon... what if we used the 2nd alternative exon for
+these cases?...)
 
 ```{r suppa-junctions-switch}
 parseSuppaJunctions <- function(event_type, strand, junctions) {

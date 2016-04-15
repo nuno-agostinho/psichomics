@@ -7,6 +7,10 @@ output:
     toc: yes
 ---
 
+> TODO: Talk about the considerations of which alternative isoform is considered
+for the exon/intron inclusion levels. Also, talk about how this is standarised
+in the end (using 1-PSI to get the complementing ratio).
+
 The splicing events annotation is different according to the program that
 creates it. The programs which allow to quantify expression levels of
 alternative splicing events studied in this report are:
@@ -582,12 +586,107 @@ functions. It should be much faster this way. By vectorising, I mean to parse
 all events at the same time, instead of splitting each event and putting them
 inside a list.
 
+```{r, eval=FALSE}
+parseMisoSE <- function(event) {
+    # Filter out events that aren't valid
+    validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 2))
+    event <- getValidEvents(event, validator)
+    eventType <- "SE"
+    
+    # If there are valid events
+    if (!is.null(event)) {
+        # Get first index, chromosome, strand and ID of valids events
+        index <- which(event[[3]] == "gene")
+        chr <- as.character(event[index, 1])
+        strand <- as.character(event[index, 7])
+        id <- NULL
+        if (ncol(event) >= 9)
+            id <- parseMisoId(event[index, 9])
+        
+        # Creates a data frame of parsed junctions filled with NAs
+        parsed <- createJunctionsTemplate(length(index),
+                                          program = "MISO",
+                                          event.type = eventType,
+                                          chromosome = chr,
+                                          strand = strand,
+                                          id = id)
+        plus <- strand == "+"
+        # Plus strand
+        if (nrow(event[plus, ]) > 0) {
+            iplus <- index[plus]
+            parsed[plus, ][c("C1.start", "C1.end")] <- event[iplus + 2, 4:5]
+            parsed[plus, ][c("A1.start", "A1.end")] <- event[iplus + 3, 4:5]
+            parsed[plus, ][c("C2.start", "C2.end")] <- event[iplus + 4, 4:5]
+        }
+        # Minus strand
+        minus <- !plus
+        if (nrow(event[minus, ]) > 0) {
+            iminus <- index[minus]
+            print(event[iminus + 2, 4:5])
+            parsed[minus, ][c("C1.start", "C1.end")] <- event[iminus + 4, 5:4]
+            parsed[minus, ][c("A1.start", "A1.end")] <- event[iminus + 3, 5:4]
+            parsed[minus, ][c("C2.start", "C2.end")] <- event[iminus + 2, 5:4]
+        }
+        return(parsed)
+    }
+}
+```
 > TODO: increase number of AFE and ALE events included in the parsing
 
 Type          | Time     | Memory  | Commit
 --------------|----------|---------|---------
 List of lists | 308.0 s  | 83.7 MB | 8d9defa5
 Data frame    |   3.6 s  |  8.5 MB | 891a972b
+
+Awesome! We can even get better times by defining the columns in only one step. 
+This also allows us to generalise the parsing of different event types into one
+function which wasn't possible before given the different number of assignments
+needed for each event type in the previous method.
+
+```{r, eval=FALSE}
+parseMisoSE2 <- function(event) {
+    # Filter out events that aren't valid
+    validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 2))
+    event <- getValidEvents(event, validator)
+    eventType <- "SE"
+    
+    # If there are valid events
+    if (!is.null(event)) {
+        # Get first index, chromosome, strand and ID of valids events
+        index <- which(event[[3]] == "gene")
+        chr <- as.character(event[index, 1])
+        strand <- as.character(event[index, 7])
+        id <- NULL
+        if (ncol(event) >= 9)
+            id <- parseMisoId(event[index, 9])
+        
+        # Creates a data frame of parsed junctions filled with NAs
+        parsed <- createJunctionsTemplate(length(index),
+                                          program = "MISO",
+                                          event.type = eventType,
+                                          chromosome = chr,
+                                          strand = strand,
+                                          id = id)
+        plus <- strand == "+"
+        # Plus strand
+        if (nrow(event[plus, ]) > 0) {
+            iplus <- index[plus]
+            parsed[plus, ][c("C1.start", "A1.start", "C2.start",
+                             "C1.end", "A1.end", "C2.end")] <- 
+                unlist(event[c(iplus + 2, iplus + 3, iplus + 4), 4:5])
+        }
+        # Minus strand
+        minus <- !plus
+        if (nrow(event[minus, ]) > 0) {
+            iminus <- index[minus]
+            parsed[minus, ][c("C1.start", "A1.start", "C2.start",
+                              "C1.end",  "A1.end", "C2.end")] <- 
+                unlist(event[c(iminus + 4, iminus + 3, iminus + 2), 4:5])
+        }
+        return(parsed)
+    }
+}
+```
 
 # Match events from different programs
 To easily match events coming from different programs, we simply need to look at
@@ -700,6 +799,27 @@ names(p) <- sapply(programs, function(x) unique(x[!is.na(x)]))
 gplots::venn(p)
 ```
 
+Another thing we have to remember is that different programs may consider 
+different alternative exons to calculate the exon inclusion levels. So as to 
+standarise and mitigate any differences between the same event across different
+representations, we'll be sorting the first alternative isoform as the one
+considered and used to calculate inclusion levels. For example, to compare a MXE
+event, we'll say the first alternative exon is to be considered. If any program
+considers the second one, we'll change the values to consider the first one
+instead (simply change the inclusion level to the complement, i.e. 1-PSI).
+
+# Differences in annotation
+Different programs can have the same event annotated differently. For example,
+a program can consider the first exon of a mutually exclusive exons event as the
+alternative exon while the same event can be considered constitutive by another
+program. This makes it hard to match different events which are indeed the same.
+To overcome this, a standard for comparison is needed. A simple way to do this
+is to sort the positions. In the case mentioned earlier, we could consider the
+alternative exon the one with lower coordinates (note: yes, we could use the
+upstream exons instead, but it's computationally faster to use an approach
+independent of strands). It's simply a matter of using the complement of a given
+value (1 - value) when changing the exon of reference.
+
 # Doing all the above but with way less code
 
 ```{r, eval=FALSE}
@@ -710,8 +830,8 @@ for (type in names(join)) {
     # Make a Venn diagram of the matching events
     vennEvents(join, type)
     title(type)
-    writeAnnotation(join, type, showID = TRUE,
-                    paste0("data/hg19_cross_annotation_", type, ".txt"))
+    # writeAnnotation(join, type, showID = TRUE,
+                    # paste0("data/hg19_cross_annotation_", type, ".txt"))
 }
 ```
 
