@@ -315,14 +315,14 @@ test_that("parseMisoA5SS parses alt. 5' SS junctions", {
     expect_equal(parsed$Strand, c("+", "-"))
     # Plus strand
     expect_equal(parsed$C1.start[[1]], 874655)
-    expect_equal(parsed$C1.end[[1]],   874840)
-    expect_equal(parsed$A1.end[[1]],   874792)
+    expect_equal(parsed$C1.end[[1]],   874792)
+    expect_equal(parsed$A1.end[[1]],   874840)
     expect_equal(parsed$C2.start[[1]], 876524)
     expect_equal(parsed$C2.end[[1]],   876686)
     # Minus strand
     expect_equal(parsed$C1.start[[2]], 17742)
-    expect_equal(parsed$C1.end[[2]],   17526)
-    expect_equal(parsed$A1.end[[2]],   17606)
+    expect_equal(parsed$C1.end[[2]],   17606)
+    expect_equal(parsed$A1.end[[2]],   17526)
     expect_equal(parsed$C2.start[[2]], 17368)
     expect_equal(parsed$C2.end[[2]],   17233)
 })
@@ -362,14 +362,14 @@ test_that("parseMisoA3SS parses alt. 3' SS junctions", {
     # Plus strand
     expect_equal(parsed$C1.start[[1]], 898084)
     expect_equal(parsed$C1.end[[1]],   898297)
-    expect_equal(parsed$C2.start[[1]], 898412)
-    expect_equal(parsed$A1.start[[1]], 898489)
+    expect_equal(parsed$A1.start[[1]], 898412)
+    expect_equal(parsed$C2.start[[1]], 898489)
     expect_equal(parsed$C2.end[[1]],   898633)
     # Minus strand
     expect_equal(parsed$C1.start[[2]], 16765)
     expect_equal(parsed$C1.end[[2]],   16607)
-    expect_equal(parsed$C2.start[[2]], 15947)
-    expect_equal(parsed$A1.start[[2]], 15942)
+    expect_equal(parsed$A1.start[[2]], 15947)
+    expect_equal(parsed$C2.start[[2]], 15942)
     expect_equal(parsed$C2.end[[2]],   15796)
 })
 
@@ -445,15 +445,15 @@ test_that("parseMisoAFE parses alt. first exon junctions", {
     expect_equal(parsed$Event.type, rep("AFE", 2))
     expect_equal(parsed$Strand, c("+", "-"))
     # Plus strand
-    expect_equal(parsed$C1.start[[1]], 4847853)
-    expect_equal(parsed$C1.end[[1]],   4848515)
-    expect_equal(parsed$A1.start[[1]], 4844168)
-    expect_equal(parsed$A1.end[[1]],   4844288)
+    expect_equal(parsed$C1.start[[1]], 4844168)
+    expect_equal(parsed$C1.end[[1]],   4844288)
+    expect_equal(parsed$A1.start[[1]], 4847853)
+    expect_equal(parsed$A1.end[[1]],   4848515)
     # Minus strand
-    expect_equal(parsed$C1.start[[2]], 38562103)
-    expect_equal(parsed$C1.end[[2]],   38561740)
-    expect_equal(parsed$A1.start[[2]], 38565897)
-    expect_equal(parsed$A1.end[[2]],   38565686)
+    expect_equal(parsed$C1.start[[2]], 38565897)
+    expect_equal(parsed$C1.end[[2]],   38565686)
+    expect_equal(parsed$A1.start[[2]], 38562103)
+    expect_equal(parsed$A1.end[[2]],   38561740)
 })
 
 test_that("parseMisoAFE parses a single alt. first exon event", {
@@ -472,10 +472,10 @@ test_that("parseMisoAFE parses a single alt. first exon event", {
     expect_equal(parsed$Chromosome, "chr17")
     expect_equal(parsed$Event.type, "AFE")
     expect_equal(parsed$Strand, "+")
-    expect_equal(parsed$C1.start[[1]], 4847853)
-    expect_equal(parsed$C1.end[[1]],   4848515)
-    expect_equal(parsed$A1.start[[1]], 4844168)
-    expect_equal(parsed$A1.end[[1]],   4844288)
+    expect_equal(parsed$C1.start[[1]], 4844168)
+    expect_equal(parsed$C1.end[[1]],   4844288)
+    expect_equal(parsed$A1.start[[1]], 4847853)
+    expect_equal(parsed$A1.end[[1]],   4848515)
 })
 
 test_that("parseMisoAFE doesn't parse unrecognized events", {
