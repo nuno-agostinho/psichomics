@@ -583,7 +583,12 @@ length(genes_index)
 # RESULT: 14957
 ```
 
-All right, there are six outliers from the 14957 A3SS events.
+All right, there are six outliers from the 14957 A3SS events. Since the ID shows
+the longer isoform first (chr1:6470:6628:-\@chr1:5805&#124;5810:5659), it means
+the longer isoform is the one being considered as the alternative
+([MISO FAQ](https://miso.readthedocs.org/en/fastmiso/#answer12). This is
+important because we need to know which isoform is the inclusion level referring
+to.
 
 ```{r parse-miso-a3ss, eval=F}
 parseA3SS <- function(event, strand, parsed) {
@@ -633,7 +638,11 @@ length(genes_index)
 # RESULT: 12807
 ```
 
-There are 2 outliers out of 12807 A5SS events.
+There are 2 outliers out of 12807 A5SS events. Since the ID shows
+the longer isoform first (chr1:7605:7469&#124;7389:-\@chr1:7096:7231:-), it means
+the longer isoform is the one being considered as the alternative
+([MISO FAQ](https://miso.readthedocs.org/en/fastmiso/#answer12). This is
+important because we need to know which isoform is being quantified.
 
 ```{r parse-miso-a5ss, eval=F}
 parseA5SS <- function(event, strand, parsed) {
@@ -746,6 +755,11 @@ table(unique_mRNAs)
 
 It seems 97% of the AFE events only have 2 unique mRNAs. Anyway, what's going on
 with with more than 3 unique mRNAs?
+
+> TODO
+
+We also need to identify which alternative exon is being considered to calculate 
+the inclusion levels.
 
 > TODO
 

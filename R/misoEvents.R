@@ -370,8 +370,8 @@ parseMisoA5SS <- function(event) {
     validator <- c("gene", "mRNA", rep("exon", 2), "mRNA", rep("exon", 2))
     coord <- c("C1.start", "A1.start", "C2.start", 
                "C1.end", "A1.end", "C2.end")
-    plusIndex <- c(2, 5, 3)
-    minusIndex <- c(2, 6, 3)
+    plusIndex <- c(5, 2, 3)
+    minusIndex <- c(2, 3, 6)
     parsed <- parseMisoGeneric(event, validator, eventType="A5SS", coord, 
                                plusIndex, minusIndex)
     return(parsed)
@@ -390,12 +390,12 @@ parseMisoA5SS <- function(event) {
 #'  chr1 A3SS exon 15796 15942 . - .
 #'  chr1 A3SS exon 16607 16765 . - .")
 #' parseMisoA3SS(event)
-parseMisoA3SS <- function(event) {
+parseMisoA3SS <- function(event, plusIndex, minusIndex) {
     validator <- c("gene", "mRNA", rep("exon", 2), "mRNA", rep("exon", 2))
     coord <- c("C1.start", "A1.start", "C2.start", 
                "C1.end", "A1.end", "C2.end")
-    plusIndex <- c(2, 6, 3)
-    minusIndex <- c(2, 5, 3)
+    plusIndex <- c(2, 3, 6)
+    minusIndex <- c(5, 2, 3)
     parsed <- parseMisoGeneric(event, validator, eventType="A3SS", coord, 
                                plusIndex, minusIndex)
     return(parsed)
@@ -470,18 +470,18 @@ parseMisoAFE <- function(event) {
         plus <- strand == "+"
         # Plus strand
         if (nrow(event[plus, ]) > 0) {
-            parsed[plus, ][c("C1.start", 
-                             "C1.end")] <- event[mRNA2-1, 4:5][plus, ]
-            parsed[plus, ][c("A1.start",
-                             "A1.end")] <- event[nextIndex-1, 4:5][plus, ]
+            parsed[plus, ][c("A1.start", 
+                             "A1.end")] <- event[mRNA2-1, 4:5][plus, ]
+            parsed[plus, ][c("C1.start",
+                             "C1.end")] <- event[nextIndex-1, 4:5][plus, ]
         }
         # Minus strand
         minus <- !plus
         if (nrow(event[minus, ]) > 0) {
-            parsed[minus, ][c("C1.start",
-                              "C1.end")] <- event[mRNA1+1, 5:4][minus, ]
-            parsed[minus, ][c("A1.start", 
-                              "A1.end")] <- event[mRNA2+1, 5:4][minus, ]
+            parsed[minus, ][c("A1.start",
+                              "A1.end")] <- event[mRNA1+1, 5:4][minus, ]
+            parsed[minus, ][c("C1.start", 
+                              "C1.end")] <- event[mRNA2+1, 5:4][minus, ]
         }
         return(parsed)
     }
