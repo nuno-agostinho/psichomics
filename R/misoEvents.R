@@ -1,23 +1,22 @@
 #' Get rows of a data frame between two row indexes
 #'
-#' @details For a given iteration i, returns data from first_row[i] to
-#' last_row[i]
+#' @details For a given iteration i, returns data from firstRow[i] to
+#' lastRow[i]
 #'
 #' @param i Integer: current iteration
 #' @param data Data.frame: contains the data of interest
-#' @param first_row Vector of integers: First row index of interest; value must
+#' @param firstRow Vector of integers: First row index of interest; value must
 #' be less than the respective last row index and less than the number of rows
 #' in the data frame
-#' @param last_row Vector of integers: Last row index of interest; value must be 
+#' @param lastRow Vector of integers: Last row index of interest; value must be 
 #' higher than the respective first row index and less than the number of rows
 #' in the data frame
 #' 
-#' @return Data frame subset givne two row indexes (returns NA if the first row 
+#' @return Data frame subset from two row indexes (returns NA if the first row 
 #' index is NA)
-#' @export
-getDataRows <- function(i, data, first_row, last_row) {
-    first <- first_row[i]
-    last  <- last_row[i]
+getDataRows <- function(i, data, firstRow, lastRow) {
+    first <- firstRow[i]
+    last  <- lastRow[i]
     if (is.na(first)) {
         # if there is no first position, there is no item match
         return(NA)
@@ -66,17 +65,17 @@ parseMisoEventID <- function(eventID, annotation, IDcolumn) {
     # Get every index of splicing events present in the annotation
     events <- which(annotation[["V3"]] == "gene")
     # Get the index of the next gene
-    next_index <- events[fmatch(index, events) + 1]
+    nextIndex <- events[fmatch(index, events) + 1]
     
     # Get the rows relative to each event
     rows <- lapply(1:(length(index)), getDataRows, annotation, index,
-                   next_index - 1)
+                   nextIndex - 1)
     return(rows)
 }
 
 #' Filters the events with valid elements according to the given validator
 #'
-#' @param events Data.frame: events annotation from MISO  
+#' @inheritParams parseMisoEvent
 #' @param validator Character: valid elements for each event
 #' @param areMultipleExonsValid Boolean: consider runs of exons as valid when
 #' comparing with the validator? Default is FALSE (see details)
@@ -114,8 +113,8 @@ parseMisoEventID <- function(eventID, annotation, IDcolumn) {
 #' ")
 #' validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 2))
 #' getValidEvents(event, validator)
-getValidEvents <- function(events, validator, areMultipleExonsValid = FALSE) {
-    elem <- events[[3]]
+getValidEvents <- function(event, validator, areMultipleExonsValid = FALSE) {
+    elem <- event[[3]]
     
     # If run length is valid, consider runs of equal elements as one element
     if (areMultipleExonsValid)
@@ -127,12 +126,12 @@ getValidEvents <- function(events, validator, areMultipleExonsValid = FALSE) {
     index <- which(elem == "gene")
     
     # Get starting position of the next event
-    next_index <- length(elem) + 1
+    nextIndex <- length(elem) + 1
     if (length(index) > 1)
-        next_index <- c(index[2:length(index)], next_index)
+        nextIndex <- c(index[2:length(index)], nextIndex)
     
     # Get the elements composing each event as elements of a list
-    diff <- next_index - index
+    diff <- nextIndex - index
     groups <- unlist(lapply(seq_along(diff), function(i, diff)
         rep.int(i, times = diff[i]), diff))
     splitElems <- split(elem, groups)
@@ -143,27 +142,27 @@ getValidEvents <- function(events, validator, areMultipleExonsValid = FALSE) {
     
     if (sum(!valid) == 0) {
         # If all events are valid, return all events
-        return(events)
+        return(event)
     } else if (sum(valid) > 0) {
         # If there are invalid events, return only valid events
         if (areMultipleExonsValid) {
             # If run length is valid, consider runs of equal elements as one
             
             # Get starting position of each event
-            index <- which(events[[3]] == "gene")
+            index <- which(event[[3]] == "gene")
             
             # Get starting position of the next event
-            next_index <- nrow(events) + 1
+            nextIndex <- nrow(event) + 1
             if (length(index) > 1)
-                next_index <- c(index[2:length(index)], next_index)
+                nextIndex <- c(index[2:length(index)], nextIndex)
         }
         
-        invalid_index <- unlist(
+        invalidIndex <- unlist(
             lapply(1:sum(!valid),
-                   function(i) index[!valid][i]:(next_index[!valid][i]-1)
+                   function(i) index[!valid][i]:(nextIndex[!valid][i]-1)
             )
         )
-        return(events[-invalid_index, ])
+        return(event[-invalidIndex, ])
     }
 }
 
@@ -193,8 +192,8 @@ getValidEvents <- function(events, validator, areMultipleExonsValid = FALSE) {
 #'   chr1 SE exon 17915 18061 . - .")
 #' parseMisoEvent(event)
 parseMisoEvent <- function(event) {
-    event_type <- as.character(event[1, 2])
-    parseEvent <- switch(event_type,
+    eventType <- as.character(event[1, 2])
+    parseEvent <- switch(eventType,
                          "SE"   = parseMisoSE,
                          "MXE"  = parseMisoMXE,
                          "RI"   = parseMisoRI,
@@ -209,8 +208,11 @@ parseMisoEvent <- function(event) {
 
 #' Parse junctions of an event from MISO according to event type
 #'
-#' @inheritParams parseMisoEvent
-#' @param strand Character: strand of the event
+#' @inheritParams getValidEvents
+#' @param eventType Character: event type (see details for available events)
+#' @param coord Character: coordinate positions to fill
+#' @param plusIndex Integer: index of the coordinates for a plus strand event
+#' @param minusIndex Integer: index of the coordinates for a minus strand event
 #'
 #' @details The following event types are available to be parsed:
 #' \itemize{
@@ -228,7 +230,59 @@ parseMisoEvent <- function(event) {
 #'
 #' @return List of parsed junctions
 #' @export
+parseMisoGeneric <- function(event, validator, eventType, coord, plusIndex, 
+                             minusIndex) {
+    # Filter out events that aren't valid
+    event <- getValidEvents(event, validator)
+    
+    # If there are valid events
+    if (!is.null(event)) {
+        # Get first index, chromosome, strand and ID of valids events
+        index <- which(event[[3]] == "gene")
+        chr <- as.character(event[index, 1])
+        strand <- as.character(event[index, 7])
+        id <- NULL
+        if (ncol(event) >= 9)
+            id <- parseMisoId(event[index, 9])
+        
+        # Creates a data frame of parsed junctions filled with NAs
+        parsed <- createJunctionsTemplate(length(index),
+                                          program = "MISO",
+                                          event.type = eventType,
+                                          chromosome = chr,
+                                          strand = strand,
+                                          id = id)
+        plus <- strand == "+"
+        # Plus strand
+        iplus <- index[plus]
+        plusIndex <- sort(rep(iplus, length(plusIndex))) + rep(plusIndex, length(iplus))
+        if (nrow(event[plus, ]) > 0)
+            parsed[plus, coord] <- unlist(event[plusIndex, 4:5])
+        
+        # Minus strand
+        minus <- !plus
+        iminus <- index[minus]
+        minusIndex <- sort(rep(iminus, length(minusIndex))) + rep(minusIndex, length(iminus))
+        if (nrow(event[minus, ]) > 0)
+            parsed[minus, rev(coord)] <- unlist(event[minusIndex, 4:5])
+        return(parsed)
+    }
+}
+
+#' Parse MISO's alternative splicing event identifier
 #'
+#' @param id Character: MISO alternative splicing event identifier
+#'
+#' @return Character with the ID parsed
+parseMisoId <- function(id) {
+    id <- as.character(event[index, 9])
+    semicolon <- gregexpr(";", id, fixed = T)
+    semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
+    id <- substr(id, 4, semicolon - 1)
+    return(id)
+}
+
+#' @rdname parseMisoGeneric
 #' @examples
 #' # skipping exon event (SE)
 #' event <- read.table(text = "
@@ -242,58 +296,16 @@ parseMisoEvent <- function(event) {
 #'   chr1 SE exon 17915 18061 . - .")
 #' parseMisoSE(event)
 parseMisoSE <- function(event) {
-    # Filter out events that aren't valid
     validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 2))
-    event <- getValidEvents(event, validator)
-    eventType <- "SE"
-    
-    # If there are valid events
-    if (!is.null(event)) {
-        # Get first index, chromosome, strand and ID of valids events
-        index <- which(event[[3]] == "gene")
-        chr <- as.character(event[index, 1])
-        strand <- as.character(event[index, 7])
-        if (ncol(event) >= 9) {
-            id <- as.character(event[index, 9])
-            semicolon <- gregexpr(";", id, fixed = T)
-            semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
-            id <- substr(id, 4, semicolon - 1)
-        } else {
-            id <- NULL
-        }
-        
-        # Creates a data frame of parsed junctions filled with NAs
-        parsed <- createJunctionsTemplate(length(index),
-                                        program = "MISO",
-                                        event.type = eventType,
-                                        chromosome = chr,
-                                        strand = strand,
-                                        id = id)
-        plus <- strand == "+"
-        # Plus strand
-        if (nrow(event[plus, ]) > 0) {
-            parsed[plus, ][c("C1.start", 
-                             "C1.end")] <- event[index[plus] + 2, 4:5]
-            parsed[plus, ][c("A1.start", 
-                             "A1.end")] <- event[index[plus] + 3, 4:5]
-            parsed[plus, ][c("C2.start", 
-                             "C2.end")] <- event[index[plus] + 4, 4:5]
-        }
-        # Minus strand
-        minus <- !plus
-        if (nrow(event[minus, ]) > 0) {
-            parsed[minus, ][c("C1.start", 
-                              "C1.end")] <- event[index[minus] + 4, 5:4]
-            parsed[minus, ][c("A1.start", 
-                              "A1.end")] <- event[index[minus] + 3, 5:4]
-            parsed[minus, ][c("C2.start", 
-                              "C2.end")] <- event[index[minus] + 2, 5:4]
-        }
-        return(parsed)
-    }
+    coord <- c("C1.start", "A1.start", "C2.start", "C1.end", "A1.end", "C2.end")
+    plusIndex <- 2:4
+    minusIndex <- 2:4
+    parsed <- parseMisoGeneric(event, validator, eventType="SE", coord, 
+                               plusIndex, minusIndex)
+    return(parsed)
 }
 
-#' @rdname parseMisoSE
+#' @rdname parseMisoGeneric
 #' @examples
 #' 
 #' # mutually exclusive exon (MXE) event
@@ -309,62 +321,17 @@ parseMisoSE <- function(event) {
 #'  chr1 MXE exon 787307 788090 . + .")
 #' parseMisoMXE(event)
 parseMisoMXE <- function(event) {
-    # Filter out events that aren't valid
     validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 3))
-    event <- getValidEvents(event, validator)
-    eventType <- "MXE"
-    
-    # If there are valid events
-    if (!is.null(event)) {
-        # Get first index, chromosome and strand of valids events
-        index <- which(event[[3]] == "gene")
-        chr <- as.character(event[index, 1])
-        strand <- as.character(event[index, 7])
-        if (ncol(event) >= 9) {
-            id <- as.character(event[index, 9])
-            semicolon <- gregexpr(";", id, fixed = T)
-            semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
-            id <- substr(id, 4, semicolon - 1)
-        } else {
-            id <- NULL
-        }
-        
-        # Creates a data frame of parsed junctions filled with NAs
-        parsed <- createJunctionsTemplate(length(index),
-                                          program = "MISO",
-                                          event.type = eventType,
-                                          chromosome = chr,
-                                          strand = strand,
-                                          id = id)
-        plus <- strand == "+"
-        # Plus strand
-        if (nrow(event[plus, ]) > 0) {
-            parsed[plus, ][c("C1.start", 
-                             "C1.end")] <- event[index[plus] + 2, 4:5]
-            parsed[plus, ][c("A1.start", 
-                             "A1.end")] <- event[index[plus] + 3, 4:5]
-            parsed[plus, ][c("A2.start", 
-                             "A2.end")] <- event[index[plus] + 7, 4:5]
-            parsed[plus, ][c("C2.start", 
-                             "C2.end")] <- event[index[plus] + 4, 4:5]
-        }
-        # Minus strand
-        minus <- !plus
-        if (nrow(event[minus, ]) > 0) {
-            parsed[minus, ][c("C1.start",
-                              "C1.end")] <- event[index[minus] + 8, 5:4]
-            parsed[minus, ][c("A1.start", 
-                              "A1.end")] <- event[index[minus] + 3, 5:4]
-            parsed[minus, ][c("A2.start", 
-                              "A2.end")] <- event[index[minus] + 7, 5:4]
-            parsed[minus, ][c("C2.start", 
-                              "C2.end")] <- event[index[minus] + 6, 5:4]
-        }
-        return(parsed)
-    }
+    coord <- c("C1.start", "A1.start", "A2.start", "C2.start", 
+               "C1.end", "A1.end", "A2.end", "C2.end")
+    plusIndex <- c(2:3, 7, 4)
+    minusIndex <- c(2, 7, 3:4)
+    parsed <- parseMisoGeneric(event, validator, eventType="MXE", coord, 
+                               plusIndex, minusIndex)
+    return(parsed)
 }
 
-#' @rdname parseMisoSE
+#' @rdname parseMisoGeneric
 #' @examples
 #'
 #' # intron retention (RI) event
@@ -377,54 +344,16 @@ parseMisoMXE <- function(event) {
 #'  chr1 RI exon 17601 17742 . - .")
 #' parseMisoRI(event)
 parseMisoRI <- function(event, strand) {
-    # Filter out events that aren't valid
     validator <- c("gene", "mRNA", "exon", "mRNA", rep("exon", 2))
-    event <- getValidEvents(event, validator)
-    eventType <- "RI"
-    
-    # If there are valid events
-    if (!is.null(event)) {
-        # Get first index, chromosome and strand of valids events
-        index <- which(event[[3]] == "gene")
-        chr <- as.character(event[index, 1])
-        strand <- as.character(event[index, 7])
-        if (ncol(event) >= 9) {
-            id <- as.character(event[index, 9])
-            semicolon <- gregexpr(";", id, fixed = T)
-            semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
-            id <- substr(id, 4, semicolon - 1)
-        } else {
-            id <- NULL
-        }
-        
-        # Creates a data frame of parsed junctions filled with NAs
-        parsed <- createJunctionsTemplate(length(index),
-                                          program = "MISO",
-                                          event.type = eventType,
-                                          chromosome = chr,
-                                          strand = strand,
-                                          id = id)
-        plus <- strand == "+"
-        # Plus strand
-        if (nrow(event[plus, ]) > 0) {
-            parsed[plus, ][c("C1.start", 
-                             "C1.end")] <- event[index[plus] + 4, 4:5]
-            parsed[plus, ][c("C2.start",
-                             "C2.end")] <- event[index[plus] + 5, 4:5]
-        }
-        # Minus strand
-        minus <- !plus
-        if (nrow(event[minus, ]) > 0) {
-            parsed[minus, ][c("C1.start",
-                              "C1.end")] <- event[index[minus] + 5, 5:4]
-            parsed[minus, ][c("C2.start",
-                              "C2.end")] <- event[index[minus] + 4, 5:4]
-        }
-        return(parsed)
-    }
+    coord <- c("C1.start", "C2.start", "C1.end", "C2.end")
+    plusIndex <- 4:5
+    minusIndex <- 4:5
+    parsed <- parseMisoGeneric(event, validator, eventType="RI", coord, 
+                               plusIndex, minusIndex)
+    return(parsed)
 }
 
-#' @rdname parseMisoSE
+#' @rdname parseMisoGeneric
 #' @examples
 #'
 #' # alternative 5' splice site (A5SS) event
@@ -438,56 +367,17 @@ parseMisoRI <- function(event, strand) {
 #'  chr1 A5SS exon 17606 17742 . - .")
 #' parseMisoA5SS(event)
 parseMisoA5SS <- function(event) {
-    # Filter out events that aren't valid
     validator <- c("gene", "mRNA", rep("exon", 2), "mRNA", rep("exon", 2))
-    event <- getValidEvents(event, validator)
-    eventType <- "A5SS"
-    
-    # If there are valid events
-    if (!is.null(event)) {
-        # Get the first index, chromosome and strand of valids events
-        index <- which(event[[3]] == "gene")
-        chr <- as.character(event[index, 1])
-        strand <- as.character(event[index, 7])
-        if (ncol(event) >= 9) {
-            id <- as.character(event[index, 9])
-            semicolon <- gregexpr(";", id, fixed = T)
-            semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
-            id <- substr(id, 4, semicolon - 1)
-        } else {
-            id <- NULL
-        }
-        
-        # Creates a data frame of parsed junctions filled with NAs
-        parsed <- createJunctionsTemplate(length(index),
-                                          program = "MISO",
-                                          event.type = eventType,
-                                          chromosome = chr,
-                                          strand = strand,
-                                          id = id)
-        plus <- strand == "+"
-        # Plus strand
-        if (nrow(event[plus, ]) > 0) {
-            parsed[plus, ]["C1.start"] <- event[index[plus] + 2, 4]
-            parsed[plus, ]["C1.end"] <- event[index[plus] + 2, 5]
-            parsed[plus, ]["A1.end"] <- event[index[plus] + 5, 5]
-            parsed[plus, ][c("C2.start", "C2.end")] <- 
-                event[index[plus] + 3, 4:5]
-        }
-        # Minus strand
-        minus <- !plus
-        if (nrow(event[minus, ]) > 0) {
-            parsed[minus, ]["C1.start"] <- event[index[minus] + 3, 5]
-            parsed[minus, ]["C1.end"] <- event[index[minus] + 3, 4]
-            parsed[minus, ]["A1.end"] <- event[index[minus] + 6, 4]
-            parsed[minus, ][c("C2.start", "C2.end")] <- 
-                event[index[minus] + 2, 5:4]
-        }
-        return(parsed)
-    }
+    coord <- c("C1.start", "A1.start", "C2.start", 
+               "C1.end", "A1.end", "C2.end")
+    plusIndex <- c(2, 5, 3)
+    minusIndex <- c(2, 6, 3)
+    parsed <- parseMisoGeneric(event, validator, eventType="A5SS", coord, 
+                               plusIndex, minusIndex)
+    return(parsed)
 }
 
-#' @rdname parseMisoSE
+#' @rdname parseMisoGeneric
 #' @examples
 #'
 #' # alternative 3' splice site (A3SS) event
@@ -500,58 +390,18 @@ parseMisoA5SS <- function(event) {
 #'  chr1 A3SS exon 15796 15942 . - .
 #'  chr1 A3SS exon 16607 16765 . - .")
 #' parseMisoA3SS(event)
-parseMisoA3SS <- function(event, strand) {
-    # Filter out events that aren't valid
+parseMisoA3SS <- function(event) {
     validator <- c("gene", "mRNA", rep("exon", 2), "mRNA", rep("exon", 2))
-    event <- getValidEvents(event, validator)
-    eventType <- "A3SS"
-    
-    # If there are valid events
-    if (!is.null(event)) {
-        # Get the first index, chromosome and strand of valids events
-        index <- which(event[[3]] == "gene")
-        chr <- as.character(event[index, 1])
-        strand <- as.character(event[index, 7])
-        if (ncol(event) >= 9) {
-            id <- as.character(event[index, 9])
-            semicolon <- gregexpr(";", id, fixed = T)
-            semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
-            id <- substr(id, 4, semicolon - 1)
-        } else {
-            id <- NULL
-        }
-        
-        # Creates a data frame of parsed junctions filled with NAs
-        parsed <- createJunctionsTemplate(length(index),
-                                          program = "MISO",
-                                          event.type = eventType,
-                                          chromosome = chr,
-                                          strand = strand,
-                                          id = id)
-        
-        plus <- strand == "+"
-        # Plus strand
-        if (nrow(event[plus, ]) > 0) {
-            parsed[plus, ][c("C1.start", "C1.end")] <- 
-                event[index[plus] + 2, 4:5]
-            parsed[plus, ]["C2.start"] <- event[index[plus] + 3, 4]
-            parsed[plus, ]["A1.start"] <- event[index[plus] + 6, 4]
-            parsed[plus, ]["C2.end"] <- event[index[plus] + 3, 5]
-        }
-        # Minus strand
-        minus <- !plus
-        if (nrow(event[minus, ]) > 0) {
-            parsed[minus, ][c("C1.start", "C1.end")] <- 
-                event[index[minus] + 3, 5:4]
-            parsed[minus, ]["C2.start"] <- event[index[minus] + 2, 5]
-            parsed[minus, ]["A1.start"] <- event[index[minus] + 5, 5]
-            parsed[minus, ]["C2.end"] <- event[index[minus] + 2, 4]
-        }
-        return(parsed)
-    }
+    coord <- c("C1.start", "A1.start", "C2.start", 
+               "C1.end", "A1.end", "C2.end")
+    plusIndex <- c(2, 6, 3)
+    minusIndex <- c(2, 5, 3)
+    parsed <- parseMisoGeneric(event, validator, eventType="A3SS", coord, 
+                               plusIndex, minusIndex)
+    return(parsed)
 }
 
-#' @rdname parseMisoSE
+#' @rdname parseMisoGeneric
 #' @examples
 #'
 #' # Tandem UTR event
@@ -562,53 +412,17 @@ parseMisoA3SS <- function(event, strand) {
 #'  chr19 TandemUTR mRNA  10664223  10664625  .  -  .
 #'  chr19 TandemUTR exon  10664223  10664625  .  -  .")
 #' parseMisoTandemUTR(event)
-parseMisoTandemUTR <- function(event, strand) {
-    # Filter out events that aren't valid
+parseMisoTandemUTR <- function(event, minusIndex) {
     validator <- c("gene", "mRNA", "exon", "mRNA", rep("exon", 1))
-    event <- getValidEvents(event, validator)
-    eventType <- "TandemUTR"
-    
-    # If there are valid events
-    if (!is.null(event)) {
-        # Get the first index, chromosome and strand of valids events
-        index <- which(event[[3]] == "gene")
-        chr <- as.character(event[index, 1])
-        strand <- as.character(event[index, 7])
-        if (ncol(event) >= 9) {
-            id <- as.character(event[index, 9])
-            semicolon <- gregexpr(";", id, fixed = T)
-            semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
-            id <- substr(id, 4, semicolon - 1)
-        } else {
-            id <- NULL
-        }
-        
-        # Creates a data frame of parsed junctions filled with NAs
-        parsed <- createJunctionsTemplate(length(index),
-                                          program = "MISO",
-                                          event.type = eventType,
-                                          chromosome = chr,
-                                          strand = strand,
-                                          id = id)
-        plus <- strand == "+"
-        # Plus strand
-        if (nrow(event[plus, ]) > 0) {
-            parsed[plus, ]["C1.start"] <- event[index[plus] + 2, 4]
-            parsed[plus, ][c("C1.end",
-                             "A1.end")] <- event[index[plus] + c(2, 4), 5]
-        }
-        # Minus strand
-        minus <- !plus
-        if (nrow(event[minus, ]) > 0) {
-            parsed[minus, ]["C1.start"] <- event[index[minus] + 2, 5]
-            parsed[minus, ][c("C1.end",
-                              "A1.end")] <- event[index[minus] + c(2, 4), 4]
-        }
-        return(parsed)
-    }
+    coord <- c("C1.start", "A1.start", "C1.end", "A1.end")
+    plusIndex <- c(2, 4)
+    minusIndex <- c(4, 2)
+    parsed <- parseMisoGeneric(event, validator, eventType="TandemUTR", coord, 
+                               plusIndex, minusIndex)
+    return(parsed)
 }
 
-#' @rdname parseMisoSE
+#' @rdname parseMisoGeneric
 #' @examples
 #'
 #' # alternative first exon (AFE) event
@@ -631,27 +445,20 @@ parseMisoAFE <- function(event) {
     if (!is.null(event)) {
         # Get the first index, chromosome and strand of valids events
         index <- which(event[[3]] == "gene")
-        next_index <- nrow(event) + 1
+        nextIndex <- nrow(event) + 1
         if (length(index) > 1)
-            next_index <- c(index[2:length(index)], next_index)
+            nextIndex <- c(index[2:length(index)], nextIndex)
         
         chr <- as.character(event[index, 1])
         strand <- as.character(event[index, 7])
+        id <- NULL
+        if (ncol(event) >= 9) id <- parseMisoId(event[index, 9])
         
         # Get mRNAs index
         mRNA <- which(event[[3]] == "mRNA")
         splitting <- split(mRNA, c(TRUE, FALSE))
         mRNA1 <- splitting$`TRUE`
         mRNA2 <- splitting$`FALSE`
-        
-        if (ncol(event) >= 9) {
-            id <- as.character(event[index, 9])
-            semicolon <- gregexpr(";", id, fixed = T)
-            semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
-            id <- substr(id, 4, semicolon - 1)
-        } else {
-            id <- NULL
-        }
         
         # Creates a data frame of parsed junctions filled with NAs
         parsed <- createJunctionsTemplate(length(index),
@@ -666,7 +473,7 @@ parseMisoAFE <- function(event) {
             parsed[plus, ][c("C1.start", 
                              "C1.end")] <- event[mRNA2-1, 4:5][plus, ]
             parsed[plus, ][c("A1.start",
-                             "A1.end")] <- event[next_index-1, 4:5][plus, ]
+                             "A1.end")] <- event[nextIndex-1, 4:5][plus, ]
         }
         # Minus strand
         minus <- !plus
@@ -679,62 +486,62 @@ parseMisoAFE <- function(event) {
         return(parsed)
     }
     
-#     # Remove mRNAs from different chromosomes and mark event
-#     len <- nrow(event)
-#     event <- remove_wrong_mRNA(event)
-#     if (len < nrow(event))
-#         parsed[["comment"]] <- "wrong mRNAs"
-#     
-#     # Get a list of each mRNA and respective exons
-#     mRNA <- list_mRNA(event)
-#     
-#     # Remove mRNAs with the same exons and mark event
-#     len <- length(mRNA)
-#     mRNA <- remove_duplicated_mRNA(mRNA)
-#     if (len < length(mRNA))
-#         parsed[["comment"]] <- "duplicated mRNAs"
-#    
-#     if (length(mRNA) != 2) {
-#         # Don't parse events with more than two mRNAs or only one mRNA
-#     } else if (strand == "+") {
-#         mRNA1 <- mRNA[[1]]
-#         exon1 <- mRNA1[nrow(mRNA1), 4:5]
-#         mRNA2 <- mRNA[[2]]
-#         exon2 <- mRNA2[nrow(mRNA2), 4:5]
-#         # Check if the most downstream exons are equal in both mRNAs
-#         if (all(exon1 == exon2)) {
-#             # Save positions of shared (constitutive) exon and alternative
-#             # first exons
-#             parsed[c("C1.start", "C1.end")] <- mRNA1[nrow(mRNA2) - 1, 4:5]
-#             parsed[c("A1.start", "A1.end")] <- mRNA1[nrow(mRNA2) - 1, 4:5]
-#             parsed[c("C2.start", "C2.end")] <- exon1
-#         } else {
-#             # Save the positions of the downstream exons
-#             parsed[c("C1.start", "C1.end")] <- exon1
-#             parsed[c("A1.start", "A1.end")] <- exon2
-#         }
-#     } else if (strand == "-") {
-#         mRNA1 <- mRNA[[1]]
-#         exon1 <- mRNA1[2, 5:4]
-#         mRNA2 <- mRNA[[2]]
-#         exon2 <- mRNA2[2, 5:4]
-#         # Check if the most downstream exons are equal in both mRNAs
-#         if (all(exon1 == exon2)) {
-#             # Save positions of shared (constitutive) exon and alternative
-#             # first exons
-#             parsed[c("C1.start", "C1.end")] <- mRNA1[3, 5:4]
-#             parsed[c("A1.start", "A1.end")] <- mRNA2[3, 5:4]
-#             parsed[c("C2.start", "C2.end")] <- exon1
-#         } else {
-#             # Save the positions of the downstream exons
-#             parsed[c("C1.start", "C1.end")] <- exon1
-#             parsed[c("A1.start", "A1.end")] <- exon2
-#         }
-#     }
-#     return(parsed)
+    #     # Remove mRNAs from different chromosomes and mark event
+    #     len <- nrow(event)
+    #     event <- removeWrongRNA(event)
+    #     if (len < nrow(event))
+    #         parsed[["comment"]] <- "wrong mRNAs"
+    #     
+    #     # Get a list of each mRNA and respective exons
+    #     mRNA <- listRNA(event)
+    #     
+    #     # Remove mRNAs with the same exons and mark event
+    #     len <- length(mRNA)
+    #     mRNA <- removeDuplicatedRNA(mRNA)
+    #     if (len < length(mRNA))
+    #         parsed[["comment"]] <- "duplicated mRNAs"
+    #    
+    #     if (length(mRNA) != 2) {
+    #         # Don't parse events with more than two mRNAs or only one mRNA
+    #     } else if (strand == "+") {
+    #         mRNA1 <- mRNA[[1]]
+    #         exon1 <- mRNA1[nrow(mRNA1), 4:5]
+    #         mRNA2 <- mRNA[[2]]
+    #         exon2 <- mRNA2[nrow(mRNA2), 4:5]
+    #         # Check if the most downstream exons are equal in both mRNAs
+    #         if (all(exon1 == exon2)) {
+    #             # Save positions of shared (constitutive) exon and alternative
+    #             # first exons
+    #             parsed[c("C1.start", "C1.end")] <- mRNA1[nrow(mRNA2) - 1, 4:5]
+    #             parsed[c("A1.start", "A1.end")] <- mRNA1[nrow(mRNA2) - 1, 4:5]
+    #             parsed[c("C2.start", "C2.end")] <- exon1
+    #         } else {
+    #             # Save the positions of the downstream exons
+    #             parsed[c("C1.start", "C1.end")] <- exon1
+    #             parsed[c("A1.start", "A1.end")] <- exon2
+    #         }
+    #     } else if (strand == "-") {
+    #         mRNA1 <- mRNA[[1]]
+    #         exon1 <- mRNA1[2, 5:4]
+    #         mRNA2 <- mRNA[[2]]
+    #         exon2 <- mRNA2[2, 5:4]
+    #         # Check if the most downstream exons are equal in both mRNAs
+    #         if (all(exon1 == exon2)) {
+    #             # Save positions of shared (constitutive) exon and alternative
+    #             # first exons
+    #             parsed[c("C1.start", "C1.end")] <- mRNA1[3, 5:4]
+    #             parsed[c("A1.start", "A1.end")] <- mRNA2[3, 5:4]
+    #             parsed[c("C2.start", "C2.end")] <- exon1
+    #         } else {
+    #             # Save the positions of the downstream exons
+    #             parsed[c("C1.start", "C1.end")] <- exon1
+    #             parsed[c("A1.start", "A1.end")] <- exon2
+    #         }
+    #     }
+    #     return(parsed)
 }
 
-#' @rdname parseMisoSE
+#' @rdname parseMisoGeneric
 #' @examples
 #'
 #' # alternative last exon (ALE) event
@@ -755,27 +562,20 @@ parseMisoALE <- function(event) {
     if (!is.null(event)) {
         # Get the first index, chromosome and strand of valids events
         index <- which(event[[3]] == "gene")
-        next_index <- nrow(event) + 1
+        nextIndex <- nrow(event) + 1
         if (length(index) > 1)
-            next_index <- c(index[2:length(index)], next_index)
+            nextIndex <- c(index[2:length(index)], nextIndex)
         
         chr <- as.character(event[index, 1])
         strand <- as.character(event[index, 7])
+        id <- NULL
+        if (ncol(event) >= 9) id <- parseMisoId(event[index, 9])
         
         # Get mRNAs index
         mRNA <- which(event[[3]] == "mRNA")
         splitting <- split(mRNA, c(TRUE, FALSE))
         mRNA1 <- splitting$`TRUE`
         mRNA2 <- splitting$`FALSE`
-        
-        if (ncol(event) >= 9) {
-            id <- as.character(event[index, 9])
-            semicolon <- gregexpr(";", id, fixed = T)
-            semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
-            id <- substr(id, 4, semicolon - 1)
-        } else {
-            id <- NULL
-        }
         
         # Creates a data frame of parsed junctions filled with NAs
         parsed <- createJunctionsTemplate(length(index),
@@ -798,60 +598,60 @@ parseMisoALE <- function(event) {
             parsed[minus, ][c("A1.start", 
                               "A1.end")] <- event[mRNA2 - 1, 5:4][minus, ]
             parsed[minus, ][c("C2.start", 
-                              "C2.end")] <- event[next_index - 1, 5:4][minus, ]
+                              "C2.end")] <- event[nextIndex - 1, 5:4][minus, ]
         }
         return(parsed)
     }
     
-#     len <- nrow(event)
-#     if (len < 5) {
-#         # A GFF3 valid event needs at least 5 lines to be described
-#     } else {
-#         event <- remove_wrong_mRNA(event)
-#         if (len < nrow(event))
-#             parsed[["comment"]] <- "wrong mRNAs"
-#         
-#         # Get a list of each mRNA and respective exons
-#         mRNA <- list_mRNA(event)
-#         
-#         # Remove mRNAs with the same exons and mark event
-#         len <- length(mRNA)
-#         mRNA <- remove_duplicated_mRNA(mRNA)
-#         if (len < length(mRNA))
-#             parsed[["comment"]] <- "duplicated mRNAs"
-#         
-#         if (length(mRNA) != 2) {
-#             # Don't parse events with more than two mRNAs or only one mRNA
-#             # parsed[["comment"]] <- "unrecognized event"
-#         } else if (strand == "+") {
-#             mRNA1 <- mRNA[[1]]
-#             exon1 <- mRNA1[2, 4:5]
-#             mRNA2 <- mRNA[[2]]
-#             exon2 <- mRNA2[2, 4:5]
-#             # Check if the most downstream exons are equal in both mRNAs
-#             if (all(exon1 == exon2)) {
-#                 parsed[c("C1.start", "C1.end")] <- exon1
-#                 parsed[c("A1.start", "A1.end")] <- mRNA1[3, 4:5]
-#                 parsed[c("C2.start", "C2.end")] <- mRNA2[3, 4:5]
-#             } else {
-#                 parsed[c("A1.start", "A1.end")] <- exon1
-#                 parsed[c("C2.start", "C2.end")] <- exon2
-#             }
-#         } else if (strand == "-") {
-#             mRNA1 <- mRNA[[1]]
-#             exon1 <- mRNA1[nrow(mRNA1), 5:4]
-#             mRNA2 <- mRNA[[2]]
-#             exon2 <- mRNA2[nrow(mRNA2), 5:4]
-#             # Check if the most downstream exons are equal in both mRNAs
-#             if (all(exon1 == exon2)) {
-#                 parsed[c("C1.start", "C1.end")] <- exon1
-#                 parsed[c("A1.start", "A1.end")] <- mRNA1[nrow(mRNA2) - 1, 5:4]
-#                 parsed[c("C2.start", "C2.end")] <- mRNA2[nrow(mRNA2) - 1, 5:4]
-#             } else {
-#                 parsed[c("A1.start", "A1.end")] <- exon1
-#                 parsed[c("C2.start", "C2.end")] <- exon2
-#             }
-#         }
-#     }
-#     return(parsed)
+    #     len <- nrow(event)
+    #     if (len < 5) {
+    #         # A GFF3 valid event needs at least 5 lines to be described
+    #     } else {
+    #         event <- removeWrongRNA(event)
+    #         if (len < nrow(event))
+    #             parsed[["comment"]] <- "wrong mRNAs"
+    #         
+    #         # Get a list of each mRNA and respective exons
+    #         mRNA <- listRNA(event)
+    #         
+    #         # Remove mRNAs with the same exons and mark event
+    #         len <- length(mRNA)
+    #         mRNA <- removeDuplicatedRNA(mRNA)
+    #         if (len < length(mRNA))
+    #             parsed[["comment"]] <- "duplicated mRNAs"
+    #         
+    #         if (length(mRNA) != 2) {
+    #             # Don't parse events with more than two mRNAs or only one mRNA
+    #             # parsed[["comment"]] <- "unrecognized event"
+    #         } else if (strand == "+") {
+    #             mRNA1 <- mRNA[[1]]
+    #             exon1 <- mRNA1[2, 4:5]
+    #             mRNA2 <- mRNA[[2]]
+    #             exon2 <- mRNA2[2, 4:5]
+    #             # Check if the most downstream exons are equal in both mRNAs
+    #             if (all(exon1 == exon2)) {
+    #                 parsed[c("C1.start", "C1.end")] <- exon1
+    #                 parsed[c("A1.start", "A1.end")] <- mRNA1[3, 4:5]
+    #                 parsed[c("C2.start", "C2.end")] <- mRNA2[3, 4:5]
+    #             } else {
+    #                 parsed[c("A1.start", "A1.end")] <- exon1
+    #                 parsed[c("C2.start", "C2.end")] <- exon2
+    #             }
+    #         } else if (strand == "-") {
+    #             mRNA1 <- mRNA[[1]]
+    #             exon1 <- mRNA1[nrow(mRNA1), 5:4]
+    #             mRNA2 <- mRNA[[2]]
+    #             exon2 <- mRNA2[nrow(mRNA2), 5:4]
+    #             # Check if the most downstream exons are equal in both mRNAs
+    #             if (all(exon1 == exon2)) {
+    #                 parsed[c("C1.start", "C1.end")] <- exon1
+    #                 parsed[c("A1.start", "A1.end")] <- mRNA1[nrow(mRNA2) - 1, 5:4]
+    #                 parsed[c("C2.start", "C2.end")] <- mRNA2[nrow(mRNA2) - 1, 5:4]
+    #             } else {
+    #                 parsed[c("A1.start", "A1.end")] <- exon1
+    #                 parsed[c("C2.start", "C2.end")] <- exon2
+    #             }
+    #         }
+    #     }
+    #     return(parsed)
 }
