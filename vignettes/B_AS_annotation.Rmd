@@ -748,7 +748,7 @@ getNumerics <- function(table, by = NULL, toNumeric = FALSE) {
 
 # Join all given tables together based on given parameters
 types <- names(events)
-joint <- lapply(types, function(type, events) {
+join <- lapply(types, function(type, events) {
     print(type)
     join <- function(...) fullJoinTables(events[[type]], ...)
     
@@ -784,13 +784,13 @@ joint <- lapply(types, function(type, events) {
                                 c(rep(FALSE, 2), rep(TRUE, 4))))
     return(res)
 }, events)
-names(joint) <- types
+names(join) <- types
 ```
 
 ```{r, eval=FALSE}
 # Okay! Let's check how many overlaps there are and how many events are unique
 # for skipping exons events (just change)
-j <- joint$SE
+j <- join$SE
 programs <- j[grep("Program", names(j))]
 nas <- !is.na(programs)
 nas <- ifelse(nas, row(nas), NA)
@@ -820,18 +820,83 @@ upstream exons instead, but it's computationally faster to use an approach
 independent of strands). It's simply a matter of using the complement of a given
 value (1 - value) when changing the exon of reference.
 
+There are 5 types of events where this may happen: AFE/ALE, A3/5SS, MXE and
+Tandem UTR. The inclusion element in SE and RI is universal for all.
+
+In MXE, AFE/ALE and Tandem UTR, we may consider the second exon instead of the
+first as the alternative. In A3/5SS, we may consider either the longest or
+shortest isoform as the alternative. Let's abstract from all that. Let's just
+sort ALL the coordinates and compare if they are the same given the strand and
+chromosome (we can't ignore these two attributes, of course).
+
+```{r, eval=FALSE}
+#' Returns the coordinates of interest to sort for a given event type
+#' @export
+sortingCoordinates <- function(type) {
+    switch(type,
+           "A3SS" = c("C2.start", "A1.start"),
+           "A5SS" = c("C1.end", "A1.end"),
+           "AFE"  = c("A1.start", "A1.end", "C1.start", "C1.end"),
+           "ALE"  = c("A1.start", "A1.end", "C2.start", "C2.end"),
+           "MXE"  = c("A1.start", "A1.end", "A2.start", "A2.end"), 
+           "TandemUTR" = c("A1.end", "C1.end"))
+}
+
+toNumbers <- function(type, annotation) {
+    # Create vector with comparable columns
+    id <- c("Strand", "Chromosome", "Event.type")
+    by <- c(id, getCoordinates(type))
+    toNumeric <- !by %in% id
+    
+    # Convert given columns to numeric if possible
+    tables <- lapply(annotation[[type]], getNumerics, by, toNumeric)
+    return(tables)
+}
+
+annotation <- getParsedAnnotation()
+annot2 <- NULL
+for (type in names(annotation)) {
+    coord <- sortingCoordinates(type)
+    annot2[[type]] <- toNumbers(type, annotation)
+    if (!is.null(coord)) {
+        for (program in names(annotation[[type]])) {
+            print(paste(type, program))
+            table <- annot2[[type]][[program]]
+            plus <- table[["Strand"]] == "+"
+            plusOrd <- apply(table[plus, coord], 1, sort)
+            minusOrd <- apply(table[!plus, coord], 1, sort, decreasing = TRUE)
+            annot2[[type]][[program]][plus, coord] <- t(plusOrd)
+            annot2[[type]][[program]][!plus, coord] <- t(minusOrd)
+        }
+    }
+}
+
+# Let's compare!
+join <- joinAnnotation(annotation)
+join2 <- joinAnnotation(annot2)
+
+for (type in names(join)) {
+    print(type)
+    vennEvents(join, type)
+    title(paste(type))
+    vennEvents(join2, type)
+    title(paste(type, "unique interest sorted"))
+}
+```
+
 # Doing all the above but with way less code
 
 ```{r, eval=FALSE}
 annotation <- getParsedAnnotation()
 join <- joinAnnotation(annotation)
+join <- j2
 for (type in names(join)) {
     print(type)
     # Make a Venn diagram of the matching events
     vennEvents(join, type)
     title(type)
-    # writeAnnotation(join, type, showID = TRUE,
-                    # paste0("data/hg19_cross_annotation_", type, ".txt"))
+    writeAnnotation(join, type, showID = TRUE,
+                    paste0("data/hg19_cross_annotation_", type, ".txt"))
 }
 ```
 
