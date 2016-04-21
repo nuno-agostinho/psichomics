@@ -256,15 +256,18 @@ parseMisoGeneric <- function(event, validator, eventType, coord, plusIndex,
         # Plus strand
         iplus <- index[plus]
         plusIndex <- sort(rep(iplus, length(plusIndex))) + rep(plusIndex, length(iplus))
-        if (nrow(event[plus, ]) > 0)
-            parsed[plus, coord] <- unlist(event[plusIndex, 4:5])
-        
+        if (nrow(event[plus, ]) > 0) {
+            parsed[plus, coord] <- matrix(unlist(
+                c(t(event[plusIndex, 4:5]))), ncol = length(coord), byrow = T)
+        }
         # Minus strand
         minus <- !plus
         iminus <- index[minus]
         minusIndex <- sort(rep(iminus, length(minusIndex))) + rep(minusIndex, length(iminus))
-        if (nrow(event[minus, ]) > 0)
-            parsed[minus, rev(coord)] <- unlist(event[minusIndex, 4:5])
+        if (nrow(event[minus, ]) > 0) {
+            parsed[minus, rev(coord)] <- matrix(unlist(
+                c(t(event[minusIndex, 4:5]))), ncol = length(coord), byrow = T)
+        }
         return(parsed)
     }
 }
@@ -275,7 +278,7 @@ parseMisoGeneric <- function(event, validator, eventType, coord, plusIndex,
 #'
 #' @return Character with the ID parsed
 parseMisoId <- function(id) {
-    id <- as.character(event[index, 9])
+    id <- as.character(id)
     semicolon <- gregexpr(";", id, fixed = T)
     semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
     id <- substr(id, 4, semicolon - 1)
@@ -297,7 +300,9 @@ parseMisoId <- function(id) {
 #' parseMisoSE(event)
 parseMisoSE <- function(event) {
     validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 2))
-    coord <- c("C1.start", "A1.start", "C2.start", "C1.end", "A1.end", "C2.end")
+    coord <- c("C1.start", "C1.end",
+               "A1.start", "A1.end",
+               "C2.start", "C2.end")
     plusIndex <- 2:4
     minusIndex <- 2:4
     parsed <- parseMisoGeneric(event, validator, eventType="SE", coord, 
@@ -322,8 +327,10 @@ parseMisoSE <- function(event) {
 #' parseMisoMXE(event)
 parseMisoMXE <- function(event) {
     validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 3))
-    coord <- c("C1.start", "A1.start", "A2.start", "C2.start", 
-               "C1.end", "A1.end", "A2.end", "C2.end")
+    coord <- c("C1.start", "C1.end",
+               "A1.start", "A1.end",
+               "A2.start", "A2.end",
+               "C2.start", "C2.end")
     plusIndex <- c(2:3, 7, 4)
     minusIndex <- c(2, 7, 3:4)
     parsed <- parseMisoGeneric(event, validator, eventType="MXE", coord, 
@@ -345,7 +352,8 @@ parseMisoMXE <- function(event) {
 #' parseMisoRI(event)
 parseMisoRI <- function(event, strand) {
     validator <- c("gene", "mRNA", "exon", "mRNA", rep("exon", 2))
-    coord <- c("C1.start", "C2.start", "C1.end", "C2.end")
+    coord <- c("C1.start", "C1.end", 
+               "C2.start", "C2.end")
     plusIndex <- 4:5
     minusIndex <- 4:5
     parsed <- parseMisoGeneric(event, validator, eventType="RI", coord, 
@@ -368,8 +376,9 @@ parseMisoRI <- function(event, strand) {
 #' parseMisoA5SS(event)
 parseMisoA5SS <- function(event) {
     validator <- c("gene", "mRNA", rep("exon", 2), "mRNA", rep("exon", 2))
-    coord <- c("C1.start", "A1.start", "C2.start", 
-               "C1.end", "A1.end", "C2.end")
+    coord <- c("C1.start", "C1.end",
+               "A1.start", "A1.end",
+               "C2.start", "C2.end")
     plusIndex <- c(5, 2, 3)
     minusIndex <- c(2, 3, 6)
     parsed <- parseMisoGeneric(event, validator, eventType="A5SS", coord, 
@@ -392,8 +401,9 @@ parseMisoA5SS <- function(event) {
 #' parseMisoA3SS(event)
 parseMisoA3SS <- function(event, plusIndex, minusIndex) {
     validator <- c("gene", "mRNA", rep("exon", 2), "mRNA", rep("exon", 2))
-    coord <- c("C1.start", "A1.start", "C2.start", 
-               "C1.end", "A1.end", "C2.end")
+    coord <- c("C1.start", "C1.end",
+               "A1.start", "A1.end",
+               "C2.start", "C2.end")
     plusIndex <- c(2, 3, 6)
     minusIndex <- c(5, 2, 3)
     parsed <- parseMisoGeneric(event, validator, eventType="A3SS", coord, 
@@ -414,7 +424,8 @@ parseMisoA3SS <- function(event, plusIndex, minusIndex) {
 #' parseMisoTandemUTR(event)
 parseMisoTandemUTR <- function(event, minusIndex) {
     validator <- c("gene", "mRNA", "exon", "mRNA", rep("exon", 1))
-    coord <- c("C1.start", "A1.start", "C1.end", "A1.end")
+    coord <- c("C1.start", "C1.end",
+               "A1.start", "A1.end")
     plusIndex <- c(2, 4)
     minusIndex <- c(4, 2)
     parsed <- parseMisoGeneric(event, validator, eventType="TandemUTR", coord, 
@@ -452,7 +463,8 @@ parseMisoAFE <- function(event) {
         chr <- as.character(event[index, 1])
         strand <- as.character(event[index, 7])
         id <- NULL
-        if (ncol(event) >= 9) id <- parseMisoId(event[index, 9])
+        if (ncol(event) >= 9) 
+            id <- parseMisoId(event[index, 9])
         
         # Get mRNAs index
         mRNA <- which(event[[3]] == "mRNA")
@@ -569,7 +581,8 @@ parseMisoALE <- function(event) {
         chr <- as.character(event[index, 1])
         strand <- as.character(event[index, 7])
         id <- NULL
-        if (ncol(event) >= 9) id <- parseMisoId(event[index, 9])
+        if (ncol(event) >= 9)
+            id <- parseMisoId(event[index, 9])
         
         # Get mRNAs index
         mRNA <- which(event[[3]] == "mRNA")
