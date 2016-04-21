@@ -84,3 +84,10 @@ checkbox in the header
 
 > TODO: Allow to use Firehose even if the server is down (for example, if we
 only want to use the information we have already downloaded)
+
+> TODO: Allow the user to choose the colors of the groups in the groups
+interface
+
+> TODO: Remove the warning messages when building the package. It happens 
+because of different packages loading homonymic functions, so just load
+the functions needed by each package.
