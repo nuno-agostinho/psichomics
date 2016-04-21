@@ -1,3 +1,10 @@
+## TODO(NunoA): project either individuals (as default) or events
+## TODO(NunoA): add histogram in/above (percentage of NAs per row to remove)
+## TODO(NunoA): include attributes (like name... what else?) in the tooltip
+## TODO(NunoA): add brushing capabilities (brush function from Shiny? only
+## rectangle selection available?)
+## TODO(NunoA): create clusters and use those clusters as groups of data
+
 # The name used for the plot must be unique
 plot <- "PCA highcharts"
 id <- function(value) objectId(name, plot, value)
@@ -127,7 +134,6 @@ server <- function(input, output, session) {
                 column(6, selectizeInput(id("pcY"), "Choose Y axis",
                                          choices = choices,
                                          selected = choices[[2]]))),
-            highchartOutput(id("variancePlot")),
             fluidRow(
                 column(8,
                        selectizeInput(
@@ -141,8 +147,16 @@ server <- function(input, output, session) {
                 column(2,
                        actionButton(id("colorGroups_selectAll"), "Select all", 
                                     class = "inline_selectize"))),
+            actionButton(id("showVariancePlot"), "Show variance plot"),
             actionButton(id("plot"), class = "btn-primary", "Plot PCA")
         )
+    })
+    
+    # Show variance plot
+    observeEvent(input[[id("showVariancePlot")]], {
+        showModal(session, "Variance plot", highchartOutput(id("variancePlot")), 
+                  size = "large", style = "info", icon = "info-circle",
+                  printMessage = FALSE)
     })
     
     # Select all color groups when pressing the respective "Select all" button
@@ -188,7 +202,8 @@ server <- function(input, output, session) {
     # Plots the principal component analysis
     observeEvent(input[[id("plot")]], {
         output[[id("scatterplot")]] <- renderHighchart({
-            if (is.null(sharedData$inclusionLevelsPCA)) 
+            pca <- sharedData$inclusionLevelsPCA
+            if (is.null(pca)) 
                 return(NULL)
             
             isolate({
@@ -198,9 +213,9 @@ server <- function(input, output, session) {
             })
             
             if (!is.null(xAxis) & !is.null(yAxis)) {
-                sdevSq <- sharedData$inclusionLevelsPCA$sdev ^ 2
-                perc <- sdevSq / sum(sdevSq) * 100
-                names(perc) <- colnames(sharedData$inclusionLevelsPCA$x)
+                imp <- as.data.frame(summary(pca)$importance)[2, ]
+                perc <- as.numeric(imp)
+                names(perc) <- names(imp)
                 
                 label <- sprintf("%s (%s%% explained variance)", 
                                  names(perc[c(xAxis, yAxis)]), 
@@ -211,10 +226,11 @@ server <- function(input, output, session) {
                     hc_xAxis(title = list(text = label[1])) %>%
                     hc_yAxis(title = list(text = label[2]))
                 
-                df <- data.frame(sharedData$inclusionLevelsPCA$x)
-                
+                df <- data.frame(pca[["x"]])
                 if (is.null(selected)) {
-                    hc <- hc_add_series_scatter(hc, df[ , xAxis], df[ , yAxis])
+                    hc <- hc %>%
+                        hc_scatter(df[[xAxis]], df[[yAxis]], name = rownames(df)) %>%
+                        hc_tooltip(pointFormat = "{point.name}")
                 } else {
                     # Subset data by the selected clinical groups
                     clinical <- getGroupsFrom("Clinical data")
@@ -222,10 +238,12 @@ server <- function(input, output, session) {
                     
                     for (groupName in selected) {
                         ns <- getMatchingRowNames(groupName, clinical, match)
-                        hc <- hc %>% hc_add_series_scatter(
-                            df[ns, xAxis], df[ns, yAxis],
-                            name = groupName,
-                            showInLegend = TRUE)
+                        hc <- hc %>% 
+                            hc_scatter(df[ns, xAxis], df[ns, yAxis],
+                                       name = rownames(df[ns, ]),
+                                       showInLegend = TRUE) %>%
+                            hc_tooltip(headerFormat = "<b>{series.name}</b><br>",
+                                       pointFormat = "{point.name}")
                     }
                 }
                 return(hc)
