@@ -2,7 +2,7 @@
 % Please edit documentation in R/begin.R
 \name{renameDuplicated}
 \alias{renameDuplicated}
-\title{Rename new vector to avoid duplicated values with old vector}
+\title{Rename vector to avoid duplicated values with comparison}
 \usage{
 renameDuplicated(check, comp)
 }
@@ -13,13 +13,12 @@ renameDuplicated(check, comp)
 }
 \value{
 Character vector with renamed values if duplicated; else, it
-returns the usual values
+returns the usual values. Doesn't return the comparator values.
 }
 \description{
-Renames duplicated values by adding an index
+Renames values by adding an index to the end of duplicates.
 }
 \examples{
-renameDuplicated(check = c("Nuno", "Carolina", "Mariana", "Teresa"),
-       comp = c("Nuno", "Lina", "Marie"))
+renameDuplicated(check = c("blue", "red"), comp = c("green", "blue"))
 }
 
