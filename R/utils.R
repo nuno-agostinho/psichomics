@@ -161,3 +161,48 @@ enableTab <- function(tab) {
     # Enable link itself
     enable(selector = paste0(".navbar li a[data-value=", tab, "]"))
 }
+
+#' Add scatter
+#' @export
+hc_scatter <- function (hc, x, y, z = NULL, color = NULL, label = NULL, 
+                        showInLegend = FALSE, viridis.option = "D", ...) {
+    assertthat::assert_that(highcharter:::.is_highchart(hc), 
+                            length(x) == length(y), 
+                            is.numeric(x), is.numeric(y))
+    df <- data_frame(x, y)
+    if (!is.null(z)) {
+        assert_that(length(x) == length(z))
+        df <- df %>% mutate(z = z)
+    }
+    if (!is.null(color)) {
+        assert_that(length(x) == length(color))
+        assert_that(viridis.option %in% c("A", "B", "C", "D"))
+        cols <- colorize_vector(color, option = viridis.option)
+        df <- df %>% mutate(valuecolor = color, color = cols)
+    }
+    if (!is.null(label)) {
+        assert_that(length(x) == length(label))
+        df <- df %>% mutate(label = label)
+    }
+    # Add arguments to data points if they match the length of the data
+    args <- list(...)
+    for (i in seq_along(args)) {
+        if (length(x) == length(args[[i]])) {
+            df <- cbind(df, setNames(list(args[i]), names(args)[i]))
+            args[[i]] <- character(0)
+        }
+    }
+    
+    ds <- list.parse3(df)
+    type <- ifelse(!is.null(z), "bubble", "scatter")
+    if (!is.null(label)) {
+        dlopts <- list(enabled = TRUE, format = "{point.label}")
+    }
+    else {
+        dlopts <- list(enabled = FALSE)
+    }
+    args <- Filter(length, args)
+    do.call("hc_add_series", c(list(hc, data = ds, type = type, 
+                                    showInLegend = showInLegend, 
+                                    dataLabels = dlopts), args))
+}
