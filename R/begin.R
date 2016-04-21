@@ -252,10 +252,10 @@ psichomics <- function(..., reload = FALSE) {
 #' @param printMessage Boolean: print to console? TRUE by default
 showModal <- function(session, title = "Howdy", content, style = NULL,
                       iconName = "exclamation-circle", footer = NULL,
-                      printMessage = TRUE) {
+                      printMessage = TRUE, size = "small") {
     session$output[["globalModal"]] <- renderUI(
         bsModal2(id(title), style = style, div(icon(iconName), title),
-                 trigger = NULL, size = "small", content = content,
+                 trigger = NULL, size = size, content = content,
                  footer = NULL))
     toggleModal(session, id(title), toggle = "open")
     if (printMessage) print(content)
