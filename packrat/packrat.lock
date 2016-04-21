@@ -211,6 +211,12 @@ Source: CRAN
 Version: 1.2.1
 Hash: 54c730c712edd6087972ecf99bf87c55
 
+Package: gdata
+Source: CRAN
+Version: 2.17.0
+Hash: e7d520c2a9597b303f54499e3bd90644
+Requires: gtools
+
 Package: ggbiplot
 Source: github
 Version: 0.55
@@ -232,6 +238,12 @@ Source: CRAN
 Version: 0.14.0
 Hash: 38b74f188c339da499441cb1812b89b9
 
+Package: gplots
+Source: CRAN
+Version: 3.0.1
+Hash: b7abe122479c203aa236499b7fc4b816
+Requires: caTools, gdata, gtools
+
 Package: gridBase
 Source: CRAN
 Version: 0.4-7
@@ -247,6 +259,11 @@ Package: gtable
 Source: CRAN
 Version: 0.2.0
 Hash: cd78381a9d3fea966ac39bd0daaf5554
+
+Package: gtools
+Source: CRAN
+Version: 3.5.0
+Hash: 471b2e2452dfb30fdc1dd6f1b567925a
 
 Package: highcharter
 Source: CRAN
