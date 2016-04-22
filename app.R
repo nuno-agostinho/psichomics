@@ -29,7 +29,7 @@ ui <- shinyUI(
                            includeScript("www/functions.js"),
                            conditionalPanel(
                                condition="$('html').hasClass('shiny-busy')",
-                               div(icon("cog", "fa-spin"), "Working...",
+                               div(icon("flask", "fa-spin"), "Working...",
                                    class="text-right", id="loadmessage")
                            ),
                            uiOutput("globalModal")),
