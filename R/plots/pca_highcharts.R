@@ -42,7 +42,7 @@ ui <- list(
                            c("Center values" = "center",
                              "Scale values" = "scale"),
                            selected = c("center")),
-        sliderInput(id("naTolerance"), "Percentage of NAs per row to tolerate",
+        sliderInput(id("naTolerance"), "Percentage of NAs per individual to tolerate",
                     min = 0, max=100, value=30, post="%"),
         fluidRow(
             column(8,
