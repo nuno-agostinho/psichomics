@@ -74,11 +74,12 @@ server <- function(input, output, session) {
     # Update available group choices to select
     observe({
         groups <- getGroupsFrom("Clinical data")
-        if (!is.null(groups)) {
-            updateSelectizeInput(
-                session, id("dataGroups"), choices = groups[, "Names"],
-                options = list(placeholder = "Click in 'Select all' to select all groups"))
-        }
+        updateSelectizeInput(
+            session, id("dataGroups"), choices = groups[, "Names"],
+            options = list(placeholder =
+                               ifelse(length(groups) > 0,
+                                      "Click 'Select all' to select all groups",
+                                      "No groups created")))
     })
     
     # Select all data groups when pressing the respective "Select all" button
