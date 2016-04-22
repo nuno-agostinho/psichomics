@@ -179,15 +179,25 @@ server <- function(input, output, session) {
     
     # Plots the explained variance plot
     output[[id("variancePlot")]] <- renderHighchart({
+        pca <- sharedData$inclusionLevelsPCA
         if (is.null(sharedData$inclusionLevelsPCA)) 
             return(NULL)
         
-        sdevSq <- sharedData$inclusionLevelsPCA$sdev ^ 2
+        sdevSq <- pca$sdev ^ 2
+        
+        imp <- as.data.frame(summary(pca)$importance)[2, ]
+        perc <- as.numeric(imp)
+        # names(perc) <- names(imp)
+        
+        print(head(sdevSq))
+        df <- as.data.frame(sdevSq)
+        df <- cbind(df, perc = perc)
+        
         highchart() %>%
             hc_chart(zoomType = "xy", backgroundColor = NULL) %>%
             hc_title(text = paste("Explained variance by each",
                                   "Principal Component (PC)")) %>%
-            hc_add_series(name = "PCs", data = sdevSq, type = "waterfall") %>%
+            hc_add_series(name = "PCs", data = df, type = "waterfall") %>%
             hc_plotOptions(series = list(dataLabels = list(
                 align = "center",
                 verticalAlign = "top",
@@ -198,11 +208,10 @@ server <- function(input, output, session) {
                     "var perc = (this.y/total) * 100;",
                     "return (Highcharts.numberFormat(this.y) +'<br/>'+",
                     "Highcharts.numberFormat(perc) + '%')}")))) %>%
-            hc_xAxis(categories = colnames(sharedData$inclusionLevelsPCA$x),
-                     crosshair = TRUE) %>%
+            hc_xAxis(categories = colnames(pca[["x"]]), crosshair = TRUE) %>%
             hc_yAxis(title = list(text = "Explained variance")) %>%
             hc_legend(enabled = FALSE) %>%
-            hc_tooltip(pointFormat = '{point.name} {point.y:.5f}') %>%
+            hc_tooltip(pointFormat = '{point.name} {point.y:.2f} {point.perc}') %>%
             hc_exporting(enabled = TRUE,
                          buttons = list(contextButton = list(
                              text = "Export", y = -50,
