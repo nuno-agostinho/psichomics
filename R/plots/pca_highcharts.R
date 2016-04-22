@@ -52,6 +52,7 @@ ui <- list(
             column(2,
                    actionButton(id("dataGroups_selectAll"), "Select all", 
                                 class = "inline_selectize"))),
+        actionButton(id("editGroups"), "Edit groups"),
         actionButton(id("calculate"), class = "btn-primary", "Calculate PCA"),
         uiOutput(id("selectPC"))
     ), mainPanel(
@@ -60,6 +61,16 @@ ui <- list(
 )
 
 server <- function(input, output, session) {
+    observeEvent(input[[id("editGroups")]], {
+        env <- new.env()
+        sys.source("R/data/2-groups.R", envir = env)
+        env$server(input, output, session)
+        
+        showModal(session, "Groups", env$ui(),
+                  iconName = "object-group", size = "small", style = "info",
+                  printMessage = FALSE)
+    })
+    
     # Update available group choices to select
     observe({
         groups <- getGroupsFrom("Clinical data")
