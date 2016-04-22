@@ -228,8 +228,9 @@ server <- function(input, output, session) {
                 df <- data.frame(pca[["x"]])
                 if (is.null(selected)) {
                     hc <- hc %>%
-                        hc_scatter(df[[xAxis]], df[[yAxis]], name = rownames(df)) %>%
-                        hc_tooltip(pointFormat = "{point.name}")
+                        hc_scatter(df[[xAxis]], df[[yAxis]],
+                                   sample = rownames(df)) %>%
+                        hc_tooltip(pointFormat = "{point.sample}")
                 } else {
                     # Subset data by the selected clinical groups
                     clinical <- getGroupsFrom("Clinical data")
@@ -239,10 +240,10 @@ server <- function(input, output, session) {
                         ns <- getMatchingRowNames(groupName, clinical, match)
                         hc <- hc %>% 
                             hc_scatter(df[ns, xAxis], df[ns, yAxis],
-                                       name = rownames(df[ns, ]),
+                                       name = groupName,
+                                       sample = rownames(df[ns, ]),
                                        showInLegend = TRUE) %>%
-                            hc_tooltip(headerFormat = "<b>{series.name}</b><br>",
-                                       pointFormat = "{point.name}")
+                            hc_tooltip(pointFormat = "{point.sample}")
                     }
                 }
                 return(hc)
