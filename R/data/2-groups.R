@@ -116,7 +116,9 @@ createGroupFromInput <- function (input, output, session) {
         
         # If there's an error, show it to the user
         if ("simpleError" %in% class(tried)) {
-            errorModal(session, "Expression error", tried$message)
+            errorModal(session, "Expression error", tags$b("Error in the field",
+                       "'Subset expression'."), "Check if the column name is",
+                       "correct.", br(), br(), tags$code(tried$message))
             return(NULL)
         } else {
             whichRows <- list(rownames(set))
