@@ -107,8 +107,7 @@ checkObjects <- function(script, check, parentEnv = NULL) {
     sys.source(script, env)
     # Check for the given variables
     varsDefined <- vapply(check, exists, logical(1), envir = env)
-    if (all(varsDefined))
-        return(env)
+    if (all(varsDefined)) return(env)
 }
 
 #' Sources scripts containing the given variables from a given folder
@@ -135,7 +134,7 @@ sourceScripts <- function(folder, check, parentEnv = NULL, ...){
 #' @note It's a good idea to check if the function is included in the script.
 #'
 #' @inheritParams sourceScripts
-#' @param func Character: function to call
+#' @param func Character: name of function to call
 #' @param ... Arguments to pass to the given function call
 #'
 #' @return Variable from valid script
@@ -143,7 +142,7 @@ sourceScripts <- function(folder, check, parentEnv = NULL, ...){
 callScriptsFunction <- function(func, ..., check = func, folder = "R/") {
     # Get scripts given the variables of interest
     scripts <- sourceScripts(folder, check)
-    # Get a given variable from those script
+    # Get a given variable from those scripts
     f <- lapply(scripts, "[[", func)
     # Remove nulls (needed?)
     f <- Filter(Negate(is.null), f)
@@ -250,13 +249,23 @@ psichomics <- function(..., reload = FALSE) {
 #' @param iconName Character: FontAwesome icon name to appear with the title
 #' @param footer List of interface elements: Custom modal footer
 #' @param printMessage Boolean: print to console? TRUE by default
-showModal <- function(session, title = "Howdy", content, style = NULL,
+#' @param size Character: modal size can be "large", "small" (default) or NULL
+#' (medium)
+#' 
+#' @export
+showModal <- function(session, title, content, style = NULL,
                       iconName = "exclamation-circle", footer = NULL,
-                      printMessage = TRUE, size = "small") {
+                      printMessage = FALSE, size = NULL) {
     session$output[["globalModal"]] <- renderUI(
         bsModal2(id(title), style = style, div(icon(iconName), title),
                  trigger = NULL, size = size, content = content,
                  footer = NULL))
     toggleModal(session, id(title), toggle = "open")
     if (printMessage) print(content)
+}
+
+#' @export
+errorModal <- function(session, title, content, footer) {
+    showModal(session, title, content, footer, style = "danger", size = "small",
+              printMessage = TRUE, iconName = "exclamation-circle")
 }
