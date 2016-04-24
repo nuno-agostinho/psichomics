@@ -45,9 +45,7 @@ setClinicalMatchFrom <- function(dataType, value, category = getCategory())
 #' @return Character with underscores instead of spaces
 #' @examples
 #' objectId("Exploratory analysis", "PCA", "plot")
-objectId <- function(...) {
-    return(gsub(" ", "_", paste(...)))
-}
+objectId <- function(...) return(gsub(" ", "_", paste(...)))
 
 # TODO(NunoA): increase allowed size and warn the user to wait for large files
 # Refuse files with size greater than the specified
@@ -253,19 +251,18 @@ psichomics <- function(..., reload = FALSE) {
 #' (medium)
 #' 
 #' @export
-showModal <- function(session, title, content, style = NULL,
+showModal <- function(session, title, ..., style = NULL,
                       iconName = "exclamation-circle", footer = NULL,
                       printMessage = FALSE, size = NULL) {
     session$output[["globalModal"]] <- renderUI(
         bsModal2(id(title), style = style, div(icon(iconName), title),
-                 trigger = NULL, size = size, content = content,
-                 footer = NULL))
+                 trigger = NULL, size = size, ..., footer = NULL))
     toggleModal(session, id(title), toggle = "open")
     if (printMessage) print(content)
 }
 
 #' @export
-errorModal <- function(session, title, content, footer) {
-    showModal(session, title, content, footer, style = "danger", size = "small",
+errorModal <- function(session, title, ..., footer = NULL) {
+    showModal(session, title, ..., footer, style = "danger", size = "small",
               printMessage = TRUE, iconName = "exclamation-circle")
 }
