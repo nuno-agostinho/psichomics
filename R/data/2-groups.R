@@ -77,6 +77,11 @@ ui <- function() {
 #' The groups are inserted in a matrix
 createGroupFromInput <- function (input, output, session) {
     active <- input[[id("dataTypeTab")]]
+    if (is.null(active)) {
+        errorModal(session, "Data missing", "Load some data first.")
+        return(NULL)
+    }
+    
     type <- input[[id("subsetBy")]]
     
     columnInput <- input[[id("groupColumn")]]
@@ -101,7 +106,6 @@ createGroupFromInput <- function (input, output, session) {
         rows <- unlist(lapply(rows, function(row) eval(parse(text = row))))
         whichRows <- list(rownames(data[rows, ]))
         group <- cbind(input[[id("groupName")]], type, strRows, whichRows)
-        print(group)
     } else if (type == "Expression") {
         # Subset data using the given expression
         expr <- input[[id("groupExpression")]]
@@ -112,8 +116,7 @@ createGroupFromInput <- function (input, output, session) {
         
         # If there's an error, show it to the user
         if ("simpleError" %in% class(tried)) {
-            showModal(session, "Expression error", tried$message, 
-                   style = "danger", icon = "exclamation-circle")
+            errorModal(session, "Expression error", tried$message)
             return(NULL)
         } else {
             whichRows <- list(rownames(set))
@@ -123,6 +126,8 @@ createGroupFromInput <- function (input, output, session) {
         ## TODO(NunoA): Subset data with the GREP expression for the given column
         group <- rep(NA, 4)
     } 
+    # Name group if empty
+    if (group[[1]] == "") group[[1]] <- "Unnamed"
     # Standarise rows
     ns <- c("Names", "Subset", "Input", "Rows")
     if (is.matrix(group))
