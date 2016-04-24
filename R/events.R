@@ -234,8 +234,7 @@ joinAnnotation <- function(annotation) {
         names(res) <- unique(unlist(cols))
         
         # Remove equal rows
-        res <- distinct_(res)
-        return(res)
+        return(unique(res))
     }, annotation)
     names(joint) <- types
     return(joint)
