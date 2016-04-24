@@ -40,13 +40,13 @@ dropdown <- function(inputId) {
 }
 
 #' @export
-bsModal2 <- function (id, title, trigger, ..., size, style, footer = NULL)  {
+bsModal2 <- function (id, title, trigger, ..., style, size = NULL, footer = NULL)  {
     if (!missing(style)) {
         modalHeader <- paste("modal-header", style, sep = "-")
     } else {
         modalHeader <- "modal-header"
     }
-    if (!missing(size)) {
+    if (!is.null(size)) {
         if (size == "large") size = "modal-lg"
         else if (size == "small") size = "modal-sm"
         size <- paste("modal-dialog", size)
