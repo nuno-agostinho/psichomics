@@ -1,21 +1,21 @@
 name <- "Data"
 id <- function(value) objectId(name, value)
 
-# # Loads valid scripts from the indicated folder
+## Loads valid scripts from the indicated folder
 dataName <- "data"
-dataEnvs <- sourceScripts(folder = paste0(tabsFolder, "data/"),
-                          check = c(dataName, "ui"),
-                          parentEnv = environment())
+dataEnvs <- sourceScripts(folder=paste0(tabsFolder, "data/"),
+                          check=c(dataName, "ui"),
+                          parentEnv=environment())
 dataEnvs.server <- lapply(dataEnvs, "[[", "server")
 
 # Get name of the loaded scripts
 names <- sapply(dataEnvs, "[[", dataName)
 
 ui <- function(tab) {
-    tab(name, sidebarLayout(sidebarPanel(
+    tab(title=div(icon("table"), name), sidebarLayout(sidebarPanel(
         do.call(
             tabsetPanel,
-            c(type = "pill",
+            c(type="pill",
               lapply(dataEnvs, function(pill)
                   tabPanel(pill$name, br(), pill$ui()))
             ))),
@@ -30,8 +30,8 @@ ui <- function(tab) {
 #' @param ... Extra arguments to pass to the function dataTableOutput
 #'
 #' @return The HTML code for a tabPanel template
-tabTable <- function(title, id, columns, description = NULL) {
-    tablename <- id(paste("table", id, sep = "-"))
+tabTable <- function(title, id, columns, description=NULL) {
+    tablename <- id(paste("table", id, sep="-"))
     if(!is.null(description))
         d <- p(tags$strong("Table description:"), description, hr())
     else
@@ -52,7 +52,7 @@ server <- function(input, output, session) {
             includeMarkdown("about.md")
         else
             list(selectInput(id("category"), "Select category:",
-                             choices = names(getData())),
+                             choices=names(getData())),
                  uiOutput(id("datatabs")))
     })
     
@@ -64,8 +64,8 @@ server <- function(input, output, session) {
         data <- getData()
         categoryData <- getCategoryData()
         for (group in seq_along(data)) {
-            lapply(seq_along(categoryData), renderDataTab,
-                   data = data[[group]], group)
+            lapply(seq_along(categoryData), renderDataTab, data=data[[group]],
+                   group)
         }
     })
     
@@ -78,30 +78,29 @@ server <- function(input, output, session) {
             seq_along(names(categoryData)),
             function(i)
                 tabTable(names(categoryData)[i],
-                         columns = names(categoryData[[i]]),
-                         id = paste(category, i, sep = "-"),
-                         description = attr(categoryData[[i]], "description")))
-        do.call(tabsetPanel, c(id = id("dataTypeTab"), dataTablesUI))
+                         columns=names(categoryData[[i]]),
+                         id=paste(category, i, sep="-"),
+                         description=attr(categoryData[[i]], "description")))
+        do.call(tabsetPanel, c(id=id("dataTypeTab"), dataTablesUI))
     }) # end of renderUI
     
     # Render a specific data tab (including data table and related interface)
     renderDataTab <- function(index, data, group) {
-        tablename <- id(paste("table", getCategories()[group],
-                              index, sep = "-"))
+        tablename <- id(paste("table", getCategories()[group], index, sep="-"))
         
         table <- data[[index]]
         if (isTRUE(attr(table, "rowNames")))
-            table <- cbind(Row = rownames(table), table)
+            table <- cbind(Row=rownames(table), table)
         
         # Only show default columns if they are defined
         subsetToShow <- table
         colsToShow <- attr(table, "show")
         if (!is.null(colsToShow)) {
             match <- colsToShow %in% colnames(table)
-            subsetToShow <- subset(table, select = colsToShow[match])
+            subsetToShow <- subset(table, select=colsToShow[match])
         }
         
         output[[tablename]] <- renderDataTable(
-            subsetToShow, options = list(pageLength = 10, scrollX=TRUE))
+            subsetToShow, options=list(pageLength=10, scrollX=TRUE))
     } # end of renderDataTab
 }
