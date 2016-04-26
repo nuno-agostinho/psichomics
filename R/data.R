@@ -1,3 +1,9 @@
+## TODO(NunoA): should default columns be a perfect match or just a partial
+## match? If only a partial match... that would be better for certain situations
+
+## TODO(NunoA): render UI for each data table instead of rendering UI for all
+## so there's no refresh
+
 name <- "Data"
 id <- function(value) objectId(name, value)
 
@@ -92,7 +98,7 @@ server <- function(input, output, session) {
         if (isTRUE(attr(table, "rowNames")))
             table <- cbind(Row=rownames(table), table)
         
-        # Only show default columns if they are defined
+        # Only show default columns if they are defined (don't cause problems)
         subsetToShow <- table
         colsToShow <- attr(table, "show")
         if (!is.null(colsToShow)) {
