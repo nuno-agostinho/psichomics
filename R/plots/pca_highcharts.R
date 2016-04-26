@@ -22,6 +22,7 @@ getMatchingRowNames <- function(selected, clinicalGroups, clinicalMatches) {
 psiPCA <- function(psi, center = TRUE, scale. = FALSE, naTolerance = 30) {
     # Get individuals (rows) with less than a given percentage of NAs
     nas <- apply(psi, 1, function(row) sum(is.na(row)))
+    # hist(nas/ncol(psi)*100)
     psi <- psi[nas/ncol(psi)*100 <= naTolerance, ]
     if (nrow(psi) == 0) {
         print("No rows...")
@@ -105,7 +106,7 @@ server <- function(input, output, session) {
         if (nrow(psi) == 0) stop("No data!")
         
         # Transpose the data to have individuals as rows
-        psi <- t(psi)
+        # psi <- t(psi)
         
         # Perform principal component analysis (PCA) on the subset data
         preprocess <- isolate(input[[id("preprocess")]])
