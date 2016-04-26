@@ -18,7 +18,9 @@ name <- "Exon/intron inclusion levels"
 # }
 
 ui <- function() {
-    list(
+    tagList(
+        helpText("Calculate exon and intron inclusion levels. This is also",
+                 "known as percentage spliced in or PSI or even Ψ."),
         selectizeInput(id("eventType"), "Event type",
                        choices = c("Skipping exon" = "SE"), selected = "SE",
                        multiple = TRUE),
@@ -31,8 +33,7 @@ server <- function(input, output, session) {
         eventType <- input[[id("eventType")]]
 
         # Read annotation
-        startProgress("Reading alternative splicing annotation",
-                      divisions = 3)
+        startProgress("Reading alternative splicing annotation", divisions = 3)
         annot <- readAnnotation(eventType)
 
         # Calculate inclusion levels with annotation and junction quantification
@@ -51,7 +52,8 @@ server <- function(input, output, session) {
 
     observeEvent(input[[id("calcIncLevels")]], {
         if(is.null(getData()) || is.null(getJunctionQuantification()))
-            print("No junction quantification data!")
+            errorModal(session, "Data missing",
+                       "No junction quantification data loaded!")
         else
             levels()
     })
