@@ -39,12 +39,12 @@ server <- function(input, output, session) {
         updateProgress("Calculating inclusion levels")
         junctionQuant <- getJunctionQuantification()
         psi <- calculateInclusionLevels(eventType, junctionQuant, annot)
+        attr(psi, "rowNames") <- TRUE
+        attr(psi, "description") <- "Exon and intron inclusion levels for any given alternative splicing event."
         setInclusionLevels(psi)
 
         updateProgress("Matching clinical data")
         match <- matchIdWithClinical(colnames(psi), getClinicalData())
-        # TODO: make sure this attribute allows to show row names in Data section
-        # attr(match, "rowNames") <- TRUE
         setClinicalMatchFrom("Inclusion levels", match)
         closeProgress()
     })
