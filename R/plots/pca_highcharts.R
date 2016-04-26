@@ -45,13 +45,11 @@ ui <- list(
         sliderInput(id("naTolerance"), "Percentage of NAs per individual to tolerate",
                     min = 0, max=100, value=30, post="%"),
         fluidRow(
-            column(8,
-                   selectizeInput(id("dataGroups"), "Groups to perform PCA",
-                                  choices = NULL, multiple = TRUE, 
-                                  options = list(placeholder = "No groups created"))),
-            column(2,
-                   actionButton(id("dataGroups_selectAll"), "Select all", 
-                                class = "inline_selectize"))),
+            column(9, selectizeInput(id("dataGroups"),
+                                     "Clinical groups to perform PCA",
+                                     choices = NULL, multiple = TRUE)),
+            column(2, actionButton(id("dataGroups_selectAll"), "Select all",
+                                   class="inline_selectize"))),
         actionButton(id("editGroups"), "Edit groups"),
         actionButton(id("calculate"), class = "btn-primary", "Calculate PCA"),
         uiOutput(id("selectPC"))
@@ -137,27 +135,26 @@ server <- function(input, output, session) {
         
         groups <- getGroupsFrom("Clinical data")
         
-        list(
+        tagList(
             hr(),
+            selectizeInput(id("pcX"), "Choose X axis", choices = choices),
+            selectizeInput(id("pcY"), "Choose Y axis", choices = choices,
+                           selected = choices[[2]]),
             fluidRow(
-                column(6, selectizeInput(id("pcX"), "Choose X axis",
-                                         choices = choices)),
-                column(6, selectizeInput(id("pcY"), "Choose Y axis",
-                                         choices = choices,
-                                         selected = choices[[2]]))),
-            fluidRow(
-                column(8,
+                column(9,
                        selectizeInput(
-                           id("colorGroups"), "Groups to color the PCA",
-                           multiple = TRUE, 
-                           choices = getGroupsFrom("Clinical data")[, "Names"],
-                           selected = getGroupsFrom("Clinical data")[, "Names"],
-                           options = list(
-                               placeholder = paste("Click in 'Select all' to",
-                                                   "select all groups")))),
+                           id("colorGroups"), "Clinical groups to color the PCA",
+                           choices = groups[, "Names"], multiple = TRUE,
+                           options = list(placeholder = ifelse(
+                               length(groups) > 0,
+                               "Click 'Select all'to select all groups",
+                               "No groups created")))),
                 column(2,
-                       actionButton(id("colorGroups_selectAll"), "Select all", 
-                                    class = "inline_selectize"))),
+                       actionButton(id("colorGroups_selectAll"),
+                                    "Select all", class = "inline_selectize"))),
+            checkboxGroupInput(id("plotShow"), "Show in plot",
+                               c("Individuals", "Loadings"),
+                               selected = c("Individuals")),
             actionButton(id("showVariancePlot"), "Show variance plot"),
             actionButton(id("plot"), class = "btn-primary", "Plot PCA")
         )
@@ -180,24 +177,15 @@ server <- function(input, output, session) {
     # Plots the explained variance plot
     output[[id("variancePlot")]] <- renderHighchart({
         pca <- sharedData$inclusionLevelsPCA
-        if (is.null(sharedData$inclusionLevelsPCA)) 
-            return(NULL)
+        if (is.null(pca))  return(NULL)
         
         sdevSq <- pca$sdev ^ 2
-        
-        imp <- as.data.frame(summary(pca)$importance)[2, ]
-        perc <- as.numeric(imp)
-        # names(perc) <- names(imp)
-        
-        print(head(sdevSq))
-        df <- as.data.frame(sdevSq)
-        df <- cbind(df, perc = perc)
         
         highchart() %>%
             hc_chart(zoomType = "xy", backgroundColor = NULL) %>%
             hc_title(text = paste("Explained variance by each",
                                   "Principal Component (PC)")) %>%
-            hc_add_series(name = "PCs", data = df, type = "waterfall") %>%
+            hc_add_series(name = "PCs", data = sdevSq, type = "waterfall") %>%
             hc_plotOptions(series = list(dataLabels = list(
                 align = "center",
                 verticalAlign = "top",
@@ -229,7 +217,8 @@ server <- function(input, output, session) {
             isolate({
                 xAxis <- input[[id("pcX")]]
                 yAxis <- input[[id("pcY")]]
-                selected <- input[[id("colorGroups")]]  
+                selected <- input[[id("colorGroups")]]
+                show <- input[[id("plotShow")]]
             })
             
             if (!is.null(xAxis) & !is.null(yAxis)) {
@@ -244,28 +233,34 @@ server <- function(input, output, session) {
                 hc <- highchart() %>%
                     hc_chart(zoomType = "xy") %>%
                     hc_xAxis(title = list(text = label[1])) %>%
-                    hc_yAxis(title = list(text = label[2]))
+                    hc_yAxis(title = list(text = label[2])) %>%
+                    hc_tooltip(pointFormat = "{point.sample}")
                 
-                df <- data.frame(pca[["x"]])
-                if (is.null(selected)) {
-                    hc <- hc %>%
-                        hc_scatter(df[[xAxis]], df[[yAxis]],
-                                   sample = rownames(df)) %>%
-                        hc_tooltip(pointFormat = "{point.sample}")
-                } else {
-                    # Subset data by the selected clinical groups
-                    clinical <- getGroupsFrom("Clinical data")
-                    match <- getClinicalMatchFrom("Inclusion levels")
-                    
-                    for (groupName in selected) {
-                        ns <- getMatchingRowNames(groupName, clinical, match)
-                        hc <- hc %>% 
-                            hc_scatter(df[ns, xAxis], df[ns, yAxis],
-                                       name = groupName,
-                                       sample = rownames(df[ns, ]),
-                                       showInLegend = TRUE) %>%
-                            hc_tooltip(pointFormat = "{point.sample}")
+                if ("Individuals" %in% show) {
+                    df <- data.frame(pca$rotation)
+                    if (is.null(selected)) {
+                        hc <- hc %>%
+                            hc_scatter(df[[xAxis]], df[[yAxis]],
+                                       sample = rownames(df))
+                    } else {
+                        # Subset data by the selected clinical groups
+                        clinical <- getGroupsFrom("Clinical data")
+                        match <- getClinicalMatchFrom("Inclusion levels")
+                        
+                        for (groupName in selected) {
+                            ns <- getMatchingRowNames(groupName, clinical, match)
+                            hc <- hc %>% 
+                                hc_scatter(df[ns, xAxis], df[ns, yAxis],
+                                           name = groupName,
+                                           sample = rownames(df[ns, ]),
+                                           showInLegend = TRUE)
+                        }
                     }
+                }
+                if ("Loadings" %in% show) {
+                    m <- data.frame(pca$rotation)
+                    # For loading, add series (don't add to legend)
+                    hc <- hc %>% hc_scatter(m[[xAxis]], m[[yAxis]])
                 }
                 return(hc)
             }
