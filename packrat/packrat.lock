@@ -24,6 +24,11 @@ Hash: 510e609c8010aba7bc2b2ccc5eaf444f
 Requires: car, data.table, dplyr, ellipse, flashClust, knitr, leaps,
     scatterplot3d
 
+Package: KMsurv
+Source: CRAN
+Version: 0.1-5
+Hash: 7f4400e5d72c2fc9adc154f7635c59d0
+
 Package: MatrixModels
 Source: CRAN
 Version: 0.4-1
@@ -35,6 +40,12 @@ Version: 0.20.6
 Hash: 632aad207ab2e551b33990c9f09ab8af
 Requires: RColorBrewer, colorspace, digest, doParallel, foreach,
     ggplot2, gridBase, pkgmaker, registry, reshape2, rngtools, stringr
+
+Package: OIsurv
+Source: CRAN
+Version: 0.2
+Hash: 6358b56e4f1e39feec2aaeea2ab4b109
+Requires: KMsurv
 
 Package: R6
 Source: CRAN
@@ -99,6 +110,12 @@ Source: CRAN
 Version: 1.0-6
 Hash: 931f9972deae0f205e1c78a51f33149b
 
+Package: broom
+Source: CRAN
+Version: 0.4.0
+Hash: f234c9ab823ee862f4ed6188b8f4eef4
+Requires: dplyr, plyr, psych, reshape2, stringr, tidyr
+
 Package: caTools
 Source: CRAN
 Version: 1.17.1
@@ -129,8 +146,8 @@ Requires: memoise
 
 Package: curl
 Source: CRAN
-Version: 0.9.5
-Hash: 03562aad7537914f516bd67e9bba28b1
+Version: 0.9.7
+Hash: 8a3eaed84ed6a9a188efdeddb231c5de
 
 Package: d3heatmap
 Source: CRAN
@@ -152,8 +169,8 @@ Requires: magrittr, whisker
 
 Package: devtools
 Source: CRAN
-Version: 1.10.0
-Hash: 11261bd97eda1c73da7136c4e2031e97
+Version: 1.11.1
+Hash: 4c6aa014d917044bf376a363c3c8ee1a
 Requires: digest, git2r, httr, jsonlite, memoise, rstudioapi, whisker,
     withr
 
@@ -178,6 +195,11 @@ Source: CRAN
 Version: 0.4.3
 Hash: 35bc70760e4bbd3f4bc05fac3bbde3c3
 Requires: BH, DBI, R6, Rcpp, assertthat, lazyeval, magrittr
+
+Package: eha
+Source: CRAN
+Version: 2.4-3
+Hash: d280fb46dddbf6383992f36933315302
 
 Package: ellipse
 Source: CRAN
@@ -407,6 +429,11 @@ Version: 1.10
 Hash: 51ca88b6d140cecf8749bd09a25f6b58
 Requires: FactoMineR, mice, mvtnorm
 
+Package: mnormt
+Source: CRAN
+Version: 1.5-4
+Hash: d9793228e6242e0f025123fc19587990
+
 Package: munsell
 Source: CRAN
 Version: 0.4.3
@@ -470,6 +497,12 @@ GithubRepo: profvis
 GithubUsername: rstudio
 GithubRef: master
 GithubSha1: 462de5ba128c8cdbf50a67b3501619edf6931313
+
+Package: psych
+Source: CRAN
+Version: 1.5.8
+Hash: 68c4e1212b52e8bf12ef1bfa1e950409
+Requires: mnormt
 
 Package: purrr
 Source: CRAN
@@ -563,6 +596,11 @@ Version: 0.5.2
 Hash: 29de7294464559801762db81f05bfb33
 Requires: digest, htmltools, miniUI, shiny
 
+Package: statmod
+Source: CRAN
+Version: 1.4.24
+Hash: 1aad9bf175b7d9a5c073f633dc635c31
+
 Package: stringi
 Source: CRAN
 Version: 1.0-1
@@ -574,11 +612,17 @@ Version: 1.0.0
 Hash: 2676dd5f88890910962b733b0f9540e1
 Requires: magrittr, stringi
 
+Package: survsim
+Source: CRAN
+Version: 1.1.4
+Hash: cf4b57b4ea788bf33e19a704bbff854e
+Requires: eha, statmod
+
 Package: testthat
 Source: CRAN
-Version: 0.11.0
-Hash: e10882241e569f584fb1f8c19599a13f
-Requires: crayon, digest, praise
+Version: 1.0.2
+Hash: 88d5291104227f9dc2e7c7c1d0eb6c74
+Requires: R6, crayon, digest, magrittr, praise
 
 Package: tidyr
 Source: CRAN
