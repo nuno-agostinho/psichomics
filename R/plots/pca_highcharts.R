@@ -3,6 +3,7 @@
 ## TODO(NunoA): add brushing capabilities (brush function from Shiny? only
 ## rectangle selection available?)
 ## TODO(NunoA): create clusters and use those clusters as groups of data
+## TODO(NunoA): logarithmic values?
 
 # The name used for the plot must be unique
 plot <- "PCA highcharts"
