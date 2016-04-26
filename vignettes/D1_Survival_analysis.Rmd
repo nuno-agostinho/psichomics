@@ -1,0 +1,35 @@
+---
+title: "Survival analysis"
+output: html_document
+---
+
+Survival analysis allows to analyse the expected duration of time until one or
+more events happen such as death of an organism. This analysis can be used to
+clarify the rate of survival and whether different conditions (e.g. a disease
+treatment)  can modify the probability of survival (source: [Wikipedia](https://en.wikipedia.org/wiki/Survival_analysis#Introduction_to_survival_analysis)).
+
+R has the basic tools to perform survival analysis in R.
+```{r}
+library(survival)
+leukemiaSurv <- survfit(Surv(time, status) ~ x, data = aml)
+plot(leukemiaSurv, lty = 2:3)
+```
+
+TCGA offers clinical data that can be used in a survival analysis. The type of
+data available includes "patient", "drug", "follow_up" and "radiation". If we
+want to get clinical data's time for/since an event, we'll need to use multiple
+rows with the same apparent information but with slighlty different names. We'll
+just use the max of those numbers for any given column (they are usually the
+same numbers across columns, but not all rows have the information, using NAs
+instead).
+
+```{r}
+clinical <- data.frame(t(read.delim(paste0(
+    "/genedata/home/nuno/Downloads/gdac.broadinstitute.org_ACC.Merge_Clinical.",
+    "Level_1.2015110100.0.0/ACC.clin.merged.txt"), header=FALSE, row.names=1)))
+cols <- grep("days_to_death", names(clinical))
+daysToDeath <- apply(clinical[cols], 1, function(i)
+    if(!all(is.na(i))) max(as.numeric(i), na.rm = TRUE) else NA)
+```
+
+Source: https://www.biostars.org/p/96209/ and https://www.biostars.org/p/153013/
