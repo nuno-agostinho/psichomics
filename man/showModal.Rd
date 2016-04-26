@@ -4,15 +4,14 @@
 \alias{showModal}
 \title{Simply show a modal}
 \usage{
-showModal(session, title = "Howdy", content, style = NULL,
-  iconName = "exclamation-circle", footer = NULL, printMessage = TRUE)
+showModal(session, title, ..., style = NULL,
+  iconName = "exclamation-circle", footer = NULL, printMessage = FALSE,
+  size = NULL)
 }
 \arguments{
 \item{session}{Current Shiny session}
 
 \item{title}{Character: modal title}
-
-\item{content}{Character:}
 
 \item{style}{Character: style of the modal header; NULL (default), danger, 
 info or warning}
@@ -22,6 +21,11 @@ info or warning}
 \item{footer}{List of interface elements: Custom modal footer}
 
 \item{printMessage}{Boolean: print to console? TRUE by default}
+
+\item{size}{Character: modal size can be "large", "small" (default) or NULL
+(medium)}
+
+\item{content}{Character:}
 }
 \description{
 Simply show a modal

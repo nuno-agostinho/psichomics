@@ -7,7 +7,7 @@
 callScriptsFunction(func, ..., check = func, folder = "R/")
 }
 \arguments{
-\item{func}{Character: function to call}
+\item{func}{Character: name of function to call}
 
 \item{...}{Arguments to pass to the given function call}
 
