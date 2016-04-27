@@ -181,6 +181,39 @@ name like ```dt[ , V3]``` or by its index with an added argument
 ```dt[ , 3, with=FALSE]```. That's rather laborious, so we need to be sure we
 want to support datatables in the code or not.
 
+### Subsetting data.frame by column and row
+```{r}
+random <- data.frame(replicate(10,sample(0:100,1000,rep=TRUE)))
+library(microbenchmark)
+res <- microbenchmark(colName1 = random[["X7"]][400:500],
+                      colName2 = random[, "X7"][400:500],
+                      colName3 = random[400:500, ]["X7"],
+                      colName4 = random[400:500, "X7"],
+                      colNo1 = random[[7]][400:500],
+                      colNo2 = random[, 7][400:500],
+                      colNo3 = random[400:500, ][7],
+                      colNo4 = random[400:500, 7])
+ggplot2::autoplot(res)
+
+res <- microbenchmark(colName2 = random[, c("X3", "X7")][400:500, ],
+                      colName3 = random[400:500, ][, c("X3", "X7")],
+                      colName4 = random[400:500, c("X3", "X7")],
+                      colNo2 = random[, c(3, 7)][400:500, ],
+                      colNo3 = random[400:500, ][, c(3, 7)],
+                      colNo4 = random[400:500, c(3, 7)])
+ggplot2::autoplot(res)
+
+# Transposing the data.frame... too slow :(
+random <- as.data.frame(t(random))
+res <- microbenchmark(colName2 = random[c("X3", "X7"), ][400:500],
+                      colName3 = random[, 400:500][c("X3", "X7"), ],
+                      colName4 = random[c("X3", "X7"), 400:500],
+                      colNo2 = random[c(3, 7), ][400:500],
+                      colNo3 = random[, 400:500][c(3, 7), ],
+                      colNo4 = random[c(3, 7), 400:500])
+ggplot2::autoplot(res)
+```
+
 ## Creating a sequence of numbers from 1 to y
 ```{r number sequence}
 up <- sample(10**3)
