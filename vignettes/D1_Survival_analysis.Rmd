@@ -4,17 +4,26 @@ output: html_document
 ---
 
 Survival analysis allows to analyse the expected duration of time until one or
-more events happen such as death of an organism. This analysis can be used to
-clarify the rate of survival and whether different conditions (e.g. a disease
-treatment)  can modify the probability of survival (source: [Wikipedia](https://en.wikipedia.org/wiki/Survival_analysis#Introduction_to_survival_analysis)).
+more events (such as death) happen. This analysis can be used to estimate the
+rate of survival and whether different conditions (e.g. a disease treatment) can
+modify the probability of survival.
 
-R has the basic tools to perform survival analysis in R.
-```{r}
+R has the basic tools to perform survival analysis. The following lines of code
+allow us to draw a Keplen-Meier plot to visualise the extended use of
+chemioterapy vs regular in patients with Acute Myelogenous Leukemia.
+```{r survival}
 library(survival)
 leukemiaSurv <- survfit(Surv(time, status) ~ x, data = aml)
-plot(leukemiaSurv, lty = 2:3)
+plot(leukemiaSurv, col = c("red", "purple"))
+legend(90, .9, c("Extended", "Control"), lty = 1, col = c("red", "purple"))
 ```
 
+## Kaplan-Meier method
+Also known as product limit, this method estimates the proportion of a
+population who would survive a given length of time under the same circumstances
+given a set of observed survival times.
+
+### Example using TCGA clinical data
 TCGA offers clinical data that can be used in a survival analysis. The type of
 data available includes "patient", "drug", "follow_up" and "radiation". If we
 want to get clinical data's time for/since an event, we'll need to use multiple
@@ -23,13 +32,103 @@ just use the max of those numbers for any given column (they are usually the
 same numbers across columns, but not all rows have the information, using NAs
 instead).
 
-```{r}
+```{r tcga-survival}
+# Get clinical data
 clinical <- data.frame(t(read.delim(paste0(
     "/genedata/home/nuno/Downloads/gdac.broadinstitute.org_ACC.Merge_Clinical.",
     "Level_1.2015110100.0.0/ACC.clin.merged.txt"), header=FALSE, row.names=1)))
-cols <- grep("days_to_death", names(clinical))
-daysToDeath <- apply(clinical[cols], 1, function(i)
-    if(!all(is.na(i))) max(as.numeric(i), na.rm = TRUE) else NA)
+rownames(clinical) <- toupper(clinical$patient.bcr_patient_barcode)
+
+# Get specific columns and get the max number of days recorded for each sample
+sampleDays <- function(col, clin) {
+    cols <- grep(col, names(clin))
+    row <- apply(clin[cols], 1, function(i)
+        if(!all(is.na(i))) max(as.numeric(i), na.rm = TRUE) else NA)
+    return(row)
+}
+
+# Save the days from columns of interest in a data frame
+cols <- c("days_to_death", "days_to_last_followup")
+colsDays <- setNames(lapply(cols, sampleDays, clinical), cols)
+colsDays <- as.data.frame(colsDays)
+
+# Create new time using the days to death replacing the NAs with days to last 
+# follow up
+colsDays$time <- ifelse(!is.na(colsDays[[1]]), colsDays[[1]], colsDays[[2]])
+
+# Indicate event of interest (in this case, if the subject dies) and groups
+colsDays$event <- ifelse(!is.na(colsDays[[1]]), 1, 0)
+colsDays$groups <- c("A", "B")
+
+# Estimate and plot survival curves
+form <- Surv(time, event) ~ groups
+surv <- survfit(form, data = colsDays)
+plot(surv, lty = 2:3)
 ```
 
-Source: https://www.biostars.org/p/96209/ and https://www.biostars.org/p/153013/
+## Data censoring and truncation
+
+When a patient has no death date but there is a last follow up date that means
+we know nothing more about the patient since that day and it cannot be used in
+a Kaplan-Meier plot anymore.
+
+- **Left censoring:** the event of interest has already occurred before subject
+enrolment (rare)
+- **Right censoring:** subject leaves a study or the study ends after a fixed
+time (e.g. study time of 5 years) before the event occurs (type I right 
+censoring) or study ends when a fixed number of events occurs amongst the
+subjects (type II right censoring)
+- **Left truncation:** subjects has been at risk before entering the study
+- **Right truncation:** entire study population already experienced the event
+(e.g. historical survey of select cancer patients)
+
+Censoring the data is easy:
+```{r censoring}
+# No censoring
+form <- Surv(time, event) ~ groups
+surv <- survfit(form, data = colsDays)
+plot(surv, lty = 1, col = "blue")
+
+# Left censoring
+formLeft <- Surv(time, event, type = "left") ~ groups
+survLeft <- survfit(formLeft, data = colsDays)
+lines(survLeft, lty = 4, col = "orange")
+
+# Right censoring (notice this is over the not censored lines)
+formRight <- Surv(time, event, type = "right") ~ groups
+survRight <- survfit(formRight, data = colsDays)
+lines(survRight, lty = 2, col = "red")
+```
+
+## Cox model
+A cox model allows to explore the relationship between the survival of a patient
+and several explanatory variables by isolating the effects of treatment from the
+effects of other variables. It also allows us to estimate the risk of death 
+(i.e. hazard) for an individual, given their prognostic variables.
+
+A positive regression coefficient for an explanatory variable means that the 
+hazard is higher, and thus the prognosis worse. Conversely, a negative 
+regression coefficient implies a better prognosis for patients with higher
+values of that variable.
+
+```{r}
+# Fit a Cox proportional hazards model and plot the survival for a 60-year old 
+fit <- coxph(Surv(futime, fustat) ~ age, data=ovarian) 
+plot(survfit(fit, newdata=data.frame(age=60)), 
+     xscale=365.25, xlab="Years", ylab="Survival")
+```
+
+## Cumulative hazard
+
+```{r}
+# Cumulative hazard using the Fleming-Harrington method
+lsurv2 <- survfit(Surv(time, status) ~ x, aml, type='fleming')
+plot(lsurv2, lty=2:3, fun="cumhaz", xlab="Months", ylab="Cumulative Hazard")
+```
+
+## References
+- [Wikipedia](https://en.wikipedia.org/wiki/Survival_analysis#Introduction_to_survival_analysis)
+- [Question: Survival Analysis Using Tcga Data](https://www.biostars.org/p/96209/)
+- [Tutorial: Survival analysis of TCGA patients integrating gene expression (RNASeq) data](https://www.biostars.org/p/153013/)
+- [Statistical Lifetime Models, Lecture 1 Notes](http://www.stats.ox.ac.uk/~mlunn/lecturenotes1.pdf)
+- [What is a Cox model?](http://www.medicine.ox.ac.uk/bandolier/painres/download/whatis/cox_model.pdf)
