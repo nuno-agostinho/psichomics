@@ -2,9 +2,21 @@
 ## TODO(NunoA): add histogram in/above percentage of NAs per row to remove
 ## TODO(NunoA): add brushing capabilities (brush function from Shiny? only
 ## rectangle selection available?)
-## TODO(NunoA): create clusters and use those clusters as groups of data
-## TODO(NunoA): logarithmic values?
+## TODO(NunoA): logarithmic values
 ## TODO(NunoA): BoxCox transformation
+
+## TODO(NunoA): create clusters and use those clusters as groups of data
+##
+##  km <- kmeans(scores, centers = 7, nstart = 5)
+##  ggdata <- data.frame(scores, Cluster=km$cluster, Species=df$Species)
+##  ggplot(ggdata) +
+##      geom_point(aes(x=PC1, y=PC2, color=factor(Cluster)), size=5, shape=20) +
+##      stat_ellipse(aes(x=PC1,y=PC2,fill=factor(Cluster)),
+##          geom="polygon", level=0.95, alpha=0.2) +
+##      guides(color=guide_legend("Cluster"),fill=guide_legend("Cluster"))
+## 
+## Source:
+## http://stackoverflow.com/questions/20260434/test-significance-of-clusters-on-a-pca-plot
 
 # The name used for the plot must be unique
 plot <- "Principal component analysis"
