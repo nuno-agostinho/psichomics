@@ -4,9 +4,10 @@
 ## rectangle selection available?)
 ## TODO(NunoA): create clusters and use those clusters as groups of data
 ## TODO(NunoA): logarithmic values?
+## TODO(NunoA): BoxCox transformation
 
 # The name used for the plot must be unique
-plot <- "PCA highcharts"
+plot <- "Principal component analysis"
 id <- function(value) objectId(name, plot, value)
 
 getMatchingRowNames <- function(selected, clinicalGroups, clinicalMatches) {
