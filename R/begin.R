@@ -2,8 +2,6 @@
 NULL
 #> NULL
 
-library(highcharter)
-
 # Global variable with all the data of a session
 sharedData <- reactiveValues()
 
