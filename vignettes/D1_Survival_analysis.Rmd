@@ -60,10 +60,15 @@ colsDays$time <- ifelse(!is.na(colsDays[[1]]), colsDays[[1]], colsDays[[2]])
 colsDays$event <- ifelse(!is.na(colsDays[[1]]), 1, 0)
 colsDays$groups <- c("A", "B")
 
-# Estimate and plot survival curves
+# Estimate and plot survival curves by groups
 form <- Surv(time, event) ~ groups
 surv <- survfit(form, data = colsDays)
 plot(surv, lty = 2:3)
+
+# Estimate and plot survival curves as one
+form <- Surv(time, event) ~ 1
+surv <- survfit(form, data = colsDays)
+plot(surv)
 ```
 
 ## Data censoring and truncation
