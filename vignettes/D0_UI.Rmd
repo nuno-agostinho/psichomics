@@ -8,7 +8,7 @@ toc: yes
 ---
 
 # Conditional panels VS renderUI
-It seems that renderUI has a problem that conditionalPanel do not: when trying
+It seems that renderUI has a problem that conditionalPanel does not: when trying
 to reload the same code, renderUI reloads everything, not loading any previous
 state from the user. On the other hand, conditionalPanel does save and restores
 the objects state when reloading the same section. The only drawback to
