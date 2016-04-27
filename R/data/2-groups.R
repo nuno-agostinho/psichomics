@@ -58,8 +58,8 @@ ui <- function() {
         sprintf("input[id='%s'] %s '%s'", id("subsetBy"), sign, what)
     
     list(
-        selectizeInput(id("subsetBy"), "Subset by",
-                       c("Column", "Rows", "Expression", "Grep")),
+        radioButtons(id("subsetBy"), "Subset by", inline = TRUE,
+                     c("Column", "Rows", "Expression", "Grep")),
         conditionalPanel(checkId("==", "Column"), groupByColumn()),
         conditionalPanel(checkId("==", "Rows"), groupByRow()),
         conditionalPanel(checkId("==", "Expression"), groupByExpression()),
