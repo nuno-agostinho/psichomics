@@ -1,4 +1,3 @@
-## TODO(NunoA): How to select events?
 ## TODO(NunoA): How to select groups? If there are intersections, merge them
 ## (maybe warn the user? maybe not needed as he'll see it?)
 
@@ -14,12 +13,14 @@ ui <- tagList(
                        "Clinical attribute for ending time (optional)"),
         helpText("In case there's no record for a sample, the days to last",
                  "follow up will be used instead."),
+        selectizeInput(id("event"), choices = NULL, "Event of interest"),
         conditionalPanel(paste0("input.", id("timeStop"), "==''"),
                          radioButtons(id("censoring"), "Data censoring",
                                       selected="right",
                                       choices = c(Left="left", Right="right"))),
-        actionButton(id("plot"), class="btn-primary",
-                     tagList(icon("medkit"), "Plot survival curves"))
+        actionButton(id("coxModel"), "Plot Cox Model"),
+        actionButton(id("survivalCurves"), class="btn-primary",
+                     "Plot survival curves")
     ),
     mainPanel(
         plotOutput(id(plot))
@@ -51,22 +52,26 @@ server <- function(input, output, session) {
             choices <- unique(subDaysTo)
             names(choices) <- gsub("_", " ", choices, fixed=TRUE)
             names(choices) <- R.utils::capitalize(names(choices))
-            updateSelectizeInput(session, id("timeStart"), choices = choices)
+            updateSelectizeInput(session, id("timeStart"), choices=choices)
             updateSelectizeInput(
-                session, id("timeStop"), choices = choices, options = list(
+                session, id("timeStop"), choices = choices, options=list(
                     placeholder = "Select a column to use interval data",
                     onInitialize = I('function() { this.setValue(""); }')))
+            names(choices) <- gsub("Days to ", "", names(choices), fixed=TRUE)
+            names(choices) <- R.utils::capitalize(names(choices))
+            updateSelectizeInput(session, id("event"), choices=choices)
         }
     })
     
     # Plot survival curve
-    observeEvent(input[[id("plot")]], {
+    observeEvent(input[[id("survivalCurves")]], {
         output[[id(plot)]] <- renderPlot({
             isolate({
                 # Get clinical data and column of interest
-                clinical <- getClinicalData()
+                clinical  <- getClinicalData()
                 timeStart <- input[[id("timeStart")]]
-                timeStop <- input[[id("timeStop")]]
+                timeStop  <- input[[id("timeStop")]]
+                dataEvent <- input[[id("event")]]
                 censoring <- input[[id("censoring")]]
             })
             if (is.null(clinical)) {
@@ -78,20 +83,20 @@ server <- function(input, output, session) {
                 
                 # Save the days from columns of interest in a data frame
                 if (timeStop == "") timeStop <- NULL
-                cols <- c("days_to_last_followup", timeStart, timeStop)
+                cols <- c(followup = "days_to_last_followup", start = timeStart,
+                          stop = timeStop, event = dataEvent)
                 colsDays <- lapply(cols, sampleDays, clinical)
-                names(colsDays) <- cols
                 colsDays <- as.data.frame(colsDays)
                 
                 # Create new time using the starting time replacing the NAs with
                 # days to last follow up
-                nas <- is.na(colsDays[[2]])
-                colsDays$time <- colsDays[[2]]
-                colsDays$time[nas] <- colsDays[[1]][nas]
+                nas <- is.na(colsDays$start)
+                colsDays$time <- colsDays$start
+                colsDays$time[nas] <- colsDays$followup[nas]
                 
                 # Indicate event of interest and groups
-                colsDays$event <- ifelse(!nas, 1, 0)
-                colsDays$groups <- rep("A", nrow(colsDays))
+                colsDays$event <- ifelse(!is.na(colsDays$event), 1, 0)
+                colsDays$groups <- clinical$patient.stage_event.pathologic_stage
                 
                 # Estimate and plot survival curves by groups
                 if (is.null(timeStop))
@@ -99,14 +104,18 @@ server <- function(input, output, session) {
                 else {
                     # Create new time using the ending time replacing the NAs
                     # with days to last follow up
-                    nas <- is.na(colsDays[[3]])
-                    colsDays$time2 <- colsDays[[3]]
-                    colsDays$time2[nas] <- colsDays[[1]][nas]
+                    nas <- is.na(colsDays$stop)
+                    colsDays$time2 <- colsDays$stop
+                    colsDays$time2[nas] <- colsDays$followup[nas]
                     
+                    View(colsDays)
                     form <- Surv(time, time2, event, type = "interval") ~ groups
                 }
                 surv <- survfit(form, data = colsDays)
-                plot(surv, lty = 2:3)
+                plot(surv, lty=2:5, ylab="Proportion of individuals",
+                     xlab="Time in days", col=1:4)
+                legend("topright", sort(unique(colsDays$groups)), col=1:4,
+                       lty=2:5)
             }
         })
     })
