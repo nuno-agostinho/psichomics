@@ -262,5 +262,5 @@ showModal <- function(session, title, ..., style = NULL,
 #' @export
 errorModal <- function(session, title, ..., footer = NULL) {
     showModal(session, title, ..., footer, style = "danger", size = "small",
-              printMessage = TRUE, iconName = "exclamation-circle")
+              printMessage = FALSE, iconName = "exclamation-circle")
 }
