@@ -233,3 +233,17 @@ res <- microbenchmark(
     rowSums = rowSums(!is.na(df)) == 0)
 autoplot(res)
 ```
+
+## Sorting unique values
+```{r sort unique}
+a <- rep(c("A", "B", "C", "D", NA), 1000)
+a <- sample (a) # randomise order
+
+res <- microbenchmark(sort(unique(a)),
+                      # We can set number of unique items expected, but this
+                      # doesn't seem to improve much for such a low number
+                      sort(unique(a, nmax=5)),
+                      unique(sort(a)),
+                      unique(sort(a), nmax=5))
+autoplot(res)
+```
