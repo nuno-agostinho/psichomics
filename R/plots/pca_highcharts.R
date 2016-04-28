@@ -104,7 +104,7 @@ server <- function(input, output, session) {
     
     # Performs principal component analysis (PCA)
     observeEvent(input[[id("calculate")]], {
-        psi <- getInclusionLevels()
+        psi <- isolate(getInclusionLevels())
         
         # Subset data by the selected clinical groups
         selected <- isolate(input[[id("dataGroups")]])
