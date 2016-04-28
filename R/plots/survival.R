@@ -1,5 +1,10 @@
+## TODO(NunoA): Select different time ranges (allow to change between days,
+## weeks, months and years) or to even select custom
+
 ## TODO(NunoA): How to select groups? If there are intersections, merge them
 ## (maybe warn the user? maybe not needed as he'll see it?)
+
+## TODO(NunoA): How to correctly do interval censoring?
 
 # The name used for the plot must be unique
 plot <- "Survival plots"
