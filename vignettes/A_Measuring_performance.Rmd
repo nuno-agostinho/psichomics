@@ -152,7 +152,6 @@ autoplot(res)
 
 ## Faster subsetting
 ```{r subsetting}
-library("ggplot2")
 subsetting <- function(size) {
     df <- data.frame(age=sample(1:65, 1e2, replace=TRUE),
                      x=rnorm(size), y=rpois(size, 25))
@@ -182,9 +181,8 @@ name like ```dt[ , V3]``` or by its index with an added argument
 want to support datatables in the code or not.
 
 ### Subsetting data.frame by column and row
-```{r}
+```{r subset by column and row}
 random <- data.frame(replicate(10,sample(0:100,1000,rep=TRUE)))
-library(microbenchmark)
 res <- microbenchmark(colName1 = random[["X7"]][400:500],
                       colName2 = random[, "X7"][400:500],
                       colName3 = random[400:500, ]["X7"],
@@ -211,7 +209,7 @@ res <- microbenchmark(colName2 = random[c("X3", "X7"), ][400:500],
                       colNo2 = random[c(3, 7), ][400:500],
                       colNo3 = random[, 400:500][c(3, 7), ],
                       colNo4 = random[c(3, 7), 400:500])
-ggplot2::autoplot(res)
+autoplot(res)
 ```
 
 ## Creating a sequence of numbers from 1 to y
