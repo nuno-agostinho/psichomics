@@ -188,7 +188,7 @@ operateOnGroups <- function(input, session, sharedData, FUN, name,
             if (!identical(FUN, "remove")) {
                 mergedFields <- lapply(1:3, function(i)
                     paste(groups[selected, i], collapse = symbol))
-                rowNumbers <- sort(Reduce(FUN, groups[selected, 4]))
+                rowNumbers <- sort(as.numeric(Reduce(FUN, groups[selected, 4])))
                 new <- matrix(c(mergedFields, list(rowNumbers)), ncol = 4)
             }
             
