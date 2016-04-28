@@ -106,33 +106,43 @@ server <- function(input, output, session) {
     observeEvent(input[[id("calculate")]], {
         psi <- isolate(getInclusionLevels())
         
-        # Subset data by the selected clinical groups
-        selected <- isolate(input[[id("dataGroups")]])
-        if (!is.null(selected)) {
-            clinical <- getGroupsFrom("Clinical data")
-            match <- getClinicalMatchFrom("Inclusion levels")
-            ns <- getMatchingRowNames(selected, clinical, match)
-            psi <- psi[ , ns]
+        if (is.null(psi)) {
+            errorModal(session, "Inclusion levels missing",
+                       "Insert or calculate exon/intron inclusion levels.")
+        } else {
+            # Subset data by the selected clinical groups
+            selected <- isolate(input[[id("dataGroups")]])
+            if (!is.null(selected)) {
+                clinical <- isolate(getGroupsFrom("Clinical data"))
+                match <- getClinicalMatchFrom("Inclusion levels")
+                ns <- getMatchingRowNames(selected, clinical, match)
+                psi <- psi[ , ns]
+            }
+            
+            # Raise error if data has no rows
+            if (nrow(psi) == 0)
+                errorModal(session, "No data!", paste(
+                    "Calculation returned nothing. Check if everything is as",
+                    "expected and try again."))
+            
+            # Transpose the data to have individuals as rows
+            psi <- t(psi)
+            
+            # Perform principal component analysis (PCA) on the subset data
+            isolate({
+                preprocess <- input[[id("preprocess")]]
+                naTolerance <- input[[id("naTolerance")]]
+            })
+            
+            pca <- psiPCA(psi,
+                          center = "center" %in% preprocess,
+                          scale. = "scale" %in% preprocess,
+                          naTolerance = naTolerance)
+            sharedData$inclusionLevelsPCA <- pca
+            
+            # Save the original subset data used before performing PCA
+            sharedData$inclusionLevelsPCA$original <- psi
         }
-        
-        # Raise error if data has no rows
-        if (nrow(psi) == 0) stop("No data!")
-        
-        # Transpose the data to have individuals as rows
-        # psi <- t(psi)
-        
-        # Perform principal component analysis (PCA) on the subset data
-        preprocess <- isolate(input[[id("preprocess")]])
-        naTolerance <- isolate(input[[id("naTolerance")]])
-        
-        pca <- psiPCA(psi,
-                      center = "center" %in% preprocess,
-                      scale. = "scale" %in% preprocess,
-                      naTolerance = naTolerance)
-        sharedData$inclusionLevelsPCA <- pca
-        
-        # Save the original subset data used before performing PCA
-        sharedData$inclusionLevelsPCA$original <- psi
     })
     
     # Interface and plots to help to select principal components
