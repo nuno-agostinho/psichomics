@@ -12,14 +12,12 @@ checkFileFormat <- function(format, head) {
         head <- t(head)
     
     lenCheck <- length(format$check)
-    # See whether using row or column to check format
+    # Check if using row or column when checking format
     if (is.null(format$rowCheck) | !format$rowCheck) {
-        # Check if length is not satisfatory
         if (nrow(head) < lenCheck) return(FALSE)
         # Select wanted row and check for a match
         return(all(head[1:lenCheck, format$checkIndex] == format$check))
     } else {
-        # Check if length is not satisfatory
         if (ncol(head) < lenCheck) return(FALSE)
         # Select wanted column and check for a match
         return(all(head[format$checkIndex, 1:lenCheck] == format$check))
