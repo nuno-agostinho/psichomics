@@ -18,7 +18,7 @@ check <- c("admin.batch_number", "admin.bcr", "admin.day_of_dcc_upload",
 # Parsing information
 delim       <- "\t"  # Delimiter used to separate fields
 colNames    <- 1     # Row to use for column names
-rowNames    <- NULL  # Column to use for row names
+rowNames    <- "patient.bcr_patient_barcode"  # Column to use for row names
 ignoreCols  <- NULL  # Columns to ignore
 ignoreRows  <- 1:2   # Rows to ignore
 commentChar <- NULL  # String to identify comments (these lines will be ignored)
@@ -27,8 +27,8 @@ commentChar <- NULL  # String to identify comments (these lines will be ignored)
 unique <- FALSE   # Remove duplicated rows
 
 # Default columns to show (NULL to show all)
-show <- c("patient.bcr_patient_barcode", "patient.stage_event.pathologic_stage",
-          "patient.vital_status", "patient.days_to_death",
-          "patient.days_to_last_followup", "patient.radiation_therapy",
-          "patient.gender", "patient.clinical_cqcf.histological_type",
-          "patient.race", "patient.ethnicity")
+show <- c("patient.stage_event.pathologic_stage", "patient.vital_status",
+          "patient.days_to_death", "patient.days_to_last_followup", 
+          "patient.radiation_therapy", "patient.gender", 
+          "patient.clinical_cqcf.histological_type", "patient.race", 
+          "patient.ethnicity")
