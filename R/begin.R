@@ -255,10 +255,10 @@ groupPerPatient <- function(groups, patientsNumber, includeOuterGroup=FALSE,
     
     if (length(rows) == 0) return(rep(allDataName, patientsNumber))
     
-    for (i in seq_along(rows)) 
+    for (i in seq_along(rows))
         finalGroups[as.numeric(rows[[i]])] <- rownames(rows)[i]
     
-    # Assing patients with no groups to the outer group
+    # Assign patients with no groups to the outer group
     if (includeOuterGroup) finalGroups[is.na(finalGroups)] <- outerGroupName
     
     return(finalGroups)
