@@ -95,9 +95,6 @@ server <- function(input, output, session) {
         tablename <- id(paste("table", getCategories()[group], index, sep="-"))
         
         table <- data[[index]]
-        if (isTRUE(attr(table, "rowNames")))
-            table <- cbind(Row=rownames(table), table)
-        
         # Only show default columns if they are defined (don't cause problems)
         subsetToShow <- table
         colsToShow <- attr(table, "show")
@@ -105,6 +102,10 @@ server <- function(input, output, session) {
             match <- colsToShow %in% colnames(table)
             subsetToShow <- subset(table, select=colsToShow[match])
         }
+        
+        # Show row names if there are any
+        if (isTRUE(attr(table, "rowNames")))
+            subsetToShow <- cbind(Row=rownames(subsetToShow), subsetToShow)
         
         output[[tablename]] <- renderDataTable(
             subsetToShow, options=list(pageLength=10, scrollX=TRUE))
