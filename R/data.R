@@ -104,7 +104,7 @@ server <- function(input, output, session) {
         }
         
         # Show row names if there are any
-        if (isTRUE(attr(table, "rowNames")))
+        if (isTRUE(attr(subsetToShow, "rowNames")))
             subsetToShow <- cbind(Row=rownames(subsetToShow), subsetToShow)
         
         output[[tablename]] <- renderDataTable(
