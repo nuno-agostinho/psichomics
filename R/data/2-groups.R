@@ -88,24 +88,35 @@ createGroupFromInput <- function (input, output, session) {
     data <- getCategoryData()[[active]]
     
     if (type == "Column") {
-        # Get all unique values for given column and its respective rows
         colData <- data[[columnInput]]
         
-        # Replace NAs for "NA" so they aren't discarded when splitting the data
+        # Replace NAs for "NA" so they can be find using the `which` function
         colData[is.na(colData)] <- "NA"
         
-        # Split data according to the chosen column
-        set <- split(data, colData, drop = FALSE)
-        groupNames <- names(set)
-        whichRows <- lapply(set, rownames)
-        group <- cbind(groupNames, type, columnInput, whichRows)
+        # Create groups according to the chosen column
+        groupNames <- sort(unique(colData))
+        rows <- lapply(lapply(groupNames, `==`, colData), which)
+        group <- cbind(groupNames, type, columnInput, rows)
     } else if (type == "Rows") {
         # Convert the given string into a sequence of numbers
         rows <- input[[id("groupRows")]]
         strRows <- paste(rows, collapse = ", ")
         rows <- unlist(lapply(rows, function(row) eval(parse(text = row))))
-        whichRows <- list(rownames(data[rows, ]))
-        group <- cbind(input[[id("groupName")]], type, strRows, whichRows)
+        rows <- sort(unique(rows))
+
+        # Remove and warn if selected rows are greater than the rows number
+        gtRows <- rows > nrow(data)
+        if (any(gtRows)) {
+            removed <- paste(rows[gtRows], collapse = " ")
+            warningModal(
+                session, "Selected rows don't exist",
+                paste0(sum(gtRows), " numbers were above the number of rows ",
+                       "of the active dataset (which is", nrow(data), ")."), 
+                br(), br(), "The following numbers were discarded:", 
+                tags$code(removed))
+            rows <- rows[!gtRows]
+        }
+        group <- cbind(input[[id("groupName")]], type, strRows, list(rows))
     } else if (type == "Expression") {
         # Subset data using the given expression
         expr <- input[[id("groupExpression")]]
@@ -114,17 +125,17 @@ createGroupFromInput <- function (input, output, session) {
         tried <- tryCatch(set <- subset(data, eval(parse(text = expr))),
                           error = return)
         
-        # If there's an error, show it to the user
+        # Show error to the user
         if ("simpleError" %in% class(tried)) {
-            errorModal(session, "Expression error",
-                       tags$b("Error in the field 'Subset expression'."),
-                       "Check if the column name is correct.", br(), br(), 
+            errorModal(session, "Subset expression error",
+                       "Check if column names are correct.", br(), br(), 
+                       "The following error was raised:", br(),
                        tags$code(tried$message))
             return(NULL)
-        } else {
-            whichRows <- list(rownames(set))
-            group <- cbind(input[[id("groupName")]], type, expr, whichRows)
         }
+        
+        rows <- match(rownames(set), rownames(data))
+        group <- cbind(input[[id("groupName")]], type, expr, list(rows))
     } else if (type == "Grep") {
         ## TODO(NunoA): Subset data with the GREP expression for the given column
         group <- rep(NA, 4)
