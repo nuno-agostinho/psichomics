@@ -1,8 +1,7 @@
 ## TODO(NunoA): Select different time ranges (allow to change between days,
 ## weeks, months and years) or to even select custom
 
-## TODO(NunoA): How to select groups? If there are intersections, merge them
-## (maybe warn the user? maybe not needed as he'll see it?)
+## TODO(NunoA): Should groups be merged if there's an intersection?
 
 ## TODO(NunoA): How to correctly do interval censoring?
 
@@ -12,19 +11,28 @@ id <- function(value) objectId(name, plot, value)
 
 ui <- tagList(
     sidebarPanel(
-        selectizeInput(id("timeStart"), choices = NULL,
-                       "Clinical attribute for starting time"),
-        selectizeInput(id("timeStop"), choices = NULL,
-                       "Clinical attribute for ending time (optional)"),
-        helpText("In case there's no record for a sample, the days to last",
+        radioButtons(id("censoring"), "Data censoring", selected="right",
+                     inline=TRUE, choices=c(Left="left",
+                                            Right="right",
+                                            Interval="interval",
+                                            "Interval 2" = "interval2")),
+        selectizeInput(id("timeStart"), choices = NULL, "Follow up time"),
+        # If the chosen censoring contains the word 'interval', show this input
+        conditionalPanel(
+            paste0("input.", id("censoring"), ".indexOf('interval') > -1"),
+            selectizeInput(id("timeStop"), choices = NULL, "Ending time")),
+        helpText("In case there's no record for a patient, the days to last",
                  "follow up will be used instead."),
         selectizeInput(id("event"), choices = NULL, "Event of interest"),
-        conditionalPanel(paste0("input.", id("timeStop"), "==''"),
-                         radioButtons(id("censoring"), "Data censoring",
-                                      selected="right",
-                                      choices = c(Left="left", Right="right"))),
+        fluidRow(
+            column(9, selectizeInput(id("dataGroups"), "Clinical groups to use",
+                                     choices = NULL, multiple = TRUE)),
+            column(2, actionButton(id("dataGroups_selectAll"), "Select all",
+                                   class="inline_selectize"))),
+        checkboxInput(id("showOutGroup"), "Show data outside chosen groups",
+                      value = FALSE),
         actionButton(id("coxModel"), "Plot Cox Model"),
-        actionButton(id("survivalCurves"), class="btn-primary",
+        actionButton(id("survivalCurves"), class="btn-primary", 
                      "Plot survival curves")
     ),
     mainPanel(
@@ -32,14 +40,51 @@ ui <- tagList(
     )
 )
 
-#' Get the max number of days recorded of each sample for a given column
+#' Process survival data
+#' 
+#' @param time Integer: starting time of the interval or follow up time
+#' @param time2 Integer: ending time of the interval
+#' @param timeEvent Integer: time of the event of interest
+#' @param clinical Data.frame: clinical data
+#' 
+#' @details The event time will only be used to determine whether the event has
+#' happened (1) or not in case of NAs (0)
+#' 
+#' @return Data frame with 
+processSurvData <- function(timeStart, timeStop, event, groups, clinical) {
+    cols <- c(followup = "days_to_last_followup", start = timeStart,
+              stop = timeStop, event = event)
+    survTime <- lapply(cols, timePerPatient, clinical)
+    survTime <- as.data.frame(survTime)
+    
+    # Create new time using the starting time replacing the NAs with
+    # days to last follow up
+    nas <- is.na(survTime$start)
+    survTime$time <- survTime$start
+    survTime$time[nas] <- survTime$followup[nas]
+    
+    # Indicate event of interest and groups
+    survTime$event <- ifelse(!is.na(survTime$event), 1, 0)
+    survTime$groups <- groups
+    
+    if (!is.null(timeStop)) {
+        # Create new time using the ending time replacing the NAs
+        # with days to last follow up
+        nas <- is.na(survTime$stop)
+        survTime$time2 <- survTime$stop
+        survTime$time2[nas] <- survTime$followup[nas]
+    }
+    return(survTime)
+}
+
+#' Get all columns matching a given string and return a single vector with the
+#' max time for each patient if available
 #'
 #' @param col Character: column of interest
 #' @param clinical Data.frame: clinical data
 #'
-#' @return Numeric vector with days recorded for given column (with NA when data
-#' is not given)
-sampleDays <- function(col, clinical) {
+#' @return Numeric vector with days recorded for columns of interest
+timePerPatient <- function(col, clinical) {
     cols <- grep(col, names(clinical))
     row <- apply(clinical[cols], 1, function(i)
         if(!all(is.na(i))) max(as.numeric(i), na.rm = TRUE) else NA)
@@ -47,6 +92,32 @@ sampleDays <- function(col, clinical) {
 }
 
 server <- function(input, output, session) {
+    # Update available group choices to select
+    observe({
+        groups <- getGroupsFrom("Clinical data")
+        updateSelectizeInput(
+            session, id("dataGroups"), choices = groups[, "Names"],
+            options = list(placeholder =
+                               ifelse(length(groups) > 0,
+                                      "Click 'Select all' to select all groups",
+                                      "No groups created")))
+    })
+    
+    # Select all data groups when pressing the respective "Select all" button
+    observeEvent(input[[id("dataGroups_selectAll")]], {
+        updateSelectizeInput(
+            session, id("dataGroups"), 
+            selected = getGroupsFrom("Clinical data")[, "Names"])
+    })
+    
+    # Update selectize input label depending on the chosen censoring type
+    observe({
+        label <- "Follow up time"
+        if (grepl("interval", input[[id("censoring")]], fixed=TRUE))
+            label <- "Starting time"
+        updateSelectizeInput(session, id("timeStart"), label=label)
+    })
+    
     # Update every time clinical data changes
     observe({
         clinical <- getClinicalData()
@@ -57,14 +128,15 @@ server <- function(input, output, session) {
             choices <- unique(subDaysTo)
             names(choices) <- gsub("_", " ", choices, fixed=TRUE)
             names(choices) <- R.utils::capitalize(names(choices))
-            updateSelectizeInput(session, id("timeStart"), choices=choices)
+            updateSelectizeInput(session, id("timeStart"), choices=choices,
+                                 selected="days_to_death")
             updateSelectizeInput(
                 session, id("timeStop"), choices = choices, options=list(
-                    placeholder = "Select a column to use interval data",
                     onInitialize = I('function() { this.setValue(""); }')))
             names(choices) <- gsub("Days to ", "", names(choices), fixed=TRUE)
             names(choices) <- R.utils::capitalize(names(choices))
-            updateSelectizeInput(session, id("event"), choices=choices)
+            updateSelectizeInput(session, id("event"), choices=choices,
+                                 selected="days_to_death")
         }
     })
     
@@ -72,55 +144,49 @@ server <- function(input, output, session) {
     observeEvent(input[[id("survivalCurves")]], {
         output[[id(plot)]] <- renderPlot({
             isolate({
-                # Get clinical data and column of interest
+                # Get user input
                 clinical  <- getClinicalData()
                 timeStart <- input[[id("timeStart")]]
                 timeStop  <- input[[id("timeStop")]]
                 dataEvent <- input[[id("event")]]
                 censoring <- input[[id("censoring")]]
+                showOther <- input[[id("showOutGroup")]]
+                
+                # Get chosen groups
+                chosen <- input[[id("dataGroups")]]
+                dataGroups <- getGroupsFrom("Clinical data")[chosen, , drop=F]
             })
+            
             if (is.null(clinical)) {
                 errorModal(session, "Clinical data missing",
                            "Insert clinical data first.")
+            } else if (nrow(dataGroups) > 0 && 
+                       anyDuplicated(unlist(dataGroups[, "Rows"])) > 0) {
+                # If the chosen groups have any intersections
+                errorModal(session, "Clinical groups intercept",
+                           "There is an interception between clinical groups.")
             } else {
-                rownames(clinical) <- toupper(
-                    clinical$patient.bcr_patient_barcode)
-                
                 # Save the days from columns of interest in a data frame
+                fillGroups <- groupPerPatient(dataGroups, nrow(clinical), 
+                                              showOther)
                 if (timeStop == "") timeStop <- NULL
-                cols <- c(followup = "days_to_last_followup", start = timeStart,
-                          stop = timeStop, event = dataEvent)
-                colsDays <- lapply(cols, sampleDays, clinical)
-                colsDays <- as.data.frame(colsDays)
+                survTime <- processSurvData(timeStart, timeStop, dataEvent,
+                                            fillGroups, clinical)
                 
-                # Create new time using the starting time replacing the NAs with
-                # days to last follow up
-                nas <- is.na(colsDays$start)
-                colsDays$time <- colsDays$start
-                colsDays$time[nas] <- colsDays$followup[nas]
-                
-                # Indicate event of interest and groups
-                colsDays$event <- ifelse(!is.na(colsDays$event), 1, 0)
-                colsDays$groups <- clinical$patient.stage_event.pathologic_stage
-                
-                # Estimate and plot survival curves by groups
+                # Estimate survival curves by groups
                 if (is.null(timeStop))
-                    form <- Surv(time, event, type = censoring) ~ groups
-                else {
-                    # Create new time using the ending time replacing the NAs
-                    # with days to last follow up
-                    nas <- is.na(colsDays$stop)
-                    colsDays$time2 <- colsDays$stop
-                    colsDays$time2[nas] <- colsDays$followup[nas]
-                    
-                    View(colsDays)
-                    form <- Surv(time, time2, event, type = "interval") ~ groups
-                }
-                surv <- survfit(form, data = colsDays)
-                plot(surv, lty=2:5, ylab="Proportion of individuals",
-                     xlab="Time in days", col=1:4)
-                legend("topright", sort(unique(colsDays$groups)), col=1:4,
-                       lty=2:5)
+                    form <- Surv(time, event, type=censoring) ~ groups
+                else
+                    form <- Surv(time, time2, event, type=censoring) ~ groups
+                
+                surv <- survfit(form, data = survTime)
+                
+                # Plot survival curves
+                groups <- sort(unique(survTime$groups))
+                nos <- seq_along(groups)
+                plot(surv, col=nos, lty=nos, ylab="Proportion of individuals",
+                     xlab="Time in days")
+                legend("topright", groups, col=nos, lty=nos)
             }
         })
     })
