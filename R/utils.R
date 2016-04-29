@@ -26,10 +26,8 @@ alertNew <- function(...)
 dropdown <- function(inputId) {
     div(class="dropdown",
         tags$button(class="btn btn-default dropdown-toggle",
-                    type="button", id=inputId,
-                    "data-toggle"="dropdown",
-                    "aria-haspopup"="true",
-                    "aria-expanded"="true",
+                    type="button", id=inputId, "data-toggle"="dropdown",
+                    "aria-haspopup"="true", "aria-expanded"="true",
                     list("Dropdown", span(class="caret"))),
         tags$ul(class="dropdown-menu", "aria-labelledby"="dropdownMenu1",
                 tags$li(a(href="#", "Action")),

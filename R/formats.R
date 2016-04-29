@@ -66,10 +66,9 @@ loadFile <- function(format, file) {
     }
     
     # Add row names
-    if (!is.null(format$rowNames))
+    rowNames <- NULL
+    if (!is.null(format$rowNames)) 
         rowNames <- unlist(loaded[, format$rowNames])
-    else
-        rowNames <- NULL
     
     # Filter out unwanted columns
     if (!is.null(format$ignoreCols)) loaded <- loaded[ , -format$ignoreCols]
