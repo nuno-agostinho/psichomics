@@ -266,6 +266,9 @@ groupPerPatient <- function(groups, patientsNumber, includeOuterGroup=FALSE,
 
 #' Simply show a modal
 #' 
+#' You can also use \code{errorModal} and \code{warningModal} to use template 
+#' modals already stylised to show errors and warnings respectively.
+#' 
 #' @param session Current Shiny session
 #' @param title Character: modal title
 #' @param content Character: 
@@ -288,8 +291,16 @@ showModal <- function(session, title, ..., style = NULL,
     if (printMessage) print(content)
 }
 
+#' @rdname showModal
 #' @export
 errorModal <- function(session, title, ..., footer = NULL) {
     showModal(session, title, ..., footer, style = "danger", size = "small",
+              printMessage = FALSE, iconName = "times-circle")
+}
+
+#' @rdname showModal
+#' @export
+warningModal <- function(session, title, ..., footer = NULL) {
+    showModal(session, title, ..., footer, style = "warning", size = "small",
               printMessage = FALSE, iconName = "exclamation-circle")
 }
