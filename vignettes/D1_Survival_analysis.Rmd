@@ -131,6 +131,42 @@ lsurv2 <- survfit(Surv(time, status) ~ x, aml, type='fleming')
 plot(lsurv2, lty=2:3, fun="cumhaz", xlab="Months", ylab="Cumulative Hazard")
 ```
 
+## Plotting
+
+### Keplen-Meier
+
+To plot a Keplen-Meier using Highcharts, we'll simulate the following plot:
+```{r}
+aml.surv <- survfit(Surv(time, status) ~ x, data = aml)
+plot(aml.surv, mark.time = TRUE)
+```
+
+To do it, we'll use the information from the `aml.surv` object as follows.
+```{r}
+# The X axis will be the time and the Y axis the survival probability
+# These variables don't separate by groups, so we'll have to split them
+x <- aml.surv$time
+y <- aml.surv$surv
+
+# Check which points should be marked
+mark <- ifelse(aml.surv$n.censor, 1, 0)
+marker <- list(list(fillColor="black", symbol="diamond", enabled=TRUE))
+dont <- list(list(enabled=FALSE))
+first <- list(list(x=0, y=1, marker=dont))
+
+data <- list.parse3(data.frame(x, y, mark))
+data <- lapply(data, function(i)
+    if(i$mark) c(i, marker = marker)
+    else c(i, marker = dont))
+
+library(highcharter)
+highchart() %>%
+    hc_chart(zoomType="xy") %>%
+    hc_yAxis(min=0, max=1) %>%
+    hc_add_series(data = c(first, data[1:10]), step="left", name="Main") %>%
+    hc_add_series(data = c(first, data[11:20]), step="left", name="Non")
+```
+
 ## References
 - [Wikipedia](https://en.wikipedia.org/wiki/Survival_analysis#Introduction_to_survival_analysis)
 - [Question: Survival Analysis Using Tcga Data](https://www.biostars.org/p/96209/)
