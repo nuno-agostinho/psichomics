@@ -154,17 +154,25 @@ marker <- list(list(fillColor="black", symbol="diamond", enabled=TRUE))
 dont <- list(list(enabled=FALSE))
 first <- list(list(x=0, y=1, marker=dont))
 
-data <- list.parse3(data.frame(x, y, mark))
-data <- lapply(data, function(i)
-    if(i$mark) c(i, marker = marker)
-    else c(i, marker = dont))
+# Check groups
+group <- aml.surv$strata
+names(group) <- gsub("x=", "", names(group), fixed=TRUE)
+
+data <- list.parse3(data.frame(x, y, mark, group=rep(names(group), group), 
+                               stringsAsFactors = FALSE))
+data <- lapply(data, function(i) c(i, marker = ifelse(i$mark, marker, dont)))
 
 library(highcharter)
-highchart() %>%
+hc <- highchart() %>%
     hc_chart(zoomType="xy") %>%
-    hc_yAxis(min=0, max=1) %>%
-    hc_add_series(data = c(first, data[1:10]), step="left", name="Main") %>%
-    hc_add_series(data = c(first, data[11:20]), step="left", name="Non")
+    hc_yAxis(min=0, max=1)
+
+for (name in names(group)) {
+    d <- lapply(data, function(i) if (i$group == name) i)
+    d <- Filter(Negate(is.null), d)
+    hc <- hc %>% hc_add_series(data=c(first, d), step="left", name=name)
+}
+hc
 ```
 
 ## References
