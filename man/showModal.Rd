@@ -35,6 +35,6 @@ info or warning}
 }
 \description{
 You can also use \code{errorModal} and \code{warningModal} to use template 
-modals already stylised to show errors and warning
+modals already stylised to show errors and warnings respectively.
 }
 
