@@ -199,12 +199,20 @@ server <- function(input, output, session) {
     })
 }
 
-plotSurvCurves <- function(surv) {
-    # The X axis will be the time and the Y axis the survival probability
-    # These variables don't separate by groups, so we'll have to split them
-    x <- surv$time
-    y <- surv$surv
-    
+#' Plot survival curves using Highcharts
+#' 
+#' @param surv survfit object: survival curves returned from the \code{survfit}
+#' function
+#' @param fun Character (name of function) or function: used to transform the
+#' survival curve. \code{log} will put y axis on log scale, \code{event} plots 
+#' cumulative events (f(y) = 1-y), \code{cumhaz} plots the cumulative hazard 
+#' function (f(y) = -log(y)), and \code{cloglog} creates a complimentary log-log
+#' survival plot (f(y) = log(-log(y)) along with log scale for the x-axis.
+#' @param ymin Integer: minimum Y to plot
+#' @param ymax Integer: maximum Y to plot
+#' 
+#' @return Highchart object to plot survival curves
+plotSurvCurves <- function(surv, fun = NULL, ymin=0, ymax=1) {
     # Check which points should be marked
     mark <- ifelse(surv$n.censor, 1, 0)
     
@@ -212,33 +220,65 @@ plotSurvCurves <- function(surv) {
     if (is.null(surv$strata)) {
         group <- c("Test" = length(surv$time))
     } else {
+        # The X axis will be the time and the Y axis the survival probability
+        # These variables don't separate by groups, so we'll have to split them
         group <- surv$strata
         names(group) <- gsub(".*=", "", names(group))
     }
     
+    # Modify data according to functions (adapted from survival:::plot.survfit)
+    if (is.character(fun)) {
+        tfun <- switch(fun,
+                       log = function(x) x,
+                       event = function(x) 1 - x,
+                       cumhaz = function(x) -log(x),
+                       cloglog = function(x) log(-log(x)),
+                       pct = function(x) x * 100,
+                       logpct = function(x) 100 * x,
+                       identity = function(x) x,
+                       function(x) x)
+    } else if (is.function(fun)) {
+        tfun <- fun
+    } else 
+        tfun <- function(x) x
+    
+    surv$surv <- tfun(surv$surv)
+    if (!is.null(surv$upper)) {
+        surv$upper <- tfun(surv$upper)
+        surv$lower <- tfun(surv$lower)
+    }
+    firsty <- tfun(1)
+    
     marker <- list(list(fillColor="black", symbol=fa_icon_mark("plus"),
                         enabled=TRUE))
     dont <- list(list(enabled=FALSE))
-    data <- list.parse3(data.frame(x, y, mark, group=rep(names(group), group), 
+    data <- list.parse3(data.frame(x=surv$time, y=surv$surv, mark,
+                                   group=rep(names(group), group), 
                                    stringsAsFactors = FALSE))
     data <- lapply(data, function(i) c(i, marker=ifelse(i$mark, marker, dont)))
     
+    # Prepare Y axis range
+    yValues <- vapply(data, "[[", "y", FUN.VALUE = numeric(1))
+    ymin <- ifelse(min(yValues) >= ymin, ymin, min(yValues))
+    ymax <- ifelse(max(yValues) <= ymax, ymax, max(yValues))
+    
     hc <- highchart() %>%
         hc_chart(zoomType="xy") %>%
-        hc_yAxis(min=0, max=1, title=list(text="Proportion of individuals")) %>%
+        hc_yAxis(min=ymin, max=ymax, 
+                 title=list(text="Proportion of individuals")) %>%
         hc_xAxis(title=list(text="Time in days"))
     
     for (name in names(group)) {
         ls <- lapply(data, function(i) if (i$group == name) i)
         ls <- Filter(Negate(is.null), ls)
         
+        # Add first value if there is no x=0 in the data
         first <- NULL
-        if (!0 %in% vapply(ls, "[[", "x", FUN.VALUE = numeric(1))) {
-            # Add first value if there is no x = 0 in the data
-            first <- list(list(x=0, y=1, marker=dont))
-        }
+        if (!0 %in% vapply(ls, "[[", "x", FUN.VALUE = numeric(1)))
+            first <- list(list(x=0, y=firsty, marker=dont))
         
         hc <- hc %>% hc_add_series(data=c(first, ls), step="left", name=name)
     }
+    
     return(hc)
 }
