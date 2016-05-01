@@ -208,14 +208,18 @@ server <- function(input, output, session) {
 #' cumulative events (f(y) = 1-y), \code{cumhaz} plots the cumulative hazard 
 #' function (f(y) = -log(y)), and \code{cloglog} creates a complimentary log-log
 #' survival plot (f(y) = log(-log(y)) along with log scale for the x-axis.
-#' @param ymin Integer: minimum Y to plot
-#' @param ymax Integer: maximum Y to plot
+#' @param ymin Integer: minimum Y to plot if all Y values are higher than the 
+#' indicated (0 by default)
+#' @param ymax Integer: maximum Y to plot if all Y values are lower than the 
+#' indicated (1 by default)
+#' @param markTimes Boolean: should times be marked? (TRUE by default)
+#' @param markerSymbol Character: symbol to use as marker (plus sign by default)
+#' @param markerColor Character: color of the marker ("black" by default)
 #' 
 #' @return Highchart object to plot survival curves
-plotSurvCurves <- function(surv, fun = NULL, ymin=0, ymax=1) {
-    # Check which points should be marked
-    mark <- ifelse(surv$n.censor, 1, 0)
-    
+plotSurvCurves <- function(surv, fun = NULL, ymin=0, ymax=1, markTimes=TRUE,
+                           markerSymbol=fa_icon_mark("plus"),
+                           markerColor="black") {
     # Check if there are groups
     if (is.null(surv$strata)) {
         group <- c("Test" = length(surv$time))
@@ -244,20 +248,28 @@ plotSurvCurves <- function(surv, fun = NULL, ymin=0, ymax=1) {
     
     surv$surv <- tfun(surv$surv)
     if (!is.null(surv$upper)) {
+        ## TODO(NunoA): use upper and lower if desired
         surv$upper <- tfun(surv$upper)
         surv$lower <- tfun(surv$lower)
     }
     firsty <- tfun(1)
     
-    marker <- list(list(fillColor="black", symbol=fa_icon_mark("plus"),
-                        enabled=TRUE))
-    dont <- list(list(enabled=FALSE))
+    # Data markers
+    noMarker <- list(list(enabled=FALSE))
+    marker <- ifelse(
+        markTimes,
+        list(list(fillColor=markerColor, symbol=markerSymbol, enabled=TRUE)),
+        noMarker)
+    
+    # Prepare data
+    mark <- ifelse(surv$n.censor == 1, 1, 0)
     data <- list.parse3(data.frame(x=surv$time, y=surv$surv, mark,
                                    group=rep(names(group), group), 
                                    stringsAsFactors = FALSE))
-    data <- lapply(data, function(i) c(i, marker=ifelse(i$mark, marker, dont)))
+    data <- lapply(data, function(i)
+        c(i, marker=ifelse(i$mark, marker, noMarker)))
     
-    # Prepare Y axis range
+    # Adjust Y axis range
     yValues <- vapply(data, "[[", "y", FUN.VALUE = numeric(1))
     ymin <- ifelse(min(yValues) >= ymin, ymin, min(yValues))
     ymax <- ifelse(max(yValues) <= ymax, ymax, max(yValues))
@@ -275,7 +287,7 @@ plotSurvCurves <- function(surv, fun = NULL, ymin=0, ymax=1) {
         # Add first value if there is no x=0 in the data
         first <- NULL
         if (!0 %in% vapply(ls, "[[", "x", FUN.VALUE = numeric(1)))
-            first <- list(list(x=0, y=firsty, marker=dont))
+            first <- list(list(x=0, y=firsty, marker=noMarker))
         
         hc <- hc %>% hc_add_series(data=c(first, ls), step="left", name=name)
     }
