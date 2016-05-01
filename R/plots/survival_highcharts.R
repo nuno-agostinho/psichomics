@@ -9,7 +9,7 @@
 ## and besides they are never really centered...
 
 # The name used for the plot must be unique
-plot <- "Survival plots high"
+plot <- "Survival plots Highcharts"
 id <- function(value) objectId(name, plot, value)
 
 ui <- tagList(
