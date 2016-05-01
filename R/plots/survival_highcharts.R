@@ -5,6 +5,9 @@
 
 ## TODO(NunoA): How to correctly do interval censoring?
 
+## TODO(NunoA): Icon symbol used for cross are moved when hiding/showing series
+## and besides they are never really centered...
+
 # The name used for the plot must be unique
 plot <- "Survival plots high"
 id <- function(value) objectId(name, plot, value)
@@ -213,16 +216,17 @@ plotSurvCurves <- function(surv) {
         names(group) <- gsub(".*=", "", names(group))
     }
     
-    marker <- list(list(fillColor="black", symbol="diamond", enabled=TRUE))
+    marker <- list(list(fillColor="black", symbol=fa_icon_mark("plus"),
+                        enabled=TRUE))
     dont <- list(list(enabled=FALSE))
     data <- list.parse3(data.frame(x, y, mark, group=rep(names(group), group), 
                                    stringsAsFactors = FALSE))
-    data <- lapply(data, function(i) c(i, marker = ifelse(i$mark, marker, dont)))
+    data <- lapply(data, function(i) c(i, marker=ifelse(i$mark, marker, dont)))
     
     hc <- highchart() %>%
         hc_chart(zoomType="xy") %>%
-        hc_yAxis(min=0, max=1, title=list(text="Time in days")) %>%
-        hc_yAxis(title=list(text="Proportion of individuals"))
+        hc_yAxis(min=0, max=1, title=list(text="Proportion of individuals")) %>%
+        hc_xAxis(title=list(text="Time in days"))
     
     for (name in names(group)) {
         ls <- lapply(data, function(i) if (i$group == name) i)
@@ -230,7 +234,6 @@ plotSurvCurves <- function(surv) {
         
         first <- NULL
         if (!0 %in% vapply(ls, "[[", "x", FUN.VALUE = numeric(1))) {
-            print(vapply(ls, "[[", "x", FUN.VALUE = numeric(1)))
             # Add first value if there is no x = 0 in the data
             first <- list(list(x=0, y=1, marker=dont))
         }

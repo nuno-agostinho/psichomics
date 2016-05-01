@@ -150,9 +150,9 @@ y <- aml.surv$surv
 
 # Check which points should be marked
 mark <- ifelse(aml.surv$n.censor, 1, 0)
-marker <- list(list(fillColor="black", symbol="diamond", enabled=TRUE))
+marker <- list(list(fillColor="black", symbol=fa_icon_mark("plus"), 
+                    enabled=TRUE))
 dont <- list(list(enabled=FALSE))
-first <- list(list(x=0, y=1, marker=dont))
 
 # Check groups
 group <- aml.surv$strata
@@ -168,9 +168,16 @@ hc <- highchart() %>%
     hc_yAxis(min=0, max=1)
 
 for (name in names(group)) {
-    d <- lapply(data, function(i) if (i$group == name) i)
-    d <- Filter(Negate(is.null), d)
-    hc <- hc %>% hc_add_series(data=c(first, d), step="left", name=name)
+    ls <- lapply(data, function(i) if (i$group == name) i)
+    ls <- Filter(Negate(is.null), ls)
+    
+    first <- NULL
+    if (!0 %in% vapply(ls, "[[", "x", FUN.VALUE = numeric(1))) {
+        # Add first value if there is no x = 0 in the data
+        first <- list(list(x=0, y=1, marker=dont))
+    }
+    
+    hc <- hc %>% hc_add_series(data=c(first, ls), step="left", name=name)
 }
 hc
 ```
