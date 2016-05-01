@@ -173,7 +173,11 @@ server <- function(input, output, session) {
                 # Save the days from columns of interest in a data frame
                 fillGroups <- groupPerPatient(dataGroups, nrow(clinical), 
                                               showOther)
-                if (timeStop == "") timeStop <- NULL
+                
+                # Ignore timeStop if interval-censoring is not selected
+                if (!grepl("interval", censoring, fixed=TRUE) || timeStop == "") 
+                    timeStop <- NULL
+                
                 survTime <- processSurvData(timeStart, timeStop, dataEvent,
                                             fillGroups, clinical)
                 
