@@ -31,7 +31,7 @@ ui <- tagList(
                                    class="inline_selectize"))),
         checkboxInput(id("showOutGroup"), "Show data outside chosen groups",
                       value = FALSE),
-        actionButton(id("coxModel"), "Plot Cox Model"),
+        checkboxInput(id("coxModel"), "Use Cox proportional hazards model"),
         actionButton(id("survivalCurves"), class="btn-primary", 
                      "Plot survival curves")
     ),
@@ -151,6 +151,7 @@ server <- function(input, output, session) {
                 dataEvent <- input[[id("event")]]
                 censoring <- input[[id("censoring")]]
                 showOther <- input[[id("showOutGroup")]]
+                coxModel  <- input[[id("coxModel")]]
                 
                 # Get chosen groups
                 chosen <- input[[id("dataGroups")]]
@@ -179,13 +180,18 @@ server <- function(input, output, session) {
                 else
                     form <- Surv(time, time2, event, type=censoring) ~ groups
                 
-                surv <- survfit(form, data = survTime)
+                if (coxModel) {
+                    fit <- coxph(form, data = survTime)
+                    surv <- survfit(fit)
+                } else {
+                    surv <- survfit(form, data = survTime)
+                }
                 
                 # Plot survival curves
                 groups <- sort(unique(survTime$groups))
                 nos <- seq_along(groups)
                 plot(surv, col=nos, lty=nos, ylab="Proportion of individuals",
-                     xlab="Time in days")
+                     xlab="Time in days", mark.time = TRUE)
                 legend("topright", groups, col=nos, lty=nos)
             }
         })
