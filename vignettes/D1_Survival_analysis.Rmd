@@ -182,6 +182,38 @@ for (name in names(group)) {
 hc
 ```
 
+Another important thing are the data manipulation tools available in
+`survival:::plot.survfit`, as it's easy to understand from this snippet of code:
+```{r, eval=FALSE}
+if (!missing(fun)) {
+    if (is.character(fun)) {
+        tfun <- switch(fun, 
+                       log = function(x) x, 
+                       event = function(x) 1 - x, 
+                       cumhaz = function(x) -log(x),
+                       cloglog = function(x) log(-log(x)), 
+                       pct = function(x) x * 100,
+                       logpct = function(x) 100 * x, 
+                       identity = function(x) x,
+                       stop("Unrecognized function argument"))
+    }
+    else if (is.function(fun)) 
+        tfun <- fun
+    else stop("Invalid 'fun' argument")
+    ssurv <- tfun(ssurv)
+    if (!is.null(supper)) {
+        supper <- tfun(supper)
+        slower <- tfun(slower)
+    }
+    firsty <- tfun(firsty)
+}
+```
+
+It may be important to use the cumulative hazard function (`cumhaz`) and since
+I'm including that one, I might as well include the others with a slight 
+adaptation of this code (and of course an attribution to the reference function
+too).
+
 ## References
 - [Wikipedia](https://en.wikipedia.org/wiki/Survival_analysis#Introduction_to_survival_analysis)
 - [Question: Survival Analysis Using Tcga Data](https://www.biostars.org/p/96209/)
