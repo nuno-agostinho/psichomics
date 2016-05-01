@@ -131,9 +131,7 @@ lsurv2 <- survfit(Surv(time, status) ~ x, aml, type='fleming')
 plot(lsurv2, lty=2:3, fun="cumhaz", xlab="Months", ylab="Cumulative Hazard")
 ```
 
-## Plotting
-
-### Keplen-Meier
+## Plotting with Highcharts
 
 To plot a Keplen-Meier using Highcharts, we'll simulate the following plot:
 ```{r}
@@ -143,6 +141,7 @@ plot(aml.surv, mark.time = TRUE)
 
 To do it, we'll use the information from the `aml.surv` object as follows.
 ```{r}
+library(highcharter)
 # The X axis will be the time and the Y axis the survival probability
 # These variables don't separate by groups, so we'll have to split them
 x <- aml.surv$time
@@ -162,8 +161,8 @@ data <- list.parse3(data.frame(x, y, mark, group=rep(names(group), group),
                                stringsAsFactors = FALSE))
 data <- lapply(data, function(i) c(i, marker = ifelse(i$mark, marker, dont)))
 
-library(highcharter)
 hc <- highchart() %>%
+    hc_tooltip(shared = TRUE) %>%
     hc_chart(zoomType="xy") %>%
     hc_yAxis(min=0, max=1)
 
@@ -214,7 +213,114 @@ I'm including that one, I might as well include the others with a slight
 adaptation of this code (and of course an attribution to the reference function
 too).
 
+Let's also see if this is ready for using with `coxph` results.
+```{r}
+plotSurvCurves <- function(surv, fun = NULL, ymin=0, ymax=1, markTimes=TRUE,
+                           markerSymbol=fa_icon_mark("plus"),
+                           markerColor="black", ranges=FALSE) {
+    # Check if there are groups
+    if (is.null(surv$strata)) {
+        group <- c("Test" = length(surv$time))
+    } else {
+        # The X axis will be the time and the Y axis the survival probability
+        # These variables don't separate by groups, so we'll have to split them
+        group <- surv$strata
+        names(group) <- gsub(".*=", "", names(group))
+    }
+    
+    # Modify data according to functions (adapted from survival:::plot.survfit)
+    if (is.character(fun)) {
+        tfun <- switch(fun,
+                       log = function(x) x,
+                       event = function(x) 1 - x,
+                       cumhaz = function(x) -log(x),
+                       cloglog = function(x) log(-log(x)),
+                       pct = function(x) x * 100,
+                       logpct = function(x) 100 * x,
+                       identity = function(x) x,
+                       function(x) x)
+    } else if (is.function(fun)) {
+        tfun <- fun
+    } else 
+        tfun <- function(x) x
+    
+    firsty <- tfun(1)
+    surv$surv <- tfun(surv$surv)
+    if (ranges && !is.null(surv$upper)) {
+        surv$upper <- tfun(surv$upper)
+        surv$lower <- tfun(surv$lower)
+    }
+    
+    # Data markers
+    noMarker <- list(list(enabled=FALSE))
+    marker <- ifelse(
+        markTimes,
+        list(list(fillColor=markerColor, symbol=markerSymbol, enabled=TRUE)),
+        noMarker)
+    
+    # Prepare data
+    mark <- ifelse(surv$n.censor == 1, 1, 0)
+    data <- list.parse3(data.frame(x=surv$time, y=surv$surv, mark,
+                                   up=surv$upper, low=surv$lower,
+                                   group=rep(names(group), group), 
+                                   stringsAsFactors = FALSE))
+    data <- lapply(data, function(i)
+        c(i, marker=ifelse(i$mark, marker, noMarker)))
+    
+    # Adjust Y axis range
+    yValues <- vapply(data, "[[", "y", FUN.VALUE = numeric(1))
+    ymin <- ifelse(min(yValues) >= ymin, ymin, min(yValues))
+    ymax <- ifelse(max(yValues) <= ymax, ymax, max(yValues))
+    
+    hc <- highchart() %>%
+        hc_chart(zoomType="xy") %>%
+        hc_tooltip(shared = TRUE) %>%
+        hc_yAxis(min=ymin, max=ymax, 
+                 title=list(text="Proportion of individuals")) %>%
+        hc_xAxis(title=list(text="Time in days"))
+    
+    count <- 0
+    for (name in names(group)) {
+        ls <- lapply(data, function(i) if (i$group == name) i)
+        ls <- Filter(Negate(is.null), ls)
+        
+        # Add first value if there is no x=0 in the data
+        first <- NULL
+        if (!0 %in% vapply(ls, "[[", "x", FUN.VALUE = numeric(1)))
+            first <- list(list(x=0, y=firsty, marker=noMarker))
+        
+        hc <- hc %>% hc_add_series(
+            data=c(first, ls), step="left", name=name, zIndex=1,
+            color=JS("Highcharts.getOptions().colors[", count, "]"))
+        
+        if (ranges) {
+            # Add interval range
+            range <- lapply(ls, function(i) 
+                setNames(i[c("x", "low", "up")], NULL))
+            hc <- hc %>% hc_add_series(
+                data=range, step="left", name="Ranges", type="arearange",
+                zIndex=0, linkedTo=':previous', fillOpacity=0.3, lineWidth=0,
+                color=JS("Highcharts.getOptions().colors[", count, "]"))
+        }
+        count <- count + 1
+    }
+    
+    return(hc)
+}
+
+fit <- coxph(Surv(futime, fustat) ~ age, data = ovarian) 
+surv <- survfit(fit, newdata=data.frame(age=60))
+plot(surv, xscale=365.25, xlab = "Years", ylab="Survival")
+plotSurvCurves(surv, ranges=TRUE)
+```
+
+Let's check out interval ranges for more than one group (it looks crowded...):
+```{r}
+plotSurvCurves(aml.surv, ranges = TRUE)
+```
+
 ## References
+
 - [Wikipedia](https://en.wikipedia.org/wiki/Survival_analysis#Introduction_to_survival_analysis)
 - [Question: Survival Analysis Using Tcga Data](https://www.biostars.org/p/96209/)
 - [Tutorial: Survival analysis of TCGA patients integrating gene expression (RNASeq) data](https://www.biostars.org/p/153013/)
