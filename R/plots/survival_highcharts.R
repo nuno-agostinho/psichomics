@@ -216,14 +216,16 @@ server <- function(input, output, session) {
 #' indicated (0 by default)
 #' @param ymax Integer: maximum Y to plot if all Y values are lower than the 
 #' indicated (1 by default)
-#' @param markTimes Boolean: should times be marked? (TRUE by default)
+#' @param markTimes Boolean: should times be marked? TRUE by default
 #' @param markerSymbol Character: symbol to use as marker (plus sign by default)
-#' @param markerColor Character: color of the marker ("black" by default)
+#' @param markerColor Character: color of the marker ("black" by default); use
+#' NULL to color using the series color
+#' @param ranges Boolean: plot interval ranges? FALSE by default
 #' 
 #' @return Highchart object to plot survival curves
 plotSurvCurves <- function(surv, fun = NULL, ymin=0, ymax=1, markTimes=TRUE,
                            markerSymbol=fa_icon_mark("plus"),
-                           markerColor="black") {
+                           markerColor="black", ranges=FALSE) {
     # Check if there are groups
     if (is.null(surv$strata)) {
         group <- c("Test" = length(surv$time))
@@ -250,13 +252,12 @@ plotSurvCurves <- function(surv, fun = NULL, ymin=0, ymax=1, markTimes=TRUE,
     } else 
         tfun <- function(x) x
     
+    firsty <- tfun(1)
     surv$surv <- tfun(surv$surv)
-    if (!is.null(surv$upper)) {
-        ## TODO(NunoA): use upper and lower if desired
+    if (ranges && !is.null(surv$upper)) {
         surv$upper <- tfun(surv$upper)
         surv$lower <- tfun(surv$lower)
     }
-    firsty <- tfun(1)
     
     # Data markers
     noMarker <- list(list(enabled=FALSE))
@@ -268,6 +269,7 @@ plotSurvCurves <- function(surv, fun = NULL, ymin=0, ymax=1, markTimes=TRUE,
     # Prepare data
     mark <- ifelse(surv$n.censor == 1, 1, 0)
     data <- list.parse3(data.frame(x=surv$time, y=surv$surv, mark,
+                                   up=surv$upper, low=surv$lower,
                                    group=rep(names(group), group), 
                                    stringsAsFactors = FALSE))
     data <- lapply(data, function(i)
@@ -280,10 +282,12 @@ plotSurvCurves <- function(surv, fun = NULL, ymin=0, ymax=1, markTimes=TRUE,
     
     hc <- highchart() %>%
         hc_chart(zoomType="xy") %>%
+        hc_tooltip(shared = TRUE) %>%
         hc_yAxis(min=ymin, max=ymax, 
                  title=list(text="Proportion of individuals")) %>%
         hc_xAxis(title=list(text="Time in days"))
     
+    count <- 0
     for (name in names(group)) {
         ls <- lapply(data, function(i) if (i$group == name) i)
         ls <- Filter(Negate(is.null), ls)
@@ -293,7 +297,20 @@ plotSurvCurves <- function(surv, fun = NULL, ymin=0, ymax=1, markTimes=TRUE,
         if (!0 %in% vapply(ls, "[[", "x", FUN.VALUE = numeric(1)))
             first <- list(list(x=0, y=firsty, marker=noMarker))
         
-        hc <- hc %>% hc_add_series(data=c(first, ls), step="left", name=name)
+        hc <- hc %>% hc_add_series(
+            data=c(first, ls), step="left", name=name, zIndex=1,
+            color=JS("Highcharts.getOptions().colors[", count, "]"))
+        
+        if (ranges) {
+            # Add interval range
+            range <- lapply(ls, function(i) 
+                setNames(i[c("x", "low", "up")], NULL))
+            hc <- hc %>% hc_add_series(
+                data=range, step="left", name="Ranges", type="arearange",
+                zIndex=0, linkedTo=':previous', fillOpacity=0.3, lineWidth=0,
+                color=JS("Highcharts.getOptions().colors[", count, "]"))
+        }
+        count <- count + 1
     }
     
     return(hc)
