@@ -138,7 +138,10 @@ server <- function(input, output, session) {
                     onInitialize = I('function() { this.setValue(""); }')))
             names(choices) <- gsub("Days to ", "", names(choices), fixed=TRUE)
             names(choices) <- R.utils::capitalize(names(choices))
-            updateSelectizeInput(session, id("event"), choices=choices,
+            updateSelectizeInput(session, id("event"), 
+                                 choices=list(
+                                     "Suggested events"=choices,
+                                     "All clinical data columns"=names(clinical)),
                                  selected="days_to_death")
         }
     })
