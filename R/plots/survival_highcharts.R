@@ -227,14 +227,10 @@ plotSurvCurves <- function(surv, fun = NULL, ymin=0, ymax=1, markTimes=TRUE,
                            markerSymbol=fa_icon_mark("plus"),
                            markerColor="black", ranges=FALSE) {
     # Check if there are groups
-    if (is.null(surv$strata)) {
-        group <- c("Test" = length(surv$time))
-    } else {
-        # The X axis will be the time and the Y axis the survival probability
-        # These variables don't separate by groups, so we'll have to split them
+    if (is.null(surv$strata))
+        group <- c("Series 1" = length(surv$time))
+    else
         group <- surv$strata
-        names(group) <- gsub(".*=", "", names(group))
-    }
     
     # Modify data according to functions (adapted from survival:::plot.survfit)
     if (is.character(fun)) {
@@ -268,15 +264,13 @@ plotSurvCurves <- function(surv, fun = NULL, ymin=0, ymax=1, markTimes=TRUE,
     
     # Prepare data
     mark <- ifelse(surv$n.censor == 1, 1, 0)
-    data <- list.parse3(data.frame(x=surv$time, y=surv$surv, mark,
-                                   up=surv$upper, low=surv$lower,
-                                   group=rep(names(group), group), 
-                                   stringsAsFactors = FALSE))
-    data <- lapply(data, function(i)
-        c(i, marker=ifelse(i$mark, marker, noMarker)))
+    data <- data.frame(x=surv$time, y=surv$surv, mark,
+                       up=surv$upper, low=surv$lower,
+                       group=rep(names(group), group), 
+                       stringsAsFactors = FALSE)
     
     # Adjust Y axis range
-    yValues <- vapply(data, "[[", "y", FUN.VALUE = numeric(1))
+    yValues <- data$y
     ymin <- ifelse(min(yValues) >= ymin, ymin, min(yValues))
     ymax <- ifelse(max(yValues) <= ymax, ymax, max(yValues))
     
@@ -289,13 +283,19 @@ plotSurvCurves <- function(surv, fun = NULL, ymin=0, ymax=1, markTimes=TRUE,
     
     count <- 0
     for (name in names(group)) {
-        ls <- lapply(data, function(i) if (i$group == name) i)
-        ls <- Filter(Negate(is.null), ls)
+        df <- subset(data, group == name)
         
         # Add first value if there is no x=0 in the data
         first <- NULL
-        if (!0 %in% vapply(ls, "[[", "x", FUN.VALUE = numeric(1)))
+        if (!0 %in% df$x)
             first <- list(list(x=0, y=firsty, marker=noMarker))
+        
+        # Mark events
+        ls <- list.parse3(df)
+        if (markTimes) {
+            ls <- lapply(ls, function(i)
+                c(i, marker=ifelse(i$mark, marker, noMarker)))
+        }
         
         hc <- hc %>% hc_add_series(
             data=c(first, ls), step="left", name=name, zIndex=1,
