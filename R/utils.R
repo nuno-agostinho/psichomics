@@ -198,3 +198,82 @@ hc_scatter <- function (hc, x, y, z = NULL, color = NULL, label = NULL,
                                     showInLegend = showInLegend, 
                                     dataLabels = dlopts), args))
 }
+
+#' Create script for autocompletion for text input
+#' 
+#' Uses the JavaScript library jquery.textcomplete
+#' 
+#' @param id Character: input ID
+#' @param words Character: words to suggest
+#' @param novalue Character: string when there's no matching values
+#'
+#' @return HTML string with the JavaScript script prepared to run
+#' @export
+#' 
+#' @examples 
+#' words <- c("tumor_stage", "age", "gender")
+#' textComplete("textareaid", words)
+textComplete <- function(id, words, novalue = "No matching value") {
+    words <- paste0('["', paste(words, collapse = '", "'), '"]')
+    js <- paste0('$("#', id, '").textcomplete([{
+        match: /([a-zA-Z0-9_\\.]{1,})$/,
+        search: function(term, callback) {
+            term = term.toLowerCase();
+            callback($.map(', words, ',
+                function(word) {
+                    word = word.toLowerCase();
+                    var comp = term.length < 4 ? 1 : term.length * 2;
+                    var match = fuzzy(word, term);
+                    return match.score >= comp ? word : null;
+                }
+            ));
+        },
+        index: 1,
+        replace: function(word) {
+            return word + " ";
+        }}], { noResultsMessage: "', novalue, '"});')
+    js <- paste("<script>", js, "</script>")
+    return(HTML(js))
+}
+
+#' Create a textarea input control
+#'
+#' Create a resizable input control for entry of unstructured text values
+#'
+#' @param inputId The \code{input} slot that will be used to access the value.
+#' @param label Display label for the control, or \code{NULL} for no label.
+#' @param value Initial value.
+#' @param width The width of the input, e.g. \code{'400px'}, or \code{'100\%'};
+#'   see \code{\link{validateCssUnit}}.
+#' @param placeholder A character string giving the user a hint as to what can
+#'   be entered into the control. Internet Explorer 8 and 9 do not support this
+#'   option.
+#' @return A textarea input control that can be added to a UI definition.
+#'
+#' @family input elements
+#' @seealso \code{\link{updateTextAreaInput}}
+#'
+#' @examples
+#' ## Only run examples in interactive R sessions
+#' if (interactive()) {
+#'
+#' ui <- fluidPage(
+#'   textAreaInput("caption", "Caption", "Data Summary", width = "1000px"),
+#'   verbatimTextOutput("value")
+#' )
+#' server <- function(input, output) {
+#'   output$value <- renderText({ input$caption })
+#' }
+#' shinyApp(ui, server)
+#' }
+#' @export
+textAreaInput <- function(inputId, label, value = "", width = NULL,
+                          placeholder = NULL) {
+    
+    div(class = "form-group shiny-input-container",
+        style = if (!is.null(width)) paste0("width: ", validateCssUnit(width), ";"),
+        tags$label(label, `for` = inputId),
+        tags$textarea(id = inputId, class = "form-control", value = value,
+                      placeholder = placeholder)
+    )
+}

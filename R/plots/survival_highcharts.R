@@ -32,6 +32,8 @@ ui <- tagList(
                                      choices = NULL, multiple = TRUE)),
             column(2, actionButton(id("dataGroups_selectAll"), "Select all",
                                    class="inline_selectize"))),
+        textAreaInput(id("formula"), "Insert formula"),
+        uiOutput(id("formulaAutocomplete")),
         checkboxInput(id("showOutGroup"), "Show data outside chosen groups",
                       value = FALSE),
         checkboxInput(id("coxModel"), "Use Cox proportional hazards model"),
@@ -95,6 +97,11 @@ timePerPatient <- function(col, clinical) {
 }
 
 server <- function(input, output, session) {
+    output[[id("formulaAutocomplete")]] <- renderUI({
+        words <- names(getClinicalData())
+        textComplete(id("formula"), words)
+    })
+    
     # Update available group choices to select
     observe({
         groups <- getGroupsFrom("Clinical data")

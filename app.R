@@ -26,7 +26,9 @@ ui <- shinyUI(
         list(title = "PSΨchomics", id = "nav", collapsible = TRUE,
              position = "fixed-top",
              header = list(includeCSS("www/styles.css"),
+                           includeScript("www/jquery.textcomplete.min.js"),
                            includeScript("www/functions.js"),
+                           includeScript("www/fuzzy.min.js"),
                            conditionalPanel(
                                condition="$('html').hasClass('shiny-busy')",
                                div(icon("flask", "fa-spin"), "Working...",
