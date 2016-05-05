@@ -47,7 +47,7 @@ body { padding-top: 70px; }
 
 /* Add danger style to modal headers 
 Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
-.modal-header-danger {
+.modal-content .danger {
     color:#fff;
     padding:9px 15px;
     border-bottom:1px solid #eee;
@@ -62,7 +62,7 @@ Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
 
 /* Add info style to modal headers
 Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
-.modal-header-info {
+.modal-content .info {
     color:#fff;
     padding:9px 15px;
     border-bottom:1px solid #eee;
@@ -77,7 +77,7 @@ Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
 
 /* Add warning style to modal headers
 Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
-.modal-header-warning {
+.modal-content .warning {
 	color:#fff;
     padding:9px 15px;
     border-bottom:1px solid #eee;
