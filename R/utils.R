@@ -40,7 +40,7 @@ dropdown <- function(inputId) {
 #' @export
 bsModal2 <- function (id, title, trigger, ..., style, size = NULL, footer = NULL)  {
     if (!missing(style)) {
-        modalHeader <- paste("modal-header", style, sep = "-")
+        modalHeader <- paste("modal-header", style)
     } else {
         modalHeader <- "modal-header"
     }
