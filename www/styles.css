@@ -91,6 +91,11 @@ Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
 }
 
 /* Make the active item from the selectize.js dropdown more noticeable */
+.selectize-dropdown .active, .selectize-dropdown .active.create {
+    background-color: #1C7AB4;
+    color: white;
+}
+/* Make the active item from the selectize.js dropdown more noticeable */
 .selectize-dropdown .active {
     background-color: #1C7AB4;
     color: white;
