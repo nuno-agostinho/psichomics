@@ -89,3 +89,9 @@ Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
      border-top-left-radius: 5px;
      border-top-right-radius: 5px;
 }
+
+/* Make the active item from the selectize.js dropdown more noticeable */
+.selectize-dropdown .active {
+    background-color: #1C7AB4;
+    color: white;
+}
