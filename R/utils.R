@@ -1,4 +1,4 @@
-badge <- function (inputId, label)
+badge <- function(inputId, label)
     span(class = "badge", id = inputId, label)
 
 buttonGroups <- function(...) {
