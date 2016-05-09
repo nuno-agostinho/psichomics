@@ -5,8 +5,8 @@
 
 ## TODO(NunoA): How to correctly do interval censoring?
 
-## TODO(NunoA): Icon symbol used for cross are moved when hiding/showing series
-## and besides they are never really centered...
+## TODO(NunoA): Icon symbol used for cross in survival curves are moved when
+## hiding/showing series and they're not centered...
 
 # The name used for the plot must be unique
 plot <- "Survival plots Highcharts"
@@ -97,9 +97,10 @@ timePerPatient <- function(col, clinical) {
 }
 
 server <- function(input, output, session) {
+    # Update available clinical data attributes to use in a formula
     output[[id("formulaAutocomplete")]] <- renderUI({
-        words <- names(getClinicalData())
-        textComplete(id("formula"), words)
+        attributes <- names(getClinicalData())
+        textComplete(id("formula"), attributes)
     })
     
     # Update available group choices to select
