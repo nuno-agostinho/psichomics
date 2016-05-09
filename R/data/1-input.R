@@ -20,15 +20,15 @@ addLocalFile <- function() {
 addTCGAdata <- function() {
     cohorts <- getFirehoseCohorts()
     names(cohorts) <- sprintf("%s (%s)", names(cohorts), cohorts)
+    dates <- as.character(getFirehoseDates())
     
     if (isFirehoseUp()) {
         list(
             selectizeInput(id("firehoseCohort"), "Cohort", cohorts,
                            multiple = TRUE, selected = c("ACC", "BLCA"),
                            options = list(placeholder = "Select cohort(s)")),
-            selectizeInput(id("firehoseDate"), "Date",
-                           as.character(getFirehoseDates()), multiple = TRUE,
-                           selected = "2015-11-01", options = list(
+            selectizeInput(id("firehoseDate"), "Date", dates, multiple = TRUE,
+                           selected = dates[1], options = list(
                                placeholder = "Select sample date")),
             selectizeInput(id("dataType"), "Data type",
                            c("Clinical", "mRNASeq"), 
