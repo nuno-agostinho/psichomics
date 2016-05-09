@@ -2,17 +2,17 @@
 % Please edit documentation in R/begin.R
 \name{escape}
 \alias{escape}
-\title{Simple function to escape symbols for use in regular expressions}
+\title{Escape symbols for use in regular expressions}
 \usage{
-escape(string)
+escape(...)
 }
 \arguments{
-\item{string}{Character}
+\item{...}{Characters to be pasted with no space}
 }
 \value{
 Escaped string
 }
 \description{
-Simple function to escape symbols for use in regular expressions
+Escape symbols for use in regular expressions
 }
 
