@@ -249,7 +249,7 @@ server <- function(input, output, session) {
                 }
                 
                 # Plot survival curves
-                plotSurvCurves(surv, ranges = intRanges) %>%
+                hchart(surv, ranges = intRanges) %>%
                     hc_chart(zoomType="xy") %>%
                     hc_yAxis(title=list(text="Proportion of individuals")) %>%
                     hc_xAxis(title=list(text="Time in days"))
@@ -279,7 +279,7 @@ server <- function(input, output, session) {
 #' @param rangeOpacity Numeric: opacity of the interval ranges (0.3 by default)
 #' 
 #' @return Highchart object to plot survival curves
-plotSurvCurves <- function(surv, fun=NULL, ymin=0, ymax=1, markTimes=TRUE,
+hchart.survfit <- function(surv, fun=NULL, ymin=0, ymax=1, markTimes=TRUE,
                            markerSymbol=fa_icon_mark("plus"),
                            markerColor="black", ranges=FALSE,
                            rangesOpacity=0.3) {
