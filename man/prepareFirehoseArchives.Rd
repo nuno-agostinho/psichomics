@@ -4,12 +4,14 @@
 \alias{prepareFirehoseArchives}
 \title{Prepares Firehose archives in a given directory}
 \usage{
-prepareFirehoseArchives(downloaded, folder, progress = printPaste)
+prepareFirehoseArchives(archive, folder, md5, progress = printPaste)
 }
 \arguments{
-\item{downloaded}{Character: path to downloaded archives}
+\item{archive}{Character: path to downloaded archives}
 
 \item{folder}{Character: local folder where the archives should be stored}
+
+\item{md5}{Characater: path to MD5 files of each archive}
 
 \item{progress}{Function to show the progress (default is printPaste)}
 }
@@ -17,13 +19,7 @@ prepareFirehoseArchives(downloaded, folder, progress = printPaste)
 Invisible TRUE if successful
 }
 \description{
-Checks Firehose archives' integrity using the MD5 files, extracts the content
+Checks Firehose archives' integrity using the MD5 files, extracts the content
 of the archives and removes the original downloaded archives.
-}
-\examples{
-prepareFirehoseArchives(folder = "~/Downloads", url = paste0(
-    "http://gdac.broadinstitute.org/runs/stddata__2015_11_01/data/",
-    "ACC/20151101/gdac.broadinstitute.org_ACC.",
-    "Merge_Clinical.Level_1.2015110100.0.0.tar.gz", c("", ".md5")))
 }
 

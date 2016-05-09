@@ -74,7 +74,7 @@ ui <- function() {
                                   class = "btn-warning",
                                   "data-dismiss"="modal", 
                                   label = "Replace"))),
-        uiOutput(id("iframe")),
+        uiOutput("iframeDownload"),
         shinyBS::bsCollapse(
             id = id("addData"),
             open = "Add TCGA/Firehose data",
@@ -110,30 +110,23 @@ server <- function(input, output, session) {
     observe(toggleState(id("acceptFile"), input[[id("species")]] != ""))
     
     # Load Firehose data
-    loadAllData <- reactive({
+    loadAllData <- function() {
         shinyjs::disable(id("getFirehoseData"))
         
-        # # Direct download by the browser
-        # source = paste0("https://support.apple.com/library/APPLE/APPLECARE_ALLGEOS/HT1425/",
-        #                 c("sample_iTunes.mov.zip", "sample_iPod.m4v.zip",
-        #                   "sample_mpeg4.mp4.zip"))
-        # iframe <- function(s) tags$iframe(width=1, height=1, frameborder=0,
-        #                                   src=s)
-        # output$iframe <- renderUI(lapply(source, iframe))
-        
         # Load data from Firehose
-        setData(
-            loadFirehoseData(
-                folder = input[[id("dataFolder")]],
-                cohort = input[[id("firehoseCohort")]],
-                date = gsub("-", "_", input[[id("firehoseDate")]]),
-                data_type = input[[id("dataType")]],
-                exclude = input[[id("firehoseIgnore")]],
-                progress = updateProgress))
+        data <- loadFirehoseData(
+            folder = input[[id("dataFolder")]],
+            cohort = input[[id("firehoseCohort")]],
+            date = gsub("-", "_", input[[id("firehoseDate")]]),
+            data_type = input[[id("dataType")]],
+            exclude = input[[id("firehoseIgnore")]],
+            progress = updateProgress,
+            output = output)
         
+        if (!is.null(data)) setData(data)
         closeProgress()
         shinyjs::enable(id("getFirehoseData"))
-    }) # end of reactive
+    }
     
     # Load data when the user presses to replace data
     observeEvent(input[[id("replace")]], loadAllData())
