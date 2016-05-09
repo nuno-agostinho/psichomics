@@ -1,4 +1,4 @@
-#' @import shiny shinyBS shinyjs ggplot2 highcharter
+#' @import shiny shinyBS shinyjs ggplot2 highcharter survival
 NULL
 #> NULL
 
