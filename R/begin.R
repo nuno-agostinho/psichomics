@@ -147,14 +147,15 @@ callScriptsFunction <- function(func, ..., check = func, folder = "R/") {
     return(loaded)
 }
 
-#' Simple function to escape symbols for use in regular expressions
+#' Escape symbols for use in regular expressions
 #'
-#' @param string Character
+#' @param ... Characters to be pasted with no space
 #' 
 #' @return Escaped string
-escape <- function(string)
+escape <- function(...) {
     # return(gsub("/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]", "\\$&", string))
-    return(gsub("(\\W)", "\\\\\\1", string))
+    return(gsub("(\\W)", "\\\\\\1", paste0(...)))
+}
 
 #' Rename vector to avoid duplicated values with comparison
 #'
