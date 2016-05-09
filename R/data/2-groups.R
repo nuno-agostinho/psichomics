@@ -122,15 +122,15 @@ createGroupFromInput <- function (input, output, session) {
         expr <- input[[id("groupExpression")]]
         
         # Test expression before running
-        tried <- tryCatch(set <- subset(data, eval(parse(text = expr))),
-                          error = return)
+        set <- tryCatch(subset(data, eval(parse(text = expr))),
+                        error = return)
         
         # Show error to the user
-        if ("simpleError" %in% class(tried)) {
+        if ("simpleError" %in% class(set)) {
             errorModal(session, "Subset expression error",
                        "Check if column names are correct.", br(), br(), 
                        "The following error was raised:", br(),
-                       tags$code(tried$message))
+                       tags$code(set$message))
             return(NULL)
         }
         
