@@ -210,10 +210,11 @@ checkIntegrity <- function(filesToCheck, md5file) {
 
 #' Prepares Firehose archives in a given directory
 #'
-#' Checks Firehose archives' integrity using the MD5 files, extracts the content
+#' Checks Firehose archives' integrity using the MD5 files, extracts the content
 #' of the archives and removes the original downloaded archives.
 #'
-#' @param downloaded Character: path to downloaded archives
+#' @param archive Character: path to downloaded archives
+#' @param md5 Characater: path to MD5 files of each archive
 #' @param folder Character: local folder where the archives should be stored
 #' @param progress Function to show the progress (default is printPaste)
 #' 
@@ -221,31 +222,34 @@ checkIntegrity <- function(filesToCheck, md5file) {
 #' @export
 #'
 #' @examples
-#' prepareFirehoseArchives(folder = "~/Downloads", url = paste0(
+#' file <- paste0(
 #'     "http://gdac.broadinstitute.org/runs/stddata__2015_11_01/data/",
 #'     "ACC/20151101/gdac.broadinstitute.org_ACC.",
-#'     "Merge_Clinical.Level_1.2015110100.0.0.tar.gz", c("", ".md5")))
-prepareFirehoseArchives <- function (downloaded, folder,
+#'     "Merge_Clinical.Level_1.2015110100.0.0.tar.gz")
+#' prepareFirehoseArchives(folder = "~/Downloads", archive = file,
+#'                         md5 = paste0(file, ".md5))
+prepareFirehoseArchives <- function (archive, md5, folder,
                                      progress = printPaste) {
+    archive <- file.path(folder, archive)
+    md5 <- file.path(folder, md5)
+    
     # Check integrety of the downloaded archives with the MD5 files
-    downloadedFolders <- downloaded[tools::file_ext(downloaded) != "md5"]
     ## TODO(NunoA): don't assume every file has the respective MD5 file
-    validFiles <- simplify2array(Map(checkIntegrity, downloadedFolders,
-                                     paste0(downloadedFolders, ".md5")))
+    validFiles <- simplify2array(Map(checkIntegrity, archive, md5))
     
     ## TODO(NunoA): Should we try to download the invalid archives again?
     ## What if they're constantly invalid? Only try n times before giving up?
-    if (!all(validFiles))
-        stop(paste("Error: at least one file is not valid according to the",
-                   "MD5 hashes."))
+    if (!all(validFiles)) {
+        warning("The MD5 hashes failed when checking the following files:\n",
+                paste(archive[!validFiles], collapse = "\n\t"))
+    }
     
     ## TODO(NunoA): Check if path.expand works in Windows
     # Extract the contents of the archives to the same folder
-    invisible(lapply(downloadedFolders,
-                     untar, exdir = path.expand(folder)))
+    invisible(lapply(archive, untar, exdir = path.expand(folder)))
     
     # Remove the original downloaded files
-    invisible(file.remove(downloaded))
+    invisible(file.remove(archive, md5))
     return(invisible(TRUE))
 }
 
@@ -301,7 +305,7 @@ parseUrlsFromFirehoseResponse <- function(res) {
 #' 
 #' # Exclude certain files from being loaded
 #' loadFirehoseFolders(folders, exclude = c("pink.txt", "panther.txt"))
-loadFirehoseFolders <- function (folder, exclude="", progress = printPaste) {
+loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
     # Retrieve full path of the files inside the given folders
     files <- dir(folder, full.names=TRUE)
     
@@ -313,8 +317,8 @@ loadFirehoseFolders <- function (folder, exclude="", progress = printPaste) {
     # Try to load files and remove those with 0 rows
     loaded <- list()
     for (each in seq_along(files)) {
-        progress("Processing file", detail = basename(files[each]),
-                 each, length(files))
+        # progress("Processing file", detail = basename(files[each]),
+                 # each, length(files))
         loaded[[each]] <- parseValidFile(files[each], "R/formats")
     }
     names(loaded) <- sapply(loaded, attr, "tablename")
@@ -335,46 +339,79 @@ loadFirehoseFolders <- function (folder, exclude="", progress = printPaste) {
 #' 
 #' @export
 #' @examples 
-#' loadFirehoseData()
+#' loadFirehoseData(cohort = "ACC", data_type = "Clinical")
 loadFirehoseData <- function(folder = "~/Downloads",
                              exclude = c(".aux.", ".mage-tab.", "MANIFEST.txt"),
                              ..., progress = printPaste,
-                             download = download.file) {
-    # Check if folder exists
-    if (!dir.exists(folder)) stop("Directory doesn't exist!")
-    
+                             download = download.file, output=output) {
     ## TODO(NunoA): Check if the default folder works in Windows
     # Query Firehose and get URLs for archives
     res <- queryFirehoseData(...)
     stop_for_status(res)
     url <- parseUrlsFromFirehoseResponse(res)
     
-    # Ignore specific archives
-    exclude <- paste(exclude, collapse = "|")
+    # Don't download specific items
+    exclude <- paste(escape(exclude), collapse = "|")
     url <- url[!grepl(exclude, url)]
     
-    # Check which folders have already been downloaded to the given directory
-    noMD5 <- gsub(".md5", "", url)
-    base <- file_path_sans_ext(basename(noMD5), compression = TRUE)
-    archives <- file.path(folder, base)
-    missing <- url[!file.exists(archives)]
+    # Get the file name without extensions
+    md5  <- tools::file_ext(url) == "md5"
+    base <- basename(url)
+    base[!md5] <- tools::file_path_sans_ext(base[!md5], compression = TRUE)
     
-    # Evenly divide the progress bar in one (download) + number of files to load
-    md5 <- grepl(".md5", url)
-    archives <- split(archives[!md5], names(url[!md5]))
-    progress(divisions = (1 + length(archives)))
+    # Check which files are missing from the given directory
+    downloadedFiles <- list.files(folder)
+    downloadedMD5   <- tools::file_ext(downloadedFiles) == "md5"
     
-    # Download and prepare archives not present in the given directory
-    if (length(missing) > 0) {
-        downloaded <- downloadFiles(missing, folder, progress)
-        prepareFirehoseArchives(downloaded, folder, progress)
+    missing <- logical(length(base))
+    missing[md5]  <- !base[md5] %in% downloadedFiles[downloadedMD5]
+    missing[!md5] <- !vapply(base[!md5], function(i)
+        any(grepl(i, downloadedFiles[!downloadedMD5], fixed=TRUE)),
+        FUN.VALUE = logical(1))
+    
+    if (sum(missing[!md5]) > 0) {
+        # downloadFiles(missing, folder, progress)
+        
+        # If there aren't non-MD5 files in the given directory, download
+        # missing files
+        progress(divisions = 1)
+        print("Triggered the download of missing files")
+        
+        iframe <- function(url) 
+            tags$iframe(width=1, height=1, frameborder=0, src=url)
+        output$iframeDownload <- renderUI(lapply(url[missing], iframe))
+        return(NULL)
     } else {
-        progress("Archives already downloaded")
+        # Divide the progress bar by the number of folders to load
+        progress(divisions = length(base[!md5]))
+        
+        # Check if there are folders to unarchive
+        ## TODO(NunoA): ensure this is a complete match
+        archives <- vapply(escape(base[!md5]), FUN.VALUE = character(1),
+                           function(i) paste0(i, 
+                                              escape(c("", ".tar", ".tar.gz")),
+                                              collapse="|"))
+        archives <- vapply(archives, grep, FUN.VALUE = character(1),
+                           downloadedFiles[!downloadedMD5],
+                           value = TRUE, USE.NAMES = FALSE)
+        tar <- grepl(".tar", archives, fixed = TRUE)
+        
+        if (length(archives[tar]) > 0) {
+            # Extract the content, check the intergrity and remove archives
+            print("Preparing archives...")
+            prepareFirehoseArchives(archives[tar], base[md5][tar], folder,
+                                    progress)
+        }
+        
+        ## TODO(NunoA): Can we show file loading progress in a Shiny app?
+        # Load the files
+        print("Loading archives...")
+        folders <- file.path(folder, base[!md5])
+        loaded <- lapply(folders, loadFirehoseFolders, exclude, progress)
+        names(loaded) <- gsub(" ", "-", names(url[!md5]), fixed = TRUE)
+        
+        # Remove empty datasets
+        loaded <- Filter(length, loaded)
+        return(loaded)
     }
-    
-    ## TODO(NunoA): Can we show file loading progress in a Shiny app?
-    # Load the files
-    loaded <- lapply(archives, loadFirehoseFolders, exclude, progress)
-    names(loaded) <- gsub(" ", "-", names(loaded))
-    return(loaded)
 }
