@@ -1,6 +1,7 @@
 tablename   <- "Junction quantification"   # Name of the created table
 filename    <- "junction_quantification"   # Name of the file
 description <- "Read counts of splicing junctions"
+matchName   <- TRUE # Should the file name be matched?
 
 # Transpose the data? This is the first step before parsing the information!
 # After transposition, a row of the current data equals a column of the original
