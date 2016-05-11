@@ -4,14 +4,14 @@
 \alias{prepareFirehoseArchives}
 \title{Prepares Firehose archives in a given directory}
 \usage{
-prepareFirehoseArchives(archive, folder, md5, progress = printPaste)
+prepareFirehoseArchives(archive, md5, folder, progress = printPaste)
 }
 \arguments{
 \item{archive}{Character: path to downloaded archives}
 
-\item{folder}{Character: local folder where the archives should be stored}
-
 \item{md5}{Characater: path to MD5 files of each archive}
+
+\item{folder}{Character: local folder where the archives should be stored}
 
 \item{progress}{Function to show the progress (default is printPaste)}
 }
