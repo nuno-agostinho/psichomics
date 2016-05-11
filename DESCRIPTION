@@ -17,7 +17,9 @@ Imports: fastmatch,
     stringr,
     plyr,
     dplyr,
-    methods
+    methods,
+    highcharter,
+    survival
 Suggests: testthat,
     knitr,
     rmarkdown,
