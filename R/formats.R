@@ -5,7 +5,13 @@
 #'
 #' @return TRUE if the file is of the given format; otherwise, returns FALSE
 #' @export
-checkFileFormat <- function(format, head) {
+checkFileFormat <- function(format, head, filename) {
+    # If file name is of importance, check the filename
+    if (!is.null(format$matchName) && format$matchName && 
+        grepl(format$filename, filename, fixed = TRUE)) {
+        return(FALSE)
+    }
+    
     ## TODO(NunoA): account for comments
     # Transpose data
     if (!is.null(format$transpose) && format$transpose)
@@ -13,7 +19,7 @@ checkFileFormat <- function(format, head) {
     
     lenCheck <- length(format$check)
     # Check if using row or column when checking format
-    if (is.null(format$rowCheck) | !format$rowCheck) {
+    if (is.null(format$rowCheck) || !format$rowCheck) {
         if (nrow(head) < lenCheck) return(FALSE)
         # Select wanted row and check for a match
         return(all(head[1:lenCheck, format$checkIndex] == format$check))
@@ -113,7 +119,7 @@ parseValidFile <- function(file, formatsFolder) {
     head <- read.delim(file, header = FALSE, nrows = 6, stringsAsFactors = F)
     
     # Check if the file is recognised by at least one file format
-    recognised <- lapply(formats, checkFileFormat, head)
+    recognised <- lapply(formats, checkFileFormat, head, file)
     recognised <- unlist(recognised)
     
     if (sum(recognised) > 1) {
