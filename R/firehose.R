@@ -317,8 +317,8 @@ loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
     # Try to load files and remove those with 0 rows
     loaded <- list()
     for (each in seq_along(files)) {
-        # progress("Processing file", detail = basename(files[each]),
-                 # each, length(files))
+        progress("Processing file", detail = basename(files[each]),
+                 each, length(files))
         loaded[[each]] <- parseValidFile(files[each], "R/formats")
     }
     names(loaded) <- sapply(loaded, attr, "tablename")
@@ -335,15 +335,14 @@ loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
 #' "MANIFEST.TXT" files)
 #' @param ... Extra parameters to be passed to \code{\link{queryFirehoseData}}
 #' @param progress Function to show the progress (default is printPaste)
-#' @param download Function to download the files (default is download.file)
+#' @param output Output from the Shiny server function
 #' 
 #' @export
 #' @examples 
 #' loadFirehoseData(cohort = "ACC", data_type = "Clinical")
 loadFirehoseData <- function(folder = "~/Downloads",
                              exclude = c(".aux.", ".mage-tab.", "MANIFEST.txt"),
-                             ..., progress = printPaste,
-                             download = download.file, output=output) {
+                             ..., progress = printPaste, output=output) {
     ## TODO(NunoA): Check if the default folder works in Windows
     # Query Firehose and get URLs for archives
     res <- queryFirehoseData(...)
@@ -383,7 +382,7 @@ loadFirehoseData <- function(folder = "~/Downloads",
         return(NULL)
     } else {
         # Divide the progress bar by the number of folders to load
-        progress(divisions = length(base[!md5]))
+        progress(divisions = 1 + length(base[!md5]))
         
         # Check if there are folders to unarchive
         ## TODO(NunoA): ensure this is a complete match
@@ -398,20 +397,18 @@ loadFirehoseData <- function(folder = "~/Downloads",
         
         if (length(archives[tar]) > 0) {
             # Extract the content, check the intergrity and remove archives
-            print("Preparing archives...")
+            progress("Preparing archives...")
             prepareFirehoseArchives(archives[tar], base[md5][tar], folder,
                                     progress)
         }
         
         ## TODO(NunoA): Can we show file loading progress in a Shiny app?
         # Load the files
-        print("Loading archives...")
+        categories <- gsub(" ", "-", names(url[!md5]), fixed = TRUE)
         folders <- file.path(folder, base[!md5])
-        loaded <- lapply(folders, loadFirehoseFolders, exclude, progress)
-        names(loaded) <- gsub(" ", "-", names(url[!md5]), fixed = TRUE)
+        folders <- split(folders, categories)
         
-        # Remove empty datasets
-        loaded <- Filter(length, loaded)
+        loaded <- lapply(folders, loadFirehoseFolders, exclude, progress)
         return(loaded)
     }
 }
