@@ -36,8 +36,11 @@ addTCGAdata <- function() {
                            options = list(
                                placeholder = "Select data types")),
             selectizeInput(id("firehoseIgnore"), "Files/archives to ignore",
-                           choices = c("RSEM_isoforms", ".aux.", ".mage-tab.",
-                                       "MANIFEST.txt", "exon_quantification"),
+                           choices = c(".aux.", ".mage-tab.", "MANIFEST.txt", 
+                                       "exon_quantification", "Preprocess",
+                                       paste0("RSEM_", c("isoforms", "genes")),
+                                       paste0(c("junction", "gene", "exon"),
+                                              "_expression"), "genes_normalized"),
                            selected = c("RSEM_isoforms", ".aux.", ".mage-tab.",
                                         "MANIFEST.txt", "exon_quantification"),
                            multiple = TRUE, options = list(
@@ -123,7 +126,9 @@ server <- function(input, output, session) {
             progress = updateProgress,
             output = output)
         
-        if (!is.null(data)) setData(data)
+        if (!is.null(data))
+            setData(data)
+        
         closeProgress()
         shinyjs::enable(id("getFirehoseData"))
     }
