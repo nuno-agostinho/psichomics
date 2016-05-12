@@ -4,7 +4,7 @@
 \alias{checkFileFormat}
 \title{Checks the format of a file}
 \usage{
-checkFileFormat(format, head)
+checkFileFormat(format, head, filename)
 }
 \arguments{
 \item{format}{Environment: format of the file}

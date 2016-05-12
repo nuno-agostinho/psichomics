@@ -5,8 +5,7 @@
 \title{Downloads and processes data from the Firehose API and loads it into R}
 \usage{
 loadFirehoseData(folder = "~/Downloads", exclude = c(".aux.", ".mage-tab.",
-  "MANIFEST.txt"), ..., progress = printPaste, download = download.file,
-  output = output)
+  "MANIFEST.txt"), ..., progress = printPaste, output = output)
 }
 \arguments{
 \item{folder}{Character: directory to store the downloaded archives (by
@@ -20,7 +19,7 @@ from loading into R (by default, it excludes ".aux.", ".mage-tab." and
 
 \item{progress}{Function to show the progress (default is printPaste)}
 
-\item{download}{Function to download the files (default is download.file)}
+\item{output}{Output from the Shiny server function}
 }
 \description{
 Downloads and processes data from the Firehose API and loads it into R

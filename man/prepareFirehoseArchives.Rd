@@ -22,4 +22,12 @@ Invisible TRUE if successful
 Checks Firehose archives' integrity using the MD5 files, extracts the content
 of the archives and removes the original downloaded archives.
 }
+\examples{
+file <- paste0(
+    "http://gdac.broadinstitute.org/runs/stddata__2015_11_01/data/",
+    "ACC/20151101/gdac.broadinstitute.org_ACC.",
+    "Merge_Clinical.Level_1.2015110100.0.0.tar.gz")
+prepareFirehoseArchives(folder = "~/Downloads", archive = file,
+                        md5 = paste0(file, ".md5"))
+}
 
