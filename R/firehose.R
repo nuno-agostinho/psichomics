@@ -227,9 +227,9 @@ checkIntegrity <- function(filesToCheck, md5file) {
 #'     "ACC/20151101/gdac.broadinstitute.org_ACC.",
 #'     "Merge_Clinical.Level_1.2015110100.0.0.tar.gz")
 #' prepareFirehoseArchives(folder = "~/Downloads", archive = file,
-#'                         md5 = paste0(file, ".md5))
-prepareFirehoseArchives <- function (archive, md5, folder,
-                                     progress = printPaste) {
+#'                         md5 = paste0(file, ".md5"))
+prepareFirehoseArchives <- function(archive, md5, folder,
+                                    progress = printPaste) {
     archive <- file.path(folder, archive)
     md5 <- file.path(folder, md5)
     
