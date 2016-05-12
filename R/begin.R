@@ -1,3 +1,5 @@
+source("R/utils.R")
+
 #' @import shiny shinyBS shinyjs ggplot2 highcharter survival
 NULL
 #> NULL
