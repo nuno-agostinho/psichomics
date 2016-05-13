@@ -39,10 +39,12 @@ getFirehoseDateFormat <- function() {
 isFirehoseUp <- function() {
     link <- paste0("http://firebrowse.org/api/v1/Metadata/HeartBeat")
     heartbeat <- GET(link, query = list(format = "json"))
-    if (http_error(heartbeat))
-        return(warn_for_status(heartbeat, "reach Firehose API"))
-    else
-        return(invisible(TRUE))
+    if (http_error(heartbeat)) {
+        warn_for_status(heartbeat, "reach Firehose API")
+        return(FALSE)
+    } else {
+        return(TRUE)
+    }
 }
 
 #' Query the Firehose API for TCGA data
