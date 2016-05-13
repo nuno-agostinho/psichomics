@@ -2,8 +2,10 @@ Package: psichomics
 Title: Analyze and Visualize Alternative Splicing Data
 Version: 0.0.0.9000
 Authors@R: person("Nuno", "Agostinho", email = "nunodanielagostinho@gmail.com", role = c("aut", "cre"))
-Description: Automatically retrieve data from RNA-Seq sources such as TCGA or your own files and process the data. This tool allows you to analyze and visualize alternative splicing.
-Depends: 
+Description: Automatically retrieve data from RNA-Seq sources such as TCGA
+    or your own files and process the data. This tool allows you to analyze and
+    visualize alternative splicing.
+Depends:
     R (>= 3.2.2),
     shiny,
     shinyBS,
@@ -13,14 +15,16 @@ Depends:
 License: What license is it under?
 LazyData: true
 RoxygenNote: 5.0.1
-Imports: fastmatch,
+Imports:
+    fastmatch,
     stringr,
     plyr,
     dplyr,
     methods,
     highcharter,
     survival
-Suggests: testthat,
+Suggests:
+    testthat,
     knitr,
     rmarkdown,
     data.table,
@@ -29,3 +33,17 @@ Suggests: testthat,
     rbenchmark
 VignetteBuilder: knitr
 LinkingTo: Rcpp
+Collate:
+    'RcppExports.R'
+    'utils.R'
+    'begin.R'
+    'data.R'
+    'events.R'
+    'firehose.R'
+    'formats.R'
+    'matsEvents.R'
+    'misoEvents.R'
+    'plots.R'
+    'suppaEvents.R'
+    'vastToolsEvents.R'
+    'widgets.R'
