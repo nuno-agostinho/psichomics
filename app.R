@@ -1,7 +1,3 @@
-#' @import shiny shinyBS shinyjs
-#' @include begin.R
-NULL
-
 #' Server function
 #' 
 #' Instructions to build the Shiny app.
