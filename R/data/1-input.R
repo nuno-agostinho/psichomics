@@ -5,12 +5,23 @@ name <- "Input"
 #' @return A UI set that can be added to a UI definition
 addLocalFile <- function() {
     list(
-        fileInput(id("dataFile"), "Choose folder", multiple = T),
-        textInput(id("species"), label = "Species", 
-                  placeholder = "Required"),
-        textInput(id("commonName"), label = "Common name"),
-        actionButton(id("acceptFile"), class = "btn-primary",
-                     "Send files")
+        textInput(id("localFolder"), "Folder where data is stored",
+                  value = "~/Downloads"),
+        textInput(id("localCategory"), label = "Category name", 
+                  value = "Adenoid cystic carcinoma (ACC) 2016"),
+        selectizeInput(id("localIgnore"), "Files/directories to ignore",
+                       choices = c(".aux.", ".mage-tab.", "MANIFEST.txt",
+                                   "exon_quantification", "Preprocess",
+                                   paste0("RSEM_", c("isoforms", "genes")),
+                                   paste0(c("junction", "gene", "exon"),
+                                          "_expression"), "genes_normalized"),
+                       selected = c("RSEM_isoforms", ".aux.", ".mage-tab.",
+                                    "MANIFEST.txt", "exon_quantification"),
+                       multiple = TRUE, options = list(
+                           # Allow to add new items
+                           create = TRUE, createOnBlur=TRUE,
+                           placeholder = "Input files to exclude")),
+        actionButton(id("acceptFile"), class = "btn-primary", "Load files")
     ) # end of list
 }
 
@@ -18,11 +29,11 @@ addLocalFile <- function() {
 #' 
 #' @return A UI set that can be added to a UI definition
 addTCGAdata <- function() {
-    cohorts <- getFirehoseCohorts()
-    names(cohorts) <- sprintf("%s (%s)", names(cohorts), cohorts)
-    dates <- as.character(getFirehoseDates())
-    
     if (isFirehoseUp()) {
+        cohorts <- getFirehoseCohorts()
+        names(cohorts) <- sprintf("%s (%s)", names(cohorts), cohorts)
+        dates <- as.character(getFirehoseDates())
+        
         list(
             selectizeInput(id("firehoseCohort"), "Cohort", cohorts,
                            multiple = TRUE, selected = c("ACC", "BLCA"),
@@ -60,7 +71,8 @@ addTCGAdata <- function() {
             actionButton(class = "btn-primary", type = "button",
                          id("getFirehoseData"), "Get data"))
     } else {
-        list(p("Firehose seems to be offline at the moment."))
+        list(icon("exclamation-circle"),
+             "Firehose seems to be offline at the moment.")
     }
 }
 
@@ -98,11 +110,27 @@ ui <- function() {
 server <- function(input, output, session) {
     # Load user files
     observeEvent(input[[id("acceptFile")]], {
-        error <- function(msg) { print(msg); return(NULL) }
-        if(is.null(input[[id("dataFile")]]))
-            error("No data input selected")
-        if(input[[id("species")]] == "")
-            error("Species field can't be empty")
+        shinyjs::disable(id("acceptFile"))
+        
+        folder <- input[[id("localFolder")]]
+        category <- input[[id("localCategory")]]
+        ignore <- input[[id("localIgnore")]]
+        
+        sub <- dir(folder, full.names = T)[dir.exists(dir(folder, full.names = T))]
+        
+        startProgress("Searching inside the folder...", divisions = 1 + length(sub))
+        loaded <- loadFirehoseFolders(sub, ignore, updateProgress)
+        data <- setNames(list(loaded), category)
+        setData(data)
+        
+        closeProgress()
+        shinyjs::enable(id("acceptFile"))
+        
+        # error <- function(msg) { print(msg); return(NULL) }
+        # if(is.null(input[[id("dataFile")]]))
+            # error("No data input selected")
+        # if(input[[id("species")]] == "")
+            # error("Species field can't be empty")
         
         # inFile <- input$dataFile
         # info <- read.table(inFile$datapath, sep = input$sep,
