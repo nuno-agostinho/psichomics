@@ -9,7 +9,7 @@
 ## hiding/showing series and they're not centered...
 
 # The name used for the plot must be unique
-plot <- "Survival plots Highcharts"
+plot <- "Survival curves"
 id <- function(value) objectId(name, plot, value)
 
 ui <- tagList(
