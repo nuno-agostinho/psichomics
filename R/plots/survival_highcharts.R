@@ -258,6 +258,83 @@ server <- function(input, output, session) {
     })
 }
 
+#' Calculate survival curves using a formula (e.g. the Kaplan-Meier) or a fitted
+#' Cox model
+#'
+#' @param session Session object from Shiny function
+#' @param group Character: group of each individual 
+#' @param clinical Data frame: clinical data
+#' @param outGroup Boolean: show group with outsiders (FALSE by default; always
+#' FALSE if using a fitted Cox model is TRUE)
+#' @param censoring Character: censor using "left", "right", "interval" or
+#' "interval2"
+#' @param timeStart Integer: staring time
+#' @param timeStop Integer: ending time (needed only for interval-censored data)
+#' @param dataEvent Character: event
+#' @param modelTerms Character: use "groups" or "formula" for the survival 
+#' curves?
+#' @param formulaStr Character: formula to use
+#' @param cox Boolean: fit a Cox proportional hazards regression model (FALSE by
+#' default)
+#'
+#' @return A \code{survfit} object 
+calculateSurvFit <- function(session, group, clinical, outGroup, censoring, 
+                             timeStart, timeStop, dataEvent, modelTerms, 
+                             formulaStr, cox = FALSE) {
+    # Save the days from columns of interest in a data frame
+    fillGroups <- groupPerPatient(group, nrow(clinical), outGroup)
+    
+    # Ignore timeStop if interval-censoring is not selected
+    if (!grepl("interval", censoring, fixed=TRUE) || timeStop == "") 
+        timeStop <- NULL
+    
+    # Check if using or not interval-censored data
+    formulaSurv <- ifelse(is.null(timeStop),
+                          "Surv(time, event, type=censoring) ~", 
+                          "Surv(time, time2, event, type=censoring) ~")
+    
+    survTime <- processSurvData(timeStart, timeStop, dataEvent, fillGroups, 
+                                clinical)
+    
+    # Estimate survival curves by groups or using formula
+    if (modelTerms == "groups") {
+        formulaTerms <- "groups"
+    } else if (modelTerms == "formula") {
+        formulaTerms <- formulaStr
+        if (formulaTerms == "") {
+            errorModal(session, "Error in formula",
+                       "The formula field can't be empty.")
+            return(NULL)
+        }
+        survTime <- cbind(survTime, clinical)
+    }
+    
+    form <- tryCatch(formula(paste(formulaSurv, formulaTerms)), error = return)
+    if ("simpleError" %in% class(form)) {
+        errorModal(session, "Formula error",
+                   "Maybe you misplaced a ", tags$kbd("+"), ", ", tags$kbd(":"), 
+                   " or ", tags$kbd("*"), "?", br(), br(),  
+                   "The following error was raised:", br(), 
+                   tags$code(form$message))
+        return(NULL)
+    }
+    
+    if (cox) {
+        fit <- coxph(form, data = survTime)
+        surv <- survfit(fit)
+    } else {
+        surv <- tryCatch(survfit(form, data = survTime),
+                         error = return)
+        if ("simpleError" %in% class(surv)) {
+            errorModal(session, "Formula error",
+                       "The following error was raised:", br(),
+                       tags$code(surv$message))
+            return(NULL)
+        }
+    }
+    return(surv)
+}
+
 #' Plot survival curves using Highcharts
 #' 
 #' @param surv survfit object: survival curves returned from the \code{survfit}
