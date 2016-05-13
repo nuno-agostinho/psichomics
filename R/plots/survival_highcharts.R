@@ -252,14 +252,12 @@ server <- function(input, output, session) {
     })
 }
 
-#' Calculate survival curves using a formula (e.g. the Kaplan-Meier) or a fitted
-#' Cox model
+#' Process survival curves terms to calculate survival curves
 #'
 #' @param session Session object from Shiny function
 #' @param group Character: group of each individual 
 #' @param clinical Data frame: clinical data
-#' @param outGroup Boolean: show group with outsiders (FALSE by default; always
-#' FALSE if using a fitted Cox model is TRUE)
+#' @param outGroup Boolean: show group with outsiders (FALSE by default)
 #' @param censoring Character: censor using "left", "right", "interval" or
 #' "interval2"
 #' @param timeStart Integer: staring time
@@ -268,13 +266,14 @@ server <- function(input, output, session) {
 #' @param modelTerms Character: use "groups" or "formula" for the survival 
 #' curves?
 #' @param formulaStr Character: formula to use
-#' @param cox Boolean: fit a Cox proportional hazards regression model (FALSE by
-#' default)
+#' @param coxph Boolean: fit a Cox proportional hazards regression model? FALSE 
+#' by default
 #'
-#' @return A \code{survfit} object 
-calculateSurvFit <- function(session, group, clinical, outGroup, censoring, 
+#' @return A list with a \code{formula} object and a data frame with terms
+#' needed to calculate survival curves
+processSurvTerms <- function(session, group, clinical, outGroup, censoring, 
                              timeStart, timeStop, dataEvent, modelTerms, 
-                             formulaStr, cox = FALSE) {
+                             formulaStr, coxph=FALSE) {
     # Save the days from columns of interest in a data frame
     fillGroups <- groupPerPatient(group, nrow(clinical), outGroup)
     
@@ -313,20 +312,11 @@ calculateSurvFit <- function(session, group, clinical, outGroup, censoring,
         return(NULL)
     }
     
-    if (cox) {
-        fit <- coxph(form, data = survTime)
-        surv <- survfit(fit)
-    } else {
-        surv <- tryCatch(survfit(form, data = survTime),
-                         error = return)
-        if ("simpleError" %in% class(surv)) {
-            errorModal(session, "Formula error",
-                       "The following error was raised:", br(),
-                       tags$code(surv$message))
-            return(NULL)
-        }
-    }
-    return(surv)
+    if (coxph)
+        res <- coxph(form, data=survTime)
+    else
+        res <- list(form=form, survTime=survTime)
+    return(res)
 }
 
 #' Plot survival curves using Highcharts
