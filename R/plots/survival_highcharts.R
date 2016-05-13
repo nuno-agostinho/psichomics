@@ -27,21 +27,22 @@ ui <- tagList(
         helpText("In case there's no record for a patient, the days to last",
                  "follow up will be used instead."),
         selectizeInput(id("event"), choices = NULL, "Event of interest"),
-        radioButtons(id("modelTerms"), selected="byGroups", inline=TRUE,
+        radioButtons(id("modelTerms"), selected="groups", inline=TRUE,
                      "Select model terms of the right-hand using",
-                     choices=c("Clinical groups"="byGroups",
-                               "Formula"="byFormula")),
+                     choices=c("Clinical groups"="groups",
+                               "Formula"="formula")),
         conditionalPanel(
-            sprintf("input[id='%s'] == '%s'", id("modelTerms"), "byGroups"),
+            sprintf("input[id='%s'] == '%s'", id("modelTerms"), "groups"),
             fluidRow(
-                column(9, selectizeInput(id("dataGroups"), "Clinical groups to use",
+                column(9, selectizeInput(id("dataGroups"), 
+                                         "Clinical groups to use",
                                          choices = NULL, multiple = TRUE)),
                 column(2, actionButton(id("dataGroups_selectAll"), "Select all",
                                        class="inline_selectize"))),
             checkboxInput(id("showOutGroup"), "Show data outside chosen groups",
                           value = FALSE)),
         conditionalPanel(
-            sprintf("input[id='%s'] == '%s'", id("modelTerms"), "byFormula"),
+            sprintf("input[id='%s'] == '%s'", id("modelTerms"), "formula"),
             textAreaInput(id("formula"), "Formula for right-hand side"),
             uiOutput(id("formulaAutocomplete"))),
         checkboxInput(id("ranges"), "Show interval ranges", value = FALSE),
@@ -50,7 +51,8 @@ ui <- tagList(
                      "Plot survival curves")
     ),
     mainPanel(
-        highchartOutput(id(plot))
+        highchartOutput(id(plot)),
+        highchartOutput(id(paste0(plot, 2)))
     )
 )
 
@@ -173,10 +175,9 @@ server <- function(input, output, session) {
                 timeStop   <- input[[id("timeStop")]]
                 dataEvent  <- input[[id("event")]]
                 censoring  <- input[[id("censoring")]]
-                showOther  <- input[[id("showOutGroup")]]
-                coxModel   <- input[[id("coxModel")]]
+                outGroup   <- input[[id("showOutGroup")]]
                 modelTerms <- input[[id("modelTerms")]]
-                formula    <- input[[id("formula")]]
+                formulaStr <- input[[id("formula")]]
                 intRanges  <- input[[id("ranges")]]
                 # Get chosen groups
                 chosen <- input[[id("dataGroups")]]
@@ -192,61 +193,54 @@ server <- function(input, output, session) {
                 errorModal(session, "Clinical groups intercept",
                            "There is an interception between clinical groups.")
             } else {
-                # Save the days from columns of interest in a data frame
-                fillGroups <- groupPerPatient(dataGroups, nrow(clinical), 
-                                              showOther)
+                # Calculate survival curves
+                surv <- calculateSurvFit(session, dataGroups, clinical, 
+                                         outGroup, censoring, timeStart, 
+                                         timeStop, dataEvent, modelTerms, 
+                                         formulaStr, cox=FALSE)
                 
-                # Ignore timeStop if interval-censoring is not selected
-                if (!grepl("interval", censoring, fixed=TRUE) || timeStop == "") 
-                    timeStop <- NULL
-                
-                # Check if using or not interval-censored data
-                formulaSurv <- ifelse(is.null(timeStop),
-                                      "Surv(time, event, type=censoring) ~", 
-                                      "Surv(time, time2, event, type=censoring) ~")
-                
-                survTime <- processSurvData(timeStart, timeStop, dataEvent,
-                                            fillGroups, clinical)
-                
-                # Estimate survival curves by groups or using formula
-                if (modelTerms == "byGroups") {
-                    formulaTerms <- "groups"
-                } else if (modelTerms == "byFormula") {
-                    formulaTerms <- formula
-                    if (formulaTerms == "") {
-                        errorModal(session, "Error in formula",
-                                   "Input something in the formula field.")
-                        return(NULL)
-                    }
-                    survTime <- cbind(survTime, clinical)
-                }
-                
-                form <- tryCatch(formula(paste(formulaSurv, formulaTerms)),
-                                 error = return)
-                if ("simpleError" %in% class(form)) {
-                    errorModal(session, "Formula error",
-                               "Maybe you misplaced a ", tags$kbd("+"), ", ",
-                               tags$kbd(":"), " or ", tags$kbd("*"), "?", br(),
-                               br(),  "The following error was raised:", br(),
-                               tags$code(form$message))
-                    return(NULL)
-                }
-                
-                if (coxModel) {
-                    fit <- coxph(form, data = survTime)
-                    surv <- survfit(fit)
-                } else {
-                    surv <- tryCatch(survfit(form, data = survTime),
-                                     error = return)
-                    if ("simpleError" %in% class(surv)) {
-                        errorModal(session, "Formula error",
-                                   "At least one attribute was not found.",
-                                   br(), br(),  
-                                   "The following error was raised:", br(),
-                                   tags$code(surv$message))
-                        return(NULL)
-                    }
-                }
+                # Plot survival curves
+                hchart(surv, ranges = intRanges) %>%
+                    hc_chart(zoomType="xy") %>%
+                    hc_yAxis(title=list(text="Proportion of individuals")) %>%
+                    hc_xAxis(title=list(text="Time in days"))
+            }
+        })
+    })
+    
+    # Plot cox model
+    observeEvent(input[[id("coxModel")]], {
+        output[[id(paste0(plot, 2))]] <- renderHighchart({
+            isolate({
+                # Get user input
+                clinical   <- getClinicalData()
+                timeStart  <- input[[id("timeStart")]]
+                timeStop   <- input[[id("timeStop")]]
+                dataEvent  <- input[[id("event")]]
+                censoring  <- input[[id("censoring")]]
+                outGroup   <- input[[id("showOutGroup")]]
+                modelTerms <- input[[id("modelTerms")]]
+                formulaStr <- input[[id("formula")]]
+                intRanges  <- input[[id("ranges")]]
+                # Get chosen groups
+                chosen <- input[[id("dataGroups")]]
+                dataGroups <- getGroupsFrom("Clinical data")[chosen, , drop=F]
+            })
+            
+            if (is.null(clinical)) {
+                errorModal(session, "Clinical data missing",
+                           "Insert clinical data first.")
+            } else if (nrow(dataGroups) > 0 && 
+                       anyDuplicated(unlist(dataGroups[, "Rows"])) > 0) {
+                # If the chosen groups have any intersections
+                errorModal(session, "Clinical groups intercept",
+                           "There is an interception between clinical groups.")
+            } else {
+                # Calculate survival curves
+                surv <- calculateSurvFit(session, dataGroups, clinical, 
+                                         outGroup, censoring, timeStart, 
+                                         timeStop, dataEvent, modelTerms, 
+                                         formulaStr, cox=TRUE)
                 
                 # Plot survival curves
                 hchart(surv, ranges = intRanges) %>%
