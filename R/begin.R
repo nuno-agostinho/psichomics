@@ -1,8 +1,6 @@
-source("R/utils.R")
-
-#' @import shiny shinyBS shinyjs ggplot2 highcharter survival
+#' @import shiny shinyBS shinyjs ggplot2 highcharter survival miscTools
+#' @include utils.R 
 NULL
-#> NULL
 
 # Global variable with all the data of a session
 sharedData <- reactiveValues()
