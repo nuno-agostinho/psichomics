@@ -262,7 +262,7 @@ server <- function(input, output, session) {
                     hc_tooltip(pointFormat = "{point.sample}")
                 
                 if ("Individuals" %in% show) {
-                    df <- data.frame(pca$rotation)
+                    df <- data.frame(pca$x)
                     if (is.null(selected)) {
                         hc <- hc %>%
                             hc_scatter(df[[xAxis]], df[[yAxis]],
