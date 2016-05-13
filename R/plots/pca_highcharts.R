@@ -79,9 +79,8 @@ server <- function(input, output, session) {
         sys.source("R/data/2-groups.R", envir = env)
         env$server(input, output, session)
         
-        showModal(session, "Groups", env$ui(),
-                  iconName = "object-group", size = "small", style = "info",
-                  printMessage = FALSE)
+        showModal(session, "Groups", env$ui(),  iconName = "object-group",
+                  style = "info")
     })
     
     # Update available group choices to select
