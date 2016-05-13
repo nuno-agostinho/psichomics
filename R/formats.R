@@ -6,11 +6,10 @@
 #' @return TRUE if the file is of the given format; otherwise, returns FALSE
 #' @export
 checkFileFormat <- function(format, head, filename) {
-    # If file name is of importance, check the filename
-    if (!is.null(format$matchName) && format$matchName && 
-        grepl(format$filename, filename, fixed = TRUE)) {
+    # If file name is of importance, check if the filename matches
+    if (isTRUE(format$matchName) &&
+        !grepl(format$filename, filename, fixed = TRUE))
         return(FALSE)
-    }
     
     ## TODO(NunoA): account for comments
     # Transpose data
