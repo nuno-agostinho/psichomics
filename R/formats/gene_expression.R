@@ -12,8 +12,7 @@ rowCheck    <- TRUE  # Check format using a row (TRUE) or a column (FALSE)
 checkIndex  <- 2     # Index of the row or column used to check the format
 
 # File string to check
-check <- c("gene", "raw_counts", "median_length_normalized", "RPKM",
-           "raw_counts", "median_length_normalized")
+check <- c("gene_id", rep("normalized_count", 5))
 
 # Parsing information
 delim       <- "\t"  # Delimiter used to separate fields
