@@ -10,13 +10,14 @@ addLocalFile <- function() {
         textInput(id("localCategory"), label = "Category name", 
                   value = "Adenoid cystic carcinoma (ACC) 2016"),
         selectizeInput(id("localIgnore"), "Files/directories to ignore",
-                       choices = c(".aux.", ".mage-tab.", "MANIFEST.txt",
-                                   "exon_quantification", "Preprocess",
+                       choices = c(".aux.", ".mage-tab.",
+                                   paste0(c("junction", "exon"),
+                                          "_quantification"), "Preprocess",
                                    paste0("RSEM_", c("isoforms", "genes")),
                                    paste0(c("junction", "gene", "exon"),
                                           "_expression"), "genes_normalized"),
                        selected = c("RSEM_isoforms", ".aux.", ".mage-tab.",
-                                    "MANIFEST.txt", "exon_quantification"),
+                                    "exon_quantification"),
                        multiple = TRUE, options = list(
                            # Allow to add new items
                            create = TRUE, createOnBlur=TRUE,
@@ -47,13 +48,14 @@ addTCGAdata <- function() {
                            options = list(
                                placeholder = "Select data types")),
             selectizeInput(id("firehoseIgnore"), "Files/archives to ignore",
-                           choices = c(".aux.", ".mage-tab.", "MANIFEST.txt", 
-                                       "exon_quantification", "Preprocess",
+                           choices = c(".aux.", ".mage-tab.",
+                                       paste0(c("junction", "exon"),
+                                              "_quantification"), "Preprocess",
                                        paste0("RSEM_", c("isoforms", "genes")),
                                        paste0(c("junction", "gene", "exon"),
                                               "_expression"), "genes_normalized"),
                            selected = c("RSEM_isoforms", ".aux.", ".mage-tab.",
-                                        "MANIFEST.txt", "exon_quantification"),
+                                        "exon_quantification"),
                            multiple = TRUE, options = list(
                                # Allow to add new items
                                create = TRUE, createOnBlur=TRUE,
