@@ -175,6 +175,8 @@ getFirehoseCohorts <- function(cohort = NULL) {
 #' @param download Function to use to download files
 #' @param progress Function to show the progress (default is printPaste)
 #' 
+#' @importFrom utils download.file
+#' 
 #' @return Invisible TRUE if every file was successfully downloaded
 #' @export
 #'
@@ -201,11 +203,14 @@ downloadFiles <- function(url, folder, progress = printPaste,
 #' @param filesToCheck Character: files to calculate and match MD5 hashes
 #' @param md5file Character: file containing correct MD5 hashes
 #'
+#' @importFrom digest digest
+#' @importFrom utils read.table
+#'
 #' @return Logical vector showing TRUE for files with matching md5sums and FALSE
 #' for files with non-matching md5sums
 #' @export
 checkIntegrity <- function(filesToCheck, md5file) {
-    md5sums <- digest::digest(file = filesToCheck)
+    md5sums <- digest(file = filesToCheck)
     md5table <- read.table(md5file, stringsAsFactors = FALSE)[[1]]
     return(md5sums %in% md5table)
 }
@@ -218,6 +223,8 @@ checkIntegrity <- function(filesToCheck, md5file) {
 #' @param archive Character: path to downloaded archives
 #' @param md5 Characater: path to MD5 files of each archive
 #' @param folder Character: local folder where the archives should be stored
+#' 
+#' @importFrom utils untar
 #' 
 #' @return Invisible TRUE if successful
 #' @export

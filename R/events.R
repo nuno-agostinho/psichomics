@@ -39,6 +39,7 @@ createJunctionsTemplate <- function(nrow, program = character(0),
     return(parsed)
 }
 
+#' @importFrom utils read.delim
 getMisoAnnotation <- function() {
     types <- c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI", "TandemUTR")
     typesFile <- paste0("/genedata/Resources/Annotations/MISO/hg19/", types,
@@ -58,6 +59,7 @@ parseMisoAnnotation <- function(annot) {
     return(events)
 }
 
+#' @importFrom utils read.delim
 getSuppaAnnotation <- function() {
     types <- c("SE", "AF", "AL", "MX", "A5", "A3", "RI")
     typesFile <- paste0("~/Documents/psi_calculation/suppa/suppaEvents/hg19_", 
@@ -74,6 +76,7 @@ parseSuppaAnnotation <- function(annot) {
     return(events)
 }
 
+#' @importFrom utils read.delim
 getMatsAnnotation <- function() {
     types <- c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI")
     typesFile <- paste("~/Documents/psi_calculation/mats_out/ASEvents/fromGTF",
@@ -105,6 +108,7 @@ parseMatsAnnotation <- function(annot) {
     return(events)
 }
 
+#' @importFrom utils read.delim
 getVastToolsAnnotation <- function() {
     types <- c("ALT3", "ALT5", "COMBI", "IR", "MERGE3m", "MIC",
                rep(c("EXSK", "MULTI"), 1))
@@ -209,6 +213,7 @@ getNumerics <- function(table, by = NULL, toNumeric = FALSE) {
 }
 
 #' Full outer join all given annotation based on select columns
+#' @importFrom dplyr full_join
 #' @export
 joinAnnotation <- function(annotation) {
     types <- names(annotation)
@@ -246,6 +251,8 @@ joinAnnotation <- function(annotation) {
 #' @param eventType Character: type of event
 #' @param filename Character: path to the annotation file
 #' 
+#' @importFrom utils write.table
+#' 
 #' @return Invisible TRUE if everything's okay
 #' @export
 writeAnnotation <- function(jointEvents, eventType,
@@ -280,6 +287,8 @@ writeAnnotation <- function(jointEvents, eventType,
 #' Read the annotation of an event type from a file
 #' 
 #' @inheritParams writeAnnotation
+#' 
+#' @importFrom utils read.table
 #' 
 #' @return Data frame with the annotation
 #' @export
