@@ -23,13 +23,13 @@ Imports:
     dplyr,
     methods,
     highcharter,
-    survival
+    survival,
+    ggplot2
 Suggests:
     testthat,
     knitr,
     rmarkdown,
     data.table,
-    ggplot2,
     microbenchmark,
     rbenchmark
 VignetteBuilder: knitr
