@@ -102,6 +102,8 @@ loadFile <- function(format, file) {
 #' @details The resulting data frame includes the attribute "tablename" with the
 #' name of the data frame
 #' 
+#' @importFrom utils read.delim
+#' 
 #' @return Data frame with the contents of the given file if the file format is
 #' recognised; otherwise, returns NULL
 parseValidFile <- function(file, formatsFolder) {

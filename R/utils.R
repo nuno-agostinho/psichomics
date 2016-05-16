@@ -155,6 +155,11 @@ enableTab <- function(tab) {
 }
 
 #' Add scatter
+#' 
+#' @importFrom dplyr data_frame
+#' @importFrom assertthat assert_that
+#' @importFrom stats setNames
+#' 
 #' @export
 hc_scatter <- function (hc, x, y, z = NULL, color = NULL, label = NULL, 
                         showInLegend = FALSE, viridis.option = "D", ...) {
@@ -269,7 +274,6 @@ textComplete <- function(id, words, novalue = "No matching value") {
 #' @export
 textAreaInput <- function(inputId, label, value = "", width = NULL,
                           placeholder = NULL) {
-    
     div(class = "form-group shiny-input-container",
         style = if (!is.null(width)) paste0("width: ", validateCssUnit(width), ";"),
         tags$label(label, `for` = inputId),
