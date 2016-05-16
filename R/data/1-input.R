@@ -127,16 +127,6 @@ server <- function(input, output, session) {
         
         closeProgress()
         shinyjs::enable(id("acceptFile"))
-        
-        # error <- function(msg) { print(msg); return(NULL) }
-        # if(is.null(input[[id("dataFile")]]))
-            # error("No data input selected")
-        # if(input[[id("species")]] == "")
-            # error("Species field can't be empty")
-        
-        # inFile <- input$dataFile
-        # info <- read.table(inFile$datapath, sep = input$sep,
-        #                    header = input$header)
     })
     
     # The button is only enabled if it meets the conditions that follow
