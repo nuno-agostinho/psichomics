@@ -344,6 +344,8 @@ loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
 #' @param progress Function to show the progress (default is printPaste)
 #' @param output Output from the Shiny server function
 #' 
+#' @importFrom tools file_ext file_path_sans_ext
+#' 
 #' @export
 #' @examples 
 #' loadFirehoseData(cohort = "ACC", data_type = "Clinical")
@@ -361,13 +363,13 @@ loadFirehoseData <- function(folder = "~/Downloads",
     url <- url[!grepl(exclude, url)]
     
     # Get the file name without extensions
-    md5  <- tools::file_ext(url) == "md5"
+    md5  <- file_ext(url) == "md5"
     base <- basename(url)
-    base[!md5] <- tools::file_path_sans_ext(base[!md5], compression = TRUE)
+    base[!md5] <- file_path_sans_ext(base[!md5], compression = TRUE)
     
     # Check which files are missing from the given directory
     downloadedFiles <- list.files(folder)
-    downloadedMD5   <- tools::file_ext(downloadedFiles) == "md5"
+    downloadedMD5   <- file_ext(downloadedFiles) == "md5"
     
     missing <- logical(length(base))
     missing[md5]  <- !base[md5] %in% downloadedFiles[downloadedMD5]

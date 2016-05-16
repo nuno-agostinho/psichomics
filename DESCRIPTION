@@ -26,7 +26,11 @@ Imports:
     survival,
     ggplot2,
     assertthat,
-    digest
+    digest,
+    data.table,
+    gplots,
+    htmltools,
+    tools
 Suggests:
     testthat,
     knitr,

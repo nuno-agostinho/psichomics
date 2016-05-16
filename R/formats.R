@@ -41,6 +41,8 @@ checkFileFormat <- function(format, head, filename) {
 #' @details The resulting data frame includes the attribute "tablename" with the
 #' name of the data frame
 #' 
+#' @importFrom data.table fread
+#' 
 #' @return Data frame with the loaded file
 #' @export
 loadFile <- function(format, file) {
@@ -48,9 +50,9 @@ loadFile <- function(format, file) {
     delim <- ifelse(!is.null(format$delim), format$delim, "\t")
     skip <- ifelse(!is.null(format$skip), format$skip, 0)
     
-    loaded <- data.table::fread(file, sep = delim, header = FALSE,
-                                stringsAsFactors = FALSE, data.table = FALSE,
-                                skip = skip)
+    loaded <- fread(file, sep = delim, header = FALSE,
+                    stringsAsFactors = FALSE, data.table = FALSE,
+                    skip = skip)
     
     # Transpose data
     if (!is.null(format$transpose) && format$transpose)
@@ -63,9 +65,9 @@ loadFile <- function(format, file) {
     # Add column names
     if (!is.null(format$colNames)) {
         if (skip != 0) {
-            header <- data.table::fread(file, sep = delim, header = FALSE,
-                                        stringsAsFactors = FALSE,
-                                        data.table = FALSE, nrows = skip)
+            header <- fread(file, sep = delim, header = FALSE,
+                            stringsAsFactors = FALSE,
+                            data.table = FALSE, nrows = skip)
             names(loaded) <- header[format$colNames, ]
         } else {
             names(loaded) <- loaded[format$colNames, ]

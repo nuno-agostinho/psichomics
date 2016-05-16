@@ -37,6 +37,7 @@ dropdown <- function(inputId) {
     )
 }
 
+#' @importFrom shiny tags HTML
 #' @export
 bsModal2 <- function (id, title, trigger, ..., style, size = NULL, footer = NULL)  {
     if (!missing(style)) {
@@ -50,23 +51,23 @@ bsModal2 <- function (id, title, trigger, ..., style, size = NULL, footer = NULL
         size <- paste("modal-dialog", size)
     }
     else size <- "modal-dialog"
-    bsTag <- shiny::tags$div(
+    bsTag <- tags$div(
         class = "modal sbs-modal fade", 
         id = id, tabindex = "-1", `data-sbs-trigger` = trigger, 
-        shiny::tags$div(
-            class = size, shiny::tags$div(
+        tags$div(
+            class = size, tags$div(
                 class = "modal-content", 
-                shiny::tags$div(
+                tags$div(
                     class = modalHeader,
-                    shiny::tags$button(
+                    tags$button(
                         type = "button",
                         class = "close", `data-dismiss` = "modal",
-                        shiny::tags$span(shiny::HTML("&times;"))), 
-                    shiny::tags$h4(class = "modal-title", title)), 
-                shiny::tags$div(class = "modal-body", list(...)), 
-                shiny::tags$div(
+                        tags$span(HTML("&times;"))), 
+                    tags$h4(class = "modal-title", title)), 
+                tags$div(class = "modal-body", list(...)), 
+                tags$div(
                     class = "modal-footer",
-                    shiny::tags$button(type = "button", 
+                    tags$button(type = "button", 
                                        class = "btn btn-default",
                                        `data-dismiss` = "modal", 
                                        "Close"),
@@ -75,11 +76,12 @@ bsModal2 <- function (id, title, trigger, ..., style, size = NULL, footer = NULL
 }
 
 #' Create a progress object
+#' @importFrom shiny Progress
 #' @export
 startProgress <- function(message, divisions, global = sharedData) {
     print(message)
     global$progress.divisions <- divisions
-    global$progress <- shiny::Progress$new()
+    global$progress <- Progress$new()
     global$progress$set(message = message, value = 0)
 }
 
@@ -115,6 +117,7 @@ closeProgress <- function(message=NULL, global = sharedData) {
 }
 
 #' Allows to add id to an image
+#' @importFrom htmltools htmlDependencies
 #' @export
 icon2 <- function (name, class = NULL, lib = "font-awesome", ...) {
     prefixes <- list(`font-awesome` = "fa", glyphicon = "glyphicon")
@@ -130,7 +133,7 @@ icon2 <- function (name, class = NULL, lib = "font-awesome", ...) {
         iconClass <- paste(iconClass, class)
     iconTag <- tags$i(class = iconClass, ...)
     if (lib == "font-awesome") {
-        htmltools::htmlDependencies(iconTag) <- htmltools::htmlDependency(
+        htmlDependencies(iconTag) <- htmltools::htmlDependency(
             "font-awesome", "4.5.0", c(href = "shared/font-awesome"), 
             stylesheet = "css/font-awesome.min.css")
     }

@@ -1,41 +1,42 @@
 name <- "Widgets"
 id <- function(value) objectId(name, value)
 
+#' @importFrom shiny column
 ui <- function(tab) {
     tab(name,
         fluidRow(
             bsAlert(anchorId = id("alert")),
-            shiny::column(3, h3("Buttons"),
+            column(3, h3("Buttons"),
                           actionButton(id("action"), label = "Action")),
             #submitButton("Submit")), # DOESN'T ALLOW TO UPDATE VALUES...
-            shiny::column(3, h3("Single checkbox"),
+            column(3, h3("Single checkbox"),
                           checkboxInput(id("checkbox"), label = "Choice A",
                                         value = TRUE)),
-            shiny::column(3, checkboxGroupInput(
+            column(3, checkboxGroupInput(
                 id("checkGroup"), label = h3("Checkbox group"), 
                 choices = list("Choice 1" = 1, "Choice 2" = 2,
                                "Choice 3" = 3), selected = 1)),
-            shiny::column(3, dateInput(id("date"),
+            column(3, dateInput(id("date"),
                                        label = h3("Date input"),
                                        value = "2014-01-01"))   
         ),
         fluidRow(
-            shiny::column(3, dateRangeInput(id("dates"), label = h3("Date range"))),
-            shiny::column(3, fileInput(id("file"), label = h3("File input"))),
-            shiny::column(3, h3("Help text"),
+            column(3, dateRangeInput(id("dates"), label = h3("Date range"))),
+            column(3, fileInput(id("file"), label = h3("File input"))),
+            column(3, h3("Help text"),
                           helpText("Note: help text isn't a true widget,", 
                                    "but it provides an easy way to add text to",
                                    "accompany other widgets.")),
-            shiny::column(3, numericInput(id("num"), label = h3("Numeric input"),
+            column(3, numericInput(id("num"), label = h3("Numeric input"),
                                           value = 1))   
         ),
         fluidRow(
-            shiny::column(3, radioButtons(
+            column(3, radioButtons(
                 id("radio"), label = h3("Radio buttons"),
                 choices = list("Choice 1" = 1,
                                "Choice 2" = 2,
                                "Choice 3" = 3), selected = 1)),
-            shiny::column(3, selectizeInput(
+            column(3, selectizeInput(
                 id("select"), label = h3("Selectize box"),
                 choices = list("Primates" = c("Homo sapiens (human)" = 1),
                                "Rodents" = c("Mus musculus (mouse)" = 2),
@@ -44,12 +45,12 @@ ui <- function(tab) {
                 options = list(create = TRUE, createOnBlur = TRUE,
                                addPrecedence = TRUE),
                 selected = 1, multiple = TRUE, size = 2)),
-            shiny::column(3,
+            column(3,
                           sliderInput(id("slider1"), label = h3("Sliders"), min = 0,
                                       max = 100, value = 50),
                           sliderInput(id("slider2"), "", min = 0, max = 100,
                                       value = c(25, 75))),
-            shiny::column(3, textInput(id("text"), label = h3("Text input"), 
+            column(3, textInput(id("text"), label = h3("Text input"), 
                                        value = "Enter text..."))   
         )
     )
