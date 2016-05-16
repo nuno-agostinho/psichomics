@@ -24,7 +24,9 @@ Imports:
     methods,
     highcharter,
     survival,
-    ggplot2
+    ggplot2,
+    assertthat,
+    digest
 Suggests:
     testthat,
     knitr,
