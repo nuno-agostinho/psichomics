@@ -10,7 +10,8 @@ NULL
 #' @param program Character: Program used to get the junctions
 #' @param event.type Character: Event type of the respective events
 #' @param chromosome Character: Chromosome of the junctions
-#' @param strand Strand: positive ("+") or negative ("-") strand of the event
+#' @param strand Character: positive ("+") or negative ("-") strand of the event
+#' @param id Character: events' ID
 #' 
 #' @return A data frame with the junctions coordinate names pre-filled with NAs
 #' @export
@@ -22,6 +23,7 @@ createJunctionsTemplate <- function(nrow, program = character(0),
                                     chromosome = character(0),
                                     strand = character(0),
                                     id = character(0)) {
+    ## TODO(NunoA): only accept a "+" or a "-" strand
     parsed <- as.data.frame(matrix(NA, nrow = nrow, ncol = 8),
                             stringsAsFactors = FALSE)
     names(parsed) <- c("C1.start", "C1.end",
@@ -245,9 +247,10 @@ joinAnnotation <- function(annotation) {
 
 #' Write the annotation of an event type to a file
 #' 
-#' @param join List of lists of data frame
+#' @param jointEvents List of lists of data frame
 #' @param eventType Character: type of event
 #' @param filename Character: path to the annotation file
+#' @param showID Boolean: show the events' ID (FALSE by default)
 #' 
 #' @importFrom utils write.table
 #' 
@@ -262,7 +265,7 @@ writeAnnotation <- function(jointEvents, eventType,
     by <- c("Chromosome", "Strand", getCoordinates(eventType))
     ord <- 0
     
-    # Show the event IDs if desired
+    # Show the events' ID if desired
     if (showID) {
         cols <- grep("Event.ID", names(res), value = TRUE)
         by <- c(cols, by)

@@ -1,7 +1,11 @@
 #' Checks the format of a file
 #'
+#' @details The name of the file may also be required to be considered of a 
+#' certain format.
+#'
 #' @param format Environment: format of the file
 #' @param head Data.frame: head of the file to check
+#' @param filename Character: name of the file
 #'
 #' @return TRUE if the file is of the given format; otherwise, returns FALSE
 #' @export
