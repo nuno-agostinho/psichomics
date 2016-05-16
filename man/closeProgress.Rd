@@ -6,6 +6,9 @@
 \usage{
 closeProgress(message = NULL, global = sharedData)
 }
+\arguments{
+\item{message}{Character: message to show in progress bar}
+}
 \description{
 Close the progress even if there's an error
 }
