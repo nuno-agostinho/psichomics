@@ -1,10 +1,8 @@
-library(plyr)
-library(dplyr)
-
-source("R/matsEvents.R")
-source("R/misoEvents.R")
-source("R/vastToolsEvents.R")
-source("R/suppaEvents.R")
+#' @include matsEvents.R
+#' @include misoEvents.R
+#' @include vastToolsEvents.R
+#' @include suppaEvents.R
+NULL
 
 #' Creates a template of alternative splicing junctions
 #' 
