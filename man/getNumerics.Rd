@@ -12,7 +12,17 @@ Convert a column to numeric if possible and ignore given columns composed
 of lists
 }
 \examples{
-getNumerics(vast, by = c("Strand", "C1.end", "A1.end", "A1.start"),
-    toNumeric = c(F,T,T,T))
+event <- read.table(text = "ABC123 + 250 300 350
+                            DEF456 - 900 800 700")
+names(event) <- c("Event ID", "Strand", "C1.end", "A1.end", "A1.start")
+
+# Let's change one column to character
+event[ , "C1.end"] <- as.character(event[ , "C1.end"])
+is.character(event[ , "C1.end"])
+
+event <- getNumerics(event, by = c("Strand", "C1.end", "A1.end", "A1.start"),
+                     toNumeric = c(FALSE, TRUE, TRUE, TRUE))
+# Let's check if the same column is now integer
+is.numeric(event[ , "C1.end"])
 }
 
