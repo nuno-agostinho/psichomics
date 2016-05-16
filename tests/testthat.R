@@ -1,4 +1,4 @@
 library(testthat)
-library(PSIcalc)
+library(psichomics)
 
-test_check("PSIcalc")
+test_check("psichomics")
