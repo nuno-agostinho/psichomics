@@ -17,7 +17,9 @@ createJunctionsTemplate(nrow, program = character(0),
 
 \item{chromosome}{Character: Chromosome of the junctions}
 
-\item{strand}{Strand: positive ("+") or negative ("-") strand of the event}
+\item{strand}{Character: positive ("+") or negative ("-") strand of the event}
+
+\item{id}{Character: events' ID}
 }
 \value{
 A data frame with the junctions coordinate names pre-filled with NAs

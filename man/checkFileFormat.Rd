@@ -10,11 +10,17 @@ checkFileFormat(format, head, filename)
 \item{format}{Environment: format of the file}
 
 \item{head}{Data.frame: head of the file to check}
+
+\item{filename}{Character: name of the file}
 }
 \value{
 TRUE if the file is of the given format; otherwise, returns FALSE
 }
 \description{
 Checks the format of a file
+}
+\details{
+The name of the file may also be required to be considered of a 
+certain format.
 }
 

@@ -8,11 +8,13 @@ writeAnnotation(jointEvents, eventType, filename = paste0("data/annotation_",
   eventType, ".txt"), showID = FALSE)
 }
 \arguments{
+\item{jointEvents}{List of lists of data frame}
+
 \item{eventType}{Character: type of event}
 
 \item{filename}{Character: path to the annotation file}
 
-\item{join}{List of lists of data frame}
+\item{showID}{Boolean: show the events' ID (FALSE by default)}
 }
 \value{
 Invisible TRUE if everything's okay
