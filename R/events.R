@@ -53,9 +53,10 @@ getMisoAnnotation <- function() {
     return(annot)
 }
 
+#' @importFrom plyr rbind.fill
 parseMisoAnnotation <- function(annot) {
     events <- lapply(annot, parseMisoEvent)
-    events <- plyr::rbind.fill(events)
+    events <- rbind.fill(events)
     return(events)
 }
 
@@ -69,10 +70,11 @@ getSuppaAnnotation <- function() {
     return(annot)
 }
 
+#' @importFrom plyr rbind.fill
 parseSuppaAnnotation <- function(annot) {
     eventsID <- lapply(annot, "[[", "event_id")
     events <- lapply(eventsID, parseSuppaEvent)
-    events <- plyr::rbind.fill(events)
+    events <- rbind.fill(events)
     return(events)
 }
 
@@ -88,12 +90,13 @@ getMatsAnnotation <- function() {
     return(annot)
 }
 
+#' @importFrom plyr rbind.fill
 parseMatsAnnotation <- function(annot) {
     types <- names(annot)
     events <- lapply(seq_along(annot), function(i)
         if (nrow(annot[[i]]) > 0) 
             return(parseMatsEvent(annot[[i]], types[[i]])))
-    events <- plyr::rbind.fill(events)
+    events <- rbind.fill(events)
     
     # Sum 1 position to the start/end of MATS events (depending on the strand)
     matsNames <- names(events)
@@ -123,6 +126,7 @@ getVastToolsAnnotation <- function() {
     return(annot)
 }
 
+#' @importFrom plyr rbind.fill
 parseVastToolsAnnotation <- function(annot) {
     types <- names(annot)
     events <- lapply(seq_along(annot),
@@ -132,7 +136,7 @@ parseVastToolsAnnotation <- function(annot) {
                          if (nrow(a) > 0)
                              return(parseVastToolsEvent(a))
                      })
-    events <- plyr::rbind.fill(events)
+    events <- rbind.fill(events)
     return(events)
 }
 
@@ -313,6 +317,8 @@ readAnnotation <- function(eventType, filename = paste0("data/annotation_",
 #' @param join List of lists of data frame
 #' @param eventType Character: type of event
 #' 
+#' @importFrom gplots venn
+#' 
 #' @return Venn diagram
 #' 
 #' @export
@@ -324,7 +330,7 @@ vennEvents <- function(join, eventType) {
     nas <- ifelse(nas, row(nas), NA)
     p <- lapply(1:ncol(nas), function(col) nas[!is.na(nas[ , col]), col])
     names(p) <- sapply(programs, function(x) unique(x[!is.na(x)]))
-    gplots::venn(p)
+    venn(p)
 }
 
 #' String used to search for matches in a junction quantification file
@@ -369,7 +375,7 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation) {
                                   annotation$C1.end, annotation$C2.start)
         
         # Get specific junctions
-        fmatch <- fastmatch::fmatch
+        fmatch <- fmatch
         coords <- rownames(junctionQuant)
         incA <- junctionQuant[fmatch(incAstr, coords), ]
         incB <- junctionQuant[fmatch(incBstr, coords), ]
