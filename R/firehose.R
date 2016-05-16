@@ -301,17 +301,6 @@ parseUrlsFromFirehoseResponse <- function(res) {
 #' 
 #' @return List with loaded data.frames
 #' @export
-#'
-#' @examples
-#' # Load files from "~/Downloads"
-#' loadFirehoseFolders("~/Downloads")
-#' 
-#' # Load files from folders inside "~/Downloads"
-#' folders <- list.dirs("~/Downloads")
-#' loadFirehoseFolders(folders)
-#' 
-#' # Exclude certain files from being loaded
-#' loadFirehoseFolders(folders, exclude = c("pink.txt", "panther.txt"))
 loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
     # Retrieve full path of the files inside the given folders
     files <- dir(folder, full.names=TRUE)
