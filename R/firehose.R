@@ -218,7 +218,6 @@ checkIntegrity <- function(filesToCheck, md5file) {
 #' @param archive Character: path to downloaded archives
 #' @param md5 Characater: path to MD5 files of each archive
 #' @param folder Character: local folder where the archives should be stored
-#' @param progress Function to show the progress (default is printPaste)
 #' 
 #' @return Invisible TRUE if successful
 #' @export
@@ -230,8 +229,7 @@ checkIntegrity <- function(filesToCheck, md5file) {
 #'     "Merge_Clinical.Level_1.2015110100.0.0.tar.gz")
 #' prepareFirehoseArchives(folder = "~/Downloads", archive = file,
 #'                         md5 = paste0(file, ".md5"))
-prepareFirehoseArchives <- function(archive, md5, folder,
-                                    progress = printPaste) {
+prepareFirehoseArchives <- function(archive, md5, folder) {
     archive <- file.path(folder, archive)
     md5 <- file.path(folder, md5)
     
@@ -383,9 +381,6 @@ loadFirehoseData <- function(folder = "~/Downloads",
         output$iframeDownload <- renderUI(lapply(url[missing], iframe))
         return(NULL)
     } else {
-        # Divide the progress bar by the number of folders to load
-        progress(divisions = 1 + length(base[!md5]))
-        
         # Check if there are folders to unarchive
         ## TODO(NunoA): ensure this is a complete match
         archives <- vapply(escape(base[!md5]), FUN.VALUE = character(1),
@@ -397,19 +392,23 @@ loadFirehoseData <- function(folder = "~/Downloads",
                            value = TRUE, USE.NAMES = FALSE)
         tar <- grepl(".tar", archives, fixed = TRUE)
         
-        if (length(archives[tar]) > 0) {
-            # Extract the content, check the intergrity and remove archives
-            progress("Preparing archives...")
-            prepareFirehoseArchives(archives[tar], base[md5][tar], folder,
-                                    progress)
-        }
-        
         ## TODO(NunoA): Can we show file loading progress in a Shiny app?
-        # Load the files
+        # Split folders by the cohort type and date
         categories <- gsub(" ", "-", names(url[!md5]), fixed = TRUE)
         folders <- file.path(folder, base[!md5])
         folders <- split(folders, categories)
         
+        if (length(archives[tar]) > 0) {
+            progress("Preparing archives...", divisions = 1 + length(folders))
+            # Extract the content, check the intergrity and remove archives
+            prepareFirehoseArchives(archives[tar], base[md5][tar], folder)
+            progress("Archives prepared")
+        } else {
+            # Divide the progress bar by the number of folders to load
+            progress(divisions = length(folders))   
+        }
+        
+        # Load the files
         loaded <- lapply(folders, loadFirehoseFolders, exclude, progress)
         return(loaded)
     }
