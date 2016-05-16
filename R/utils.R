@@ -104,6 +104,9 @@ updateProgress <- function(message = "Hang in there", value = NULL, max = NULL,
 }
 
 #' Close the progress even if there's an error
+#' 
+#' @param message Character: message to show in progress bar
+#' 
 #' @export
 closeProgress <- function(message=NULL, global = sharedData) {
     # Close the progress even if there's an error
@@ -274,6 +277,7 @@ textComplete <- function(id, words, novalue = "No matching value") {
 #' @export
 textAreaInput <- function(inputId, label, value = "", width = NULL,
                           placeholder = NULL) {
+    
     div(class = "form-group shiny-input-container",
         style = if (!is.null(width)) paste0("width: ", validateCssUnit(width), ";"),
         tags$label(label, `for` = inputId),
@@ -281,3 +285,41 @@ textAreaInput <- function(inputId, label, value = "", width = NULL,
                       placeholder = placeholder)
     )
 }
+
+#' Change the value of a textarea input on the client
+#'
+#' @param value The value to set for the input object.
+#'
+#' @seealso \code{\link{textAreaInput}}
+#' @importFrom shiny updateTextInput
+#'
+#' @examples
+#' ## Only run examples in interactive R sessions
+#' if (interactive()) {
+#'
+#' ui <- fluidPage(
+#'   sliderInput("controller", "Controller", 0, 20, 10),
+#'   textAreaInput("inText", "Input textarea"),
+#'   textAreaInput("inText2", "Input textarea 2")
+#' )
+#'
+#' server <- function(input, output, session) {
+#'   observe({
+#'     # We'll use the input$controller variable multiple times, so save it as x
+#'     # for convenience.
+#'     x <- input$controller
+#'
+#'     # This will change the value of input$inText, based on x
+#'     updateTextAreaInput(session, "inText", value = paste("New text", x))
+#'
+#'     # Can also set the label, this time for input$inText2
+#'     updateTextAreaInput(session, "inText2",
+#'       label = paste("New label", x),
+#'       value = paste("New text", x))
+#'   })
+#' }
+#'
+#' shinyApp(ui, server)
+#' }
+#' @export
+updateTextAreaInput <- updateTextInput
