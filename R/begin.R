@@ -187,7 +187,7 @@ renameDuplicated <- function(check, comp) {
         counter <- sub(".* \\(([0-9]+)\\)", "\\1", locate)
         
         # Replace strings with 0
-        counter[grep("^[0-9]*$", counter, inver =TRUE)] <- 0
+        counter[grep("^[0-9]*$", counter, invert =TRUE)] <- 0
         dup <- sprintf("%s (%i)", dup, max(as.numeric(counter)) + 1)
         
         # Append value to the unique group
