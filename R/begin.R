@@ -155,6 +155,7 @@ callScriptsFunction <- function(func, ..., check = func, folder = "R/") {
 #' @param ... Characters to be pasted with no space
 #' 
 #' @return Escaped string
+#' @export
 escape <- function(...) {
     # return(gsub("/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]", "\\$&", string))
     return(gsub("(\\W)", "\\\\\\1", paste0(...)))
