@@ -34,6 +34,8 @@ fast as possible; fread() is pure C, readr is C++ and Rcpp
 Using readr to load a big junction quantification file from BLCA Firehose
 cohort took 30 seconds vs fread's 13 seconds.
 
+# R CMD check
+
 ## Building error due to the file order
 When building a package, R goes through all the files alphabetically. Unless
 explicitely stated, you'll get an error if there are unloaded dependencies. To
@@ -43,8 +45,64 @@ overcome these, I found four solutions:
 order of ALL files (you can't write just the ones you want to load first)
 * roxygen's `include` keyword (`#' @include first.R`)
 * R's native function `source`
-* Rename the first file to be loaded so it's the first to load (renaming the
-file `initial.R` to `begin.R` solved the building error)
+* Rename the files to be loaded (the ones to be loaded first should be first on
+an alphanumeric sort)
+
+The best one is using roxygen's `include` tag which will automatically order all
+the packages in the DESCRIPTION file explicitely.
+
+## Examples
+Data used in examples need to be placed in a sensible place. If the data is 
+going to be used by the user, it should go in the `data` folder; otherwise, it
+should go to `inst/extdata`. It's recommended to only give RDS data to the user
+since it's already processed and faster to load. Raw data in other formats like 
+.txt and .csv (which should only be used in examples) should go to the folder
+`inst/extdata`.
+
+To use files stored in `inst/extdata`, it's needed to call them like this:
+`system.file("extdata", "example.txt", package="psichomics")`, replacing
+`example.txt` by the file of interest.
+
+For more information, please see: http://r-pkgs.had.co.nz/data.html
+
+# Software tools
+
+## GitHub
+GitHub is a service that hosts public and private Git repositories. Public 
+repositories are free to any registered user while private ones are paid. 
+However, students can create free unlimited private repositories.
+
+There are also other Git repositories hosting services like Bitbucket but I
+personally prefer the tools available in Github.
+
+## Continuous integration
+Travis CI (continuous integration) allows to to build and test software from 
+GitHub repositories. By  using Travis CI, we're testing every modification of 
+the project for errors. It officially supports a myriad of languages like 
+Python, C++ and Java. Although it also supports R, its support is community
+maintained. Travis CI for R uses `R CMD check` which will look for errors in the
+documentation, comments, unit tests and the code itself. 
+
+To enable Travis CI in a project, you simply need to create an account in Travis 
+CI, turn the option on for the desired projects and insert a file named 
+`.travis.yml` in the top level of the project. Now, everytime there's a new 
+commit or a pull request, it will be automatically tested for errors, warnings
+and notes.
+
+Travis CI is available for free use for open-source GitHub projects. As a
+student, not only GitHub allows me to store unlimited private repositories, I 
+may also use Travis CI in private repositories for free. Anyway, as this project
+will be soon open-source, there's no issue with using Travis CI in the long-term.
+
+## Code coverage
+Code coverage allows to quantify how much of the code is tested by unit tests.
+
+To measure code coverage, I've decided to use Codecov (https://codecov.io) which
+is free for the first private repository. To enable Codecov, you need to select 
+the language used and the CI provider (in our case, it's R and Travis CI, 
+respectively). This will give to the user a string which should be copied into
+the `.travis.yml` file (general instructions are given here: 
+https://github.com/codecov/example-r).
 
 > TODO: check if methods with identical names from different classes are allowed
 
