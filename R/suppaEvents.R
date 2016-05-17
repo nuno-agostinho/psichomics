@@ -92,6 +92,7 @@ parseSuppaEvent <- function(event) {
 #' @seealso \code{\link{parseSuppaEvent}}
 #'
 #' @return Data frame of parsed junctions
+#' @export
 #' 
 #' @examples
 #' # Parse generic event (in this case, a skipping exon event)
@@ -126,6 +127,8 @@ parseSuppaSE <- function (junctions, strand) {
 }
 
 #' @rdname parseSuppaGeneric
+#' @export
+#' 
 #' @examples 
 #' 
 #' junctions <- c(196709749, 196709922, 196711005, 196711181)
@@ -139,6 +142,7 @@ parseSuppaRI <- function (junctions, strand) {
 }
 
 #' @rdname parseSuppaGeneric
+#' @export
 #' @examples 
 #' 
 #' junctions <- c(24790610, 24792494, 24792800, 24790610, 24795476, 24795797)
@@ -153,6 +157,7 @@ parseSuppaALE <- function (junctions, strand) {
 }
 
 #' @rdname parseSuppaGeneric
+#' @export
 #' @examples 
 #' 
 #' junctions <- c(169763871, 169764046, 169767998, 169764550, 169765124,
@@ -168,6 +173,7 @@ parseSuppaAFE <- function (junctions, strand) {
 }
 
 #' @rdname parseSuppaGeneric
+#' @export
 #' @examples 
 #' 
 #' junctions <- c(202060671, 202068453, 202068489, 202073793, 202060671, 
@@ -184,6 +190,7 @@ parseSuppaMXE <- function (junctions, strand) {
 }
 
 #' @rdname parseSuppaGeneric
+#' @export
 #' @examples 
 #' 
 #' junctions <- c(169772450, 169773216, 169772450, 169773253)
@@ -196,6 +203,7 @@ parseSuppaA3SS <- function (junctions, strand) {
 }
 
 #' @rdname parseSuppaGeneric
+#' @export
 #' @examples 
 #' 
 #' junctions <- c(50193276, 50197008, 50192997, 50197008)
