@@ -41,9 +41,12 @@ setClinicalMatchFrom <- function(dataType, value, category = getCategory())
 #' example.
 #' 
 #' @return Character with underscores instead of spaces
+#' 
 #' @examples
-#' objectId("Exploratory analysis", "PCA", "plot")
-objectId <- function(...) return(gsub(" ", "_", paste(...)))
+#' psichomics:::objectId("Exploratory analysis", "PCA", "plot")
+objectId <- function(...) {
+    return(gsub(" ", "_", paste(...)))
+}
 
 # TODO(NunoA): increase allowed size and warn the user to wait for large files
 # Refuse files with size greater than the specified
