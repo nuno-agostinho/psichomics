@@ -25,10 +25,12 @@ Invisible TRUE if every file was successfully downloaded
 Download files to a given directory
 }
 \examples{
+\dontrun{
 url <- paste0("https://unsplash.it/400/300/?image=", 570:572)
 downloadFiles(url, "~/Pictures")
 
 # Download without printing to console
 downloadFiles(url, "~/Pictures", quiet = TRUE)
+}
 }
 
