@@ -24,15 +24,4 @@ For faster execution, this function uses the \code{readr} library. This
 function ignores subfolders of the given folder (which means that files 
 inside subfolders are NOT loaded).
 }
-\examples{
-# Load files from "~/Downloads"
-loadFirehoseFolders("~/Downloads")
-
-# Load files from folders inside "~/Downloads"
-folders <- list.dirs("~/Downloads")
-loadFirehoseFolders(folders)
-
-# Exclude certain files from being loaded
-loadFirehoseFolders(folders, exclude = c("pink.txt", "panther.txt"))
-}
 
