@@ -2,5 +2,8 @@ language: r
 cache: packages
 warnings_are_errors: false
 
+r_packages:
+  - covr
+
 after_success:
-  - bash <(curl -s https://codecov.io/bash) -t e7511dae-1515-4189-85e8-a33f209542a3
+  - Rscript -e 'library(covr); codecov()'
