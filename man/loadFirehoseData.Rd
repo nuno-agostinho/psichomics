@@ -25,6 +25,8 @@ from loading into R (by default, it excludes ".aux.", ".mage-tab." and
 Downloads and processes data from the Firehose API and loads it into R
 }
 \examples{
+\dontrun{
 loadFirehoseData(cohort = "ACC", data_type = "Clinical")
+}
 }
 
