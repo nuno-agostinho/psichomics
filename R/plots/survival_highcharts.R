@@ -215,57 +215,59 @@ server <- function(input, output, session) {
                 hchart(surv, ranges = intRanges) %>%
                     hc_chart(zoomType="xy") %>%
                     hc_yAxis(title=list(text="Proportion of individuals")) %>%
-                    hc_xAxis(title=list(text="Time in days"))
+                    hc_xAxis(title=list(text="Time in days")) %>% 
+                    hc_tooltip(headerFormat = 'Time: {point.x}<br>')
             }
         })
     })
     
     # Plot cox model
     observeEvent(input[[id("coxModel")]], {
-        output[[id("coxphUI")]] <- renderUI({
-            highchartOutput(id("coxPlot"))
+        isolate({
+            # Get user input
+            clinical   <- getClinicalData()
+            timeStart  <- input[[id("timeStart")]]
+            timeStop   <- input[[id("timeStop")]]
+            dataEvent  <- input[[id("event")]]
+            censoring  <- input[[id("censoring")]]
+            outGroup   <- input[[id("showOutGroup")]]
+            modelTerms <- input[[id("modelTerms")]]
+            formulaStr <- input[[id("formula")]]
+            intRanges  <- input[[id("ranges")]]
+            # Get chosen groups
+            chosen <- input[[id("dataGroups")]]
+            dataGroups <- getGroupsFrom("Clinical data")[chosen, , drop=F]
         })
         
-        output[[id("coxPlot")]] <- renderHighchart({
-            isolate({
-                # Get user input
-                clinical   <- getClinicalData()
-                timeStart  <- input[[id("timeStart")]]
-                timeStop   <- input[[id("timeStop")]]
-                dataEvent  <- input[[id("event")]]
-                censoring  <- input[[id("censoring")]]
-                outGroup   <- input[[id("showOutGroup")]]
-                modelTerms <- input[[id("modelTerms")]]
-                formulaStr <- input[[id("formula")]]
-                intRanges  <- input[[id("ranges")]]
-                # Get chosen groups
-                chosen <- input[[id("dataGroups")]]
-                dataGroups <- getGroupsFrom("Clinical data")[chosen, , drop=F]
+        if (is.null(clinical)) {
+            errorModal(session, "Clinical data missing",
+                       "Insert clinical data first.")
+        } else if (nrow(dataGroups) > 0 && 
+                   anyDuplicated(unlist(dataGroups[, "Rows"])) > 0) {
+            # If the chosen groups have any intersections
+            errorModal(session, "Clinical groups intercept",
+                       "There is an interception between clinical groups.")
+        } else {
+            # Calculate survival curves
+            survTerms <- processSurvTerms(session, dataGroups, clinical, 
+                                          outGroup, censoring, timeStart, 
+                                          timeStop, dataEvent, modelTerms, 
+                                          formulaStr, cox=TRUE)
+            surv <- survfit(survTerms)
+            summary <- summary(survTerms)
+            
+            output[[id("coxphUI")]] <- renderUI({
+                highchartOutput(id("coxPlot"))
             })
             
-            if (is.null(clinical)) {
-                errorModal(session, "Clinical data missing",
-                           "Insert clinical data first.")
-            } else if (nrow(dataGroups) > 0 && 
-                       anyDuplicated(unlist(dataGroups[, "Rows"])) > 0) {
-                # If the chosen groups have any intersections
-                errorModal(session, "Clinical groups intercept",
-                           "There is an interception between clinical groups.")
-            } else {
-                # Calculate survival curves
-                survTerms <- processSurvTerms(session, dataGroups, clinical, 
-                                              outGroup, censoring, timeStart, 
-                                              timeStop, dataEvent, modelTerms, 
-                                              formulaStr, cox=TRUE)
-                surv <- survfit(survTerms)
-                
+            output[[id("coxPlot")]] <- renderHighchart({
                 # Plot survival curves
                 hchart(surv, ranges = intRanges) %>%
                     hc_chart(zoomType="xy") %>%
                     hc_yAxis(title=list(text="Proportion of individuals")) %>%
                     hc_xAxis(title=list(text="Time in days"))
-            }
-        })
+            })
+        }
     })
 }
 
