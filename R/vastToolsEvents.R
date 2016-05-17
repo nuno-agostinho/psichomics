@@ -130,7 +130,8 @@ parseVastToolsSE <- function (junctions) {
 
 #' @rdname parseVastToolsSE
 #' @param strand Character: positive (+) or negative (-) strand
-#' 
+#'
+#' @export
 #' @examples 
 #' 
 #' junctions <- read.table(text = "58864658 58864693 58864294 58864563")
@@ -155,6 +156,8 @@ parseVastToolsRI <- function (junctions, strand) {
 }
 
 #' @rdname parseVastToolsSE
+#'
+#' @export
 #' @examples 
 #' 
 #' junctions <- rbind(
@@ -195,6 +198,8 @@ parseVastToolsA3SS <- function (junctions) {
 }
 
 #' @rdname parseVastToolsSE
+#'
+#' @export
 #' @examples 
 #' 
 #' junctions <- rbind(

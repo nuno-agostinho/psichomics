@@ -287,6 +287,7 @@ parseMisoId <- function(id) {
 }
 
 #' @rdname parseMisoGeneric
+#' @export
 #' @examples
 #' # skipping exon event (SE)
 #' event <- read.table(text = "
@@ -312,6 +313,7 @@ parseMisoSE <- function(event) {
 }
 
 #' @rdname parseMisoGeneric
+#' @export
 #' @examples
 #' 
 #' # mutually exclusive exon (MXE) event
@@ -340,6 +342,7 @@ parseMisoMXE <- function(event) {
 }
 
 #' @rdname parseMisoGeneric
+#' @export
 #' @examples
 #'
 #' # intron retention (RI) event
@@ -363,6 +366,7 @@ parseMisoRI <- function(event, strand) {
 }
 
 #' @rdname parseMisoGeneric
+#' @export
 #' @examples
 #'
 #' # alternative 5' splice site (A5SS) event
@@ -388,6 +392,7 @@ parseMisoA5SS <- function(event) {
 }
 
 #' @rdname parseMisoGeneric
+#' @export
 #' @examples
 #'
 #' # alternative 3' splice site (A3SS) event
@@ -413,6 +418,7 @@ parseMisoA3SS <- function(event, plusIndex, minusIndex) {
 }
 
 #' @rdname parseMisoGeneric
+#' @export
 #' @examples
 #'
 #' # Tandem UTR event
@@ -435,6 +441,7 @@ parseMisoTandemUTR <- function(event, minusIndex) {
 }
 
 #' @rdname parseMisoGeneric
+#' @export
 #' @examples
 #'
 #' # alternative first exon (AFE) event
@@ -555,6 +562,7 @@ parseMisoAFE <- function(event) {
 }
 
 #' @rdname parseMisoGeneric
+#' @export
 #' @examples
 #'
 #' # alternative last exon (ALE) event
