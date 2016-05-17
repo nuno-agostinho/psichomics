@@ -269,7 +269,7 @@ prepareFirehoseArchives <- function(archive, md5, folder) {
 #'
 #' @examples
 #' res <- queryFirehoseData(cohort = "ACC")
-#' url <- parseUrlsFromResponse(res)
+#' url <- parseUrlsFromFirehoseResponse(res)
 parseUrlsFromFirehoseResponse <- function(res) {
     # Parse the query response
     parsed <- content(res, "text", encoding = "UTF8")
@@ -294,6 +294,8 @@ parseUrlsFromFirehoseResponse <- function(res) {
 #' @note For faster execution, this function uses the \code{readr} library. This
 #' function ignores subfolders of the given folder (which means that files 
 #' inside subfolders are NOT loaded).
+#'
+#' @include formats.R
 #'
 #' @param folder Character: folder(s) in which to look for Firehose files
 #' @param exclude Character: files to exclude from the loading
@@ -333,6 +335,7 @@ loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
 #' @param progress Function to show the progress (default is printPaste)
 #' @param output Output from the Shiny server function
 #' 
+#' @include formats.R
 #' @importFrom tools file_ext file_path_sans_ext
 #' 
 #' @export

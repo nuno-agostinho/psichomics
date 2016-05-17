@@ -17,6 +17,6 @@ Retrieve URLs from a response to a Firehose data query
 }
 \examples{
 res <- queryFirehoseData(cohort = "ACC")
-url <- parseUrlsFromResponse(res)
+url <- parseUrlsFromFirehoseResponse(res)
 }
 
