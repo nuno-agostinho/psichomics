@@ -1,6 +1,8 @@
 # psichomics
 R package to analyse and visualise alternative splicing data
 
+[![Build Status](https://travis-ci.com/nuno-agostinho/psichomics.svg?token=WnQvrH4wCa4UkqjJquSq&branch=master)](https://travis-ci.com/nuno-agostinho/psichomics)
+
 ## Start running
 If you want to install from [Bioconductor](https://www.bioconductor.org), you're out of luck. This package is not 
 available in Bioconductor (yet?).
