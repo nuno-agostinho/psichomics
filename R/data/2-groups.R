@@ -148,7 +148,7 @@ createGroupFromInput <- function (input, output, session) {
         colnames(group) <- ns
     else
         names(group) <- ns
-    rownames(groups) <- NULL
+    rownames(group) <- NULL
     return(group)
 }
 
