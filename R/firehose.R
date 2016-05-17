@@ -344,7 +344,9 @@ loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
 #' 
 #' @export
 #' @examples 
+#' \dontrun{
 #' loadFirehoseData(cohort = "ACC", data_type = "Clinical")
+#' }
 loadFirehoseData <- function(folder = "~/Downloads",
                              exclude = c(".aux.", ".mage-tab.", "MANIFEST.txt"),
                              ..., progress = printPaste, output=output) {
