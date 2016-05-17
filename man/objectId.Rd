@@ -21,6 +21,6 @@ submodule, subsubmodule, ... as arguments before passing the name. Check the
 example.
 }
 \examples{
-objectId("Exploratory analysis", "PCA", "plot")
+psichomics:::objectId("Exploratory analysis", "PCA", "plot")
 }
 
