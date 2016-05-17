@@ -181,11 +181,13 @@ getFirehoseCohorts <- function(cohort = NULL) {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' url <- paste0("https://unsplash.it/400/300/?image=", 570:572)
 #' downloadFiles(url, "~/Pictures")
 #' 
 #' # Download without printing to console
 #' downloadFiles(url, "~/Pictures", quiet = TRUE)
+#' }
 downloadFiles <- function(url, folder, progress = printPaste,
                           download = download.file, ...) {
     destination <- file.path(folder, basename(url))
