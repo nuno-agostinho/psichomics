@@ -57,27 +57,29 @@ coords <- c("C1.end", "A1.start", "A1.end", "C2.start")
 plus  <- 1:4
 minus <- 1:4
 parseSuppaGeneric(junctions, strand = "+", coords, plus, minus)
-junctions <- c(169768099, 169770024, 169770112, 169771762)
+
+junctions <- read.table(text = "169768099 169770024 169770112 169771762")
 parseSuppaSE(junctions, "+")
 
-junctions <- c(196709749, 196709922, 196711005, 196711181)
+junctions <- read.table(text = "196709749 196709922 196711005 196711181")
 parseSuppaRI(junctions, "+")
 
-junctions <- c(24790610, 24792494, 24792800, 24790610, 24795476, 24795797)
+junctions <- read.table(
+    text = "24790610 24792494 24792800 24790610 24795476 24795797")
 parseSuppaALE(junctions, "+")
 
-junctions <- c(169763871, 169764046, 169767998, 169764550, 169765124,
-               169767998)
+junctions <- read.table(
+    text = "169763871 169764046 169767998 169764550 169765124 169767998")
 parseSuppaAFE(junctions, "+")
 
-junctions <- c(202060671, 202068453, 202068489, 202073793, 202060671, 
-               202072798, 202072906, 202073793)
+junctions <- read.table(
+    text = "202060671 202068453 202068489 202073793 202060671 202072798 202072906 202073793")
 parseSuppaMXE(junctions, "+")
 
-junctions <- c(169772450, 169773216, 169772450, 169773253)
+junctions <- read.table(text = "169772450 169773216 169772450 169773253")
 parseSuppaA3SS(junctions, "+")
 
-junctions <- c(50193276, 50197008, 50192997, 50197008)
+junctions <- read.table(text = "50193276 50197008 50192997 50197008")
 parseSuppaA5SS(junctions, "+")
 }
 \seealso{
