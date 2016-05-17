@@ -53,7 +53,8 @@ getDataRows <- function(i, data, firstRow, lastRow) {
 #' @examples
 #' eventID <- c("2217@uc002poi.1@uc002poe.1", "57705@uc009xob.1@uc001jgy.2")
 #' # the annotation is one of the GFF3 files needed to run MISO
-#' annotation <- read.delim("AFE.hg19.gff3", header=FALSE, comment.char="#")
+#' gff3 <- system.file("extdata", "miso_AS_annot_example.gff3", package="psichomics")
+#' annotation <- read.delim(gff3, header=FALSE, comment.char="#")
 #' IDcolumn <- 9
 #' parseMisoEventID(eventID, annotation, IDcolumn)
 parseMisoEventID <- function(eventID, annotation, IDcolumn) {
