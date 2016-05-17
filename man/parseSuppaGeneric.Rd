@@ -52,7 +52,7 @@ The following event types are available to be parsed:
 }
 \examples{
 # Parse generic event (in this case, a skipping exon event)
-junctions <- c(169768099, 169770024, 169770112, 169771762)
+junctions <- read.table(text = "169768099 169770024 169770112 169771762")
 coords <- c("C1.end", "A1.start", "A1.end", "C2.start")
 plus  <- 1:4
 minus <- 1:4
