@@ -283,7 +283,7 @@ server <- function(input, output, session) {
                 }
                 if ("Loadings" %in% show) {
                     m <- data.frame(pca$rotation)
-                    # For loading, add series (don't add to legend)
+                    # For loadings, add series (don't add to legend)
                     hc <- hc %>% hc_scatter(m[[xAxis]], m[[yAxis]])
                 }
                 return(hc)
