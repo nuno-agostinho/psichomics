@@ -6,7 +6,7 @@ If you want to install from [Bioconductor](https://www.bioconductor.org), you're
 available in Bioconductor (yet?).
 
 To start using this program, simply type the following in RStudio or in a R console:
-```r
+```rt
 library(shiny)
 runGitHub("psichomics", "nuno-agostinho")
 ```
@@ -28,9 +28,9 @@ contained in the indicated folder and sub-folders.
 To create groups for a dataset, first select the category and the tab of the dataset of interest. Next, select how to
 create the group:
 
-- **By column:** automatically create groups by selecting a specific column of the dataset; for example, for the `Clinical data`
-dataset, type `pathologic stage`, select the appropriate suggestion, click `Create group` and confirm there is now one group for
-each pathologic stage.
+- **By column:** automatically create groups by selecting a specific column of the dataset; for example, with the `Clinical data`
+dataset selected, start typing `pathologic stage`, select the appropriate field from the suggestions, click `Create group` and 
+confirm that there is now  one group for each pathologic stage.
 - **By row:** input specific rows to create a group
 - **By subset expression:** type a subset expression
 - **By GREP expression:** apply a GREP expression over a specific column of the dataset
