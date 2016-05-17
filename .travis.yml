@@ -1,2 +1,5 @@
 language: r
 cache: packages
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash) -t e7511dae-1515-4189-85e8-a33f209542a3
