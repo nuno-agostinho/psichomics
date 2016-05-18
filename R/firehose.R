@@ -38,8 +38,10 @@ getFirehoseDateFormat <- function() {
 #' isFirehoseUp()
 isFirehoseUp <- function() {
     link <- paste0("http://firebrowse.org/api/v1/Metadata/HeartBeat")
-    heartbeat <- GET(link, query = list(format = "json"))
-    if (http_error(heartbeat)) {
+    heartbeat <- tryCatch(GET(link, query=list(format="json")), error=return)
+    if ("simpleError" %in% class(heartbeat)) {
+        return(FALSE)
+    } else if (http_error(heartbeat)) {
         warn_for_status(heartbeat, "reach Firehose API")
         return(FALSE)
     } else {
