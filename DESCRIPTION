@@ -30,7 +30,8 @@ Imports:
     data.table,
     gplots,
     htmltools,
-    tools
+    tools,
+    devtools
 Suggests:
     testthat,
     knitr,

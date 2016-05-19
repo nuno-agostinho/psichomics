@@ -29,6 +29,7 @@ ui <- function(tab)
                                   id("selectizePlot"), env[[plotName]]), env$ui)
         }))
 
+#' @importFrom shinyjs show hide
 server <- function(input, output, session) {
     # Runs server logic from the scripts
     lapply(plotEnvs.server, do.call, list(input, output, session))
@@ -53,8 +54,8 @@ server <- function(input, output, session) {
             func(id("selectizeEvent"), anim = TRUE, animType = "fade")
         
         if(grepl("Inclusion levels", input[[id("selectizePlot")]]))
-            vis(shinyjs::hide)
+            vis(hide)
         else
-            vis(shinyjs::show)
+            vis(show)
     })
 }
