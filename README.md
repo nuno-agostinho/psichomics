@@ -6,7 +6,7 @@ If you want to install from [Bioconductor](https://www.bioconductor.org), you're
 available in Bioconductor (yet?).
 
 To start using this program, simply type the following in RStudio or in a R console:
-```rt
+```r
 library(shiny)
 runGitHub("psichomics", "nuno-agostinho")
 ```
