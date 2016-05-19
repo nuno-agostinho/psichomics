@@ -38,6 +38,7 @@ dropdown <- function(inputId) {
 }
 
 #' @importFrom shiny tags HTML
+#' @importFrom htmltools attachDependencies htmlDependency
 #' @export
 bsModal2 <- function (id, title, trigger, ..., style, size = NULL, footer = NULL)  {
     if (!missing(style)) {
@@ -72,7 +73,10 @@ bsModal2 <- function (id, title, trigger, ..., style, size = NULL, footer = NULL
                                        `data-dismiss` = "modal", 
                                        "Close"),
                     footer))))
-    htmltools::attachDependencies(bsTag, shinyBS:::shinyBSDep)
+    shinyBSDep <- htmlDependency(name="shinyBS", version="0.61", meta=NULL, 
+                                 src=list(href="sbs"), script="shinyBS.js", 
+                                 stylesheet="shinyBS.css")
+    attachDependencies(bsTag, shinyBSDep)
 }
 
 #' Create a progress object
@@ -133,7 +137,7 @@ icon2 <- function (name, class = NULL, lib = "font-awesome", ...) {
         iconClass <- paste(iconClass, class)
     iconTag <- tags$i(class = iconClass, ...)
     if (lib == "font-awesome") {
-        htmlDependencies(iconTag) <- htmltools::htmlDependency(
+        htmlDependencies(iconTag) <- htmlDependency(
             "font-awesome", "4.5.0", c(href = "shared/font-awesome"), 
             stylesheet = "css/font-awesome.min.css")
     }
@@ -169,9 +173,8 @@ enableTab <- function(tab) {
 #' @export
 hc_scatter <- function (hc, x, y, z = NULL, color = NULL, label = NULL, 
                         showInLegend = FALSE, viridis.option = "D", ...) {
-    assertthat::assert_that(highcharter:::.is_highchart(hc), 
-                            length(x) == length(y), 
-                            is.numeric(x), is.numeric(y))
+    assert_that(length(x) == length(y), 
+                is.numeric(x), is.numeric(y))
     df <- data_frame(x, y)
     if (!is.null(z)) {
         assert_that(length(x) == length(z))

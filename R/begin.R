@@ -234,9 +234,12 @@ matchIdWithClinical <- function(ids, clinical) {
 #' 
 #' @param ... Parameters to pass to the function runApp
 #' 
+#' @importFrom devtools load_all
+#' 
 #' @export
 psichomics <- function(..., reload = FALSE) {
-    if (reload) devtools::load_all()
+    if (reload)
+        load_all()
     runApp(...)
 }
 
