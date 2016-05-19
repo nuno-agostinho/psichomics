@@ -46,7 +46,6 @@ ui <- tagList(
             textAreaInput(id("formula"), "Formula for right-hand side"),
             uiOutput(id("formulaAutocomplete"))),
         checkboxInput(id("ranges"), "Show interval ranges", value = FALSE),
-        actionButton(id("testDifferences"), "Test model differences"),
         actionButton(id("coxModel"), "Fit Cox PH model"),
         actionButton(id("survivalCurves"), class="btn-primary", 
                      "Plot survival curves")
@@ -92,183 +91,6 @@ processSurvData <- function(timeStart, timeStop, event, groups, clinical) {
         survTime$time2[nas] <- survTime$followup[nas]
     }
     return(survTime)
-}
-
-#' Get all columns matching a given string and return a single vector with the
-#' max time for each patient if available
-#'
-#' @param col Character: column of interest
-#' @param clinical Data.frame: clinical data
-#'
-#' @return Numeric vector with days recorded for columns of interest
-timePerPatient <- function(col, clinical) {
-    cols <- grep(col, names(clinical))
-    row <- apply(clinical[cols], 1, function(i)
-        if(!all(is.na(i))) max(as.numeric(i), na.rm = TRUE) else NA)
-    return(row)
-}
-
-server <- function(input, output, session) {
-    # Update available clinical data attributes to use in a formula
-    output[[id("formulaAutocomplete")]] <- renderUI({
-        attributes <- names(getClinicalData())
-        textComplete(id("formula"), attributes)
-    })
-    
-    # Update available group choices to select
-    observe({
-        groups <- getGroupsFrom("Clinical data")
-        updateSelectizeInput(
-            session, id("dataGroups"), choices = groups[, "Names"],
-            options = list(placeholder =
-                               ifelse(length(groups) > 0,
-                                      "Click 'Select all' to select all groups",
-                                      "No groups created")))
-    })
-    
-    # Select all data groups when pressing the respective "Select all" button
-    observeEvent(input[[id("dataGroups_selectAll")]], {
-        updateSelectizeInput(
-            session, id("dataGroups"), 
-            selected = getGroupsFrom("Clinical data")[, "Names"])
-    })
-    
-    # Update selectize input label depending on the chosen censoring type
-    observe({
-        label <- "Follow up time"
-        if (grepl("interval", input[[id("censoring")]], fixed=TRUE))
-            label <- "Starting time"
-        updateSelectizeInput(session, id("timeStart"), label=label)
-    })
-    
-    # Update every time clinical data changes
-    observe({
-        clinical <- getClinicalData()
-        if (!is.null(clinical)) {
-            # Allow the user to select any "days_to" attribute available
-            daysTo <- grep("days_to_", names(clinical), value=TRUE, fixed=TRUE)
-            subDaysTo <- gsub(".*(days_to_.*)", "\\1", daysTo)
-            choices <- unique(subDaysTo)
-            names(choices) <- gsub("_", " ", choices, fixed=TRUE)
-            names(choices) <- R.utils::capitalize(names(choices))
-            updateSelectizeInput(session, id("timeStart"), choices=choices,
-                                 selected="days_to_death")
-            updateSelectizeInput(
-                session, id("timeStop"), choices = choices, options=list(
-                    onInitialize = I('function() { this.setValue(""); }')))
-            names(choices) <- gsub("Days to ", "", names(choices), fixed=TRUE)
-            names(choices) <- R.utils::capitalize(names(choices))
-            updateSelectizeInput(session, id("event"), 
-                                 choices=list(
-                                     "Suggested events"=choices,
-                                     "All clinical data columns"=names(clinical)),
-                                 selected="days_to_death")
-        }
-    })
-    
-    # Plot survival curve
-    observeEvent(input[[id("survivalCurves")]], {
-        output[[id(plot)]] <- renderHighchart({
-            isolate({
-                # Get user input
-                clinical   <- getClinicalData()
-                timeStart  <- input[[id("timeStart")]]
-                timeStop   <- input[[id("timeStop")]]
-                dataEvent  <- input[[id("event")]]
-                censoring  <- input[[id("censoring")]]
-                outGroup   <- input[[id("showOutGroup")]]
-                modelTerms <- input[[id("modelTerms")]]
-                formulaStr <- input[[id("formula")]]
-                intRanges  <- input[[id("ranges")]]
-                # Get chosen groups
-                chosen <- input[[id("dataGroups")]]
-                dataGroups <- getGroupsFrom("Clinical data")[chosen, , drop=F]
-            })
-            
-            if (is.null(clinical)) {
-                errorModal(session, "Clinical data missing",
-                           "Insert clinical data first.")
-            } else if (nrow(dataGroups) > 0 && 
-                       anyDuplicated(unlist(dataGroups[, "Rows"])) > 0) {
-                # If the chosen groups have any intersections
-                errorModal(session, "Clinical groups intercept",
-                           "There is an interception between clinical groups.")
-            } else {
-                # Calculate survival curves
-                survTerms <- processSurvTerms(session, dataGroups, clinical, 
-                                              outGroup, censoring, timeStart, 
-                                              timeStop, dataEvent, modelTerms, 
-                                              formulaStr)
-                form <- survTerms$form
-                data <- survTerms$survTime
-                surv <- tryCatch(survfit(form, data = data),
-                                 error = return)
-                
-                if ("simpleError" %in% class(surv)) {
-                    errorModal(session, "Formula error",
-                               "The following error was raised:", br(),
-                               tags$code(surv$message))
-                    return(NULL)
-                }
-                
-                # Plot survival curves
-                hchart(surv, ranges = intRanges) %>%
-                    hc_chart(zoomType="xy") %>%
-                    hc_yAxis(title=list(text="Proportion of individuals")) %>%
-                    hc_xAxis(title=list(text="Time in days")) %>% 
-                    hc_tooltip(headerFormat = 'Time: {point.x}<br>')
-            }
-        })
-    })
-    
-    # Plot cox model
-    observeEvent(input[[id("coxModel")]], {
-        isolate({
-            # Get user input
-            clinical   <- getClinicalData()
-            timeStart  <- input[[id("timeStart")]]
-            timeStop   <- input[[id("timeStop")]]
-            dataEvent  <- input[[id("event")]]
-            censoring  <- input[[id("censoring")]]
-            outGroup   <- input[[id("showOutGroup")]]
-            modelTerms <- input[[id("modelTerms")]]
-            formulaStr <- input[[id("formula")]]
-            intRanges  <- input[[id("ranges")]]
-            # Get chosen groups
-            chosen <- input[[id("dataGroups")]]
-            dataGroups <- getGroupsFrom("Clinical data")[chosen, , drop=F]
-        })
-        
-        if (is.null(clinical)) {
-            errorModal(session, "Clinical data missing",
-                       "Insert clinical data first.")
-        } else if (nrow(dataGroups) > 0 && 
-                   anyDuplicated(unlist(dataGroups[, "Rows"])) > 0) {
-            # If the chosen groups have any intersections
-            errorModal(session, "Clinical groups intercept",
-                       "There is an interception between clinical groups.")
-        } else {
-            # Calculate survival curves
-            survTerms <- processSurvTerms(session, dataGroups, clinical, 
-                                          outGroup, censoring, timeStart, 
-                                          timeStop, dataEvent, modelTerms, 
-                                          formulaStr, cox=TRUE)
-            surv <- survfit(survTerms)
-            summary <- summary(survTerms)
-            
-            output[[id("coxphUI")]] <- renderUI({
-                highchartOutput(id("coxPlot"))
-            })
-            
-            output[[id("coxPlot")]] <- renderHighchart({
-                # Plot survival curves
-                hchart(surv, ranges = intRanges) %>%
-                    hc_chart(zoomType="xy") %>%
-                    hc_yAxis(title=list(text="Proportion of individuals")) %>%
-                    hc_xAxis(title=list(text="Time in days"))
-            })
-        }
-    })
 }
 
 #' Process survival curves terms to calculate survival curves
@@ -332,7 +154,7 @@ processSurvTerms <- function(session, group, clinical, outGroup, censoring,
     }
     
     if (coxph)
-        res <- coxph(form, data=survTime)
+        res <- tryCatch(coxph(form, data=survTime), error=return)
     else
         res <- list(form=form, survTime=survTime)
     return(res)
@@ -465,4 +287,223 @@ hchart.survfit <- function(surv, fun=NULL, ymin=0, ymax=1, markTimes=TRUE,
     }
     
     return(hc)
+}
+
+#' Get all columns matching a given string and return a single vector with the
+#' max time for each patient if available
+#'
+#' @param col Character: column of interest
+#' @param clinical Data.frame: clinical data
+#'
+#' @return Numeric vector with days recorded for columns of interest
+timePerPatient <- function(col, clinical) {
+    cols <- grep(col, names(clinical))
+    row <- apply(clinical[cols], 1, function(i)
+        if(!all(is.na(i))) max(as.numeric(i), na.rm = TRUE) else NA)
+    return(row)
+}
+
+server <- function(input, output, session) {
+    # Update available clinical data attributes to use in a formula
+    output[[id("formulaAutocomplete")]] <- renderUI({
+        attributes <- names(getClinicalData())
+        textComplete(id("formula"), attributes)
+    })
+    
+    # Update available group choices to select
+    observe({
+        groups <- getGroupsFrom("Clinical data")
+        updateSelectizeInput(
+            session, id("dataGroups"), choices = groups[, "Names"],
+            options = list(placeholder =
+                               ifelse(length(groups) > 0,
+                                      "Click 'Select all' to select all groups",
+                                      "No groups created")))
+    })
+    
+    # Select all data groups when pressing the respective "Select all" button
+    observeEvent(input[[id("dataGroups_selectAll")]], {
+        updateSelectizeInput(
+            session, id("dataGroups"), 
+            selected = getGroupsFrom("Clinical data")[, "Names"])
+    })
+    
+    # Update selectize input label depending on the chosen censoring type
+    observe({
+        label <- "Follow up time"
+        if (grepl("interval", input[[id("censoring")]], fixed=TRUE))
+            label <- "Starting time"
+        updateSelectizeInput(session, id("timeStart"), label=label)
+    })
+    
+    # Update every time clinical data changes
+    observe({
+        clinical <- getClinicalData()
+        if (!is.null(clinical)) {
+            # Allow the user to select any "days_to" attribute available
+            daysTo <- grep("days_to_", names(clinical), value=TRUE, fixed=TRUE)
+            subDaysTo <- gsub(".*(days_to_.*)", "\\1", daysTo)
+            choices <- unique(subDaysTo)
+            names(choices) <- gsub("_", " ", choices, fixed=TRUE)
+            names(choices) <- R.utils::capitalize(names(choices))
+            updateSelectizeInput(session, id("timeStart"), choices=choices,
+                                 selected="days_to_death")
+            updateSelectizeInput(
+                session, id("timeStop"), choices = choices, options=list(
+                    onInitialize = I('function() { this.setValue(""); }')))
+            names(choices) <- gsub("Days to ", "", names(choices), fixed=TRUE)
+            names(choices) <- R.utils::capitalize(names(choices))
+            updateSelectizeInput(session, id("event"), 
+                                 choices=list(
+                                     "Suggested events"=choices,
+                                     "All clinical data columns"=names(clinical)),
+                                 selected="days_to_death")
+        }
+    })
+    
+    # Plot survival curve
+    observeEvent(input[[id("survivalCurves")]], {
+        output[[id(plot)]] <- renderHighchart({
+            isolate({
+                # Get user input
+                clinical   <- getClinicalData()
+                timeStart  <- input[[id("timeStart")]]
+                timeStop   <- input[[id("timeStop")]]
+                dataEvent  <- input[[id("event")]]
+                censoring  <- input[[id("censoring")]]
+                outGroup   <- input[[id("showOutGroup")]]
+                modelTerms <- input[[id("modelTerms")]]
+                formulaStr <- input[[id("formula")]]
+                intRanges  <- input[[id("ranges")]]
+                # Get chosen groups
+                chosen <- input[[id("dataGroups")]]
+                dataGroups <- getGroupsFrom("Clinical data")[chosen, , drop=F]
+            })
+            
+            if (is.null(clinical)) {
+                errorModal(session, "Clinical data missing",
+                           "Insert clinical data first.")
+            } else if (nrow(dataGroups) > 0 && 
+                       anyDuplicated(unlist(dataGroups[, "Rows"])) > 0) {
+                # If the chosen groups have any intersections
+                errorModal(session, "Clinical groups intercept",
+                           "There is an interception between clinical groups.")
+            } else {
+                # Calculate survival curves
+                survTerms <- processSurvTerms(session, dataGroups, clinical, 
+                                              outGroup, censoring, timeStart, 
+                                              timeStop, dataEvent, modelTerms, 
+                                              formulaStr)
+                form <- survTerms$form
+                data <- survTerms$survTime
+                surv <- tryCatch(survfit(form, data = data),
+                                 error = return)
+                
+                if ("simpleError" %in% class(surv)) {
+                    errorModal(session, "Formula error",
+                               "The following error was raised:", br(),
+                               tags$code(surv$message))
+                    return(NULL)
+                }
+                
+                # If there's an error with survdiff, show p-value of 0
+                pvalue <- tryCatch({
+                    # Test the difference between survival curves
+                    diff <- survdiff(form, data = data)
+                    
+                    # Calculate p-value with 5 significant numbers
+                    pvalue <- 1 - stats::pchisq(diff$chisq, length(diff$n) - 1)
+                    signif(pvalue, 5)
+                }, error = function(e) 0)
+                
+                # Plot survival curves
+                hc <- hchart(surv, ranges = intRanges) %>%
+                    hc_chart(zoomType="xy") %>%
+                    hc_yAxis(title=list(text="Proportion of individuals")) %>%
+                    hc_xAxis(title=list(text="Time in days")) %>% 
+                    hc_tooltip(headerFormat='Time: {point.x}<br>') %>%
+                    hc_credits(href=NA, enabled=TRUE,
+                               text=paste("p-value:", pvalue)) %>%
+                    hc_tooltip(crosshairs=TRUE)
+            }
+        })
+    })
+    
+    # Plot cox model
+    observeEvent(input[[id("coxModel")]], {
+        isolate({
+            # Get user input
+            clinical   <- getClinicalData()
+            timeStart  <- input[[id("timeStart")]]
+            timeStop   <- input[[id("timeStop")]]
+            dataEvent  <- input[[id("event")]]
+            censoring  <- input[[id("censoring")]]
+            outGroup   <- input[[id("showOutGroup")]]
+            modelTerms <- input[[id("modelTerms")]]
+            formulaStr <- input[[id("formula")]]
+            intRanges  <- input[[id("ranges")]]
+            # Get chosen groups
+            chosen <- input[[id("dataGroups")]]
+            dataGroups <- getGroupsFrom("Clinical data")[chosen, , drop=F]
+        })
+        
+        if (is.null(clinical)) {
+            errorModal(session, "Clinical data missing",
+                       "Insert clinical data first.")
+        } else if (nrow(dataGroups) > 0 && 
+                   anyDuplicated(unlist(dataGroups[, "Rows"])) > 0) {
+            # If the chosen groups have any intersections
+            errorModal(session, "Clinical groups intercept",
+                       "There is an interception between clinical groups.")
+        } else {
+            # Calculate survival curves
+            survTerms <- processSurvTerms(session, dataGroups, clinical, 
+                                          outGroup, censoring, timeStart, 
+                                          timeStop, dataEvent, modelTerms, 
+                                          formulaStr, cox=TRUE)
+            if ("simpleError" %in% class(survTerms)) {
+                errorModal(session, "Formula error",
+                           "The following error was raised:", br(),
+                           tags$code(survTerms$message))
+                return(NULL)
+            }
+            
+            surv <- survfit(survTerms)
+            summary <- summary(survTerms)
+            print(summary)
+            
+            output[[id("coxphUI")]] <- renderUI({
+                # highchartOutput(id("coxPlot"))
+                list(
+                    dataTableOutput(id("coxGroups")),
+                    dataTableOutput(id("coxTests"))
+                )
+            })
+            
+            output[[id("coxGroups")]] <- renderDataTable({
+                groups <- cbind(rownames(summary$coefficients),
+                                signif(summary$coefficients, 5),
+                                signif(summary$conf.int[ , 2:4], 5))
+                return(groups)
+            }, options = list(scrollX = TRUE))
+            
+            output[[id("coxTests")]] <- renderDataTable({
+                tests <- rbind("Wald test"=summary$waldtest, 
+                               "Log test"=summary$logtest,
+                               "Score (logrank) test"=summary$sctest)
+                tests <- cbind(rownames(tests), tests)
+                colnames(tests) <- c("Statistical test", "Value", 
+                                     "Degrees of freedom", "p-value")
+                return(tests)
+            }, options = list(scrollX = TRUE))
+            
+            # output[[id("coxPlot")]] <- renderHighchart({
+            #     # Plot survival curves
+            #     hchart(surv, ranges = intRanges) %>%
+            #         hc_chart(zoomType="xy") %>%
+            #         hc_yAxis(title=list(text="Proportion of individuals")) %>%
+            #         hc_xAxis(title=list(text="Time in days"))
+            # })
+        }
+    })
 }
