@@ -35,7 +35,6 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-    data.table,
     microbenchmark,
     rbenchmark
 VignetteBuilder: knitr
