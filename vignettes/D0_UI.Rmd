@@ -316,7 +316,18 @@ be ready and change a flag to TRUE; when it's ready, we change it the value to 0
 only runs once per each click in the "remove selected groups" button and remove
 the rows. It works as intended! :)
 
-# Representing the groups interface
+# Groups
+Should groups be right next to data input? The problem is that the user will not
+understand the motivation for groups there without explaining why. The most
+intuitive way would be to open a window to create/edit groups every time the 
+user needs/wants to add them. For example, simply add a button to "Edit groups"
+near fields that ask for groups.
+
+Another nice thing to add: we could reflect the groups being selected by showing
+a filtered data table of the current selection like this: 
+https://datatables.net/examples/advanced_init/row_grouping.html
+
+## Representing the groups interface
 There's a simple way to make this better. We could simply represent contextual
 Venn diagrams (i.e. when hovering over a group, it would show information about
 that group). Or maybe use a package like `UpSetR` to allow to show much more
