@@ -1,3 +1,5 @@
+## TODO(NunoA): correct progress bar when loading local files
+
 name <- "Input"
 
 #' Creates a UI set with options to add a file from the local storage
