@@ -78,19 +78,24 @@ addTCGAdata <- function() {
     }
 }
 
+#' Create a modal warning the user of loaded data
+loadedDataModal <- function(modalId, replaceButtonId) {
+    bsModal2(modalId,
+             div(icon("exclamation-triangle"), "Data already loaded"),
+             NULL, size = "small", style = "warning",
+             "Would you like to replace the loaded data?",
+             footer = list(actionButton(replaceButtonId,
+                                        class = "btn-warning",
+                                        "data-dismiss"="modal", 
+                                        label = "Replace")))
+}
+    
 ui <- function() {
     list(
         # TODO(NunoA): Show alerts from renderUI
         bsAlert(anchorId = id("alert2")),
-        bsModal2(id("dataReplace"),
-                 div(icon("exclamation-triangle"), "Data already loaded"),
-                 NULL, size = "small", style = "warning",
-                 "Would you like to replace the loaded data?",
-                 footer = list(
-                     actionButton(id("replace"),
-                                  class = "btn-warning",
-                                  "data-dismiss"="modal", 
-                                  label = "Replace"))),
+        loadedDataModal(id("localDataModal"), id("localReplace")),
+        loadedDataModal(id("firebrowseDataModal"), id("firebrowseReplace")),
         uiOutput("iframeDownload"),
         shinyBS::bsCollapse(
             id = id("addData"),
@@ -110,8 +115,19 @@ ui <- function() {
 }
 
 server <- function(input, output, session) {
-    # Load user files
+    # Check if data is already loaded and ask the user if it should be replaced
     observeEvent(input[[id("acceptFile")]], {
+        if (!is.null(getData()))
+            toggleModal(session, id("localDataModal"), "open")
+        else
+            loadLocalData()
+    })
+    
+    # Load data when the user presses to replace data
+    observeEvent(input[[id("localReplace")]], loadLocalData())
+    
+    # Load local files
+    loadLocalData <- function() {
         shinyjs::disable(id("acceptFile"))
         
         folder <- input[[id("localFolder")]]
@@ -127,10 +143,21 @@ server <- function(input, output, session) {
         
         closeProgress()
         shinyjs::enable(id("acceptFile"))
-    })
+    }
     
     # The button is only enabled if it meets the conditions that follow
-    observe(toggleState(id("acceptFile"), input[[id("species")]] != ""))
+    # observe(toggleState(id("acceptFile"), input[[id("species")]] != ""))
+    
+    # Check if data is already loaded and ask the user if it should be replaced
+    observeEvent(input[[id("getFirehoseData")]], {
+        if (!is.null(getData()))
+            toggleModal(session, id("firebrowseDataModal"), "open")
+        else
+            loadAllData()
+    })
+    
+    # Load data when the user presses to replace data
+    observeEvent(input[[id("firebrowseReplace")]], loadAllData())
     
     # Load Firehose data
     loadAllData <- function() {
@@ -152,15 +179,4 @@ server <- function(input, output, session) {
         closeProgress()
         shinyjs::enable(id("getFirehoseData"))
     }
-    
-    # Load data when the user presses to replace data
-    observeEvent(input[[id("replace")]], loadAllData())
-    
-    # Check if data is already loaded and ask the user if it should be replaced
-    observeEvent(input[[id("getFirehoseData")]], {
-        if (!is.null(getData()))
-            toggleModal(session, id("dataReplace"), "open")
-        else
-            loadAllData()
-    })
 }
