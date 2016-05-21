@@ -4,13 +4,15 @@
 \alias{readAnnotation}
 \title{Read the annotation of an event type from a file}
 \usage{
-readAnnotation(eventType, filename = paste0("data/annotation_", eventType,
-  ".txt"))
+readAnnotation(eventType, filename, rds = TRUE)
 }
 \arguments{
 \item{eventType}{Character: type of event}
 
 \item{filename}{Character: path to the annotation file}
+
+\item{rds}{Boolean: read from a RDS file? TRUE by default; otherwise, read
+from table format}
 }
 \value{
 Data frame with the annotation
