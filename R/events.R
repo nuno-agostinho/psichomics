@@ -263,7 +263,9 @@ joinAnnotation <- function(annotation) {
 #' @param jointEvents List of lists of data frame
 #' @param eventType Character: type of event
 #' @param filename Character: path to the annotation file
-#' @param showID Boolean: show the events' ID (FALSE by default)
+#' @param showID Boolean: show the events' ID? FALSE by default
+#' @param rds Boolean: write to a RDS file? TRUE by default; otherwise, write to
+#' TXT
 #' 
 #' @importFrom utils write.table
 #' 
@@ -272,7 +274,7 @@ joinAnnotation <- function(annotation) {
 writeAnnotation <- function(jointEvents, eventType,
                             filename = paste0("data/annotation_",
                                               eventType, ".txt"),
-                            showID = FALSE) {
+                            showID = FALSE, rds = TRUE) {
     res <- jointEvents[[eventType]]
     # Show the columns Chromosome, Strand and coordinates of interest
     by <- c("Chromosome", "Strand", getCoordinates(eventType))
@@ -293,23 +295,38 @@ writeAnnotation <- function(jointEvents, eventType,
     res <- res[do.call(order, orderBy), ]
     
     res <- unique(res)
-    write.table(res, file = filename, quote = FALSE, row.names = FALSE,
-                sep = "\t")
+    
+    if (rds)
+        saveRDS(res, file = filename)
+    else
+        write.table(res, file = filename, quote = FALSE, row.names = FALSE, 
+                    sep = "\t")
     return(invisible(TRUE))
 }
 
 #' Read the annotation of an event type from a file
 #' 
 #' @inheritParams writeAnnotation
-#' 
+#' @param rds Boolean: read from a RDS file? TRUE by default; otherwise, read
+#' from table format
 #' @importFrom utils read.table
 #' 
 #' @return Data frame with the annotation
 #' @export
-readAnnotation <- function(eventType, filename = paste0("data/annotation_",
-                                                        eventType, ".txt")) {
-    res <- read.table(filename, header = TRUE, stringsAsFactors = FALSE)
-    return(res)
+readAnnotation <- function(eventType, filename, rds = TRUE) {
+    if (missing(filename)) {
+        filename <- file.path("data", paste0("annotation_", eventType))
+        filename <- paste0(filename, ifelse(rds, ".RDS", ".txt"))
+    }
+    
+    if (!file.exists(filename))
+        stop("Missing file.")
+    
+    if (rds)
+        read <- readRDS(filename)
+    else 
+        read <- read.table(filename, header = TRUE, stringsAsFactors = FALSE)
+    return(read)
 }
 
 #' Compare the number of events from the different programs in a Venn diagram
