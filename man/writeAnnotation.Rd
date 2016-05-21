@@ -5,7 +5,7 @@
 \title{Write the annotation of an event type to a file}
 \usage{
 writeAnnotation(jointEvents, eventType, filename = paste0("data/annotation_",
-  eventType, ".txt"), showID = FALSE)
+  eventType, ".txt"), showID = FALSE, rds = TRUE)
 }
 \arguments{
 \item{jointEvents}{List of lists of data frame}
@@ -14,7 +14,10 @@ writeAnnotation(jointEvents, eventType, filename = paste0("data/annotation_",
 
 \item{filename}{Character: path to the annotation file}
 
-\item{showID}{Boolean: show the events' ID (FALSE by default)}
+\item{showID}{Boolean: show the events' ID? FALSE by default}
+
+\item{rds}{Boolean: write to a RDS file? TRUE by default; otherwise, write to
+TXT}
 }
 \value{
 Invisible TRUE if everything's okay
