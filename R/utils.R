@@ -1,3 +1,19 @@
+#' Sample variance by row
+#' 
+#' Calculate the sample variance of each row in the given matrix
+#' 
+#' @param x Matrix
+#' @param na.rm Boolean: should the NAs be ignored? FALSE by default
+#' 
+#' @return Variance for each row
+rowVar <- function (x, na.rm = FALSE) {
+    means <- rowMeans(x, na.rm = na.rm)
+    meansSqDev <- (x - means)^2
+    squaresSum <- rowSums(meansSqDev, na.rm = na.rm)
+    nas <- rowSums(is.na(x))
+    return(squaresSum/(ncol(x) - nas - 1))
+}
+
 badge <- function(inputId, label)
     span(class = "badge", id = inputId, label)
 
