@@ -41,7 +41,6 @@ Suggests:
 VignetteBuilder: knitr
 LinkingTo: Rcpp
 Collate:
-    'RcppExports.R'
     'utils.R'
     'begin.R'
     'data.R'
