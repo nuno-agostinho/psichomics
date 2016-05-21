@@ -1,6 +1,13 @@
 /* Avoids fixed-top navbar from obscuring content */
 body { padding-top: 70px; }
 
+/* Hides shadows from well panels */
+.well {
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
 /* Alert appears fixed on the top right above other elements */
 .sbs-alert {
     position: fixed;
