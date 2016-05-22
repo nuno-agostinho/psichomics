@@ -1,11 +1,19 @@
+## TODO(NunoA): plot using boxplots
+
 # The name used for the plot must be unique
 plot <- "Differential analysis"
 id <- function(value) objectId(name, plot, value)
 
 ui <- tagList(
     sidebarLayout(
-        sidebarPanel("Hi there!"),
-        mainPanel(
+        sidebarPanel(
+            h3("Non-parametric tests"),
+            # uiOutput(id("spearman")), hr(),
+            # uiOutput(id("fisher")), hr(),
+            uiOutput(id("wilcox")), hr(),
+            uiOutput(id("kruskal")), hr(),
+            uiOutput(id("levene"))
+        ), mainPanel(
             highchartOutput(id(plot))
         )
     )
@@ -29,6 +37,94 @@ server <- function(input, output, session) {
         ids <- names(psi)
         psi <- as.numeric(psi[event, ])
         
+        # Separate samples by their type
+        typeList <- readRDS("data/TCGAsampleType.RDS")
+        type <- gsub(".*?-([0-9]{2}).-.*", "\\1", ids, perl = TRUE)
+        type <- typeList[type]
+        
+        # output[[id("fisher")]] <- renderUI({
+        #     stat <- try(R.utils::evalWithTimeout(
+        #         fisher.test(psi, factor(type)), 
+        #         timeout = 1, 
+        #         onTimeout = "error"))
+        #     
+        #     if (class(a) != "try-error") {
+        #         tagList(
+        #             h4(stat$method),
+        #             tags$b("p-value: "), stat$p.value, br(),
+        #             tags$b("Alternative hypothesis: "), stat$alternative
+        #         )
+        #     } else {
+        #         tagList(
+        #             h4("Fisher's Exact Test for Count Data"),
+        #             "This test took too much to complete!"
+        #         )
+        #     }
+        # })
+        
+        # output[[id("spearman")]] <- renderUI({
+        #     group <- unique(type)
+        #     len <- length(group)
+        #     
+        #     if (len != 2) {
+        #         tagList(
+        #             h4("Spearman's correlation"),
+        #             "Can only perform this test on 2 groups.")
+        #     } else {
+        #         var <- var(psi[type == group[1]], psi[type == group[2]])
+        #         cor <- cor(psi[type == group[1]], psi[type == group[2]])
+        #         
+        #         tagList(
+        #             h4("Spearman's correlation"),
+        #             tags$b("Variance: "), var, br(),
+        #             tags$b("Correlation: "), cor)
+        #     }
+        # })
+        
+        output[[id("wilcox")]] <- renderUI({
+            group <- unique(type)
+            len <- length(group)
+            
+            if (len > 2)
+                return(tagList(h4("Wilcoxon rank sum test"),
+                               "Can only perform this test on 2 or 1 group."))
+            else if (len == 2)
+                stat <- wilcox.test(psi[type == group[1]],
+                                    psi[type == group[2]])
+            else if (len == 1)
+                stat <- wilcox.test(psi)
+            
+            tagList(
+                h4(stat$method),
+                tags$b("Test value: "), stat$statistic, br(),
+                tags$b("p-value: "), stat$p.value, br(),
+                tags$b("Test parameters: "), stat$parameter, br(),
+                tags$b("Location parameter: "), stat$null.value, br(),
+                tags$b("Alternative hypothesis: "), stat$alternative, br()
+            )
+        })
+        
+        output[[id("kruskal")]] <- renderUI({
+            stat <- kruskal.test(psi, factor(type))
+            tagList(
+                h4(stat$method),
+                tags$b("Test value (Chi squared): "), stat$statistic, br(),
+                tags$b("p-value: "), stat$p.value, br(),
+                tags$b("Degrees of freedom: "), stat$parameter
+            )
+        })
+        
+        output[[id("levene")]] <- renderUI({
+            stat <- car::leveneTest(psi, factor(type))
+            tagList(
+                h4("Levene's Test for Homogeneity of Variance"),
+                HTML(tooltip_table(names(l), l))
+                # tags$b("Test value (Chi squared): "), stat$statistic, br(),
+                # tags$b("p-value: "), stat$p.value, br(),
+                # tags$b("Degrees of freedom: "), stat$parameter
+            )
+        })
+        
         output[[id(plot)]] <- renderHighchart({
             # Include X-axis zoom and hide markers without hovering
             hc <- highchart() %>%
@@ -36,11 +132,6 @@ server <- function(input, output, session) {
                 hc_xAxis(min = 0, max = 1, title = list(
                     text = "Density of exon/intron inclusion levels")) %>%
                 hc_plotOptions(series = list(marker = list(enabled = FALSE)))
-            
-            # Separate samples by their type
-            typeList <- readRDS("data/TCGAsampleType.RDS")
-            type <- gsub(".*?-([0-9]{2}).-.*", "\\1", ids, perl = TRUE)
-            type <- typeList[type]
             
             for (group in unique(type)) {
                 row <- psi[type == group]
