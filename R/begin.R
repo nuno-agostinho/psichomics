@@ -7,6 +7,7 @@ sharedData <- reactiveValues()
 
 # Get data from sharedData
 getData <- reactive(sharedData$data)
+getEvent <- reactive(sharedData$event)
 getCategory <- reactive(sharedData$category)
 getCategories <- reactive(names(getData()))
 getCategoryData <- reactive(
@@ -24,6 +25,7 @@ getClinicalMatchFrom <- function(dataType, category = getCategory())
 # Set data from sharedData (needs to be inside reactive functions)
 setElement <- function(item, value) sharedData[[item]] <- value
 setData <- function(value) setElement("data", value)
+setEvent <- function(value) setElement("event", value)
 setCategory <- function(value) setElement("category", value)
 setInclusionLevels <- function(value, category = getCategory())
     sharedData$data[[category]][["Inclusion levels"]] <- value
