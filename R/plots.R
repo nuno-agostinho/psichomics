@@ -45,8 +45,17 @@ server <- function(input, output, session) {
             names(choices) <- gsub("_", " ", rownames(psi))
             updateSelectizeInput(session, id("selectizeEvent"),
                                  choices = choices)
+        } else {
+            ## TODO(NunoA): Input doesn't seem to update when changing data...
+            updateSelectizeInput(session, id("selectizeEvent"),
+                                 choices = NULL, options = list(
+                                     placeholder = "No event available"))
         }
     })
+    
+    # Set the selected alternative splicing event
+    observeEvent(input[[id("selectizeEvent")]],
+                 setEvent(input[[id("selectizeEvent")]]))
     
     # If showing datatable, hide selectizeEvent; otherwise, show it
     observe({
