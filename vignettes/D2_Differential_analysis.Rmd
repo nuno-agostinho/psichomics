@@ -1,0 +1,141 @@
+---
+title: "Differential analysis"
+output: html_document
+---
+
+# Splicing
+**Adapted from Marie Tutorial**
+
+To perform differential analysis on alternative splicing, we need the exon
+inclusion levels ("PSI" tables). Let's load them.
+
+```{r creating PSI table}
+# Create PSI table from
+INCLUSION_LEVELS_FULL.Hsa8 <- read.delim("~/Dropbox/FCUL/Tese de Mestrado/Supporting Materials/INCLUSION_LEVELS_FULL-Hsa8.tab")
+
+psi <- INCLUSION_LEVELS_FULL.Hsa8[-c(1:5, seq(6, 22, by=2))]
+rownames(psi) <- INCLUSION_LEVELS_FULL.Hsa8[, 2]
+
+# Scaling PSIs from 0 to 1 insted of 0 to 100
+psi <- psi/100
+```
+
+Exclude events that do not vary across samples.
+```{r remove variance of 0 or NA}
+var_events <- rowVar(psi, na.rm = TRUE)
+psi <- psi[!(is.na(var_events) | var_events == 0), ]
+```
+
+Quantify the percentage of NAs per event: let's only consider events with up to
+40% of NAs (more than 50% is really not acceptable).
+
+```{r remove high percentage of NAs}
+nasPerRow <- rowSums(is.na(psi))
+rows <- ncol(psi)
+na_events <- nasPerRow/rows
+
+# Plot histogram of NAs per row
+library(ggplot2)
+ggplot(psi, aes(x=na_events)) + 
+    geom_histogram(colour="black", fill="light blue") + 
+    xlab("NA fraction") + ylab("Count") + ggtitle("NA content per Event")
+
+psiFiltered <- psi[na_events < 0.4, ]
+```
+
+# Plots
+The two types of plots most used in differential analysis are boxplots and 
+density plots. Boxplots are available in the package `Highcharter` by using the 
+function `hc_add_series_boxplot` (currently only available in the development 
+version at GitHub):
+```{r}
+library(dplyr)
+library(purrr)
+library(stringr)
+
+hc_add_series_df <- function(hc, data, ...) {
+    
+    assertthat::assert_that(is.data.frame(data))
+    
+    hc <- hc %>%
+        hc_add_series(data = list.parse3(data), ...)
+    
+    hc
+}
+
+#' Shorcut to create a boxplot
+hc_add_series_boxplot <- function(hc, x, by = NULL, outliers = TRUE, ...) {
+    if (is.null(by)) {
+        by <- "value"
+    } else {
+        stopifnot(length(x) == length(by))
+    }
+    
+    df <- data_frame(value = x, by = by) %>% 
+        group_by(by) %>% 
+        do(data = boxplot.stats(.$value))
+    
+    bxps <- map(df$data, "stats")
+    
+    hc <- hc %>%
+        hc_xAxis(categories = df$by) %>% 
+        hc_add_series(data = bxps, type = "boxplot", ...)
+    
+    if (outliers) {
+        outs <- map2_df(seq(nrow(df)), df$data, function(x, y){
+            if (length(y$out) > 0)
+                d <- data_frame(x = x - 1, y = y$out)
+            else
+                d <- data_frame()
+            d
+        })
+        
+        if (nrow(outs) > 0) {
+            hc <- hc %>%
+                hc_add_series_df(
+                    data = outs,
+                    name = str_trim(paste(list(...)$name, "outliers")),
+                    type = "scatter", #linkedTo = ":previous",
+                    marker = list(...),
+                    tooltip = list(
+                        headerFormat = "<span>{point.key}</span><br/>",
+                        # pointFormat = "Observation: {point.y}"
+                        pointFormat = 
+                            "<span style='color:{point.color}'></span> Outlier: <b>{point.y}</b><br/>"
+                    ),
+                    ...
+                )
+        }
+        
+        
+    }
+    return(hc)
+}
+
+library(highcharter)
+data(diamonds, package = "ggplot2")
+
+highchart() %>% 
+    hc_add_series_boxplot(diamonds$x, diamonds$color,
+                          name = "X", color = "#2980b9") 
+```
+
+Regarding density plots, there are no supporting functions. Therefore, I created
+a function to easily create them:
+
+```{r}
+hc_add_series_density <- function (hc, x, area = FALSE, ...) {
+    type <- ifelse(area, "area", "spline")
+    data <- list.parse3(data.frame(cbind(x = x$x, y = x$y)))
+    return(hc %>% hc_add_series(data = data, type = type))
+}
+
+d1 <- density(mtcars$mpg[1:32/2])
+d2 <- density(mtcars$mpg[32/2:32])
+d3 <- density(mtcars$mpg[5:(16+5)])
+
+highchart() %>% 
+    hc_add_series_density(d1, area = TRUE) %>% 
+    hc_add_series_density(d2, area = TRUE) %>% 
+    hc_add_series_density(d3, area = TRUE)
+```
