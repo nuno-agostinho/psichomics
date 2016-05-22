@@ -43,6 +43,20 @@ ggplot(psi, aes(x=na_events)) +
 psiFiltered <- psi[na_events < 0.4, ]
 ```
 
+# Statistical tests
+
+## Non-parametric tests
+Assuming the data does not follow normal distribution, non-parametric tests are
+required. Such kind of tests include:
+
+- **Data dependency:** Spearman's rank correlation coefficient (quantitative
+outcomes) and Fisher's exact test
+- **Median tests:** Wilcoxon rank-sum test (two condition comparison; also known
+as Mann-Whitney U Test) and Wilcoxon signed-rank test (non-parametric version of
+the paired two condition comparison's *t*-test)
+- **Variance tests:** Kruskal-Wallis rank sum test (multiple condition 
+comparison) and Levene's test
+
 # Plots
 The two types of plots most used in differential analysis are boxplots and 
 density plots. Boxplots are available in the package `Highcharter` by using the 
@@ -139,3 +153,8 @@ highchart() %>%
     hc_add_series_density(d2, area = TRUE) %>% 
     hc_add_series_density(d3, area = TRUE)
 ```
+
+# References
+- https://en.wikipedia.org/wiki/Student%27s_t-test
+- [rSeqNP: A non-parametric approach for detecting differential ex-
+pression and splicing from RNA-Seq data](http://bioinformatics.oxfordjournals.org/content/31/13/2222)
