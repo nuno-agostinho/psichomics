@@ -23,6 +23,9 @@ ui <- function(tab)
                                      choices = NULL,
                                      options = list(
                                          placeholder = "Select an event")))),
+        bsTooltip(id("selectizeEvent"), placement="right",
+                  "Delete text and start typing to search events",
+                  options = list(container="body")),
         lapply(plotEnvs, function(env) {
             conditionalPanel(
                 condition=sprintf("input[id='%s']=='%s'",
