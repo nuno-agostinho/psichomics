@@ -18,7 +18,7 @@ hc_add_series_density <- function (hc, x, name, area = FALSE, ...) {
 }
 
 server <- function(input, output, session) {
-    output[[id(plot)]] <- renderHighchart({
+    observe({
         # Get selected event (if there is any)
         event <- getEvent()
         if (is.null(event) || event == "")
@@ -29,27 +29,30 @@ server <- function(input, output, session) {
         ids <- names(psi)
         psi <- as.numeric(psi[event, ])
         
-        # Include X-axis zoom and hide markers without hovering
-        hc <- highchart() %>%
-            hc_chart(zoomType = "x") %>%
-            hc_xAxis(min = 0, max = 1) %>%
-            hc_plotOptions(series = list(marker = list(enabled = FALSE)))
-        
-        # Separate samples by their type
-        typeList <- readRDS("data/TCGAsampleType.RDS")
-        type <- gsub(".*?-([0-9]{2}).-.*", "\\1", ids, perl = TRUE)
-        type <- typeList[type]
-        
-        for (group in unique(type)) {
-            row <- psi[type == group]
-            # Ignore data with low number of data points
-            if (sum(!is.na(row)) >= 2) {
-                # Calculate the density of inclusion levels for each sample type
-                den <- density(row, na.rm = TRUE)
-                hc <- hc %>%
-                    hc_add_series_density(den, group, area = TRUE)
+        output[[id(plot)]] <- renderHighchart({
+            # Include X-axis zoom and hide markers without hovering
+            hc <- highchart() %>%
+                hc_chart(zoomType = "x") %>%
+                hc_xAxis(min = 0, max = 1, title = list(
+                    text = "Density of exon/intron inclusion levels")) %>%
+                hc_plotOptions(series = list(marker = list(enabled = FALSE)))
+            
+            # Separate samples by their type
+            typeList <- readRDS("data/TCGAsampleType.RDS")
+            type <- gsub(".*?-([0-9]{2}).-.*", "\\1", ids, perl = TRUE)
+            type <- typeList[type]
+            
+            for (group in unique(type)) {
+                row <- psi[type == group]
+                # Ignore data with low number of data points
+                if (sum(!is.na(row)) >= 2) {
+                    # Calculate the density of inclusion levels for each sample type
+                    den <- density(row, na.rm = TRUE)
+                    hc <- hc %>%
+                        hc_add_series_density(den, group, area = TRUE)
+                }
             }
-        }
-        return(hc)
+            return(hc)
+        })
     })
 }
