@@ -408,7 +408,7 @@ loadFirehoseData <- function(folder = "~/Downloads",
         folders <- split(folders, categories)
         
         if (length(archives[tar]) > 0) {
-            progress("Preparing archives...", divisions = 1 + length(folders))
+            progress("Extracting archives...", divisions = 1 + length(folders))
             # Extract the content, check the intergrity and remove archives
             prepareFirehoseArchives(archives[tar], base[md5][tar], folder)
             progress("Archives prepared")
