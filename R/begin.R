@@ -303,21 +303,21 @@ showModal <- function(session, title, ..., style = NULL,
 
 #' @rdname showModal
 #' @export
-errorModal <- function(session, title, ..., footer = NULL) {
-    showModal(session, title, ..., footer, style = "danger", size = "small",
+errorModal <- function(session, title, ..., size = "small", footer = NULL) {
+    showModal(session, title, ..., footer, style = "danger", size = size,
               printMessage = FALSE, iconName = "times-circle")
 }
 
 #' @rdname showModal
 #' @export
-warningModal <- function(session, title, ..., footer = NULL) {
-    showModal(session, title, ..., footer, style = "warning", size = "small",
+warningModal <- function(session, title, ..., size = "small", footer = NULL) {
+    showModal(session, title, ..., footer, style = "warning", size = size,
               printMessage = FALSE, iconName = "exclamation-circle")
 }
 
 #' @rdname showModal
 #' @export
-infoModal <- function(session, title, ..., footer = NULL) {
-    showModal(session, title, ..., footer, style = "info", size = "small",
+infoModal <- function(session, title, ..., size = "small", footer = NULL) {
+    showModal(session, title, ..., footer, style = "info", size = size,
               printMessage = FALSE, iconName = "info-circle")
 }
