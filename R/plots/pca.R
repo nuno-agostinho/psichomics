@@ -186,9 +186,8 @@ server <- function(input, output, session) {
     
     # Show variance plot
     observeEvent(input[[id("showVariancePlot")]], {
-        showModal(session, "Variance plot", highchartOutput(id("variancePlot")), 
-                  size = "large", style = "info", icon = "info-circle",
-                  printMessage = FALSE)
+        infoModal(session, "Variance plot", highchartOutput(id("variancePlot")), 
+                  size = "large")
     })
     
     # Select all color groups when pressing the respective "Select all" button
