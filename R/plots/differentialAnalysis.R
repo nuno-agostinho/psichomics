@@ -14,7 +14,7 @@ ui <- tagList(
             uiOutput(id("kruskal")), hr(),
             uiOutput(id("levene"))
         ), mainPanel(
-            highchartOutput(id(plot))
+            highchartOutput(id("density"))
         )
     )
 )
@@ -136,7 +136,7 @@ server <- function(input, output, session) {
             }
         })
         
-        output[[id(plot)]] <- renderHighchart({
+        output[[id("density")]] <- renderHighchart({
             # Include X-axis zoom and hide markers without hovering
             hc <- highchart() %>%
                 hc_chart(zoomType = "x") %>%
@@ -144,14 +144,27 @@ server <- function(input, output, session) {
                     text = "Density of exon/intron inclusion levels")) %>%
                 hc_plotOptions(series = list(marker = list(enabled = FALSE)))
             
+            count <- 0
             for (group in unique(type)) {
                 row <- psi[type == group]
+                med <- round(median(row, na.rm = TRUE), 2)
                 # Ignore data with low number of data points
                 if (sum(!is.na(row)) >= 2) {
                     # Calculate the density of inclusion levels for each sample type
                     den <- density(row, na.rm = TRUE)
                     hc <- hc %>%
-                        hc_add_series_density(den, group, area = TRUE)
+                        hc_add_series_density(den, group, area = TRUE) %>%
+                        hc_xAxis(plotLines = list(
+                            list(label = list(text = paste(
+                                "Median:", med)),
+                                # Colour the same as the series
+                                color=JS("Highcharts.getOptions().colors[",
+                                         count, "]"),
+                                dashStyle="shortdash",
+                                width=2,
+                                value=med,
+                                zIndex = 10)))
+                    count <- count + 1
                 }
             }
             return(hc)
