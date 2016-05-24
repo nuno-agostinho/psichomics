@@ -229,13 +229,14 @@ hc_scatter <- function (hc, x, y, z = NULL, color = NULL, label = NULL,
                                     dataLabels = dlopts), args))
 }
 
-#' Create script for autocompletion for text input
+#' Create script for autocompletion of text input
 #' 
 #' Uses the JavaScript library jquery.textcomplete
 #' 
 #' @param id Character: input ID
 #' @param words Character: words to suggest
 #' @param novalue Character: string when there's no matching values
+#' @param char Character to succeed accepted word
 #'
 #' @return HTML string with the JavaScript script prepared to run
 #' @export
@@ -243,7 +244,7 @@ hc_scatter <- function (hc, x, y, z = NULL, color = NULL, label = NULL,
 #' @examples 
 #' words <- c("tumor_stage", "age", "gender")
 #' textComplete("textareaid", words)
-textComplete <- function(id, words, novalue = "No matching value") {
+textComplete <- function(id, words, novalue = "No matching value", char=" ") {
     words <- paste0('["', paste(words, collapse = '", "'), '"]')
     js <- paste0('$("#', id, '").textcomplete([{
         match: /([a-zA-Z0-9_\\.]{1,})$/,
@@ -260,7 +261,7 @@ textComplete <- function(id, words, novalue = "No matching value") {
         },
         index: 1,
         replace: function(word) {
-            return word + " ";
+            return word + "', char ,'";
         }}], { noResultsMessage: "', novalue, '"});')
     js <- paste("<script>", js, "</script>")
     return(HTML(js))

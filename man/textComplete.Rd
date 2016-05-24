@@ -4,7 +4,7 @@
 \alias{textComplete}
 \title{Create script for autocompletion for text input}
 \usage{
-textComplete(id, words, novalue = "No matching value")
+textComplete(id, words, novalue = "No matching value", char = " ")
 }
 \arguments{
 \item{id}{Character: input ID}
@@ -12,6 +12,8 @@ textComplete(id, words, novalue = "No matching value")
 \item{words}{Character: words to suggest}
 
 \item{novalue}{Character: string when there's no matching values}
+
+\item{char}{Character to succeed accepted word}
 }
 \value{
 HTML string with the JavaScript script prepared to run
