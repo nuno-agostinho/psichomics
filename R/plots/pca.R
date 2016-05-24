@@ -36,19 +36,19 @@ psiPCA <- function(psi, center = TRUE, scale. = FALSE, naTolerance = 30) {
     # Get individuals (rows) with less than a given percentage of NAs
     nas <- apply(psi, 1, function(row) sum(is.na(row)))
     # hist(nas/ncol(psi)*100)
-    psi <- psi[nas/ncol(psi)*100 <= naTolerance, ]
-    if (nrow(psi) == 0) {
-        print("No rows...")
-        return(NULL)
-    }
-    
+    psi <- psi[nas/ncol(psi)*100 <= naTolerance, , drop = FALSE]
+    if (nrow(psi) == 0) return(NULL)
+
     # Replace NAs with the medians for each individual (row)
     medians <- miscTools::rowMedians(psi, na.rm = T)
     nas <- apply(psi, 1, function(row) sum(is.na(row)))
     psi[is.na(psi)] <- rep(medians, nas)
     
     # Perform principal component analysis on resulting data
-    return(prcomp(psi, center = center, scale. = scale.))
+    pca <- prcomp(psi, center = center, scale. = scale.)
+    # PCA is useless if done with only one point
+    if (nrow(pca$x) == 1) return(NULL)
+    return(pca)
 }
 
 ui <- list(
@@ -133,55 +133,15 @@ server <- function(input, output, session) {
                 naTolerance <- input[[id("naTolerance")]]
             })
             
-            pca <- psiPCA(psi,
+            pca <- psiPCA(psi, naTolerance = naTolerance,
                           center = "center" %in% preprocess,
-                          scale. = "scale" %in% preprocess,
-                          naTolerance = naTolerance)
+                          scale. = "scale" %in% preprocess)
+            if (is.null(pca)) {
+                errorModal(session, "No individuals to plot PCA", 
+                           "Try increasing the tolerance of NAs per individual.")
+            }
             sharedData$inclusionLevelsPCA <- pca
-            
-            # Save the original subset data used before performing PCA
-            sharedData$inclusionLevelsPCA$original <- psi
         }
-    })
-    
-    # Interface and plots to help to select principal components
-    output[[id("selectPC")]] <- renderUI({
-        if (is.null(sharedData$inclusionLevelsPCA)) 
-            return(NULL)
-        
-        sdevSq <- sharedData$inclusionLevelsPCA$sdev ^ 2
-        perc <- sdevSq / sum(sdevSq) * 100
-        names(perc) <- colnames(sharedData$inclusionLevelsPCA$x)
-        
-        label <- sprintf("%s (%s%% explained variance)", 
-                         names(perc), round(perc, 2))
-        choices <- setNames(names(perc), label)
-        
-        groups <- getGroupsFrom("Clinical data")
-        
-        tagList(
-            hr(),
-            selectizeInput(id("pcX"), "Choose X axis", choices = choices),
-            selectizeInput(id("pcY"), "Choose Y axis", choices = choices,
-                           selected = choices[[2]]),
-            fluidRow(
-                column(9,
-                       selectizeInput(
-                           id("colorGroups"), "Clinical groups to color the PCA",
-                           choices = groups[, "Names"], multiple = TRUE,
-                           options = list(placeholder = ifelse(
-                               length(groups) > 0,
-                               "Click 'Select all'to select all groups",
-                               "No groups created")))),
-                column(2,
-                       actionButton(id("colorGroups_selectAll"),
-                                    "Select all", class = "inline_selectize"))),
-            checkboxGroupInput(id("plotShow"), "Show in plot",
-                               c("Individuals", "Loadings"),
-                               selected = c("Individuals")),
-            actionButton(id("showVariancePlot"), "Show variance plot"),
-            actionButton(id("plot"), class = "btn-primary", "Plot PCA")
-        )
     })
     
     # Show variance plot
@@ -197,96 +157,131 @@ server <- function(input, output, session) {
             selected = getGroupsFrom("Clinical data")[, "Names"])
     })
     
-    # Plots the explained variance plot
-    output[[id("variancePlot")]] <- renderHighchart({
+    observe({
         pca <- sharedData$inclusionLevelsPCA
-        if (is.null(pca))  return(NULL)
+        if (is.null(pca)) return(NULL)
         
-        sdevSq <- pca$sdev ^ 2
+        imp <- summary(pca)$importance[2, ]
+        perc <- as.numeric(imp)
+        names(perc) <- names(imp)
         
-        highchart() %>%
-            hc_chart(zoomType = "xy", backgroundColor = NULL) %>%
-            hc_title(text = paste("Explained variance by each",
-                                  "Principal Component (PC)")) %>%
-            hc_add_series(name = "PCs", data = sdevSq, type = "waterfall") %>%
-            hc_plotOptions(series = list(dataLabels = list(
-                align = "center",
-                verticalAlign = "top",
-                enabled = TRUE,
-                formatter = JS(
-                    "function() {",
-                    "var total = ", sum(sdevSq), ";",
-                    "var perc = (this.y/total) * 100;",
-                    "return (Highcharts.numberFormat(this.y) +'<br/>'+",
-                    "Highcharts.numberFormat(perc) + '%')}")))) %>%
-            hc_xAxis(categories = colnames(pca[["x"]]), crosshair = TRUE) %>%
-            hc_yAxis(title = list(text = "Explained variance")) %>%
-            hc_legend(enabled = FALSE) %>%
-            hc_tooltip(pointFormat = '{point.name} {point.y:.2f} {point.perc}') %>%
-            hc_exporting(enabled = TRUE,
-                         buttons = list(contextButton = list(
-                             text = "Export", y = -50,
-                             verticalAlign = "bottom",
-                             theme = list(fill = NULL))))
-    })
-    
-    # Plots the principal component analysis
-    observeEvent(input[[id("plot")]], {
-        output[[id("scatterplot")]] <- renderHighchart({
-            pca <- sharedData$inclusionLevelsPCA
-            if (is.null(pca)) 
-                return(NULL)
+        # Interface and plots to help to select principal components
+        output[[id("selectPC")]] <- renderUI({
+            label <- sprintf("%s (%s%% explained variance)", 
+                             names(perc), round(perc * 100, 2))
+            choices <- setNames(names(perc), label)
+            groups <- getGroupsFrom("Clinical data")
             
-            isolate({
-                xAxis <- input[[id("pcX")]]
-                yAxis <- input[[id("pcY")]]
-                selected <- input[[id("colorGroups")]]
-                show <- input[[id("plotShow")]]
-            })
+            tagList(
+                hr(),
+                selectizeInput(id("pcX"), "Choose X axis", choices = choices),
+                selectizeInput(id("pcY"), "Choose Y axis", choices = choices,
+                               selected = choices[[2]]),
+                fluidRow(
+                    column(9,
+                           selectizeInput(
+                               id("colorGroups"), 
+                               "Clinical groups to color the PCA",
+                               choices = groups[, "Names"], multiple = TRUE,
+                               options = list(placeholder = ifelse(
+                                   length(groups) > 0,
+                                   "Click 'Select all'to select all groups",
+                                   "No groups created")))),
+                    column(2,
+                           actionButton(id("colorGroups_selectAll"),
+                                        "Select all", 
+                                        class = "inline_selectize"))),
+                checkboxGroupInput(id("plotShow"), "Show in plot",
+                                   c("Individuals", "Loadings"),
+                                   selected = c("Individuals")),
+                actionButton(id("showVariancePlot"), "Show variance plot"),
+                actionButton(id("plot"), class = "btn-primary", "Plot PCA")
+            )
+        })
+        
+        # Plots the explained variance plot
+        output[[id("variancePlot")]] <- renderHighchart({
+            sdevSq <- pca$sdev ^ 2
             
-            if (!is.null(xAxis) & !is.null(yAxis)) {
-                imp <- as.data.frame(summary(pca)$importance)[2, ]
-                perc <- as.numeric(imp)
-                names(perc) <- names(imp)
+            highchart() %>%
+                hc_chart(zoomType = "xy", backgroundColor = NULL) %>%
+                hc_title(text = paste("Explained variance by each",
+                                      "Principal Component (PC)")) %>%
+                hc_add_series(name = "PCs", data = sdevSq,
+                              type = "waterfall") %>%
+                hc_plotOptions(series = list(dataLabels = list(
+                    align = "center",
+                    verticalAlign = "top",
+                    enabled = TRUE,
+                    formatter = JS(
+                        "function() {",
+                        "var total = ", sum(sdevSq), ";",
+                        "var perc = (this.y/total) * 100;",
+                        "return (Highcharts.numberFormat(this.y) +'<br/>'+",
+                        "Highcharts.numberFormat(perc) + '%')}")))) %>%
+                hc_xAxis(categories = colnames(pca[["x"]]), 
+                         crosshair = TRUE) %>%
+                hc_yAxis(title = list(text = "Explained variance")) %>%
+                hc_legend(enabled = FALSE) %>%
+                hc_tooltip(pointFormat = 
+                               '{point.name} {point.y:.2f} {point.perc}') %>%
+                hc_exporting(enabled = TRUE,
+                             buttons = list(contextButton = list(
+                                 text = "Export", y = -50,
+                                 verticalAlign = "bottom",
+                                 theme = list(fill = NULL))))
+        })
+        
+        # Plots the principal component analysis
+        observeEvent(input[[id("plot")]], {
+            output[[id("scatterplot")]] <- renderHighchart({
+                isolate({
+                    xAxis <- input[[id("pcX")]]
+                    yAxis <- input[[id("pcY")]]
+                    selected <- input[[id("colorGroups")]]
+                    show <- input[[id("plotShow")]]
+                })
                 
-                label <- sprintf("%s (%s%% explained variance)", 
-                                 names(perc[c(xAxis, yAxis)]), 
-                                 round(perc[c(xAxis, yAxis)]*100, 2))
-                
-                hc <- highchart() %>%
-                    hc_chart(zoomType = "xy") %>%
-                    hc_xAxis(title = list(text = label[1])) %>%
-                    hc_yAxis(title = list(text = label[2])) %>%
-                    hc_tooltip(pointFormat = "{point.sample}")
-                
-                if ("Individuals" %in% show) {
-                    df <- data.frame(pca$x)
-                    if (is.null(selected)) {
-                        hc <- hc %>%
-                            hc_scatter(df[[xAxis]], df[[yAxis]],
-                                       sample = rownames(df))
-                    } else {
-                        # Subset data by the selected clinical groups
-                        clinical <- getGroupsFrom("Clinical data")
-                        match <- getClinicalMatchFrom("Inclusion levels")
-                        
-                        for (groupName in selected) {
-                            ns <- getMatchingRowNames(groupName, clinical, match)
-                            hc <- hc %>% 
-                                hc_scatter(df[ns, xAxis], df[ns, yAxis],
-                                           name = groupName,
-                                           sample = rownames(df[ns, ]),
-                                           showInLegend = TRUE)
+                if (!is.null(xAxis) & !is.null(yAxis)) {
+                    label <- sprintf("%s (%s%% explained variance)", 
+                                     names(perc[c(xAxis, yAxis)]), 
+                                     round(perc[c(xAxis, yAxis)]*100, 2))
+                    
+                    hc <- highchart() %>%
+                        hc_chart(zoomType = "xy") %>%
+                        hc_xAxis(title = list(text = label[1])) %>%
+                        hc_yAxis(title = list(text = label[2])) %>%
+                        hc_tooltip(pointFormat = "{point.sample}")
+                    
+                    if ("Individuals" %in% show) {
+                        df <- data.frame(pca$x)
+                        if (is.null(selected)) {
+                            hc <- hc %>% hc_scatter(df[[xAxis]], df[[yAxis]],
+                                                    sample = rownames(df))
+                        } else {
+                            # Subset data by the selected clinical groups
+                            clinical <- getGroupsFrom("Clinical data")
+                            match <- getClinicalMatchFrom("Inclusion levels")
+                            
+                            for (groupName in selected) {
+                                ns <- getMatchingRowNames(groupName, clinical,
+                                                          match)
+                                hc <- hc %>% 
+                                    hc_scatter(df[ns, xAxis], df[ns, yAxis],
+                                               name = groupName,
+                                               sample = rownames(df[ns, ]),
+                                               showInLegend = TRUE)
+                            }
                         }
                     }
+                    if ("Loadings" %in% show) {
+                        m <- data.frame(pca$rotation)
+                        # For loadings, add series (don't add to legend)
+                        hc <- hc %>% hc_scatter(m[[xAxis]], m[[yAxis]])
+                    }
+                    return(hc)
                 }
-                if ("Loadings" %in% show) {
-                    m <- data.frame(pca$rotation)
-                    # For loadings, add series (don't add to legend)
-                    hc <- hc %>% hc_scatter(m[[xAxis]], m[[yAxis]])
-                }
-                return(hc)
-            }
+            })
         })
     })
 }
