@@ -85,22 +85,35 @@ server <- function(input, output, session) {
         # })
         
         output[[id("wilcox")]] <- renderUI({
-            if (len > 2)
+            if (len > 2) {
                 return(tagList(h4("Wilcoxon rank sum test"),
                                "Can only perform this test on 2 or 1 group."))
-            else if (len == 2)
-                stat <- wilcox.test(psi[type == group[1]],
-                                    psi[type == group[2]])
-            else if (len == 1)
-                stat <- wilcox.test(psi)
+            } else if (len == 2) {
+                stat <- tryCatch(list(stat=wilcox.test(psi[type == group[1]],
+                                                       psi[type == group[2]])), 
+                                 warning=function(w)
+                                     return(list(
+                                         stat=wilcox.test(psi[type == group[1]],
+                                                          psi[type == group[2]]),
+                                         warning=w)))
+            } else if (len == 1) {
+                stat <- tryCatch(list(stat=wilcox.test(psi)), warning=function(w)
+                    return(list(stat=wilcox.test(psi), warning=w)))
+            }
+            
+            if ("warning" %in% names(stat))
+                warn <- tagList(
+                    tags$code(paste("Warning:", stat$warning$message)), br())
+            else
+                warn <- NULL
             
             tagList(
-                h4(stat$method),
-                tags$b("Test value: "), stat$statistic, br(),
-                tags$b("p-value: "), stat$p.value, br(),
-                tags$b("Test parameters: "), stat$parameter, br(),
-                tags$b("Location parameter: "), stat$null.value, br(),
-                tags$b("Alternative hypothesis: "), stat$alternative, br()
+                h4(stat$stat$method), warn,
+                tags$b("Test value: "), stat$stat$statistic, br(),
+                tags$b("p-value: "), stat$stat$p.value, br(),
+                tags$b("Test parameters: "), stat$stat$parameter, br(),
+                tags$b("Location parameter: "), stat$stat$null.value, br(),
+                tags$b("Alternative hypothesis: "), stat$stat$alternative, br()
             )
         })
         
