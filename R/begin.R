@@ -314,3 +314,10 @@ warningModal <- function(session, title, ..., footer = NULL) {
     showModal(session, title, ..., footer, style = "warning", size = "small",
               printMessage = FALSE, iconName = "exclamation-circle")
 }
+
+#' @rdname showModal
+#' @export
+infoModal <- function(session, title, ..., footer = NULL) {
+    showModal(session, title, ..., footer, style = "info", size = "small",
+              printMessage = FALSE, iconName = "info-circle")
+}
