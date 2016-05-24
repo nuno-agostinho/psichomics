@@ -176,7 +176,7 @@ server <- function(input, output, session) {
                                 dashStyle="shortdash",
                                 width=2,
                                 value=med,
-                                zIndex = 10)))
+                                zIndex = 7)))
                     count <- count + 1
                 }
             }
