@@ -251,7 +251,7 @@ server <- function(input, output, session) {
                 
                 label <- sprintf("%s (%s%% explained variance)", 
                                  names(perc[c(xAxis, yAxis)]), 
-                                 round(perc[c(xAxis, yAxis)], 2))
+                                 round(perc[c(xAxis, yAxis)]*100, 2))
                 
                 hc <- highchart() %>%
                     hc_chart(zoomType = "xy") %>%
