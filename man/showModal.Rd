@@ -11,11 +11,11 @@ showModal(session, title, ..., style = NULL,
   iconName = "exclamation-circle", footer = NULL, printMessage = FALSE,
   size = NULL)
 
-errorModal(session, title, ..., footer = NULL)
+errorModal(session, title, ..., size = "small", footer = NULL)
 
-warningModal(session, title, ..., footer = NULL)
+warningModal(session, title, ..., size = "small", footer = NULL)
 
-infoModal(session, title, ..., footer = NULL)
+infoModal(session, title, ..., size = "small", footer = NULL)
 }
 \arguments{
 \item{session}{Current Shiny session}
