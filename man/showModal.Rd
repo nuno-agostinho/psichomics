@@ -2,6 +2,7 @@
 % Please edit documentation in R/begin.R
 \name{showModal}
 \alias{errorModal}
+\alias{infoModal}
 \alias{showModal}
 \alias{warningModal}
 \title{Simply show a modal}
@@ -13,6 +14,8 @@ showModal(session, title, ..., style = NULL,
 errorModal(session, title, ..., footer = NULL)
 
 warningModal(session, title, ..., footer = NULL)
+
+infoModal(session, title, ..., footer = NULL)
 }
 \arguments{
 \item{session}{Current Shiny session}
