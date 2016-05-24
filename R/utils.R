@@ -209,8 +209,8 @@ hc_scatter <- function (hc, x, y, z = NULL, color = NULL, label = NULL,
     # Add arguments to data points if they match the length of the data
     args <- list(...)
     for (i in seq_along(args)) {
-        if (length(x) == length(args[[i]])) {
-            df <- cbind(df, setNames(list(args[i]), names(args)[i]))
+        if (length(x) == length(args[[i]]) && names(args[i]) != "name") {
+            df <- cbind(df, setNames(list(args[i]), names(args[i])))
             args[[i]] <- character(0)
         }
     }
