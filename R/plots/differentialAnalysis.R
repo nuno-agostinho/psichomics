@@ -42,6 +42,9 @@ server <- function(input, output, session) {
         type <- gsub(".*?-([0-9]{2}).-.*", "\\1", ids, perl = TRUE)
         type <- typeList[type]
         
+        group <- unique(type)
+        len <- length(group)
+        
         # output[[id("fisher")]] <- renderUI({
         #     stat <- try(R.utils::evalWithTimeout(
         #         fisher.test(psi, factor(type)), 
@@ -82,9 +85,6 @@ server <- function(input, output, session) {
         # })
         
         output[[id("wilcox")]] <- renderUI({
-            group <- unique(type)
-            len <- length(group)
-            
             if (len > 2)
                 return(tagList(h4("Wilcoxon rank sum test"),
                                "Can only perform this test on 2 or 1 group."))
@@ -105,24 +105,35 @@ server <- function(input, output, session) {
         })
         
         output[[id("kruskal")]] <- renderUI({
-            stat <- kruskal.test(psi, factor(type))
-            tagList(
-                h4(stat$method),
-                tags$b("Test value (Chi squared): "), stat$statistic, br(),
-                tags$b("p-value: "), stat$p.value, br(),
-                tags$b("Degrees of freedom: "), stat$parameter
-            )
+            if (len >= 2) {
+                stat <- kruskal.test(psi, factor(type))
+                tagList(
+                    h4(stat$method),
+                    tags$b("Test value (Chi squared): "), stat$statistic, br(),
+                    tags$b("p-value: "), stat$p.value, br(),
+                    tags$b("Degrees of freedom: "), stat$parameter
+                )
+            } else {
+                tagList(
+                    h4("Kruskal test"),
+                    "Can only perform this test on 2 or more groups."
+                )
+            }
         })
         
         output[[id("levene")]] <- renderUI({
-            stat <- car::leveneTest(psi, factor(type))
-            tagList(
-                h4("Levene's Test for Homogeneity of Variance"),
-                HTML(tooltip_table(names(l), l))
-                # tags$b("Test value (Chi squared): "), stat$statistic, br(),
-                # tags$b("p-value: "), stat$p.value, br(),
-                # tags$b("Degrees of freedom: "), stat$parameter
-            )
+            if (len >= 2) {
+                stat <- car::leveneTest(psi, factor(type))
+                tagList(
+                    h4("Levene's Test for Homogeneity of Variance"),
+                    HTML(tooltip_table(names(stat), stat))
+                )
+            } else {
+                tagList(
+                    h4("Levene's Test for Homogeneity of Variance"),
+                    "Can only perform this test on 2 or more groups."
+                )
+            }
         })
         
         output[[id(plot)]] <- renderHighchart({
