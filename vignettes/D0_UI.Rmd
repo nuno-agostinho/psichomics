@@ -352,3 +352,7 @@ of this: https://jsfiddle.net/danielagos/jk74yew0/
 
 Now, we'll have to consider how to implement this in our application in a way
 that the suggestions are updated according to the group names available.
+
+# Debug
+To debug a Shiny app, you simply need to enter the command `browser()` and when
+running the Shiny app, the debug mode will start when hitting that command.
