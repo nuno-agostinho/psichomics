@@ -98,6 +98,7 @@ ui <- function() {
         bsAlert(anchorId = id("alert2")),
         loadedDataModal(id("localDataModal"), id("localReplace")),
         loadedDataModal(id("firebrowseDataModal"), id("firebrowseReplace")),
+        uiOutput(id("pathAutocomplete")),
         uiOutput("iframeDownload"),
         shinyBS::bsCollapse(
             id = id("addData"),
@@ -117,6 +118,22 @@ ui <- function() {
 }
 
 server <- function(input, output, session) {
+    # Update available clinical data attributes to use in a formula
+    output[[id("pathAutocomplete")]] <- renderUI({
+        checkInside <- function(dir) {
+            if (substr(dir, nchar(dir), nchar(dir)) == "/")
+                list.files(dir)
+            else
+                list.files(dirname(dir))
+        }
+        
+        textComplete(id("localFolder"), checkInside(input[[id("localFolder")]]),
+                     char=.Platform$file.sep)
+        print(input[[id("dataFolder")]])
+        textComplete(id("dataFolder"), checkInside(input[[id("dataFolder")]]),
+                     char=.Platform$file.sep)
+    })
+    
     # Check if data is already loaded and ask the user if it should be replaced
     observeEvent(input[[id("acceptFile")]], {
         if (!is.null(getData()))
