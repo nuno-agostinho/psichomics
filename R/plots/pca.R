@@ -266,8 +266,10 @@ server <- function(input, output, session) {
                             for (groupName in selected) {
                                 ns <- getMatchingRowNames(groupName, clinical,
                                                           match)
-                                hc <- hc %>% 
-                                    hc_scatter(df[ns, xAxis], df[ns, yAxis],
+                                ns <- ns[ns %in% rownames(df)]
+                                hc <- hc %>%
+                                    hc_scatter(df[ns, xAxis],
+                                               df[ns, yAxis],
                                                name = groupName,
                                                sample = rownames(df[ns, ]),
                                                showInLegend = TRUE)
