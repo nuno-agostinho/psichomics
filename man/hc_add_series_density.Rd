@@ -21,7 +21,7 @@ Shorcut to create a density plot
 }
 \examples{
 
-require(`highcharter`)
+require("highcharter")
 highchart() \%>\%
   hc_add_series_density(rnorm(1000)) \%>\%
   hc_add_series_density(rexp(1000), area = TRUE)
