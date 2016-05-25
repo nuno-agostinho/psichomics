@@ -40,7 +40,8 @@ groupByRow <- function() { list(
 groupByExpression <- function() { list (
     textInput(id("groupExpression"), "Subset expression"),
     helpText('Type ', tags$kbd('X > 8 & Y == "alive"'), ' to select rows with',
-             'values higher than 8 for column X and "alive" for column Y.')
+             'values higher than 8 for column X and "alive" for column Y.'),
+    uiOutput(id("groupExpressionAutocomplete"))
 )}
 
 groupByGrep <- function() { list (
@@ -218,6 +219,13 @@ operateOnGroups <- function(input, session, sharedData, FUN, name,
 }
 
 server <- function(input, output, session) {
+    # Update available attributes to suggest in the group expression
+    output[[id("groupExpressionAutocomplete")]] <- renderUI({
+        active <- input[[id("dataTypeTab")]]
+        attributes <- names(getCategoryData()[[active]])
+        textComplete(id("groupExpression"), attributes)
+    })
+    
     # Update columns available for creating groups when there's loaded data
     observeEvent(input[[id("dataTypeTab")]], {
         active <- input[[id("dataTypeTab")]]
