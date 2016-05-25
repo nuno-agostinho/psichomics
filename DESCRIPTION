@@ -51,5 +51,6 @@ Collate:
     'events.R'
     'formats.R'
     'firehose.R'
+    'highcharter.R'
     'plots.R'
     'widgets.R'
