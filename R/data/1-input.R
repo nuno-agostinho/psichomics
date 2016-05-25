@@ -7,8 +7,8 @@ name <- "Input"
 #' @return A UI set that can be added to a UI definition
 addLocalFile <- function() {
     list(
-        textInput(id("localFolder"), "Folder where data is stored",
-                  value = "~/Downloads"),
+        textAreaInput(id("localFolder"), "Folder where data is stored",
+                      value = "~/Downloads"),
         textInput(id("localCategory"), label = "Category name", 
                   value = "Adenoid cystic carcinoma (ACC) 2016"),
         selectizeInput(id("localIgnore"), "Files/directories to ignore",
@@ -66,8 +66,8 @@ addTCGAdata <- function() {
                       options = list(container = "body"),
                       paste("Files which contain these terms won\\'t be",
                             "either downloaded or loaded.")),
-            textInput(id("dataFolder"), "Folder to store the data",
-                      value = "~/Downloads",
+            textAreaInput(id("dataFolder"), "Folder to store the data",
+                          value = "~/Downloads",
                       placeholder = "Insert data folder"),
             bsTooltip(id("dataFolder"), placement = "right",
                       options = list(container = "body"),
