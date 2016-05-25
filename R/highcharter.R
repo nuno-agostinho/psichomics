@@ -72,6 +72,7 @@ hc_scatter <- function (hc, x, y, z = NULL, color = NULL, label = NULL,
 #' 
 #' # Plot Kaplan-Meier curves
 #' require("survival")
+#' require("highcharter")
 #' leukemia.surv <- survfit(Surv(time, status) ~ x, data = aml) 
 #' hchart(leukemia.surv)
 #' 
@@ -208,7 +209,7 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
 #' @importFrom highcharter %>% hc_add_series list.parse3
 #' @examples
 #' 
-#' require(`highcharter`)
+#' require("highcharter")
 #' highchart() %>%
 #'   hc_add_series_density(rnorm(1000)) %>%
 #'   hc_add_series_density(rexp(1000), area = TRUE)
