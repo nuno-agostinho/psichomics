@@ -200,6 +200,8 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
 #' @param area A boolean value to show or not the area
 #' @param ... Aditional shared arguments for the data series
 #'   (\url{http://api.highcharts.com/highcharts#series}).
+#' 
+#' @importFrom stats density
 #' @examples
 #' 
 #' highchart() %>%

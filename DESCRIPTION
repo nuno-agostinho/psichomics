@@ -31,7 +31,8 @@ Imports:
     gplots,
     htmltools,
     tools,
-    devtools
+    devtools,
+    stats
 Suggests:
     testthat,
     knitr,
