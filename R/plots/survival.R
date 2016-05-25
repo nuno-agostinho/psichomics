@@ -103,7 +103,7 @@ processSurvData <- function(timeStart, timeStop, event, groups, clinical) {
 #' "interval2"
 #' @param timeStart Integer: staring time
 #' @param timeStop Integer: ending time (needed only for interval-censored data)
-#' @param dataEvent Character: event
+#' @param dataEvent Character: event of interest
 #' @param modelTerms Character: use "groups" or "formula" for the survival 
 #' curves?
 #' @param formulaStr Character: formula to use
