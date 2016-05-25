@@ -32,7 +32,7 @@ just use the max of those numbers for any given column (they are usually the
 same numbers across columns, but not all rows have the information, using NAs
 instead).
 
-```{r tcga-survival}
+```{r tcga-survival, eval=FALSE}
 # Get clinical data
 clinical <- data.frame(t(read.delim(paste0(
     "/genedata/home/nuno/Downloads/gdac.broadinstitute.org_ACC.Merge_Clinical.",
@@ -88,7 +88,7 @@ subjects (type II right censoring)
 (e.g. historical survey of select cancer patients)
 
 Censoring the data is easy:
-```{r censoring}
+```{r censoring, eval=FALSE}
 # No censoring
 form <- Surv(time, event) ~ groups
 surv <- survfit(form, data = colsDays)
@@ -147,7 +147,7 @@ plot(survfit(fit, newdata=data.frame(age=60)),
 
 ## Cumulative hazard
 
-```{r}
+```{r, eval=FALSE}
 # Cumulative hazard using the Fleming-Harrington method
 lsurv2 <- survfit(Surv(time, status) ~ x, aml, type='fleming')
 plot(lsurv2, lty=2:3, fun="cumhaz", xlab="Months", ylab="Cumulative Hazard")
@@ -156,13 +156,13 @@ plot(lsurv2, lty=2:3, fun="cumhaz", xlab="Months", ylab="Cumulative Hazard")
 ## Plotting with Highcharts
 
 To plot a Keplen-Meier using Highcharts, we'll simulate the following plot:
-```{r}
+```{r, eval=FALSE}
 aml.surv <- survfit(Surv(time, status) ~ x, data = aml)
 plot(aml.surv, mark.time = TRUE)
 ```
 
 To do it, we'll use the information from the `aml.surv` object as follows.
-```{r}
+```{r, eval=FALSE}
 library(highcharter)
 # The X axis will be the time and the Y axis the survival probability
 # These variables don't separate by groups, so we'll have to split them
@@ -235,7 +235,7 @@ adaptation of this code (and of course an attribution to the reference function
 too).
 
 Let's also see if this is ready for using with `coxph` results.
-```{r}
+```{r, eval=FALSE}
 plotSurvCurves <- function(surv, fun = NULL, ymin=0, ymax=1, markTimes=TRUE,
                            markerSymbol=fa_icon_mark("plus"),
                            markerColor="black", ranges=FALSE) {
@@ -336,7 +336,7 @@ plotSurvCurves(surv, ranges=TRUE)
 ```
 
 Let's check out interval ranges for more than one group (it looks crowded...):
-```{r}
+```{r, eval=FALSE}
 plotSurvCurves(aml.surv, ranges = TRUE)
 ```
 
