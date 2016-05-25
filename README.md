@@ -48,6 +48,6 @@ using more accurate software such as [MISO](http://genes.mit.edu/burgelab/miso),
 [rMATS](http://rnaseq-mats.sourceforge.net) or [SUPPA](https://bitbucket.org/regulatorygenomicsupf/suppa).
 
 ## Author
-Nuno Agostinho, 2015 @ <a href="http://imm.medicina.ulisboa.pt/group/compbio/" target="_blank">Nuno Morais Lab, IMM</a>
+Nuno Agostinho, 2015-2016 @ <a href="http://imm.medicina.ulisboa.pt/group/compbio/" target="_blank">Nuno Morais Lab, IMM</a>
 
 Special thanks to my lab colleagues for their work-related support and supporting chatter.
