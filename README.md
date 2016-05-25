@@ -16,7 +16,7 @@ directory and type `psichomics()`.
 
 ## Data input
 ### Downloading TCGA data
-You can download data from The Cancer Genome Atlas (TCGA) by using the Firehose API incorporated in the package. Simply
+You can download data from [The Cancer Genome Atlas (TCGA)](https://tcga-data.nci.nih.gov) by using the Firehose API incorporated in the package. Simply
 choose the cohort of interest, date of the sample, type of interest and so on. Wait for the data download and process to
 finish.
 
@@ -35,7 +35,7 @@ confirm that there is now  one group for each pathologic stage.
 - **By subset expression:** type a subset expression
 - **By GREP expression:** apply a GREP expression over a specific column of the dataset
 
-You can also select groups using the checkbox to merge, intersect or remove them.
+You can also select groups using the checkbox in order to merge, intersect or remove the groups.
 
 When changing the dataset, the interface will update accordingly. Worry not, everything is saved.
 
