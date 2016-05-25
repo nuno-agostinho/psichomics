@@ -251,10 +251,8 @@ textComplete <- function(id, words, novalue = "No matching value", char=" ") {
     js <- paste0('$("#', id, '").textcomplete([{
         match: /([a-zA-Z0-9_\\.]{1,})$/,
         search: function(term, callback) {
-            term = term.toLowerCase();
             callback($.map(', varId, ',
                 function(word) {
-                    word = word.toLowerCase();
                     var comp = term.length < 4 ? 1 : term.length * 2;
                     var match = fuzzy(word, term);
                     return match.score >= comp ? word : null;
