@@ -208,7 +208,7 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
 #' @importFrom highcharter %>% hc_add_series list.parse3
 #' @examples
 #' 
-#' require(`highchart`)
+#' require(`highcharter`)
 #' highchart() %>%
 #'   hc_add_series_density(rnorm(1000)) %>%
 #'   hc_add_series_density(rexp(1000), area = TRUE)
