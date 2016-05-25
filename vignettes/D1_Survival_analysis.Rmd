@@ -105,6 +105,28 @@ survRight <- survfit(formRight, data = colsDays)
 lines(survRight, lty = 2, col = "red")
 ```
 
+
+## Types of survival curves
+"Some studies may use a combination of different types of survival curves to
+express their data. The main difference between the curves is what is defined as
+the event or end-point. In **overall survival curves**, the event of interest is 
+death from any cause. This provides a very broad, general sense of the mortality
+of the groups. In **disease free survival curves**, the event of interest is 
+relapse of a disease rather than death. Because patients may have relapsed but 
+not yet died, disease free survival curves are lower than overall survival 
+curves. **Progression free survival** uses progression of a disease as an 
+end-point (i.e. tumor growth or spread). This is useful in isolating and
+assessing the effects of a particular treatment on a disease. **Disease specific
+survival curves** (also known as cause specific survival) utilize death from the 
+disease of interest as the endpoint. This curve can be misleading in that it 
+will always be higher than overall survival and disease free survival curves
+because events are limited only to death from a specific disease, i.e. patients 
+that have disease relapse or die from non- related causes are not included as 
+events. In addition, death caused by disease related factors (i.e. treatments) 
+may not be included in disease-specific survival curves."
+
+From: http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3932959/pdf/nihms549224.pdf
+
 ## Cox model
 A cox model allows to explore the relationship between the survival of a patient
 and several explanatory variables by isolating the effects of treatment from the
@@ -328,3 +350,4 @@ This function was sent as a pull request to
 - [Statistical Lifetime Models, Lecture 1 Notes](http://www.stats.ox.ac.uk/~mlunn/lecturenotes1.pdf)
 - [What is a Cox model?](http://www.medicine.ox.ac.uk/bandolier/painres/download/whatis/cox_model.pdf)
 - [Hazard Ratio in Clinical Trials](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC478551/pdf/1409-03.pdf)
+- http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3932959/pdf/nihms549224.pdf
