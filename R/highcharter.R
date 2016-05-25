@@ -3,6 +3,7 @@
 #' @importFrom dplyr data_frame
 #' @importFrom assertthat assert_that
 #' @importFrom stats setNames
+#' @importFrom highcharter %>% hc_add_series
 #' 
 #' @export
 hc_scatter <- function (hc, x, y, z = NULL, color = NULL, label = NULL, 
@@ -63,6 +64,8 @@ hc_scatter <- function (hc, x, y, z = NULL, color = NULL, label = NULL,
 #' @param ranges Plot interval ranges? FALSE by default
 #' @param rangesOpacity Opacity of the interval ranges (0.3 by default)
 #' 
+#' @importFrom highcharter %>% hc_add_series highchart hc_tooltip hc_yAxis
+#' hc_plotOptions
 #' @return Highcharts object to plot survival curves
 #' 
 #' @examples
@@ -202,8 +205,10 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
 #'   (\url{http://api.highcharts.com/highcharts#series}).
 #' 
 #' @importFrom stats density
+#' @importFrom highcharter %>% hc_add_series list.parse3
 #' @examples
 #' 
+#' require(`highchart`)
 #' highchart() %>%
 #'   hc_add_series_density(rnorm(1000)) %>%
 #'   hc_add_series_density(rexp(1000), area = TRUE)
