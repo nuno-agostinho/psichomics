@@ -245,12 +245,14 @@ hc_scatter <- function (hc, x, y, z = NULL, color = NULL, label = NULL,
 #' words <- c("tumor_stage", "age", "gender")
 #' textComplete("textareaid", words)
 textComplete <- function(id, words, novalue = "No matching value", char=" ") {
-    words <- paste0('["', paste(words, collapse = '", "'), '"]')
+    varId <- paste0(id, "_words")
+    var <- paste0(varId, ' = ["', paste(words, collapse = '", "'), '"];')
+    
     js <- paste0('$("#', id, '").textcomplete([{
         match: /([a-zA-Z0-9_\\.]{1,})$/,
         search: function(term, callback) {
             term = term.toLowerCase();
-            callback($.map(', words, ',
+            callback($.map(', varId, ',
                 function(word) {
                     word = word.toLowerCase();
                     var comp = term.length < 4 ? 1 : term.length * 2;
@@ -263,7 +265,7 @@ textComplete <- function(id, words, novalue = "No matching value", char=" ") {
         replace: function(word) {
             return word + "', char ,'";
         }}], { noResultsMessage: "', novalue, '"});')
-    js <- paste("<script>", js, "</script>")
+    js <- paste("<script>", var, js, "</script>")
     return(HTML(js))
 }
 

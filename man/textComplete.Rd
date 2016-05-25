@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{textComplete}
 \alias{textComplete}
-\title{Create script for autocompletion for text input}
+\title{Create script for autocompletion of text input}
 \usage{
 textComplete(id, words, novalue = "No matching value", char = " ")
 }
