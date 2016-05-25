@@ -16,7 +16,7 @@ directory and type `psichomics()`.
 
 ## Data input
 ### Downloading TCGA data
-You can download data from The Cancer Genome Atlas (TCGA) by using the Firehose API incorporated in the package. Simply
+You can download data from [The Cancer Genome Atlas (TCGA)](https://tcga-data.nci.nih.gov) by using the Firehose API incorporated in the package. Simply
 choose the cohort of interest, date of the sample, type of interest and so on. Wait for the data download and process to
 finish.
 
