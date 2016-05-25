@@ -120,18 +120,22 @@ ui <- function() {
 server <- function(input, output, session) {
     # Update available clinical data attributes to use in a formula
     output[[id("pathAutocomplete")]] <- renderUI({
-        checkInside <- function(dir) {
-            if (substr(dir, nchar(dir), nchar(dir)) == "/")
-                list.files(dir)
-            else
-                list.files(dirname(dir))
+        checkInside <- function(path) {
+            if (substr(path, nchar(path), nchar(path)) == "/") {
+                list.files(path)
+            } else {
+                list.files(dirname(path))
+            }
         }
         
-        textComplete(id("localFolder"), checkInside(input[[id("localFolder")]]),
-                     char=.Platform$file.sep)
-        print(input[[id("dataFolder")]])
-        textComplete(id("dataFolder"), checkInside(input[[id("dataFolder")]]),
-                     char=.Platform$file.sep)
+        tagList(
+            textComplete(id("localFolder"), 
+                         checkInside(input[[id("localFolder")]]),
+                         char=.Platform$file.sep),
+            textComplete(id("dataFolder"), 
+                         checkInside(input[[id("dataFolder")]]),
+                         char=.Platform$file.sep)
+        )
     })
     
     # Check if data is already loaded and ask the user if it should be replaced
