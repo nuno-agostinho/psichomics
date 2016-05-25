@@ -40,6 +40,18 @@ server <- function(input, output, session) {
     # Updates selectize input to show available plots
     updateSelectizeInput(session, id("selectizePlot"), choices = names)
     
+    # Updates selectize input to show available categories
+    observe({
+        data <- getData()
+        if (!is.null(data))
+            updateSelectizeInput(session, id("selectizeCategory"), 
+                                 choices = names(data))
+    })
+    
+    # Set the category of the data when possible
+    observeEvent(input[[id("selectizeCategory")]], 
+                 setCategory(input[[id("selectizeCategory")]]))
+    
     # Updates selectize event to show available events
     observe({
         psi <- getInclusionLevels()
