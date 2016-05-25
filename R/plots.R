@@ -15,11 +15,15 @@ ui <- function(tab)
     tab(name,
         # allows the user to choose which UI set is shown
         fluidRow(
-            column(3, selectizeInput(id("selectizePlot"), "Select plot type:",
+            column(4, selectizeInput(id("selectizePlot"), "Select plot type:",
                                      choices = NULL,
                                      options = list(
                                          placeholder = "Select a plot type"))),
-            column(3, selectizeInput(id("selectizeEvent"), "Select event:",
+            column(4, selectizeInput(id("selectizeCategory"), "Select category:",
+                                     choices = NULL,
+                                     options = list(
+                                         placeholder = "Select a category"))),
+            column(4, selectizeInput(id("selectizeEvent"), "Select event:",
                                      choices = NULL,
                                      options = list(
                                          placeholder = "Select an event")))),
