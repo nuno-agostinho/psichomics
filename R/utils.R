@@ -211,6 +211,7 @@ textComplete <- function(id, words, novalue = "No matching value", char=" ") {
             ));
         },
         index: 1,
+        cache: true,
         replace: function(word) {
             return word + "', char ,'";
         }}], { noResultsMessage: "', novalue, '"});')
