@@ -202,13 +202,13 @@ textComplete <- function(id, words, novalue = "No matching value", char=" ") {
     js <- paste0('$("#', id, '").textcomplete([{
         match: /([a-zA-Z0-9_\\.]{1,})$/,
         search: function(term, callback) {
-            callback($.map(', varId, ',
-                function(word) {
-                    var comp = term.length < 4 ? 1 : term.length * 2;
-                    var match = fuzzy(word, term);
-                    return match.score >= comp ? word : null;
-                }
-            ));
+            var words = ', varId, ', sorted = [];
+            for (i = 0; i < words.length; i++) {
+                sorted[i] = fuzzy(words[i], term);
+            }
+            sorted.sort(fuzzy.matchComparator);
+            sorted = sorted.map(function(i) { return i.term; });
+            callback(sorted);
         },
         index: 1,
         cache: true,
