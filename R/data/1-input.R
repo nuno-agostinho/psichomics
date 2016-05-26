@@ -8,7 +8,7 @@ name <- "Input"
 addLocalFile <- function() {
     list(
         textAreaInput(id("localFolder"), "Folder where data is stored",
-                      value = "~/Downloads"),
+                      value = "~/Downloads/", placeholder = "Insert local folder"),
         textInput(id("localCategory"), label = "Category name", 
                   value = "Adenoid cystic carcinoma (ACC) 2016"),
         selectizeInput(id("localIgnore"), "Files/directories to ignore",
@@ -67,7 +67,7 @@ addTCGAdata <- function() {
                       paste("Files which contain these terms won\\'t be",
                             "either downloaded or loaded.")),
             textAreaInput(id("dataFolder"), "Folder to store the data",
-                          value = "~/Downloads",
+                          value = "~/Downloads/",
                       placeholder = "Insert data folder"),
             bsTooltip(id("dataFolder"), placement = "right",
                       options = list(container = "body"),
