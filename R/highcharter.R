@@ -89,9 +89,7 @@ hc_scatter <- function (hc, x, y, z = NULL, color = NULL, label = NULL,
 hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
                            symbol = fa_icon_mark("plus"), markerColor = "black",
                            ranges = FALSE, rangesOpacity = 0.3) {
-    
-    group <- NULL
-    
+    groups <- NULL
     # Check if there are groups
     if (is.null(object$strata))
         strata <- c("Series 1" = length(object$time))
