@@ -8,6 +8,7 @@ ui <- tagList(
     sidebarLayout(
         sidebarPanel(
             h3("Non-parametric tests"),
+            uiOutput(id("basicStats")), hr(),
             # uiOutput(id("spearman")), hr(),
             # uiOutput(id("fisher")), hr(),
             uiOutput(id("wilcox")), hr(),
@@ -152,28 +153,56 @@ server <- function(input, output, session) {
                 hc_plotOptions(series = list(marker = list(enabled = FALSE)))
             
             count <- 0
+            allRows <- list()
+            plotLines <- list()
             for (group in unique(type)) {
                 row <- psi[type == group]
                 med <- round(median(row, na.rm = TRUE), 2)
+                var <- round(var(row, na.rm = TRUE), 2)
+                max <- round(max(row, na.rm = TRUE), 2)
+                min <- round(min(row, na.rm = TRUE), 2)
                 # Ignore data with low number of data points
                 if (sum(!is.na(row)) >= 2) {
                     # Calculate the density of inclusion levels for each sample type
                     den <- density(row, na.rm = TRUE)
                     hc <- hc %>%
-                        hc_add_series_density(den, group, area = TRUE) %>%
-                        hc_xAxis(plotLines = list(
-                            list(label = list(text = paste(
-                                "Median:", med)),
-                                # Colour the same as the series
-                                color=JS("Highcharts.getOptions().colors[",
-                                         count, "]"),
-                                dashStyle="shortdash",
-                                width=2,
-                                value=med,
-                                zIndex = 7)))
+                        hc_add_series_density(den, name=group, area=TRUE,
+                                              median=med, var=var,
+                                              max=max, min=min)
+                    # Save plot line with information
+                    plotLines[[count + 1]] <- list(
+                        label = list(text = paste("Median:", med,
+                                                  "/ Variance:", var)),
+                        # Colour the same as the series
+                        color=JS("Highcharts.getOptions().colors[",
+                                 count, "]"),
+                        dashStyle="shortdash",
+                        width=2,
+                        value=med,
+                        zIndex = 7)
+                    allRows[[count + 1]] <- row
                     count <- count + 1
                 }
             }
+            
+            # Add plotLines with information
+            hc <- hc %>% 
+                hc_xAxis(plotLines = plotLines) %>%
+                hc_tooltip(
+                    headerFormat = paste(
+                        span(style="color:{point.color}", "\u25CF "),
+                        tags$b("{series.name}"), br()),
+                    pointFormat = paste(
+                        "Inclusion level: {point.x}", br(),
+                        "Median: {series.options.median}", br(),
+                        "Variance: {series.options.var}", br(),
+                        "Range: {series.options.min} - {series.options.max}"))
+            
+            output[[id("basicStats")]] <- renderUI ({
+                var <- vapply(allRows, var, numeric(1), na.rm = TRUE)
+                tagList(h4("Basic statistics"),
+                        tags$b("Average variance: "), sum(var)/length(var))
+            })
             return(hc)
         })
     })
