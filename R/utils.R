@@ -251,12 +251,11 @@ textComplete <- function(id, words, novalue = "No matching value", char=" ") {
 #' @export
 textAreaInput <- function(inputId, label, value = "", width = NULL,
                           placeholder = NULL) {
-    
     div(class = "form-group shiny-input-container",
         style = if (!is.null(width)) paste0("width: ", validateCssUnit(width), ";"),
         tags$label(label, `for` = inputId),
-        tags$textarea(id = inputId, class = "form-control", value = value,
-                      placeholder = placeholder)
+        tags$textarea(id = inputId, class = "form-control", placeholder = placeholder,
+                      paste(value, collapse = "\n"))
     )
 }
 
