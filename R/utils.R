@@ -214,8 +214,8 @@ textComplete <- function(id, words, novalue = "No matching value", char=" ") {
         replace: function(word) {
             return word + "', char ,'";
         }}], { noResultsMessage: "', novalue, '"});')
-    js <- paste("<script>", var, js, "</script>")
-    return(HTML(js))
+    js <- HTML("<script>", var, js, "</script>")
+    return(js)
 }
 
 #' Create a textarea input control
