@@ -70,14 +70,14 @@ test_that("Calculate inclusion levels for skipping exon with minimum reads", {
     names(annot) <- c("Chromosome", "Strand",
                       "C1.end", "A1.start", "A1.end", "C2.start")
     junctionQuant <- read.table(text = "10 10 10 10 10 10
-                                10 10 10 10 10 10
-                                10 10 10 10 10 10
-                                27 20 90 24 14 35
-                                10 18 13 12 10 21
-                                30 24 92 26 13 29
-                                27 20 90 24 14 35
-                                90 98 93 92 90 91
-                                30 24 92 26 13 29")
+                                        10 10 10 10 10 10
+                                        10 10 10 10 10 10
+                                        27 20 90 24 14 35
+                                        10 18 13 12 10 21
+                                        30 24 92 26 13 29
+                                        27 20 90 24 14 35
+                                        90 98 93 92 90 91
+                                        30 24 92 26 13 29")
     names(junctionQuant) <- c(paste("Normal", 1:3), paste("Cancer", 1:3))
     rownames(junctionQuant) <- c("chr1:32:+,chr1:35:+",
                                  "chr1:32:+,chr1:38:+",
