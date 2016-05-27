@@ -108,7 +108,7 @@ server <- function(input, output, session) {
                 tags$b("p-value: "), stat$stat$p.value, br(),
                 tags$b("Test parameters: "), stat$stat$parameter, br(),
                 tags$b("Location parameter: "), stat$stat$null.value, br(),
-                tags$b("Alternative hypothesis: "), stat$stat$alternative, br()
+                tags$b("Alternative hypothesis: "), stat$stat$alternative
             )
         })
         
@@ -131,10 +131,14 @@ server <- function(input, output, session) {
         
         output[[id("levene")]] <- renderUI({
             if (len >= 2) {
-                stat <- car::leveneTest(psi, factor(type))
+                nas <- is.na(psi)
+                stat <- lawstat::levene.test(psi[!nas], factor(type[!nas]))
                 tagList(
                     h4("Levene's Test for Homogeneity of Variance"),
-                    HTML(tooltip_table(names(stat), stat))
+                    tags$b("Test value: "), stat$statistic, br(),
+                    tags$b("p-value: "), stat$p.value, br(),
+                    tags$b("p-value without bootstrap: "), 
+                    stat$non.bootstrap.p.value
                 )
             } else {
                 tagList(
