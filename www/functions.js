@@ -19,3 +19,9 @@ Shiny.addCustomMessageHandler('getCheckedBoxes', function(variable) {
 Shiny.addCustomMessageHandler('setZero', function(variable) {
     Shiny.onInputChange(variable, 0);
 });
+
+/* Change document title to reflect if app is busy */
+setInterval(function() {
+    document.title = ($('html').hasClass('shiny-busy')) ?
+        '[R] PSΨchomics' : 'PSΨchomics';
+    }, 500);
