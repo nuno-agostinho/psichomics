@@ -374,13 +374,18 @@ junctionString <- function(chr, strand, junc5, junc3) {
 #' columns and junctions as rows
 #' @param annotation Data.frame: alternative splicing annotation related to
 #' event type
+#' @param minReads Integer: minimum of reads to consider in calculations
 #' 
 #' @importFrom fastmatch fmatch
 #' @return Matrix with inclusion levels
 #' @export
-calculateInclusionLevels <- function(eventType, junctionQuant, annotation) {
+calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
+                                     minReads = 0) {
     chr <- annotation$Chromosome
     strand <- annotation$Strand
+    
+    # Ignore reads below the minimum reads threshold
+    if (minReads > 0) junctionQuant[junctionQuant < minReads] <- 0
     
     if (eventType == "SE") {
         # Create searchable strings for junctions
