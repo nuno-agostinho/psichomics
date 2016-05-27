@@ -397,7 +397,6 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                                   annotation$C1.end, annotation$C2.start)
         
         # Get specific junctions
-        fmatch <- fmatch
         coords <- rownames(junctionQuant)
         incA <- junctionQuant[fmatch(incAstr, coords), ]
         incB <- junctionQuant[fmatch(incBstr, coords), ]
@@ -406,12 +405,72 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         # Calculate inclusion levels
         inc <- (incA + incB) / 2
         psi <- inc/(excl + inc)
-        rownames(psi) <- sprintf("%s_%s_%s_%s_%s_%s", chr, strand,
+        rownames(psi) <- sprintf("%s_%s_%s_%s_%s_%s_%s", eventType, chr, strand,
                                  annotation$C1.end, annotation$A1.start,
                                  annotation$A1.end, annotation$C2.start)
+    } else if (eventType == "MX") {
+        # Create searchable strings for junctions
+        incAstr <- junctionString(chr, strand,
+                                  annotation$C1.end, annotation$A1.start)
+        incBstr <- junctionString(chr, strand,
+                                  annotation$A1.end, annotation$C2.start)
+        excAstr <- junctionString(chr, strand,
+                                  annotation$C1.end, annotation$A2.start)
+        excBstr <- junctionString(chr, strand,
+                                  annotation$A2.end, annotation$C2.start)
         
-        # Clear rows with nothing but NAs
-        naRows <- rowSums(!is.na(psi)) == 0
-        return(psi[!naRows, ])
+        # Get specific junctions
+        coords <- rownames(junctionQuant)
+        incA <- junctionQuant[fmatch(incAstr, coords), ]
+        incB <- junctionQuant[fmatch(incBstr, coords), ]
+        excA <- junctionQuant[fmatch(excAstr, coords), ]
+        excB <- junctionQuant[fmatch(excBstr, coords), ]
+        
+        # Calculate inclusion levels
+        inc <- (incA + incB)/2
+        exc <- (excA + excB)/2
+        psi <- inc/(inc + exc)
+        rownames(psi) <- sprintf("%s_%s_%s_%s_%s_%s_%s_%s_%s", eventType, chr,
+                                 strand, annotation$C1.end, annotation$A1.start,
+                                 annotation$A1.end, annotation$A2.start,
+                                 annotation$A2.end, annotation$C2.start)
+    } else if (eventType == "A5" || eventType == "AF") {
+        # Create searchable strings for junctions
+        incStr <- junctionString(chr, strand,
+                                 annotation$A1.end, annotation$C2.start)
+        excStr <- junctionString(chr, strand,
+                                 annotation$C1.end, annotation$C2.start)
+        
+        # Get specific junctions
+        coords <- rownames(junctionQuant)
+        inc <- junctionQuant[fmatch(incStr, coords), ]
+        exc <- junctionQuant[fmatch(excStr, coords), ]
+        
+        # Calculate inclusion levels
+        psi <- inc/(inc + exc)
+        rownames(psi) <- sprintf("%s_%s_%s_%s_%s_%s", eventType, chr,
+                                 strand, annotation$C1.end, annotation$A1.end,
+                                 annotation$C2.start)
+    } else if (eventType == "A3" || eventType == "AL") {
+        # Create searchable strings for junctions
+        incStr <- junctionString(chr, strand,
+                                 annotation$C1.end, annotation$A1.start)
+        excStr <- junctionString(chr, strand,
+                                 annotation$C1.end, annotation$C2.start)
+        
+        # Get specific junctions
+        coords <- rownames(junctionQuant)
+        inc <- junctionQuant[fmatch(incStr, coords), ]
+        exc <- junctionQuant[fmatch(excStr, coords), ]
+        
+        # Calculate inclusion levels
+        psi <- inc/(inc + exc)
+        rownames(psi) <- sprintf("%s_%s_%s_%s_%s_%s", eventType, chr,
+                                 strand, annotation$C1.end, annotation$A1.start,
+                                 annotation$C2.start)
     }
+    
+    # Clear rows with nothing but NAs
+    naRows <- rowSums(!is.na(psi)) == 0
+    return(psi[!naRows, ])
 }
