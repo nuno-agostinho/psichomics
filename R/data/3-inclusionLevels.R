@@ -24,6 +24,7 @@ ui <- function() {
         selectizeInput(id("eventType"), "Event type",
                        choices = c("Skipping exon" = "SE"), selected = "SE",
                        multiple = TRUE),
+        numericInput(id("minReads"), "Minimum reads to consider", value = 10),
         actionButton(id("calcIncLevels"), class = "btn-primary",
                      "Calculate inclusion levels"))
 }
@@ -31,6 +32,7 @@ ui <- function() {
 server <- function(input, output, session) {
     levels <- reactive({
         eventType <- input[[id("eventType")]]
+        minReads  <- input[[id("minReads")]]
 
         # Read annotation
         startProgress("Reading alternative splicing annotation", divisions = 3)
@@ -39,7 +41,8 @@ server <- function(input, output, session) {
         # Calculate inclusion levels with annotation and junction quantification
         updateProgress("Calculating inclusion levels")
         junctionQuant <- getJunctionQuantification()
-        psi <- calculateInclusionLevels(eventType, junctionQuant, annot)
+        psi <- calculateInclusionLevels(eventType, junctionQuant, annot,
+                                        minReads = minReads)
         attr(psi, "rowNames") <- TRUE
         attr(psi, "description") <- "Exon and intron inclusion levels for any given alternative splicing event."
         setInclusionLevels(psi)

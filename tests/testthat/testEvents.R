@@ -58,3 +58,40 @@ test_that("Calculate inclusion levels for skipping exon", {
     expect_true(all(psi[2, ] > 0.5)) # More reads for inclusion isoform
     expect_true(all(psi[3, ] < 0.5)) # More reads for exclusive isoform
 })
+
+test_that("Calculate inclusion levels for skipping exon with minimum reads", {
+    library(fastmatch)
+    
+    eventType <- "SE"
+    minReads <- 15
+    annot <- read.table(text = "1 + 32 35 37 38
+                        2 + 32 35 37 38
+                        3 + 32 35 37 38")
+    names(annot) <- c("Chromosome", "Strand",
+                      "C1.end", "A1.start", "A1.end", "C2.start")
+    junctionQuant <- read.table(text = "10 10 10 10 10 10
+                                10 10 10 10 10 10
+                                10 10 10 10 10 10
+                                27 20 90 24 14 35
+                                10 18 13 12 10 21
+                                30 24 92 26 13 29
+                                27 20 90 24 14 35
+                                90 98 93 92 90 91
+                                30 24 92 26 13 29")
+    names(junctionQuant) <- c(paste("Normal", 1:3), paste("Cancer", 1:3))
+    rownames(junctionQuant) <- c("chr1:32:+,chr1:35:+",
+                                 "chr1:32:+,chr1:38:+",
+                                 "chr1:37:+,chr1:38:+",
+                                 "chr2:32:+,chr2:35:+",
+                                 "chr2:32:+,chr2:38:+",
+                                 "chr2:37:+,chr2:38:+",
+                                 "chr3:32:+,chr3:35:+",
+                                 "chr3:32:+,chr3:38:+",
+                                 "chr3:37:+,chr3:38:+")
+    psi <- calculateInclusionLevels(eventType, junctionQuant, annot, minReads)
+    
+    expect_equal(nrow(psi), 2) # Discard first event based on few reads
+    expect_true(is.na(psi[1, 5]))
+    expect_true(all(psi[1, -5] > 0.5)) # More reads for inclusion isoform
+    expect_true(all(psi[2, ] < 0.5)) # More reads for exclusive isoform
+})
