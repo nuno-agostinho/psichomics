@@ -165,6 +165,7 @@ server <- function(input, output, session) {
                 var <- round(var(row, na.rm = TRUE), 2)
                 max <- round(max(row, na.rm = TRUE), 2)
                 min <- round(min(row, na.rm = TRUE), 2)
+                samples <- sum(!is.na(row))
                 # Ignore data with low number of data points
                 if (sum(!is.na(row)) >= 2) {
                     # Calculate the density of inclusion levels for each sample type
@@ -172,6 +173,7 @@ server <- function(input, output, session) {
                     hc <- hc %>%
                         hc_add_series_density(den, name=group, area=TRUE,
                                               median=med, var=var,
+                                              samples=samples,
                                               max=max, min=min)
                     # Save plot line with information
                     plotLines[[count + 1]] <- list(
@@ -198,13 +200,23 @@ server <- function(input, output, session) {
                         tags$b("{series.name}"), br()),
                     pointFormat = paste(
                         "Inclusion level: {point.x}", br(),
+                        "Number of samples: {series.options.samples}", br(),
                         "Median: {series.options.median}", br(),
                         "Variance: {series.options.var}", br(),
                         "Range: {series.options.min} - {series.options.max}"))
             
             output[[id("basicStats")]] <- renderUI ({
                 var <- vapply(allRows, var, numeric(1), na.rm = TRUE)
-                tagList(h4("Basic statistics"),
+                med <- vapply(allRows, median, numeric(1), na.rm = TRUE)
+                
+                if (len == 2) {
+                    deltaMedian <- tagList(
+                        tags$b("|Δ Median|: "), abs(med[2] - med[1]), br())
+                } else {
+                    deltaMedian <- NULL   
+                }
+                
+                tagList(h4("Basic statistics"), deltaMedian,
                         tags$b("Average variance: "), sum(var)/length(var))
             })
             return(hc)
