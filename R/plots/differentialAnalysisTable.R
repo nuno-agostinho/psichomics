@@ -9,9 +9,10 @@ ui <- tagList(
         sidebarPanel(
             checkboxGroupInput(id("statsChoices"),
                                "Choose statistical analyses to be performed:",
-                               c("Wilcoxin Test"="wilcox",
+                               c("Wilcoxon Test"="wilcox",
                                  "Kruskal-Wallis Rank Sum Test"="kruskal", 
-                                 "Levene's test"="levene")),
+                                 "Levene's test"="levene"),
+                               selected = c("kruskal", "levene")),
             actionButton(id("startAnalyses"), "Perform selected tests")
         ), mainPanel(
             dataTableOutput(id("statsTable"))
@@ -46,37 +47,34 @@ server <- function(input, output, session) {
             print("Performing statistical analyses...")
             stats <- apply(psi, 1, function(row, type) {
                 # Kruskal-Wallis test
-                k <- NULL
+                kruskal <- NULL
                 if ("kruskal" %in% statsChoices) {
-                    k <- tryCatch(kruskal.test(row, factor(type)),
-                                  error=return)
-                    if ("error" %in% class(k))
-                        k <- NA
+                    kruskal <- tryCatch(kruskal.test(row, factor(type)),
+                                        error=return)
+                    if ("error" %in% class(kruskal)) kruskal <- NA
                 }
                 # Levene's test
-                l <- NULL
+                levene <- NULL
                 if ("levene" %in% statsChoices) {
                     nas <- is.na(row)
-                    l <- tryCatch(lawstat::levene.test(row[!nas],
-                                                       factor(type[!nas])),
-                                  error=return)
-                    if ("error" %in% class(l)) l <- NA
+                    levene <- tryCatch(lawstat::levene.test(row[!nas],
+                                                            factor(type[!nas])),
+                                       error=return)
+                    if ("error" %in% class(levene)) levene <- NA
                 }
-                return(list(unlist(k), unlist(l)))
+                group <- split(row, type)
+                samples <- lapply(group, function(i) sum(!is.na(i))) # Number of samples
+                med <- lapply(group, median, na.rm=TRUE) # Median
+                var <- lapply(group, var, na.rm=TRUE) # Variance
+                return(c(Samples=samples, Kruskal=kruskal, Levene=levene, 
+                         Var=var, Median=med))
             }, factor(type))
-
-            assign("stats", stats, .GlobalEnv)
             
             # Convert to data frame
             df <- do.call(rbind, stats)
-            df <- lapply(seq(ncol(df)), function(i) do.call(rbind, df[ , i]))
             
-            ns <- lapply(df, colnames)
-            ns <- as.character(mapply(function(i, e) paste(i, e), 
-                                      c("kruskal", "levene"), ns))
-            df <- do.call(cbind, df)
-            colnames(df) <- ns
-            df <- df[, -c(4, 5, 8, 9)]
+            # colnames(df) <- ns
+            df <- df[, !grepl("method|data.name", colnames(df))]
             
             # Convert to numeric
             df2 <- data.matrix(matrix(ncol=ncol(df), nrow=nrow(df)))
@@ -84,8 +82,16 @@ server <- function(input, output, session) {
             rownames(df2) <- rownames(df)
             colnames(df2) <- colnames(df)
             
+            # Show data frame with not a single NA
+            ## TODO(NunoA): we shouldn't discard rows with a single NA...
+            df2 <- df2[rowSums(is.na(df2)) == 0, ]
+            deltaVar <- df2[, grepl("variance", colnames(df))]
+            deltaMed <- 
+            df3 <- cbind(df2, deltaVar, deltaMed)
+            df4 <- data.frame(data.matrix(df3))
+            
             output[[id("statsTable")]] <- renderDataTable(
-                cbind(Event = rownames(df), df2),
+                cbind(Event = rownames(df4), df4),
                 options=list(pageLength=10, scrollX=TRUE))
         }
         print(Sys.time() - time)
