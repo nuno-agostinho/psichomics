@@ -7,6 +7,7 @@ id <- function(value) objectId(name, plot, value)
 ui <- tagList(
     sidebarLayout(
         sidebarPanel(
+            numericInput(id("bandwidth"), "Density bandwidth", 0.01),
             h3("Non-parametric tests"),
             uiOutput(id("basicStats")), hr(),
             # uiOutput(id("spearman")), hr(),
@@ -148,6 +149,7 @@ server <- function(input, output, session) {
             }
         })
         
+        bandwidth <- input[[id("bandwidth")]]
         output[[id("density")]] <- renderHighchart({
             # Include X-axis zoom and hide markers without hovering
             hc <- highchart() %>%
@@ -169,7 +171,7 @@ server <- function(input, output, session) {
                 # Ignore data with low number of data points
                 if (sum(!is.na(row)) >= 2) {
                     # Calculate the density of inclusion levels for each sample type
-                    den <- density(row, na.rm = TRUE)
+                    den <- density(row, bw = bandwidth, na.rm = TRUE)
                     hc <- hc %>%
                         hc_add_series_density(den, name=group, area=TRUE,
                                               median=med, var=var,
