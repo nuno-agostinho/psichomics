@@ -67,13 +67,11 @@ server <- function(input, output, session) {
                 med <- lapply(group, median, na.rm=TRUE) # Median
                 var <- lapply(group, var, na.rm=TRUE) # Variance
                 return(c(Samples=samples, Kruskal=kruskal, Levene=levene, 
-                         Var=var, Median=med))
+                         Variance=var, Median=med))
             }, factor(type))
             
             # Convert to data frame
             df <- do.call(rbind, stats)
-            
-            # colnames(df) <- ns
             df <- df[, !grepl("method|data.name", colnames(df))]
             
             # Convert to numeric
@@ -85,8 +83,10 @@ server <- function(input, output, session) {
             # Show data frame with not a single NA
             ## TODO(NunoA): we shouldn't discard rows with a single NA...
             df2 <- df2[rowSums(is.na(df2)) == 0, ]
-            deltaVar <- df2[, grepl("variance", colnames(df))]
-            deltaMed <- 
+            deltaVar <- df2[, grepl("Variance", colnames(df))]
+            deltaVar <- deltaVar[, 2] - deltaVar[, 1]
+            deltaMed <- df2[, grepl("Median", colnames(df))]
+            deltaMed <- deltaMed[, 2] - deltaMed[, 1]
             df3 <- cbind(df2, deltaVar, deltaMed)
             df4 <- data.frame(data.matrix(df3))
             
