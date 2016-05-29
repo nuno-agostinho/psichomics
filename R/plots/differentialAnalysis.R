@@ -7,7 +7,7 @@ id <- function(value) objectId(name, plot, value)
 ui <- tagList(
     sidebarLayout(
         sidebarPanel(
-            numericInput(id("bandwidth"), "Density bandwidth", 0.01),
+            numericInput(id("bandwidth"), "Density bandwidth", 0.01, step=0.01),
             h3("Non-parametric tests"),
             uiOutput(id("basicStats")), hr(),
             # uiOutput(id("spearman")), hr(),
