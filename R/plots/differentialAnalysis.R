@@ -150,6 +150,12 @@ server <- function(input, output, session) {
         })
         
         bandwidth <- input[[id("bandwidth")]]
+        if (bandwidth <= 0 || is.na(bandwidth)) {
+            errorModal(session, "Bandwidth must have a positive value",
+                       "Insert a number higher than 0.")
+            return(NULL)
+        }
+        
         output[[id("density")]] <- renderHighchart({
             # Include X-axis zoom and hide markers without hovering
             hc <- highchart() %>%
