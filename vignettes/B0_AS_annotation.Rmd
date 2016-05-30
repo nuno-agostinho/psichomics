@@ -855,7 +855,8 @@ toNumbers <- function(type, annotation) {
 
 annotation <- getParsedAnnotation()
 annot2 <- NULL
-for (type in names(annotation)) {
+types <- names(annotation)
+for (type in types) {
     coord <- sortingCoordinates(type)
     annot2[[type]] <- toNumbers(type, annotation)
     if (!is.null(coord)) {
@@ -874,6 +875,20 @@ for (type in names(annotation)) {
 # Let's compare!
 join <- joinAnnotation(annotation)
 join2 <- joinAnnotation(annot2)
+
+# Add C2 start from MATS and SUPPA to AFE events
+suppaAFE <- join2$AFE$SUPPA.C2.start
+matsAFE  <- join2$AFE$MATS.C2.start
+join2$AFE[["C2.start"]] <- as.numeric(ifelse(sapply(suppaAFE, is.null),
+                                             ifelse(sapply(matsAFE, is.null), NA, unlist(matsAFE)),
+                                             unlist(suppaAFE)))
+
+# Add C1 end from MATS and SUPPA to ALE events
+suppaALE <- join2$ALE$SUPPA.C1.end
+matsALE  <- join2$ALE$MATS.C1.end
+join2$ALE[["C1.end"]] <- as.numeric(ifelse(sapply(suppaALE, is.null),
+                                           ifelse(sapply(matsALE, is.null), NA, unlist(matsALE)),
+                                           unlist(suppaALE)))
 
 for (type in names(join)) {
     print(type)
@@ -895,8 +910,8 @@ for (type in names(join)) {
     # Make a Venn diagram of the matching events
     vennEvents(join, type)
     title(type)
-    writeAnnotation(join, type, showID = TRUE,
-                    paste0("data/hg19_cross_annotation_", type, ".txt"))
+    # writeAnnotation(join, type, showID = TRUE,
+                    # paste0("data/hg19_cross_annotation_", type, ".txt"))
 }
 ```
 
@@ -961,4 +976,4 @@ a number a bit higher.
 
 To learn about data retrieval from TCGA, head to the vignette `TCGA data.Rmd`.
 It also discusses how to integrate the different types of data available, like
-cross-linking clinical data with sequentiation files.
+cross-linking clinical data with sequencing files.
