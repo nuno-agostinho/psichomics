@@ -403,7 +403,7 @@ loadFirehoseData <- function(folder = "~/Downloads",
         
         ## TODO(NunoA): Can we show file loading progress in a Shiny app?
         # Split folders by the cohort type and date
-        categories <- gsub(" ", "-", names(url[!md5]), fixed = TRUE)
+        categories <- gsub(" ", "_", names(url[!md5]), fixed = TRUE)
         folders <- file.path(folder, base[!md5])
         folders <- split(folders, categories)
         
