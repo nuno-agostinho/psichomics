@@ -890,28 +890,25 @@ join2$ALE[["C1.end"]] <- as.numeric(ifelse(sapply(suppaALE, is.null),
                                            ifelse(sapply(matsALE, is.null), NA, unlist(matsALE)),
                                            unlist(suppaALE)))
 
+annot <- lapply(names(join2), 
+                function(i) { 
+                    join2[[i]][, c(grep("Event.ID", names(join[[i]]), value = TRUE), 
+                                   "Chromosome", "Strand",
+                                   getCoordinates(i))]
+                })
+names(annot) <- names(join2)
+
+annot$AFE[["C2.start"]] <- join2$AFE$C2.start
+annot$ALE[["C1.end"]]   <- join2$ALE$C1.end
+
 for (type in names(join)) {
     print(type)
     vennEvents(join, type)
     title(paste(type))
     vennEvents(join2, type)
     title(paste(type, "unique interest sorted"))
-}
-```
-
-# Doing all the above but with way less code
-
-```{r, eval=FALSE}
-annotation <- getParsedAnnotation()
-join <- joinAnnotation(annotation)
-join <- j2
-for (type in names(join)) {
-    print(type)
-    # Make a Venn diagram of the matching events
-    vennEvents(join, type)
-    title(type)
-    # writeAnnotation(join, type, showID = TRUE,
-                    # paste0("data/hg19_cross_annotation_", type, ".txt"))
+    write.table(annot[[type]], file = paste0("data/annotation_", type, ".txt"),
+                quote = FALSE, row.names = FALSE, sep = "\t")
 }
 ```
 
