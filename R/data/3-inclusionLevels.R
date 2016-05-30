@@ -66,7 +66,7 @@ server <- function(input, output, session) {
                                           "for any given alternative splicing",
                                           "event.")
         setInclusionLevels(psi)
-
+        
         updateProgress("Matching clinical data")
         match <- matchIdWithClinical(colnames(psi), getClinicalData())
         setClinicalMatchFrom("Inclusion levels", match)
