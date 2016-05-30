@@ -961,4 +961,4 @@ a number a bit higher.
 
 To learn about data retrieval from TCGA, head to the vignette `TCGA data.Rmd`.
 It also discusses how to integrate the different types of data available, like
-cross-linking clinical data with sequentiation files.
+cross-linking clinical data with sequencing files.
