@@ -113,8 +113,7 @@ server <- function(input, output, session) {
             subsetToShow, options=list(pageLength=10, scrollX=TRUE))
         
         output[[paste(tablename, "download", sep="-")]] <- downloadHandler(
-            filename = function() paste(getCategories()[group],
-                                        attr(table, "tablename")),
+            filename = paste(getCategories()[group], attr(table, "tablename")),
             content = function(file) write.table(table, file, quote = FALSE,
                                                  row.names = TRUE, sep = "\t"))
     } # end of renderDataTab
