@@ -4,16 +4,14 @@
 \alias{tabTable}
 \title{Creates a tabPanel template for a datatable with a title and description}
 \usage{
-tabTable(title, id, columns, description = NULL)
+tabTable(title, id, description = NULL)
 }
 \arguments{
 \item{title}{Character: tab title}
 
+\item{id}{Character: id of the datatable}
+
 \item{description}{Character: description of the table (optional)}
-
-\item{tableId}{Character: id of the datatable}
-
-\item{...}{Extra arguments to pass to the function dataTableOutput}
 }
 \value{
 The HTML code for a tabPanel template

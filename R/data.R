@@ -31,18 +31,20 @@ ui <- function(tab) {
 #' Creates a tabPanel template for a datatable with a title and description
 #'
 #' @param title Character: tab title
-#' @param tableId Character: id of the datatable
+#' @param id Character: id of the datatable
 #' @param description Character: description of the table (optional)
-#' @param ... Extra arguments to pass to the function dataTableOutput
 #'
 #' @return The HTML code for a tabPanel template
-tabTable <- function(title, id, columns, description=NULL) {
+tabTable <- function(title, id, description=NULL) {
     tablename <- id(paste("table", id, sep="-"))
     if(!is.null(description))
-        d <- p(tags$strong("Table description:"), description, hr())
+        descr <- p(tags$strong("Table description:"), description)
     else
-        d <- NULL
-    tabPanel(title, br(), d, dataTableOutput(tablename))
+        descr <- NULL
+    
+    download <- downloadButton(paste(tablename, "download", sep="-"),
+                               "Download")
+    tabPanel(title, br(), descr, download, hr(), dataTableOutput(tablename))
 }
 
 #' Server logic
@@ -84,7 +86,7 @@ server <- function(input, output, session) {
             seq_along(names(categoryData)),
             function(i)
                 tabTable(names(categoryData)[i],
-                         columns=names(categoryData[[i]]),
+                         # columns=names(categoryData[[i]]),
                          id=paste(category, i, sep="-"),
                          description=attr(categoryData[[i]], "description")))
         do.call(tabsetPanel, c(id=id("dataTypeTab"), dataTablesUI))
@@ -109,5 +111,11 @@ server <- function(input, output, session) {
         
         output[[tablename]] <- renderDataTable(
             subsetToShow, options=list(pageLength=10, scrollX=TRUE))
+        
+        output[[paste(tablename, "download", sep="-")]] <- downloadHandler(
+            filename = function() paste(getCategories()[group],
+                                        attr(table, "tablename")),
+            content = function(file) write.table(table, file, quote = FALSE,
+                                                 row.names = TRUE, sep = "\t"))
     } # end of renderDataTab
 }
