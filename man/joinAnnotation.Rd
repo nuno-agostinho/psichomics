@@ -4,7 +4,7 @@
 \alias{joinAnnotation}
 \title{Full outer join all given annotation based on select columns}
 \usage{
-joinAnnotation(annotation)
+joinAnnotation(annotation, types)
 }
 \description{
 Full outer join all given annotation based on select columns
