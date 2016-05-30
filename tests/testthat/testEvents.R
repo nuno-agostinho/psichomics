@@ -99,7 +99,7 @@ test_that("Calculate inclusion levels for skipping exon with minimum reads", {
 test_that("Calculate inclusion levels for mutually exclusive exons", {
     library(fastmatch)
     
-    eventType <- "MX"
+    eventType <- "MXE"
     annot <- read.table(text = "1 + 32 35 37 38 40 42
                                 2 + 32 35 37 38 40 42
                                 3 + 32 35 37 38 40 42")
@@ -141,7 +141,7 @@ test_that("Calculate inclusion levels for mutually exclusive exons", {
 test_that("Calculate inclusion levels for alternative 5' splice site", {
     library(fastmatch)
     
-    eventType <- "A5"
+    eventType <- "A5SS"
     annot <- read.table(text = "1 + 32 35 37
                                 2 + 32 35 37
                                 3 + 32 35 37")
@@ -169,7 +169,7 @@ test_that("Calculate inclusion levels for alternative 5' splice site", {
 test_that("Calculate inclusion levels for alternative 3' splice site", {
     library(fastmatch)
     
-    eventType <- "A3"
+    eventType <- "A3SS"
     annot <- read.table(text = "1 + 32 35 37
                                 2 + 32 35 37
                                 3 + 32 35 37")
