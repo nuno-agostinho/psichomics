@@ -164,8 +164,8 @@ getFirehoseDates <- function() {
 #' getFirehoseCohorts()
 getFirehoseCohorts <- function(cohort = NULL) {
     response <- parseFirehoseMetadata("Cohorts", cohort=cohort)
-    cohorts <- response$Cohorts[[1]]
-    names(cohorts) <- response$Cohorts[[2]]
+    cohorts <- response$Cohorts[[2]]
+    names(cohorts) <- response$Cohorts[[1]]
     return(cohorts)
 }
 
@@ -283,10 +283,13 @@ parseUrlsFromFirehoseResponse <- function(res) {
     parsed$date <- as.Date(parsed$date,
                            format = getFirehoseDateFormat()$response)
     
+    # Get cohort names
+    cohort <- getFirehoseCohorts()
+    cohort <- cohort[parsed$cohort]
+    
     ## TODO(NunoA): maybe this could be simplified?
     # Split URLs from response by cohort and datestamp
-    url <- split(parsed$url,
-                 paste(parsed$cohort, format(parsed$date, "%Y-%m-%d")))
+    url <- split(parsed$url, paste(cohort, format(parsed$date, "%Y-%m-%d")))
     url <- lapply(url, unlist)
     link <- unlist(url)
     names(link) <- rep(names(url), vapply(url, length, numeric(1)))
@@ -403,7 +406,7 @@ loadFirehoseData <- function(folder = "~/Downloads",
         
         ## TODO(NunoA): Can we show file loading progress in a Shiny app?
         # Split folders by the cohort type and date
-        categories <- gsub(" ", "_", names(url[!md5]), fixed = TRUE)
+        categories <- names(url[!md5])
         folders <- file.path(folder, base[!md5])
         folders <- split(folders, categories)
         

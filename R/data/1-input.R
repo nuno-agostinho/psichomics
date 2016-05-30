@@ -34,11 +34,13 @@ addLocalFile <- function() {
 addTCGAdata <- function() {
     if (isFirehoseUp()) {
         cohorts <- getFirehoseCohorts()
-        names(cohorts) <- sprintf("%s (%s)", names(cohorts), cohorts)
+        acronyms <- names(cohorts)
+        names(acronyms) <- sprintf("%s (%s)", names(cohorts), cohorts)
+        
         dates <- as.character(getFirehoseDates())
         
         list(
-            selectizeInput(id("firehoseCohort"), "Cohort", cohorts,
+            selectizeInput(id("firehoseCohort"), "Cohort", acronyms,
                            multiple = TRUE, selected = c("ACC", "BLCA"),
                            options = list(placeholder = "Select cohort(s)")),
             selectizeInput(id("firehoseDate"), "Date", dates, multiple = TRUE,
