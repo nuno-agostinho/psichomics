@@ -17,13 +17,19 @@ name <- "Exon/intron inclusion levels"
 #     return(link)
 # }
 
+choices <- c("Skipping exon (SE)" = "SE",
+             "Mutually exclusive exons (MXE)" = "MXE",
+             "Alternative 5' Splice Site (A5SS)" = "A5SS",
+             "Alternative 3' Splice Site (A3SS)" = "A3SS",
+             "Alternative first exon (AFE)" = "AFE",
+             "Alternative last exon (ALE)" = "ALE")
+
 ui <- function() {
     tagList(
         helpText("Calculate exon and intron inclusion levels. This is also",
                  "known as percentage spliced in or PSI or even Ψ."),
-        selectizeInput(id("eventType"), "Event type",
-                       choices = c("Skipping exon" = "SE"), selected = "SE",
-                       multiple = TRUE),
+        selectizeInput(id("eventType"), "Event type(s)", selected = "SE",
+                       choices = choices, multiple = TRUE),
         numericInput(id("minReads"), "Minimum reads to consider", value = 10),
         actionButton(id("calcIncLevels"), class = "btn-primary",
                      "Calculate inclusion levels"))
@@ -33,18 +39,29 @@ server <- function(input, output, session) {
     levels <- reactive({
         eventType <- input[[id("eventType")]]
         minReads  <- input[[id("minReads")]]
+        
+        if (is.null(eventType) || is.null(minReads)) return(NULL)
 
         # Read annotation
         startProgress("Reading alternative splicing annotation", divisions = 3)
-        annot <- readAnnotation(eventType)
-
+        annot <- readRDS("data/cross_annotation.RDS")
+        
         # Calculate inclusion levels with annotation and junction quantification
         updateProgress("Calculating inclusion levels")
         junctionQuant <- getJunctionQuantification()
-        psi <- calculateInclusionLevels(eventType, junctionQuant, annot,
-                                        minReads = minReads)
+        
+        psi <- NULL
+        for (i in seq_along(eventType)) {
+            type <- eventType[[i]]
+            updateProgress("Calculating inclusion levels", names(choices)[[i]], 
+                           value = i, max = length(eventType))
+            psi <- rbind(psi, calculateInclusionLevels(type, junctionQuant, 
+                                                       annot[[type]], minReads))
+        }
         attr(psi, "rowNames") <- TRUE
-        attr(psi, "description") <- "Exon and intron inclusion levels for any given alternative splicing event."
+        attr(psi, "description") <- paste("Exon and intron inclusion levels",
+                                          "for any given alternative splicing",
+                                          "event.")
         setInclusionLevels(psi)
 
         updateProgress("Matching clinical data")
