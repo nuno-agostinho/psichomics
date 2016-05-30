@@ -147,7 +147,7 @@ getCoordinates <- function(type) {
            "SE"   = c("C1.end", "A1.start", "A1.end", "C2.start"),
            "A3SS" = c("C1.end", "C2.start", "A1.start"),
            "A5SS" = c("C1.end", "C2.start", "A1.end"),
-           "AFE"  = c("C1.start", "C1.end", "A1.start", "A1.end", "C2.start"),
+           "AFE"  = c("C1.start", "C1.end", "A1.start", "A1.end"),
            "ALE"  = c("A1.start", "A1.end", "C2.start", "C2.end"),
            "RI"   = c("C1.start", "C1.end", "C2.start", "C2.end"),
            "MXE"  = c("C1.end", "A1.start", "A1.end",
@@ -228,8 +228,8 @@ getNumerics <- function(table, by = NULL, toNumeric = FALSE) {
 #' Full outer join all given annotation based on select columns
 #' @importFrom dplyr full_join
 #' @export
-joinAnnotation <- function(annotation) {
-    types <- names(annotation)
+joinAnnotation <- function(annotation, types) {
+    if (missing(types)) types <- names(annotation)
     joint <- lapply(types, function(type, annotation) {
         print(type)
         # Create vector with comparable columns
