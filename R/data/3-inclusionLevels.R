@@ -44,7 +44,7 @@ server <- function(input, output, session) {
 
         # Read annotation
         startProgress("Reading alternative splicing annotation", divisions = 3)
-        annot <- readRDS("data/cross_annotation.RDS")
+        annot <- readRDS("data/splicingAnnotation.RDS")
         
         # Calculate inclusion levels with annotation and junction quantification
         updateProgress("Calculating inclusion levels")
@@ -55,6 +55,9 @@ server <- function(input, output, session) {
             type <- eventType[[i]]
             updateProgress("Calculating inclusion levels", names(choices)[[i]], 
                            value = i, max = length(eventType))
+            
+            if (i == "AFE") annot$AFE <- annot$AFE[!is.na(annot$AFE$C2.start), ]
+            if (i == "ALE") annot$ALE <- annot$ALE[!is.na(annot$ALE$C1.end), ]
             psi <- rbind(psi, calculateInclusionLevels(type, junctionQuant, 
                                                        annot[[type]], minReads))
         }
