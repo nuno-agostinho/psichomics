@@ -8,12 +8,14 @@ ui <- tagList(
     sidebarLayout(
         sidebarPanel(
             checkboxGroupInput(id("statsChoices"),
-                               "Choose statistical analyses to be performed:",
+                               "Choose statistical analyses to perform:",
                                c("Wilcoxon Test"="wilcox",
                                  "Kruskal-Wallis Rank Sum Test"="kruskal", 
                                  "Levene's test"="levene"),
                                selected = c("kruskal", "levene")),
-            actionButton(id("startAnalyses"), "Perform selected tests")
+            downloadButton(id("download"), "Download"),
+            actionButton(id("startAnalyses"), class = "btn-primary", 
+                         "Perform selected tests")
         ), mainPanel(
             dataTableOutput(id("statsTable"))
         )
@@ -89,10 +91,18 @@ server <- function(input, output, session) {
             deltaMed <- deltaMed[, 2] - deltaMed[, 1]
             df3 <- cbind(df2, deltaVar, deltaMed)
             df4 <- data.frame(data.matrix(df3))
+            stats <- cbind(Event = rownames(df4), df4)
             
             output[[id("statsTable")]] <- renderDataTable(
-                cbind(Event = rownames(df4), df4),
-                options=list(pageLength=10, scrollX=TRUE))
+                stats, options=list(pageLength=10, scrollX=TRUE))
+            
+            output[[id("download")]] <- downloadHandler(
+                filename = paste(getCategories(),  
+                                 "Differential splicing analyses"),
+                content = function(file)
+                    write.table(stats, file, quote=FALSE, row.names=FALSE, 
+                                sep="\t")
+            )
         }
         print(Sys.time() - time)
     })
