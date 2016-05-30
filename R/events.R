@@ -408,7 +408,7 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         rownames(psi) <- sprintf("%s_%s_%s_%s_%s_%s_%s", eventType, chr, strand,
                                  annotation$C1.end, annotation$A1.start,
                                  annotation$A1.end, annotation$C2.start)
-    } else if (eventType == "MX") {
+    } else if (eventType == "MXE") {
         # Create searchable strings for junctions
         incAstr <- junctionString(chr, strand,
                                   annotation$C1.end, annotation$A1.start)
@@ -434,7 +434,7 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                                  strand, annotation$C1.end, annotation$A1.start,
                                  annotation$A1.end, annotation$A2.start,
                                  annotation$A2.end, annotation$C2.start)
-    } else if (eventType == "A5" || eventType == "AF") {
+    } else if (eventType == "A5SS" || eventType == "AFE") {
         # Create searchable strings for junctions
         incStr <- junctionString(chr, strand,
                                  annotation$A1.end, annotation$C2.start)
@@ -451,7 +451,7 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         rownames(psi) <- sprintf("%s_%s_%s_%s_%s_%s", eventType, chr,
                                  strand, annotation$C1.end, annotation$A1.end,
                                  annotation$C2.start)
-    } else if (eventType == "A3" || eventType == "AL") {
+    } else if (eventType == "A3SS" || eventType == "ALE") {
         # Create searchable strings for junctions
         incStr <- junctionString(chr, strand,
                                  annotation$C1.end, annotation$A1.start)
