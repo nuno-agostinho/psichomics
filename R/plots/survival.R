@@ -30,7 +30,8 @@ ui <- tagList(
         radioButtons(id("modelTerms"), selected="groups", inline=TRUE,
                      "Select model terms of the right-hand using",
                      choices=c("Clinical groups"="groups",
-                               "Formula"="formula")),
+                               "Formula"="formula",
+                               "Inclusion leves cutoff"="psiCutoff")),
         conditionalPanel(
             sprintf("input[id='%s'] == '%s'", id("modelTerms"), "groups"),
             fluidRow(
@@ -44,7 +45,14 @@ ui <- tagList(
         conditionalPanel(
             sprintf("input[id='%s'] == '%s'", id("modelTerms"), "formula"),
             textAreaInput(id("formula"), "Formula for right-hand side"),
-            uiOutput(id("formulaAutocomplete"))),
+            uiOutput(id("formulaAutocomplete")),
+            helpText("Interesting attributes include", 
+                     tags$b("pathologic_stage"))),
+        conditionalPanel(
+            sprintf("input[id='%s'] == '%s'", id("modelTerms"), "psiCutoff"),
+            numericInput(id("psiCutoff"),  value = 0.5, step=0.01,
+                         "Cutoff value for the selected event")),
+        checkboxInput(id("markTimes"), "Show time marks", value = FALSE),
         checkboxInput(id("ranges"), "Show interval ranges", value = FALSE),
         actionButton(id("coxModel"), "Fit Cox PH model"),
         actionButton(id("survivalCurves"), class="btn-primary", 
@@ -98,26 +106,22 @@ processSurvData <- function(timeStart, timeStop, event, groups, clinical) {
 #' @param session Session object from Shiny function
 #' @param group Character: group of each individual 
 #' @param clinical Data frame: clinical data
-#' @param outGroup Boolean: show group with outsiders (FALSE by default)
 #' @param censoring Character: censor using "left", "right", "interval" or
 #' "interval2"
 #' @param timeStart Integer: staring time
 #' @param timeStop Integer: ending time (needed only for interval-censored data)
 #' @param dataEvent Character: event of interest
-#' @param modelTerms Character: use "groups" or "formula" for the survival 
-#' curves?
+#' @param modelTerms Character: use "groups", "formula" or "psiCutoff" for the 
+#' survival curves?
 #' @param formulaStr Character: formula to use
 #' @param coxph Boolean: fit a Cox proportional hazards regression model? FALSE 
 #' by default
 #'
 #' @return A list with a \code{formula} object and a data frame with terms
 #' needed to calculate survival curves
-processSurvTerms <- function(session, group, clinical, outGroup, censoring, 
+processSurvTerms <- function(session, group, clinical, censoring, 
                              timeStart, timeStop, dataEvent, modelTerms, 
                              formulaStr, coxph=FALSE) {
-    # Save the days from columns of interest in a data frame
-    fillGroups <- groupPerPatient(group, nrow(clinical), outGroup)
-    
     # Ignore timeStop if interval-censoring is not selected
     if (!grepl("interval", censoring, fixed=TRUE) || timeStop == "") 
         timeStop <- NULL
@@ -127,15 +131,14 @@ processSurvTerms <- function(session, group, clinical, outGroup, censoring,
                           "Surv(time, event, type=censoring) ~", 
                           "Surv(time, time2, event, type=censoring) ~")
     
-    survTime <- processSurvData(timeStart, timeStop, dataEvent, fillGroups, 
-                                clinical)
+    survTime <- processSurvData(timeStart, timeStop, dataEvent, group, clinical)
     
     # Estimate survival curves by groups or using formula
-    if (modelTerms == "groups") {
+    if (modelTerms == "groups" || modelTerms == "psiCutoff") {
         formulaTerms <- "groups"
     } else if (modelTerms == "formula") {
         formulaTerms <- formulaStr
-        if (formulaTerms == "") {
+        if (formulaTerms == "" || is.null(formulaTerms)) {
             errorModal(session, "Error in formula",
                        "The formula field can't be empty.")
             return(NULL)
@@ -246,6 +249,10 @@ server <- function(input, output, session) {
                 modelTerms <- input[[id("modelTerms")]]
                 formulaStr <- input[[id("formula")]]
                 intRanges  <- input[[id("ranges")]]
+                markTimes  <- input[[id("markTimes")]]
+                psi        <- getInclusionLevels()
+                event      <- getEvent()
+                psiCutoff  <- input[[id("psiCutoff")]]
                 # Get chosen groups
                 chosen <- input[[id("dataGroups")]]
                 dataGroups <- getGroupsFrom("Clinical data")[chosen, , drop=F]
@@ -260,11 +267,48 @@ server <- function(input, output, session) {
                 errorModal(session, "Clinical groups intercept",
                            "There is an interception between clinical groups.")
             } else {
+                if (modelTerms == "groups") {
+                    # Assign one group for each clinical patient
+                    fillGroups <- groupPerPatient(dataGroups, nrow(clinical), 
+                                                  outGroup)
+                } else if (modelTerms == "psiCutoff") {
+                    if (is.null(psi)) {
+                        errorModal(session, "Inclusion levels missing",
+                                   "You need to calculate or load inclusion levels first.")
+                        return(NULL)
+                    } else if (is.null(event)) {
+                        errorModal(session, "No event selected",
+                                   "Select an alternative splicing event.")
+                        return(NULL)
+                    }
+                    
+                    # Get tumour sample IDs (normal and control samples are not 
+                    # interesting for survival analysis)
+                    match <- getClinicalMatchFrom("Inclusion levels")
+                    types <- getSampleTypes(names(match))
+                    tumour <- match[!grepl("Normal|Control", types)]
+                    
+                    # Group samples by the inclusion levels cutoff
+                    clinicalIDs <- nrow(clinical)
+                    groups <- rep(NA, clinicalIDs)
+                    psi <- as.numeric(psi[event, toupper(names(tumour))])
+                    groups[tumour] <- psi >= psiCutoff
+                    
+                    # Assign a value based on the inclusion levels cutoff
+                    # groups[is.na(groups)] <- "NA"
+                    groups[groups == "TRUE"]  <- paste("Inclusion levels >=", 
+                                                       psiCutoff)
+                    groups[groups == "FALSE"] <- paste("Inclusion levels <", 
+                                                       psiCutoff)
+                    fillGroups <- groups
+                } else {
+                    fillGroups <- "All data"
+                }
+                
                 # Calculate survival curves
-                survTerms <- processSurvTerms(session, dataGroups, clinical, 
-                                              outGroup, censoring, timeStart, 
-                                              timeStop, dataEvent, modelTerms, 
-                                              formulaStr)
+                survTerms <- processSurvTerms(session, fillGroups, clinical, 
+                                              censoring, timeStart, timeStop, 
+                                              dataEvent, modelTerms, formulaStr)
                 form <- survTerms$form
                 data <- survTerms$survTime
                 surv <- tryCatch(survfit(form, data = data),
@@ -288,7 +332,7 @@ server <- function(input, output, session) {
                 }, error = function(e) 0)
                 
                 # Plot survival curves
-                hc <- hchart(surv, ranges = intRanges) %>%
+                hc <- hchart(surv, ranges = intRanges, markTimes = markTimes) %>%
                     hc_chart(zoomType="xy") %>%
                     hc_yAxis(title=list(text="Proportion of individuals")) %>%
                     hc_xAxis(title=list(text="Time in days")) %>% 
