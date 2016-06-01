@@ -9,7 +9,7 @@ test_that("Each group will be placed in the respective index", {
         c(names[1], list(1:3), 
           names[2], list(4:7),
           names[3], list(8:10)))
-    expect_equal(groupPerPatient(groups, patientsNumber = 10),
+    expect_equal(groupPerPatient(groups, patients = 10),
                  c(rep("Stage 1", 3), rep("Stage 2", 4), rep("Stage 3", 3)))
     
     # Random order
@@ -21,7 +21,7 @@ test_that("Each group will be placed in the respective index", {
           names[2], list(c(1, 5)),
           names[3], list(c(3, 6, 7))))
     expect_equal(
-        groupPerPatient(groups, patientsNumber = 7),
+        groupPerPatient(groups, patients = 7),
         c("Dead", "Alive", "Zombie", "Alive", "Dead", "Zombie", "Zombie"))
 })
 
@@ -35,7 +35,7 @@ test_that("Non-matching patients are returned as NAs or custom group", {
           names[2], list(c(1, 6)),
           names[3], list(c(9, 10))))
     expect_equal(
-        groupPerPatient(groups, patientsNumber = 10),
+        groupPerPatient(groups, patients = 10),
         c("Dead", "Alive", NA, "Alive", NA, "Dead", NA, NA, "Zombie", "Zombie"))
     
     # Return non-matching patients as part of a custom group
@@ -47,7 +47,7 @@ test_that("Non-matching patients are returned as NAs or custom group", {
           names[2], list(c(1, 6)),
           names[3], list(c(9, 10))))
     expect_equal(
-        groupPerPatient(groups, patientsNumber = 10, includeOuterGroup = TRUE, 
+        groupPerPatient(groups, patients = 10, includeOuterGroup = TRUE, 
                         outerGroupName = "Others"),
         c("Dead", "Alive", "Others", "Alive", "Others", "Dead", "Others", 
           "Others", "Zombie", "Zombie"))
@@ -59,6 +59,6 @@ test_that("No groups returns a custom string", {
                      c("Single", list(c(2, 4))))
     groups <- groups[-1, ]
     expect_equal(
-        groupPerPatient(groups, patientsNumber = 10, allDataName = "No groups"),
+        groupPerPatient(groups, patients = 10, allDataName = "No groups"),
         rep("No groups", 10))
 })
