@@ -254,7 +254,7 @@ server <- function(input, output, session) {
             if (is.null(clinical)) {
                 errorModal(session, "Clinical data missing",
                            "Insert clinical data first.")
-            } else if (nrow(dataGroups) > 0 && 
+            } else if (modelTerms == "groups" && nrow(dataGroups) > 0 && 
                        anyDuplicated(unlist(dataGroups[, "Rows"])) > 0) {
                 # If the chosen groups have any intersections
                 errorModal(session, "Clinical groups intercept",
