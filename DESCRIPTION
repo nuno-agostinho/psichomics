@@ -50,6 +50,7 @@ Collate:
     'misoEvents.R'
     'matsEvents.R'
     'events.R'
+    'extraUtils.R'
     'formats.R'
     'firehose.R'
     'highcharter.R'
