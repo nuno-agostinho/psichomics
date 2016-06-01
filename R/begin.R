@@ -286,7 +286,7 @@ psichomics <- function(..., reload = FALSE) {
 #' Assign one group for each clinical patient
 #' 
 #' @param groups Matrix: clinical groups
-#' @param patientsNumber Integer: total number of clinical patients
+#' @param patients Integer: total number of clinical patients
 #' @param includeOuterGroup Boolean: join the patients that have no groups?
 #' @param outerGroupName Character: name to give to outer group
 #' @param allDataName Character: name to give in case there are no groups
@@ -294,15 +294,14 @@ psichomics <- function(..., reload = FALSE) {
 #' @return Character vector where each element corresponds to the group of a
 #' clinical patient
 #' @export
-groupPerPatient <- function(groups, patientsNumber, includeOuterGroup=FALSE, 
+groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE, 
                             outerGroupName="(Outer data)",
                             allDataName="All data") {
     ## TODO(NunoA): join groups if a patient belongs to more than one group?
-    finalGroups <- rep(NA, patientsNumber)
     rows <- groups[, "Rows", drop=FALSE]
+    if (length(rows) == 0) return(rep(allDataName, patients))
     
-    if (length(rows) == 0) return(rep(allDataName, patientsNumber))
-    
+    finalGroups <- rep(NA, patients)
     for (i in seq_along(rows))
         finalGroups[as.numeric(rows[[i]])] <- rownames(rows)[i]
     
