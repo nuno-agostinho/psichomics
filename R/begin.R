@@ -5,32 +5,70 @@ NULL
 # Global variable with all the data of a session
 sharedData <- reactiveValues()
 
-# Get data from sharedData
+#' Get global data
 getData <- reactive(sharedData$data)
+
+#' Get selected alternative splicing event
 getEvent <- reactive(sharedData$event)
-getCategory <- reactive(sharedData$category)
+
+#' Get available data categories
 getCategories <- reactive(names(getData()))
+
+#' Get selected data category
+getCategory <- reactive(sharedData$category)
+
+#' Get data of selected data category
 getCategoryData <- reactive(
     if(!is.null(getCategory())) getData()[[getCategory()]])
+
+#' Get clinical data of the data category
 getClinicalData <- reactive(getCategoryData()[["Clinical data"]])
+
+#' Get junction quantification data of the data category
 getJunctionQuantification <- reactive(
     getCategoryData()[["Junction quantification"]])
-getInclusionLevels <- reactive(
-    getCategoryData()[["Inclusion levels"]])
+
+#' Get inclusion leves of the selected data category
+getInclusionLevels <- reactive(getCategoryData()[["Inclusion levels"]])
+
+#' Get groups from a given data type
+#' @note Needs to be called inside reactive function
 getGroupsFrom <- function(dataType, category = getCategory())
     sharedData[[paste(category, dataType, "groups", sep = "_")]] 
+
+#' Get clinical matches from a given data type
+#' @note Needs to be called inside reactive function
 getClinicalMatchFrom <- function(dataType, category = getCategory())
     sharedData[[paste(category, dataType, "clinicalMatch", sep = "_")]] 
 
-# Set data from sharedData (needs to be inside reactive functions)
+#' Set an element of global data
+#' @note Needs to be called inside reactive function
 setElement <- function(item, value) sharedData[[item]] <- value
+
+#' Set data of the global data
+#' @note Needs to be called inside reactive function
 setData <- function(value) setElement("data", value)
+
+#' Set selected event
+#' @note Needs to be called inside reactive function
 setEvent <- function(value) setElement("event", value)
+
+#' Set selected category
+#' @note Needs to be called inside reactive function
 setCategory <- function(value) setElement("category", value)
+
+#' Set inclusion levels for a given data category
+#' @note Needs to be called inside reactive function
 setInclusionLevels <- function(value, category = getCategory())
     sharedData$data[[category]][["Inclusion levels"]] <- value
+
+#' Set groups from a given data type
+#' @note Needs to be called inside reactive function
 setGroupsFrom <- function(dataType, value, category = getCategory())
     setElement(paste(category, dataType, "groups", sep = "_"), value)
+
+#' Set clinical matches from a given data type
+#' @note Needs to be called inside reactive function
 setClinicalMatchFrom <- function(dataType, value, category = getCategory())
     setElement(paste(category, dataType, "clinicalMatch", sep = "_"), value)
 
