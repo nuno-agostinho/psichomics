@@ -337,8 +337,7 @@ server <- function(input, output, session) {
                     hc_yAxis(title=list(text="Proportion of individuals")) %>%
                     hc_xAxis(title=list(text="Time in days")) %>% 
                     hc_tooltip(headerFormat='Time: {point.x}<br>') %>%
-                    hc_credits(href=NA, enabled=TRUE,
-                               text=paste("p-value:", pvalue)) %>%
+                    hc_subtitle(text=paste("p-value:", pvalue)) %>%
                     hc_tooltip(crosshairs=TRUE)
             }
         })
