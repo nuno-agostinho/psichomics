@@ -4,13 +4,13 @@
 \alias{groupPerPatient}
 \title{Assign one group for each clinical patient}
 \usage{
-groupPerPatient(groups, patientsNumber, includeOuterGroup = FALSE,
+groupPerPatient(groups, patients, includeOuterGroup = FALSE,
   outerGroupName = "(Outer data)", allDataName = "All data")
 }
 \arguments{
 \item{groups}{Matrix: clinical groups}
 
-\item{patientsNumber}{Integer: total number of clinical patients}
+\item{patients}{Integer: total number of clinical patients}
 
 \item{includeOuterGroup}{Boolean: join the patients that have no groups?}
 
