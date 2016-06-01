@@ -35,7 +35,7 @@ addTCGAdata <- function() {
     if (isFirehoseUp()) {
         cohorts <- getFirehoseCohorts()
         acronyms <- names(cohorts)
-        names(acronyms) <- sprintf("%s (%s)", names(cohorts), cohorts)
+        names(acronyms) <- sprintf("%s (%s)", cohorts, names(cohorts))
         
         dates <- as.character(getFirehoseDates())
         
