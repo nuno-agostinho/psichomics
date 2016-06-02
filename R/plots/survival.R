@@ -52,6 +52,9 @@ ui <- tagList(
             sprintf("input[id='%s'] == '%s'", id("modelTerms"), "psiCutoff"),
             numericInput(id("psiCutoff"),  value = 0.5, step=0.01,
                          "Cutoff value for the selected event")),
+        radioButtons(id("scale"), "Display time in", inline=TRUE,
+                     c(Days="days", Weeks="weeks", Months="months", 
+                       Years="years")),
         checkboxInput(id("markTimes"), "Show time marks", value = FALSE),
         checkboxInput(id("ranges"), "Show interval ranges", value = FALSE),
         actionButton(id("coxModel"), "Fit Cox PH model"),
@@ -110,6 +113,8 @@ processSurvData <- function(timeStart, timeStop, event, groups, clinical) {
 #' "interval2"
 #' @param timeStart Integer: staring time
 #' @param timeStop Integer: ending time (needed only for interval-censored data)
+#' @param scale Character: rescale the survival time to "days", "weeks",
+#' "months" or "years"
 #' @param dataEvent Character: event of interest
 #' @param modelTerms Character: use "groups", "formula" or "psiCutoff" for the 
 #' survival curves?
@@ -119,17 +124,19 @@ processSurvData <- function(timeStart, timeStop, event, groups, clinical) {
 #'
 #' @return A list with a \code{formula} object and a data frame with terms
 #' needed to calculate survival curves
-processSurvTerms <- function(session, group, clinical, censoring, 
-                             timeStart, timeStop, dataEvent, modelTerms, 
-                             formulaStr, coxph=FALSE) {
+processSurvTerms <- function(session, group, clinical, censoring, timeStart, 
+                             timeStop, dataEvent, modelTerms, formulaStr, 
+                             coxph=FALSE, scale="days") {
     # Ignore timeStop if interval-censoring is not selected
     if (!grepl("interval", censoring, fixed=TRUE) || timeStop == "") 
         timeStop <- NULL
     
     # Check if using or not interval-censored data
     formulaSurv <- ifelse(is.null(timeStop),
-                          "Surv(time, event, type=censoring) ~", 
-                          "Surv(time, time2, event, type=censoring) ~")
+                          "Surv(time/%s, event, type=censoring) ~", 
+                          "Surv(time/%s, time2, event, type=censoring) ~")
+    scale <- switch(scale, days=1, weeks=7, months=30.42, years=365.25)
+    formulaSurv <- sprintf(formulaSurv, scale)
     
     survTime <- processSurvData(timeStart, timeStop, dataEvent, group, clinical)
     
@@ -253,6 +260,7 @@ server <- function(input, output, session) {
                 psi        <- getInclusionLevels()
                 event      <- getEvent()
                 psiCutoff  <- input[[id("psiCutoff")]]
+                scale      <- input[[id("scale")]]
                 # Get chosen groups
                 chosen <- input[[id("dataGroups")]]
                 dataGroups <- getGroupsFrom("Clinical data")[chosen, , drop=F]
@@ -308,7 +316,8 @@ server <- function(input, output, session) {
                 # Calculate survival curves
                 survTerms <- processSurvTerms(session, fillGroups, clinical, 
                                               censoring, timeStart, timeStop, 
-                                              dataEvent, modelTerms, formulaStr)
+                                              dataEvent, modelTerms, formulaStr,
+                                              scale = scale)
                 form <- survTerms$form
                 data <- survTerms$survTime
                 surv <- tryCatch(survfit(form, data = data),
@@ -321,7 +330,7 @@ server <- function(input, output, session) {
                     return(NULL)
                 }
                 
-                # If there's an error with survdiff, show p-value of 0
+                # If there's an error with survdiff, show NA
                 pvalue <- tryCatch({
                     # Test the difference between survival curves
                     diff <- survdiff(form, data = data)
@@ -329,13 +338,13 @@ server <- function(input, output, session) {
                     # Calculate p-value with 5 significant numbers
                     pvalue <- 1 - stats::pchisq(diff$chisq, length(diff$n) - 1)
                     signif(pvalue, 5)
-                }, error = function(e) 0)
+                }, error = function(e) NA)
                 
                 # Plot survival curves
                 hc <- hchart(surv, ranges = intRanges, markTimes = markTimes) %>%
                     hc_chart(zoomType="xy") %>%
                     hc_yAxis(title=list(text="Proportion of individuals")) %>%
-                    hc_xAxis(title=list(text="Time in days")) %>% 
+                    hc_xAxis(title=list(text=paste("Time in", scale))) %>% 
                     hc_tooltip(headerFormat='Time: {point.x}<br>') %>%
                     hc_subtitle(text=paste("p-value:", pvalue)) %>%
                     hc_tooltip(crosshairs=TRUE)
@@ -356,6 +365,7 @@ server <- function(input, output, session) {
             modelTerms <- input[[id("modelTerms")]]
             formulaStr <- input[[id("formula")]]
             intRanges  <- input[[id("ranges")]]
+            scale      <- input[[id("scale")]]
             # Get chosen groups
             chosen <- input[[id("dataGroups")]]
             dataGroups <- getGroupsFrom("Clinical data")[chosen, , drop=F]
@@ -374,7 +384,7 @@ server <- function(input, output, session) {
             survTerms <- processSurvTerms(session, dataGroups, clinical, 
                                           outGroup, censoring, timeStart, 
                                           timeStop, dataEvent, modelTerms, 
-                                          formulaStr, cox=TRUE)
+                                          formulaStr, cox=TRUE, scale=scale)
             if ("simpleError" %in% class(survTerms)) {
                 errorModal(session, "Formula error",
                            "The following error was raised:", br(),
