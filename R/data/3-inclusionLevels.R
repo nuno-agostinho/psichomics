@@ -1,6 +1,3 @@
-## TODO(NunoA): Don't calculate inclusion levels with less than X reads (just
-## put as NA since matrix calculation ignores NAs)
-
 name <- "Exon/intron inclusion levels"
 
 # createLink <- function(val) {

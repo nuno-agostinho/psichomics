@@ -1,17 +1,8 @@
-## TODO(NunoA): help the user by suggesting column names; try this with JavaScript
-
 ## TODO(NunoA): Allow to select the checkboxes in groups from different "pages"
 ## in the table; maybe by memorising the ones selected in each page? Then always 
 ## show the ones selected as checked... try to do it by memorising when clicking 
 ## to go on next page or something and clean checkboxes when 
 ## merging/intersect/removing groups
-
-## TODO(NunoA): Easily identify multiple operations by isolating each with
-## parenthesis; e.g. using A + B ∩ C + D, we don't know if the original
-## operations were either A + (B ∩ C) + D or (A + B) ∩ (C + D) or ...
-
-## TODO(NunoA): build GREP expressions
-## TODO(NunoA): isolate GREP expression to give a warning on failure
 
 name <- "Groups"
 
