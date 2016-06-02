@@ -1,5 +1,3 @@
-## TODO(NunoA): plot using boxplots
-
 # The name used for the plot must be unique
 plot <- "Differential analysis table"
 id <- function(value) objectId(name, plot, value)

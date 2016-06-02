@@ -1,12 +1,6 @@
-## TODO(NunoA): Select different time ranges (allow to change between days,
-## weeks, months and years) or to even select custom
-
 ## TODO(NunoA): Should groups be merged if there's an intersection?
 
 ## TODO(NunoA): How to correctly do interval censoring?
-
-## TODO(NunoA): Icon symbol used for cross in survival curves are moved when
-## hiding/showing series and they're not centered...
 
 # The name used for the plot must be unique
 plot <- "Survival curves"
