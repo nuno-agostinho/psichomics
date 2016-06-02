@@ -268,7 +268,7 @@ observeEvent(input[[id("removeGroups")]], {
     session$sendCustomMessage(type = "getCheckedBoxes", "removeGroups")
     
     # Get groups for the data table that is visible and active
-    active <- input[[id("dataTypeTab")]]
+    active <- input[[id("datasetTab")]]
     groups <- getGroupsFrom(active)
     
     # Remove selected rows

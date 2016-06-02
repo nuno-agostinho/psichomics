@@ -41,21 +41,23 @@ getGroupsFrom <- function(dataType, category = getCategory())
 getClinicalMatchFrom <- function(dataType, category = getCategory())
     sharedData[[paste(category, dataType, "clinicalMatch", sep = "_")]] 
 
-#' Set an element of global data
+#' Set element as globally accessible
+#' 
+#' @details Set element inside the global variable
 #' @note Needs to be called inside reactive function
-setElement <- function(item, value) sharedData[[item]] <- value
+setAsGlobal <- function(item, value) sharedData[[item]] <- value
 
 #' Set data of the global data
 #' @note Needs to be called inside reactive function
-setData <- function(value) setElement("data", value)
+setData <- function(value) setAsGlobal("data", value)
 
 #' Set selected event
 #' @note Needs to be called inside reactive function
-setEvent <- function(value) setElement("event", value)
+setEvent <- function(value) setAsGlobal("event", value)
 
 #' Set selected category
 #' @note Needs to be called inside reactive function
-setCategory <- function(value) setElement("category", value)
+setCategory <- function(value) setAsGlobal("category", value)
 
 #' Set inclusion levels for a given data category
 #' @note Needs to be called inside reactive function
@@ -65,12 +67,12 @@ setInclusionLevels <- function(value, category = getCategory())
 #' Set groups from a given data type
 #' @note Needs to be called inside reactive function
 setGroupsFrom <- function(dataType, value, category = getCategory())
-    setElement(paste(category, dataType, "groups", sep = "_"), value)
+    setAsGlobal(paste(category, dataType, "groups", sep = "_"), value)
 
 #' Set clinical matches from a given data type
 #' @note Needs to be called inside reactive function
 setClinicalMatchFrom <- function(dataType, value, category = getCategory())
-    setElement(paste(category, dataType, "clinicalMatch", sep = "_"), value)
+    setAsGlobal(paste(category, dataType, "clinicalMatch", sep = "_"), value)
 
 #' Create an identifier for a given object
 #' 

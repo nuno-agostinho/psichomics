@@ -47,6 +47,36 @@ tabTable <- function(title, id, description=NULL) {
     tabPanel(title, br(), descr, download, hr(), dataTableOutput(tablename))
 }
 
+#' Render a specific data tab (including data table and related interface)
+#' @param index Integer: index of the data to load
+#' @param data Data frame: data with everything to load
+#' @param name Character: name of the dataset
+#' @param output Shiny session output
+createDataTab <- function(index, data, name, output) {
+    tablename <- id(paste("table", name, index, sep="-"))
+    
+    table <- data[[index]]
+    # Only show default columns if they are defined (don't cause problems)
+    subsetToShow <- table
+    colsToShow <- attr(table, "show")
+    if (!is.null(colsToShow)) {
+        match <- colsToShow %in% colnames(table)
+        subsetToShow <- subset(table, select=colsToShow[match])
+    }
+    
+    # Show row names if there are any
+    if (isTRUE(attr(table, "rowNames")))
+        subsetToShow <- cbind(Row=rownames(subsetToShow), subsetToShow)
+    
+    output[[tablename]] <- renderDataTable(
+        subsetToShow, options=list(pageLength=10, scrollX=TRUE))
+    
+    output[[paste(tablename, "download", sep="-")]] <- downloadHandler(
+        filename = paste(name, attr(table, "tablename")),
+        content = function(file) write.table(table, file, quote = FALSE,
+                                             row.names = TRUE, sep = "\t"))
+}
+
 #' Server logic
 #'
 #' @return Part of the server logic related to this tab
@@ -71,9 +101,11 @@ server <- function(input, output, session) {
     observe({
         data <- getData()
         categoryData <- getCategoryData()
-        for (group in seq_along(data)) {
-            lapply(seq_along(categoryData), renderDataTab, data=data[[group]],
-                   group)
+        for (category in seq_along(data)) {
+            name <- getCategories()[category]
+            # Create data tab for each dataset in a data category
+            lapply(seq_along(categoryData), createDataTab, 
+                   data=data[[category]], name, output)
         }
     })
     
@@ -86,35 +118,8 @@ server <- function(input, output, session) {
             seq_along(names(categoryData)),
             function(i)
                 tabTable(names(categoryData)[i],
-                         # columns=names(categoryData[[i]]),
                          id=paste(category, i, sep="-"),
                          description=attr(categoryData[[i]], "description")))
-        do.call(tabsetPanel, c(id=id("dataTypeTab"), dataTablesUI))
-    }) # end of renderUI
-    
-    # Render a specific data tab (including data table and related interface)
-    renderDataTab <- function(index, data, group) {
-        tablename <- id(paste("table", getCategories()[group], index, sep="-"))
-        
-        table <- data[[index]]
-        # Only show default columns if they are defined (don't cause problems)
-        subsetToShow <- table
-        colsToShow <- attr(table, "show")
-        if (!is.null(colsToShow)) {
-            match <- colsToShow %in% colnames(table)
-            subsetToShow <- subset(table, select=colsToShow[match])
-        }
-        
-        # Show row names if there are any
-        if (isTRUE(attr(table, "rowNames")))
-            subsetToShow <- cbind(Row=rownames(subsetToShow), subsetToShow)
-        
-        output[[tablename]] <- renderDataTable(
-            subsetToShow, options=list(pageLength=10, scrollX=TRUE))
-        
-        output[[paste(tablename, "download", sep="-")]] <- downloadHandler(
-            filename = paste(getCategories()[group], attr(table, "tablename")),
-            content = function(file) write.table(table, file, quote = FALSE,
-                                                 row.names = TRUE, sep = "\t"))
-    } # end of renderDataTab
+        do.call(tabsetPanel, c(id=id("datasetTab"), dataTablesUI))
+    })
 }
