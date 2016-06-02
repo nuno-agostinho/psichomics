@@ -77,7 +77,7 @@ ui <- function() {
 #' 
 #' The groups are inserted in a matrix
 createGroupFromInput <- function (input, output, session) {
-    active <- input[[id("dataTypeTab")]]
+    active <- input[[id("datasetTab")]]
     if (is.null(active)) {
         errorModal(session, "Data missing", "Load some data first.")
         return(NULL)
@@ -191,7 +191,7 @@ operateOnGroups <- function(input, session, sharedData, FUN, name,
             sharedData[[name]] <- FALSE
             
             # Get groups for the data table that is visible and active
-            active <- input[[id("dataTypeTab")]]
+            active <- input[[id("datasetTab")]]
             groups <- getGroupsFrom(active)
             
             # Create new set
@@ -221,14 +221,14 @@ operateOnGroups <- function(input, session, sharedData, FUN, name,
 server <- function(input, output, session) {
     # Update available attributes to suggest in the group expression
     output[[id("groupExpressionAutocomplete")]] <- renderUI({
-        active <- input[[id("dataTypeTab")]]
+        active <- input[[id("datasetTab")]]
         attributes <- names(getCategoryData()[[active]])
         textComplete(id("groupExpression"), attributes)
     })
     
     # Update columns available for creating groups when there's loaded data
-    observeEvent(input[[id("dataTypeTab")]], {
-        active <- input[[id("dataTypeTab")]]
+    observeEvent(input[[id("datasetTab")]], {
+        active <- input[[id("datasetTab")]]
         for (i in id(c("groupColumn", "grepColumn"))) {
             updateSelectizeInput(session, i, selected = NULL,
                                  choices = names(getCategoryData()[[active]]))
@@ -238,7 +238,7 @@ server <- function(input, output, session) {
     # Create a new group when clicking on the createGroup button
     observeEvent(input[[id("createGroup")]], {
         # Get groups for the data table that is visible and active
-        active <- input[[id("dataTypeTab")]]
+        active <- input[[id("datasetTab")]]
         groups <- getGroupsFrom(active)
         
         # Create new group(s) from user input
@@ -259,7 +259,7 @@ server <- function(input, output, session) {
         ## TODO(NunoA): Allow to remove and merge selected rows from the groups
         ## This could be done using checkboxes; how to retrieve which checkboxes
         ## were checked? Possible with data table or javascript?
-        active <- input[[id("dataTypeTab")]]
+        active <- input[[id("datasetTab")]]
         groups <- getGroupsFrom(active)
         
         # Show groups only if there is at least one group
@@ -302,7 +302,7 @@ server <- function(input, output, session) {
     
     # Render groups interface only if any group exists
     output[[id("groupsList")]] <- renderUI({
-        active <- input[[id("dataTypeTab")]]
+        active <- input[[id("datasetTab")]]
         groups <- getGroupsFrom(active)
         
         operationButton <- function(operation, operationId, ...)
