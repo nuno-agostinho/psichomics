@@ -376,9 +376,10 @@ loadFirehoseData <- function(folder = "~/Downloads",
     
     missing <- logical(length(base))
     missing[md5]  <- !base[md5] %in% downloadedFiles[downloadedMD5]
-    missing[!md5] <- !vapply(base[!md5], function(i)
-        any(grepl(i, downloadedFiles[!downloadedMD5], fixed=TRUE)),
-        FUN.VALUE = logical(1))
+    
+    possibleExtensions <- lapply(base[!md5], paste0, c("", ".tar", ".tar.gz"))
+    missing[!md5] <- vapply(possibleExtensions, function (i)
+        !any(i %in% downloadedFiles[!downloadedMD5]), FUN.VALUE = logical(1))
     
     if (sum(missing[!md5]) > 0) {
         # downloadFiles(missing, folder, progress)
@@ -394,17 +395,10 @@ loadFirehoseData <- function(folder = "~/Downloads",
         return(NULL)
     } else {
         # Check if there are folders to unarchive
-        ## TODO(NunoA): ensure this is a complete match
-        archives <- vapply(escape(base[!md5]), FUN.VALUE = character(1),
-                           function(i) paste0(i, 
-                                              escape(c("", ".tar", ".tar.gz")),
-                                              collapse="|"))
-        archives <- vapply(archives, grep, FUN.VALUE = character(1),
-                           downloadedFiles[!downloadedMD5],
-                           value = TRUE, USE.NAMES = FALSE)
+        archives <- unlist(lapply(possibleExtensions, function (i)
+            i[i %in% downloadedFiles[!downloadedMD5]]))
         tar <- grepl(".tar", archives, fixed = TRUE)
         
-        ## TODO(NunoA): Can we show file loading progress in a Shiny app?
         # Split folders by the cohort type and date
         categories <- names(url[!md5])
         folders <- file.path(folder, base[!md5])
