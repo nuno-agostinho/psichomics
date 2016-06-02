@@ -31,34 +31,47 @@ ui <- function(tab) {
 #' Creates a tabPanel template for a datatable with a title and description
 #'
 #' @param title Character: tab title
-#' @param id Character: id of the datatable
+#' @param tableId Character: id of the datatable
 #' @param description Character: description of the table (optional)
 #'
 #' @return The HTML code for a tabPanel template
-tabTable <- function(title, id, description=NULL) {
-    tablename <- id(paste("table", id, sep="-"))
+tabDataset <- function(title, tableId, columns, colsToShow, description=NULL) {
+    tablename <- id(paste("table", tableId, sep="-"))
     if(!is.null(description))
-        descr <- p(tags$strong("Table description:"), description)
-    else
-        descr <- NULL
+        description <- p(tags$strong("Table description:"), description)
     
-    download <- downloadButton(paste(tablename, "download", sep="-"),
-                               "Download")
-    tabPanel(title, br(), descr, download, hr(), dataTableOutput(tablename))
+    downloadId <- paste(tablename, "download", sep="-")
+    download <- downloadButton(downloadId, "Download this dataset")
+    
+    visibleColumns <- selectizeInput(id(paste(tablename, "columns", sep="-")),
+                                     label="Columns to show", choices=columns,
+                                     selected=colsToShow, multiple=TRUE,
+                                     width="100%")
+    
+    tooltip <- bsTooltip(id(paste(tablename, "columns", sep="-")),
+                         paste("Dataset columns to show; empty this input to",
+                               "show all columns (it can be slow for large",
+                               "datasets)"),
+                         placement = "top", options = list(container = "body"))
+    
+    tabPanel(title, br(), description, download, br(), visibleColumns, tooltip,
+             hr(), dataTableOutput(tablename))
 }
 
 #' Render a specific data tab (including data table and related interface)
 #' @param index Integer: index of the data to load
 #' @param data Data frame: data with everything to load
 #' @param name Character: name of the dataset
+#' @param input Shiny session input
 #' @param output Shiny session output
-createDataTab <- function(index, data, name, output) {
+createDataTab <- function(index, data, name, input, output) {
     tablename <- id(paste("table", name, index, sep="-"))
     
     table <- data[[index]]
     # Only show default columns if they are defined (don't cause problems)
     subsetToShow <- table
-    colsToShow <- attr(table, "show")
+    
+    colsToShow <- input[[id(paste(tablename, "columns", sep="-"))]]
     if (!is.null(colsToShow)) {
         match <- colsToShow %in% colnames(table)
         subsetToShow <- subset(table, select=colsToShow[match])
@@ -105,7 +118,7 @@ server <- function(input, output, session) {
             name <- getCategories()[category]
             # Create data tab for each dataset in a data category
             lapply(seq_along(categoryData), createDataTab, 
-                   data=data[[category]], name, output)
+                   data=data[[category]], name, input, output)
         }
     })
     
@@ -115,11 +128,14 @@ server <- function(input, output, session) {
         category <- getCategory()
         
         dataTablesUI <- lapply(
-            seq_along(names(categoryData)),
-            function(i)
-                tabTable(names(categoryData)[i],
-                         id=paste(category, i, sep="-"),
-                         description=attr(categoryData[[i]], "description")))
+            seq_along(categoryData),
+            function(i) {
+                tabDataset(names(categoryData)[i],
+                           paste(category, i, sep="-"),
+                           names(categoryData[[i]]),
+                           attr(categoryData[[i]], "show"),
+                           description=attr(categoryData[[i]], "description"))
+            })
         do.call(tabsetPanel, c(id=id("datasetTab"), dataTablesUI))
     })
 }
