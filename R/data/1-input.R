@@ -83,23 +83,27 @@ addTCGAdata <- function() {
 }
 
 #' Create a modal warning the user of loaded data
-loadedDataModal <- function(modalId, replaceButtonId) {
+loadedDataModal <- function(modalId, replaceButtonId, keepButtonId) {
     bsModal2(modalId,
              div(icon("exclamation-triangle"), "Data already loaded"),
              NULL, size = "small", style = "warning",
-             "Would you like to replace the loaded data?",
-             footer = list(actionButton(replaceButtonId,
-                                        class = "btn-warning",
-                                        "data-dismiss"="modal", 
-                                        label = "Replace")))
+             "Would you like to", tags$b("replace"), "the loaded data or",
+             tags$b("keep"), "both the previous and new data?",
+             footer = tagList(
+                 actionButton(keepButtonId, "data-dismiss"="modal",
+                              label="Keep both"),
+                 actionButton(replaceButtonId, class = "btn-warning",
+                              "data-dismiss"="modal", label="Replace")))
 }
     
 ui <- function() {
     list(
         # TODO(NunoA): Show alerts from renderUI
         bsAlert(anchorId = id("alert2")),
-        loadedDataModal(id("localDataModal"), id("localReplace")),
-        loadedDataModal(id("firebrowseDataModal"), id("firebrowseReplace")),
+        loadedDataModal(id("localDataModal"), id("localReplace"),
+                        id("localAppend")),
+        loadedDataModal(id("firebrowseDataModal"), id("firebrowseReplace"),
+                        id("firebrowseAppend")),
         uiOutput(id("pathAutocomplete")),
         uiOutput("iframeDownload"),
         shinyBS::bsCollapse(
@@ -149,22 +153,35 @@ server <- function(input, output, session) {
     })
     
     # Load data when the user presses to replace data
-    observeEvent(input[[id("localReplace")]], loadLocalData())
+    observeEvent(input[[id("localReplace")]],
+                 loadLocalData(replace=TRUE))
     
-    # Load local files
-    loadLocalData <- function() {
+    # Load data when the user presses to load new data (keep previously loaded)
+    observeEvent(input[[id("localAppend")]],
+                 loadAllData(replace=FALSE))
+    
+    #' Load local files
+    #' @param replace Boolean: replace loaded data? TRUE by default
+    loadLocalData <- function(replace=TRUE) {
         shinyjs::disable(id("acceptFile"))
         
         folder <- input[[id("localFolder")]]
         category <- input[[id("localCategory")]]
         ignore <- input[[id("localIgnore")]]
         
-        sub <- dir(folder, full.names = T)[dir.exists(dir(folder, full.names = T))]
+        sub <- dir(folder, full.names=T)[dir.exists(dir(folder, full.names=T))]
         
-        startProgress("Searching inside the folder...", divisions = 1 + length(sub))
+        startProgress("Searching inside the folder...",
+                      divisions=1 + length(sub))
         loaded <- loadFirehoseFolders(sub, ignore, updateProgress)
         data <- setNames(list(loaded), category)
-        setData(data)
+        
+        if (!is.null(data)) {
+            if(replace)
+                setData(data)
+            else
+                setData(c(getData(), data))
+        }
         
         closeProgress()
         shinyjs::enable(id("acceptFile"))
@@ -182,10 +199,15 @@ server <- function(input, output, session) {
     })
     
     # Load data when the user presses to replace data
-    observeEvent(input[[id("firebrowseReplace")]], loadAllData())
+    observeEvent(input[[id("firebrowseReplace")]],
+                 loadAllData(replace=TRUE))
+    
+    # Load data when the user presses to load new data (keep previously loaded)
+    observeEvent(input[[id("firebrowseAppend")]],
+                 loadAllData(replace=FALSE))
     
     # Load Firehose data
-    loadAllData <- function() {
+    loadAllData <- function(replace=TRUE) {
         shinyjs::disable(id("getFirehoseData"))
         
         # Load data from Firehose
@@ -198,8 +220,12 @@ server <- function(input, output, session) {
             progress = updateProgress,
             output = output)
         
-        if (!is.null(data))
-            setData(data)
+        if (!is.null(data)) {
+            if(replace)
+                setData(data)
+            else
+                setData(c(getData(), data))
+        }
         
         closeProgress()
         shinyjs::enable(id("getFirehoseData"))
