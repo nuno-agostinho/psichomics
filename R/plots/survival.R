@@ -331,7 +331,7 @@ server <- function(input, output, session) {
                     
                     # Calculate p-value with 5 significant numbers
                     pvalue <- 1 - stats::pchisq(diff$chisq, length(diff$n) - 1)
-                    signif(pvalue, 5)
+                    signifDigits(pvalue)
                 }, error = function(e) NA)
                 
                 # Plot survival curves
@@ -400,8 +400,8 @@ server <- function(input, output, session) {
             
             output[[id("coxGroups")]] <- renderDataTable({
                 groups <- cbind(rownames(summary$coefficients),
-                                signif(summary$coefficients, 5),
-                                signif(summary$conf.int[ , 2:4], 5))
+                                signifDigits(summary$coefficients),
+                                signifDigits(summary$conf.int[ , 2:4]))
                 return(groups)
             }, options = list(scrollX = TRUE))
             

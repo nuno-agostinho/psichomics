@@ -2,6 +2,12 @@
 #' @include utils.R 
 NULL
 
+#' Get number of significant digits
+#' @param n Numeric: number to round
+signifDigits <- function(n) {
+    return(signif(n, 5))
+}
+
 # Global variable with all the data of a session
 sharedData <- reactiveValues()
 
