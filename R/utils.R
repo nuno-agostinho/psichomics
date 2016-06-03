@@ -93,7 +93,12 @@ updateProgress <- function(message = "Hang in there", value = NULL, max = NULL,
     }
     amount <- ifelse(is.null(max), value/divisions, 1/max/divisions)
     global$progress$inc(amount = amount, message = message, detail = detail)
-    print(paste(message, detail))
+    
+    if (!is.null(detail))
+        print(paste(message, detail, sep=": "))
+    else
+        print(message)
+    return(invisible(TRUE))
 }
 
 #' Close the progress even if there's an error
