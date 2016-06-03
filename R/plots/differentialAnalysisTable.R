@@ -14,8 +14,7 @@ ui <- tagList(
             downloadButton(id("download"), "Download"),
             actionButton(id("startAnalyses"), class = "btn-primary", 
                          "Perform selected tests"),
-            selectizeInput(id("columns"), "Show columns", choices=NULL,
-                           multiple=TRUE)
+            uiOutput(id("showColumns"))
         ), mainPanel(
             dataTableOutput(id("statsTable"))
         )
@@ -93,12 +92,16 @@ server <- function(input, output, session) {
             df4 <- data.frame(data.matrix(df3))
             stats <- cbind(Event = rownames(df4), df4)
             
-            # Allow user to select columns to show/hide
-            updateSelectizeInput(session, id("columns"),
-                                 choices=colnames(stats),
-                                 selected=colnames(stats))
+            # Columns to show in statistical table
+            output[[id("showColumns")]] <- renderUI({
+                tagList(
+                    hr(),
+                    selectizeInput(id("columns"), "Show columns", multiple=TRUE,
+                                   choices=colnames(stats), 
+                                   selected=colnames(stats)))
+            })
             
-            # Render data table with the selected columns
+            # Render statistical table with the selected columns
             output[[id("statsTable")]] <- renderDataTable({
                 cols <- colnames(stats) %in% input[[id("columns")]]
                 stats[, cols]
