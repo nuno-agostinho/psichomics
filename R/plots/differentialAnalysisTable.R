@@ -13,7 +13,9 @@ ui <- tagList(
                                selected = c("kruskal", "levene")),
             downloadButton(id("download"), "Download"),
             actionButton(id("startAnalyses"), class = "btn-primary", 
-                         "Perform selected tests")
+                         "Perform selected tests"),
+            selectizeInput(id("columns"), "Show columns", choices=NULL,
+                           multiple=TRUE)
         ), mainPanel(
             dataTableOutput(id("statsTable"))
         )
@@ -91,8 +93,16 @@ server <- function(input, output, session) {
             df4 <- data.frame(data.matrix(df3))
             stats <- cbind(Event = rownames(df4), df4)
             
-            output[[id("statsTable")]] <- renderDataTable(
-                stats, options=list(pageLength=10, scrollX=TRUE))
+            # Allow user to select columns to show/hide
+            updateSelectizeInput(session, id("columns"),
+                                 choices=colnames(stats),
+                                 selected=colnames(stats))
+            
+            # Render data table with the selected columns
+            output[[id("statsTable")]] <- renderDataTable({
+                cols <- colnames(stats) %in% input[[id("columns")]]
+                stats[, cols]
+            }, options=list(pageLength=10, scrollX=TRUE))
             
             output[[id("download")]] <- downloadHandler(
                 filename = paste(getCategories(),  
