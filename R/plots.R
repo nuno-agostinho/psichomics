@@ -63,7 +63,7 @@ server <- function(input, output, session) {
             choices <- rownames(psi)
             names(choices) <- gsub("_", " ", rownames(psi))
             updateSelectizeInput(session, id("selectizeEvent"),
-                                 choices = choices)
+                                 choices = sort(choices))
         } else {
             ## TODO(NunoA): Input doesn't seem to update when changing data...
             updateSelectizeInput(session, id("selectizeEvent"),
