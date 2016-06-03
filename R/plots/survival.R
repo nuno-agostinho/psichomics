@@ -63,9 +63,9 @@ ui <- tagList(
 
 #' Process survival data to calculate survival curves
 #' 
-#' @param timeStart Integer: starting time of the interval or follow up time
-#' @param timeStop Integer: ending time of the interval
-#' @param timeEvent Integer: time of the event of interest
+#' @param timeStart Numeric: starting time of the interval or follow up time
+#' @param timeStop Numeric: ending time of the interval
+#' @param timeEvent Numeric: time of the event of interest
 #' @param clinical Data.frame: clinical data
 #' 
 #' @details The event time will only be used to determine whether the event has
@@ -105,8 +105,8 @@ processSurvData <- function(timeStart, timeStop, event, groups, clinical) {
 #' @param clinical Data frame: clinical data
 #' @param censoring Character: censor using "left", "right", "interval" or
 #' "interval2"
-#' @param timeStart Integer: staring time
-#' @param timeStop Integer: ending time (needed only for interval-censored data)
+#' @param timeStart Numeric: starting time
+#' @param timeStop Numeric: ending time (needed only for interval-censored data)
 #' @param scale Character: rescale the survival time to "days", "weeks",
 #' "months" or "years"
 #' @param dataEvent Character: event of interest
