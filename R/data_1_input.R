@@ -132,7 +132,8 @@ setLocalData <- function(input, output, session, replace=TRUE) {
     category <- input[[id("localCategory")]]
     ignore <- input[[id("localIgnore")]]
     
-    sub <- dir(folder, full.names=T)[dir.exists(dir(folder, full.names=T))]
+    sub <- dir(folder, full.names=TRUE)[dir.exists(
+        dir(folder, full.names=TRUE))]
     
     startProgress("Searching inside the folder...",
                   divisions=1 + length(sub))

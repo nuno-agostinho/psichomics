@@ -43,7 +43,7 @@ parseVastToolsEvent <- function(event) {
     
     # Split multiple acceptors/donors (separated with +)
     splitJunctions <- function(i) {
-        split <- strsplit(i, "+", fixed = T)
+        split <- strsplit(i, "+", fixed=TRUE)
         if (length(split) < 4)
             split[[4]] <- character(0)
             

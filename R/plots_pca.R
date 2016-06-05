@@ -42,7 +42,7 @@ psiPCA <- function(psi, center = TRUE, scale. = FALSE, naTolerance = 30) {
     if (nrow(psi) == 0) return(NULL)
     
     # Replace NAs with the medians for each individual (row)
-    medians <- rowMedians(psi, na.rm = T)
+    medians <- rowMedians(psi, na.rm=TRUE)
     nas <- apply(psi, 1, function(row) sum(is.na(row)))
     psi[is.na(psi)] <- rep(medians, nas)
     

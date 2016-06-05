@@ -281,7 +281,7 @@ parseMisoGeneric <- function(event, validator, eventType, coord, plusIndex,
 #' @return Character with the ID parsed
 parseMisoId <- function(id) {
     id <- as.character(id)
-    semicolon <- gregexpr(";", id, fixed = T)
+    semicolon <- gregexpr(";", id, fixed = TRUE)
     semicolon <- vapply(semicolon, "[[", 1, FUN.VALUE = numeric(1))
     id <- substr(id, 4, semicolon - 1)
     return(id)

@@ -126,7 +126,7 @@ parseValidFile <- function(file, formatsFolder) {
     headRows <- ifelse(!is.null(headRows), max(headRows), 6)
     
     ## TODO(NunoA): check if fread makes this faster
-    head <- read.delim(file, header = FALSE, nrows = 6, stringsAsFactors = F)
+    head <- read.delim(file, header=FALSE, nrows=6, stringsAsFactors=FALSE)
     
     # Check if the file is recognised by at least one file format
     recognised <- lapply(formats, checkFileFormat, head, file)
