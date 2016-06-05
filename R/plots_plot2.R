@@ -2,7 +2,7 @@
 plot <- "plot2"
 id <- function(value) objectId(name, plot, value)
 
-ui <- plotOutput(id(plot))
+ui <- function() plotOutput(id(plot))
 
 server <- function(input, output, session) {
     output[[id(plot)]] <- renderPlot({

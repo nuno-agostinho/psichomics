@@ -4,22 +4,25 @@
 plot <- "Differential analysis"
 id <- function(value) objectId(name, plot, value)
 
-ui <- tagList(
-    sidebarLayout(
-        sidebarPanel(
-            numericInput(id("bandwidth"), "Density bandwidth", 0.01, step=0.01),
-            h3("Non-parametric tests"),
-            uiOutput(id("basicStats")), hr(),
-            # uiOutput(id("spearman")), hr(),
-            # uiOutput(id("fisher")), hr(),
-            uiOutput(id("wilcox")), hr(),
-            uiOutput(id("kruskal")), hr(),
-            uiOutput(id("levene"))
-        ), mainPanel(
-            highchartOutput(id("density"))
+#' @importFrom highcharter highchartOutput
+ui <- function() {
+    tagList(
+        sidebarLayout(
+            sidebarPanel(
+                numericInput(id("bandwidth"), "Density bandwidth", 0.01, step=0.01),
+                h3("Non-parametric tests"),
+                uiOutput(id("basicStats")), hr(),
+                # uiOutput(id("spearman")), hr(),
+                # uiOutput(id("fisher")), hr(),
+                uiOutput(id("wilcox")), hr(),
+                uiOutput(id("kruskal")), hr(),
+                uiOutput(id("levene"))
+            ), mainPanel(
+                highchartOutput(id("density"))
+            )
         )
     )
-)
+}
 
 #' @importFrom lawstat levene.test
 server <- function(input, output, session) {

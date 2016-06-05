@@ -3,7 +3,7 @@
 #' @importFrom dplyr data_frame
 #' @importFrom assertthat assert_that
 #' @importFrom stats setNames
-#' @importFrom highcharter %>% hc_add_series
+#' @importFrom highcharter %>% hc_add_series colorize_vector
 #' 
 #' @export
 hc_scatter <- function (hc, x, y, z = NULL, color = NULL, label = NULL, 
@@ -65,7 +65,7 @@ hc_scatter <- function (hc, x, y, z = NULL, color = NULL, label = NULL,
 #' @param rangesOpacity Opacity of the interval ranges (0.3 by default)
 #' 
 #' @importFrom highcharter %>% hc_add_series highchart hc_tooltip hc_yAxis
-#' hc_plotOptions
+#' hc_plotOptions fa_icon_mark JS
 #' @return Highcharts object to plot survival curves
 #' 
 #' @examples

@@ -40,7 +40,7 @@ psiPCA <- function(psi, center = TRUE, scale. = FALSE, naTolerance = 30) {
     # hist(nas/ncol(psi)*100)
     psi <- psi[nas/ncol(psi)*100 <= naTolerance, , drop = FALSE]
     if (nrow(psi) == 0) return(NULL)
-
+    
     # Replace NAs with the medians for each individual (row)
     medians <- rowMedians(psi, na.rm = T)
     nas <- apply(psi, 1, function(row) sum(is.na(row)))
@@ -53,27 +53,30 @@ psiPCA <- function(psi, center = TRUE, scale. = FALSE, naTolerance = 30) {
     return(pca)
 }
 
-ui <- list(
-    sidebarPanel(
-        checkboxGroupInput(id("preprocess"), "Preprocessing",
-                           c("Center values" = "center",
-                             "Scale values" = "scale"),
-                           selected = c("center")),
-        sliderInput(id("naTolerance"), "Percentage of NAs per individual to tolerate",
-                    min = 0, max=100, value=30, post="%"),
-        fluidRow(
-            column(9, selectizeInput(id("dataGroups"),
-                                     "Clinical groups to perform PCA",
-                                     choices = NULL, multiple = TRUE)),
-            column(2, actionButton(id("dataGroups_selectAll"), "Select all",
-                                   class="inline_selectize"))),
-        actionButton(id("editGroups"), "Edit groups"),
-        actionButton(id("calculate"), class = "btn-primary", "Calculate PCA"),
-        uiOutput(id("selectPC"))
-    ), mainPanel(
-        highchartOutput(id("scatterplot"))
+#' @importFrom highcharter highchartOutput
+ui <- function() {
+    list(
+        sidebarPanel(
+            checkboxGroupInput(id("preprocess"), "Preprocessing",
+                               c("Center values" = "center",
+                                 "Scale values" = "scale"),
+                               selected = c("center")),
+            sliderInput(id("naTolerance"), "Percentage of NAs per individual to tolerate",
+                        min = 0, max=100, value=30, post="%"),
+            fluidRow(
+                column(9, selectizeInput(id("dataGroups"),
+                                         "Clinical groups to perform PCA",
+                                         choices = NULL, multiple = TRUE)),
+                column(2, actionButton(id("dataGroups_selectAll"), "Select all",
+                                       class="inline_selectize"))),
+            actionButton(id("editGroups"), "Edit groups"),
+            actionButton(id("calculate"), class = "btn-primary", "Calculate PCA"),
+            uiOutput(id("selectPC"))
+        ), mainPanel(
+            highchartOutput(id("scatterplot"))
+        )
     )
-)
+}
 
 server <- function(input, output, session) {
     observeEvent(input[[id("editGroups")]], {

@@ -24,10 +24,15 @@ getSampleTypes <- function(sample, filename = "data/TCGAsampleType.RDS") {
     return(typeList[type])
 }
 
+#' Modified version of shinyBS::bsModal
+#' 
+#' bsModal is used within the UI to create a modal window. This allows to use
+#' the footer.
+#' 
 #' @importFrom shiny tags HTML
 #' @importFrom htmltools attachDependencies htmlDependency
 #' @export
-bsModal2 <- function (id, title, trigger, ..., style, size = NULL, footer = NULL)  {
+bsModal2 <- function (id, title, trigger, ..., style, size=NULL, footer=NULL)  {
     if (!missing(style)) {
         modalHeader <- paste("modal-header", style)
     } else {
@@ -137,6 +142,7 @@ icon2 <- function (name, class = NULL, lib = "font-awesome", ...) {
 }
 
 #' Disable a tab from the navbar
+#' @importFrom shinyjs disable addClass
 #' @export
 disableTab <- function(tab) {
     # Style item as disabled
@@ -147,6 +153,7 @@ disableTab <- function(tab) {
 }
 
 #' Enable a tab from the navbar
+#' @importFrom shinyjs removeClass enable
 #' @export
 enableTab <- function(tab) {
     # Style item as enabled

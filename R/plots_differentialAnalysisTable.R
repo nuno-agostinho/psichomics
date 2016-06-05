@@ -2,24 +2,26 @@
 plot <- "Differential analysis table"
 id <- function(value) objectId(name, plot, value)
 
-ui <- tagList(
-    sidebarLayout(
-        sidebarPanel(
-            checkboxGroupInput(id("statsChoices"),
-                               "Choose statistical analyses to perform:",
-                               c("Wilcoxon Test"="wilcox",
-                                 "Kruskal-Wallis Rank Sum Test"="kruskal", 
-                                 "Levene's test"="levene"),
-                               selected = c("kruskal", "levene")),
-            downloadButton(id("download"), "Download"),
-            actionButton(id("startAnalyses"), class = "btn-primary", 
-                         "Perform selected tests"),
-            uiOutput(id("showColumns"))
-        ), mainPanel(
-            dataTableOutput(id("statsTable"))
+ui <- function() {
+    tagList(
+        sidebarLayout(
+            sidebarPanel(
+                checkboxGroupInput(id("statsChoices"),
+                                   "Choose statistical analyses to perform:",
+                                   c("Wilcoxon Test"="wilcox",
+                                     "Kruskal-Wallis Rank Sum Test"="kruskal", 
+                                     "Levene's test"="levene"),
+                                   selected = c("kruskal", "levene")),
+                downloadButton(id("download"), "Download"),
+                actionButton(id("startAnalyses"), class = "btn-primary", 
+                             "Perform selected tests"),
+                uiOutput(id("showColumns"))
+            ), mainPanel(
+                dataTableOutput(id("statsTable"))
+            )
         )
     )
-)
+}
 
 #' @importFrom lawstat levene.test
 server <- function(input, output, session) {

@@ -27,7 +27,7 @@ addLocalFile <- function() {
 }
 
 #' Creates a UI set with options to add data from TCGA/Firehose
-#' 
+#' @importFrom shinyBS bsTooltip
 #' @return A UI set that can be added to a UI definition
 addTCGAdata <- function() {
     if (isFirehoseUp()) {
@@ -94,7 +94,7 @@ loadedDataModal <- function(modalId, replaceButtonId, keepButtonId) {
                               "data-dismiss"="modal", label="Replace")))
 }
 
-#' @importFrom shinyBS bsCollapse bsCollapsePanel
+#' @importFrom shinyBS bsCollapse bsCollapsePanel bsAlert
 ui <- function() {
     list(
         # TODO(NunoA): Show alerts from renderUI
@@ -177,6 +177,7 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
     enable(id("getFirehoseData"))
 }
 
+#' @importFrom shinyBS toggleModal
 server <- function(input, output, session) {
     # The button is only enabled if it meets the conditions that follow
     # observe(toggleState(id("acceptFile"), input[[id("species")]] != ""))
