@@ -31,7 +31,7 @@ ui <- shinyUI(
                                    class="text-right", id="loadmessage")
                            ),
                            uiOutput("globalModal")),
-             footer = useShinyjs()),
+             footer = shinyjs::useShinyjs()),
         # Loads the interface of each tab
         callScriptsFunction(func = "ui", check = c("name", "ui"), tabPanel)
     ))
