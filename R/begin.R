@@ -1,4 +1,4 @@
-#' @import shiny
+#' @import shiny utils
 #' @include utils.R 
 NULL
 

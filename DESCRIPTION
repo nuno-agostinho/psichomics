@@ -34,6 +34,7 @@ Imports:
     devtools,
     stats,
     R.utils,
+    utils,
     lawstat
 Suggests:
     testthat,
