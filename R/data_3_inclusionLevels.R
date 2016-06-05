@@ -41,7 +41,8 @@ server <- function(input, output, session) {
 
         # Read annotation
         startProgress("Reading alternative splicing annotation", divisions = 3)
-        annot <- readRDS("data/hg19_splicingAnnotation.RDS")
+        annot <- readRDS(system.file("extdata", "hg19_splicingAnnotation.RDS",
+                                     package = "psichomics"))
         
         # Calculate inclusion levels with annotation and junction quantification
         updateProgress("Calculating inclusion levels")

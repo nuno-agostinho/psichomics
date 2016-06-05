@@ -18,7 +18,10 @@ rowVar <- function (x, na.rm = FALSE) {
 #' 
 #' @param sample Character: ID of the sample
 #' @param filename Character: path to RDS file containing corresponding type
-getSampleTypes <- function(sample, filename = "data/TCGAsampleType.RDS") {
+getSampleTypes <- function(sample, 
+                           filename = system.file("extdata",  
+                                                  "TCGAsampleType.RDS",
+                                                  package="psichomics")) {
     typeList <- readRDS(filename)
     type <- gsub(".*?-([0-9]{2}).-.*", "\\1", sample, perl = TRUE)
     return(typeList[type])
