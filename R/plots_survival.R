@@ -386,9 +386,9 @@ server <- function(input, output, session) {
         } else {
             # Calculate survival curves
             survTerms <- processSurvTerms(session, dataGroups, clinical, 
-                                          outGroup, censoring, timeStart, 
-                                          timeStop, dataEvent, modelTerms, 
-                                          formulaStr, cox=TRUE, scale=scale)
+                                          censoring, timeStart, timeStop, 
+                                          dataEvent, modelTerms, formulaStr, 
+                                          cox=TRUE, scale=scale)
             if ("simpleError" %in% class(survTerms)) {
                 errorModal(session, "Formula error",
                            "The following error was raised:", br(),
