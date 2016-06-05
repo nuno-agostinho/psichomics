@@ -32,7 +32,9 @@ Imports:
     htmltools,
     tools,
     devtools,
-    stats
+    stats,
+    R.utils,
+    lawstat
 Suggests:
     testthat,
     knitr,
