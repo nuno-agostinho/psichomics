@@ -1,7 +1,8 @@
 Package: psichomics
 Title: Analyze and Visualize Alternative Splicing Data
 Version: 0.0.0.9000
-Authors@R: person("Nuno", "Agostinho", email = "nunodanielagostinho@gmail.com", role = c("aut", "cre"))
+Authors@R: person("Nuno", "Agostinho", email = "nunodanielagostinho@gmail.com", 
+    role = c("aut", "cre"))
 Description: Automatically retrieve data from RNA-Seq sources such as TCGA
     or your own files and process the data. This tool allows you to analyze and
     visualize alternative splicing.
