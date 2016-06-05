@@ -6,7 +6,7 @@ Description: Automatically retrieve data from RNA-Seq sources such as TCGA
     or your own files and process the data. This tool allows you to analyze and
     visualize alternative splicing.
 Depends:
-    R (>= 3.2.2),
+    R (>= 3.3),
     shiny
 License: What license is it under?
 LazyData: true
