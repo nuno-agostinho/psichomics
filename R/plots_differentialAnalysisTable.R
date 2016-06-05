@@ -39,9 +39,7 @@ server <- function(input, output, session) {
         ids <- names(psi)
         
         # Separate samples by their type
-        typeList <- readRDS("data/TCGAsampleType.RDS")
-        type <- gsub(".*?-([0-9]{2}).-.*", "\\1", ids, perl = TRUE)
-        type <- typeList[type]
+        type <- getSampleTypes(ids)
         
         group <- unique(type)
         len <- length(group)

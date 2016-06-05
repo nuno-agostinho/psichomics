@@ -4,7 +4,8 @@
 \alias{getSampleTypes}
 \title{Return the type of a given sample}
 \usage{
-getSampleTypes(sample, filename = "data/TCGAsampleType.RDS")
+getSampleTypes(sample, filename = system.file("extdata", "TCGAsampleType.RDS",
+  package = "psichomics"))
 }
 \arguments{
 \item{sample}{Character: ID of the sample}
