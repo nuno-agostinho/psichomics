@@ -21,6 +21,7 @@ ui <- tagList(
     )
 )
 
+#' @importFrom lawstat levene.test
 server <- function(input, output, session) {
     observe({
         # Get selected event (if there is any)
@@ -131,7 +132,7 @@ server <- function(input, output, session) {
         output[[id("levene")]] <- renderUI({
             if (len >= 2) {
                 nas <- is.na(psi)
-                stat <- lawstat::levene.test(psi[!nas], factor(type[!nas]))
+                stat <- levene.test(psi[!nas], factor(type[!nas]))
                 tagList(
                     h4("Levene's Test for Homogeneity of Variance"),
                     tags$b("Test value: "), stat$statistic, br(),

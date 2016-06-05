@@ -21,6 +21,7 @@ ui <- tagList(
     )
 )
 
+#' @importFrom lawstat levene.test
 server <- function(input, output, session) {
     observeEvent(input[[id("startAnalyses")]], {
         isolate({
@@ -58,8 +59,8 @@ server <- function(input, output, session) {
                 levene <- NULL
                 if ("levene" %in% statsChoices) {
                     nas <- is.na(row)
-                    levene <- tryCatch(lawstat::levene.test(row[!nas],
-                                                            factor(type[!nas])),
+                    levene <- tryCatch(levene.test(row[!nas],
+                                                   factor(type[!nas])),
                                        error=return)
                     if ("error" %in% class(levene)) levene <- NA
                 }

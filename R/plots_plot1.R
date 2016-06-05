@@ -7,7 +7,7 @@ ui <- list(
         sidebarPanel(
             selectizeInput(id("x"), "Pick x axis", choices = names(mtcars)),
             selectizeInput(id("y"), "Pick y axis", choices = names(mtcars)),
-            shiny::actionButton(id("change"), "Change to plot2")
+            actionButton(id("change"), "Change to plot2")
         ), 
         mainPanel( plotOutput(id(plot)) )
     )

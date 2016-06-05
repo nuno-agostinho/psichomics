@@ -68,7 +68,7 @@ addTCGAdata <- function() {
                             "either downloaded or loaded.")),
             textAreaInput(id("dataFolder"), "Folder to store the data",
                           value = "~/Downloads/",
-                      placeholder = "Insert data folder"),
+                          placeholder = "Insert data folder"),
             bsTooltip(id("dataFolder"), placement = "right",
                       options = list(container = "body"),
                       "Data not available in this folder will be downloaded."),
@@ -93,7 +93,8 @@ loadedDataModal <- function(modalId, replaceButtonId, keepButtonId) {
                  actionButton(replaceButtonId, class = "btn-warning",
                               "data-dismiss"="modal", label="Replace")))
 }
-    
+
+#' @importFrom shinyBS bsCollapse bsCollapsePanel
 ui <- function() {
     list(
         # TODO(NunoA): Show alerts from renderUI
@@ -104,15 +105,15 @@ ui <- function() {
                         id("firebrowseAppend")),
         uiOutput(id("pathAutocomplete")),
         uiOutput("iframeDownload"),
-        shinyBS::bsCollapse(
+        bsCollapse(
             id = id("addData"),
             open = "Add TCGA/Firehose data",
-            shinyBS::bsCollapsePanel(
+            bsCollapsePanel(
                 style = "info",
                 title = list(icon("plus-circle"), "Add local files"),
                 value = "Add local files",
                 addLocalFile()),
-            shinyBS::bsCollapsePanel(
+            bsCollapsePanel(
                 style = "info",
                 title = list(icon("plus-circle"),
                              "Add TCGA/Firehose data"),
@@ -121,7 +122,65 @@ ui <- function() {
     )
 }
 
+#' Load local files
+#' @param replace Boolean: replace loaded data? TRUE by default
+#' @importFrom shinyjs disable enable
+setLocalData <- function(input, output, session, replace=TRUE) {
+    disable(id("acceptFile"))
+    
+    folder <- input[[id("localFolder")]]
+    category <- input[[id("localCategory")]]
+    ignore <- input[[id("localIgnore")]]
+    
+    sub <- dir(folder, full.names=T)[dir.exists(dir(folder, full.names=T))]
+    
+    startProgress("Searching inside the folder...",
+                  divisions=1 + length(sub))
+    loaded <- loadFirehoseFolders(sub, ignore, updateProgress)
+    data <- setNames(list(loaded), category)
+    
+    if (!is.null(data)) {
+        if(replace)
+            setData(data)
+        else
+            setData(c(getData(), data))
+    }
+    
+    closeProgress()
+    enable(id("acceptFile"))
+}
+
+#' Set data from Firehose
+#' @param replace Boolean: replace loaded data? TRUE by default
+#' @importFrom shinyjs disable enable 
+setFirehoseData <- function(input, output, session, replace=TRUE) {
+    disable(id("getFirehoseData"))
+    
+    # Load data from Firehose
+    data <- loadFirehoseData(
+        folder = input[[id("dataFolder")]],
+        cohort = input[[id("firehoseCohort")]],
+        date = gsub("-", "_", input[[id("firehoseDate")]]),
+        data_type = input[[id("dataType")]],
+        exclude = input[[id("firehoseIgnore")]],
+        progress = updateProgress,
+        output = output)
+    
+    if (!is.null(data)) {
+        if(replace)
+            setData(data)
+        else
+            setData(c(getData(), data))
+    }
+    
+    closeProgress()
+    enable(id("getFirehoseData"))
+}
+
 server <- function(input, output, session) {
+    # The button is only enabled if it meets the conditions that follow
+    # observe(toggleState(id("acceptFile"), input[[id("species")]] != ""))
+    
     # Update available clinical data attributes to use in a formula
     output[[id("pathAutocomplete")]] <- renderUI({
         checkInside <- function(path) {
@@ -147,85 +206,30 @@ server <- function(input, output, session) {
         if (!is.null(getData()))
             toggleModal(session, id("localDataModal"), "open")
         else
-            loadLocalData()
+            setLocalData(input, output, session)
     })
     
     # Load data when the user presses to replace data
     observeEvent(input[[id("localReplace")]],
-                 loadLocalData(replace=TRUE))
+                 setLocalData(input, output, session, replace=TRUE))
     
     # Load data when the user presses to load new data (keep previously loaded)
     observeEvent(input[[id("localAppend")]],
-                 loadAllData(replace=FALSE))
-    
-    #' Load local files
-    #' @param replace Boolean: replace loaded data? TRUE by default
-    loadLocalData <- function(replace=TRUE) {
-        shinyjs::disable(id("acceptFile"))
-        
-        folder <- input[[id("localFolder")]]
-        category <- input[[id("localCategory")]]
-        ignore <- input[[id("localIgnore")]]
-        
-        sub <- dir(folder, full.names=T)[dir.exists(dir(folder, full.names=T))]
-        
-        startProgress("Searching inside the folder...",
-                      divisions=1 + length(sub))
-        loaded <- loadFirehoseFolders(sub, ignore, updateProgress)
-        data <- setNames(list(loaded), category)
-        
-        if (!is.null(data)) {
-            if(replace)
-                setData(data)
-            else
-                setData(c(getData(), data))
-        }
-        
-        closeProgress()
-        shinyjs::enable(id("acceptFile"))
-    }
-    
-    # The button is only enabled if it meets the conditions that follow
-    # observe(toggleState(id("acceptFile"), input[[id("species")]] != ""))
+                 setLocalData(input, output, session, replace=FALSE))
     
     # Check if data is already loaded and ask the user if it should be replaced
     observeEvent(input[[id("getFirehoseData")]], {
         if (!is.null(getData()))
             toggleModal(session, id("firebrowseDataModal"), "open")
         else
-            loadAllData()
+            setFirehoseData(input, output, session)
     })
     
     # Load data when the user presses to replace data
     observeEvent(input[[id("firebrowseReplace")]],
-                 loadAllData(replace=TRUE))
+                 setFirehoseData(input, output, session, replace=TRUE))
     
     # Load data when the user presses to load new data (keep previously loaded)
     observeEvent(input[[id("firebrowseAppend")]],
-                 loadAllData(replace=FALSE))
-    
-    # Load Firehose data
-    loadAllData <- function(replace=TRUE) {
-        shinyjs::disable(id("getFirehoseData"))
-        
-        # Load data from Firehose
-        data <- loadFirehoseData(
-            folder = input[[id("dataFolder")]],
-            cohort = input[[id("firehoseCohort")]],
-            date = gsub("-", "_", input[[id("firehoseDate")]]),
-            data_type = input[[id("dataType")]],
-            exclude = input[[id("firehoseIgnore")]],
-            progress = updateProgress,
-            output = output)
-        
-        if (!is.null(data)) {
-            if(replace)
-                setData(data)
-            else
-                setData(c(getData(), data))
-        }
-        
-        closeProgress()
-        shinyjs::enable(id("getFirehoseData"))
-    }
+                 setFirehoseData(input, output, session, replace=FALSE))
 }
