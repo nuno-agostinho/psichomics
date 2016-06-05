@@ -6,7 +6,7 @@ buttonGroups <- function(...) {
 }
 
 progressbar <- function(value, min = 0, max = 100, label = paste0(value, "%"),
-                        striped = T) {
+                        striped = TRUE) {
     stripedText <- ifelse(striped, "progress-bar-striped", "")
     div(class="progress",
         div(class=paste("progress-bar", stripedText),
