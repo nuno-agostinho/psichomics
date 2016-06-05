@@ -36,8 +36,7 @@ Imports:
     stats,
     R.utils,
     utils,
-    lawstat,
-    BiocInstaller
+    lawstat
 Suggests:
     testthat,
     knitr,
