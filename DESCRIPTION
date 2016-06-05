@@ -69,3 +69,6 @@ Collate:
     'plots_plot2.R'
     'plots_survival.R'
     'widgets.R'
+biocViews: Sequencing, RNASeq, AlternativeSplicing, DifferentialSplicing,
+	   Transcription, GUI, PrincipalComponent, Survival, BiomedicalInformatics,
+	   Transcriptomics, Visualization, MultipleComparison
