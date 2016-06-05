@@ -105,7 +105,6 @@ survRight <- survfit(formRight, data = colsDays)
 lines(survRight, lty = 2, col = "red")
 ```
 
-
 ## Types of survival curves
 "Some studies may use a combination of different types of survival curves to
 express their data. The main difference between the curves is what is defined as
@@ -153,7 +152,15 @@ lsurv2 <- survfit(Surv(time, status) ~ x, aml, type='fleming')
 plot(lsurv2, lty=2:3, fun="cumhaz", xlab="Months", ylab="Cumulative Hazard")
 ```
 
-## Plotting with Highcharts
+## Plotting libraries
+
+### ggplot2 and ggfortify
+http://rpubs.com/sinhrks/plot_surv
+
+### Plotly
+https://plot.ly/ipython-notebooks/survival-analysis-r-vs-python/
+
+### Highcharts
 
 To plot a Keplen-Meier using Highcharts, we'll simulate the following plot:
 ```{r, eval=FALSE}
@@ -340,7 +347,8 @@ Let's check out interval ranges for more than one group (it looks crowded...):
 plotSurvCurves(aml.surv, ranges = TRUE)
 ```
 
-This function was sent as a pull request to
+This function was sent and accepted as a pull request to the R package
+[Highcharter](http://jkunst.com/highcharter).
 
 ## References
 
@@ -351,3 +359,4 @@ This function was sent as a pull request to
 - [What is a Cox model?](http://www.medicine.ox.ac.uk/bandolier/painres/download/whatis/cox_model.pdf)
 - [Hazard Ratio in Clinical Trials](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC478551/pdf/1409-03.pdf)
 - http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3932959/pdf/nihms549224.pdf
+- http://www.sthda.com/english/wiki/principal-component-analysis-how-to-reveal-the-most-important-variables-in-your-data-r-software-and-data-mining
