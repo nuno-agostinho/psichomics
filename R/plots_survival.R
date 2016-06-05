@@ -185,7 +185,7 @@ timePerPatient <- function(col, clinical) {
 
 #' @importFrom R.utils capitalize
 #' @importFrom stats pchisq
-#' @importFrom survival survfit
+#' @importFrom survival survfit survdiff
 #' @importFrom highcharter hchart hc_chart hc_yAxis hc_xAxis hc_tooltip
 #' hc_subtitle hc_tooltip renderHighchart
 server <- function(input, output, session) {
