@@ -7,15 +7,15 @@ Description: Automatically retrieve data from RNA-Seq sources such as TCGA
     visualize alternative splicing.
 Depends:
     R (>= 3.2.2),
-    shiny,
-    shinyBS,
-    shinyjs,
-    jsonlite,
-    httr
+    shiny
 License: What license is it under?
 LazyData: true
 RoxygenNote: 5.0.1
 Imports:
+    shinyBS,
+    shinyjs,
+    jsonlite,
+    httr,
     miscTools,
     fastmatch,
     stringr,
@@ -42,7 +42,6 @@ Suggests:
     microbenchmark,
     rbenchmark
 VignetteBuilder: knitr
-LinkingTo: Rcpp
 Collate:
     'utils.R'
     'begin.R'

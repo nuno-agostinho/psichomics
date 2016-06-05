@@ -6,61 +6,63 @@
 plot <- "Survival curves"
 id <- function(value) objectId(name, plot, value)
 
-ui <- tagList(
-    sidebarPanel(
-        radioButtons(id("censoring"), "Data censoring", selected="right",
-                     inline=TRUE, choices=c(Left="left",
-                                            Right="right",
-                                            Interval="interval",
-                                            "Interval 2" = "interval2")),
-        selectizeInput(id("timeStart"), choices = NULL, "Follow up time"),
-        # If the chosen censoring contains the word 'interval', show this input
-        conditionalPanel(
-            paste0("input.", id("censoring"), ".indexOf('interval') > -1"),
-            selectizeInput(id("timeStop"), choices = NULL, "Ending time")),
-        helpText("In case there's no record for a patient, the days to last",
-                 "follow up will be used instead."),
-        selectizeInput(id("event"), choices = NULL, "Event of interest"),
-        radioButtons(id("modelTerms"), selected="groups", inline=TRUE,
-                     "Select model terms of the right-hand using",
-                     choices=c("Clinical groups"="groups",
-                               "Formula"="formula",
-                               "Inclusion leves cutoff"="psiCutoff")),
-        conditionalPanel(
-            sprintf("input[id='%s'] == '%s'", id("modelTerms"), "groups"),
-            fluidRow(
-                column(10, selectizeInput(id("dataGroups"),
-                                         "Clinical groups to use",
-                                         choices = NULL, multiple = TRUE)),
-                column(2, actionButton(id("dataGroups_selectAll"), "Edit",
-                                       class="inline_selectize"))),
-            checkboxInput(id("showOutGroup"), "Show data outside chosen groups",
-                          value = FALSE)),
-        conditionalPanel(
-            sprintf("input[id='%s'] == '%s'", id("modelTerms"), "formula"),
-            textAreaInput(id("formula"), "Formula for right-hand side"),
-            uiOutput(id("formulaAutocomplete")),
-            helpText("Interesting attributes include", 
-                     tags$b("pathologic_stage"))),
-        conditionalPanel(
-            sprintf("input[id='%s'] == '%s'", id("modelTerms"), "psiCutoff"),
-            numericInput(id("psiCutoff"),  value = 0.5, step=0.01,
-                         "Cutoff value for the selected event")),
-        radioButtons(id("scale"), "Display time in", inline=TRUE,
-                     c(Days="days", Weeks="weeks", Months="months", 
-                       Years="years")),
-        checkboxInput(id("markTimes"), "Show time marks", value = FALSE),
-        checkboxInput(id("ranges"), "Show interval ranges", value = FALSE),
-        actionButton(id("coxModel"), "Fit Cox PH model"),
-        actionButton(id("survivalCurves"), class="btn-primary", 
-                     "Plot survival curves")
-    ),
-    mainPanel(
-        highchartOutput(id(plot)),
-        uiOutput(id("coxphUI"))
+ui <- function() {
+    tagList(
+        sidebarPanel(
+            radioButtons(id("censoring"), "Data censoring", selected="right",
+                         inline=TRUE, choices=c(Left="left",
+                                                Right="right",
+                                                Interval="interval",
+                                                "Interval 2" = "interval2")),
+            selectizeInput(id("timeStart"), choices = NULL, "Follow up time"),
+            # If the chosen censoring contains the word 'interval', show this input
+            conditionalPanel(
+                paste0("input.", id("censoring"), ".indexOf('interval') > -1"),
+                selectizeInput(id("timeStop"), choices = NULL, "Ending time")),
+            helpText("In case there's no record for a patient, the days to last",
+                     "follow up will be used instead."),
+            selectizeInput(id("event"), choices = NULL, "Event of interest"),
+            radioButtons(id("modelTerms"), selected="groups", inline=TRUE,
+                         "Select model terms of the right-hand using",
+                         choices=c("Clinical groups"="groups",
+                                   "Formula"="formula",
+                                   "Inclusion leves cutoff"="psiCutoff")),
+            conditionalPanel(
+                sprintf("input[id='%s'] == '%s'", id("modelTerms"), "groups"),
+                fluidRow(
+                    column(10, selectizeInput(id("dataGroups"),
+                                              "Clinical groups to use",
+                                              choices = NULL, multiple = TRUE)),
+                    column(2, actionButton(id("dataGroups_selectAll"), "Edit",
+                                           class="inline_selectize"))),
+                checkboxInput(id("showOutGroup"), "Show data outside chosen groups",
+                              value = FALSE)),
+            conditionalPanel(
+                sprintf("input[id='%s'] == '%s'", id("modelTerms"), "formula"),
+                textAreaInput(id("formula"), "Formula for right-hand side"),
+                uiOutput(id("formulaAutocomplete")),
+                helpText("Interesting attributes include", 
+                         tags$b("pathologic_stage"))),
+            conditionalPanel(
+                sprintf("input[id='%s'] == '%s'", id("modelTerms"), "psiCutoff"),
+                numericInput(id("psiCutoff"),  value = 0.5, step=0.01,
+                             "Cutoff value for the selected event")),
+            radioButtons(id("scale"), "Display time in", inline=TRUE,
+                         c(Days="days", Weeks="weeks", Months="months", 
+                           Years="years")),
+            checkboxInput(id("markTimes"), "Show time marks", value = FALSE),
+            checkboxInput(id("ranges"), "Show interval ranges", value = FALSE),
+            actionButton(id("coxModel"), "Fit Cox PH model"),
+            actionButton(id("survivalCurves"), class="btn-primary", 
+                         "Plot survival curves")
+        ),
+        mainPanel(
+            highchartOutput(id(plot)),
+            uiOutput(id("coxphUI"))
+        )
     )
-)
-
+}
+        
 #' Process survival data to calculate survival curves
 #' 
 #' @param timeStart Numeric: starting time of the interval or follow up time
@@ -117,7 +119,7 @@ processSurvData <- function(timeStart, timeStop, event, groups, clinical) {
 #' by default
 #' 
 #' @importFrom stats formula
-#' @importFrom survival coxph
+#' @importFrom survival coxph Surv
 #'
 #' @return A list with a \code{formula} object and a data frame with terms
 #' needed to calculate survival curves
@@ -184,6 +186,8 @@ timePerPatient <- function(col, clinical) {
 #' @importFrom R.utils capitalize
 #' @importFrom stats pchisq
 #' @importFrom survival survfit
+#' @importFrom highcharter hchart hc_chart hc_yAxis hc_xAxis hc_tooltip
+#' hc_subtitle hc_tooltip renderHighchart
 server <- function(input, output, session) {
     # Update available clinical data attributes to use in a formula
     output[[id("formulaAutocomplete")]] <- renderUI({

@@ -1,4 +1,4 @@
-#' @import shiny shinyBS shinyjs ggplot2 highcharter survival miscTools
+#' @import shiny
 #' @include utils.R 
 NULL
 
@@ -337,6 +337,7 @@ groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE,
 #' @param size Character: modal size can be "large", "small" (default) or NULL
 #' (medium)
 #' 
+#' @importFrom shinyBS toggleModal
 #' @export
 showModal <- function(session, title, ..., style = NULL,
                       iconName = "exclamation-circle", footer = NULL,

@@ -36,6 +36,8 @@ ui <- function(tab) {
 #' @param tableId Character: id of the datatable
 #' @param description Character: description of the table (optional)
 #'
+#' @importFrom shinyBS bsTooltip
+#'
 #' @return The HTML code for a tabPanel template
 tabDataset <- function(title, tableId, columns, colsToShow, description=NULL) {
     tablename <- id(paste("table", tableId, sep="-"))

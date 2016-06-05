@@ -13,6 +13,7 @@ plotEnvs.server <- lapply(plotEnvs, "[[", "server")
 # Get name of the loaded scripts
 names <- sapply(plotEnvs, "[[", plotName)
 
+#' @importFrom shinyBS bsTooltip
 ui <- function(tab) {
     tab(name,
         # allows the user to choose which UI set is shown
@@ -35,7 +36,7 @@ ui <- function(tab) {
         lapply(plotEnvs, function(env) {
             conditionalPanel(
                 condition=sprintf("input[id='%s']=='%s'",
-                                  id("selectizePlot"), env[[plotName]]), env$ui)
+                                  id("selectizePlot"), env[[plotName]]), env$ui())
         }))
 }
 

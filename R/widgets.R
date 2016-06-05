@@ -3,6 +3,7 @@ primary <- TRUE
 id <- function(value) objectId(name, value)
 
 #' @importFrom shiny column
+#' @importFrom shinyBS bsAlert
 ui <- function(tab) {
     tab(name,
         fluidRow(
@@ -57,6 +58,7 @@ ui <- function(tab) {
     )
 }
 
+#' @importFrom shinyBS createAlert closeAlert
 server <- function(input, output, session) {
     obsB <- observe({
         # Dismiss the alert or it won't update afterwards
