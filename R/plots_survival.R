@@ -29,10 +29,10 @@ ui <- tagList(
         conditionalPanel(
             sprintf("input[id='%s'] == '%s'", id("modelTerms"), "groups"),
             fluidRow(
-                column(9, selectizeInput(id("dataGroups"), 
+                column(10, selectizeInput(id("dataGroups"),
                                          "Clinical groups to use",
                                          choices = NULL, multiple = TRUE)),
-                column(2, actionButton(id("dataGroups_selectAll"), "Select all",
+                column(2, actionButton(id("dataGroups_selectAll"), "Edit",
                                        class="inline_selectize"))),
             checkboxInput(id("showOutGroup"), "Show data outside chosen groups",
                           value = FALSE)),

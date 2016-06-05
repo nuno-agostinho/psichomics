@@ -5,11 +5,13 @@
 ## so there's no refresh
 
 name <- "Data"
+primary <- TRUE
 id <- function(value) objectId(name, value)
 
 ## Loads valid scripts from the indicated folder
 dataName <- "data"
-dataEnvs <- sourceScripts(folder=paste0(tabsFolder, "data/"),
+dataEnvs <- sourceScripts(folder=tabsFolder,
+                          pattern="data_",
                           check=c(dataName, "ui"),
                           parentEnv=environment())
 dataEnvs.server <- lapply(dataEnvs, "[[", "server")

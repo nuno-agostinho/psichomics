@@ -160,13 +160,14 @@ checkObjects <- function(script, check, parentEnv = NULL) {
 #' Sources scripts containing the given variables from a given folder
 #'
 #' @param folder Character: folder where the scripts are located
+#' @param pattern Character: regular expression to filter file names
 #' @param ... Extra parameters to be passed to list.files
 #' @inheritParams checkObjects
 #'
 #' @return List of environments with sourced scripts
 #' @export
-sourceScripts <- function(folder, check, parentEnv = NULL, ...){
-    files <- list.files(folder, full.names = TRUE, ...)
+sourceScripts <- function(folder, check, parentEnv=NULL, pattern=NULL, ...){
+    files <- list.files(folder, pattern=pattern, full.names = TRUE, ...)
     # Get every script that defines the desired variables
     envs <- lapply(files, checkObjects, check, parentEnv)
     envs <- Filter(Negate(is.null), envs)
@@ -187,10 +188,11 @@ sourceScripts <- function(folder, check, parentEnv = NULL, ...){
 #' @return Variable from valid script
 #' @export
 callScriptsFunction <- function(func, ..., check = func, folder = "R/") {
-    # Get scripts given the variables of interest
+    # Get scripts given the variables of interest to show at primary level
     scripts <- sourceScripts(folder, check)
+    primary <- vapply(scripts, function(i) isTRUE(i[["primary"]]), logical(1))
     # Get a given variable from those scripts
-    f <- lapply(scripts, "[[", func)
+    f <- lapply(scripts[primary], "[[", func)
     # Remove nulls (needed?)
     f <- Filter(Negate(is.null), f)
     # Calls the function of each script with the given parameters

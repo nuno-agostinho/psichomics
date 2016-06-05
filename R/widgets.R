@@ -1,4 +1,5 @@
 name <- "Widgets"
+primary <- TRUE
 id <- function(value) objectId(name, value)
 
 #' @importFrom shiny column

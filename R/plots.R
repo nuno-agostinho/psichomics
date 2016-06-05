@@ -1,9 +1,11 @@
 name <- "Plots"
+primary <- TRUE
 id <- function(value) objectId(name, value)
 
 # Loads valid scripts from the indicated folder
 plotName <- "plot"
-plotEnvs <- sourceScripts(folder = paste0(tabsFolder, "plots/"),
+plotEnvs <- sourceScripts(folder = tabsFolder,
+                          pattern = "plots_",
                           check = c(plotName, "ui"),
                           parentEnv = environment())
 plotEnvs.server <- lapply(plotEnvs, "[[", "server")
@@ -11,7 +13,7 @@ plotEnvs.server <- lapply(plotEnvs, "[[", "server")
 # Get name of the loaded scripts
 names <- sapply(plotEnvs, "[[", plotName)
 
-ui <- function(tab)
+ui <- function(tab) {
     tab(name,
         # allows the user to choose which UI set is shown
         fluidRow(
@@ -35,8 +37,8 @@ ui <- function(tab)
                 condition=sprintf("input[id='%s']=='%s'",
                                   id("selectizePlot"), env[[plotName]]), env$ui)
         }))
+}
 
-#' @importFrom shinyjs show hide
 server <- function(input, output, session) {
     # Runs server logic from the scripts
     lapply(plotEnvs.server, do.call, list(input, output, session))
@@ -76,14 +78,14 @@ server <- function(input, output, session) {
     observeEvent(input[[id("selectizeEvent")]],
                  setEvent(input[[id("selectizeEvent")]]))
     
-    # If showing datatable, hide selectizeEvent; otherwise, show it
-    observe({
-        vis <- function(func, ...)
-            func(id("selectizeEvent"), anim = TRUE, animType = "fade")
-        
-        if(grepl("Inclusion levels", input[[id("selectizePlot")]]))
-            vis(hide)
-        else
-            vis(show)
-    })
+    # # If showing datatable, hide selectizeEvent; otherwise, show it
+    # observe({
+    #     vis <- function(func, ...)
+    #         func(id("selectizeEvent"), anim = TRUE, animType = "fade")
+    #     
+    #     if(grepl("Inclusion levels", input[[id("selectizePlot")]]))
+    #         vis(shinyjs::hide)
+    #     else
+    #         vis(shinyjs::show)
+    # })
 }
