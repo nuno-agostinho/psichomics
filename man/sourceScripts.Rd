@@ -4,7 +4,7 @@
 \alias{sourceScripts}
 \title{Sources scripts containing the given variables from a given folder}
 \usage{
-sourceScripts(folder, check, parentEnv = NULL, ...)
+sourceScripts(folder, check, parentEnv = NULL, pattern = NULL, ...)
 }
 \arguments{
 \item{folder}{Character: folder where the scripts are located}
@@ -12,6 +12,8 @@ sourceScripts(folder, check, parentEnv = NULL, ...)
 \item{check}{Character: objects to check}
 
 \item{parentEnv}{Environment: enclosing environment inherited}
+
+\item{pattern}{Character: regular expression to filter file names}
 
 \item{...}{Extra parameters to be passed to list.files}
 }

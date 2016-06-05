@@ -326,7 +326,7 @@ loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
     for (each in seq_along(files)) {
         progress("Processing file", detail = basename(files[each]),
                  each, length(files))
-        loaded[[each]] <- parseValidFile(files[each], "R/formats")
+        loaded[[each]] <- parseValidFile(files[each], tabsFolder)
     }
     names(loaded) <- sapply(loaded, attr, "tablename")
     loaded <- Filter(length, loaded)

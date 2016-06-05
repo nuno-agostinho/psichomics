@@ -115,7 +115,9 @@ loadFile <- function(format, file) {
 #' @export
 parseValidFile <- function(file, formatsFolder) {
     # Get all information from available formats
-    formats <- sourceScripts(formatsFolder, c("tablename", "check"))
+    formats <- sourceScripts(formatsFolder,
+                             pattern="formats_",
+                             c("tablename", "check"))
     
     # The number of rows to read will be the maximum value asked by all the file
     # formats; if no format aks for a specific number of rows, the default is 6
