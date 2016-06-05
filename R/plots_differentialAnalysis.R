@@ -218,7 +218,7 @@ server <- function(input, output, session) {
                 
                 if (len == 2) {
                     deltaMedian <- tagList(
-                        tags$b("|Δ Median|: "), abs(med[2] - med[1]), br())
+                        tags$b("|\u0394 Median|: "), abs(med[2] - med[1]), br())
                 } else {
                     deltaMedian <- NULL   
                 }

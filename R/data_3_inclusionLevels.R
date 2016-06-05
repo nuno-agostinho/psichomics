@@ -24,7 +24,7 @@ choices <- c("Skipping exon (SE)" = "SE",
 ui <- function() {
     tagList(
         helpText("Calculate exon and intron inclusion levels. This is also",
-                 "known as percentage spliced in or PSI or even Ψ."),
+                 "known as percentage spliced in or PSI or even \u03A8."),
         selectizeInput(id("eventType"), "Event type(s)", selected = "SE",
                        choices = choices, multiple = TRUE),
         numericInput(id("minReads"), "Minimum reads to consider", value = 10),

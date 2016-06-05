@@ -289,11 +289,12 @@ server <- function(input, output, session) {
     
     # Merge selected groups
     mergeId <- id("mergeGroups")
-    operateOnGroups(input, session, sharedData, union, mergeId, " + ")
+    operateOnGroups(input, session, sharedData, union, mergeId, " \u222A ")
     
     # Intersect selected groups
     intersectId <- id("intersectGroups")
-    operateOnGroups(input, session, sharedData, intersect, intersectId, " ∩ ")
+    operateOnGroups(input, session, sharedData, intersect, intersectId,
+                    " \u2229 ")
     
     # Render groups interface only if any group exists
     output[[id("groupsList")]] <- renderUI({
