@@ -115,6 +115,9 @@ processSurvData <- function(timeStart, timeStop, event, groups, clinical) {
 #' @param formulaStr Character: formula to use
 #' @param coxph Boolean: fit a Cox proportional hazards regression model? FALSE 
 #' by default
+#' 
+#' @importFrom stats formula
+#' @importFrom survival coxph
 #'
 #' @return A list with a \code{formula} object and a data frame with terms
 #' needed to calculate survival curves
@@ -178,6 +181,9 @@ timePerPatient <- function(col, clinical) {
     return(row)
 }
 
+#' @importFrom R.utils capitalize
+#' @importFrom stats pchisq
+#' @importFrom survival survfit
 server <- function(input, output, session) {
     # Update available clinical data attributes to use in a formula
     output[[id("formulaAutocomplete")]] <- renderUI({
@@ -220,14 +226,14 @@ server <- function(input, output, session) {
             subDaysTo <- gsub(".*(days_to_.*)", "\\1", daysTo)
             choices <- unique(subDaysTo)
             names(choices) <- gsub("_", " ", choices, fixed=TRUE)
-            names(choices) <- R.utils::capitalize(names(choices))
+            names(choices) <- capitalize(names(choices))
             updateSelectizeInput(session, id("timeStart"), choices=choices,
                                  selected="days_to_death")
             updateSelectizeInput(
                 session, id("timeStop"), choices = choices, options=list(
                     onInitialize = I('function() { this.setValue(""); }')))
             names(choices) <- gsub("Days to ", "", names(choices), fixed=TRUE)
-            names(choices) <- R.utils::capitalize(names(choices))
+            names(choices) <- capitalize(names(choices))
             updateSelectizeInput(session, id("event"), 
                                  choices=list(
                                      "Suggested events"=choices,
@@ -330,7 +336,7 @@ server <- function(input, output, session) {
                     diff <- survdiff(form, data = data)
                     
                     # Calculate p-value with 5 significant numbers
-                    pvalue <- 1 - stats::pchisq(diff$chisq, length(diff$n) - 1)
+                    pvalue <- 1 - pchisq(diff$chisq, length(diff$n) - 1)
                     signifDigits(pvalue)
                 }, error = function(e) NA)
                 

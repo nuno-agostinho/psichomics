@@ -32,6 +32,8 @@ getMatchingRowNames <- function(selected, clinicalGroups, clinicalMatches) {
     return(ns)
 }
 
+#' @importFrom stats prcomp
+#' @importFrom miscTools rowMedians
 psiPCA <- function(psi, center = TRUE, scale. = FALSE, naTolerance = 30) {
     # Get individuals (rows) with less than a given percentage of NAs
     nas <- apply(psi, 1, function(row) sum(is.na(row)))
@@ -40,7 +42,7 @@ psiPCA <- function(psi, center = TRUE, scale. = FALSE, naTolerance = 30) {
     if (nrow(psi) == 0) return(NULL)
 
     # Replace NAs with the medians for each individual (row)
-    medians <- miscTools::rowMedians(psi, na.rm = T)
+    medians <- rowMedians(psi, na.rm = T)
     nas <- apply(psi, 1, function(row) sum(is.na(row)))
     psi[is.na(psi)] <- rep(medians, nas)
     
