@@ -1,20 +1,3 @@
-#' Server function
-#' 
-#' Instructions to build the Shiny app.
-#'
-#' @param input Input object
-#' @param output Output object
-#' @param session Session object
-server <- function(input, output, session) {
-    callScriptsFunction(func = "server", input, output, session,
-                        check = c("name", "server"))
-    
-    # session$onSessionEnded(function() {
-    #     # Stop app and print message to console
-    #     suppressMessages(stopped <- stopApp(returnValue="Shiny app was closed"))
-    # })
-}
-
 # The user interface (ui) controls the layout and appearance of the app
 # All the CSS modifications are in the file "www/styles.css"
 ui <- shinyUI(
@@ -28,13 +11,31 @@ ui <- shinyUI(
                            conditionalPanel(
                                condition="$('html').hasClass('shiny-busy')",
                                div(icon("flask", "fa-spin"), "Working...",
-                                   class="text-right", id="loadmessage")
-                           ),
+                                   class="text-right", id="loadmessage")),
                            uiOutput("globalModal")),
              footer = shinyjs::useShinyjs()),
         # Loads the interface of each tab
-        callScriptsFunction(func = "ui", check = c("name", "ui"), tabPanel)
+        callScriptsFunction(func="ui", check=c("name", "ui"), tabPanel,
+                            folder=system.file("R", package="psichomics"))
     ))
 )
+
+#' Server function
+#' 
+#' Instructions to build the Shiny app.
+#'
+#' @param input Input object
+#' @param output Output object
+#' @param session Session object
+server <- function(input, output, session) {
+    callScriptsFunction(func = "server", input, output, session,
+                        check = c("name", "server"), 
+                        folder=system.file("R", package="psichomics"))
+    
+    # session$onSessionEnded(function() {
+    #     # Stop app and print message to console
+    #     suppressMessages(stopped <- stopApp(returnValue="Shiny app was closed"))
+    # })
+}
 
 shinyApp(ui, server)
