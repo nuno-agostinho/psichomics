@@ -268,7 +268,7 @@ server <- function(input, output, session) {
                 scale      <- input[[id("scale")]]
                 # Get chosen groups
                 chosen <- input[[id("dataGroups")]]
-                dataGroups <- getGroupsFrom("Clinical data")[chosen, , drop=F]
+                dataGroups <- getGroupsFrom("Clinical data")[chosen, , drop=FALSE]
             })
             
             if (is.null(clinical)) {
