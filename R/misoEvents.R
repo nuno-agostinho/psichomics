@@ -268,7 +268,7 @@ parseMisoGeneric <- function(event, validator, eventType, coord, plusIndex,
         minusIndex <- sort(rep(iminus, length(minusIndex))) + rep(minusIndex, length(iminus))
         if (nrow(event[minus, ]) > 0) {
             parsed[minus, rev(coord)] <- matrix(unlist(
-                c(t(event[minusIndex, 4:5]))), ncol = length(coord), byrow = T)
+                c(t(event[minusIndex, 4:5]))), ncol=length(coord), byrow=TRUE)
         }
         return(parsed)
     }
