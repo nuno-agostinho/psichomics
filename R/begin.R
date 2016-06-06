@@ -364,7 +364,7 @@ showModal <- function(session, title, ..., style = NULL,
 #' @rdname showModal
 #' @export
 errorModal <- function(session, title, ..., size = "small", footer = NULL) {
-    showModal(session, title, ..., footer, style = "danger", size = size,
+    showModal(session, title, ..., footer, style = "error", size = size,
               printMessage = FALSE, iconName = "times-circle")
 }
 
