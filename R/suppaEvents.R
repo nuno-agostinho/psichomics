@@ -77,7 +77,10 @@ parseSuppaEvent <- function(event) {
 #'
 #' @param junctions List of integers: exon-exon junctions of an event
 #' @param strand Character: positive ("+") or negative ("-") strand
-#'
+#' @param coords Character: coordinate positions to fill
+#' @param plus_pos Integer: index of the coordinates for a plus strand event
+#' @param minus_pos Integer: index of the coordinates for a minus strand event
+#' 
 #' @details The following event types are available to be parsed:
 #' \itemize{
 #'  \item{\bold{SE} (exon skipping)}

@@ -6,6 +6,15 @@
 \usage{
 icon2(name, class = NULL, lib = "font-awesome", ...)
 }
+\arguments{
+\item{name}{Character: name of the icon}
+
+\item{class}{Additional classes to customise the icon style}
+
+\item{lib}{Icon library to use (either "font-awesome" or "glyphicon")}
+
+\item{...}{Extra arguments to the icon tag}
+}
 \description{
 Allows to add id to an image
 }

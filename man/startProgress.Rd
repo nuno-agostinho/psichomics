@@ -6,6 +6,13 @@
 \usage{
 startProgress(message, divisions, global = sharedData)
 }
+\arguments{
+\item{message}{Character: progress message}
+
+\item{divisions}{Integer: number of divisions in the progress bar}
+
+\item{global}{Shiny's global variable}
+}
 \description{
 Create a progress object
 }

@@ -6,6 +6,9 @@
 \usage{
 getCoordinates(type)
 }
+\arguments{
+\item{type}{Character: alternative splicing event type}
+}
 \description{
 Returns the coordinates of interest for a given event type
 }

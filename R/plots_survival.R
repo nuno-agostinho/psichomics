@@ -67,7 +67,8 @@ ui <- function() {
 #' 
 #' @param timeStart Numeric: starting time of the interval or follow up time
 #' @param timeStop Numeric: ending time of the interval
-#' @param timeEvent Numeric: time of the event of interest
+#' @param event Numeric: time of the event of interest
+#' @param groups Character: group of each individual
 #' @param clinical Data.frame: clinical data
 #' 
 #' @details The event time will only be used to determine whether the event has

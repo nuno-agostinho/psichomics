@@ -44,6 +44,8 @@ files)}
 \item{plusIndex}{Integer: index of the coordinates for a plus strand event}
 
 \item{minusIndex}{Integer: index of the coordinates for a minus strand event}
+
+\item{strand}{Character: "+" or "-" strand}
 }
 \value{
 List of parsed junctions

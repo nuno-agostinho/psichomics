@@ -13,6 +13,7 @@ plotEnvs.server <- lapply(plotEnvs, "[[", "server")
 # Get name of the loaded scripts
 names <- sapply(plotEnvs, "[[", plotName)
 
+#' User interface
 #' @importFrom shinyBS bsTooltip
 ui <- function(tab) {
     tab(name,

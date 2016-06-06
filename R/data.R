@@ -19,6 +19,8 @@ dataEnvs.server <- lapply(dataEnvs, "[[", "server")
 # Get name of the loaded scripts
 names <- sapply(dataEnvs, "[[", dataName)
 
+#' User interface
+#' @param tab Function to create tab
 ui <- function(tab) {
     tab(title=div(icon("table"), name), sidebarLayout(sidebarPanel(
         do.call(
@@ -35,6 +37,8 @@ ui <- function(tab) {
 #' @param title Character: tab title
 #' @param tableId Character: id of the datatable
 #' @param description Character: description of the table (optional)
+#' @param columns Character: column names of the datatable
+#' @param colsToShow Boolean: columns to show
 #'
 #' @importFrom shinyBS bsTooltip
 #'

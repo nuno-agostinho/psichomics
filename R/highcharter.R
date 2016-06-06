@@ -1,5 +1,16 @@
-#' Add scatter
+#' Add scatter using Highcharts
 #' 
+#' @param hc Highcharts object
+#' @param x Numeric vector
+#' @param y Numeric vector
+#' @param z Numeric vector (optional)
+#' @param color Character: color (optional)
+#' @param label Character: series label
+#' @param showInLegend Boolean: show series in legened? FALSE by default
+#' @param viridis.option Character: viridis option; choose between "A", "B", "C"
+#' or "D"
+#' @param ... Extra arguments to be passed to the series
+#'
 #' @importFrom dplyr data_frame
 #' @importFrom assertthat assert_that
 #' @importFrom stats setNames

@@ -6,6 +6,9 @@
 \usage{
 enableTab(tab)
 }
+\arguments{
+\item{tab}{Character: tab to enable}
+}
 \description{
 Enable a tab from the navbar
 }

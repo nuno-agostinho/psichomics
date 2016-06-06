@@ -6,6 +6,9 @@
 \usage{
 disableTab(tab)
 }
+\arguments{
+\item{tab}{Character: tab to disable}
+}
 \description{
 Disable a tab from the navbar
 }

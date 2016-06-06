@@ -2,12 +2,32 @@
 % Please edit documentation in R/highcharter.R
 \name{hc_scatter}
 \alias{hc_scatter}
-\title{Add scatter}
+\title{Add scatter using Highcharts}
 \usage{
 hc_scatter(hc, x, y, z = NULL, color = NULL, label = NULL,
   showInLegend = FALSE, viridis.option = "D", ...)
 }
+\arguments{
+\item{hc}{Highcharts object}
+
+\item{x}{Numeric vector}
+
+\item{y}{Numeric vector}
+
+\item{z}{Numeric vector (optional)}
+
+\item{color}{Character: color (optional)}
+
+\item{label}{Character: series label}
+
+\item{showInLegend}{Boolean: show series in legened? FALSE by default}
+
+\item{viridis.option}{Character: viridis option; choose between "A", "B", "C"
+or "D"}
+
+\item{...}{Extra arguments to be passed to the series}
+}
 \description{
-Add scatter
+Add scatter using Highcharts
 }
 

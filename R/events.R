@@ -39,6 +39,7 @@ createJunctionsTemplate <- function(nrow, program = character(0),
     return(parsed)
 }
 
+#' Get MISO alternative splicing annotation
 #' @importFrom utils read.delim
 getMisoAnnotation <- function() {
     types <- c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI", "TandemUTR")
@@ -53,6 +54,8 @@ getMisoAnnotation <- function() {
     return(annot)
 }
 
+#' Parse MISO alternative splicing annotation
+#' @param annot Data frame or matrix: alternative splicing annotation
 #' @importFrom plyr rbind.fill
 parseMisoAnnotation <- function(annot) {
     events <- lapply(annot, parseMisoEvent)
@@ -60,6 +63,7 @@ parseMisoAnnotation <- function(annot) {
     return(events)
 }
 
+#' Get SUPPA alternative splicing annotation
 #' @importFrom utils read.delim
 getSuppaAnnotation <- function() {
     types <- c("SE", "AF", "AL", "MX", "A5", "A3", "RI")
@@ -70,6 +74,8 @@ getSuppaAnnotation <- function() {
     return(annot)
 }
 
+#' Parse SUPPA alternative splicing annotation
+#' @param annot Data frame or matrix: alternative splicing annotation
 #' @importFrom plyr rbind.fill
 parseSuppaAnnotation <- function(annot) {
     eventsID <- lapply(annot, "[[", "event_id")
@@ -78,6 +84,7 @@ parseSuppaAnnotation <- function(annot) {
     return(events)
 }
 
+#' Get MATS alternative splicing annotation
 #' @importFrom utils read.delim
 getMatsAnnotation <- function() {
     types <- c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI")
@@ -90,6 +97,8 @@ getMatsAnnotation <- function() {
     return(annot)
 }
 
+#' Parse MATS alternative splicing annotation
+#' @param annot Data frame or matrix: alternative splicing annotation
 #' @importFrom plyr rbind.fill
 parseMatsAnnotation <- function(annot) {
     types <- names(annot)
@@ -111,6 +120,7 @@ parseMatsAnnotation <- function(annot) {
     return(events)
 }
 
+#' Get VAST-TOOLS alternative splicing annotation
 #' @importFrom utils read.delim
 getVastToolsAnnotation <- function() {
     types <- c("ALT3", "ALT5", "COMBI", "IR", "MERGE3m", "MIC",
@@ -126,6 +136,8 @@ getVastToolsAnnotation <- function() {
     return(annot)
 }
 
+#' Parse VAST-TOOLS alternative splicing annotation
+#' @param annot Data frame or matrix: alternative splicing annotation
 #' @importFrom plyr rbind.fill
 parseVastToolsAnnotation <- function(annot) {
     types <- names(annot)
@@ -141,6 +153,7 @@ parseVastToolsAnnotation <- function(annot) {
 }
 
 #' Returns the coordinates of interest for a given event type
+#' @param type Character: alternative splicing event type
 #' @export
 getCoordinates <- function(type) {
     switch(type,
@@ -198,6 +211,11 @@ getParsedAnnotation <- function() {
 #' Convert a column to numeric if possible and ignore given columns composed
 #' of lists
 #' 
+#' @param table Data matrix: table
+#' @param by Character: column names of interest
+#' @param toNumeric Boolean: which columns to convert to numeric (FALSE by 
+#' default)
+#' 
 #' @export 
 #' @examples
 #' event <- read.table(text = "ABC123 + 250 300 350
@@ -226,6 +244,9 @@ getNumerics <- function(table, by = NULL, toNumeric = FALSE) {
 }
 
 #' Full outer join all given annotation based on select columns
+#' @param annotation Data frame or matrix: alternative splicing annotation
+#' @param types Character: alternative splicing types
+#' 
 #' @importFrom dplyr full_join
 #' @export
 joinAnnotation <- function(annotation, types) {

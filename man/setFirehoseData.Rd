@@ -7,6 +7,12 @@
 setFirehoseData(input, output, session, replace = TRUE)
 }
 \arguments{
+\item{input}{Shiny input}
+
+\item{output}{Shiny output}
+
+\item{session}{Shiny session}
+
 \item{replace}{Boolean: replace loaded data? TRUE by default}
 }
 \description{

@@ -39,46 +39,63 @@ getInclusionLevels <- reactive(getCategoryData()[["Inclusion levels"]])
 
 #' Get groups from a given data type
 #' @note Needs to be called inside reactive function
-getGroupsFrom <- function(dataType, category = getCategory())
-    sharedData[[paste(category, dataType, "groups", sep = "_")]] 
+#' @param dataset Character: data set (e.g. "Clinical data")
+#' @param category Character: data category (e.g. "Carcinoma 2016")
+getGroupsFrom <- function(dataset, category = getCategory())
+    sharedData[[paste(category, dataset, "groups", sep = "_")]] 
 
 #' Get clinical matches from a given data type
+#' @param dataset Character: data set (e.g. "Junction quantification")
+#' @param category Character: data category (e.g. "Carcinoma 2016")
 #' @note Needs to be called inside reactive function
-getClinicalMatchFrom <- function(dataType, category = getCategory())
-    sharedData[[paste(category, dataType, "clinicalMatch", sep = "_")]] 
+getClinicalMatchFrom <- function(dataset, category = getCategory())
+    sharedData[[paste(category, dataset, "clinicalMatch", sep = "_")]] 
 
 #' Set element as globally accessible
-#' 
 #' @details Set element inside the global variable
 #' @note Needs to be called inside reactive function
-setAsGlobal <- function(item, value) sharedData[[item]] <- value
+#' 
+#' @param element Character: name of element
+#' @param value Any value to attribute to element
+setAsGlobal <- function(element, value) sharedData[[element]] <- value
 
 #' Set data of the global data
 #' @note Needs to be called inside reactive function
+#' @param value Data frame or matrix to set as data
 setData <- function(value) setAsGlobal("data", value)
 
-#' Set selected event
+#' Set event
+#' @param event Character: event
 #' @note Needs to be called inside reactive function
-setEvent <- function(value) setAsGlobal("event", value)
+setEvent <- function(event) setAsGlobal("event", event)
 
-#' Set selected category
+#' Set data category
+#' @param category Character: data category
 #' @note Needs to be called inside reactive function
-setCategory <- function(value) setAsGlobal("category", value)
+setCategory <- function(category) setAsGlobal("category", category)
 
 #' Set inclusion levels for a given data category
 #' @note Needs to be called inside reactive function
+#' @param value Data frame or matrix: inclusion levels
+#' @param category Character: data category (e.g. "Carcinoma 2016")
 setInclusionLevels <- function(value, category = getCategory())
     sharedData$data[[category]][["Inclusion levels"]] <- value
 
 #' Set groups from a given data type
+#' @param dataset Character: data set (e.g. "Clinical data")
+#' @param value Matrix: groups of dataset
+#' @param category Character: data category (e.g. "Carcinoma 2016")
 #' @note Needs to be called inside reactive function
-setGroupsFrom <- function(dataType, value, category = getCategory())
-    setAsGlobal(paste(category, dataType, "groups", sep = "_"), value)
+setGroupsFrom <- function(dataset, value, category = getCategory())
+    setAsGlobal(paste(category, dataset, "groups", sep = "_"), value)
 
 #' Set clinical matches from a given data type
 #' @note Needs to be called inside reactive function
-setClinicalMatchFrom <- function(dataType, value, category = getCategory())
-    setAsGlobal(paste(category, dataType, "clinicalMatch", sep = "_"), value)
+#' @param dataset Character: data set (e.g. "Clinical data")
+#' @param value Vector of integers: clinical matches of dataset
+#' @param category Character: data category (e.g. "Carcinoma 2016")
+setClinicalMatchFrom <- function(dataset, value, category = getCategory())
+    setAsGlobal(paste(category, dataset, "clinicalMatch", sep = "_"), value)
 
 #' Create an identifier for a given object
 #' 
@@ -283,6 +300,7 @@ matchIdWithClinical <- function(ids, clinical) {
 #' Start graphical interface of PSICHOMICS
 #' 
 #' @param ... Parameters to pass to the function runApp
+#' @param reload Boolean: reload package? FALSE by default
 #' 
 #' @importFrom devtools load_all
 #' 
@@ -326,16 +344,10 @@ groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE,
 #' You can also use \code{errorModal} and \code{warningModal} to use template 
 #' modals already stylised to show errors and warnings respectively.
 #' 
+#' @inheritParams bsModal2
 #' @param session Current Shiny session
-#' @param title Character: modal title
-#' @param content Character: 
-#' @param style Character: style of the modal header; NULL (default), danger, 
-#' info or warning
 #' @param iconName Character: FontAwesome icon name to appear with the title
-#' @param footer List of interface elements: Custom modal footer
-#' @param printMessage Boolean: print to console? TRUE by default
-#' @param size Character: modal size can be "large", "small" (default) or NULL
-#' (medium)
+#' @param printMessage Boolean: print to console? FALSE by default
 #' 
 #' @importFrom shinyBS toggleModal
 #' @export

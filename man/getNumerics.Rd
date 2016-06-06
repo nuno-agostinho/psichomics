@@ -7,6 +7,14 @@ of lists}
 \usage{
 getNumerics(table, by = NULL, toNumeric = FALSE)
 }
+\arguments{
+\item{table}{Data matrix: table}
+
+\item{by}{Character: column names of interest}
+
+\item{toNumeric}{Boolean: which columns to convert to numeric (FALSE by 
+default)}
+}
 \description{
 Convert a column to numeric if possible and ignore given columns composed
 of lists

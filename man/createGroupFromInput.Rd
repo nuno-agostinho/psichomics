@@ -6,6 +6,13 @@
 \usage{
 createGroupFromInput(input, output, session)
 }
+\arguments{
+\item{input}{Shiny input}
+
+\item{output}{Shiny output}
+
+\item{session}{Shiny session}
+}
 \description{
 The groups are inserted in a matrix
 }

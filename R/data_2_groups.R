@@ -6,6 +6,7 @@
 
 name <- "Groups"
 
+#' User interface to group by column
 groupByColumn <- function() { list(
     selectizeInput(id("groupColumn"), "Select column", choices = NULL,
                    options = list(
@@ -14,6 +15,7 @@ groupByColumn <- function() { list(
              "given column.")
 )}
 
+#' User interface to group by row
 groupByRow <- function() { list(
     selectizeInput(
         id("groupRows"), "Select rows", choices = NULL,
@@ -28,6 +30,7 @@ groupByRow <- function() { list(
              "to create a group with rows 1 to 6, 8 and 10 to 19.")
 )}
 
+#' User interface to group by subset expression
 groupByExpression <- function() { list (
     textInput(id("groupExpression"), "Subset expression"),
     helpText('Type ', tags$kbd('X > 8 & Y == "alive"'), ' to select rows with',
@@ -35,6 +38,7 @@ groupByExpression <- function() { list (
     uiOutput(id("groupExpressionAutocomplete"))
 )}
 
+#' User interface to group by grep expression
 groupByGrep <- function() { list (
     textInput(id("grepExpression"), "GREP expression"),
     selectizeInput(id("grepColumn"),
@@ -67,6 +71,10 @@ ui <- function() {
 #' Set new groups according to the user input
 #' 
 #' The groups are inserted in a matrix
+#' 
+#' @param input Shiny input
+#' @param output Shiny output
+#' @param session Shiny session
 createGroupFromInput <- function (input, output, session) {
     active <- input[[id("datasetTab")]]
     if (is.null(active)) {
@@ -166,20 +174,30 @@ renameGroups <- function(new, old) {
     return(new)
 }
 
-operateOnGroups <- function(input, session, sharedData, FUN, name, 
+#' Set operations on groups
+#' 
+#' This function can be used on groups to merge, intersect, subtract, etc.
+#' 
+#' @param input Shiny input
+#' @param session Shiny session
+#' @param sharedData Shiny app's global variable
+#' @param FUN Function: operation to set
+#' @param buttonId Character: ID of the button to trigger operation
+#' @param symbol Character: operation symbol
+operateOnGroups <- function(input, session, sharedData, FUN, buttonId, 
                             symbol = " ") {
     # Operate on selected groups when pressing the corresponding button
-    observeEvent(input[[paste(name, "Button", sep = "_")]], {
-        session$sendCustomMessage(type = "getCheckedBoxes", name)
-        sharedData[[name]] <- TRUE
+    observeEvent(input[[paste(buttonId, "Button", sep = "_")]], {
+        session$sendCustomMessage(type = "getCheckedBoxes", buttonId)
+        sharedData[[buttonId]] <- TRUE
     })
     
     observe({
-        if (!is.null(input[[name]]) && all(input[[name]] > 0) &&
-            isTRUE(sharedData[[name]])) {
+        if (!is.null(input[[buttonId]]) && all(input[[buttonId]] > 0) &&
+            isTRUE(sharedData[[buttonId]])) {
             # Set operation groups as 0 and flag to FALSE
-            session$sendCustomMessage(type = "setZero", name)
-            sharedData[[name]] <- FALSE
+            session$sendCustomMessage(type = "setZero", buttonId)
+            sharedData[[buttonId]] <- FALSE
             
             # Get groups for the data table that is visible and active
             active <- input[[id("datasetTab")]]
@@ -187,7 +205,7 @@ operateOnGroups <- function(input, session, sharedData, FUN, name,
             
             # Create new set
             new <- NULL
-            selected <- as.numeric(input[[name]])
+            selected <- as.numeric(input[[buttonId]])
             if (!identical(FUN, "remove")) {
                 mergedFields <- lapply(1:3, function(i) {
                     names <- paste(groups[selected, i], collapse = symbol)
@@ -213,6 +231,11 @@ operateOnGroups <- function(input, session, sharedData, FUN, name,
     })
 }
 
+#' Server function for data grouping
+#'
+#' @param input Shiny input
+#' @param output Shiny output
+#' @param session Shiny session
 server <- function(input, output, session) {
     # Update available attributes to suggest in the group expression
     output[[id("groupExpressionAutocomplete")]] <- renderUI({

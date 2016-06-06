@@ -11,9 +11,11 @@ processSurvData(timeStart, timeStop, event, groups, clinical)
 
 \item{timeStop}{Numeric: ending time of the interval}
 
-\item{clinical}{Data.frame: clinical data}
+\item{event}{Numeric: time of the event of interest}
 
-\item{timeEvent}{Numeric: time of the event of interest}
+\item{groups}{Character: group of each individual}
+
+\item{clinical}{Data.frame: clinical data}
 }
 \value{
 Data frame with terms needed to calculate survival curves

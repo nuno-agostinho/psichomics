@@ -2,12 +2,15 @@
 % Please edit documentation in R/begin.R
 \name{setEvent}
 \alias{setEvent}
-\title{Set selected event}
+\title{Set event}
 \usage{
-setEvent(value)
+setEvent(event)
+}
+\arguments{
+\item{event}{Character: event}
 }
 \description{
-Set selected event
+Set event
 }
 \note{
 Needs to be called inside reactive function

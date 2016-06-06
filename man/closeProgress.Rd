@@ -8,6 +8,8 @@ closeProgress(message = NULL, global = sharedData)
 }
 \arguments{
 \item{message}{Character: message to show in progress bar}
+
+\item{global}{Global Shiny variable where all data is stored}
 }
 \description{
 Close the progress even if there's an error

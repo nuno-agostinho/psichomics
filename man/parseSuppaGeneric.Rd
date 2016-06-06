@@ -31,6 +31,12 @@ parseSuppaA5SS(junctions, strand)
 \item{junctions}{List of integers: exon-exon junctions of an event}
 
 \item{strand}{Character: positive ("+") or negative ("-") strand}
+
+\item{coords}{Character: coordinate positions to fill}
+
+\item{plus_pos}{Integer: index of the coordinates for a plus strand event}
+
+\item{minus_pos}{Integer: index of the coordinates for a minus strand event}
 }
 \value{
 Data frame of parsed junctions
