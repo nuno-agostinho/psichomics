@@ -52,9 +52,9 @@ body { padding-top: 70px; }
     margin-top: 25px;
 }
 
-/* Add danger style to modal headers 
+/* Add error style to modal headers 
 Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
-.modal-content .danger {
+.modal-content .error {
     color:#fff;
     padding:9px 15px;
     border-bottom:1px solid #eee;
