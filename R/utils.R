@@ -75,8 +75,9 @@ bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL,
                                        `data-dismiss` = "modal", 
                                        "Close"),
                     footer))))
-    shinyBSDep <- htmlDependency(name="shinyBS", version="0.61", meta=NULL, 
-                                 src=list(href="sbs"), script="shinyBS.js", 
+    shinyBSDep <- htmlDependency("shinyBS", packageVersion("shinyBS"),
+                                 src=c(href="sbs"),
+                                 script="shinyBS.js", 
                                  stylesheet="shinyBS.css")
     attachDependencies(bsTag, shinyBSDep)
 }

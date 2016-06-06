@@ -1,3 +1,21 @@
+#' Server function
+#' 
+#' Instructions to build the Shiny app.
+#'
+#' @param input Input object
+#' @param output Output object
+#' @param session Session object
+server <- function(input, output, session) {
+    callScriptsFunction(func = "server", input, output, session,
+                        check = c("name", "server"), 
+                        folder=system.file("R", package="psichomics"))
+    
+    # session$onSessionEnded(function() {
+    #     # Stop app and print message to console
+    #     suppressMessages(stopped <- stopApp(returnValue="Shiny app was closed"))
+    # })
+}
+
 # The user interface (ui) controls the layout and appearance of the app
 # All the CSS modifications are in the file "www/styles.css"
 ui <- shinyUI(
@@ -19,23 +37,5 @@ ui <- shinyUI(
                             folder=system.file("R", package="psichomics"))
     ))
 )
-
-#' Server function
-#' 
-#' Instructions to build the Shiny app.
-#'
-#' @param input Input object
-#' @param output Output object
-#' @param session Session object
-server <- function(input, output, session) {
-    callScriptsFunction(func = "server", input, output, session,
-                        check = c("name", "server"), 
-                        folder=system.file("R", package="psichomics"))
-    
-    # session$onSessionEnded(function() {
-    #     # Stop app and print message to console
-    #     suppressMessages(stopped <- stopApp(returnValue="Shiny app was closed"))
-    # })
-}
 
 shinyApp(ui, server)

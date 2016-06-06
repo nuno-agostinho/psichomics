@@ -80,7 +80,7 @@ addTCGAdata <- function() {
     }
 }
 
-#' Create a warning modal the user of loaded data
+#' Create a modal warning the user of already loaded data
 #' @param modalId Character: identifier of the modal
 #' @param replaceButtonId Character: identifier of the button to replace data
 #' @param keepButtonId Character: identifier of the button to append data
