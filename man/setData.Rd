@@ -6,6 +6,9 @@
 \usage{
 setData(value)
 }
+\arguments{
+\item{value}{Data frame or matrix to set as data}
+}
 \description{
 Set data of the global data
 }

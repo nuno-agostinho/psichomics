@@ -4,7 +4,12 @@
 \alias{setAsGlobal}
 \title{Set element as globally accessible}
 \usage{
-setAsGlobal(item, value)
+setAsGlobal(element, value)
+}
+\arguments{
+\item{element}{Character: name of element}
+
+\item{value}{Any value to attribute to element}
 }
 \description{
 Set element as globally accessible

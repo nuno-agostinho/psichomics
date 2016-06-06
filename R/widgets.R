@@ -2,6 +2,7 @@ name <- "Widgets"
 primary <- TRUE
 id <- function(value) objectId(name, value)
 
+#' User interface
 #' @importFrom shiny column
 #' @importFrom shinyBS bsAlert
 ui <- function(tab) {

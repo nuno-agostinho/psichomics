@@ -80,7 +80,10 @@ addTCGAdata <- function() {
     }
 }
 
-#' Create a modal warning the user of loaded data
+#' Create a warning modal the user of loaded data
+#' @param modalId Character: identifier of the modal
+#' @param replaceButtonId Character: identifier of the button to replace data
+#' @param keepButtonId Character: identifier of the button to append data
 loadedDataModal <- function(modalId, replaceButtonId, keepButtonId) {
     bsModal2(modalId,
              div(icon("exclamation-triangle"), "Data already loaded"),
@@ -123,7 +126,11 @@ ui <- function() {
 }
 
 #' Load local files
+#' @param input Shiny input
+#' @param output Shiny output
+#' @param session Shiny session
 #' @param replace Boolean: replace loaded data? TRUE by default
+#' 
 #' @importFrom shinyjs disable enable
 setLocalData <- function(input, output, session, replace=TRUE) {
     disable(id("acceptFile"))
@@ -152,6 +159,9 @@ setLocalData <- function(input, output, session, replace=TRUE) {
 }
 
 #' Set data from Firehose
+#' @param input Shiny input
+#' @param output Shiny output
+#' @param session Shiny session
 #' @param replace Boolean: replace loaded data? TRUE by default
 #' @importFrom shinyjs disable enable 
 setFirehoseData <- function(input, output, session, replace=TRUE) {

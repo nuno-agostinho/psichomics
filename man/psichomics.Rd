@@ -8,6 +8,8 @@ psichomics(..., reload = FALSE)
 }
 \arguments{
 \item{...}{Parameters to pass to the function runApp}
+
+\item{reload}{Boolean: reload package? FALSE by default}
 }
 \description{
 Start graphical interface of PSICHOMICS

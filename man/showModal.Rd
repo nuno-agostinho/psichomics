@@ -20,21 +20,20 @@ infoModal(session, title, ..., size = "small", footer = NULL)
 \arguments{
 \item{session}{Current Shiny session}
 
-\item{title}{Character: modal title}
+\item{title}{The title to appear at the top of the modal}
 
-\item{style}{Character: style of the modal header; NULL (default), danger, 
-info or warning}
+\item{...}{UI elements to include within the modal}
+
+\item{style}{Character: message style can be "warning", "error", "info" or 
+NULL}
 
 \item{iconName}{Character: FontAwesome icon name to appear with the title}
 
-\item{footer}{List of interface elements: Custom modal footer}
+\item{footer}{UI set: List of elements to include in the footer}
 
-\item{printMessage}{Boolean: print to console? TRUE by default}
+\item{printMessage}{Boolean: print to console? FALSE by default}
 
-\item{size}{Character: modal size can be "large", "small" (default) or NULL
-(medium)}
-
-\item{content}{Character:}
+\item{size}{\bold{Optional} What size should the modal be? (\code{small} or \code{large})}
 }
 \description{
 You can also use \code{errorModal} and \code{warningModal} to use template 

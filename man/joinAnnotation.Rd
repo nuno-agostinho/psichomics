@@ -6,6 +6,11 @@
 \usage{
 joinAnnotation(annotation, types)
 }
+\arguments{
+\item{annotation}{Data frame or matrix: alternative splicing annotation}
+
+\item{types}{Character: alternative splicing types}
+}
 \description{
 Full outer join all given annotation based on select columns
 }

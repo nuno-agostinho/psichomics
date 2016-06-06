@@ -2,12 +2,15 @@
 % Please edit documentation in R/begin.R
 \name{setCategory}
 \alias{setCategory}
-\title{Set selected category}
+\title{Set data category}
 \usage{
-setCategory(value)
+setCategory(category)
+}
+\arguments{
+\item{category}{Character: data category}
 }
 \description{
-Set selected category
+Set data category
 }
 \note{
 Needs to be called inside reactive function

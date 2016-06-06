@@ -32,11 +32,18 @@ getSampleTypes <- function(sample,
 #' bsModal is used within the UI to create a modal window. This allows to use
 #' the footer.
 #' 
+#' @inheritParams shinyBS::bsModal
+#' @param footer UI set: List of elements to include in the footer
+#' @param style Character: message style can be "warning", "error", "info" or 
+#' NULL
+#' 
 #' @importFrom shiny tags HTML
 #' @importFrom htmltools attachDependencies htmlDependency
 #' @export
-bsModal2 <- function (id, title, trigger, ..., style, size=NULL, footer=NULL)  {
-    if (!missing(style)) {
+bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL, 
+                      style = NULL)  {
+    if (!is.null(style)) {
+        style <- match.arg(style, c("info", "warning", "error"))
         modalHeader <- paste("modal-header", style)
     } else {
         modalHeader <- "modal-header"
@@ -75,7 +82,11 @@ bsModal2 <- function (id, title, trigger, ..., style, size=NULL, footer=NULL)  {
 }
 
 #' Create a progress object
-#' @importFrom shiny Progress
+#' 
+#' @param message Character: progress message
+#' @param divisions Integer: number of divisions in the progress bar
+#' @param global Shiny's global variable
+#' 
 #' @export
 startProgress <- function(message, divisions, global = sharedData) {
     print(message)
@@ -85,6 +96,17 @@ startProgress <- function(message, divisions, global = sharedData) {
 }
 
 #' Update a progress object
+#' 
+#' @details If \code{divisions} isn't NULL, a progress bar is started with the 
+#' given divisions. If \code{value} is NULL, the progress bar will be 
+#' incremented by one; otherwise, the progress bar will be incremented by the
+#' integer given in value.
+#' 
+#' @inheritParams startProgress
+#' @param value Integer: current progress value
+#' @param max Integer: maximum progress value
+#' @param detail Character: detailed message
+#' 
 #' @export
 updateProgress <- function(message = "Hang in there", value = NULL, max = NULL,
                            detail = NULL, divisions = NULL, 
@@ -112,6 +134,7 @@ updateProgress <- function(message = "Hang in there", value = NULL, max = NULL,
 #' Close the progress even if there's an error
 #' 
 #' @param message Character: message to show in progress bar
+#' @param global Global Shiny variable where all data is stored
 #' 
 #' @export
 closeProgress <- function(message=NULL, global = sharedData) {
@@ -121,7 +144,14 @@ closeProgress <- function(message=NULL, global = sharedData) {
 }
 
 #' Allows to add id to an image
+#' 
+#' @param name Character: name of the icon
+#' @param class Additional classes to customise the icon style
+#' @param lib Icon library to use (either "font-awesome" or "glyphicon")
+#' @param ... Extra arguments to the icon tag
+#' 
 #' @importFrom htmltools htmlDependencies
+#' 
 #' @export
 icon2 <- function (name, class = NULL, lib = "font-awesome", ...) {
     prefixes <- list(`font-awesome` = "fa", glyphicon = "glyphicon")
@@ -146,6 +176,7 @@ icon2 <- function (name, class = NULL, lib = "font-awesome", ...) {
 
 #' Disable a tab from the navbar
 #' @importFrom shinyjs disable addClass
+#' @param tab Character: tab to disable
 #' @export
 disableTab <- function(tab) {
     # Style item as disabled
@@ -157,6 +188,7 @@ disableTab <- function(tab) {
 
 #' Enable a tab from the navbar
 #' @importFrom shinyjs removeClass enable
+#' @param tab Character: tab to enable
 #' @export
 enableTab <- function(tab) {
     # Style item as enabled
@@ -251,7 +283,7 @@ textAreaInput <- function(inputId, label, value = "", width = NULL,
 #' @param value The value to set for the input object.
 #'
 #' @seealso \code{\link{textAreaInput}}
-#' @importFrom shiny updateTextInput
+#' @inheritParams shiny::updateTextInput
 #'
 #' @examples
 #' ## Only run examples in interactive R sessions

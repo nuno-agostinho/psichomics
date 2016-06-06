@@ -7,7 +7,26 @@
 updateProgress(message = "Hang in there", value = NULL, max = NULL,
   detail = NULL, divisions = NULL, global = sharedData)
 }
+\arguments{
+\item{message}{Character: progress message}
+
+\item{value}{Integer: current progress value}
+
+\item{max}{Integer: maximum progress value}
+
+\item{detail}{Character: detailed message}
+
+\item{divisions}{Integer: number of divisions in the progress bar}
+
+\item{global}{Shiny's global variable}
+}
 \description{
 Update a progress object
+}
+\details{
+If \code{divisions} isn't NULL, a progress bar is started with the 
+given divisions. If \code{value} is NULL, the progress bar will be 
+incremented by one; otherwise, the progress bar will be incremented by the
+integer given in value.
 }
 

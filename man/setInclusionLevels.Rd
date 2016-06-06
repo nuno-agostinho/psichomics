@@ -6,6 +6,11 @@
 \usage{
 setInclusionLevels(value, category = getCategory())
 }
+\arguments{
+\item{value}{Data frame or matrix: inclusion levels}
+
+\item{category}{Character: data category (e.g. "Carcinoma 2016")}
+}
 \description{
 Set inclusion levels for a given data category
 }

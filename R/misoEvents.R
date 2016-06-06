@@ -343,6 +343,7 @@ parseMisoMXE <- function(event) {
 }
 
 #' @rdname parseMisoGeneric
+#' @param strand Character: "+" or "-" strand
 #' @export
 #' @examples
 #'

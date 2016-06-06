@@ -11,6 +11,10 @@ tabDataset(title, tableId, columns, colsToShow, description = NULL)
 
 \item{tableId}{Character: id of the datatable}
 
+\item{columns}{Character: column names of the datatable}
+
+\item{colsToShow}{Boolean: columns to show}
+
 \item{description}{Character: description of the table (optional)}
 }
 \value{

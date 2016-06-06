@@ -4,7 +4,24 @@
 \alias{bsModal2}
 \title{Modified version of shinyBS::bsModal}
 \usage{
-bsModal2(id, title, trigger, ..., style, size = NULL, footer = NULL)
+bsModal2(id, title, trigger, ..., size = NULL, footer = NULL,
+  style = NULL)
+}
+\arguments{
+\item{id}{A unique identifier for the modal window}
+
+\item{title}{The title to appear at the top of the modal}
+
+\item{trigger}{The id of a button or link that will open the modal.}
+
+\item{...}{UI elements to include within the modal}
+
+\item{size}{\bold{Optional} What size should the modal be? (\code{small} or \code{large})}
+
+\item{footer}{UI set: List of elements to include in the footer}
+
+\item{style}{Character: message style can be "warning", "error", "info" or 
+NULL}
 }
 \description{
 bsModal is used within the UI to create a modal window. This allows to use

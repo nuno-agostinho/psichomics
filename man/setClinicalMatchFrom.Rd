@@ -4,7 +4,14 @@
 \alias{setClinicalMatchFrom}
 \title{Set clinical matches from a given data type}
 \usage{
-setClinicalMatchFrom(dataType, value, category = getCategory())
+setClinicalMatchFrom(dataset, value, category = getCategory())
+}
+\arguments{
+\item{dataset}{Character: data set (e.g. "Clinical data")}
+
+\item{value}{Vector of integers: clinical matches of dataset}
+
+\item{category}{Character: data category (e.g. "Carcinoma 2016")}
 }
 \description{
 Set clinical matches from a given data type
