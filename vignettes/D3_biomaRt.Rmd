@@ -9,7 +9,7 @@ output:
 
 Let's check available BioMart databases and select one dataset.
 
-```{r marts, results='asis' eval=FALSE}
+```{r marts, eval=FALSE}
 library("biomaRt")
 listMarts()
 ensembl <- useMart("ENSEMBL_MART_ENSEMBL")

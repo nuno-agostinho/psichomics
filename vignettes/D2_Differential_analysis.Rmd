@@ -4,7 +4,7 @@ output: html_document
 ---
 
 # Splicing
-**Adapted from Marie Tutorial**
+**Adapted from Marie's and Lina's Tutorials**
 
 To perform differential analysis on alternative splicing, we need the exon
 inclusion levels ("PSI" tables). Let's load them.
