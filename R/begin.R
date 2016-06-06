@@ -121,7 +121,7 @@ options(shiny.maxRequestSize = MB * 1024^2)
 # TODO(NunoA): remove this (it's only for documentation purposes)
 # options(shiny.trace=TRUE)
 
-tabsFolder <- "R/"
+tabsFolder <- system.file("R", package="psichomics")
 
 #' Trims whitespace from a word
 #'
@@ -308,7 +308,7 @@ matchIdWithClinical <- function(ids, clinical) {
 psichomics <- function(..., reload = FALSE) {
     if (reload)
         load_all()
-    runApp(...)
+    runApp(system.file("inst/shiny", package="psichomics"), ...)
 }
 
 #' Assign one group for each clinical patient
