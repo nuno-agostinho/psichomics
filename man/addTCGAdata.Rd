@@ -4,7 +4,7 @@
 \alias{addTCGAdata}
 \title{Creates a UI set with options to add data from TCGA/Firehose}
 \usage{
-addTCGAdata()
+addTCGAdata(ns)
 }
 \value{
 A UI set that can be added to a UI definition

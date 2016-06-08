@@ -4,7 +4,7 @@
 \alias{addLocalFile}
 \title{Creates a UI set with options to add a file from the local storage}
 \usage{
-addLocalFile()
+addLocalFile(ns)
 }
 \value{
 A UI set that can be added to a UI definition
