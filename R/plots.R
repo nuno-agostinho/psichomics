@@ -1,84 +1,74 @@
-name <- "Plots"
-primary <- TRUE
-id <- function(value) objectId(name, value)
-
-# Loads valid scripts from the indicated folder
-plotName <- "plot"
-plotEnvs <- sourceScripts(folder = tabsFolder,
-                          pattern = "plots_",
-                          check = c(plotName, "ui"),
-                          parentEnv = environment())
-plotEnvs.server <- lapply(plotEnvs, "[[", "server")
-
-# Get name of the loaded scripts
-names <- sapply(plotEnvs, "[[", plotName)
-
 #' User interface
 #' @importFrom shinyBS bsTooltip
-ui <- function(tab) {
-    tab(name,
+plotsUI <- function(id, tab) {
+    ns <- NS(id)
+    uiList <- getUiFunctions(ns, "plots")
+    sharedData$names <- sapply(uiList, attr, "name")
+     
+    tab("Plots",
         # allows the user to choose which UI set is shown
         fluidRow(
-            column(4, selectizeInput(id("selectizePlot"), "Select plot type:",
+            column(4, selectizeInput(ns("selectizePlot"), "Select plot type:",
                                      choices = NULL,
                                      options = list(
                                          placeholder = "Select a plot type"))),
-            column(4, selectizeInput(id("selectizeCategory"), "Select category:",
+            column(4, selectizeInput(ns("selectizeCategory"), "Select category:",
                                      choices = NULL,
                                      options = list(
                                          placeholder = "Select a category"))),
-            column(4, selectizeInput(id("selectizeEvent"), "Select event:",
+            column(4, selectizeInput(ns("selectizeEvent"), "Select event:",
                                      choices = NULL,
                                      options = list(
                                          placeholder = "Select an event")))),
-        bsTooltip(id("selectizeEvent"), placement="right",
+        bsTooltip(ns("selectizeEvent"), placement="right",
                   "Delete text and start typing to search events",
                   options = list(container="body")),
-        lapply(plotEnvs, function(env) {
+        lapply(uiList, function(ui) {
             conditionalPanel(
-                condition=sprintf("input[id='%s']=='%s'",
-                                  id("selectizePlot"), env[[plotName]]), env$ui())
-        }))
+                condition=sprintf("input[id='%s'] == '%s'",
+                                  ns("selectizePlot"), attr(ui, "name")), ui)
+        })
+    )
 }
 
-server <- function(input, output, session) {
+plotsServer <- function(input, output, session) {
     # Runs server logic from the scripts
-    lapply(plotEnvs.server, do.call, list(input, output, session))
-    
+    getServerFunctions("plots")
+
     # Updates selectize input to show available plots
-    updateSelectizeInput(session, id("selectizePlot"), choices = names)
-    
+    observe({
+        updateSelectizeInput(session, "selectizePlot", choices=sharedData$names)
+    })
+
     # Updates selectize input to show available categories
     observe({
         data <- getData()
         if (!is.null(data))
-            updateSelectizeInput(session, id("selectizeCategory"), 
+            updateSelectizeInput(session, "selectizeCategory",
                                  choices = names(data))
     })
     
     # Set the category of the data when possible
-    observeEvent(input[[id("selectizeCategory")]], 
-                 setCategory(input[[id("selectizeCategory")]]))
-    
+    observeEvent(input$selectizeCategory, setCategory(input$selectizeCategory))
+
     # Updates selectize event to show available events
     observe({
         psi <- getInclusionLevels()
         if (!is.null(psi)) {
             choices <- rownames(psi)
             names(choices) <- gsub("_", " ", rownames(psi))
-            updateSelectizeInput(session, id("selectizeEvent"),
-                                 choices = sort(choices))
+            updateSelectizeInput(session, "selectizeEvent",
+                                 choices=sort(choices))
         } else {
             ## TODO(NunoA): Input doesn't seem to update when changing data...
-            updateSelectizeInput(session, id("selectizeEvent"),
-                                 choices = NULL, options = list(
-                                     placeholder = "No event available"))
+            updateSelectizeInput(session, "selectizeEvent", choices=NULL,
+                                 options=list(
+                                     placeholder="No event available"))
         }
     })
-    
-    # Set the selected alternative splicing event
-    observeEvent(input[[id("selectizeEvent")]],
-                 setEvent(input[[id("selectizeEvent")]]))
+
+    # # Set the selected alternative splicing event
+    observeEvent(input$selectizeEvent, setEvent(input$selectizeEvent))
     
     # # If showing datatable, hide selectizeEvent; otherwise, show it
     # observe({
@@ -91,3 +81,6 @@ server <- function(input, output, session) {
     #         vis(shinyjs::show)
     # })
 }
+
+attr(plotsUI, "loader") <- "app"
+attr(plotsServer, "loader") <- "app"
