@@ -28,16 +28,16 @@ loadBy <- function(loader, FUN) {
 getServerFunctions <- function(loader, ...) {
     # Get all functions ending with "Server"
     server <- ls(getNamespace("psichomics"), all.names=TRUE, pattern="Server$")
-    for (each in server) {
+    lapply(server, function(name) {
         # Parse function name to get the function itself
-        FUN <- eval(parse(text=each))
+        FUN <- eval(parse(text=name))
         # Check if module should be loaded by app
         if (loadBy(loader, FUN)) {
             # Remove last "Server" from the name and use it as ID
-            name <- gsub("Server$", "", each)
-            callModule(FUN, name, ...)
+            id <- gsub("Server$", "", name)
+            callModule(FUN, id, ...)
         }
-    }
+    })
     return(invisible(TRUE))
 }
 
@@ -49,14 +49,14 @@ getUiFunctions <- function(ns, loader) {
     ui <- ls(getNamespace("psichomics"), all.names=TRUE, pattern="UI$")
     
     # Get the interface of each tab
-    uiList <- lapply(ui, function(tabUI) {
+    uiList <- lapply(ui, function(name) {
         # Parse function name to get the function itself
-        FUN <- eval(parse(text=tabUI))
+        FUN <- eval(parse(text=name))
         # Check if module should be loaded by app
         if (loadBy(loader, FUN)) {
             # Remove last "UI" from the name and use it as ID
-            name <- gsub("UI$", "", tabUI)
-            FUN(ns(name), tabPanel)
+            id <- gsub("UI$", "", name)
+            FUN(ns(id), tabPanel)
         }
     })
     # Remove NULL elements from list
