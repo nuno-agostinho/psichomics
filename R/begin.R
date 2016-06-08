@@ -348,6 +348,7 @@ groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE,
 showModal <- function(session, title, ..., style = NULL,
                       iconName = "exclamation-circle", footer = NULL,
                       printMessage = FALSE, size = NULL) {
+    warning("Modals aren't working. The following was raised: ", title)
     session$output[["globalModal"]] <- renderUI(
         bsModal2(id(title), style = style, div(icon(iconName), title),
                  trigger = NULL, size = size, ..., footer = NULL))
