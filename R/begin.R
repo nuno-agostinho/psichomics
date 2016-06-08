@@ -297,20 +297,6 @@ matchIdWithClinical <- function(ids, clinical) {
     return(clinicalRows)
 }
 
-#' Start graphical interface of PSICHOMICS
-#' 
-#' @param ... Parameters to pass to the function runApp
-#' @param reload Boolean: reload package? FALSE by default
-#' 
-#' @importFrom devtools load_all
-#' 
-#' @export
-psichomics <- function(..., reload = FALSE) {
-    if (reload)
-        load_all()
-    runApp(system.file("inst/shiny", package="psichomics"), ...)
-}
-
 #' Assign one group for each clinical patient
 #' 
 #' @param groups Matrix: clinical groups
