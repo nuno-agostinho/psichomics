@@ -41,10 +41,14 @@ getServerFunctions <- function(loader, ...) {
     return(invisible(TRUE))
 }
 
-#' Matches UI functions from a given loader
-#' @param Character: loader to run the functions
+#' Matches user interface (UI) functions from a given loader
+#' 
+#' @param ns Shiny function to create namespaced IDs
+#' @param loader Character: loader to run the functions
+#' @param ... Extra arguments to pass to the user interface (UI) functions
+#' 
 #' @return List of functions related to the given loader
-getUiFunctions <- function(ns, loader) {
+getUiFunctions <- function(ns, loader, ...) {
     # Get all functions ending with "UI"
     ui <- ls(getNamespace("psichomics"), all.names=TRUE, pattern="UI$")
     
@@ -55,8 +59,11 @@ getUiFunctions <- function(ns, loader) {
         # Check if module should be loaded by app
         if (loadBy(loader, FUN)) {
             # Remove last "UI" from the name and use it as ID
-            id <- gsub("UI$", "", name)
-            FUN(ns(id), tabPanel)
+            id  <- gsub("UI$", "", name)
+            res <- FUN(ns(id), ...)
+            # Give a name to the UI
+            attr(res, "name") <- attr(FUN, "name")
+            return(res)
         }
     })
     # Remove NULL elements from list
@@ -67,7 +74,7 @@ getUiFunctions <- function(ns, loader) {
 #' The user interface (ui) controls the layout and appearance of the app
 #' All the CSS modifications are in the file "shiny/www/styles.css"
 appUI <- function() {
-    uiList <- getUiFunctions(paste, "app")
+    uiList <- getUiFunctions(paste, "app", tabPanel)
     
     header <- list(
         includeCSS(insideFile("shiny", "www", "styles.css")),
