@@ -27,6 +27,9 @@ getCategory <- reactive(sharedData$category)
 getCategoryData <- reactive(
     if(!is.null(getCategory())) getData()[[getCategory()]])
 
+#' Get selected dataset
+getActiveDataset <- reactive(sharedData$activeDataset)
+
 #' Get clinical data of the data category
 getClinicalData <- reactive(getCategoryData()[["Clinical data"]])
 
@@ -73,6 +76,11 @@ setEvent <- function(event) setAsGlobal("event", event)
 #' @param category Character: data category
 #' @note Needs to be called inside reactive function
 setCategory <- function(category) setAsGlobal("category", category)
+
+#' Set active dataset
+#' @param dataset Character: dataset
+#' @note Needs to be called inside reactive function
+setActiveDataset <- function(dataset) setAsGlobal("activeDataset", dataset)
 
 #' Set inclusion levels for a given data category
 #' @note Needs to be called inside reactive function

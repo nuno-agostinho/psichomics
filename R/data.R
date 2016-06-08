@@ -137,8 +137,11 @@ dataServer <- function(input, output, session) {
         do.call(tabsetPanel, c(id=ns("datasetTab"), dataTablesUI))
     })
     
+    # Change the active dataset
+    observe( setActiveDataset(input$datasetTab) )
+    
     # Run server logic from the scripts
-    getServerFunctions("data", reactive(input$datasetTab))
+    getServerFunctions("data")
 }
 
 attr(dataUI, "loader") <- "app"
