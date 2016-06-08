@@ -4,21 +4,20 @@
 ## to go on next page or something and clean checkboxes when 
 ## merging/intersect/removing groups
 
-name <- "Groups"
-
 #' User interface to group by column
-groupByColumn <- function() { list(
-    selectizeInput(id("groupColumn"), "Select column", choices = NULL,
-                   options = list(
-                       placeholder = "Start typing to search for columns")),
-    helpText("Groups will be created automatically depending on the",
-             "given column.")
-)}
+groupByColumn <- function(ns) {
+    list(
+        selectizeInput(ns("groupColumn"), "Select column", choices = NULL,
+                       options = list(
+                           placeholder = "Start typing to search for columns")),
+        helpText("Groups will be created automatically depending on the",
+                 "given column.")
+    )}
 
 #' User interface to group by row
-groupByRow <- function() { list(
+groupByRow <- function(ns) { list(
     selectizeInput(
-        id("groupRows"), "Select rows", choices = NULL,
+        ns("groupRows"), "Select rows", choices = NULL,
         multiple = TRUE,
         # Allow to add new items
         options = list(
@@ -31,17 +30,17 @@ groupByRow <- function() { list(
 )}
 
 #' User interface to group by subset expression
-groupByExpression <- function() { list (
-    textInput(id("groupExpression"), "Subset expression"),
+groupByExpression <- function(ns) { list (
+    textInput(ns("groupExpression"), "Subset expression"),
     helpText('Type ', tags$kbd('X > 8 & Y == "alive"'), ' to select rows with',
              'values higher than 8 for column X and "alive" for column Y.'),
-    uiOutput(id("groupExpressionAutocomplete"))
+    uiOutput(ns("groupExpressionAutocomplete"))
 )}
 
 #' User interface to group by grep expression
-groupByGrep <- function() { list (
-    textInput(id("grepExpression"), "GREP expression"),
-    selectizeInput(id("grepColumn"),
+groupByGrep <- function(ns) { list (
+    textInput(ns("grepExpression"), "GREP expression"),
+    selectizeInput(ns("grepColumn"),
                    "Select column to GREP",
                    choices = NULL,
                    options = list(
@@ -49,22 +48,23 @@ groupByGrep <- function() { list (
 )}
 
 #' Creates UI elements for the grouping feature
-ui <- function() {
-    checkId <- function (sign, what)
-        sprintf("input[id='%s'] %s '%s'", id("subsetBy"), sign, what)
+groupsUI <- function(id, tab) {
+    ns <- NS(id)
     
-    list(
-        radioButtons(id("subsetBy"), "Subset by", inline = TRUE,
+    checkId <- function (sign, what)
+        sprintf("input[id='%s'] %s '%s'", ns("subsetBy"), sign, what)
+    tab("Groups", br(),
+        radioButtons(ns("subsetBy"), "Subset by", inline = TRUE,
                      c("Column", "Rows", "Expression", "Grep")),
-        conditionalPanel(checkId("==", "Column"), groupByColumn()),
-        conditionalPanel(checkId("==", "Rows"), groupByRow()),
-        conditionalPanel(checkId("==", "Expression"), groupByExpression()),
-        conditionalPanel(checkId("==", "Grep"), groupByGrep()),
+        conditionalPanel(checkId("==", "Column"), groupByColumn(ns)),
+        conditionalPanel(checkId("==", "Rows"), groupByRow(ns)),
+        conditionalPanel(checkId("==", "Expression"), groupByExpression(ns)),
+        conditionalPanel(checkId("==", "Grep"), groupByGrep(ns)),
         conditionalPanel(checkId("!=", "Column"),
-                         textInput(id("groupName"), "Group name",
+                         textInput(ns("groupName"), "Group name",
                                    placeholder = "Unnamed")),
-        actionButton(id("createGroup"), "Create group", class ="btn-primary"),
-        uiOutput(id("groupsList"))
+        actionButton(ns("createGroup"), "Create group", class ="btn-primary"),
+        uiOutput(ns("groupsList"))
     )
 }
 
@@ -75,17 +75,16 @@ ui <- function() {
 #' @param input Shiny input
 #' @param output Shiny output
 #' @param session Shiny session
-createGroupFromInput <- function (input, output, session) {
-    active <- input[[id("datasetTab")]]
-    if (is.null(active)) {
+createGroupFromInput <- function (input, output, session, active) {
+    if (is.null(active())) {
         errorModal(session, "Data missing", "Load some data first.")
         return(NULL)
     }
     
-    type <- input[[id("subsetBy")]]
+    type <- input$subsetBy
     
-    columnInput <- input[[id("groupColumn")]]
-    data <- getCategoryData()[[active]]
+    columnInput <- input$groupColumn
+    data <- getCategoryData()[[active()]]
     
     if (type == "Column") {
         colData <- data[[columnInput]]
@@ -99,11 +98,11 @@ createGroupFromInput <- function (input, output, session) {
         group <- cbind(groupNames, type, columnInput, rows)
     } else if (type == "Rows") {
         # Convert the given string into a sequence of numbers
-        rows <- input[[id("groupRows")]]
+        rows <- input$groupRows
         strRows <- paste(rows, collapse = ", ")
         rows <- unlist(lapply(rows, function(row) eval(parse(text = row))))
         rows <- sort(unique(rows))
-
+        
         # Remove and warn if selected rows are greater than the rows number
         gtRows <- rows > nrow(data)
         if (any(gtRows)) {
@@ -116,10 +115,10 @@ createGroupFromInput <- function (input, output, session) {
                 tags$code(removed))
             rows <- rows[!gtRows]
         }
-        group <- cbind(input[[id("groupName")]], type, strRows, list(rows))
+        group <- cbind(input$groupName, type, strRows, list(rows))
     } else if (type == "Expression") {
         # Subset data using the given expression
-        expr <- input[[id("groupExpression")]]
+        expr <- input$groupExpression
         
         # Test expression before running
         set <- tryCatch(subset(data, eval(parse(text = expr))),
@@ -135,7 +134,7 @@ createGroupFromInput <- function (input, output, session) {
         }
         
         rows <- match(rownames(set), rownames(data))
-        group <- cbind(input[[id("groupName")]], type, expr, list(rows))
+        group <- cbind(input$groupName, type, expr, list(rows))
     } else if (type == "Grep") {
         ## TODO(NunoA): Subset data with the GREP expression for the given column
         group <- rep(NA, 4)
@@ -185,10 +184,12 @@ renameGroups <- function(new, old) {
 #' @param buttonId Character: ID of the button to trigger operation
 #' @param symbol Character: operation symbol
 operateOnGroups <- function(input, session, sharedData, FUN, buttonId, 
-                            symbol = " ") {
+                            active, symbol=" ") {
+    ns <- session$ns
     # Operate on selected groups when pressing the corresponding button
-    observeEvent(input[[paste(buttonId, "Button", sep = "_")]], {
-        session$sendCustomMessage(type = "getCheckedBoxes", buttonId)
+    observeEvent(input[[paste(buttonId, "button", sep="-")]], {
+        browser()
+        session$sendCustomMessage(type="getCheckedBoxes", "test")
         sharedData[[buttonId]] <- TRUE
     })
     
@@ -200,8 +201,7 @@ operateOnGroups <- function(input, session, sharedData, FUN, buttonId,
             sharedData[[buttonId]] <- FALSE
             
             # Get groups for the data table that is visible and active
-            active <- input[[id("datasetTab")]]
-            groups <- getGroupsFrom(active)
+            groups <- getGroupsFrom(active())
             
             # Create new set
             new <- NULL
@@ -218,7 +218,7 @@ operateOnGroups <- function(input, session, sharedData, FUN, buttonId,
             }
             
             # Remove selected groups
-            if (identical(FUN, "remove") || input[[id("removeSetsUsed")]])
+            if (identical(FUN, "remove") || input$removeSetsUsed)
                 groups <- groups[-selected, , drop=FALSE]
             
             # Add new groups to top (if there are any)
@@ -226,7 +226,7 @@ operateOnGroups <- function(input, session, sharedData, FUN, buttonId,
                 new <- renameGroups(new, groups)
                 groups <- rbind(new, groups)
             }
-            setGroupsFrom(active, groups)
+            setGroupsFrom(active(), groups)
         }
     })
 }
@@ -236,31 +236,32 @@ operateOnGroups <- function(input, session, sharedData, FUN, buttonId,
 #' @param input Shiny input
 #' @param output Shiny output
 #' @param session Shiny session
-server <- function(input, output, session) {
+groupsServer <- function(input, output, session, active) {
+    ns <- session$ns
+    
     # Update available attributes to suggest in the group expression
-    output[[id("groupExpressionAutocomplete")]] <- renderUI({
-        active <- input[[id("datasetTab")]]
-        attributes <- names(getCategoryData()[[active]])
-        textComplete(id("groupExpression"), attributes)
+    output$groupExpressionAutocomplete <- renderUI({
+        if (!is.null(active())) {
+            attributes <- names(getCategoryData()[[active()]])
+            textComplete(ns("groupExpression"), attributes)
+        }
     })
     
     # Update columns available for creating groups when there's loaded data
-    observeEvent(input[[id("datasetTab")]], {
-        active <- input[[id("datasetTab")]]
-        for (i in id(c("groupColumn", "grepColumn"))) {
+    observeEvent(active(), {
+        for (i in c("groupColumn", "grepColumn")) {
             updateSelectizeInput(session, i, selected = NULL,
-                                 choices = names(getCategoryData()[[active]]))
+                                 choices = names(getCategoryData()[[active()]]))
         }
     })
     
     # Create a new group when clicking on the createGroup button
-    observeEvent(input[[id("createGroup")]], {
+    observeEvent(input$createGroup, {
         # Get groups for the data table that is visible and active
-        active <- input[[id("datasetTab")]]
-        groups <- getGroupsFrom(active)
+        groups <- getGroupsFrom(active())
         
         # Create new group(s) from user input
-        new <- createGroupFromInput(input, output, session)
+        new <- createGroupFromInput(input, output, session, active)
         
         if (!is.null(new)) {
             # Rename duplicated group names
@@ -268,17 +269,13 @@ server <- function(input, output, session) {
             
             # Append the new group(s) to the groups already created
             groups <- rbind(new, groups)
-            setGroupsFrom(active, groups)
+            setGroupsFrom(active(), groups)
         }
     })
     
     # Render groups list and show interface to manage groups
-    output[[id("groupsTable")]] <- renderDataTable({
-        ## TODO(NunoA): Allow to remove and merge selected rows from the groups
-        ## This could be done using checkboxes; how to retrieve which checkboxes
-        ## were checked? Possible with data table or javascript?
-        active <- input[[id("datasetTab")]]
-        groups <- getGroupsFrom(active)
+    output$groupsTable <- renderDataTable({
+        groups <- getGroupsFrom(active())
         
         # Show groups only if there is at least one group
         if (!is.null(groups) && nrow(groups) > 0) {
@@ -301,47 +298,51 @@ server <- function(input, output, session) {
             colnames(res)[1] <- "<input name='checkAllGroups' type='checkbox'/>"
             return(res)
         }
-    }, options = list(pageLength = 10, lengthChange = FALSE, scrollX = TRUE, 
+    }, options = list(pageLength = 10, lengthChange = FALSE, scrollX = TRUE,
                       #filter = FALSE, info = FALSE, paginationType = "simple",
                       ordering = FALSE),
     escape = FALSE)
     
     # Remove selected groups
-    removeId <- id("removeGroups")
-    operateOnGroups(input, session, sharedData, "remove", removeId)
+    removeId <- "removeGroups"
+    operateOnGroups(input, session, sharedData, FUN="remove", buttonId=removeId,
+                    active)
     
     # Merge selected groups
-    mergeId <- id("mergeGroups")
-    operateOnGroups(input, session, sharedData, union, mergeId, " \u222A ")
+    mergeId <- "mergeGroups"
+    operateOnGroups(input, session, sharedData, FUN=union, buttonId=mergeId,
+                    active, symbol=" \u222A ")
     
     # Intersect selected groups
-    intersectId <- id("intersectGroups")
-    operateOnGroups(input, session, sharedData, intersect, intersectId,
-                    " \u2229 ")
+    intersectId <- "intersectGroups"
+    operateOnGroups(input, session, sharedData, FUN=intersect,
+                    buttonId=intersectId, active, symbol=" \u2229 ")
     
     # Render groups interface only if any group exists
-    output[[id("groupsList")]] <- renderUI({
-        active <- input[[id("datasetTab")]]
-        groups <- getGroupsFrom(active)
+    output$groupsList <- renderUI({
+        groups <- getGroupsFrom(active())
         
-        operationButton <- function(operation, operationId, ...)
-            actionButton(paste(operationId, "Button", sep = "_"),
-                         operation, ...)
+        operationButton <- function(operation, operationId, ...) {
+            actionButton(paste(operationId, "button", sep="-"), operation, ...)
+        }
         
         # Don't show anything when there are no groups
         if (!is.null(groups) && nrow(groups) > 0) {
-            list(
+            tagList(
                 hr(),
-                dataTableOutput(id("groupsTable")),
+                dataTableOutput(ns("groupsTable")),
                 div(class="btn-group",
-                    operationButton("Merge", mergeId),
-                    operationButton("Intersect", intersectId),
-                    # actionButton(id("complementGroups"), "Complement"),
-                    # actionButton(id("subtractGroups"), "Subtract"),
-                    operationButton("Remove", removeId, icon = icon("times"))),
-                checkboxInput(id("removeSetsUsed"), "Remove original groups", 
+                    operationButton("Merge", ns(mergeId)),
+                    operationButton("Intersect", ns(intersectId)),
+                    # actionButton("complementGroups", ns("Complement")),
+                    # actionButton("subtractGroups", ns("Subtract")),
+                    operationButton("Remove", ns(removeId), icon = icon("times"))),
+                checkboxInput(ns("removeSetsUsed"), "Remove original groups",
                               value = TRUE)
             )
         }
     })
 }
+
+attr(groupsUI, "loader") <- "data"
+attr(groupsServer, "loader") <- "data"
