@@ -114,10 +114,22 @@ loadFile <- function(format, file) {
 #' recognised; otherwise, returns NULL
 #' @export
 parseValidFile <- function(file, formatsFolder) {
-    # Get all information from available formats
-    formats <- sourceScripts(formatsFolder,
-                             pattern="formats_",
-                             c("tablename", "check"))
+    # Get all functions ending with "UI"
+    fun <- ls(getNamespace("psichomics"), all.names=TRUE, pattern="Format$")
+    
+    # Get the parameters of each function
+    formats <- lapply(fun, function(format) {
+        # Parse function name to get the function itself
+        FUN <- eval(parse(text=format))
+        # Check if module should be loaded by app
+        if (loadBy("formats", FUN)) {
+            # Remove last "UI" from the name and use it as ID
+            name <- gsub("UI$", "", format)
+            FUN()
+        }
+    })
+    # Remove NULL elements from list
+    formats <- Filter(Negate(is.null), formats)
     
     # The number of rows to read will be the maximum value asked by all the file
     # formats; if no format aks for a specific number of rows, the default is 6
