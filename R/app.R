@@ -1,0 +1,122 @@
+#' @include begin.R
+NULL
+
+#' Get psichomics file inside a given directory
+#' @param ... character vectors, specifying subdirectory and file(s) within some
+#'  package. The default, none, returns the root of the package. Wildcards are
+#'  not supported.
+insideFile <- function(...) {
+    return(system.file(..., package="psichomics"))
+}
+
+#' Check if a given function should be loaded by a 
+#' @param loader Character: name of the file responsible to load such function 
+#' @param child Function
+#' @return Boolean vector
+loadBy <- function(loader, FUN) {
+    attribute <- attr(FUN, "loader")
+    if (is.null(attribute))
+        return(FALSE)
+    else
+        return(attribute == loader)
+}
+
+#' Matches server functions from a given loader
+#' @param loader Character: loader to run the functions
+#' @param ... Extra arguments to pass to server functions
+#' @return Invisible TRUE
+getServerFunctions <- function(loader, ...) {
+    # Get all functions ending with "Server"
+    server <- ls(getNamespace("psichomics"), all.names=TRUE, pattern="Server$")
+    for (each in server) {
+        # Parse function name to get the function itself
+        FUN <- eval(parse(text=each))
+        # Check if module should be loaded by app
+        if (loadBy(loader, FUN)) {
+            # Remove last "Server" from the name and use it as ID
+            name <- gsub("Server$", "", each)
+            callModule(FUN, name, ...)
+        }
+    }
+    return(invisible(TRUE))
+}
+
+#' Matches UI functions from a given loader
+#' @param Character: loader to run the functions
+#' @return List of functions related to the given loader
+getUiFunctions <- function(ns, loader) {
+    # Get all functions ending with "UI"
+    ui <- ls(getNamespace("psichomics"), all.names=TRUE, pattern="UI$")
+    
+    # Get the interface of each tab
+    uiList <- lapply(ui, function(tabUI) {
+        # Parse function name to get the function itself
+        FUN <- eval(parse(text=tabUI))
+        # Check if module should be loaded by app
+        if (loadBy(loader, FUN)) {
+            # Remove last "UI" from the name and use it as ID
+            name <- gsub("UI$", "", tabUI)
+            FUN(ns(name), tabPanel)
+        }
+    })
+    # Remove NULL elements from list
+    uiList <- Filter(Negate(is.null), uiList)
+    return(uiList)
+}
+
+#' The user interface (ui) controls the layout and appearance of the app
+#' All the CSS modifications are in the file "shiny/www/styles.css"
+appUI <- function() {
+    uiList <- getUiFunctions(paste, "app")
+    
+    header <- list(
+        includeCSS(insideFile("shiny", "www", "styles.css")),
+        includeScript(insideFile("shiny", "www", "functions.js")),
+        includeScript(insideFile("shiny", "www", "fuzzy.min.js")),
+        includeScript(insideFile("shiny", "www", "jquery.textcomplete.min.js")),
+        conditionalPanel(
+            condition="$('html').hasClass('shiny-busy')",
+            div(icon("flask", "fa-spin"), "Working...",
+                class="text-right", id="loadmessage")),
+        uiOutput("globalModal"))
+    
+    shinyUI(
+        do.call(navbarPage, c(
+            list(title = "PSΨchomics", id = "nav", collapsible = TRUE,
+                 position = "fixed-top",
+                 header = header,
+                 footer = shinyjs::useShinyjs()),
+            uiList)
+        )
+    )
+}
+
+#' Server function
+#'
+#' Instructions to build the Shiny app.
+#'
+#' @param input Input object
+#' @param output Output object
+#' @param session Session object
+appServer <- function(input, output, session) {
+    getServerFunctions("app")
+    
+    # session$onSessionEnded(function() {
+    #     # Stop app and print message to console
+    #     suppressMessages(stopped <- stopApp(returnValue="Shiny app was closed"))
+    # })
+}
+
+#' Start graphical interface of PSICHOMICS
+#'
+#' @param ... Parameters to pass to the function runApp
+#' @param reload Boolean: reload package? FALSE by default
+#'
+#' @importFrom devtools load_all
+#' @importFrom shiny shinyApp
+#'
+#' @export
+psichomics <- function(..., reload = FALSE) {
+    if (reload) load_all()
+    shinyApp(appUI(), appServer)
+}
