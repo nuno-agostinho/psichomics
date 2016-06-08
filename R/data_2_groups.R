@@ -75,8 +75,8 @@ groupsUI <- function(id, tab) {
 #' @param input Shiny input
 #' @param output Shiny output
 #' @param session Shiny session
-createGroupFromInput <- function (input, output, session, active) {
-    if (is.null(active())) {
+createGroupFromInput <- function (input, output, session) {
+    if (is.null(getActiveDataset())) {
         errorModal(session, "Data missing", "Load some data first.")
         return(NULL)
     }
@@ -84,7 +84,7 @@ createGroupFromInput <- function (input, output, session, active) {
     type <- input$subsetBy
     
     columnInput <- input$groupColumn
-    data <- getCategoryData()[[active()]]
+    data <- getCategoryData()[[getActiveDataset()]]
     
     if (type == "Column") {
         colData <- data[[columnInput]]
@@ -201,32 +201,32 @@ operateOnGroups <- function(input, session, sharedData, FUN, buttonId,
 #' @param input Shiny input
 #' @param output Shiny output
 #' @param session Shiny session
-groupsServer <- function(input, output, session, active) {
+groupsServer <- function(input, output, session) {
     ns <- session$ns
     
     # Update available attributes to suggest in the group expression
     output$groupExpressionAutocomplete <- renderUI({
-        if (!is.null(active())) {
-            attributes <- names(getCategoryData()[[active()]])
+        if (!is.null(getActiveDataset())) {
+            attributes <- names(getCategoryData()[[getActiveDataset()]])
             textComplete(ns("groupExpression"), attributes)
         }
     })
     
     # Update columns available for creating groups when there's loaded data
-    observeEvent(active(), {
+    observeEvent(getActiveDataset(), {
         for (i in c("groupColumn", "grepColumn")) {
             updateSelectizeInput(session, i, selected = NULL,
-                                 choices = names(getCategoryData()[[active()]]))
+                                 choices = names(getCategoryData()[[getActiveDataset()]]))
         }
     })
     
     # Create a new group when clicking on the createGroup button
     observeEvent(input$createGroup, {
         # Get groups for the data table that is visible and active
-        groups <- getGroupsFrom(active())
+        groups <- getGroupsFrom(getActiveDataset())
         
         # Create new group(s) from user input
-        new <- createGroupFromInput(input, output, session, active)
+        new <- createGroupFromInput(input, output, session)
         
         if (!is.null(new)) {
             # Rename duplicated group names
@@ -234,13 +234,13 @@ groupsServer <- function(input, output, session, active) {
             
             # Append the new group(s) to the groups already created
             groups <- rbind(new, groups)
-            setGroupsFrom(active(), groups)
+            setGroupsFrom(getActiveDataset(), groups)
         }
     })
     
     # Render groups list and show interface to manage groups
     output$groupsTable <- renderDataTable({
-        groups <- getGroupsFrom(active())
+        groups <- getGroupsFrom(getActiveDataset())
         
         # Show groups only if there is at least one group
         if (!is.null(groups) && nrow(groups) > 0) {
@@ -298,7 +298,7 @@ groupsServer <- function(input, output, session, active) {
             sharedData$javascriptRead <- FALSE
             
             # Get groups for the data table that is visible and active
-            groups <- getGroupsFrom(active())
+            groups <- getGroupsFrom(getActiveDataset())
             
             # Create new set
             new <- NULL
@@ -323,7 +323,7 @@ groupsServer <- function(input, output, session, active) {
                 new <- renameGroups(new, groups)
                 groups <- rbind(new, groups)
             }
-            setGroupsFrom(active(), groups)
+            setGroupsFrom(getActiveDataset(), groups)
         }
     })
     
@@ -332,7 +332,7 @@ groupsServer <- function(input, output, session, active) {
     
     # Render groups interface only if any group exists
     output$groupsList <- renderUI({
-        groups <- getGroupsFrom(active())
+        groups <- getGroupsFrom(getActiveDataset())
         
         operationButton <- function(operation, operationId, ...) {
             actionButton(paste(operationId, "button", sep="-"), operation, ...)
