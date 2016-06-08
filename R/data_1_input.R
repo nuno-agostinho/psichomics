@@ -1,15 +1,13 @@
-name <- "Input"
-
 #' Creates a UI set with options to add a file from the local storage
 #' 
 #' @return A UI set that can be added to a UI definition
-addLocalFile <- function() {
-    list(
-        textAreaInput(id("localFolder"), "Folder where data is stored",
+addLocalFile <- function(ns) {
+    tagList(
+        textAreaInput(ns("localFolder"), "Folder where data is stored",
                       value = "~/Downloads/", placeholder = "Insert local folder"),
-        textInput(id("localCategory"), label = "Category name", 
+        textInput(ns("localCategory"), label = "Category name",
                   value = "Adenoid cystic carcinoma (ACC) 2016"),
-        selectizeInput(id("localIgnore"), "Files/directories to ignore",
+        selectizeInput(ns("localIgnore"), "Files/directories to ignore",
                        choices = c(".aux.", ".mage-tab.",
                                    paste0(c("junction", "exon"),
                                           "_quantification"), "Preprocess",
@@ -22,14 +20,14 @@ addLocalFile <- function() {
                            # Allow to add new items
                            create = TRUE, createOnBlur=TRUE,
                            placeholder = "Input files to exclude")),
-        actionButton(id("acceptFile"), class = "btn-primary", "Load files")
+        actionButton(ns("acceptFile"), class = "btn-primary", "Load files")
     ) # end of list
 }
 
 #' Creates a UI set with options to add data from TCGA/Firehose
 #' @importFrom shinyBS bsTooltip
 #' @return A UI set that can be added to a UI definition
-addTCGAdata <- function() {
+addTCGAdata <- function(ns) {
     if (isFirehoseUp()) {
         cohorts <- getFirehoseCohorts()
         acronyms <- names(cohorts)
@@ -37,19 +35,19 @@ addTCGAdata <- function() {
         
         dates <- as.character(getFirehoseDates())
         
-        list(
-            selectizeInput(id("firehoseCohort"), "Cohort", acronyms,
+        tagList(
+            selectizeInput(ns("firehoseCohort"), "Cohort", acronyms,
                            multiple = TRUE, selected = c("ACC", "BLCA"),
                            options = list(placeholder = "Select cohort(s)")),
-            selectizeInput(id("firehoseDate"), "Date", dates, multiple = TRUE,
+            selectizeInput(ns("firehoseDate"), "Date", dates, multiple = TRUE,
                            selected = dates[1], options = list(
                                placeholder = "Select sample date")),
-            selectizeInput(id("dataType"), "Data type",
+            selectizeInput(ns("dataType"), "Data type",
                            c("Clinical", "mRNASeq"), 
                            multiple = TRUE, selected = "Clinical",
                            options = list(
                                placeholder = "Select data types")),
-            selectizeInput(id("firehoseIgnore"), "Files/archives to ignore",
+            selectizeInput(ns("firehoseIgnore"), "Files/archives to ignore",
                            choices = c(".aux.", ".mage-tab.",
                                        paste0(c("junction", "exon"),
                                               "_quantification"), "Preprocess",
@@ -62,18 +60,18 @@ addTCGAdata <- function() {
                                # Allow to add new items
                                create = TRUE, createOnBlur=TRUE,
                                placeholder = "Input files to exclude")),
-            bsTooltip(id("firehoseIgnore"), placement = "right",
+            bsTooltip(ns("firehoseIgnore"), placement = "right",
                       options = list(container = "body"),
                       paste("Files which contain these terms won\\'t be",
                             "either downloaded or loaded.")),
-            textAreaInput(id("dataFolder"), "Folder to store the data",
+            textAreaInput(ns("dataFolder"), "Folder to store the data",
                           value = "~/Downloads/",
                           placeholder = "Insert data folder"),
-            bsTooltip(id("dataFolder"), placement = "right",
+            bsTooltip(ns("dataFolder"), placement = "right",
                       options = list(container = "body"),
                       "Data not available in this folder will be downloaded."),
             actionButton(class = "btn-primary", type = "button",
-                         id("getFirehoseData"), "Get data"))
+                         ns("getFirehoseData"), "Get data"))
     } else {
         list(icon("exclamation-circle"),
              "Firehose seems to be offline at the moment.")
@@ -95,33 +93,43 @@ loadedDataModal <- function(modalId, replaceButtonId, keepButtonId) {
                               label="Keep both"),
                  actionButton(replaceButtonId, class = "btn-warning",
                               "data-dismiss"="modal", label="Replace")))
+    # warningModal(session, "Data already loaded",
+    #              "Would you like to", tags$b("replace"), "the loaded data or",
+    #              tags$b("keep"), "both the previous and new data?",
+    #              footer = tagList(
+    #                  actionButton(keepButtonId, "data-dismiss"="modal",
+    #                               label="Keep both"),
+    #                  actionButton(replaceButtonId, class = "btn-warning",
+    #                               "data-dismiss"="modal", label="Replace")))
 }
 
-#' @importFrom shinyBS bsCollapse bsCollapsePanel bsAlert
-ui <- function() {
-    list(
+#' @importFrom shinyBS bsCollapse bsCollapsePanel
+inputUI <- function(id, tab) {
+    ns <- NS(id)
+    tab("Input", br(),
         # TODO(NunoA): Show alerts from renderUI
-        bsAlert(anchorId = id("alert2")),
-        loadedDataModal(id("localDataModal"), id("localReplace"),
-                        id("localAppend")),
-        loadedDataModal(id("firebrowseDataModal"), id("firebrowseReplace"),
-                        id("firebrowseAppend")),
-        uiOutput(id("pathAutocomplete")),
+        loadedDataModal(ns("localDataModal"),
+                        ns("localReplace"),
+                        ns("localAppend")),
+        loadedDataModal(ns("firebrowseDataModal"),
+                        ns("firebrowseReplace"),
+                        ns("firebrowseAppend")),
+        uiOutput(ns("pathAutocomplete")),
         uiOutput("iframeDownload"),
         bsCollapse(
-            id = id("addData"),
+            id = ns("addData"),
             open = "Add TCGA/Firehose data",
             bsCollapsePanel(
                 style = "info",
                 title = list(icon("plus-circle"), "Add local files"),
                 value = "Add local files",
-                addLocalFile()),
+                addLocalFile(ns)),
             bsCollapsePanel(
                 style = "info",
                 title = list(icon("plus-circle"),
                              "Add TCGA/Firehose data"),
                 value = "Add TCGA/Firehose data",
-                addTCGAdata()))
+                addTCGAdata(ns)))
     )
 }
 
@@ -133,11 +141,11 @@ ui <- function() {
 #' 
 #' @importFrom shinyjs disable enable
 setLocalData <- function(input, output, session, replace=TRUE) {
-    disable(id("acceptFile"))
+    disable("acceptFile")
     
-    folder <- input[[id("localFolder")]]
-    category <- input[[id("localCategory")]]
-    ignore <- input[[id("localIgnore")]]
+    folder <- input$localFolder
+    category <- input$localCategory
+    ignore <- input$localIgnore
     
     sub <- dir(folder, full.names=TRUE)[dir.exists(
         dir(folder, full.names=TRUE))]
@@ -155,7 +163,7 @@ setLocalData <- function(input, output, session, replace=TRUE) {
     }
     
     closeProgress()
-    enable(id("acceptFile"))
+    enable("acceptFile")
 }
 
 #' Set data from Firehose
@@ -165,15 +173,15 @@ setLocalData <- function(input, output, session, replace=TRUE) {
 #' @param replace Boolean: replace loaded data? TRUE by default
 #' @importFrom shinyjs disable enable 
 setFirehoseData <- function(input, output, session, replace=TRUE) {
-    disable(id("getFirehoseData"))
+    disable("getFirehoseData")
     
     # Load data from Firehose
     data <- loadFirehoseData(
-        folder = input[[id("dataFolder")]],
-        cohort = input[[id("firehoseCohort")]],
-        date = gsub("-", "_", input[[id("firehoseDate")]]),
-        data_type = input[[id("dataType")]],
-        exclude = input[[id("firehoseIgnore")]],
+        folder = input$dataFolder,
+        cohort = input$firehoseCohort,
+        date = gsub("-", "_", input$firehoseDate),
+        data_type = input$dataType,
+        exclude = input$firehoseIgnore,
         progress = updateProgress,
         output = output)
     
@@ -185,16 +193,18 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
     }
     
     closeProgress()
-    enable(id("getFirehoseData"))
+    enable("getFirehoseData")
 }
 
 #' @importFrom shinyBS toggleModal
-server <- function(input, output, session) {
+inputServer <- function(input, output, session, active) {
+    ns <- session$ns
+    
     # The button is only enabled if it meets the conditions that follow
-    # observe(toggleState(id("acceptFile"), input[[id("species")]] != ""))
+    # observe(toggleState("acceptFile", input$species != ""))
     
     # Update available clinical data attributes to use in a formula
-    output[[id("pathAutocomplete")]] <- renderUI({
+    output$pathAutocomplete <- renderUI({
         checkInside <- function(path) {
             if (substr(path, nchar(path), nchar(path)) == "/") {
                 list.files(path)
@@ -202,46 +212,49 @@ server <- function(input, output, session) {
                 list.files(dirname(path))
             }
         }
-        
+
         tagList(
-            textComplete(id("localFolder"), 
-                         checkInside(input[[id("localFolder")]]),
+            textComplete(ns("localFolder"),
+                         checkInside(input$localFolder),
                          char=.Platform$file.sep),
-            textComplete(id("dataFolder"), 
-                         checkInside(input[[id("dataFolder")]]),
+            textComplete(ns("dataFolder"),
+                         checkInside(input$dataFolder),
                          char=.Platform$file.sep)
         )
     })
     
     # Check if data is already loaded and ask the user if it should be replaced
-    observeEvent(input[[id("acceptFile")]], {
+    observeEvent(input$acceptFile, {
         if (!is.null(getData()))
-            toggleModal(session, id("localDataModal"), "open")
+            toggleModal(session, "localDataModal", "open")
         else
             setLocalData(input, output, session)
     })
     
     # Load data when the user presses to replace data
-    observeEvent(input[[id("localReplace")]],
+    observeEvent(input$localReplace,
                  setLocalData(input, output, session, replace=TRUE))
     
     # Load data when the user presses to load new data (keep previously loaded)
-    observeEvent(input[[id("localAppend")]],
+    observeEvent(input$localAppend,
                  setLocalData(input, output, session, replace=FALSE))
     
     # Check if data is already loaded and ask the user if it should be replaced
-    observeEvent(input[[id("getFirehoseData")]], {
+    observeEvent(input$getFirehoseData, {
         if (!is.null(getData()))
-            toggleModal(session, id("firebrowseDataModal"), "open")
+            toggleModal(session, "firebrowseDataModal", "open")
         else
             setFirehoseData(input, output, session)
     })
     
     # Load data when the user presses to replace data
-    observeEvent(input[[id("firebrowseReplace")]],
+    observeEvent(input$firebrowseReplace,
                  setFirehoseData(input, output, session, replace=TRUE))
     
     # Load data when the user presses to load new data (keep previously loaded)
-    observeEvent(input[[id("firebrowseAppend")]],
+    observeEvent(input$firebrowseAppend,
                  setFirehoseData(input, output, session, replace=FALSE))
 }
+
+attr(inputUI, "loader") <- "data"
+attr(inputServer, "loader") <- "data"
