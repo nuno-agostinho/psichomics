@@ -8,7 +8,7 @@
 #' @param tab Function to create tab
 dataUI <- function(id, tab) {
     ns <- NS(id)
-    uiList <- getUiFunctions(ns, "data")
+    uiList <- getUiFunctions(ns, "data", tabPanel)
     
     tab(title=div(icon("table"), "Data"),
         sidebarLayout(sidebarPanel(
