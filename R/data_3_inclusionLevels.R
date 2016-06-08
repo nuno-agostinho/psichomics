@@ -1,5 +1,3 @@
-name <- "Exon/intron inclusion levels"
-
 # createLink <- function(val) {
 #     id <- gsub(" ", "_", val)
 #     js <- 'document.getElementById(\'%s\').selectize.setValue(\'%s\')'
@@ -14,28 +12,36 @@ name <- "Exon/intron inclusion levels"
 #     return(link)
 # }
 
-choices <- c("Skipping exon (SE)" = "SE",
-             "Mutually exclusive exons (MXE)" = "MXE",
-             "Alternative 5' Splice Site (A5SS)" = "A5SS",
-             "Alternative 3' Splice Site (A3SS)" = "A3SS",
-             "Alternative first exon (AFE)" = "AFE",
-             "Alternative last exon (ALE)" = "ALE")
-
-ui <- function() {
-    tagList(
+inclusionLevelsUI <- function(id, tab) {
+    ns <- NS(id)
+    choices <- c("Skipping exon (SE)" = "SE",
+                 "Mutually exclusive exons (MXE)" = "MXE",
+                 "Alternative 5' Splice Site (A5SS)" = "A5SS",
+                 "Alternative 3' Splice Site (A3SS)" = "A3SS",
+                 "Alternative first exon (AFE)" = "AFE",
+                 "Alternative last exon (ALE)" = "ALE")
+    
+    tab("Inclusion levels",
         helpText("Calculate exon and intron inclusion levels. This is also",
                  "known as percentage spliced in or PSI or even \u03A8."),
-        selectizeInput(id("eventType"), "Event type(s)", selected = "SE",
+        selectizeInput(ns("eventType"), "Event type(s)", selected = "SE",
                        choices = choices, multiple = TRUE),
-        numericInput(id("minReads"), "Minimum reads to consider", value = 10),
-        actionButton(id("calcIncLevels"), class = "btn-primary",
+        numericInput(ns("minReads"), "Minimum reads to consider", value = 10),
+        actionButton(ns("calcIncLevels"), class = "btn-primary",
                      "Calculate inclusion levels"))
 }
 
-server <- function(input, output, session) {
+inclusionLevelsServer <- function(input, output, session) {
+    choices <- c("Skipping exon (SE)" = "SE",
+                 "Mutually exclusive exons (MXE)" = "MXE",
+                 "Alternative 5' Splice Site (A5SS)" = "A5SS",
+                 "Alternative 3' Splice Site (A3SS)" = "A3SS",
+                 "Alternative first exon (AFE)" = "AFE",
+                 "Alternative last exon (ALE)" = "ALE")
+    
     levels <- reactive({
-        eventType <- input[[id("eventType")]]
-        minReads  <- input[[id("minReads")]]
+        eventType <- input$eventType
+        minReads  <- input$minReads
         
         if (is.null(eventType) || is.null(minReads)) return(NULL)
 
@@ -43,20 +49,20 @@ server <- function(input, output, session) {
         startProgress("Reading alternative splicing annotation", divisions = 3)
         annot <- readRDS(system.file("extdata", "hg19_splicingAnnotation.RDS",
                                      package = "psichomics"))
-        
+
         # Calculate inclusion levels with annotation and junction quantification
         updateProgress("Calculating inclusion levels")
         junctionQuant <- getJunctionQuantification()
-        
+
         psi <- NULL
         for (i in seq_along(eventType)) {
             type <- eventType[[i]]
-            updateProgress("Calculating inclusion levels", names(choices)[[i]], 
+            updateProgress("Calculating inclusion levels", names(choices)[[i]],
                            value = i, max = length(eventType))
-            
+
             if (i == "AFE") annot$AFE <- annot$AFE[!is.na(annot$AFE$C2.start), ]
             if (i == "ALE") annot$ALE <- annot$ALE[!is.na(annot$ALE$C1.end), ]
-            psi <- rbind(psi, calculateInclusionLevels(type, junctionQuant, 
+            psi <- rbind(psi, calculateInclusionLevels(type, junctionQuant,
                                                        annot[[type]], minReads))
         }
         attr(psi, "rowNames") <- TRUE
@@ -64,15 +70,15 @@ server <- function(input, output, session) {
                                           "for any given alternative splicing",
                                           "event.")
         setInclusionLevels(psi)
-        
+
         updateProgress("Matching clinical data")
         match <- matchIdWithClinical(colnames(psi), getClinicalData())
         match <- match[!is.na(match)] # remove non-matching IDs
         setClinicalMatchFrom("Inclusion levels", match)
         closeProgress()
     })
-
-    observeEvent(input[[id("calcIncLevels")]], {
+    
+    observeEvent(input$calcIncLevels, {
         if(is.null(getData()) || is.null(getJunctionQuantification()))
             errorModal(session, "Data missing",
                        "No junction quantification data loaded!")
@@ -80,3 +86,6 @@ server <- function(input, output, session) {
             levels()
     })
 }
+
+attr(inclusionLevelsUI, "loader") <- "data"
+attr(inclusionLevelsServer, "loader") <- "data"
