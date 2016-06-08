@@ -105,6 +105,12 @@ appServer <- function(input, output, session) {
     #     # Stop app and print message to console
     #     suppressMessages(stopped <- stopApp(returnValue="Shiny app was closed"))
     # })
+    
+    # Save selected groups
+    observe({
+        sharedData$selectedGroups <- input$selectedGroups
+        sharedData$javascriptStatus$read <- TRUE
+    })
 }
 
 #' Start graphical interface of PSICHOMICS
