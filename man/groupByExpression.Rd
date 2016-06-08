@@ -4,7 +4,7 @@
 \alias{groupByExpression}
 \title{User interface to group by subset expression}
 \usage{
-groupByExpression()
+groupByExpression(ns)
 }
 \description{
 User interface to group by subset expression

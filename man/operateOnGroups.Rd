@@ -4,7 +4,8 @@
 \alias{operateOnGroups}
 \title{Set operations on groups}
 \usage{
-operateOnGroups(input, session, sharedData, FUN, buttonId, symbol = " ")
+operateOnGroups(input, session, sharedData, FUN, buttonId, active,
+  symbol = " ")
 }
 \arguments{
 \item{input}{Shiny input}
