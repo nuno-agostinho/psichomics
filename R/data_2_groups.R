@@ -184,50 +184,15 @@ renameGroups <- function(new, old) {
 #' @param buttonId Character: ID of the button to trigger operation
 #' @param symbol Character: operation symbol
 operateOnGroups <- function(input, session, sharedData, FUN, buttonId, 
-                            active, symbol=" ") {
+                            symbol=" ") {
     ns <- session$ns
     # Operate on selected groups when pressing the corresponding button
     observeEvent(input[[paste(buttonId, "button", sep="-")]], {
-        browser()
-        session$sendCustomMessage(type="getCheckedBoxes", "test")
-        sharedData[[buttonId]] <- TRUE
-    })
-    
-    observe({
-        if (!is.null(input[[buttonId]]) && all(input[[buttonId]] > 0) &&
-            isTRUE(sharedData[[buttonId]])) {
-            # Set operation groups as 0 and flag to FALSE
-            session$sendCustomMessage(type = "setZero", buttonId)
-            sharedData[[buttonId]] <- FALSE
-            
-            # Get groups for the data table that is visible and active
-            groups <- getGroupsFrom(active())
-            
-            # Create new set
-            new <- NULL
-            selected <- as.numeric(input[[buttonId]])
-            if (!identical(FUN, "remove")) {
-                mergedFields <- lapply(1:3, function(i) {
-                    names <- paste(groups[selected, i], collapse = symbol)
-                    # Add parenthesis around new expression
-                    names <- paste0("(", names, ")")
-                    return(names)
-                })
-                rowNumbers <- sort(as.numeric(Reduce(FUN, groups[selected, 4])))
-                new <- matrix(c(mergedFields, list(rowNumbers)), ncol = 4)
-            }
-            
-            # Remove selected groups
-            if (identical(FUN, "remove") || input$removeSetsUsed)
-                groups <- groups[-selected, , drop=FALSE]
-            
-            # Add new groups to top (if there are any)
-            if (!is.null(new)) {
-                new <- renameGroups(new, groups)
-                groups <- rbind(new, groups)
-            }
-            setGroupsFrom(active(), groups)
-        }
+        session$sendCustomMessage(type="getCheckedBoxes", "selectedGroups")
+        sharedData$javascriptSent <- TRUE
+        sharedData$groupsFUN <- FUN
+        sharedData$groupSymbol <- symbol
+        # appServer saves the result to the R variable sharedData$selectedGroups
     })
 }
 
@@ -305,18 +270,65 @@ groupsServer <- function(input, output, session, active) {
     
     # Remove selected groups
     removeId <- "removeGroups"
-    operateOnGroups(input, session, sharedData, FUN="remove", buttonId=removeId,
-                    active)
+    operateOnGroups(input, session, sharedData, FUN="remove", buttonId=removeId)
     
     # Merge selected groups
     mergeId <- "mergeGroups"
     operateOnGroups(input, session, sharedData, FUN=union, buttonId=mergeId,
-                    active, symbol=" \u222A ")
+                    symbol=" \u222A ")
     
     # Intersect selected groups
     intersectId <- "intersectGroups"
     operateOnGroups(input, session, sharedData, FUN=intersect,
-                    buttonId=intersectId, active, symbol=" \u2229 ")
+                    buttonId=intersectId, symbol=" \u2229 ")
+    
+    
+    observe({
+        if (!is.null(sharedData$selectedGroups) &&
+            all(sharedData$selectedGroups > 0) &&
+            isTRUE(sharedData$javascriptSent) &&
+            isTRUE(sharedData$javascriptRead)) {
+            
+            FUN <- sharedData$groupsFUN
+            symbol <- sharedData$groupSymbol
+            
+            # Set operation groups as 0 and flag to FALSE
+            session$sendCustomMessage(type = "setZero", "selectedGroups")
+            sharedData$javascriptSent <- FALSE
+            sharedData$javascriptRead <- FALSE
+            
+            # Get groups for the data table that is visible and active
+            groups <- getGroupsFrom(active())
+            
+            # Create new set
+            new <- NULL
+            selected <- as.numeric(sharedData$selectedGroups)
+            if (!identical(FUN, "remove")) {
+                mergedFields <- lapply(1:3, function(i) {
+                    names <- paste(groups[selected, i], collapse = symbol)
+                    # Add parenthesis around new expression
+                    names <- paste0("(", names, ")")
+                    return(names)
+                })
+                rowNumbers <- sort(as.numeric(Reduce(FUN, groups[selected, 4])))
+                new <- matrix(c(mergedFields, list(rowNumbers)), ncol = 4)
+            }
+            
+            # Remove selected groups
+            if (identical(FUN, "remove") || input$removeSetsUsed)
+                groups <- groups[-selected, , drop=FALSE]
+            
+            # Add new groups to top (if there are any)
+            if (!is.null(new)) {
+                new <- renameGroups(new, groups)
+                groups <- rbind(new, groups)
+            }
+            setGroupsFrom(active(), groups)
+        }
+    })
+    
+    
+    
     
     # Render groups interface only if any group exists
     output$groupsList <- renderUI({
