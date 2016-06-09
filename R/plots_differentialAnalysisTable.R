@@ -1,4 +1,4 @@
-diffAnalysisTable <- function(id) {
+diffAnalysisTableUI <- function(id) {
     ns <- NS(id)
     tagList(
         sidebarLayout(
@@ -120,5 +120,5 @@ diffAnalysisTableServer <- function(input, output, session) {
 }
 
 attr(diffAnalysisTableUI, "loader") <- "plots"
-attr(diffAnalysisTableUI, "name") <- "Differential analysis"
+attr(diffAnalysisTableUI, "name") <- "Differential analysis table"
 attr(diffAnalysisTableServer, "loader") <- "plots"
