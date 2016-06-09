@@ -4,7 +4,7 @@
 \alias{groupsServer}
 \title{Server function for data grouping}
 \usage{
-groupsServer(input, output, session, active)
+groupsServer(input, output, session)
 }
 \arguments{
 \item{input}{Shiny input}
