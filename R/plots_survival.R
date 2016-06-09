@@ -399,7 +399,7 @@ survivalServer <- function(input, output, session) {
             survTerms <- processSurvTerms(session, dataGroups, clinical,
                                           censoring, timeStart, timeStop,
                                           dataEvent, modelTerms, formulaStr,
-                                          cox=TRUE, scale=scale)
+                                          coxph=TRUE, scale=scale)
             if ("simpleError" %in% class(survTerms)) {
                 errorModal(session, "Formula error",
                            "The following error was raised:", br(),
