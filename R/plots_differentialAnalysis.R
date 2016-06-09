@@ -170,10 +170,10 @@ diffAnalysisServer <- function(input, output, session) {
             plotLines <- list()
             for (group in unique(type)) {
                 row <- psi[type == group]
-                med <- round(median(row, na.rm = TRUE), 2)
-                var <- round(var(row, na.rm = TRUE), 2)
-                max <- round(max(row, na.rm = TRUE), 2)
-                min <- round(min(row, na.rm = TRUE), 2)
+                med <- roundDigits(median(row, na.rm = TRUE))
+                var <- roundDigits(var(row, na.rm = TRUE))
+                max <- roundDigits(max(row, na.rm = TRUE))
+                min <- roundDigits(min(row, na.rm = TRUE))
                 samples <- sum(!is.na(row))
                 # Ignore data with low number of data points
                 if (sum(!is.na(row)) >= 2) {

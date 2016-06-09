@@ -8,6 +8,12 @@ signifDigits <- function(n) {
     return(signif(n, 5))
 }
 
+#' Round by the given number of digits
+#' @param n Numeric: number to round
+roundDigits <- function(n) {
+    return(round(n, 2))
+}
+
 # Global variable with all the data of a session
 sharedData <- reactiveValues()
 
