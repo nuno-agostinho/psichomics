@@ -8,7 +8,7 @@ available in Bioconductor (yet?).
 To start using this program, follow these steps:
 
 1. [Install R](https://www.r-project.org/)
-2. Open a console, type `R` and press enter (or simply open [RStudio](https://www.rstudio.com/products/rstudio))
+2. Open [RStudio](https://www.rstudio.com/products/rstudio) (or open a console, type `R` and press enter)
 3. Type the following:
 ```r
 devtools::install_github("nuno-agostinho/psichomics", auth_token = "b752621b2059cd64ac21d5f7e8418821feb81b81", ref="package")
