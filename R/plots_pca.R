@@ -172,7 +172,7 @@ pcaServer <- function(input, output, session) {
         # Interface and plots to help to select principal components
         output$selectPC <- renderUI({
             label <- sprintf("%s (%s%% explained variance)", 
-                             names(perc), round(perc * 100, 2))
+                             names(perc), roundDigits(perc * 100))
             choices <- setNames(names(perc), label)
             groups <- getGroupsFrom("Clinical data")
             
@@ -249,7 +249,7 @@ pcaServer <- function(input, output, session) {
                 if (!is.null(xAxis) & !is.null(yAxis)) {
                     label <- sprintf("%s (%s%% explained variance)", 
                                      names(perc[c(xAxis, yAxis)]), 
-                                     round(perc[c(xAxis, yAxis)]*100, 2))
+                                     roundDigits(perc[c(xAxis, yAxis)]*100))
                     
                     hc <- highchart() %>%
                         hc_chart(zoomType = "xy") %>%
