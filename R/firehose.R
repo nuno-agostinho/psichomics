@@ -387,7 +387,7 @@ loadFirehoseData <- function(folder = "~/Downloads",
         # If there aren't non-MD5 files in the given directory, download
         # missing files
         progress(divisions = 1)
-        print("Triggered the download of missing files")
+        print("Triggered the download of files")
         
         iframe <- function(url) 
             tags$iframe(width=1, height=1, frameborder=0, src=url)
