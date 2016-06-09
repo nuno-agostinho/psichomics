@@ -1,31 +1,29 @@
 ## TODO(NunoA): plot using boxplots
 
-# The name used for the plot must be unique
-plot <- "Differential analysis"
-id <- function(value) objectId(name, plot, value)
-
 #' @importFrom highcharter highchartOutput
-ui <- function() {
+diffAnalysisUI <- function(id) {
+    ns <- NS(id)
+    
     tagList(
         sidebarLayout(
             sidebarPanel(
-                numericInput(id("bandwidth"), "Density bandwidth", 0.01, step=0.01),
+                numericInput(ns("bandwidth"), "Density bandwidth", 0.01, step=0.01),
                 h3("Non-parametric tests"),
-                uiOutput(id("basicStats")), hr(),
-                # uiOutput(id("spearman")), hr(),
-                # uiOutput(id("fisher")), hr(),
-                uiOutput(id("wilcox")), hr(),
-                uiOutput(id("kruskal")), hr(),
-                uiOutput(id("levene"))
+                uiOutput(ns("basicStats")), hr(),
+                # uiOutput(ns("spearman")), hr(),
+                # uiOutput(ns("fisher")), hr(),
+                uiOutput(ns("wilcox")), hr(),
+                uiOutput(ns("kruskal")), hr(),
+                uiOutput(ns("levene"))
             ), mainPanel(
-                highchartOutput(id("density"))
+                highchartOutput(ns("density"))
             )
         )
     )
 }
 
 #' @importFrom lawstat levene.test
-server <- function(input, output, session) {
+diffAnalysisServer <- function(input, output, session) {
     observe({
         # Get selected event (if there is any)
         event <- getEvent()
@@ -43,7 +41,7 @@ server <- function(input, output, session) {
         group <- unique(type)
         len <- length(group)
         
-        # output[[id("fisher")]] <- renderUI({
+        # output$fisher <- renderUI({
         #     stat <- try(R.utils::evalWithTimeout(
         #         fisher.test(psi, factor(type)), 
         #         timeout = 1, 
@@ -63,7 +61,7 @@ server <- function(input, output, session) {
         #     }
         # })
         
-        # output[[id("spearman")]] <- renderUI({
+        # output$spearman <- renderUI({
         #     group <- unique(type)
         #     len <- length(group)
         #     
@@ -82,7 +80,7 @@ server <- function(input, output, session) {
         #     }
         # })
         
-        output[[id("wilcox")]] <- renderUI({
+        output$wilcox <- renderUI({
             if (len > 2) {
                 return(tagList(h4("Wilcoxon rank sum test"),
                                "Can only perform this test on 2 or 1 group."))
@@ -115,7 +113,7 @@ server <- function(input, output, session) {
             )
         })
         
-        output[[id("kruskal")]] <- renderUI({
+        output$kruskal <- renderUI({
             if (len >= 2) {
                 stat <- kruskal.test(psi, factor(type))
                 tagList(
@@ -132,7 +130,7 @@ server <- function(input, output, session) {
             }
         })
         
-        output[[id("levene")]] <- renderUI({
+        output$levene <- renderUI({
             if (len >= 2) {
                 nas <- is.na(psi)
                 stat <- levene.test(psi[!nas], factor(type[!nas]))
@@ -151,14 +149,14 @@ server <- function(input, output, session) {
             }
         })
         
-        bandwidth <- input[[id("bandwidth")]]
+        bandwidth <- input$bandwidth
         if (bandwidth <= 0 || is.na(bandwidth)) {
             errorModal(session, "Bandwidth must have a positive value",
                        "Insert a number higher than 0.")
             return(NULL)
         }
         
-        output[[id("density")]] <- renderHighchart({
+        output$density <- renderHighchart({
             # Include X-axis zoom and hide markers without hovering
             hc <- highchart() %>%
                 hc_chart(zoomType = "x") %>%
@@ -215,7 +213,7 @@ server <- function(input, output, session) {
                         "Variance: {series.options.var}", br(),
                         "Range: {series.options.min} - {series.options.max}"))
             
-            output[[id("basicStats")]] <- renderUI ({
+            output$basicStats <- renderUI ({
                 var <- vapply(allRows, var, numeric(1), na.rm = TRUE)
                 med <- vapply(allRows, median, numeric(1), na.rm = TRUE)
                 
@@ -233,3 +231,7 @@ server <- function(input, output, session) {
         })
     })
 }
+
+attr(diffAnalysisUI, "loader") <- "plots"
+attr(diffAnalysisUI, "name") <- "Differential analysis"
+attr(diffAnalysisServer, "loader") <- "plots"
