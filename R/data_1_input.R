@@ -115,7 +115,7 @@ inputUI <- function(id, tab) {
                         ns("firebrowseReplace"),
                         ns("firebrowseAppend")),
         uiOutput(ns("pathAutocomplete")),
-        uiOutput("iframeDownload"),
+        uiOutput(ns("iframeDownload")),
         bsCollapse(
             id = ns("addData"),
             open = "Add TCGA/Firehose data",
