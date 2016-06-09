@@ -131,5 +131,6 @@ appServer <- function(input, output, session) {
 #' @export
 psichomics <- function(..., reload = FALSE) {
     if (reload) load_all()
-    shinyApp(appUI(), appServer)
+    app <- shinyApp(appUI(), appServer)
+    runApp(app, launch.browser = TRUE, ...)
 }
