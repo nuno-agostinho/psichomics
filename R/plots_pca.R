@@ -76,6 +76,84 @@ pcaUI <- function(id) {
     )
 }
 
+#' Interface and plots to help selecting principal components
+#' @param ns Shiny namespace function
+#' @param output Shiny output
+selectPC <- function(ns, output, perc) {
+    output$selectPC <- renderUI({
+        label <- sprintf("%s (%s%% explained variance)", 
+                         names(perc), roundDigits(perc * 100))
+        choices <- setNames(names(perc), label)
+        groups <- getGroupsFrom("Clinical data")
+        
+        tagList(
+            hr(),
+            selectizeInput(ns("pcX"), "Choose X axis", choices = choices),
+            selectizeInput(ns("pcY"), "Choose Y axis", choices = choices,
+                           selected = choices[[2]]),
+            fluidRow(
+                column(9,
+                       selectizeInput(
+                           ns("colorGroups"), 
+                           "Clinical groups to color the PCA",
+                           choices = groups[, "Names"], multiple = TRUE,
+                           options = list(placeholder = ifelse(
+                               length(groups) > 0,
+                               "Click 'Select all' to select all groups",
+                               "No groups created")))),
+                column(2,
+                       actionButton(ns("colorGroups_selectAll"),
+                                    "Select all", 
+                                    class = "inline_selectize"))),
+            checkboxGroupInput(ns("plotShow"), "Show in plot",
+                               c("Individuals", "Loadings"),
+                               selected = c("Individuals")),
+            actionButton(ns("showVariancePlot"), "Show variance plot"),
+            actionButton(ns("plot"), class = "btn-primary", "Plot PCA")
+        )
+    })
+}
+
+#' Render the explained variance plot
+#' @param ouput Shiny output
+#' @param pca PCA values
+#' 
+#' @importFrom highcharter highchart hc_chart hc_title hc_add_series 
+#' hc_plotOptions hc_xAxis hc_yAxis hc_legend hc_tooltip hc_exporting
+plotVariance <- function(output, pca) {
+    output$variancePlot <- renderHighchart({
+        sdevSq <- pca$sdev ^ 2
+        
+        highchart() %>%
+            hc_chart(zoomType = "xy", backgroundColor = NULL) %>%
+            hc_title(text = paste("Explained variance by each",
+                                  "Principal Component (PC)")) %>%
+            hc_add_series(name = "PCs", data = sdevSq,
+                          type = "waterfall") %>%
+            hc_plotOptions(series = list(dataLabels = list(
+                align = "center",
+                verticalAlign = "top",
+                enabled = TRUE,
+                formatter = JS(
+                    "function() {",
+                    "var total = ", sum(sdevSq), ";",
+                    "var perc = (this.y/total) * 100;",
+                    "return (Highcharts.numberFormat(this.y) +'<br/>'+",
+                    "Highcharts.numberFormat(perc) + '%')}")))) %>%
+            hc_xAxis(categories = colnames(pca[["x"]]), 
+                     crosshair = TRUE) %>%
+            hc_yAxis(title = list(text = "Explained variance")) %>%
+            hc_legend(enabled = FALSE) %>%
+            hc_tooltip(pointFormat = 
+                           '{point.name} {point.y:.2f} {point.perc}') %>%
+            hc_exporting(enabled = TRUE,
+                         buttons = list(contextButton = list(
+                             text = "Export", y = -50,
+                             verticalAlign = "bottom",
+                             theme = list(fill = NULL))))
+    })
+}
+
 pcaServer <- function(input, output, session) {
     ns <- session$ns
     # observeEvent(input$editGroups, {
@@ -92,10 +170,10 @@ pcaServer <- function(input, output, session) {
         groups <- getGroupsFrom("Clinical data")
         updateSelectizeInput(
             session, "dataGroups", choices = groups[, "Names"])
-            # options = list(placeholder =
-            #                    ifelse(length(groups) > 0,
-            #                           "Click 'Select all' to select all groups",
-            #                           "No groups created")))
+        # options = list(placeholder =
+        #                    ifelse(length(groups) > 0,
+        #                           "Click 'Select all' to select all groups",
+        #                           "No groups created")))
     })
     
     # Select all data groups when pressing the respective "Select all" button
@@ -105,7 +183,7 @@ pcaServer <- function(input, output, session) {
             selected = getGroupsFrom("Clinical data")[, "Names"])
     })
     
-    # Performs principal component analysis (PCA)
+    # Perform principal component analysis (PCA)
     observeEvent(input$calculate, {
         psi <- isolate(getInclusionLevels())
         
@@ -169,74 +247,13 @@ pcaServer <- function(input, output, session) {
         perc <- as.numeric(imp)
         names(perc) <- names(imp)
         
-        # Interface and plots to help to select principal components
-        output$selectPC <- renderUI({
-            label <- sprintf("%s (%s%% explained variance)", 
-                             names(perc), roundDigits(perc * 100))
-            choices <- setNames(names(perc), label)
-            groups <- getGroupsFrom("Clinical data")
-            
-            tagList(
-                hr(),
-                selectizeInput(ns("pcX"), "Choose X axis", choices = choices),
-                selectizeInput(ns("pcY"), "Choose Y axis", choices = choices,
-                               selected = choices[[2]]),
-                fluidRow(
-                    column(9,
-                           selectizeInput(
-                               ns("colorGroups"), 
-                               "Clinical groups to color the PCA",
-                               choices = groups[, "Names"], multiple = TRUE,
-                               options = list(placeholder = ifelse(
-                                   length(groups) > 0,
-                                   "Click 'Select all' to select all groups",
-                                   "No groups created")))),
-                    column(2,
-                           actionButton(ns("colorGroups_selectAll"),
-                                        "Select all", 
-                                        class = "inline_selectize"))),
-                checkboxGroupInput(ns("plotShow"), "Show in plot",
-                                   c("Individuals", "Loadings"),
-                                   selected = c("Individuals")),
-                actionButton(ns("showVariancePlot"), "Show variance plot"),
-                actionButton(ns("plot"), class = "btn-primary", "Plot PCA")
-            )
-        })
+        # Interface and plots to help select principal components
+        selectPC(ns, output, perc)
         
-        # Plots the explained variance plot
-        output$variancePlot <- renderHighchart({
-            sdevSq <- pca$sdev ^ 2
-            
-            highchart() %>%
-                hc_chart(zoomType = "xy", backgroundColor = NULL) %>%
-                hc_title(text = paste("Explained variance by each",
-                                      "Principal Component (PC)")) %>%
-                hc_add_series(name = "PCs", data = sdevSq,
-                              type = "waterfall") %>%
-                hc_plotOptions(series = list(dataLabels = list(
-                    align = "center",
-                    verticalAlign = "top",
-                    enabled = TRUE,
-                    formatter = JS(
-                        "function() {",
-                        "var total = ", sum(sdevSq), ";",
-                        "var perc = (this.y/total) * 100;",
-                        "return (Highcharts.numberFormat(this.y) +'<br/>'+",
-                        "Highcharts.numberFormat(perc) + '%')}")))) %>%
-                hc_xAxis(categories = colnames(pca[["x"]]), 
-                         crosshair = TRUE) %>%
-                hc_yAxis(title = list(text = "Explained variance")) %>%
-                hc_legend(enabled = FALSE) %>%
-                hc_tooltip(pointFormat = 
-                               '{point.name} {point.y:.2f} {point.perc}') %>%
-                hc_exporting(enabled = TRUE,
-                             buttons = list(contextButton = list(
-                                 text = "Export", y = -50,
-                                 verticalAlign = "bottom",
-                                 theme = list(fill = NULL))))
-        })
+        # Plot the explained variance plot
+        plotVariance(output, pca)
         
-        # Plots the principal component analysis
+        # Plot the principal component analysis
         observeEvent(input$plot, {
             isolate({
                 xAxis <- input$pcX
