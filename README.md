@@ -5,10 +5,15 @@ R package to analyse and visualise alternative splicing data
 If you want to install from [Bioconductor](https://www.bioconductor.org), you're out of luck. This package is not 
 available in Bioconductor (yet?).
 
-To start using this program, simply type the following in RStudio or in a R console:
+To start using this program, follow these steps:
+
+1. [Install R](https://www.r-project.org/)
+2. Open a console, type `R` and press enter (or simply open [RStudio](https://www.rstudio.com/products/rstudio))
+3. Type the following:
 ```r
-library(shiny)
-runGitHub("psichomics", "nuno-agostinho")
+devtools::install_github("nuno-agostinho/psichomics", auth_token = "b752621b2059cd64ac21d5f7e8418821feb81b81", ref="package")
+library(psichomics)
+psichomics()
 ```
 
 You can also download it and install it as a package. Or clone this repository, set the downloaded folder as the working
