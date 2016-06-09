@@ -21,6 +21,7 @@ diffAnalysisTableUI <- function(id) {
 }
 
 #' @importFrom lawstat levene.test
+#' @importFrom stats kruskal.test median wilcox.test var
 diffAnalysisTableServer <- function(input, output, session) {
     ns <- session$ns
     
