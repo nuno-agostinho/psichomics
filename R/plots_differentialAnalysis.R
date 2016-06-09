@@ -22,6 +22,7 @@ diffAnalysisUI <- function(id) {
     )
 }
 
+#' @importFrom stats kruskal.test median wilcox.test var
 #' @importFrom lawstat levene.test
 diffAnalysisServer <- function(input, output, session) {
     observe({
