@@ -1,35 +1,34 @@
-# The name used for the plot must be unique
-plot <- "Differential analysis table"
-id <- function(value) objectId(name, plot, value)
-
-ui <- function() {
+diffAnalysisTable <- function(id) {
+    ns <- NS(id)
     tagList(
         sidebarLayout(
             sidebarPanel(
-                checkboxGroupInput(id("statsChoices"),
+                checkboxGroupInput(ns("statsChoices"),
                                    "Choose statistical analyses to perform:",
                                    c("Wilcoxon Test"="wilcox",
                                      "Kruskal-Wallis Rank Sum Test"="kruskal", 
                                      "Levene's test"="levene"),
                                    selected = c("kruskal", "levene")),
-                downloadButton(id("download"), "Download"),
-                actionButton(id("startAnalyses"), class = "btn-primary", 
+                downloadButton(ns("download"), "Download"),
+                actionButton(ns("startAnalyses"), class = "btn-primary", 
                              "Perform selected tests"),
-                uiOutput(id("showColumns"))
+                uiOutput(ns("showColumns"))
             ), mainPanel(
-                dataTableOutput(id("statsTable"))
+                dataTableOutput(ns("statsTable"))
             )
         )
     )
 }
 
 #' @importFrom lawstat levene.test
-server <- function(input, output, session) {
-    observeEvent(input[[id("startAnalyses")]], {
+diffAnalysisTableServer <- function(input, output, session) {
+    ns <- session$ns
+    
+    observeEvent(input$startAnalyses, {
         isolate({
             # Get event's inclusion levels
             psi <- getInclusionLevels()
-            statsChoices <- input[[id("statsChoices")]]
+            statsChoices <- input$statsChoices
         })
         if (is.null(psi)) {
             errorModal(session, "No inclusion levels data",
@@ -94,21 +93,21 @@ server <- function(input, output, session) {
             stats <- cbind(Event = rownames(df4), df4)
             
             # Columns to show in statistical table
-            output[[id("showColumns")]] <- renderUI({
+            output$showColumns <- renderUI({
                 tagList(
                     hr(),
-                    selectizeInput(id("columns"), "Show columns", multiple=TRUE,
+                    selectizeInput(ns("columns"), "Show columns", multiple=TRUE,
                                    choices=colnames(stats), 
                                    selected=colnames(stats)))
             })
             
             # Render statistical table with the selected columns
-            output[[id("statsTable")]] <- renderDataTable({
-                cols <- colnames(stats) %in% input[[id("columns")]]
+            output$statsTable <- renderDataTable({
+                cols <- colnames(stats) %in% input$columns
                 stats[, cols]
             }, options=list(pageLength=10, scrollX=TRUE))
             
-            output[[id("download")]] <- downloadHandler(
+            output$download <- downloadHandler(
                 filename = paste(getCategories(),  
                                  "Differential splicing analyses"),
                 content = function(file)
@@ -119,3 +118,7 @@ server <- function(input, output, session) {
         print(Sys.time() - time)
     })
 }
+
+attr(diffAnalysisTableUI, "loader") <- "plots"
+attr(diffAnalysisTableUI, "name") <- "Differential analysis"
+attr(diffAnalysisTableServer, "loader") <- "plots"
