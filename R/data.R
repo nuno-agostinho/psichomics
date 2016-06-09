@@ -4,32 +4,20 @@
 ## TODO(NunoA): render UI for each data table instead of rendering UI for all
 ## so there's no refresh
 
-name <- "Data"
-primary <- TRUE
-id <- function(value) objectId(name, value)
-
-## Loads valid scripts from the indicated folder
-dataName <- "data"
-dataEnvs <- sourceScripts(folder=tabsFolder,
-                          pattern="data_",
-                          check=c(dataName, "ui"),
-                          parentEnv=environment())
-dataEnvs.server <- lapply(dataEnvs, "[[", "server")
-
-# Get name of the loaded scripts
-names <- sapply(dataEnvs, "[[", dataName)
-
 #' User interface
 #' @param tab Function to create tab
-ui <- function(tab) {
-    tab(title=div(icon("table"), name), sidebarLayout(sidebarPanel(
-        do.call(
-            tabsetPanel,
-            c(type="pill",
-              lapply(dataEnvs, function(pill)
-                  tabPanel(pill$name, br(), pill$ui()))
-            ))),
-        mainPanel( uiOutput(id("tablesOrAbout")) )))
+dataUI <- function(id, tab) {
+    ns <- NS(id)
+    uiList <- getUiFunctions(ns, "data", tabPanel)
+    
+    tab(title=div(icon("table"), "Data"),
+        sidebarLayout(sidebarPanel(
+            do.call(tabsetPanel,
+                    c(type="pill", uiList)
+            )
+        ),
+        mainPanel( uiOutput(ns("tablesOrAbout")) ))
+    )
 }
 
 #' Creates a tabPanel template for a datatable with a title and description
@@ -43,20 +31,22 @@ ui <- function(tab) {
 #' @importFrom shinyBS bsTooltip
 #'
 #' @return The HTML code for a tabPanel template
-tabDataset <- function(title, tableId, columns, colsToShow, description=NULL) {
-    tablename <- id(paste("table", tableId, sep="-"))
+tabDataset <- function(ns, title, tableId, columns, colsToShow,
+                       description=NULL) {
+    tablename <- ns(paste("table", tableId, sep="-"))
+    
     if(!is.null(description))
         description <- p(tags$strong("Table description:"), description)
     
     downloadId <- paste(tablename, "download", sep="-")
     download <- downloadButton(downloadId, "Download this dataset")
     
-    visibleColumns <- selectizeInput(id(paste(tablename, "columns", sep="-")),
+    visibleColumns <- selectizeInput(paste(tablename, "columns", sep="-"),
                                      label="Columns to show", choices=columns,
                                      selected=colsToShow, multiple=TRUE,
                                      width="100%")
     
-    tooltip <- bsTooltip(id(paste(tablename, "columns", sep="-")),
+    tooltip <- bsTooltip(paste(tablename, "columns", sep="-"),
                          paste("Dataset columns to show; empty this input to",
                                "show all columns (it can be slow for large",
                                "datasets)"),
@@ -73,13 +63,13 @@ tabDataset <- function(title, tableId, columns, colsToShow, description=NULL) {
 #' @param input Shiny session input
 #' @param output Shiny session output
 createDataTab <- function(index, data, name, input, output) {
-    tablename <- id(paste("table", name, index, sep="-"))
+    tablename <- paste("table", name, index, sep="-")
     
     table <- data[[index]]
     # Only show default columns if they are defined (don't cause problems)
     subsetToShow <- table
     
-    colsToShow <- input[[id(paste(tablename, "columns", sep="-"))]]
+    colsToShow <- input[[paste(tablename, "columns", sep="-")]]
     if (!is.null(colsToShow)) {
         match <- colsToShow %in% colnames(table)
         subsetToShow <- subset(table, select=colsToShow[match])
@@ -101,23 +91,22 @@ createDataTab <- function(index, data, name, input, output) {
 #' Server logic
 #'
 #' @return Part of the server logic related to this tab
-server <- function(input, output, session) {
-    # Runs server logic from the scripts
-    lapply(dataEnvs.server, do.call, list(input, output, session))
+dataServer <- function(input, output, session) {
+    ns <- session$ns
     
     # Show welcome screen when there's no data loaded
-    output[[id("tablesOrAbout")]] <- renderUI({
-        if(is.null(getData()))
-            includeMarkdown("about.md")
-        else
-            list(selectInput(id("category"), "Select category:",
+    output$tablesOrAbout <- renderUI({
+        if(is.null(getData())) {
+            includeMarkdown(insideFile("shiny", "about.md"))
+        } else
+            list(selectInput(ns("category"), "Select category:",
                              choices=names(getData())),
-                 uiOutput(id("datatabs")))
+                 uiOutput(ns("datatabs")))
     })
-    
+
     # Set the category of the data when possible
-    observeEvent(input[[id("category")]], setCategory(input[[id("category")]]))
-    
+    observeEvent(input$category, setCategory(input$category))
+
     # Render tables when data changes
     observe({
         data <- getData()
@@ -125,25 +114,35 @@ server <- function(input, output, session) {
         for (category in seq_along(data)) {
             name <- getCategories()[category]
             # Create data tab for each dataset in a data category
-            lapply(seq_along(categoryData), createDataTab, 
+            lapply(seq_along(categoryData), createDataTab,
                    data=data[[category]], name, input, output)
         }
     })
-    
+
     # Render tabs with data tables
-    output[[id("datatabs")]] <- renderUI({
+    output$datatabs <- renderUI({
         categoryData <- getCategoryData()
         category <- getCategory()
         
         dataTablesUI <- lapply(
             seq_along(categoryData),
             function(i) {
-                tabDataset(names(categoryData)[i],
+                tabDataset(ns,
+                           names(categoryData)[i],
                            paste(category, i, sep="-"),
                            names(categoryData[[i]]),
                            attr(categoryData[[i]], "show"),
                            description=attr(categoryData[[i]], "description"))
             })
-        do.call(tabsetPanel, c(id=id("datasetTab"), dataTablesUI))
+        do.call(tabsetPanel, c(id=ns("datasetTab"), dataTablesUI))
     })
+    
+    # Change the active dataset
+    observe( setActiveDataset(input$datasetTab) )
+    
+    # Run server logic from the scripts
+    getServerFunctions("data")
 }
+
+attr(dataUI, "loader") <- "app"
+attr(dataServer, "loader") <- "app"

@@ -4,7 +4,7 @@
 \alias{groupByRow}
 \title{User interface to group by row}
 \usage{
-groupByRow()
+groupByRow(ns)
 }
 \description{
 User interface to group by row

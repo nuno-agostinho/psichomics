@@ -130,6 +130,7 @@ library(highcharter)
 data(diamonds, package = "ggplot2")
 
 highchart() %>% 
+    hc_legend(enabled = FALSE) %>%
     hc_add_series_boxplot(diamonds$x, diamonds$color,
                           name = "X", color = "#2980b9") 
 ```
