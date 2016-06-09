@@ -101,7 +101,7 @@ pcaServer <- function(input, output, session) {
     # Select all data groups when pressing the respective "Select all" button
     observeEvent(input$dataGroups_selectAll, {
         updateSelectizeInput(
-            session, dataGroups, 
+            session, "dataGroups", 
             selected = getGroupsFrom("Clinical data")[, "Names"])
     })
     
