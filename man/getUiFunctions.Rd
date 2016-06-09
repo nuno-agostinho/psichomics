@@ -2,17 +2,21 @@
 % Please edit documentation in R/app.R
 \name{getUiFunctions}
 \alias{getUiFunctions}
-\title{Matches UI functions from a given loader}
+\title{Matches user interface (UI) functions from a given loader}
 \usage{
-getUiFunctions(ns, loader)
+getUiFunctions(ns, loader, ...)
 }
 \arguments{
-\item{Character:}{loader to run the functions}
+\item{ns}{Shiny function to create namespaced IDs}
+
+\item{loader}{Character: loader to run the functions}
+
+\item{...}{Extra arguments to pass to the user interface (UI) functions}
 }
 \value{
 List of functions related to the given loader
 }
 \description{
-Matches UI functions from a given loader
+Matches user interface (UI) functions from a given loader
 }
 
