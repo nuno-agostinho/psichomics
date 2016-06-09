@@ -4,7 +4,7 @@
 \alias{tabDataset}
 \title{Creates a tabPanel template for a datatable with a title and description}
 \usage{
-tabDataset(title, tableId, columns, colsToShow, description = NULL)
+tabDataset(ns, title, tableId, columns, colsToShow, description = NULL)
 }
 \arguments{
 \item{title}{Character: tab title}

@@ -19,9 +19,6 @@
 ## http://stackoverflow.com/questions/20260434/test-significance-of-clusters-on-a-pca-plot
 
 # The name used for the plot must be unique
-plot <- "Principal component analysis"
-id <- function(value) objectId(name, plot, value)
-
 getMatchingRowNames <- function(selected, clinicalGroups, clinicalMatches) {
     # Get selected groups from clinical data
     rows <- clinicalGroups[selected, "Rows"]
@@ -54,60 +51,62 @@ psiPCA <- function(psi, center = TRUE, scale. = FALSE, naTolerance = 30) {
 }
 
 #' @importFrom highcharter highchartOutput
-ui <- function() {
+pcaUI <- function(id) {
+    ns <- NS(id)
     list(
         sidebarPanel(
-            checkboxGroupInput(id("preprocess"), "Preprocessing",
+            checkboxGroupInput(ns("preprocess"), "Preprocessing",
                                c("Center values" = "center",
                                  "Scale values" = "scale"),
                                selected = c("center")),
-            sliderInput(id("naTolerance"), "Percentage of NAs per individual to tolerate",
+            sliderInput(ns("naTolerance"), "Percentage of NAs per individual to tolerate",
                         min = 0, max=100, value=30, post="%"),
             fluidRow(
-                column(9, selectizeInput(id("dataGroups"),
+                column(9, selectizeInput(ns("dataGroups"),
                                          "Clinical groups to perform PCA",
                                          choices = NULL, multiple = TRUE)),
-                column(2, actionButton(id("dataGroups_selectAll"), "Select all",
+                column(2, actionButton(ns("dataGroups_selectAll"), "Select all",
                                        class="inline_selectize"))),
-            actionButton(id("editGroups"), "Edit groups"),
-            actionButton(id("calculate"), class = "btn-primary", "Calculate PCA"),
-            uiOutput(id("selectPC"))
+            actionButton(ns("editGroups"), "Edit groups"),
+            actionButton(ns("calculate"), class = "btn-primary", "Calculate PCA"),
+            uiOutput(ns("selectPC"))
         ), mainPanel(
-            highchartOutput(id("scatterplot"))
+            highchartOutput(ns("scatterplot"))
         )
     )
 }
 
-server <- function(input, output, session) {
-    observeEvent(input[[id("editGroups")]], {
-        env <- new.env()
-        sys.source("R/data/2-groups.R", envir = env)
-        env$server(input, output, session)
-        
-        showModal(session, "Groups", env$ui(),  iconName = "object-group",
-                  style = "info")
-    })
+pcaServer <- function(input, output, session) {
+    ns <- session$ns
+    # observeEvent(input$editGroups, {
+    #     env <- new.env()
+    #     sys.source("R/data/2-groups.R", envir = env)
+    #     env$server(input, output, session)
+    #     
+    #     showModal(session, "Groups", env$ui(), iconName = "object-group",
+    #               style = "info")
+    # })
     
     # Update available group choices to select
     observe({
         groups <- getGroupsFrom("Clinical data")
         updateSelectizeInput(
-            session, id("dataGroups"), choices = groups[, "Names"],
-            options = list(placeholder =
-                               ifelse(length(groups) > 0,
-                                      "Click 'Select all' to select all groups",
-                                      "No groups created")))
+            session, "dataGroups", choices = groups[, "Names"])
+            # options = list(placeholder =
+            #                    ifelse(length(groups) > 0,
+            #                           "Click 'Select all' to select all groups",
+            #                           "No groups created")))
     })
     
     # Select all data groups when pressing the respective "Select all" button
-    observeEvent(input[[id("dataGroups_selectAll")]], {
+    observeEvent(input$dataGroups_selectAll, {
         updateSelectizeInput(
-            session, id("dataGroups"), 
+            session, dataGroups, 
             selected = getGroupsFrom("Clinical data")[, "Names"])
     })
     
     # Performs principal component analysis (PCA)
-    observeEvent(input[[id("calculate")]], {
+    observeEvent(input$calculate, {
         psi <- isolate(getInclusionLevels())
         
         if (is.null(psi)) {
@@ -115,7 +114,7 @@ server <- function(input, output, session) {
                        "Insert or calculate exon/intron inclusion levels.")
         } else {
             # Subset data by the selected clinical groups
-            selected <- isolate(input[[id("dataGroups")]])
+            selected <- isolate(input$dataGroups)
             if (!is.null(selected)) {
                 clinical <- isolate(getGroupsFrom("Clinical data"))
                 match <- getClinicalMatchFrom("Inclusion levels")
@@ -134,8 +133,8 @@ server <- function(input, output, session) {
             
             # Perform principal component analysis (PCA) on the subset data
             isolate({
-                preprocess <- input[[id("preprocess")]]
-                naTolerance <- input[[id("naTolerance")]]
+                preprocess <- input$preprocess
+                naTolerance <- input$naTolerance
             })
             
             pca <- psiPCA(psi, naTolerance = naTolerance,
@@ -150,15 +149,15 @@ server <- function(input, output, session) {
     })
     
     # Show variance plot
-    observeEvent(input[[id("showVariancePlot")]], {
-        infoModal(session, "Variance plot", highchartOutput(id("variancePlot")), 
-                  size = "large")
-    })
+    # observeEvent(input$showVariancePlot, {
+    #     infoModal(session, "Variance plot", highchartOutput(ns("variancePlot")), 
+    #               size = "large")
+    # })
     
     # Select all color groups when pressing the respective "Select all" button
-    observeEvent(input[[id("colorGroups_selectAll")]], {
+    observeEvent(input$colorGroups_selectAll, {
         updateSelectizeInput(
-            session, id("colorGroups"), 
+            session, "colorGroups", 
             selected = getGroupsFrom("Clinical data")[, "Names"])
     })
     
@@ -171,7 +170,7 @@ server <- function(input, output, session) {
         names(perc) <- names(imp)
         
         # Interface and plots to help to select principal components
-        output[[id("selectPC")]] <- renderUI({
+        output$selectPC <- renderUI({
             label <- sprintf("%s (%s%% explained variance)", 
                              names(perc), round(perc * 100, 2))
             choices <- setNames(names(perc), label)
@@ -179,33 +178,33 @@ server <- function(input, output, session) {
             
             tagList(
                 hr(),
-                selectizeInput(id("pcX"), "Choose X axis", choices = choices),
-                selectizeInput(id("pcY"), "Choose Y axis", choices = choices,
+                selectizeInput(ns("pcX"), "Choose X axis", choices = choices),
+                selectizeInput(ns("pcY"), "Choose Y axis", choices = choices,
                                selected = choices[[2]]),
                 fluidRow(
                     column(9,
                            selectizeInput(
-                               id("colorGroups"), 
+                               ns("colorGroups"), 
                                "Clinical groups to color the PCA",
                                choices = groups[, "Names"], multiple = TRUE,
                                options = list(placeholder = ifelse(
                                    length(groups) > 0,
-                                   "Click 'Select all'to select all groups",
+                                   "Click 'Select all' to select all groups",
                                    "No groups created")))),
                     column(2,
-                           actionButton(id("colorGroups_selectAll"),
+                           actionButton(ns("colorGroups_selectAll"),
                                         "Select all", 
                                         class = "inline_selectize"))),
-                checkboxGroupInput(id("plotShow"), "Show in plot",
+                checkboxGroupInput(ns("plotShow"), "Show in plot",
                                    c("Individuals", "Loadings"),
                                    selected = c("Individuals")),
-                actionButton(id("showVariancePlot"), "Show variance plot"),
-                actionButton(id("plot"), class = "btn-primary", "Plot PCA")
+                actionButton(ns("showVariancePlot"), "Show variance plot"),
+                actionButton(ns("plot"), class = "btn-primary", "Plot PCA")
             )
         })
         
         # Plots the explained variance plot
-        output[[id("variancePlot")]] <- renderHighchart({
+        output$variancePlot <- renderHighchart({
             sdevSq <- pca$sdev ^ 2
             
             highchart() %>%
@@ -238,15 +237,15 @@ server <- function(input, output, session) {
         })
         
         # Plots the principal component analysis
-        observeEvent(input[[id("plot")]], {
-            output[[id("scatterplot")]] <- renderHighchart({
-                isolate({
-                    xAxis <- input[[id("pcX")]]
-                    yAxis <- input[[id("pcY")]]
-                    selected <- input[[id("colorGroups")]]
-                    show <- input[[id("plotShow")]]
-                })
-                
+        observeEvent(input$plot, {
+            isolate({
+                xAxis <- input$pcX
+                yAxis <- input$pcY
+                selected <- input$colorGroups
+                show <- input$plotShow
+            })
+            
+            output$scatterplot <- renderHighchart({
                 if (!is.null(xAxis) & !is.null(yAxis)) {
                     label <- sprintf("%s (%s%% explained variance)", 
                                      names(perc[c(xAxis, yAxis)]), 
@@ -269,14 +268,14 @@ server <- function(input, output, session) {
                             match <- getClinicalMatchFrom("Inclusion levels")
                             
                             for (groupName in selected) {
-                                ns <- getMatchingRowNames(groupName, clinical,
-                                                          match)
-                                ns <- ns[ns %in% rownames(df)]
+                                rows <- getMatchingRowNames(groupName, clinical,
+                                                            match)
+                                rows <- rows[rows %in% rownames(df)]
                                 hc <- hc %>%
-                                    hc_scatter(df[ns, xAxis],
-                                               df[ns, yAxis],
+                                    hc_scatter(df[rows, xAxis],
+                                               df[rows, yAxis],
                                                name = groupName,
-                                               sample = rownames(df[ns, ]),
+                                               sample = rownames(df[rows, ]),
                                                showInLegend = TRUE)
                             }
                         }
@@ -292,3 +291,7 @@ server <- function(input, output, session) {
         })
     })
 }
+
+attr(pcaUI, "loader") <- "plots"
+attr(pcaUI, "name") <- "Principal Component Analysis (PCA)"
+attr(pcaServer, "loader") <- "plots"

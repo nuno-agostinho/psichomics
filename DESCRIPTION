@@ -36,17 +36,18 @@ Imports:
     stats,
     R.utils,
     utils,
-    lawstat
+    lawstat,
+    rmarkdown
 Suggests:
     testthat,
     knitr,
-    rmarkdown,
     microbenchmark,
     rbenchmark
 VignetteBuilder: knitr
 Collate:
     'utils.R'
     'begin.R'
+    'app.R'
     'data.R'
     'data_1_input.R'
     'data_2_groups.R'
@@ -72,5 +73,5 @@ Collate:
     'plots_survival.R'
     'widgets.R'
 biocViews: Sequencing, RNASeq, AlternativeSplicing, DifferentialSplicing,
-	   Transcription, GUI, PrincipalComponent, Survival, BiomedicalInformatics,
-	   Transcriptomics, Visualization, MultipleComparison
+    Transcription, GUI, PrincipalComponent, Survival, BiomedicalInformatics,
+    Transcriptomics, Visualization, MultipleComparison

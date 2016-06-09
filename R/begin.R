@@ -27,6 +27,9 @@ getCategory <- reactive(sharedData$category)
 getCategoryData <- reactive(
     if(!is.null(getCategory())) getData()[[getCategory()]])
 
+#' Get selected dataset
+getActiveDataset <- reactive(sharedData$activeDataset)
+
 #' Get clinical data of the data category
 getClinicalData <- reactive(getCategoryData()[["Clinical data"]])
 
@@ -73,6 +76,11 @@ setEvent <- function(event) setAsGlobal("event", event)
 #' @param category Character: data category
 #' @note Needs to be called inside reactive function
 setCategory <- function(category) setAsGlobal("category", category)
+
+#' Set active dataset
+#' @param dataset Character: dataset
+#' @note Needs to be called inside reactive function
+setActiveDataset <- function(dataset) setAsGlobal("activeDataset", dataset)
 
 #' Set inclusion levels for a given data category
 #' @note Needs to be called inside reactive function
@@ -297,20 +305,6 @@ matchIdWithClinical <- function(ids, clinical) {
     return(clinicalRows)
 }
 
-#' Start graphical interface of PSICHOMICS
-#' 
-#' @param ... Parameters to pass to the function runApp
-#' @param reload Boolean: reload package? FALSE by default
-#' 
-#' @importFrom devtools load_all
-#' 
-#' @export
-psichomics <- function(..., reload = FALSE) {
-    if (reload)
-        load_all()
-    runApp(system.file("inst/shiny", package="psichomics"), ...)
-}
-
 #' Assign one group for each clinical patient
 #' 
 #' @param groups Matrix: clinical groups
@@ -354,11 +348,12 @@ groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE,
 showModal <- function(session, title, ..., style = NULL,
                       iconName = "exclamation-circle", footer = NULL,
                       printMessage = FALSE, size = NULL) {
-    session$output[["globalModal"]] <- renderUI(
-        bsModal2(id(title), style = style, div(icon(iconName), title),
-                 trigger = NULL, size = size, ..., footer = NULL))
-    toggleModal(session, id(title), toggle = "open")
-    if (printMessage) print(content)
+    warning("Modals aren't working. The following was raised: ", title)
+    # session$output[["globalModal"]] <- renderUI(
+    #     bsModal2(id(title), style = style, div(icon(iconName), title),
+    #              trigger = NULL, size = size, ..., footer = NULL))
+    # toggleModal(session, id(title), toggle = "open")
+    # if (printMessage) print(content)
 }
 
 #' @rdname showModal

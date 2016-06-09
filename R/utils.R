@@ -215,10 +215,10 @@ enableTab <- function(tab) {
 #' words <- c("tumor_stage", "age", "gender")
 #' textComplete("textareaid", words)
 textComplete <- function(id, words, novalue = "No matching value", char=" ") {
-    varId <- paste0(id, "_words")
+    varId <- paste0(gsub("-", "_", id), "_words")
     var <- paste0(varId, ' = ["', paste(words, collapse = '", "'), '"];')
     
-    js <- paste0('$("#', id, '").textcomplete([{
+    js <- paste0('$("#', escape(id), '").textcomplete([{
         match: /([a-zA-Z0-9_\\.]{1,})$/,
         search: function(term, callback) {
             var words = ', varId, ', sorted = [];

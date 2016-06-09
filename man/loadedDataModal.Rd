@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_1_input.R
 \name{loadedDataModal}
 \alias{loadedDataModal}
-\title{Create a warning modal the user of loaded data}
+\title{Create a modal warning the user of already loaded data}
 \usage{
 loadedDataModal(modalId, replaceButtonId, keepButtonId)
 }
@@ -14,6 +14,6 @@ loadedDataModal(modalId, replaceButtonId, keepButtonId)
 \item{keepButtonId}{Character: identifier of the button to append data}
 }
 \description{
-Create a warning modal the user of loaded data
+Create a modal warning the user of already loaded data
 }
 
