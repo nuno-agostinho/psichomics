@@ -36,11 +36,11 @@ Imports:
     stats,
     R.utils,
     utils,
-    lawstat
+    lawstat,
+    rmarkdown
 Suggests:
     testthat,
     knitr,
-    rmarkdown,
     microbenchmark,
     rbenchmark
 VignetteBuilder: knitr
