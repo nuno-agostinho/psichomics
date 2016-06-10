@@ -67,6 +67,7 @@ Collate:
     'plots.R'
     'plots_differentialAnalysis.R'
     'plots_differentialAnalysisTable.R'
+    'plots_information.R'
     'plots_pca.R'
     'plots_plot1.R'
     'plots_plot2.R'
