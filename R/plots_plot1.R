@@ -12,9 +12,10 @@ plots1UI <- function(id) {
     )
 }
 
+#' @importFrom highcharter highchart %>%
 plots1Server <- function(input, output, session) {
     output$plot <- renderPlot({
-        plot(mtcars[[input$x]], mtcars[[input$y]])
+        highchart() %>% hc_scatter(mtcars[[input$x]], mtcars[[input$y]])
         # ggplot(data=mtcars, aes_string(input$x, input$y)) + geom_bin2d()
     })
     

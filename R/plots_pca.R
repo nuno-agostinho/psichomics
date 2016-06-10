@@ -154,6 +154,7 @@ plotVariance <- function(output, pca) {
     })
 }
 
+#' @importFrom highcharter %>% hc_chart hc_xAxis hc_yAxis hc_tooltip
 pcaServer <- function(input, output, session) {
     ns <- session$ns
     # observeEvent(input$editGroups, {
