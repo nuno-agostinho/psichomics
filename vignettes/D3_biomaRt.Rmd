@@ -53,6 +53,9 @@ r <- content(resp, "text", encoding = "UTF8")
 json <- jsonlite::fromJSON(r)
 ```
 
+## MyGene.info
+Unfortunately, this only offers gene information for the current GRCh38.
+
 # Retrieving the gene names of the annotation
 ```{r, eval=FALSE}
 annot  <- readRDS("data/hg19_splicingAnnotation.RDS")
