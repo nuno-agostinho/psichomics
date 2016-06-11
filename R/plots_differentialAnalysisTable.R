@@ -92,31 +92,37 @@ diffAnalysisTableServer <- function(input, output, session) {
             df3 <- cbind(df2, deltaVar, deltaMed)
             df4 <- data.frame(data.matrix(df3))
             stats <- cbind(Event = rownames(df4), df4)
-            
-            # Columns to show in statistical table
-            output$showColumns <- renderUI({
-                tagList(
-                    hr(),
-                    selectizeInput(ns("columns"), "Show columns", multiple=TRUE,
-                                   choices=colnames(stats), 
-                                   selected=colnames(stats)))
-            })
-            
-            # Render statistical table with the selected columns
-            output$statsTable <- renderDataTable({
-                cols <- colnames(stats) %in% input$columns
-                stats[, cols]
-            }, options=list(pageLength=10, scrollX=TRUE))
-            
-            output$download <- downloadHandler(
-                filename = paste(getCategories(),  
-                                 "Differential splicing analyses"),
-                content = function(file)
-                    write.table(stats, file, quote=FALSE, row.names=FALSE, 
-                                sep="\t")
-            )
+            setDifferentialAnalyses(stats)
         }
         print(Sys.time() - time)
+    })
+    
+    observe({
+        stats <- getDifferentialAnalyses()
+        if (is.null(stats)) return(NULL)
+        
+        # Columns to show in statistical table
+        output$showColumns <- renderUI({
+            tagList(
+                hr(),
+                selectizeInput(ns("columns"), "Show columns", multiple=TRUE,
+                               choices=colnames(stats), 
+                               selected=colnames(stats)))
+        })
+        
+        # Render statistical table with the selected columns
+        output$statsTable <- renderDataTable({
+            cols <- colnames(stats) %in% input$columns
+            stats[, cols]
+        }, options=list(pageLength=10, scrollX=TRUE))
+        
+        output$download <- downloadHandler(
+            filename = paste(getCategories(),  
+                             "Differential splicing analyses"),
+            content = function(file)
+                write.table(stats, file, quote=FALSE, row.names=FALSE, 
+                            sep="\t")
+        )
     })
 }
 

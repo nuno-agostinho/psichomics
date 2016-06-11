@@ -51,6 +51,14 @@ getInclusionLevels <- reactive(getCategoryData()[["Inclusion levels"]])
 #' @param sep Character to separate identifiers
 getGlobal <- function(..., sep="_") sharedData[[paste(..., sep=sep)]]
 
+#' Get table of differential analyses
+#' @note Needs to be called inside reactive function
+#' @param category Character: data category (e.g. "Carcinoma 2016")
+#' 
+#' @return Data frame of differential analyses
+getDifferentialAnalyses <- function(category = getCategory())
+    getGlobal(category, "differentialAnalyses")
+
 #' Get groups from a given data type
 #' @note Needs to be called inside reactive function
 #' @param dataset Character: data set (e.g. "Clinical data")
@@ -113,10 +121,12 @@ setInclusionLevels <- function(value, category = getCategory())
 setGroupsFrom <- function(dataset, groups, category = getCategory())
     setGlobal(category, dataset, "groups", value=groups)
 
+#' Set table of differential analyses
+#' @param table Character: differential analyses table
 #' @param category Character: data category (e.g. "Carcinoma 2016")
 #' @note Needs to be called inside reactive function
-setGroupsFrom <- function(dataset, value, category = getCategory())
-    setAsGlobal(paste(category, dataset, "groups", sep = "_"), value)
+setDifferentialAnalyses <- function(table, category = getCategory())
+    setGlobal(category, "differentialAnalyses", value=table)
 
 #' Set clinical matches from a given data type
 #' @note Needs to be called inside reactive function
