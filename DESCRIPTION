@@ -37,6 +37,7 @@ Imports:
     R.utils,
     utils,
     lawstat,
+    Sushi,
     rmarkdown
 Suggests:
     testthat,
