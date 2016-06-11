@@ -205,12 +205,16 @@ inputServer <- function(input, output, session, active) {
     
     # Update available clinical data attributes to use in a formula
     output$pathAutocomplete <- renderUI({
-        checkInside <- function(path) {
+        checkInside <- function(path, showFiles=FALSE) {
             if (substr(path, nchar(path), nchar(path)) == "/") {
-                list.files(path)
+                content <- list.files(path, full.names = TRUE)
             } else {
-                list.files(dirname(path))
+                content <- list.files(dirname(path), full.names = TRUE)
             }
+            
+            # Show only directories if showFiles is FALSE
+            if (!showFiles) content <- content[dir.exists(content)]
+            return(basename(content))
         }
 
         tagList(
