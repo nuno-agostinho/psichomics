@@ -46,47 +46,57 @@ getJunctionQuantification <- reactive(
 #' Get inclusion leves of the selected data category
 getInclusionLevels <- reactive(getCategoryData()[["Inclusion levels"]])
 
+#' Get data from shared data
+#' @param ... Arguments to identify a variable
+#' @param sep Character to separate identifiers
+getGlobal <- function(..., sep="_") sharedData[[paste(..., sep=sep)]]
+
 #' Get groups from a given data type
 #' @note Needs to be called inside reactive function
 #' @param dataset Character: data set (e.g. "Clinical data")
 #' @param category Character: data category (e.g. "Carcinoma 2016")
+#' 
+#' @return Matrix with groups of a given dataset
 getGroupsFrom <- function(dataset, category = getCategory())
-    sharedData[[paste(category, dataset, "groups", sep = "_")]] 
+    getGlobal(category, dataset, "groups")
 
 #' Get clinical matches from a given data type
 #' @param dataset Character: data set (e.g. "Junction quantification")
 #' @param category Character: data category (e.g. "Carcinoma 2016")
 #' @note Needs to be called inside reactive function
 getClinicalMatchFrom <- function(dataset, category = getCategory())
-    sharedData[[paste(category, dataset, "clinicalMatch", sep = "_")]] 
+    getGlobal(category, dataset, "clinicalMatch")
 
 #' Set element as globally accessible
 #' @details Set element inside the global variable
 #' @note Needs to be called inside reactive function
 #' 
-#' @param element Character: name of element
+#' @param ... Arguments to identify a variable
 #' @param value Any value to attribute to element
-setAsGlobal <- function(element, value) sharedData[[element]] <- value
+#' @param sep Character to separate identifier
+setGlobal <- function(..., value, sep="_") {
+    sharedData[[paste(..., sep=sep)]] <- value
+}
 
 #' Set data of the global data
 #' @note Needs to be called inside reactive function
-#' @param value Data frame or matrix to set as data
-setData <- function(value) setAsGlobal("data", value)
+#' @param data Data frame or matrix to set as data
+setData <- function(data) setGlobal("data", value=data)
 
 #' Set event
 #' @param event Character: event
 #' @note Needs to be called inside reactive function
-setEvent <- function(event) setAsGlobal("event", event)
+setEvent <- function(event) setGlobal("event", value=event)
 
 #' Set data category
 #' @param category Character: data category
 #' @note Needs to be called inside reactive function
-setCategory <- function(category) setAsGlobal("category", category)
+setCategory <- function(category) setGlobal("category", value=category)
 
 #' Set active dataset
 #' @param dataset Character: dataset
 #' @note Needs to be called inside reactive function
-setActiveDataset <- function(dataset) setAsGlobal("activeDataset", dataset)
+setActiveDataset <- function(dataset) setGlobal("activeDataset", value=dataset)
 
 #' Set inclusion levels for a given data category
 #' @note Needs to be called inside reactive function
@@ -97,7 +107,12 @@ setInclusionLevels <- function(value, category = getCategory())
 
 #' Set groups from a given data type
 #' @param dataset Character: data set (e.g. "Clinical data")
-#' @param value Matrix: groups of dataset
+#' @param groups Matrix: groups of dataset
+#' @param category Character: data category (e.g. "Carcinoma 2016")
+#' @note Needs to be called inside reactive function
+setGroupsFrom <- function(dataset, groups, category = getCategory())
+    setGlobal(category, dataset, "groups", value=groups)
+
 #' @param category Character: data category (e.g. "Carcinoma 2016")
 #' @note Needs to be called inside reactive function
 setGroupsFrom <- function(dataset, value, category = getCategory())
@@ -106,10 +121,10 @@ setGroupsFrom <- function(dataset, value, category = getCategory())
 #' Set clinical matches from a given data type
 #' @note Needs to be called inside reactive function
 #' @param dataset Character: data set (e.g. "Clinical data")
-#' @param value Vector of integers: clinical matches of dataset
+#' @param matches Vector of integers: clinical matches of dataset
 #' @param category Character: data category (e.g. "Carcinoma 2016")
-setClinicalMatchFrom <- function(dataset, value, category = getCategory())
-    setAsGlobal(paste(category, dataset, "clinicalMatch", sep = "_"), value)
+setClinicalMatchFrom <- function(dataset, matches, category = getCategory())
+    setGlobal(category, dataset, "clinicalMatch", value=matches)
 
 #' Create an identifier for a given object
 #' 
