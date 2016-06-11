@@ -11,13 +11,14 @@ To start using this program, follow these steps:
 2. Open [RStudio](https://www.rstudio.com/products/rstudio) (or open a console, type `R` and press enter)
 3. Type the following:
 ```r
+install.packages("devtools")
 devtools::install_github("nuno-agostinho/psichomics", auth_token = "b752621b2059cd64ac21d5f7e8418821feb81b81", ref="package")
 library(psichomics)
 psichomics()
 ```
 
 You can also download it and install it as a package. Or clone this repository, set the downloaded folder as the working
-directory and type `psichomics()`.
+directory and type `devtools::load.all(); psichomics()`.
 
 ## Data input
 ### Downloading TCGA data
