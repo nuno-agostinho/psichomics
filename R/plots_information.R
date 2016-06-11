@@ -45,6 +45,7 @@ noinfo <- function(output) {
     output$transcripts <- renderPlot(NULL)
 }
 
+#' @importFrom Sushi plotGenes zoomsregion labelgenome
 #' @importFrom highcharter highchart %>%
 infoServer <- function(input, output, session) {
     ns <- session$ns
