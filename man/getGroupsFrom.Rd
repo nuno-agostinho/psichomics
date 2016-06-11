@@ -11,6 +11,9 @@ getGroupsFrom(dataset, category = getCategory())
 
 \item{category}{Character: data category (e.g. "Carcinoma 2016")}
 }
+\value{
+Matrix with groups of a given dataset
+}
 \description{
 Get groups from a given data type
 }
