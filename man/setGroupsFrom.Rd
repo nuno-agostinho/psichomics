@@ -4,12 +4,12 @@
 \alias{setGroupsFrom}
 \title{Set groups from a given data type}
 \usage{
-setGroupsFrom(dataset, value, category = getCategory())
+setGroupsFrom(dataset, groups, category = getCategory())
 }
 \arguments{
 \item{dataset}{Character: data set (e.g. "Clinical data")}
 
-\item{value}{Matrix: groups of dataset}
+\item{groups}{Matrix: groups of dataset}
 
 \item{category}{Character: data category (e.g. "Carcinoma 2016")}
 }

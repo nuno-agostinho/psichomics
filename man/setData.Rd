@@ -4,10 +4,10 @@
 \alias{setData}
 \title{Set data of the global data}
 \usage{
-setData(value)
+setData(data)
 }
 \arguments{
-\item{value}{Data frame or matrix to set as data}
+\item{data}{Data frame or matrix to set as data}
 }
 \description{
 Set data of the global data
