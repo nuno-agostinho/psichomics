@@ -149,6 +149,7 @@ parseVastToolsAnnotation <- function(annot) {
                              return(parseVastToolsEvent(a))
                      })
     events <- rbind.fill(events)
+    events <- unique(events)
     return(events)
 }
 
