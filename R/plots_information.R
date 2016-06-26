@@ -61,8 +61,11 @@ infoServer <- function(input, output, session) {
         eventPosition <- event[4:(length(event)-1)]
         eventPosition <- range(as.numeric(eventPosition))
         
-        path <- paste0("lookup/symbol/human/", gene)
-        info <- queryEnsembl(path, list(expand=1))
+        species <- tolower(getSpecies())
+        assembly <- getAssemblyVersion()
+        path <- paste0("lookup/symbol/", species, "/", gene)
+        grch37 <- assembly == "hg19"
+        info <- queryEnsembl(path, list(expand=1), grch37=grch37)
         
         output$transcripts <- renderPlot({
             transcripts <- data.frame()
@@ -99,7 +102,8 @@ infoServer <- function(input, output, session) {
             
             tagList(
                 h2(info$display_name, tags$small(info$id)),
-                sprintf("Chromosome %s: %s-%s (%s strand)",
+                sprintf("Species: %s (assembly %s)", species, assembly),
+                br(), sprintf("Chromosome %s: %s-%s (%s strand)",
                         info$seq_region_name, 
                         format(start, big.mark=",", scientific=FALSE),
                         format(end, big.mark=",", scientific=FALSE),
@@ -108,7 +112,7 @@ infoServer <- function(input, output, session) {
                               info$biotype), br(),
                 tags$a("Ensembl", icon("external-link"), target="_blank",
                        class="btn btn-link",
-                       href=paste0("http://grch37.ensembl.org/human/",
+                       href=paste0("http://grch37.ensembl.org/", species, "/",
                                    "Gene/Summary?g=", info$id)),
                 tags$a("UCSC", icon("external-link"), target="_blank",
                        class="btn btn-link",
