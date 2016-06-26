@@ -51,27 +51,53 @@ getInclusionLevels <- reactive(getCategoryData()[["Inclusion levels"]])
 #' @param sep Character to separate identifiers
 getGlobal <- function(..., sep="_") sharedData[[paste(..., sep=sep)]]
 
-#' Get table of differential analyses
+#' Get the table of differential analyses of a data category
 #' @note Needs to be called inside reactive function
-#' @param category Character: data category (e.g. "Carcinoma 2016")
+#' 
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
 #' 
 #' @return Data frame of differential analyses
 getDifferentialAnalyses <- function(category = getCategory())
     getGlobal(category, "differentialAnalyses")
 
+#' Get the species of a data category
+#' @note Needs to be called inside reactive function
+#' 
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' 
+#' @return Character value with the species
+getSpecies <- function(category = getCategory())
+    getGlobal(category, "species")
+
+#' Get the assembly version of a data category
+#' @note Needs to be called inside reactive function
+#' 
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' 
+#' @return Character value with the assembly version
+getAssemblyVersion <- function(category = getCategory())
+    getGlobal(category, "assemblyVersion")
+
 #' Get groups from a given data type
 #' @note Needs to be called inside reactive function
+#' 
 #' @param dataset Character: data set (e.g. "Clinical data")
-#' @param category Character: data category (e.g. "Carcinoma 2016")
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
 #' 
 #' @return Matrix with groups of a given dataset
 getGroupsFrom <- function(dataset, category = getCategory())
     getGlobal(category, dataset, "groups")
 
 #' Get clinical matches from a given data type
-#' @param dataset Character: data set (e.g. "Junction quantification")
-#' @param category Character: data category (e.g. "Carcinoma 2016")
 #' @note Needs to be called inside reactive function
+#' 
+#' @param dataset Character: data set (e.g. "Junction quantification")
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
 getClinicalMatchFrom <- function(dataset, category = getCategory())
     getGlobal(category, dataset, "clinicalMatch")
 
@@ -108,41 +134,67 @@ setActiveDataset <- function(dataset) setGlobal("activeDataset", value=dataset)
 
 #' Set inclusion levels for a given data category
 #' @note Needs to be called inside reactive function
+#' 
 #' @param value Data frame or matrix: inclusion levels
-#' @param category Character: data category (e.g. "Carcinoma 2016")
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
 setInclusionLevels <- function(value, category = getCategory())
     sharedData$data[[category]][["Inclusion levels"]] <- value
 
 #' Set groups from a given data type
+#' @note Needs to be called inside reactive function
+#' 
 #' @param dataset Character: data set (e.g. "Clinical data")
 #' @param groups Matrix: groups of dataset
-#' @param category Character: data category (e.g. "Carcinoma 2016")
-#' @note Needs to be called inside reactive function
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
 setGroupsFrom <- function(dataset, groups, category = getCategory())
     setGlobal(category, dataset, "groups", value=groups)
 
-#' Set table of differential analyses
-#' @param table Character: differential analyses table
-#' @param category Character: data category (e.g. "Carcinoma 2016")
+#' Set the table of differential analyses of a data category
 #' @note Needs to be called inside reactive function
+#' 
+#' @param table Character: differential analyses table
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
 setDifferentialAnalyses <- function(table, category = getCategory())
     setGlobal(category, "differentialAnalyses", value=table)
 
+#' Set the species of a data category
+#' @note Needs to be called inside reactive function
+#' 
+#' @param value Character: species
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+setSpecies <- function(value, category = getCategory())
+    setGlobal(category, "species", value=value)
+
+#' Set the assembly version of a data category
+#' @note Needs to be called inside reactive function
+#' 
+#' @param value Character: assembly version
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+setAssemblyVersion <- function(value, category = getCategory())
+    setGlobal(category, "assemblyVersion", value=value)
+
 #' Set clinical matches from a given data type
 #' @note Needs to be called inside reactive function
+#' 
 #' @param dataset Character: data set (e.g. "Clinical data")
 #' @param matches Vector of integers: clinical matches of dataset
-#' @param category Character: data category (e.g. "Carcinoma 2016")
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
 setClinicalMatchFrom <- function(dataset, matches, category = getCategory())
     setGlobal(category, dataset, "clinicalMatch", value=matches)
 
 #' Create an identifier for a given object
 #' 
-#' @param ... Arguments to identify an object
-#' 
-#' @details To make an object's identifier unique, use the names of the module,
+#' To make an object's identifier unique, use the names of the module,
 #' submodule, subsubmodule, ... as arguments before passing the name. Check the
 #' example.
+#' 
+#' @param ... Arguments to identify an object
 #' 
 #' @return Character with underscores instead of spaces
 #' 
