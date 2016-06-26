@@ -53,7 +53,11 @@ inclusionLevelsServer <- function(input, output, session) {
         startProgress("Reading alternative splicing annotation", divisions = 3)
         annot <- readRDS(system.file("extdata", input$annotation,
                                      package = "psichomics"))
-
+        
+        # Set species and assembly version
+        setSpecies("Human")
+        setAssemblyVersion("hg19")
+        
         # Calculate inclusion levels with annotation and junction quantification
         updateProgress("Calculating inclusion levels")
         junctionQuant <- getJunctionQuantification()
