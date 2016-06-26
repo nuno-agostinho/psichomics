@@ -23,11 +23,14 @@ inclusionLevelsUI <- function(id, tab) {
     
     tab("Inclusion levels",
         uiOutput(ns("modal")),
-        helpText("Calculate exon and intron inclusion levels. This is also",
-                 "known as percentage spliced in or PSI or even \u03A8."),
+        helpText("Calculate exon inclusion levels. This is also",
+                 "known as percentage spliced in (PSI or \u03A8)."),
+        selectizeInput(ns("annotation"),
+                       "Alternative splicing event annotation",
+                       choices = c("Human (hg19/GRCh37)"="hg19_splicingAnnotation.RDS")),
         selectizeInput(ns("eventType"), "Event type(s)", selected = "SE",
                        choices = choices, multiple = TRUE),
-        numericInput(ns("minReads"), "Minimum reads to consider", value = 10),
+        numericInput(ns("minReads"), "Minimum reads threshold", value = 10),
         actionButton(ns("calcIncLevels"), class = "btn-primary",
                      "Calculate inclusion levels"))
 }
@@ -48,7 +51,7 @@ inclusionLevelsServer <- function(input, output, session) {
 
         # Read annotation
         startProgress("Reading alternative splicing annotation", divisions = 3)
-        annot <- readRDS(system.file("extdata", "hg19_splicingAnnotation.RDS",
+        annot <- readRDS(system.file("extdata", input$annotation,
                                      package = "psichomics"))
 
         # Calculate inclusion levels with annotation and junction quantification
