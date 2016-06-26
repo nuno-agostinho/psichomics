@@ -265,7 +265,12 @@ groupsServer <- function(input, output, session) {
         }
     }, options = list(pageLength = 10, lengthChange = FALSE, scrollX = TRUE,
                       #filter = FALSE, info = FALSE, paginationType = "simple",
-                      ordering = FALSE),
+                      ordering = FALSE,
+                      # Stack DataTable elements so they fit in the container
+                      dom = paste0(
+                          '<"row view-filter"<"col-sm-12"<"pull-left"l>',
+                          '<"pull-right"f><"clearfix">>>',
+                          'rt<"row view-pager"<"col-sm-12"<"text-center"ip>>>')),
     escape = FALSE)
     
     # Remove selected groups
