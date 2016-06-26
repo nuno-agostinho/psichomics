@@ -82,38 +82,25 @@ addTCGAdata <- function(ns) {
 #' @param modalId Character: identifier of the modal
 #' @param replaceButtonId Character: identifier of the button to replace data
 #' @param keepButtonId Character: identifier of the button to append data
-loadedDataModal <- function(modalId, replaceButtonId, keepButtonId) {
-    bsModal2(modalId,
-             div(icon("exclamation-triangle"), "Data already loaded"),
-             NULL, size = "small", style = "warning",
-             "Would you like to", tags$b("replace"), "the loaded data or",
-             tags$b("keep"), "both the previous and new data?",
-             footer = tagList(
-                 actionButton(keepButtonId, "data-dismiss"="modal",
-                              label="Keep both"),
-                 actionButton(replaceButtonId, class = "btn-warning",
-                              "data-dismiss"="modal", label="Replace")))
-    # warningModal(session, "Data already loaded",
-    #              "Would you like to", tags$b("replace"), "the loaded data or",
-    #              tags$b("keep"), "both the previous and new data?",
-    #              footer = tagList(
-    #                  actionButton(keepButtonId, "data-dismiss"="modal",
-    #                               label="Keep both"),
-    #                  actionButton(replaceButtonId, class = "btn-warning",
-    #                               "data-dismiss"="modal", label="Replace")))
+loadedDataModal <- function(session, modalId, replaceButtonId, keepButtonId) {
+    ns <- session$ns
+    warningModal(session, "Data already loaded",
+                 "Would you like to", tags$b("replace"), "the loaded data or",
+                 tags$b("keep"), "both the previous and new data?",
+                 footer = tagList(
+                     actionButton(ns(keepButtonId), "data-dismiss"="modal",
+                                  label="Keep both"),
+                     actionButton(ns(replaceButtonId), class = "btn-warning",
+                                  "data-dismiss"="modal", label="Replace")),
+                 modalId=modalId)
 }
 
 #' @importFrom shinyBS bsCollapse bsCollapsePanel
 inputUI <- function(id, tab) {
     ns <- NS(id)
     tab("Input", br(),
-        # TODO(NunoA): Show alerts from renderUI
-        loadedDataModal(ns("localDataModal"),
-                        ns("localReplace"),
-                        ns("localAppend")),
-        loadedDataModal(ns("firebrowseDataModal"),
-                        ns("firebrowseReplace"),
-                        ns("firebrowseAppend")),
+        uiOutput(ns("localDataModal")),
+        uiOutput(ns("firebrowseDataModal")),
         uiOutput(ns("pathAutocomplete")),
         uiOutput(ns("iframeDownload")),
         bsCollapse(
@@ -196,7 +183,6 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
     enable("getFirehoseData")
 }
 
-#' @importFrom shinyBS toggleModal
 inputServer <- function(input, output, session, active) {
     ns <- session$ns
     
@@ -230,7 +216,10 @@ inputServer <- function(input, output, session, active) {
     # Check if data is already loaded and ask the user if it should be replaced
     observeEvent(input$acceptFile, {
         if (!is.null(getData()))
-            toggleModal(session, "localDataModal", "open")
+            loadedDataModal(session,
+                            "localDataModal",
+                            "localReplace",
+                            "localAppend")
         else
             setLocalData(input, output, session)
     })
@@ -246,7 +235,10 @@ inputServer <- function(input, output, session, active) {
     # Check if data is already loaded and ask the user if it should be replaced
     observeEvent(input$getFirehoseData, {
         if (!is.null(getData()))
-            toggleModal(session, "firebrowseDataModal", "open")
+            loadedDataModal(session,
+                            "firebrowseDataModal",
+                            "firebrowseReplace",
+                            "firebrowseAppend")
         else
             setFirehoseData(input, output, session)
     })

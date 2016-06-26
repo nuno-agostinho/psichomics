@@ -378,32 +378,33 @@ groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE,
 #' @export
 showModal <- function(session, title, ..., style = NULL,
                       iconName = "exclamation-circle", footer = NULL,
-                      printMessage = FALSE, size = NULL) {
-    warning("Modals aren't working. The following was raised: ", title)
-    # session$output[["globalModal"]] <- renderUI(
-    #     bsModal2(id(title), style = style, div(icon(iconName), title),
-    #              trigger = NULL, size = size, ..., footer = NULL))
-    # toggleModal(session, id(title), toggle = "open")
-    # if (printMessage) print(content)
+                      printMessage = FALSE, size = NULL,
+                      modalId = "modal") {
+    ns <- session$ns
+    session$output[[modalId]] <- renderUI({
+        bsModal2(ns(id(title)), style=style, div(icon(iconName), title),
+                 trigger=NULL, size=size, ..., footer=footer)})
+    toggleModal(session, id(title), toggle = "open")
+    if (printMessage) print(content)
 }
 
 #' @rdname showModal
 #' @export
 errorModal <- function(session, title, ..., size = "small", footer = NULL) {
-    showModal(session, title, ..., footer, style = "error", size = size,
+    showModal(session, title, ..., footer=footer, style = "error", size = size,
               printMessage = FALSE, iconName = "times-circle")
 }
 
 #' @rdname showModal
 #' @export
 warningModal <- function(session, title, ..., size = "small", footer = NULL) {
-    showModal(session, title, ..., footer, style = "warning", size = size,
+    showModal(session, title, ..., footer=footer, style="warning", size = size,
               printMessage = FALSE, iconName = "exclamation-circle")
 }
 
 #' @rdname showModal
 #' @export
 infoModal <- function(session, title, ..., size = "small", footer = NULL) {
-    showModal(session, title, ..., footer, style = "info", size = size,
+    showModal(session, title, ..., footer=footer, style = "info", size = size,
               printMessage = FALSE, iconName = "info-circle")
 }

@@ -84,8 +84,9 @@ appUI <- function() {
         conditionalPanel(
             condition="$('html').hasClass('shiny-busy')",
             div(icon("flask", "fa-spin"), "Working...",
-                class="text-right", id="loadmessage")),
-        uiOutput("globalModal"))
+                class="text-right", id="loadmessage")
+        )
+    )
     
     shinyUI(
         do.call(navbarPage, c(
