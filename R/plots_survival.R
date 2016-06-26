@@ -6,6 +6,7 @@ survivalUI <- function(id) {
     ns <- NS(id)
     
     tagList(
+        uiOutput(ns("modal")),
         sidebarPanel(
             radioButtons(ns("censoring"), "Data censoring", selected="right",
                          inline=TRUE, choices=c(Left="left",

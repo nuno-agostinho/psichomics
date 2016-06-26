@@ -5,6 +5,7 @@ diffAnalysisUI <- function(id) {
     ns <- NS(id)
     
     tagList(
+        uiOutput(ns("modal")),
         sidebarLayout(
             sidebarPanel(
                 numericInput(ns("bandwidth"), "Density bandwidth", 0.01, step=0.01),

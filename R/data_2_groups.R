@@ -54,6 +54,7 @@ groupsUI <- function(id, tab) {
     checkId <- function (sign, what)
         sprintf("input[id='%s'] %s '%s'", ns("subsetBy"), sign, what)
     tab("Groups", br(),
+        uiOutput(ns("modal")),
         radioButtons(ns("subsetBy"), "Subset by", inline = TRUE,
                      c("Column", "Rows", "Expression", "Grep")),
         conditionalPanel(checkId("==", "Column"), groupByColumn(ns)),

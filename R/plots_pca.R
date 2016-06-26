@@ -53,7 +53,8 @@ psiPCA <- function(psi, center = TRUE, scale. = FALSE, naTolerance = 30) {
 #' @importFrom highcharter highchartOutput
 pcaUI <- function(id) {
     ns <- NS(id)
-    list(
+    tagList(
+        uiOutput(ns("modal")),
         sidebarPanel(
             checkboxGroupInput(ns("preprocess"), "Preprocessing",
                                c("Center values" = "center",
@@ -228,10 +229,10 @@ pcaServer <- function(input, output, session) {
     })
     
     # Show variance plot
-    # observeEvent(input$showVariancePlot, {
-    #     infoModal(session, "Variance plot", highchartOutput(ns("variancePlot")), 
-    #               size = "large")
-    # })
+    observeEvent(input$showVariancePlot, {
+        infoModal(session, "Variance plot", highchartOutput(ns("variancePlot")),
+                  size = "large")
+    })
     
     # Select all color groups when pressing the respective "Select all" button
     observeEvent(input$colorGroups_selectAll, {

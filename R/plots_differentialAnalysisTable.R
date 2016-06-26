@@ -1,6 +1,7 @@
 diffAnalysisTableUI <- function(id) {
     ns <- NS(id)
     tagList(
+        uiOutput(ns("modal")),
         sidebarLayout(
             sidebarPanel(
                 checkboxGroupInput(ns("statsChoices"),

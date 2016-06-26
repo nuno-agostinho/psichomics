@@ -22,6 +22,7 @@ inclusionLevelsUI <- function(id, tab) {
                  "Alternative last exon (ALE)" = "ALE")
     
     tab("Inclusion levels",
+        uiOutput(ns("modal")),
         helpText("Calculate exon and intron inclusion levels. This is also",
                  "known as percentage spliced in or PSI or even \u03A8."),
         selectizeInput(ns("eventType"), "Event type(s)", selected = "SE",
