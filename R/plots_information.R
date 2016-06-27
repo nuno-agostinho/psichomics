@@ -55,17 +55,11 @@ queryUniprot <- function(protein, format="xml") {
 
 infoUI <- function(id) {
     ns <- NS(id)
-    tagList(
-        uiOutput(ns("info")),
-        plotOutput(ns("plotTranscripts")),
-        uiOutput(ns("selectProtein")),
-        highchartOutput(ns("plotProtein"))
-    )
+    uiOutput(ns("info"))
 }
 
 noinfo <- function(output) {
     output$info <- renderUI("No information available. Try another event.")
-    output$plotTranscripts <- renderPlot(NULL)
 }
 
 #' Parse XML from Uniprot's RESTful service
@@ -235,42 +229,75 @@ infoServer <- function(input, output, session) {
                                    info$seq_region_name, ":", start, "-", end)),
                 radioButtons(ns("zoom"), "Zoom", inline=TRUE,
                              c("Show all transcripts"="all", 
-                               "Zoom to splicing event"="event"))
+                               "Zoom to splicing event"="event")),
+                plotOutput(ns("plotTranscripts"), height="200px"),
+                uiOutput(ns("selectizeProtein")),
+                highchartOutput(ns("plotProtein"), height="200px")
             )
         })
         
-        output$selectProtein <- renderUI({
+        output$selectizeProtein <- renderUI({
             proteins <- info$Transcript$Translation$id
             proteins <- proteins[!is.na(proteins)]
-            selectizeInput(ns("protein"), label="Select protein",
-                           choices=proteins)
+            tagList(
+                selectizeInput(ns("selectedProtein"), label="Select protein",
+                               choices=proteins),
+                uiOutput(ns("proteinLink"))
+            )
         })
+    })
+    
+    observe({
+        # Convert from ENSEMBL to Uniprot/SWISSPROT
+        ensembl <- input$selectedProtein
         
-        observe({
-            # Convert from ENSEMBL to Uniprot/SWISSPROT
-            ensembl <- input$protein
+        if (is.null(ensembl)) return(NULL)
+        
+        species <- tolower(getSpecies())
+        assembly <- getAssemblyVersion()
+        grch37 <- assembly == "hg19"
+        
+        print("Looking for ENSEMBL protein in Uniprot...")
+        uniprot <- queryEnsembl(paste0("xrefs/id/", ensembl),
+                                list("content-type"="application/json"), 
+                                grch37=grch37)
+        uniprot <- uniprot[grepl("SWISSPROT", uniprot$dbname), ]
+        
+        ensemblLink <- tags$a("Ensembl", icon("external-link"), target="_blank",
+                              class="btn btn-link",
+                              href=paste0("http://", if(grch37) { "grch37." }, 
+                                          "ensembl.org/", species, "/",
+                                          "Search/Results?q=", ensembl))
+        
+        if (nrow(uniprot) == 0) {
+            print("No protein match with Uniprot/SWISSPROT")
+            output$proteinLink <- renderUI({
+                tagList(ensemblLink,
+                        tags$a("No Uniprot match was found",
+                               icon("chain-broken"), 
+                               class="btn btn-link")
+                )
+            })
+            output$plotProtein <- renderHighchart(NULL)
+        } else {
+            protein <- uniprot$primary_id[1]
+            xml <- queryUniprot(protein, "xml")
+            parsed <- parseUniprotXML(xml)
+            proteinLength <- parsed$proteinLength
+            feature <- parsed$feature
             
-            if (is.null(ensembl)) return(NULL)
-            print("Looking for ENSEMBL protein in Uniprot...")
-            uniprot <- queryEnsembl(paste0("xrefs/id/", ensembl),
-                                    list("content-type"="application/json"), 
-                                    grch37=grch37)
-            uniprot <- uniprot[grepl("SWISSPROT", uniprot$dbname), ]
-            
-            if (nrow(uniprot) == 0)
-                print("No protein from Uniprot :(")
-            else {
-                protein <- uniprot$primary_id[1]
-                xml <- queryUniprot(protein, "xml")
-                parsed <- parseUniprotXML(xml)
-                proteinLength <- parsed$proteinLength
-                feature <- parsed$feature
-                
-                hc <- proteinHighcharts(feature, proteinLength)
-                output$plotProtein <- renderHighchart(hc)
-                print("Uniprot protein found")
-            }
-        })
+            hc <- proteinHighcharts(feature, proteinLength)
+            output$proteinLink <- renderUI({
+                tagList(ensemblLink,
+                        tags$a("Uniprot", icon("external-link"),
+                               target="_blank", class="btn btn-link",
+                               href=paste0("http://www.uniprot.org/uniprot/",
+                                           protein))
+                )
+            })
+            output$plotProtein <- renderHighchart(hc)
+            print("Uniprot/SWISSPROT protein found")
+        }
     })
 }
 
