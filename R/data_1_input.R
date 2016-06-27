@@ -1,3 +1,13 @@
+getFirebrowseDataChoices <- function() {
+    choices <- c(paste0(c("junction", "exon"),
+                        "_quantification"), "Preprocess",
+                 paste0("RSEM_", c("isoforms", "genes")),
+                 paste0(c("junction", "gene", "exon"),
+                        "_expression"), "genes_normalized")
+    names(choices) <- gsub("_", " ", choices)
+    return(choices)
+}
+
 #' Creates a UI set with options to add a file from the local storage
 #' 
 #' @return A UI set that can be added to a UI definition
@@ -8,11 +18,7 @@ addLocalFile <- function(ns) {
         textInput(ns("localCategory"), label = "Category name",
                   value = "Adenoid cystic carcinoma (ACC) 2016"),
         selectizeInput(ns("localIgnore"), "Files/directories to ignore",
-                       choices = c(paste0(c("junction", "exon"),
-                                          "_quantification"), "Preprocess",
-                                   paste0("RSEM_", c("isoforms", "genes")),
-                                   paste0(c("junction", "gene", "exon"),
-                                          "_expression"), "genes_normalized"),
+                       choices = getFirebrowseDataChoices(),
                        selected = c("RSEM_isoforms", "exon_quantification"),
                        multiple = TRUE, options = list(
                            # Allow to add new items
@@ -46,11 +52,7 @@ addTCGAdata <- function(ns) {
                            options = list(
                                placeholder = "Select data types")),
             selectizeInput(ns("firehoseIgnore"), "Files/archives to ignore",
-                           choices = c(paste0(c("junction", "exon"),
-                                              "_quantification"), "Preprocess",
-                                       paste0("RSEM_", c("isoforms", "genes")),
-                                       paste0(c("junction", "gene", "exon"),
-                                              "_expression"), "genes_normalized"),
+                           choices = getFirebrowseDataChoices(),
                            selected = c("RSEM_isoforms", "exon_quantification"),
                            multiple = TRUE, options = list(
                                # Allow to add new items
