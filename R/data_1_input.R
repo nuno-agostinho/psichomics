@@ -8,14 +8,12 @@ addLocalFile <- function(ns) {
         textInput(ns("localCategory"), label = "Category name",
                   value = "Adenoid cystic carcinoma (ACC) 2016"),
         selectizeInput(ns("localIgnore"), "Files/directories to ignore",
-                       choices = c(".aux.", ".mage-tab.",
-                                   paste0(c("junction", "exon"),
+                       choices = c(paste0(c("junction", "exon"),
                                           "_quantification"), "Preprocess",
                                    paste0("RSEM_", c("isoforms", "genes")),
                                    paste0(c("junction", "gene", "exon"),
                                           "_expression"), "genes_normalized"),
-                       selected = c("RSEM_isoforms", ".aux.", ".mage-tab.",
-                                    "exon_quantification"),
+                       selected = c("RSEM_isoforms", "exon_quantification"),
                        multiple = TRUE, options = list(
                            # Allow to add new items
                            create = TRUE, createOnBlur=TRUE,
@@ -48,14 +46,12 @@ addTCGAdata <- function(ns) {
                            options = list(
                                placeholder = "Select data types")),
             selectizeInput(ns("firehoseIgnore"), "Files/archives to ignore",
-                           choices = c(".aux.", ".mage-tab.",
-                                       paste0(c("junction", "exon"),
+                           choices = c(paste0(c("junction", "exon"),
                                               "_quantification"), "Preprocess",
                                        paste0("RSEM_", c("isoforms", "genes")),
                                        paste0(c("junction", "gene", "exon"),
                                               "_expression"), "genes_normalized"),
-                           selected = c("RSEM_isoforms", ".aux.", ".mage-tab.",
-                                        "exon_quantification"),
+                           selected = c("RSEM_isoforms", "exon_quantification"),
                            multiple = TRUE, options = list(
                                # Allow to add new items
                                create = TRUE, createOnBlur=TRUE,
@@ -132,7 +128,7 @@ setLocalData <- function(input, output, session, replace=TRUE) {
     
     folder <- input$localFolder
     category <- input$localCategory
-    ignore <- input$localIgnore
+    ignore <- c(".aux.", ".mage-tab.", input$localIgnore)
     
     sub <- dir(folder, full.names=TRUE)[dir.exists(
         dir(folder, full.names=TRUE))]
@@ -168,7 +164,7 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
         cohort = input$firehoseCohort,
         date = gsub("-", "_", input$firehoseDate),
         data_type = input$dataType,
-        exclude = input$firehoseIgnore,
+        exclude = c(".aux.", ".mage-tab.", input$firehoseIgnore),
         progress = updateProgress,
         output = output)
     
