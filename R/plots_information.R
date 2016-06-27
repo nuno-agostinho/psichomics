@@ -122,7 +122,7 @@ proteinHighcharts <- function(feature, length) {
     hc <- highchart() %>%
         hc_chart(type="area", zoomType="x") %>%
         hc_xAxis(title=list(text="Position (aminoacids)"), min=0,
-                 max=length) %>%
+                 max=length, allowDecimals=FALSE) %>%
         hc_yAxis(visible=FALSE) %>%
         hc_tooltip(pointFormat="<b>{series.name} {point.id}</b>
                    <br>{point.variant}{point.description}")
