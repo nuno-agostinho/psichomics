@@ -9,7 +9,8 @@ getClinicalMatchFrom(dataset, category = getCategory())
 \arguments{
 \item{dataset}{Character: data set (e.g. "Junction quantification")}
 
-\item{category}{Character: data category (e.g. "Carcinoma 2016")}
+\item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
+it uses the selected data category}
 }
 \description{
 Get clinical matches from a given data type

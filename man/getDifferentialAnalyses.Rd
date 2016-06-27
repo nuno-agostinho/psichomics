@@ -2,18 +2,19 @@
 % Please edit documentation in R/begin.R
 \name{getDifferentialAnalyses}
 \alias{getDifferentialAnalyses}
-\title{Get table of differential analyses}
+\title{Get the table of differential analyses of a data category}
 \usage{
 getDifferentialAnalyses(category = getCategory())
 }
 \arguments{
-\item{category}{Character: data category (e.g. "Carcinoma 2016")}
+\item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
+it uses the selected data category}
 }
 \value{
 Data frame of differential analyses
 }
 \description{
-Get table of differential analyses
+Get the table of differential analyses of a data category
 }
 \note{
 Needs to be called inside reactive function

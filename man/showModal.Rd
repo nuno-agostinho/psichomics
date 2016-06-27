@@ -9,7 +9,7 @@
 \usage{
 showModal(session, title, ..., style = NULL,
   iconName = "exclamation-circle", footer = NULL, printMessage = FALSE,
-  size = NULL)
+  size = NULL, modalId = "modal")
 
 errorModal(session, title, ..., size = "small", footer = NULL)
 

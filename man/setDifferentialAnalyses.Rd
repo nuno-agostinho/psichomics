@@ -2,17 +2,18 @@
 % Please edit documentation in R/begin.R
 \name{setDifferentialAnalyses}
 \alias{setDifferentialAnalyses}
-\title{Set table of differential analyses}
+\title{Set the table of differential analyses of a data category}
 \usage{
 setDifferentialAnalyses(table, category = getCategory())
 }
 \arguments{
 \item{table}{Character: differential analyses table}
 
-\item{category}{Character: data category (e.g. "Carcinoma 2016")}
+\item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
+it uses the selected data category}
 }
 \description{
-Set table of differential analyses
+Set the table of differential analyses of a data category
 }
 \note{
 Needs to be called inside reactive function

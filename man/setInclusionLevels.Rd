@@ -9,7 +9,8 @@ setInclusionLevels(value, category = getCategory())
 \arguments{
 \item{value}{Data frame or matrix: inclusion levels}
 
-\item{category}{Character: data category (e.g. "Carcinoma 2016")}
+\item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
+it uses the selected data category}
 }
 \description{
 Set inclusion levels for a given data category
