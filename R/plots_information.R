@@ -59,7 +59,9 @@ infoUI <- function(id) {
 }
 
 noinfo <- function(output) {
-    output$info <- renderUI("No information available. Try another event.")
+    output$info <- renderUI(
+        h3("No information available for this event.", br(),
+           tags$small("Select another alternative splicing event.")))
 }
 
 #' Parse XML from Uniprot's RESTful service
@@ -303,5 +305,5 @@ infoServer <- function(input, output, session) {
 }
 
 attr(infoUI, "loader") <- "plots"
-attr(infoUI, "name") <- "Information"
+attr(infoUI, "name") <- "Gene, transcript and protein information"
 attr(infoServer, "loader") <- "plots"
