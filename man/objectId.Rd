@@ -13,9 +13,6 @@ objectId(...)
 Character with underscores instead of spaces
 }
 \description{
-Create an identifier for a given object
-}
-\details{
 To make an object's identifier unique, use the names of the module,
 submodule, subsubmodule, ... as arguments before passing the name. Check the
 example.

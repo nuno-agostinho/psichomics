@@ -11,7 +11,8 @@ setGroupsFrom(dataset, groups, category = getCategory())
 
 \item{groups}{Matrix: groups of dataset}
 
-\item{category}{Character: data category (e.g. "Carcinoma 2016")}
+\item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
+it uses the selected data category}
 }
 \description{
 Set groups from a given data type

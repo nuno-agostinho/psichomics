@@ -11,7 +11,8 @@ setClinicalMatchFrom(dataset, matches, category = getCategory())
 
 \item{matches}{Vector of integers: clinical matches of dataset}
 
-\item{category}{Character: data category (e.g. "Carcinoma 2016")}
+\item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
+it uses the selected data category}
 }
 \description{
 Set clinical matches from a given data type

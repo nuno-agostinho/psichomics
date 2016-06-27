@@ -4,7 +4,7 @@
 \alias{loadedDataModal}
 \title{Create a modal warning the user of already loaded data}
 \usage{
-loadedDataModal(modalId, replaceButtonId, keepButtonId)
+loadedDataModal(session, modalId, replaceButtonId, keepButtonId)
 }
 \arguments{
 \item{modalId}{Character: identifier of the modal}
