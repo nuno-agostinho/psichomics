@@ -68,32 +68,27 @@ noinfo <- function(output) {
     output$plotTranscripts <- renderPlot(NULL)
 }
 
-#' Plot a Uniprot protein
+#' Parse XML from Uniprot's RESTful service
 #' 
-#' @param feature List of XML nodes: features of the Uniprot protein
-#' @param proteinLength Integer: protein length
+#' @param XML response from Uniprot
 #' 
-#' @return Highcharter object
-proteinHighcharts <- function(feature, proteinLength) {
-    hc <- highchart() %>%
-        hc_chart(type="area", zoomType="x") %>%
-        hc_xAxis(title=list(text="Position (aminoacids)"), min=0,
-                 max=proteinLength) %>%
-        hc_yAxis(visible=FALSE) %>%
-        hc_tooltip(pointFormat="<b>{series.name} {point.id}</b>
-                   <br>{point.variant}{point.description}")
+#' @return List containing protein length and data frame of protein features
+parseUniprotXML <- function(xml) {
+    doc <- xmlTreeParse(xml)
+    root <- xmlRoot(doc)[[1]]
+    featureNodes <- getNodeSet(root, "//feature")
+    proteinLength <- as.numeric(
+        xmlAttrs(getNodeSet(root, "//sequence[@length]")[[1]])[[1]])
     
-    # The diverse types of features available
-    types <- unique(sapply(sapply(feature, xmlAttrs), "[[", 1))
-    
-    featureList <- NULL
-    # Reverse elements from features so the first ones (smaller Y) are above
-    for (feat in rev(feature)) {
+    # Convert list of XMLNodes to list of characters
+    l <- lapply(featureNodes, function(feat) { 
         attrs <- xmlAttrs(feat)
-        type  <- attrs[[1]]
-        description <- attrs[[2]]
-        id <- tryCatch(attrs[[3]], error=function(e) NULL)
+        
         location  <- feat[[match("location", names(feat))]]
+        start <- as.numeric(xmlAttrs(location[[1]]))
+        # If there's no stop position, simply sum 1 to the start position
+        stop  <- tryCatch(as.numeric(xmlAttrs(location[[2]])),
+                          error=function(e) start+1)
         
         # Get original and variant aminoacid
         variant <- match("variation", names(feat))
@@ -104,24 +99,58 @@ proteinHighcharts <- function(feature, proteinLength) {
         } else {
             variant <- NULL
         }
+        return(c(attrs, start=start, stop=stop, variant=variant))
+    })
+    
+    # Convert list of characters to data frame of characters
+    feature <- plyr::ldply(l, rbind)
+    for (col in 1:ncol(feature))
+        feature[[col]] <- as.character(feature[[col]])
+    
+    feature$start <- as.numeric(feature$start)
+    feature$stop <- as.numeric(feature$stop)
+    return(list(proteinLength=proteinLength, feature=feature))
+}
+
+#' Plot protein features
+#' 
+#' @param feature Data frame: protein features
+#' @param length Integer: protein length
+#' 
+#' @return Highcharter object
+proteinHighcharts <- function(feature, length) {
+    hc <- highchart() %>%
+        hc_chart(type="area", zoomType="x") %>%
+        hc_xAxis(title=list(text="Position (aminoacids)"), min=0,
+                 max=length) %>%
+        hc_yAxis(visible=FALSE) %>%
+        hc_tooltip(pointFormat="<b>{series.name} {point.id}</b>
+                   <br>{point.variant}{point.description}")
+    
+    # The diverse types of features available
+    types <- unique(feature$type)
+    
+    featureList <- NULL
+    # Reverse elements from features so the first ones (smaller Y) are above
+    for (feat in nrow(feature):1) {
+        feat <- feature[feat, ]
         
-        start <- as.numeric(xmlAttrs(location[[1]]))
         # If there's no stop position, simply sum 1 to the start position
-        stop  <- tryCatch(as.numeric(xmlAttrs(location[[2]])),
-                          error=function(e) {return(start+1)})
-        y     <- match(type, types)
+        stop <- ifelse(!is.na(feat$stop), feat$stop, feat$start + 1)
+        y <- match(feat$type, types)
         
         # Create a list with two points based on this region
-        temp <- list(
-            NULL, 
-            list(x=start, y=y, description=description, id=id, variant=variant), 
-            list(x=stop,  y=y, description=description, id=id, variant=variant))
+        temp <- list(NULL, 
+                     list(x=feat$start, y=y, description=feat$description, 
+                          id=feat$id, variant=feat$variant), 
+                     list(x=feat$stop,  y=y, description=feat$description, 
+                          id=feat$id, variant=feat$variant))
         
         # Either make a new list or append to existing
-        if (is.null(featureList[type])) {
-            featureList[[type]] <- temp[2:3]
+        if (is.null(featureList[feat$type])) {
+            featureList[[feat$type]] <- temp[2:3]
         } else {
-            featureList[[type]] <- c(featureList[[type]], temp)
+            featureList[[feat$type]] <- c(featureList[[feat$type]], temp)
         }
     }
     for (type in names(featureList))
@@ -232,13 +261,10 @@ infoServer <- function(input, output, session) {
                 print("No protein from Uniprot :(")
             else {
                 protein <- uniprot$primary_id[1]
-                resp <- queryUniprot(protein, "xml")
-                
-                doc <- xmlTreeParse(resp)
-                root <- xmlRoot(doc)[[1]]
-                feature <- getNodeSet(root, "//feature")
-                proteinLength <- as.numeric(
-                    xmlAttrs(getNodeSet(root, "//sequence")[[1]])[[1]])
+                xml <- queryUniprot(protein, "xml")
+                parsed <- parseUniprotXML(xml)
+                proteinLength <- parsed$proteinLength
+                feature <- parsed$feature
                 
                 hc <- proteinHighcharts(feature, proteinLength)
                 output$plotProtein <- renderHighchart(hc)
