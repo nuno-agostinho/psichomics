@@ -18,7 +18,8 @@ Parsed response
 Query the Uniprot REST API
 }
 \examples{
-query <- list(feature = "gene")
+protein <- "P51587"
+format <- "xml"
 queryUniprot(protein, format)
 }
 
