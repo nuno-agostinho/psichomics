@@ -10,13 +10,16 @@ plotsUI <- function(id, tab) {
         fluidRow(
             column(4, selectizeInput(ns("selectizePlot"), "Select plot type:",
                                      choices = NULL, options = list(
-                                         placeholder = "Select a plot type"))),
+                                         placeholder = "Select a plot type"),
+                                     width="auto")),
             column(4, selectizeInput(ns("selectizeCategory"), "Select category:",
                                      choices = NULL, options = list(
-                                         placeholder = "Select a category"))),
+                                         placeholder = "Select a category"),
+                                     width="auto")),
             column(4, selectizeInput(ns("selectizeEvent"), "Select event:",
                                      choices = NULL, options = list(
-                                         placeholder = "Select an event")))),
+                                         placeholder = "Select an event"),
+                                     width="auto"))),
         # bsTooltip(ns("selectizeEvent"), placement="right",
         #           "Delete text and start typing to search events",
         #           options = list(container="body")),
