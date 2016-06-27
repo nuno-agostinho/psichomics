@@ -2,19 +2,19 @@
 % Please edit documentation in R/plots_information.R
 \name{proteinHighcharts}
 \alias{proteinHighcharts}
-\title{Plot a Uniprot protein}
+\title{Plot protein features}
 \usage{
-proteinHighcharts(feature, proteinLength)
+proteinHighcharts(feature, length)
 }
 \arguments{
-\item{feature}{List of XML nodes: features of the Uniprot protein}
+\item{feature}{Data frame: protein features}
 
-\item{proteinLength}{Integer: protein length}
+\item{length}{Integer: protein length}
 }
 \value{
 Highcharter object
 }
 \description{
-Plot a Uniprot protein
+Plot protein features
 }
 
