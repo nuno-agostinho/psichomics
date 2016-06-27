@@ -111,7 +111,7 @@ createGroupFromInput <- function (input, output, session) {
             warningModal(
                 session, "Selected rows don't exist",
                 paste0(sum(gtRows), " numbers were above the number of rows ",
-                       "of the active dataset (which is", nrow(data), ")."), 
+                       "of the active dataset (which is ", nrow(data), ")."), 
                 br(), br(), "The following numbers were discarded:", 
                 tags$code(removed))
             rows <- rows[!gtRows]
