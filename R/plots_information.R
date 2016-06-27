@@ -41,7 +41,8 @@ queryEnsembl <- function(path, query, grch37 = TRUE) {
 #' @export
 #' 
 #' @examples 
-#' query <- list(feature = "gene")
+#' protein <- "P51587"
+#' format <- "xml"
 #' queryUniprot(protein, format)
 queryUniprot <- function(protein, format="xml") {
     url <- "http://www.uniprot.org"
