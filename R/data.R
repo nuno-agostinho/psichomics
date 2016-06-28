@@ -8,7 +8,8 @@
 #' @param tab Function to create tab
 dataUI <- function(id, tab) {
     ns <- NS(id)
-    uiList <- getUiFunctions(ns, "data", tabPanel)
+    uiList <- getUiFunctions(ns, "data", tabPanel, 
+                             priority=c("inputUI", "inclusionLevelsUI"))
     
     tab(title=div(icon("table"), "Data"),
         sidebarLayout(sidebarPanel(
@@ -141,7 +142,8 @@ dataServer <- function(input, output, session) {
     observe( setActiveDataset(input$datasetTab) )
     
     # Run server logic from the scripts
-    getServerFunctions("data")
+    getServerFunctions("data", priority=c("inputServer",
+                                          "inclusionLevelsServer"))
 }
 
 attr(dataUI, "loader") <- "app"
