@@ -5,13 +5,13 @@ NULL
 #' Get number of significant digits
 #' @param n Numeric: number to round
 signifDigits <- function(n) {
-    return(signif(n, 5))
+    return(isolate(formatC(n, getSignificant(), format="g")))
 }
 
 #' Round by the given number of digits
 #' @param n Numeric: number to round
 roundDigits <- function(n) {
-    return(round(n, 2))
+    return(isolate(formatC(n, getPrecision(), format="f")))
 }
 
 # Global variable with all the data of a session
@@ -19,6 +19,15 @@ sharedData <- reactiveValues()
 
 #' Get global data
 getData <- reactive(sharedData$data)
+
+#' Get number of cores
+getCores <- reactive(sharedData$cores)
+
+#' Get number of significant digits
+getSignificant <- reactive(sharedData$significant)
+
+#' Get number of decimal places
+getPrecision <- reactive(sharedData$precision)
 
 #' Get selected alternative splicing event
 getEvent <- reactive(sharedData$event)
@@ -116,6 +125,21 @@ setGlobal <- function(..., value, sep="_") {
 #' @note Needs to be called inside reactive function
 #' @param data Data frame or matrix to set as data
 setData <- function(data) setGlobal("data", value=data)
+
+#' Set number of cores
+#' @param cores Character: number of cores
+#' @note Needs to be called inside reactive function
+setCores <- function(cores) setGlobal("cores", value=cores)
+
+#' Set number of significant digits
+#' @param significant Character: number of significant digits
+#' @note Needs to be called inside reactive function
+setSignificant <- function(significant) setGlobal("significant", value=significant)
+
+#' Set number of decimal places
+#' @param precision Character: number of decimal places
+#' @note Needs to be called inside reactive function
+setPrecision <- function(precision) setGlobal("precision", value=precision)
 
 #' Set event
 #' @param event Character: event
