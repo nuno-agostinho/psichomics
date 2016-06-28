@@ -4,20 +4,35 @@
 ## TODO(NunoA): render UI for each data table instead of rendering UI for all
 ## so there's no refresh
 
+#' Create a modal warning the user of already loaded data
+#' @param modalId Character: identifier of the modal
+#' @param replaceButtonId Character: identifier of the button to replace data
+#' @param keepButtonId Character: identifier of the button to append data
+loadedDataModal <- function(session, modalId, replaceButtonId, keepButtonId) {
+    ns <- session$ns
+    warningModal(session, "Data already loaded",
+                 "Would you like to", tags$b("replace"), "the loaded data or",
+                 tags$b("keep"), "both the previous and new data?",
+                 footer = tagList(
+                     actionButton(ns(keepButtonId), "data-dismiss"="modal",
+                                  label="Keep both"),
+                     actionButton(ns(replaceButtonId), class = "btn-warning",
+                                  "data-dismiss"="modal", label="Replace")),
+                 modalId=modalId)
+}
+
 #' User interface
 #' @param tab Function to create tab
 dataUI <- function(id, tab) {
     ns <- NS(id)
-    uiList <- getUiFunctions(ns, "data", tabPanel, 
-                             priority=c("inputUI", "inclusionLevelsUI"))
+    uiList <- getUiFunctions(ns, "data", bsCollapsePanel)
     
     tab(title=div(icon("table"), "Data"),
-        sidebarLayout(sidebarPanel(
-            do.call(tabsetPanel,
-                    c(type="pill", uiList)
-            )
-        ),
-        mainPanel( uiOutput(ns("tablesOrAbout")) ))
+        sidebarLayout(
+            sidebarPanel(
+                do.call(bsCollapse, uiList)
+            ),
+            mainPanel( uiOutput(ns("tablesOrAbout")) ))
     )
 }
 
@@ -104,10 +119,10 @@ dataServer <- function(input, output, session) {
                              choices=names(getData())),
                  uiOutput(ns("datatabs")))
     })
-
+    
     # Set the category of the data when possible
     observeEvent(input$category, setCategory(input$category))
-
+    
     # Render tables when data changes
     observe({
         data <- getData()
@@ -119,7 +134,7 @@ dataServer <- function(input, output, session) {
                    data=data[[category]], name, input, output)
         }
     })
-
+    
     # Render tabs with data tables
     output$datatabs <- renderUI({
         categoryData <- getCategoryData()
@@ -142,8 +157,7 @@ dataServer <- function(input, output, session) {
     observe( setActiveDataset(input$datasetTab) )
     
     # Run server logic from the scripts
-    getServerFunctions("data", priority=c("inputServer",
-                                          "inclusionLevelsServer"))
+    getServerFunctions("data")
 }
 
 attr(dataUI, "loader") <- "app"
