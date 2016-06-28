@@ -36,6 +36,7 @@ getSampleTypes <- function(sample,
 #' @param footer UI set: List of elements to include in the footer
 #' @param style Character: message style can be "warning", "error", "info" or 
 #' NULL
+#' @param size Character: Modal size ("small", "default" or "large")
 #' 
 #' @importFrom shiny tags HTML
 #' @importFrom htmltools attachDependencies htmlDependency
@@ -51,6 +52,7 @@ bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL,
     if (!is.null(size)) {
         if (size == "large") size = "modal-lg"
         else if (size == "small") size = "modal-sm"
+        else if (size == "default") size = "modal-sm"
         size <- paste("modal-dialog", size)
     }
     else size <- "modal-dialog"
