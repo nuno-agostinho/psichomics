@@ -12,43 +12,44 @@
 #     return(link)
 # }
 
-inclusionLevelsUI <- function(id, tab) {
-    ns <- NS(id)
-    choices <- c("Skipping exon (SE)" = "SE",
-                 "Mutually exclusive exons (MXE)" = "MXE",
-                 "Alternative 5' Splice Site (A5SS)" = "A5SS",
-                 "Alternative 3' Splice Site (A3SS)" = "A3SS",
-                 "Alternative first exon (AFE)" = "AFE",
-                 "Alternative last exon (ALE)" = "ALE")
-    
-    tab("Inclusion levels",
+getSplicingEventChoices <- function() {
+    c("Skipping exon (SE)" = "SE",
+      "Mutually exclusive exons (MXE)" = "MXE",
+      "Alternative 5' Splice Site (A5SS)" = "A5SS",
+      "Alternative 3' Splice Site (A3SS)" = "A3SS",
+      "Alternative first exon (AFE)" = "AFE",
+      "Alternative last exon (ALE)" = "ALE")
+}
+
+inclusionLevelsInterface <- function(ns) {
+    tagList(
         uiOutput(ns("modal")),
         helpText("Calculate exon inclusion levels. This is also",
                  "known as percentage spliced in (PSI or \u03A8)."),
         selectizeInput(ns("annotation"),
                        "Alternative splicing event annotation",
-                       choices = c("Human (hg19/GRCh37)"="hg19_splicingAnnotation.RDS")),
+                       choices=c("Human (hg19/GRCh37)"="hg19_splicingAnnotation.RDS")),
         selectizeInput(ns("eventType"), "Event type(s)", selected = "SE",
-                       choices = choices, multiple = TRUE),
+                       choices=getSplicingEventChoices(), multiple = TRUE),
         numericInput(ns("minReads"), "Minimum reads threshold", value = 10),
         actionButton(ns("calcIncLevels"), class = "btn-primary",
                      "Calculate inclusion levels"))
 }
 
+inclusionLevelsUI <- function(id, panel) {
+    ns <- NS(id)
+    title <- "Add/calculate alternative splicing quantification"
+    panel(style="info", title=list(icon("plus-circle"), title), value=title,
+          inclusionLevelsInterface(ns))
+}
+
 inclusionLevelsServer <- function(input, output, session) {
-    choices <- c("Skipping exon (SE)" = "SE",
-                 "Mutually exclusive exons (MXE)" = "MXE",
-                 "Alternative 5' Splice Site (A5SS)" = "A5SS",
-                 "Alternative 3' Splice Site (A3SS)" = "A3SS",
-                 "Alternative first exon (AFE)" = "AFE",
-                 "Alternative last exon (ALE)" = "ALE")
-    
     levels <- reactive({
         eventType <- input$eventType
         minReads  <- input$minReads
         
         if (is.null(eventType) || is.null(minReads)) return(NULL)
-
+        
         # Read annotation
         startProgress("Reading alternative splicing annotation", divisions = 3)
         annot <- readRDS(system.file("extdata", input$annotation,
@@ -61,13 +62,14 @@ inclusionLevelsServer <- function(input, output, session) {
         # Calculate inclusion levels with annotation and junction quantification
         updateProgress("Calculating inclusion levels")
         junctionQuant <- getJunctionQuantification()
-
+        
         psi <- NULL
         for (i in seq_along(eventType)) {
             type <- eventType[[i]]
-            updateProgress("Calculating inclusion levels", names(choices)[[i]],
-                           value = i, max = length(eventType))
-
+            updateProgress("Calculating inclusion levels", 
+                           names(getSplicingEventChoices())[[i]], value = i, 
+                           max = length(eventType))
+            
             if (i == "AFE") annot$AFE <- annot$AFE[!is.na(annot$AFE$C2.start), ]
             if (i == "ALE") annot$ALE <- annot$ALE[!is.na(annot$ALE$C1.end), ]
             psi <- rbind(psi, calculateInclusionLevels(type, junctionQuant,
@@ -78,7 +80,7 @@ inclusionLevelsServer <- function(input, output, session) {
                                           "for any given alternative splicing",
                                           "event.")
         setInclusionLevels(psi)
-
+        
         updateProgress("Matching clinical data")
         match <- matchIdWithClinical(colnames(psi), getClinicalData())
         match <- match[!is.na(match)] # remove non-matching IDs
