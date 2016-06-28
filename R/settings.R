@@ -38,14 +38,20 @@ settingsServer <- function(input, output, session) {
     observe({
         setPrecision(input$precision)
         output$precisionExample <- renderText(
-            formatC(283.5837243243332313139838387437323823823829283984784687284,
-                    digits=getPrecision(), format="f"))
+            paste(
+                "Example:",
+                formatC(283.5837243243332313139838387437323823823829283984784687284,
+                        digits=getPrecision(), format="f"))
+        )
     })
     observe({
         setSignificant(input$significant)
         output$significantExample <- renderText(
-            formatC(0.000005849839043444982905434543482092830943294512474723566,
-                    getSignificant(), format="g"))
+            paste(
+                "Example:",
+                formatC(0.000005849839043444982905434543482092830943294512474723566,
+                        getSignificant(), format="g"))
+        )
     })
 }
 
