@@ -4,18 +4,18 @@
 \alias{getUiFunctions}
 \title{Matches user interface (UI) functions from a given loader}
 \usage{
-getUiFunctions(ns, loader, priority, ...)
+getUiFunctions(ns, loader, ..., priority = NULL)
 }
 \arguments{
 \item{ns}{Shiny function to create namespaced IDs}
 
 \item{loader}{Character: loader to run the functions}
 
+\item{...}{Extra arguments to pass to the user interface (UI) functions}
+
 \item{priority}{Character: name of functions to prioritise by the given
 order; for instance, c("data", "analyses") would load "data", then "analyses"
 then remaining functions}
-
-\item{...}{Extra arguments to pass to the user interface (UI) functions}
 }
 \value{
 List of functions related to the given loader
