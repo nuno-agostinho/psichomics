@@ -2,18 +2,21 @@
 settingsUI <- function(id, tab) {
     ns <- NS(id)
     tab(title=div(icon("wrench"), "Settings"),
-        numericInput(ns("cores"), h4("Number of cores"), value=1, min=1, 
-                     step=1),
-        
-        numericInput(ns("precision"), h4("Numeric precision"), value=3, min=0,
-                     step=1),
-        textOutput(ns("precisionExample")),
-        helpText("Only applies to new calculations."),
-        
-        numericInput(ns("significant"), h4("Significant digits"),
-                     value=3, min=0, step=1),
-        textOutput(ns("significantExample")),
-        helpText("Only applies to new calculations.")
+        fluidRow(
+            column(4,
+                   numericInput(ns("cores"), h4("Number of cores"), value=1,
+                                min=1, step=1, width="auto")),
+            column(4,
+                   sliderInput(ns("precision"), h4("Numeric precision"),
+                               value=3, min=0, max=20, step=1, width="auto"),
+                   textOutput(ns("precisionExample")),
+                   helpText("Only applies to new calculations.")),
+            column(4,
+                   sliderInput(ns("significant"), h4("Significant digits"),
+                               value=3, min=0, max=20, step=1, width="auto"),
+                   textOutput(ns("significantExample")),
+                   helpText("Only applies to new calculations."))
+        )
     )
 }
 
