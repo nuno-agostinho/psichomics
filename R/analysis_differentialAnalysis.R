@@ -170,11 +170,11 @@ diffAnalysisServer <- function(input, output, session) {
             allRows <- list()
             plotLines <- list()
             for (group in unique(type)) {
-                row <- psi[type == group]
-                med <- roundDigits(median(row, na.rm = TRUE))
-                var <- roundDigits(var(row, na.rm = TRUE))
-                max <- roundDigits(max(row, na.rm = TRUE))
-                min <- roundDigits(min(row, na.rm = TRUE))
+                row  <- psi[type == group]
+                med  <- roundDigits(median(row, na.rm = TRUE))
+                vari <- roundDigits(var(row, na.rm = TRUE))
+                max  <- roundDigits(max(row, na.rm = TRUE))
+                min  <- roundDigits(min(row, na.rm = TRUE))
                 samples <- sum(!is.na(row))
                 # Ignore data with low number of data points
                 if (sum(!is.na(row)) >= 2) {
@@ -182,13 +182,13 @@ diffAnalysisServer <- function(input, output, session) {
                     den <- density(row, bw = bandwidth, na.rm = TRUE)
                     hc <- hc %>%
                         hc_add_series_density(den, name=group, area=TRUE,
-                                              median=med, var=var,
+                                              median=med, var=vari,
                                               samples=samples,
                                               max=max, min=min)
                     # Save plot line with information
                     plotLines[[count + 1]] <- list(
                         label = list(text = paste("Median:", med,
-                                                  "/ Variance:", var)),
+                                                  "/ Variance:", vari)),
                         # Colour the same as the series
                         color=JS("Highcharts.getOptions().colors[",
                                  count, "]"),
@@ -216,18 +216,18 @@ diffAnalysisServer <- function(input, output, session) {
                         "Range: {series.options.min} - {series.options.max}"))
             
             output$basicStats <- renderUI ({
-                var <- vapply(allRows, var, numeric(1), na.rm = TRUE)
-                med <- vapply(allRows, median, numeric(1), na.rm = TRUE)
+                vari <- vapply(allRows, var, numeric(1), na.rm = TRUE)
+                medi <- vapply(allRows, median, numeric(1), na.rm = TRUE)
                 
                 if (len == 2) {
                     deltaMedian <- tagList(
-                        tags$b("|\u0394 Median|: "), abs(med[2] - med[1]), br())
+                        tags$b("|\u0394 Median|: "), abs(medi[2] - medi[1]), br())
                 } else {
                     deltaMedian <- NULL   
                 }
                 
                 tagList(h4("Basic statistics"), deltaMedian,
-                        tags$b("Average variance: "), sum(var)/length(var))
+                        tags$b("Average variance: "), sum(vari)/length(vari))
             })
             return(hc)
         })
