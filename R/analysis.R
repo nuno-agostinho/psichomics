@@ -5,7 +5,7 @@ analysesUI <- function(id, tab) {
     uiList <- getUiFunctions(ns, "analysis")
     sharedData$names <- sapply(uiList, attr, "name")
      
-    tab(div(icon("bar-chart"), "Analyses"),
+    tab(div(icon("flask"), "Analyses"),
         # allows the user to choose which UI set is shown
         fluidRow(
             column(4, selectizeInput(ns("selectizeAnalysis"), "Select analysis type:",
