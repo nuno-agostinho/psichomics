@@ -4,10 +4,14 @@
 \alias{getServerFunctions}
 \title{Matches server functions from a given loader}
 \usage{
-getServerFunctions(loader, ...)
+getServerFunctions(loader, priority, ...)
 }
 \arguments{
 \item{loader}{Character: loader to run the functions}
+
+\item{priority}{Character: name of functions to prioritise by the given
+order; for instance, c("data", "analyses") would load "data", then "analyses"
+then remaining functions}
 
 \item{...}{Extra arguments to pass to server functions}
 }
