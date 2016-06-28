@@ -79,5 +79,5 @@ widgetsServer <- function(input, output, session) {
     })
 }
 
-attr(widgetsUI, "loader") <- "app"
-attr(widgetsServer, "loader") <- "app"
+# attr(widgetsUI, "loader") <- "app"
+# attr(widgetsServer, "loader") <- "app"
