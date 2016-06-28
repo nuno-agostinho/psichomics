@@ -1,11 +1,23 @@
 #' User interface
+#' @importFrom parallel detectCores
 settingsUI <- function(id, tab) {
     ns <- NS(id)
+    
+    if( require("parallel") ) {
+        cores <- detectCores()
+        coresInput <- tagList(
+            sliderInput(ns("cores"), h4("Number of cores"), value=1, min=1, 
+                        step=1, max=cores, width="auto"),
+            helpText("You have a total of", cores, "cores to use")
+        )
+    } else {
+        coresInput <- numericInput(ns("cores"), h4("Number of cores"), value=1,
+                                   min=1, step=1, width="auto")
+    }
+    
     tab(title=div(icon("wrench"), "Settings"),
         fluidRow(
-            column(4,
-                   numericInput(ns("cores"), h4("Number of cores"), value=1,
-                                min=1, step=1, width="auto")),
+            column(4, coresInput),
             column(4,
                    sliderInput(ns("precision"), h4("Numeric precision"),
                                value=3, min=0, max=20, step=1, width="auto"),
