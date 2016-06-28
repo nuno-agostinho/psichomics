@@ -1,16 +1,16 @@
 #' User interface
 #' @importFrom shinyBS bsTooltip
-plotsUI <- function(id, tab) {
+analysesUI <- function(id, tab) {
     ns <- NS(id)
-    uiList <- getUiFunctions(ns, "plots")
+    uiList <- getUiFunctions(ns, "analysis")
     sharedData$names <- sapply(uiList, attr, "name")
      
-    tab("Plots",
+    tab(div(icon("bar-chart"), "Analyses"),
         # allows the user to choose which UI set is shown
         fluidRow(
-            column(4, selectizeInput(ns("selectizePlot"), "Select plot type:",
+            column(4, selectizeInput(ns("selectizeAnalysis"), "Select analysis type:",
                                      choices = NULL, options = list(
-                                         placeholder = "Select a plot type"),
+                                         placeholder = "Select an analysis type"),
                                      width="auto")),
             column(4, selectizeInput(ns("selectizeCategory"), "Select category:",
                                      choices = NULL, options = list(
@@ -26,18 +26,19 @@ plotsUI <- function(id, tab) {
         lapply(uiList, function(ui) {
             conditionalPanel(
                 condition=sprintf("input[id='%s'] == '%s'",
-                                  ns("selectizePlot"), attr(ui, "name")), ui)
+                                  ns("selectizeAnalysis"), attr(ui, "name")), ui)
         })
     )
 }
 
-plotsServer <- function(input, output, session) {
+analysesServer <- function(input, output, session) {
     # Run server logic from the scripts
-    getServerFunctions("plots")
+    getServerFunctions("analysis")
 
-    # Update selectize input to show available plots
+    # Update selectize input to show available analyses
     observe({
-        updateSelectizeInput(session, "selectizePlot", choices=sharedData$names)
+        updateSelectizeInput(session, "selectizeAnalysis",
+                             choices=sharedData$names)
     })
 
     # Update selectize input to show available categories
@@ -76,12 +77,12 @@ plotsServer <- function(input, output, session) {
     #     vis <- function(func, ...)
     #         func(id("selectizeEvent"), anim = TRUE, animType = "fade")
     #     
-    #     if(grepl("Inclusion levels", input[[id("selectizePlot")]]))
+    #     if(grepl("Inclusion levels", input[[id("selectizeAnalysis")]]))
     #         vis(shinyjs::hide)
     #     else
     #         vis(shinyjs::show)
     # })
 }
 
-attr(plotsUI, "loader") <- "app"
-attr(plotsServer, "loader") <- "app"
+attr(analysesUI, "loader") <- "app"
+attr(analysesServer, "loader") <- "app"

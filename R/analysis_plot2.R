@@ -11,6 +11,6 @@ plots2Server <- function(input, output, session) {
     })
 }
 
-attr(plots2UI, "loader") <- "plots"
-attr(plots2UI, "name") <- "Plots 2"
-attr(plots2Server, "loader") <- "plots"
+# attr(plots2UI, "loader") <- "analysis"
+# attr(plots2UI, "name") <- "Plots 2"
+# attr(plots2Server, "loader") <- "analysis"
