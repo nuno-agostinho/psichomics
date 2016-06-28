@@ -234,6 +234,6 @@ diffAnalysisServer <- function(input, output, session) {
     })
 }
 
-attr(diffAnalysisUI, "loader") <- "plots"
-attr(diffAnalysisUI, "name") <- "Differential analysis"
-attr(diffAnalysisServer, "loader") <- "plots"
+attr(diffAnalysisUI, "loader") <- "analysis"
+attr(diffAnalysisUI, "name") <- "Differential analysis (per splicing event)"
+attr(diffAnalysisServer, "loader") <- "analysis"

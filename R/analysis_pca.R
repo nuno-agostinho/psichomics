@@ -311,6 +311,6 @@ pcaServer <- function(input, output, session) {
     })
 }
 
-attr(pcaUI, "loader") <- "plots"
+attr(pcaUI, "loader") <- "analysis"
 attr(pcaUI, "name") <- "Principal Component Analysis (PCA)"
-attr(pcaServer, "loader") <- "plots"
+attr(pcaServer, "loader") <- "analysis"

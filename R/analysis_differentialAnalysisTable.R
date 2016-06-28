@@ -127,6 +127,6 @@ diffAnalysisTableServer <- function(input, output, session) {
     })
 }
 
-attr(diffAnalysisTableUI, "loader") <- "plots"
-attr(diffAnalysisTableUI, "name") <- "Differential analysis table"
-attr(diffAnalysisTableServer, "loader") <- "plots"
+attr(diffAnalysisTableUI, "loader") <- "analysis"
+attr(diffAnalysisTableUI, "name") <- "Differential analysis (exploratory)"
+attr(diffAnalysisTableServer, "loader") <- "analysis"

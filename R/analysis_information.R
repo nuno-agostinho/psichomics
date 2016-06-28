@@ -304,6 +304,6 @@ infoServer <- function(input, output, session) {
     })
 }
 
-attr(infoUI, "loader") <- "plots"
+attr(infoUI, "loader") <- "analysis"
 attr(infoUI, "name") <- "Gene, transcript and protein information"
-attr(infoServer, "loader") <- "plots"
+attr(infoServer, "loader") <- "analysis"

@@ -448,6 +448,6 @@ survivalServer <- function(input, output, session) {
     })
 }
 
-attr(survivalUI, "loader") <- "plots"
+attr(survivalUI, "loader") <- "analysis"
 attr(survivalUI, "name") <- "Survival curves"
-attr(survivalServer, "loader") <- "plots"
+attr(survivalServer, "loader") <- "analysis"

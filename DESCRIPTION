@@ -46,6 +46,14 @@ Suggests:
     rbenchmark
 VignetteBuilder: knitr
 Collate:
+    'analysis.R'
+    'analysis_differentialAnalysis.R'
+    'analysis_differentialAnalysisTable.R'
+    'analysis_information.R'
+    'analysis_pca.R'
+    'analysis_plot1.R'
+    'analysis_plot2.R'
+    'analysis_survival.R'
     'utils.R'
     'begin.R'
     'app.R'
@@ -65,14 +73,6 @@ Collate:
     'formats_firehose_junction_quantification.R'
     'formats_firehose_merge_clinical.R'
     'highcharter.R'
-    'plots.R'
-    'plots_differentialAnalysis.R'
-    'plots_differentialAnalysisTable.R'
-    'plots_information.R'
-    'plots_pca.R'
-    'plots_plot1.R'
-    'plots_plot2.R'
-    'plots_survival.R'
     'widgets.R'
 biocViews: Sequencing, RNASeq, AlternativeSplicing, DifferentialSplicing,
     Transcription, GUI, PrincipalComponent, Survival, BiomedicalInformatics,
