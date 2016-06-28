@@ -22,12 +22,15 @@ loadBy <- function(loader, FUN) {
 }
 
 #' Matches server functions from a given loader
-#' @param loader Character: loader to run the functions
 #' @param ... Extra arguments to pass to server functions
+#' @inheritParams getUiFunctions
+#' 
 #' @return Invisible TRUE
-getServerFunctions <- function(loader, ...) {
+getServerFunctions <- function(loader, ..., priority=NULL) {
     # Get all functions ending with "Server"
     server <- ls(getNamespace("psichomics"), all.names=TRUE, pattern="Server$")
+    server <- c(priority, server[!server %in% priority])
+    
     lapply(server, function(name) {
         # Parse function name to get the function itself
         FUN <- eval(parse(text=name))
@@ -46,11 +49,15 @@ getServerFunctions <- function(loader, ...) {
 #' @param ns Shiny function to create namespaced IDs
 #' @param loader Character: loader to run the functions
 #' @param ... Extra arguments to pass to the user interface (UI) functions
+#' @param priority Character: name of functions to prioritise by the given
+#' order; for instance, c("data", "analyses") would load "data", then "analyses"
+#' then remaining functions
 #' 
 #' @return List of functions related to the given loader
-getUiFunctions <- function(ns, loader, ...) {
+getUiFunctions <- function(ns, loader, ..., priority=NULL) {
     # Get all functions ending with "UI"
     ui <- ls(getNamespace("psichomics"), all.names=TRUE, pattern="UI$")
+    ui <- c(priority, ui[!ui %in% priority])
     
     # Get the interface of each tab
     uiList <- lapply(ui, function(name) {
@@ -74,7 +81,8 @@ getUiFunctions <- function(ns, loader, ...) {
 #' The user interface (ui) controls the layout and appearance of the app
 #' All the CSS modifications are in the file "shiny/www/styles.css"
 appUI <- function() {
-    uiList <- getUiFunctions(paste, "app", tabPanel)
+    uiList <- getUiFunctions(paste, "app", tabPanel, priority=c("dataUI",
+                                                                "analysesUI"))
     
     header <- list(
         includeCSS(insideFile("shiny", "www", "styles.css")),
@@ -107,7 +115,7 @@ appUI <- function() {
 #' @param output Output object
 #' @param session Session object
 appServer <- function(input, output, session) {
-    getServerFunctions("app")
+    getServerFunctions("app", priority=c("dataServer", "analysesServer"))
     
     # session$onSessionEnded(function() {
     #     # Stop app and print message to console
