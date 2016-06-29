@@ -10,7 +10,7 @@
 #' @importFrom httr GET
 #' @importFrom jsonlite fromJSON
 #' 
-#' @return Parsed response
+#' @return Parsed response or NULL if there's no response
 #' @export
 #' 
 #' @examples 
@@ -24,7 +24,7 @@
 queryEnsembl <- function(path, query, grch37 = TRUE) {
     url <- paste0("http://", if(grch37) "grch37.", "rest.ensembl.org")
     resp <- GET(url, path=path, query=query)
-    warn_for_status(resp)
+    if (http_error(resp)) return(NULL)
     r <- content(resp, "text", encoding = "UTF8")
     return(fromJSON(r))
 }
@@ -58,10 +58,10 @@ infoUI <- function(id) {
     uiOutput(ns("info"))
 }
 
-noinfo <- function(output) {
+noinfo <- function(output, title="No information available for this event.",
+                   description="Select another alternative splicing event.") {
     output$info <- renderUI(
-        h3("No information available for this event.", br(),
-           tags$small("Select another alternative splicing event.")))
+        h3(title, br(), tags$small(description)))
 }
 
 #' Parse XML from Uniprot's RESTful service
@@ -177,6 +177,9 @@ infoServer <- function(input, output, session) {
         
         path <- paste0("lookup/symbol/", species, "/", gene)
         info <- queryEnsembl(path, list(expand=1), grch37=grch37)
+        if (is.null(info))
+            return(noinfo(output, title="No Ensembl match retrieved.",
+                          description="Please, try again."))
         
         output$plotTranscripts <- renderPlot({
             transcripts <- data.frame()
@@ -265,6 +268,7 @@ infoServer <- function(input, output, session) {
         uniprot <- queryEnsembl(paste0("xrefs/id/", ensembl),
                                 list("content-type"="application/json"), 
                                 grch37=grch37)
+        if (is.null(uniprot)) return(NULL)
         uniprot <- uniprot[grepl("SWISSPROT", uniprot$dbname), ]
         
         ensemblLink <- tags$a("Ensembl", icon("external-link"), target="_blank",
