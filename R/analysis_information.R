@@ -261,12 +261,12 @@ infoServer <- function(input, output, session) {
     observe({
         # Convert from ENSEMBL to Uniprot/SWISSPROT
         ensembl <- input$selectedProtein
-        
         if (is.null(ensembl)) return(NULL)
         
         species <- tolower(getSpecies())
         assembly <- getAssemblyVersion()
         grch37 <- assembly == "hg19"
+        if(is.null(species) || is.null(assembly)) return(NULL)
         
         print("Looking for ENSEMBL protein in Uniprot...")
         uniprot <- queryEnsembl(paste0("xrefs/id/", ensembl),
