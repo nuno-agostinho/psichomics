@@ -4,7 +4,7 @@ Version: 0.0.0.9000
 Authors@R: person("Nuno", "Agostinho", email = "nunodanielagostinho@gmail.com", 
     role = c("aut", "cre"))
 Description: Automatically retrieve data from RNA-Seq sources such as TCGA
-    or load your own files and process the data. This tool allows you to analyse 
+    or load your own files and process the data. This tool allows you to analyse
     and visualise alternative splicing.
 Depends:
     R (>= 3.3),
