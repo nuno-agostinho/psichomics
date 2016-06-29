@@ -62,12 +62,7 @@ pcaUI <- function(id) {
                                selected = c("center")),
             sliderInput(ns("naTolerance"), "Percentage of NAs per individual to tolerate",
                         min = 0, max=100, value=30, post="%"),
-            fluidRow(
-                column(9, selectizeInput(ns("dataGroups"),
-                                         "Clinical groups to perform PCA",
-                                         choices = NULL, multiple = TRUE)),
-                column(2, actionButton(ns("dataGroups_selectAll"), "Select all",
-                                       class="inline_selectize"))),
+            selectGroupsUI(ns("dataGroups"), "Clinical groups to perform PCA"),
             actionButton(ns("editGroups"), "Edit groups"),
             actionButton(ns("calculate"), class = "btn-primary", "Calculate PCA"),
             uiOutput(ns("selectPC"))
@@ -92,20 +87,8 @@ selectPC <- function(ns, output, perc) {
             selectizeInput(ns("pcX"), "Choose X axis", choices = choices),
             selectizeInput(ns("pcY"), "Choose Y axis", choices = choices,
                            selected = choices[[2]]),
-            fluidRow(
-                column(9,
-                       selectizeInput(
-                           ns("colorGroups"), 
-                           "Clinical groups to color the PCA",
-                           choices = groups[, "Names"], multiple = TRUE,
-                           options = list(placeholder = ifelse(
-                               length(groups) > 0,
-                               "Click 'Select all' to select all groups",
-                               "No groups created")))),
-                column(2,
-                       actionButton(ns("colorGroups_selectAll"),
-                                    "Select all", 
-                                    class = "inline_selectize"))),
+            selectGroupsUI(ns("colourGroups"),
+                           "Clinical groups to colour the PCA"),
             checkboxGroupInput(ns("plotShow"), "Show in plot",
                                c("Individuals", "Loadings"),
                                selected = c("Individuals")),
@@ -158,25 +141,11 @@ plotVariance <- function(output, pca) {
 #' @importFrom highcharter %>% hc_chart hc_xAxis hc_yAxis hc_tooltip
 pcaServer <- function(input, output, session) {
     ns <- session$ns
-    # observeEvent(input$editGroups, {
-    #     env <- new.env()
-    #     sys.source("R/data/2-groups.R", envir = env)
-    #     env$server(input, output, session)
-    #     
-    #     showModal(session, "Groups", env$ui(), iconName = "object-group",
-    #               style = "info")
-    # })
-    
-    # Update available group choices to select
-    observe({
-        groups <- getGroupsFrom("Clinical data")
-        updateSelectizeInput(
-            session, "dataGroups", choices = groups[, "Names"])
-        # options = list(placeholder =
-        #                    ifelse(length(groups) > 0,
-        #                           "Click 'Select all' to select all groups",
-        #                           "No groups created")))
-    })
+
+    selectGroupsServer(session, "dataGroups", getClinicalData(),
+                       "Clinical data")
+    selectGroupsServer(session, "colourGroups", getClinicalData(),
+                       "Clinical data")
     
     # Select all data groups when pressing the respective "Select all" button
     observeEvent(input$dataGroups_selectAll, {
@@ -234,13 +203,6 @@ pcaServer <- function(input, output, session) {
                   size = "large")
     })
     
-    # Select all color groups when pressing the respective "Select all" button
-    observeEvent(input$colorGroups_selectAll, {
-        updateSelectizeInput(
-            session, "colorGroups", 
-            selected = getGroupsFrom("Clinical data")[, "Names"])
-    })
-    
     observe({
         pca <- sharedData$inclusionLevelsPCA
         if (is.null(pca)) return(NULL)
@@ -260,7 +222,7 @@ pcaServer <- function(input, output, session) {
             isolate({
                 xAxis <- input$pcX
                 yAxis <- input$pcY
-                selected <- input$colorGroups
+                selected <- input$colourGroups
                 show <- input$plotShow
             })
             

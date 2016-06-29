@@ -28,17 +28,9 @@ survivalUI <- function(id) {
                                    "Inclusion leves cutoff"="psiCutoff")),
             conditionalPanel(
                 sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "groups"),
-                fluidRow(
-                    column(10, selectizeInput(
-                        ns("dataGroups"), "Clinical groups to plot",
-                        choices = NULL, multiple = TRUE, width="auto",
-                        options = list(
-                            placeholder="Click 'Edit' to create or edit groups")
-                    )),
-                    column(2, actionButton(
-                        ns("dataGroupsEdit"), "Edit",
-                        class="inline_selectize pull-right"))),
-                checkboxInput(ns("showOutGroup"), "Show data outside chosen groups",
+                selectGroupsUI(ns("dataGroups"), "Clinical groups to plot"),
+                checkboxInput(ns("showOutGroup"), 
+                              "Show data outside chosen groups",
                               value = FALSE)),
             conditionalPanel(
                 sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "formula"),
@@ -227,23 +219,13 @@ updateClinicalFields <- function(session) {
 survivalServer <- function(input, output, session) {
     ns <- session$ns
     
+    selectGroupsServer(session, "dataGroups", getClinicalData(), 
+                       "Clinical data")
+    
     # Update available clinical data attributes to use in a formula
     output$formulaAutocomplete <- renderUI({
         attributes <- names(getClinicalData())
         textComplete(ns("formula"), attributes)
-    })
-    
-    # Update available group choices to select
-    observe({
-        groups <- getGroupsFrom("Clinical data")
-        updateSelectizeInput(
-            session, "dataGroups", choices=groups[, "Names"])
-    })
-    
-    observeEvent(input$dataGroupsEdit, {
-        showModal(session, "Groups", groupsUI(ns("groups"), getClinicalData()), 
-                  size=NULL, iconName="object-group", style="info")
-        callModule(groupsServer, "groups", getClinicalData(), "Clinical data")
     })
     
     # Update selectize input label depending on the chosen censoring type

@@ -4,6 +4,44 @@
 ## to go on next page or something and clean checkboxes when 
 ## merging/intersect/removing groups
 
+#' Group selection interface
+#' 
+#' @param id Character: identifier of the group selection
+#' @param label Character: selectize label
+#' @param placeholder Character: selectize placeholder
+#' 
+#' @return Interface for group selection
+selectGroupsUI <- function (id, label, placeholder=
+                                "Click 'Edit' to create or edit groups") {
+    editId <- paste0(id, "Edit")
+    fluidRow(
+        column(10, selectizeInput(id, label, choices = NULL, multiple = TRUE, 
+                                  width="auto",
+                                  options = list(placeholder=placeholder))),
+        column(2, actionButton(editId, "Edit", 
+                               class="inline_selectize pull-right")))
+}
+
+
+selectGroupsServer <- function(session, id, dataset, datasetName) {
+    ns <- session$ns
+    input <- session$input
+    output <- session$output
+    
+    editId <- paste0(id, "Edit")
+    modalId <- paste0(id, "Modal")
+    
+    observeEvent(input[[editId]], {
+        showModal(session, "Groups", groupsUI(ns(modalId), dataset), 
+                  size=NULL, iconName="object-group", style="info")
+        callModule(groupsServer, modalId, dataset, datasetName)
+        observe({
+            groupNames <- getGroupsFrom(datasetName)[, "Names"]
+            updateSelectizeInput(session, id, choices=groupNames)
+        })
+    })
+}
+
 #' User interface to group by column
 groupByColumn <- function(ns, dataset) {
     list(
