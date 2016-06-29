@@ -38,7 +38,8 @@ Imports:
     utils,
     lawstat,
     Sushi,
-    rmarkdown
+    rmarkdown,
+    XML
 Suggests:
     testthat,
     knitr,
