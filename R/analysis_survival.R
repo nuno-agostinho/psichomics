@@ -29,9 +29,12 @@ survivalUI <- function(id) {
             conditionalPanel(
                 sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "groups"),
                 fluidRow(
-                    column(10, selectizeInput(ns("dataGroups"),
-                                              "Clinical groups to use",
-                                              choices = NULL, multiple = TRUE)),
+                    column(10, selectizeInput(
+                        ns("dataGroups"), "Clinical groups to use",
+                        choices = NULL, multiple = TRUE,
+                        options = list(
+                            placeholder="Click 'edit' to create or edit groups")
+                    )),
                     column(2, actionButton(ns("dataGroupsEdit"), "Edit",
                                            class="inline_selectize"))),
                 checkboxInput(ns("showOutGroup"), "Show data outside chosen groups",
@@ -234,18 +237,14 @@ survivalServer <- function(input, output, session) {
         groups <- getGroupsFrom("Clinical data")
         updateSelectizeInput(
             session, "dataGroups", choices=groups[, "Names"])
-    #         options = list(placeholder =
-    #                            ifelse(length(groups) > 0,
-    #                                   "Click 'Select all' to select all groups",
-    #                                   "No groups created")))
     })
-
-    # # Select all data groups when pressing the respective "Select all" button
-    # observeEvent(input$dataGroups_selectAll, {
-    #     updateSelectizeInput(
-    #         session, "dataGroups",
-    #         selected = getGroupsFrom("Clinical data")[, "Names"])
-    # })
+    
+    observeEvent(input$dataGroupsEdit, {
+        showModal(session, "Groups", groupsUI(ns("groups"), 
+                                              getClinicalData()), 
+                  size=NULL, iconName="object-group", style="info")
+        callModule(groupsServer, "groups", getClinicalData(), "Clinical data")
+    })
     
     # Update selectize input label depending on the chosen censoring type
     observe({
