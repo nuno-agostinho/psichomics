@@ -68,6 +68,7 @@ noinfo <- function(output) {
 #' 
 #' @param XML response from Uniprot
 #' 
+#' @importFrom XML xmlTreeParse xmlRoot getNodeSet xmlAttrs xmlToList
 #' @return List containing protein length and data frame of protein features
 parseUniprotXML <- function(xml) {
     doc <- xmlTreeParse(xml)
