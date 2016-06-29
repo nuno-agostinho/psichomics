@@ -4,7 +4,7 @@
 \alias{groupByGrep}
 \title{User interface to group by grep expression}
 \usage{
-groupByGrep(ns)
+groupByGrep(ns, dataset)
 }
 \description{
 User interface to group by grep expression

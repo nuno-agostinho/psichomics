@@ -4,7 +4,7 @@
 \alias{createGroupFromInput}
 \title{Set new groups according to the user input}
 \usage{
-createGroupFromInput(input, output, session)
+createGroupFromInput(input, output, session, dataset, datasetName)
 }
 \arguments{
 \item{input}{Shiny input}
