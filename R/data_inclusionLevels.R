@@ -38,7 +38,7 @@ inclusionLevelsInterface <- function(ns) {
 
 inclusionLevelsUI <- function(id, panel) {
     ns <- NS(id)
-    title <- "Load/calculate alternative splicing quantification"
+    title <- "Quantify alternative splicing events"
     panel(style="info", title=list(icon("plus-circle"), title), value=title,
           inclusionLevelsInterface(ns))
 }
