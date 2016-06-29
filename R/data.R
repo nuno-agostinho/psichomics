@@ -51,16 +51,21 @@ tabDataset <- function(ns, title, tableId, columns, colsToShow,
                        description=NULL) {
     tablename <- ns(paste("table", tableId, sep="-"))
     
-    if(!is.null(description))
-        description <- p(tags$strong("Table description:"), description)
-    
     downloadId <- paste(tablename, "download", sep="-")
-    download <- downloadButton(downloadId, "Download this dataset")
+    download <- downloadButton(downloadId, "Download dataset", "pull-right")
+    
+    if(!is.null(description)) {
+        description <- p(tags$strong("Table description:"), description)
+        download <- fluidRow(
+            column(10, description),
+            column(2, download)
+        )
+    }
     
     visibleColumns <- selectizeInput(paste(tablename, "columns", sep="-"),
                                      label="Columns to show", choices=columns,
                                      selected=colsToShow, multiple=TRUE,
-                                     width="100%")
+                                     width="auto")
     
     tooltip <- bsTooltip(paste(tablename, "columns", sep="-"),
                          paste("Dataset columns to show; empty this input to",
@@ -68,8 +73,8 @@ tabDataset <- function(ns, title, tableId, columns, colsToShow,
                                "datasets)"),
                          placement = "top", options = list(container = "body"))
     
-    tabPanel(title, br(), description, download, br(), visibleColumns, tooltip,
-             hr(), dataTableOutput(tablename))
+    tabPanel(title, br(), download, visibleColumns, tooltip, hr(),
+             dataTableOutput(tablename))
 }
 
 #' Render a specific data tab (including data table and related interface)
@@ -115,7 +120,7 @@ dataServer <- function(input, output, session) {
         if(is.null(getData())) {
             includeMarkdown(insideFile("shiny", "about.md"))
         } else
-            list(selectInput(ns("category"), "Select category:",
+            list(selectInput(ns("category"), "Select category:", width="auto",
                              choices=names(getData())),
                  uiOutput(ns("datatabs")))
     })
