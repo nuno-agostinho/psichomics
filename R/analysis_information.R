@@ -252,7 +252,7 @@ infoServer <- function(input, output, session) {
             proteins <- proteins[!is.na(proteins)]
             tagList(
                 selectizeInput(ns("selectedProtein"), label="Select protein",
-                               choices=proteins),
+                               choices=proteins, width="auto"),
                 uiOutput(ns("proteinLink"))
             )
         })
