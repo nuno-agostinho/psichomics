@@ -30,13 +30,14 @@ survivalUI <- function(id) {
                 sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "groups"),
                 fluidRow(
                     column(10, selectizeInput(
-                        ns("dataGroups"), "Clinical groups to use",
-                        choices = NULL, multiple = TRUE,
+                        ns("dataGroups"), "Clinical groups to plot",
+                        choices = NULL, multiple = TRUE, width="auto",
                         options = list(
-                            placeholder="Click 'edit' to create or edit groups")
+                            placeholder="Click 'Edit' to create or edit groups")
                     )),
-                    column(2, actionButton(ns("dataGroupsEdit"), "Edit",
-                                           class="inline_selectize"))),
+                    column(2, actionButton(
+                        ns("dataGroupsEdit"), "Edit",
+                        class="inline_selectize pull-right"))),
                 checkboxInput(ns("showOutGroup"), "Show data outside chosen groups",
                               value = FALSE)),
             conditionalPanel(
