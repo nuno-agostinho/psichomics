@@ -15,7 +15,7 @@ queryEnsembl(path, query, grch37 = TRUE)
 otherwise, query the most recent API}
 }
 \value{
-Parsed response
+Parsed response or NULL if there's no response
 }
 \description{
 Query the Ensembl REST API

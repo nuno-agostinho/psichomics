@@ -4,7 +4,7 @@
 \alias{groupsUI}
 \title{Creates UI elements for the grouping feature}
 \usage{
-groupsUI(id, tab)
+groupsUI(id, dataset)
 }
 \description{
 Creates UI elements for the grouping feature

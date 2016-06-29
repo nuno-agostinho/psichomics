@@ -4,7 +4,7 @@
 \alias{groupByColumn}
 \title{User interface to group by column}
 \usage{
-groupByColumn(ns)
+groupByColumn(ns, dataset)
 }
 \description{
 User interface to group by column
