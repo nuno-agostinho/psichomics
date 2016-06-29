@@ -3,8 +3,8 @@
 settingsUI <- function(id, tab) {
     ns <- NS(id)
     
-    if( require("parallel") ) {
-        cores <- detectCores()
+    if (requireNamespace("parallel", quietly = TRUE)) {
+        cores <- parallel::detectCores()
         coresInput <- tagList(
             sliderInput(ns("cores"), h4("Number of cores"), value=1, min=1, 
                         step=1, max=cores, width="auto"),
