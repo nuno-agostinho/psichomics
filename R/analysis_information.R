@@ -243,6 +243,10 @@ infoServer <- function(input, output, session) {
             )
         })
         
+        # Clean so it doesn't show previous results when loading
+        output$selectizeProtein <- renderUI("Loading...")
+        output$plotProtein <- renderHighchart(NULL)
+        
         output$selectizeProtein <- renderUI({
             proteins <- info$Transcript$Translation$id
             proteins <- proteins[!is.na(proteins)]
