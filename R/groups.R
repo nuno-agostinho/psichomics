@@ -45,12 +45,12 @@ groupByGrep <- function(ns, dataset) { list (
 )}
 
 #' Creates UI elements for the grouping feature
-groupsUI <- function(id, tab, dataset) {
+groupsUI <- function(id, dataset) {
     ns <- NS(id)
     
     checkId <- function (sign, what)
         sprintf("input[id='%s'] %s '%s'", ns("subsetBy"), sign, what)
-    tab("Groups", br(),
+    tagList(
         uiOutput(ns("modal")),
         radioButtons(ns("subsetBy"), "Subset by", inline = TRUE,
                      c("Column", "Rows", "Expression", "Grep")),

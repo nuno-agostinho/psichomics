@@ -240,8 +240,7 @@ survivalServer <- function(input, output, session) {
     })
     
     observeEvent(input$dataGroupsEdit, {
-        showModal(session, "Groups", groupsUI(ns("groups"), 
-                                              getClinicalData()), 
+        showModal(session, "Groups", groupsUI(ns("groups"), getClinicalData()), 
                   size=NULL, iconName="object-group", style="info")
         callModule(groupsServer, "groups", getClinicalData(), "Clinical data")
     })
