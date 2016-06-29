@@ -25,7 +25,8 @@ loadedDataModal <- function(session, modalId, replaceButtonId, keepButtonId) {
 #' @param tab Function to create tab
 dataUI <- function(id, tab) {
     ns <- NS(id)
-    uiList <- getUiFunctions(ns, "data", bsCollapsePanel)
+    uiList <- getUiFunctions(ns, "data", bsCollapsePanel,
+                             priority="localDataUI")
     
     tab(title=div(icon("table"), "Data"),
         sidebarLayout(
@@ -162,7 +163,7 @@ dataServer <- function(input, output, session) {
     observe( setActiveDataset(input$datasetTab) )
     
     # Run server logic from the scripts
-    getServerFunctions("data")
+    getServerFunctions("data", priority="localDataServer")
 }
 
 attr(dataUI, "loader") <- "app"
