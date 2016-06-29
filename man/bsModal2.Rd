@@ -16,7 +16,7 @@ bsModal2(id, title, trigger, ..., size = NULL, footer = NULL,
 
 \item{...}{UI elements to include within the modal}
 
-\item{size}{\bold{Optional} What size should the modal be? (\code{small} or \code{large})}
+\item{size}{Character: Modal size ("small", "default" or "large")}
 
 \item{footer}{UI set: List of elements to include in the footer}
 
