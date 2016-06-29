@@ -33,7 +33,7 @@ NULL}
 
 \item{printMessage}{Boolean: print to console? FALSE by default}
 
-\item{size}{\bold{Optional} What size should the modal be? (\code{small} or \code{large})}
+\item{size}{Character: Modal size ("small", "default" or "large")}
 }
 \description{
 You can also use \code{errorModal} and \code{warningModal} to use template 
