@@ -1,7 +1,7 @@
-#' @include matsEvents.R
-#' @include misoEvents.R
-#' @include vastToolsEvents.R
-#' @include suppaEvents.R
+#' @include events_mats.R
+#' @include events_miso.R
+#' @include events_vastTools.R
+#' @include events_suppa.R
 NULL
 
 #' Creates a template of alternative splicing junctions
