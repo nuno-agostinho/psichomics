@@ -75,12 +75,13 @@ groupByExpression <- function(ns) { list (
 )}
 
 #' User interface to group by grep expression
-groupByGrep <- function(ns, dataset) { list (
-    textInput(ns("grepExpression"), "GREP expression", width="auto"),
-    selectizeInput(ns("grepColumn"), "Select column to GREP", selected=NULL, 
-                   choices=names(dataset), width="auto", options = list(
-                       placeholder = "Start typing to search for columns"))
-)}
+groupByGrep <- function(ns, dataset) {
+    list (
+        textInput(ns("grepExpression"), "Regular expression", width="auto"),
+        selectizeInput(ns("grepColumn"), "Select column to GREP", selected=NULL, 
+                       choices=names(dataset), width="auto", options = list(
+                           placeholder = "Start typing to search for columns"))
+    )}
 
 #' Creates UI elements for the grouping feature
 groupsUI <- function(id, dataset) {
@@ -91,11 +92,14 @@ groupsUI <- function(id, dataset) {
     tagList(
         uiOutput(ns("modal")),
         radioButtons(ns("subsetBy"), "Subset by", inline = TRUE,
-                     c("Column", "Rows", "Expression", "Grep")),
+                     c("Column", "Rows", "Subset expression",
+                       "Regular expression")),
         conditionalPanel(checkId("==", "Column"), groupByColumn(ns, dataset)),
         conditionalPanel(checkId("==", "Rows"), groupByRow(ns)),
-        conditionalPanel(checkId("==", "Expression"), groupByExpression(ns)),
-        conditionalPanel(checkId("==", "Grep"), groupByGrep(ns, dataset)),
+        conditionalPanel(checkId("==", "Subset expression"), 
+                         groupByExpression(ns)),
+        conditionalPanel(checkId("==", "Regular expression"), 
+                         groupByGrep(ns, dataset)),
         conditionalPanel(checkId("!=", "Column"),
                          textInput(ns("groupName"), "Group name", width="auto",
                                    placeholder = "Unnamed")),
@@ -117,10 +121,10 @@ createGroupFromInput <- function (input, output, session, dataset, datasetName) 
         return(NULL)
     }
     type <- input$subsetBy
-    columnInput <- input$groupColumn
     
     if (type == "Column") {
-        colData <- dataset[[columnInput]]
+        col <- input$groupColumn
+        colData <- dataset[[col]]
         
         # Replace NAs for "NA" so they can be find using the `which` function
         colData[is.na(colData)] <- "NA"
@@ -128,7 +132,7 @@ createGroupFromInput <- function (input, output, session, dataset, datasetName) 
         # Create groups according to the chosen column
         groupNames <- sort(unique(colData))
         rows <- lapply(lapply(groupNames, `==`, colData), which)
-        group <- cbind(groupNames, type, columnInput, rows)
+        group <- cbind(groupNames, type, col, rows)
     } else if (type == "Rows") {
         # Convert the given string into a sequence of numbers
         rows <- input$groupRows
@@ -149,7 +153,7 @@ createGroupFromInput <- function (input, output, session, dataset, datasetName) 
             rows <- rows[!gtRows]
         }
         group <- cbind(input$groupName, type, strRows, list(rows))
-    } else if (type == "Expression") {
+    } else if (type == "Subset expression") {
         # Subset dataset using the given expression
         expr <- input$groupExpression
         
@@ -168,9 +172,25 @@ createGroupFromInput <- function (input, output, session, dataset, datasetName) 
         
         rows <- match(rownames(set), rownames(dataset))
         group <- cbind(input$groupName, type, expr, list(rows))
-    } else if (type == "Grep") {
-        ## TODO(NunoA): Subset dataset with the GREP expression for the given column
-        group <- rep(NA, 4)
+    } else if (type == "Regular expression") {
+        # Subset dataset column using given regular expression
+        col <- input$grepColumn
+        colData <- dataset[[col]]
+        expr <- input$grepExpression
+        
+        # Test expression before running
+        set <- tryCatch(grep(expr, colData), error = return)
+        
+        # Show error to the user
+        if ("simpleError" %in% class(set)) {
+            errorModal(session, "GREP expression error",
+                       "The following error was raised:", br(),
+                       tags$code(set$message))
+            return(NULL)
+        }
+        
+        strRows <- sprintf('"%s" in %s', expr, col)
+        group <- cbind(input$groupName, "GREP", strRows, list(set))
     } 
     # Name group if empty
     if (group[[1]] == "") group[[1]] <- "Unnamed"
@@ -237,12 +257,10 @@ operateOnGroups <- function(input, session, sharedData, FUN, buttonId,
 groupsServer <- function(input, output, session, dataset, datasetName) {
     ns <- session$ns
     
-    # Update available attributes to suggest in the group expression
+    # Update available attributes to suggest in the subset expression
     output$groupExpressionAutocomplete <- renderUI({
-        if (!is.null(datasetName)) {
-            attributes <- names(dataset)
-            textComplete(ns("groupExpression"), attributes)
-        }
+        if (!is.null(datasetName))
+            textComplete(ns("groupExpression"), names(dataset))
     })
     
     # Create a new group when clicking on the createGroup button
@@ -323,11 +341,6 @@ groupsServer <- function(input, output, session, dataset, datasetName) {
             FUN <- sharedData$groupsFUN
             symbol <- sharedData$groupSymbol
             
-            # Set operation groups as 0 and flag to FALSE
-            session$sendCustomMessage(type = "setZero", "selectedGroups")
-            sharedData$javascriptSent <- FALSE
-            sharedData$javascriptRead <- FALSE
-            
             # Get groups from the dataset
             groups <- getGroupsFrom(datasetName)
             
@@ -355,6 +368,11 @@ groupsServer <- function(input, output, session, dataset, datasetName) {
                 groups <- rbind(new, groups)
             }
             setGroupsFrom(datasetName, groups)
+            
+            # Set operation groups as 0 and flag to FALSE
+            session$sendCustomMessage(type = "setZero", "selectedGroups")
+            sharedData$javascriptSent <- FALSE
+            sharedData$javascriptRead <- FALSE
         }
     })
     
