@@ -22,7 +22,14 @@ selectGroupsUI <- function (id, label, placeholder=
                                class="inline_selectize pull-right")))
 }
 
-
+#' Group selection logic
+#' 
+#' @param session Shiny session
+#' @param id Character: identifier of the group selection
+#' @param dataset Data frame: dataset of interest
+#' @param datasetName Character: name of the dataset of interest
+#' 
+#' @return Server logic for group selection
 selectGroupsServer <- function(session, id, dataset, datasetName) {
     ns <- session$ns
     input <- session$input
