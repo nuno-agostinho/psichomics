@@ -102,8 +102,14 @@ Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
     background-color: #1C7AB4;
     color: white;
 }
+
 /* Make the active item from the selectize.js dropdown more noticeable */
 .selectize-dropdown .active {
     background-color: #1C7AB4;
     color: white;
+}
+
+/* Make the text complete dropdown apper above everything (even modals) */
+.textcomplete-dropdown {
+    z-index: 10000 !important;
 }
