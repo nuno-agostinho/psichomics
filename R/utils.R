@@ -318,3 +318,6 @@ textAreaInput <- function(inputId, label, value = "", width = NULL,
 #' }
 #' @export
 updateTextAreaInput <- updateTextInput
+
+alertNew <- function(...)
+    div(class="alert alert-warning alert-dismissible", role="alert", ...)

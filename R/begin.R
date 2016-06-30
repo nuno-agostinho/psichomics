@@ -1,6 +1,11 @@
-#' @import shiny utils
 #' @include utils.R 
-NULL
+
+# TODO(NunoA): increase allowed size and warn the user to wait for large files
+# Refuse files with size greater than the specified
+MB = 5000 # File size in MB
+options(shiny.maxRequestSize = MB * 1024^2)
+
+tabsFolder <- system.file("R", package="psichomics")
 
 #' Get number of significant digits
 #' @param n Numeric: number to round
@@ -212,32 +217,6 @@ setAssemblyVersion <- function(value, category = getCategory())
 setClinicalMatchFrom <- function(dataset, matches, category = getCategory())
     setGlobal(category, dataset, "clinicalMatch", value=matches)
 
-#' Create an identifier for a given object
-#' 
-#' To make an object's identifier unique, use the names of the module,
-#' submodule, subsubmodule, ... as arguments before passing the name. Check the
-#' example.
-#' 
-#' @param ... Arguments to identify an object
-#' 
-#' @return Character with underscores instead of spaces
-#' 
-#' @examples
-#' psichomics:::objectId("Exploratory analysis", "PCA", "plot")
-objectId <- function(...) {
-    return(gsub(" ", "_", paste(...)))
-}
-
-# TODO(NunoA): increase allowed size and warn the user to wait for large files
-# Refuse files with size greater than the specified
-MB = 5000 # File size in MB
-options(shiny.maxRequestSize = MB * 1024^2)
-
-# TODO(NunoA): remove this (it's only for documentation purposes)
-# options(shiny.trace=TRUE)
-
-tabsFolder <- system.file("R", package="psichomics")
-
 #' Trims whitespace from a word
 #'
 #' @param word Character to trim
@@ -265,72 +244,6 @@ trimWhitespace <- function(word) {
 #' returns an empty list if the input is a list with only NULL elements)
 #' @export
 rm.null <- function(v) Filter(Negate(is.null), v)
-
-#' Checks if a given script defines the given objects
-#'
-#' Loads the script into a new environment and checks if all the given objects
-#' are present.
-#'
-#' @param script Character: file path to the script
-#' @param check Character: objects to check
-#' @param parentEnv Environment: enclosing environment inherited
-#'
-#' @return Environment with the loaded script if all the given objects are
-#' present; otherwise, returns NULL
-#' @export
-checkObjects <- function(script, check, parentEnv = NULL) {
-    if (is.null(parentEnv))
-        env <- new.env()
-    else
-        env <- new.env(parent = parentEnv)
-    sys.source(script, env)
-    # Check for the given variables
-    varsDefined <- vapply(check, exists, logical(1), envir = env)
-    if (all(varsDefined)) return(env)
-}
-
-#' Sources scripts containing the given variables from a given folder
-#'
-#' @param folder Character: folder where the scripts are located
-#' @param pattern Character: regular expression to filter file names
-#' @param ... Extra parameters to be passed to list.files
-#' @inheritParams checkObjects
-#'
-#' @return List of environments with sourced scripts
-#' @export
-sourceScripts <- function(folder, check, parentEnv=NULL, pattern=NULL, ...){
-    files <- list.files(folder, pattern=pattern, full.names = TRUE, ...)
-    # Get every script that defines the desired variables
-    envs <- lapply(files, checkObjects, check, parentEnv)
-    envs <- Filter(Negate(is.null), envs)
-    return(envs)
-}
-
-#' Call a given function from valid scripts
-#' 
-#' Scripts from a given folder are checked to see if they have the given
-#' objects. If they do, a given function will be called.
-#' 
-#' @note It's a good idea to check if the function is included in the script.
-#'
-#' @inheritParams sourceScripts
-#' @param func Character: name of function to call
-#' @param ... Arguments to pass to the given function call
-#'
-#' @return Variable from valid script
-#' @export
-callScriptsFunction <- function(func, ..., check = func, folder = "R/") {
-    # Get scripts given the variables of interest to show at primary level
-    scripts <- sourceScripts(folder, check)
-    primary <- vapply(scripts, function(i) isTRUE(i[["primary"]]), logical(1))
-    # Get a given variable from those scripts
-    f <- lapply(scripts[primary], "[[", func)
-    # Remove nulls (needed?)
-    f <- Filter(Negate(is.null), f)
-    # Calls the function of each script with the given parameters
-    loaded <- lapply(f, do.call, list(...))
-    return(loaded)
-}
 
 #' Escape symbols for use in regular expressions
 #'
