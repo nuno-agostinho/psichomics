@@ -279,13 +279,9 @@ groupsServer <- function(input, output, session, dataset, datasetName) {
     
     # Create a new group when clicking on the createGroup button
     observeEvent(input$createGroup, {
-        # Get groups from the dataset
         groups <- getGroupsFrom(datasetName)
-        
-        # Create new group(s) from user input
-        new <- createGroupFromInput(input, output, session, dataset, 
+        new <- createGroupFromInput(input, output, session, dataset,
                                     datasetName)
-        
         if (!is.null(new)) {
             # Rename duplicated group names
             new <- renameGroups(new, groups)
