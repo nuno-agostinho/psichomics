@@ -80,6 +80,7 @@ getUiFunctions <- function(ns, loader, ..., priority=NULL) {
 
 #' The user interface (ui) controls the layout and appearance of the app
 #' All the CSS modifications are in the file "shiny/www/styles.css"
+#' @importFrom shinyjs useShinyjs
 appUI <- function() {
     uiList <- getUiFunctions(paste, "app", tabPanel, priority=c("dataUI",
                                                                 "analysesUI"))
@@ -98,10 +99,8 @@ appUI <- function() {
     
     shinyUI(
         do.call(navbarPage, c(
-            list(title = "PSΨchomics", id = "nav", collapsible = TRUE,
-                 position = "fixed-top",
-                 header = header,
-                 footer = shinyjs::useShinyjs()),
+            list(title="PSΨchomics", id="nav", collapsible=TRUE, header=header,
+                 position="fixed-top", footer=useShinyjs()),
             uiList)
         )
     )
