@@ -4,15 +4,18 @@ analysesUI <- function(id, tab) {
     ns <- NS(id)
     uiList <- getUiFunctions(ns, "analysis")
     sharedData$names <- sapply(uiList, attr, "name")
-     
+    
     tab(div(icon("flask"), "Analyses"),
         # allows the user to choose which UI set is shown
         fluidRow(
-            column(4, selectizeInput(ns("selectizeAnalysis"), "Select analysis type:",
-                                     choices = NULL, options = list(
-                                         placeholder = "Select an analysis type"),
-                                     width="auto")),
-            column(4, selectizeInput(ns("selectizeCategory"), "Select category:",
+            column(4, 
+                   selectizeInput(ns("selectizeAnalysis"), 
+                                  "Select analysis type:",
+                                  choices = NULL, options = list(
+                                      placeholder = "Select an analysis type"),
+                                  width="auto")),
+            column(4, selectizeInput(ns("selectizeCategory"), 
+                                     "Select category:",
                                      choices = NULL, options = list(
                                          placeholder = "Select a category"),
                                      width="auto")),
@@ -26,7 +29,8 @@ analysesUI <- function(id, tab) {
         lapply(uiList, function(ui) {
             conditionalPanel(
                 condition=sprintf("input[id='%s'] == '%s'",
-                                  ns("selectizeAnalysis"), attr(ui, "name")), ui)
+                                  ns("selectizeAnalysis"), attr(ui, "name")),
+                ui)
         })
     )
 }
@@ -34,11 +38,11 @@ analysesUI <- function(id, tab) {
 analysesServer <- function(input, output, session) {
     # Run server logic from the scripts
     getServerFunctions("analysis")
-
+    
     # Update selectize input to show available analyses
     observe( updateSelectizeInput(session, "selectizeAnalysis",
-                             choices=sharedData$names) )
-
+                                  choices=sharedData$names) )
+    
     # Update selectize input to show available categories
     observe({
         data <- getData()
@@ -48,7 +52,7 @@ analysesServer <- function(input, output, session) {
     
     # Set the category of the data when possible
     observeEvent(input$selectizeCategory, setCategory(input$selectizeCategory))
-
+    
     # Updates selectize event to show available events
     observe({
         psi <- getInclusionLevels()
@@ -69,7 +73,7 @@ analysesServer <- function(input, output, session) {
         # }
     })
     
-    # # If showing datatable, hide selectizeEvent; otherwise, show it
+    # # If showing table, hide selectizeEvent; otherwise, show it
     # observe({
     #     vis <- function(func, ...)
     #         func(id("selectizeEvent"), anim = TRUE, animType = "fade")
