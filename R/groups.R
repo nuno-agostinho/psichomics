@@ -42,10 +42,11 @@ selectGroupsServer <- function(session, id, dataset, datasetName) {
         showModal(session, "Groups", groupsUI(ns(modalId), dataset), 
                   size=NULL, iconName="object-group", style="info")
         callModule(groupsServer, modalId, dataset, datasetName)
-        observe({
-            groupNames <- getGroupsFrom(datasetName)[, "Names"]
-            updateSelectizeInput(session, id, choices=groupNames)
-        })
+    })
+    
+    observe({
+        groupNames <- getGroupsFrom(datasetName)[, "Names"]
+        updateSelectizeInput(session, id, choices=groupNames)
     })
 }
 
