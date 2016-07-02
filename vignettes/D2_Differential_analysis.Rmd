@@ -155,6 +155,43 @@ highchart() %>%
     hc_add_series_density(d3, area = TRUE)
 ```
 
+How about illustrating the location of the points that contribute to the density 
+plot?
+```{r}
+hchart(density(x), area = TRUE) %>%
+    hc_chart(zoomType="xy") %>%
+    hc_add_series_density(density(y), area = TRUE) %>% 
+    hc_add_serie_scatter(x, rep(0, length(x)), 
+                         marker=list(symbol="square", width=1)) %>%
+    hc_add_serie_scatter(y, rep(0, length(y)), 
+                         marker=list(symbol="square", width=1))
+```
+
+Unfortunately, when hovering the point symbols, they grow back to normal... why?
+Let's use transparent circles instead...
+
+```{r}
+hchart(density(x), area = TRUE, color="rgba(170,70,67,0.5)") %>%
+    hc_chart(zoomType="xy") %>%
+    hc_add_series_density(density(y), area = TRUE, color="rgba(0,70,67,0.5)") %>% 
+    hc_add_serie_scatter(x, rep(0, length(x)),
+                         marker=list(symbol="circle", fillColor="rgba(170,70,67,0.5)")) %>%
+    hc_add_serie_scatter(y, rep(0, length(y)), 
+                         marker=list(symbol="circle", fillColor="rgba(0,70,67,0.5)"))
+```
+
+What about trying to render the lines? It's possible by
+manipulating JavaScript... which we can't do in here, but we
+can in a Shiny app.
+
+```{js}
+// Define a custom symbol named "line"
+Highcharts.SVGRenderer.prototype.symbols.line =
+  function(x, y, w, h) {
+    return ['M', x+h/2, y, 'L', x + h/2, y + w];
+  };
+```
+
 # References
 - https://en.wikipedia.org/wiki/Student%27s_t-test
 - [rSeqNP: A non-parametric approach for detecting differential ex-
