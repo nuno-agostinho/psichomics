@@ -147,13 +147,6 @@ pcaServer <- function(input, output, session) {
     selectGroupsServer(session, "colourGroups", getClinicalData(),
                        "Clinical data")
     
-    # Select all data groups when pressing the respective "Select all" button
-    observeEvent(input$dataGroups_selectAll, {
-        updateSelectizeInput(
-            session, "dataGroups", 
-            selected = getGroupsFrom("Clinical data")[, "Names"])
-    })
-    
     # Perform principal component analysis (PCA)
     observeEvent(input$calculate, {
         psi <- isolate(getInclusionLevels())
