@@ -371,9 +371,9 @@ showModal <- function(session, title, ..., style = NULL,
                       modalId = "modal") {
     ns <- session$ns
     session$output[[modalId]] <- renderUI({
-        bsModal2(ns(id(title)), style=style, div(icon(iconName), title),
+        bsModal2(ns("showModal"), style=style, div(icon(iconName), title),
                  trigger=NULL, size=size, ..., footer=footer)})
-    toggleModal(session, id(title), toggle = "open")
+    toggleModal(session, "showModal", toggle = "open")
     if (printMessage) print(content)
 }
 

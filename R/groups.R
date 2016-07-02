@@ -37,13 +37,19 @@ selectGroupsServer <- function(session, id, dataset, datasetName) {
     
     editId <- paste0(id, "Edit")
     modalId <- paste0(id, "Modal")
+
+    session$output[["modal"]] <- renderUI({
+        bsModal2(ns("showModal"), style="info", trigger=NULL, size=NULL,
+                 div(icon("object-group"), "Groups"),
+                 groupsUI(ns(modalId), dataset))})
     
-    observeEvent(input[[editId]], {
-        showModal(session, "Groups", groupsUI(ns(modalId), dataset), 
-                  size=NULL, iconName="object-group", style="info")
-        callModule(groupsServer, modalId, dataset, datasetName)
-    })
+    # Toggle group selection interface when clicking the "Edit" button
+    observeEvent(input[[editId]],
+                 toggleModal(session, "showModal", toggle="open"))
     
+    callModule(groupsServer, modalId, dataset, datasetName)
+    
+    # Update groups shown in the interface
     observe({
         groupNames <- getGroupsFrom(datasetName)[, "Names"]
         updateSelectizeInput(session, id, choices=groupNames)
