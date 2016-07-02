@@ -38,19 +38,13 @@ body { padding-top: 70px; }
 }
 
 /* Properly sets the loading message when the navbar is collapsed */
-@media (max-width: 768px) {
-    #loadmessage { left: -70px; }
-}
+@media (max-width: 768px) { #loadmessage { left: -70px; } }
 
 /* Set the width of the navbar container to auto (better for bigger displays) */
-@media (min-width: 768px) {
-    .navbar .container { width: auto; }
-}
+@media (min-width: 768px) { .navbar .container { width: auto; } }
 
 /* Align element with selectize input */
-.inline_selectize { 
-    margin-top: 25px;
-}
+.inline_selectize { margin-top: 25px; }
 
 /* Add error style to modal headers 
 Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
@@ -110,6 +104,4 @@ Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
 }
 
 /* Make the text complete dropdown apper above everything (even modals) */
-.textcomplete-dropdown {
-    z-index: 10000 !important;
-}
+.textcomplete-dropdown { z-index: 10000 !important; }

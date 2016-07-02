@@ -12,7 +12,7 @@ proteinHighcharts(feature, length)
 \item{length}{Integer: protein length}
 }
 \value{
-Highcharter object
+highchart object
 }
 \description{
 Plot protein features

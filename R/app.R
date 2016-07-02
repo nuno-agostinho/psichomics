@@ -82,8 +82,8 @@ getUiFunctions <- function(ns, loader, ..., priority=NULL) {
 #' All the CSS modifications are in the file "shiny/www/styles.css"
 #' @importFrom shinyjs useShinyjs
 appUI <- function() {
-    uiList <- getUiFunctions(paste, "app", tabPanel, priority=c("dataUI",
-                                                                "analysesUI"))
+    uiList <- getUiFunctions(paste, "app", tabPanel,
+                             priority=c("dataUI", "analysesUI"))
     
     header <- list(
         includeCSS(insideFile("shiny", "www", "styles.css")),

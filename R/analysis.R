@@ -36,17 +36,14 @@ analysesServer <- function(input, output, session) {
     getServerFunctions("analysis")
 
     # Update selectize input to show available analyses
-    observe({
-        updateSelectizeInput(session, "selectizeAnalysis",
-                             choices=sharedData$names)
-    })
+    observe( updateSelectizeInput(session, "selectizeAnalysis",
+                             choices=sharedData$names) )
 
     # Update selectize input to show available categories
     observe({
         data <- getData()
-        if (!is.null(data))
-            updateSelectizeInput(session, "selectizeCategory",
-                                 choices=names(data))
+        if (!is.null(data)) updateSelectizeInput(session, "selectizeCategory",
+                                                 choices=names(data))
     })
     
     # Set the category of the data when possible
