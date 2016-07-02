@@ -14,8 +14,10 @@
 selectGroupsUI <- function (id, label, placeholder=
                                 "Click 'Edit' to create or edit groups") {
     editId <- paste0(id, "Edit")
+    modalId <- paste0(id, "Modal")
     fluidRow(
-        column(10, selectizeInput(id, label, choices = NULL, multiple = TRUE, 
+        uiOutput(modalId),
+        column(10, selectizeInput(id, label, choices = NULL, multiple = TRUE,
                                   width="auto",
                                   options = list(placeholder=placeholder))),
         column(2, actionButton(editId, "Edit", 
@@ -37,17 +39,19 @@ selectGroupsServer <- function(session, id, dataset, datasetName) {
     
     editId <- paste0(id, "Edit")
     modalId <- paste0(id, "Modal")
-
-    session$output[["modal"]] <- renderUI({
-        bsModal2(ns("showModal"), style="info", trigger=NULL, size=NULL,
+    showId <- uId <- paste0(id, "Show")
+    uId <- paste0(id, "Call")
+    
+    session$output[[modalId]] <- renderUI({
+        bsModal2(ns(showId), style="info", trigger=NULL, size=NULL,
                  div(icon("object-group"), "Groups"),
-                 groupsUI(ns(modalId), dataset))})
+                 groupsUI(ns(uId), dataset))})
     
     # Toggle group selection interface when clicking the "Edit" button
     observeEvent(input[[editId]],
-                 toggleModal(session, "showModal", toggle="open"))
+                 toggleModal(session, showId, toggle="open"))
     
-    callModule(groupsServer, modalId, dataset, datasetName)
+    callModule(groupsServer, uId, dataset, datasetName)
     
     # Update groups shown in the interface
     observe({
