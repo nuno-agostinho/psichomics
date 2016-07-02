@@ -1,23 +1,23 @@
 ## TODO: check if API is alive before querying data
 
 #' Query the Ensembl REST API
-#' 
+#'
 #' @param path Character: API path
 #' @param query Character: API query
 #' @param grch37 Boolean: query the Ensembl GRCh37 API? TRUE by default;
 #' otherwise, query the most recent API
-#' 
+#'
 #' @importFrom httr GET
 #' @importFrom jsonlite fromJSON
-#' 
+#'
 #' @return Parsed response or NULL if there's no response
 #' @export
-#' 
-#' @examples 
+#'
+#' @examples
 #' path  <- "overlap/region/human/7:140424943-140624564"
 #' query <- list(feature = "gene")
 #' queryEnsembl(path, query, grch37 = TRUE)
-#' 
+#'
 #' path  <- "lookup/symbol/human/BRCA2"
 #' query <- list(expand=1)
 #' queryEnsembl(path, query, grch37 = TRUE)
@@ -30,17 +30,17 @@ queryEnsembl <- function(path, query, grch37 = TRUE) {
 }
 
 #' Query the Uniprot REST API
-#' 
+#'
 #' @param protein Character: protein to query
 #' @param format Character: format of the response
-#' 
+#'
 #' @importFrom httr GET
 #' @importFrom jsonlite fromJSON
-#' 
+#'
 #' @return Parsed response
 #' @export
-#' 
-#' @examples 
+#'
+#' @examples
 #' protein <- "P51587"
 #' format <- "xml"
 #' queryUniprot(protein, format)
@@ -60,14 +60,13 @@ infoUI <- function(id) {
 
 noinfo <- function(output, title="No information available for this event.",
                    description="Select another alternative splicing event.") {
-    output$info <- renderUI(
-        h3(title, br(), tags$small(description)))
+    output$info <- renderUI( h3(title, br(), tags$small(description)) )
 }
 
 #' Parse XML from Uniprot's RESTful service
-#' 
+#'
 #' @param XML response from Uniprot
-#' 
+#'
 #' @importFrom XML xmlTreeParse xmlRoot getNodeSet xmlAttrs xmlToList
 #' @return List containing protein length and data frame of protein features
 parseUniprotXML <- function(xml) {
@@ -76,17 +75,17 @@ parseUniprotXML <- function(xml) {
     featureNodes <- getNodeSet(root, "//feature")
     proteinLength <- as.numeric(
         xmlAttrs(getNodeSet(root, "//sequence[@length]")[[1]])[[1]])
-    
+
     # Convert list of XMLNodes to list of characters
-    l <- lapply(featureNodes, function(feat) { 
+    l <- lapply(featureNodes, function(feat) {
         attrs <- xmlAttrs(feat)
-        
+
         location  <- feat[[match("location", names(feat))]]
         start <- as.numeric(xmlAttrs(location[[1]]))
         # If there's no stop position, simply sum 1 to the start position
         stop  <- tryCatch(as.numeric(xmlAttrs(location[[2]])),
                           error=function(e) start+1)
-        
+
         # Get original and variant aminoacid
         variant <- match("variation", names(feat))
         if (!is.na(variant) && !is.null(variant)) {
@@ -98,23 +97,23 @@ parseUniprotXML <- function(xml) {
         }
         return(c(attrs, start=start, stop=stop, variant=variant))
     })
-    
+
     # Convert list of characters to data frame of characters
     feature <- plyr::ldply(l, rbind)
     for (col in 1:ncol(feature))
         feature[[col]] <- as.character(feature[[col]])
-    
+
     feature$start <- as.numeric(feature$start)
     feature$stop <- as.numeric(feature$stop)
     return(list(proteinLength=proteinLength, feature=feature))
 }
 
 #' Plot protein features
-#' 
+#'
 #' @param feature Data frame: protein features
 #' @param length Integer: protein length
-#' 
-#' @return Highcharter object
+#'
+#' @return highchart object
 proteinHighcharts <- function(feature, length) {
     hc <- highchart() %>%
         hc_chart(type="area", zoomType="x") %>%
@@ -123,26 +122,26 @@ proteinHighcharts <- function(feature, length) {
         hc_yAxis(visible=FALSE) %>%
         hc_tooltip(pointFormat="<b>{series.name} {point.id}</b>
                    <br>{point.variant}{point.description}")
-    
+
     # The diverse types of features available
     types <- unique(feature$type)
-    
+
     featureList <- NULL
     # Reverse elements from features so the first ones (smaller Y) are above
     for (feat in nrow(feature):1) {
         feat <- feature[feat, ]
-        
+
         # If there's no stop position, simply sum 1 to the start position
         stop <- ifelse(!is.na(feat$stop), feat$stop, feat$start + 1)
         y <- match(feat$type, types)
-        
+
         # Create a list with two points based on this region
-        temp <- list(NULL, 
-                     list(x=feat$start, y=y, description=feat$description, 
-                          id=feat$id, variant=feat$variant), 
-                     list(x=feat$stop,  y=y, description=feat$description, 
+        temp <- list(NULL,
+                     list(x=feat$start, y=y, description=feat$description,
+                          id=feat$id, variant=feat$variant),
+                     list(x=feat$stop,  y=y, description=feat$description,
                           id=feat$id, variant=feat$variant))
-        
+
         # Either make a new list or append to existing
         if (is.null(featureList[feat$type])) {
             featureList[[feat$type]] <- temp[2:3]
@@ -155,99 +154,107 @@ proteinHighcharts <- function(feature, length) {
     return(hc)
 }
 
+plotTranscripts <- function(input, output, info, eventPosition) {
+    output$plotTranscripts <- renderPlot({
+        transcripts <- data.frame()
+
+        for (i in 1:nrow(info$Transcript)) {
+            transcriptId <- info$Transcript[i, "id"]
+            nn <- info$Transcript$Exon[[i]]
+            transcripts <- rbind(
+                transcripts,
+                data.frame(chrom=nn$seq_region_name, start=nn$start,
+                           stop=nn$end, gene=transcriptId, score=0,
+                           strand=nn$strand))
+        }
+
+        chrom <- paste0("chr", transcripts$chrom)
+        min <- min(transcripts$start)
+        max <- max(transcripts$stop)
+
+        if (!is.null(input$zoom) && input$zoom == "all") {
+            plotGenes(transcripts, chrom, min, max, fontsize=1.5)
+            zoomsregion(eventPosition, highlight=TRUE)
+            labelgenome(chrom, min, max, scale="Mb")
+        } else if (!is.null(input$zoom) && input$zoom == "event") {
+            min <- eventPosition[1]
+            max <- eventPosition[2]
+            plotGenes(transcripts, chrom, min, max, fontsize=1.5)
+            labelgenome(chrom, min, max, scale="Mb")
+        }
+    })
+}
+
+renderGeneticInfo <- function(ns, output, info, species, assembly, grch37) {
+
+    output$info <- renderUI({
+        start <- as.numeric(info$start)
+        end   <- as.numeric(info$end)
+
+        tagList(
+            h2(info$display_name, tags$small(info$id)),
+            sprintf("Species: %s (assembly %s)", species, assembly),
+            br(), sprintf("Chromosome %s: %s-%s (%s strand)",
+                          info$seq_region_name,
+                          format(start, big.mark=",", scientific=FALSE),
+                          format(end, big.mark=",", scientific=FALSE),
+                          ifelse(info$strand == -1,"reverse", "forward")),
+            br(), sprintf("%s (%s)", info$description,
+                          info$biotype), br(),
+            tags$a("Ensembl", icon("external-link"), target="_blank",
+                   class="btn btn-link",
+                   href=paste0("http://", if(grch37) { "grch37." },
+                               "ensembl.org/", species, "/",
+                               "Gene/Summary?g=", info$id)),
+            tags$a("UCSC", icon("external-link"), target="_blank",
+                   class="btn btn-link",
+                   href=paste0("https://genome.ucsc.edu/cgi-bin/hgTracks",
+                               if(grch37) { "?db=hg19" }, "&position=chr",
+                               info$seq_region_name, ":", start, "-", end)),
+            radioButtons(ns("zoom"), "Zoom", inline=TRUE,
+                         c("Show all transcripts"="all",
+                           "Zoom to splicing event"="event")),
+            plotOutput(ns("plotTranscripts"), height="200px"),
+            uiOutput(ns("selectizeProtein")),
+            highchartOutput(ns("plotProtein"), height="200px")
+        )
+    })
+}
+
 #' @importFrom Sushi plotGenes zoomsregion labelgenome
 #' @importFrom highcharter highchart %>%
 infoServer <- function(input, output, session) {
     ns <- session$ns
-    
+
     observe({
         event <- getEvent()
         if (is.null(event) || event == "") return(noinfo(output))
-        
+
         event <- strsplit(event, "_")[[1]]
         gene <- event[length(event)]
         if (gene == "NA") return(noinfo(output))
-        
+
         eventPosition <- event[4:(length(event)-1)]
         eventPosition <- range(as.numeric(eventPosition))
-        
+
         species <- tolower(getSpecies())
         assembly <- getAssemblyVersion()
         grch37 <- assembly == "hg19"
         if(is.null(species) || is.null(assembly)) return(NULL)
-        
+
         path <- paste0("lookup/symbol/", species, "/", gene)
         info <- queryEnsembl(path, list(expand=1), grch37=grch37)
         if (is.null(info))
             return(noinfo(output, title="No Ensembl match retrieved.",
                           description="Please, try again."))
-        
-        output$plotTranscripts <- renderPlot({
-            transcripts <- data.frame()
-            
-            for (i in 1:nrow(info$Transcript)) {
-                transcriptId <- info$Transcript[i, "id"]
-                nn <- info$Transcript$Exon[[i]]
-                transcripts <- rbind(
-                    transcripts,
-                    data.frame(chrom=nn$seq_region_name, start=nn$start, 
-                               stop=nn$end, gene=transcriptId, score=0, 
-                               strand=nn$strand))
-            }
-            
-            chrom <- paste0("chr", transcripts$chrom)
-            min <- min(transcripts$start)
-            max <- max(transcripts$stop)
-            
-            if (!is.null(input$zoom) && input$zoom == "all") {
-                plotGenes(transcripts, chrom, min, max, fontsize=1.5)
-                zoomsregion(eventPosition, highlight=TRUE)
-                labelgenome(chrom, min, max, scale="Mb")
-            } else if (!is.null(input$zoom) && input$zoom == "event") {
-                min <- eventPosition[1]
-                max <- eventPosition[2]
-                plotGenes(transcripts, chrom, min, max, fontsize=1.5)
-                labelgenome(chrom, min, max, scale="Mb")
-            }
-        })
-        
-        output$info <- renderUI({
-            start <- as.numeric(info$start)
-            end   <- as.numeric(info$end)
-            
-            tagList(
-                h2(info$display_name, tags$small(info$id)),
-                sprintf("Species: %s (assembly %s)", species, assembly),
-                br(), sprintf("Chromosome %s: %s-%s (%s strand)",
-                              info$seq_region_name, 
-                              format(start, big.mark=",", scientific=FALSE),
-                              format(end, big.mark=",", scientific=FALSE),
-                              ifelse(info$strand == -1,"reverse", "forward")),
-                br(), sprintf("%s (%s)", info$description,
-                              info$biotype), br(),
-                tags$a("Ensembl", icon("external-link"), target="_blank",
-                       class="btn btn-link",
-                       href=paste0("http://", if(grch37) { "grch37." }, 
-                                   "ensembl.org/", species, "/",
-                                   "Gene/Summary?g=", info$id)),
-                tags$a("UCSC", icon("external-link"), target="_blank",
-                       class="btn btn-link",
-                       href=paste0("https://genome.ucsc.edu/cgi-bin/hgTracks",
-                                   if(grch37) { "?db=hg19" }, "&position=chr", 
-                                   info$seq_region_name, ":", start, "-", end)),
-                radioButtons(ns("zoom"), "Zoom", inline=TRUE,
-                             c("Show all transcripts"="all", 
-                               "Zoom to splicing event"="event")),
-                plotOutput(ns("plotTranscripts"), height="200px"),
-                uiOutput(ns("selectizeProtein")),
-                highchartOutput(ns("plotProtein"), height="200px")
-            )
-        })
-        
-        # Clean so it doesn't show previous results when loading
+
+        renderGeneticInfo(ns, output, info, species, assembly, grch37)
+        plotTranscripts(input, output, info, eventPosition)
+
+        # Show NULL so it doesn't show previous results when loading
         output$selectizeProtein <- renderUI("Loading...")
         output$plotProtein <- renderHighchart(NULL)
-        
+
         output$selectizeProtein <- renderUI({
             proteins <- info$Transcript$Translation$id
             proteins <- proteins[!is.na(proteins)]
@@ -258,36 +265,36 @@ infoServer <- function(input, output, session) {
             )
         })
     })
-    
+
     observe({
-        # Convert from ENSEMBL to Uniprot/SWISSPROT
         ensembl <- input$selectedProtein
         if (is.null(ensembl)) return(NULL)
-        
+
         species <- tolower(getSpecies())
         assembly <- getAssemblyVersion()
         grch37 <- assembly == "hg19"
         if(is.null(species) || is.null(assembly)) return(NULL)
-        
+
+        # Convert from ENSEMBL to Uniprot/SWISSPROT
         print("Looking for ENSEMBL protein in Uniprot...")
         uniprot <- queryEnsembl(paste0("xrefs/id/", ensembl),
-                                list("content-type"="application/json"), 
+                                list("content-type"="application/json"),
                                 grch37=grch37)
         if (is.null(uniprot)) return(NULL)
         uniprot <- uniprot[grepl("SWISSPROT", uniprot$dbname), ]
-        
+
         ensemblLink <- tags$a("Ensembl", icon("external-link"), target="_blank",
                               class="btn btn-link",
-                              href=paste0("http://", if(grch37) { "grch37." }, 
+                              href=paste0("http://", if(grch37) { "grch37." },
                                           "ensembl.org/", species, "/",
                                           "Search/Results?q=", ensembl))
-        
+
         if (nrow(uniprot) == 0) {
             print("No protein match with Uniprot/SWISSPROT")
             output$proteinLink <- renderUI({
                 tagList(ensemblLink,
                         tags$a("No Uniprot match was found",
-                               icon("chain-broken"), 
+                               icon("chain-broken"),
                                class="btn btn-link")
                 )
             })
@@ -298,7 +305,7 @@ infoServer <- function(input, output, session) {
             parsed <- parseUniprotXML(xml)
             proteinLength <- parsed$proteinLength
             feature <- parsed$feature
-            
+
             hc <- proteinHighcharts(feature, proteinLength)
             output$proteinLink <- renderUI({
                 tagList(ensemblLink,
