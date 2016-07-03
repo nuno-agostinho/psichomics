@@ -377,6 +377,14 @@ survivalServer <- function(input, output, session) {
             errorModal(session, "Clinical groups intercept",
                        "There is an interception between clinical groups.")
         } else {
+            if (modelTerms == "groups") {
+                # Assign one group for each clinical patient
+                dataGroups <- groupPerPatient(dataGroups, nrow(clinical),
+                                              outGroup)
+            } else {
+                dataGroups <- NULL
+            }
+            
             # Calculate survival curves
             survTerms <- processSurvTerms(session, dataGroups, clinical,
                                           censoring, timeStart, timeStop,
