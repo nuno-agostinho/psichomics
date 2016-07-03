@@ -2,6 +2,7 @@
 ## TODO(NunoA): How to correctly do interval censoring?
 
 #' User interface of the survival curves
+#' @importFrom shinyBS bsTooltip
 survivalUI <- function(id) {
     ns <- NS(id)
     
@@ -26,6 +27,14 @@ survivalUI <- function(id) {
                          choices=c("Clinical groups"="groups",
                                    "Formula"="formula",
                                    "Inclusion leves cutoff"="psiCutoff")),
+            bsTooltip(ns("modelTerms"), placement="right", 
+                      options = list(container = "body"),
+                      paste0(
+                          "Survival analysis using:<br/>\u2022 User-created <b>",
+                          "clinical groups</b><br/>\u2022 A <b>formula</b> that",
+                          " can test clinical attributes with interactions<br/>",
+                          "\u2022 <b>Inclusion levels cutoff</b> for the",
+                          " selected alternative splicing event")),
             conditionalPanel(
                 sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "groups"),
                 selectGroupsUI(ns("dataGroups"), "Clinical groups to plot"),
@@ -40,8 +49,11 @@ survivalUI <- function(id) {
                          tags$b("pathologic_stage"))),
             conditionalPanel(
                 sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "psiCutoff"),
-                numericInput(ns("psiCutoff"),  value = 0.5, step=0.01,
-                             "Cutoff value for the selected event")),
+                sliderInput(ns("psiCutoff"), value = 0.5, min=0, max=1, step=0.01,
+                             "Cutoff value for the selected event"),
+                bsTooltip(ns("psiCutoff"), placement="right", 
+                          options = list(container = "body"),
+                          "You can click on the white circle and then use the left and right arrows for finer control.")),
             radioButtons(ns("scale"), "Display time in", inline=TRUE,
                          c(Days="days", Weeks="weeks", Months="months",
                            Years="years")),
