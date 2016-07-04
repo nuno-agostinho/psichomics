@@ -25,7 +25,7 @@ diffAnalysisUI <- function(id) {
 }
 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_plotOptions hc_tooltip
-#' JS hc_add_series_scatter hc_add_series_density
+#' JS hc_add_series_scatter
 prepareDensityPlot <- function(psi, type, bandwidth) {
     # js <- "Highcharts.SVGRenderer.prototype.symbols.line =
     #       function(x, y, w, h) {
