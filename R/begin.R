@@ -1,4 +1,5 @@
 #' @include utils.R 
+NULL
 
 # TODO(NunoA): increase allowed size and warn the user to wait for large files
 # Refuse files with size greater than the specified
