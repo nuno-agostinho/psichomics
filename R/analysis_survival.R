@@ -415,7 +415,7 @@ survivalServer <- function(input, output, session) {
             output$coxphUI <- renderUI({
                 # highchartOutput(ns("coxPlot"))
                 tagList(
-                    dataTableOutput(ns("coxTests")),
+                    dataTableOutput(ns("coxTests")), hr(),
                     dataTableOutput(ns("coxGroups"))
                 )
             })
@@ -435,7 +435,8 @@ survivalServer <- function(input, output, session) {
                 colnames(tests) <- c("Statistical test", "Value",
                                      "Degrees of freedom", "p-value")
                 return(tests)
-            }, options = list(scrollX = TRUE))
+            }, options = list(info=FALSE, paging=FALSE, searching=FALSE,
+                              scrollX=TRUE))
             
             # output$coxPlot <- renderHighchart({
             #     # Plot survival curves
