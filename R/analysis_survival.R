@@ -17,8 +17,9 @@ survivalUI <- function(id) {
             selectizeInput(ns("timeStart"), choices = NULL, "Follow up time"),
             # If the chosen censoring contains the word 'interval', show this input
             conditionalPanel(
-                paste0("input[id='", ns("censoring"), "'].indexOf('interval') > -1"),
-                selectizeInput(ns("timeStop"), choices = NULL, "Ending time")),
+                paste0("input[id='", ns("censoring"),
+                       "'].indexOf('interval') > -1"),
+                selectizeInput(ns("timeStop"), choices=NULL, "Ending time")),
             helpText("In case there's no record for a patient, the days to last",
                      "follow up will be used instead."),
             selectizeInput(ns("event"), choices = NULL, "Event of interest"),
@@ -207,9 +208,7 @@ updateClinicalFields <- function(session) {
                                  selected="days_to_death")
             
             # Update choices for ending time
-            updateSelectizeInput(
-                session, "timeStop", choices = choices, options=list(
-                    onInitialize = I('function() { this.setValue(""); }')))
+            updateSelectizeInput(session, "timeStop", choices=choices)
             
             # Update choices for events of interest
             names(choices) <- gsub("Days to ", "", names(choices), fixed=TRUE)
