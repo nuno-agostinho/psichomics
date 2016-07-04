@@ -409,11 +409,15 @@ groupsServer <- function(input, output, session, dataset, datasetName) {
                     # actionButton("complementGroups", ns("Complement")),
                     # actionButton("subtractGroups", ns("Subtract")),
                     operationButton("Remove", ns(removeId), icon = icon("times"))),
+                actionButton(ns("removeAll"), "Remove all groups"),
                 checkboxInput(ns("removeSetsUsed"), "Remove original groups",
                               value = TRUE)
             )
         }
     })
+    
+    observeEvent(input[["removeAll"]],
+                 setGroupsFrom(datasetName, NULL))
 }
 
 # attr(groupsUI, "loader") <- "data"
