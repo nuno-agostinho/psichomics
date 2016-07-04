@@ -24,6 +24,8 @@ diffAnalysisUI <- function(id) {
     )
 }
 
+#' @importFrom highcharter highchart hc_chart hc_xAxis hc_plotOptions hc_tooltip
+#' JS hc_add_series_scatter hc_add_series_density
 prepareDensityPlot <- function(psi, type, bandwidth) {
     # js <- "Highcharts.SVGRenderer.prototype.symbols.line =
     #       function(x, y, w, h) {
@@ -221,6 +223,7 @@ spearman <- function(psi, type) {
 
 #' @importFrom stats kruskal.test median wilcox.test var
 #' @importFrom lawstat levene.test
+#' @importFrom highcharter renderHighchart
 diffAnalysisServer <- function(input, output, session) {
     observe({
         # Get selected event (if there is any)
