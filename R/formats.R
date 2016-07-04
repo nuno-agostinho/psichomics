@@ -62,12 +62,11 @@ loadFile <- function(format, file) {
     # Remove duplicated rows
     if (!is.null(format$unique) && format$unique) loaded <- unique(loaded)
     
-    # Add column names
+    # Add column names from given row
     if (!is.null(format$colNames)) {
         if (skip != 0) {
-            header <- fread(file, sep = delim, header = FALSE,
-                            stringsAsFactors = FALSE,
-                            data.table = FALSE, nrows = skip)
+            header <- fread(file, sep = delim, header = FALSE, nrows = skip,
+                            stringsAsFactors = FALSE, data.table = FALSE)
             names(loaded) <- header[format$colNames, ]
         } else {
             names(loaded) <- loaded[format$colNames, ]
@@ -97,23 +96,8 @@ loadFile <- function(format, file) {
     return(loaded)
 }
 
-#' Parse file given a folder with recognised formats
-#' 
-#' Tries to recognise the file format and parses the content of the given file
-#' accordingly.
-#' 
-#' @param file Character: file to parse
-#' @param formatsFolder Character: folder with recognised file formats
-#' 
-#' @details The resulting data frame includes the attribute "tablename" with the
-#' name of the data frame
-#' 
-#' @importFrom utils read.delim
-#' 
-#' @return Data frame with the contents of the given file if the file format is
-#' recognised; otherwise, returns NULL
-#' @export
-parseValidFile <- function(file, formatsFolder) {
+#' Loads file formats
+loadFileFormats <- function() {
     # Get all functions ending with "UI"
     fun <- ls(getNamespace("psichomics"), all.names=TRUE, pattern="Format$")
     
@@ -130,7 +114,26 @@ parseValidFile <- function(file, formatsFolder) {
     })
     # Remove NULL elements from list
     formats <- Filter(Negate(is.null), formats)
-    
+    return(formats)
+}
+
+#' Parse file given a list of file formats
+#' 
+#' Tries to recognise the file format and parses the content of the given file
+#' accordingly.
+#' 
+#' @param file Character: file to parse
+#' @param formats List of file formats to check
+#' 
+#' @details The resulting data frame includes the attribute "tablename" with the
+#' name of the data frame
+#' 
+#' @importFrom utils read.delim
+#' 
+#' @return Data frame with the contents of the given file if the file format is
+#' recognised; otherwise, returns NULL
+#' @export
+parseValidFile <- function(file, formats) {
     # The number of rows to read will be the maximum value asked by all the file
     # formats; if no format aks for a specific number of rows, the default is 6
     headRows <- lapply(formats, "[[", "header_rows")
