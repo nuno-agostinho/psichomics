@@ -37,14 +37,15 @@ Imports:
     lawstat,
     Sushi,
     rmarkdown,
-    XML
+    XML,
+    gplots,
+    assertthat
 Suggests:
     testthat,
     knitr,
     microbenchmark,
     rbenchmark,
-    parallel,
-    gplots
+    parallel
 VignetteBuilder: knitr
 Collate:
     'analysis.R'
