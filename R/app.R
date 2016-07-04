@@ -121,7 +121,7 @@ appServer <- function(input, output, session) {
     #     suppressMessages(stopped <- stopApp(returnValue="Shiny app was closed"))
     # })
 
-    # Save selected groups
+    # Save checkbox groups from groups selection
     observe({
         sharedData$selectedGroups <- input$selectedGroups
         sharedData$javascriptRead <- TRUE

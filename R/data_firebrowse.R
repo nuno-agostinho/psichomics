@@ -328,10 +328,11 @@ loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
     
     # Try to load files and remove those with 0 rows
     loaded <- list()
+    formats <- loadFileFormats()
     for (each in seq_along(files)) {
-        progress("Processing file", detail = basename(files[each]),
-                 each, length(files))
-        loaded[[each]] <- parseValidFile(files[each], tabsFolder)
+        progress("Processing file", detail = basename(files[each]), each, 
+                 length(files))
+        loaded[[each]] <- parseValidFile(files[each], formats)
     }
     names(loaded) <- sapply(loaded, attr, "tablename")
     loaded <- Filter(length, loaded)
