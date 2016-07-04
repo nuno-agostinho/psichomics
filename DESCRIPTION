@@ -26,10 +26,8 @@ Imports:
     highcharter,
     survival,
     ggplot2,
-    assertthat,
     digest,
     data.table,
-    gplots,
     htmltools,
     tools,
     devtools,
@@ -45,7 +43,8 @@ Suggests:
     knitr,
     microbenchmark,
     rbenchmark,
-    parallel
+    parallel,
+    gplots
 VignetteBuilder: knitr
 Collate:
     'analysis.R'
