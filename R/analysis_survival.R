@@ -408,7 +408,7 @@ survivalServer <- function(input, output, session) {
                 return(NULL)
             }
             
-            surv <- survfit(survTerms)
+            # surv <- survfit(survTerms)
             summary <- summary(survTerms)
             print(summary)
             
