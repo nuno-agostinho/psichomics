@@ -397,3 +397,94 @@ infoModal <- function(session, title, ..., size = "small", footer = NULL) {
     showModal(session, title, ..., footer=footer, style = "info", size = size,
               printMessage = FALSE, iconName = "info-circle")
 }
+
+#' Sample variance by row
+#' 
+#' Calculate the sample variance of each row in the given matrix
+#' 
+#' @param x Matrix
+#' @param na.rm Boolean: should the NAs be ignored? FALSE by default
+#' 
+#' @return Variance for each row
+rowVar <- function (x, na.rm = FALSE) {
+    means <- rowMeans(x, na.rm = na.rm)
+    meansSqDev <- (x - means)^2
+    squaresSum <- rowSums(meansSqDev, na.rm = na.rm)
+    nas <- rowSums(is.na(x))
+    return(squaresSum/(ncol(x) - nas - 1))
+}
+
+#' Return the type of a given sample
+#' 
+#' @param sample Character: ID of the sample
+#' @param filename Character: path to RDS file containing corresponding type
+getSampleTypes <- function(sample, 
+                           filename = system.file("extdata",  
+                                                  "TCGAsampleType.RDS",
+                                                  package="psichomics")) {
+    typeList <- readRDS(filename)
+    type <- gsub(".*?-([0-9]{2}).-.*", "\\1", sample, perl = TRUE)
+    return(typeList[type])
+}
+
+#' Create a progress object
+#' 
+#' @param message Character: progress message
+#' @param divisions Integer: number of divisions in the progress bar
+#' @param global Shiny's global variable
+#' 
+#' @export
+startProgress <- function(message, divisions, global = sharedData) {
+    print(message)
+    global$progress.divisions <- divisions
+    global$progress <- Progress$new()
+    global$progress$set(message = message, value = 0)
+}
+
+#' Update a progress object
+#' 
+#' @details If \code{divisions} isn't NULL, a progress bar is started with the 
+#' given divisions. If \code{value} is NULL, the progress bar will be 
+#' incremented by one; otherwise, the progress bar will be incremented by the
+#' integer given in value.
+#' 
+#' @inheritParams startProgress
+#' @param value Integer: current progress value
+#' @param max Integer: maximum progress value
+#' @param detail Character: detailed message
+#' 
+#' @export
+updateProgress <- function(message = "Hang in there", value = NULL, max = NULL,
+                           detail = NULL, divisions = NULL, 
+                           global = sharedData) {
+    if (!is.null(divisions)) {
+        startProgress(message, divisions, global)
+        return(NULL)
+    }
+    divisions <- global$progress.divisions
+    if (is.null(value)) {
+        value <- global$progress$getValue()
+        max <- global$progress$getMax()
+        value <- value + (max - value)
+    }
+    amount <- ifelse(is.null(max), value/divisions, 1/max/divisions)
+    global$progress$inc(amount = amount, message = message, detail = detail)
+    
+    if (!is.null(detail))
+        print(paste(message, detail, sep=": "))
+    else
+        print(message)
+    return(invisible(TRUE))
+}
+
+#' Close the progress even if there's an error
+#' 
+#' @param message Character: message to show in progress bar
+#' @param global Global Shiny variable where all data is stored
+#' 
+#' @export
+closeProgress <- function(message=NULL, global = sharedData) {
+    # Close the progress even if there's an error
+    if (!is.null(message)) print(message)
+    global$progress$close()
+}
