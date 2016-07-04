@@ -2,14 +2,14 @@
 % Please edit documentation in R/formats.R
 \name{parseValidFile}
 \alias{parseValidFile}
-\title{Parse file given a folder with recognised formats}
+\title{Parse file given a list of file formats}
 \usage{
-parseValidFile(file, formatsFolder)
+parseValidFile(file, formats)
 }
 \arguments{
 \item{file}{Character: file to parse}
 
-\item{formatsFolder}{Character: folder with recognised file formats}
+\item{formats}{List of file formats to check}
 }
 \value{
 Data frame with the contents of the given file if the file format is

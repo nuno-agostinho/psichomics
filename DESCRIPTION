@@ -71,7 +71,6 @@ Collate:
     'formats_firehose_junction_quantification.R'
     'formats_firehose_merge_clinical.R'
     'groups.R'
-    'highcharter.R'
     'settings.R'
 biocViews: Sequencing, RNASeq, AlternativeSplicing, DifferentialSplicing,
     Transcription, GUI, PrincipalComponent, Survival, BiomedicalInformatics,
