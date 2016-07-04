@@ -415,8 +415,8 @@ survivalServer <- function(input, output, session) {
             output$coxphUI <- renderUI({
                 # highchartOutput(ns("coxPlot"))
                 tagList(
-                    dataTableOutput(ns("coxGroups")),
-                    dataTableOutput(ns("coxTests"))
+                    dataTableOutput(ns("coxTests")),
+                    dataTableOutput(ns("coxGroups"))
                 )
             })
             
