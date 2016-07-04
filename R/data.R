@@ -149,12 +149,11 @@ dataServer <- function(input, output, session) {
         dataTablesUI <- lapply(
             seq_along(categoryData),
             function(i) {
-                tabDataset(ns,
-                           names(categoryData)[i],
-                           paste(category, i, sep="-"),
-                           names(categoryData[[i]]),
-                           attr(categoryData[[i]], "show"),
-                           description=attr(categoryData[[i]], "description"))
+                data <- categoryData[[i]]
+                tabDataset(ns, names(categoryData)[i], 
+                           paste(category, i, sep="-"), names(data),
+                           attr(data, "show"), 
+                           description=attr(data, "description"))
             })
         do.call(tabsetPanel, c(id=ns("datasetTab"), dataTablesUI))
     })
