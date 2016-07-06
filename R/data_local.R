@@ -96,8 +96,6 @@ localDataServer <- function(input, output, session, active) {
         textComplete(ns("localFolder"),
                      checkInside(input$localFolder),
                      char=.Platform$file.sep)
-        # textComplete(ns("dataFolder"), checkInside(input$dataFolder),
-        #              char=.Platform$file.sep)
     })
     
     # Check if data is already loaded and ask the user if it should be replaced
