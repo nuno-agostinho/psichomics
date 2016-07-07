@@ -365,7 +365,7 @@ survivalServer <- function(input, output, session) {
                     hc_yAxis(title=list(text="Proportion of individuals")) %>%
                     hc_xAxis(title=list(text=paste("Time in", scale))) %>%
                     hc_tooltip(headerFormat='Time: {point.x}<br>') %>%
-                    hc_subtitle(text=paste("p-value:", pvalue)) %>%
+                    hc_subtitle(text=paste("log-rank p-value:", pvalue)) %>%
                     hc_tooltip(crosshairs=TRUE)
             })
         }
