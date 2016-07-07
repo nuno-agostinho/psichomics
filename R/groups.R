@@ -73,15 +73,15 @@ groupByColumn <- function(ns, dataset) {
 #' User interface to group by row
 groupByRow <- function(ns) { list(
     selectizeInput(
-        ns("groupRows"), "Select rows", choices = NULL, multiple = TRUE,
+        ns("groupRows"), "Row indexes", choices = NULL, multiple = TRUE,
         # Allow to add new items
         width="auto", options = list(
             create = TRUE, createOnBlur=TRUE,
             ## TODO(NunoA): only allow numbers (use selectize.js REGEX option)
             # Hide discarded user-created items in the dropdown
             persist = FALSE)),
-    helpText("Select rows like in R. Type ", tags$kbd("1:6, 8, 10:19"),
-             "to create a group with rows 1 to 6, 8 and 10 to 19.")
+    helpText("Type ", tags$kbd("1:6, 8, 10:19"), "to create a group with rows",
+             "1 to 6, 8 and 10 to 19.")
 )}
 
 #' User interface to group by subset expression
