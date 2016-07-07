@@ -442,50 +442,60 @@ getFirebrowseDataChoices <- function() {
 #' @importFrom shinyBS bsTooltip
 #' @return A UI set that can be added to a UI definition
 addTCGAdata <- function(ns) {
-    if (isFirehoseUp()) {
-        cohorts <- getFirehoseCohorts()
-        acronyms <- names(cohorts)
-        names(acronyms) <- sprintf("%s (%s)", cohorts, names(cohorts))
-        
-        dates <- as.character(getFirehoseDates())
-        
-        tagList(
-            uiOutput(ns("firebrowseDataModal")),
-            uiOutput(ns("pathAutocomplete")),
-            uiOutput(ns("iframeDownload")),
-            selectizeInput(ns("firehoseCohort"), "Cohort", acronyms,
-                           multiple = TRUE, selected = c("ACC"),
-                           options = list(placeholder = "Select cohort(s)")),
-            selectizeInput(ns("firehoseDate"), "Date", dates, multiple = TRUE,
-                           selected = dates[1], options = list(
-                               placeholder = "Select sample date")),
-            selectizeInput(ns("firehoseData"), "Data type",
-                           c("Clinical", getFirebrowseDataChoices()), 
-                           multiple = TRUE, selected = "Clinical",
-                           options = list(
-                               placeholder = "Select data types")),
-            textAreaInput(ns("dataFolder"), "Folder to store the data",
-                          value = "~/Downloads/",
-                          placeholder = "Insert data folder"),
-            bsTooltip(ns("dataFolder"), placement = "right",
-                      options = list(container = "body"),
-                      "Data not available in this folder will be downloaded."),
-            actionButton(class = "btn-primary", type = "button",
-                         ns("getFirehoseData"), "Get data"))
-    } else {
-        list(icon("exclamation-circle"),
-             "Firehose seems to be offline at the moment.")
-    }
+    cohorts <- getFirehoseCohorts()
+    acronyms <- names(cohorts)
+    names(acronyms) <- sprintf("%s (%s)", cohorts, names(cohorts))
+    
+    dates <- as.character(getFirehoseDates())
+    
+    tagList(
+        uiOutput(ns("firebrowseDataModal")),
+        uiOutput(ns("pathAutocomplete")),
+        uiOutput(ns("iframeDownload")),
+        selectizeInput(ns("firehoseCohort"), "Cohort", acronyms,
+                       multiple = TRUE, selected = c("ACC"),
+                       options = list(placeholder = "Select cohort(s)")),
+        selectizeInput(ns("firehoseDate"), "Date", dates, multiple = TRUE,
+                       selected = dates[1], options = list(
+                           placeholder = "Select sample date")),
+        selectizeInput(ns("firehoseData"), "Data type",
+                       c("Clinical", getFirebrowseDataChoices()), 
+                       multiple = TRUE, selected = "Clinical",
+                       options = list(
+                           placeholder = "Select data types")),
+        textAreaInput(ns("dataFolder"), "Folder to store the data",
+                      value = "~/Downloads/",
+                      placeholder = "Insert data folder"),
+        bsTooltip(ns("dataFolder"), placement = "right",
+                  options = list(container = "body"),
+                  "Data not available in this folder will be downloaded."),
+        actionButton(class = "btn-primary", type = "button",
+                     ns("getFirehoseData"), "Get data"))
 }
 
-#' @importFrom shinyBS bsCollapse bsCollapsePanel
 firebrowseUI <- function(id, panel) {
     ns <- NS(id)
     
-    panel(
-        style = "info",
-        title = list(icon("plus-circle"), "Add TCGA/Firehose data"),
-        value = "Add TCGA/Firehose data", addTCGAdata(ns))
+    panel(style="info",
+          title=list(icon("plus-circle"), "Add TCGA/Firehose data"),
+          value="Add TCGA/Firehose data", uiOutput(ns("checkFirebrowse")))
+}
+
+checkFirebrowse <- function(ns) {
+    startProgress("Checking Firebrowse API", 1)
+    if (isFirehoseUp()) {
+        updateProgress("Loading interface")
+        ui <- addTCGAdata(ns)
+    } else {
+        ui <- tagList(icon("exclamation-circle"),
+                      "Firebrowse seems to be offline at the moment.", br(), 
+                      br(), actionButton(ns("refreshFirebrowse"),
+                                         icon=icon("refresh"),
+                                         "Check Firebrowse again", 
+                                         class="btn-primary"))
+    }
+    closeProgress("Firebrowse interface loaded")
+    return(ui)
 }
 
 #' Set data from Firehose
@@ -527,6 +537,11 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
 
 firebrowseServer <- function(input, output, session, active) {
     ns <- session$ns
+    
+    # If Firebrowse is unaccessible, allow user to try again
+    output$checkFirebrowse <- renderUI(checkFirebrowse(ns))
+    observeEvent(input$refreshFirebrowse,
+                 output$checkFirebrowse <- renderUI(checkFirebrowse(ns)))
     
     # # The button is only enabled if it meets the conditions that follow
     # observe(toggleState("acceptFile", input$species != ""))
