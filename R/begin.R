@@ -420,7 +420,7 @@ showAlert <- function(session, ..., title=NULL, style=NULL, dismissable=TRUE,
             div(title, id="myAlert", class="alert", class=style, class="fade",
                 class=dismissable, role="alert", dismiss, ...),
             tags$script("window.setTimeout(
-                        function() { $('#myAlert').addClass('in'); }, 100)")
+                        function() { $('#myAlert').addClass('now'); }, 100)")
         )
     })
     }
