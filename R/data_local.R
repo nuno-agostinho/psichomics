@@ -98,7 +98,7 @@ localDataServer <- function(input, output, session, active) {
                      char=.Platform$file.sep)
     })
     
-    # Check if data is already loaded and ask the user if it should be replaced
+    # If data is loaded, let user replace or append to loaded data
     observeEvent(input$acceptFile, {
         if (!is.null(getData()))
             loadedDataModal(session,
