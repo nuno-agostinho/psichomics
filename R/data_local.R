@@ -17,17 +17,17 @@ addLocalFile <- function(ns) {
         uiOutput(ns("localDataModal")),
         uiOutput(ns("pathAutocomplete")),
         textAreaInput(ns("localFolder"), "Folder where data is stored",
-                      value = "~/Downloads/", placeholder = "Insert local folder"),
-        textInput(ns("localCategory"), label = "Category name",
-                  value = "Adenoid cystic carcinoma (ACC) 2016"),
+                      value="~/Downloads/", placeholder="Insert local folder"),
+        textInput(ns("localCategory"), label="Category name",
+                  value="Adenoid cystic carcinoma (ACC) 2016"),
         selectizeInput(ns("localIgnore"), "Files/directories to ignore",
-                       choices = getFirebrowseDataChoices(),
-                       selected = c("RSEM_isoforms", "exon_quantification"),
-                       multiple = TRUE, options = list(
+                       choices=getFirebrowseDataChoices(),
+                       selected=c("RSEM_isoforms", "exon_quantification"),
+                       multiple=TRUE, options=list(
                            # Allow to add new items
-                           create = TRUE, createOnBlur=TRUE,
-                           placeholder = "Input files to exclude")),
-        actionButton(ns("acceptFile"), class = "btn-primary", "Load files")
+                           create=TRUE, createOnBlur=TRUE,
+                           placeholder="Input files to exclude")),
+        actionButton(ns("acceptFile"), class="btn-primary", "Load files")
     ) # end of list
 }
 
@@ -36,8 +36,8 @@ localDataUI <- function(id, panel) {
     ns <- NS(id)
     
     panel(
-        style = "info", title = list(icon("plus-circle"), "Add local files"),
-        value = "Add local files", addLocalFile(ns))
+        style="info", title=list(icon("plus-circle"), "Add local files"),
+        value="Add local files", addLocalFile(ns))
 }
 
 #' Load local files
@@ -83,9 +83,9 @@ localDataServer <- function(input, output, session, active) {
     output$pathAutocomplete <- renderUI({
         checkInside <- function(path, showFiles=FALSE) {
             if (substr(path, nchar(path), nchar(path)) == "/") {
-                content <- list.files(path, full.names = TRUE)
+                content <- list.files(path, full.names=TRUE)
             } else {
-                content <- list.files(dirname(path), full.names = TRUE)
+                content <- list.files(dirname(path), full.names=TRUE)
             }
             
             # Show only directories if showFiles is FALSE
