@@ -63,11 +63,12 @@ selectGroupsServer <- function(session, id, dataset, datasetName) {
 #' User interface to group by column
 groupByColumn <- function(ns, dataset) {
     list(
-        selectizeInput(ns("groupColumn"), "Select column", selected=NULL,
-                       width="auto", choices=names(dataset), options = list(
-                           placeholder = "Start typing to search for columns")),
-        helpText("Groups will be created automatically depending on the",
-                 "given column.")
+        helpText(
+            "Groups will be created automatically depending on the given",
+            "column. Start typing", tags$b("pathologic stage"), "and choose",
+            "the first suggestion to create groups by tumour stage"),
+        selectInput(ns("groupColumn"), "Select column", width="auto", 
+                    choices=c("Start typing here"="", names(dataset)))
     )}
 
 #' User interface to group by row
@@ -130,10 +131,10 @@ groupsUI <- function(id, dataset) {
 #' 
 #' The groups are inserted in a matrix
 #' 
+#' @param session Shiny session
 #' @param input Shiny input
 #' @param output Shiny output
-#' @param session Shiny session
-createGroupFromInput <- function (input, output, session, dataset, datasetName) {
+createGroupFromInput <- function (session, input, output, dataset, datasetName) {
     if (is.null(datasetName)) {
         errorAlert(session, "Data missing", "Load some data first.")
         return(NULL)
@@ -142,6 +143,7 @@ createGroupFromInput <- function (input, output, session, dataset, datasetName) 
     
     if (type == "Column") {
         col <- input$groupColumn
+        if (col == "") return(NULL)
         colData <- dataset[[col]]
         
         # Replace NAs for "NA" so they can be find using the `which` function
@@ -284,8 +286,7 @@ groupsServer <- function(input, output, session, dataset, datasetName) {
         removeAlert(output)
         
         groups <- getGroupsFrom(datasetName)
-        new <- createGroupFromInput(input, output, session, dataset,
-                                    datasetName)
+        new <- createGroupFromInput(session, input, output, dataset, datasetName)
         if (!is.null(new)) {
             # Rename duplicated group names
             new <- renameGroups(new, groups)
