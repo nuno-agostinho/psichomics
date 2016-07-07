@@ -7,8 +7,8 @@ settingsUI <- function(id, tab) {
         cores <- parallel::detectCores()
         coresInput <- tagList(
             sliderInput(ns("cores"), h4("Number of cores"), value=1, min=1, 
-                        step=1, max=cores, width="auto"),
-            helpText("You have a total of", cores, "cores to use")
+                        step=1, max=cores, width="auto", post=" core(s)"),
+            helpText("A total of", cores, "were detected.")
         )
     } else {
         coresInput <- numericInput(ns("cores"), h4("Number of cores"), value=1,
@@ -20,12 +20,14 @@ settingsUI <- function(id, tab) {
             column(4, coresInput),
             column(4,
                    sliderInput(ns("precision"), h4("Numeric precision"),
-                               value=3, min=0, max=20, step=1, width="auto"),
+                               value=3, min=0, max=20, step=1, width="auto",
+                               post=" decimal(s)"),
                    textOutput(ns("precisionExample")),
                    helpText("Only applies to new calculations.")),
             column(4,
                    sliderInput(ns("significant"), h4("Significant digits"),
-                               value=3, min=0, max=20, step=1, width="auto"),
+                               value=3, min=0, max=20, step=1, width="auto",
+                               post=" digit(s)"),
                    textOutput(ns("significantExample")),
                    helpText("Only applies to new calculations."))
         )
