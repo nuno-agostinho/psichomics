@@ -32,8 +32,11 @@ diffAnalysisTableServer <- function(input, output, session) {
             statsChoices <- input$statsChoices
         })
         if (is.null(psi)) {
-            errorModal(session, "No inclusion levels data",
-                       "Insert inclusion levels data first.")
+            errorModal(session, "No AS event quantification",
+                       "Insert or quantify alternative splicing events by",
+                       "going to the", icon("table"), tags$b("Data"),
+                       "tab and opening",  icon("calculator"),
+                       tags$b("Quantify alternative splicing events"), ".")
             return(NULL)
         }
         ids <- names(psi)
