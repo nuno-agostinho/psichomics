@@ -18,8 +18,7 @@ addLocalFile <- function(ns) {
         uiOutput(ns("pathSuggestions")),
         textAreaInput(ns("localFolder"), "Folder where data is stored",
                       value="~/Downloads/", placeholder="Insert local folder"),
-        textInput(ns("localCategory"), label="Category name",
-                  value="Adenoid cystic carcinoma (ACC) 2016"),
+        textInput(ns("localCategory"), label="Data category name"),
         selectizeInput(ns("localIgnore"), "Files/directories to ignore",
                        choices=getFirebrowseDataChoices(),
                        selected=c("RSEM_isoforms", "exon_quantification"),
@@ -132,6 +131,12 @@ localDataServer <- function(input, output, session, active) {
     # Load data when the user presses to load new data (keep previously loaded)
     observeEvent(input$localAppend,
                  setLocalData(input, output, session, replace=FALSE))
+    
+    # Update category name input based on given folder
+    observe({
+        folder <- input$localFolder
+        updateTextInput(session, "localCategory", value=basename(folder))
+    })
 }
 
 attr(localDataUI, "loader") <- "data"
