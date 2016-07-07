@@ -10,7 +10,6 @@ diffAnalysisTableUI <- function(id) {
                                      "Kruskal-Wallis Rank Sum Test"="kruskal", 
                                      "Levene's test"="levene"),
                                    selected = c("kruskal", "levene")),
-                downloadButton(ns("download"), "Download"),
                 actionButton(ns("startAnalyses"), class = "btn-primary", 
                              "Perform selected tests"),
                 uiOutput(ns("showColumns"))
@@ -108,7 +107,8 @@ diffAnalysisTableServer <- function(input, output, session) {
                 hr(),
                 selectizeInput(ns("columns"), "Show columns", multiple=TRUE,
                                choices=colnames(stats), 
-                               selected=colnames(stats)))
+                               selected=colnames(stats)),
+                downloadButton(ns("download"), "Download"))
         })
         
         # Render statistical table with the selected columns
