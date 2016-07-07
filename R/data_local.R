@@ -57,8 +57,7 @@ setLocalData <- function(input, output, session, replace=TRUE) {
     sub <- dir(folder, full.names=TRUE)[dir.exists(
         dir(folder, full.names=TRUE))]
     
-    startProgress("Searching inside the folder...",
-                  divisions=1 + length(sub))
+    startProgress("Searching inside the folder...", divisions=1 + length(sub))
     loaded <- loadFirehoseFolders(sub, ignore, updateProgress)
     data <- setNames(list(loaded), category)
     
@@ -99,6 +98,24 @@ localDataServer <- function(input, output, session, active) {
     
     # If data is loaded, let user replace or append to loaded data
     observeEvent(input$acceptFile, {
+        folder <- input$localFolder
+        if (!dir.exists(folder)) {
+            if (file.exists(folder)){
+                # Asking for a folder, not a file
+                errorModal(session, "Folder not found",
+                           "The path is directing to a file, but only folders are",
+                           "accepted. Please, insert the path to a folder.",
+                           modalId="localDataModal")
+            } else {
+                # Folder not found
+                errorModal(session, "Folder not found",
+                           "Check if path is correct.",
+                           modalId="localDataModal")
+            }
+            enable("acceptFile")
+            return(NULL)
+        }
+        
         if (!is.null(getData()))
             loadedDataModal(session,
                             "localDataModal",
