@@ -372,7 +372,7 @@ groupsServer <- function(input, output, session, dataset, datasetName) {
             }
             
             # Remove selected groups
-            if (identical(FUN, "remove") || input$removeSetsUsed)
+            if (identical(FUN, "remove"))# || input$removeSetsUsed)
                 groups <- groups[-selected, , drop=FALSE]
             
             # Add new groups to top (if there are any)
@@ -407,16 +407,15 @@ groupsServer <- function(input, output, session, dataset, datasetName) {
                     operationButton("Intersect", ns(intersectId)),
                     # actionButton("complementGroups", ns("Complement")),
                     # actionButton("subtractGroups", ns("Subtract")),
-                    operationButton("Remove", ns(removeId), icon = icon("times"))),
-                actionButton(ns("removeAll"), "Remove all groups"),
-                checkboxInput(ns("removeSetsUsed"), "Remove original groups",
-                              value = TRUE)
+                    operationButton("Remove", ns(removeId), icon=icon("times"))),
+                actionButton(ns("removeAll"), "Remove all groups")#,
+                #checkboxInput(ns("removeSetsUsed"), "Remove original groups",
+                #              value=TRUE)
             )
         }
     })
-    
-    observeEvent(input[["removeAll"]],
-                 setGroupsFrom(datasetName, NULL))
+
+    observeEvent(input$removeAll, setGroupsFrom(datasetName, NULL))
 }
 
 # attr(groupsUI, "loader") <- "data"
