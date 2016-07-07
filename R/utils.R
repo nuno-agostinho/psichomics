@@ -123,8 +123,8 @@ enableTab <- function(tab) {
 #' 
 #' @examples 
 #' words <- c("tumor_stage", "age", "gender")
-#' textComplete("textareaid", words)
-textComplete <- function(id, words, novalue = "No matching value", char=" ") {
+#' textSuggestions("textareaid", words)
+textSuggestions <- function(id, words, novalue="No matching value", char=" ") {
     varId <- paste0(gsub("-", "_", id), "_words")
     var <- paste0(varId, ' = ["', paste(words, collapse = '", "'), '"];')
     
