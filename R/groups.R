@@ -108,7 +108,7 @@ groupsUI <- function(id, dataset) {
     checkId <- function (sign, what)
         sprintf("input[id='%s'] %s '%s'", ns("subsetBy"), sign, what)
     tagList(
-        uiOutput(ns("modal")),
+        uiOutput(ns("alert")),
         radioButtons(ns("subsetBy"), "Subset by", inline = TRUE,
                      c("Column", "Rows", "Subset expression",
                        "Regular expression")),
@@ -135,7 +135,7 @@ groupsUI <- function(id, dataset) {
 #' @param session Shiny session
 createGroupFromInput <- function (input, output, session, dataset, datasetName) {
     if (is.null(datasetName)) {
-        errorModal(session, "Data missing", "Load some data first.")
+        errorAlert(session, "Data missing", "Load some data first.")
         return(NULL)
     }
     type <- input$subsetBy
@@ -162,12 +162,10 @@ createGroupFromInput <- function (input, output, session, dataset, datasetName) 
         gtRows <- rows > nrow(dataset)
         if (any(gtRows)) {
             removed <- paste(rows[gtRows], collapse = " ")
-            warningModal(
-                session, "Selected rows don't exist",
-                paste0(sum(gtRows), " numbers were above the number of rows ",
-                       "of the dataset (which is ", nrow(dataset), ")."), 
-                br(), br(), "The following numbers were discarded:", 
-                tags$code(removed))
+            warningAlert(
+                session, sum(gtRows), " indexes were above the number of rows ",
+                "of the dataset (which is ", nrow(dataset), ").", br(),
+                "The following numbers were discarded:", tags$code(removed))
             rows <- rows[!gtRows]
         }
         group <- cbind(input$groupName, type, strRows, list(rows))
@@ -181,9 +179,9 @@ createGroupFromInput <- function (input, output, session, dataset, datasetName) 
         
         # Show error to the user
         if ("simpleError" %in% class(set)) {
-            errorModal(session, "Subset expression error",
-                       "Check if column names are correct.", br(), br(), 
-                       "The following error was raised:", br(),
+            errorAlert(session, "Error in the subset expression.",
+                       "Check if column names are correct.", br(),
+                       "The following error was raised:",
                        tags$code(set$message))
             return(NULL)
         }
@@ -201,7 +199,7 @@ createGroupFromInput <- function (input, output, session, dataset, datasetName) 
         
         # Show error to the user
         if ("simpleError" %in% class(set)) {
-            errorModal(session, "GREP expression error",
+            errorAlert(session, "GREP expression error",
                        "The following error was raised:", br(),
                        tags$code(set$message))
             return(NULL)
@@ -283,6 +281,8 @@ groupsServer <- function(input, output, session, dataset, datasetName) {
     
     # Create a new group when clicking on the createGroup button
     observeEvent(input$createGroup, {
+        removeAlert(output)
+        
         groups <- getGroupsFrom(datasetName)
         new <- createGroupFromInput(input, output, session, dataset,
                                     datasetName)
