@@ -37,8 +37,7 @@ bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL,
                     class = modalHeader,
                     tags$button(
                         type = "button",
-                        class = "close", `data-dismiss` = "modal",
-                        tags$span(HTML("&times;"))), 
+                        class = "close", `data-dismiss` = "modal"), 
                     tags$h4(class = "modal-title", title)), 
                 tags$div(class = "modal-body", list(...)), 
                 tags$div(

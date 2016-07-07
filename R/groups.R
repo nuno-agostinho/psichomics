@@ -345,7 +345,6 @@ groupsServer <- function(input, output, session, dataset, datasetName) {
     operateOnGroups(input, session, sharedData, FUN=intersect,
                     buttonId=intersectId, symbol=" \u2229 ")
     
-    
     observe({
         if (!is.null(sharedData$selectedGroups) &&
             all(sharedData$selectedGroups > 0) &&
