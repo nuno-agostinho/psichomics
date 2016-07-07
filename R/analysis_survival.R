@@ -45,13 +45,13 @@ survivalUI <- function(id) {
             conditionalPanel(
                 sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "formula"),
                 textAreaInput(ns("formula"), "Formula for right-hand side"),
-                uiOutput(ns("formulaAutocomplete")),
+                uiOutput(ns("formulaSuggestions")),
                 helpText("Interesting attributes include", 
                          tags$b("pathologic_stage"))),
             conditionalPanel(
                 sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "psiCutoff"),
                 sliderInput(ns("psiCutoff"), value = 0.5, min=0, max=1, step=0.01,
-                             "Cutoff value for the selected event"),
+                            "Cutoff value for the selected event"),
                 bsTooltip(ns("psiCutoff"), placement="right", 
                           options = list(container = "body"),
                           "You can click on the white circle and then use the left and right arrows for finer control.")),
@@ -234,9 +234,9 @@ survivalServer <- function(input, output, session) {
                        "Clinical data")
     
     # Update available clinical data attributes to use in a formula
-    output$formulaAutocomplete <- renderUI({
+    output$formulaSuggestions <- renderUI({
         attributes <- names(getClinicalData())
-        textComplete(ns("formula"), attributes)
+        textSuggestions(ns("formula"), attributes)
     })
     
     # Update selectize input label depending on the chosen censoring type
