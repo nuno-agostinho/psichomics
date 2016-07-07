@@ -99,8 +99,8 @@ appUI <- function() {
     
     shinyUI(
         do.call(navbarPage, c(
-            list(title="PSΨchomics", id="nav", collapsible=TRUE, header=header,
-                 position="fixed-top", footer=useShinyjs()),
+            list(title="PS\u03A8chomics", id="nav", collapsible=TRUE, 
+                 header=header, position="fixed-top", footer=useShinyjs()),
             uiList)
         )
     )
