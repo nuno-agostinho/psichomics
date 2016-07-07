@@ -399,6 +399,48 @@ infoModal <- function(session, title, ..., size = "small", footer = NULL) {
               printMessage = FALSE, iconName = "info-circle")
 }
 
+showAlert <- function(session, ..., title=NULL, style=NULL, dismissable=TRUE, 
+                      alertId="alert") {
+    ns <- session$ns
+    
+    if (dismissable) {
+        dismissable <- "alert-dismissible"
+        dismiss <- tags$button(type="button", class="close",
+                               "data-dismiss"="alert", "aria-label"="Close",
+                               span("aria-hidden"="true", "\u00D7"))
+    } else {
+        dismissable <- NULL
+        dismiss <- NULL
+    }
+    
+    if (!is.null(title)) title <- h3(title)
+    
+    session$output[[alertId]] <- renderUI({
+        tagList(
+            div(title, id="myAlert", class="alert", class=style, class="fade",
+                class=dismissable, role="alert", dismiss, ...),
+            tags$script("window.setTimeout(
+                        function() { $('#myAlert').addClass('in'); }, 100)")
+        )
+    })
+    }
+
+errorAlert <- function(session, ..., title=NULL, dismissable=TRUE,
+                       alertId="alert") {
+    showAlert(session, ..., style="alert-danger", title=title, 
+              dismissable=dismissable, alertId=alertId)
+}
+
+warningAlert <- function(session, ..., title=NULL, dismissable=TRUE,
+                         alertId="alert") {
+    showAlert(session, ..., style="alert-warning", title=title,
+              dismissable=dismissable, alertId=alertId)
+}
+
+removeAlert <- function(output, alertId="alert") {
+    output[[alertId]] <- renderUI(NULL)
+}
+
 #' Sample variance by row
 #' 
 #' Calculate the sample variance of each row in the given matrix
