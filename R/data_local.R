@@ -15,7 +15,7 @@ getFirebrowseDataChoices <- function() {
 addLocalFile <- function(ns) {
     tagList(
         uiOutput(ns("localDataModal")),
-        uiOutput(ns("pathAutocomplete")),
+        uiOutput(ns("pathSuggestions")),
         textAreaInput(ns("localFolder"), "Folder where data is stored",
                       value="~/Downloads/", placeholder="Insert local folder"),
         textInput(ns("localCategory"), label="Category name",
@@ -80,7 +80,7 @@ localDataServer <- function(input, output, session, active) {
     # observe(toggleState("acceptFile", input$species != ""))
     
     # Update available clinical data attributes to use in a formula
-    output$pathAutocomplete <- renderUI({
+    output$pathSuggestions <- renderUI({
         checkInside <- function(path, showFiles=FALSE) {
             if (substr(path, nchar(path), nchar(path)) == "/") {
                 content <- list.files(path, full.names=TRUE)
@@ -93,9 +93,8 @@ localDataServer <- function(input, output, session, active) {
             return(basename(content))
         }
         
-        textComplete(ns("localFolder"),
-                     checkInside(input$localFolder),
-                     char=.Platform$file.sep)
+        textSuggestions(ns("localFolder"), checkInside(input$localFolder),
+                        char=.Platform$file.sep)
     })
     
     # If data is loaded, let user replace or append to loaded data

@@ -450,7 +450,7 @@ addTCGAdata <- function(ns) {
     
     tagList(
         uiOutput(ns("firebrowseDataModal")),
-        uiOutput(ns("pathAutocomplete")),
+        uiOutput(ns("pathSuggestions")),
         uiOutput(ns("iframeDownload")),
         selectizeInput(ns("firehoseCohort"), "Cohort", acronyms,
                        multiple = TRUE, selected = c("ACC"),
@@ -547,21 +547,20 @@ firebrowseServer <- function(input, output, session, active) {
     # observe(toggleState("acceptFile", input$species != ""))
     
     # Update available clinical data attributes to use in a formula
-    output$pathAutocomplete <- renderUI({
+    output$pathSuggestions <- renderUI({
         checkInside <- function(path, showFiles=FALSE) {
-            if (substr(path, nchar(path), nchar(path)) == "/") {
+            if (substr(path, nchar(path), nchar(path)) == "/")
                 content <- list.files(path, full.names = TRUE)
-            } else {
+            else
                 content <- list.files(dirname(path), full.names = TRUE)
-            }
             
             # Show only directories if showFiles is FALSE
             if (!showFiles) content <- content[dir.exists(content)]
             return(basename(content))
         }
         
-        textComplete(ns("dataFolder"), checkInside(input$dataFolder),
-                     char=.Platform$file.sep)
+        textSuggestions(ns("dataFolder"), checkInside(input$dataFolder),
+                        char=.Platform$file.sep)
     })
     
     # Check if data is already loaded and ask the user if it should be replaced

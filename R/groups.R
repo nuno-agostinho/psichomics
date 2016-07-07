@@ -89,7 +89,7 @@ groupByExpression <- function(ns) { list (
     textInput(ns("groupExpression"), "Subset expression", width="auto"),
     helpText('Type ', tags$kbd('X > 8 & Y == "alive"'), ' to select rows with',
              'values higher than 8 for column X and "alive" for column Y.'),
-    uiOutput(ns("groupExpressionAutocomplete"))
+    uiOutput(ns("groupExpressionSuggestions"))
 )}
 
 #' User interface to group by grep expression
@@ -274,9 +274,9 @@ groupsServer <- function(input, output, session, dataset, datasetName) {
     ns <- session$ns
     
     # Update available attributes to suggest in the subset expression
-    output$groupExpressionAutocomplete <- renderUI({
+    output$groupExpressionSuggestions <- renderUI({
         if (!is.null(datasetName))
-            textComplete(ns("groupExpression"), names(dataset))
+            textSuggestions(ns("groupExpression"), names(dataset))
     })
     
     # Create a new group when clicking on the createGroup button
