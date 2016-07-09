@@ -55,9 +55,10 @@ loadFile <- function(format, file) {
                     skip = skip)
     
     # Transpose data
-    if (!is.null(format$transpose) && format$transpose)
+    if (!is.null(format$transpose) && format$transpose) {
         loaded <- data.frame(t(loaded), stringsAsFactors = FALSE, 
                              row.names = NULL)
+    }
     
     # Remove duplicated rows
     if (!is.null(format$unique) && format$unique) loaded <- unique(loaded)
@@ -83,6 +84,16 @@ loadFile <- function(format, file) {
     if (!is.null(format$ignoreRows)) {
         rowNames <- rowNames[-format$ignoreRows]
         loaded <- loaded[-format$ignoreRows, ]
+    }
+    
+    # Convert columns to numeric if data was transposed
+    if (!is.null(format$transpose) && format$transpose) {
+        for (col in 1:ncol(loaded)) {
+            try <- tryCatch(as.numeric(as.character(loaded[ , col])),
+                            warning=function(e) e)
+            if (!"warning" %in% class(try))
+                loaded[ , col] <- try
+        }
     }
     
     # Add table name and description
