@@ -24,11 +24,12 @@ getSplicingEventChoices <- function() {
 inclusionLevelsInterface <- function(ns) {
     tagList(
         uiOutput(ns("modal")),
-        helpText("Calculate exon inclusion levels. This is also",
-                 "known as percentage spliced in (PSI or \u03A8)."),
+        helpText("Measure exon inclusion levels from junction quantification.",
+                 "This is also known as Percentage Spliced In (PSI)."),
         selectizeInput(ns("annotation"),
                        "Alternative splicing event annotation",
-                       choices=c("Human (hg19/GRCh37)"="hg19_splicingAnnotation.RDS")),
+                       choices=c("Human (hg19/GRCh37)"=
+                                     "hg19_splicingAnnotation.RDS")),
         selectizeInput(ns("eventType"), "Event type(s)", selected = "SE",
                        choices=getSplicingEventChoices(), multiple = TRUE),
         numericInput(ns("minReads"), "Minimum reads threshold", value = 10),
