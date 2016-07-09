@@ -48,7 +48,7 @@ dataUI <- function(id, tab) {
 #' @importFrom shinyBS bsTooltip
 #'
 #' @return The HTML code for a tabPanel template
-tabDataset <- function(ns, title, tableId, columns, colsToShow,
+tabDataset <- function(ns, title, tableId, columns, colsToShow, data,
                        description=NULL) {
     tablename <- ns(paste("table", tableId, sep="-"))
     
@@ -63,10 +63,21 @@ tabDataset <- function(ns, title, tableId, columns, colsToShow,
         )
     }
     
+    # Get class of each column
+    colType <- sapply(1:ncol(data), function(i) class(data[[i]]))
+    colType[colType == "character"] <- "string"
+    
+    # Show class of each column
+    choices <- columns
+    names(choices) <- sprintf("%s (%s class)", columns, colType)
+    
     visibleColumns <- selectizeInput(
         paste(tablename, "columns", sep="-"), label="Columns to show", 
-        choices=columns, selected=colsToShow, multiple=TRUE, width="auto", 
-        options=list(plugins=list('remove_button', 'drag_drop')))
+        choices=choices, selected=colsToShow, multiple=TRUE, width="auto", 
+        options=list(plugins=list('remove_button', 'drag_drop'),
+                     render=I("{ item: function(item, escape) {
+                                 return '<div>' + escape(item.value) + '</div>';
+                               } }")))
     
     tooltip <- bsTooltip(paste(tablename, "columns", sep="-"),
                          paste("Dataset columns to show; empty this input to",
@@ -152,7 +163,7 @@ dataServer <- function(input, output, session) {
                 data <- categoryData[[i]]
                 tabDataset(ns, names(categoryData)[i], 
                            paste(category, i, sep="-"), names(data),
-                           attr(data, "show"), 
+                           attr(data, "show"), data,
                            description=attr(data, "description"))
             })
         do.call(tabsetPanel, c(id=ns("datasetTab"), dataTablesUI))
