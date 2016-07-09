@@ -110,7 +110,9 @@ diffAnalysisTableServer <- function(input, output, session) {
                 hr(),
                 selectizeInput(ns("columns"), "Show columns", multiple=TRUE,
                                choices=colnames(stats), 
-                               selected=colnames(stats)),
+                               selected=colnames(stats),
+                               options=list(plugins=list('remove_button', 
+                                                         'drag_drop'))),
                 downloadButton(ns("download"), "Download"))
         })
         
@@ -121,11 +123,9 @@ diffAnalysisTableServer <- function(input, output, session) {
         }, options=list(pageLength=10, scrollX=TRUE))
         
         output$download <- downloadHandler(
-            filename = paste(getCategories(),  
-                             "Differential splicing analyses"),
-            content = function(file)
-                write.table(stats, file, quote=FALSE, row.names=FALSE, 
-                            sep="\t")
+            filename=paste(getCategories(), "Differential splicing analyses"),
+            content=function(file)
+                write.table(stats, file, quote=FALSE, row.names=FALSE, sep="\t")
         )
     })
 }

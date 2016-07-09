@@ -63,10 +63,10 @@ tabDataset <- function(ns, title, tableId, columns, colsToShow,
         )
     }
     
-    visibleColumns <- selectizeInput(paste(tablename, "columns", sep="-"),
-                                     label="Columns to show", choices=columns,
-                                     selected=colsToShow, multiple=TRUE,
-                                     width="auto")
+    visibleColumns <- selectizeInput(
+        paste(tablename, "columns", sep="-"), label="Columns to show", 
+        choices=columns, selected=colsToShow, multiple=TRUE, width="auto", 
+        options=list(plugins=list('remove_button', 'drag_drop')))
     
     tooltip <- bsTooltip(paste(tablename, "columns", sep="-"),
                          paste("Dataset columns to show; empty this input to",
