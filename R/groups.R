@@ -67,8 +67,8 @@ groupByColumn <- function(ns, dataset) {
             "Groups will be created automatically depending on the given",
             "column. Start typing", tags$b("pathologic stage"), "and choose",
             "the first suggestion to create groups by tumour stage"),
-        selectInput(ns("groupColumn"), "Select column", width="auto", 
-                    choices=c("Start typing here"="", names(dataset)))
+        selectizeInput(ns("groupColumn"), "Select column", width="auto", 
+                       choices=c("Start typing here"="", names(dataset)))
     )}
 
 #' User interface to group by row
