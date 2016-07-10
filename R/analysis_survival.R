@@ -23,18 +23,19 @@ survivalUI <- function(id) {
             helpText("In case there's no record for a patient, the days to last",
                      "follow up will be used instead."),
             selectizeInput(ns("event"), choices = NULL, "Event of interest"),
+            hr(),
             radioButtons(ns("modelTerms"), selected="groups", inline=TRUE,
                          "Select model terms of the right-hand using",
                          choices=c("Clinical groups"="groups",
                                    "Formula"="formula",
-                                   "Inclusion leves cutoff"="psiCutoff")),
+                                   "Inclusion leves cut-off"="psiCutoff")),
             bsTooltip(ns("modelTerms"), placement="right", 
                       options = list(container = "body"),
                       paste0(
                           "Survival analysis using:<br/>\u2022 User-created <b>",
                           "clinical groups</b><br/>\u2022 A <b>formula</b> that",
                           " can test clinical attributes with interactions<br/>",
-                          "\u2022 <b>Inclusion levels cutoff</b> for the",
+                          "\u2022 <b>Inclusion levels cut-off</b> for the",
                           " selected alternative splicing event")),
             conditionalPanel(
                 sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "groups"),
@@ -51,10 +52,12 @@ survivalUI <- function(id) {
             conditionalPanel(
                 sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "psiCutoff"),
                 sliderInput(ns("psiCutoff"), value = 0.5, min=0, max=1, step=0.01,
-                            "Cutoff value for the selected event"),
+                            "Cut-off value for the selected event"),
                 bsTooltip(ns("psiCutoff"), placement="right", 
                           options = list(container = "body"),
-                          "You can click on the white circle and then use the left and right arrows for finer control.")),
+                          "You can click on the white circle and then use the left and right arrows for finer control."),
+                uiOutput(ns("optimalPsi"))),
+            hr(),
             radioButtons(ns("scale"), "Display time in", inline=TRUE,
                          c(Days="days", Weeks="weeks", Months="months",
                            Years="years")),
@@ -133,7 +136,7 @@ processSurvData <- function(timeStart, timeStop, event, groups, clinical) {
 #' @return A list with a \code{formula} object and a data frame with terms
 #' needed to calculate survival curves
 processSurvTerms <- function(session, group, clinical, censoring, timeStart, 
-                             timeStop, dataEvent, modelTerms, formulaStr, 
+                             timeStop, dataEvent, modelTerms, formulaStr=NULL, 
                              coxph=FALSE, scale="days") {
     # Ignore timeStop if interval-censoring is not selected
     if (!grepl("interval", censoring, fixed=TRUE) || timeStop == "") 
@@ -314,13 +317,13 @@ survivalServer <- function(input, output, session) {
                 types <- getSampleTypes(names(match))
                 tumour <- match[!grepl("Normal|Control", types)]
                 
-                # Group samples by the inclusion levels cutoff
+                # Group samples by the inclusion levels cut-off
                 clinicalIDs <- nrow(clinical)
                 groups <- rep(NA, clinicalIDs)
                 psi <- as.numeric(psi[event, toupper(names(tumour))])
                 groups[tumour] <- psi >= psiCutoff
                 
-                # Assign a value based on the inclusion levels cutoff
+                # Assign a value based on the inclusion levels cut-off
                 # groups[is.na(groups)] <- "NA"
                 groups[groups == "TRUE"]  <- paste("Inclusion levels >=",
                                                    psiCutoff)
@@ -348,7 +351,7 @@ survivalServer <- function(input, output, session) {
                 return(NULL)
             }
             
-            # If there's an error with survdiff, show NA
+            # If there's an error with survdiff, return NA
             pvalue <- tryCatch({
                 # Test the difference between survival curves
                 diff <- survdiff(form, data = data)
@@ -456,6 +459,95 @@ survivalServer <- function(input, output, session) {
             #         hc_yAxis(title=list(text="Proportion of individuals")) %>%
             #         hc_xAxis(title=list(text="Time in days"))
             # })
+        }
+    })
+    
+    # Calculate optimal inclusion levels
+    output$optimalPsi <- renderUI({
+        # Get user input
+        isolate({
+            clinical   <- getClinicalData()
+            timeStart  <- input$timeStart
+            timeStop   <- input$timeStop
+            dataEvent  <- input$event
+            censoring  <- input$censoring
+            intRanges  <- input$ranges
+            markTimes  <- input$markTimes
+            psi        <- getInclusionLevels()
+            event      <- getEvent()
+            scale      <- input$scale
+        })
+        
+        if (is.null(clinical)) {
+            errorModal(session, "Clinical data missing",
+                       "Insert clinical data first.")
+        } else if (is.null(getInclusionLevels())) {
+            errorModal(session, "No AS events quantification",
+                       "Please, load or calculate the quantification of",
+                       "alternative splicing events.")
+        } else if (is.null(getEvent()) || getEvent() == "") {
+            errorModal(session, "No AS event selected",
+                       "Please, select an alternative splicing event.")
+        } else {
+            # Get tumour sample IDs (normal and control samples are not
+            # interesting for survival analysis)
+            match <- getClinicalMatchFrom("Inclusion levels")
+            types <- getSampleTypes(names(match))
+            tumour <- match[!grepl("Normal|Control", types)]
+            
+            # Group samples by the inclusion levels cut-off
+            clinicalIDs <- nrow(clinical)
+            groups <- rep(NA, clinicalIDs)
+            psi <- as.numeric(psi[event, toupper(names(tumour))])
+            
+            #' @importFrom survival survdiff
+            testSurvival <- function(psiCutoff, groups, tumour, psi, session,
+                                     clinical, censoring, timeStart, timeStop,
+                                     dataEvent, modelTerms, formulaStr, scale) {
+                groups[tumour] <- psi >= psiCutoff
+                
+                # Assign a value based on the inclusion levels cut-off
+                # groups[is.na(groups)] <- "NA"
+                groups[groups == "TRUE"]  <- paste("Inclusion levels >=", psiCutoff)
+                groups[groups == "FALSE"] <- paste("Inclusion levels <", psiCutoff)
+                fillGroups <- groups
+                
+                # Calculate survival curves
+                survTerms <- processSurvTerms(session, fillGroups, clinical,
+                                              censoring, timeStart, timeStop,
+                                              dataEvent, modelTerms, formulaStr,
+                                              scale=scale)
+                form <- survTerms$form
+                data <- survTerms$survTime
+                
+                # If there's an error with survdiff, return NA
+                pvalue <- tryCatch({
+                    # Test the difference between survival curves
+                    diff <- survdiff(form, data = data)
+                    
+                    # Calculate p-value with 5 significant numbers
+                    pvalue <- 1 - pchisq(diff$chisq, length(diff$n) - 1)
+                    return(as.numeric(signifDigits(pvalue)))
+                }, error = function(e) NA)
+                return(pvalue)
+            }
+            
+            # Supress warnings from failed calculations while optimising
+            opt <- suppressWarnings(
+                optim(0, testSurvival, groups=groups, tumour=tumour, psi=psi, 
+                      session=session, clinical=clinical, censoring=censoring, 
+                      timeStart=timeStart, timeStop=timeStop, 
+                      dataEvent=dataEvent, modelTerms="psiCutoff", scale=scale,
+                      # Method and parameters interval
+                      method="Brent", lower=0, upper=1))
+            
+            if (!is.na(opt$value))
+                return(div(tags$b("Optimal cut-off:"), opt$par, br(),
+                           tags$b("Minimal log-rank p-value:"), opt$value))
+            else
+                return(div(icon("bell-o"),
+                           "No optimal cut-off was found for this alternative",
+                           "splicing event."))
         }
     })
 }
