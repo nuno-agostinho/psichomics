@@ -60,31 +60,29 @@ prepareDensityPlot <- function(psi, type, bandwidth) {
         max  <- roundDigits(max(row, na.rm = TRUE))
         min  <- roundDigits(min(row, na.rm = TRUE))
         samples <- sum(!is.na(row))
-        # Ignore data with low number of data points
-        if (sum(!is.na(row)) >= 2) {
-            color <- JS("Highcharts.getOptions().colors[", count, "]")
-            
-            # Calculate the density of inclusion levels for each sample type
-            den <- density(row, bw = bandwidth, na.rm = TRUE)
-            hc <- hc %>%
-                hc_add_series_density(den, name=group, area=TRUE, median=med, 
-                                      var=vari, samples=samples, max=max,
-                                      min=min, fillColor=color) %>%
-                hc_add_series_scatter(row, rep(0, length(row)),
-                                      marker=list(enabled=TRUE, symbol="circle",
-                                                  radius=4, fillColor=color))
-            # Save plot line with information
-            plotLines[[count + 1]] <- list(
-                label = list(text = paste("Median:", med, "/ Variance:", vari)),
-                # Colour the same as the series
-                color=color,
-                dashStyle="shortdash",
-                width=2,
-                value=med,
-                zIndex = 7)
-            allRows[[count + 1]] <- row
-            count <- count + 1
-        }
+        
+        color <- JS("Highcharts.getOptions().colors[", count, "]")
+        
+        # Calculate the density of inclusion levels for each sample type
+        den <- density(row, bw = bandwidth, na.rm = TRUE)
+        hc <- hc %>%
+            hc_add_series_density(den, name=group, area=TRUE, median=med, 
+                                  var=vari, samples=samples, max=max, color=color,
+                                  min=min, fillColor=color, lineColor=color) %>%
+            hc_add_series_scatter(row, rep(0, length(row)),
+                                  marker=list(enabled=TRUE, symbol="circle",
+                                              radius=4, fillColor=color))
+        # Save plot line with information
+        plotLines[[count + 1]] <- list(
+            label = list(text = paste("Median:", med, "/ Variance:", vari)),
+            # Colour the same as the series
+            color=color,
+            dashStyle="shortdash",
+            width=2,
+            value=med,
+            zIndex = 7)
+        allRows[[count + 1]] <- row
+        count <- count + 1
     }
     
     # Add plotLines with information
