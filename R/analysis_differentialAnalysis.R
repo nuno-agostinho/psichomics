@@ -246,12 +246,24 @@ diffAnalysisServer <- function(input, output, session) {
             return(NULL)
         }
         
+        # Filter groups with less data points than required
+        threshold <- 1
+        names(psi) <- type
+        
+        psi <- lapply(unique(type),
+                      function(t) {
+                          psi <- psi[type == t]
+                          if ( sum(!is.na(psi)) >= threshold )
+                              return(psi)
+                      })
+        psi <- unlist(psi)
+        type <- names(psi)
+        len <- length(unique(type))
+        
         prep <- prepareDensityPlot(psi, type, bandwidth)
         output$density <- renderHighchart(prep$plot)
         
-        len <- length(unique(type))
         output$basicStats <- renderUI(basicStats(prep$data, len))
-        
         output$wilcox   <- renderUI(wilcox(psi, type))
         output$kruskal  <- renderUI(kruskal(psi, type))
         output$levene   <- renderUI(levene(psi, type))
