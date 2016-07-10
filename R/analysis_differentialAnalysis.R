@@ -112,7 +112,7 @@ wilcox <- function(psi, type) {
     len <- length(group)
     
     if (len > 2) {
-        return(tagList(h4("Wilcoxon rank sum test"),
+        return(tagList(h4("Wilcoxon test"),
                        "Can only perform this test on 2 or 1 group."))
     } else if (len == 2) {
         psiA <- psi[type == group[1]]
@@ -224,10 +224,9 @@ spearman <- function(psi, type) {
 #' @importFrom highcharter renderHighchart
 diffAnalysisServer <- function(input, output, session) {
     observe({
-        # Get selected event (if there is any)
+        # Get selected event
         event <- getEvent()
-        if (is.null(event) || event == "")
-            return(NULL)
+        if (is.null(event) || event == "") return(NULL)
         
         # Get event's inclusion levels for all samples
         psi <- getInclusionLevels()
