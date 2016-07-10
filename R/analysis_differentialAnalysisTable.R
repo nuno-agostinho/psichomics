@@ -4,16 +4,24 @@ diffAnalysisTableUI <- function(id) {
         uiOutput(ns("modal")),
         sidebarLayout(
             sidebarPanel(
-                checkboxGroupInput(ns("statsChoices"),
-                                   "Choose statistical analyses to perform:",
-                                   c("Wilcoxon Test"="wilcox",
-                                     "Kruskal-Wallis Rank Sum Test"="kruskal", 
-                                     "Levene's test"="levene"),
-                                   selected = c("kruskal", "levene")),
+                uiOutput(ns("groupsInfo")),
+                checkboxGroupInput(
+                    ns("statsChoices"),
+                    "Choose statistical analyses to perform:",
+                    # Basic stats is on and disabled by JavaScript
+                    c("Variance and median"="basicStats",
+                      "Wilcoxon Test (1 or 2 groups)"="wilcox",
+                      "Kruskal-Wallis Rank Sum Test (2 or more groups)"="kruskal", 
+                      "Levene's test (2 or more groups)"="levene"),
+                    selected = c("basicStats", "kruskal", "levene")),
+                # Disable checkbox of basic statistics
+                HTML("<script>",
+                     '$("[value=basicStats]").attr("disabled", true);', 
+                     "</script>"),
                 actionButton(ns("startAnalyses"), class = "btn-primary", 
-                             "Perform selected tests"),
-                uiOutput(ns("showColumns"))
+                             "Perform analyses")
             ), mainPanel(
+                uiOutput(ns("showColumns")),
                 dataTableOutput(ns("statsTable"))
             )
         )
@@ -46,6 +54,17 @@ diffAnalysisTableServer <- function(input, output, session) {
         
         group <- unique(type)
         len <- length(group)
+        # Information on the data groups from TCGA
+        output$groupsInfo <- renderUI({
+            bullet  <- "\u2022"
+            groups <- NULL
+            for (each in unique(type))
+                groups <- tagList(groups, br(), bullet, each)
+            
+            return(tagList(
+                helpText("The data contains the following groups:", groups),
+                hr()))
+        })
         
         time <- Sys.time()
         if (len > 1) {
