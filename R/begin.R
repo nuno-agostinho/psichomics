@@ -495,11 +495,12 @@ startProgress <- function(message, divisions, global = sharedData) {
 #' @param value Integer: current progress value
 #' @param max Integer: maximum progress value
 #' @param detail Character: detailed message
+#' @param console Boolean: print message to console? (TRUE by default)
 #' 
 #' @export
-updateProgress <- function(message = "Hang in there", value = NULL, max = NULL,
-                           detail = NULL, divisions = NULL, 
-                           global = sharedData) {
+updateProgress <- function(message="Hang in there", value=NULL, max=NULL,
+                           detail=NULL, divisions=NULL, 
+                           global=sharedData, console=TRUE) {
     if (!is.null(divisions)) {
         startProgress(message, divisions, global)
         return(NULL)
@@ -513,6 +514,10 @@ updateProgress <- function(message = "Hang in there", value = NULL, max = NULL,
     amount <- ifelse(is.null(max), value/divisions, 1/max/divisions)
     global$progress$inc(amount = amount, message = message, detail = detail)
     
+    if (!console)
+        return(invisible(TRUE))
+    
+    # Print message to console
     if (!is.null(detail))
         print(paste(message, detail, sep=": "))
     else
