@@ -28,7 +28,7 @@ body { padding-top: 70px; }
 
 /* Loading message located in the navbar at the right */
 #loadmessage {
-    top: 15px;
+    top: 5px;
     left: -15px;
     position: fixed;
     width: 100%;
