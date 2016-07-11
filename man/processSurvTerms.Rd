@@ -5,7 +5,7 @@
 \title{Process survival curves terms to calculate survival curves}
 \usage{
 processSurvTerms(session, group, clinical, censoring, timeStart, timeStop,
-  dataEvent, modelTerms, formulaStr, coxph = FALSE, scale = "days")
+  dataEvent, modelTerms, formulaStr = NULL, coxph = FALSE, scale = "days")
 }
 \arguments{
 \item{session}{Session object from Shiny function}
