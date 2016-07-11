@@ -68,6 +68,7 @@ noinfo <- function(output, title="No information available for this event.",
 #' @param XML response from Uniprot
 #'
 #' @importFrom XML xmlTreeParse xmlRoot getNodeSet xmlAttrs xmlToList
+#' @importFrom plyr ldply
 #' @return List containing protein length and data frame of protein features
 parseUniprotXML <- function(xml) {
     doc <- xmlTreeParse(xml)
@@ -99,7 +100,7 @@ parseUniprotXML <- function(xml) {
     })
 
     # Convert list of characters to data frame of characters
-    feature <- plyr::ldply(l, rbind)
+    feature <- ldply(l, rbind)
     for (col in 1:ncol(feature))
         feature[[col]] <- as.character(feature[[col]])
 
