@@ -28,8 +28,81 @@ diffAnalysisTableUI <- function(id) {
     )
 }
 
+#' Perform statistical analysis on a vector with elements from different groups
+#' 
+#' @param vector Numeric
+#' @param group Character: group of each element in the vector
+#' @param threshold Integer: minimum number of data points to perform analysis
+#' in a group (default is 1)
+#' @param analyses Character: name of the analyses to perform (all by default)
+#' 
+#' @return A data frame row with the results
+statsAnalysis <- function(vector, group, threshold=1, count=0, step=100,
+                          analyses=c("wilcox", "kruskal", "levene")) {
+      count <<- count + 1
+      if (count %% step == 0)
+          updateProgress("Performing statistical analysis", console=FALSE)
+  
+      # Filter vector by a given threshold
+      filterByThreshold <- function(thisType, allTypes, vector, threshold) {
+          vector <- vector[thisType == allTypes]
+          if ( sum(!is.na(vector)) >= threshold )
+              return(vector)
+      }
+      names(vector) <- group
+      vector <- lapply(unique(group), filterByThreshold, group, vector, 
+                       threshold)
+      
+      vector  <- unlist(vector)
+      group <- names(vector)
+      vector  <- as.numeric(vector)
+      len  <- length(unique(group))
+      
+      # Wilcoxon tests
+      wilcox <- NULL
+      if ("wilcox" %in% analyses) {
+          if (len == 2) {
+              typeOne <- group == unique(group)[1]
+              wilcox  <- suppressWarnings(wilcox.test(vector[typeOne], 
+                                                      vector[!typeOne]))
+          } else if (len == 1) {
+              wilcox <- suppressWarnings(wilcox.test(vector))
+          }
+      }
+      
+      # Kruskal-Wallis test
+      kruskal <- NULL
+      if ("kruskal" %in% analyses && len >= 2) {
+          kruskal <- tryCatch(kruskal.test(vector, factor(group)),
+                              error=return)
+          if ("error" %in% class(kruskal)) kruskal <- NULL
+      }
+      
+      # Levene's test
+      levene <- NULL
+      if ("levene" %in% analyses && len >= 2) {
+          nas <- is.na(vector)
+          levene <- tryCatch(levene.test(vector[!nas], factor(group[!nas])),
+                             error=return)
+          if ("error" %in% class(levene)) levene <- NULL
+      }
+      
+      # Variance and median
+      group <- split(vector, group)
+      samples <- lapply(group, function(i) sum(!is.na(i))) # Number of samples
+      med <- lapply(group, median, na.rm=TRUE) # Median
+      var <- lapply(group, var, na.rm=TRUE) # Variance
+      
+      vector <- c(Samples=samples, Wilcox=wilcox, Kruskal=kruskal, 
+               Levene=levene, Variance=var, Median=med)
+      vector <- vector[!vapply(vector, is.null, logical(1))] # Remove NULL
+      vector <- data.frame(vector, stringsAsFactors=FALSE)
+      return(vector)
+}
+
 #' @importFrom lawstat levene.test
 #' @importFrom stats kruskal.test median wilcox.test var
+#' @importFrom DT renderDataTable
 diffAnalysisTableServer <- function(input, output, session) {
     ns <- session$ns
     
@@ -47,9 +120,9 @@ diffAnalysisTableServer <- function(input, output, session) {
                        tags$b("Quantify alternative splicing events"), ".")
             return(NULL)
         }
-        ids <- names(psi)
         
         # Separate samples by their type
+        ids <- names(psi)
         type <- getSampleTypes(ids)
         
         # Information on the data groups from TCGA
@@ -71,75 +144,9 @@ diffAnalysisTableServer <- function(input, output, session) {
         time <- Sys.time()
         
         count <- 0
-        stats <- apply(psi, 1, function(row, type) {
-            count <<- count + 1
-            if (count %% step == 0)
-                updateProgress("Performing statistical analysis", console=FALSE)
-            
-            # Filter groups with less data points than required
-            threshold <- 1
-            names(row) <- type
-            
-            #' Filter row by a given threshold
-            filterByThreshold <- function(thisType, allTypes, row, threshold) {
-                row <- row[thisType == allTypes]
-                if ( sum(!is.na(row)) >= threshold )
-                    return(row)
-            }
-            row <- lapply(unique(type), filterByThreshold, type, row, threshold)
-            
-            row  <- unlist(row)
-            type <- names(row)
-            row  <- as.numeric(row)
-            len  <- length(unique(type))
-            
-            # Wilcoxon tests
-            wilcox <- NULL
-            if ("wilcox" %in% statsChoices) {
-                if (len == 2) {
-                    typeOne <- type == unique(type)[1]
-                    wilcox  <- suppressWarnings(wilcox.test(row[typeOne], 
-                                                            row[!typeOne]))
-                } else if (len == 1) {
-                    wilcox <- suppressWarnings(wilcox.test(row))
-                }
-            }
-            
-            # Kruskal-Wallis test
-            kruskal <- NULL
-            if ("kruskal" %in% statsChoices && len >= 2) {
-                kruskal <- tryCatch(kruskal.test(row, factor(type)),
-                                    error=return)
-                if ("error" %in% class(kruskal)) kruskal <- NULL
-            }
-            
-            # Levene's test
-            levene <- NULL
-            if ("levene" %in% statsChoices && len >= 2) {
-                nas <- is.na(row)
-                levene <- tryCatch(levene.test(row[!nas], factor(type[!nas])),
-                                   error=return)
-                if ("error" %in% class(levene)) levene <- NULL
-            }
-            
-            # Variance and median
-            group <- split(row, type)
-            samples <- lapply(group,
-                              function(i) sum(!is.na(i))) # Number of samples
-            med <- lapply(group, median, na.rm=TRUE) # Median
-            var <- lapply(group, var, na.rm=TRUE) # Variance
-            
-            row <- c(Samples=samples, Wilcox=wilcox, Kruskal=kruskal, 
-                     Levene=levene, Variance=var, Median=med)
-            row <- row[!vapply(row, is.null, logical(1))] # Remove NULL
-            row <- data.frame(row, stringsAsFactors=FALSE)
-            return(row)
-        }, factor(type))
-        
-        print(Sys.time() - time)
-        
-        browser()
+        stats <- apply(psi, 1, statsAnalysis, factor(type), threshold=1)
         updateProgress("Performing statistical analysis", console=FALSE)
+        
         # Convert to data frame
         df <- do.call(rbind.fill, stats)
         df <- df[, !grepl("method|data.name", colnames(df))]
