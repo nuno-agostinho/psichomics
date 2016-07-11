@@ -5,7 +5,7 @@
 \title{Update a progress object}
 \usage{
 updateProgress(message = "Hang in there", value = NULL, max = NULL,
-  detail = NULL, divisions = NULL, global = sharedData)
+  detail = NULL, divisions = NULL, global = sharedData, console = TRUE)
 }
 \arguments{
 \item{message}{Character: progress message}
@@ -19,6 +19,8 @@ updateProgress(message = "Hang in there", value = NULL, max = NULL,
 \item{divisions}{Integer: number of divisions in the progress bar}
 
 \item{global}{Shiny's global variable}
+
+\item{console}{Boolean: print message to console? (TRUE by default)}
 }
 \description{
 Update a progress object

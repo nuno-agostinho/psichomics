@@ -4,14 +4,14 @@
 \alias{createGroupFromInput}
 \title{Set new groups according to the user input}
 \usage{
-createGroupFromInput(input, output, session, dataset, datasetName)
+createGroupFromInput(session, input, output, dataset, datasetName)
 }
 \arguments{
+\item{session}{Shiny session}
+
 \item{input}{Shiny input}
 
 \item{output}{Shiny output}
-
-\item{session}{Shiny session}
 }
 \description{
 The groups are inserted in a matrix
