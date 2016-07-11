@@ -53,13 +53,27 @@ setLocalData <- function(input, output, session, replace=TRUE) {
     category <- input$localCategory
     ignore <- c(".aux.", ".mage-tab.", input$localIgnore)
     
-    sub <- dir(folder, full.names=TRUE)[dir.exists(
-        dir(folder, full.names=TRUE))]
+    # Get all files in the specified directory and subdirectories
+    files <- list.files(folder, recursive = TRUE, full.names = TRUE)
     
-    startProgress("Searching inside the folder...", divisions=1 + length(sub))
-    loaded <- loadFirehoseFolders(sub, ignore, updateProgress)
+    # Exclude undesired subdirectories or files
+    files <- files[!dir.exists(files)]
+    ignore <- paste(ignore, collapse = "|")
+    if (ignore != "") files <- files[!grepl(ignore, files)]
+    
+    startProgress("Searching inside the folder...", divisions=length(files))
+    
+    # Try to load files and remove those with 0 rows
+    loaded <- list()
+    formats <- loadFileFormats()
+    for (each in seq_along(files)) {
+        updateProgress("Processing file", detail = basename(files[each]))
+        loaded[[each]] <- parseValidFile(files[each], formats)
+    }
+    names(loaded) <- sapply(loaded, attr, "tablename")
+    loaded <- Filter(length, loaded)
+    
     data <- setNames(list(loaded), category)
-    
     if (!is.null(data)) {
         if(replace)
             setData(data)
