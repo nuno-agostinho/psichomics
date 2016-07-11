@@ -92,8 +92,9 @@ appUI <- function() {
         includeScript(insideFile("shiny", "www", "jquery.textcomplete.min.js")),
         conditionalPanel(
             condition="$('html').hasClass('shiny-busy')",
-            div(icon("flask", "fa-spin"), "Working...",
-                class="text-right", id="loadmessage")
+            div(class="text-right", id="loadmessage",
+                h4(tags$span(class="label", class="label-info",
+                             icon("flask", "fa-spin"), "Working...")))
         )
     )
     
