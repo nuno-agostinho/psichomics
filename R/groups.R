@@ -328,7 +328,7 @@ groupsServer <- function(input, output, session, dataset, datasetName) {
     rownames=FALSE,
     options=list(pageLength=10, lengthChange=FALSE, scrollX=TRUE,
                  #filter=FALSE, info=FALSE, paginationType="simple",
-                 ordering=FALSE,
+                 ordering=FALSE, drawCallback=JS("checkAllGroups"),
                  # Stack DataTable elements so they fit in the container
                  dom=paste0(
                      '<"row view-filter"<"col-sm-12"<"pull-left"l>',

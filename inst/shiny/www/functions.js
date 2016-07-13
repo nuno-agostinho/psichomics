@@ -1,8 +1,10 @@
 /* Check all groups when clicking the checkbox in the group table's header*/
 /* TODO(NunoA): Make this work... */
-$("input[name='checkAllGroups']").change(function () {
-    $("input[name='checkGroups']").prop('checked', $(this).prop("checked"));
-});
+function checkAllGroups() {
+    $("input[name='checkAllGroups']").change(function () {
+        $("input[name='checkGroups']").prop('checked', $(this).prop("checked"));
+    });
+}
 
 /* Get which checkboxes are checked in the groups section */
 Shiny.addCustomMessageHandler('getCheckedBoxes', function(variable) {   
