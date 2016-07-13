@@ -67,8 +67,8 @@ prepareDensityPlot <- function(psi, type, bandwidth) {
         den <- density(row, bw = bandwidth, na.rm = TRUE)
         hc <- hc %>%
             hc_add_series_density(den, name=group, area=TRUE, median=med, 
-                                  var=vari, samples=samples, max=max, color=color,
-                                  min=min, fillColor=color, lineColor=color) %>%
+                                  var=vari, samples=samples, max=max, 
+                                  color=color, min=min) %>%
             hc_add_series_scatter(row, rep(0, length(row)),
                                   marker=list(enabled=TRUE, symbol="circle",
                                               radius=4, fillColor=color))
