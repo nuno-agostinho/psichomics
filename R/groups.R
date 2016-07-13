@@ -17,9 +17,9 @@ selectGroupsUI <- function (id, label, placeholder=
     modalId <- paste0(id, "Modal")
     fluidRow(
         uiOutput(modalId),
-        column(10, selectizeInput(id, label, choices = NULL, multiple = TRUE,
+        column(10, selectizeInput(id, label, choices=NULL, multiple=TRUE,
                                   width="auto",
-                                  options = list(placeholder=placeholder))),
+                                  options=list(placeholder=placeholder))),
         column(2, actionButton(editId, "Edit", 
                                class="inline_selectize pull-right")))
 }
@@ -74,13 +74,13 @@ groupByColumn <- function(ns, dataset) {
 #' User interface to group by row
 groupByRow <- function(ns) { list(
     selectizeInput(
-        ns("groupRows"), "Row indexes", choices = NULL, multiple = TRUE,
+        ns("groupRows"), "Row indexes", choices=NULL, multiple=TRUE,
         # Allow to add new items
-        width="auto", options = list(
-            create = TRUE, createOnBlur=TRUE,
+        width="auto", options=list(
+            create=TRUE, createOnBlur=TRUE,
             ## TODO(NunoA): only allow numbers (use selectize.js REGEX option)
             # Hide discarded user-created items in the dropdown
-            persist = FALSE)),
+            persist=FALSE)),
     helpText("Type ", tags$kbd("1:6, 8, 10:19"), "to create a group with rows",
              "1 to 6, 8 and 10 to 19.")
 )}
@@ -98,8 +98,8 @@ groupByGrep <- function(ns, dataset) {
     list (
         textInput(ns("grepExpression"), "Regular expression", width="auto"),
         selectizeInput(ns("grepColumn"), "Select column to GREP", selected=NULL, 
-                       choices=names(dataset), width="auto", options = list(
-                           placeholder = "Start typing to search for columns"))
+                       choices=names(dataset), width="auto", options=list(
+                           placeholder="Start typing to search for columns"))
     )}
 
 #' Creates UI elements for the grouping feature
@@ -110,7 +110,7 @@ groupsUI <- function(id, dataset) {
         sprintf("input[id='%s'] %s '%s'", ns("subsetBy"), sign, what)
     tagList(
         uiOutput(ns("alert")),
-        radioButtons(ns("subsetBy"), "Subset by", inline = TRUE,
+        radioButtons(ns("subsetBy"), "Subset by", inline=TRUE,
                      c("Column", "Rows", "Subset expression",
                        "Regular expression")),
         conditionalPanel(checkId("==", "Column"), groupByColumn(ns, dataset)),
@@ -121,7 +121,7 @@ groupsUI <- function(id, dataset) {
                          groupByGrep(ns, dataset)),
         conditionalPanel(checkId("!=", "Column"),
                          textInput(ns("groupName"), "Group name", width="auto",
-                                   placeholder = "Unnamed")),
+                                   placeholder="Unnamed")),
         actionButton(ns("createGroup"), "Create group", class ="btn-primary"),
         uiOutput(ns("groupsList"))
     )
@@ -156,14 +156,14 @@ createGroupFromInput <- function (session, input, output, dataset, datasetName) 
     } else if (type == "Rows") {
         # Convert the given string into a sequence of numbers
         rows <- input$groupRows
-        strRows <- paste(rows, collapse = ", ")
-        rows <- unlist(lapply(rows, function(row) eval(parse(text = row))))
+        strRows <- paste(rows, collapse=", ")
+        rows <- unlist(lapply(rows, function(row) eval(parse(text=row))))
         rows <- sort(unique(rows))
         
         # Remove and warn if selected rows are greater than the rows number
         gtRows <- rows > nrow(dataset)
         if (any(gtRows)) {
-            removed <- paste(rows[gtRows], collapse = " ")
+            removed <- paste(rows[gtRows], collapse=" ")
             warningAlert(
                 session, sum(gtRows), " indexes were above the number of rows ",
                 "of the dataset (which is ", nrow(dataset), ").", br(),
@@ -176,8 +176,8 @@ createGroupFromInput <- function (session, input, output, dataset, datasetName) 
         expr <- input$groupExpression
         
         # Test expression before running
-        set <- tryCatch(subset(dataset, eval(parse(text = expr))),
-                        error = return)
+        set <- tryCatch(subset(dataset, eval(parse(text=expr))),
+                        error=return)
         
         # Show error to the user
         if ("simpleError" %in% class(set)) {
@@ -197,7 +197,7 @@ createGroupFromInput <- function (session, input, output, dataset, datasetName) 
         expr <- input$grepExpression
         
         # Test expression before running
-        set <- tryCatch(grep(expr, colData), error = return)
+        set <- tryCatch(grep(expr, colData), error=return)
         
         # Show error to the user
         if ("simpleError" %in% class(set)) {
@@ -313,7 +313,7 @@ groupsServer <- function(input, output, session, dataset, datasetName) {
             ord <- c(1, 4, 2, 3)
             ordered <- groups[ , ord]
             if (!is.matrix(ordered)) {
-                ordered <- matrix(ordered, ncol = 4)
+                ordered <- matrix(ordered, ncol=4)
                 colnames(ordered) <- colnames(groups)[ord]
             }
             
@@ -366,13 +366,13 @@ groupsServer <- function(input, output, session, dataset, datasetName) {
             selected <- as.numeric(sharedData$selectedGroups)
             if (!identical(FUN, "remove")) {
                 mergedFields <- lapply(1:3, function(i) {
-                    names <- paste(groups[selected, i], collapse = symbol)
+                    names <- paste(groups[selected, i], collapse=symbol)
                     # Add parenthesis around new expression
                     names <- paste0("(", names, ")")
                     return(names)
                 })
                 rowNumbers <- sort(as.numeric(Reduce(FUN, groups[selected, 4])))
-                new <- matrix(c(mergedFields, list(rowNumbers)), ncol = 4)
+                new <- matrix(c(mergedFields, list(rowNumbers)), ncol=4)
             }
             
             # Remove selected groups
@@ -387,7 +387,7 @@ groupsServer <- function(input, output, session, dataset, datasetName) {
             setGroupsFrom(datasetName, groups)
             
             # Set operation groups as 0 and flag to FALSE
-            session$sendCustomMessage(type = "setZero", "selectedGroups")
+            session$sendCustomMessage(type="setZero", "selectedGroups")
             sharedData$javascriptSent <- FALSE
             sharedData$javascriptRead <- FALSE
         }
@@ -418,7 +418,7 @@ groupsServer <- function(input, output, session, dataset, datasetName) {
             )
         }
     })
-
+    
     observeEvent(input$removeAll, setGroupsFrom(datasetName, NULL))
 }
 
