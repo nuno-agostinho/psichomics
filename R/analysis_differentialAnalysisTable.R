@@ -37,67 +37,63 @@ diffAnalysisTableUI <- function(id) {
 #' @param analyses Character: name of the analyses to perform (all by default)
 #' 
 #' @return A data frame row with the results
-statsAnalysis <- function(vector, group, threshold=1, count=0, step=100,
+statsAnalysis <- function(vector, group, threshold=1, step=100,
                           analyses=c("wilcox", "kruskal", "levene")) {
-      count <<- count + 1
-      if (count %% step == 0)
-          updateProgress("Performing statistical analysis", console=FALSE)
-  
-      # Filter vector by a given threshold
-      filterByThreshold <- function(thisType, allTypes, vector, threshold) {
-          vector <- vector[thisType == allTypes]
-          if ( sum(!is.na(vector)) >= threshold )
-              return(vector)
-      }
-      names(vector) <- group
-      vector <- lapply(unique(group), filterByThreshold, group, vector, 
-                       threshold)
-      
-      vector  <- unlist(vector)
-      group <- names(vector)
-      vector  <- as.numeric(vector)
-      len  <- length(unique(group))
-      
-      # Wilcoxon tests
-      wilcox <- NULL
-      if ("wilcox" %in% analyses) {
-          if (len == 2) {
-              typeOne <- group == unique(group)[1]
-              wilcox  <- suppressWarnings(wilcox.test(vector[typeOne], 
-                                                      vector[!typeOne]))
-          } else if (len == 1) {
-              wilcox <- suppressWarnings(wilcox.test(vector))
-          }
-      }
-      
-      # Kruskal-Wallis test
-      kruskal <- NULL
-      if ("kruskal" %in% analyses && len >= 2) {
-          kruskal <- tryCatch(kruskal.test(vector, factor(group)),
-                              error=return)
-          if ("error" %in% class(kruskal)) kruskal <- NULL
-      }
-      
-      # Levene's test
-      levene <- NULL
-      if ("levene" %in% analyses && len >= 2) {
-          nas <- is.na(vector)
-          levene <- tryCatch(levene.test(vector[!nas], factor(group[!nas])),
-                             error=return)
-          if ("error" %in% class(levene)) levene <- NULL
-      }
-      
-      # Variance and median
-      group <- split(vector, group)
-      samples <- lapply(group, function(i) sum(!is.na(i))) # Number of samples
-      med <- lapply(group, median, na.rm=TRUE) # Median
-      var <- lapply(group, var, na.rm=TRUE) # Variance
-      
-      vector <- c(Samples=samples, Wilcox=wilcox, Kruskal=kruskal, 
-               Levene=levene, Variance=var, Median=med)
-      vector <- vector[!vapply(vector, is.null, logical(1))] # Remove NULL
-      vector <- data.frame(vector, stringsAsFactors=FALSE)
-      return(vector)
+    # Filter vector by a given threshold
+    filterByThreshold <- function(thisType, allTypes, vector, threshold) {
+        vector <- vector[thisType == allTypes]
+        if ( sum(!is.na(vector)) >= threshold )
+            return(vector)
+    }
+    names(vector) <- group
+    vector <- lapply(unique(group), filterByThreshold, group, vector, 
+                     threshold)
+    
+    vector  <- unlist(vector)
+    group <- names(vector)
+    vector  <- as.numeric(vector)
+    len  <- length(unique(group))
+    
+    # Wilcoxon tests
+    wilcox <- NULL
+    if ("wilcox" %in% analyses) {
+        if (len == 2) {
+            typeOne <- group == unique(group)[1]
+            wilcox  <- suppressWarnings(wilcox.test(vector[typeOne], 
+                                                    vector[!typeOne]))
+        } else if (len == 1) {
+            wilcox <- suppressWarnings(wilcox.test(vector))
+        }
+    }
+    
+    # Kruskal-Wallis test
+    kruskal <- NULL
+    if ("kruskal" %in% analyses && len >= 2) {
+        kruskal <- tryCatch(kruskal.test(vector, factor(group)),
+                            error=return)
+        if ("error" %in% class(kruskal)) kruskal <- NULL
+    }
+    
+    # Levene's test
+    levene <- NULL
+    if ("levene" %in% analyses && len >= 2) {
+        nas <- is.na(vector)
+        levene <- tryCatch(levene.test(vector[!nas], factor(group[!nas])),
+                           error=return)
+        if ("error" %in% class(levene)) levene <- NULL
+    }
+    
+    # Variance and median
+    group <- split(vector, group)
+    samples <- lapply(group, function(i) sum(!is.na(i))) # Number of samples
+    med <- lapply(group, median, na.rm=TRUE) # Median
+    var <- lapply(group, var, na.rm=TRUE) # Variance
+    
+    vector <- c(Samples=samples, Wilcox=wilcox, Kruskal=kruskal, 
+                Levene=levene, Variance=var, Median=med)
+    vector <- vector[!vapply(vector, is.null, logical(1))] # Remove NULL
+    vector <- data.frame(vector, stringsAsFactors=FALSE)
+    return(vector)
 }
 
 #' @importFrom lawstat levene.test
@@ -144,7 +140,12 @@ diffAnalysisTableServer <- function(input, output, session) {
         time <- Sys.time()
         
         count <- 0
-        stats <- apply(psi, 1, statsAnalysis, factor(type), threshold=1)
+        stats <- apply(psi, 1, function(...) {
+            count <<- count + 1
+            if (count %% step == 0)
+                updateProgress("Performing statistical analysis", console=FALSE)
+            return(statsAnalysis(...))
+        }, factor(type), threshold=1, step=step, analyses=statsChoices)
         updateProgress("Performing statistical analysis", console=FALSE)
         
         # Convert to data frame
@@ -152,7 +153,7 @@ diffAnalysisTableServer <- function(input, output, session) {
         df <- df[, !grepl("method|data.name", colnames(df))]
         
         # Calculate delta variance and delta median if there are only 2 groups
-        deltaVar <- df[, grepl("Variance", colnames(df))]
+        deltaVar <- df[, grepl("Variance", colnames(df)), drop=FALSE]
         if (ncol(deltaVar) == 2) {
             deltaVar <- deltaVar[, 2] - deltaVar[, 1]
             deltaMed <- df[, grepl("Median", colnames(df))]
