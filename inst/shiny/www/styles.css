@@ -21,11 +21,6 @@ body { padding-top: 70px; }
 .shiny-progress-container { top: 48px; }
 .shiny-progress .progress-text { width: auto; }
 
-/* Better contrast of odd elements of the table in the grouping section */
-.table-striped>tbody>tr:nth-of-type(odd) {
-    background-color: rgb(237, 237, 237);
-}
-
 /* Loading message located in the navbar at the right */
 #loadmessage {
     top: 5px;
