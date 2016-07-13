@@ -178,7 +178,7 @@ diffAnalysisTableServer <- function(input, output, session) {
         # Columns to show in statistical table
         output$showColumns <- renderUI({
             tagList(
-                downloadButton(ns("download"), "Download table"),
+                downloadButton(ns("download"), "Download whole table"),
                 selectizeInput(ns("columns"), "Show columns", multiple=TRUE,
                                choices=colnames(stats), width="auto",
                                selected=colnames(stats),
@@ -198,7 +198,8 @@ diffAnalysisTableServer <- function(input, output, session) {
         output$download <- downloadHandler(
             filename=paste(getCategories(), "Differential splicing analyses"),
             content=function(file)
-                write.table(stats, file, quote=FALSE, row.names=FALSE, sep="\t")
+                write.table(getDifferentialAnalyses(), file, quote=FALSE,
+                            row.names=FALSE, sep="\t")
         )
     })
 }
