@@ -22,16 +22,33 @@ diffAnalysisTableUI <- function(id) {
                              "Perform analyses")
             ), mainPanel(
                 uiOutput(ns("showColumns")),
-                dataTableOutput(ns("statsTable"))
+                dataTableOutput(ns("statsTable")),
+                highchartOutput(ns("densitySparklines"))
             )
         )
     )
+}
+
+#' @importFrom highcharter highchart hc_chart hc_xAxis hc_plotOptions hc_tooltip
+#' JS hc_add_series_scatter
+densitySparkline <- function(hc, psi, type, bandwidth) {
+    for (group in unique(type)) {
+        row  <- psi[type == group]
+        # Calculate the density of inclusion levels for each sample type with a
+        # greatly reduced number of points for faster execution
+        den <- density(row, n=10, bw=bandwidth, na.rm=TRUE)
+        hc <- hc %>%
+            hc_add_series_density(den, name=group, area=TRUE) %>%
+            hc_new_sparkline()
+    }
+    return(hc)
 }
 
 #' Perform statistical analysis on a vector with elements from different groups
 #' 
 #' @param vector Numeric
 #' @param group Character: group of each element in the vector
+#' @param hc Highchart object used to get the density plots
 #' @param threshold Integer: minimum number of data points to perform analysis
 #' in a group (default is 1)
 #' @param analyses Character: name of the analyses to perform (all by default)
@@ -82,6 +99,11 @@ statsAnalysis <- function(vector, group, threshold=1, step=100,
                            error=return)
         if ("error" %in% class(levene)) levene <- NULL
     }
+    
+    # Density sparklines
+    hc <- getDensitySparklines()
+    hc <- densitySparkline(hc, vector, group, 0.1)
+    setDensitySparklines(hc)
     
     # Variance and median
     group <- split(vector, group)
@@ -139,6 +161,14 @@ diffAnalysisTableServer <- function(input, output, session) {
                       divisions=1+round(nrow(psi)/step))
         time <- Sys.time()
         
+        hc <- highchart() %>%
+            hc_xAxis(min=0, max=1) %>%
+        hc_tooltip(
+            headerFormat = paste(
+                span(style="color:{point.color}", "\u25CF "),
+                tags$b("{series.name}"), br()))
+        setDensitySparklines(hc)
+        
         count <- 0
         stats <- apply(psi, 1, function(...) {
             count <<- count + 1
@@ -161,7 +191,10 @@ diffAnalysisTableServer <- function(input, output, session) {
             df <- cbind(df, deltaVar, deltaMed)
         }
         
-        stats <- df
+        hc <- getDensitySparklines()
+        assign("hc2", hc, .GlobalEnv)
+        sparklines <- hchart(hc)
+        stats <- cbind(Density=sparklines, df)
         rownames(stats) <- rownames(psi)
         setDifferentialAnalyses(stats)
         
@@ -188,18 +221,18 @@ diffAnalysisTableServer <- function(input, output, session) {
         })
         
         # Render statistical table with the selected columns
-        output$statsTable <- renderDataTable({
+        output$statsTable <- renderDataTableSparklines({
             if (!is.null(input$columns) && all(input$columns %in% names(stats)))
                 stats[, input$columns]
-        }, style="bootstrap", selection="none", filter='top', 
+        }, style="bootstrap", selection="none", filter='top',
         options=list(pageLength=10))
         
         # Prepare table to be downloaded
         output$download <- downloadHandler(
             filename=paste(getCategories(), "Differential splicing analyses"),
             content=function(file)
-                write.table(getDifferentialAnalyses(), file, quote=FALSE,
-                            row.names=FALSE, sep="\t")
+                write.table(getDifferentialAnalyses()[-c("Density")], 
+                            file, quote=FALSE, row.names=FALSE, sep="\t")
         )
     })
 }

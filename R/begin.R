@@ -76,6 +76,16 @@ getGlobal <- function(..., sep="_") sharedData[[paste(..., sep=sep)]]
 getDifferentialAnalyses <- function(category = getCategory())
     getGlobal(category, "differentialAnalyses")
 
+#' Get the sparklines of density plots
+#' @note Needs to be called inside reactive function
+#' 
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' 
+#' @return Highchart object of density sparklines
+getDensitySparklines <- function(category = getCategory())
+    getGlobal(category, "densitySparklines")
+
 #' Get the species of a data category
 #' @note Needs to be called inside reactive function
 #' 
@@ -189,6 +199,15 @@ setGroupsFrom <- function(dataset, groups, category = getCategory())
 #' it uses the selected data category
 setDifferentialAnalyses <- function(table, category = getCategory())
     setGlobal(category, "differentialAnalyses", value=table)
+
+#' Set the sparklines of density plots
+#' @note Needs to be called inside reactive function
+#' 
+#' @param table Character: sparklines of density plots
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+setDensitySparklines <- function(table, category = getCategory())
+    setGlobal(category, "densitySparklines", value=table)
 
 #' Set the species of a data category
 #' @note Needs to be called inside reactive function
