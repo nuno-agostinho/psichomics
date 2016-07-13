@@ -46,6 +46,7 @@ dataUI <- function(id, tab) {
 #' @param colsToShow Boolean: columns to show
 #'
 #' @importFrom shinyBS bsTooltip
+#' @importFrom DT dataTableOutput
 #'
 #' @return The HTML code for a tabPanel template
 tabDataset <- function(ns, title, tableId, columns, colsToShow, data,
@@ -95,6 +96,8 @@ tabDataset <- function(ns, title, tableId, columns, colsToShow, data,
 #' @param name Character: name of the dataset
 #' @param input Shiny session input
 #' @param output Shiny session output
+#' 
+#' @importFrom DT renderDataTable
 createDataTab <- function(index, data, name, input, output) {
     tablename <- paste("table", name, index, sep="-")
     
@@ -108,12 +111,9 @@ createDataTab <- function(index, data, name, input, output) {
         subsetToShow <- subset(table, select=colsToShow[match])
     }
     
-    # Show row names if there are any
-    if (isTRUE(attr(table, "rowNames")))
-        subsetToShow <- cbind(Row=rownames(subsetToShow), subsetToShow)
-    
     output[[tablename]] <- renderDataTable(
-        subsetToShow, options=list(pageLength=10, scrollX=TRUE))
+        subsetToShow, style="bootstrap", selection='none',
+        options=list(pageLength=10, scrollX=TRUE))
     
     output[[paste(tablename, "download", sep="-")]] <- downloadHandler(
         filename = paste(name, attr(table, "tablename")),

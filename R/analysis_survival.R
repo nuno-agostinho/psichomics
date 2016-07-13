@@ -230,6 +230,7 @@ updateClinicalFields <- function(session) {
 #' @importFrom survival survfit survdiff
 #' @importFrom highcharter hchart hc_chart hc_yAxis hc_xAxis hc_tooltip
 #' hc_subtitle hc_tooltip renderHighchart
+#' @importFrom DT dataTableOutput renderDataTable
 survivalServer <- function(input, output, session) {
     ns <- session$ns
     
@@ -435,22 +436,21 @@ survivalServer <- function(input, output, session) {
             })
             
             output$coxGroups <- renderDataTable({
-                groups <- cbind(rownames(summary$coefficients),
-                                signifDigits(summary$coefficients),
+                groups <- cbind(signifDigits(summary$coefficients),
                                 signifDigits(summary$conf.int[ , 2:4]))
                 return(groups)
-            }, options = list(scrollX = TRUE))
+            }, style="bootstrap", selection='none',
+            options=list(scrollX=TRUE))
             
             output$coxTests <- renderDataTable({
                 tests <- rbind("Wald test"=summary$waldtest,
                                "Log test"=summary$logtest,
                                "Score (logrank) test"=summary$sctest)
-                tests <- cbind(rownames(tests), tests)
-                colnames(tests) <- c("Statistical test", "Value",
-                                     "Degrees of freedom", "p-value")
+                colnames(tests) <- c("Value", "Degrees of freedom", "p-value")
                 return(tests)
-            }, options = list(info=FALSE, paging=FALSE, searching=FALSE,
-                              scrollX=TRUE))
+            }, style="bootstrap", selection='none',
+            options=list(info=FALSE, paging=FALSE, searching=FALSE, 
+                         scrollX=TRUE))
             
             # output$coxPlot <- renderHighchart({
             #     # Plot survival curves
@@ -458,7 +458,7 @@ survivalServer <- function(input, output, session) {
             #         hc_chart(zoomType="xy") %>%
             #         hc_yAxis(title=list(text="Proportion of individuals")) %>%
             #         hc_xAxis(title=list(text="Time in days"))
-            # })
+            # }, style="bootstrap", selection='none')
         }
     })
     

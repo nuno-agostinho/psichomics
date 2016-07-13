@@ -272,6 +272,8 @@ operateOnGroups <- function(input, session, sharedData, FUN, buttonId,
 #' @param input Shiny input
 #' @param output Shiny output
 #' @param session Shiny session
+#' 
+#' @importFrom DT renderDataTable dataTableOutput
 groupsServer <- function(input, output, session, dataset, datasetName) {
     ns <- session$ns
     
@@ -322,15 +324,16 @@ groupsServer <- function(input, output, session, dataset, datasetName) {
             colnames(res)[1] <- "<input name='checkAllGroups' type='checkbox'/>"
             return(res)
         }
-    }, options = list(pageLength = 10, lengthChange = FALSE, scrollX = TRUE,
-                      #filter = FALSE, info = FALSE, paginationType = "simple",
-                      ordering = FALSE,
-                      # Stack DataTable elements so they fit in the container
-                      dom = paste0(
-                          '<"row view-filter"<"col-sm-12"<"pull-left"l>',
-                          '<"pull-right"f><"clearfix">>>',
-                          'rt<"row view-pager"<"col-sm-12"<"text-center"ip>>>')),
-    escape = FALSE)
+    }, style="bootstrap", selection='none', escape=FALSE, server=TRUE, 
+    rownames=FALSE,
+    options=list(pageLength=10, lengthChange=FALSE, scrollX=TRUE,
+                 #filter=FALSE, info=FALSE, paginationType="simple",
+                 ordering=FALSE,
+                 # Stack DataTable elements so they fit in the container
+                 dom=paste0(
+                     '<"row view-filter"<"col-sm-12"<"pull-left"l>',
+                     '<"pull-right"f><"clearfix">>>',
+                     'rt<"row view-pager"<"col-sm-12"<"text-center"ip>>>')))
     
     # Remove selected groups
     removeId <- "removeGroups"
