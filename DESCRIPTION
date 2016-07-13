@@ -39,7 +39,8 @@ Imports:
     rmarkdown,
     XML,
     gplots,
-    assertthat
+    assertthat,
+    DT
 Suggests:
     testthat,
     knitr,

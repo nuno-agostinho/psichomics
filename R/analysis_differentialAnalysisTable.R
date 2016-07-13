@@ -160,7 +160,8 @@ diffAnalysisTableServer <- function(input, output, session) {
             df <- cbind(df, deltaVar, deltaMed)
         }
         
-        stats <- cbind(Event = rownames(psi), df)
+        stats <- df
+        rownames(stats) <- rownames(psi)
         setDifferentialAnalyses(stats)
         
         # parallel::stopCluster(cl)
@@ -186,8 +187,11 @@ diffAnalysisTableServer <- function(input, output, session) {
         })
         
         # Render statistical table with the selected columns
-        output$statsTable <- renderDataTable(
-            stats[, input$columns], options=list(pageLength=10, scrollX=TRUE))
+        output$statsTable <- renderDataTable({
+            if (!is.null(input$columns) && all(input$columns %in% names(stats)))
+                stats[, input$columns]
+        }, style="bootstrap", selection="none", filter='top', 
+        options=list(pageLength=10))
         
         # Prepare table to be downloaded
         output$download <- downloadHandler(
