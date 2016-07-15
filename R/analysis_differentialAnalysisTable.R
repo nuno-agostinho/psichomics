@@ -124,6 +124,30 @@ statsAnalysis <- function(vector, group, threshold=1, step=100,
 diffAnalysisTableServer <- function(input, output, session) {
     ns <- session$ns
     
+    # Information on the data groups from TCGA
+    output$groupsInfo <- renderUI({
+        # Get event's inclusion levels
+        psi <- getInclusionLevels()
+        
+        if (is.null(psi)) return(tagList(
+            helpText(icon("exclamation-circle"), 
+                     "No alternative splicing junction quantification loaded.")))
+        
+        # Separate samples by their type
+        ids <- names(psi)
+        type <- getSampleTypes(ids)
+        
+        bullet  <- "\u2022"
+        groups <- NULL
+        for (each in unique(type))
+            groups <- tagList(groups, br(), bullet, each)
+        
+        return(tagList(
+            helpText("The data contains the following groups:", groups),
+            hr()))
+    })
+    
+    
     observeEvent(input$startAnalyses, {
         isolate({
             # Get event's inclusion levels
@@ -143,30 +167,19 @@ diffAnalysisTableServer <- function(input, output, session) {
         ids <- names(psi)
         type <- getSampleTypes(ids)
         
-        # Information on the data groups from TCGA
-        output$groupsInfo <- renderUI({
-            bullet  <- "\u2022"
-            groups <- NULL
-            for (each in unique(type))
-                groups <- tagList(groups, br(), bullet, each)
-            
-            return(tagList(
-                helpText("The data contains the following groups:", groups),
-                hr()))
-        })
-        
         # cl <- parallel::makeCluster(getOption("cl.cores", getCores()))
         step <- 100 # Avoid updating after analysing each event
         startProgress("Performing statistical analysis", 
-                      divisions=1+round(nrow(psi)/step))
+                      divisions=4+round(nrow(psi)/step))
         time <- Sys.time()
         
         hc <- highchart() %>%
             hc_xAxis(min=0, max=1) %>%
-        hc_tooltip(
-            headerFormat = paste(
-                span(style="color:{point.color}", "\u25CF "),
-                tags$b("{series.name}"), br()))
+            hc_tooltip(
+                headerFormat="<small>Inclusion levels: {point.x}</small></br>",
+                pointFormat=paste(
+                    span(style="color:{point.color}", "\u25CF "),
+                    tags$b("{series.name}"), br()))
         setDensitySparklines(hc)
         
         count <- 0
@@ -176,11 +189,11 @@ diffAnalysisTableServer <- function(input, output, session) {
                 updateProgress("Performing statistical analysis", console=FALSE)
             return(statsAnalysis(...))
         }, factor(type), threshold=1, step=step, analyses=statsChoices)
-        updateProgress("Performing statistical analysis", console=FALSE)
         
         # Convert to data frame
         df <- do.call(rbind.fill, stats)
         df <- df[, !grepl("method|data.name", colnames(df))]
+        updateProgress("Performing statistical analysis", console=FALSE)
         
         # Calculate delta variance and delta median if there are only 2 groups
         deltaVar <- df[, grepl("Variance", colnames(df)), drop=FALSE]
@@ -190,6 +203,7 @@ diffAnalysisTableServer <- function(input, output, session) {
             deltaMed <- deltaMed[, 2] - deltaMed[, 1]
             df <- cbind(df, deltaVar, deltaMed)
         }
+        updateProgress("Performing statistical analysis", console=FALSE)
         
         hc <- getDensitySparklines()
         assign("hc2", hc, .GlobalEnv)
@@ -197,6 +211,7 @@ diffAnalysisTableServer <- function(input, output, session) {
         stats <- cbind(Density=sparklines, df)
         rownames(stats) <- rownames(psi)
         setDifferentialAnalyses(stats)
+        updateProgress("Performing statistical analysis", console=FALSE)
         
         # parallel::stopCluster(cl)
         print(Sys.time() - time)
