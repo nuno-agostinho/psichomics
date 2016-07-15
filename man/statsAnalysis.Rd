@@ -16,6 +16,8 @@ statsAnalysis(vector, group, threshold = 1, step = 100,
 in a group (default is 1)}
 
 \item{analyses}{Character: name of the analyses to perform (all by default)}
+
+\item{hc}{Highchart object used to get the density plots}
 }
 \value{
 A data frame row with the results
