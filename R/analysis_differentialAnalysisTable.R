@@ -36,10 +36,9 @@ densitySparkline <- function(hc, psi, type, bandwidth) {
         # Calculate the density of inclusion levels for each sample type with a
         # greatly reduced number of points for faster execution
         den <- density(row, n=10, bw=bandwidth, na.rm=TRUE)
-        hc <- hc %>%
-            hc_add_series_density(den, name=group, area=TRUE) %>%
-            hc_new_sparkline()
+        hc <- hc_add_series_density(hc, den, name=group, area=TRUE)
     }
+    hc <- hc_new_sparkline(hc)
     return(hc)
 }
 
