@@ -59,15 +59,21 @@ $(function() {
     };
 });
 
-/* Correctly position the tooltip */
-function tooltipPos (w, h, point) {
+/** Position the Highcharts tooltip to a relative point
+ * @param {Number} width Tooltip's width
+ * @param {Number} height Tooltip's height
+ * @param {Object} point Position of interest
+ * @return {Object} X and Y coordinates
+ */
+function tooltipPos (width, height, point) {
     return {
-        x: point.plotX - w / 2,
-        y: point.plotY - h
+        x: point.plotX - width / 2,
+        y: point.plotY - height
     };
 }
 
-/* Draw sparklines based on the JSON code from the Sparkline HTML element */
+/** Draw sparklines based on the JSON code from the Sparkline HTML element
+ */ 
 function drawSparklines() {
     var $data = $('sparkline'), sparkline, obj;
 

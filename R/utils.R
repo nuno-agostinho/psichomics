@@ -476,5 +476,5 @@ hc_add_series_density <- function (hc, x, area = FALSE, ...) {
 renderDataTableSparklines <- function(..., options=NULL) {
     # Escape is set to FALSE to render the Sparkline HTML elements
     renderDataTable(..., escape=FALSE, env=parent.frame(n=1), options=c(
-        list(drawCallback=JS("function() { drawSparklines(); }")), options))
+        list(drawCallback=JS("drawSparklines")), options))
 }
