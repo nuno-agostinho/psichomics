@@ -147,13 +147,19 @@ pcaServer <- function(input, output, session) {
     selectGroupsServer(session, "colourGroups", getClinicalData(),
                        "Clinical data")
     
+    observeEvent(input$takeMeThere,
+                 shinyjs::runjs("showDataPanel('alternative');"))
+    
     # Perform principal component analysis (PCA)
     observeEvent(input$calculate, {
         psi <- isolate(getInclusionLevels())
         
         if (is.null(psi)) {
-            errorModal(session, "Inclusion levels missing",
-                       "Insert or calculate exon/intron inclusion levels.")
+            errorModal(
+                session, "Inclusion levels missing",
+                "Insert or calculate alternative splicing event quantification.",
+                footer=actionButton(ns("takeMeThere"), "Calculate",
+                                    "data-dismiss"="modal", class="btn-danger"))
         } else {
             # Subset data by the selected clinical groups
             selected <- isolate(input$dataGroups)
