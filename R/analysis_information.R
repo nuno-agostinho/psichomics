@@ -212,6 +212,11 @@ renderGeneticInfo <- function(ns, output, info, species, assembly, grch37) {
                    href=paste0("https://genome.ucsc.edu/cgi-bin/hgTracks",
                                if(grch37) { "?db=hg19" }, "&position=chr",
                                info$seq_region_name, ":", start, "-", end)),
+            if (species == "human") 
+                tags$a("Human Protein Atlas", icon("external-link"),
+                       target="_blank", class="btn btn-link",
+                       href=paste0("http://www.proteinatlas.org/", info$id, 
+                                   "/cancer")),
             radioButtons(ns("zoom"), "Zoom", inline=TRUE,
                          c("Show all transcripts"="all",
                            "Zoom to splicing event"="event")),
