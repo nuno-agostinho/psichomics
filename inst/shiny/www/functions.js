@@ -18,6 +18,16 @@ function showDataPanel(panelVal) {
     $("div[value*='" + panelVal + "'] > div[role='tabpanel']").collapse("show")
 }
 
+function showDiffSplicing (event) {
+        $("select[id*='selectizeAnalysis']").selectize()[0].selectize.setValue("Differential analysis (per splicing event)");
+        $("select[id*='selectizeEvent']").selectize()[0].selectize.setValue(event);
+}
+
+function createDiffSplicingLinks(row, data, index) {
+    $('td:eq(0)', row).html("<a onclick='showDiffSplicing(\"" + data[0] + "\")' href='javascript:void(0);'>" + data[0] + "</a>");
+    return row;
+}
+
 /* Get which checkboxes are checked in the groups section */
 Shiny.addCustomMessageHandler('getCheckedBoxes', function(variable) {   
     var selected = [];
