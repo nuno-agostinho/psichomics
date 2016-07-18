@@ -1,3 +1,253 @@
+#' Modified from lawstat::levene.test
+levene.test <- function (y, group, location = c("median", "mean", "trim.mean"), 
+                         trim.alpha = 0.25, bootstrap = FALSE, num.bootstrap = 1000, 
+                         kruskal.test = FALSE, correction.method = c("none", "correction.factor", 
+                                                                     "zero.removal", "zero.correction")) 
+{
+    if (length(y) != length(group)) {
+        stop("the length of the data (y) does not match the length of the group")
+    }
+    location <- match.arg(location)
+    correction.method <- match.arg(correction.method)
+    DNAME = deparse(substitute(y))
+    y <- y[!is.na(y)]
+    group <- group[!is.na(y)]
+    if ((location == "trim.mean") & (trim.alpha == 1)) {
+        stop("trim.alpha value of 0 to 0.5 should be provided for the trim.mean location")
+    }
+    reorder <- order(group)
+    group <- group[reorder]
+    y <- y[reorder]
+    gr <- group
+    group <- as.factor(group)
+    if (location == "mean") {
+        means <- tapply(y, group, mean)
+        METHOD <- "classical Levene's test based on the absolute deviations from the mean"
+    }
+    else if (location == "median") {
+        means <- tapply(y, group, median)
+        METHOD = "modified robust Brown-Forsythe Levene-type test based on the absolute deviations from the median"
+    }
+    else {
+        location = "trim.mean"
+        trimmed.mean <- function(y) mean(y, trim = trim.alpha)
+        means <- tapply(y, group, trimmed.mean)
+        METHOD <- "modified robust Levene-type test based on the absolute deviations from the trimmed mean"
+    }
+    n <- tapply(y, group, length)
+    resp.mean <- abs(y - means[group])
+    ngroup <- n[group]
+    if (location != "median" && correction.method != "correction.factor") {
+        METHOD <- paste(METHOD, "(", correction.method, "not applied because the location is not set to median", 
+                        ")")
+        correction.method <- "none"
+    }
+    if (correction.method == "correction.factor") {
+        METHOD <- paste(METHOD, "with correction factor")
+        correction <- sqrt(ngroup/(ngroup - 1))
+        resp.mean <- correction * resp.mean
+    }
+    if (correction.method == "zero.removal" || correction.method == 
+        "zero.correction") {
+        if (correction.method == "zero.removal") {
+            METHOD <- paste(METHOD, "with Hines-Hines structural zero removal method")
+        }
+        if (correction.method == "zero.correction") {
+            METHOD <- paste(METHOD, "with modified structural zero removal method and correction factor")
+        }
+        resp.mean <- y - means[group]
+        k <- length(n)
+        temp <- double()
+        endpos <- double()
+        startpos <- double()
+        for (i in 1:k) {
+            group.size <- n[i]
+            j <- i - 1
+            if (i == 1) 
+                start <- 1
+            else start <- sum(n[1:j]) + 1
+            startpos <- c(startpos, start)
+            end <- sum(n[1:i])
+            endpos <- c(endpos, end)
+            sub.resp.mean <- resp.mean[start:end]
+            sub.resp.mean <- sub.resp.mean[order(sub.resp.mean)]
+            if (group.size%%2 == 1) {
+                mid <- (group.size + 1)/2
+                temp2 <- sub.resp.mean[-mid]
+                if (correction.method == "zero.correction") {
+                    ntemp <- length(temp2) + 1
+                    correction <- sqrt((ntemp - 1)/ntemp)
+                    temp2 <- correction * temp2
+                }
+            }
+            if (group.size%%2 == 0) {
+                mid <- group.size/2
+                if (correction.method == "zero.removal") {
+                    denom <- sqrt(2)
+                }
+                else {
+                    denom <- 1
+                }
+                replace1 <- (sub.resp.mean[mid + 1] - sub.resp.mean[mid])/denom
+                temp2 <- sub.resp.mean[c(-mid, -mid - 1)]
+                temp2 <- c(temp2, replace1)
+                if (correction.method == "zero.correction") {
+                    ntemp <- length(temp2) + 1
+                    correction <- sqrt((ntemp - 1)/ntemp)
+                    temp2 <- correction * temp2
+                }
+            }
+            temp <- c(temp, temp2)
+        }
+        resp.mean <- abs(temp)
+        zero.removal.group <- group[-endpos]
+    }
+    else {
+        correction.method = "none"
+    }
+    if (correction.method == "zero.removal" || correction.method == 
+        "zero.correction") {
+        d <- zero.removal.group
+    }
+    else {
+        d <- group
+    }
+    if (kruskal.test == FALSE) {
+        nv <- anova(lm(resp.mean ~ d))
+        statistic <- nv[1, 4]
+        p.value <- nv[1, 5]
+    }
+    else {
+        METHOD <- paste("rank-based (Kruskal-Wallis)", METHOD)
+        ktest <- kruskal.test(resp.mean, d)
+        statistic <- ktest$statistic
+        p.value = ktest$p.value
+    }
+    non.bootstrap.p.value <- p.value
+    if (bootstrap == TRUE) {
+        METHOD <- paste("bootstrap", METHOD)
+        R <- 0
+        N <- length(y)
+        frac.trim.alpha <- 0.2
+        b.trimmed.mean <- function(y) {
+            nn <- length(y)
+            wt <- rep(0, nn)
+            y2 <- y[order(y)]
+            lower <- ceiling(nn * frac.trim.alpha) + 1
+            upper <- floor(nn * (1 - frac.trim.alpha))
+            if (lower > upper) 
+                stop("frac.trim.alpha value is too large")
+            m <- upper - lower + 1
+            frac <- (nn * (1 - 2 * frac.trim.alpha) - m)/2
+            wt[lower - 1] <- frac
+            wt[upper + 1] <- frac
+            wt[lower:upper] <- 1
+            return(weighted.mean(y2, wt))
+        }
+        b.trim.means <- tapply(y, group, b.trimmed.mean)
+        rm <- y - b.trim.means[group]
+        for (j in 1:num.bootstrap) {
+            sam <- sample(rm, replace = TRUE)
+            boot.sample <- sam
+            if (min(n) < 10) {
+                U <- runif(1) - 0.5
+                means <- tapply(y, group, mean)
+                v <- sqrt(sum((y - means[group])^2)/N)
+                boot.sample <- ((12/13)^(0.5)) * (sam + v * U)
+            }
+            if (location == "mean") {
+                boot.means <- tapply(boot.sample, group, mean)
+            }
+            else if (location == "median") {
+                boot.means <- tapply(boot.sample, group, median)
+            }
+            else {
+                location = "trim.mean"
+                trimmed.mean.2 <- function(boot.sample) mean(boot.sample, 
+                                                             trim = trim.alpha)
+                boot.means <- tapply(boot.sample, group, trimmed.mean.2)
+            }
+            resp.boot.mean <- abs(boot.sample - boot.means[group])
+            if (correction.method == "correction.factor") {
+                correction <- sqrt(ngroup/(ngroup - 1))
+                resp.mean <- correction * resp.boot.mean
+            }
+            if (correction.method == "zero.removal" || correction.method == 
+                "zero.correction") {
+                resp.mean <- boot.sample - boot.means[group]
+                k <- length(n)
+                temp <- double()
+                endpos <- double()
+                startpos <- double()
+                for (i in 1:k) {
+                    group.size <- n[i]
+                    j <- i - 1
+                    if (i == 1) 
+                        start <- 1
+                    else start <- sum(n[1:j]) + 1
+                    startpos <- c(startpos, start)
+                    end <- sum(n[1:i])
+                    endpos <- c(endpos, end)
+                    sub.resp.mean <- resp.mean[start:end]
+                    sub.resp.mean <- sub.resp.mean[order(sub.resp.mean)]
+                    if (group.size%%2 == 1) {
+                        mid <- (group.size + 1)/2
+                        temp2 <- sub.resp.mean[-mid]
+                        if (correction.method == "zero.correction") {
+                            ntemp <- length(temp2) + 1
+                            correction <- sqrt((ntemp - 1)/ntemp)
+                            temp2 <- correction * temp2
+                        }
+                    }
+                    if (group.size%%2 == 0) {
+                        mid <- group.size/2
+                        if (correction.method == "zero.removal") {
+                            denom <- sqrt(2)
+                        }
+                        else {
+                            denom <- 1
+                        }
+                        replace1 <- (sub.resp.mean[mid + 1] - sub.resp.mean[mid])/denom
+                        temp2 <- sub.resp.mean[c(-mid, -mid - 1)]
+                        temp2 <- c(temp2, replace1)
+                        if (correction.method == "zero.correction") {
+                            ntemp <- length(temp2) + 1
+                            correction <- sqrt((ntemp - 1)/ntemp)
+                            temp2 <- correction * temp2
+                        }
+                    }
+                    temp <- c(temp, temp2)
+                }
+                resp.boot.mean <- abs(temp)
+                zero.removal.group <- group[-endpos]
+            }
+            if (correction.method == "zero.removal" || correction.method == 
+                "zero.correction") {
+                d <- zero.removal.group
+            }
+            else {
+                d <- group
+            }
+            if (kruskal.test == FALSE) {
+                statistic2 = anova(lm(resp.boot.mean ~ d))[1, 
+                                                           4]
+            }
+            else {
+                bktest <- kruskal.test(resp.boot.mean, d)
+                statistic2 <- bktest$statistic
+            }
+            if (statistic2 > statistic) 
+                R <- R + 1
+        }
+        p.value <- R/num.bootstrap
+    }
+    STATISTIC = statistic
+    names(STATISTIC) = "Test Statistic"
+    structure(list(statistic = STATISTIC, p.value = p.value, 
+                   method = METHOD, data.name = DNAME, non.bootstrap.p.value = non.bootstrap.p.value), 
+              class = "htest")
+}
+
 diffAnalysisTableUI <- function(id) {
     ns <- NS(id)
     tagList(
@@ -12,8 +262,10 @@ diffAnalysisTableUI <- function(id) {
                     c("Variance and median"="basicStats",
                       "Wilcoxon Test (1 or 2 groups)"="wilcox",
                       "Kruskal-Wallis Rank Sum Test (2 or more groups)"="kruskal", 
-                      "Levene's test (2 or more groups)"="levene"),
-                    selected=c("basicStats", "wilcox", "kruskal", "levene")),
+                      "Levene's test (2 or more groups)"="levene",
+                      "Alternative splicing quantification density"="density"),
+                    selected=c("basicStats", "wilcox", "kruskal", "levene",
+                               "density")),
                 # Disable checkbox of basic statistics
                 tags$script('$("[value=basicStats]").attr("disabled", true);'),
                 actionButton(ns("startAnalyses"), class="btn-primary", 
@@ -22,24 +274,10 @@ diffAnalysisTableUI <- function(id) {
             ), mainPanel(
                 uiOutput(ns("showColumns")),
                 dataTableOutput(ns("statsTable")),
-                highchartOutput(ns("densitySparklines"))
+                highchartOutput(ns("densitySparklines"), 0, 0)
             )
         )
     )
-}
-
-#' @importFrom highcharter highchart hc_chart hc_xAxis hc_plotOptions hc_tooltip
-#' JS hc_add_series_scatter
-densitySparkline <- function(hc, psi, type, bandwidth) {
-    for (group in unique(type)) {
-        row  <- psi[type == group]
-        # Calculate the density of inclusion levels for each sample type with a
-        # greatly reduced number of points for faster execution
-        den <- density(row, n=10, bw=bandwidth, na.rm=TRUE)
-        hc <- hc_add_series_density(hc, den, name=group, area=TRUE)
-    }
-    hc <- hc_new_sparkline(hc)
-    return(hc)
 }
 
 #' Perform statistical analysis on a vector with elements from different groups
@@ -54,26 +292,19 @@ densitySparkline <- function(hc, psi, type, bandwidth) {
 #' @return A data frame row with the results
 statsAnalysis <- function(vector, group, threshold=1, step=100,
                           analyses=c("wilcox", "kruskal", "levene")) {
-    # Filter vector by a given threshold
-    filterByThreshold <- function(thisType, allTypes, vector, threshold) {
-        vector <- vector[thisType == allTypes]
-        if ( sum(!is.na(vector)) >= threshold )
-            return(vector)
-    }
-    names(vector) <- group
-    vector <- lapply(unique(group), filterByThreshold, group, vector, 
-                     threshold)
-    
-    vector  <- unlist(vector)
-    group <- names(vector)
-    vector  <- as.numeric(vector)
-    len  <- length(unique(group))
+    series <- split(vector, group)
+    samples <- vapply(series, function(i) sum(!is.na(i)), integer(1))
+    valid <- names(series)[samples >= threshold]
+    inGroup <- group %in% valid
+    group <- group[inGroup]
+    vector <- vector[inGroup]
+    len  <- length(valid)
     
     # Wilcoxon tests
     wilcox <- NULL
-    if ("wilcox" %in% analyses) {
+    if (any("wilcox" == analyses)) {
         if (len == 2) {
-            typeOne <- group == unique(group)[1]
+            typeOne <- group == valid[1]
             wilcox  <- suppressWarnings(wilcox.test(vector[typeOne], 
                                                     vector[!typeOne]))
         } else if (len == 1) {
@@ -83,40 +314,45 @@ statsAnalysis <- function(vector, group, threshold=1, step=100,
     
     # Kruskal-Wallis test
     kruskal <- NULL
-    if ("kruskal" %in% analyses && len >= 2) {
-        kruskal <- tryCatch(kruskal.test(vector, factor(group)),
-                            error=return)
-        if ("error" %in% class(kruskal)) kruskal <- NULL
+    if (any("kruskal" == analyses) && len >= 2) {
+        kruskal <- tryCatch(kruskal.test(vector, group), error=return)
+        if (any("error" == class(kruskal))) kruskal <- NULL
     }
     
     # Levene's test
     levene <- NULL
-    if ("levene" %in% analyses && len >= 2) {
+    if (any("levene" == analyses) && len >= 2) {
         nas <- is.na(vector)
-        levene <- tryCatch(levene.test(vector[!nas], factor(group[!nas])),
-                           error=return)
-        if ("error" %in% class(levene)) levene <- NULL
+        levene <- tryCatch(levene.test(vector[!nas], group[!nas]), error=return)
+        if (any("error" == class(levene))) levene <- NULL
     }
     
     # Density sparklines
-    hc <- getDensitySparklines()
-    hc <- densitySparkline(hc, vector, group, 0.1)
-    setDensitySparklines(hc)
+    sparkline <- NULL
+    if (any("density" == analyses)) {
+        data <- NULL
+        validSeries <- series[valid]
+        for (group in validSeries) {
+            # Calculate the density of inclusion levels for each sample type 
+            # with a greatly reduced number of points for faster execution
+            den <- density(group, n=10, bw=0.01, na.rm=TRUE)
+            data <- c(data, paste(sprintf('{"x":%s,"y":%s}', den$x, den$y),
+                                  collapse=","))
+        }
+        sparkline <- paste(sprintf('{"name":"%s", "data":[%s]}', 
+                                   names(validSeries), data), collapse=",")
+    }
     
     # Variance and median
-    group <- split(vector, group)
-    samples <- lapply(group, function(i) sum(!is.na(i))) # Number of samples
-    med <- lapply(group, median, na.rm=TRUE) # Median
-    var <- lapply(group, var, na.rm=TRUE) # Variance
+    med <- lapply(series, median, na.rm=TRUE) # Median
+    var <- lapply(series, var, na.rm=TRUE) # Variance
     
-    vector <- c(Samples=samples, Wilcox=wilcox, Kruskal=kruskal, 
-                Levene=levene, Variance=var, Median=med)
+    vector <- c(Density=sparkline, Samples=samples, Wilcox=wilcox, 
+                Kruskal=kruskal, Levene=levene, Variance=var, Median=med)
     vector <- vector[!vapply(vector, is.null, logical(1))] # Remove NULL
-    vector <- data.frame(vector, stringsAsFactors=FALSE)
     return(vector)
 }
 
-#' @importFrom lawstat levene.test
 #' @importFrom stats kruskal.test median wilcox.test var
 #' @importFrom DT renderDataTable
 diffAnalysisTableServer <- function(input, output, session) {
@@ -166,19 +402,10 @@ diffAnalysisTableServer <- function(input, output, session) {
         type <- getSampleTypes(ids)
         
         # cl <- parallel::makeCluster(getOption("cl.cores", getCores()))
-        step <- 100 # Avoid updating after analysing each event
+        step <- 50 # Avoid updating after analysing each event
         startProgress("Performing statistical analysis", 
-                      divisions=4+round(nrow(psi)/step))
+                      divisions=5 + round(nrow(psi)/step))
         time <- Sys.time()
-        
-        hc <- highchart() %>%
-            hc_xAxis(min=0, max=1) %>%
-            hc_tooltip(
-                headerFormat="<small>Inclusion levels: {point.x}</small></br>",
-                pointFormat=paste(
-                    span(style="color:{point.color}", "\u25CF "),
-                    tags$b("{series.name}"), br()))
-        setDensitySparklines(hc)
         
         count <- 0
         stats <- apply(psi, 1, function(...) {
@@ -187,29 +414,73 @@ diffAnalysisTableServer <- function(input, output, session) {
                 updateProgress("Performing statistical analysis", console=FALSE)
             return(statsAnalysis(...))
         }, factor(type), threshold=1, step=step, analyses=statsChoices)
+        print(Sys.time() - time)
         
-        # Convert to data frame
-        df <- do.call(rbind.fill, stats)
+        # Check the column names of the different columns
+        # df <- do.call(rbind.fill, stats)
+        ns <- lapply(stats, names)
+        uniq <- unique(ns)
+        match <- fastmatch::fmatch(ns, uniq)
+        
+        # Convert matrix that share the same name to data frame (way faster)
+        updateProgress("Preparing data")
+        ll <- list()
+        for (k in seq_along(uniq)) {
+            df <- lapply(stats[match == k], data.frame)
+            ll <- c(ll, list(do.call(rbind, df)))
+        }
+        
+        # Bind all data frames together
+        df <- do.call(plyr::rbind.fill, ll)
+        rownames(df) <- unlist(lapply(ll, rownames))
+        print(Sys.time() - time)
+        
+        # Remove columns of no interest
         df <- df[, !grepl("method|data.name", colnames(df))]
-        updateProgress("Performing statistical analysis", console=FALSE)
         
         # Calculate delta variance and delta median if there are only 2 groups
         deltaVar <- df[, grepl("Variance", colnames(df)), drop=FALSE]
         if (ncol(deltaVar) == 2) {
+            updateProgress("Calculating delta variance and median")
             deltaVar <- deltaVar[, 2] - deltaVar[, 1]
             deltaMed <- df[, grepl("Median", colnames(df))]
             deltaMed <- deltaMed[, 2] - deltaMed[, 1]
             df <- cbind(df, deltaVar, deltaMed)
         }
-        updateProgress("Performing statistical analysis", console=FALSE)
         
-        hc <- getDensitySparklines()
-        assign("hc2", hc, .GlobalEnv)
-        sparklines <- hchart(hc)
-        stats <- cbind(Density=sparklines, df)
-        rownames(stats) <- rownames(psi)
-        setDifferentialAnalyses(stats)
-        updateProgress("Performing statistical analysis", console=FALSE)
+        if (any("density" == statsChoices)) {
+            updateProgress("Calculating the density of inclusion levels")
+            hc <- highchart() %>%
+                hc_xAxis(min=0, max=1) %>%
+                hc_tooltip(
+                    headerFormat="<small>Inclusion levels: {point.x}</small><br/>",
+                    pointFormat=paste(
+                        span(style="color:{point.color}", "\u25CF "),
+                        tags$b("{series.name}"), br())) %>%
+                hc_chart(width=120, height=20, backgroundColor="", 
+                         type="areaspline", margin=c(2, 0, 2, 0), 
+                         style=list(overflow='visible')) %>%
+                hc_title(text="") %>%
+                hc_credits(enabled=FALSE) %>%
+                hc_xAxis(visible=FALSE) %>%
+                hc_yAxis(endOnTick=FALSE, startOnTick=FALSE, visible=FALSE) %>%
+                hc_exporting(enabled=FALSE) %>%
+                hc_legend(enabled=FALSE) %>%
+                hc_tooltip(hideDelay=0, shared=TRUE) %>%
+                hc_plotOptions(series=list(animation=FALSE, lineWidth=1,
+                                           marker=list(radius=1),
+                                           fillOpacity=0.25))
+            
+            hc <- as.character(jsonlite::toJSON(hc$x$hc_opts, auto_unbox=TRUE))
+            hc <- substr(hc, 1, nchar(hc)-1)
+            
+            data <- df[ , "Density"]
+            json <- paste0(hc, ',"series":[', data, "]}")
+            # browser()
+            df[, "Density"] <- sprintf("<sparkline data-sparkline='%s'/>", json)
+        }
+        
+        setDifferentialAnalyses(df)
         
         # parallel::stopCluster(cl)
         print(Sys.time() - time)
@@ -397,8 +668,9 @@ diffAnalysisTableServer <- function(input, output, session) {
         # Remove NAs and add information to the statistical table
         opt <- opt[ , !is.na(opt[2, ])]
         df <- data.frame(t(opt))
-        stats[names(df)] <- NA
-        stats[rownames(df), names(df)] <- df
+        for (col in names(df)) {
+            stats[rownames(df), col] <- df[ , col]
+        }
         
         setDifferentialAnalyses(stats)
         closeProgress()
