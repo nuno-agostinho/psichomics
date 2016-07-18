@@ -6,6 +6,18 @@ function checkAllGroups() {
     });
 }
 
+/**
+ * Change active tab to the Data panel and expand the panel with the given value
+ * @param {String} panelVal Value of the panel to open
+ */
+function showDataPanel(panelVal) {
+    // Open Data tab
+    $("ul[id='nav'] > li > a[data-value*='Data']").tab("show")
+
+    // Expand panel of interest
+    $("div[value*='" + panelVal + "'] > div[role='tabpanel']").collapse("show")
+}
+
 /* Get which checkboxes are checked in the groups section */
 Shiny.addCustomMessageHandler('getCheckedBoxes', function(variable) {   
     var selected = [];
