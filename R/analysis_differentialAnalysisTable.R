@@ -511,7 +511,7 @@ diffAnalysisTableServer <- function(input, output, session) {
             if (!is.null(input$columns) && all(input$columns %in% names(stats)))
                 stats[, input$columns]
         }, style="bootstrap", selection="none", filter='top',
-        options=list(pageLength=10))
+        options=list(pageLength=10, rowCallback=JS("createDiffSplicingLinks")))
         
         # Prepare table to be downloaded
         output$download <- downloadHandler(
