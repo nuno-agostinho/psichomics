@@ -355,6 +355,8 @@ statsAnalysis <- function(vector, group, threshold=1, step=100,
 
 #' @importFrom stats kruskal.test median wilcox.test var
 #' @importFrom DT renderDataTable
+#' @importFrom jsonlite toJSON
+#' @importFrom highcharter hc_credits
 diffAnalysisTableServer <- function(input, output, session) {
     ns <- session$ns
     
@@ -471,7 +473,7 @@ diffAnalysisTableServer <- function(input, output, session) {
                                            marker=list(radius=1),
                                            fillOpacity=0.25))
             
-            hc <- as.character(jsonlite::toJSON(hc$x$hc_opts, auto_unbox=TRUE))
+            hc <- as.character(toJSON(hc$x$hc_opts, auto_unbox=TRUE))
             hc <- substr(hc, 1, nchar(hc)-1)
             
             data <- df[ , "Density"]
