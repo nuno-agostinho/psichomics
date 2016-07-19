@@ -385,7 +385,7 @@ calculateDensitySparklines <- function(data) {
         hc_yAxis(endOnTick=FALSE, startOnTick=FALSE, visible=FALSE) %>%
         hc_exporting(enabled=FALSE) %>%
         hc_legend(enabled=FALSE) %>%
-        hc_plotOptions(series=list(animation=FALSE, lineWidth=1,
+        hc_plotOptions(series=list(cursor="non", animation=FALSE, lineWidth=1,
                                    marker=list(radius=1), fillOpacity=0.25))
     hc <- as.character(toJSON(hc$x$hc_opts, auto_unbox=TRUE))
     hc <- substr(hc, 1, nchar(hc)-1)
