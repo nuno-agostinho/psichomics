@@ -7,6 +7,9 @@ All the CSS modifications are in the file "shiny/www/styles.css"}
 \usage{
 appUI()
 }
+\value{
+HTML elements
+}
 \description{
 The user interface (ui) controls the layout and appearance of the app
 All the CSS modifications are in the file "shiny/www/styles.css"

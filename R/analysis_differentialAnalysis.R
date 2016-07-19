@@ -1,6 +1,10 @@
 ## TODO(NunoA): plot using boxplots
 
+#' Interface for the analysis of an alternative splicing event
+#' @param id Character: identifier
 #' @importFrom highcharter highchartOutput
+#' @importFrom shiny tagList uiOutput NS sidebarLayout numericInput h3 mainPanel
+#' @return Character with the HTML interface
 diffAnalysisUI <- function(id) {
     ns <- NS(id)
     
@@ -24,9 +28,25 @@ diffAnalysisUI <- function(id) {
     )
 }
 
+#' Prepare density plot
+#' 
+#' The tooltip shows the median, variance, max, min and number of non-NA samples
+#' of each data series.
+#' 
+#' @inheritParams wilcox
+#' @param bandwidth Numeric: density bandwidth
+#' @param rug Boolean: include rug plot to better visualise data distribution 
+#' (TRUE by default)
+#' @param vLine Boolean: include vertical plot lines to indicate the mean and
+#' median of each group even when those groups are omitted
+#' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_plotOptions hc_tooltip
 #' JS hc_add_series_scatter
-prepareDensityPlot <- function(psi, type, bandwidth) {
+#' @importFrom stats median var
+#' 
+#' @return Highcharter object with density plot
+prepareDensityPlot <- function(psi, type, bandwidth, rug=TRUE, vLine=TRUE) {
+    # # Cross symbol try used for time marks
     # js <- "Highcharts.SVGRenderer.prototype.symbols.line =
     #       function(x, y, w, h) {
     # return ['M', x, y, 'L', x, y]; };"
@@ -68,28 +88,44 @@ prepareDensityPlot <- function(psi, type, bandwidth) {
         hc <- hc %>%
             hc_add_series_density(den, name=group, area=TRUE, median=med, 
                                   var=vari, samples=samples, max=max, 
-                                  color=color, min=min) %>%
-            hc_add_series_scatter(row, rep(0, length(row)),
-                                  marker=list(enabled=TRUE, symbol="circle",
-                                              radius=4, fillColor=color))
+                                  color=color, min=min)
+        # Rug plot
+        if (rug) {
+            hc <- hc_add_series_scatter(
+                hc, row, rep(0, length(row)), marker=list(
+                    enabled=TRUE, symbol="circle", radius=4, fillColor=color))
+        }
         # Save plot line with information
-        plotLines[[count + 1]] <- list(
-            label = list(text = paste("Median:", med, "/ Variance:", vari)),
-            # Colour the same as the series
-            color=color,
-            dashStyle="shortdash",
-            width=2,
-            value=med,
-            zIndex = 7)
+        if (vLine) {
+            plotLines[[count + 1]] <- list(
+                label = list(text = paste("Median:", med, "/ Variance:", vari)),
+                # Colour the same as the series
+                color=color,
+                dashStyle="shortdash",
+                width=2,
+                value=med,
+                zIndex = 7)
+        }
         allRows[[count + 1]] <- row
         count <- count + 1
     }
     
     # Add plotLines with information
-    hc <- hc %>% hc_xAxis(plotLines = plotLines)
+    if (vLine) hc <- hc %>% hc_xAxis(plotLines = plotLines)
     return(list(plot=hc, data=allRows))
 }
 
+#' Basic statistics performed on data
+#' 
+#' Variance and median of each group. If data has 2 groups, also calculates the
+#' delta variance and delta median.
+#' 
+#' @param data Numeric: data to analyse
+#' @param len Integer: number of groups
+#' 
+#' @importFrom shiny tagList br h4
+#' 
+#' @return HTML elements
 basicStats <- function(data, len) {
     vari <- vapply(data, var, numeric(1), na.rm = TRUE)
     medi <- vapply(data, median, numeric(1), na.rm = TRUE)
@@ -107,6 +143,13 @@ basicStats <- function(data, len) {
     return(ui)
 }
 
+#' Perform Wilcox analysis and return interface to show the results
+#' @param psi Numeric: quantification of one alternative splicing event
+#' @param type Character: group of each PSI index
+#' 
+#' @importFrom shiny tagList tags h4 br
+#' @importFrom stats wilcox.test
+#' @return HTML elements
 wilcox <- function(psi, type) {
     group <- unique(type)
     len <- length(group)
@@ -142,6 +185,10 @@ wilcox <- function(psi, type) {
     )
 }
 
+#' Perform Levene's test and return interface to show the results
+#' @inheritParams wilcox
+#' @importFrom shiny tagList tags h4 br
+#' @return HTML elements
 levene <- function(psi, type) {
     len <- length(unique(type))
     if (len >= 2) {
@@ -162,6 +209,11 @@ levene <- function(psi, type) {
     }
 }
 
+#' Perform Kruskal's test and return interface to show the results
+#' @inheritParams wilcox
+#' @importFrom shiny tagList tags h4 br
+#' @importFrom stats kruskal.test
+#' @return HTML elements
 kruskal <- function(psi, type) {
     len <- length(unique(type))
     if (len >= 2) {
@@ -180,6 +232,11 @@ kruskal <- function(psi, type) {
     }
 }
 
+#' Perform Fisher's exact test and return interface to show the results
+#' @inheritParams wilcox
+#' @importFrom shiny tagList tags h4 br
+#' @importFrom stats fisher.test
+#' @return HTML elements
 fisher <- function(psi, type) {
     stat <- try(R.utils::evalWithTimeout(
         fisher.test(psi, factor(type)),
@@ -200,6 +257,11 @@ fisher <- function(psi, type) {
     }
 }
 
+#' Perform Spearman's test and return interface to show the results
+#' @inheritParams wilcox
+#' @importFrom shiny tagList tags h4 br
+#' @importFrom stats var cor
+#' @return HTML elements
 spearman <- function(psi, type) {
     group <- unique(type)
     len <- length(group)
@@ -219,8 +281,11 @@ spearman <- function(psi, type) {
     }
 }
 
-#' @importFrom stats kruskal.test median wilcox.test var
-#' @importFrom lawstat levene.test
+#' Server logic for the analyses of a single alternative splicing event
+#' @param input Shiny input
+#' @param output Shiny ouput
+#' @param session Shiny session
+#' 
 #' @importFrom highcharter renderHighchart
 diffAnalysisServer <- function(input, output, session) {
     observe({

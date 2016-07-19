@@ -1,6 +1,13 @@
-#' User interface
+#' User interface for the data analyses
+#' 
+#' @param id Character: identifier
+#' @param tab Function to process HTML elements
+#' 
 #' @importFrom shinyBS bsTooltip
-analysesUI <- function(id, tab) {
+#' @importFrom shiny NS div icon fluidRow column selectizeInput conditionalPanel
+#' 
+#' @return HTML element as character
+analysesUI <- function(id, tab) { 
     ns <- NS(id)
     uiList <- getUiFunctions(ns, "analysis")
     sharedData$names <- sapply(uiList, attr, "name")
@@ -35,6 +42,12 @@ analysesUI <- function(id, tab) {
     )
 }
 
+#' Server logic for the analyses
+#' @param input Shiny input
+#' @param output Shiny ouput
+#' @param session Shiny session
+#' 
+#' @importFrom shiny observe observeEvent updateSelectizeInput
 analysesServer <- function(input, output, session) {
     # Run server logic from the scripts
     getServerFunctions("analysis")

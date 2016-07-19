@@ -10,6 +10,8 @@
 #' @param label Character: selectize label
 #' @param placeholder Character: selectize placeholder
 #' 
+#' @importFrom shiny fluidRow column uiOutput selectizeInput actionButton
+#' 
 #' @return Interface for group selection
 selectGroupsUI <- function (id, label, placeholder=
                                 "Click 'Edit' to create or edit groups") {
@@ -61,8 +63,13 @@ selectGroupsServer <- function(session, id, dataset, datasetName) {
 }
 
 #' User interface to group by column
+#' 
+#' @param ns Namespace function
+#' @param dataset Data frame: dataset of interest
+#' 
+#' @return HTML elements
 groupByColumn <- function(ns, dataset) {
-    list(
+    tagList(
         helpText(
             "Groups will be created automatically depending on the given",
             "column. Start typing", tags$b("pathologic stage"), "and choose",
@@ -72,30 +79,47 @@ groupByColumn <- function(ns, dataset) {
     )}
 
 #' User interface to group by row
-groupByRow <- function(ns) { list(
-    selectizeInput(
-        ns("groupRows"), "Row indexes", choices=NULL, multiple=TRUE,
-        # Allow to add new items
-        width="auto", options=list(
-            create=TRUE, createOnBlur=TRUE,
-            ## TODO(NunoA): only allow numbers (use selectize.js REGEX option)
-            # Hide discarded user-created items in the dropdown
-            persist=FALSE)),
-    helpText("Type ", tags$kbd("1:6, 8, 10:19"), "to create a group with rows",
-             "1 to 6, 8 and 10 to 19.")
-)}
+#' 
+#' @param ns Namespace function
+#' 
+#' @return HTML elements
+groupByRow <- function(ns) {
+    tagList(
+        selectizeInput(
+            ns("groupRows"), "Row indexes", choices=NULL, multiple=TRUE,
+            # Allow to add new items
+            width="auto", options=list(
+                create=TRUE, createOnBlur=TRUE,
+                # Hide discarded user-created items in the dropdown
+                persist=FALSE)),
+        helpText("Type ", tags$kbd("1:6, 8, 10:19"), "to create a group with",
+                 "rows 1 to 6, 8 and 10 to 19.")
+    )
+}
 
 #' User interface to group by subset expression
-groupByExpression <- function(ns) { list (
-    textInput(ns("groupExpression"), "Subset expression", width="auto"),
-    helpText('Type ', tags$kbd('X > 8 & Y == "alive"'), ' to select rows with',
-             'values higher than 8 for column X and "alive" for column Y.'),
-    uiOutput(ns("groupExpressionSuggestions"))
-)}
+#' 
+#' @param ns Namespace function
+#' 
+#' @return HTML elements
+groupByExpression <- function(ns) {
+    tagList (
+        textInput(ns("groupExpression"), "Subset expression", width="auto"),
+        helpText('Type ', tags$kbd('X > 8 & Y == "alive"'), ' to select rows',
+                 'with values higher than 8 for column X and "alive" for',
+                 'column Y.'),
+        uiOutput(ns("groupExpressionSuggestions"))
+    )
+}
 
 #' User interface to group by grep expression
+#' 
+#' @param ns Namespace function
+#' @param dataset Data frame: dataset of interest
+#' 
+#' @return HTML elements
 groupByGrep <- function(ns, dataset) {
-    list (
+    tagList (
         textInput(ns("grepExpression"), "Regular expression", width="auto"),
         selectizeInput(ns("grepColumn"), "Select column to GREP", selected=NULL, 
                        choices=names(dataset), width="auto", options=list(
@@ -103,6 +127,9 @@ groupByGrep <- function(ns, dataset) {
     )}
 
 #' Creates UI elements for the grouping feature
+#' @param id Character: identifier
+#' @param dataset Data frame or matrix: dataset of interest
+#' @return HTML elements
 groupsUI <- function(id, dataset) {
     ns <- NS(id)
     
@@ -129,12 +156,15 @@ groupsUI <- function(id, dataset) {
 
 #' Set new groups according to the user input
 #' 
-#' The groups are inserted in a matrix
-#' 
 #' @param session Shiny session
 #' @param input Shiny input
 #' @param output Shiny output
-createGroupFromInput <- function (session, input, output, dataset, datasetName) {
+#' @param dataset Data frame or matrix: dataset of interest
+#' @param datasetName Character: name of the dataset
+#' 
+#' @return Matrix with the group names and respective indexes
+createGroupFromInput <- function (session, input, output, dataset,
+                                  datasetName) {
     if (is.null(datasetName)) {
         errorAlert(session, "Data missing", "Load some data first.")
         return(NULL)
@@ -272,6 +302,8 @@ operateOnGroups <- function(input, session, sharedData, FUN, buttonId,
 #' @param input Shiny input
 #' @param output Shiny output
 #' @param session Shiny session
+#' @param dataset Data frame: dataset of interest
+#' @param datasetName Character: name of dataset
 #' 
 #' @importFrom DT renderDataTable dataTableOutput
 groupsServer <- function(input, output, session, dataset, datasetName) {

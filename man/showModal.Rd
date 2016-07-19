@@ -5,7 +5,7 @@
 \alias{infoModal}
 \alias{showModal}
 \alias{warningModal}
-\title{Simply show a modal}
+\title{Show a modal}
 \usage{
 showModal(session, title, ..., style = NULL,
   iconName = "exclamation-circle", footer = NULL, printMessage = FALSE,
@@ -34,9 +34,14 @@ NULL}
 \item{printMessage}{Boolean: print to console? FALSE by default}
 
 \item{size}{Character: Modal size ("small", "default" or "large")}
+
+\item{modalId}{Character: identifier}
 }
 \description{
 You can also use \code{errorModal} and \code{warningModal} to use template 
 modals already stylised to show errors and warnings respectively.
+}
+\seealso{
+showAlert
 }
 

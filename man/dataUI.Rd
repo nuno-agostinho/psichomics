@@ -2,14 +2,19 @@
 % Please edit documentation in R/data.R
 \name{dataUI}
 \alias{dataUI}
-\title{User interface}
+\title{User interface of the data module}
 \usage{
 dataUI(id, tab)
 }
 \arguments{
+\item{id}{Character: identifier}
+
 \item{tab}{Function to create tab}
 }
+\value{
+HTML elements
+}
 \description{
-User interface
+User interface of the data module
 }
 
