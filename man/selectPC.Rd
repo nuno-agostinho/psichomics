@@ -10,6 +10,8 @@ selectPC(ns, output, perc)
 \item{ns}{Shiny namespace function}
 
 \item{output}{Shiny output}
+
+\item{perc}{Numeric: principal components' percentage of explained variance}
 }
 \description{
 Interface and plots to help selecting principal components

@@ -7,7 +7,7 @@
 parseUniprotXML(xml)
 }
 \arguments{
-\item{XML}{response from Uniprot}
+\item{xml}{response from Uniprot}
 }
 \value{
 List containing protein length and data frame of protein features

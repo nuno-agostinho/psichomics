@@ -11,6 +11,7 @@
 #' 
 #' @importFrom shiny tags HTML
 #' @importFrom htmltools attachDependencies htmlDependency
+#' @importFrom utils packageVersion
 #' @export
 bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL, 
                       style = NULL)  {
@@ -48,8 +49,7 @@ bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL,
                                        "Close"),
                     footer))))
     shinyBSDep <- htmlDependency("shinyBS", packageVersion("shinyBS"),
-                                 src=c(href="sbs"),
-                                 script="shinyBS.js", 
+                                 src=c(href="sbs"), script="shinyBS.js", 
                                  stylesheet="shinyBS.css")
     attachDependencies(bsTag, shinyBSDep)
 }
@@ -165,6 +165,8 @@ textSuggestions <- function(id, words, novalue="No matching value", char=" ") {
 #' @family input elements
 #' @seealso \code{\link{updateTextAreaInput}}
 #'
+#' @importFrom shiny div validateCssUnit
+#'
 #' @examples
 #' ## Only run examples in interactive R sessions
 #' if (interactive()) {
@@ -226,9 +228,6 @@ textAreaInput <- function(inputId, label, value = "", width = NULL,
 #' }
 #' @export
 updateTextAreaInput <- updateTextInput
-
-alertNew <- function(...)
-    div(class="alert alert-warning alert-dismissible", role="alert", ...)
 
 #' Add scatter using Highcharts
 #' 

@@ -439,7 +439,10 @@ getFirebrowseDataChoices <- function() {
 }
 
 #' Creates a UI set with options to add data from TCGA/Firehose
+#' @param ns Namespace function
+#' 
 #' @importFrom shinyBS bsTooltip
+#' @importFrom shiny tagList uiOutput selectizeInput actionButton
 #' @return A UI set that can be added to a UI definition
 addTCGAdata <- function(ns) {
     cohorts <- getFirehoseCohorts()
@@ -481,6 +484,17 @@ firebrowseUI <- function(id, panel) {
           value="Add TCGA/Firehose data", uiOutput(ns("checkFirebrowse")))
 }
 
+#' Return an user interface depending on the status of the Firebrowse API
+#' 
+#' If the API is working, it'll be loaded. Else, a message will appear warning
+#' the user that the API is down and that will let check again if the API is 
+#' back online.
+#' 
+#' @param ns Namespace function
+#' 
+#' @importFrom shiny br icon tagList actionButton
+#' 
+#' @return HTML elements
 checkFirebrowse <- function(ns) {
     startProgress("Checking Firebrowse API", 1)
     if (isFirehoseUp()) {

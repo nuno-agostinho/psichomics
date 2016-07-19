@@ -8,6 +8,7 @@
 #' @param modalId Character: identifier of the modal
 #' @param replaceButtonId Character: identifier of the button to replace data
 #' @param keepButtonId Character: identifier of the button to append data
+#' @param session Shiny session
 loadedDataModal <- function(session, modalId, replaceButtonId, keepButtonId) {
     ns <- session$ns
     warningModal(session, "Data already loaded",
@@ -21,8 +22,10 @@ loadedDataModal <- function(session, modalId, replaceButtonId, keepButtonId) {
                  modalId=modalId)
 }
 
-#' User interface
+#' User interface of the data module
+#' @param id Character: identifier
 #' @param tab Function to create tab
+#' @return HTML elements
 dataUI <- function(id, tab) {
     ns <- NS(id)
     uiList <- getUiFunctions(ns, "data", bsCollapsePanel,
@@ -39,14 +42,18 @@ dataUI <- function(id, tab) {
 
 #' Creates a tabPanel template for a datatable with a title and description
 #'
+#' @param ns Namespace function
 #' @param title Character: tab title
 #' @param tableId Character: id of the datatable
 #' @param description Character: description of the table (optional)
 #' @param columns Character: column names of the datatable
 #' @param colsToShow Boolean: columns to show
+#' @param data Data frame: dataset of interest
 #'
 #' @importFrom shinyBS bsTooltip
 #' @importFrom DT dataTableOutput
+#' @importFrom shiny hr br tabPanel selectizeInput column fluidRow p mainPanel
+#' downloadButton
 #'
 #' @return The HTML code for a tabPanel template
 tabDataset <- function(ns, title, tableId, columns, colsToShow, data,
@@ -98,6 +105,7 @@ tabDataset <- function(ns, title, tableId, columns, colsToShow, data,
 #' @param output Shiny session output
 #' 
 #' @importFrom DT renderDataTable
+#' @importFrom shiny downloadHandler br
 createDataTab <- function(index, data, name, input, output) {
     tablename <- paste("table", name, index, sep="-")
     
@@ -121,7 +129,13 @@ createDataTab <- function(index, data, name, input, output) {
                                              row.names = TRUE, sep = "\t"))
 }
 
-#' Server logic
+#' Server logic of the data module
+#'
+#' @param input Shiny input
+#' @param output Shiny output
+#' @param session Shiny session
+#'
+#' @importFrom shiny includeMarkdown selectInput tabsetPanel
 #'
 #' @return Part of the server logic related to this tab
 dataServer <- function(input, output, session) {

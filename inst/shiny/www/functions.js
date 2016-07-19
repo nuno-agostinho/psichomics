@@ -1,5 +1,4 @@
-/* Check all groups when clicking the checkbox in the group table's header*/
-/* TODO(NunoA): Make this work... */
+/** Check all groups when clicking the checkbox in the group table's header */
 function checkAllGroups() {
     $("input[name='checkAllGroups']").change(function () {
         $("input[name='checkGroups']").prop('checked', $(this).prop("checked"));
@@ -12,10 +11,10 @@ function checkAllGroups() {
  */
 function showDataPanel(panelVal) {
     // Open Data tab
-    $("ul[id='nav'] > li > a[data-value*='Data']").tab("show")
+    $("ul[id='nav'] > li > a[data-value*='Data']").tab("show");
 
     // Expand panel of interest
-    $("div[value*='" + panelVal + "'] > div[role='tabpanel']").collapse("show")
+    $("div[value*='" + panelVal + "'] > div[role='tabpanel']").collapse("show");
 }
 
 function showDiffSplicing (event) {
@@ -35,7 +34,7 @@ Shiny.addCustomMessageHandler('getCheckedBoxes', function(variable) {
         selected.push($(this).attr('number'));
         
     });
-    /* Add value to variable in R */
+    // Add value to variable in R
     Shiny.onInputChange(variable, selected);
 });
 

@@ -12,6 +12,8 @@
 #     return(link)
 # }
 
+#' Splicing event types available
+#' @return Named character vector with splicing event types
 getSplicingEventChoices <- function() {
     c("Skipping exon (SE)" = "SE",
       "Mutually exclusive exons (MXE)" = "MXE",
@@ -21,6 +23,9 @@ getSplicingEventChoices <- function() {
       "Alternative last exon (ALE)" = "ALE")
 }
 
+#' Interface
+#' @param ns Namespace function
+#' @return HTML elements
 inclusionLevelsInterface <- function(ns) {
     tagList(
         uiOutput(ns("modal")),
@@ -37,6 +42,12 @@ inclusionLevelsInterface <- function(ns) {
                      "Calculate inclusion levels"))
 }
 
+#' Interface of the alternative splicing event quantification module
+#' 
+#' @param id Character: identifier
+#' @param panel Function to process HTML elements
+#' 
+#' @return HTML elements
 inclusionLevelsUI <- function(id, panel) {
     ns <- NS(id)
     title <- "Quantify alternative splicing events"
@@ -44,6 +55,13 @@ inclusionLevelsUI <- function(id, panel) {
           inclusionLevelsInterface(ns))
 }
 
+#' Server logic of the alternative splicing event quantification module
+#' 
+#' @param input Shiny input
+#' @param output Shiny ouput
+#' @param session Shiny session
+#' 
+#' @importFrom shiny reactive observeEvent
 inclusionLevelsServer <- function(input, output, session) {
     levels <- reactive({
         eventType <- input$eventType

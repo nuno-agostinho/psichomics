@@ -2,11 +2,19 @@
 % Please edit documentation in R/settings.R
 \name{settingsUI}
 \alias{settingsUI}
-\title{User interface}
+\title{User interface of the settings}
 \usage{
 settingsUI(id, tab)
 }
+\arguments{
+\item{id}{Character: identifier}
+
+\item{tab}{Function to create tabs}
+}
+\value{
+HTML elements
+}
 \description{
-User interface
+User interface of the settings
 }
 

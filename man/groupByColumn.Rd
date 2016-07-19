@@ -6,6 +6,14 @@
 \usage{
 groupByColumn(ns, dataset)
 }
+\arguments{
+\item{ns}{Namespace function}
+
+\item{dataset}{Data frame: dataset of interest}
+}
+\value{
+HTML elements
+}
 \description{
 User interface to group by column
 }
