@@ -78,7 +78,7 @@ $(function() {
 function tooltipPos (width, height, point) {
     return {
         x: point.plotX - width / 2,
-        y: point.plotY - height
+        y: point.plotY - height * 1.2
     };
 }
 
