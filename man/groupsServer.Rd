@@ -12,6 +12,10 @@ groupsServer(input, output, session, dataset, datasetName)
 \item{output}{Shiny output}
 
 \item{session}{Shiny session}
+
+\item{dataset}{Data frame: dataset of interest}
+
+\item{datasetName}{Character: name of dataset}
 }
 \description{
 Server function for data grouping

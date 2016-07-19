@@ -7,6 +7,8 @@
 loadedDataModal(session, modalId, replaceButtonId, keepButtonId)
 }
 \arguments{
+\item{session}{Shiny session}
+
 \item{modalId}{Character: identifier of the modal}
 
 \item{replaceButtonId}{Character: identifier of the button to replace data}

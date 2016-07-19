@@ -2,11 +2,17 @@
 % Please edit documentation in R/analysis_survival.R
 \name{survivalUI}
 \alias{survivalUI}
-\title{User interface of the survival curves}
+\title{User interface of survival analysis}
 \usage{
 survivalUI(id)
 }
+\arguments{
+\item{id}{Character: namespace identifier}
+}
+\value{
+Character with HTML
+}
 \description{
-User interface of the survival curves
+User interface of survival analysis
 }
 

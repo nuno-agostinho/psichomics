@@ -75,6 +75,10 @@ pcaUI <- function(id) {
 #' Interface and plots to help selecting principal components
 #' @param ns Shiny namespace function
 #' @param output Shiny output
+#' @param perc Numeric: principal components' percentage of explained variance
+#' 
+#' @importFrom shiny renderUI tagList hr selectizeInput checkboxGroupInput 
+#' actionButton 
 selectPC <- function(ns, output, perc) {
     output$selectPC <- renderUI({
         label <- sprintf("%s (%s%% explained variance)", 
@@ -99,7 +103,8 @@ selectPC <- function(ns, output, perc) {
 }
 
 #' Render the explained variance plot
-#' @param ouput Shiny output
+#' 
+#' @param output Shiny output
 #' @param pca PCA values
 #' 
 #' @importFrom highcharter highchart hc_chart hc_title hc_add_series 

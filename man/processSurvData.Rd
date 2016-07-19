@@ -4,7 +4,7 @@
 \alias{processSurvData}
 \title{Process survival data to calculate survival curves}
 \usage{
-processSurvData(timeStart, timeStop, event, groups, clinical)
+processSurvData(timeStart, timeStop, event, group, clinical)
 }
 \arguments{
 \item{timeStart}{Numeric: starting time of the interval or follow up time}
@@ -13,7 +13,7 @@ processSurvData(timeStart, timeStop, event, groups, clinical)
 
 \item{event}{Numeric: time of the event of interest}
 
-\item{groups}{Character: group of each individual}
+\item{group}{Character: group of each individual}
 
 \item{clinical}{Data.frame: clinical data}
 }

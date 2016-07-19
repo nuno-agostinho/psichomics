@@ -6,6 +6,9 @@
 \usage{
 addLocalFile(ns)
 }
+\arguments{
+\item{ns}{Namespace function}
+}
 \value{
 A UI set that can be added to a UI definition
 }

@@ -12,8 +12,15 @@ createGroupFromInput(session, input, output, dataset, datasetName)
 \item{input}{Shiny input}
 
 \item{output}{Shiny output}
+
+\item{dataset}{Data frame or matrix: dataset of interest}
+
+\item{datasetName}{Character: name of the dataset}
+}
+\value{
+Matrix with the group names and respective indexes
 }
 \description{
-The groups are inserted in a matrix
+Set new groups according to the user input
 }
 

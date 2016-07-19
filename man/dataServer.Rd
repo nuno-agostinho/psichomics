@@ -2,14 +2,21 @@
 % Please edit documentation in R/data.R
 \name{dataServer}
 \alias{dataServer}
-\title{Server logic}
+\title{Server logic of the data module}
 \usage{
 dataServer(input, output, session)
+}
+\arguments{
+\item{input}{Shiny input}
+
+\item{output}{Shiny output}
+
+\item{session}{Shiny session}
 }
 \value{
 Part of the server logic related to this tab
 }
 \description{
-Server logic
+Server logic of the data module
 }
 

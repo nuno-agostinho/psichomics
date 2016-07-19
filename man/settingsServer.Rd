@@ -2,11 +2,18 @@
 % Please edit documentation in R/settings.R
 \name{settingsServer}
 \alias{settingsServer}
-\title{Server logic}
+\title{Server logic of the settings}
 \usage{
 settingsServer(input, output, session)
 }
+\arguments{
+\item{input}{Shiny input}
+
+\item{output}{Shiny output}
+
+\item{session}{Shiny session}
+}
 \description{
-Server logic
+Server logic of the settings
 }
 
