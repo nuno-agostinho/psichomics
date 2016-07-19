@@ -1,4 +1,7 @@
 #' Modified from lawstat::levene.test
+#' @inheritParams lawstat::levene.test
+#' @importFrom stats anova lm
+#' @importFrom stats kruskal.test weighted.mean
 levene.test <- function (y, group, location = c("median", "mean", "trim.mean"), 
                          trim.alpha = 0.25, bootstrap = FALSE, num.bootstrap = 1000, 
                          kruskal.test = FALSE, correction.method = c("none", "correction.factor", 
@@ -248,6 +251,9 @@ levene.test <- function (y, group, location = c("median", "mean", "trim.mean"),
               class = "htest")
 }
 
+#' Interface for exploratory differential analyses
+#' @param id Character: identifier
+#' @return HTML elements
 diffAnalysisTableUI <- function(id) {
     ns <- NS(id)
     tagList(
@@ -284,13 +290,16 @@ diffAnalysisTableUI <- function(id) {
 #' 
 #' @param vector Numeric
 #' @param group Character: group of each element in the vector
-#' @param hc Highchart object used to get the density plots
 #' @param threshold Integer: minimum number of data points to perform analysis
 #' in a group (default is 1)
 #' @param analyses Character: name of the analyses to perform (all by default)
+#' @param step Numeric: number of events before the progress bar is updated
+#' (a bigger number allows for a faster execution)
+#' 
+#' @importFrom stats kruskal.test median wilcox.test var
 #' 
 #' @return A data frame row with the results
-statsAnalysis <- function(vector, group, threshold=1, step=100,
+statsAnalyses <- function(vector, group, threshold=1, step=100,
                           analyses=c("wilcox", "kruskal", "levene")) {
     series <- split(vector, group)
     samples <- vapply(series, function(i) sum(!is.na(i)), integer(1))
@@ -353,10 +362,292 @@ statsAnalysis <- function(vector, group, threshold=1, step=100,
     return(vector)
 }
 
-#' @importFrom stats kruskal.test median wilcox.test var
-#' @importFrom DT renderDataTable
+#' Calculate density sparklines for inclusion levels
+#' @param data Character: HTML-formatted data series of interest
+#' 
+#' @importFrom highcharter highchart hc_credits hc_tooltip hc_chart hc_title
+#' hc_xAxis hc_yAxis hc_exporting hc_legend hc_plotOptions
 #' @importFrom jsonlite toJSON
-#' @importFrom highcharter hc_credits
+#' 
+#' @return HTML element with sparkline data (character)
+calculateDensitySparklines <- function(data) {
+    hc <- highchart() %>%
+        hc_tooltip(
+            hideDelay=0, shared=TRUE,
+            headerFormat="<small>Inclusion levels: {point.x}</small><br/>",
+            pointFormat=paste(span(style="color:{point.color}", "\u25CF "),
+                              tags$b("{series.name}"), br())) %>%
+        hc_chart(width=120, height=20, backgroundColor="", type="areaspline", 
+                 margin=c(2, 0, 2, 0), style=list(overflow='visible')) %>%
+        hc_title(text="") %>%
+        hc_credits(enabled=FALSE) %>%
+        hc_xAxis(min=0, max=1, visible=FALSE) %>%
+        hc_yAxis(endOnTick=FALSE, startOnTick=FALSE, visible=FALSE) %>%
+        hc_exporting(enabled=FALSE) %>%
+        hc_legend(enabled=FALSE) %>%
+        hc_plotOptions(series=list(animation=FALSE, lineWidth=1,
+                                   marker=list(radius=1), fillOpacity=0.25))
+    hc <- as.character(toJSON(hc$x$hc_opts, auto_unbox=TRUE))
+    hc <- substr(hc, 1, nchar(hc)-1)
+    
+    json <- paste0(hc, ',"series":[', data, "]}")
+    sparklines <- sprintf("<sparkline data-sparkline='%s'/>", json)
+    return(sparklines)
+}
+
+#' Process survival curves terms using a cutoff to calculate survival curves
+#' @inheritParams processSurvData
+#' @param censoring Character: type of censoring for survival analysis
+processSurvTermsCutoff <- function(group, clinical, censoring, timeStart, 
+                                   timeStop, event) {
+    # Ignore timeStop if interval-censoring is not selected
+    if (!grepl("interval", censoring, fixed=TRUE) || 
+        timeStop == "") 
+        timeStop <- NULL
+    
+    # Check if using or not interval-censored data
+    formulaSurv <- ifelse(is.null(timeStop),
+                          "Surv(time, event, type=censoring) ~", 
+                          "Surv(time, time2, event, type=censoring) ~")
+    
+    survTime <- processSurvData(timeStart, timeStop, event, group, clinical)
+    
+    form <- tryCatch(formula(paste(formulaSurv, "groups")), 
+                     error = return)
+    if ("simpleError" %in% class(form)) return(NULL)
+    res <- list(form=form, survTime=survTime)
+    return(res)
+}
+
+#' Test the survival difference between two groups given a cutoff
+#' 
+#' @inheritParams processSurvTermsCutoff
+#' @param cutoff Numeric: Cut-off of interest
+#' @param data Numeric: attribute of interest of the clinical data
+#' @param group Pre-filled vector of NAs with the length of data
+#' @param filter Boolean or numeric: interest of the data elements
+#' 
+#' @importFrom survival survdiff
+#' @return p-value of the survival difference
+testSurvivalCutoff <- function(cutoff, data, group, filter, clinical,
+                               censoring, timeStart, timeStop, event) {
+    group[filter] <- data >= cutoff
+    
+    # Assign a value based on the inclusion levels cut-off
+    group[group == "TRUE"]  <- paste("Inclusion levels >=", cutoff)
+    group[group == "FALSE"] <- paste("Inclusion levels <", cutoff)
+    fillGroup <- group
+    
+    # Calculate survival curves
+    survTerms <- processSurvTermsCutoff(fillGroup, clinical, censoring, 
+                                        timeStart, timeStop, event)
+    form <- survTerms$form
+    time <- survTerms$survTime
+    
+    # If there's an error with survdiff, return NA
+    pvalue <- tryCatch({
+        # Test the difference between survival curves
+        diff <- survdiff(form, data=time)
+        
+        # Calculate p-value with 5 significant numbers
+        pvalue <- 1 - pchisq(diff$chisq, length(diff$n) - 1)
+        return(as.numeric(signifDigits(pvalue)))
+    }, error = function(e) NA)
+    return(pvalue)
+}
+
+#' Interface for calculating optimal cut-off and p-value for survival curves
+#' differences
+#' @param ns Namespace function
+optimSurvDiffUI <- function(ns) {
+    tagList(
+        hr(),
+        h3("Survival analyses"),
+        radioButtons(ns("censoring"), "Data censoring",
+                     selected="right",
+                     inline=TRUE, choices=c(
+                         Left="left",
+                         Right="right",
+                         Interval="interval",
+                         "Interval 2" = "interval2")),
+        selectizeInput(ns("timeStart"), choices = NULL, 
+                       "Follow up time"),
+        # If the chosen censoring contains the word 'interval',
+        # show this input
+        conditionalPanel(
+            paste0("input[id='", ns("censoring"),
+                   "'].indexOf('interval') > -1"),
+            selectizeInput(ns("timeStop"), choices=NULL, 
+                           "Ending time")),
+        helpText("In case there's no record for a patient, the",
+                 "days to last follow up will be used instead."),
+        selectizeInput(ns("event"), choices = NULL, 
+                       "Event of interest"),
+        radioButtons(
+            ns("selected"), "Perform survival analysis in:",
+            choices=c("Alternative splicing events currently in the table"="shown",
+                      "All alternative splicing events (slow process)"="all")),
+        actionButton(ns("survival"), class="btn-primary",
+                     "Perform survival analysis")
+    )
+}
+
+#' Perform all statistical analyses
+#' 
+#' @param session Shiny session
+#' @param input Shiny input
+#' @param psi Data frame or matrix: Alternative splicing event quantification
+#' @param statsChoices Character: analyses to perform
+#' 
+#' @importFrom plyr rbind.fill
+#' @importFrom fastmatch fmatch
+performStatsAnalyses <- function(session, input, psi, statsChoices) {
+    # Separate samples by their type
+    ids <- names(psi)
+    type <- getSampleTypes(ids)
+    
+    # cl <- parallel::makeCluster(getOption("cl.cores", getCores()))
+    step <- 50 # Avoid updating after analysing each event
+    startProgress("Performing statistical analysis", 
+                  divisions=5 + round(nrow(psi)/step))
+    time <- Sys.time()
+    
+    count <- 0
+    stats <- apply(psi, 1, function(...) {
+        count <<- count + 1
+        if (count %% step == 0)
+            updateProgress("Performing statistical analysis", console=FALSE)
+        return(statsAnalyses(...))
+    }, factor(type), threshold=1, step=step, analyses=statsChoices)
+    print(Sys.time() - time)
+    
+    # Check the column names of the different columns
+    ns <- lapply(stats, names)
+    uniq <- unique(ns)
+    match <- fmatch(ns, uniq)
+    
+    # Convert matrix that share the same name to data frame (way faster)
+    updateProgress("Preparing data")
+    ll <- list()
+    for (k in seq_along(uniq)) {
+        df <- lapply(stats[match == k], data.frame)
+        ll <- c(ll, list(do.call(rbind, df)))
+    }
+    
+    # Bind all data frames together
+    df <- do.call(rbind.fill, ll)
+    rownames(df) <- unlist(lapply(ll, rownames))
+    print(Sys.time() - time)
+    
+    # Remove columns of no interest
+    df <- df[, !grepl("method|data.name", colnames(df))]
+    
+    # Calculate delta variance and delta median if there are only 2 groups
+    deltaVar <- df[, grepl("Variance", colnames(df)), drop=FALSE]
+    if (ncol(deltaVar) == 2) {
+        updateProgress("Calculating delta variance and median")
+        deltaVar <- deltaVar[, 2] - deltaVar[, 1]
+        deltaMed <- df[, grepl("Median", colnames(df))]
+        deltaMed <- deltaMed[, 2] - deltaMed[, 1]
+        df <- cbind(df, deltaVar, deltaMed)
+    }
+    
+    if (any("density" == statsChoices)) {
+        updateProgress("Calculating the density of inclusion levels")
+        df[, "Density"] <- calculateDensitySparklines(df[, "Density"])
+    }
+    
+    setDifferentialAnalyses(df)
+    
+    # parallel::stopCluster(cl)
+    print(Sys.time() - time)
+    closeProgress()
+}
+
+#' Optimal survival difference given an inclusion level cut-off for a specific
+#' alternative splicing event
+#' 
+#' @param session Shiny session
+#' @param input Shiny input
+#' @param output Shiny output
+optimSurvDiff <- function(session, input, output) {
+    observe({
+        if (is.null(getDifferentialAnalyses()) || is.null(getClinicalData()))
+            return(NULL)
+        
+        output$survivalOptions <- renderUI(optimSurvDiffUI(session$ns))
+        
+        # Update selectize input label depending on the chosen censoring type
+        observe({
+            if (is.null(input$censoring)) return(NULL)
+            
+            label <- "Follow up time"
+            if (grepl("interval", input$censoring, fixed=TRUE))
+                label <- "Starting time"
+            updateSelectizeInput(session, "timeStart", label=label)
+        })
+        
+        updateClinicalParams(session)
+    })
+    
+    #' Calculate optimal survival cut-off for the inclusion levels of a given
+    #' alternative splicing event
+    observeEvent(input$survival, {
+        survTerms <- isolate({
+            # Get tumour sample IDs (normal and control samples are not
+            # interesting for survival analysis)
+            match <- getClinicalMatchFrom("Inclusion levels")
+            types <- getSampleTypes(names(match))
+            tumour <- match[!grepl("Normal|Control", types)]
+
+            # Group samples by the inclusion levels cut-off
+            clinical <- getClinicalData()
+            clinicalIDs <- nrow(clinical)
+            groups <- rep(NA, clinicalIDs)
+
+            censoring <- input$censoring
+            timeStart <- input$timeStart
+            timeStop  <- input$timeStop
+            dataEvent <- input$event
+            psi       <- getInclusionLevels()
+            stats     <- getDifferentialAnalyses()
+            display   <- input$statsTable_rows_current
+            selected  <- input$selected
+        })
+
+        if (selected == "shown") psi <- psi[display, ]
+        startProgress("Performing survival analysis", nrow(psi))
+
+        opt <- apply(psi, 1, function(vector) {
+            v <- as.numeric(vector[toupper(names(tumour))])
+
+            opt <- suppressWarnings(
+                optim(0, testSurvivalCutoff, data=v, group=groups,
+                      filter=tumour, clinical=clinical, censoring=censoring,
+                      timeStart=timeStart, timeStop=timeStop, event=dataEvent,
+                      # Method and parameters interval
+                      method="Brent", lower=0, upper=1))
+
+            updateProgress("Survival analysis", console=FALSE)
+            return(c("Optimal survival PSI cut-off"=opt$par,
+                     "Optimal survival difference"=opt$value))
+        })
+        # Remove NAs and add information to the statistical table
+        opt <- opt[ , !is.na(opt[2, ])]
+        df <- data.frame(t(opt))
+        for (col in names(df)) stats[rownames(df), col] <- df[ , col]
+
+        setDifferentialAnalyses(stats)
+        closeProgress()
+    })
+}
+
+#' Server logic of the exploratory differential analyses
+#' @param input Shiny input
+#' @param output Shiny ouput
+#' @param session Shiny session
+#' 
+#' @importFrom DT renderDataTable
 diffAnalysisTableServer <- function(input, output, session) {
     ns <- session$ns
     
@@ -373,17 +664,16 @@ diffAnalysisTableServer <- function(input, output, session) {
         ids <- names(psi)
         type <- getSampleTypes(ids)
         
-        bullet  <- "\u2022"
+        bullet <- "\u2022"
         groups <- NULL
-        for (each in unique(type))
-            groups <- tagList(groups, br(), bullet, each)
+        for (each in unique(type)) groups <- tagList(groups, br(), bullet, each)
         
         return(tagList(
             helpText("The data contains the following groups:", groups),
             hr()))
     })
     
-    
+    # Perform statistical analyses
     observeEvent(input$startAnalyses, {
         isolate({
             # Get event's inclusion levels
@@ -399,94 +689,7 @@ diffAnalysisTableServer <- function(input, output, session) {
             return(NULL)
         }
         
-        # Separate samples by their type
-        ids <- names(psi)
-        type <- getSampleTypes(ids)
-        
-        # cl <- parallel::makeCluster(getOption("cl.cores", getCores()))
-        step <- 50 # Avoid updating after analysing each event
-        startProgress("Performing statistical analysis", 
-                      divisions=5 + round(nrow(psi)/step))
-        time <- Sys.time()
-        
-        count <- 0
-        stats <- apply(psi, 1, function(...) {
-            count <<- count + 1
-            if (count %% step == 0)
-                updateProgress("Performing statistical analysis", console=FALSE)
-            return(statsAnalysis(...))
-        }, factor(type), threshold=1, step=step, analyses=statsChoices)
-        print(Sys.time() - time)
-        
-        # Check the column names of the different columns
-        # df <- do.call(rbind.fill, stats)
-        ns <- lapply(stats, names)
-        uniq <- unique(ns)
-        match <- fastmatch::fmatch(ns, uniq)
-        
-        # Convert matrix that share the same name to data frame (way faster)
-        updateProgress("Preparing data")
-        ll <- list()
-        for (k in seq_along(uniq)) {
-            df <- lapply(stats[match == k], data.frame)
-            ll <- c(ll, list(do.call(rbind, df)))
-        }
-        
-        # Bind all data frames together
-        df <- do.call(plyr::rbind.fill, ll)
-        rownames(df) <- unlist(lapply(ll, rownames))
-        print(Sys.time() - time)
-        
-        # Remove columns of no interest
-        df <- df[, !grepl("method|data.name", colnames(df))]
-        
-        # Calculate delta variance and delta median if there are only 2 groups
-        deltaVar <- df[, grepl("Variance", colnames(df)), drop=FALSE]
-        if (ncol(deltaVar) == 2) {
-            updateProgress("Calculating delta variance and median")
-            deltaVar <- deltaVar[, 2] - deltaVar[, 1]
-            deltaMed <- df[, grepl("Median", colnames(df))]
-            deltaMed <- deltaMed[, 2] - deltaMed[, 1]
-            df <- cbind(df, deltaVar, deltaMed)
-        }
-        
-        if (any("density" == statsChoices)) {
-            updateProgress("Calculating the density of inclusion levels")
-            hc <- highchart() %>%
-                hc_xAxis(min=0, max=1) %>%
-                hc_tooltip(
-                    headerFormat="<small>Inclusion levels: {point.x}</small><br/>",
-                    pointFormat=paste(
-                        span(style="color:{point.color}", "\u25CF "),
-                        tags$b("{series.name}"), br())) %>%
-                hc_chart(width=120, height=20, backgroundColor="", 
-                         type="areaspline", margin=c(2, 0, 2, 0), 
-                         style=list(overflow='visible')) %>%
-                hc_title(text="") %>%
-                hc_credits(enabled=FALSE) %>%
-                hc_xAxis(visible=FALSE) %>%
-                hc_yAxis(endOnTick=FALSE, startOnTick=FALSE, visible=FALSE) %>%
-                hc_exporting(enabled=FALSE) %>%
-                hc_legend(enabled=FALSE) %>%
-                hc_tooltip(hideDelay=0, shared=TRUE) %>%
-                hc_plotOptions(series=list(animation=FALSE, lineWidth=1,
-                                           marker=list(radius=1),
-                                           fillOpacity=0.25))
-            
-            hc <- as.character(toJSON(hc$x$hc_opts, auto_unbox=TRUE))
-            hc <- substr(hc, 1, nchar(hc)-1)
-            
-            data <- df[ , "Density"]
-            json <- paste0(hc, ',"series":[', data, "]}")
-            # browser()
-            df[, "Density"] <- sprintf("<sparkline data-sparkline='%s'/>", json)
-        }
-        
-        setDifferentialAnalyses(df)
-        
-        # parallel::stopCluster(cl)
-        print(Sys.time() - time)
-        closeProgress()
+        performStatsAnalyses(session, input, psi, statsChoices)
     })
     
     # Show table and respective interface when statistical table is available
@@ -522,161 +725,9 @@ diffAnalysisTableServer <- function(input, output, session) {
         )
     })
     
-    observe({
-        if (is.null(getDifferentialAnalyses()) || is.null(getClinicalData()))
-            return(NULL)
-        
-        output$survivalOptions <- renderUI({
-            tagList(
-                hr(),
-                h3("Survival analyses"),
-                radioButtons(ns("censoring"), "Data censoring",
-                             selected="right",
-                             inline=TRUE, choices=c(
-                                 Left="left",
-                                 Right="right",
-                                 Interval="interval",
-                                 "Interval 2" = "interval2")),
-                selectizeInput(ns("timeStart"), choices = NULL, 
-                               "Follow up time"),
-                # If the chosen censoring contains the word 'interval',
-                # show this input
-                conditionalPanel(
-                    paste0("input[id='", ns("censoring"),
-                           "'].indexOf('interval') > -1"),
-                    selectizeInput(ns("timeStop"), choices=NULL, 
-                                   "Ending time")),
-                helpText("In case there's no record for a patient, the",
-                         "days to last follow up will be used instead."),
-                selectizeInput(ns("event"), choices = NULL, 
-                               "Event of interest"),
-                radioButtons(
-                    ns("selected"), "Perform survival analysis in:",
-                    choices=c("Alternative splicing events currently in the table"="shown",
-                              "All alternative splicing events (slow process)"="all")),
-                actionButton(ns("survival"), class="btn-primary",
-                             "Perform survival analysis")
-            )
-        })
-        
-        # Update selectize input label depending on the chosen censoring type
-        observe({
-            if (is.null(input$censoring)) return(NULL)
-            
-            label <- "Follow up time"
-            if (grepl("interval", input$censoring, fixed=TRUE))
-                label <- "Starting time"
-            updateSelectizeInput(session, "timeStart", label=label)
-        })
-        
-        updateClinicalFields(session)
-    })
-    
-    observeEvent(input$survival, {
-        survTerms <- isolate({
-            # Get tumour sample IDs (normal and control samples are not
-            # interesting for survival analysis)
-            match <- getClinicalMatchFrom("Inclusion levels")
-            types <- getSampleTypes(names(match))
-            tumour <- match[!grepl("Normal|Control", types)]
-            
-            # Group samples by the inclusion levels cut-off
-            clinical <- getClinicalData()
-            clinicalIDs <- nrow(clinical)
-            groups <- rep(NA, clinicalIDs)
-            
-            censoring <- input$censoring
-            timeStart <- input$timeStart
-            timeStop  <- input$timeStop
-            dataEvent <- input$event
-            psi       <- getInclusionLevels()
-            stats     <- getDifferentialAnalyses()
-            display   <- input$statsTable_rows_current
-            selected  <- input$selected
-        })
-        
-        if (input$selected == "shown")
-            psi <- psi[display, ]
-        
-        startProgress("Performing survival analysis", nrow(psi))
-        
-        opt <- apply(psi, 1, function(vector) {
-            v <- as.numeric(vector[toupper(names(tumour))])
-            
-            #' @importFrom survival survdiff
-            testSurvival2 <- function(psiCutoff, groups, tumour, psi, clinical, 
-                                      censoring, timeStart, timeStop, dataEvent,
-                                      survTime) {
-                groups[tumour] <- psi >= psiCutoff
-                
-                # Assign a value based on the inclusion levels cut-off
-                # groups[is.na(groups)] <- "NA"
-                groups[groups == "TRUE"]  <- paste("Inclusion levels >=", psiCutoff)
-                groups[groups == "FALSE"] <- paste("Inclusion levels <", psiCutoff)
-                fillGroups <- groups
-                
-                processSurvTerms2 <- function(group, clinical, censoring, timeStart, 
-                                              timeStop, dataEvent, survTime) {
-                    # Ignore timeStop if interval-censoring is not selected
-                    if (!grepl("interval", censoring, fixed=TRUE) || 
-                        timeStop == "") 
-                        timeStop <- NULL
-                    
-                    # Check if using or not interval-censored data
-                    formulaSurv <- ifelse(is.null(timeStop),
-                                          "Surv(time, event, type=censoring) ~", 
-                                          "Surv(time, time2, event, type=censoring) ~")
-                    
-                    survTime <- processSurvData(timeStart, timeStop, dataEvent, 
-                                                group, clinical)
-                    
-                    form <- tryCatch(formula(paste(formulaSurv, "groups")), 
-                                     error = return)
-                    if ("simpleError" %in% class(form)) return(NULL)
-                    res <- list(form=form, survTime=survTime)
-                    return(res)
-                }
-                
-                # Calculate survival curves
-                survTerms <- processSurvTerms2(fillGroups, clinical, censoring, 
-                                               timeStart, timeStop, dataEvent,
-                                               survTime)
-                form <- survTerms$form
-                data <- survTerms$survTime
-                
-                # If there's an error with survdiff, return NA
-                pvalue <- tryCatch({
-                    # Test the difference between survival curves
-                    diff <- survdiff(form, data = data)
-                    
-                    # Calculate p-value with 5 significant numbers
-                    pvalue <- 1 - pchisq(diff$chisq, length(diff$n) - 1)
-                    return(as.numeric(signifDigits(pvalue)))
-                }, error = function(e) NA)
-                return(pvalue)
-            }
-            
-            opt <- suppressWarnings(
-                optim(0, testSurvival2, groups=groups, tumour=tumour, psi=v, 
-                      clinical=clinical, censoring=censoring, timeStart=timeStart,
-                      timeStop=timeStop, dataEvent=dataEvent, survTime=survTime,
-                      # Method and parameters interval
-                      method="Brent", lower=0, upper=1))
-            
-            updateProgress("Survival analysis", console=FALSE)
-            return(c("Optimal survival PSI cut-off"=opt$par, 
-                     "Optimal survival difference"=opt$value))
-        })
-        # Remove NAs and add information to the statistical table
-        opt <- opt[ , !is.na(opt[2, ])]
-        df <- data.frame(t(opt))
-        for (col in names(df)) {
-            stats[rownames(df), col] <- df[ , col]
-        }
-        
-        setDifferentialAnalyses(stats)
-        closeProgress()
-    })
+    # Optimal survival difference given an inclusion level cut-off for a 
+    # specific alternative splicing event
+    optimSurvDiff(session, input, output)
 }
 
 attr(diffAnalysisTableUI, "loader") <- "analysis"

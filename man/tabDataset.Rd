@@ -7,6 +7,8 @@
 tabDataset(ns, title, tableId, columns, colsToShow, data, description = NULL)
 }
 \arguments{
+\item{ns}{Namespace function}
+
 \item{title}{Character: tab title}
 
 \item{tableId}{Character: id of the datatable}
@@ -14,6 +16,8 @@ tabDataset(ns, title, tableId, columns, colsToShow, data, description = NULL)
 \item{columns}{Character: column names of the datatable}
 
 \item{colsToShow}{Boolean: columns to show}
+
+\item{data}{Data frame: dataset of interest}
 
 \item{description}{Character: description of the table (optional)}
 }

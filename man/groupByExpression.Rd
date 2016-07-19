@@ -6,6 +6,12 @@
 \usage{
 groupByExpression(ns)
 }
+\arguments{
+\item{ns}{Namespace function}
+}
+\value{
+HTML elements
+}
 \description{
 User interface to group by subset expression
 }

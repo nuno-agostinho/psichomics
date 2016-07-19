@@ -10,6 +10,7 @@ tabsFolder <- system.file("R", package="psichomics")
 
 #' Get number of significant digits
 #' @param n Numeric: number to round
+#' @importFrom shiny isolate
 signifDigits <- function(n) {
     return(isolate(formatC(n, getSignificant(), format="g")))
 }
@@ -354,7 +355,7 @@ groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE,
     return(finalGroups)
 }
 
-#' Simply show a modal
+#' Show a modal
 #' 
 #' You can also use \code{errorModal} and \code{warningModal} to use template 
 #' modals already stylised to show errors and warnings respectively.
@@ -363,8 +364,11 @@ groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE,
 #' @param session Current Shiny session
 #' @param iconName Character: FontAwesome icon name to appear with the title
 #' @param printMessage Boolean: print to console? FALSE by default
+#' @param modalId Character: identifier
 #' 
+#' @importFrom shiny renderUI div icon
 #' @importFrom shinyBS toggleModal
+#' @seealso showAlert
 #' @export
 showModal <- function(session, title, ..., style = NULL,
                       iconName = "exclamation-circle", footer = NULL,
@@ -399,6 +403,22 @@ infoModal <- function(session, title, ..., size = "small", footer = NULL) {
               printMessage = FALSE, iconName = "info-circle")
 }
 
+#' Show a modal
+#' 
+#' You can also use \code{errorAlert} and \code{warningAlert} to use template 
+#' alerts already stylised to show errors and warnings respectively.
+#' 
+#' @param session Shiny session
+#' @param ... Arguments to render as elements of alert
+#' @param title Character: title of the alert (optional)
+#' @param style Character: style of the alert ("alert-danger", "alert-warning" 
+#' or NULL)
+#' @param dismissable Boolean: is the alert dismissable? TRUE by default
+#' @param alertId Character: alert identifier
+#' 
+#' @seealso showModal
+#' @importFrom shiny span h3 renderUI div tagList
+#' @export
 showAlert <- function(session, ..., title=NULL, style=NULL, dismissable=TRUE, 
                       alertId="alert") {
     ns <- session$ns
@@ -425,12 +445,14 @@ showAlert <- function(session, ..., title=NULL, style=NULL, dismissable=TRUE,
     })
     }
 
+#' @rdname showAlert
 errorAlert <- function(session, ..., title=NULL, dismissable=TRUE,
                        alertId="alert") {
     showAlert(session, ..., style="alert-danger", title=title, 
               dismissable=dismissable, alertId=alertId)
 }
 
+#' @rdname showAlert
 warningAlert <- function(session, ..., title=NULL, dismissable=TRUE,
                          alertId="alert") {
     showAlert(session, ..., style="alert-warning", title=title,
@@ -475,6 +497,7 @@ getSampleTypes <- function(sample,
 #' @param message Character: progress message
 #' @param divisions Integer: number of divisions in the progress bar
 #' @param global Shiny's global variable
+#' @importFrom shiny Progress
 #' 
 #' @export
 startProgress <- function(message, divisions, global = sharedData) {

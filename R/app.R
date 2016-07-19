@@ -9,9 +9,9 @@ insideFile <- function(...) {
     return(system.file(..., package="psichomics"))
 }
 
-#' Check if a given function should be loaded by a 
+#' Check if a given function should be loaded by the calling module
 #' @param loader Character: name of the file responsible to load such function 
-#' @param child Function
+#' @param FUN Function
 #' @return Boolean vector
 loadBy <- function(loader, FUN) {
     attribute <- attr(FUN, "loader")
@@ -25,6 +25,7 @@ loadBy <- function(loader, FUN) {
 #' @param ... Extra arguments to pass to server functions
 #' @inheritParams getUiFunctions
 #' 
+#' @importFrom shiny callModule
 #' @return Invisible TRUE
 getServerFunctions <- function(loader, ..., priority=NULL) {
     # Get all functions ending with "Server"
@@ -81,6 +82,9 @@ getUiFunctions <- function(ns, loader, ..., priority=NULL) {
 #' The user interface (ui) controls the layout and appearance of the app
 #' All the CSS modifications are in the file "shiny/www/styles.css"
 #' @importFrom shinyjs useShinyjs
+#' @importFrom shiny tabPanel includeCSS includeScript conditionalPanel div h4 
+#' icon shinyUI navbarPage
+#' @return HTML elements
 appUI <- function() {
     uiList <- getUiFunctions(paste, "app", tabPanel,
                              priority=c("dataUI", "analysesUI"))
@@ -114,6 +118,8 @@ appUI <- function() {
 #' @param input Input object
 #' @param output Output object
 #' @param session Session object
+#' 
+#' @importFrom shiny observe
 appServer <- function(input, output, session) {
     getServerFunctions("app", priority=c("dataServer", "analysesServer"))
     
@@ -135,7 +141,7 @@ appServer <- function(input, output, session) {
 #' @param reload Boolean: reload package? FALSE by default
 #'
 #' @importFrom devtools load_all
-#' @importFrom shiny shinyApp
+#' @importFrom shiny shinyApp runApp
 #'
 #' @export
 psichomics <- function(..., reload = FALSE) {

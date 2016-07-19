@@ -7,9 +7,9 @@
 plotVariance(output, pca)
 }
 \arguments{
-\item{pca}{PCA values}
+\item{output}{Shiny output}
 
-\item{ouput}{Shiny output}
+\item{pca}{PCA values}
 }
 \description{
 Render the explained variance plot

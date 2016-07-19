@@ -2,11 +2,19 @@
 % Please edit documentation in R/analysis.R
 \name{analysesUI}
 \alias{analysesUI}
-\title{User interface}
+\title{User interface for the data analyses}
 \usage{
 analysesUI(id, tab)
 }
+\arguments{
+\item{id}{Character: identifier}
+
+\item{tab}{Function to process HTML elements}
+}
+\value{
+HTML element as character
+}
 \description{
-User interface
+User interface for the data analyses
 }
 

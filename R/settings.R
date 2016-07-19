@@ -1,5 +1,13 @@
-#' User interface
+#' User interface of the settings
+#' 
+#' @param id Character: identifier
+#' @param tab Function to create tabs
+#' 
 #' @importFrom parallel detectCores
+#' @importFrom shiny NS tagList sliderInput h4 helpText numericInput div icon
+#' fluidRow column textOutput
+#' 
+#' @return HTML elements
 settingsUI <- function(id, tab) {
     ns <- NS(id)
     
@@ -20,13 +28,13 @@ settingsUI <- function(id, tab) {
             column(4, coresInput),
             column(4,
                    sliderInput(ns("precision"), h4("Numeric precision"),
-                               value=3, min=0, max=20, step=1, width="auto",
+                               value=3, min=0, max=10, step=1, width="auto",
                                post=" decimal(s)"),
                    textOutput(ns("precisionExample")),
                    helpText("Only applies to new calculations.")),
             column(4,
                    sliderInput(ns("significant"), h4("Significant digits"),
-                               value=3, min=0, max=20, step=1, width="auto",
+                               value=3, min=0, max=10, step=1, width="auto",
                                post=" digit(s)"),
                    textOutput(ns("significantExample")),
                    helpText("Only applies to new calculations."))
@@ -34,26 +42,29 @@ settingsUI <- function(id, tab) {
     )
 }
 
-#' Server logic
+#' Server logic of the settings
+#' 
+#' @param session Shiny session
+#' @param input Shiny input
+#' @param output Shiny output
+#' 
+#' @importFrom shiny observe renderText
 settingsServer <- function(input, output, session) {
     observe(setCores(input$cores))
     observe({
         setPrecision(input$precision)
         output$precisionExample <- renderText(
-            paste(
-                "Example:",
-                formatC(283.5837243243332313139838387437323823823829283984784687284,
-                        digits=getPrecision(), format="f"))
-        )
+            paste("Example:",
+                  formatC(283.5837243243332313139838387437323823823829,
+                          digits=getPrecision(), format="f")))
     })
+    
     observe({
         setSignificant(input$significant)
         output$significantExample <- renderText(
-            paste(
-                "Example:",
-                formatC(0.000005849839043444982905434543482092830943294512474723566,
-                        getSignificant(), format="g"))
-        )
+            paste("Example:", 
+                  formatC(0.000005849839043444982905434543482092830943,
+                          getSignificant(), format="g")))
     })
 }
 

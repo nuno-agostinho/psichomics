@@ -53,11 +53,20 @@ queryUniprot <- function(protein, format="xml") {
     return(r)
 }
 
+#' Information's user interface
+#' @param id Character: identifier
+#' @importFrom shiny uiOutput
+#' @return HTML elements
 infoUI <- function(id) {
     ns <- NS(id)
     uiOutput(ns("info"))
 }
 
+#' Interface when no information could be retrieved
+#' @param output Shiny output
+#' @param title Character: title of the message to show to the user
+#' @param description Character: description of the message to show to the user
+#' @importFrom shiny renderUI h3 br tags
 noinfo <- function(output, title="No information available for this event.",
                    description="Select another alternative splicing event.") {
     output$info <- renderUI( h3(title, br(), tags$small(description)) )
@@ -65,7 +74,7 @@ noinfo <- function(output, title="No information available for this event.",
 
 #' Parse XML from Uniprot's RESTful service
 #'
-#' @param XML response from Uniprot
+#' @param xml response from Uniprot
 #'
 #' @importFrom XML xmlTreeParse xmlRoot getNodeSet xmlAttrs xmlToList
 #' @importFrom plyr ldply
@@ -155,6 +164,14 @@ proteinHighcharts <- function(feature, length) {
     return(hc)
 }
 
+#' Plot transcripts
+#' 
+#' @param input SHiny input
+#' @param output Shiny output
+#' @param info Information retrieved from ENSEMBL
+#' @param eventPosition Numeric: coordinates of the alternative splicing event
+#' 
+#' @importFrom shiny renderPlot
 plotTranscripts <- function(input, output, info, eventPosition) {
     output$plotTranscripts <- renderPlot({
         transcripts <- data.frame()
@@ -186,6 +203,16 @@ plotTranscripts <- function(input, output, info, eventPosition) {
     })
 }
 
+#' Render genetic information
+#' 
+#' @param ns Namespace function
+#' @param output Shiny output
+#' @param info Information as retrieved from ENSEMBL
+#' @param species Character: species name
+#' @param assembly Character: assembly version
+#' @param grch37 Boolean: use version GRCh37 of the genome?
+#' 
+#' @importFrom shiny renderUI h2 plotOutput
 renderGeneticInfo <- function(ns, output, info, species, assembly, grch37) {
 
     output$info <- renderUI({
@@ -227,11 +254,17 @@ renderGeneticInfo <- function(ns, output, info, species, assembly, grch37) {
     })
 }
 
+#' Server logic
+#' 
+#' @param input Shiny input
+#' @param output Shiny output
+#' @param session Shiny session
+#' 
 #' @importFrom Sushi plotGenes zoomsregion labelgenome
 #' @importFrom highcharter highchart %>%
 infoServer <- function(input, output, session) {
     ns <- session$ns
-
+    
     observe({
         event <- getEvent()
         if (is.null(event) || event == "") return(noinfo(output))

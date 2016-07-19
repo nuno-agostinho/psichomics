@@ -2,19 +2,19 @@
 % Please edit documentation in R/app.R
 \name{loadBy}
 \alias{loadBy}
-\title{Check if a given function should be loaded by a}
+\title{Check if a given function should be loaded by the calling module}
 \usage{
 loadBy(loader, FUN)
 }
 \arguments{
 \item{loader}{Character: name of the file responsible to load such function}
 
-\item{child}{Function}
+\item{FUN}{Function}
 }
 \value{
 Boolean vector
 }
 \description{
-Check if a given function should be loaded by a
+Check if a given function should be loaded by the calling module
 }
 

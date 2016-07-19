@@ -1,8 +1,16 @@
 ## TODO(NunoA): Should groups be merged if there's an intersection?
 ## TODO(NunoA): How to correctly do interval censoring?
 
-#' User interface of the survival curves
+#' User interface of survival analysis
+#' 
+#' @param id Character: namespace identifier
+#' 
 #' @importFrom shinyBS bsTooltip
+#' @importFrom shiny NS tagList uiOutput sidebarPanel radioButtons helpText hr 
+#' selectizeInput checkboxInput sliderInput actionButton mainPanel
+#' conditionalPanel
+#' 
+#' @return Character with HTML
 survivalUI <- function(id) {
     ns <- NS(id)
     
@@ -79,14 +87,14 @@ survivalUI <- function(id) {
 #' @param timeStart Numeric: starting time of the interval or follow up time
 #' @param timeStop Numeric: ending time of the interval
 #' @param event Numeric: time of the event of interest
-#' @param groups Character: group of each individual
+#' @param group Character: group of each individual
 #' @param clinical Data.frame: clinical data
 #' 
 #' @details The event time will only be used to determine whether the event has
 #' happened (1) or not in case of NAs (0)
 #' 
 #' @return Data frame with terms needed to calculate survival curves
-processSurvData <- function(timeStart, timeStop, event, groups, clinical) {
+processSurvData <- function(timeStart, timeStop, event, group, clinical) {
     cols <- c(followup = "days_to_last_followup", start = timeStart,
               stop = timeStop, event = event)
     survTime <- lapply(cols, timePerPatient, clinical)
@@ -100,7 +108,7 @@ processSurvData <- function(timeStart, timeStop, event, groups, clinical) {
     
     # Indicate event of interest and groups
     survTime$event <- ifelse(!is.na(survTime$event), 1, 0)
-    survTime$groups <- groups
+    survTime$groups <- group
     
     if (!is.null(timeStop)) {
         # Create new time using the ending time replacing the NAs
@@ -195,7 +203,10 @@ timePerPatient <- function(col, clinical) {
     return(row)
 }
 
-updateClinicalFields <- function(session) {
+#' Update available clinical attributes when the clinical data changes
+#' @param session Shiny session
+#' @importFrom shiny observe updateSelectizeInput
+updateClinicalParams <- function(session) {
     observe({
         clinical <- getClinicalData()
         if (!is.null(clinical)) {
@@ -225,8 +236,16 @@ updateClinicalFields <- function(session) {
     })
 }
 
+#' Server logic of survival analysis
+#' 
+#' @param input Shiny input
+#' @param output Shiny ouput
+#' @param session Shiny session
+#' 
 #' @importFrom R.utils capitalize
-#' @importFrom stats pchisq
+#' @importFrom shiny renderUI observe updateSelectizeInput observeEvent isolate 
+#' br tagList hr div icon
+#' @importFrom stats pchisq optim
 #' @importFrom survival survfit survdiff
 #' @importFrom highcharter hchart hc_chart hc_yAxis hc_xAxis hc_tooltip
 #' hc_subtitle hc_tooltip renderHighchart
@@ -252,7 +271,7 @@ survivalServer <- function(input, output, session) {
     })
     
     # Update available clinical attributes when the clinical data changes
-    updateClinicalFields(session)
+    updateClinicalParams(session)
     
     # Plot survival curves
     observeEvent(input$survivalCurves, {
