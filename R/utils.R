@@ -245,6 +245,7 @@ updateTextAreaInput <- updateTextInput
 #' @importFrom dplyr data_frame
 #' @importFrom assertthat assert_that
 #' @importFrom stats setNames
+#' @importFrom rlist list.parse
 #' @importFrom highcharter %>% hc_add_series colorize_vector
 #' 
 #' @export
@@ -276,7 +277,8 @@ hc_scatter <- function (hc, x, y, z = NULL, color = NULL, label = NULL,
         }
     }
     
-    ds <- list.parse3(df)
+    ds <- list.parse(df)
+    names(ds) <- NULL
     type <- ifelse(!is.null(z), "bubble", "scatter")
     if (!is.null(label)) {
         dlopts <- list(enabled = TRUE, format = "{point.label}")
@@ -308,6 +310,7 @@ hc_scatter <- function (hc, x, y, z = NULL, color = NULL, label = NULL,
 #' 
 #' @importFrom highcharter %>% hc_add_series highchart hc_tooltip hc_yAxis
 #' hc_plotOptions fa_icon_mark JS
+#' @importFrom rlist list.parse
 #' @return Highcharts object to plot survival curves
 #' 
 #' @examples
@@ -410,7 +413,8 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
             first <- NULL
         
         # Mark events
-        ls <- list.parse3(df)
+        ls <- list.parse(df)
+        names(ls) <- NULL
         if (markTimes)
             ls[submark] <- lapply(ls[submark], c, marker=marker)
         
@@ -446,7 +450,8 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
 #'   (\url{http://api.highcharts.com/highcharts#series}).
 #' 
 #' @importFrom stats density
-#' @importFrom highcharter %>% hc_add_series list.parse3
+#' @importFrom highcharter %>% hc_add_series
+#' @importFrom rlist list.parse
 #' @examples
 #' 
 #' require("highcharter")
@@ -458,7 +463,8 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
 hc_add_series_density <- function (hc, x, area = FALSE, ...) {
     if(is.numeric(x)) x <- density(x)
     type <- ifelse(area, "areaspline", "spline")
-    data <- list.parse3(data.frame(cbind(x = x$x, y = x$y)))
+    data <- list.parse(data.frame(cbind(x = x$x, y = x$y)))
+    names(data) <- NULL
     return(hc %>% hc_add_series(data = data, type = type, ...))
 }
 
