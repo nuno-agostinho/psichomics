@@ -47,7 +47,8 @@ selectGroupsServer <- function(session, id, dataset, datasetName) {
     session$output[[modalId]] <- renderUI({
         bsModal2(ns(showId), style="info", trigger=NULL, size=NULL,
                  div(icon("object-group"), "Groups"),
-                 groupsUI(ns(uId), dataset))})
+                 groupsUI(ns(uId), dataset))
+    })
     
     # Toggle group selection interface when clicking the "Edit" button
     observeEvent(input[[editId]],

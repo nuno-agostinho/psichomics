@@ -63,34 +63,10 @@ pcaUI <- function(id) {
             sliderInput(ns("naTolerance"), "Percentage of NAs per individual to tolerate",
                         min = 0, max=100, value=30, post="%"),
             selectGroupsUI(ns("dataGroups"), "Clinical groups to perform PCA"),
-            actionButton(ns("editGroups"), "Edit groups"),
             actionButton(ns("calculate"), class = "btn-primary", "Calculate PCA"),
-            uiOutput(ns("selectPC"))
-        ), mainPanel(
-            highchartOutput(ns("scatterplot"))
-        )
-    )
-}
-
-#' Interface and plots to help selecting principal components
-#' @param ns Shiny namespace function
-#' @param output Shiny output
-#' @param perc Numeric: principal components' percentage of explained variance
-#' 
-#' @importFrom shiny renderUI tagList hr selectizeInput checkboxGroupInput 
-#' actionButton 
-selectPC <- function(ns, output, perc) {
-    output$selectPC <- renderUI({
-        label <- sprintf("%s (%s%% explained variance)", 
-                         names(perc), roundDigits(perc * 100))
-        choices <- setNames(names(perc), label)
-        groups <- getGroupsFrom("Clinical data")
-        
-        tagList(
             hr(),
-            selectizeInput(ns("pcX"), "Choose X axis", choices = choices),
-            selectizeInput(ns("pcY"), "Choose Y axis", choices = choices,
-                           selected = choices[[2]]),
+            selectizeInput(ns("pcX"), "Choose X axis", choices=NULL),
+            selectizeInput(ns("pcY"), "Choose Y axis", choices=NULL),
             selectGroupsUI(ns("colourGroups"),
                            "Clinical groups to colour the PCA"),
             checkboxGroupInput(ns("plotShow"), "Show in plot",
@@ -98,8 +74,10 @@ selectPC <- function(ns, output, perc) {
                                selected = c("Individuals")),
             actionButton(ns("showVariancePlot"), "Show variance plot"),
             actionButton(ns("plot"), class = "btn-primary", "Plot PCA")
+        ), mainPanel(
+            highchartOutput(ns("scatterplot"))
         )
-    })
+    )
 }
 
 #' Render the explained variance plot
@@ -215,8 +193,17 @@ pcaServer <- function(input, output, session) {
         perc <- as.numeric(imp)
         names(perc) <- names(imp)
         
-        # Interface and plots to help select principal components
-        selectPC(ns, output, perc)
+        observe({
+            # Update inputs to select principal components
+            label <- sprintf("%s (%s%% explained variance)", 
+                             names(perc), roundDigits(perc * 100))
+            choices <- setNames(names(perc), label)
+            groups <- getGroupsFrom("Clinical data")
+            
+            updateSelectizeInput(session, "pcX", choices=choices)
+            updateSelectizeInput(session, "pcY", choices=choices, 
+                                 selected=choices[[2]])
+        })
         
         # Plot the explained variance plot
         plotVariance(output, pca)
