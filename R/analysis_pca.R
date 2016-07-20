@@ -51,6 +51,8 @@ psiPCA <- function(psi, center = TRUE, scale. = FALSE, naTolerance = 30) {
 }
 
 #' @importFrom highcharter highchartOutput
+#' @importFrom shiny checkboxGroupInput sidebarPanel tagList uiOutput hr
+#' sliderInput actionButton selectizeInput
 pcaUI <- function(id) {
     ns <- NS(id)
     tagList(

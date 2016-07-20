@@ -40,7 +40,8 @@ Imports:
     XML,
     gplots,
     assertthat,
-    DT
+    DT,
+    rlist
 Suggests:
     testthat,
     knitr,
