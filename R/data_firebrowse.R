@@ -553,7 +553,7 @@ firebrowseServer <- function(input, output, session, active) {
     ns <- session$ns
     
     # If Firebrowse is unaccessible, allow user to try again
-    output$checkFirebrowse <- renderUI(checkFirebrowse(ns))
+    output$checkFirebrowse <- renderUI(isolate(checkFirebrowse(ns)))
     observeEvent(input$refreshFirebrowse,
                  output$checkFirebrowse <- renderUI(checkFirebrowse(ns)))
     
