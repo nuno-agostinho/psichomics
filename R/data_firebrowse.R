@@ -389,17 +389,14 @@ loadFirehoseData <- function(folder = "~/Downloads",
         !any(i %in% downloadedFiles[!downloadedMD5]), FUN.VALUE = logical(1))
     
     if (sum(missing[!md5]) > 0) {
-        # downloadFiles(missing, folder, progress)
-        
-        # If there aren't non-MD5 files in the given directory, download
-        # missing files
+        # Download missing files
         progress(divisions = 1)
         print("Triggered the download of files")
         
         iframe <- function(url) 
             tags$iframe(width=1, height=1, frameborder=0, src=url)
         output$iframeDownload <- renderUI(lapply(url[missing], iframe))
-        return(NULL)
+        return(NA)
     } else {
         # Check if there are folders to unarchive
         archives <- unlist(lapply(possibleExtensions, function (i)
@@ -538,7 +535,14 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
         progress = updateProgress,
         output = output)
     
-    if (!is.null(data)) {
+    if (is.na(data)) {
+        infoModal(
+            session, "Downloading missing data",
+            "Data is being downloaded to the folder", tags$b(input$dataFolder), 
+            br(), br(), "When the downloads complete, click the button",
+            tags$b("Get data"), "again to load the select data.",
+            modalId="firebrowseDataModal")
+    } else if (!is.null(data)) {
         if(replace)
             setData(data)
         else
