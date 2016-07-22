@@ -235,7 +235,13 @@ pcaServer <- function(input, output, session) {
     
     observe({
         pca <- sharedData$inclusionLevelsPCA
-        if (is.null(pca)) return(NULL)
+        if (is.null(pca)) {
+            if (input$plot > 0) {
+                errorModal(session, "No PCA performed",
+                           "Perform a PCA and plot it afterwards.")
+            }
+            return(NULL)
+        }
         
         imp <- summary(pca)$importance[2, ]
         perc <- as.numeric(imp)
