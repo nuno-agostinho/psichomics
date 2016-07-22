@@ -2,16 +2,17 @@
 % Please edit documentation in R/analysis_pca.R
 \name{plotVariance}
 \alias{plotVariance}
-\title{Render the explained variance plot}
+\title{Create the explained variance plot}
 \usage{
-plotVariance(output, pca)
+plotVariance(pca)
 }
 \arguments{
-\item{output}{Shiny output}
-
 \item{pca}{PCA values}
 }
+\value{
+Plot variance as an Highcharter object
+}
 \description{
-Render the explained variance plot
+Create the explained variance plot
 }
 

@@ -12,6 +12,9 @@ getClinicalMatchFrom(dataset, category = getCategory())
 \item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
 it uses the selected data category}
 }
+\value{
+Integer with clinical matches to a given dataset
+}
 \description{
 Get clinical matches from a given data type
 }

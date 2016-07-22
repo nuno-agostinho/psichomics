@@ -114,6 +114,8 @@ getGroupsFrom <- function(dataset, category = getCategory())
 #' @param dataset Character: data set (e.g. "Junction quantification")
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
+#' 
+#' @return Integer with clinical matches to a given dataset
 getClinicalMatchFrom <- function(dataset, category = getCategory())
     getGlobal(category, dataset, "clinicalMatch")
 
@@ -325,6 +327,22 @@ matchIdWithClinical <- function(ids, clinical) {
         clinicalRows[lapply(match, length) != 0] <- unlist(match)
     }
     return(clinicalRows)
+}
+
+#' Get clinical row names matching selected groups
+#' @param selected Character: name of selected groups
+#' @param clinicalGroups Matrix: named groups with row indexes
+#' @param clinicalMatches 
+#' 
+#' @return Names of the matching clinical names
+getMatchingRowNames <- function(selected, clinicalGroups, clinicalMatches) {
+    # Get selected groups from clinical data
+    rows <- clinicalGroups[selected, "Rows"]
+    
+    # Get names of the matching rows with the clinical data
+    ns <- names(clinicalMatches[clinicalMatches %in% unlist(rows)])
+    ns <- toupper(unique(ns))
+    return(ns)
 }
 
 #' Assign one group for each clinical patient
