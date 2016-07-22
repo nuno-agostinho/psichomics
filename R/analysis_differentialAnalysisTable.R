@@ -266,14 +266,18 @@ diffAnalysisTableUI <- function(id) {
                     "Choose statistical analyses to perform:",
                     # Basic stats is on and disabled by JavaScript
                     c("Variance and median"="basicStats",
-                      "Wilcoxon Test (1 or 2 groups)"="wilcox",
-                      "Kruskal-Wallis Rank Sum Test (2 or more groups)"="kruskal", 
+                      "Wilcoxon signed rank test (1 group)"="wilcoxSignedRank",
+                      "Wilcoxon rank sum test (2 groups)"="wilcoxRankSum",
+                      "Kruskal-Wallis rank sum test (2 or more groups)"="kruskal", 
                       "Levene's test (2 or more groups)"="levene",
                       "Alternative splicing quantification density"="density"),
-                    selected=c("basicStats", "wilcox", "kruskal", "levene",
-                               "density")),
+                    selected=c("basicStats", "kruskal", "levene", "density",
+                               "wilcoxSignedRank", "wilcoxRankSum")),
                 # Disable checkbox of basic statistics
                 tags$script('$("[value=basicStats]").attr("disabled", true);'),
+                helpText("If groups have too many missing values for a",
+                         "particular alternative splicing event, the group",
+                         "itself will be discarded from the analyses."),
                 actionButton(ns("startAnalyses"), class="btn-primary", 
                              "Perform analyses"),
                 uiOutput(ns("survivalOptions"))
@@ -300,25 +304,26 @@ diffAnalysisTableUI <- function(id) {
 #' 
 #' @return A data frame row with the results
 statsAnalyses <- function(vector, group, threshold=1, step=100,
-                          analyses=c("wilcox", "kruskal", "levene")) {
-    series <- split(vector, group)
+                          analyses=c("wilcoxRankSum", "wilcoxSignedRank",
+                                     "kruskal", "levene")) {
+    series  <- split(vector, group)
     samples <- vapply(series, function(i) sum(!is.na(i)), integer(1))
-    valid <- names(series)[samples >= threshold]
+    valid   <- names(series)[samples >= threshold]
     inGroup <- group %in% valid
-    group <- group[inGroup]
-    vector <- vector[inGroup]
-    len  <- length(valid)
+    group   <- group[inGroup]
+    vector  <- vector[inGroup]
+    len     <- length(valid)
     
     # Wilcoxon tests
     wilcox <- NULL
-    if (any("wilcox" == analyses)) {
-        if (len == 2) {
-            typeOne <- group == valid[1]
-            wilcox  <- suppressWarnings(wilcox.test(vector[typeOne], 
-                                                    vector[!typeOne]))
-        } else if (len == 1) {
-            wilcox <- suppressWarnings(wilcox.test(vector))
-        }
+    if (any("wilcoxRankSum" == analyses) && len == 2) {
+        # Wilcoxon rank sum test (Mann Whitney U test)
+        typeOne <- group == valid[1]
+        wilcox  <- suppressWarnings(wilcox.test(vector[typeOne],
+                                                vector[!typeOne]))
+    } else if (any("wilcoxSignedRank" == analyses) && len == 1) {
+        # Wilcoxon signed rank test
+        wilcox <- suppressWarnings(wilcox.test(vector))
     }
     
     # Kruskal-Wallis test
