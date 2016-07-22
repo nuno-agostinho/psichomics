@@ -487,29 +487,24 @@ survivalServer <- function(input, output, session) {
     # Calculate optimal inclusion levels
     output$optimalPsi <- renderUI({
         # Get user input
-        isolate({
-            clinical   <- getClinicalData()
-            timeStart  <- input$timeStart
-            timeStop   <- input$timeStop
-            dataEvent  <- input$event
-            censoring  <- input$censoring
-            intRanges  <- input$ranges
-            markTimes  <- input$markTimes
-            psi        <- getInclusionLevels()
-            event      <- getEvent()
-            scale      <- input$scale
-        })
+        clinical   <- getClinicalData()
+        timeStart  <- input$timeStart
+        timeStop   <- input$timeStop
+        dataEvent  <- input$event
+        censoring  <- input$censoring
+        psi        <- getInclusionLevels()
+        event      <- getEvent()
         
         if (is.null(clinical)) {
-            errorModal(session, "Clinical data missing",
-                       "Insert clinical data first.")
+            return(helpText(icon("exclamation-circle"), 
+                            "Please, load clinical data."))
         } else if (is.null(getInclusionLevels())) {
-            errorModal(session, "No AS events quantification",
-                       "Please, load or calculate the quantification of",
-                       "alternative splicing events.")
+            return(helpText(icon("exclamation-circle"),
+                            "Please, load or calculate the quantification of",
+                            "alternative splicing events."))
         } else if (is.null(getEvent()) || getEvent() == "") {
-            errorModal(session, "No AS event selected",
-                       "Please, select an alternative splicing event.")
+            return(helpText(icon("exclamation-circle"), 
+                            "Please, select an alternative splicing event."))
         } else {
             # Get tumour sample IDs (normal and control samples are not
             # interesting for survival analysis)
@@ -525,7 +520,7 @@ survivalServer <- function(input, output, session) {
             #' @importFrom survival survdiff
             testSurvival <- function(psiCutoff, groups, tumour, psi, session,
                                      clinical, censoring, timeStart, timeStop,
-                                     dataEvent, modelTerms, formulaStr, scale) {
+                                     dataEvent, modelTerms, formulaStr) {
                 groups[tumour] <- psi >= psiCutoff
                 
                 # Assign a value based on the inclusion levels cut-off
@@ -538,7 +533,7 @@ survivalServer <- function(input, output, session) {
                 survTerms <- processSurvTerms(session, fillGroups, clinical,
                                               censoring, timeStart, timeStop,
                                               dataEvent, modelTerms, formulaStr,
-                                              scale=scale)
+                                              scale=1)
                 form <- survTerms$form
                 data <- survTerms$survTime
                 
@@ -559,7 +554,7 @@ survivalServer <- function(input, output, session) {
                 optim(0, testSurvival, groups=groups, tumour=tumour, psi=psi, 
                       session=session, clinical=clinical, censoring=censoring, 
                       timeStart=timeStart, timeStop=timeStop, 
-                      dataEvent=dataEvent, modelTerms="psiCutoff", scale=scale,
+                      dataEvent=dataEvent, modelTerms="psiCutoff",
                       # Method and parameters interval
                       method="Brent", lower=0, upper=1))
             
