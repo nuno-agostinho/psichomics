@@ -63,6 +63,7 @@ inclusionLevelsUI <- function(id, panel) {
 #' 
 #' @importFrom shiny reactive observeEvent
 inclusionLevelsServer <- function(input, output, session) {
+    ns <- session$ns
     levels <- reactive({
         eventType <- input$eventType
         minReads  <- input$minReads
@@ -107,10 +108,12 @@ inclusionLevelsServer <- function(input, output, session) {
         closeProgress()
     })
     
+    observeEvent(input$takeMeThere, missingDataGuide("Junction quantification"))
+    
     observeEvent(input$calcIncLevels, {
         if(is.null(getData()) || is.null(getJunctionQuantification()))
-            errorModal(session, "Data missing",
-                       "No junction quantification data loaded!")
+            missingDataModal(session, "Junction quantification",
+                             ns("takeMeThere"))
         else
             levels()
     })

@@ -273,6 +273,10 @@ survivalServer <- function(input, output, session) {
     # Update available clinical attributes when the clinical data changes
     updateClinicalParams(session)
     
+    observeEvent(input$missingClinical, missingDataGuide("Clinical data"))
+    observeEvent(input$missingInclusionLevels,
+                 missingDataGuide("Inclusion levels"))
+    
     # Plot survival curves
     observeEvent(input$survivalCurves, {
         isolate({
@@ -297,8 +301,7 @@ survivalServer <- function(input, output, session) {
         })
         
         if (is.null(clinical)) {
-            errorModal(session, "Clinical data missing",
-                       "Insert clinical data first.")
+            missingDataModal(session, "Clinical data", ns("missingClinical"))
         } else if (modelTerms == "groups" && nrow(dataGroups) > 0 &&
                    anyDuplicated(unlist(dataGroups[, "Rows"])) > 0) {
             rows <- dataGroups[, "Rows"]
@@ -322,8 +325,8 @@ survivalServer <- function(input, output, session) {
                                               outGroup)
             } else if (modelTerms == "psiCutoff") {
                 if (is.null(psi)) {
-                    errorModal(session, "Inclusion levels missing",
-                               "You need to calculate or load inclusion levels first.")
+                    missingDataModal(session, "Inclusion levels",
+                                     ns("missingInclusionLevels"))
                     return(NULL)
                 } else if (is.null(event)) {
                     errorModal(session, "No event selected",
@@ -415,8 +418,7 @@ survivalServer <- function(input, output, session) {
         })
         
         if (is.null(clinical)) {
-            errorModal(session, "Clinical data missing",
-                       "Insert clinical data first.")
+            missingDataModal(session, "Clinical data", ns("missingClinical"))
         } else if (nrow(dataGroups) > 0 &&
                    anyDuplicated(unlist(dataGroups[, "Rows"])) > 0) {
             # If the chosen groups have any intersections
