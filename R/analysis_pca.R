@@ -183,18 +183,14 @@ pcaServer <- function(input, output, session) {
     selectGroupsServer(session, "colourGroups", getClinicalData(),
                        "Clinical data")
     
-    observeEvent(input$takeMeThere, runjs("showDataPanel('alternative');"))
+    observeEvent(input$takeMeThere, missingDataGuide("Inclusion levels"))
     
     # Perform principal component analysis (PCA)
     observeEvent(input$calculate, {
         psi <- isolate(getInclusionLevels())
         
         if (is.null(psi)) {
-            errorModal(
-                session, "Inclusion levels missing",
-                "Insert or calculate alternative splicing event quantification.",
-                footer=actionButton(ns("takeMeThere"), "Calculate",
-                                    "data-dismiss"="modal", class="btn-danger"))
+            missingDataModal(session, "Inclusion levels", ns("takeMeThere"))
         } else {
             # Subset data by the selected clinical groups
             selected <- isolate(input$dataGroups)

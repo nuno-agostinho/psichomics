@@ -678,6 +678,9 @@ diffAnalysisTableServer <- function(input, output, session) {
             hr()))
     })
     
+    observeEvent(input$missingInclusionLevels, 
+                 missingDataGuide("Inclusion levels"))
+    
     # Perform statistical analyses
     observeEvent(input$startAnalyses, {
         isolate({
@@ -686,11 +689,8 @@ diffAnalysisTableServer <- function(input, output, session) {
             statsChoices <- input$statsChoices
         })
         if (is.null(psi)) {
-            errorModal(session, "No AS event quantification",
-                       "Insert or quantify alternative splicing events by",
-                       "going to the", icon("table"), tags$b("Data"),
-                       "tab and opening",  icon("calculator"),
-                       tags$b("Quantify alternative splicing events"), ".")
+            missingDataModal(session, "Inclusion levels",
+                             ns("missingInclusionLevels"))
             return(NULL)
         }
         

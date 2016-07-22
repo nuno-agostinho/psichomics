@@ -1,3 +1,51 @@
+#' Missing information modal template
+#'  
+#' @param session Shiny session
+#' @param dataType Character: type of data missing
+#' @param buttonId Character: identifier of button to take user to load missing 
+#' data
+#' 
+#' @examples
+#' \dontrun{
+#'  session <- session$ns
+#'  buttonInput <- "takeMeThere"
+#'  buttonId <- ns(buttonInput)
+#'  dataType <- "Inclusion levels"
+#'  missingDataModal(session, buttonId, dataType)
+#'  observeEvent(input[[buttonInput]], missingDataGuide(dataType))
+#' }
+missingDataModal <- function(session, dataType, buttonId) {
+    switch(dataType,
+           "Clinical data"=errorModal(
+               session, "Clinical data missing",
+               "Load clinical data.",
+               footer=actionButton(buttonId, "Load", "data-dismiss"="modal",
+                                   class="btn-danger")),
+           "Junction quantification"=errorModal(
+               session, "Junction quantification missing",
+               "Load junction quantification.",
+               footer=actionButton(buttonId, "Load", "data-dismiss"="modal",
+                                   class="btn-danger")),
+           "Inclusion levels"=errorModal(
+               session, "Inclusion levels missing",
+               "Load or calculate alternative splicing event quantification.",
+               footer=actionButton(buttonId, "Load or calculate", 
+                                   "data-dismiss"="modal", class="btn-danger"))
+    )
+}
+
+#' @rdname missingDataModal
+missingDataGuide <- function(dataType) {
+    panel <- switch(dataType,
+                    "Clinical data"="TCGA",
+                    "Junction quantification"="TCGA",
+                    "Inclusion levels"="alternative"
+    )
+    
+    js <- sprintf("showDataPanel('%s');", panel)
+    runjs(js)
+}
+
 #' User interface for the data analyses
 #' 
 #' @param id Character: identifier
