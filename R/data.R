@@ -135,7 +135,7 @@ createDataTab <- function(index, data, name, input, output) {
 #' @param output Shiny output
 #' @param session Shiny session
 #'
-#' @importFrom shiny includeMarkdown selectInput tabsetPanel
+#' @importFrom shiny selectInput tabsetPanel tags h1 h2
 #'
 #' @return Part of the server logic related to this tab
 dataServer <- function(input, output, session) {
@@ -144,7 +144,26 @@ dataServer <- function(input, output, session) {
     # Show welcome screen when there's no data loaded
     output$tablesOrAbout <- renderUI({
         if(is.null(getData())) {
-            includeMarkdown(insideFile("shiny", "about.md"))
+            tagList(
+                h1("Welcome"),
+                "This app provides an effortless analysis of tumour cells with",
+                "a focus on alternative splicing.",
+                h2("Instructions"),
+                tags$ol(id="list",
+                    tags$li("Load tumour transcriptomic data from TCGA",
+                            "(clinical data and junction quantification)"),
+                    tags$li("Quantify the alternative splicing events"),
+                    tags$li("Explore statistically significant events or",
+                            "individual events of interest")
+                ), br(), br(),
+                p(style="text-align:right",
+                    tags$a(href="http://imm.medicina.ulisboa.pt/group/compbio/",
+                           target="_blank", "Nuno Morais Lab, iMM"), 
+                    "(Nuno Agostinho, 2015-2016)", br(),
+                    "Special thanks to my lab colleagues for their work-related",
+                    br(), "support and supporting chatter."
+                )
+            )
         } else
             list(selectInput(ns("category"), "Select category:", width="auto",
                              choices=names(getData())),

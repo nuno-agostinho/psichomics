@@ -111,3 +111,42 @@ Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
 }
 
 .fade.now { opacity: 1; }
+
+/* Style an ordered list */
+#list {
+    list-style-type: none;
+    list-style-type: decimal !ie; /* Hackf or IE 7 hack */
+     
+    margin: 0;
+    margin-left: 3em;
+    padding: 0;
+     
+    counter-reset: li-counter;
+}
+
+#list > li{
+    position: relative;
+    margin-bottom: 20px;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    background-color: #fff;
+}
+
+#list > li:before {
+    position: absolute;
+    top: -0.1em;
+    left: -1.2em;
+    width: 1em;
+ 
+    font-size: 2.5em;
+    line-height: 1;
+    font-weight: bold;
+    text-align: right;
+    color: #464646;
+     
+    z-index: -99;
+    overflow: hidden;
+     
+    content: counter(li-counter);
+    counter-increment: li-counter;
+}
