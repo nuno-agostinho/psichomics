@@ -36,7 +36,6 @@ Imports:
     utils,
     lawstat,
     Sushi,
-    rmarkdown,
     XML,
     gplots,
     assertthat,
@@ -47,6 +46,7 @@ Suggests:
     knitr,
     microbenchmark,
     rbenchmark,
+    rmarkdown,
     parallel
 VignetteBuilder: knitr
 Collate:
