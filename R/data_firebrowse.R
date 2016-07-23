@@ -432,17 +432,15 @@ loadFirehoseData <- function(folder = "~/Downloads",
             
             file.rename(arc, file.path(dirname(arc), ns, basen))
             progress("Archives prepared")
-            
-            downloadedFiles <- list.files(folder, recursive=TRUE, 
-                                          full.names=TRUE, include.dirs=TRUE)
-            folders <- fullPath(base[!md5])
-            folders <- split(folders, categories)
         } else {
             # Divide the progress bar by the number of folders to load
             progress(divisions = length(folders))   
         }
         
-        browser()
+        downloadedFiles <- list.files(folder, recursive=TRUE, 
+                                      full.names=TRUE, include.dirs=TRUE)
+        folders <- fullPath(base[!md5])
+        folders <- split(folders, categories)
         
         # Load the files
         loaded <- lapply(folders, loadFirehoseFolders, exclude, progress)
