@@ -329,19 +329,18 @@ matchIdWithClinical <- function(ids, clinical) {
     return(clinicalRows)
 }
 
-#' Get clinical row names matching selected groups
+#' Get row names matching selected groups
 #' @param selected Character: name of selected groups
-#' @param clinicalGroups Matrix: named groups with row indexes
-#' @param clinicalMatches 
+#' @param groups Matrix: named groups with row indexes
 #' 
-#' @return Names of the matching clinical names
-getMatchingRowNames <- function(selected, clinicalGroups, clinicalMatches) {
-    # Get selected groups from clinical data
-    rows <- clinicalGroups[selected, "Rows"]
+#' @return Names of the matching rows
+getMatchingRowNames <- function(selected, groups, matches) {
+    # Get selected groups
+    rows <- groups[selected, "Rows"]
     
-    # Get names of the matching rows with the clinical data
-    ns <- names(clinicalMatches[clinicalMatches %in% unlist(rows)])
-    ns <- toupper(unique(ns))
+    # Get names of the matching rows with the data
+    ns <- names(matches[matches %in% unlist(rows)])
+    ns <- unique(ns)
     return(ns)
 }
 

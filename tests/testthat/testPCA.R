@@ -80,11 +80,67 @@ test_that("Plot explained variance", {
     expect_equal(hc$x$hc_opts$series[[1]]$data, pca$sdev ^ 2)
 })
 
-# test_that("Plot PCA", {
-#     pca <- performPCA(data, center=FALSE, scale.=FALSE)
-#     imp <- summary(pca)$importance[2, ]
-#     perc <- as.numeric(imp)
-#     names(perc) <- names(imp)
-#     
-#     plotPCA(pca, perc, xAxis="PC1", yAxis="PC2", selected=rownames(pca$x))
-# })
+
+pca <- performPCA(data, center=FALSE, scale.=FALSE)
+imp <- summary(pca)$importance[2, ]
+perc <- as.numeric(imp)
+names(perc) <- names(imp)
+
+groups <- data.frame(Rows=I(lapply(1:4, `*`, c(2, 5))))
+rownames(groups) <- paste("Group", 1:4)
+match  <- seq(nrow(pca$x))
+names(match) <- rownames(pca$x)
+
+test_that("Plot all PCA individuals", {
+    hc <- plotPCA(pca, perc, xAxis="PC1", yAxis="PC2", selected=NULL, groups,
+                  match)
+    expect_is(hc, "highchart")
+    
+    opts <- hc$x$hc_opts
+    expect_null(sapply(opts$series, "[[", "name")[[1]])
+    expect_equal(opts$xAxis$title$text, "PC1 (98.035% explained variance)")
+    expect_equal(opts$yAxis$title$text, "PC2 (1.848% explained variance)")
+})
+
+test_that("Plot PCA individuals and colour all groups", {
+    hc <- plotPCA(pca, perc, xAxis="PC1", yAxis="PC2",
+                  selected=rownames(groups), groups, match)
+    expect_is(hc, "highchart")
+    
+    opts <- hc$x$hc_opts
+    expect_equal(sapply(opts$series, "[[", "name"), rownames(groups))
+    expect_equal(opts$xAxis$title$text, "PC1 (98.035% explained variance)")
+    expect_equal(opts$yAxis$title$text, "PC2 (1.848% explained variance)")
+})
+
+test_that("Plot PCA individuals and colour two groups", {
+    hc <- plotPCA(pca, perc, xAxis="PC1", yAxis="PC2",
+                  selected=rownames(groups)[2:3], groups, match)
+    expect_is(hc, "highchart")
+    
+    opts <- hc$x$hc_opts
+    expect_equal(sapply(opts$series, "[[", "name"), rownames(groups)[2:3])
+    expect_equal(opts$xAxis$title$text, "PC1 (98.035% explained variance)")
+    expect_equal(opts$yAxis$title$text, "PC2 (1.848% explained variance)")
+})
+
+test_that("Plot PCA loadings", {
+    hc <- plotPCA(pca, perc, xAxis="PC1", yAxis="PC2", selected=NULL, groups,
+                  match, loadings=TRUE)
+    expect_is(hc, "highchart")
+    
+    opts <- hc$x$hc_opts
+    expect_is(opts$series[[2]], "list")
+    
+    # Colour two groups of individuals
+    hc <- plotPCA(pca, perc, xAxis="PC1", yAxis="PC2",
+                  selected=rownames(groups)[2:3], groups, match, loadings=TRUE)
+    expect_is(hc, "highchart")
+    
+    opts <- hc$x$hc_opts
+    namz <- sapply(opts$series, "[[", "name")
+    expect_equal(unlist(namz), rownames(groups)[2:3])
+    expect_null(namz[[3]])
+    expect_equal(opts$xAxis$title$text, "PC1 (98.035% explained variance)")
+    expect_equal(opts$yAxis$title$text, "PC2 (1.848% explained variance)")
+})
