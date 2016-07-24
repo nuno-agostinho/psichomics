@@ -59,11 +59,6 @@ survivalUI <- function(id) {
                          tags$b("pathologic_stage"))),
             conditionalPanel(
                 sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "psiCutoff"),
-                sliderInput(ns("psiCutoff"), value = 0.5, min=0, max=1, step=0.01,
-                            "Cut-off value for the selected event"),
-                bsTooltip(ns("psiCutoff"), placement="right", 
-                          options = list(container = "body"),
-                          "You can click on the white circle and then use the left and right arrows for finer control."),
                 uiOutput(ns("optimalPsi"))),
             hr(),
             radioButtons(ns("scale"), "Display time in", inline=TRUE,
@@ -558,13 +553,23 @@ survivalServer <- function(input, output, session) {
                       # Method and parameters interval
                       method="Brent", lower=0, upper=1))
             
+            slider <- tagList(
+                sliderInput(ns("psiCutoff"), value = 0.5, min=0, max=1, step=0.01,
+                            "Cut-off value for the selected event"),
+                bsTooltip(ns("psiCutoff"), placement="right", 
+                          options = list(container = "body"),
+                          "You can click on the white circle and then use the left and right arrows for finer control.")
+            )
+            
             if (!is.na(opt$value))
-                return(div(tags$b("Optimal cut-off:"), opt$par, br(),
-                           tags$b("Minimal log-rank p-value:"), opt$value))
+                return(tagList(slider, div(
+                           tags$b("Optimal cut-off:"), opt$par, br(),
+                           tags$b("Minimal log-rank p-value:"), opt$value)))
             else
-                return(div(icon("bell-o"),
-                           "No optimal cut-off was found for this alternative",
-                           "splicing event."))
+                return(tagList(
+                    slider, div(icon("bell-o"),
+                                "No optimal cut-off was found for this alternative",
+                                "splicing event.")))
         }
     })
 }
