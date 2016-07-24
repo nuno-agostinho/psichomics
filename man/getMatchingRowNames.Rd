@@ -2,21 +2,19 @@
 % Please edit documentation in R/begin.R
 \name{getMatchingRowNames}
 \alias{getMatchingRowNames}
-\title{Get clinical row names matching selected groups}
+\title{Get row names matching selected groups}
 \usage{
-getMatchingRowNames(selected, clinicalGroups, clinicalMatches)
+getMatchingRowNames(selected, groups, matches)
 }
 \arguments{
 \item{selected}{Character: name of selected groups}
 
-\item{clinicalGroups}{Matrix: named groups with row indexes}
-
-\item{clinicalMatches}{}
+\item{groups}{Matrix: named groups with row indexes}
 }
 \value{
-Names of the matching clinical names
+Names of the matching rows
 }
 \description{
-Get clinical row names matching selected groups
+Get row names matching selected groups
 }
 

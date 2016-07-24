@@ -124,13 +124,14 @@ plotVariance <- function(pca) {
 #' @param xAxis Character: name of the xAxis of interest from the PCA
 #' @param yAxis Character: name of the yAxis of interest from the PCA
 #' @param selected Character: selected groups to show
+#' @param match Integer: clinical matches to a given dataset
 #' @param individuals Boolean: plot PCA individuals (TRUE by default)
 #' @param loadings Boolean: plot PCA loadings/rotations (FALSE by default)
 #' 
-#' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip
+#' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip %>%
 #' @return Scatterplot as an Highcharter object
-plotPCA <- function(pca, perc, xAxis, yAxis, selected, individuals=TRUE, 
-                    loadings=FALSE) {
+plotPCA <- function(pca, perc, xAxis, yAxis, selected, clinical, match,
+                    individuals=TRUE, loadings=FALSE) {
     label <- sprintf("%s (%s%% explained variance)", 
                      names(perc[c(xAxis, yAxis)]), 
                      roundDigits(perc[c(xAxis, yAxis)]*100))
@@ -147,12 +148,10 @@ plotPCA <- function(pca, perc, xAxis, yAxis, selected, individuals=TRUE,
             hc <- hc_scatter(hc, df[[xAxis]], df[[yAxis]], sample=rownames(df))
         } else {
             # Subset data by the selected clinical groups
-            clinical <- getGroupsFrom("Clinical data")
-            match <- getClinicalMatchFrom("Inclusion levels")
-            
+            lowerNames <- tolower(rownames(df))
             for (groupName in selected) {
                 rows <- getMatchingRowNames(groupName, clinical, match)
-                rows <- rows[rows %in% rownames(df)]
+                rows <- rownames(df)[lowerNames %in% tolower(rows)]
                 hc <- hc_scatter(hc, df[rows, xAxis], df[rows, yAxis],
                                  name=groupName, sample=rownames(df[rows, ]),
                                  showInLegend=TRUE)
@@ -233,6 +232,7 @@ pcaServer <- function(input, output, session) {
                   size = "large")
     })
     
+    # Interface after performing PCA
     observe({
         pca <- sharedData$inclusionLevelsPCA
         if (is.null(pca)) {
@@ -269,11 +269,13 @@ pcaServer <- function(input, output, session) {
                 yAxis <- input$pcY
                 selected <- input$colourGroups
                 show <- input$plotShow
+                clinical <- getGroupsFrom("Clinical data")
+                match <- getClinicalMatchFrom("Inclusion levels")
             })
             
             output$scatterplot <- renderHighchart(
                 if (!is.null(xAxis) & !is.null(yAxis))
-                    plotPCA(pca, perc, xAxis, yAxis, selected, 
+                    plotPCA(pca, perc, xAxis, yAxis, selected, clinical, match,
                             "Individuals" %in% show, "Loadings" %in% show))
         })
     })
