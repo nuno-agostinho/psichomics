@@ -98,8 +98,6 @@ test_that("Plot all PCA individuals", {
     
     opts <- hc$x$hc_opts
     expect_null(sapply(opts$series, "[[", "name")[[1]])
-    expect_equal(opts$xAxis$title$text, "PC1 (98.035% explained variance)")
-    expect_equal(opts$yAxis$title$text, "PC2 (1.848% explained variance)")
 })
 
 test_that("Plot PCA individuals and colour all groups", {
@@ -109,8 +107,6 @@ test_that("Plot PCA individuals and colour all groups", {
     
     opts <- hc$x$hc_opts
     expect_equal(sapply(opts$series, "[[", "name"), rownames(groups))
-    expect_equal(opts$xAxis$title$text, "PC1 (98.035% explained variance)")
-    expect_equal(opts$yAxis$title$text, "PC2 (1.848% explained variance)")
 })
 
 test_that("Plot PCA individuals and colour two groups", {
@@ -120,8 +116,6 @@ test_that("Plot PCA individuals and colour two groups", {
     
     opts <- hc$x$hc_opts
     expect_equal(sapply(opts$series, "[[", "name"), rownames(groups)[2:3])
-    expect_equal(opts$xAxis$title$text, "PC1 (98.035% explained variance)")
-    expect_equal(opts$yAxis$title$text, "PC2 (1.848% explained variance)")
 })
 
 test_that("Plot PCA loadings", {
@@ -141,6 +135,4 @@ test_that("Plot PCA loadings", {
     namz <- sapply(opts$series, "[[", "name")
     expect_equal(unlist(namz), rownames(groups)[2:3])
     expect_null(namz[[3]])
-    expect_equal(opts$xAxis$title$text, "PC1 (98.035% explained variance)")
-    expect_equal(opts$yAxis$title$text, "PC2 (1.848% explained variance)")
 })
