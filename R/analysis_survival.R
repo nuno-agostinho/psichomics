@@ -117,7 +117,6 @@ processSurvData <- function(timeStart, timeStop, event, group, clinical) {
 
 #' Process survival curves terms to calculate survival curves
 #'
-#' @param session Session object from Shiny function
 #' @param group Character: group of each individual 
 #' @param clinical Data frame: clinical data
 #' @param censoring Character: censor using "left", "right", "interval" or
@@ -138,8 +137,8 @@ processSurvData <- function(timeStart, timeStop, event, group, clinical) {
 #'
 #' @return A list with a \code{formula} object and a data frame with terms
 #' needed to calculate survival curves
-processSurvTerms <- function(session, group, clinical, censoring, timeStart, 
-                             timeStop, dataEvent, modelTerms, formulaStr=NULL, 
+processSurvTerms <- function(group, clinical, censoring, timeStart, timeStop, 
+                             dataEvent, modelTerms, formulaStr=NULL, 
                              coxph=FALSE, scale="days") {
     # Ignore timeStop if interval-censoring is not selected
     if (!grepl("interval", censoring, fixed=TRUE) || timeStop == "") 
@@ -159,26 +158,17 @@ processSurvTerms <- function(session, group, clinical, censoring, timeStart,
         formulaTerms <- "groups"
     } else if (modelTerms == "formula") {
         formulaTerms <- formulaStr
-        if (formulaTerms == "" || is.null(formulaTerms)) {
-            errorModal(session, "Error in formula",
-                       "The formula field can't be empty.")
-            return(NULL)
-        }
+        
+        if (formulaTerms == "" || is.null(formulaTerms))
+            stop("The formula field can't be empty")
+        
         survTime <- cbind(survTime, clinical)
     }
     
-    form <- tryCatch(formula(paste(formulaSurv, formulaTerms)), error = return)
-    if ("simpleError" %in% class(form)) {
-        errorModal(session, "Formula error",
-                   "Maybe you misplaced a ", tags$kbd("+"), ", ", tags$kbd(":"), 
-                   " or ", tags$kbd("*"), "?", br(), br(),  
-                   "The following error was raised:", br(), 
-                   tags$code(form$message))
-        return(NULL)
-    }
+    form <- formula(paste(formulaSurv, formulaTerms))
     
     if (coxph)
-        res <- tryCatch(coxph(form, data=survTime), error=return)
+        res <- coxph(form, data=survTime)
     else
         res <- list(form=form, survTime=survTime)
     return(res)
@@ -229,6 +219,87 @@ updateClinicalParams <- function(session) {
                                  selected="days_to_death")
         }
     })
+}
+
+#' Check if survival analyses successfully completed or returned errors
+#' 
+#' @param session Shiny session
+#' @param ... Arguments to pass to function \code{processSurvTerms}
+#' 
+#' @importFrom shiny tags
+#' @return List with survival analysis results
+processSurvival <- function(session, ...) {
+    # Calculate survival curves
+    survTerms <- tryCatch(processSurvTerms(...), error=return)
+    if ("simpleError" %in% class(survTerms)) {
+        if (survTerms[[1]] == "The formula field can't be empty") {
+            errorModal(session, "Error in formula",
+                       "The formula field can't be empty.")
+        } else {
+            errorModal(session, "Formula error",
+                       "Maybe you misplaced a ", tags$kbd("+"), ", ",
+                       tags$kbd(":"), " or ", tags$kbd("*"), "?", br(),
+                       br(), "The following error was raised:", br(), 
+                       tags$code(survTerms$message))
+        }
+        return(NULL)
+    }
+    return(survTerms)
+}
+
+#' Test the survival difference between survival groups
+#' @param ... Arguments to pass to \code{survdiff}
+#' 
+#' @importFrom survival survdiff
+#' @return p-value of the survival difference or NA any error occurs
+testSurvival <- function(...) {
+    # If there's an error with survdiff, return NA
+    pvalue <- tryCatch({
+        # Test the difference between survival curves
+        diff <- survdiff(...)
+        
+        # Calculate p-value with 5 significant numbers
+        pvalue <- 1 - pchisq(diff$chisq, length(diff$n) - 1)
+        return(as.numeric(signifDigits(pvalue)))
+    }, error = function(e) NA)
+    return(pvalue)
+}
+
+#' Test the survival difference between two survival groups given a cutoff
+#' 
+#' @inheritParams processSurvTerms
+#' @param cutoff Numeric: Cut-off of interest
+#' @param data Numeric: attribute of interest of the clinical data
+#' @param group Pre-filled vector of NAs with the length of data
+#' @param filter Boolean or numeric: interest of the data elements
+#' @param ... Arguments to pass to \code{processSurvTerms}
+#' @param session Shiny session
+#' @param modals Boolean: show error dialogs? TRUE by default
+#' 
+#' @importFrom survival survdiff
+#' @return p-value of the survival difference
+testSurvivalCutoff <- function(cutoff, data, group, filter, ..., session=NULL,
+                               modals=TRUE) {
+    group[filter] <- data >= cutoff
+    
+    # Assign a value based on the inclusion levels cut-off
+    group[group == "TRUE"]  <- paste("Inclusion levels >=", cutoff)
+    group[group == "FALSE"] <- paste("Inclusion levels <", cutoff)
+    
+    # Calculate survival curves
+    if (modals) {
+        survTerms <- processSurvival(session, group, ...,
+                                     modelTerms="psiCutoff")
+        if (is.null(survTerms)) return(NULL)
+    } else {
+        survTerms <- tryCatch(processSurvTerms(group, ...,
+                                               modelTerms="psiCutoff"),
+                              error=return)
+        if ("simpleError" %in% class(survTerms)) return(NA)
+    }
+    
+    pvalue <- testSurvival(survTerms$form, data=survTerms$survTime)
+    return(pvalue)
 }
 
 #' Server logic of survival analysis
@@ -352,16 +423,13 @@ survivalServer <- function(input, output, session) {
                 fillGroups <- "All data"
             }
             
-            # Calculate survival curves
-            survTerms <- processSurvTerms(session, fillGroups, clinical,
-                                          censoring, timeStart, timeStop,
-                                          dataEvent, modelTerms, formulaStr,
-                                          scale = scale)
-            form <- survTerms$form
-            data <- survTerms$survTime
-            surv <- tryCatch(survfit(form, data = data),
+            survTerms <- processSurvival(session, fillGroups, clinical,
+                                         censoring, timeStart, timeStop, 
+                                         dataEvent, modelTerms, formulaStr, 
+                                         scale=scale)
+            if (is.null(survTerms)) return(NULL)
+            surv <- tryCatch(survfit(survTerms$form, data=survTerms$survTime), 
                              error = return)
-            
             if ("simpleError" %in% class(surv)) {
                 errorModal(session, "Formula error",
                            "The following error was raised:", br(),
@@ -369,15 +437,7 @@ survivalServer <- function(input, output, session) {
                 return(NULL)
             }
             
-            # If there's an error with survdiff, return NA
-            pvalue <- tryCatch({
-                # Test the difference between survival curves
-                diff <- survdiff(form, data = data)
-                
-                # Calculate p-value with 5 significant numbers
-                pvalue <- 1 - pchisq(diff$chisq, length(diff$n) - 1)
-                signifDigits(pvalue)
-            }, error = function(e) NA)
+            pvalue <- testSurvival(survTerms$form, data=survTerms$survTime)
             
             # Plot survival curves
             output$survival <- renderHighchart({
@@ -429,23 +489,15 @@ survivalServer <- function(input, output, session) {
             }
             
             # Calculate survival curves
-            survTerms <- processSurvTerms(session, dataGroups, clinical,
-                                          censoring, timeStart, timeStop,
-                                          dataEvent, modelTerms, formulaStr,
-                                          coxph=TRUE, scale=scale)
-            if ("simpleError" %in% class(survTerms)) {
-                errorModal(session, "Formula error",
-                           "The following error was raised:", br(),
-                           tags$code(survTerms$message))
-                return(NULL)
-            }
-            
-            # surv <- survfit(survTerms)
+            survTerms <- processSurvival(session, dataGroups, clinical, 
+                                         censoring, timeStart, timeStop, 
+                                         dataEvent, modelTerms, formulaStr,
+                                         coxph=TRUE, scale=scale)
+            if (is.null(survTerms)) return(NULL)
             summary <- summary(survTerms)
             print(summary)
             
             output$coxphUI <- renderUI({
-                # highchartOutput(ns("coxPlot"))
                 tagList(
                     dataTableOutput(ns("coxTests")), hr(),
                     dataTableOutput(ns("coxGroups"))
@@ -468,14 +520,6 @@ survivalServer <- function(input, output, session) {
             }, style="bootstrap", selection='none',
             options=list(info=FALSE, paging=FALSE, searching=FALSE, 
                          scrollX=TRUE))
-            
-            # output$coxPlot <- renderHighchart({
-            #     # Plot survival curves
-            #     hchart(surv, ranges = intRanges) %>%
-            #         hc_chart(zoomType="xy") %>%
-            #         hc_yAxis(title=list(text="Proportion of individuals")) %>%
-            #         hc_xAxis(title=list(text="Time in days"))
-            # }, style="bootstrap", selection='none')
         }
     })
     
@@ -512,44 +556,12 @@ survivalServer <- function(input, output, session) {
             groups <- rep(NA, clinicalIDs)
             psi <- as.numeric(psi[event, toupper(names(tumour))])
             
-            #' @importFrom survival survdiff
-            testSurvival <- function(psiCutoff, groups, tumour, psi, session,
-                                     clinical, censoring, timeStart, timeStop,
-                                     dataEvent, modelTerms, formulaStr) {
-                groups[tumour] <- psi >= psiCutoff
-                
-                # Assign a value based on the inclusion levels cut-off
-                # groups[is.na(groups)] <- "NA"
-                groups[groups == "TRUE"]  <- paste("Inclusion levels >=", psiCutoff)
-                groups[groups == "FALSE"] <- paste("Inclusion levels <", psiCutoff)
-                fillGroups <- groups
-                
-                # Calculate survival curves
-                survTerms <- processSurvTerms(session, fillGroups, clinical,
-                                              censoring, timeStart, timeStop,
-                                              dataEvent, modelTerms, formulaStr,
-                                              scale=1)
-                form <- survTerms$form
-                data <- survTerms$survTime
-                
-                # If there's an error with survdiff, return NA
-                pvalue <- tryCatch({
-                    # Test the difference between survival curves
-                    diff <- survdiff(form, data = data)
-                    
-                    # Calculate p-value with 5 significant numbers
-                    pvalue <- 1 - pchisq(diff$chisq, length(diff$n) - 1)
-                    return(as.numeric(signifDigits(pvalue)))
-                }, error = function(e) NA)
-                return(pvalue)
-            }
-            
             # Supress warnings from failed calculations while optimising
             opt <- suppressWarnings(
-                optim(0, testSurvival, groups=groups, tumour=tumour, psi=psi, 
-                      session=session, clinical=clinical, censoring=censoring, 
+                optim(0, testSurvivalCutoff, group=groups, filter=tumour,
+                      data=psi, clinical=clinical, censoring=censoring, 
                       timeStart=timeStart, timeStop=timeStop, 
-                      dataEvent=dataEvent, modelTerms="psiCutoff",
+                      dataEvent=dataEvent, session=session,
                       # Method and parameters interval
                       method="Brent", lower=0, upper=1))
             
@@ -558,18 +570,18 @@ survivalServer <- function(input, output, session) {
                             "Cut-off value for the selected event"),
                 bsTooltip(ns("psiCutoff"), placement="right", 
                           options = list(container = "body"),
-                          "You can click on the white circle and then use the left and right arrows for finer control.")
-            )
+                          paste("You can click on the white circle and then",
+                                "use the left and right arrows for finer",
+                                "control.")))
             
             if (!is.na(opt$value))
                 return(tagList(slider, div(
-                           tags$b("Optimal cut-off:"), opt$par, br(),
-                           tags$b("Minimal log-rank p-value:"), opt$value)))
+                    tags$b("Optimal cut-off:"), opt$par, br(),
+                    tags$b("Minimal log-rank p-value:"), opt$value)))
             else
                 return(tagList(
-                    slider, div(icon("bell-o"),
-                                "No optimal cut-off was found for this alternative",
-                                "splicing event.")))
+                    slider, div(icon("bell-o"), "No optimal cut-off was found",
+                                "for this alternative splicing event.")))
         }
     })
 }

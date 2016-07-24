@@ -400,67 +400,6 @@ calculateDensitySparklines <- function(data) {
     return(sparklines)
 }
 
-#' Process survival curves terms using a cutoff to calculate survival curves
-#' @inheritParams processSurvData
-#' @param censoring Character: type of censoring for survival analysis
-processSurvTermsCutoff <- function(group, clinical, censoring, timeStart, 
-                                   timeStop, event) {
-    # Ignore timeStop if interval-censoring is not selected
-    if (!grepl("interval", censoring, fixed=TRUE) || 
-        timeStop == "") 
-        timeStop <- NULL
-    
-    # Check if using or not interval-censored data
-    formulaSurv <- ifelse(is.null(timeStop),
-                          "Surv(time, event, type=censoring) ~", 
-                          "Surv(time, time2, event, type=censoring) ~")
-    
-    survTime <- processSurvData(timeStart, timeStop, event, group, clinical)
-    
-    form <- tryCatch(formula(paste(formulaSurv, "groups")), 
-                     error = return)
-    if ("simpleError" %in% class(form)) return(NULL)
-    res <- list(form=form, survTime=survTime)
-    return(res)
-}
-
-#' Test the survival difference between two groups given a cutoff
-#' 
-#' @inheritParams processSurvTermsCutoff
-#' @param cutoff Numeric: Cut-off of interest
-#' @param data Numeric: attribute of interest of the clinical data
-#' @param group Pre-filled vector of NAs with the length of data
-#' @param filter Boolean or numeric: interest of the data elements
-#' 
-#' @importFrom survival survdiff
-#' @return p-value of the survival difference
-testSurvivalCutoff <- function(cutoff, data, group, filter, clinical,
-                               censoring, timeStart, timeStop, event) {
-    group[filter] <- data >= cutoff
-    
-    # Assign a value based on the inclusion levels cut-off
-    group[group == "TRUE"]  <- paste("Inclusion levels >=", cutoff)
-    group[group == "FALSE"] <- paste("Inclusion levels <", cutoff)
-    fillGroup <- group
-    
-    # Calculate survival curves
-    survTerms <- processSurvTermsCutoff(fillGroup, clinical, censoring, 
-                                        timeStart, timeStop, event)
-    form <- survTerms$form
-    time <- survTerms$survTime
-    
-    # If there's an error with survdiff, return NA
-    pvalue <- tryCatch({
-        # Test the difference between survival curves
-        diff <- survdiff(form, data=time)
-        
-        # Calculate p-value with 5 significant numbers
-        pvalue <- 1 - pchisq(diff$chisq, length(diff$n) - 1)
-        return(as.numeric(signifDigits(pvalue)))
-    }, error = function(e) NA)
-    return(pvalue)
-}
-
 #' Interface for calculating optimal cut-off and p-value for survival curves
 #' differences
 #' @param ns Namespace function
@@ -629,7 +568,8 @@ optimSurvDiff <- function(session, input, output) {
             opt <- suppressWarnings(
                 optim(0, testSurvivalCutoff, data=v, group=groups,
                       filter=tumour, clinical=clinical, censoring=censoring,
-                      timeStart=timeStart, timeStop=timeStop, event=dataEvent,
+                      timeStart=timeStart, timeStop=timeStop, 
+                      dataEvent=dataEvent, modals=FALSE,
                       # Method and parameters interval
                       method="Brent", lower=0, upper=1))
 
