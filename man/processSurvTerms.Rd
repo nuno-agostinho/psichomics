@@ -4,12 +4,10 @@
 \alias{processSurvTerms}
 \title{Process survival curves terms to calculate survival curves}
 \usage{
-processSurvTerms(session, group, clinical, censoring, timeStart, timeStop,
-  dataEvent, modelTerms, formulaStr = NULL, coxph = FALSE, scale = "days")
+processSurvTerms(group, clinical, censoring, timeStart, timeStop, dataEvent,
+  modelTerms, formulaStr = NULL, coxph = FALSE, scale = "days")
 }
 \arguments{
-\item{session}{Session object from Shiny function}
-
 \item{group}{Character: group of each individual}
 
 \item{clinical}{Data frame: clinical data}
