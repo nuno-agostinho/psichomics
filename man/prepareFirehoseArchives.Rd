@@ -4,7 +4,7 @@
 \alias{prepareFirehoseArchives}
 \title{Prepares Firehose archives in a given directory}
 \usage{
-prepareFirehoseArchives(archive, md5, folder)
+prepareFirehoseArchives(archive, md5)
 }
 \arguments{
 \item{archive}{Character: path to downloaded archives}
@@ -22,12 +22,12 @@ of the archives and removes the original downloaded archives.
 }
 \examples{
 file <- paste0(
-    "http://gdac.broadinstitute.org/runs/stddata__2015_11_01/data/",
+    "~/Downloads",
     "ACC/20151101/gdac.broadinstitute.org_ACC.",
     "Merge_Clinical.Level_1.2015110100.0.0.tar.gz")
+md5 <- paste0(file, ".md5")
 \dontrun{
-prepareFirehoseArchives(folder = "~/Downloads", archive = file,
-                        md5 = paste0(file, ".md5"))
+prepareFirehoseArchives(archive = file, md5 = paste0(file, ".md5"))
 }
 }
 

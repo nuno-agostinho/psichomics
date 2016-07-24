@@ -5,7 +5,7 @@
 \title{Perform statistical analysis on a vector with elements from different groups}
 \usage{
 statsAnalyses(vector, group, threshold = 1, step = 100,
-  analyses = c("wilcox", "kruskal", "levene"))
+  analyses = c("wilcoxRankSum", "wilcoxSignedRank", "kruskal", "levene"))
 }
 \arguments{
 \item{vector}{Numeric}
