@@ -476,16 +476,15 @@ addTCGAdata <- function(ns) {
         uiOutput(ns("firebrowseDataModal")),
         uiOutput(ns("pathSuggestions")),
         uiOutput(ns("iframeDownload")),
-        selectizeInput(ns("firehoseCohort"), "Cohort", acronyms,
-                       multiple = TRUE, selected = c("ACC"),
+        selectizeInput(ns("firehoseCohort"), "Tumour type", acronyms,
+                       multiple = TRUE,
                        options = list(placeholder = "Select cohort(s)")),
         selectizeInput(ns("firehoseDate"), "Date", dates, multiple = TRUE,
                        selected = dates[1], options = list(
                            placeholder = "Select sample date")),
         selectizeInput(ns("firehoseData"), "Data type",
                        c("Clinical", getFirebrowseDataChoices()), 
-                       multiple = TRUE, selected = "Clinical",
-                       options = list(
+                       multiple = TRUE, options = list(
                            placeholder = "Select data types")),
         textAreaInput(ns("dataFolder"), "Folder to store the data",
                       value = "~/Downloads/",
@@ -550,14 +549,13 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
     ignore <- datasets[!datasets %in% data]
     
     # Load data from Firehose
-    data <- loadFirehoseData(
-        folder = input$dataFolder,
-        cohort = input$firehoseCohort,
-        date = gsub("-", "_", input$firehoseDate),
-        data_type = data_type,
-        exclude = c(".aux.", ".mage-tab.", ignore),
-        progress = updateProgress,
-        output = output)
+    data <- loadFirehoseData(folder = input$dataFolder,
+                             cohort = input$firehoseCohort,
+                             date = gsub("-", "_", input$firehoseDate),
+                             data_type = data_type,
+                             exclude = c(".aux.", ".mage-tab.", ignore),
+                             progress = updateProgress,
+                             output = output)
     
     if (is.na(data)) {
         infoModal(
@@ -608,13 +606,22 @@ firebrowseServer <- function(input, output, session, active) {
     
     # Check if data is already loaded and ask the user if it should be replaced
     observeEvent(input$getFirehoseData, {
-        if (!is.null(getData()))
+        if (length(isolate(input$firehoseCohort)) == 0) {
+            errorModal(session, "No tumour type",
+                       "Please, input a tumour type.", 
+                       modalId="firebrowseDataModal")
+        } else if (length(isolate(input$firehoseData)) == 0) {
+            errorModal(session, "No data types",
+                       "Please, input data types of interest.",
+                       modalId="firebrowseDataModal")
+        } else if (!is.null(getData())) {
             loadedDataModal(session,
                             "firebrowseDataModal",
                             "firebrowseReplace",
                             "firebrowseAppend")
-        else
+        } else {
             setFirehoseData(input, output, session)
+        }
     })
     
     # Load data when the user presses to replace data
