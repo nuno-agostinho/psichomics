@@ -120,8 +120,8 @@ createDataTab <- function(index, data, name, input, output) {
     }
     
     output[[tablename]] <- renderDataTable(
-        subsetToShow, style="bootstrap", selection='none',
-        options=list(pageLength=10, scrollX=TRUE))
+        subsetToShow, style="bootstrap", selection='none', filter="top",
+        server=TRUE, options=list(pageLength=10))
     
     output[[paste(tablename, "download", sep="-")]] <- downloadHandler(
         filename = paste(name, attr(table, "tablename")),
