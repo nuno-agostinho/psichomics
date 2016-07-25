@@ -3,6 +3,7 @@ firehoseJunctionQuantificationFormat <- function() {
         tablename   = "Junction quantification",   # Name of the created table
         filename    = "junction_quantification",   # Name of the file
         description = "Read counts of splicing junctions",
+        dataType    = "Junction quantification",
         matchName   = TRUE, # Should the file name be matched?
         
         # Transpose the data? This is the first step before parsing the information!

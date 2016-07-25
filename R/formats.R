@@ -104,6 +104,8 @@ loadFile <- function(format, file) {
     # Add row names (it doesn't work placed before for some reason...)
     rownames(loaded) <- rowNames
     attr(loaded, "rowNames") <- !is.null(rowNames)
+    attr(loaded, "filename") <- file
+    attr(loaded, "dataType") <- format$dataType
     return(loaded)
 }
 

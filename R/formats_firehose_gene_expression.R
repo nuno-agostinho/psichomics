@@ -3,6 +3,7 @@ firehoseGeneExpressionFormat <- function() {
         tablename   = "RSEM gene expression",   # Name of the created table
         filename    = "RSEM_genes_normalized",   # Name of the file
         description = "Normalised gene expression from RSEM",
+        dataType    = "Gene expression",
         
         # Transpose the data? This is the first step before parsing the information!
         # After transposition, a row of the current data equals a column of the original

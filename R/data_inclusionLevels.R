@@ -31,6 +31,9 @@ inclusionLevelsInterface <- function(ns) {
         uiOutput(ns("modal")),
         helpText("Measure exon inclusion levels from junction quantification.",
                  "This is also known as Percentage Spliced In (PSI)."),
+        selectizeInput(ns("junctionQuant"), "Junction quantification",
+                       choices=NULL, options=list(
+                           placeholder="No junction quantification loaded")),
         selectizeInput(ns("annotation"),
                        "Alternative splicing event annotation",
                        choices=c("Human (hg19/GRCh37)"=
@@ -81,7 +84,7 @@ inclusionLevelsServer <- function(input, output, session) {
         
         # Calculate inclusion levels with annotation and junction quantification
         updateProgress("Calculating inclusion levels")
-        junctionQuant <- getJunctionQuantification()
+        junctionQuant <- getJunctionQuantification()[[input$junctionQuant]]
         
         psi <- NULL
         for (i in seq_along(eventType)) {
@@ -109,6 +112,13 @@ inclusionLevelsServer <- function(input, output, session) {
     })
     
     observeEvent(input$takeMeThere, missingDataGuide("Junction quantification"))
+    
+    observe({
+        junctionQuant <- getJunctionQuantification()
+        if (!is.null(junctionQuant))
+            updateSelectizeInput(session, "junctionQuant",
+                                 choices=names(junctionQuant))
+    })
     
     observeEvent(input$calcIncLevels, {
         if(is.null(getData()) || is.null(getJunctionQuantification()))
