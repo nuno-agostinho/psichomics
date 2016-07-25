@@ -82,6 +82,7 @@ setLocalData <- function(input, output, session, replace=TRUE) {
     
     data <- setNames(list(loaded), category)
     if (!is.null(data)) {
+        data <- processDatasetNames(data)
         if(replace)
             setData(data)
         else

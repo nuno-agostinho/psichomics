@@ -22,6 +22,37 @@ loadedDataModal <- function(session, modalId, replaceButtonId, keepButtonId) {
                  modalId=modalId)
 }
 
+processDatasetNames <- function(data) {
+    newData <- data
+    # Avoid duplicate names in categories
+    names(newData) <- renameDuplicated(names(data), 
+                                       names(data)[duplicated(names(data))])
+    
+    ns <- lapply(newData, names)
+    for (each in names(ns)) {
+        nse <- names(newData[[each]])
+        
+        # For junction quantification, add the respective sequencing technology    
+        index <- nse == "Junction quantification"
+        for (k in seq_along(nse)) {
+            if (index[[k]]) {
+                file <- attr(newData[[each]][[k]], "filename")
+                if (grepl("illuminahiseq", file, fixed=TRUE))
+                    names(newData[[each]])[[k]] <- paste(
+                        names(newData[[each]])[[k]], "(Illumina HiSeq)")
+                else if (grepl("illuminaga", file, fixed=TRUE)) 
+                    names(newData[[each]])[[k]] <- paste(
+                        names(newData[[each]])[[k]], "(Illumina GA)")
+            }
+        }
+        
+        # Avoid duplicate names in datasets from the same category
+        nse <- names(newData[[each]])
+        names(newData[[each]]) <- renameDuplicated(nse, nse[duplicated(nse)])
+    }
+    return(newData)
+}
+
 #' User interface of the data module
 #' @param id Character: identifier
 #' @param tab Function to create tab
@@ -179,6 +210,7 @@ dataServer <- function(input, output, session) {
         categoryData <- getCategoryData()
         for (category in seq_along(data)) {
             name <- getCategories()[category]
+            print(name)
             # Create data tab for each dataset in a data category
             lapply(seq_along(categoryData), createDataTab,
                    data=data[[category]], name, input, output)

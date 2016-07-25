@@ -567,6 +567,7 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
             tags$b("Get data"), "again to load the select data.",
             modalId="firebrowseDataModal")
     } else if (!is.null(data)) {
+        data <- processDatasetNames(data)
         if(replace)
             setData(data)
         else

@@ -55,9 +55,17 @@ getActiveDataset <- reactive(sharedData$activeDataset)
 #' Get clinical data of the data category
 getClinicalData <- reactive(getCategoryData()[["Clinical data"]])
 
-#' Get junction quantification data of the data category
-getJunctionQuantification <- reactive(
-    getCategoryData()[["Junction quantification"]])
+#' Get junction quantification data
+#' @note Needs to be called inside reactive function
+#' 
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' @return List of data frames of junction quantification
+getJunctionQuantification <- function(category=getCategory()) {
+    data <- getData()[[getCategory()]]
+    match <- sapply(data, attr, "dataType") == "Junction quantification"
+    return(data[match])
+}
 
 #' Get inclusion leves of the selected data category
 getInclusionLevels <- reactive(getCategoryData()[["Inclusion levels"]])
