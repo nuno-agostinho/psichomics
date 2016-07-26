@@ -1,3 +1,7 @@
+.onLoad <- function(libname, pkgname) {
+    message("Start the visual interface by running the function psichomics()")
+}
+
 #' Modified version of shinyBS::bsModal
 #' 
 #' bsModal is used within the UI to create a modal window. This allows to use
