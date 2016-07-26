@@ -559,7 +559,18 @@ optimSurvDiff <- function(session, input, output) {
             selected  <- input$selected
         })
 
-        if (selected == "shown") psi <- psi[display, ]
+        if (selected == "shown") {
+            if (!is.null(display)) {
+                psi <- psi[display, ]
+            } else {
+                errorModal(session, "Error with selected events",
+                           "Unfortunately, it's not possible to get events",
+                           "shown in the table. To calculate survival analyses",
+                           "calculate for all events.")
+                closeProgress()
+                return(NULL)
+            }
+        }
         startProgress("Performing survival analysis", nrow(psi))
 
         opt <- apply(psi, 1, function(vector) {
@@ -577,12 +588,19 @@ optimSurvDiff <- function(session, input, output) {
             return(c("Optimal survival PSI cut-off"=opt$par,
                      "Optimal survival difference"=opt$value))
         })
-        # Remove NAs and add information to the statistical table
-        opt <- opt[ , !is.na(opt[2, ])]
-        df <- data.frame(t(opt))
-        for (col in names(df)) stats[rownames(df), col] <- df[ , col]
-
-        setDifferentialAnalyses(stats)
+        
+        if (length(opt) == 0) {
+            errorModal(session, "No survival analyses",
+                       "Optimal PSI cut-off for the selected alternative",
+                       "splicing events returned no survival analyses.")
+        } else {
+            # Remove NAs and add information to the statistical table
+            opt <- opt[ , !is.na(opt[2, ])]
+            df <- data.frame(t(opt))
+            for (col in names(df)) stats[rownames(df), col] <- df[ , col]
+            
+            setDifferentialAnalyses(stats)
+        }
         closeProgress()
     })
 }
