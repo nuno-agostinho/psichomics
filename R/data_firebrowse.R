@@ -258,7 +258,7 @@ prepareFirehoseArchives <- function(archive, md5) {
     
     ## TODO(NunoA): Check if path.expand works in Windows
     # Extract the contents of the archives to the same folder
-    invisible(lapply(archive, untar, exdir=dirname(archive)))
+    invisible(lapply(archive, function(arc) untar(arc, exdir=dirname(arc))))
     
     # Remove the original downloaded files
     invisible(file.remove(archive, md5))
