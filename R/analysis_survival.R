@@ -566,18 +566,27 @@ survivalServer <- function(input, output, session) {
                       method="Brent", lower=0, upper=1))
             
             slider <- tagList(
-                sliderInput(ns("psiCutoff"), value = 0.5, min=0, max=1, step=0.01,
-                            "Cut-off value for the selected event"),
+                sliderInput(ns("psiCutoff"), value = 0.5, min=0, max=1,
+                            step=0.01, "Cut-off value for the selected event"),
                 bsTooltip(ns("psiCutoff"), placement="right", 
                           options = list(container = "body"),
                           paste("You can click on the white circle and then",
                                 "use the left and right arrows for finer",
                                 "control.")))
             
+            observe({
+                if (!is.na(opt$value)) 
+                    value <- opt$par
+                else
+                    value <- 0.5
+                updateSliderInput(session, "psiCutoff", value=value)
+            })
+            
             if (!is.na(opt$value))
-                return(tagList(slider, div(
-                    tags$b("Optimal cut-off:"), opt$par, br(),
-                    tags$b("Minimal log-rank p-value:"), opt$value)))
+                return(tagList(
+                    slider,
+                    div(tags$b("Optimal cut-off:"), opt$par, br(),
+                        tags$b("Minimal log-rank p-value:"), opt$value)))
             else
                 return(tagList(
                     slider, div(icon("bell-o"), "No optimal cut-off was found",
