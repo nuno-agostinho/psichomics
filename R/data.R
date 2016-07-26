@@ -210,7 +210,6 @@ dataServer <- function(input, output, session) {
         categoryData <- getCategoryData()
         for (category in seq_along(data)) {
             name <- getCategories()[category]
-            print(name)
             # Create data tab for each dataset in a data category
             lapply(seq_along(categoryData), createDataTab,
                    data=data[[category]], name, input, output)
