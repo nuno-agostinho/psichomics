@@ -560,10 +560,11 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
     if (is.na(data)) {
         infoModal(
             session, "Downloading missing data",
-            "Data is being downloaded to the folder", tags$b(input$dataFolder), 
-            br(), br(), "When the downloads complete, click the button",
-            tags$b("Get data"), "again to load the select data.",
-            modalId="firebrowseDataModal")
+            "Data is being downloaded. Check if the folder",
+            tags$b(input$dataFolder), "is your download folder. If not, move", 
+            "the downloaded files to the desired location.", br(), br(),
+            "When the downloads complete, click the button", tags$b("Get data"), 
+            "again to load the selected data.", modalId="firebrowseDataModal")
     } else if (!is.null(data)) {
         data <- processDatasetNames(data)
         if(replace)
