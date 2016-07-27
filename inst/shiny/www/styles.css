@@ -150,3 +150,8 @@ Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
     content: counter(li-counter);
     counter-increment: li-counter;
 }
+
+/* Avoid wrapping content of DataTables */
+table {
+    white-space: nowrap;
+}
