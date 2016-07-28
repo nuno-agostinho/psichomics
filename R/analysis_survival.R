@@ -35,16 +35,17 @@ survivalUI <- function(id) {
             radioButtons(ns("modelTerms"), selected="groups", inline=TRUE,
                          "Select model terms of the right-hand using",
                          choices=c("Clinical groups"="groups",
-                                   "Formula"="formula",
+                                   "Clinical groups (interaction)"="formula",
                                    "Inclusion leves cut-off"="psiCutoff")),
             bsTooltip(ns("modelTerms"), placement="right", 
                       options = list(container = "body"),
-                      paste0(
-                          "Survival analysis using:<br/>\u2022 User-created <b>",
-                          "clinical groups</b><br/>\u2022 A <b>formula</b> that",
-                          " can test clinical attributes with interactions<br/>",
-                          "\u2022 <b>Inclusion levels cut-off</b> for the",
-                          " selected alternative splicing event")),
+                      paste(
+                          "Perform survival analysis using:<br/>\u2022",
+                          "User-created <b>clinical groups</b><br/>\u2022",
+                          "A formula that can test clinical attributes with",
+                          "<b>interactions</b><br/>\u2022 <b>Inclusion levels",
+                          "cut-off</b> for the selected alternative splicing",
+                          "event")),
             conditionalPanel(
                 sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "groups"),
                 selectGroupsUI(ns("dataGroups"), "Clinical groups to plot"),
@@ -53,10 +54,18 @@ survivalUI <- function(id) {
                               value = FALSE)),
             conditionalPanel(
                 sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "formula"),
-                textAreaInput(ns("formula"), "Formula for right-hand side"),
+                textAreaInput(
+                    ns("formula"), "Formula with clinical attributes", 
+                    placeholder="Start typing to suggest clinical attributes"),
                 uiOutput(ns("formulaSuggestions")),
-                helpText("Interesting attributes include", 
-                         tags$b("pathologic_stage"))),
+                helpText(
+                    "To analyse a series of attributes, separate each attribute",
+                    "with a", tags$kbd("+"), ". To analyse interactions, use", 
+                    tags$kbd(":"), " (interactions are only usable with Cox",
+                    "models). For example, ",
+                    tags$kbd("pathologic_stage : gender + race"), br(), br(),
+                    "Interesting attributes include", tags$b("pathologic_stage"), 
+                    "to get tumour stages.")),
             conditionalPanel(
                 sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "psiCutoff"),
                 uiOutput(ns("optimalPsi"))),
