@@ -606,4 +606,5 @@ survivalServer <- function(input, output, session) {
 
 attr(survivalUI, "loader") <- "analysis"
 attr(survivalUI, "name") <- "Survival curves"
+attr(survivalUI, "selectEvent") <- TRUE
 attr(survivalServer, "loader") <- "analysis"
