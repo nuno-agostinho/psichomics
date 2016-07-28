@@ -59,7 +59,8 @@ selectGroupsServer <- function(session, id, dataset, datasetName) {
     # Update groups shown in the interface
     observe({
         groupNames <- getGroupsFrom(datasetName)[, "Names"]
-        updateSelectizeInput(session, id, choices=groupNames)
+        updateSelectizeInput(session, id, choices=groupNames,
+                             selected=groupNames)
     })
 }
 
