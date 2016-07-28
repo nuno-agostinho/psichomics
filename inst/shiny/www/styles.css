@@ -17,9 +17,17 @@ body { padding-top: 70px; }
     filter: opacity(80%);
 }
 
-/* Progress bar right below navbar and text display */
+/* Progress bar right below navbar and style progress display */
 .shiny-progress-container { top: 48px; }
-.shiny-progress .progress-text { width: auto; }
+.shiny-progress .progress-text { 
+    width: auto; 
+    height: auto; 
+    top: -3px !important;
+}
+.shiny-progress .progress { 
+    height: 18px; 
+    border-radius: 0;
+}
 
 /* Loading message located in the navbar at the right */
 #loadmessage {
