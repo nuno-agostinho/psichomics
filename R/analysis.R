@@ -58,6 +58,7 @@ missingDataGuide <- function(dataType) {
 analysesUI <- function(id, tab) { 
     ns <- NS(id)
     uiList <- getUiFunctions(ns, "analysis")
+    
     analysesSelectEvent <- sapply(uiList, attr, "selectEvent")
     names(analysesSelectEvent) <- sapply(uiList, attr, "name")
     sharedData$analysesSelectEvent <- analysesSelectEvent
@@ -67,28 +68,31 @@ analysesUI <- function(id, tab) {
         fluidRow(
             column(4, 
                    selectizeInput(ns("selectizeAnalysis"), 
-                                  "Select analysis type:",
+                                  "Select analysis:",
                                   choices = NULL, options = list(
                                       placeholder = "Select an analysis type"),
                                   width="auto")),
             column(4, selectizeInput(ns("selectizeCategory"), 
-                                     "Select category:",
+                                     "Select data category:",
                                      choices = NULL, options = list(
-                                         placeholder = "Select a category"),
+                                         placeholder = "Select data category"),
                                      width="auto")),
             column(4, selectizeInput(ns("selectizeEvent"), "Select event:",
                                      choices = NULL, options = list(
                                          placeholder = "Select an event"),
                                      width="auto"))),
-        # bsTooltip(ns("selectizeEvent"), placement="right",
-        #           "Delete text and start typing to search events",
-        #           options = list(container="body")),
+        bsTooltip(ns("selectizeEvent"), placement="top",
+                  paste("Delete text and start typing to search events by",
+                        "gene, chromosome and coordinates."),
+                  options = list(container="body")),
         lapply(uiList, function(ui) {
             conditionalPanel(
                 condition=sprintf("input[id='%s'] == '%s'",
                                   ns("selectizeAnalysis"), attr(ui, "name")),
                 ui)
-        })
+        }),
+        conditionalPanel(sprintf("input[id='%s']==''", ns("selectizeAnalysis")), 
+                         h3(icon("hand-o-up"), "Select an analysis above"))
     )
 }
 
@@ -105,7 +109,7 @@ analysesServer <- function(input, output, session) {
     
     # Update selectize input to show available analyses
     observe( updateSelectizeInput(
-        session, "selectizeAnalysis",
+        session, "selectizeAnalysis", selected="",
         choices=names(sharedData$analysesSelectEvent)))
     
     # Update selectize input to show available categories
@@ -145,9 +149,9 @@ analysesServer <- function(input, output, session) {
 
         exploratory <- sharedData$analysesSelectEvent
         if(input$selectizeAnalysis %in% names(exploratory)[!exploratory])
-            vis(hide)
-        else
             vis(show)
+        else
+            vis(hide)
     })
 }
 
