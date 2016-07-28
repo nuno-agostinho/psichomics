@@ -480,7 +480,7 @@ addTCGAdata <- function(ns) {
                        multiple = TRUE,
                        options = list(placeholder = "Select cohort(s)")),
         selectizeInput(ns("firehoseDate"), "Date", dates, multiple = TRUE,
-                       selected = dates[1], options = list(
+                       selected = NULL, options = list(
                            placeholder = "Select sample date")),
         selectizeInput(ns("firehoseData"), "Data type",
                        c("Clinical", getFirebrowseDataChoices()), 
@@ -610,6 +610,10 @@ firebrowseServer <- function(input, output, session, active) {
         if (length(isolate(input$firehoseCohort)) == 0) {
             errorModal(session, "No tumour type",
                        "Please, input a tumour type.", 
+                       modalId="firebrowseDataModal")
+        } else if (length(isolate(input$firehoseDate)) == 0) {
+            errorModal(session, "No date",
+                       "Please, input date of samples of interest.",
                        modalId="firebrowseDataModal")
         } else if (length(isolate(input$firehoseData)) == 0) {
             errorModal(session, "No data types",
