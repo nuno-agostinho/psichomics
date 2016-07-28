@@ -34,7 +34,7 @@ firehoseMergeClinicalFormat <- function() {
                   "patient.days_to_death", "patient.days_to_last_followup", 
                   "patient.radiation_therapy", "patient.gender", 
                   "patient.clinical_cqcf.histological_type", "patient.race", 
-                  "patient.ethnicity")
+                  "patient.ethnicity", "patient.race_list.race")
     )
 }
 
