@@ -13,8 +13,8 @@
 #' @importFrom shiny fluidRow column uiOutput selectizeInput actionButton
 #' 
 #' @return Interface for group selection
-selectGroupsUI <- function (id, label, placeholder=
-                                "Click 'Edit' to create or edit groups") {
+selectGroupsUI <- function (
+    id, label, placeholder="Click in 'Groups' to create or edit groups") {
     editId <- paste0(id, "Edit")
     modalId <- paste0(id, "Modal")
     fluidRow(
@@ -22,8 +22,8 @@ selectGroupsUI <- function (id, label, placeholder=
         column(10, selectizeInput(id, label, choices=NULL, multiple=TRUE,
                                   width="auto",
                                   options=list(placeholder=placeholder))),
-        column(2, actionButton(editId, "Edit", 
-                               class="inline_selectize pull-right")))
+        column(2, actionButton(editId, "Groups", 
+                               class="inline_selectize pull-right btn-info")))
 }
 
 #' Group selection logic
