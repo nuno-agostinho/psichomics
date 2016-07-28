@@ -25,4 +25,5 @@ templateServer <- function(input, output, session) {
 
 # attr(templateUI, "loader") <- "analysis"
 # attr(templateUI, "name") <- "Template"
+# attr(templateUI, "selectEvent") <- TRUE
 # attr(templateServer, "loader") <- "analysis"
