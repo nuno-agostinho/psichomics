@@ -69,8 +69,8 @@ getUiFunctions <- function(ns, loader, ..., priority=NULL) {
             # Remove last "UI" from the name and use it as ID
             id  <- gsub("UI$", "", name)
             res <- FUN(ns(id), ...)
-            # Give a name to the UI
-            attr(res, "name") <- attr(FUN, "name")
+            # Pass all attributes
+            attributes(res) <- c(attributes(res), attributes(FUN)[-1])
             return(res)
         }
     })

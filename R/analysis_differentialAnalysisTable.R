@@ -695,4 +695,5 @@ diffAnalysisTableServer <- function(input, output, session) {
 
 attr(diffAnalysisTableUI, "loader") <- "analysis"
 attr(diffAnalysisTableUI, "name") <- "Differential analysis (exploratory)"
+attr(diffAnalysisTableUI, "selectEvent") <- FALSE
 attr(diffAnalysisTableServer, "loader") <- "analysis"

@@ -336,4 +336,5 @@ diffAnalysisServer <- function(input, output, session) {
 
 attr(diffAnalysisUI, "loader") <- "analysis"
 attr(diffAnalysisUI, "name") <- "Differential analysis (per splicing event)"
+attr(diffAnalysisUI, "selectEvent") <- TRUE
 attr(diffAnalysisServer, "loader") <- "analysis"

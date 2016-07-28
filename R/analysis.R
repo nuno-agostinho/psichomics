@@ -58,7 +58,9 @@ missingDataGuide <- function(dataType) {
 analysesUI <- function(id, tab) { 
     ns <- NS(id)
     uiList <- getUiFunctions(ns, "analysis")
-    sharedData$names <- sapply(uiList, attr, "name")
+    analysesSelectEvent <- sapply(uiList, attr, "selectEvent")
+    names(analysesSelectEvent) <- sapply(uiList, attr, "name")
+    sharedData$analysesSelectEvent <- analysesSelectEvent
     
     tab(div(icon("flask"), "Analyses"),
         # allows the user to choose which UI set is shown
@@ -96,13 +98,15 @@ analysesUI <- function(id, tab) {
 #' @param session Shiny session
 #' 
 #' @importFrom shiny observe observeEvent updateSelectizeInput
+#' @importFrom shinyjs hide show
 analysesServer <- function(input, output, session) {
     # Run server logic from the scripts
-    getServerFunctions("analysis")
+    server <- getServerFunctions("analysis")
     
     # Update selectize input to show available analyses
-    observe( updateSelectizeInput(session, "selectizeAnalysis",
-                                  choices=sharedData$names) )
+    observe( updateSelectizeInput(
+        session, "selectizeAnalysis",
+        choices=names(sharedData$analysesSelectEvent)))
     
     # Update selectize input to show available categories
     observe({
@@ -134,16 +138,17 @@ analysesServer <- function(input, output, session) {
         # }
     })
     
-    # # If showing table, hide selectizeEvent; otherwise, show it
-    # observe({
-    #     vis <- function(func, ...)
-    #         func(id("selectizeEvent"), anim = TRUE, animType = "fade")
-    #     
-    #     if(grepl("Inclusion levels", input[[id("selectizeAnalysis")]]))
-    #         vis(shinyjs::hide)
-    #     else
-    #         vis(shinyjs::show)
-    # })
+    # If showing exploratory analyses, hide selectizeEvent; otherwise, show it
+    observe({
+        vis <- function(func, ...)
+            func("selectizeEvent", anim = TRUE, animType = "fade")
+
+        exploratory <- sharedData$analysesSelectEvent
+        if(input$selectizeAnalysis %in% names(exploratory)[!exploratory])
+            vis(hide)
+        else
+            vis(show)
+    })
 }
 
 attr(analysesUI, "loader") <- "app"
