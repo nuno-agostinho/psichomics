@@ -147,8 +147,8 @@ analysesServer <- function(input, output, session) {
         vis <- function(func, ...)
             func("selectizeEvent", anim = TRUE, animType = "fade")
 
-        exploratory <- sharedData$analysesSelectEvent
-        if(input$selectizeAnalysis %in% names(exploratory)[!exploratory])
+        specific <- sharedData$analysesSelectEvent
+        if(input$selectizeAnalysis %in% names(specific)[specific])
             vis(show)
         else
             vis(hide)
