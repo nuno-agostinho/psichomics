@@ -190,16 +190,10 @@ plotTranscripts <- function(input, output, info, eventPosition) {
         min <- min(transcripts$start)
         max <- max(transcripts$stop)
         
-        if (!is.null(input$zoom) && input$zoom == "all") {
-            plotGenes(transcripts, chrom, min, max, fontsize=1.5)
-            zoomsregion(eventPosition, highlight=TRUE)
-            labelgenome(chrom, min, max, scale="Mb")
-        } else if (!is.null(input$zoom) && input$zoom == "event") {
-            min <- eventPosition[1]
-            max <- eventPosition[2]
-            plotGenes(transcripts, chrom, min, max, fontsize=1.5)
-            labelgenome(chrom, min, max, scale="Mb")
-        }
+        
+        plotGenes(transcripts, chrom, min, max, fontsize=1.5)
+        zoomsregion(eventPosition, highlight=TRUE)
+        labelgenome(chrom, min, max, scale="Mb")
     })
 }
 
@@ -212,7 +206,7 @@ plotTranscripts <- function(input, output, info, eventPosition) {
 #' @param assembly Character: assembly version
 #' @param grch37 Boolean: use version GRCh37 of the genome?
 #' 
-#' @importFrom shiny renderUI h2 plotOutput
+#' @importFrom shiny renderUI h2 h4 plotOutput
 renderGeneticInfo <- function(ns, output, info, species, assembly, grch37) {
     
     output$info <- renderUI({
@@ -248,9 +242,7 @@ renderGeneticInfo <- function(ns, output, info, species, assembly, grch37) {
                        target="_blank", class="btn btn-link",
                        href=paste0("http://www.proteinatlas.org/", info$id, 
                                    "/cancer")),
-            radioButtons(ns("zoom"), "Zoom", inline=TRUE,
-                         c("Show all transcripts"="all",
-                           "Zoom to splicing event"="event")),
+            h4("Transcripts"),
             plotOutput(ns("plotTranscripts"), height="200px"),
             uiOutput(ns("selectizeProtein")),
             highchartOutput(ns("plotProtein"), height="200px")
@@ -336,8 +328,7 @@ infoServer <- function(input, output, session) {
             print("No protein match with Uniprot/SWISSPROT")
             output$proteinLink <- renderUI({
                 tagList(ensemblLink,
-                        tags$a("No Uniprot match was found",
-                               icon("chain-broken"),
+                        tags$a("No Uniprot match", icon("chain-broken"),
                                class="btn btn-link")
                 )
             })
