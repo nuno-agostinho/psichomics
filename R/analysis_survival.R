@@ -378,22 +378,6 @@ survivalServer <- function(input, output, session) {
         
         if (is.null(clinical)) {
             missingDataModal(session, "Clinical data", ns("missingClinical"))
-        } else if (modelTerms == "groups" && nrow(dataGroups) > 0 &&
-                   anyDuplicated(unlist(dataGroups[, "Rows"])) > 0) {
-            rows <- dataGroups[, "Rows"]
-            len <- sapply(rows, length)
-            ns <- rep(names(len), len)
-            dup <- duplicated(unlist(rows)) | duplicated(unlist(rows), 
-                                                         fromLast=TRUE)
-            intersectingGroups <- unique(ns[dup])
-            
-            # If the chosen groups have any intersections
-            errorModal(session, "Clinical groups intersect",
-                       "There is an intersection between the selected groups.",
-                       "If you'd like to perform complex queries, use the",
-                       "'Formula' field.", br(), br(),
-                       "The following groups have intersecting values:",
-                       tags$kbd(paste(intersectingGroups, collapse = ", ")))
         } else {
             if (modelTerms == "groups") {
                 # Assign one group for each clinical patient
@@ -484,11 +468,6 @@ survivalServer <- function(input, output, session) {
         
         if (is.null(clinical)) {
             missingDataModal(session, "Clinical data", ns("missingClinical"))
-        } else if (nrow(dataGroups) > 0 &&
-                   anyDuplicated(unlist(dataGroups[, "Rows"])) > 0) {
-            # If the chosen groups have any intersections
-            errorModal(session, "Clinical groups intercept",
-                       "There is an interception between clinical groups.")
         } else {
             if (modelTerms == "groups") {
                 # Assign one group for each clinical patient

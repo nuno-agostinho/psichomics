@@ -366,13 +366,15 @@ getMatchingRowNames <- function(selected, groups, matches) {
 groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE, 
                             outerGroupName="(Outer data)",
                             allDataName="All data") {
-    ## TODO(NunoA): join groups if a patient belongs to more than one group?
     rows <- groups[, "Rows", drop=FALSE]
     if (length(rows) == 0) return(rep(allDataName, patients))
     
+    all <- unlist(rows)
+    names(all) <- rep(rownames(rows), sapply(rows, length))
+
     finalGroups <- rep(NA, patients)
-    for (i in seq_along(rows))
-        finalGroups[as.numeric(rows[[i]])] <- rownames(rows)[i]
+    for (each in unique(all))
+        finalGroups[each] <- paste(names(all[all == each]), collapse=", ")
     
     # Assign patients with no groups to the outer group
     if (includeOuterGroup) finalGroups[is.na(finalGroups)] <- outerGroupName
