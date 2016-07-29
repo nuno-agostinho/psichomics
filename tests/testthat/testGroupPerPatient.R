@@ -25,6 +25,26 @@ test_that("Each group will be placed in the respective index", {
         c("Dead", "Alive", "Zombie", "Alive", "Dead", "Zombie", "Zombie"))
 })
 
+test_that("Each index can belong to multiple groups", {
+    # Example 1
+    names <- paste("Stage", 1:4)
+    groups <- matrix(ncol=1, byrow=TRUE, dimnames=list(names, "Rows"),
+                     c(list(1:3), list(4:7), list(8:10), list(c(1, 8))))
+    expect_equal(groupPerPatient(groups, patients = 10),
+                 c("Stage 1, Stage 4", rep("Stage 1", 2), rep("Stage 2", 4), 
+                   "Stage 3, Stage 4", rep("Stage 3", 2)))
+    
+    # Example 2
+    names <- c("Alive", "Dead", "Zombie", "Possibly")
+    groups <- matrix(ncol=1, byrow=TRUE, dimnames=list(names, "Rows"),
+                     c(list(c(2, 4)), list(c(1, 5)), list(c(3, 6, 7)),
+                       list(c(3, 6, 4))))
+    expect_equal(
+        groupPerPatient(groups, patients = 7),
+        c("Dead", "Alive", "Zombie, Possibly", "Alive, Possibly", "Dead", 
+          "Zombie, Possibly", "Zombie"))
+})
+
 test_that("Non-matching patients are returned as NAs or custom group", {
     # Return non-matching patients as NAs
     names <- c("Alive", "Dead", "Zombie")
