@@ -33,10 +33,11 @@ survivalUI <- function(id) {
             selectizeInput(ns("event"), choices = NULL, "Event of interest"),
             hr(),
             radioButtons(ns("modelTerms"), selected="groups", inline=TRUE,
-                         "Select model terms of the right-hand using",
+                         div("Select groups for survival analysis",
+                             icon("question-circle")),
                          choices=c("Clinical groups"="groups",
                                    "Clinical groups (interaction)"="formula",
-                                   "Inclusion leves cut-off"="psiCutoff")),
+                                   "Inclusion levels cut-off"="psiCutoff")),
             bsTooltip(ns("modelTerms"), placement="right", 
                       options = list(container = "body"),
                       paste(
@@ -576,7 +577,9 @@ survivalServer <- function(input, output, session) {
             
             slider <- tagList(
                 sliderInput(ns("psiCutoff"), value = 0.5, min=0, max=1,
-                            step=0.01, "Cut-off value for the selected event"),
+                            step=0.01, paste(
+                                "Quantification cut-off for the selected",
+                                "splicing event")),
                 bsTooltip(ns("psiCutoff"), placement="right", 
                           options = list(container = "body"),
                           paste("You can click on the white circle and then",
@@ -594,8 +597,8 @@ survivalServer <- function(input, output, session) {
             if (!is.na(opt$value))
                 return(tagList(
                     slider,
-                    div(tags$b("Optimal cut-off:"), opt$par, br(),
-                        tags$b("Minimal log-rank p-value:"), opt$value)))
+                    div(tags$b("Optimal quantification cut-off:"), opt$par, 
+                        br(), tags$b("Minimal log-rank p-value:"), opt$value)))
             else
                 return(tagList(
                     slider, div(icon("bell-o"), "No optimal cut-off was found",

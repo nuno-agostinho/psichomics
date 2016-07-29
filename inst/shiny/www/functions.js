@@ -17,13 +17,37 @@ function showDataPanel(panelVal) {
     $("div[value*='" + panelVal + "'] > div[role='tabpanel']").collapse("show");
 }
 
-function showDiffSplicing (event) {
-        $("select[id*='selectizeAnalysis']").selectize()[0].selectize.setValue("Differential analysis (per splicing event)");
-        $("select[id*='selectizeEvent']").selectize()[0].selectize.setValue(event);
+/**
+ * Navigate user to survival analysis by quantification cut-off
+ */
+function showSurvCutoff() {
+    var surv = "Survival curves";
+    $("select[id*='selectizeAnalysis']").selectize()[0].selectize.setValue(surv);
+    $("input[value='psiCutoff']").click();
 }
 
+/**
+ * Navigate user to differential splicing of a given alternative splicing event
+ * @param {String} event Alternative splicing event
+ */
+function showDiffSplicing (event) {
+    var diff = "Differential analysis (per splicing event)";
+    $("select[id*='selectizeAnalysis']").selectize()[0].selectize.setValue(diff);
+    $("select[id*='selectizeEvent']").selectize()[0].selectize.setValue(event);
+}
+
+/**
+ * Modify row of a table to include links to navigate user to the differential
+ * splicing of the respective event
+ * 
+ * @param {Numeric} row Row to introduce links
+ * @param {Object} data Table of interest
+ * 
+ * @return Links
+ */
 function createDiffSplicingLinks(row, data, index) {
-    $('td:eq(0)', row).html("<a onclick='showDiffSplicing(\"" + data[0] + "\")' href='javascript:void(0);'>" + data[0] + "</a>");
+    $('td:eq(0)', row).html("<a onclick='showDiffSplicing(\"" + data[0] + 
+        "\")' href='javascript:void(0);'>" + data[0] + "</a>");
     return row;
 }
 

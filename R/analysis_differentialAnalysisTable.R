@@ -406,23 +406,18 @@ calculateDensitySparklines <- function(data) {
 optimSurvDiffUI <- function(ns) {
     tagList(
         hr(),
-        h3("Survival analyses"),
-        radioButtons(ns("censoring"), "Data censoring",
-                     selected="right",
-                     inline=TRUE, choices=c(
-                         Left="left",
-                         Right="right",
-                         Interval="interval",
-                         "Interval 2" = "interval2")),
-        selectizeInput(ns("timeStart"), choices = NULL, 
-                       "Follow up time"),
-        # If the chosen censoring contains the word 'interval',
-        # show this input
-        conditionalPanel(
-            paste0("input[id='", ns("censoring"),
-                   "'].indexOf('interval') > -1"),
-            selectizeInput(ns("timeStop"), choices=NULL, 
-                           "Ending time")),
+        h3("Survival analyses by quantification cut-off"),
+        helpText("Perform and separate survival curves by optimal cut-off",
+                 "quantification cut-off from a single splicing event."),
+        radioButtons(ns("censoring"), "Data censoring", selected="right",
+                     inline=TRUE, choices=c(Left="left", Right="right",
+                                            Interval="interval", 
+                                            "Interval 2"="interval2")),
+        selectizeInput(ns("timeStart"), choices = NULL, "Follow up time"),
+        # If the chosen censoring contains the word 'interval', show this input
+        conditionalPanel(paste0(
+            "input[id='", ns("censoring"), "'].indexOf('interval') > -1"),
+            selectizeInput(ns("timeStop"), choices=NULL, "Ending time")),
         helpText("In case there's no record for a patient, the",
                  "days to last follow up will be used instead."),
         selectizeInput(ns("event"), choices = NULL, 
