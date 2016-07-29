@@ -20,7 +20,8 @@ diffAnalysisUI <- function(id) {
                 # uiOutput(ns("fisher")), hr(),
                 uiOutput(ns("wilcox")), hr(),
                 uiOutput(ns("kruskal")), hr(),
-                uiOutput(ns("levene"))
+                uiOutput(ns("levene")), hr(),
+                uiOutput(ns("survival"))
             ), mainPanel(
                 highchartOutput(ns("density"))
             )
@@ -287,6 +288,7 @@ spearman <- function(psi, type) {
 #' @param session Shiny session
 #' 
 #' @importFrom highcharter renderHighchart
+#' @importFrom shinyjs runjs
 diffAnalysisServer <- function(input, output, session) {
     observe({
         # Get selected event
@@ -331,7 +333,15 @@ diffAnalysisServer <- function(input, output, session) {
         output$levene   <- renderUI(levene(psi, type))
         # output$fisher   <- renderUI(fisher(psi, type))
         # output$spearman <- renderUI(spearman(psi, type))
+        
+        output$survival <- renderUI({
+            tagList(h3("Survival analysis by quantification cut-off"),
+                    actionButton(session$ns("optimalSurv"), "Take me there"))
+        })
     })
+    
+    # Take user to survival anlysis by quantification cut-off
+    observeEvent(input$optimalSurv, runjs("showSurvCutoff()"))
 }
 
 attr(diffAnalysisUI, "loader") <- "analysis"
