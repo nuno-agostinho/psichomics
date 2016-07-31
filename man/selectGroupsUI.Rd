@@ -5,7 +5,7 @@
 \title{Group selection interface}
 \usage{
 selectGroupsUI(id, label,
-  placeholder = "Click 'Edit' to create or edit groups")
+  placeholder = "Click in 'Groups' to create or edit groups")
 }
 \arguments{
 \item{id}{Character: identifier of the group selection}
