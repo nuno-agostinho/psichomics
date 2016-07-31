@@ -411,8 +411,8 @@ optimSurvDiffUI <- function(ns) {
     tagList(
         hr(),
         h3("Survival analyses by quantification cut-off"),
-        helpText("Perform and separate survival curves by optimal cut-off",
-                 "quantification cut-off from a single splicing event."),
+        helpText("For each splicing event, perform and separate survival curves",
+                 "by the optimal quantification cut-off."),
         radioButtons(ns("censoring"), "Data censoring", selected="right",
                      inline=TRUE, choices=c(Left="left", Right="right",
                                             Interval="interval", 

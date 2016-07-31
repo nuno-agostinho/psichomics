@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_inclusionLevels.R
 \name{inclusionLevelsInterface}
 \alias{inclusionLevelsInterface}
-\title{Interface}
+\title{Interface to quantify alternative splicing}
 \usage{
 inclusionLevelsInterface(ns)
 }
@@ -13,6 +13,6 @@ inclusionLevelsInterface(ns)
 HTML elements
 }
 \description{
-Interface
+Interface to quantify alternative splicing
 }
 

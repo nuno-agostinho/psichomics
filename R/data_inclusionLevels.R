@@ -23,8 +23,13 @@ getSplicingEventChoices <- function() {
       "Alternative last exon (ALE)" = "ALE")
 }
 
-#' Interface
+#' Interface to quantify alternative splicing
+#' 
 #' @param ns Namespace function
+#' 
+#' @importFrom shiny tagList uiOutput selectizeInput numericInput actionButton
+#' @importFrom shinyBS bsTooltip
+#' 
 #' @return HTML elements
 inclusionLevelsInterface <- function(ns) {
     tagList(
@@ -106,6 +111,7 @@ inclusionLevelsServer <- function(input, output, session) {
         attr(psi, "description") <- paste("Exon and intron inclusion levels",
                                           "for any given alternative splicing",
                                           "event.")
+        attr(psi, "dataType") <- "Inclusion levels"
         setInclusionLevels(psi)
         
         updateProgress("Matching clinical data")

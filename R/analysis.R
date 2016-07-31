@@ -146,7 +146,7 @@ analysesServer <- function(input, output, session) {
     observe({
         vis <- function(func, ...)
             func("selectizeEvent", anim = TRUE, animType = "fade")
-
+        
         specific <- sharedData$analysesSelectEvent
         if(input$selectizeAnalysis %in% names(specific)[specific])
             vis(show)

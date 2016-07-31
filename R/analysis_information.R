@@ -123,6 +123,9 @@ parseUniprotXML <- function(xml) {
 #' @param feature Data frame: protein features
 #' @param length Integer: protein length
 #'
+#' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip
+#' hc_add_series
+#'
 #' @return highchart object
 proteinHighcharts <- function(feature, length) {
     hc <- highchart() %>%
