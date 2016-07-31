@@ -367,15 +367,16 @@ statsAnalyses <- function(vector, group, threshold=1, step=100,
     return(vector)
 }
 
-#' Calculate density sparklines for inclusion levels
+#' Create density sparklines for inclusion levels
 #' @param data Character: HTML-formatted data series of interest
+#' @param events Characater: event identifiers
 #' 
 #' @importFrom highcharter highchart hc_credits hc_tooltip hc_chart hc_title
 #' hc_xAxis hc_yAxis hc_exporting hc_legend hc_plotOptions
 #' @importFrom jsonlite toJSON
 #' 
 #' @return HTML element with sparkline data (character)
-calculateDensitySparklines <- function(data) {
+createDensitySparklines <- function(data, events) {
     hc <- highchart() %>%
         hc_tooltip(
             hideDelay=0, shared=TRUE,
@@ -396,7 +397,10 @@ calculateDensitySparklines <- function(data) {
     hc <- substr(hc, 1, nchar(hc)-1)
     
     json <- paste0(hc, ',"series":[', data, "]}")
-    sparklines <- sprintf("<sparkline data-sparkline='%s'/>", json)
+    sparklines <- sprintf(
+        paste('<sparkline onclick="showDiffSplicing(\'%s\')"',
+              'style="cursor:pointer;" data-sparkline=\'%s\'/>'), 
+        events, json)
     return(sparklines)
 }
 
@@ -493,7 +497,8 @@ performStatsAnalyses <- function(session, input, psi, statsChoices) {
     
     if (any("density" == statsChoices)) {
         updateProgress("Calculating the density of inclusion levels")
-        df[, "Density"] <- calculateDensitySparklines(df[, "Density"])
+        df[, "Density"] <- createDensitySparklines(df[, "Density"], 
+                                                   rownames(df))
     }
     
     setDifferentialAnalyses(df)
@@ -538,12 +543,12 @@ optimSurvDiff <- function(session, input, output) {
             match <- getClinicalMatchFrom("Inclusion levels")
             types <- getSampleTypes(names(match))
             tumour <- match[!grepl("Normal|Control", types)]
-
+            
             # Group samples by the inclusion levels cut-off
             clinical <- getClinicalData()
             clinicalIDs <- nrow(clinical)
             groups <- rep(NA, clinicalIDs)
-
+            
             censoring <- input$censoring
             timeStart <- input$timeStart
             timeStop  <- input$timeStop
@@ -553,7 +558,7 @@ optimSurvDiff <- function(session, input, output) {
             display   <- input$statsTable_rows_current
             selected  <- input$selected
         })
-
+        
         if (selected == "shown") {
             if (!is.null(display)) {
                 psi <- psi[display, ]
@@ -567,10 +572,10 @@ optimSurvDiff <- function(session, input, output) {
             }
         }
         startProgress("Performing survival analysis", nrow(psi))
-
+        
         opt <- apply(psi, 1, function(vector) {
             v <- as.numeric(vector[toupper(names(tumour))])
-
+            
             opt <- suppressWarnings(
                 optim(0, testSurvivalCutoff, data=v, group=groups,
                       filter=tumour, clinical=clinical, censoring=censoring,
@@ -578,7 +583,7 @@ optimSurvDiff <- function(session, input, output) {
                       dataEvent=dataEvent, modals=FALSE,
                       # Method and parameters interval
                       method="Brent", lower=0, upper=1))
-
+            
             updateProgress("Survival analysis", console=FALSE)
             return(c("Optimal survival PSI cut-off"=opt$par,
                      "Optimal survival difference"=opt$value))
