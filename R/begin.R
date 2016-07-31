@@ -64,7 +64,7 @@ getClinicalData <- reactive(getCategoryData()[["Clinical data"]])
 getJunctionQuantification <- function(category=getCategory()) {
     data <- getData()[[getCategory()]]
     match <- sapply(data, attr, "dataType") == "Junction quantification"
-    return(data[match])
+    if (any(match)) return(data[match])
 }
 
 #' Get inclusion leves of the selected data category
