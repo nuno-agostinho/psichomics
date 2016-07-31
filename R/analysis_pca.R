@@ -52,6 +52,7 @@ performPCA <- function(data, center = TRUE, scale. = FALSE, naTolerance = 30) {
 #' @param id Character: identifier
 #' 
 #' @importFrom highcharter highchartOutput
+#' @importFrom shinyBS bsTooltip
 #' @importFrom shiny checkboxGroupInput sidebarPanel tagList uiOutput hr
 #' sliderInput actionButton selectizeInput
 pcaUI <- function(id) {
@@ -59,13 +60,22 @@ pcaUI <- function(id) {
     tagList(
         uiOutput(ns("modal")),
         sidebarPanel(
+            selectizeInput(ns("dataForPCA"), "Data to perform PCA", choices=NULL,
+                           options=list(placeholder="No data available")),
             checkboxGroupInput(ns("preprocess"), "Preprocessing",
                                c("Center values" = "center",
                                  "Scale values" = "scale"),
                                selected = c("center")),
-            sliderInput(ns("naTolerance"), "Percentage of NAs per individual to tolerate",
+            sliderInput(ns("naTolerance"),
+                        div("Percentage of missing values to tolerate per individual",
+                            icon("question-circle")),
                         min = 0, max=100, value=30, post="%"),
-            selectGroupsUI(ns("dataGroups"), "Clinical groups to perform PCA"),
+            bsTooltip(ns("naTolerance"), placement="right", 
+                      paste("Individuals with a tolerable percentage of missing",
+                            "values use the median value to replace missing",
+                            "values. The remaining individuals are discarded."),
+                      options=list(container="body")),
+            selectGroupsUI(ns("dataGroups"), "Filter data groups"),
             actionButton(ns("calculate"), class = "btn-primary", "Calculate PCA"),
             hr(),
             selectizeInput(ns("pcX"), "Choose X axis", choices=NULL),
