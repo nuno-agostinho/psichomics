@@ -18,12 +18,11 @@ survivalUI <- function(id) {
         uiOutput(ns("modal")),
         sidebarPanel(
             radioButtons(ns("censoring"), "Data censoring", selected="right",
-                         inline=TRUE, choices=c(Left="left",
-                                                Right="right",
+                         inline=TRUE, choices=c(Left="left", Right="right",
                                                 Interval="interval",
                                                 "Interval 2" = "interval2")),
             selectizeInput(ns("timeStart"), choices = NULL, "Follow up time"),
-            # If the chosen censoring contains the word 'interval', show this input
+            # If chosen censoring contains the word 'interval', ask end time
             conditionalPanel(
                 paste0("input[id='", ns("censoring"),
                        "'].indexOf('interval') > -1"),
@@ -324,7 +323,7 @@ testSurvivalCutoff <- function(cutoff, data, group, filter, ..., session=NULL,
 #' @importFrom stats pchisq optim
 #' @importFrom survival survfit survdiff
 #' @importFrom highcharter hchart hc_chart hc_yAxis hc_xAxis hc_tooltip
-#' hc_subtitle hc_tooltip renderHighchart
+#' hc_subtitle hc_tooltip renderHighchart hc_title hc_plotOptions
 #' @importFrom DT dataTableOutput renderDataTable
 survivalServer <- function(input, output, session) {
     ns <- session$ns
@@ -434,16 +433,31 @@ survivalServer <- function(input, output, session) {
             pvalue <- testSurvival(survTerms$form, data=survTerms$survTime)
             
             # Plot survival curves
-            output$survival <- renderHighchart({
-                hc <- hchart(surv, ranges=intRanges, markTimes=markTimes) %>%
-                    hc_chart(zoomType="xy") %>%
-                    hc_yAxis(title=list(text="Proportion of individuals")) %>%
-                    hc_xAxis(title=list(text=paste("Time in", scale))) %>%
-                    hc_tooltip(headerFormat=paste(
-                        "{point.x}", scale, "<br>")) %>%
-                    hc_subtitle(text=paste("log-rank p-value:", pvalue)) %>%
-                    hc_tooltip(crosshairs=TRUE)
-            })
+            if (modelTerms == "psiCutoff")
+                plotTitle <- event
+            else
+                plotTitle <- "Survival analysis"
+            
+            hc <- hchart(surv, ranges=intRanges, markTimes=markTimes) %>%
+                hc_chart(zoomType="xy") %>%
+                hc_title(text=plotTitle) %>%
+                hc_subtitle(text=paste("log-rank p-value:", pvalue)) %>%
+                hc_yAxis(title=list(text="Proportion of individuals")) %>%
+                hc_xAxis(title=list(text=paste("Time in", scale))) %>%
+                hc_tooltip(
+                    useHTML = TRUE,
+                    headerFormat = paste(
+                        tags$small("{point.x}", scale), br(),
+                        span(style="color:{point.color}", "\u25CF "),
+                        tags$b("{series.name}"), br()),
+                    pointFormat = paste(
+                        "Records: {series.options.records}", br(),
+                        "Events: {series.options.events}", br(),
+                        "Median: {series.options.median}")) %>%
+                hc_tooltip(crosshairs=TRUE) %>%
+                hc_plotOptions(series=list(stickyTracking=FALSE))
+            
+            output$survival <- renderHighchart(hc)
         }
     })
     

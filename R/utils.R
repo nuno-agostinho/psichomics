@@ -387,7 +387,7 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
     ymax <- ifelse(max(yValues) <= 1, 1, max(yValues))
     
     hc <- highchart() %>%
-        hc_tooltip(shared = TRUE) %>%
+        hc_tooltip(pointFormat="{point.y}") %>%
         hc_yAxis(min=ymin, max=ymax) %>%
         hc_plotOptions(line = list(marker = list(enabled = FALSE)))
     
@@ -400,6 +400,7 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
         groups <- names(strata)
     }
     
+    summ <- summary(object)$table
     for (name in groups) {
         if (!is.null(ncol(object$surv))) {
             df <- df[c("x", paste(c("y", "low", "up"), col, sep="."))]
@@ -422,10 +423,15 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
         if (markTimes)
             ls[submark] <- lapply(ls[submark], c, marker=marker)
         
-        hc <- hc %>% hc_add_series(
-            data=c(first, ls), step="left", name=name, zIndex=1,
-            color=JS("Highcharts.getOptions().colors[", count, "]"),
-            ...)
+        if (is.matrix(summ))
+            curveSumm <- summ[name, ]
+        else
+            curveSumm <- summ
+        
+        hc <- do.call(hc_add_series, c(list(
+            hc, data=c(first, ls), step="left", name=name, zIndex=1,
+            color=JS("Highcharts.getOptions().colors[", count, "]"), ...),
+            curveSumm))
         
         if (ranges && !is.null(object$upper)) {
             # Add interval range
