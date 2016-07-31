@@ -334,6 +334,8 @@ matchIdWithClinical <- function(ids, clinical) {
         # All matched IDs will save their respective rows
         clinicalRows[lapply(match, length) != 0] <- unlist(match)
     }
+    # Remove non-matching IDs
+    clinicalRows <- clinicalRows[!is.na(clinicalRows)]
     return(clinicalRows)
 }
 

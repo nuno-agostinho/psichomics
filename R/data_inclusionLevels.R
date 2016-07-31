@@ -106,7 +106,6 @@ inclusionLevelsServer <- function(input, output, session) {
         
         updateProgress("Matching clinical data")
         match <- matchIdWithClinical(colnames(psi), getClinicalData())
-        match <- match[!is.na(match)] # remove non-matching IDs
         setClinicalMatchFrom("Inclusion levels", match)
         closeProgress()
     })
