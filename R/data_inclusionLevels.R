@@ -40,7 +40,11 @@ inclusionLevelsInterface <- function(ns) {
                                      "hg19_splicingAnnotation.RDS")),
         selectizeInput(ns("eventType"), "Event type(s)", selected = "SE",
                        choices=getSplicingEventChoices(), multiple = TRUE),
-        numericInput(ns("minReads"), "Minimum reads threshold", value = 10),
+        numericInput(ns("minReads"), div("Minimum reads threshold",
+                                         icon("question-circle")), value = 10),
+        bsTooltip(ns("minReads"), placement = "right", 
+                  options = list(container = "body"),
+                  "Reads below this threshold will be discarded"),
         actionButton(ns("calcIncLevels"), class = "btn-primary",
                      "Calculate inclusion levels"))
 }
