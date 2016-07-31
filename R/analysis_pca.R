@@ -192,11 +192,23 @@ pcaServer <- function(input, output, session) {
     selectGroupsServer(session, "colourGroups", getClinicalData(),
                        "Clinical data")
     
+    # Update available data input
+    observe({
+        inclusionLevels <- getInclusionLevels()
+        if (!is.null(inclusionLevels)) {
+            updateSelectizeInput(session, "dataForPCA",
+                                 choices=attr(inclusionLevels, "dataType"))
+        }
+    })
+    
     observeEvent(input$takeMeThere, missingDataGuide("Inclusion levels"))
     
     # Perform principal component analysis (PCA)
     observeEvent(input$calculate, {
-        psi <- isolate(getInclusionLevels())
+        if (input$dataForPCA == "Inclusion levels")
+            psi <- isolate(getInclusionLevels())
+        else
+            return(NULL)
         
         if (is.null(psi)) {
             missingDataModal(session, "Inclusion levels", ns("takeMeThere"))
