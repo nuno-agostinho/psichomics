@@ -515,23 +515,34 @@ performStatsAnalyses <- function(session, input, psi, statsChoices) {
 #' @param input Shiny input
 #' @param output Shiny output
 optimSurvDiff <- function(session, input, output) {
-    observe({
-        if (is.null(getDifferentialAnalyses()) || is.null(getClinicalData()))
+    # Interface of survival analyses
+    output$survivalOptions <- renderUI({
+        if (is.null(getDifferentialAnalyses()) || 
+            is.null(getClinicalData()))
             return(NULL)
         
-        output$survivalOptions <- renderUI(optimSurvDiffUI(session$ns))
-        
-        # Update selectize input label depending on the chosen censoring type
-        observe({
-            if (is.null(input$censoring)) return(NULL)
-            
-            label <- "Follow up time"
-            if (grepl("interval", input$censoring, fixed=TRUE))
-                label <- "Starting time"
-            updateSelectizeInput(session, "timeStart", label=label)
-        })
+        optimSurvDiffUI(session$ns)
+    })
+    
+    # Update clinical parameters
+    observe({
+        if (is.null(getDifferentialAnalyses()) || 
+            is.null(getClinicalData()))
+            return(NULL)
         
         updateClinicalParams(session)
+    })
+    
+    # Update selectize input label depending on the chosen censoring type
+    observe({
+        if (is.null(getDifferentialAnalyses()) || 
+            is.null(getClinicalData()) || is.null(input$censoring)) 
+            return(NULL)
+        
+        label <- "Follow up time"
+        if (grepl("interval", input$censoring, fixed=TRUE))
+            label <- "Starting time"
+        updateSelectizeInput(session, "timeStart", label=label)
     })
     
     #' Calculate optimal survival cut-off for the inclusion levels of a given
@@ -658,10 +669,11 @@ diffAnalysisTableServer <- function(input, output, session) {
     # Show table and respective interface when statistical table is available
     observe({
         stats <- getDifferentialAnalyses()
-        if (is.null(stats)) return(NULL)
         
         # Columns to show in statistical table
         output$showColumns <- renderUI({
+            if (is.null(stats)) return(NULL)
+            
             tagList(
                 downloadButton(ns("download"), "Download whole table"),
                 selectizeInput(ns("columns"), "Show columns", multiple=TRUE,
@@ -674,10 +686,13 @@ diffAnalysisTableServer <- function(input, output, session) {
         
         # Render statistical table with the selected columns
         output$statsTable <- renderDataTableSparklines({
+            if (is.null(stats)) return(NULL)
+            
             if (!is.null(input$columns) && all(input$columns %in% names(stats)))
                 stats[, input$columns]
-        }, style="bootstrap", selection="none", filter='top',
-        options=list(pageLength=10, rowCallback=JS("createDiffSplicingLinks")))
+        }, style="bootstrap", selection="none", filter='top', server=TRUE,
+        options=list(pageLength=10, rowCallback=JS("createDiffSplicingLinks"),
+                     stateSave = TRUE))
         
         # Prepare table to be downloaded
         output$download <- downloadHandler(
