@@ -501,7 +501,16 @@ survivalServer <- function(input, output, session) {
             print(summary)
             
             output$coxphUI <- renderUI({
+                len <- length(summary$na.action)
                 tagList(
+                    hr(), h3("Cox model ", tags$small(
+                        summary$n, " patients, ", summary$nevent, " events",
+                        if (len > 0) 
+                            paste0(" (", len, " missing values removed)"))),
+                    tags$b("Concordance: "), summary$concordance[[1]],
+                    tags$b("(SE: "), summary$concordance[[2]], tags$b(")"),
+                    br(), tags$b("R\u00B2: "), summary$rsq[[1]], 
+                    tags$b("(max possible: "), summary$rsq[[2]], tags$b(")"), 
                     dataTableOutput(ns("coxTests")), hr(),
                     dataTableOutput(ns("coxGroups"))
                 )
