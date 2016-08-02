@@ -328,8 +328,7 @@ testSurvivalCutoff <- function(cutoff, data, group, filter, ..., session=NULL,
 survivalServer <- function(input, output, session) {
     ns <- session$ns
     
-    selectGroupsServer(session, "dataGroups", getClinicalData(), 
-                       "Clinical data")
+    selectGroupsServer(session, "dataGroups", "Clinical data")
     
     # Update available clinical data attributes to use in a formula
     output$formulaSuggestions <- renderUI({

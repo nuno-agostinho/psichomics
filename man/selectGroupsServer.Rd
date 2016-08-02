@@ -4,14 +4,12 @@
 \alias{selectGroupsServer}
 \title{Group selection logic}
 \usage{
-selectGroupsServer(session, id, dataset, datasetName)
+selectGroupsServer(session, id, datasetName)
 }
 \arguments{
 \item{session}{Shiny session}
 
 \item{id}{Character: identifier of the group selection}
-
-\item{dataset}{Data frame: dataset of interest}
 
 \item{datasetName}{Character: name of the dataset of interest}
 }

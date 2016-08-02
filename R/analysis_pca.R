@@ -187,10 +187,8 @@ plotPCA <- function(pca, perc, xAxis, yAxis, selected, clinical, match,
 pcaServer <- function(input, output, session) {
     ns <- session$ns
     
-    selectGroupsServer(session, "dataGroups", getClinicalData(),
-                       "Clinical data")
-    selectGroupsServer(session, "colourGroups", getClinicalData(),
-                       "Clinical data")
+    selectGroupsServer(session, "dataGroups", "Clinical data")
+    selectGroupsServer(session, "colourGroups", "Clinical data")
     
     # Update available data input
     observe({

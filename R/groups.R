@@ -30,11 +30,10 @@ selectGroupsUI <- function (
 #' 
 #' @param session Shiny session
 #' @param id Character: identifier of the group selection
-#' @param dataset Data frame: dataset of interest
 #' @param datasetName Character: name of the dataset of interest
 #' 
 #' @return Server logic for group selection
-selectGroupsServer <- function(session, id, dataset, datasetName) {
+selectGroupsServer <- function(session, id, datasetName) {
     ns <- session$ns
     input <- session$input
     output <- session$output
@@ -47,14 +46,14 @@ selectGroupsServer <- function(session, id, dataset, datasetName) {
     session$output[[modalId]] <- renderUI({
         bsModal2(ns(showId), style="info", trigger=NULL, size=NULL,
                  div(icon("object-group"), "Groups"),
-                 groupsUI(ns(uId), dataset))
+                 groupsUI(ns(uId), getCategoryData()[[datasetName]]))
     })
     
     # Toggle group selection interface when clicking the "Edit" button
     observeEvent(input[[editId]],
                  toggleModal(session, showId, toggle="open"))
     
-    callModule(groupsServer, uId, dataset, datasetName)
+    callModule(groupsServer, uId, datasetName)
     
     # Update groups shown in the interface
     observe({
@@ -306,17 +305,17 @@ operateOnGroups <- function(input, session, sharedData, FUN, buttonId,
 #' @param input Shiny input
 #' @param output Shiny output
 #' @param session Shiny session
-#' @param dataset Data frame: dataset of interest
 #' @param datasetName Character: name of dataset
 #' 
 #' @importFrom DT renderDataTable dataTableOutput
-groupsServer <- function(input, output, session, dataset, datasetName) {
+groupsServer <- function(input, output, session, datasetName) {
     ns <- session$ns
     
     # Update available attributes to suggest in the subset expression
     output$groupExpressionSuggestions <- renderUI({
         if (!is.null(datasetName))
-            textSuggestions(ns("groupExpression"), names(dataset))
+            textSuggestions(ns("groupExpression"),
+                            names(getCategoryData()[[datasetName]]))
     })
     
     # Create a new group when clicking on the createGroup button
@@ -324,7 +323,9 @@ groupsServer <- function(input, output, session, dataset, datasetName) {
         removeAlert(output)
         
         groups <- getGroupsFrom(datasetName)
-        new <- createGroupFromInput(session, input, output, dataset, datasetName)
+        new <- createGroupFromInput(session, input, output, 
+                                    getCategoryData()[[datasetName]],
+                                    datasetName)
         if (!is.null(new)) {
             # Rename duplicated group names
             new <- renameGroups(new, groups)

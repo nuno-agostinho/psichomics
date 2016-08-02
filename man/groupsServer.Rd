@@ -4,7 +4,7 @@
 \alias{groupsServer}
 \title{Server function for data grouping}
 \usage{
-groupsServer(input, output, session, dataset, datasetName)
+groupsServer(input, output, session, datasetName)
 }
 \arguments{
 \item{input}{Shiny input}
@@ -12,8 +12,6 @@ groupsServer(input, output, session, dataset, datasetName)
 \item{output}{Shiny output}
 
 \item{session}{Shiny session}
-
-\item{dataset}{Data frame: dataset of interest}
 
 \item{datasetName}{Character: name of dataset}
 }
