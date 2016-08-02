@@ -563,7 +563,7 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
         infoModal(
             session, "Wait while files are being downloaded",
             "When the downloads complete, click the button", tags$b("Get data"), 
-            "again to load the selected data.", br(), br(), "Check if your files", 
+            "again to load the data.", br(), br(), "Check if your files", 
             "are being downloaded to the folder", tags$b(input$dataFolder),
             ". If not, move the downloaded files to this location.", 
             modalId="firebrowseDataModal")

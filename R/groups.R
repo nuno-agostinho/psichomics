@@ -73,9 +73,10 @@ selectGroupsServer <- function(session, id, datasetName) {
 groupByColumn <- function(ns, dataset) {
     tagList(
         helpText(
-            "Groups will be created automatically depending on the given",
-            "column. Start typing", tags$b("pathologic stage"), "and choose",
-            "the first suggestion to create groups by tumour stage"),
+            "Automatically create groups according to the unique values of the",
+            "selected column. For instance, to create groups by tumour stage,",
+            "type", tags$b("pathologic stage"), "and select the first",
+            "suggestion that appears."),
         selectizeInput(ns("groupColumn"), "Select column", width="auto", 
                        choices=c("Start typing to search for columns"="", 
                                  names(dataset)))

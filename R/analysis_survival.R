@@ -501,7 +501,7 @@ survivalServer <- function(input, output, session) {
             output$coxphUI <- renderUI({
                 len <- length(summary$na.action)
                 tagList(
-                    hr(), h3("Cox model ", tags$small(
+                    hr(), h3("Cox PH model ", tags$small(
                         summary$n, " patients, ", summary$nevent, " events",
                         if (len > 0) 
                             paste0(" (", len, " missing values removed)"))),
