@@ -208,12 +208,13 @@ dataServer <- function(input, output, session) {
     # Render tables when data changes
     observe({
         data <- getData()
-        categoryData <- getCategoryData()
-        for (category in seq_along(data)) {
-            name <- getCategories()[category]
-            # Create data tab for each dataset in a data category
-            lapply(seq_along(categoryData), createDataTab,
-                   data=data[[category]], name, input, output)
+        if (!is.null(data)) {
+            for (category in names(data)) {
+                categoryData <- data[[category]]
+                # Create data tab for each dataset in a data category
+                lapply(seq_along(categoryData), createDataTab,
+                       data=categoryData, category, input, output)
+            }
         }
     })
     
