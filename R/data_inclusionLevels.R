@@ -124,9 +124,12 @@ inclusionLevelsServer <- function(input, output, session) {
     
     observe({
         junctionQuant <- getJunctionQuantification()
-        if (!is.null(junctionQuant))
+        if (!is.null(junctionQuant)) {
             updateSelectizeInput(session, "junctionQuant",
                                  choices=names(junctionQuant))
+        } else {
+            updateSelectizeInput(session, "junctionQuant", choices=list())
+        }
     })
     
     observeEvent(input$calcIncLevels, {
