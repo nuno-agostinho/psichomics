@@ -108,11 +108,12 @@ analysesServer <- function(input, output, session) {
     # Update selectize input to show available categories
     observe({
         data <- getData()
-        if (!is.null(data)) updateSelectizeInput(session, "selectizeCategory",
-                                                 choices=names(data))
+        if (!is.null(data))
+            updateSelectizeInput(session, "selectizeCategory",
+                                 choices=names(data))
     })
     
-    # Set the category of the data when possible
+    # Set the category of the data
     observeEvent(input$selectizeCategory, setCategory(input$selectizeCategory))
     
     # Updates selectize event to show available events
@@ -122,17 +123,16 @@ analysesServer <- function(input, output, session) {
             choices <- rownames(psi)
             names(choices) <- gsub("_", " ", rownames(psi))
             choices <- sort(choices)
-            updateSelectizeInput(session, "selectizeEvent", choices=choices)
+            updateSelectizeInput(session, "selectizeEvent", choices=choices,
+                                 selected=list())
             
             # Set the selected alternative splicing event
             observeEvent(input$selectizeEvent, setEvent(input$selectizeEvent))
+        } else {
+            # Replace with empty list since NULLs are dropped
+            updateSelectizeInput(session, "selectizeEvent", choices=list(),
+                                 selected=list())
         }
-        # } else {
-        #     ## TODO(NunoA): Input doesn't seem to update when changing data...
-        #     updateSelectizeInput(session, "selectizeEvent", choices=NULL,
-        #                          options=list(
-        #                              placeholder="No event available"))
-        # }
     })
     
     # If showing exploratory analyses, hide selectizeEvent; otherwise, show it
