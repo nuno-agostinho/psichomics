@@ -15,23 +15,18 @@
 #'  observeEvent(input[[buttonInput]], missingDataGuide(dataType))
 #' }
 missingDataModal <- function(session, dataType, buttonId) {
+    template <- function(buttonLabel) {
+        errorModal(
+            session, paste("Load", tolower(dataType)),
+            "This analysis requires", tolower(dataType), "to proceed.",
+            footer=actionButton(buttonId, buttonLabel, "data-dismiss"="modal",
+                                class="btn-danger"))
+    }
+    
     switch(dataType,
-           "Clinical data"=errorModal(
-               session, "Clinical data missing",
-               "Load clinical data.",
-               footer=actionButton(buttonId, "Load", "data-dismiss"="modal",
-                                   class="btn-danger")),
-           "Junction quantification"=errorModal(
-               session, "Junction quantification missing",
-               "Load junction quantification.",
-               footer=actionButton(buttonId, "Load", "data-dismiss"="modal",
-                                   class="btn-danger")),
-           "Inclusion levels"=errorModal(
-               session, "Inclusion levels missing",
-               "Load or calculate alternative splicing event quantification.",
-               footer=actionButton(buttonId, "Load or calculate", 
-                                   "data-dismiss"="modal", class="btn-danger"))
-    )
+           "Clinical data"=template("Load"),
+           "Junction quantification"=template("Load"),
+           "Inclusion levels"=template("Load or calculate"))
 }
 
 #' @rdname missingDataModal
@@ -77,14 +72,12 @@ analysesUI <- function(id, tab) {
                                      choices = NULL, options = list(
                                          placeholder = "Select data category"),
                                      width="auto")),
-            column(4, selectizeInput(ns("selectizeEvent"), "Select event:",
-                                     choices = NULL, options = list(
-                                         placeholder = "Select an event"),
-                                     width="auto"))),
-        bsTooltip(ns("selectizeEvent"), placement="top",
-                  paste("Delete text and start typing to search events by",
-                        "gene, chromosome and coordinates."),
-                  options = list(container="body")),
+            column(4, selectizeInput(
+                ns("selectizeEvent"), "Select event:",
+                choices = NULL, options = list(
+                    placeholder = paste("Search splicing events by gene,",
+                                        "chromosome and coordinates")),
+                width="auto"))),
         lapply(uiList, function(ui) {
             conditionalPanel(
                 condition=sprintf("input[id='%s'] == '%s'",
