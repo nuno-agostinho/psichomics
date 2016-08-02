@@ -92,7 +92,8 @@ tabDataset <- function(ns, title, tableId, columns, colsToShow, data,
     tablename <- ns(paste("table", tableId, sep="-"))
     
     downloadId <- paste(tablename, "download", sep="-")
-    download <- downloadButton(downloadId, "Download dataset", "pull-right")
+    download <- downloadButton(downloadId, "Download whole dataset",
+                               "pull-right")
     
     if(!is.null(description)) {
         description <- p(tags$strong("Table description:"), description)
