@@ -444,7 +444,6 @@ survivalServer <- function(input, output, session) {
                 hc_yAxis(title=list(text="Proportion of individuals")) %>%
                 hc_xAxis(title=list(text=paste("Time in", scale))) %>%
                 hc_tooltip(
-                    useHTML = TRUE,
                     headerFormat = paste(
                         tags$small("{point.x}", scale), br(),
                         span(style="color:{point.color}", "\u25CF "),
