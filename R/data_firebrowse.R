@@ -471,6 +471,8 @@ addTCGAdata <- function(ns) {
     names(acronyms) <- sprintf("%s (%s)", cohorts, names(cohorts))
     
     dates <- as.character(getFirehoseDates())
+    names(dates) <- dates
+    names(dates)[1] <- paste(names(dates)[1], "(most recent)")
     
     tagList(
         uiOutput(ns("firebrowseDataModal")),
