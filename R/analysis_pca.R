@@ -139,6 +139,7 @@ plotVariance <- function(pca) {
 #' @param loadings Boolean: plot PCA loadings/rotations (FALSE by default)
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip %>%
+#' hc_add_series_scatter
 #' @return Scatterplot as an Highcharter object
 plotPCA <- function(pca, perc, xAxis, yAxis, selected, clinical, match,
                     individuals=TRUE, loadings=FALSE) {
@@ -155,23 +156,26 @@ plotPCA <- function(pca, perc, xAxis, yAxis, selected, clinical, match,
     if (individuals) {
         df <- data.frame(pca$x)
         if (is.null(selected)) {
-            hc <- hc_scatter(hc, df[[xAxis]], df[[yAxis]], sample=rownames(df))
+            hc <- hc_add_series_scatter(hc, df[[xAxis]], df[[yAxis]], 
+                                        sample=rownames(df))
         } else {
             # Subset data by the selected clinical groups
             lowerNames <- tolower(rownames(df))
             for (groupName in selected) {
                 rows <- getMatchingRowNames(groupName, clinical, match)
                 rows <- rownames(df)[lowerNames %in% tolower(rows)]
-                hc <- hc_scatter(hc, df[rows, xAxis], df[rows, yAxis],
-                                 name=groupName, sample=rownames(df[rows, ]),
-                                 showInLegend=TRUE)
+                hc <- hc_add_series_scatter(hc, df[rows, xAxis], 
+                                            df[rows, yAxis],
+                                            name=groupName, 
+                                            sample=rownames(df[rows, ]),
+                                            showInLegend=TRUE)
             }
         }
     }
     if (loadings) {
         m <- data.frame(pca$rotation)
         # For loadings, add series (but don't add to legend)
-        hc <- hc_scatter(hc, m[[xAxis]], m[[yAxis]])
+        hc <- hc_add_series_scatter(hc, m[[xAxis]], m[[yAxis]])
     }
     return(hc)
 }

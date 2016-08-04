@@ -233,69 +233,6 @@ textAreaInput <- function(inputId, label, value = "", width = NULL,
 #' @export
 updateTextAreaInput <- updateTextInput
 
-#' Add scatter using Highcharts
-#' 
-#' @param hc Highcharts object
-#' @param x Numeric vector
-#' @param y Numeric vector
-#' @param z Numeric vector (optional)
-#' @param color Character: color (optional)
-#' @param label Character: series label
-#' @param showInLegend Boolean: show series in legened? FALSE by default
-#' @param viridis.option Character: viridis option; choose between "A", "B", "C"
-#' or "D"
-#' @param ... Extra arguments to be passed to the series
-#'
-#' @importFrom dplyr data_frame
-#' @importFrom assertthat assert_that
-#' @importFrom stats setNames
-#' @importFrom rlist list.parse
-#' @importFrom highcharter %>% hc_add_series colorize_vector
-#' 
-#' @export
-hc_scatter <- function (hc, x, y, z = NULL, color = NULL, label = NULL, 
-                        showInLegend = FALSE, viridis.option = "D", ...) {
-    assert_that(length(x) == length(y), 
-                is.numeric(x), is.numeric(y))
-    df <- data_frame(x, y)
-    if (!is.null(z)) {
-        assert_that(length(x) == length(z))
-        df <- df %>% mutate(z = z)
-    }
-    if (!is.null(color)) {
-        assert_that(length(x) == length(color))
-        assert_that(viridis.option %in% c("A", "B", "C", "D"))
-        cols <- colorize_vector(color, option = viridis.option)
-        df <- df %>% mutate(valuecolor = color, color = cols)
-    }
-    if (!is.null(label)) {
-        assert_that(length(x) == length(label))
-        df <- df %>% mutate(label = label)
-    }
-    # Add arguments to data points if they match the length of the data
-    args <- list(...)
-    for (i in seq_along(args)) {
-        if (length(x) == length(args[[i]]) && names(args[i]) != "name") {
-            df <- cbind(df, setNames(list(args[i]), names(args[i])))
-            args[[i]] <- character(0)
-        }
-    }
-    
-    ds <- list.parse(df)
-    names(ds) <- NULL
-    type <- ifelse(!is.null(z), "bubble", "scatter")
-    if (!is.null(label)) {
-        dlopts <- list(enabled = TRUE, format = "{point.label}")
-    }
-    else {
-        dlopts <- list(enabled = FALSE)
-    }
-    args <- Filter(length, args)
-    do.call("hc_add_series", c(list(hc, data = ds, type = type, 
-                                    showInLegend = showInLegend, 
-                                    dataLabels = dlopts), args))
-}
-
 #' Plot survival curves using Highcharts
 #' 
 #' @param object A survfit object as returned from the \code{survfit} function
@@ -336,7 +273,7 @@ hc_scatter <- function (hc, x, y, z = NULL, color = NULL, label = NULL,
 #' 
 #' @export
 hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
-                           symbol = fa_icon_mark("plus"), markerColor = "black",
+                           symbol = "plus", markerColor = "black",
                            ranges = FALSE, rangesOpacity = 0.3) {
     groups <- NULL
     # Check if there are groups
@@ -448,34 +385,6 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
     }
     
     return(hc)
-}
-
-
-#' Shorcut to create a density plot 
-#' 
-#' @param hc A \code{highchart} \code{htmlwidget} object. 
-#' @param x A numeric vector
-#' @param area A boolean value to show or not the area
-#' @param ... Aditional shared arguments for the data series
-#'   (\url{http://api.highcharts.com/highcharts#series}).
-#' 
-#' @importFrom stats density
-#' @importFrom highcharter %>% hc_add_series
-#' @importFrom rlist list.parse
-#' @examples
-#' 
-#' require("highcharter")
-#' highchart() %>%
-#'   hc_add_series_density(rnorm(1000)) %>%
-#'   hc_add_series_density(rexp(1000), area = TRUE)
-#'  
-#' @export
-hc_add_series_density <- function (hc, x, area = FALSE, ...) {
-    if(is.numeric(x)) x <- density(x)
-    type <- ifelse(area, "areaspline", "spline")
-    data <- list.parse(data.frame(cbind(x = x$x, y = x$y)))
-    names(data) <- NULL
-    return(hc %>% hc_add_series(data = data, type = type, ...))
 }
 
 #' Render a data table with Sparkline HTML elements

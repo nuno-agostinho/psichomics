@@ -73,7 +73,7 @@ survivalUI <- function(id) {
             radioButtons(ns("scale"), "Display time in", inline=TRUE,
                          c(Days="days", Weeks="weeks", Months="months",
                            Years="years")),
-            checkboxInput(ns("markTimes"), "Show time marks", value = FALSE),
+            checkboxInput(ns("markTimes"), "Show time marks", value = TRUE),
             checkboxInput(ns("ranges"), "Show interval ranges", value = FALSE),
             actionButton(ns("coxModel"), "Fit Cox PH model"),
             actionButton(ns("survivalCurves"), class="btn-primary",

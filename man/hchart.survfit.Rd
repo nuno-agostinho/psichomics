@@ -5,7 +5,7 @@
 \title{Plot survival curves using Highcharts}
 \usage{
 \method{hchart}{survfit}(object, ..., fun = NULL, markTimes = TRUE,
-  symbol = fa_icon_mark("plus"), markerColor = "black", ranges = FALSE,
+  symbol = "plus", markerColor = "black", ranges = FALSE,
   rangesOpacity = 0.3)
 }
 \arguments{
