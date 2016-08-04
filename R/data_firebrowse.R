@@ -3,7 +3,6 @@ printPaste <- function(...) print(paste(...))
 #' Returns the date format used by the Firehose API
 #'
 #' @return Named list with Firehose API's date formats
-#' @export
 #'
 #' @examples
 #' format <- getFirehoseDateFormat()
@@ -27,7 +26,6 @@ getFirehoseDateFormat <- function() {
 #'
 #' @return Invisible TRUE if the Firehose API is working; otherwise, raises a
 #' warning
-#' @export
 #'
 #' @importFrom httr GET warn_for_status http_error
 #'
@@ -67,7 +65,6 @@ isFirehoseUp <- function() {
 #' cohort)
 #'
 #' @return Response from the Firehose API (it needs to be parsed)
-#' @export
 #'
 #' @importFrom httr GET
 #'
@@ -110,7 +107,6 @@ queryFirehoseData <- function(format = "json", date = NULL, cohort = NULL,
 #' @param ... Character: parameters to pass to query (optional)
 #'
 #' @return List with parsed JSON response
-#' @export
 #'
 #' @importFrom httr GET content
 #' @importFrom jsonlite fromJSON
@@ -143,7 +139,6 @@ parseFirehoseMetadata <- function(type, ...) {
 #' response
 #'
 #' @return Date with datestamps of the data available
-#' @export
 #'
 #' @examples
 #' getFirehoseDates()
@@ -160,7 +155,6 @@ getFirehoseDates <- function() {
 #'
 #' @return Character with cohort abbreviations (as values) and description (as 
 #' names)
-#' @export
 #'
 #' @examples
 #' getFirehoseCohorts()
@@ -182,7 +176,6 @@ getFirehoseCohorts <- function(cohort = NULL) {
 #' @importFrom utils download.file
 #' 
 #' @return Invisible TRUE if every file was successfully downloaded
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -214,7 +207,6 @@ downloadFiles <- function(url, folder, progress = printPaste,
 #'
 #' @return Logical vector showing TRUE for files with matching md5sums and FALSE
 #' for files with non-matching md5sums
-#' @export
 checkIntegrity <- function(filesToCheck, md5file) {
     if (is.na(md5file)) return(FALSE)
     md5sums <- digest(file = filesToCheck)
@@ -234,7 +226,6 @@ checkIntegrity <- function(filesToCheck, md5file) {
 #' @importFrom utils untar
 #' 
 #' @return Invisible TRUE if successful
-#' @export
 #'
 #' @examples
 #' file <- paste0(
@@ -270,7 +261,6 @@ prepareFirehoseArchives <- function(archive, md5) {
 #' @param res Response from httr::GET to a Firehose data query
 #'
 #' @return Named character with URLs
-#' @export
 #' 
 #' @importFrom jsonlite fromJSON
 #' @importFrom httr content
@@ -313,7 +303,6 @@ parseUrlsFromFirehoseResponse <- function(res) {
 #' @param progress Function to show the progress (default is printPaste)
 #' 
 #' @return List with loaded data.frames
-#' @export
 loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
     # Retrieve full path of the files inside the given folders
     files <- dir(folder, full.names=TRUE)
@@ -351,7 +340,6 @@ loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
 #' @importFrom tools file_ext file_path_sans_ext
 #' @importFrom httr stop_for_status
 #' 
-#' @export
 #' @examples 
 #' \dontrun{
 #' loadFirehoseData(cohort = "ACC", data_type = "Clinical")

@@ -11,7 +11,6 @@
 #' @importFrom jsonlite fromJSON
 #'
 #' @return Parsed response or NULL if there's no response
-#' @export
 #'
 #' @examples
 #' path  <- "overlap/region/human/7:140424943-140624564"
@@ -38,7 +37,6 @@ queryEnsembl <- function(path, query, grch37 = TRUE) {
 #' @importFrom jsonlite fromJSON
 #'
 #' @return Parsed response
-#' @export
 #'
 #' @examples
 #' protein <- "P51587"

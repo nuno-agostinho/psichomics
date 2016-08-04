@@ -13,7 +13,6 @@
 #' }
 #'
 #' @return List containing the event attributes and junctions
-#' @export
 #'
 #' @examples
 #' # MATS event (alternative 3' splice site)
@@ -91,7 +90,6 @@ parseMatsEvent <- function(event, event_type) {
 #' @seealso \code{\link{parseMatsEvent}}
 #' 
 #' @return Data frame with parsed junctions
-#' @export
 #' 
 #' @examples 
 #' # Parse generic event (in this case, a skipping exon event)
@@ -114,7 +112,6 @@ parseMatsGeneric <- function(junctions, strand, coords, plus_pos, minus_pos) {
 }
 
 #' @rdname parseMatsGeneric
-#' @export
 #' @examples 
 #' 
 #' # Parse skipping exon event
@@ -131,7 +128,6 @@ parseMatsSE <- function(junctions, strand) {
 }
 
 #' @rdname parseMatsGeneric
-#' @export
 #' @examples 
 #' 
 #' # Parse mutually exclusive exon event
@@ -149,7 +145,6 @@ parseMatsMXE <- function(junctions, strand) {
 }
 
 #' @rdname parseMatsGeneric
-#' @export
 #' @examples 
 #' 
 #' # Parse intron retention event
@@ -165,7 +160,6 @@ parseMatsRI <- function(junctions, strand) {
 }
 
 #' @rdname parseMatsGeneric
-#' @export
 #' @examples 
 #' 
 #' # Parse alternative 3' splicing site event
@@ -182,7 +176,6 @@ parseMatsA3SS <- function(junctions, strand) {
 }
 
 #' @rdname parseMatsGeneric
-#' @export
 #' @examples 
 #' 
 #' # Parse alternative 5' splicing site event
@@ -199,7 +192,6 @@ parseMatsA5SS <- function(junctions, strand) {
 }
 
 #' @rdname parseMatsGeneric
-#' @export
 #' @examples 
 #' 
 #' # Parse alternative first exon event
@@ -216,7 +208,6 @@ parseMatsAFE <- function(junctions, strand) {
 }
 
 #' @rdname parseMatsGeneric
-#' @export
 #' @examples 
 #' 
 #' # Parse alternative last exon event

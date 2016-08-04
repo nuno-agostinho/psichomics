@@ -16,7 +16,6 @@
 #' @importFrom shiny tags HTML
 #' @importFrom htmltools attachDependencies htmlDependency
 #' @importFrom utils packageVersion
-#' @export
 bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL, 
                       style = NULL)  {
     if (!is.null(style)) {
@@ -66,8 +65,6 @@ bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL,
 #' @param ... Extra arguments to the icon tag
 #' 
 #' @importFrom htmltools htmlDependencies
-#' 
-#' @export
 icon2 <- function (name, class = NULL, lib = "font-awesome", ...) {
     prefixes <- list(`font-awesome` = "fa", glyphicon = "glyphicon")
     prefix <- prefixes[[lib]]
@@ -92,7 +89,6 @@ icon2 <- function (name, class = NULL, lib = "font-awesome", ...) {
 #' Disable a tab from the navbar
 #' @importFrom shinyjs disable addClass
 #' @param tab Character: tab to disable
-#' @export
 disableTab <- function(tab) {
     # Style item as disabled
     addClass(selector = paste0(".navbar li:has(a[data-value=", tab, "])"),
@@ -104,7 +100,6 @@ disableTab <- function(tab) {
 #' Enable a tab from the navbar
 #' @importFrom shinyjs removeClass enable
 #' @param tab Character: tab to enable
-#' @export
 enableTab <- function(tab) {
     # Style item as enabled
     removeClass(selector = paste0(".navbar li:has(a[data-value=", tab, "])"),
@@ -123,7 +118,6 @@ enableTab <- function(tab) {
 #' @param char Character to succeed accepted word
 #'
 #' @return HTML string with the JavaScript script prepared to run
-#' @export
 #' 
 #' @examples 
 #' words <- c("tumor_stage", "age", "gender")
@@ -184,7 +178,6 @@ textSuggestions <- function(id, words, novalue="No matching value", char=" ") {
 #' }
 #' shinyApp(ui, server)
 #' }
-#' @export
 textAreaInput <- function(inputId, label, value = "", width = NULL,
                           placeholder = NULL) {
     div(class = "form-group shiny-input-container",
@@ -230,7 +223,6 @@ textAreaInput <- function(inputId, label, value = "", width = NULL,
 #'
 #' shinyApp(ui, server)
 #' }
-#' @export
 updateTextAreaInput <- updateTextInput
 
 #' Plot survival curves using Highcharts
@@ -270,8 +262,6 @@ updateTextAreaInput <- updateTextInput
 #' fit <- coxph(Surv(futime, fustat) ~ age, data = ovarian)
 #' ovarian.surv <- survfit(fit, newdata=data.frame(age=60))
 #' hchart(ovarian.surv, ranges = TRUE)
-#' 
-#' @export
 hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
                            symbol = "plus", markerColor = "black",
                            ranges = FALSE, rangesOpacity = 0.3) {
