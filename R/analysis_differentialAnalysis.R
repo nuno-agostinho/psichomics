@@ -42,7 +42,7 @@ diffAnalysisUI <- function(id) {
 #' median of each group even when those groups are omitted
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_plotOptions hc_tooltip
-#' JS hc_add_series_scatter
+#' JS hc_add_series_scatter hc_add_series_density
 #' @importFrom stats median var
 #' 
 #' @return Highcharter object with density plot
