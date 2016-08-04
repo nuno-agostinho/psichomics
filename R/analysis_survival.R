@@ -319,7 +319,7 @@ testSurvivalCutoff <- function(cutoff, data, group, filter, ..., session=NULL,
 #' 
 #' @importFrom R.utils capitalize
 #' @importFrom shiny renderUI observe updateSelectizeInput observeEvent isolate 
-#' br tagList hr div icon
+#' br tagList hr div icon updateSliderInput
 #' @importFrom stats pchisq optim
 #' @importFrom survival survfit survdiff
 #' @importFrom highcharter hchart hc_chart hc_yAxis hc_xAxis hc_tooltip

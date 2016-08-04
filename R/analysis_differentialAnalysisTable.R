@@ -300,7 +300,7 @@ diffAnalysisTableUI <- function(id) {
 #' @param step Numeric: number of events before the progress bar is updated
 #' (a bigger number allows for a faster execution)
 #' 
-#' @importFrom stats kruskal.test median wilcox.test var
+#' @importFrom stats kruskal.test median wilcox.test var density
 #' 
 #' @return A data frame row with the results
 statsAnalyses <- function(vector, group, threshold=1, step=100,

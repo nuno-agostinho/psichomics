@@ -43,7 +43,7 @@ diffAnalysisUI <- function(id) {
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_plotOptions hc_tooltip
 #' JS hc_add_series_scatter hc_add_series_density
-#' @importFrom stats median var
+#' @importFrom stats median var density
 #' 
 #' @return Highcharter object with density plot
 prepareDensityPlot <- function(psi, type, bandwidth, rug=TRUE, vLine=TRUE) {

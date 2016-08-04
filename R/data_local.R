@@ -39,6 +39,8 @@ localDataUI <- function(id, panel) {
 #' @param ignore Character: skip folders and filenames that match the expression
 #' @param progress Function to keep track of the progress
 #' 
+#' @importFrom stats setNames
+#' 
 #' @return List of data frames from valid files
 #' @export
 #' 
