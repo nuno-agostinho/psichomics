@@ -10,8 +10,6 @@ prepareFirehoseArchives(archive, md5)
 \item{archive}{Character: path to downloaded archives}
 
 \item{md5}{Characater: path to MD5 files of each archive}
-
-\item{folder}{Character: local folder where the archives should be stored}
 }
 \value{
 Invisible TRUE if successful

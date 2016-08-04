@@ -188,6 +188,7 @@ plotPCA <- function(pca, perc, xAxis, yAxis, selected, clinical, match,
 #' 
 #' @importFrom shinyjs runjs
 #' @importFrom highcharter %>% hc_chart hc_xAxis hc_yAxis hc_tooltip
+#' @importFrom stats setNames
 pcaServer <- function(input, output, session) {
     ns <- session$ns
     

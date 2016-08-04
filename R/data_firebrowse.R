@@ -223,7 +223,6 @@ checkIntegrity <- function(filesToCheck, md5file) {
 #'
 #' @param archive Character: path to downloaded archives
 #' @param md5 Characater: path to MD5 files of each archive
-#' @param folder Character: local folder where the archives should be stored
 #' 
 #' @importFrom utils untar
 #' 

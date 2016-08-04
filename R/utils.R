@@ -65,7 +65,7 @@ bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL,
 #' @param lib Icon library to use (either "font-awesome" or "glyphicon")
 #' @param ... Extra arguments to the icon tag
 #' 
-#' @importFrom htmltools htmlDependencies
+#' @importFrom htmltools htmlDependencies "htmlDependencies<-"
 icon2 <- function (name, class = NULL, lib = "font-awesome", ...) {
     prefixes <- list(`font-awesome` = "fa", glyphicon = "glyphicon")
     prefix <- prefixes[[lib]]
@@ -250,6 +250,8 @@ updateTextAreaInput <- updateTextInput
 #' @importFrom highcharter %>% hc_add_series highchart hc_tooltip hc_yAxis
 #' hc_plotOptions fa_icon_mark JS
 #' @importFrom rlist list.parse
+#' @importFrom stats setNames
+#' 
 #' @return Highcharts object to plot survival curves
 #' 
 #' @examples
