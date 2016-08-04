@@ -266,7 +266,11 @@ infoServer <- function(input, output, session) {
     
     observe({
         event <- getEvent()
-        if (is.null(event) || event == "") return(noinfo(output))
+        if (is.null(getInclusionLevels()))
+            return(noinfo(output, "Quantify alternative splicing",
+                          paste("To perform this analysis, you need to quantify",
+                                "alternative splicing.")))
+        else if (is.null(event) || event == "") return(noinfo(output))
         
         event <- strsplit(event, "_")[[1]]
         gene <- event[length(event)]
