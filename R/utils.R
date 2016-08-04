@@ -1,5 +1,6 @@
-.onLoad <- function(libname, pkgname) {
-    message("Start the visual interface by running the function psichomics()")
+.onAttach <- function(libname, pkgname) {
+    packageStartupMessage("Start the visual interface by running the function ",
+                          "psichomics()")
 }
 
 #' Modified version of shinyBS::bsModal
