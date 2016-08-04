@@ -1,17 +1,3 @@
-#' Get Firebrowse choices of data types
-#' @importFrom R.utils capitalize
-#' 
-#' @return Named character vector
-getFirebrowseDataChoices <- function() {
-    choices <- c(paste0(c("junction", "exon"),
-                        "_quantification"), "Preprocess",
-                 paste0("RSEM_", c("isoforms", "genes")),
-                 paste0(c("junction", "gene", "exon"),
-                        "_expression"), "genes_normalized")
-    names(choices) <- capitalize(gsub("_", " ", choices))
-    return(choices)
-}
-
 #' Creates a UI set with options to add a file from the local storage
 #' 
 #' @param ns Namespace function
@@ -27,7 +13,7 @@ addLocalFile <- function(ns) {
                       value="~/Downloads/", placeholder="Insert local folder"),
         textInput(ns("localCategory"), label="Data category name"),
         selectizeInput(ns("localIgnore"), "Files/directories to ignore",
-                       choices=getFirebrowseDataChoices(),
+                       choices=getFirebrowseDataTypes(),
                        selected=c("RSEM_isoforms", "exon_quantification"),
                        multiple=TRUE, options=list(
                            # Allow to add new items
@@ -47,6 +33,48 @@ localDataUI <- function(id, panel) {
 }
 
 #' Load local files
+#' 
+#' @param folder Character: path to folder containing files of interest
+#' @param name Character: name of the category containing all loaded datasets
+#' @param ignore Character: skip folders and filenames that match the expression
+#' @param progress Function to keep track of the progress
+#' 
+#' @return List of data frames from valid files
+#' @export
+#' 
+#' @examples
+#' folder <- "~/Downloads/ACC 2016"
+#' data <- loadLocalFiles(folder)
+#' 
+#' ignore <- c(".aux.", ".mage-tab.", "junction quantification")
+#' loadLocalFiles(folder, ignore)
+loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."), name="Data",
+                           progress=printPaste) {
+    # Get all files in the specified directory and subdirectories
+    files <- list.files(folder, recursive=TRUE, full.names=TRUE)
+    
+    # Exclude undesired subdirectories or files
+    files <- files[!dir.exists(files)]
+    ignore <- paste(ignore, collapse = "|")
+    if (ignore != "") files <- files[!grepl(ignore, files)]
+    
+    progress("Searching inside the folder...", divisions=length(files))
+    
+    loaded <- list()
+    formats <- loadFileFormats()
+    for (each in seq_along(files)) {
+        progress("Processing file", detail = basename(files[each]))
+        loaded[[each]] <- parseValidFile(files[each], formats)
+    }
+    names(loaded) <- sapply(loaded, attr, "tablename")
+    loaded <- Filter(length, loaded)
+    
+    data <- setNames(list(loaded), name)
+    data <- processDatasetNames(data)
+    return(data)
+}
+
+#' Load local files
 #' @param input Shiny input
 #' @param output Shiny output
 #' @param session Shiny session
@@ -60,29 +88,11 @@ setLocalData <- function(input, output, session, replace=TRUE) {
     category <- input$localCategory
     ignore <- c(".aux.", ".mage-tab.", input$localIgnore)
     
-    # Get all files in the specified directory and subdirectories
-    files <- list.files(folder, recursive = TRUE, full.names = TRUE)
+    # Load valid local files
+    progress <- updateProgress
+    data <- loadLocalFiles(folder, name=category, ignore, progress)
     
-    # Exclude undesired subdirectories or files
-    files <- files[!dir.exists(files)]
-    ignore <- paste(ignore, collapse = "|")
-    if (ignore != "") files <- files[!grepl(ignore, files)]
-    
-    startProgress("Searching inside the folder...", divisions=length(files))
-    
-    # Try to load files and remove those with 0 rows
-    loaded <- list()
-    formats <- loadFileFormats()
-    for (each in seq_along(files)) {
-        updateProgress("Processing file", detail = basename(files[each]))
-        loaded[[each]] <- parseValidFile(files[each], formats)
-    }
-    names(loaded) <- sapply(loaded, attr, "tablename")
-    loaded <- Filter(length, loaded)
-    
-    data <- setNames(list(loaded), category)
     if (!is.null(data)) {
-        data <- processDatasetNames(data)
         if(replace)
             setData(data)
         else

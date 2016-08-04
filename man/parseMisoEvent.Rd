@@ -33,6 +33,6 @@ event <- read.table(text = "
   chr1 SE mRNA 16854 18061 . - .
   chr1 SE exon 16854 17955 . - .
   chr1 SE exon 17915 18061 . - .")
-parseMisoEvent(event)
+psichomics:::parseMisoEvent(event)
 }
 

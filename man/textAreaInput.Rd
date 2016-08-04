@@ -29,16 +29,19 @@ Create a resizable input control for entry of unstructured text values
 }
 \examples{
 ## Only run examples in interactive R sessions
+\dontrun{
 if (interactive()) {
 
 ui <- fluidPage(
-  textAreaInput("caption", "Caption", "Data Summary", width = "1000px"),
+  psichomics:::textAreaInput("caption", "Caption", "Data Summary",
+                             width = "1000px"),
   verbatimTextOutput("value")
 )
 server <- function(input, output) {
   output$value <- renderText({ input$caption })
 }
 shinyApp(ui, server)
+}
 }
 }
 \seealso{

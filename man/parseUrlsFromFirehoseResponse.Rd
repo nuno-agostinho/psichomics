@@ -16,7 +16,7 @@ Named character with URLs
 Retrieve URLs from a response to a Firehose data query
 }
 \examples{
-res <- queryFirehoseData(cohort = "ACC")
-url <- parseUrlsFromFirehoseResponse(res)
+res <- psichomics:::queryFirehoseData(cohort = "ACC")
+url <- psichomics:::parseUrlsFromFirehoseResponse(res)
 }
 

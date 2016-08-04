@@ -15,11 +15,11 @@
 #' @examples
 #' path  <- "overlap/region/human/7:140424943-140624564"
 #' query <- list(feature = "gene")
-#' queryEnsembl(path, query, grch37 = TRUE)
+#' psichomics:::queryEnsembl(path, query, grch37 = TRUE)
 #'
 #' path  <- "lookup/symbol/human/BRCA2"
 #' query <- list(expand=1)
-#' queryEnsembl(path, query, grch37 = TRUE)
+#' psichomics:::queryEnsembl(path, query, grch37 = TRUE)
 queryEnsembl <- function(path, query, grch37 = TRUE) {
     url <- paste0("http://", if(grch37) "grch37.", "rest.ensembl.org")
     resp <- GET(url, path=path, query=query)
@@ -41,7 +41,7 @@ queryEnsembl <- function(path, query, grch37 = TRUE) {
 #' @examples
 #' protein <- "P51587"
 #' format <- "xml"
-#' queryUniprot(protein, format)
+#' psichomics:::queryUniprot(protein, format)
 queryUniprot <- function(protein, format="xml") {
     url <- "http://www.uniprot.org"
     path <- paste0("uniprot/", protein, ".", format)

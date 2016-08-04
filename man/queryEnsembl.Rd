@@ -23,10 +23,10 @@ Query the Ensembl REST API
 \examples{
 path  <- "overlap/region/human/7:140424943-140624564"
 query <- list(feature = "gene")
-queryEnsembl(path, query, grch37 = TRUE)
+psichomics:::queryEnsembl(path, query, grch37 = TRUE)
 
 path  <- "lookup/symbol/human/BRCA2"
 query <- list(expand=1)
-queryEnsembl(path, query, grch37 = TRUE)
+psichomics:::queryEnsembl(path, query, grch37 = TRUE)
 }
 

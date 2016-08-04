@@ -16,6 +16,6 @@ this is not the status code obtained from the API, the function will raise a
 warning with the status code and a brief explanation.
 }
 \examples{
-isFirehoseUp()
+psichomics:::isFirehoseUp()
 }
 

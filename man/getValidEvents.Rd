@@ -52,6 +52,6 @@ event <- read.table(text = "
  chr1 SE exon 17915 18061  .  -  .
 ")
 validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 2))
-getValidEvents(event, validator)
+psichomics:::getValidEvents(event, validator)
 }
 

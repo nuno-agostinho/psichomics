@@ -5,7 +5,7 @@ printPaste <- function(...) print(paste(...))
 #' @return Named list with Firehose API's date formats
 #'
 #' @examples
-#' format <- getFirehoseDateFormat()
+#' format <- psichomics:::getFirehoseDateFormat()
 #' 
 #' # date format to use in a query to Firehose API
 #' format$query
@@ -30,7 +30,7 @@ getFirehoseDateFormat <- function() {
 #' @importFrom httr GET warn_for_status http_error
 #'
 #' @examples
-#' isFirehoseUp()
+#' psichomics:::isFirehoseUp()
 isFirehoseUp <- function() {
     link <- paste0("http://firebrowse.org/api/v1/Metadata/HeartBeat")
     heartbeat <- tryCatch(GET(link, query=list(format="json")), error=return)
@@ -69,14 +69,14 @@ isFirehoseUp <- function() {
 #' @importFrom httr GET
 #'
 #' @examples
-#' cohort <- getFirehoseCohorts()[1]
-#' queryFirehoseData(cohort = cohort, data_type = "mRNASeq")
+#' cohort <- psichomics:::getFirehoseCohorts()[1]
+#' psichomics:::queryFirehoseData(cohort = cohort, data_type = "mRNASeq")
 #' 
 #' # Querying for data from a specific date
-#' dates <- getFirehoseDates()
-#' dates <- format(dates, getFirehoseDateFormat()$query)
+#' dates <- psichomics:::getFirehoseDates()
+#' dates <- format(dates, psichomics:::getFirehoseDateFormat()$query)
 #' 
-#' queryFirehoseData(date = dates[2], cohort = cohort)
+#' psichomics:::queryFirehoseData(date = dates[2], cohort = cohort)
 queryFirehoseData <- function(format = "json", date = NULL, cohort = NULL, 
                               data_type = NULL, tool = NULL, platform = NULL,
                               center = NULL, level = NULL, protocol = NULL,
@@ -112,14 +112,14 @@ queryFirehoseData <- function(format = "json", date = NULL, cohort = NULL,
 #' @importFrom jsonlite fromJSON
 #'
 #' @examples
-#' parseFirehoseMetadata("Dates")
-#' parseFirehoseMetadata("Centers")
-#' parseFirehoseMetadata("HeartBeat")
+#' psichomics:::parseFirehoseMetadata("Dates")
+#' psichomics:::parseFirehoseMetadata("Centers")
+#' psichomics:::parseFirehoseMetadata("HeartBeat")
 #' 
 #' # Get the abbreviation and description of all cohorts available
-#' parseFirehoseMetadata("Cohorts")
+#' psichomics:::parseFirehoseMetadata("Cohorts")
 #' # Get the abbreviation and description of the selected cohorts
-#' parseFirehoseMetadata("Cohorts", cohort = c("ACC", "BRCA"))
+#' psichomics:::parseFirehoseMetadata("Cohorts", cohort = c("ACC", "BRCA"))
 parseFirehoseMetadata <- function(type, ...) {
     # Remove NULL arguments
     args <- Filter(Negate(is.null), list(...))
@@ -139,7 +139,8 @@ parseFirehoseMetadata <- function(type, ...) {
 #' response
 #'
 #' @return Date with datestamps of the data available
-#'
+#' @export
+#' 
 #' @examples
 #' getFirehoseDates()
 getFirehoseDates <- function() {
@@ -155,9 +156,10 @@ getFirehoseDates <- function() {
 #'
 #' @return Character with cohort abbreviations (as values) and description (as 
 #' names)
+#' @export
 #'
 #' @examples
-#' getFirehoseCohorts()
+#' if (psichomics:::isFirehoseUp()) getFirehoseCohorts()
 getFirehoseCohorts <- function(cohort = NULL) {
     response <- parseFirehoseMetadata("Cohorts", cohort=cohort)
     cohorts <- response$Cohorts[[2]]
@@ -266,8 +268,8 @@ prepareFirehoseArchives <- function(archive, md5) {
 #' @importFrom httr content
 #'
 #' @examples
-#' res <- queryFirehoseData(cohort = "ACC")
-#' url <- parseUrlsFromFirehoseResponse(res)
+#' res <- psichomics:::queryFirehoseData(cohort = "ACC")
+#' url <- psichomics:::parseUrlsFromFirehoseResponse(res)
 parseUrlsFromFirehoseResponse <- function(res) {
     # Parse the query response
     parsed <- content(res, "text", encoding = "UTF8")
@@ -334,11 +336,16 @@ loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
 #' "MANIFEST.TXT" files)
 #' @param ... Extra parameters to be passed to \code{\link{queryFirehoseData}}
 #' @param progress Function to show the progress (default is printPaste)
-#' @param output Output from the Shiny server function
+#' @param download Boolean: download missing files through the function
+#' \code{download.file}
 #' 
 #' @include formats.R
 #' @importFrom tools file_ext file_path_sans_ext
 #' @importFrom httr stop_for_status
+#' @importFrom utils download.file
+#' 
+#' @return URL of missing files ("missing" class) or list with loaded data
+#' @export
 #' 
 #' @examples 
 #' \dontrun{
@@ -346,7 +353,7 @@ loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
 #' }
 loadFirehoseData <- function(folder = "~/Downloads",
                              exclude = c(".aux.", ".mage-tab.", "MANIFEST.txt"),
-                             ..., progress = printPaste, output=output) {
+                             ..., progress = printPaste, download=TRUE) {
     ## TODO(NunoA): Check if the default folder works in Windows
     # Query Firehose and get URLs for archives
     res <- queryFirehoseData(...)
@@ -382,10 +389,10 @@ loadFirehoseData <- function(folder = "~/Downloads",
         progress(divisions = 1)
         print("Triggered the download of files")
         
-        iframe <- function(url) 
-            tags$iframe(width=1, height=1, frameborder=0, src=url)
-        output$iframeDownload <- renderUI(lapply(url[missing], iframe))
-        return(NA)
+        missingFiles <- url[missing]
+        class(missingFiles) <- c("missing", class(missingFiles))
+        if (download) download.file(missingFiles, destfile=folder)
+        return(missingFiles)
     } else {
         # Check if there are folders to unarchive
         archives <- unlist(lapply(possibleExtensions, function (i)
@@ -436,17 +443,6 @@ loadFirehoseData <- function(folder = "~/Downloads",
     }
 }
 
-#' @importFrom R.utils capitalize
-getFirebrowseDataChoices <- function() {
-    choices <- c(paste0(c("junction", "exon"),
-                        "_quantification"), "Preprocess",
-                 paste0("RSEM_", c("isoforms", "genes")),
-                 paste0(c("junction", "gene", "exon"),
-                        "_expression"), "genes_normalized")
-    names(choices) <- capitalize(gsub("_", " ", choices))
-    return(choices)
-}
-
 #' Creates a UI set with options to add data from TCGA/Firehose
 #' @param ns Namespace function
 #' 
@@ -473,7 +469,7 @@ addTCGAdata <- function(ns) {
                        selected = NULL, options = list(
                            placeholder = "Select sample date")),
         selectizeInput(ns("firehoseData"), "Data type",
-                       c("Clinical", getFirebrowseDataChoices()), 
+                       c("Clinical", getFirebrowseDataTypes()), 
                        multiple = TRUE, options = list(
                            placeholder = "Select data types")),
         textAreaInput(ns("dataFolder"), "Folder to store the data",
@@ -532,7 +528,7 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
     disable("getFirehoseData")
     
     data <- input$firehoseData
-    datasets <- getFirebrowseDataChoices()
+    datasets <- getFirebrowseDataTypes()
     # Data types to load
     data_type <- c(data[!data %in% datasets], "mRNASeq")
     # Datasets to ignore
@@ -545,9 +541,14 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
                              data_type = data_type,
                              exclude = c(".aux.", ".mage-tab.", ignore),
                              progress = updateProgress,
-                             output = output)
+                             download = FALSE)
     
-    if (is.na(data)) {
+    if (any(class(data) == "missing")) {
+        # Download missing files through the browser
+        iframe <- function(url) 
+            tags$iframe(width=1, height=1, frameborder=0, src=url)
+        output$iframeDownload <- renderUI(lapply(data, iframe))
+        
         infoModal(
             session, "Wait while files are being downloaded",
             "When the downloads complete, click the button", tags$b("Get data"), 

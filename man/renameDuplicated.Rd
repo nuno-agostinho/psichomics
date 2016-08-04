@@ -19,6 +19,7 @@ returns the usual values. Doesn't return the comparator values.
 Renames values by adding an index to the end of duplicates.
 }
 \examples{
-renameDuplicated(check = c("blue", "red"), comp = c("green", "blue"))
+psichomics:::renameDuplicated(check = c("blue", "red"), comp = c("green",
+                                                                 "blue"))
 }
 

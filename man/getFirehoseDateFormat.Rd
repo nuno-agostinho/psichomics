@@ -13,7 +13,7 @@ Named list with Firehose API's date formats
 Returns the date format used by the Firehose API
 }
 \examples{
-format <- getFirehoseDateFormat()
+format <- psichomics:::getFirehoseDateFormat()
 
 # date format to use in a query to Firehose API
 format$query

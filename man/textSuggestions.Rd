@@ -23,6 +23,6 @@ Uses the JavaScript library jquery.textcomplete
 }
 \examples{
 words <- c("tumor_stage", "age", "gender")
-textSuggestions("textareaid", words)
+psichomics:::textSuggestions("textareaid", words)
 }
 

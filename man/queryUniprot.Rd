@@ -20,6 +20,6 @@ Query the Uniprot REST API
 \examples{
 protein <- "P51587"
 format <- "xml"
-queryUniprot(protein, format)
+psichomics:::queryUniprot(protein, format)
 }
 

@@ -20,6 +20,7 @@ updateTextAreaInput(session, inputId, label = NULL, value = NULL)
 Change the value of a textarea input on the client
 }
 \examples{
+\dontrun{
 ## Only run examples in interactive R sessions
 if (interactive()) {
 
@@ -46,6 +47,7 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui, server)
+}
 }
 }
 \seealso{

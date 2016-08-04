@@ -52,6 +52,5 @@ hchart(lsurv2, fun="cumhaz")
 fit <- coxph(Surv(futime, fustat) ~ age, data = ovarian)
 ovarian.surv <- survfit(fit, newdata=data.frame(age=60))
 hchart(ovarian.surv, ranges = TRUE)
-
 }
 

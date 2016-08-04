@@ -46,13 +46,13 @@ Response from the Firehose API (it needs to be parsed)
 Query the Firehose API for TCGA data
 }
 \examples{
-cohort <- getFirehoseCohorts()[1]
-queryFirehoseData(cohort = cohort, data_type = "mRNASeq")
+cohort <- psichomics:::getFirehoseCohorts()[1]
+psichomics:::queryFirehoseData(cohort = cohort, data_type = "mRNASeq")
 
 # Querying for data from a specific date
-dates <- getFirehoseDates()
-dates <- format(dates, getFirehoseDateFormat()$query)
+dates <- psichomics:::getFirehoseDates()
+dates <- format(dates, psichomics:::getFirehoseDateFormat()$query)
 
-queryFirehoseData(date = dates[2], cohort = cohort)
+psichomics:::queryFirehoseData(date = dates[2], cohort = cohort)
 }
 
