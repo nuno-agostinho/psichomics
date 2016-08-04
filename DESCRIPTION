@@ -14,6 +14,7 @@ License: What license is it under?
 LazyData: true
 RoxygenNote: 5.0.1
 Imports:
+    ggplot2,
 	data.table,
 	devtools,
 	digest,
