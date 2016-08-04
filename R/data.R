@@ -4,6 +4,20 @@
 ## TODO(NunoA): render UI for each data table instead of rendering UI for all
 ## so there's no refresh
 
+#' Get Firebrowse choices of data types
+#' @importFrom R.utils capitalize
+#' 
+#' @return Named character vector
+getFirebrowseDataTypes <- function() {
+    choices <- c(paste0(c("junction", "exon"),
+                        "_quantification"), "Preprocess",
+                 paste0("RSEM_", c("isoforms", "genes")),
+                 paste0(c("junction", "gene", "exon"),
+                        "_expression"), "genes_normalized")
+    names(choices) <- capitalize(gsub("_", " ", choices))
+    return(choices)
+}
+
 #' Create a modal warning the user of already loaded data
 #' @param modalId Character: identifier of the modal
 #' @param replaceButtonId Character: identifier of the button to replace data

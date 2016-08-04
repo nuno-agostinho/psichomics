@@ -40,6 +40,6 @@ gff3 <- system.file("extdata", "miso_AS_annot_example.gff3",
                     package="psichomics")
 annotation <- read.delim(gff3, header=FALSE, comment.char="#")
 IDcolumn <- 9
-parseMisoEventID(eventID, annotation, IDcolumn)
+psichomics:::parseMisoEventID(eventID, annotation, IDcolumn)
 }
 

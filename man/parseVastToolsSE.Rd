@@ -38,27 +38,27 @@ The following event types are available to be parsed:
 }
 \examples{
 junctions <- read.table(text = "41040823 41046768 41046903 41051785")
-parseVastToolsSE(junctions)
+psichomics:::parseVastToolsSE(junctions)
 
 # these functions are vectorised!
 junctions <- read.table(text = "41040823 41046768 41046903 41051785
                                 58864658 58864693 58864294 58864563")
-parseVastToolsSE(junctions)
+psichomics:::parseVastToolsSE(junctions)
 
 junctions <- read.table(text = "58864658 58864693 58864294 58864563")
-parseVastToolsRI(junctions, strand = "+")
+psichomics:::parseVastToolsRI(junctions, strand = "+")
 
 junctions <- rbind(
     c(36276385, list(c(36277798, 36277315)), 36277974),
     c(7133604, 7133377, list(c(7133474, 7133456)))
 )
-parseVastToolsA3SS(junctions)
+psichomics:::parseVastToolsA3SS(junctions)
 
 junctions <- rbind(
     c(74650610, list(c(74650654, 74650658)), 74650982),
     c(list(c(49557666, 49557642), 49557746, 49557470))
 )
-parseVastToolsA5SS(junctions)
+psichomics:::parseVastToolsA5SS(junctions)
 }
 \seealso{
 \code{\link{parseVastToolsEvent}}

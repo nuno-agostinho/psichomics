@@ -71,42 +71,42 @@ coords <- c("A1.start", "A1.end",
             "C2.start", "C2.end")
 plus  <- c(1:6)
 minus <- c(2:1, 6:3)
-parseMatsGeneric(junctions, strand = "+", coords, plus, minus)
+psichomics:::parseMatsGeneric(junctions, strand = "+", coords, plus, minus)
 
 # Parse skipping exon event
 junctions <- read.table(text=
     "79685787 79685910 79685796 79685910 79679566 79679751")
-parseMatsSE(junctions, strand = "+")
+psichomics:::parseMatsSE(junctions, strand = "+")
 
 # Parse mutually exclusive exon event
 junctions <- read.table(text=
 "158282161 158282276 158282689 158282804 158281047 158281295 158283950 158284199")
-parseMatsMXE(junctions, strand = "+")
+psichomics:::parseMatsMXE(junctions, strand = "+")
 
 # Parse intron retention event
 junctions <- read.table(text=
     "15929853 15932100 15929853 15930016 15930687 15932100")
-parseMatsRI(junctions, strand = "+")
+psichomics:::parseMatsRI(junctions, strand = "+")
 
 # Parse alternative 3' splicing site event
 junctions <- read.table(text=
     "79685787 79685910 79685796 79685910 79679566 79679751")
-parseMatsA3SS(junctions, strand = "+")
+psichomics:::parseMatsA3SS(junctions, strand = "+")
 
 # Parse alternative 5' splicing site event
 junctions <- read.table(text=
     "102884421 102884501 102884421 102884489 102884812 102885881")
-parseMatsA5SS(junctions, strand = "+")
+psichomics:::parseMatsA5SS(junctions, strand = "+")
 
 # Parse alternative first exon event
 junctions <- read.table(text=
     "16308723 16308879 16308967 16309119 16314269 16314426")
-parseMatsAFE(junctions, strand = "+")
+psichomics:::parseMatsAFE(junctions, strand = "+")
 
 # Parse alternative last exon event
 junctions <- read.table(text=
     "111858645 111858828 111851063 111851921 111850441 111850543")
-parseMatsAFE(junctions, strand = "+")
+psichomics:::parseMatsAFE(junctions, strand = "+")
 }
 \seealso{
 \code{\link{parseMatsEvent}}

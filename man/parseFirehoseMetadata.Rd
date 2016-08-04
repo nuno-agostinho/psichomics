@@ -18,13 +18,13 @@ List with parsed JSON response
 Query the Firehose API for metadata and parse the response
 }
 \examples{
-parseFirehoseMetadata("Dates")
-parseFirehoseMetadata("Centers")
-parseFirehoseMetadata("HeartBeat")
+psichomics:::parseFirehoseMetadata("Dates")
+psichomics:::parseFirehoseMetadata("Centers")
+psichomics:::parseFirehoseMetadata("HeartBeat")
 
 # Get the abbreviation and description of all cohorts available
-parseFirehoseMetadata("Cohorts")
+psichomics:::parseFirehoseMetadata("Cohorts")
 # Get the abbreviation and description of the selected cohorts
-parseFirehoseMetadata("Cohorts", cohort = c("ACC", "BRCA"))
+psichomics:::parseFirehoseMetadata("Cohorts", cohort = c("ACC", "BRCA"))
 }
 

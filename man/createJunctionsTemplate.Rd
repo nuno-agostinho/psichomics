@@ -28,6 +28,6 @@ A data frame with the junctions coordinate names pre-filled with NAs
 Creates a template of alternative splicing junctions
 }
 \examples{
-createJunctionsTemplate(nrow = 8)
+psichomics:::createJunctionsTemplate(nrow = 8)
 }
 

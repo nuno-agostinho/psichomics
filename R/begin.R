@@ -236,8 +236,9 @@ setClinicalMatchFrom <- function(dataset, matches, category = getCategory())
 #' @return Character without whitespace
 #'
 #' @examples
-#' trimWhitespace("    hey   there     ")
-#' trimWhitespace(c("pineapple    ", "one two three", " sunken    ship   "))
+#' psichomics:::trimWhitespace("    hey   there     ")
+#' psichomics:::trimWhitespace(c("pineapple    ", "one two three", 
+#'                               " sunken    ship   "))
 trimWhitespace <- function(word) {
     # Remove leading and trailing whitespace
     word <- gsub("^\\s+|\\s+$", "", word)
@@ -276,7 +277,8 @@ escape <- function(...) {
 #' returns the usual values. Doesn't return the comparator values.
 #'
 #' @examples
-#' renameDuplicated(check = c("blue", "red"), comp = c("green", "blue"))
+#' psichomics:::renameDuplicated(check = c("blue", "red"), comp = c("green",
+#'                                                                  "blue"))
 renameDuplicated <- function(check, comp) {
     # If there's nothing to compare with, return the values
     if (length(comp) == 0) return(check)

@@ -28,8 +28,9 @@ names(event) <- c("Event ID", "Strand", "C1.end", "A1.end", "A1.start")
 event[ , "C1.end"] <- as.character(event[ , "C1.end"])
 is.character(event[ , "C1.end"])
 
-event <- getNumerics(event, by = c("Strand", "C1.end", "A1.end", "A1.start"),
-                     toNumeric = c(FALSE, TRUE, TRUE, TRUE))
+event <- psichomics:::getNumerics(event, by = c("Strand", "C1.end", "A1.end",
+                                  "A1.start"),
+                                  toNumeric = c(FALSE, TRUE, TRUE, TRUE))
 # Let's check if the same column is now integer
 is.numeric(event[ , "C1.end"])
 }

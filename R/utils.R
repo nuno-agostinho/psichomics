@@ -122,7 +122,7 @@ enableTab <- function(tab) {
 #' 
 #' @examples 
 #' words <- c("tumor_stage", "age", "gender")
-#' textSuggestions("textareaid", words)
+#' psichomics:::textSuggestions("textareaid", words)
 textSuggestions <- function(id, words, novalue="No matching value", char=" ") {
     varId <- paste0(gsub("-", "_", id), "_words")
     var <- paste0(varId, ' = ["', paste(words, collapse = '", "'), '"];')
@@ -168,16 +168,19 @@ textSuggestions <- function(id, words, novalue="No matching value", char=" ") {
 #'
 #' @examples
 #' ## Only run examples in interactive R sessions
+#' \dontrun{
 #' if (interactive()) {
 #'
 #' ui <- fluidPage(
-#'   textAreaInput("caption", "Caption", "Data Summary", width = "1000px"),
+#'   psichomics:::textAreaInput("caption", "Caption", "Data Summary",
+#'                              width = "1000px"),
 #'   verbatimTextOutput("value")
 #' )
 #' server <- function(input, output) {
 #'   output$value <- renderText({ input$caption })
 #' }
 #' shinyApp(ui, server)
+#' }
 #' }
 textAreaInput <- function(inputId, label, value = "", width = NULL,
                           placeholder = NULL) {
@@ -197,6 +200,7 @@ textAreaInput <- function(inputId, label, value = "", width = NULL,
 #' @inheritParams shiny::updateTextInput
 #'
 #' @examples
+#' \dontrun{
 #' ## Only run examples in interactive R sessions
 #' if (interactive()) {
 #'
@@ -223,6 +227,7 @@ textAreaInput <- function(inputId, label, value = "", width = NULL,
 #' }
 #'
 #' shinyApp(ui, server)
+#' }
 #' }
 updateTextAreaInput <- updateTextInput
 

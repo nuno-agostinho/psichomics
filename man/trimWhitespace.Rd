@@ -16,7 +16,8 @@ Character without whitespace
 Trims whitespace from a word
 }
 \examples{
-trimWhitespace("    hey   there     ")
-trimWhitespace(c("pineapple    ", "one two three", " sunken    ship   "))
+psichomics:::trimWhitespace("    hey   there     ")
+psichomics:::trimWhitespace(c("pineapple    ", "one two three", 
+                              " sunken    ship   "))
 }
 

@@ -37,6 +37,6 @@ It only allows to parse one event type at once.
 }
 \examples{
 event <- "ENSG00000000419;A3:20:49557492-49557642:49557470-49557642:-"
-parseSuppaEvent(event)
+psichomics:::parseSuppaEvent(event)
 }
 

@@ -21,7 +21,7 @@
 #'      5 ENSG00000166012 TAF1D chr11 - 93466515 93466671 93466515 93466585 93467790 93467826
 #'      6 ENSG00000166012 TAF1D chr11 - 93466515 93466585 93466515 93466563 93467790 93467826
 #' ")
-#' parseMatsEvent(event, "A3SS")
+#' psichomics:::parseMatsEvent(event, "A3SS")
 parseMatsEvent <- function(event, event_type) {
     len <- ncol(event)
     # Create list with event attributes
@@ -100,7 +100,7 @@ parseMatsEvent <- function(event, event_type) {
 #'             "C2.start", "C2.end")
 #' plus  <- c(1:6)
 #' minus <- c(2:1, 6:3)
-#' parseMatsGeneric(junctions, strand = "+", coords, plus, minus)
+#' psichomics:::parseMatsGeneric(junctions, strand = "+", coords, plus, minus)
 parseMatsGeneric <- function(junctions, strand, coords, plus_pos, minus_pos) {
     # Creates a data frame of parsed junctions filled with NAs
     parsed <- createJunctionsTemplate(nrow(junctions))
@@ -117,7 +117,7 @@ parseMatsGeneric <- function(junctions, strand, coords, plus_pos, minus_pos) {
 #' # Parse skipping exon event
 #' junctions <- read.table(text=
 #'     "79685787 79685910 79685796 79685910 79679566 79679751")
-#' parseMatsSE(junctions, strand = "+")
+#' psichomics:::parseMatsSE(junctions, strand = "+")
 parseMatsSE <- function(junctions, strand) {
     coords <- c("A1.start", "A1.end",
                 "C1.start", "C1.end",
@@ -133,7 +133,7 @@ parseMatsSE <- function(junctions, strand) {
 #' # Parse mutually exclusive exon event
 #' junctions <- read.table(text=
 #' "158282161 158282276 158282689 158282804 158281047 158281295 158283950 158284199")
-#' parseMatsMXE(junctions, strand = "+")
+#' psichomics:::parseMatsMXE(junctions, strand = "+")
 parseMatsMXE <- function(junctions, strand) {
     coords <- c("A1.start", "A1.end",
                 "A2.start", "A2.end",
@@ -150,7 +150,7 @@ parseMatsMXE <- function(junctions, strand) {
 #' # Parse intron retention event
 #' junctions <- read.table(text=
 #'     "15929853 15932100 15929853 15930016 15930687 15932100")
-#' parseMatsRI(junctions, strand = "+")
+#' psichomics:::parseMatsRI(junctions, strand = "+")
 parseMatsRI <- function(junctions, strand) {
     coords <- c("C1.start", "C1.end",
                 "C2.start", "C2.end")
@@ -165,7 +165,7 @@ parseMatsRI <- function(junctions, strand) {
 #' # Parse alternative 3' splicing site event
 #' junctions <- read.table(text=
 #'     "79685787 79685910 79685796 79685910 79679566 79679751")
-#' parseMatsA3SS(junctions, strand = "+")
+#' psichomics:::parseMatsA3SS(junctions, strand = "+")
 parseMatsA3SS <- function(junctions, strand) {
     coords <- c("C1.start", "C1.end",
                 "A1.start",
@@ -181,7 +181,7 @@ parseMatsA3SS <- function(junctions, strand) {
 #' # Parse alternative 5' splicing site event
 #' junctions <- read.table(text=
 #'     "102884421 102884501 102884421 102884489 102884812 102885881")
-#' parseMatsA5SS(junctions, strand = "+")
+#' psichomics:::parseMatsA5SS(junctions, strand = "+")
 parseMatsA5SS <- function(junctions, strand) {
     coords <- c("C1.start", "C1.end",
                             "A1.end",
@@ -197,7 +197,7 @@ parseMatsA5SS <- function(junctions, strand) {
 #' # Parse alternative first exon event
 #' junctions <- read.table(text=
 #'     "16308723 16308879 16308967 16309119 16314269 16314426")
-#' parseMatsAFE(junctions, strand = "+")
+#' psichomics:::parseMatsAFE(junctions, strand = "+")
 parseMatsAFE <- function(junctions, strand) {
     coords <- c("C1.start", "C1.end",
                 "A1.start", "A1.end",
@@ -213,7 +213,7 @@ parseMatsAFE <- function(junctions, strand) {
 #' # Parse alternative last exon event
 #' junctions <- read.table(text=
 #'     "111858645 111858828 111851063 111851921 111850441 111850543")
-#' parseMatsAFE(junctions, strand = "+")
+#' psichomics:::parseMatsAFE(junctions, strand = "+")
 parseMatsALE <- function(junctions, strand) {
     coords <- c("C1.start", "C1.end",
                 "A1.start", "A1.end",
