@@ -14,7 +14,6 @@ NULL
 #'
 #' @return List with the event attributes (chromosome, strand, event type and
 #' the position of the exon boundaries)
-#' @export
 #'
 #' @examples
 #' event <- read.table(text = 
@@ -98,7 +97,6 @@ parseVastToolsEvent <- function(event) {
 #' @seealso \code{\link{parseVastToolsEvent}}
 #'
 #' @return List of parsed junctions
-#' @export
 #'
 #' @examples
 #' junctions <- read.table(text = "41040823 41046768 41046903 41051785")
@@ -131,7 +129,6 @@ parseVastToolsSE <- function (junctions) {
 #' @rdname parseVastToolsSE
 #' @param strand Character: positive (+) or negative (-) strand
 #'
-#' @export
 #' @examples 
 #' 
 #' junctions <- read.table(text = "58864658 58864693 58864294 58864563")
@@ -157,7 +154,6 @@ parseVastToolsRI <- function (junctions, strand) {
 
 #' @rdname parseVastToolsSE
 #'
-#' @export
 #' @examples 
 #' 
 #' junctions <- rbind(
@@ -199,7 +195,6 @@ parseVastToolsA3SS <- function (junctions) {
 
 #' @rdname parseVastToolsSE
 #'
-#' @export
 #' @examples 
 #' 
 #' junctions <- rbind(

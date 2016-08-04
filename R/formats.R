@@ -8,7 +8,6 @@
 #' @param filename Character: name of the file
 #'
 #' @return TRUE if the file is of the given format; otherwise, returns FALSE
-#' @export
 checkFileFormat <- function(format, head, filename) {
     # If file name is of importance, check if the filename matches
     if (isTRUE(format$matchName) &&
@@ -44,7 +43,6 @@ checkFileFormat <- function(format, head, filename) {
 #' @importFrom data.table fread
 #' 
 #' @return Data frame with the loaded file
-#' @export
 loadFile <- function(format, file) {
     ## TODO(NunoA): account for the comment character
     delim <- ifelse(!is.null(format$delim), format$delim, "\t")
@@ -145,7 +143,6 @@ loadFileFormats <- function() {
 #' 
 #' @return Data frame with the contents of the given file if the file format is
 #' recognised; otherwise, returns NULL
-#' @export
 parseValidFile <- function(file, formats) {
     # The number of rows to read will be the maximum value asked by all the file
     # formats; if no format aks for a specific number of rows, the default is 6

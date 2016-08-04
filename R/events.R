@@ -14,7 +14,6 @@ NULL
 #' @param id Character: events' ID
 #' 
 #' @return A data frame with the junctions coordinate names pre-filled with NAs
-#' @export
 #' 
 #' @examples
 #' createJunctionsTemplate(nrow = 8)
@@ -155,7 +154,6 @@ parseVastToolsAnnotation <- function(annot) {
 
 #' Returns the coordinates of interest for a given event type
 #' @param type Character: alternative splicing event type
-#' @export
 getCoordinates <- function(type) {
     switch(type,
            "SE"   = c("C1.end", "A1.start", "A1.end", "C2.start"),
@@ -170,7 +168,6 @@ getCoordinates <- function(type) {
 }
 
 #' Get the annotation for all event types
-#' @export
 getParsedAnnotation <- function() {
     print("Retrieving MISO annotation...")
     annot <- getMisoAnnotation()
@@ -217,7 +214,6 @@ getParsedAnnotation <- function() {
 #' @param toNumeric Boolean: which columns to convert to numeric (FALSE by 
 #' default)
 #' 
-#' @export 
 #' @examples
 #' event <- read.table(text = "ABC123 + 250 300 350
 #'                             DEF456 - 900 800 700")
@@ -249,7 +245,6 @@ getNumerics <- function(table, by = NULL, toNumeric = FALSE) {
 #' @param types Character: alternative splicing types
 #' 
 #' @importFrom dplyr full_join
-#' @export
 joinAnnotation <- function(annotation, types) {
     if (missing(types)) types <- names(annotation)
     joint <- lapply(types, function(type, annotation) {
@@ -292,7 +287,6 @@ joinAnnotation <- function(annotation, types) {
 #' @importFrom utils write.table
 #' 
 #' @return Invisible TRUE if everything's okay
-#' @export
 writeAnnotation <- function(jointEvents, eventType,
                             filename = paste0("data/annotation_",
                                               eventType, ".txt"),
@@ -334,7 +328,6 @@ writeAnnotation <- function(jointEvents, eventType,
 #' @importFrom utils read.table
 #' 
 #' @return Data frame with the annotation
-#' @export
 readAnnotation <- function(eventType, filename, rds = TRUE) {
     if (missing(filename)) {
         filename <- file.path("data", paste0("annotation_", eventType))
@@ -359,8 +352,6 @@ readAnnotation <- function(eventType, filename, rds = TRUE) {
 #' @importFrom gplots venn
 #' 
 #' @return Venn diagram
-#' 
-#' @export
 vennEvents <- function(join, eventType) {
     join <- join[[eventType]]
     
@@ -400,7 +391,6 @@ junctionString <- function(chr, strand, junc5, junc3) {
 #' 
 #' @importFrom fastmatch fmatch
 #' @return Matrix with inclusion levels
-#' @export
 calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                                      minReads = 0) {
     chr <- annotation$Chromosome

@@ -48,7 +48,6 @@ getDataRows <- function(i, data, firstRow, lastRow) {
 #' @importFrom fastmatch fmatch
 #'
 #' @return Data frame of the matching events (or NA when nothing is matched)
-#' @export
 #'
 #' @examples
 #' eventID <- c("2217@uc002poi.1@uc002poe.1", "57705@uc009xob.1@uc001jgy.2")
@@ -91,7 +90,6 @@ parseMisoEventID <- function(eventID, annotation, IDcolumn) {
 #' elements \code{c("gene", "mRNA", "exon", "exon", "exon")}.
 #'
 #' @return Data.frame with valid events
-#' @export
 #'
 #' @examples
 #' event <- read.table(text = "
@@ -179,7 +177,6 @@ getValidEvents <- function(event, validator, areMultipleExonsValid = FALSE) {
 #'
 #' @return List with event attributes and junction positions for the exons
 #' (depends on the events)
-#' @export
 #'
 #' @examples
 #' # example of alternative splicing event: skipped exon (SE)
@@ -231,7 +228,6 @@ parseMisoEvent <- function(event) {
 #' @seealso \code{\link{parseMisoEvent}}
 #'
 #' @return List of parsed junctions
-#' @export
 parseMisoGeneric <- function(event, validator, eventType, coord, plusIndex, 
                              minusIndex) {
     # Filter out events that aren't valid
@@ -288,7 +284,6 @@ parseMisoId <- function(id) {
 }
 
 #' @rdname parseMisoGeneric
-#' @export
 #' @examples
 #' # skipping exon event (SE)
 #' event <- read.table(text = "
@@ -314,7 +309,6 @@ parseMisoSE <- function(event) {
 }
 
 #' @rdname parseMisoGeneric
-#' @export
 #' @examples
 #' 
 #' # mutually exclusive exon (MXE) event
@@ -344,7 +338,6 @@ parseMisoMXE <- function(event) {
 
 #' @rdname parseMisoGeneric
 #' @param strand Character: "+" or "-" strand
-#' @export
 #' @examples
 #'
 #' # intron retention (RI) event
@@ -368,7 +361,6 @@ parseMisoRI <- function(event, strand) {
 }
 
 #' @rdname parseMisoGeneric
-#' @export
 #' @examples
 #'
 #' # alternative 5' splice site (A5SS) event
@@ -394,7 +386,6 @@ parseMisoA5SS <- function(event) {
 }
 
 #' @rdname parseMisoGeneric
-#' @export
 #' @examples
 #'
 #' # alternative 3' splice site (A3SS) event
@@ -420,7 +411,6 @@ parseMisoA3SS <- function(event, plusIndex, minusIndex) {
 }
 
 #' @rdname parseMisoGeneric
-#' @export
 #' @examples
 #'
 #' # Tandem UTR event
@@ -443,7 +433,6 @@ parseMisoTandemUTR <- function(event, minusIndex) {
 }
 
 #' @rdname parseMisoGeneric
-#' @export
 #' @examples
 #'
 #' # alternative first exon (AFE) event
@@ -564,7 +553,6 @@ parseMisoAFE <- function(event) {
 }
 
 #' @rdname parseMisoGeneric
-#' @export
 #' @examples
 #'
 #' # alternative last exon (ALE) event

@@ -234,7 +234,6 @@ setClinicalMatchFrom <- function(dataset, matches, category = getCategory())
 #' @param word Character to trim
 #'
 #' @return Character without whitespace
-#' @export
 #'
 #' @examples
 #' trimWhitespace("    hey   there     ")
@@ -254,7 +253,6 @@ trimWhitespace <- function(word) {
 #' @return Filtered vector or list with no NULL elements; if the input is a
 #' vector composed of only NULL elements, it returns a NULL (note that it will
 #' returns an empty list if the input is a list with only NULL elements)
-#' @export
 rm.null <- function(v) Filter(Negate(is.null), v)
 
 #' Escape symbols for use in regular expressions
@@ -262,7 +260,6 @@ rm.null <- function(v) Filter(Negate(is.null), v)
 #' @param ... Characters to be pasted with no space
 #' 
 #' @return Escaped string
-#' @export
 escape <- function(...) {
     # return(gsub("/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]", "\\$&", string))
     return(gsub("(\\W)", "\\\\\\1", paste0(...)))
@@ -277,7 +274,6 @@ escape <- function(...) {
 #'
 #' @return Character vector with renamed values if duplicated; else, it
 #' returns the usual values. Doesn't return the comparator values.
-#' @export
 #'
 #' @examples
 #' renameDuplicated(check = c("blue", "red"), comp = c("green", "blue"))
@@ -314,7 +310,6 @@ renameDuplicated <- function(check, comp) {
 #'
 #' @return Integer vector of the row number in clinical data corresponding to 
 #' the given IDs (named with the ID)
-#' @export
 matchIdWithClinical <- function(ids, clinical) {
     # All IDs are lower case in the clinical data
     ids <- tolower(ids)
@@ -364,7 +359,6 @@ getMatchingRowNames <- function(selected, groups, matches) {
 #' 
 #' @return Character vector where each element corresponds to the group of a
 #' clinical patient
-#' @export
 groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE, 
                             outerGroupName="(Outer data)",
                             allDataName="All data") {
@@ -398,7 +392,6 @@ groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE,
 #' @importFrom shiny renderUI div icon
 #' @importFrom shinyBS toggleModal
 #' @seealso showAlert
-#' @export
 showModal <- function(session, title, ..., style = NULL,
                       iconName = "exclamation-circle", footer = NULL,
                       printMessage = FALSE, size = NULL,
@@ -412,21 +405,18 @@ showModal <- function(session, title, ..., style = NULL,
 }
 
 #' @rdname showModal
-#' @export
 errorModal <- function(session, title, ..., size = "small", footer = NULL) {
     showModal(session, title, ..., footer=footer, style = "error", size = size,
               printMessage = FALSE, iconName = "times-circle")
 }
 
 #' @rdname showModal
-#' @export
 warningModal <- function(session, title, ..., size = "small", footer = NULL) {
     showModal(session, title, ..., footer=footer, style="warning", size = size,
               printMessage = FALSE, iconName = "exclamation-circle")
 }
 
 #' @rdname showModal
-#' @export
 infoModal <- function(session, title, ..., size = "small", footer = NULL) {
     showModal(session, title, ..., footer=footer, style = "info", size = size,
               printMessage = FALSE, iconName = "info-circle")
@@ -447,7 +437,6 @@ infoModal <- function(session, title, ..., size = "small", footer = NULL) {
 #' 
 #' @seealso showModal
 #' @importFrom shiny span h3 renderUI div tagList
-#' @export
 showAlert <- function(session, ..., title=NULL, style=NULL, dismissable=TRUE, 
                       alertId="alert") {
     ns <- session$ns
@@ -527,8 +516,6 @@ getSampleTypes <- function(sample,
 #' @param divisions Integer: number of divisions in the progress bar
 #' @param global Shiny's global variable
 #' @importFrom shiny Progress
-#' 
-#' @export
 startProgress <- function(message, divisions, global = sharedData) {
     print(message)
     global$progress.divisions <- divisions
@@ -548,8 +535,6 @@ startProgress <- function(message, divisions, global = sharedData) {
 #' @param max Integer: maximum progress value
 #' @param detail Character: detailed message
 #' @param console Boolean: print message to console? (TRUE by default)
-#' 
-#' @export
 updateProgress <- function(message="Hang in there", value=NULL, max=NULL,
                            detail=NULL, divisions=NULL, 
                            global=sharedData, console=TRUE) {
@@ -581,8 +566,6 @@ updateProgress <- function(message="Hang in there", value=NULL, max=NULL,
 #' 
 #' @param message Character: message to show in progress bar
 #' @param global Global Shiny variable where all data is stored
-#' 
-#' @export
 closeProgress <- function(message=NULL, global = sharedData) {
     # Close the progress even if there's an error
     if (!is.null(message)) print(message)

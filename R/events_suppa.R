@@ -25,7 +25,6 @@ NULL
 #'
 #' @return List with the event attributes (chromosome, strand, event type and
 #' the position of the exon boundaries)
-#' @export
 #'
 #' @examples
 #' event <- "ENSG00000000419;A3:20:49557492-49557642:49557470-49557642:-"
@@ -95,7 +94,6 @@ parseSuppaEvent <- function(event) {
 #' @seealso \code{\link{parseSuppaEvent}}
 #'
 #' @return Data frame of parsed junctions
-#' @export
 #' 
 #' @examples
 #' # Parse generic event (in this case, a skipping exon event)
@@ -115,7 +113,6 @@ parseSuppaGeneric <- function(junctions, strand, coords, plus_pos, minus_pos) {
 }
 
 #' @rdname parseSuppaGeneric
-#' @export
 #'
 #' @examples
 #' 
@@ -131,7 +128,6 @@ parseSuppaSE <- function (junctions, strand) {
 }
 
 #' @rdname parseSuppaGeneric
-#' @export
 #' 
 #' @examples 
 #' 
@@ -146,7 +142,6 @@ parseSuppaRI <- function (junctions, strand) {
 }
 
 #' @rdname parseSuppaGeneric
-#' @export
 #' @examples 
 #' 
 #' junctions <- read.table(
@@ -162,7 +157,6 @@ parseSuppaALE <- function (junctions, strand) {
 }
 
 #' @rdname parseSuppaGeneric
-#' @export
 #' @examples 
 #' 
 #' junctions <- read.table(
@@ -178,7 +172,6 @@ parseSuppaAFE <- function (junctions, strand) {
 }
 
 #' @rdname parseSuppaGeneric
-#' @export
 #' @examples 
 #' 
 #' junctions <- read.table(
@@ -195,7 +188,6 @@ parseSuppaMXE <- function (junctions, strand) {
 }
 
 #' @rdname parseSuppaGeneric
-#' @export
 #' @examples 
 #' 
 #' junctions <- read.table(text = "169772450 169773216 169772450 169773253")
@@ -208,7 +200,6 @@ parseSuppaA3SS <- function (junctions, strand) {
 }
 
 #' @rdname parseSuppaGeneric
-#' @export
 #' @examples 
 #' 
 #' junctions <- read.table(text = "50193276 50197008 50192997 50197008")
