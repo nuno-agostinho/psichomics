@@ -1,20 +1,10 @@
-# createLink <- function(val) {
-#     id <- gsub(" ", "_", val)
-#     js <- 'document.getElementById(\'%s\').selectize.setValue(\'%s\')'
-#
-#     onclick <- paste(sprintf(js, objectId(name, "selectizePlot"), "plot4"),
-#                      sprintf(js, objectId(name, "selectizeEvent"), id),
-#                      sep = "; ")
-#
-#     html <- paste('<a id="%s" title="Get more information about this event"',
-#                   'href="#" onclick="%s">%s</a>')
-#     link <- sprintf(html, id, onclick, val)
-#     return(link)
-# }
-
 #' Splicing event types available
 #' @return Named character vector with splicing event types
-getSplicingEventChoices <- function() {
+#' @export
+#' 
+#' @examples 
+#' getSplicingEventTypes()
+getSplicingEventTypes <- function() {
     c("Skipping exon (SE)" = "SE",
       "Mutually exclusive exons (MXE)" = "MXE",
       "Alternative 5' Splice Site (A5SS)" = "A5SS",
@@ -44,7 +34,7 @@ inclusionLevelsInterface <- function(ns) {
                        choices=c("Human (hg19/GRCh37)"=
                                      "hg19_splicingAnnotation.RDS")),
         selectizeInput(ns("eventType"), "Event type(s)", selected = "SE",
-                       choices=getSplicingEventChoices(), multiple = TRUE),
+                       choices=getSplicingEventTypes(), multiple = TRUE),
         numericInput(ns("minReads"), div("Minimum reads threshold",
                                          icon("question-circle")), value = 10),
         bsTooltip(ns("minReads"), placement = "right", 
@@ -67,6 +57,58 @@ inclusionLevelsUI <- function(id, panel) {
           inclusionLevelsInterface(ns))
 }
 
+#' Quantify alternative splicing events
+#' 
+#' @param annotation List of data frames: annotation for each alternative
+#' splicing event type
+#' @param junctionQuant Data frame: junction quantification
+#' @param eventType Character: splicing event types to quantify
+#' @param minReads Integer: minimum of read counts to consider a junction read 
+#' in calculations
+#' @param progress Function to track the progess
+#' 
+#' @return Data frame with the quantification of the alternative splicing events
+#' @export
+#' 
+#' @examples 
+#' \dontrun{
+#' annotation <- readRDS(system.file("extdata", "hg19_splicingAnnotation.RDS",
+#'                       package="psichomics"))
+#'                       
+#' data <- loadFirehoseData(cohort = "ACC", data=c("Clinical", 
+#'                                                 "junction_quantification"))
+#' junctionQuant <- data[[1]]$`Junction quantification (Illumina HiSeq)`
+#'                       
+#' # Check splicing event types that can be calculated
+#' getSplicingEventTypes()
+#' 
+#' eventType <- c("SE", "A5SS")
+#' quantifySplicing(annotation, junctionQuant, eventType, minReads=10)
+#' }
+quantifySplicing <- function(annotation, junctionQuant, eventType="SE", 
+                             minReads=10, progress=printPaste) {
+    psi <- NULL
+    for (i in seq_along(eventType)) {
+        type <- eventType[[i]]
+        progress("Calculating inclusion levels",
+                 names(getSplicingEventTypes())[[i]], value = i, 
+                 max = length(eventType))
+        
+        if (i == "AFE") 
+            annotation$AFE <- annotation$AFE[!is.na(annotation$AFE$C2.start), ]
+        if (i == "ALE") 
+            annotation$ALE <- annotation$ALE[!is.na(annotation$ALE$C1.end), ]
+        psi <- rbind(psi, calculateInclusionLevels(
+            type, junctionQuant, annotation[[type]], minReads))
+    }
+    attr(psi, "rowNames") <- TRUE
+    attr(psi, "description") <- paste("Exon and intron inclusion levels",
+                                      "for any given alternative splicing",
+                                      "event.")
+    attr(psi, "dataType") <- "Inclusion levels"
+    return(psi)
+}
+
 #' Server logic of the alternative splicing event quantification module
 #' 
 #' @param input Shiny input
@@ -76,49 +118,6 @@ inclusionLevelsUI <- function(id, panel) {
 #' @importFrom shiny reactive observeEvent
 inclusionLevelsServer <- function(input, output, session) {
     ns <- session$ns
-    levels <- reactive({
-        eventType <- input$eventType
-        minReads  <- input$minReads
-        
-        if (is.null(eventType) || is.null(minReads)) return(NULL)
-        
-        # Read annotation
-        startProgress("Reading alternative splicing annotation", divisions = 3)
-        annot <- readRDS(system.file("extdata", input$annotation,
-                                     package = "psichomics"))
-        
-        # Set species and assembly version
-        if (grepl("Human", "Human (hg19/GRCh37)")) setSpecies("Human")
-        if (grepl("hg19", "Human (hg19/GRCh37)")) setAssemblyVersion("hg19")
-        
-        # Calculate inclusion levels with annotation and junction quantification
-        updateProgress("Calculating inclusion levels")
-        junctionQuant <- getJunctionQuantification()[[input$junctionQuant]]
-        
-        psi <- NULL
-        for (i in seq_along(eventType)) {
-            type <- eventType[[i]]
-            updateProgress("Calculating inclusion levels", 
-                           names(getSplicingEventChoices())[[i]], value = i, 
-                           max = length(eventType))
-            
-            if (i == "AFE") annot$AFE <- annot$AFE[!is.na(annot$AFE$C2.start), ]
-            if (i == "ALE") annot$ALE <- annot$ALE[!is.na(annot$ALE$C1.end), ]
-            psi <- rbind(psi, calculateInclusionLevels(type, junctionQuant,
-                                                       annot[[type]], minReads))
-        }
-        attr(psi, "rowNames") <- TRUE
-        attr(psi, "description") <- paste("Exon and intron inclusion levels",
-                                          "for any given alternative splicing",
-                                          "event.")
-        attr(psi, "dataType") <- "Inclusion levels"
-        setInclusionLevels(psi)
-        
-        updateProgress("Matching clinical data")
-        match <- matchIdWithClinical(colnames(psi), getClinicalData())
-        setClinicalMatchFrom("Inclusion levels", match)
-        closeProgress()
-    })
     
     observeEvent(input$takeMeThere, missingDataGuide("Junction quantification"))
     
@@ -133,11 +132,40 @@ inclusionLevelsServer <- function(input, output, session) {
     })
     
     observeEvent(input$calcIncLevels, {
-        if(is.null(getData()) || is.null(getJunctionQuantification()))
+        if(is.null(getData()) || is.null(getJunctionQuantification())) {
             missingDataModal(session, "Junction quantification",
                              ns("takeMeThere"))
-        else
-            levels()
+        } else {
+            eventType <- input$eventType
+            minReads  <- input$minReads
+            
+            if (is.null(eventType) || is.null(minReads)) return(NULL)
+            
+            # Read annotation
+            startProgress("Reading alternative splicing annotation",
+                          divisions = 3)
+            annot <- readRDS(system.file("extdata", input$annotation, 
+                                         package="psichomics"))
+            
+            # Set species and assembly version
+            if (grepl("Human", "Human (hg19/GRCh37)")) setSpecies("Human")
+            if (grepl("hg19", "Human (hg19/GRCh37)")) setAssemblyVersion("hg19")
+            
+            junctionQuant <- getJunctionQuantification()[[input$junctionQuant]]
+            
+            # Calculate inclusion levels with annotation and junction
+            # quantification
+            updateProgress("Calculating inclusion levels")
+            psi <- quantifySplicing(annot, junctionQuant, eventType, 
+                                    minReads, progress=updateProgress)
+            setInclusionLevels(psi)
+            
+            updateProgress("Matching clinical data")
+            match <- matchIdWithClinical(colnames(psi), getClinicalData())
+            setClinicalMatchFrom("Inclusion levels", match)
+            
+            closeProgress()
+        }
     })
 }
 

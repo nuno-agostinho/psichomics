@@ -15,6 +15,6 @@ Query the Firehose API for the datestamps of the data available and parse the
 response
 }
 \examples{
-getFirehoseDates()
+if (isFirehoseUp()) getFirehoseDates()
 }
 

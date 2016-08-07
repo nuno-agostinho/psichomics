@@ -89,6 +89,41 @@ analysesUI <- function(id, tab) {
     )
 }
 
+#' Test the survival difference between two survival groups given a cutoff
+#' 
+#' @inheritParams processSurvTerms
+#' @param cutoff Numeric: Cut-off of interest
+#' @param data Numeric: elements of interest to test against the cut-off
+#' @param group Pre-filled vector of missing values with the length of data
+#' @param filter Boolean or numeric: interest of the data elements
+#' @param ... Arguments to pass to \code{processSurvTerms}
+#' @param session Shiny session
+#' @param modals Boolean: show error dialogs? TRUE by default
+#' 
+#' @importFrom survival survdiff
+#' @return p-value of the survival difference
+testSurvivalCutoff <- function(cutoff, data, filter, ..., group=NULL, 
+                               session=NULL) {
+    if (is.null(group)) groups <- rep(NA, nrow(clinical))
+    group[filter] <- data >= cutoff
+    
+    # Assign a value based on the inclusion levels cut-off
+    group[group == "TRUE"]  <- paste("Inclusion levels >=", cutoff)
+    group[group == "FALSE"] <- paste("Inclusion levels <", cutoff)
+    
+    # Calculate survival curves
+    if (!is.null(session)) {
+        survTerms <- processSurvival(session, group, ...)
+        if (is.null(survTerms)) return(NULL)
+    } else {
+        survTerms <- tryCatch(processSurvTerms(group, ...), error=return)
+        if ("simpleError" %in% class(survTerms)) return(NA)
+    }
+    
+    pvalue <- testSurvival(survTerms$form, data=survTerms$survTime)
+    return(pvalue)
+}
+
 #' Server logic for the analyses
 #' @param input Shiny input
 #' @param output Shiny ouput

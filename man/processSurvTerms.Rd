@@ -4,25 +4,25 @@
 \alias{processSurvTerms}
 \title{Process survival curves terms to calculate survival curves}
 \usage{
-processSurvTerms(group, clinical, censoring, timeStart, timeStop, dataEvent,
-  modelTerms, formulaStr = NULL, coxph = FALSE, scale = "days")
+processSurvTerms(clinical, censoring, event, timeStart, timeStop,
+  group = NULL, formulaStr = NULL, coxph = FALSE, scale = "days")
 }
 \arguments{
-\item{group}{Character: group of each individual}
-
 \item{clinical}{Data frame: clinical data}
 
 \item{censoring}{Character: censor using "left", "right", "interval" or
 "interval2"}
 
-\item{timeStart}{Numeric: starting time}
+\item{event}{Character: name of column containing time of the event of
+interest}
 
-\item{timeStop}{Numeric: ending time (needed only for interval-censored data)}
+\item{timeStart}{Character: name of column containing starting time of the
+interval or follow up time}
 
-\item{dataEvent}{Character: event of interest}
+\item{timeStop}{Character: name of column containing ending time of the 
+interval}
 
-\item{modelTerms}{Character: use "groups", "formula" or "psiCutoff" for the 
-survival curves?}
+\item{group}{Character: group of each individual}
 
 \item{formulaStr}{Character: formula to use}
 
@@ -31,6 +31,9 @@ by default}
 
 \item{scale}{Character: rescale the survival time to "days", "weeks",
 "months" or "years"}
+
+\item{modelTerms}{Character: use "groups", "formula" or "psiCutoff" for the 
+survival curves?}
 }
 \value{
 A list with a \code{formula} object and a data frame with terms
@@ -38,5 +41,9 @@ needed to calculate survival curves
 }
 \description{
 Process survival curves terms to calculate survival curves
+}
+\details{
+\code{timeStop} is only considered if \code{censoring} is either
+\code{interval} or \code{interval2}
 }
 

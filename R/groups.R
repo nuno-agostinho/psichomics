@@ -57,7 +57,7 @@ selectGroupsServer <- function(session, id, datasetName) {
     
     # Update groups shown in the interface
     observe({
-        groups <- getGroupsFrom(datasetName)[, "Names"]
+        groups <- names(getGroupsFrom(datasetName))
         # Not possible to update select values with NULL
         if (is.null(groups)) groups <- list()
         updateSelectizeInput(session, id, choices=groups, selected=groups)
@@ -323,7 +323,7 @@ groupsServer <- function(input, output, session, datasetName) {
     observeEvent(input$createGroup, {
         removeAlert(output)
         
-        groups <- getGroupsFrom(datasetName)
+        groups <- getGroupsFrom(datasetName, full=TRUE)
         new <- createGroupFromInput(session, input, output, 
                                     getCategoryData()[[datasetName]],
                                     datasetName)
@@ -339,7 +339,7 @@ groupsServer <- function(input, output, session, datasetName) {
     
     # Render groups list and show interface to manage groups
     output$groupsTable <- renderDataTable({
-        groups <- getGroupsFrom(datasetName)
+        groups <- getGroupsFrom(datasetName, full=TRUE)
         
         # Show groups only if there is at least one group
         if (!is.null(groups) && nrow(groups) > 0) {
@@ -397,7 +397,7 @@ groupsServer <- function(input, output, session, datasetName) {
             symbol <- sharedData$groupSymbol
             
             # Get groups from the dataset
-            groups <- getGroupsFrom(datasetName)
+            groups <- getGroupsFrom(datasetName, full=TRUE)
             
             # Create new set
             new <- NULL
@@ -433,7 +433,7 @@ groupsServer <- function(input, output, session, datasetName) {
     
     # Render groups interface only if at least one group exists
     output$groupsList <- renderUI({
-        groups <- getGroupsFrom(datasetName)
+        groups <- getGroupsFrom(datasetName, full=TRUE)
         
         operationButton <- function(operation, operationId, ...) {
             actionButton(paste(operationId, "button", sep="-"), operation, ...)

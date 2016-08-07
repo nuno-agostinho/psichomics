@@ -101,6 +101,7 @@ pcaUI <- function(id) {
 #' hc_plotOptions hc_xAxis hc_yAxis hc_legend hc_tooltip hc_exporting
 #' 
 #' @return Plot variance as an Highcharter object
+#' @export
 plotVariance <- function(pca) {
     sdevSq <- pca$sdev ^ 2
     
@@ -130,7 +131,6 @@ plotVariance <- function(pca) {
 #' Create a scatterplot from a PCA object
 #' 
 #' @param pca \code{prcomp} object
-#' @param perc Numeric: percentage of explained variance
 #' @param xAxis Character: name of the xAxis of interest from the PCA
 #' @param yAxis Character: name of the yAxis of interest from the PCA
 #' @param selected Character: selected groups to show
@@ -141,11 +141,15 @@ plotVariance <- function(pca) {
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip %>%
 #' hc_add_series_scatter
 #' @return Scatterplot as an Highcharter object
-plotPCA <- function(pca, perc, xAxis, yAxis, selected, clinical, match,
+plotPCA <- function(pca, pcX="PC1", pcY="PC2", selected=NULL, clinical, match,
                     individuals=TRUE, loadings=FALSE) {
-    label <- sprintf("%s (%s%% explained variance)", 
-                     names(perc[c(xAxis, yAxis)]), 
-                     roundDigits(perc[c(xAxis, yAxis)]*100))
+    imp <- summary(pca)$importance[2, ]
+    perc <- as.numeric(imp)
+    names(perc) <- names(imp)
+    
+    label <- sprintf("%s (%s%% explained variance)",
+                     names(perc[c(pcX, pcY)]), 
+                     roundDigits(perc[c(pcX, pcY)]*100))
     
     hc <- highchart() %>%
         hc_chart(zoomType = "xy") %>%
@@ -156,7 +160,7 @@ plotPCA <- function(pca, perc, xAxis, yAxis, selected, clinical, match,
     if (individuals) {
         df <- data.frame(pca$x)
         if (is.null(selected)) {
-            hc <- hc_add_series_scatter(hc, df[[xAxis]], df[[yAxis]], 
+            hc <- hc_add_series_scatter(hc, df[[pcX]], df[[pcY]], 
                                         sample=rownames(df))
         } else {
             # Subset data by the selected clinical groups
@@ -164,18 +168,16 @@ plotPCA <- function(pca, perc, xAxis, yAxis, selected, clinical, match,
             for (groupName in selected) {
                 rows <- getMatchingRowNames(groupName, clinical, match)
                 rows <- rownames(df)[lowerNames %in% tolower(rows)]
-                hc <- hc_add_series_scatter(hc, df[rows, xAxis], 
-                                            df[rows, yAxis],
-                                            name=groupName, 
-                                            sample=rownames(df[rows, ]),
-                                            showInLegend=TRUE)
+                hc <- hc_add_series_scatter(
+                    hc, df[rows, pcX], df[rows, pcY], name=groupName, 
+                    sample=rownames(df[rows, ]), showInLegend=TRUE)
             }
         }
     }
     if (loadings) {
         m <- data.frame(pca$rotation)
         # For loadings, add series (but don't add to legend)
-        hc <- hc_add_series_scatter(hc, m[[xAxis]], m[[yAxis]])
+        hc <- hc_add_series_scatter(hc, m[[pcX]], m[[pcY]])
     }
     return(hc)
 }
@@ -216,30 +218,32 @@ pcaServer <- function(input, output, session) {
         if (is.null(psi)) {
             missingDataModal(session, "Inclusion levels", ns("takeMeThere"))
         } else {
-            # Subset data by the selected clinical groups
-            selected <- isolate(input$dataGroups)
-            if (!is.null(selected)) {
-                clinical <- isolate(getGroupsFrom("Clinical data"))
+            isolate({
+                selected <- input$dataGroups
+                clinical <- getGroupsFrom("Clinical data")
                 match <- getClinicalMatchFrom("Inclusion levels")
+                
+                preprocess <- input$preprocess
+                naTolerance <- input$naTolerance
+            })
+            
+            # Subset data by the selected clinical groups
+            if (!is.null(selected)) {
                 ns <- getMatchingRowNames(selected, clinical, match)
                 psi <- psi[ , ns]
             }
             
             # Raise error if data has no rows
-            if (nrow(psi) == 0)
+            if (nrow(psi) == 0) {
                 errorModal(session, "No data!", paste(
                     "Calculation returned nothing. Check if everything is as",
                     "expected and try again."))
+            }
             
             # Transpose the data to have individuals as rows
             psi <- t(psi)
             
             # Perform principal component analysis (PCA) on the subset data
-            isolate({
-                preprocess <- input$preprocess
-                naTolerance <- input$naTolerance
-            })
-            
             pca <- performPCA(psi, naTolerance = naTolerance,
                               center = "center" %in% preprocess,
                               scale. = "scale" %in% preprocess)
@@ -252,14 +256,13 @@ pcaServer <- function(input, output, session) {
     })
     
     # Show variance plot
-    observeEvent(input$showVariancePlot, {
+    observeEvent(input$showVariancePlot,
         infoModal(session, "Variance plot", highchartOutput(ns("variancePlot")),
-                  size = "large")
-    })
+                  size = "large"))
     
     # Interface after performing PCA
     observe({
-        pca <- sharedData$inclusionLevelsPCA
+        pca <- isolate(sharedData$inclusionLevelsPCA)
         if (is.null(pca)) {
             if (input$plot > 0) {
                 errorModal(session, "No PCA performed",
@@ -277,7 +280,6 @@ pcaServer <- function(input, output, session) {
             label <- sprintf("%s (%s%% explained variance)", 
                              names(perc), roundDigits(perc * 100))
             choices <- setNames(names(perc), label)
-            groups <- getGroupsFrom("Clinical data")
             
             updateSelectizeInput(session, "pcX", choices=choices)
             updateSelectizeInput(session, "pcY", choices=choices, 
@@ -290,8 +292,8 @@ pcaServer <- function(input, output, session) {
         # Plot the principal component analysis
         observeEvent(input$plot, {
             isolate({
-                xAxis <- input$pcX
-                yAxis <- input$pcY
+                pcX <- input$pcX
+                pcY <- input$pcY
                 selected <- input$colourGroups
                 show <- input$plotShow
                 clinical <- getGroupsFrom("Clinical data")
@@ -299,8 +301,8 @@ pcaServer <- function(input, output, session) {
             })
             
             output$scatterplot <- renderHighchart(
-                if (!is.null(xAxis) & !is.null(yAxis))
-                    plotPCA(pca, perc, xAxis, yAxis, selected, clinical, match,
+                if (!is.null(pcX) & !is.null(pcY))
+                    plotPCA(pca, pcX, pcY, selected, clinical, match,
                             "Individuals" %in% show, "Loadings" %in% show))
         })
     })

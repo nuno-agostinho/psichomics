@@ -88,17 +88,20 @@ survivalUI <- function(id) {
 
 #' Process survival data to calculate survival curves
 #' 
-#' @param timeStart Numeric: starting time of the interval or follow up time
-#' @param timeStop Numeric: ending time of the interval
-#' @param event Numeric: time of the event of interest
+#' @param timeStart Character: name of column containing starting time of the
+#' interval or follow up time
+#' @param timeStop Character: name of column containing ending time of the 
+#' interval
+#' @param event Character: name of column containing time of the event of
+#' interest
 #' @param group Character: group of each individual
-#' @param clinical Data.frame: clinical data
+#' @param clinical Data frame: clinical data
 #' 
 #' @details The event time will only be used to determine whether the event has
 #' happened (1) or not in case of NAs (0)
 #' 
 #' @return Data frame with terms needed to calculate survival curves
-processSurvData <- function(timeStart, timeStop, event, group, clinical) {
+processSurvData <- function(event, timeStart, timeStop, group, clinical) {
     cols <- c(followup = "days_to_last_followup", start = timeStart,
               stop = timeStop, event = event)
     survTime <- lapply(cols, timePerPatient, clinical)
@@ -125,16 +128,15 @@ processSurvData <- function(timeStart, timeStop, event, group, clinical) {
 }
 
 #' Process survival curves terms to calculate survival curves
+#' 
+#' @details \code{timeStop} is only considered if \code{censoring} is either
+#' \code{interval} or \code{interval2}
 #'
-#' @param group Character: group of each individual 
-#' @param clinical Data frame: clinical data
+#' @inheritParams processSurvData
 #' @param censoring Character: censor using "left", "right", "interval" or
 #' "interval2"
-#' @param timeStart Numeric: starting time
-#' @param timeStop Numeric: ending time (needed only for interval-censored data)
 #' @param scale Character: rescale the survival time to "days", "weeks",
 #' "months" or "years"
-#' @param dataEvent Character: event of interest
 #' @param modelTerms Character: use "groups", "formula" or "psiCutoff" for the 
 #' survival curves?
 #' @param formulaStr Character: formula to use
@@ -146,9 +148,10 @@ processSurvData <- function(timeStart, timeStop, event, group, clinical) {
 #'
 #' @return A list with a \code{formula} object and a data frame with terms
 #' needed to calculate survival curves
-processSurvTerms <- function(group, clinical, censoring, timeStart, timeStop, 
-                             dataEvent, modelTerms, formulaStr=NULL, 
-                             coxph=FALSE, scale="days") {
+#' @export
+processSurvTerms <- function(clinical, censoring, event, timeStart, timeStop, 
+                             group=NULL, formulaStr=NULL, coxph=FALSE, 
+                             scale="days") {
     # Ignore timeStop if interval-censoring is not selected
     if (!grepl("interval", censoring, fixed=TRUE) || timeStop == "") 
         timeStop <- NULL
@@ -160,17 +163,13 @@ processSurvTerms <- function(group, clinical, censoring, timeStart, timeStop,
     scale <- switch(scale, days=1, weeks=7, months=30.42, years=365.25)
     formulaSurv <- sprintf(formulaSurv, scale)
     
-    survTime <- processSurvData(timeStart, timeStop, dataEvent, group, clinical)
+    survTime <- processSurvData(event, timeStart, timeStop, group, clinical)
     
     # Estimate survival curves by groups or using formula
-    if (modelTerms == "groups" || modelTerms == "psiCutoff") {
+    if (formulaStr == "" || is.null(formulaStr)) {
         formulaTerms <- "groups"
-    } else if (modelTerms == "formula") {
+    } else {
         formulaTerms <- formulaStr
-        
-        if (formulaTerms == "" || is.null(formulaTerms))
-            stop("The formula field can't be empty")
-        
         survTime <- cbind(survTime, clinical)
     }
     
@@ -257,11 +256,14 @@ processSurvival <- function(session, ...) {
 }
 
 #' Test the survival difference between survival groups
+#' 
 #' @param ... Arguments to pass to \code{survdiff}
 #' 
 #' @importFrom survival survdiff
+#' 
 #' @return p-value of the survival difference or NA any error occurs
-testSurvival <- function(...) {
+#' @export
+testSurvival <- function (...) {
     # If there's an error with survdiff, return NA
     pvalue <- tryCatch({
         # Test the difference between survival curves
@@ -274,41 +276,67 @@ testSurvival <- function(...) {
     return(pvalue)
 }
 
-#' Test the survival difference between two survival groups given a cutoff
+#' Plot survival curves
 #' 
+#' @param surv Survival object
+#' @param interval Boolean: show interval ranges? FALSE by default
+#' @param mark Boolean: mark times? TRUE by default
+#' @param title Character: plot title
+#' @param pvalue Numeric: p-value of the survival curves
+#' @param scale Character: time scale; default is "days"
+#' 
+#' @importFrom shiny tags br
+#' 
+#' @return Plot of survival curves
+#' @export
+plotSurvivalCurves <- function(surv, mark=TRUE, interval=FALSE, pvalue=NULL, 
+                               title="Survival analysis", scale="days") {
+    hc <- hchart(surv, ranges=interval, markTimes=mark) %>%
+        hc_chart(zoomType="xy") %>%
+        hc_title(text=title) %>%
+        hc_yAxis(title=list(text="Proportion of individuals")) %>%
+        hc_xAxis(title=list(text=paste("Time in", scale))) %>%
+        hc_tooltip(
+            headerFormat = paste(
+                tags$small("{point.x}", scale), br(),
+                span(style="color:{point.color}", "\u25CF "),
+                tags$b("{series.name}"), br()),
+            pointFormat = paste(
+                "Records: {series.options.records}", br(),
+                "Events: {series.options.events}", br(),
+                "Median: {series.options.median}")) %>%
+        hc_tooltip(crosshairs=TRUE) %>%
+        hc_plotOptions(series=list(stickyTracking=FALSE))
+    
+    if (!is.null(pvalue))
+        hc <- hc_subtitle(hc, text=paste("log-rank p-value:", pvalue))
+    return(hc)
+}
+
+#' Calculate optimal alternative splicing quantification cut-off to separate
+#' survival curves
+#'
+#' @details \code{timeStop} is only considered if \code{censoring} is either
+#' \code{interval} or \code{interval2}
+#'
 #' @inheritParams processSurvTerms
-#' @param cutoff Numeric: Cut-off of interest
-#' @param data Numeric: attribute of interest of the clinical data
-#' @param group Pre-filled vector of NAs with the length of data
-#' @param filter Boolean or numeric: interest of the data elements
-#' @param ... Arguments to pass to \code{processSurvTerms}
-#' @param session Shiny session
-#' @param modals Boolean: show error dialogs? TRUE by default
+#' @inheritParams testSurvivalCutoff
+#' @param session Shiny session (only used for the visual interface)
 #' 
-#' @importFrom survival survdiff
-#' @return p-value of the survival difference
-testSurvivalCutoff <- function(cutoff, data, group, filter, ..., session=NULL,
-                               modals=TRUE) {
-    group[filter] <- data >= cutoff
+#' @return Optimal alternative splicing quantification cut-off
+#' @export
+optimalPSIcutoff <- function(clinical, data, filter, censoring, event,
+                             timeStart, timeStop=NULL, session=NULL) {
+    groups <- rep(NA, nrow(clinical))
     
-    # Assign a value based on the inclusion levels cut-off
-    group[group == "TRUE"]  <- paste("Inclusion levels >=", cutoff)
-    group[group == "FALSE"] <- paste("Inclusion levels <", cutoff)
-    
-    # Calculate survival curves
-    if (modals) {
-        survTerms <- processSurvival(session, group, ...,
-                                     modelTerms="psiCutoff")
-        if (is.null(survTerms)) return(NULL)
-    } else {
-        survTerms <- tryCatch(processSurvTerms(group, ...,
-                                               modelTerms="psiCutoff"),
-                              error=return)
-        if ("simpleError" %in% class(survTerms)) return(NA)
-    }
-    
-    pvalue <- testSurvival(survTerms$form, data=survTerms$survTime)
-    return(pvalue)
+    # Supress warnings from failed calculations while optimising
+    opt <- suppressWarnings(
+        optim(0, testSurvivalCutoff, group=groups, data=data, filter=filter,
+              clinical=clinical, censoring=censoring, timeStart=timeStart, 
+              timeStop=timeStop, event=event, session=session,
+              # Method and parameters interval
+              method="Brent", lower=0, upper=1))
+    return(opt)
 }
 
 #' Server logic of survival analysis
@@ -358,7 +386,7 @@ survivalServer <- function(input, output, session) {
             clinical   <- getClinicalData()
             timeStart  <- input$timeStart
             timeStop   <- input$timeStop
-            dataEvent  <- input$event
+            event      <- input$event
             censoring  <- input$censoring
             outGroup   <- input$showOutGroup
             modelTerms <- input$modelTerms
@@ -366,107 +394,85 @@ survivalServer <- function(input, output, session) {
             intRanges  <- input$ranges
             markTimes  <- input$markTimes
             psi        <- getInclusionLevels()
-            event      <- getEvent()
+            splicingEvent <- getEvent()
             psiCutoff  <- input$psiCutoff
             scale      <- input$scale
             # Get chosen groups
-            chosen <- input$dataGroups
-            dataGroups <- getGroupsFrom("Clinical data")[chosen, , drop=FALSE]
+            dataGroups <- input$dataGroups
+            chosen <- getGroupsFrom("Clinical data")[dataGroups]
         })
         
         if (is.null(clinical)) {
             missingDataModal(session, "Clinical data", ns("missingClinical"))
-        } else {
-            if (modelTerms == "groups") {
-                # Assign one group for each clinical patient
-                fillGroups <- groupPerPatient(dataGroups, nrow(clinical),
-                                              outGroup)
-            } else if (modelTerms == "psiCutoff") {
-                if (is.null(psi)) {
-                    missingDataModal(session, "Inclusion levels",
-                                     ns("missingInclusionLevels"))
-                    return(NULL)
-                } else if (is.null(event)) {
-                    errorModal(session, "No event selected",
-                               "Select an alternative splicing event.")
-                    return(NULL)
-                }
-                
-                # Get tumour sample IDs (normal and control samples are not
-                # interesting for survival analysis)
-                match <- getClinicalMatchFrom("Inclusion levels")
-                types <- getSampleTypes(names(match))
-                tumour <- match[!grepl("Normal|Control", types)]
-                
-                # Group samples by the inclusion levels cut-off
-                clinicalIDs <- nrow(clinical)
-                groups <- rep(NA, clinicalIDs)
-                psi <- as.numeric(psi[event, toupper(names(tumour))])
-                groups[tumour] <- psi >= psiCutoff
-                
-                # Assign a value based on the inclusion levels cut-off
-                # groups[is.na(groups)] <- "NA"
-                groups[groups == "TRUE"]  <- paste("Inclusion levels >=",
-                                                   psiCutoff)
-                groups[groups == "FALSE"] <- paste("Inclusion levels <",
-                                                   psiCutoff)
-                fillGroups <- groups
-            } else {
-                fillGroups <- "All data"
-            }
-            
-            survTerms <- processSurvival(session, fillGroups, clinical,
-                                         censoring, timeStart, timeStop, 
-                                         dataEvent, modelTerms, formulaStr, 
-                                         scale=scale)
-            if (is.null(survTerms)) return(NULL)
-            surv <- tryCatch(survfit(survTerms$form, data=survTerms$survTime), 
-                             error = return)
-            if ("simpleError" %in% class(surv)) {
-                errorModal(session, "Formula error",
-                           "The following error was raised:", br(),
-                           tags$code(surv$message))
+        } else if (modelTerms == "groups") {
+            # Assign one group for each clinical patient
+            groups <- groupPerPatient(chosen, nrow(clinical), outGroup)
+            formulaStr <- NULL
+        } else if (modelTerms == "psiCutoff") {
+            if (is.null(psi)) {
+                missingDataModal(session, "Inclusion levels",
+                                 ns("missingInclusionLevels"))
+                return(NULL)
+            } else if (is.null(splicingEvent)) {
+                errorModal(session, "No event selected",
+                           "Select an alternative splicing event.")
                 return(NULL)
             }
             
-            pvalue <- testSurvival(survTerms$form, data=survTerms$survTime)
+            # Get tumour sample IDs (matched normal and control samples are not
+            # interesting for this survival analysis)
+            match <- getClinicalMatchFrom("Inclusion levels")
+            types <- parseSampleGroups(names(match))
+            tumour <- match[!grepl("Normal|Control", types)]
             
-            # Plot survival curves
-            if (modelTerms == "psiCutoff")
-                plotTitle <- event
-            else
-                plotTitle <- "Survival analysis"
+            # Retrieve numeric PSIs from tumour samples
+            eventPSI <- as.numeric(psi[splicingEvent, toupper(names(tumour))])
+            groups   <- rep(NA, nrow(clinical))
+            groups[tumour] <- eventPSI >= psiCutoff
             
-            hc <- hchart(surv, ranges=intRanges, markTimes=markTimes) %>%
-                hc_chart(zoomType="xy") %>%
-                hc_title(text=plotTitle) %>%
-                hc_subtitle(text=paste("log-rank p-value:", pvalue)) %>%
-                hc_yAxis(title=list(text="Proportion of individuals")) %>%
-                hc_xAxis(title=list(text=paste("Time in", scale))) %>%
-                hc_tooltip(
-                    headerFormat = paste(
-                        tags$small("{point.x}", scale), br(),
-                        span(style="color:{point.color}", "\u25CF "),
-                        tags$b("{series.name}"), br()),
-                    pointFormat = paste(
-                        "Records: {series.options.records}", br(),
-                        "Events: {series.options.events}", br(),
-                        "Median: {series.options.median}")) %>%
-                hc_tooltip(crosshairs=TRUE) %>%
-                hc_plotOptions(series=list(stickyTracking=FALSE))
-            
-            output$survival <- renderHighchart(hc)
+            # Assign a value based on the inclusion levels cut-off
+            # groups[is.na(groups)] <- "NA"
+            groups[groups == "TRUE"]  <- paste("Inclusion levels >=", psiCutoff)
+            groups[groups == "FALSE"] <- paste("Inclusion levels <", psiCutoff)
+            formulaStr <- NULL
+        } else {
+            groups <- NULL
         }
+        
+        survTerms <- processSurvival(session, clinical, censoring, event, 
+                                     timeStart, timeStop, groups, formulaStr, 
+                                     scale=scale)
+        if (is.null(survTerms)) return(NULL)
+        surv <- tryCatch(survfit(survTerms$form, data=survTerms$survTime), 
+                         error = return)
+        if ("simpleError" %in% class(surv)) {
+            errorModal(session, "Formula error",
+                       "The following error was raised:", br(),
+                       tags$code(surv$message))
+            return(NULL)
+        }
+        
+        pvalue <- testSurvival(survTerms$form, data=survTerms$survTime)
+        
+        if (modelTerms == "psiCutoff")
+            plotTitle <- splicingEvent
+        else
+            plotTitle <- "Survival analysis"
+        
+        # Plot survival curves
+        hc <- plotSurvivalCurves(surv, markTimes, intRanges, pvalue, plotTitle, 
+                                 scale)
+        output$survival <- renderHighchart(hc)
     })
     
-    # Plot cox model
+    # Fit Cox Proportional Hazards model
     observeEvent(input$coxModel, {
         isolate({
             # Get user input
             clinical   <- getClinicalData()
             timeStart  <- input$timeStart
             timeStop   <- input$timeStop
-            dataEvent  <- input$event
+            event      <- input$event
             censoring  <- input$censoring
             outGroup   <- input$showOutGroup
             modelTerms <- input$modelTerms
@@ -474,75 +480,78 @@ survivalServer <- function(input, output, session) {
             intRanges  <- input$ranges
             scale      <- input$scale
             # Get chosen groups
-            chosen <- input$dataGroups
-            dataGroups <- getGroupsFrom("Clinical data")[chosen, , drop=FALSE]
+            dataGroups <- input$dataGroups
+            chosen <- getGroupsFrom("Clinical data")[dataGroups]
         })
         
         if (is.null(clinical)) {
             missingDataModal(session, "Clinical data", ns("missingClinical"))
+            return(NULL)
+        } else if (modelTerms == "groups") {
+            # Assign one group for each clinical patient
+            groups <- groupPerPatient(chosen, nrow(clinical), outGroup)
+            formulaStr <- NULL
         } else {
-            if (modelTerms == "groups") {
-                # Assign one group for each clinical patient
-                dataGroups <- groupPerPatient(dataGroups, nrow(clinical),
-                                              outGroup)
-            } else {
-                dataGroups <- NULL
-            }
-            
-            # Calculate survival curves
-            survTerms <- processSurvival(session, dataGroups, clinical, 
-                                         censoring, timeStart, timeStop, 
-                                         dataEvent, modelTerms, formulaStr,
-                                         coxph=TRUE, scale=scale)
-            if (is.null(survTerms)) return(NULL)
+            groups <- NULL
+        }
+        
+        # Calculate survival curves
+        survTerms <- processSurvival(session, clinical, censoring, event,
+                                     timeStart, timeStop, groups, formulaStr, 
+                                     coxph=TRUE, scale=scale)
+        if (!is.null(survTerms)) {
             summary <- summary(survTerms)
             print(summary)
-            
-            output$coxphUI <- renderUI({
-                len <- length(summary$na.action)
-                tagList(
-                    hr(), h3("Cox PH model ", tags$small(
-                        summary$n, " patients, ", summary$nevent, " events",
-                        if (len > 0) 
-                            paste0(" (", len, " missing values removed)"))),
-                    tags$b("Concordance: "), summary$concordance[[1]],
-                    tags$b("(SE: "), summary$concordance[[2]], tags$b(")"),
-                    br(), tags$b("R\u00B2: "), summary$rsq[[1]], 
-                    tags$b("(max possible: "), summary$rsq[[2]], tags$b(")"), 
-                    dataTableOutput(ns("coxTests")), hr(),
-                    dataTableOutput(ns("coxGroups"))
-                )
-            })
-            
-            output$coxGroups <- renderDataTable({
-                groups <- cbind(signifDigits(summary$coefficients),
-                                signifDigits(summary$conf.int[ , 2:4]))
-                return(groups)
-            }, style="bootstrap", selection='none',
-            options=list(scrollX=TRUE))
-            
-            output$coxTests <- renderDataTable({
-                tests <- rbind("Wald test"=summary$waldtest,
-                               "Log test"=summary$logtest,
-                               "Score (logrank) test"=summary$sctest)
-                colnames(tests) <- c("Value", "Degrees of freedom", "p-value")
-                return(tests)
-            }, style="bootstrap", selection='none',
-            options=list(info=FALSE, paging=FALSE, searching=FALSE, 
-                         scrollX=TRUE))
         }
+        
+        output$coxphUI <- renderUI({
+            if (is.null(survTerms)) return(NULL)
+            
+            len <- length(summary$na.action)
+            tagList(
+                hr(), h3("Cox PH model ", tags$small(
+                    summary$n, " patients, ", summary$nevent, " events",
+                    if (len > 0) 
+                        paste0(" (", len, " missing values removed)"))),
+                tags$b("Concordance: "), summary$concordance[[1]],
+                tags$b("(SE: "), summary$concordance[[2]], tags$b(")"),
+                br(), tags$b("R\u00B2: "), summary$rsq[[1]], 
+                tags$b("(max possible: "), summary$rsq[[2]], tags$b(")"), 
+                dataTableOutput(ns("coxTests")), hr(),
+                dataTableOutput(ns("coxGroups"))
+            )
+        })
+        
+        output$coxGroups <- renderDataTable({
+            if (is.null(survTerms)) return(NULL)
+            
+            cox <- cbind(signifDigits(summary$coefficients),
+                         signifDigits(summary$conf.int[ , 2:4]))
+            return(cox)
+        }, style="bootstrap", selection='none', options=list(scrollX=TRUE))
+        
+        output$coxTests <- renderDataTable({
+            if (is.null(survTerms)) return(NULL)
+            
+            tests <- rbind("Wald test"=summary$waldtest,
+                           "Log test"=summary$logtest,
+                           "Score (logrank) test"=summary$sctest)
+            colnames(tests) <- c("Value", "Degrees of freedom", "p-value")
+            return(tests)
+        }, style="bootstrap", selection='none',
+        options=list(info=FALSE, paging=FALSE, searching=FALSE, scrollX=TRUE))
     })
     
     # Calculate optimal inclusion levels
     output$optimalPsi <- renderUI({
         # Get user input
-        clinical   <- getClinicalData()
-        timeStart  <- input$timeStart
-        timeStop   <- input$timeStop
-        dataEvent  <- input$event
-        censoring  <- input$censoring
-        psi        <- getInclusionLevels()
-        event      <- getEvent()
+        clinical      <- getClinicalData()
+        timeStart     <- input$timeStart
+        timeStop      <- input$timeStop
+        event         <- input$event
+        censoring     <- input$censoring
+        psi           <- getInclusionLevels()
+        splicingEvent <- getEvent()
         
         if (is.null(clinical)) {
             return(helpText(icon("exclamation-circle"), 
@@ -555,25 +564,20 @@ survivalServer <- function(input, output, session) {
             return(helpText(icon("exclamation-circle"), 
                             "Please, select an alternative splicing event."))
         } else {
-            # Get tumour sample IDs (normal and control samples are not
-            # interesting for survival analysis)
+            # Get tumour sample IDs (matched normal and control samples are not
+            # interesting for this survival analysis)
             match <- getClinicalMatchFrom("Inclusion levels")
-            types <- getSampleTypes(names(match))
+            types <- parseSampleGroups(names(match))
             tumour <- match[!grepl("Normal|Control", types)]
             
-            # Group samples by the inclusion levels cut-off
-            clinicalIDs <- nrow(clinical)
-            groups <- rep(NA, clinicalIDs)
-            psi <- as.numeric(psi[event, toupper(names(tumour))])
+            # Retrieve numeric PSIs from tumour samples
+            psi <- as.numeric(psi[splicingEvent, toupper(names(tumour))])
             
-            # Supress warnings from failed calculations while optimising
-            opt <- suppressWarnings(
-                optim(0, testSurvivalCutoff, group=groups, filter=tumour,
-                      data=psi, clinical=clinical, censoring=censoring, 
-                      timeStart=timeStart, timeStop=timeStop, 
-                      dataEvent=dataEvent, session=session,
-                      # Method and parameters interval
-                      method="Brent", lower=0, upper=1))
+            # Calculate optimal alternative splicing quantification cut-off
+            opt <- optimalPSIcutoff(clinical, data=psi, filter=tumour, 
+                                    censoring=censoring, event=event,
+                                    timeStart=timeStart, timeStop=timeStop,
+                                    session=session)
             
             slider <- tagList(
                 sliderInput(ns("psiCutoff"), value = 0.5, min=0, max=1,
@@ -605,7 +609,7 @@ survivalServer <- function(input, output, session) {
                                 "for this alternative splicing event.")))
         }
     })
-}
+    }
 
 attr(survivalUI, "loader") <- "analysis"
 attr(survivalUI, "name") <- "Survival curves"

@@ -1,4 +1,10 @@
-printPaste <- function(...) print(paste(...))
+#' Print progress to console
+#' 
+#' @param ... Strings to print to console
+#' @param console Boolean: print to console? TRUE by default
+printPaste <- function(..., console=TRUE) {
+    if (console) print(paste(...))
+}
 
 #' Returns the date format used by the Firehose API
 #'
@@ -26,11 +32,12 @@ getFirehoseDateFormat <- function() {
 #'
 #' @return Invisible TRUE if the Firehose API is working; otherwise, raises a
 #' warning
+#' @export
 #'
 #' @importFrom httr GET warn_for_status http_error
 #'
 #' @examples
-#' psichomics:::isFirehoseUp()
+#' isFirehoseUp()
 isFirehoseUp <- function() {
     link <- paste0("http://firebrowse.org/api/v1/Metadata/HeartBeat")
     heartbeat <- tryCatch(GET(link, query=list(format="json")), error=return)
@@ -142,7 +149,7 @@ parseFirehoseMetadata <- function(type, ...) {
 #' @export
 #' 
 #' @examples
-#' getFirehoseDates()
+#' if (isFirehoseUp()) getFirehoseDates()
 getFirehoseDates <- function() {
     dates <- parseFirehoseMetadata("Dates")$Dates
     format <- getFirehoseDateFormat()
@@ -159,7 +166,7 @@ getFirehoseDates <- function() {
 #' @export
 #'
 #' @examples
-#' if (psichomics:::isFirehoseUp()) getFirehoseCohorts()
+#' if (isFirehoseUp()) getFirehoseCohorts()
 getFirehoseCohorts <- function(cohort = NULL) {
     response <- parseFirehoseMetadata("Cohorts", cohort=cohort)
     cohorts <- response$Cohorts[[2]]
@@ -336,26 +343,36 @@ loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
 #' @param ... Extra parameters to be passed to \code{\link{queryFirehoseData}}
 #' @param progress Function to show the progress (default is printPaste)
 #' @param download Boolean: download missing files through the function
-#' \code{download.file}
+#' \code{download.file} (TRUE by default)
 #' 
 #' @include formats.R
 #' @importFrom tools file_ext file_path_sans_ext
 #' @importFrom httr stop_for_status
 #' @importFrom utils download.file
 #' 
-#' @return URL of missing files ("missing" class) or list with loaded data
+#' @return URL of missing files ("missing" class) if files need to be downloaded
+#' and if the argument \code{download} is \code{FALSE}; else, a list with loaded
+#' data
 #' @export
 #' 
 #' @examples 
 #' \dontrun{
 #' loadFirehoseData(cohort = "ACC", data_type = "Clinical")
 #' }
-loadFirehoseData <- function(folder = "~/Downloads",
+loadFirehoseData <- function(folder = "~/Downloads", data=NULL,
                              exclude = c(".aux.", ".mage-tab.", "MANIFEST.txt"),
                              ..., progress = printPaste, download=TRUE) {
+    args <- list(...)
+    
+    datasets <- getFirehoseDataTypes()
+    # Data types to load
+    args$data_type <- c(data[!data %in% datasets], "mRNASeq")
+    # Datasets to ignore
+    exclude <- c(exclude, datasets[!datasets %in% data])
+    
     ## TODO(NunoA): Check if the default folder works in Windows
     # Query Firehose and get URLs for archives
-    res <- queryFirehoseData(...)
+    res <- do.call(queryFirehoseData, args)
     stop_for_status(res)
     url <- parseUrlsFromFirehoseResponse(res)
     
@@ -390,56 +407,68 @@ loadFirehoseData <- function(folder = "~/Downloads",
         
         missingFiles <- url[missing]
         class(missingFiles) <- c("missing", class(missingFiles))
-        if (download) download.file(missingFiles, destfile=folder)
-        return(missingFiles)
-    } else {
-        # Check if there are folders to unarchive
-        archives <- unlist(lapply(possibleExtensions, function (i)
-            i[i %in% basename(downloadedFiles[!downloadedMD5])]))
-        tar <- grepl(".tar", archives, fixed = TRUE)
-        
-        # Split folders by the cohort type and date
-        categories <- names(url[!md5])
-        folders <- base[!md5]
-        folders <- split(folders, categories)
-        
-        if (length(archives[tar]) > 0) {
-            progress("Extracting archives...", divisions = 1 + length(folders))
+
+        if (download) {
+            dl <- download.file(missingFiles, 
+                                destfile=file.path(folder, 
+                                                   basename(missingFiles)))
             
-            # Extract the content, check the intergrity and remove archives
-            prepareFirehoseArchives(fullPath(archives[tar]), 
-                                    fullPath(base[md5][tar]))
-            
-            # Create folders for these data
-            directory <- file.path(folder, names(folders))
-            existing <- dir.exists(directory)
-            lapply(directory[!existing], dir.create)
-            
-            # Move the files to the newly-created folders
-            arc <- file_path_sans_ext(fullPath(archives[tar]), compression=TRUE)
-            basen <- basename(arc)
-            
-            ns <- sapply(basen, function(k) {
-                m <- sapply(folders, function(p) basename(p) == k)
-                names(folders)[col(m)[m]]
-            })
-            
-            file.rename(arc, file.path(dirname(arc), ns, basen))
-            progress("Archives prepared")
+            # Check again the files in the given directory
+            downloadedFiles <- list.files(folder, recursive=TRUE, 
+                                          full.names=TRUE, include.dirs=TRUE)
+            downloadedMD5   <- file_ext(downloadedFiles) == "md5"
         } else {
-            # Divide the progress bar by the number of folders to load
-            progress(divisions = length(folders))   
+            return(missingFiles)
         }
-        
-        downloadedFiles <- list.files(folder, recursive=TRUE, 
-                                      full.names=TRUE, include.dirs=TRUE)
-        folders <- fullPath(base[!md5])
-        folders <- split(folders, categories)
-        
-        # Load the files
-        loaded <- lapply(folders, loadFirehoseFolders, exclude, progress)
-        return(loaded)
     }
+    
+    # Check if there are folders to unarchive
+    archives <- unlist(lapply(possibleExtensions, function (i)
+        i[i %in% basename(downloadedFiles[!downloadedMD5])]))
+    tar <- grepl(".tar", archives, fixed = TRUE)
+    
+    # Split folders by the cohort type and date
+    categories <- names(url[!md5])
+    folders <- base[!md5]
+    folders <- split(folders, categories)
+    
+    if (length(archives[tar]) > 0) {
+        progress("Extracting archives...", divisions = 1 + length(folders))
+        
+        # Extract the content, check the intergrity and remove archives
+        prepareFirehoseArchives(fullPath(archives[tar]), 
+                                fullPath(base[md5][tar]))
+        
+        # Create folders for these data
+        directory <- file.path(folder, names(folders))
+        existing <- dir.exists(directory)
+        lapply(directory[!existing], dir.create)
+        
+        # Move the files to the newly-created folders
+        arc <- file_path_sans_ext(fullPath(archives[tar]), compression=TRUE)
+        basen <- basename(arc)
+        
+        ns <- sapply(basen, function(k) {
+            m <- sapply(folders, function(p) basename(p) == k)
+            names(folders)[col(m)[m]]
+        })
+        
+        file.rename(arc, file.path(dirname(arc), ns, basen))
+        progress("Archives prepared")
+    } else {
+        # Divide the progress bar by the number of folders to load
+        progress(divisions = length(folders))   
+    }
+    
+    downloadedFiles <- list.files(folder, recursive=TRUE, 
+                                  full.names=TRUE, include.dirs=TRUE)
+    folders <- fullPath(base[!md5])
+    folders <- split(folders, categories)
+    
+    # Load the files
+    loaded <- lapply(folders, loadFirehoseFolders, exclude, progress)
+    loaded <- processDatasetNames(loaded)
+    return(loaded)
 }
 
 #' Creates a UI set with options to add data from TCGA/Firehose
@@ -468,7 +497,7 @@ addTCGAdata <- function(ns) {
                        selected = NULL, options = list(
                            placeholder = "Select sample date")),
         selectizeInput(ns("firehoseData"), "Data type",
-                       c("Clinical", getFirebrowseDataTypes()), 
+                       c("Clinical", getFirehoseDataTypes()), 
                        multiple = TRUE, options = list(
                            placeholder = "Select data types")),
         textAreaInput(ns("dataFolder"), "Folder to store the data",
@@ -526,19 +555,11 @@ checkFirebrowse <- function(ns) {
 setFirehoseData <- function(input, output, session, replace=TRUE) {
     disable("getFirehoseData")
     
-    data <- input$firehoseData
-    datasets <- getFirebrowseDataTypes()
-    # Data types to load
-    data_type <- c(data[!data %in% datasets], "mRNASeq")
-    # Datasets to ignore
-    ignore <- datasets[!datasets %in% data]
-    
     # Load data from Firehose
     data <- loadFirehoseData(folder = input$dataFolder,
                              cohort = input$firehoseCohort,
                              date = gsub("-", "_", input$firehoseDate),
-                             data_type = data_type,
-                             exclude = c(".aux.", ".mage-tab.", ignore),
+                             data = input$firehoseData,
                              progress = updateProgress,
                              download = FALSE)
     
@@ -556,7 +577,6 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
             ". If not, move the downloaded files to this location.", 
             modalId="firebrowseDataModal")
     } else if (!is.null(data)) {
-        data <- processDatasetNames(data)
         if(replace)
             setData(data)
         else

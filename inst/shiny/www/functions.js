@@ -31,7 +31,7 @@ function showSurvCutoff() {
  * @param {String} event Alternative splicing event
  */
 function showDiffSplicing (event) {
-    var diff = "Differential analysis (per splicing event)";
+    var diff = "Differential splicing analysis (per splicing event)";
     $("select[id*='selectizeAnalysis']").selectize()[0].selectize.setValue(diff);
     $("select[id*='selectizeEvent']").selectize()[0].selectize.setValue(event);
 }
@@ -43,7 +43,7 @@ function showDiffSplicing (event) {
  * @param {Numeric} row Row to introduce links
  * @param {Object} data Table of interest
  * 
- * @return Links
+ * @return Same rows from input with links
  */
 function createDiffSplicingLinks(row, data, index) {
     $('td:eq(0)', row).html("<a onclick='showDiffSplicing(\"" + data[0] + 
@@ -51,13 +51,23 @@ function createDiffSplicingLinks(row, data, index) {
     return row;
 }
 
-/* Get which checkboxes are checked in the groups section */
-Shiny.addCustomMessageHandler('getCheckedBoxes', function(variable) {   
+/**
+ * Get selected checkboxes in the group section
+ * 
+ * @return Array with the selected checkboxes
+ */
+function getSelectedCheckboxes() {
     var selected = [];
     $("input[name='checkGroups']:checked").each(function() {
         selected.push($(this).attr('number'));
-        
     });
+    return(selected);
+}
+
+/* Get which checkboxes are checked in the groups section */
+Shiny.addCustomMessageHandler('getCheckedBoxes', function(variable) {   
+    var selected = getSelectedCheckboxes();
+    
     // Add value to variable in R
     Shiny.onInputChange(variable, selected);
 });

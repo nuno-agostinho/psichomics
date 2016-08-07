@@ -4,13 +4,9 @@
 \alias{plotTranscripts}
 \title{Plot transcripts}
 \usage{
-plotTranscripts(input, output, info, eventPosition)
+plotTranscripts(info, eventPosition)
 }
 \arguments{
-\item{input}{SHiny input}
-
-\item{output}{Shiny output}
-
 \item{info}{Information retrieved from ENSEMBL}
 
 \item{eventPosition}{Numeric: coordinates of the alternative splicing event}

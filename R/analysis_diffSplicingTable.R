@@ -254,7 +254,7 @@ levene.test <- function (y, group, location = c("median", "mean", "trim.mean"),
 #' Interface for exploratory differential analyses
 #' @param id Character: identifier
 #' @return HTML elements
-diffAnalysisTableUI <- function(id) {
+diffSplicingTableUI <- function(id) {
     ns <- NS(id)
     tagList(
         uiOutput(ns("modal")),
@@ -290,22 +290,35 @@ diffAnalysisTableUI <- function(id) {
     )
 }
 
-#' Perform statistical analysis on a vector with elements from different groups
+#' Perform statistical analysis on a given splicing event
+#' 
+#' Perform statistical analyses on a given vector containing elements from
+#' different groups
+#' 
+#' @details 
+#' The following statistical analyses may be performed by including the 
+#' respective string in the \code{analysis} argument:
+#' \itemize{
+#'      \item{Wilcoxon Rank Sum test - \code{wilcoxRankSum}}
+#'      \item{Wilcoxon Signed Rank test - \code{wilcoxSignedRank}}
+#'      \item{Kruskal test - \code{kruskal}}
+#'      \item{Levene's test - \code{levene}}
+#' }
 #' 
 #' @param vector Numeric
 #' @param group Character: group of each element in the vector
 #' @param threshold Integer: minimum number of data points to perform analysis
 #' in a group (default is 1)
-#' @param analyses Character: name of the analyses to perform (all by default)
+#' @param analyses Character: analyses to perform (see "Details")
 #' @param step Numeric: number of events before the progress bar is updated
 #' (a bigger number allows for a faster execution)
 #' 
 #' @importFrom stats kruskal.test median wilcox.test var density
 #' 
-#' @return A data frame row with the results
-statsAnalyses <- function(vector, group, threshold=1, step=100,
-                          analyses=c("wilcoxRankSum", "wilcoxSignedRank",
-                                     "kruskal", "levene")) {
+#' @return A row from a data frame with the results
+singleStatsAnalyses <- function(vector, group, threshold=1, step=100,
+                                analyses=c("wilcoxRankSum", "wilcoxSignedRank",
+                                           "kruskal", "levene")) {
     series  <- split(vector, group)
     samples <- vapply(series, function(i) sum(!is.na(i)), integer(1))
     valid   <- names(series)[samples >= threshold]
@@ -435,33 +448,50 @@ optimSurvDiffUI <- function(ns) {
     )
 }
 
-#' Perform all statistical analyses
+#' Perform selected statistical analyses on multiple splicing events
 #' 
-#' @param session Shiny session
-#' @param input Shiny input
 #' @param psi Data frame or matrix: Alternative splicing event quantification
-#' @param statsChoices Character: analyses to perform
+#' @param analyses Character: analyses to perform
+#' @param progress Function to track the progress
 #' 
 #' @importFrom plyr rbind.fill
 #' @importFrom fastmatch fmatch
-performStatsAnalyses <- function(session, input, psi, statsChoices) {
+#' 
+#' @details 
+#' The following statistical analyses may be performed by including the 
+#' respective string in the \code{analysis} argument:
+#' \itemize{
+#'      \item{Wilcoxon Rank Sum test - \code{wilcoxRankSum}}
+#'      \item{Wilcoxon Signed Rank test - \code{wilcoxSignedRank}}
+#'      \item{Kruskal test - \code{kruskal}}
+#'      \item{Levene's test - \code{levene}}
+#'      \item{Density plots - \code{density} (only usable through the visual 
+#'      interface)}
+#' }
+#' 
+#' @return Table of statistical analyses
+#' @export
+statsAnalyses <- function(psi, analyses=c("wilcoxRankSum",
+                                                 "wilcoxSignedRank",
+                                                 "kruskal", "levene"),
+                                 progress=printPaste) {
     # Separate samples by their type
     ids <- names(psi)
-    type <- getSampleTypes(ids)
+    type <- parseSampleGroups(ids)
     
     # cl <- parallel::makeCluster(getOption("cl.cores", getCores()))
-    step <- 50 # Avoid updating after analysing each event
-    startProgress("Performing statistical analysis", 
-                  divisions=5 + round(nrow(psi)/step))
+    step <- 50 # Avoid updating progress for too few events
+    progress("Performing statistical analysis", 
+             divisions=5 + round(nrow(psi)/step))
     time <- Sys.time()
     
     count <- 0
     stats <- apply(psi, 1, function(...) {
         count <<- count + 1
         if (count %% step == 0)
-            updateProgress("Performing statistical analysis", console=FALSE)
-        return(statsAnalyses(...))
-    }, factor(type), threshold=1, step=step, analyses=statsChoices)
+            progress("Performing statistical analysis", console=FALSE)
+        return(singleStatsAnalyses(...))
+    }, factor(type), threshold=1, step=step, analyses=analyses)
     print(Sys.time() - time)
     
     # Check the column names of the different columns
@@ -469,8 +499,8 @@ performStatsAnalyses <- function(session, input, psi, statsChoices) {
     uniq <- unique(ns)
     match <- fmatch(ns, uniq)
     
-    # Convert matrix that share the same name to data frame (way faster)
-    updateProgress("Preparing data")
+    # Convert matrix with the same name to data frames (way faster)
+    progress("Preparing data")
     ll <- list()
     for (k in seq_along(uniq)) {
         df <- lapply(stats[match == k], data.frame)
@@ -488,24 +518,21 @@ performStatsAnalyses <- function(session, input, psi, statsChoices) {
     # Calculate delta variance and delta median if there are only 2 groups
     deltaVar <- df[, grepl("Variance", colnames(df)), drop=FALSE]
     if (ncol(deltaVar) == 2) {
-        updateProgress("Calculating delta variance and median")
+        progress("Calculating delta variance and median")
         deltaVar <- deltaVar[, 2] - deltaVar[, 1]
         deltaMed <- df[, grepl("Median", colnames(df))]
         deltaMed <- deltaMed[, 2] - deltaMed[, 1]
         df <- cbind(df, deltaVar, deltaMed)
     }
     
-    if (any("density" == statsChoices)) {
-        updateProgress("Calculating the density of inclusion levels")
-        df[, "Density"] <- createDensitySparklines(df[, "Density"], 
+    if (any("density" == analyses)) {
+        progress("Calculating the density of inclusion levels")
+        df[, "Density"] <- createDensitySparklines(df[, "Density"],
                                                    rownames(df))
     }
-    
-    setDifferentialAnalyses(df)
-    
     # parallel::stopCluster(cl)
     print(Sys.time() - time)
-    closeProgress()
+    return(df)
 }
 
 #' Optimal survival difference given an inclusion level cut-off for a specific
@@ -552,7 +579,7 @@ optimSurvDiff <- function(session, input, output) {
             # Get tumour sample IDs (normal and control samples are not
             # interesting for survival analysis)
             match <- getClinicalMatchFrom("Inclusion levels")
-            types <- getSampleTypes(names(match))
+            types <- parseSampleGroups(names(match))
             tumour <- match[!grepl("Normal|Control", types)]
             
             # Group samples by the inclusion levels cut-off
@@ -563,7 +590,7 @@ optimSurvDiff <- function(session, input, output) {
             censoring <- input$censoring
             timeStart <- input$timeStart
             timeStop  <- input$timeStop
-            dataEvent <- input$event
+            event     <- input$event
             psi       <- getInclusionLevels()
             stats     <- getDifferentialAnalyses()
             display   <- input$statsTable_rows_current
@@ -588,10 +615,9 @@ optimSurvDiff <- function(session, input, output) {
             v <- as.numeric(vector[toupper(names(tumour))])
             
             opt <- suppressWarnings(
-                optim(0, testSurvivalCutoff, data=v, group=groups,
-                      filter=tumour, clinical=clinical, censoring=censoring,
-                      timeStart=timeStart, timeStop=timeStop, 
-                      dataEvent=dataEvent, modals=FALSE,
+                optim(0, testSurvivalCutoff, data=v, filter=tumour,
+                      group=groups, clinical=clinical, censoring=censoring,
+                      timeStart=timeStart, timeStop=timeStop, event=event,
                       # Method and parameters interval
                       method="Brent", lower=0, upper=1))
             
@@ -622,7 +648,7 @@ optimSurvDiff <- function(session, input, output) {
 #' @param session Shiny session
 #' 
 #' @importFrom DT renderDataTable
-diffAnalysisTableServer <- function(input, output, session) {
+diffSplicingTableServer <- function(input, output, session) {
     ns <- session$ns
     
     # Information on the data groups from TCGA
@@ -636,11 +662,12 @@ diffAnalysisTableServer <- function(input, output, session) {
         
         # Separate samples by their type
         ids <- names(psi)
-        type <- getSampleTypes(ids)
+        type <- parseSampleGroups(ids)
         
         bullet <- "\u2022"
         groups <- NULL
-        for (each in unique(type)) groups <- tagList(groups, br(), bullet, each)
+        for (each in unique(type))
+            groups <- tagList(groups, br(), bullet, each)
         
         return(tagList(
             helpText("The data contains the following groups:", groups),
@@ -662,8 +689,10 @@ diffAnalysisTableServer <- function(input, output, session) {
                              ns("missingInclusionLevels"))
             return(NULL)
         }
-        
-        performStatsAnalyses(session, input, psi, statsChoices)
+         
+        stats <- statsAnalyses(psi, statsChoices, progress=updateProgress)
+        setDifferentialAnalyses(stats)
+        closeProgress()
     })
     
     # Show table and respective interface when statistical table is available
@@ -708,7 +737,7 @@ diffAnalysisTableServer <- function(input, output, session) {
     optimSurvDiff(session, input, output)
 }
 
-attr(diffAnalysisTableUI, "loader") <- "analysis"
-attr(diffAnalysisTableUI, "name") <- "Differential analysis (using all splicing events)"
-attr(diffAnalysisTableUI, "selectEvent") <- FALSE
-attr(diffAnalysisTableServer, "loader") <- "analysis"
+attr(diffSplicingTableUI, "loader") <- "analysis"
+attr(diffSplicingTableUI, "name") <- "Differential splicing analysis (using all splicing events)"
+attr(diffSplicingTableUI, "selectEvent") <- FALSE
+attr(diffSplicingTableServer, "loader") <- "analysis"

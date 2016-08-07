@@ -17,6 +17,6 @@ names)
 Query the Firehose API for the cohorts available
 }
 \examples{
-if (psichomics:::isFirehoseUp()) getFirehoseCohorts()
+if (isFirehoseUp()) getFirehoseCohorts()
 }
 

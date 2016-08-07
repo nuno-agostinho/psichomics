@@ -4,17 +4,11 @@
 \alias{plotPCA}
 \title{Create a scatterplot from a PCA object}
 \usage{
-plotPCA(pca, perc, xAxis, yAxis, selected, clinical, match,
+plotPCA(pca, pcX = "PC1", pcY = "PC2", selected = NULL, clinical, match,
   individuals = TRUE, loadings = FALSE)
 }
 \arguments{
 \item{pca}{\code{prcomp} object}
-
-\item{perc}{Numeric: percentage of explained variance}
-
-\item{xAxis}{Character: name of the xAxis of interest from the PCA}
-
-\item{yAxis}{Character: name of the yAxis of interest from the PCA}
 
 \item{selected}{Character: selected groups to show}
 
@@ -23,6 +17,10 @@ plotPCA(pca, perc, xAxis, yAxis, selected, clinical, match,
 \item{individuals}{Boolean: plot PCA individuals (TRUE by default)}
 
 \item{loadings}{Boolean: plot PCA loadings/rotations (FALSE by default)}
+
+\item{xAxis}{Character: name of the xAxis of interest from the PCA}
+
+\item{yAxis}{Character: name of the yAxis of interest from the PCA}
 }
 \value{
 Scatterplot as an Highcharter object

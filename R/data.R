@@ -4,11 +4,16 @@
 ## TODO(NunoA): render UI for each data table instead of rendering UI for all
 ## so there's no refresh
 
-#' Get Firebrowse choices of data types
+#' Get data types available from Firehose
+#' 
 #' @importFrom R.utils capitalize
 #' 
 #' @return Named character vector
-getFirebrowseDataTypes <- function() {
+#' @export
+#' 
+#' @examples 
+#' getFirehoseDataTypes()
+getFirehoseDataTypes <- function() {
     choices <- c(paste0(c("junction", "exon"),
                         "_quantification"), "Preprocess",
                  paste0("RSEM_", c("isoforms", "genes")),

@@ -5,7 +5,7 @@
 \title{Assign one group for each clinical patient}
 \usage{
 groupPerPatient(groups, patients, includeOuterGroup = FALSE,
-  outerGroupName = "(Outer data)", allDataName = "All data")
+  outerGroupName = "(Outer data)")
 }
 \arguments{
 \item{groups}{Matrix: clinical groups}
@@ -15,8 +15,6 @@ groupPerPatient(groups, patients, includeOuterGroup = FALSE,
 \item{includeOuterGroup}{Boolean: join the patients that have no groups?}
 
 \item{outerGroupName}{Character: name to give to outer group}
-
-\item{allDataName}{Character: name to give in case there are no groups}
 }
 \value{
 Character vector where each element corresponds to the group of a

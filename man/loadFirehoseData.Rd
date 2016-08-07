@@ -4,8 +4,9 @@
 \alias{loadFirehoseData}
 \title{Downloads and processes data from the Firehose API and loads it into R}
 \usage{
-loadFirehoseData(folder = "~/Downloads", exclude = c(".aux.", ".mage-tab.",
-  "MANIFEST.txt"), ..., progress = printPaste, download = TRUE)
+loadFirehoseData(folder = "~/Downloads", data = NULL, exclude = c(".aux.",
+  ".mage-tab.", "MANIFEST.txt"), ..., progress = printPaste,
+  download = TRUE)
 }
 \arguments{
 \item{folder}{Character: directory to store the downloaded archives (by
@@ -20,10 +21,12 @@ from loading into R (by default, it excludes ".aux.", ".mage-tab." and
 \item{progress}{Function to show the progress (default is printPaste)}
 
 \item{download}{Boolean: download missing files through the function
-\code{download.file}}
+\code{download.file} (TRUE by default)}
 }
 \value{
-URL of missing files ("missing" class) or list with loaded data
+URL of missing files ("missing" class) if files need to be downloaded
+and if the argument \code{download} is \code{FALSE}; else, a list with loaded
+data
 }
 \description{
 Downloads and processes data from the Firehose API and loads it into R
