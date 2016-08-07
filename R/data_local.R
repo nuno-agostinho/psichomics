@@ -13,7 +13,7 @@ addLocalFile <- function(ns) {
                       value="~/Downloads/", placeholder="Insert local folder"),
         textInput(ns("localCategory"), label="Data category name"),
         selectizeInput(ns("localIgnore"), "Files/directories to ignore",
-                       choices=getFirebrowseDataTypes(),
+                       choices=getFirehoseDataTypes(),
                        selected=c("RSEM_isoforms", "exon_quantification"),
                        multiple=TRUE, options=list(
                            # Allow to add new items
@@ -45,11 +45,13 @@ localDataUI <- function(id, panel) {
 #' @export
 #' 
 #' @examples
+#' \dontrun{
 #' folder <- "~/Downloads/ACC 2016"
 #' data <- loadLocalFiles(folder)
 #' 
 #' ignore <- c(".aux.", ".mage-tab.", "junction quantification")
 #' loadLocalFiles(folder, ignore)
+#' }
 loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."), name="Data",
                            progress=printPaste) {
     # Get all files in the specified directory and subdirectories

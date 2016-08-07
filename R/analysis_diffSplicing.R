@@ -5,7 +5,7 @@
 #' @importFrom highcharter highchartOutput
 #' @importFrom shiny tagList uiOutput NS sidebarLayout numericInput h3 mainPanel
 #' @return Character with the HTML interface
-diffAnalysisUI <- function(id) {
+diffSplicingUI <- function(id) {
     ns <- NS(id)
     
     tagList(
@@ -29,7 +29,7 @@ diffAnalysisUI <- function(id) {
     )
 }
 
-#' Prepare density plot
+#' Plot distribution through a density plot
 #' 
 #' The tooltip shows the median, variance, max, min and number of non-NA samples
 #' of each data series.
@@ -46,18 +46,14 @@ diffAnalysisUI <- function(id) {
 #' @importFrom stats median var density
 #' 
 #' @return Highcharter object with density plot
-prepareDensityPlot <- function(psi, type, bandwidth, rug=TRUE, vLine=TRUE) {
-    # # Cross symbol try used for time marks
-    # js <- "Highcharts.SVGRenderer.prototype.symbols.line =
-    #       function(x, y, w, h) {
-    # return ['M', x, y, 'L', x, y]; };"
-    # HTML("<script>", js, "</script>")
-    
+#' @export
+plotDistribution <- function(psi, groups, bandwidth=0.01, rug=TRUE, 
+                             vLine=TRUE) {
     # Include X-axis zoom and hide markers
     hc <- highchart() %>%
         hc_chart(zoomType = "x") %>%
         hc_xAxis(min = 0, max = 1, title = list(
-            text = "Density of exon/intron inclusion levels")) %>%
+            text = "Density of exon inclusion levels")) %>%
         hc_plotOptions(series = list(fillOpacity=0.3,
                                      marker = list(enabled = FALSE))) %>%
         hc_tooltip(
@@ -72,10 +68,9 @@ prepareDensityPlot <- function(psi, type, bandwidth, rug=TRUE, vLine=TRUE) {
                 "Range: {series.options.min} - {series.options.max}"))
     
     count <- 0
-    allRows <- list()
     plotLines <- list()
-    for (group in unique(type)) {
-        row  <- psi[type == group]
+    for (group in unique(groups)) {
+        row  <- psi[groups == group]
         med  <- roundDigits(median(row, na.rm = TRUE))
         vari <- roundDigits(var(row, na.rm = TRUE))
         max  <- roundDigits(max(row, na.rm = TRUE))
@@ -84,7 +79,7 @@ prepareDensityPlot <- function(psi, type, bandwidth, rug=TRUE, vLine=TRUE) {
         
         color <- JS("Highcharts.getOptions().colors[", count, "]")
         
-        # Calculate the density of inclusion levels for each sample type
+        # Calculate the density of inclusion levels for each sample group
         den <- density(row, bw = bandwidth, na.rm = TRUE)
         hc <- hc %>%
             hc_add_series_density(den, name=group, area=TRUE, median=med, 
@@ -93,8 +88,9 @@ prepareDensityPlot <- function(psi, type, bandwidth, rug=TRUE, vLine=TRUE) {
         # Rug plot
         if (rug) {
             hc <- hc_add_series_scatter(
-                hc, row, rep(0, length(row)), marker=list(
-                    enabled=TRUE, symbol="circle", radius=4, fillColor=color))
+                hc, row, rep(0, length(row)), name=group, marker=list(
+                    enabled=TRUE, symbol="circle", radius=4, fillColor=color),
+                median=med, var=vari, samples=samples, max=max, min=min)
         }
         # Save plot line with information
         if (vLine) {
@@ -107,13 +103,12 @@ prepareDensityPlot <- function(psi, type, bandwidth, rug=TRUE, vLine=TRUE) {
                 value=med,
                 zIndex = 7)
         }
-        allRows[[count + 1]] <- row
         count <- count + 1
     }
     
     # Add plotLines with information
     if (vLine) hc <- hc %>% hc_xAxis(plotLines = plotLines)
-    return(list(plot=hc, data=allRows))
+    return(hc)
 }
 
 #' Basic statistics performed on data
@@ -121,13 +116,14 @@ prepareDensityPlot <- function(psi, type, bandwidth, rug=TRUE, vLine=TRUE) {
 #' Variance and median of each group. If data has 2 groups, also calculates the
 #' delta variance and delta median.
 #' 
-#' @param data Numeric: data to analyse
-#' @param len Integer: number of groups
-#' 
+#' @inheritParams wilcox
 #' @importFrom shiny tagList br h4
 #' 
 #' @return HTML elements
-basicStats <- function(data, len) {
+basicStats <- function(psi, groups) {
+    data <- lapply(unique(groups), function(g) psi[groups == g])
+    
+    len <- length(unique(groups))
     vari <- vapply(data, var, numeric(1), na.rm = TRUE)
     medi <- vapply(data, median, numeric(1), na.rm = TRUE)
     
@@ -146,21 +142,21 @@ basicStats <- function(data, len) {
 
 #' Perform Wilcox analysis and return interface to show the results
 #' @param psi Numeric: quantification of one alternative splicing event
-#' @param type Character: group of each PSI index
+#' @param groups Character: group of each PSI index
 #' 
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats wilcox.test
 #' @return HTML elements
-wilcox <- function(psi, type) {
-    group <- unique(type)
+wilcox <- function(psi, groups) {
+    group <- unique(groups)
     len <- length(group)
     
     if (len > 2) {
         return(tagList(h4("Wilcoxon test"),
                        "Can only perform this test on 2 or 1 group."))
     } else if (len == 2) {
-        psiA <- psi[type == group[1]]
-        psiB <- psi[type == group[2]]
+        psiA <- psi[groups == group[1]]
+        psiB <- psi[groups == group[2]]
         stat <- tryCatch(list(stat=wilcox.test(psiA, psiB)), 
                          warning=function(w)
                              return(list(stat=wilcox.test(psiA, psiB),
@@ -190,11 +186,11 @@ wilcox <- function(psi, type) {
 #' @inheritParams wilcox
 #' @importFrom shiny tagList tags h4 br
 #' @return HTML elements
-levene <- function(psi, type) {
-    len <- length(unique(type))
+levene <- function(psi, groups) {
+    len <- length(unique(groups))
     if (len >= 2) {
         nas <- is.na(psi)
-        stat <- levene.test(psi[!nas], factor(type[!nas]))
+        stat <- levene.test(psi[!nas], factor(groups[!nas]))
         tagList(
             h4("Levene's Test for Homogeneity of Variance"),
             tags$b("Test value: "), stat$statistic, br(),
@@ -215,10 +211,10 @@ levene <- function(psi, type) {
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats kruskal.test
 #' @return HTML elements
-kruskal <- function(psi, type) {
-    len <- length(unique(type))
+kruskal <- function(psi, groups) {
+    len <- length(unique(groups))
     if (len >= 2) {
-        stat <- kruskal.test(psi, factor(type))
+        stat <- kruskal.test(psi, factor(groups))
         tagList(
             h4(stat$method),
             tags$b("Test value (Chi squared): "), stat$statistic, br(),
@@ -238,9 +234,9 @@ kruskal <- function(psi, type) {
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats fisher.test
 #' @return HTML elements
-fisher <- function(psi, type) {
+fisher <- function(psi, groups) {
     stat <- try(R.utils::evalWithTimeout(
-        fisher.test(psi, factor(type)),
+        fisher.test(psi, factor(groups)),
         timeout = 1,
         onTimeout = "error"))
     
@@ -263,8 +259,8 @@ fisher <- function(psi, type) {
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats var cor
 #' @return HTML elements
-spearman <- function(psi, type) {
-    group <- unique(type)
+spearman <- function(psi, groups) {
+    group <- unique(groups)
     len <- length(group)
     
     if (len != 2) {
@@ -272,14 +268,36 @@ spearman <- function(psi, type) {
             h4("Spearman's correlation"),
             "Can only perform this test on 2 groups.")
     } else {
-        var <- var(psi[type == group[1]], psi[type == group[2]])
-        cor <- cor(psi[type == group[1]], psi[type == group[2]])
+        var <- var(psi[groups == group[1]], psi[groups == group[2]])
+        cor <- cor(psi[groups == group[1]], psi[groups == group[2]])
         
         tagList(
             h4("Spearman's correlation"),
             tags$b("Variance: "), var, br(),
             tags$b("Correlation: "), cor)
     }
+}
+
+#' Filter groups with less data points than the threshold
+#' 
+#' Groups containing a number of non-missing values less than the threshold are
+#' discarded.
+#' 
+#' @param vector Unnamed elements
+#' @param group Character: group of the elements
+#' @param threshold Integer: number of valid non-missing values by group
+#' 
+#' @return Named vector with filtered elementes from valid groups. The group of 
+#' the respective element is given in the name.
+#' @export
+filterGroups <- function(vector, group, threshold=1) {
+    names(vector) <- group
+    vector <- lapply(unique(group), function(t) {
+        vector <- vector[group == t]
+        if ( sum(!is.na(vector)) >= threshold )
+            return(vector)
+    })
+    return(unlist(vector))
 }
 
 #' Server logic for the analyses of a single alternative splicing event
@@ -289,20 +307,13 @@ spearman <- function(psi, type) {
 #' 
 #' @importFrom highcharter renderHighchart
 #' @importFrom shinyjs runjs
-diffAnalysisServer <- function(input, output, session) {
+diffSplicingServer <- function(input, output, session) {
     observe({
         # Get selected event
         event <- getEvent()
         if (is.null(event) || event == "") return(NULL)
         
-        # Get event's inclusion levels for all samples
-        psi <- getInclusionLevels()
-        ids <- names(psi)
-        psi <- as.numeric(psi[event, ])
-        
-        # Separate samples by their type
-        type <- getSampleTypes(ids)
-        
+        # Check if bandwidth is valid
         bandwidth <- input$bandwidth
         if (bandwidth <= 0 || is.na(bandwidth)) {
             errorModal(session, "Bandwidth must have a positive value",
@@ -310,29 +321,24 @@ diffAnalysisServer <- function(input, output, session) {
             return(NULL)
         }
         
-        # Filter groups with less data points than required
-        threshold <- 1
-        names(psi) <- type
+        # Get splicing event's inclusion levels for all samples
+        psi <- getInclusionLevels()
+        eventPSI <- as.numeric(psi[event, ])
         
-        psi <- lapply(unique(type),
-                      function(t) {
-                          psi <- psi[type == t]
-                          if ( sum(!is.na(psi)) >= threshold )
-                              return(psi)
-                      })
-        psi <- unlist(psi)
-        type <- names(psi)
-        len <- length(unique(type))
+        # Separate samples by their groups
+        groups <- parseSampleGroups(colnames(psi))
+        eventPSI <- filterGroups(eventPSI, groups)
+        groups <- names(eventPSI)
         
-        prep <- prepareDensityPlot(psi, type, bandwidth)
-        output$density <- renderHighchart(prep$plot)
+        plot <- plotDistribution(eventPSI, groups, bandwidth)
+        output$density <- renderHighchart(plot)
         
-        output$basicStats <- renderUI(basicStats(prep$data, len))
-        output$wilcox   <- renderUI(wilcox(psi, type))
-        output$kruskal  <- renderUI(kruskal(psi, type))
-        output$levene   <- renderUI(levene(psi, type))
-        # output$fisher   <- renderUI(fisher(psi, type))
-        # output$spearman <- renderUI(spearman(psi, type))
+        output$basicStats <- renderUI(basicStats(eventPSI, groups))
+        output$wilcox     <- renderUI(wilcox(eventPSI, groups))
+        output$kruskal    <- renderUI(kruskal(eventPSI, groups))
+        output$levene     <- renderUI(levene(eventPSI, groups))
+        # output$fisher   <- renderUI(fisher(eventPSI, groups))
+        # output$spearman <- renderUI(spearman(eventPSI, groups))
         
         output$survival <- renderUI({
             tagList(h3("Survival analysis by quantification cut-off"),
@@ -340,11 +346,11 @@ diffAnalysisServer <- function(input, output, session) {
         })
     })
     
-    # Take user to survival anlysis by quantification cut-off
+    # Take user to the survival curves separation by a quantification cut-off
     observeEvent(input$optimalSurv, runjs("showSurvCutoff()"))
 }
 
-attr(diffAnalysisUI, "loader") <- "analysis"
-attr(diffAnalysisUI, "name") <- "Differential analysis (per splicing event)"
-attr(diffAnalysisUI, "selectEvent") <- TRUE
-attr(diffAnalysisServer, "loader") <- "analysis"
+attr(diffSplicingUI, "loader") <- "analysis"
+attr(diffSplicingUI, "name") <- "Differential splicing analysis (per splicing event)"
+attr(diffSplicingUI, "selectEvent") <- TRUE
+attr(diffSplicingServer, "loader") <- "analysis"

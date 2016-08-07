@@ -51,6 +51,22 @@ queryUniprot <- function(protein, format="xml") {
     return(r)
 }
 
+#' Convert a protein's Ensembl identifier to UniProt identifier
+#' 
+#' @param protein Character: Ensembl protein identifier
+#' 
+#' @return UniProt protein identifier
+#' @export
+ensemblToUniprot <- function(protein) {
+    external <- queryEnsembl(paste0("xrefs/id/", protein),
+                             list("content-type"="application/json"),
+                             grch37=TRUE)
+    db <- external[grepl("Uniprot", external$dbname), ]
+    uniprot <- db$primary_id
+    names(uniprot) <- sprintf("%s (%s)", db$display_id, db$db_display_name)
+    return(uniprot)
+}
+
 #' Information's user interface
 #' @param id Character: identifier
 #' @importFrom shiny uiOutput
@@ -118,14 +134,19 @@ parseUniprotXML <- function(xml) {
 
 #' Plot protein features
 #'
-#' @param feature Data frame: protein features
-#' @param length Integer: protein length
+#' @param protein Character: UniProt protein identifier
 #'
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip
 #' hc_add_series
 #'
 #' @return highchart object
-proteinHighcharts <- function(feature, length) {
+#' @export
+plotProtein <- function(protein) {
+    xml     <- queryUniprot(protein, "xml")
+    parsed  <- parseUniprotXML(xml)
+    length  <- parsed$proteinLength
+    feature <- parsed$feature
+    
     hc <- highchart() %>%
         hc_chart(type="area", zoomType="x") %>%
         hc_xAxis(title=list(text="Position (aminoacids)"), min=0,
@@ -167,88 +188,110 @@ proteinHighcharts <- function(feature, length) {
 
 #' Plot transcripts
 #' 
-#' @param input SHiny input
-#' @param output Shiny output
 #' @param info Information retrieved from ENSEMBL
 #' @param eventPosition Numeric: coordinates of the alternative splicing event
 #' 
 #' @importFrom shiny renderPlot
-plotTranscripts <- function(input, output, info, eventPosition) {
-    output$plotTranscripts <- renderPlot({
-        transcripts <- data.frame()
-        
-        for (i in 1:nrow(info$Transcript)) {
-            transcriptId <- info$Transcript[i, "id"]
-            nn <- info$Transcript$Exon[[i]]
-            transcripts <- rbind(
-                transcripts,
-                data.frame(chrom=nn$seq_region_name, start=nn$start,
-                           stop=nn$end, gene=transcriptId, score=0,
-                           strand=nn$strand))
-        }
-        
-        chrom <- paste0("chr", transcripts$chrom)
-        min <- min(transcripts$start)
-        max <- max(transcripts$stop)
-        
-        
-        plotGenes(transcripts, chrom, min, max, fontsize=1.5)
-        zoomsregion(eventPosition, highlight=TRUE)
-        labelgenome(chrom, min, max, scale="Mb")
-    })
+#' @export
+plotTranscripts <- function(info, eventPosition) {
+    transcripts <- data.frame()
+    
+    for (i in 1:nrow(info$Transcript)) {
+        transcriptId <- info$Transcript[i, "id"]
+        nn <- info$Transcript$Exon[[i]]
+        transcripts <- rbind(
+            transcripts,
+            data.frame(chrom=nn$seq_region_name, start=nn$start,
+                       stop=nn$end, gene=transcriptId, score=0,
+                       strand=nn$strand))
+    }
+    
+    chrom <- paste0("chr", transcripts$chrom)
+    min <- min(transcripts$start)
+    max <- max(transcripts$stop)
+    
+    
+    plotGenes(transcripts, chrom, min, max, fontsize=1.5)
+    zoomsregion(eventPosition, highlight=TRUE)
+    labelgenome(chrom, min, max, scale="Mb")
 }
 
 #' Render genetic information
 #' 
 #' @param ns Namespace function
-#' @param output Shiny output
 #' @param info Information as retrieved from ENSEMBL
 #' @param species Character: species name
 #' @param assembly Character: assembly version
 #' @param grch37 Boolean: use version GRCh37 of the genome?
 #' 
 #' @importFrom shiny renderUI h2 h4 plotOutput
-renderGeneticInfo <- function(ns, output, info, species, assembly, grch37) {
+renderGeneticInfo <- function(ns, info, species, assembly, grch37) {
+    start <- as.numeric(info$start)
+    end   <- as.numeric(info$end)
     
-    output$info <- renderUI({
-        start <- as.numeric(info$start)
-        end   <- as.numeric(info$end)
-        
-        tagList(
-            h2(info$display_name, tags$small(info$id)),
-            sprintf("Species: %s (assembly %s)", species, assembly),
-            br(), sprintf("Chromosome %s: %s-%s (%s strand)",
-                          info$seq_region_name,
-                          format(start, big.mark=",", scientific=FALSE),
-                          format(end, big.mark=",", scientific=FALSE),
-                          ifelse(info$strand == -1,"reverse", "forward")),
-            br(), sprintf("%s (%s)", info$description,
-                          info$biotype), br(),
-            tags$a("Ensembl", icon("external-link"), target="_blank",
-                   class="btn btn-link",
-                   href=paste0("http://", if(grch37) { "grch37." },
-                               "ensembl.org/", species, "/",
-                               "Gene/Summary?g=", info$id)),
-            tags$a("UCSC", icon("external-link"), target="_blank",
-                   class="btn btn-link",
-                   href=paste0("https://genome.ucsc.edu/cgi-bin/hgTracks",
-                               if(grch37) { "?db=hg19" }, "&position=chr",
-                               info$seq_region_name, ":", start, "-", end)),
-            tags$a("GeneCards", icon("external-link"), target="_blank",
-                   class="btn btn-link",
-                   href=paste0("http://www.genecards.org/cgi-bin/",
-                               "carddisp.pl?gene=", info$id)),
-            if (species == "human") 
-                tags$a("Human Protein Atlas", icon("external-link"),
-                       target="_blank", class="btn btn-link",
-                       href=paste0("http://www.proteinatlas.org/", info$id, 
-                                   "/cancer")),
-            h4("Transcripts"),
-            plotOutput(ns("plotTranscripts"), height="200px"),
-            uiOutput(ns("selectizeProtein")),
-            highchartOutput(ns("plotProtein"), height="200px")
-        )
-    })
+    tagList(
+        h2(info$display_name, tags$small(info$id)),
+        sprintf("Species: %s (assembly %s)", species, assembly),
+        br(), sprintf("Chromosome %s: %s-%s (%s strand)",
+                      info$seq_region_name,
+                      format(start, big.mark=",", scientific=FALSE),
+                      format(end, big.mark=",", scientific=FALSE),
+                      ifelse(info$strand == -1,"reverse", "forward")),
+        br(), sprintf("%s (%s)", info$description,
+                      info$biotype), br(),
+        tags$a("Ensembl", icon("external-link"), target="_blank",
+               class="btn btn-link",
+               href=paste0("http://", if(grch37) { "grch37." },
+                           "ensembl.org/", species, "/",
+                           "Gene/Summary?g=", info$id)),
+        tags$a("UCSC", icon("external-link"), target="_blank",
+               class="btn btn-link",
+               href=paste0("https://genome.ucsc.edu/cgi-bin/hgTracks",
+                           if(grch37) { "?db=hg19" }, "&position=chr",
+                           info$seq_region_name, ":", start, "-", end)),
+        tags$a("GeneCards", icon("external-link"), target="_blank",
+               class="btn btn-link",
+               href=paste0("http://www.genecards.org/cgi-bin/",
+                           "carddisp.pl?gene=", info$id)),
+        if (species == "human") 
+            tags$a("Human Protein Atlas", icon("external-link"),
+                   target="_blank", class="btn btn-link",
+                   href=paste0("http://www.proteinatlas.org/", info$id, 
+                               "/cancer")),
+        h4("Transcripts"),
+        plotOutput(ns("plotTranscripts"), height="200px"),
+        uiOutput(ns("selectizeProtein")),
+        highchartOutput(ns("plotProtein"), height="200px")
+    )
+}
+
+#' Query information from Ensembl by a given alternative splicing event
+#' 
+#' @param event Character: alternative splicing event identifier
+#' @param ... Arguments to pass to \code{queryEnsemblByGene}
+#' 
+#' @return Information from Ensembl
+#' @export
+queryEnsemblByEvent <- function(event, ...) {
+    gene <- parseEvent(event)$gene
+    if (gene == "NA")
+        stop("This event has no gene associated")
+    return(queryEnsemblByGene(gene, ...))
+}
+
+#' Query information from Ensembl by a given gene
+#' 
+#' @param gene Character: gene identifier
+#' @param species Character: species
+#' @param assembly Character: assembly version
+#' 
+#' @return Information from Ensembl
+#' @export
+queryEnsemblByGene <- function(gene, species, assembly) {
+    grch37 <- assembly == "hg19"
+    path   <- paste0("lookup/symbol/", species, "/", gene)
+    info   <- queryEnsembl(path, list(expand=1), grch37=grch37)
+    return(info)
 }
 
 #' Server logic
@@ -270,26 +313,26 @@ infoServer <- function(input, output, session) {
                                 "alternative splicing.")))
         else if (is.null(event) || event == "") return(noinfo(output))
         
-        event <- strsplit(event, "_")[[1]]
-        gene <- event[length(event)]
-        if (gene == "NA") return(noinfo(output))
+        parsed <- parseEvent(event)
+        if (parsed$gene == "NA") return(noinfo(output))
         
-        eventPosition <- event[4:(length(event)-1)]
-        eventPosition <- range(as.numeric(eventPosition))
-        
-        species <- tolower(getSpecies())
+        species  <- tolower(getSpecies())
         assembly <- getAssemblyVersion()
-        grch37 <- assembly == "hg19"
-        if(is.null(species) || is.null(assembly)) return(NULL)
+        grch37   <- assembly == "hg19"
+        if(is.null(species) || is.null(assembly)) stop("NULL")
         
-        path <- paste0("lookup/symbol/", species, "/", gene)
+        path <- paste0("lookup/symbol/", species, "/", parsed$gene)
         info <- queryEnsembl(path, list(expand=1), grch37=grch37)
+        
         if (is.null(info))
             return(noinfo(output, title="No Ensembl match retrieved.",
                           description="Please, try again."))
         
-        renderGeneticInfo(ns, output, info, species, assembly, grch37)
-        plotTranscripts(input, output, info, eventPosition)
+        output$info <- renderUI(
+            renderGeneticInfo(ns, info, species, assembly, grch37))
+        
+        output$plotTranscripts <- renderPlot(
+            plotTranscripts(info, parsed$pos))
         
         # Show NULL so it doesn't show previous results when loading
         output$selectizeProtein <- renderUI("Loading...")
@@ -297,12 +340,13 @@ infoServer <- function(input, output, session) {
         
         output$selectizeProtein <- renderUI({
             proteins <- info$Transcript$Translation$id
+            names(proteins) <- paste("Transcript:", info$Transcript$id, "/", 
+                                     "Protein:", proteins)
             proteins <- proteins[!is.na(proteins)]
             tagList(
                 selectizeInput(ns("selectedProtein"), label="Select protein",
                                choices=proteins, width="auto"),
-                uiOutput(ns("proteinLink"))
-            )
+                uiOutput(ns("proteinLink")))
         })
     })
     
@@ -310,9 +354,9 @@ infoServer <- function(input, output, session) {
         ensembl <- input$selectedProtein
         if (is.null(ensembl)) return(NULL)
         
-        species <- tolower(getSpecies())
+        species  <- tolower(getSpecies())
         assembly <- getAssemblyVersion()
-        grch37 <- assembly == "hg19"
+        grch37   <- assembly == "hg19"
         if(is.null(species) || is.null(assembly)) return(NULL)
         
         # Convert from ENSEMBL to Uniprot/SWISSPROT
@@ -323,36 +367,26 @@ infoServer <- function(input, output, session) {
         if (is.null(uniprot)) return(NULL)
         uniprot <- uniprot[grepl("SWISSPROT", uniprot$dbname), ]
         
+        href <- paste0("http://", if(grch37) { "grch37." }, "ensembl.org/", 
+                       species, "/Search/Results?q=", ensembl)
         ensemblLink <- tags$a("Ensembl", icon("external-link"), target="_blank",
-                              class="btn btn-link",
-                              href=paste0("http://", if(grch37) { "grch37." },
-                                          "ensembl.org/", species, "/",
-                                          "Search/Results?q=", ensembl))
+                              class="btn btn-link", href=href)
         
         if (nrow(uniprot) == 0) {
             print("No protein match with Uniprot/SWISSPROT")
-            output$proteinLink <- renderUI({
-                tagList(ensemblLink,
-                        tags$a("No Uniprot match", icon("chain-broken"),
-                               class="btn btn-link")
-                )
-            })
+            noMatch <- tagList(ensemblLink, tags$a("No Uniprot match", 
+                                                   icon("chain-broken"),
+                                                   class="btn btn-link"))
+            output$proteinLink <- renderUI(noMatch)
             output$plotProtein <- renderHighchart(NULL)
         } else {
             protein <- uniprot$primary_id[1]
-            xml <- queryUniprot(protein, "xml")
-            parsed <- parseUniprotXML(xml)
-            proteinLength <- parsed$proteinLength
-            feature <- parsed$feature
-            
-            hc <- proteinHighcharts(feature, proteinLength)
+            hc <- plotProtein(protein)
             output$proteinLink <- renderUI({
-                tagList(ensemblLink,
-                        tags$a("Uniprot", icon("external-link"),
-                               target="_blank", class="btn btn-link",
-                               href=paste0("http://www.uniprot.org/uniprot/",
-                                           protein))
-                )
+                href <- paste0("http://www.uniprot.org/uniprot/", protein)
+                tagList(ensemblLink, 
+                        tags$a("Uniprot", icon("external-link"), href=href,
+                               target="_blank", class="btn btn-link"))
             })
             output$plotProtein <- renderHighchart(hc)
             print("Uniprot/SWISSPROT protein found")

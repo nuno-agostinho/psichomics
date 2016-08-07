@@ -111,10 +111,17 @@ getAssemblyVersion <- function(category = getCategory())
 #' @param dataset Character: data set (e.g. "Clinical data")
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
+#' @param full Boolean: return all the information on groups (TRUE) or just the
+#' group names and respective indexes (FALSE)? FALSE by default
 #' 
 #' @return Matrix with groups of a given dataset
-getGroupsFrom <- function(dataset, category = getCategory())
-    getGlobal(category, dataset, "groups")
+getGroupsFrom <- function(dataset, category = getCategory(), full=FALSE) {
+    groups <- getGlobal(category, dataset, "groups")
+    if (full)
+        return(groups)
+    else
+        return(groups[, "Rows"])
+}
 
 #' Get clinical matches from a given data type
 #' @note Needs to be called inside reactive function
@@ -228,6 +235,25 @@ setAssemblyVersion <- function(value, category = getCategory())
 #' it uses the selected data category
 setClinicalMatchFrom <- function(dataset, matches, category = getCategory())
     setGlobal(category, dataset, "clinicalMatch", value=matches)
+
+#' Parse an alternative splicing event based on a given identifier
+#' 
+#' @param event Character: event identifier
+#' 
+#' @return Parsed event
+#' @export
+parseEvent <- function(event) {
+    event <- strsplit(event, "_")[[1]]
+    parsed <- NULL
+    
+    parsed$type   <- event[1]
+    parsed$chrom  <- event[2]
+    parsed$strand <- event[3]
+    parsed$gene   <- event[length(event)]
+    parsed$pos    <- event[4:(length(event)-1)]
+    parsed$pos    <- range(as.numeric(parsed$pos))
+    return(parsed)
+}
 
 #' Trims whitespace from a word
 #'
@@ -343,10 +369,10 @@ matchIdWithClinical <- function(ids, clinical) {
 #' @return Names of the matching rows
 getMatchingRowNames <- function(selected, groups, matches) {
     # Get selected groups
-    rows <- groups[selected, "Rows"]
+    g <- unlist(groups[selected])
     
     # Get names of the matching rows with the data
-    ns <- names(matches[matches %in% unlist(rows)])
+    ns <- names(matches[matches %in% g])
     ns <- unique(ns)
     return(ns)
 }
@@ -357,18 +383,15 @@ getMatchingRowNames <- function(selected, groups, matches) {
 #' @param patients Integer: total number of clinical patients
 #' @param includeOuterGroup Boolean: join the patients that have no groups?
 #' @param outerGroupName Character: name to give to outer group
-#' @param allDataName Character: name to give in case there are no groups
 #' 
 #' @return Character vector where each element corresponds to the group of a
 #' clinical patient
 groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE, 
-                            outerGroupName="(Outer data)",
-                            allDataName="All data") {
-    rows <- groups[, "Rows", drop=FALSE]
-    if (length(rows) == 0) return(rep(allDataName, patients))
+                            outerGroupName="(Outer data)") {
+    if (length(groups) == 0) return(rep("Single group", patients))
     
-    all <- unlist(rows)
-    names(all) <- rep(rownames(rows), sapply(rows, length))
+    all <- unlist(groups)
+    names(all) <- rep(names(groups), sapply(groups, length))
 
     finalGroups <- rep(NA, patients)
     for (each in unique(all))
@@ -503,10 +526,13 @@ rowVar <- function (x, na.rm = FALSE) {
 #' 
 #' @param sample Character: ID of the sample
 #' @param filename Character: path to RDS file containing corresponding type
-getSampleTypes <- function(sample, 
-                           filename = system.file("extdata",  
-                                                  "TCGAsampleType.RDS",
-                                                  package="psichomics")) {
+#' 
+#' @return Types of the TCGA samples
+#' @export
+parseSampleGroups <- function(sample, 
+                              filename = system.file("extdata",  
+                                                     "TCGAsampleType.RDS",
+                                                     package="psichomics")) {
     typeList <- readRDS(filename)
     type <- gsub(".*?-([0-9]{2}).-.*", "\\1", sample, perl = TRUE)
     return(typeList[type])

@@ -15,29 +15,29 @@ LazyData: true
 RoxygenNote: 5.0.1
 Imports:
     ggplot2,
-	data.table,
-	devtools,
-	digest,
-	dplyr,
-	DT,
-	fastmatch,
-	gplots,
-	highcharter,
-	htmltools,
-	httr,
-	jsonlite,
-	miscTools,
-	plyr,
-	R.utils,
-	rlist,
-	shinyjs,
-	stats,
-	stringr,
-	survival,
-	Sushi,
-	tools,
-	utils,
-	XML
+    data.table,
+    devtools,
+    digest,
+    dplyr,
+    DT,
+    fastmatch,
+    gplots,
+    highcharter,
+    htmltools,
+    httr,
+    jsonlite,
+    miscTools,
+    plyr,
+    R.utils,
+    rlist,
+    shinyjs,
+    stats,
+    stringr,
+    survival,
+    Sushi,
+    tools,
+    utils,
+    XML
 Suggests:
     testthat,
     knitr,
@@ -48,8 +48,8 @@ Suggests:
 VignetteBuilder: knitr
 Collate:
     'analysis.R'
-    'analysis_differentialAnalysis.R'
-    'analysis_differentialAnalysisTable.R'
+    'analysis_diffSplicing.R'
+    'analysis_diffSplicingTable.R'
     'analysis_information.R'
     'analysis_pca.R'
     'analysis_survival.R'

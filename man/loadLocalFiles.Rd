@@ -23,10 +23,12 @@ List of data frames from valid files
 Load local files
 }
 \examples{
+\dontrun{
 folder <- "~/Downloads/ACC 2016"
 data <- loadLocalFiles(folder)
 
 ignore <- c(".aux.", ".mage-tab.", "junction quantification")
 loadLocalFiles(folder, ignore)
+}
 }
 

@@ -4,18 +4,21 @@
 \alias{processSurvData}
 \title{Process survival data to calculate survival curves}
 \usage{
-processSurvData(timeStart, timeStop, event, group, clinical)
+processSurvData(event, timeStart, timeStop, group, clinical)
 }
 \arguments{
-\item{timeStart}{Numeric: starting time of the interval or follow up time}
+\item{event}{Character: name of column containing time of the event of
+interest}
 
-\item{timeStop}{Numeric: ending time of the interval}
+\item{timeStart}{Character: name of column containing starting time of the
+interval or follow up time}
 
-\item{event}{Numeric: time of the event of interest}
+\item{timeStop}{Character: name of column containing ending time of the 
+interval}
 
 \item{group}{Character: group of each individual}
 
-\item{clinical}{Data.frame: clinical data}
+\item{clinical}{Data frame: clinical data}
 }
 \value{
 Data frame with terms needed to calculate survival curves
