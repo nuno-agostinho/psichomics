@@ -22,8 +22,9 @@
 #' psichomics:::queryEnsembl(path, query, grch37 = TRUE)
 queryEnsembl <- function(path, query, grch37 = TRUE) {
     url <- paste0("http://", if(grch37) "grch37.", "rest.ensembl.org")
-    resp <- GET(url, path=path, query=query)
-    if (http_error(resp)) return(NULL)
+    resp <- tryCatch(GET(url, path=path, query=query), error=return)
+    if ("error" %in% class(resp)) return(NULL)
+    else if (http_error(resp)) return(NULL)
     r <- content(resp, "text", encoding = "UTF8")
     return(fromJSON(r))
 }
@@ -49,6 +50,43 @@ queryUniprot <- function(protein, format="xml") {
     warn_for_status(resp)
     r <- content(resp, "text", encoding = "UTF8")
     return(r)
+}
+
+#' Query the PubMed REST API
+#'
+#' @importFrom httr GET
+#' @importFrom jsonlite fromJSON
+#'
+#' @return Parsed response
+#'
+#' @examples
+#' psichomics:::queryPubMed("BRCA1", "cancer", "adrenocortical carcinoma")
+queryPubMed <- function(primary, ...) {
+    args  <- unlist(list(...))
+    for (each in seq_along(args)) {
+        args[each] <- paste0("(", paste(primary, args[each], sep=" AND "), ")")
+    }
+    terms <- paste(args, collapse=" OR ")
+    terms <- paste(primary, terms, sep=" OR ")
+    
+    url <- "https://eutils.ncbi.nlm.nih.gov"
+    query <- list(db="pmc", term=terms, retmax=3, tool="psichomics", 
+                  field="abstract", sort="relevance",
+                  email="nunodanielagostinho@gmail.com", retmode="json")
+    resp <- GET(url, path="entrez/eutils/esearch.fcgi", query=query)
+    warn_for_status(resp)
+    search <- content(resp, "text", encoding = "UTF8")
+    search <- fromJSON(search)[[2]]
+    
+    # Get summary information on the articles
+    ids <- paste(search$idlist, collapse="+")
+    query <- list(db="pmc", tool="psichomics", id=ids,
+                  email="nunodanielagostinho@gmail.com", retmode="json")
+    resp <- GET(url, path="entrez/eutils/esummary.fcgi", query=query)
+    warn_for_status(resp)
+    metadata <- content(resp, "text", encoding = "UTF8")
+    metadata <- fromJSON(metadata)[[2]][-1]
+    return(c(search=list(search), metadata))
 }
 
 #' Convert a protein's Ensembl identifier to UniProt identifier
@@ -229,7 +267,7 @@ renderGeneticInfo <- function(ns, info, species, assembly, grch37) {
     start <- as.numeric(info$start)
     end   <- as.numeric(info$end)
     
-    tagList(
+    genetic <- tagList(
         h2(info$display_name, tags$small(info$id)),
         sprintf("Species: %s (assembly %s)", species, assembly),
         br(), sprintf("Chromosome %s: %s-%s (%s strand)",
@@ -254,15 +292,19 @@ renderGeneticInfo <- function(ns, info, species, assembly, grch37) {
                href=paste0("http://www.genecards.org/cgi-bin/",
                            "carddisp.pl?gene=", info$id)),
         if (species == "human") 
-            tags$a("Human Protein Atlas", icon("external-link"),
-                   target="_blank", class="btn btn-link",
+            tags$a("Human Protein Atlas (Cancer Atlas)", 
+                   icon("external-link"), target="_blank", class="btn btn-link",
                    href=paste0("http://www.proteinatlas.org/", info$id, 
-                               "/cancer")),
-        h4("Transcripts"),
+                               "/cancer"))
+    )
+    
+    tagList(
+        fluidRow(column(6, genetic), 
+                 column(6, uiOutput(ns("articles")))),
+        h4("Transcripts"), 
         plotOutput(ns("plotTranscripts"), height="200px"),
         uiOutput(ns("selectizeProtein")),
-        highchartOutput(ns("plotProtein"), height="200px")
-    )
+        highchartOutput(ns("plotProtein"), height="200px"))
 }
 
 #' Query information from Ensembl by a given alternative splicing event
@@ -324,9 +366,17 @@ infoServer <- function(input, output, session) {
         path <- paste0("lookup/symbol/", species, "/", parsed$gene)
         info <- queryEnsembl(path, list(expand=1), grch37=grch37)
         
-        if (is.null(info))
-            return(noinfo(output, title="No Ensembl match retrieved.",
-                          description="Please, try again."))
+        if (is.null(info)) {
+            output$info <- renderUI({ 
+                title <- "Ensembl API appears to be offline."
+                description <- paste("Please, try selecting another event or",
+                                     "try again later.")
+                noinfo <- h3(title, br(), tags$small(description))
+                fluidRow(column(6, noinfo), 
+                         column(6, uiOutput(ns("articles"))))
+            })
+            return(NULL)
+        }
         
         output$info <- renderUI(
             renderGeneticInfo(ns, info, species, assembly, grch37))
@@ -339,58 +389,129 @@ infoServer <- function(input, output, session) {
         output$plotProtein <- renderHighchart(NULL)
         
         output$selectizeProtein <- renderUI({
-            proteins <- info$Transcript$Translation$id
-            names(proteins) <- paste("Transcript:", info$Transcript$id, "/", 
-                                     "Protein:", proteins)
-            proteins <- proteins[!is.na(proteins)]
+            transcripts <- info$Transcript$Translation$id
+            names(transcripts) <- info$Transcript$id
+            transcripts <- transcripts[!is.na(transcripts)]
+            
             tagList(
-                selectizeInput(ns("selectedProtein"), label="Select protein",
-                               choices=proteins, width="auto"),
-                uiOutput(ns("proteinLink")))
+                fixedRow(
+                    column(3, selectizeInput(ns("selectedTranscript"),
+                                             label="Select transcript", 
+                                             choices=transcripts, width="auto")),
+                    column(3, selectizeInput(ns("selectedProtein"),
+                                             label="Select protein",
+                                             choices=NULL, width="auto")),
+                    column(3, uiOutput(ns("proteinLink"), 
+                                       class="inline_selectize"))))
         })
     })
     
+    # Check UniProt proteins matching a given Ensembl transcript
     observe({
-        ensembl <- input$selectedProtein
-        if (is.null(ensembl)) return(NULL)
+        ensembl  <- input$selectedTranscript
+        species  <- tolower(getSpecies())
+        assembly <- getAssemblyVersion()
+        grch37   <- assembly == "hg19"
+        
+        if (is.null(ensembl) || is.null(species) || is.null(assembly)) {
+            updateSelectizeInput(session, "selectedProtein", 
+                                 choices=c("No UniProt match"=""))
+        } else {
+            # Look up matching identifiers from Uniprot
+            external <- queryEnsembl(paste0("xrefs/id/", ensembl),
+                                     list("content-type"="application/json"),
+                                     grch37=grch37)
+            if (is.null(external)) {
+                updateSelectizeInput(
+                    session, "selectedProtein", 
+                    choices=c("Ensembl API appears to be offline"=""))
+            } else {
+                db <- external[grepl("Uniprot", external$dbname), ]
+                if (nrow(db) == 0) {
+                    updateSelectizeInput(session, "selectedProtein", 
+                                         choices=c("No UniProt match"=""))
+                }
+                uniprot <- db$primary_id
+                names(uniprot) <- sprintf("%s (%s)", db$display_id,
+                                          db$db_display_name)
+                updateSelectizeInput(session, "selectedProtein", 
+                                     choices=uniprot)
+            }
+        }
+    })
+    
+    # Update protein links depending on chosen transcript and protein
+    observe({
+        ensembl <- input$selectedTranscript
+        uniprot <- input$selectedProtein
         
         species  <- tolower(getSpecies())
         assembly <- getAssemblyVersion()
         grch37   <- assembly == "hg19"
-        if(is.null(species) || is.null(assembly)) return(NULL)
-        
-        # Convert from ENSEMBL to Uniprot/SWISSPROT
-        print("Looking for ENSEMBL protein in Uniprot...")
-        uniprot <- queryEnsembl(paste0("xrefs/id/", ensembl),
-                                list("content-type"="application/json"),
-                                grch37=grch37)
-        if (is.null(uniprot)) return(NULL)
-        uniprot <- uniprot[grepl("SWISSPROT", uniprot$dbname), ]
+        if (is.null(species) || is.null(assembly)) return(NULL)
         
         href <- paste0("http://", if(grch37) { "grch37." }, "ensembl.org/", 
                        species, "/Search/Results?q=", ensembl)
         ensemblLink <- tags$a("Ensembl", icon("external-link"), target="_blank",
                               class="btn btn-link", href=href)
         
-        if (nrow(uniprot) == 0) {
-            print("No protein match with Uniprot/SWISSPROT")
-            noMatch <- tagList(ensemblLink, tags$a("No Uniprot match", 
-                                                   icon("chain-broken"),
-                                                   class="btn btn-link"))
-            output$proteinLink <- renderUI(noMatch)
+        href <- paste0("http://www.uniprot.org/uniprot/", uniprot)
+        links <- tagList(ensemblLink, 
+                         tags$a("Uniprot", icon("external-link"), href=href,
+                                target="_blank", class="btn btn-link"))
+        output$proteinLink <- renderUI(links)
+    })
+    
+    # Plot UniProt proteins
+    observe({
+        uniprot <- input$selectedProtein
+        if (is.null(uniprot) || uniprot == "") {
             output$plotProtein <- renderHighchart(NULL)
         } else {
-            protein <- uniprot$primary_id[1]
-            hc <- plotProtein(protein)
-            output$proteinLink <- renderUI({
-                href <- paste0("http://www.uniprot.org/uniprot/", protein)
-                tagList(ensemblLink, 
-                        tags$a("Uniprot", icon("external-link"), href=href,
-                               target="_blank", class="btn btn-link"))
-            })
-            output$plotProtein <- renderHighchart(hc)
-            print("Uniprot/SWISSPROT protein found")
+            hc <- tryCatch(plotProtein(uniprot), error=return)
+            if ("error" %in% hc) {
+                print("Some error occurred...")
+            } else {
+                output$plotProtein <- renderHighchart(hc)
+            }
         }
+    })
+    
+    # Render relevant articles
+    output$articles <- renderUI({
+        event <- getEvent()
+        event <- parseEvent(event)
+        pubmed <- queryPubMed(event$gene, "cancer")
+        
+        articles <- pubmed[-1]
+        articleList <- lapply(articles, function (article) {
+            authors <- article$authors$name
+            if (length(authors) > 2)
+                authors <- paste(authors[1], "et al.")
+            
+            year <- strsplit(article$pubdate, " ")[[1]][[1]]
+            description <- sprintf("%s (%s). %s, %s(%s).", authors, year, 
+                                   article$source, article$volume, 
+                                   article$issue)
+            
+            pmid <- article$articleids$value[1]
+            tags$a(href=paste0("http://pubmed.gov/", pmid), target="_blank",
+                   class="list-group-item",
+                   h5(class="list-group-item-heading", 
+                      article$title, tags$small(description)))
+        })
+        
+        search <- pubmed$search$querytranslation
+        search <- gsub("[Abstract]", "[Title/Abstract]", search, fixed = TRUE)
+        search <- paste0("http://www.ncbi.nlm.nih.gov/pubmed/?term=", search)
+        
+        articlesUI <- div(class="panel panel-default", 
+                          div(class="panel-heading",
+                              tags$b("Relevant PubMed articles", tags$a(
+                                  href=search, target="_blank", 
+                                  class="pull-right", "Show more articles"))),
+                          div(class="list-group", articleList))
+        return(articlesUI)
     })
 }
 
