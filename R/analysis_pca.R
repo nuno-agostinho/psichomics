@@ -76,7 +76,8 @@ pcaUI <- function(id) {
                             "values. The remaining individuals are discarded."),
                       options=list(container="body")),
             selectGroupsUI(ns("dataGroups"), "Filter data groups"),
-            actionButton(ns("calculate"), class = "btn-primary", "Calculate PCA"),
+            actionButton(ns("calculate"), class = "btn-primary", 
+                         "Calculate PCA"),
             hr(),
             selectizeInput(ns("pcX"), "Choose X axis", choices=NULL),
             selectizeInput(ns("pcY"), "Choose Y axis", choices=NULL),
@@ -230,7 +231,7 @@ pcaServer <- function(input, output, session) {
             # Subset data by the selected clinical groups
             if (!is.null(selected)) {
                 ns <- getMatchingRowNames(selected, clinical, match)
-                psi <- psi[ , ns]
+                psi <- psi[ , toupper(ns)]
             }
             
             # Raise error if data has no rows
@@ -257,17 +258,18 @@ pcaServer <- function(input, output, session) {
     
     # Show variance plot
     observeEvent(input$showVariancePlot,
-        infoModal(session, "Variance plot", highchartOutput(ns("variancePlot")),
-                  size = "large"))
+                 infoModal(session, "Variance plot", 
+                           highchartOutput(ns("variancePlot")),
+                           size = "large"))
     
-    # Interface after performing PCA
+    # Update select inputs of the principal components
     observe({
-        pca <- isolate(sharedData$inclusionLevelsPCA)
+        pca <- sharedData$inclusionLevelsPCA
         if (is.null(pca)) {
-            if (input$plot > 0) {
-                errorModal(session, "No PCA performed",
-                           "Perform a PCA and plot it afterwards.")
-            }
+            updateSelectizeInput(session, "pcX",
+                                 choices=c("No PCA performed yet"=""))
+            updateSelectizeInput(session, "pcY",
+                                 choices=c("No PCA performed yet"=""))
             return(NULL)
         }
         
@@ -275,36 +277,46 @@ pcaServer <- function(input, output, session) {
         perc <- as.numeric(imp)
         names(perc) <- names(imp)
         
-        observe({
-            # Update inputs to select principal components
-            label <- sprintf("%s (%s%% explained variance)", 
-                             names(perc), roundDigits(perc * 100))
-            choices <- setNames(names(perc), label)
-            
-            updateSelectizeInput(session, "pcX", choices=choices)
-            updateSelectizeInput(session, "pcY", choices=choices, 
-                                 selected=choices[[2]])
+        # Update inputs to select principal components
+        label <- sprintf("%s (%s%% explained variance)", 
+                         names(perc), roundDigits(perc * 100))
+        choices <- setNames(names(perc), label)
+        choices <- c(choices, "Select a principal component"="")
+        
+        updateSelectizeInput(session, "pcX", choices=choices)
+        updateSelectizeInput(session, "pcY", choices=choices, 
+                             selected=choices[[2]])
+    })
+    
+    # Plot the explained variance plot
+    output$variancePlot <- renderHighchart({
+        pca <- sharedData$inclusionLevelsPCA
+        if (is.null(pca)) {
+            if (input$plot > 0) {
+                errorModal(session, "No PCA performed",
+                           "Perform a PCA and plot it afterwards.")
+            }
+            return(NULL)
+        }
+        plotVariance(pca)
+    })
+    
+    # Plot the principal component analysis
+    observeEvent(input$plot, {
+        isolate({
+            pca <- sharedData$inclusionLevelsPCA
+            pcX <- input$pcX
+            pcY <- input$pcY
+            selected <- input$colourGroups
+            show <- input$plotShow
+            clinical <- getGroupsFrom("Clinical data")
+            match <- getClinicalMatchFrom("Inclusion levels")
         })
         
-        # Plot the explained variance plot
-        output$variancePlot <- renderHighchart( plotVariance(pca) )
-        
-        # Plot the principal component analysis
-        observeEvent(input$plot, {
-            isolate({
-                pcX <- input$pcX
-                pcY <- input$pcY
-                selected <- input$colourGroups
-                show <- input$plotShow
-                clinical <- getGroupsFrom("Clinical data")
-                match <- getClinicalMatchFrom("Inclusion levels")
-            })
-            
-            output$scatterplot <- renderHighchart(
-                if (!is.null(pcX) & !is.null(pcY))
-                    plotPCA(pca, pcX, pcY, selected, clinical, match,
-                            "Individuals" %in% show, "Loadings" %in% show))
-        })
+        output$scatterplot <- renderHighchart(
+            if (!is.null(pcX) & !is.null(pcY))
+                plotPCA(pca, pcX, pcY, selected, clinical, match,
+                        "Individuals" %in% show, "Loadings" %in% show))
     })
 }
 
