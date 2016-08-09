@@ -226,10 +226,14 @@ checkIntegrity <- function(filesToCheck, md5file) {
 #' Prepares Firehose archives in a given directory
 #'
 #' Checks Firehose archives' integrity using the MD5 files, extracts the content
-#' of the archives and removes the original downloaded archives.
+#' of the archives, moves the content to newly-created folders and removes the 
+#' original downloaded archives.
 #'
 #' @param archive Character: path to downloaded archives
 #' @param md5 Characater: path to MD5 files of each archive
+#' @param folder Character: master directory where every archive will be 
+#' extracted
+#' @param outdir Character: subdirectories where to move the extracted content
 #' 
 #' @importFrom utils untar
 #' 
@@ -244,7 +248,7 @@ checkIntegrity <- function(filesToCheck, md5file) {
 #' \dontrun{
 #' prepareFirehoseArchives(archive = file, md5 = paste0(file, ".md5"))
 #' }
-prepareFirehoseArchives <- function(archive, md5) {
+prepareFirehoseArchives <- function(archive, md5, folder, outdir) {
     # Check integrety of the downloaded archives with the MD5 files
     validFiles <- simplify2array(Map(checkIntegrity, archive, md5))
     
@@ -261,6 +265,22 @@ prepareFirehoseArchives <- function(archive, md5) {
     
     # Remove the original downloaded files
     invisible(file.remove(archive, md5))
+    
+    # Create folders for these data
+    directory <- file.path(folder, names(outdir))
+    existing <- dir.exists(directory)
+    lapply(directory[!existing], dir.create)
+    
+    # Move the files to the newly-created folders
+    arc <- file_path_sans_ext(archive, compression=TRUE)
+    basen <- basename(arc)
+    
+    ns <- sapply(basen, function(k) {
+        m <- sapply(outdir, function(p) basename(p) == k)
+        names(outdir)[col(m)[m]]
+    })
+    
+    file.rename(arc, file.path(dirname(arc), ns, basen))
     return(invisible(TRUE))
 }
 
@@ -337,6 +357,7 @@ loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
 #' 
 #' @param folder Character: directory to store the downloaded archives (by
 #' default, it saves in the user's "Downloads" folder)
+#' @param data Character: data to load
 #' @param exclude Character: files and folders to exclude from downloading and
 #' from loading into R (by default, it excludes ".aux.", ".mage-tab." and
 #' "MANIFEST.TXT" files)
@@ -392,26 +413,26 @@ loadFirehoseData <- function(folder = "~/Downloads", data=NULL,
     fullPath <- function(files)
         downloadedFiles[match(files, basename(downloadedFiles))]
     
+    # Downloaded files may be archived
+    possibleExtensions <- lapply(base[!md5], paste0, c("", ".tar", ".tar.gz"))
+    
     missing <- logical(length(base))
     missing[md5]  <- !base[md5] %in% basename(downloadedFiles[downloadedMD5])
-    
-    possibleExtensions <- lapply(base[!md5], paste0, c("", ".tar", ".tar.gz"))
     missing[!md5] <- vapply(possibleExtensions, function (i)
-        !any(i %in% basename(downloadedFiles[!downloadedMD5])),
+        !any(i %in% basename(downloadedFiles[!downloadedMD5])), 
         FUN.VALUE = logical(1))
     
     if (sum(missing[!md5]) > 0) {
-        # Download missing files
-        progress(divisions = 1)
-        print("Triggered the download of files")
-        
         missingFiles <- url[missing]
         class(missingFiles) <- c("missing", class(missingFiles))
 
         if (download) {
-            dl <- download.file(missingFiles, 
-                                destfile=file.path(folder, 
-                                                   basename(missingFiles)))
+            # Download missing files
+            progress(divisions = 1)
+            print("Triggered the download of files")
+            
+            dl <- download.file(missingFiles, destfile=file.path(
+                folder, basename(missingFiles)))
             
             # Check again the files in the given directory
             downloadedFiles <- list.files(folder, recursive=TRUE, 
@@ -422,46 +443,31 @@ loadFirehoseData <- function(folder = "~/Downloads", data=NULL,
         }
     }
     
-    # Check if there are folders to unarchive
-    archives <- unlist(lapply(possibleExtensions, function (i)
-        i[i %in% basename(downloadedFiles[!downloadedMD5])]))
-    tar <- grepl(".tar", archives, fixed = TRUE)
-    
     # Split folders by the cohort type and date
     categories <- names(url[!md5])
     folders <- base[!md5]
     folders <- split(folders, categories)
     
+    # Check if there are folders to unarchive
+    archives <- unlist(lapply(possibleExtensions, function (i)
+        i[i %in% basename(downloadedFiles[!downloadedMD5])]))
+    tar <- grepl(".tar", archives, fixed = TRUE)
+    
     if (length(archives[tar]) > 0) {
+        # Extract the content, check intergrity, move archives to newly-created
+        # folders and remove original archives
         progress("Extracting archives...", divisions = 1 + length(folders))
-        
-        # Extract the content, check the intergrity and remove archives
         prepareFirehoseArchives(fullPath(archives[tar]), 
-                                fullPath(base[md5][tar]))
-        
-        # Create folders for these data
-        directory <- file.path(folder, names(folders))
-        existing <- dir.exists(directory)
-        lapply(directory[!existing], dir.create)
-        
-        # Move the files to the newly-created folders
-        arc <- file_path_sans_ext(fullPath(archives[tar]), compression=TRUE)
-        basen <- basename(arc)
-        
-        ns <- sapply(basen, function(k) {
-            m <- sapply(folders, function(p) basename(p) == k)
-            names(folders)[col(m)[m]]
-        })
-        
-        file.rename(arc, file.path(dirname(arc), ns, basen))
+                                fullPath(base[md5][tar]), folder, folders)
         progress("Archives prepared")
     } else {
-        # Divide the progress bar by the number of folders to load
+        # Set the progress bar to the number of folders to load
         progress(divisions = length(folders))   
     }
     
-    downloadedFiles <- list.files(folder, recursive=TRUE, 
-                                  full.names=TRUE, include.dirs=TRUE)
+    # Get the full path of the files
+    downloadedFiles <- list.files(folder, recursive=TRUE, full.names=TRUE, 
+                                  include.dirs=TRUE)
     folders <- fullPath(base[!md5])
     folders <- split(folders, categories)
     
@@ -564,6 +570,9 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
                              download = FALSE)
     
     if (any(class(data) == "missing")) {
+        updateProgress(divisions = 1)
+        print("Triggered the download of files")
+        
         # Download missing files through the browser
         iframe <- function(url) 
             tags$iframe(width=1, height=1, frameborder=0, src=url)
