@@ -4,19 +4,25 @@
 \alias{prepareFirehoseArchives}
 \title{Prepares Firehose archives in a given directory}
 \usage{
-prepareFirehoseArchives(archive, md5)
+prepareFirehoseArchives(archive, md5, folder, outdir)
 }
 \arguments{
 \item{archive}{Character: path to downloaded archives}
 
 \item{md5}{Characater: path to MD5 files of each archive}
+
+\item{folder}{Character: master directory where every archive will be 
+extracted}
+
+\item{outdir}{Character: subdirectories where to move the extracted content}
 }
 \value{
 Invisible TRUE if successful
 }
 \description{
 Checks Firehose archives' integrity using the MD5 files, extracts the content
-of the archives and removes the original downloaded archives.
+of the archives, moves the content to newly-created folders and removes the 
+original downloaded archives.
 }
 \examples{
 file <- paste0(

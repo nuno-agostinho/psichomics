@@ -53,7 +53,14 @@ queryUniprot <- function(protein, format="xml") {
 }
 
 #' Query the PubMed REST API
-#'
+#' 
+#' @param primary Character: primary search term
+#' @param ... Character: other relevant search terms
+#' @param top Numeric: number of articles to retrieve (3 by default)
+#' @param field Character: field of interest where to look for terms ("abstract"
+#'  by default)
+#' @param sort Character: sort by a given parameter ("relevance" by default)
+#' 
 #' @importFrom httr GET
 #' @importFrom jsonlite fromJSON
 #'
@@ -61,7 +68,8 @@ queryUniprot <- function(protein, format="xml") {
 #'
 #' @examples
 #' psichomics:::queryPubMed("BRCA1", "cancer", "adrenocortical carcinoma")
-queryPubMed <- function(primary, ...) {
+queryPubMed <- function(primary, ..., top=3, field="abstract", 
+                        sort="relevance") {
     args  <- unlist(list(...))
     for (each in seq_along(args)) {
         args[each] <- paste0("(", paste(primary, args[each], sep=" AND "), ")")
@@ -70,8 +78,8 @@ queryPubMed <- function(primary, ...) {
     terms <- paste(primary, terms, sep=" OR ")
     
     url <- "https://eutils.ncbi.nlm.nih.gov"
-    query <- list(db="pmc", term=terms, retmax=3, tool="psichomics", 
-                  field="abstract", sort="relevance",
+    query <- list(db="pmc", term=terms, retmax=top, tool="psichomics", 
+                  field=field, sort=sort,
                   email="nunodanielagostinho@gmail.com", retmode="json")
     resp <- GET(url, path="entrez/eutils/esearch.fcgi", query=query)
     warn_for_status(resp)
@@ -267,39 +275,53 @@ renderGeneticInfo <- function(ns, info, species, assembly, grch37) {
     start <- as.numeric(info$start)
     end   <- as.numeric(info$end)
     
-    genetic <- tagList(
-        h2(info$display_name, tags$small(info$id)),
-        sprintf("Species: %s (assembly %s)", species, assembly),
-        br(), sprintf("Chromosome %s: %s-%s (%s strand)",
-                      info$seq_region_name,
-                      format(start, big.mark=",", scientific=FALSE),
-                      format(end, big.mark=",", scientific=FALSE),
-                      ifelse(info$strand == -1,"reverse", "forward")),
-        br(), sprintf("%s (%s)", info$description,
-                      info$biotype), br(),
+    links <- tagList(
         tags$a("Ensembl", icon("external-link"), target="_blank",
-               class="btn btn-link",
                href=paste0("http://", if(grch37) { "grch37." },
                            "ensembl.org/", species, "/",
                            "Gene/Summary?g=", info$id)),
         tags$a("UCSC", icon("external-link"), target="_blank",
-               class="btn btn-link",
                href=paste0("https://genome.ucsc.edu/cgi-bin/hgTracks",
                            if(grch37) { "?db=hg19" }, "&position=chr",
                            info$seq_region_name, ":", start, "-", end)),
         tags$a("GeneCards", icon("external-link"), target="_blank",
-               class="btn btn-link",
                href=paste0("http://www.genecards.org/cgi-bin/",
                            "carddisp.pl?gene=", info$id)),
-        if (species == "human") 
+        if (species == "human") { 
             tags$a("Human Protein Atlas (Cancer Atlas)", 
-                   icon("external-link"), target="_blank", class="btn btn-link",
+                   icon("external-link"), target="_blank",
                    href=paste0("http://www.proteinatlas.org/", info$id, 
                                "/cancer"))
+        }
+    )
+    
+    dtWidth  <- "width: 80px;"
+    ddMargin <- "margin-left: 100px;"
+    
+    genetic <- tagList(
+        h2(info$display_name, tags$small(info$id)),
+        tags$dl(class="dl-horizontal",
+                tags$dt(style=dtWidth, "Species"),
+                tags$dd(style=ddMargin,
+                        sprintf("%s (%s assembly)", species, assembly)),
+                tags$dt(style=dtWidth, "Location"),
+                tags$dd(style=ddMargin,
+                        sprintf("Chromosome %s: %s-%s (%s strand)",
+                                info$seq_region_name,
+                                format(start, big.mark=",", scientific=FALSE),
+                                format(end, big.mark=",", scientific=FALSE),
+                                ifelse(info$strand == -1,
+                                       "reverse", "forward"))),
+                tags$dt(style=dtWidth, "Description"),
+                tags$dd(style=ddMargin,
+                        sprintf("%s (%s)", info$description, info$biotype)),
+                tags$dt(style=dtWidth, "Links"),
+                tags$dd(style=ddMargin,
+                        tags$ul(class="list-inline", lapply(links, tags$li)) ))
     )
     
     tagList(
-        fluidRow(column(6, genetic), 
+        fluidRow(column(6, genetic),
                  column(6, uiOutput(ns("articles")))),
         h4("Transcripts"), 
         plotOutput(ns("plotTranscripts"), height="200px"),
@@ -334,6 +356,57 @@ queryEnsemblByGene <- function(gene, species, assembly) {
     path   <- paste0("lookup/symbol/", species, "/", gene)
     info   <- queryEnsembl(path, list(expand=1), grch37=grch37)
     return(info)
+}
+
+#' Return the interface to display an article
+#' 
+#' @param article PubMed article
+#' 
+#' @return HTML to render an article's interface
+articleUI <- function(article) {
+    authors <- article$authors$name
+    if (length(authors) > 2) {
+        authors <- paste(authors[1], "et al.")
+    } else if (length(authors) == 2) {
+        authors <- paste(authors, collapse=" and ")
+    }
+    year <- strsplit(article$pubdate, " ")[[1]][[1]]
+    description <- sprintf("%s (%s). %s, %s(%s).", authors, year, 
+                           article$source, article$volume, 
+                           article$issue)
+    
+    pmid <- article$articleids$value[1]
+    tags$a(href=paste0("http://pubmed.gov/", pmid), target="_blank",
+           class="list-group-item",
+           h5(class="list-group-item-heading", 
+              article$title, tags$small(description)))
+}
+
+#' Return the interface of relevant PubMed articles for a given splicing event
+#' 
+#' @param event Character: alternative splicing event identifier
+#' @param ... Arguments to pass to \code{queryPubMed} function
+#' 
+#' @return HTML interface of relevant PubMed articles
+pubmedUI <- function(event, ...) {
+    event <- parseEvent(event)
+    pubmed <- queryPubMed(event$gene, ...)
+    
+    articles <- pubmed[-1]
+    articleList <- lapply(articles, articleUI)
+    
+    search <- pubmed$search$querytranslation
+    search <- gsub("[Abstract]", "[Title/Abstract]", search, fixed = TRUE)
+    search <- paste0("http://www.ncbi.nlm.nih.gov/pubmed/?term=", search)
+    
+    articlesUI <- div(class="panel panel-default", 
+                      div(class="panel-heading",
+                          tags$b("Relevant PubMed articles", tags$a(
+                              href=search, target="_blank", 
+                              class="pull-right", "Show more articles",
+                              icon("external-link")))),
+                      div(class="list-group", articleList))
+    return(articlesUI)
 }
 
 #' Server logic
@@ -480,38 +553,8 @@ infoServer <- function(input, output, session) {
     # Render relevant articles
     output$articles <- renderUI({
         event <- getEvent()
-        event <- parseEvent(event)
-        pubmed <- queryPubMed(event$gene, "cancer")
-        
-        articles <- pubmed[-1]
-        articleList <- lapply(articles, function (article) {
-            authors <- article$authors$name
-            if (length(authors) > 2)
-                authors <- paste(authors[1], "et al.")
-            
-            year <- strsplit(article$pubdate, " ")[[1]][[1]]
-            description <- sprintf("%s (%s). %s, %s(%s).", authors, year, 
-                                   article$source, article$volume, 
-                                   article$issue)
-            
-            pmid <- article$articleids$value[1]
-            tags$a(href=paste0("http://pubmed.gov/", pmid), target="_blank",
-                   class="list-group-item",
-                   h5(class="list-group-item-heading", 
-                      article$title, tags$small(description)))
-        })
-        
-        search <- pubmed$search$querytranslation
-        search <- gsub("[Abstract]", "[Title/Abstract]", search, fixed = TRUE)
-        search <- paste0("http://www.ncbi.nlm.nih.gov/pubmed/?term=", search)
-        
-        articlesUI <- div(class="panel panel-default", 
-                          div(class="panel-heading",
-                              tags$b("Relevant PubMed articles", tags$a(
-                                  href=search, target="_blank", 
-                                  class="pull-right", "Show more articles"))),
-                          div(class="list-group", articleList))
-        return(articlesUI)
+        if (is.null(event)) return(NULL)
+        pubmedUI(event, "cancer", top=3)
     })
 }
 

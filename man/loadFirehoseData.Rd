@@ -12,6 +12,8 @@ loadFirehoseData(folder = "~/Downloads", data = NULL, exclude = c(".aux.",
 \item{folder}{Character: directory to store the downloaded archives (by
 default, it saves in the user's "Downloads" folder)}
 
+\item{data}{Character: data to load}
+
 \item{exclude}{Character: files and folders to exclude from downloading and
 from loading into R (by default, it excludes ".aux.", ".mage-tab." and
 "MANIFEST.TXT" files)}
