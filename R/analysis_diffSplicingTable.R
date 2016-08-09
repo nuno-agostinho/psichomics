@@ -275,9 +275,9 @@ diffSplicingTableUI <- function(id) {
                                "wilcoxSignedRank", "wilcoxRankSum")),
                 # Disable checkbox of basic statistics
                 tags$script('$("[value=basicStats]").attr("disabled", true);'),
-                helpText("If groups have too many missing values for a",
-                         "particular alternative splicing event, the group",
-                         "itself will be discarded from the analyses."),
+                helpText("If groups have only one sample for a particular",
+                         "alternative splicing event, the group will be",
+                         "discarded from the analyses."),
                 actionButton(ns("startAnalyses"), class="btn-primary", 
                              "Perform analyses"),
                 uiOutput(ns("survivalOptions"))
@@ -441,7 +441,7 @@ optimSurvDiffUI <- function(ns) {
                        "Event of interest"),
         radioButtons(
             ns("selected"), "Perform survival analysis in:",
-            choices=c("Alternative splicing events currently in the table"="shown",
+            choices=c("Alternative splicing events shown in the screen"="shown",
                       "All alternative splicing events (slow process)"="all")),
         actionButton(ns("survival"), class="btn-primary",
                      "Perform survival analysis")
@@ -623,7 +623,7 @@ optimSurvDiff <- function(session, input, output) {
             
             updateProgress("Survival analysis", console=FALSE)
             return(c("Optimal survival PSI cut-off"=opt$par,
-                     "Optimal survival difference"=opt$value))
+                     "Minimal survival p-value"=opt$value))
         })
         
         if (length(opt) == 0) {

@@ -132,8 +132,8 @@ plotVariance <- function(pca) {
 #' Create a scatterplot from a PCA object
 #' 
 #' @param pca \code{prcomp} object
-#' @param xAxis Character: name of the xAxis of interest from the PCA
-#' @param yAxis Character: name of the yAxis of interest from the PCA
+#' @param pcX Character: name of the xAxis of interest from the PCA
+#' @param pcY Character: name of the yAxis of interest from the PCA
 #' @param selected Character: selected groups to show
 #' @param match Integer: clinical matches to a given dataset
 #' @param individuals Boolean: plot PCA individuals (TRUE by default)

@@ -10,6 +10,10 @@ plotPCA(pca, pcX = "PC1", pcY = "PC2", selected = NULL, clinical, match,
 \arguments{
 \item{pca}{\code{prcomp} object}
 
+\item{pcX}{Character: name of the xAxis of interest from the PCA}
+
+\item{pcY}{Character: name of the yAxis of interest from the PCA}
+
 \item{selected}{Character: selected groups to show}
 
 \item{match}{Integer: clinical matches to a given dataset}
@@ -17,10 +21,6 @@ plotPCA(pca, pcX = "PC1", pcY = "PC2", selected = NULL, clinical, match,
 \item{individuals}{Boolean: plot PCA individuals (TRUE by default)}
 
 \item{loadings}{Boolean: plot PCA loadings/rotations (FALSE by default)}
-
-\item{xAxis}{Character: name of the xAxis of interest from the PCA}
-
-\item{yAxis}{Character: name of the yAxis of interest from the PCA}
 }
 \value{
 Scatterplot as an Highcharter object

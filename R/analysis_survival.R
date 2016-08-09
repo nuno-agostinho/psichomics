@@ -137,8 +137,6 @@ processSurvData <- function(event, timeStart, timeStop, group, clinical) {
 #' "interval2"
 #' @param scale Character: rescale the survival time to "days", "weeks",
 #' "months" or "years"
-#' @param modelTerms Character: use "groups", "formula" or "psiCutoff" for the 
-#' survival curves?
 #' @param formulaStr Character: formula to use
 #' @param coxph Boolean: fit a Cox proportional hazards regression model? FALSE 
 #' by default

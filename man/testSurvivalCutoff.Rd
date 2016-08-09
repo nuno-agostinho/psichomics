@@ -18,8 +18,6 @@ testSurvivalCutoff(cutoff, data, filter, ..., group = NULL, session = NULL)
 \item{group}{Pre-filled vector of missing values with the length of data}
 
 \item{session}{Shiny session}
-
-\item{modals}{Boolean: show error dialogs? TRUE by default}
 }
 \value{
 p-value of the survival difference

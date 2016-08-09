@@ -31,9 +31,6 @@ by default}
 
 \item{scale}{Character: rescale the survival time to "days", "weeks",
 "months" or "years"}
-
-\item{modelTerms}{Character: use "groups", "formula" or "psiCutoff" for the 
-survival curves?}
 }
 \value{
 A list with a \code{formula} object and a data frame with terms
