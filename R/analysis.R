@@ -98,7 +98,6 @@ analysesUI <- function(id, tab) {
 #' @param filter Boolean or numeric: interest of the data elements
 #' @param ... Arguments to pass to \code{processSurvTerms}
 #' @param session Shiny session
-#' @param modals Boolean: show error dialogs? TRUE by default
 #' 
 #' @importFrom survival survdiff
 #' @return p-value of the survival difference
