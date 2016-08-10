@@ -1,10 +1,3 @@
-/** Check all groups when clicking the checkbox in the group table's header */
-function checkAllGroups() {
-    $("input[name='checkAllGroups']").change(function () {
-        $("input[name='checkGroups']").prop('checked', $(this).prop("checked"));
-    });
-}
-
 /**
  * Change active tab to the Data panel and expand the panel with the given value
  * @param {String} panelVal Value of the panel to open

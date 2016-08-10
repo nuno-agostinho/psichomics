@@ -19,7 +19,7 @@ Imports:
     devtools,
     digest,
     dplyr,
-    DT,
+    DT (>= 0.2),
     fastmatch,
     gplots,
     highcharter,

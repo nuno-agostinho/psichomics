@@ -4,20 +4,23 @@
 \alias{operateOnGroups}
 \title{Set operations on groups}
 \usage{
-operateOnGroups(input, session, sharedData, FUN, buttonId, symbol = " ")
+operateOnGroups(input, session, FUN, buttonId, symbol = " ", datasetName,
+  sharedData = sharedData)
 }
 \arguments{
 \item{input}{Shiny input}
 
 \item{session}{Shiny session}
 
-\item{sharedData}{Shiny app's global variable}
-
 \item{FUN}{Function: operation to set}
 
 \item{buttonId}{Character: ID of the button to trigger operation}
 
 \item{symbol}{Character: operation symbol}
+
+\item{datasetName}{Character: name of dataset}
+
+\item{sharedData}{Shiny app's global variable}
 }
 \description{
 This function can be used on groups to merge, intersect, subtract, etc.
