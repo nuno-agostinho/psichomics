@@ -1,9 +1,3 @@
-## TODO(NunoA): Allow to select the checkboxes in groups from different "pages"
-## in the table; maybe by memorising the ones selected in each page? Then always 
-## show the ones selected as checked... try to do it by memorising when clicking 
-## to go on next page or something and clean checkboxes when 
-## merging/intersect/removing groups
-
 #' Group selection interface
 #' 
 #' @param id Character: identifier of the group selection
@@ -45,7 +39,7 @@ selectGroupsServer <- function(session, id, datasetName) {
     
     session$output[[modalId]] <- renderUI({
         bsModal2(ns(showId), style="info", trigger=NULL, size=NULL,
-                 div(icon("object-group"), "Groups"),
+                 div(icon("object-group"), "Groups"), 
                  groupsUI(ns(uId), getCategoryData()[[datasetName]]))
     })
     
@@ -284,31 +278,55 @@ renameGroups <- function(new, old) {
 #' 
 #' @param input Shiny input
 #' @param session Shiny session
-#' @param sharedData Shiny app's global variable
 #' @param FUN Function: operation to set
 #' @param buttonId Character: ID of the button to trigger operation
 #' @param symbol Character: operation symbol
-operateOnGroups <- function(input, session, sharedData, FUN, buttonId, 
-                            symbol=" ") {
+#' @param datasetName Character: name of dataset
+#' @param sharedData Shiny app's global variable
+operateOnGroups <- function(input, session, FUN, buttonId, symbol=" ",
+                            datasetName, sharedData=sharedData) {
     ns <- session$ns
     # Operate on selected groups when pressing the corresponding button
     observeEvent(input[[paste(buttonId, "button", sep="-")]], {
-        session$sendCustomMessage(type="getCheckedBoxes", "selectedGroups")
-        sharedData$javascriptSent <- TRUE
-        sharedData$groupsFUN <- FUN
-        sharedData$groupSymbol <- symbol
-        # appServer saves the result to the R variable sharedData$selectedGroups
+        # Get groups from the dataset
+        groups <- getGroupsFrom(datasetName, full=TRUE)
+        
+        # Create new set
+        new <- NULL
+        selected <- input$groupsTable_rows_selected
+        if (!identical(FUN, "remove")) {
+            mergedFields <- lapply(1:3, function(i) {
+                names <- paste(groups[selected, i], collapse=symbol)
+                # Add parenthesis around new expression
+                names <- paste0("(", names, ")")
+                return(names)
+            })
+            rowNumbers <- sort(as.numeric(Reduce(FUN, groups[selected, 4])))
+            new <- matrix(c(mergedFields, list(rowNumbers)), ncol=4)
+        }
+        
+        # Remove selected groups
+        if (identical(FUN, "remove"))# || input$removeSetsUsed)
+            groups <- groups[-selected, , drop=FALSE]
+        
+        # Add new groups to top (if there are any)
+        if (!is.null(new)) {
+            new <- renameGroups(new, groups)
+            groups <- rbind(new, groups)
+        }
+        setGroupsFrom(datasetName, groups)
     })
 }
 
 #' Server function for data grouping
 #'
+#' @inheritParams operateOnGroups
 #' @param input Shiny input
 #' @param output Shiny output
 #' @param session Shiny session
-#' @param datasetName Character: name of dataset
 #' 
 #' @importFrom DT renderDataTable dataTableOutput
+#' @importFrom shinyjs disabled enable disable
 groupsServer <- function(input, output, session, datasetName) {
     ns <- session$ns
     
@@ -354,82 +372,40 @@ groupsServer <- function(input, output, session, datasetName) {
                 ordered <- matrix(ordered, ncol=4)
                 colnames(ordered) <- colnames(groups)[ord]
             }
-            
-            # Add checkboxes
-            pick <- paste("<center><input number=", 1:nrow(ordered),
-                          "name='checkGroups' type='checkbox'/></center>")
-            res <- cbind(pick, ordered)
-            colnames(res)[1] <- "<input name='checkAllGroups' type='checkbox'/>"
-            return(res)
+            return(ordered)
         }
-    }, style="bootstrap", selection='none', escape=FALSE, server=TRUE, 
-    rownames=FALSE,
+    }, style="bootstrap", escape=FALSE, server=TRUE, rownames=FALSE,
     options=list(pageLength=10, lengthChange=FALSE, scrollX=TRUE,
-                 #filter=FALSE, info=FALSE, paginationType="simple",
-                 ordering=FALSE, drawCallback=JS("checkAllGroups"),
+                 ordering=FALSE,
                  # Stack DataTable elements so they fit in the container
                  dom=paste0(
                      '<"row view-filter"<"col-sm-12"<"pull-left"l>',
                      '<"pull-right"f><"clearfix">>>',
                      'rt<"row view-pager"<"col-sm-12"<"text-center"ip>>>')))
     
+    # Disable buttons if there's no row selected
+    observe({
+        if (!is.null(input$groupsTable_rows_selected)) {
+            enable("setOperations")
+        } else {
+            disable("setOperations")
+        }
+    })
+    
     # Remove selected groups
     removeId <- "removeGroups"
-    operateOnGroups(input, session, sharedData, FUN="remove", buttonId=removeId)
+    operateOnGroups(input, session, FUN="remove", buttonId=removeId,
+                    datasetName=datasetName)
     
     # Merge selected groups
     mergeId <- "mergeGroups"
-    operateOnGroups(input, session, sharedData, FUN=union, buttonId=mergeId,
-                    symbol=" \u222A ")
+    operateOnGroups(input, session, FUN=union, buttonId=mergeId, 
+                    symbol=" \u222A ", datasetName=datasetName)
     
     # Intersect selected groups
     intersectId <- "intersectGroups"
-    operateOnGroups(input, session, sharedData, FUN=intersect,
+    operateOnGroups(input, session, FUN=intersect, datasetName=datasetName,
                     buttonId=intersectId, symbol=" \u2229 ")
-    
-    observe({
-        if (!is.null(sharedData$selectedGroups) &&
-            all(sharedData$selectedGroups > 0) &&
-            isTRUE(sharedData$javascriptSent) &&
-            isTRUE(sharedData$javascriptRead)) {
-            
-            FUN <- sharedData$groupsFUN
-            symbol <- sharedData$groupSymbol
-            
-            # Get groups from the dataset
-            groups <- getGroupsFrom(datasetName, full=TRUE)
-            
-            # Create new set
-            new <- NULL
-            selected <- as.numeric(sharedData$selectedGroups)
-            if (!identical(FUN, "remove")) {
-                mergedFields <- lapply(1:3, function(i) {
-                    names <- paste(groups[selected, i], collapse=symbol)
-                    # Add parenthesis around new expression
-                    names <- paste0("(", names, ")")
-                    return(names)
-                })
-                rowNumbers <- sort(as.numeric(Reduce(FUN, groups[selected, 4])))
-                new <- matrix(c(mergedFields, list(rowNumbers)), ncol=4)
-            }
-            
-            # Remove selected groups
-            if (identical(FUN, "remove"))# || input$removeSetsUsed)
-                groups <- groups[-selected, , drop=FALSE]
-            
-            # Add new groups to top (if there are any)
-            if (!is.null(new)) {
-                new <- renameGroups(new, groups)
-                groups <- rbind(new, groups)
-            }
-            setGroupsFrom(datasetName, groups)
-            
-            # Set operation groups as 0 and flag to FALSE
-            session$sendCustomMessage(type="setZero", "selectedGroups")
-            sharedData$javascriptSent <- FALSE
-            sharedData$javascriptRead <- FALSE
-        }
-    })
     
     # Render groups interface only if at least one group exists
     output$groupsList <- renderUI({
@@ -441,16 +417,19 @@ groupsServer <- function(input, output, session, datasetName) {
         
         # Don't show anything when there are no groups
         if (!is.null(groups) && nrow(groups) > 0) {
+            operations <- div(id=ns("setOperations"), class="btn-group",
+                              operationButton("Merge", ns(mergeId)),
+                              operationButton("Intersect", ns(intersectId)),
+                              # actionButton("complementGroups", ns("Complement")),
+                              # actionButton("subtractGroups", ns("Subtract")),
+                              operationButton("Remove", ns(removeId),
+                                              icon=icon("times")))
             tagList(
                 hr(),
                 dataTableOutput(ns("groupsTable")),
-                div(class="btn-group",
-                    operationButton("Merge", ns(mergeId)),
-                    operationButton("Intersect", ns(intersectId)),
-                    # actionButton("complementGroups", ns("Complement")),
-                    # actionButton("subtractGroups", ns("Subtract")),
-                    operationButton("Remove", ns(removeId), icon=icon("times"))),
-                actionButton(ns("removeAll"), "Remove all groups")#,
+                disabled(operations),
+                actionButton(ns("removeAll"), class="btn-danger", 
+                             "Remove all groups")#,
                 #checkboxInput(ns("removeSetsUsed"), "Remove original groups",
                 #              value=TRUE)
             )
