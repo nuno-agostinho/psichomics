@@ -48,13 +48,14 @@ loadFile <- function(format, file) {
     delim <- ifelse(!is.null(format$delim), format$delim, "\t")
     skip <- ifelse(!is.null(format$skip), format$skip, 0)
     
+    transpose <- !is.null(format$transpose) && format$transpose
     loaded <- fread(file, sep = delim, header = FALSE,
-                    stringsAsFactors = FALSE, data.table = FALSE,
+                    stringsAsFactors = !transpose, data.table = FALSE,
                     skip = skip)
     
     # Transpose data
-    if (!is.null(format$transpose) && format$transpose) {
-        loaded <- data.frame(t(loaded), stringsAsFactors = FALSE, 
+    if (transpose) {
+        loaded <- data.frame(t(loaded), stringsAsFactors = TRUE, 
                              row.names = NULL)
     }
     
@@ -68,7 +69,9 @@ loadFile <- function(format, file) {
                             stringsAsFactors = FALSE, data.table = FALSE)
             names(loaded) <- header[format$colNames, ]
         } else {
-            names(loaded) <- loaded[format$colNames, ]
+            names(loaded) <- unname(vapply(loaded[format$colNames, ],
+                                           as.character, character(1)))
+            
         }
     }
     
