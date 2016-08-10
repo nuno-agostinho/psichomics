@@ -713,6 +713,9 @@ diffSplicingTableServer <- function(input, output, session) {
                 hr())
         })
         
+        densityCol <- NULL
+        if (!is.null(stats)) densityCol <- match("Density", colnames(stats))
+            
         # Render statistical table with the selected columns
         output$statsTable <- renderDataTableSparklines({
             if (is.null(stats)) return(NULL)
@@ -721,7 +724,8 @@ diffSplicingTableServer <- function(input, output, session) {
                 stats[, input$columns]
         }, style="bootstrap", selection="none", filter='top', server=TRUE,
         options=list(pageLength=10, rowCallback=JS("createDiffSplicingLinks"),
-                     stateSave = TRUE))
+                     stateSave=TRUE, columnDefs=list(list(targets=densityCol,
+                                                          searchable=FALSE))))
         
         # Prepare table to be downloaded
         output$download <- downloadHandler(
