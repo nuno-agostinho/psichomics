@@ -252,37 +252,56 @@ levene.test <- function (y, group, location = c("median", "mean", "trim.mean"),
 }
 
 #' Interface for exploratory differential analyses
+#' 
 #' @param id Character: identifier
+#' 
+#' @importFrom shinyjs disabled
+#' 
 #' @return HTML elements
 diffSplicingTableUI <- function(id) {
     ns <- NS(id)
+    
+    sidebar <- sidebarPanel(
+        uiOutput(ns("groupsInfo")),
+        checkboxGroupInput(
+            ns("statsChoices"),
+            "Choose statistical analyses to perform:",
+            # Basic stats is on and disabled by JavaScript
+            c("Variance and median"="basicStats",
+              "Wilcoxon signed rank test (1 group)"="wilcoxSignedRank",
+              "Wilcoxon rank sum test (2 groups)"="wilcoxRankSum",
+              "Kruskal-Wallis rank sum test (2 or more groups)"="kruskal", 
+              "Levene's test (2 or more groups)"="levene",
+              "Alternative splicing quantification density"="density"),
+            selected=c("basicStats", "kruskal", "levene", "density",
+                       "wilcoxSignedRank", "wilcoxRankSum")),
+        # Disable checkbox of basic statistics
+        tags$script('$("[value=basicStats]").attr("disabled", true);'),
+        helpText("If groups have only one sample for a particular",
+                 "alternative splicing event, the group will be",
+                 "discarded from the analyses."),
+        disabled(div(id=ns("downloadStats"), class="btn-group",
+                     tags$button(class="btn btn-default dropdown-toggle",
+                                 type="button", "data-toggle"="dropdown",
+                                 "aria-haspopup"="true",
+                                 "aria-expanded"="false", 
+                                 icon("download"), 
+                                 "Download table", tags$span(class="caret")),
+                     tags$ul(class="dropdown-menu", 
+                             tags$li(downloadLink(ns("downloadAll"), 
+                                                  "All data")),
+                             tags$li(downloadLink(ns("downloadSubset"), 
+                                                  "Filtered data"))))),
+        actionButton(ns("startAnalyses"), class="btn-primary", 
+                     "Perform analyses"),
+        uiOutput(ns("survivalOptions"))
+    )
+    
     tagList(
         uiOutput(ns("modal")),
         sidebarLayout(
-            sidebarPanel(
-                uiOutput(ns("groupsInfo")),
-                checkboxGroupInput(
-                    ns("statsChoices"),
-                    "Choose statistical analyses to perform:",
-                    # Basic stats is on and disabled by JavaScript
-                    c("Variance and median"="basicStats",
-                      "Wilcoxon signed rank test (1 group)"="wilcoxSignedRank",
-                      "Wilcoxon rank sum test (2 groups)"="wilcoxRankSum",
-                      "Kruskal-Wallis rank sum test (2 or more groups)"="kruskal", 
-                      "Levene's test (2 or more groups)"="levene",
-                      "Alternative splicing quantification density"="density"),
-                    selected=c("basicStats", "kruskal", "levene", "density",
-                               "wilcoxSignedRank", "wilcoxRankSum")),
-                # Disable checkbox of basic statistics
-                tags$script('$("[value=basicStats]").attr("disabled", true);'),
-                helpText("If groups have only one sample for a particular",
-                         "alternative splicing event, the group will be",
-                         "discarded from the analyses."),
-                actionButton(ns("startAnalyses"), class="btn-primary", 
-                             "Perform analyses"),
-                uiOutput(ns("survivalOptions"))
-            ), mainPanel(
-                uiOutput(ns("showColumns")),
+            sidebar, 
+            mainPanel(
                 dataTableOutput(ns("statsTable")),
                 highchartOutput(ns("densitySparklines"), 0, 0)
             )
@@ -424,8 +443,8 @@ optimSurvDiffUI <- function(ns) {
     tagList(
         hr(),
         h3("Survival analyses by quantification cut-off"),
-        helpText("For each splicing event, perform and separate survival curves",
-                 "by the optimal quantification cut-off."),
+        helpText("For each splicing event, find the optimal quantification",
+                 "cut-off that most significantly separates survival curves."),
         radioButtons(ns("censoring"), "Data censoring", selected="right",
                      inline=TRUE, choices=c(Left="left", Right="right",
                                             Interval="interval", 
@@ -472,9 +491,9 @@ optimSurvDiffUI <- function(ns) {
 #' @return Table of statistical analyses
 #' @export
 statsAnalyses <- function(psi, analyses=c("wilcoxRankSum",
-                                                 "wilcoxSignedRank",
-                                                 "kruskal", "levene"),
-                                 progress=printPaste) {
+                                          "wilcoxSignedRank",
+                                          "kruskal", "levene"),
+                          progress=printPaste) {
     # Separate samples by their type
     ids <- names(psi)
     type <- parseSampleGroups(ids)
@@ -647,7 +666,7 @@ optimSurvDiff <- function(session, input, output) {
 #' @param output Shiny ouput
 #' @param session Shiny session
 #' 
-#' @importFrom DT renderDataTable
+#' @importFrom shinyjs toggleState
 diffSplicingTableServer <- function(input, output, session) {
     ns <- session$ns
     
@@ -658,7 +677,9 @@ diffSplicingTableServer <- function(input, output, session) {
         
         if (is.null(psi)) return(tagList(
             helpText(icon("exclamation-circle"), 
-                     "No alternative splicing junction quantification loaded.")))
+                     "No alternative splicing quantification loaded.",
+                     tags$a(href="#", "Load or calculate it.",
+                            onclick=loadRequiredData("Inclusion levels")))))
         
         # Separate samples by their type
         ids <- names(psi)
@@ -689,7 +710,7 @@ diffSplicingTableServer <- function(input, output, session) {
                              ns("missingInclusionLevels"))
             return(NULL)
         }
-         
+        
         stats <- statsAnalyses(psi, statsChoices, progress=updateProgress)
         setDifferentialAnalyses(stats)
         closeProgress()
@@ -699,46 +720,60 @@ diffSplicingTableServer <- function(input, output, session) {
     observe({
         stats <- getDifferentialAnalyses()
         
-        # Columns to show in statistical table
-        output$showColumns <- renderUI({
-            if (is.null(stats)) return(NULL)
-            
-            tagList(
-                downloadButton(ns("download"), "Download whole table"),
-                selectizeInput(ns("columns"), "Show columns", multiple=TRUE,
-                               choices=colnames(stats), width="auto",
-                               selected=colnames(stats),
-                               options=list(plugins=list('remove_button', 
-                                                         'drag_drop'))),
-                hr())
-        })
-        
         densityCol <- NULL
         if (!is.null(stats)) densityCol <- match("Density", colnames(stats))
             
-        # Render statistical table with the selected columns
+        # Render statistical table
         output$statsTable <- renderDataTableSparklines({
-            if (is.null(stats)) return(NULL)
-            
-            if (!is.null(input$columns) && all(input$columns %in% names(stats)))
-                stats[, input$columns]
+            isolate(stats)
         }, style="bootstrap", selection="none", filter='top', server=TRUE,
-        options=list(pageLength=10, rowCallback=JS("createDiffSplicingLinks"),
-                     stateSave=TRUE, columnDefs=list(list(targets=densityCol,
-                                                          searchable=FALSE))))
+        extensions=c("Buttons", "ColReorder"), options=list(
+            pageLength=10, rowCallback=JS("createDiffSplicingLinks"),
+            dom = 'Bfrtip', buttons=I('colvis'), colReorder=TRUE,
+            columnDefs=list(list(targets=densityCol, searchable=FALSE))))
         
-        # Prepare table to be downloaded
-        output$download <- downloadHandler(
+        # Download whole table
+        output$downloadAll <- downloadHandler(
             filename=paste(getCategories(), "Differential splicing analyses"),
-            content=function(file)
-                write.table(getDifferentialAnalyses()[-c("Density")], 
-                            file, quote=FALSE, row.names=FALSE, sep="\t")
+            content=function(file) {
+                stats <- getDifferentialAnalyses()
+                
+                densityCol <- NULL
+                if (!is.null(stats))
+                    densityCol <- match("Density", colnames(stats))
+                
+                write.table(stats[-densityCol], file, quote=FALSE, sep="\t",
+                            row.names=FALSE)
+            }
+        )
+        
+        # Download filtered table
+        output$downloadSubset <- downloadHandler(
+            filename=paste(getCategories(), "Differential splicing analyses"),
+            content=function(file) {
+                stats <- getDifferentialAnalyses()
+                
+                densityCol <- NULL
+                if (!is.null(stats))
+                    densityCol <- match("Density", colnames(stats))
+                
+                write.table(stats[input$statsTable_rows_all, -densityCol], 
+                            file, quote=FALSE, sep="\t", row.names=FALSE)
+            }
         )
     })
     
     # Optimal survival difference given an inclusion level cut-off for a 
     # specific alternative splicing event
     optimSurvDiff(session, input, output)
+    
+    # Disable download button if statistical table is NULL
+    observe({
+        if (is.null(getDifferentialAnalyses()))
+            disable("downloadStats")
+        else
+            enable("downloadStats")
+    })
 }
 
 attr(diffSplicingTableUI, "loader") <- "analysis"

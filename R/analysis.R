@@ -30,14 +30,19 @@ missingDataModal <- function(session, dataType, buttonId) {
 }
 
 #' @rdname missingDataModal
-missingDataGuide <- function(dataType) {
+loadRequiredData <- function(dataType) {
     panel <- switch(dataType,
                     "Clinical data"="TCGA",
                     "Junction quantification"="TCGA",
                     "Inclusion levels"="alternative"
     )
     
-    js <- sprintf("showDataPanel('%s');", panel)
+    return(sprintf("showDataPanel('%s');", panel))
+}
+
+#' @rdname missingDataModal
+missingDataGuide <- function(dataType) {
+    js <- loadRequiredData(dataType)
     runjs(js)
 }
 
