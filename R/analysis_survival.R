@@ -487,6 +487,9 @@ survivalServer <- function(input, output, session) {
             modelTerms <- input$modelTerms
             formulaStr <- input$formula
             intRanges  <- input$ranges
+            psi        <- getInclusionLevels()
+            splicingEvent <- getEvent()
+            psiCutoff  <- input$psiCutoff
             scale      <- input$scale
             # Get chosen groups
             dataGroups <- input$dataGroups
@@ -499,6 +502,33 @@ survivalServer <- function(input, output, session) {
         } else if (modelTerms == "groups") {
             # Assign one group for each clinical patient
             groups <- groupPerPatient(chosen, nrow(clinical), outGroup)
+            formulaStr <- NULL
+        } else if (modelTerms == "psiCutoff") {
+            if (is.null(psi)) {
+                missingDataModal(session, "Inclusion levels",
+                                 ns("missingInclusionLevels"))
+                return(NULL)
+            } else if (is.null(splicingEvent) || splicingEvent == "") {
+                errorModal(session, "No event selected",
+                           "Select an alternative splicing event.")
+                return(NULL)
+            }
+            
+            # Get tumour sample IDs (matched normal and control samples are not
+            # interesting for this survival analysis)
+            match <- getClinicalMatchFrom("Inclusion levels")
+            types <- parseSampleGroups(names(match))
+            tumour <- match[!grepl("Normal|Control", types)]
+            
+            # Retrieve numeric PSIs from tumour samples
+            eventPSI <- as.numeric(psi[splicingEvent, toupper(names(tumour))])
+            groups   <- rep(NA, nrow(clinical))
+            groups[tumour] <- eventPSI >= psiCutoff
+            
+            # Assign a value based on the inclusion levels cut-off
+            # groups[is.na(groups)] <- "NA"
+            groups[groups == "TRUE"]  <- paste("Inclusion levels >=", psiCutoff)
+            groups[groups == "FALSE"] <- paste("Inclusion levels <", psiCutoff)
             formulaStr <- NULL
         } else {
             groups <- NULL
