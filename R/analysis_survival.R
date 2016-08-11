@@ -14,6 +14,11 @@
 survivalUI <- function(id) {
     ns <- NS(id)
     
+    kaplanMeierOptions <- tagList(
+        checkboxInput(ns("markTimes"), "Show time marks", value = TRUE),
+        checkboxInput(ns("ranges"), "Show interval ranges", value = FALSE)
+    )
+    
     tagList(
         uiOutput(ns("modal")),
         sidebarPanel(
@@ -21,15 +26,21 @@ survivalUI <- function(id) {
                          inline=TRUE, choices=c(Left="left", Right="right",
                                                 Interval="interval",
                                                 "Interval 2" = "interval2")),
-            selectizeInput(ns("timeStart"), choices = NULL, "Follow up time"),
+            selectizeInput(ns("timeStart"), "Follow up time",
+                           choices=c("No clinical data loaded"="")),
             # If chosen censoring contains the word 'interval', ask end time
             conditionalPanel(
                 paste0("input[id='", ns("censoring"),
                        "'].indexOf('interval') > -1"),
-                selectizeInput(ns("timeStop"), choices=NULL, "Ending time")),
+                selectizeInput(ns("timeStop"), "Ending time",
+                               choices=c("No clinical data loaded"=""))),
             helpText("In case there's no record for a patient, the days to last",
                      "follow up will be used instead."),
-            selectizeInput(ns("event"), choices = NULL, "Event of interest"),
+            selectizeInput(ns("event"), "Event of interest",
+                           choices=c("No clinical data loaded"="")),
+            radioButtons(ns("scale"), "Display time in", inline=TRUE,
+                         c(Days="days", Weeks="weeks", Months="months", 
+                           Years="years")),
             hr(),
             radioButtons(ns("modelTerms"), selected="groups", inline=TRUE,
                          div("Select groups for survival analysis",
@@ -70,11 +81,11 @@ survivalUI <- function(id) {
                 sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "psiCutoff"),
                 uiOutput(ns("optimalPsi"))),
             hr(),
-            radioButtons(ns("scale"), "Display time in", inline=TRUE,
-                         c(Days="days", Weeks="weeks", Months="months",
-                           Years="years")),
-            checkboxInput(ns("markTimes"), "Show time marks", value = TRUE),
-            checkboxInput(ns("ranges"), "Show interval ranges", value = FALSE),
+            bsCollapse(open="KM options",
+                       bsCollapsePanel(tagList(icon("sliders"),
+                                               "Kaplan-Meier plot options"),
+                                       value="KM options",
+                                       kaplanMeierOptions, style="info")),
             actionButton(ns("coxModel"), "Fit Cox PH model"),
             actionButton(ns("survivalCurves"), class="btn-primary",
                          "Plot survival curves")
@@ -607,7 +618,7 @@ survivalServer <- function(input, output, session) {
                                 "for this alternative splicing event.")))
         }
     })
-    }
+}
 
 attr(survivalUI, "loader") <- "analysis"
 attr(survivalUI, "name") <- "Survival curves"
