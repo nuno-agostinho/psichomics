@@ -22,7 +22,7 @@ Imports:
     DT (>= 0.2),
     fastmatch,
     gplots,
-    highcharter,
+    highcharter (>= 0.4.0),
     htmltools,
     httr,
     jsonlite,
