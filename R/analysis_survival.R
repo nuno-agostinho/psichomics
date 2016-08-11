@@ -422,7 +422,7 @@ survivalServer <- function(input, output, session) {
                 missingDataModal(session, "Inclusion levels",
                                  ns("missingInclusionLevels"))
                 return(NULL)
-            } else if (is.null(splicingEvent)) {
+            } else if (is.null(splicingEvent) || splicingEvent == "") {
                 errorModal(session, "No event selected",
                            "Select an alternative splicing event.")
                 return(NULL)
