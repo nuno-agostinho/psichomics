@@ -163,16 +163,12 @@ groupsUI <- function(id, dataset) {
 #' @return Matrix with the group names and respective indexes
 createGroupFromInput <- function (session, input, output, dataset,
                                   datasetName) {
-    if (is.null(datasetName)) {
-        errorAlert(session, "Data missing", "Load some data first.")
-        return(NULL)
-    }
     type <- input$subsetBy
     
     if (type == "Column") {
         col <- input$groupColumn
         if (col == "") return(NULL)
-        colData <- dataset[[col]]
+        colData <- as.character(dataset[[col]])
         
         # Replace NAs for "NA" so they can be find using the `which` function
         colData[is.na(colData)] <- "NA"
@@ -221,7 +217,7 @@ createGroupFromInput <- function (session, input, output, dataset,
     } else if (type == "Regular expression") {
         # Subset dataset column using given regular expression
         col <- input$grepColumn
-        colData <- dataset[[col]]
+        colData <- as.character(dataset[[col]])
         expr <- input$grepExpression
         
         # Test expression before running
@@ -342,6 +338,11 @@ groupsServer <- function(input, output, session, datasetName) {
         removeAlert(output)
         
         groups <- getGroupsFrom(datasetName, full=TRUE)
+        if (is.null(datasetName)) {
+            errorAlert(session, "Data missing", "Load some data first.")
+            return(NULL)
+        }
+        
         new <- createGroupFromInput(session, input, output, 
                                     getCategoryData()[[datasetName]],
                                     datasetName)
