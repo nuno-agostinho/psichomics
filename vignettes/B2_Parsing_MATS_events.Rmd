@@ -27,10 +27,10 @@ only correct when considering the "+" strand. The upstream and downstream exons
 and the respective start and end position are wrong when considering an event
 with the "-" strand.
 
-# Skipping exon (SE)
+# Skipped exon (SE)
 
 Below we represent the `head` of a MATS output file pertaining to junction 
-counts for a skipping exon event.
+counts for a exon skipping event.
 
 |ID|GeneID|geneSymbol|chr|strand | exonStart_0base|exonEnd|upstreamES|upstreamEE|downstreamES|downstreamEE|ID.1|IJC_SAMPLE_1| SJC_SAMPLE_1| IJC_SAMPLE_2| SJC_SAMPLE_2| IncFormLen|SkipFormLen|PValue|FDR| IncLevel1| IncLevel2| IncLevelDifference|
 |-----:|:---------------|:----------|:-----|:------|---------------:|---------:|----------:|----------:|------------:|------------:|-----:|------------:|------------:|------------:|------------:|----------:|-----------:|---------:|---------:|---------:|---------:|------------------:|

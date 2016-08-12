@@ -51,7 +51,7 @@ type
 \details{
 The following event types are ready to be parsed:
 \itemize{
- \item{\bold{SE} (exon skipping)}
+ \item{\bold{SE} (skipped exon)}
  \item{\bold{MXE} (mutually exclusive exon)}
  \item{\bold{RI} (intron retention)}
  \item{\bold{A5SS} (alternative 5' splice site)}
@@ -63,7 +63,7 @@ The following event types are ready to be parsed:
 You can use \code{parseMatsGeneric} to parse other event types.
 }
 \examples{
-# Parse generic event (in this case, a skipping exon event)
+# Parse generic event (in this case, an exon skipping event)
 junctions <- read.table(text=
     "79685787 79685910 79685796 79685910 79679566 79679751")
 coords <- c("A1.start", "A1.end",
@@ -73,7 +73,7 @@ plus  <- c(1:6)
 minus <- c(2:1, 6:3)
 psichomics:::parseMatsGeneric(junctions, strand = "+", coords, plus, minus)
 
-# Parse skipping exon event
+# Parse exon skipping event
 junctions <- read.table(text=
     "79685787 79685910 79685796 79685910 79679566 79679751")
 psichomics:::parseMatsSE(junctions, strand = "+")

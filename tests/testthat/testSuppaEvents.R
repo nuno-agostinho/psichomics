@@ -1,6 +1,6 @@
 context("Parse SUPPA splicing events")
 
-test_that("parseSuppaEvent parses multiple skipping exon event IDs at once", {
+test_that("parseSuppaEvent parses multiple exon skipping event IDs at once", {
     # Load all types of events to test
     events <- c(
         "ENSG00000131002.7;SE:chrY:21751498-21753666:21753845-21755285:+",
@@ -34,7 +34,7 @@ test_that("parseSuppaEvent parses multiple alt. 3' SS event IDs at once", {
                                   "1019733"))
 })
 
-test_that("parseSuppaSE parses a skipping exon event junctions", {
+test_that("parseSuppaSE parses a exon skipping event junctions", {
     # Strand plus
     junctions <- read.table(text = "169768099 169770024 169770112 169771762")
     parsed <- parseSuppaSE(junctions, "+")

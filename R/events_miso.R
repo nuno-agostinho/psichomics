@@ -285,7 +285,7 @@ parseMisoId <- function(id) {
 
 #' @rdname parseMisoGeneric
 #' @examples
-#' # skipping exon event (SE)
+#' # skipped exon event (SE)
 #' event <- read.table(text = "
 #'   chr1 SE gene 16854 18061 . - .
 #'   chr1 SE mRNA 16854 18061 . - .

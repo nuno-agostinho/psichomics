@@ -708,7 +708,7 @@ microbenchmark(mats <- split(matsEvents, matsEvents$Event.type),
 # SUPPA events' chromosome identifier differs from the rest (let's add "chr")
 suppaEvents$Chromosome <- paste0("chr", suppaEvents$Chromosome)
 
-# MATS' skipping exon events don't match if we don't add one
+# MATS' exon skipping events don't match if we don't add one
 matsEvents[matsEvents$Event.type == "SE", ]$A1.start <- as.numeric(
     matsEvents[matsEvents$Event.type == "SE", ]$A1.start) + 1
 matsEvents[matsEvents$Event.type == "SE", ]$C2.start <- as.numeric(
@@ -789,7 +789,7 @@ names(join) <- types
 
 ```{r, eval=FALSE}
 # Okay! Let's check how many overlaps there are and how many events are unique
-# for skipping exons events (just change)
+# for exon skippings events (just change)
 j <- join$SE
 programs <- j[grep("Program", names(j))]
 nas <- !is.na(programs)
@@ -939,7 +939,7 @@ junctions <- cbind(junctions.files[[1]]$raw_counts,
 row.names(junctions) <- junctionsID
 ```
 
-All right! Now let's search for pairs (only in skipping exon events, for now)!
+All right! Now let's search for pairs (only in exon skipping events, for now)!
 ```{r TCGA/events match, eval=FALSE}
 chr <- joint$SE$Chromosome
 strand <- joint$SE$Strand
@@ -968,7 +968,7 @@ nrow(psi[complete.cases(psi), ])
 ```
 
 Only a few paired, it seems. We got the inclusion levels of 16711 out of 271998
-skipping exon events. My PI says that is quite all right but I was expecting for
+exon skipping events. My PI says that is quite all right but I was expecting for
 a number a bit higher.
 
 To learn about data retrieval from TCGA, head to the vignette `TCGA data.Rmd`.

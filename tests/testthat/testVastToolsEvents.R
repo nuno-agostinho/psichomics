@@ -1,6 +1,6 @@
 context("Parse VAST-TOOLS splicing events")
 
-test_that("parseVastToolsEvent parses skipping exon event", {
+test_that("parseVastToolsEvent parses exon skipping event", {
     events <- read.table(
         text = "
         NFYA HsaEX0042823 chr6:41046768-41046903 136 chr6:41040823,41046768-41046903,41051785 C2 0 N,N,N,Bn,S@0,0 0 N,N,N,Bn,S@0,0
@@ -35,7 +35,7 @@ test_that("parseVastToolsEvent parses skipping exon event", {
     expect_equal(parsed$Strand[[3]], "+")
 })
 
-test_that("parseVastToolsEvent parses skipping exon annotation", {
+test_that("parseVastToolsEvent parses exon skipping annotation", {
     event <- read.table(
         text = "
         NFYA HsaEX0042823 chr6:41046768-41046903 136 chr6:41040823,41046768-41046903,41051785 C2
@@ -220,7 +220,7 @@ test_that("parseVastToolsEvent parses intron retention annotation", {
     expect_equal(parsed$Strand[[3]], "+")
 })
 
-test_that("parseVastToolsSE parses skipping exon junctions", {
+test_that("parseVastToolsSE parses exon skipping junctions", {
     junctions <- read.table(
         text = "
         169768099 169770024 169770112 169771762

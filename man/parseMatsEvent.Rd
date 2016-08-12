@@ -20,7 +20,7 @@ Parse alternative splicing events from MATS
 \details{
 The following event types can be parsed:
 \itemize{
- \item{\strong{SE}: Skipping exon}
+ \item{\strong{SE}: Skipped exon}
  \item{\strong{MXE}: Mutually exclusive exons}
  \item{\strong{RI}:Retained intron}
  \item{\strong{A3SS}: Alternative 3' splice site}
