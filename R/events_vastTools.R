@@ -27,7 +27,7 @@ parseVastToolsEvent <- function(event) {
                               "Event ID"    = as.character(event[[2]]),
                               stringsAsFactors = FALSE)
     
-    # By default, assumes things may be parsable as a skipping exon
+    # By default, assumes things may be parsable as an exon skipping
     # TODO (NunoA): make sure this is intended...
     event_type <- as.character(event[1, 6])
     event_type <- switch(event_type,
@@ -88,7 +88,7 @@ parseVastToolsEvent <- function(event) {
 #'
 #' @details The following event types are available to be parsed:
 #' \itemize{
-#'  \item{\bold{SE} (exon skipping)}
+#'  \item{\bold{SE} (skipped exon)}
 #'  \item{\bold{RI} (intron retention)}
 #'  \item{\bold{A5SS} (alternative 5' splice site)}
 #'  \item{\bold{A3SS} (alternative 3' splice site)}

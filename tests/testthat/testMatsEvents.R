@@ -98,7 +98,7 @@ test_that("parseMatsEvent parses alt. 5' splice event annotation", {
     expect_null(parsed$Inclusion.level.B)
 })
 
-test_that("parseMatsEvent parses skipping exon events", {
+test_that("parseMatsEvent parses exon skipping events", {
     event <- read.table(text = "
         4626 ENSG00000151422 FER chr5 + 108168470 108168644 108133824 108134090 108171408 108171508 4626 16 0 0 4 112 56 0.000164083368228 0.0164083368228 1 0 1
         16170 ENSG00000151914 DST chr6 - 56463273 56463507 56462537 56462804 56464866 56465019 16170 53 7 64 2 112 56 0.062949258326 0.796580100354 0.791 0.941 -0.15
@@ -134,7 +134,7 @@ test_that("parseMatsEvent parses skipping exon events", {
     expect_equal(parsed[2, "Inclusion.level.B"], 0.941)
 })
 
-test_that("parseMatsEvent parses skipping exon event annotation", {
+test_that("parseMatsEvent parses exon skipping event annotation", {
     event <- read.table(text = "
         16170 ENSG00000151914 DST chr6 - 56463273 56463507 56462537 56462804 56464866 56465019
     ")
@@ -330,7 +330,7 @@ test_that("parseMatsEvent parses alt. last exon event annotation", {
     expect_null(parsed[2, "Inclusion.level.B"])
 })
 
-test_that("parseMatsSE parses a skipping exon event's junctions", {
+test_that("parseMatsSE parses a exon skipping event's junctions", {
     junctions <- read.table(
         text = "79685787 79685910 79685796 79685910 79679566 79679751")
     parsed <- parseMatsSE(junctions, strand = "+")

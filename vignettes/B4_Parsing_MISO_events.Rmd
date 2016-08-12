@@ -1327,7 +1327,7 @@ Great! This will do for most of types of events. Some exceptions include AFE and
 ALE events where the validator is not always the same.
 
 There's just something that takes more time than I'd like. After using
-```profvis``` while running parseMisoSE on all skipping exon events from the 
+```profvis``` while running parseMisoSE on all exon skipping events from the 
 MISO annotation, it seems most of the time of the function is spent doing:
 ```{r, eval=F}
 # Get the elements composing each event

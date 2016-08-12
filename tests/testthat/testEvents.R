@@ -24,7 +24,7 @@ test_that("createJunctionsTemplate creates a template of junctions with NAs", {
     expect_equal(temp$Strand, c("-", "+"))
 })
 
-test_that("Calculate inclusion levels for skipping exon", {
+test_that("Calculate inclusion levels for exon skipping", {
     library(fastmatch)
     
     eventType <- "SE"
@@ -59,7 +59,7 @@ test_that("Calculate inclusion levels for skipping exon", {
     expect_true(all(psi[3, ] < 0.5)) # More reads for exclusive isoform
 })
 
-test_that("Calculate inclusion levels for skipping exon with minimum reads", {
+test_that("Calculate inclusion levels for exon skipping with minimum reads", {
     library(fastmatch)
     
     eventType <- "SE"

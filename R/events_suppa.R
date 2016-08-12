@@ -12,7 +12,7 @@ NULL
 #'
 #' @details The following event types are available to be parsed:
 #' \itemize{
-#'  \item{\bold{SE} (exon skipping)}
+#'  \item{\bold{SE} (skipped exon)}
 #'  \item{\bold{RI} (intron retention)}
 #'  \item{\bold{MX} (mutually exclusive exons)}
 #'  \item{\bold{A5} (alternative 5' splice site)}
@@ -96,7 +96,7 @@ parseSuppaEvent <- function(event) {
 #' @return Data frame of parsed junctions
 #' 
 #' @examples
-#' # Parse generic event (in this case, a skipping exon event)
+#' # Parse generic event (in this case, an exon skipping event)
 #' junctions <- read.table(text = "169768099 169770024 169770112 169771762")
 #' coords <- c("C1.end", "A1.start", "A1.end", "C2.start")
 #' plus  <- 1:4

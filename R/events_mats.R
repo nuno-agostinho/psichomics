@@ -5,7 +5,7 @@
 #'
 #' @details The following event types can be parsed:
 #' \itemize{
-#'  \item{\strong{SE}: Skipping exon}
+#'  \item{\strong{SE}: Skipped exon}
 #'  \item{\strong{MXE}: Mutually exclusive exons}
 #'  \item{\strong{RI}:Retained intron}
 #'  \item{\strong{A3SS}: Alternative 3' splice site}
@@ -76,7 +76,7 @@ parseMatsEvent <- function(event, event_type) {
 #' 
 #' @details The following event types are ready to be parsed:
 #' \itemize{
-#'  \item{\bold{SE} (exon skipping)}
+#'  \item{\bold{SE} (skipped exon)}
 #'  \item{\bold{MXE} (mutually exclusive exon)}
 #'  \item{\bold{RI} (intron retention)}
 #'  \item{\bold{A5SS} (alternative 5' splice site)}
@@ -92,7 +92,7 @@ parseMatsEvent <- function(event, event_type) {
 #' @return Data frame with parsed junctions
 #' 
 #' @examples 
-#' # Parse generic event (in this case, a skipping exon event)
+#' # Parse generic event (in this case, an exon skipping event)
 #' junctions <- read.table(text=
 #'     "79685787 79685910 79685796 79685910 79679566 79679751")
 #' coords <- c("A1.start", "A1.end",
@@ -114,7 +114,7 @@ parseMatsGeneric <- function(junctions, strand, coords, plus_pos, minus_pos) {
 #' @rdname parseMatsGeneric
 #' @examples 
 #' 
-#' # Parse skipping exon event
+#' # Parse exon skipping event
 #' junctions <- read.table(text=
 #'     "79685787 79685910 79685796 79685910 79679566 79679751")
 #' psichomics:::parseMatsSE(junctions, strand = "+")

@@ -5,7 +5,7 @@
 #' @examples 
 #' getSplicingEventTypes()
 getSplicingEventTypes <- function() {
-    c("Skipping exon (SE)" = "SE",
+    c("Exon skipping (SE)" = "SE",
       "Mutually exclusive exons (MXE)" = "MXE",
       "Alternative 5' Splice Site (A5SS)" = "A5SS",
       "Alternative 3' Splice Site (A3SS)" = "A3SS",
