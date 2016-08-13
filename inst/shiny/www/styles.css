@@ -18,11 +18,13 @@ body { padding-top: 70px; }
 }
 
 /* Progress bar right below navbar and style progress display */
-.shiny-progress-container { top: 48px; }
+.shiny-progress-container { top: 50px; }
 .shiny-progress .progress-text { 
     width: auto; 
-    height: auto; 
-    top: -3px !important;
+    height: 18px; 
+    top: 0 !important;
+    padding: 0;
+    background-color: rgba(255, 255, 255, 0.70);
 }
 .shiny-progress .progress { 
     height: 18px; 
@@ -31,7 +33,7 @@ body { padding-top: 70px; }
 
 /* Loading message located in the navbar at the right */
 #loadmessage {
-    top: 5px;
+    top: 65px;
     left: -15px;
     position: fixed;
     width: 100%;
@@ -159,6 +161,4 @@ Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
 }
 
 /* Avoid wrapping content of DataTables */
-table {
-    white-space: nowrap;
-}
+table { white-space: nowrap; }

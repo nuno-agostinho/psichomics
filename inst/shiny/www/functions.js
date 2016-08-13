@@ -14,8 +14,9 @@ function showDataPanel(panelVal) {
  * Navigate user to survival analysis by quantification cut-off
  */
 function showSurvCutoff() {
-    var surv = "Survival curves";
-    $("select[id*='selectizeAnalysis']").selectize()[0].selectize.setValue(surv);
+    var surv = "Survival analysis";
+    $("ul[id='nav'] > li > ul > li > a[data-value*='" + surv + "']")
+        .tab("show");
     $("input[value='psiCutoff']").click();
 }
 
@@ -25,7 +26,8 @@ function showSurvCutoff() {
  */
 function showDiffSplicing (event) {
     var diff = "Differential splicing analysis (per splicing event)";
-    $("select[id*='selectizeAnalysis']").selectize()[0].selectize.setValue(diff);
+    $("ul[id='nav'] > li > ul > li > a[data-value*='" + diff + "']")
+        .tab("show");
     $("select[id*='selectizeEvent']").selectize()[0].selectize.setValue(event);
 }
 

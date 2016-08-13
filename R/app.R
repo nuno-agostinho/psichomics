@@ -69,7 +69,7 @@ getUiFunctions <- function(ns, loader, ..., priority=NULL) {
             # Remove last "UI" from the name and use it as ID
             id  <- gsub("UI$", "", name)
             res <- FUN(ns(id), ...)
-            # Pass all attributes
+            # Pass all attributes and add identifier
             attributes(res) <- c(attributes(res), attributes(FUN)[-1])
             return(res)
         }
@@ -77,6 +77,51 @@ getUiFunctions <- function(ns, loader, ..., priority=NULL) {
     # Remove NULL elements from list
     uiList <- Filter(Negate(is.null), uiList)
     return(uiList)
+}
+
+#' Create a selectize input available from any page
+#' @param id Character: input identifier
+#' @param label Character: label
+#' @return HTML element for a global selectize input
+globalSelectize <- function(id, placeholder) {
+    elem <- paste0(id, "Elem")
+    select <- selectizeInput(
+        elem, "", choices = NULL,
+        options = list(
+            onDropdownClose = I(
+                paste0("function($dropdown) { $('#", id,
+                       "')[0].style.display = 'none'; }")),
+            onBlur = I(
+                paste0("function() { $('#", id,
+                       "')[0].style.display = 'none'; }")),
+            placeholder = placeholder),
+        width="auto")
+    select[[3]][[1]] <- NULL
+    select <- tagAppendAttributes(
+        select, id=id,
+        style=paste("width: 95%;", "position: absolute;", 
+                    "margin-top: 5px !important;", "display: none;"))
+    return(select)
+}
+
+#' Create a special selectize input in the navigatin bar
+#' @inheritParams globalSelectize
+#' @return HTML element to be included in a navigation bar
+navSelectize <- function(id, label, placeholder=label) {
+    value <- paste0(id, "Value")
+    tags$li( tags$div(
+        class="navbar-text",
+        style="margin-top: 5px !important; margin-bottom: 0px !important;", 
+        globalSelectize(id, placeholder),
+        tags$small(
+            tags$b(label),
+            tags$a(
+                href="#", "Change...",
+                onclick=paste0(
+                    '$("#', id, '")[0].style.display = "block";',
+                    '$("#', id, ' > div > select")[0].selectize.clear();',
+                    '$("#', id, ' > div > select")[0].selectize.focus();'))), 
+        tags$br(), textOutput(value)))
 }
 
 #' The user interface (ui) controls the layout and appearance of the app
@@ -89,7 +134,7 @@ appUI <- function() {
     uiList <- getUiFunctions(paste, "app", tabPanel,
                              priority=c("dataUI", "analysesUI"))
     
-    header <- list(
+    header <- tagList(
         includeCSS(insideFile("shiny", "www", "styles.css")),
         includeScript(insideFile("shiny", "www", "functions.js")),
         includeScript(insideFile("shiny", "www", "fuzzy.min.js")),
@@ -98,17 +143,20 @@ appUI <- function() {
             condition="$('html').hasClass('shiny-busy')",
             div(class="text-right", id="loadmessage",
                 h4(tags$span(class="label", class="label-info",
-                             icon("flask", "fa-spin"), "Working...")))
-        )
-    )
+                             icon("flask", "fa-spin"), "Working...")))))
     
-    shinyUI(
-        do.call(navbarPage, c(
-            list(title="PS\u03A8chomics", id="nav", collapsible=TRUE, 
-                 header=header, position="fixed-top", footer=useShinyjs()),
-            uiList)
-        )
-    )
+    nav <- do.call(navbarPage, c(
+        list(title="PS\u03A8chomics", id="nav", collapsible=TRUE, 
+             header=header, position="fixed-top", footer=useShinyjs()),
+        uiList))
+    
+    nav[[3]][[1]][[3]][[1]][[3]][[2]] <- shiny::tagAppendChild(
+        nav[[3]][[1]][[3]][[1]][[3]][[2]], 
+        tags$ul(class="nav navbar-nav navbar-right",
+                navSelectize("selectizeCategory", "Select data category"),
+                navSelectize("selectizeEvent", "Select splicing event",
+                             "Search by gene, chromosome and coordinates")))
+    shinyUI(nav)
 }
 
 #' Server function
@@ -122,6 +170,61 @@ appUI <- function() {
 #' @importFrom shiny observe
 appServer <- function(input, output, session) {
     getServerFunctions("app", priority=c("dataServer", "analysesServer"))
+    
+    # Update selectize input to show available categories
+    observe({
+        data <- getData()
+        if (!is.null(data))
+            updateSelectizeInput(session, "selectizeCategoryElem",
+                                 choices=names(data))
+        else
+            updateSelectizeInput(session, "selectizeCategoryElem",
+                                 choices=list())
+    })
+    
+    # Set the category of the data
+    observeEvent(input$selectizeCategoryElem, 
+                 setCategory(input$selectizeCategoryElem))
+    
+    # Update selectize event to show available events
+    observe({
+        psi <- getInclusionLevels()
+        if (!is.null(psi)) {
+            choices <- rownames(psi)
+            names(choices) <- gsub("_", " ", rownames(psi))
+            choices <- sort(choices)
+            updateSelectizeInput(session, "selectizeEventElem", choices=choices)
+            
+            # Set the selected alternative splicing event
+            observeEvent(input$selectizeEventElem,
+                         if (input$selectizeEventElem != "")
+                             setEvent(input$selectizeEventElem))
+        } else {
+            # Replace with empty list since NULLs are dropped
+            updateSelectizeInput(session, "selectizeEventElem", choices=list(),
+                                 selected=list())
+        }
+    })
+    
+    output$selectizeCategoryValue <- renderText({
+        category <- getCategory()
+        if (is.null(category))
+            return("No data loaded")
+        else if(category == "")
+            return("No category selected")
+        else
+            return(category)
+    })
+    
+    output$selectizeEventValue <- renderText({
+        event <- getEvent()
+        if (is.null(event))
+            return("No data loaded")
+        else if (event == "")
+            return("No event selected")
+        else
+            return(gsub("_", " ", event))
+    })
     
     # session$onSessionEnded(function() {
     #     # Stop app and print message to console
