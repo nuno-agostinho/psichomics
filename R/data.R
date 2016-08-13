@@ -216,13 +216,8 @@ dataServer <- function(input, output, session) {
                 )
             )
         } else
-            list(selectInput(ns("category"), "Select category:", width="auto",
-                             choices=names(getData())),
-                 uiOutput(ns("datatabs")))
+            uiOutput(ns("datatabs"))
     })
-    
-    # Set the category of the data when possible
-    observeEvent(input$category, setCategory(input$category))
     
     # Render tables when data changes
     observe({
