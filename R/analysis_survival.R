@@ -552,10 +552,12 @@ survivalServer <- function(input, output, session) {
                     summary$n, " patients, ", summary$nevent, " events",
                     if (len > 0) 
                         paste0(" (", len, " missing values removed)"))),
-                tags$b("Concordance: "), summary$concordance[[1]],
-                tags$b("(SE: "), summary$concordance[[2]], tags$b(")"),
-                br(), tags$b("R\u00B2: "), summary$rsq[[1]], 
-                tags$b("(max possible: "), summary$rsq[[2]], tags$b(")"), 
+                tags$b("Concordance: "), roundDigits(summary$concordance[[1]]),
+                tags$b("(SE: "), roundDigits(summary$concordance[[2]]),
+                tags$b(")"),
+                br(), tags$b("R\u00B2: "), roundDigits(summary$rsq[[1]]), 
+                tags$b("(max possible: "), roundDigits(summary$rsq[[2]]),
+                tags$b(")"), 
                 dataTableOutput(ns("coxTests")), hr(),
                 dataTableOutput(ns("coxGroups"))
             )
@@ -651,6 +653,6 @@ survivalServer <- function(input, output, session) {
 }
 
 attr(survivalUI, "loader") <- "analysis"
-attr(survivalUI, "name") <- "Survival curves"
+attr(survivalUI, "name") <- "Survival analysis"
 attr(survivalUI, "selectEvent") <- TRUE
 attr(survivalServer, "loader") <- "analysis"

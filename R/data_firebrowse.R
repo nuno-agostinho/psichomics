@@ -591,7 +591,6 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
         else
             setData(c(getData(), data))
     }
-    
     closeProgress()
     enable("getFirehoseData")
 }

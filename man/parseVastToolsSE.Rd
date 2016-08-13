@@ -30,7 +30,7 @@ Parse junctions of an event from VAST-TOOLS according to event type
 \details{
 The following event types are available to be parsed:
 \itemize{
- \item{\bold{SE} (exon skipping)}
+ \item{\bold{SE} (skipped exon)}
  \item{\bold{RI} (intron retention)}
  \item{\bold{A5SS} (alternative 5' splice site)}
  \item{\bold{A3SS} (alternative 3' splice site)}
