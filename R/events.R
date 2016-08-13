@@ -409,7 +409,7 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         exclstr <- junctionString(chr, strand, 
                                   annotation$C1.end, annotation$C2.start)
         
-        # Get specific junctions
+        # Get specific junction quantification
         coords <- rownames(junctionQuant)
         incA <- junctionQuant[fmatch(incAstr, coords), ]
         incB <- junctionQuant[fmatch(incBstr, coords), ]
@@ -432,7 +432,7 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         excBstr <- junctionString(chr, strand,
                                   annotation$A2.end, annotation$C2.start)
         
-        # Get specific junctions
+        # Get specific junction quantification
         coords <- rownames(junctionQuant)
         incA <- junctionQuant[fmatch(incAstr, coords), ]
         incB <- junctionQuant[fmatch(incBstr, coords), ]
@@ -440,8 +440,8 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         excB <- junctionQuant[fmatch(excBstr, coords), ]
         
         # Calculate inclusion levels
-        inc <- (incA + incB)/2
-        exc <- (excA + excB)/2
+        inc <- (incA + incB)
+        exc <- (excA + excB)
         psi <- inc/(inc + exc)
         rownames(psi) <- paste(eventType, chr, strand, annotation$C1.end,
                                annotation$A1.start, annotation$A1.end, 
@@ -454,7 +454,7 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         excStr <- junctionString(chr, strand,
                                  annotation$C1.end, annotation$C2.start)
         
-        # Get specific junctions
+        # Get specific junction quantification
         coords <- rownames(junctionQuant)
         inc <- junctionQuant[fmatch(incStr, coords), ]
         exc <- junctionQuant[fmatch(excStr, coords), ]
@@ -471,7 +471,7 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         excStr <- junctionString(chr, strand,
                                  annotation$C1.end, annotation$C2.start)
         
-        # Get specific junctions
+        # Get specific junction quantification
         coords <- rownames(junctionQuant)
         inc <- junctionQuant[fmatch(incStr, coords), ]
         exc <- junctionQuant[fmatch(excStr, coords), ]
