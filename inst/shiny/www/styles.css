@@ -111,15 +111,11 @@ Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
 /* Make the text complete dropdown apper above everything (even modals) */
 .textcomplete-dropdown { z-index: 10000 !important; }
 
-/* Style an ordered list */
+/* Style an ordered list; original source:
+https://blog.endeos.com/lleva-las-listas-html-al-siguiente-nivel-con-css */
 #list {
     list-style-type: none;
-    list-style-type: decimal !ie; /* Hackf or IE 7 hack */
-     
-    margin: 0;
-    margin-left: 3em;
-    padding: 0;
-     
+    list-style-type: decimal !ie; /* IE7 hack */
     counter-reset: li-counter;
 }
 
@@ -132,18 +128,12 @@ Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
 
 #list > li:before {
     position: absolute;
-    top: -0.1em;
-    left: -1.2em;
-    width: 1em;
- 
-    font-size: 2.5em;
+    top: 4px;
+    left: -0.8em;
+    font-size: 3em;
     line-height: 1;
     font-weight: bold;
     text-align: right;
-    color: #464646;
-     
-    z-index: -99;
-    overflow: hidden;
      
     content: counter(li-counter);
     counter-increment: li-counter;
@@ -151,3 +141,6 @@ Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
 
 /* Avoid wrapping content of DataTables */
 table { white-space: nowrap; }
+
+/* Improve padding of content inside navigation tabs and pills */
+.tab-content { padding: 10px; }

@@ -55,6 +55,9 @@ performPCA <- function(data, center = TRUE, scale. = FALSE, naTolerance = 30) {
 #' @importFrom shinyBS bsTooltip
 #' @importFrom shiny checkboxGroupInput sidebarPanel tagList uiOutput hr
 #' sliderInput actionButton selectizeInput
+#' @importFrom shinyjs hidden
+#' 
+#' @return HTML element
 pcaUI <- function(id) {
     ns <- NS(id)
     tagList(
@@ -71,23 +74,28 @@ pcaUI <- function(id) {
                             icon("question-circle")),
                         min = 0, max=100, value=30, post="%"),
             bsTooltip(ns("naTolerance"), placement="right", 
-                      paste("Individuals with a tolerable percentage of missing",
-                            "values use the median value to replace missing",
-                            "values. The remaining individuals are discarded."),
+                      paste("For individuals with a tolerable percentage of",
+                            "missing values, the median value is used to",
+                            "replace missing values. The remaining individuals",
+                            "are discarded."),
                       options=list(container="body")),
             selectGroupsUI(ns("dataGroups"), "Filter data groups"),
             actionButton(ns("calculate"), class = "btn-primary", 
                          "Calculate PCA"),
-            hr(),
-            selectizeInput(ns("pcX"), "Choose X axis", choices=NULL),
-            selectizeInput(ns("pcY"), "Choose Y axis", choices=NULL),
-            selectGroupsUI(ns("colourGroups"),
-                           "Clinical groups to colour the PCA"),
-            checkboxGroupInput(ns("plotShow"), "Show in plot",
-                               c("Individuals", "Loadings"),
-                               selected = c("Individuals")),
-            actionButton(ns("showVariancePlot"), "Show variance plot"),
-            actionButton(ns("plot"), class = "btn-primary", "Plot PCA")
+            hidden(
+                div(id=ns("pcaPlotUI"),
+                    hr(),
+                    selectizeInput(ns("pcX"), "Choose X axis", choices=NULL),
+                    selectizeInput(ns("pcY"), "Choose Y axis", choices=NULL),
+                    selectGroupsUI(ns("colourGroups"),
+                                   "Clinical groups to colour the PCA"),
+                    checkboxGroupInput(ns("plotShow"), "Show in plot",
+                                       c("Individuals", "Event (loadings)"),
+                                       selected = c("Individuals")),
+                    actionButton(ns("showVariancePlot"), "Show variance plot"),
+                    actionButton(ns("plot"), class = "btn-primary", "Plot PCA")
+                )
+            )
         ), mainPanel(
             highchartOutput(ns("scatterplot"))
         )
@@ -189,7 +197,7 @@ plotPCA <- function(pca, pcX="PC1", pcY="PC2", selected=NULL, clinical, match,
 #' @param output Shiny output
 #' @param session Shiny session
 #' 
-#' @importFrom shinyjs runjs
+#' @importFrom shinyjs runjs hide show
 #' @importFrom highcharter %>% hc_chart hc_xAxis hc_yAxis hc_tooltip
 #' @importFrom stats setNames
 pcaServer <- function(input, output, session) {
@@ -316,7 +324,12 @@ pcaServer <- function(input, output, session) {
         output$scatterplot <- renderHighchart(
             if (!is.null(pcX) & !is.null(pcY))
                 plotPCA(pca, pcX, pcY, selected, clinical, match,
-                        "Individuals" %in% show, "Loadings" %in% show))
+                        "Individuals" %in% show, "Events (loadings)" %in% show))
+    })
+    
+    observe({
+        pca <- sharedData$inclusionLevelsPCA
+        if (!is.null(pca)) shinyjs::show("pcaPlotUI", animType="fade")
     })
 }
 

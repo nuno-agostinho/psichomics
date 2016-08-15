@@ -172,7 +172,7 @@ createDataTab <- function(index, data, name, input, output) {
     
     output[[tablename]] <- renderDataTable(
         subsetToShow, style="bootstrap", selection='none', filter="top",
-        server=TRUE, options=list(pageLength=10))
+        options=list(pageLength=10))
     
     output[[paste(tablename, "download", sep="-")]] <- downloadHandler(
         filename = paste(name, attr(table, "tablename")),
@@ -195,17 +195,38 @@ dataServer <- function(input, output, session) {
     # Show welcome screen when there's no data loaded
     output$tablesOrAbout <- renderUI({
         if(is.null(getData())) {
+            tcga <- tags$abbr(title="The Cancer Genome Atlas", "TCGA")
+            
             tagList(
                 h1("Welcome"),
-                "This app provides an effortless analysis of tumour cells with",
-                "a focus on alternative splicing.",
+                "Analyse clinical and transcriptomic data from The Cancer",
+                "Genome Atlas (", tcga, ") with a focus on alternative splicing.",
                 h2("Instructions"),
                 tags$ol(id="list",
-                    tags$li("Load tumour transcriptomic data from TCGA",
-                            "(clinical data and junction quantification)"),
-                    tags$li("Quantify the alternative splicing events"),
+                    tags$li("Load junction quantification and clinical data",
+                            "from ", tcga, ".", tags$br(), "Only these data",
+                            "types are currently supported."),
+                    tags$li("Quantify or load alternative splicing events.",
+                            tags$br(),
+                            "The quantification is performed through the",
+                            "percentage splicing index (PSI) metric.",
+                            # "The following event types are available:",
+                            # "skipped exon (SE), mutually exclusive exon",
+                            # "(MXE), alternative 3' and 5' splice site (A3SS",
+                            # "and A5SS) and alternative first and last exon",
+                            # "(AFE and ALE).", tags$br(),
+                            tags$br(), tags$small(
+                                style="color: gray;",
+                                "As ", tcga, " doesn't include exon-intron",
+                                "junction quantification, intron retention",
+                                "events are not measurable")),
                     tags$li("Explore statistically significant events or",
-                            "individual events of interest")
+                            "individual events of interest.", tags$br(),
+                            "Analyse clinical features such as tumour",
+                            "stage and survival and perform differential",
+                            "splicing analyses based on", tags$br(), "variance",
+                            "and median statistical tests. Annotation of the",
+                            "splicing events is also incorporated.")
                 ), br(), br(),
                 p(style="text-align:right",
                     tags$a(href="http://imm.medicina.ulisboa.pt/group/compbio/",

@@ -130,9 +130,9 @@ groupByExpression <- function(ns) {
 groupByGrep <- function(ns, dataset) {
     tagList (
         textInput(ns("grepExpression"), "Regular expression", width="auto"),
-        selectizeInput(ns("grepColumn"), "Select column to GREP", selected=NULL, 
-                       choices=names(dataset), width="auto", options=list(
-                           placeholder="Start typing to search for columns"))
+        selectizeInput(ns("grepColumn"), "Select column to GREP",
+                       choices=c("Start typing to search for columns"="",
+                                 names(dataset)), width="auto")
     )}
 
 #' Creates UI elements for the grouping feature
@@ -365,6 +365,8 @@ groupsServer <- function(input, output, session, datasetName) {
             groups <- rbind(new, groups)
             setGroupsFrom(datasetName, groups)
         }
+        
+        updateSelectizeInput(session, "groupColumn", selected=character())
     })
     
     # Render groups list and show interface to manage groups

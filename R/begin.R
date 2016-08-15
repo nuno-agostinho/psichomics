@@ -392,7 +392,7 @@ groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE,
     
     all <- unlist(groups)
     names(all) <- rep(names(groups), sapply(groups, length))
-
+    
     finalGroups <- rep(NA, patients)
     for (each in unique(all))
         finalGroups[each] <- paste(names(all[all == each]), collapse=", ")

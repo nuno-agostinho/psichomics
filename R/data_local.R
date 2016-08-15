@@ -28,8 +28,8 @@ localDataUI <- function(id, panel) {
     ns <- NS(id)
     
     panel(
-        style="info", title=list(icon("plus-circle"), "Add local files"),
-        value="Add local files", addLocalFile(ns))
+        style="info", title=list(icon("plus-circle"), "Load local files"),
+        value="Load local files", addLocalFile(ns))
 }
 
 #' Load local files
