@@ -2,17 +2,19 @@
 % Please edit documentation in R/analysis_diffSplicing.R
 \name{diffSplicingUI}
 \alias{diffSplicingUI}
-\title{Interface for the analysis of an alternative splicing event}
+\title{User interface for the differential splicing analyses}
 \usage{
-diffSplicingUI(id)
+diffSplicingUI(id, tab)
 }
 \arguments{
 \item{id}{Character: identifier}
+
+\item{tab}{Function to process HTML elements}
 }
 \value{
-Character with the HTML interface
+HTML element as character
 }
 \description{
-Interface for the analysis of an alternative splicing event
+User interface for the differential splicing analyses
 }
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis_diffSplicing.R
 \name{diffSplicingServer}
 \alias{diffSplicingServer}
-\title{Server logic for the analyses of a single alternative splicing event}
+\title{Server logic for the differential splicing analyses}
 \usage{
 diffSplicingServer(input, output, session)
 }
@@ -14,6 +14,6 @@ diffSplicingServer(input, output, session)
 \item{session}{Shiny session}
 }
 \description{
-Server logic for the analyses of a single alternative splicing event
+Server logic for the differential splicing analyses
 }
 

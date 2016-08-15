@@ -49,7 +49,8 @@ VignetteBuilder: knitr
 Collate:
     'analysis.R'
     'analysis_diffSplicing.R'
-    'analysis_diffSplicingTable.R'
+    'analysis_diffSplicing_event.R'
+    'analysis_diffSplicing_table.R'
     'analysis_information.R'
     'analysis_pca.R'
     'analysis_survival.R'
