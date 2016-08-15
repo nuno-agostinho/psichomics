@@ -25,9 +25,8 @@ function showSurvCutoff() {
  * @param {String} event Alternative splicing event
  */
 function showDiffSplicing (event) {
-    var diff = "Differential splicing analysis (per splicing event)";
-    $("ul[id='nav'] > li > ul > li > a[data-value*='" + diff + "']")
-        .tab("show");
+    var diff = "Single event";
+    $("a[data-value*='" + diff + "']").tab("show");
     $("select[id*='selectizeEvent']").selectize()[0].selectize.setValue(event);
 }
 
