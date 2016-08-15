@@ -136,6 +136,7 @@ appUI <- function() {
     
     header <- tagList(
         includeCSS(insideFile("shiny", "www", "styles.css")),
+        includeCSS(insideFile("shiny", "www", "animate.min.css")),
         includeScript(insideFile("shiny", "www", "functions.js")),
         includeScript(insideFile("shiny", "www", "fuzzy.min.js")),
         includeScript(insideFile("shiny", "www", "jquery.textcomplete.min.js")),
