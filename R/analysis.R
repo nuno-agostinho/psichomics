@@ -59,13 +59,8 @@ analysesUI <- function(id, tab) {
     ns <- NS(id)
     uiList <- getUiFunctions(ns, "analysis")
     
-    analysesSelectEvent <- sapply(uiList, attr, "selectEvent")
-    names(analysesSelectEvent) <- sapply(uiList, attr, "name")
-    sharedData$analysesSelectEvent <- analysesSelectEvent
-    
+    # Load available analyses
     ui <- lapply(uiList, function(ui) tabPanel(attr(ui, "name"), ui) )
-    
-    # Select analyses
     do.call(navbarMenu, c(list(icon=icon("flask"), "Analyses"), ui))
 }
 

@@ -322,5 +322,4 @@ pcaServer <- function(input, output, session) {
 
 attr(pcaUI, "loader") <- "analysis"
 attr(pcaUI, "name") <- "Principal Component Analysis (PCA)"
-attr(pcaUI, "selectEvent") <- FALSE
 attr(pcaServer, "loader") <- "analysis"
