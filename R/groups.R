@@ -17,7 +17,8 @@ selectGroupsUI <- function (
                                   width="auto",
                                   options=list(placeholder=placeholder))),
         column(2, actionButton(editId, "Groups", 
-                               class="inline_selectize pull-right btn-info")))
+                               class="inline_selectize pull-right btn-info",
+                               style="z-index: 1; position: relative;")))
 }
 
 #' Group selection logic
@@ -25,6 +26,8 @@ selectGroupsUI <- function (
 #' @param session Shiny session
 #' @param id Character: identifier of the group selection
 #' @param datasetName Character: name of the dataset of interest
+#' 
+#' @importFrom shinyjs enable disable onclick toggleClass
 #' 
 #' @return Server logic for group selection
 selectGroupsServer <- function(session, id, datasetName) {
@@ -52,8 +55,16 @@ selectGroupsServer <- function(session, id, datasetName) {
     # Update groups shown in the interface
     observe({
         groups <- names(getGroupsFrom(datasetName))
-        # Not possible to update select values with NULL
-        if (is.null(groups)) groups <- list()
+        if (is.null(groups)) {
+            # Disable selection and animate button when clicking disabled input
+            groups <- list()
+            disable(id)
+            onclick(id, runjs(paste0("$('#", ns(editId), 
+                                     "').animateCss('rubberBand');")))
+        } else {
+            enable(id)
+            onclick(id, NULL)
+        }
         updateSelectizeInput(session, id, choices=groups, selected=groups)
     })
 }

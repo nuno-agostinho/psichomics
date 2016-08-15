@@ -121,3 +121,20 @@ function drawSparklines() {
         sparkline.highcharts('SparkLine', obj);
     }
 }
+
+$.fn.extend({
+    /**
+     * Play animation from Animate.css in a selected element
+     * 
+     * @param {String} animationName Name of animation of interest
+     * @example $('div').animateCss("bounce");
+     */
+    animateCss: function (animationName) {
+        var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd' +
+            'oanimationend animationend';
+        $(this).addClass('animated ' + animationName)
+            .one(animationEnd, function() {
+                $(this).removeClass('animated ' + animationName);
+            });
+    }
+});

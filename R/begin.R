@@ -480,13 +480,11 @@ showAlert <- function(session, ..., title=NULL, style=NULL, dismissable=TRUE,
     
     session$output[[alertId]] <- renderUI({
         tagList(
-            div(title, id="myAlert", class="alert", class=style, class="fade",
-                class=dismissable, role="alert", dismiss, ...),
-            tags$script("window.setTimeout(
-                        function() { $('#myAlert').addClass('now'); }, 100)")
+            div(title, id="myAlert", class="alert", class=style, role="alert",
+                class="animated fadeIn", class=dismissable, dismiss, ...)
         )
     })
-    }
+}
 
 #' @rdname showAlert
 errorAlert <- function(session, ..., title=NULL, dismissable=TRUE,
