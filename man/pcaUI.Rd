@@ -9,6 +9,9 @@ pcaUI(id)
 \arguments{
 \item{id}{Character: identifier}
 }
+\value{
+HTML element
+}
 \description{
 User interface of the principal component analysis
 }

@@ -513,15 +513,15 @@ addTCGAdata <- function(ns) {
                   options = list(container = "body"),
                   "Data not available in this folder will be downloaded."),
         actionButton(class = "btn-primary", type = "button",
-                     ns("getFirehoseData"), "Get data"))
+                     ns("getFirehoseData"), "Load data"))
 }
 
 firebrowseUI <- function(id, panel) {
     ns <- NS(id)
     
     panel(style="info",
-          title=list(icon("plus-circle"), "Add TCGA/Firehose data"),
-          value="Add TCGA/Firehose data", uiOutput(ns("checkFirebrowse")))
+          title=list(icon("plus-circle"), "Load TCGA/Firehose data"),
+          value="Load TCGA/Firehose data", uiOutput(ns("checkFirebrowse")))
 }
 
 #' Return an user interface depending on the status of the Firebrowse API

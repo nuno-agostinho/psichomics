@@ -658,6 +658,11 @@ optimSurvDiff <- function(session, input, output) {
             setDifferentialAnalyses(stats)
         }
         closeProgress()
+        
+        infoModal(session, "Survival columns added to table",
+                  "The optimal survival cut-off and associated p-value for the",
+                  "requested alternative splicing events were placed in the",
+                  "last two columns of the table.")
     })
 }
 
