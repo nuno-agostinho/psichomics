@@ -560,5 +560,4 @@ infoServer <- function(input, output, session) {
 
 attr(infoUI, "loader") <- "analysis"
 attr(infoUI, "name") <- "Gene, transcript and protein information"
-attr(infoUI, "selectEvent") <- TRUE
 attr(infoServer, "loader") <- "analysis"
