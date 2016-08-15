@@ -776,7 +776,7 @@ diffSplicingTableServer <- function(input, output, session) {
     })
 }
 
-attr(diffSplicingTableUI, "loader") <- "analysis"
-attr(diffSplicingTableUI, "name") <- "Differential splicing analysis (using all splicing events)"
+attr(diffSplicingTableUI, "loader") <- "diffSplicing"
+attr(diffSplicingTableUI, "name") <- "All events (table)"
 attr(diffSplicingTableUI, "selectEvent") <- FALSE
-attr(diffSplicingTableServer, "loader") <- "analysis"
+attr(diffSplicingTableServer, "loader") <- "diffSplicing"
