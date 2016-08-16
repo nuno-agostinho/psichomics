@@ -19,72 +19,21 @@
 #' @importFrom utils packageVersion
 bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL, 
                       style = NULL)  {
+    if (is.null(size))
+        modal <- bsModal(id, title, trigger, ...)
+    else
+        modal <- bsModal(id, title, trigger, ..., size=size)
+        
     if (!is.null(style)) {
         style <- match.arg(style, c("info", "warning", "error"))
-        modalHeader <- paste("modal-header", style)
-    } else {
-        modalHeader <- "modal-header"
+        modal[[3]][[1]][[3]][[1]][[3]][[1]] <-
+            tagAppendAttributes(modal[[3]][[1]][[3]][[1]][[3]][[1]],
+                                class=style)
     }
-    if (!is.null(size)) {
-        if (size == "large") size = "modal-lg"
-        else if (size == "small") size = "modal-sm"
-        else if (size == "default") size = "modal-sm"
-        size <- paste("modal-dialog", size)
-    }
-    else size <- "modal-dialog"
-    bsTag <- tags$div(
-        class = "modal sbs-modal fade", 
-        id = id, tabindex = "-1", `data-sbs-trigger` = trigger, 
-        tags$div(
-            class = size, tags$div(
-                class = "modal-content", 
-                tags$div(
-                    class = modalHeader,
-                    tags$button(
-                        type = "button",
-                        class = "close", `data-dismiss` = "modal"), 
-                    tags$h4(class = "modal-title", title)), 
-                tags$div(class = "modal-body", list(...)), 
-                tags$div(
-                    class = "modal-footer",
-                    tags$button(type = "button", 
-                                       class = "btn btn-default",
-                                       `data-dismiss` = "modal", 
-                                       "Close"),
-                    footer))))
-    shinyBSDep <- htmlDependency("shinyBS", packageVersion("shinyBS"),
-                                 src=c(href="sbs"), script="shinyBS.js", 
-                                 stylesheet="shinyBS.css")
-    attachDependencies(bsTag, shinyBSDep)
-}
-
-#' Allows to add id to an image
-#' 
-#' @param name Character: name of the icon
-#' @param class Additional classes to customise the icon style
-#' @param lib Icon library to use (either "font-awesome" or "glyphicon")
-#' @param ... Extra arguments to the icon tag
-#' 
-#' @importFrom htmltools htmlDependencies "htmlDependencies<-"
-icon2 <- function (name, class = NULL, lib = "font-awesome", ...) {
-    prefixes <- list(`font-awesome` = "fa", glyphicon = "glyphicon")
-    prefix <- prefixes[[lib]]
-    if (is.null(prefix)) {
-        stop("Unknown font library '", lib, "' specified. Must be one of ", 
-             paste0("\"", names(prefixes), "\"", collapse = ", "))
-    }
-    iconClass <- ""
-    if (!is.null(name)) 
-        iconClass <- paste0(prefix, " ", prefix, "-", name)
-    if (!is.null(class)) 
-        iconClass <- paste(iconClass, class)
-    iconTag <- tags$i(class = iconClass, ...)
-    if (lib == "font-awesome") {
-        htmlDependencies(iconTag) <- htmlDependency(
-            "font-awesome", "4.5.0", c(href = "shared/font-awesome"), 
-            stylesheet = "css/font-awesome.min.css")
-    }
-    iconTag
+    
+    modal[[3]][[1]][[3]][[1]][[3]][[3]] <-
+        tagAppendChild(modal[[3]][[1]][[3]][[1]][[3]][[3]], footer)
+    return(modal)
 }
 
 #' Disable a tab from the navbar
