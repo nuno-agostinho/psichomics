@@ -30,11 +30,18 @@ firehoseMergeClinicalFormat <- function() {
         unique = FALSE,   # Remove duplicated rows
         
         # Default columns to show (NULL to show all)
-        show = c("patient.stage_event.pathologic_stage", "patient.vital_status",
-                  "patient.days_to_death", "patient.days_to_last_followup", 
-                  "patient.radiation_therapy", "patient.gender", 
-                  "patient.clinical_cqcf.histological_type", "patient.race", 
-                  "patient.ethnicity", "patient.race_list.race")
+        show = c("patient.stage_event.pathologic_stage (tumour stage)",
+                 "patient.vital_status",
+                 "patient.days_to_death", "patient.days_to_last_followup", 
+                 "patient.radiation_therapy", "patient.gender", 
+                 "patient.clinical_cqcf.histological_type", "patient.race", 
+                 "patient.ethnicity", "patient.race_list.race"),
+        
+        process = function(data) {
+            col <- grep("stage.*pathologic_stage", colnames(data))
+            colnames(data)[col] <- paste(colnames(data)[col], "(tumour stage)")
+            return(data)
+        }
     )
 }
 

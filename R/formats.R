@@ -107,6 +107,9 @@ loadFile <- function(format, file) {
     attr(loaded, "rowNames") <- !is.null(rowNames)
     attr(loaded, "filename") <- file
     attr(loaded, "dataType") <- format$dataType
+    
+    # Further process the dataset if needed
+    if (!is.null(format$process)) loaded <- format$process(loaded)
     return(loaded)
 }
 
