@@ -853,7 +853,7 @@ toNumbers <- function(type, annotation) {
     return(tables)
 }
 
-annotation <- getParsedAnnotation()
+annotation <- psichomics:::getParsedAnnotation()
 annot2 <- NULL
 types <- names(annotation)
 for (type in types) {
@@ -873,26 +873,29 @@ for (type in types) {
 }
 
 # Let's compare!
-join <- joinAnnotation(annotation)
-join2 <- joinAnnotation(annot2)
+join <- psichomics:::joinAnnotation(annotation)
+join2 <- psichomics:::joinAnnotation(annot2)
 
 # Add C2 start from MATS and SUPPA to AFE events
 suppaAFE <- join2$AFE$SUPPA.C2.start
 matsAFE  <- join2$AFE$MATS.C2.start
 join2$AFE[["C2.start"]] <- as.numeric(ifelse(sapply(suppaAFE, is.null),
-                                             ifelse(sapply(matsAFE, is.null), NA, unlist(matsAFE)),
+                                             ifelse(sapply(matsAFE, is.null), 
+                                                    NA, unlist(matsAFE)),
                                              unlist(suppaAFE)))
 
 # Add C1 end from MATS and SUPPA to ALE events
 suppaALE <- join2$ALE$SUPPA.C1.end
 matsALE  <- join2$ALE$MATS.C1.end
 join2$ALE[["C1.end"]] <- as.numeric(ifelse(sapply(suppaALE, is.null),
-                                           ifelse(sapply(matsALE, is.null), NA, unlist(matsALE)),
+                                           ifelse(sapply(matsALE, is.null), 
+                                                  NA, unlist(matsALE)),
                                            unlist(suppaALE)))
 
 annot <- lapply(names(join2), 
                 function(i) { 
-                    join2[[i]][, c(grep("Event.ID", names(join[[i]]), value = TRUE), 
+                    join2[[i]][, c(grep("Event.ID", names(join[[i]]), 
+                                        value = TRUE), 
                                    "Chromosome", "Strand",
                                    getCoordinates(i))]
                 })
@@ -903,12 +906,12 @@ annot$ALE[["C1.end"]]   <- join2$ALE$C1.end
 
 for (type in names(join)) {
     print(type)
-    vennEvents(join, type)
+    psichomics:::vennEvents(join, type)
     title(paste(type))
-    vennEvents(join2, type)
+    psichomics:::vennEvents(join2, type)
     title(paste(type, "unique interest sorted"))
-    write.table(annot[[type]], file = paste0("data/annotation_", type, ".txt"),
-                quote = FALSE, row.names = FALSE, sep = "\t")
+    #write.table(annot[[type]], file = paste0("data/annotation_", type, ".txt"),
+    #            quote = FALSE, row.names = FALSE, sep = "\t")
 }
 ```
 
