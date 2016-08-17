@@ -1,4 +1,4 @@
-context("Test general functions")
+context("Test miscellanious functions")
 
 test_that("trimWhitespace does nothing when there's no need to trim", {
     word <- "this is a test"
@@ -45,4 +45,17 @@ test_that("rm.null returns an empty list for a list with only NULL elements", {
     l1 <- list(NULL, NULL, NULL)
     l2 <- rm.null(l1)
     expect_equal(l2, list())
+})
+
+test_that("Text suggestions create a runnable JS script", {
+    words <- c("gene", "transcript", "protein")
+    suggest <- textSuggestions("id", words)
+    expect_is(suggest, "html")
+    
+    # Words are in script
+    scriptWords <- paste0('["', paste(words, collapse = '", "'), "\"]")
+    expect_true(grepl(scriptWords, suggest, fixed=TRUE))
+    
+    # The library textcomplete is used
+    expect_true(grepl(".textcomplete(", suggest, fixed=TRUE))
 })
