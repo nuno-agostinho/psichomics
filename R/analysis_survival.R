@@ -623,8 +623,8 @@ survivalServer <- function(input, output, session) {
             slider <- tagList(
                 sliderInput(ns("psiCutoff"), value = 0.5, min=0, max=1,
                             step=0.01, paste(
-                                "Quantification cut-off for the selected",
-                                "splicing event")),
+                                "Splicing quantification cut-off for the",
+                                "selected splicing event")),
                 bsTooltip(ns("psiCutoff"), placement="right", 
                           options = list(container = "body"),
                           paste("You can click on the white circle and then",
@@ -642,8 +642,9 @@ survivalServer <- function(input, output, session) {
             if (!is.na(opt$value))
                 return(tagList(
                     slider,
-                    div(tags$b("Optimal quantification cut-off:"), opt$par, 
-                        br(), tags$b("Minimal log-rank p-value:"), opt$value)))
+                    div(tags$b("Optimal splicing quantification cut-off:"),
+                        opt$par, br(), 
+                        tags$b("Minimal log-rank p-value:"), opt$value)))
             else
                 return(tagList(
                     slider, div(icon("bell-o"), "No optimal cut-off was found",

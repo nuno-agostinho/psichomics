@@ -78,7 +78,7 @@ analysesUI <- function(id, tab) {
 #' @return p-value of the survival difference
 testSurvivalCutoff <- function(cutoff, data, filter, ..., group=NULL, 
                                session=NULL) {
-    if (is.null(group)) groups <- rep(NA, nrow(clinical))
+    if (is.null(group)) group <- rep(NA, nrow(clinical))
     group[filter] <- data >= cutoff
     
     # Assign a value based on the inclusion levels cut-off

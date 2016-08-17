@@ -15,9 +15,6 @@ diffSplicingUI <- function(id, tab) {
     
     ui <- lapply(uiList, function(ui) tabPanel(attr(ui, "name"), ui) )
     do.call(tabsetPanel, c(list(type="pills"), ui))
-    
-    # # Select analyses
-    # do.call(navbarMenu, c(list(icon=icon("flask"), "Analyses"), ui))
 }
 
 #' Server logic for the differential splicing analyses
