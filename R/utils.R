@@ -1,6 +1,384 @@
+## Auxiliary functions used throughout the program
+
+#' Print how to start the graphical interface when attaching the package
 .onAttach <- function(libname, pkgname) {
     packageStartupMessage("Start the visual interface by running the function ",
                           "psichomics()")
+}
+
+#' Parse an alternative splicing event based on a given identifier
+#' 
+#' @param event Character: event identifier
+#' 
+#' @return Parsed event
+#' @export
+parseEvent <- function(event) {
+    event <- strsplit(event, "_")[[1]]
+    parsed <- NULL
+    
+    parsed$type   <- event[1]
+    parsed$chrom  <- event[2]
+    parsed$strand <- event[3]
+    parsed$gene   <- event[length(event)]
+    parsed$pos    <- event[4:(length(event)-1)]
+    parsed$pos    <- range(as.numeric(parsed$pos))
+    return(parsed)
+}
+
+#' Trims whitespace from a word
+#'
+#' @param word Character to trim
+#'
+#' @return Character without whitespace
+#'
+#' @examples
+#' psichomics:::trimWhitespace("    hey   there     ")
+#' psichomics:::trimWhitespace(c("pineapple    ", "one two three", 
+#'                               " sunken    ship   "))
+trimWhitespace <- function(word) {
+    # Remove leading and trailing whitespace
+    word <- gsub("^\\s+|\\s+$", "", word)
+    # Replace multiple spaces between words with one single space
+    word <- gsub("\\s+", " ", word)
+    return(word)
+}
+
+#' Filter NULL elements from vector or list
+#' 
+#' @param v Vector or list
+#' 
+#' @return Filtered vector or list with no NULL elements; if the input is a
+#' vector composed of only NULL elements, it returns a NULL (note that it will
+#' returns an empty list if the input is a list with only NULL elements)
+rm.null <- function(v) Filter(Negate(is.null), v)
+
+#' Escape symbols for use in regular expressions
+#'
+#' @param ... Characters to be pasted with no space
+#' 
+#' @return Escaped string
+escape <- function(...) {
+    # return(gsub("/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]", "\\$&", string))
+    return(gsub("(\\W)", "\\\\\\1", paste0(...)))
+}
+
+#' Rename vector to avoid duplicated values with comparison
+#'
+#' Renames values by adding an index to the end of duplicates.
+#'
+#' @param check Character: values to rename if duplicated
+#' @param comp Character: values to compare with
+#'
+#' @return Character vector with renamed values if duplicated; else, it
+#' returns the usual values. Doesn't return the comparator values.
+#'
+#' @examples
+#' psichomics:::renameDuplicated(check = c("blue", "red"), comp = c("green",
+#'                                                                  "blue"))
+renameDuplicated <- function(check, comp) {
+    # If there's nothing to compare with, return the values
+    if (length(comp) == 0) return(check)
+    
+    repeated <- check %in% comp
+    uniq <- check[!repeated]
+    
+    for (dup in check[repeated]) {
+        # Locate matches (don't forget the counter)
+        all <- c(comp, uniq)
+        expr <- paste0(escape(dup), " \\([0-9]+\\)|", escape(dup))
+        locate <- grep(expr, all, value = TRUE)
+        
+        # Get the maximum counter and add one
+        counter <- sub(".* \\(([0-9]+)\\)", "\\1", locate)
+        
+        # Replace strings with 0
+        counter[grep("^[0-9]*$", counter, invert =TRUE)] <- 0
+        dup <- sprintf("%s (%i)", dup, max(as.numeric(counter)) + 1)
+        
+        # Append value to the unique group
+        uniq <- c(uniq, dup)
+    }
+    return(uniq)
+}
+
+#' Match given IDs with the clinical data
+#'
+#' @param ids Character: IDs of interest
+#' @param clinical Matrix or data.frame: clinical data 
+#'
+#' @return Integer vector of the row number in clinical data corresponding to 
+#' the given IDs (named with the ID)
+matchIdWithClinical <- function(ids, clinical) {
+    # All IDs are lower case in the clinical data
+    ids <- tolower(ids)
+    
+    # Get all possible identifiers starting in "tcga" from the clinical data
+    idsIndex <- sapply(1:ncol(clinical), 
+                       function(i) length(grep("^tcga", clinical[[i]])) != 0)
+    clinicalIds <- clinical[, idsIndex]
+    
+    # Get the clinical data row corresponding to the given IDs
+    clinicalRows <- rep(NA, length(ids))
+    names(clinicalRows) <- ids
+    for (col in 1:ncol(clinicalIds)) {
+        # Check if any ID matches the current column of clinical IDs
+        match <- sapply(ids, grep, clinicalIds[ , col], fixed = TRUE)
+        
+        # All matched IDs will save their respective rows
+        clinicalRows[lapply(match, length) != 0] <- unlist(match)
+    }
+    # Remove non-matching IDs
+    clinicalRows <- clinicalRows[!is.na(clinicalRows)]
+    return(clinicalRows)
+}
+
+#' Get row names matching selected groups
+#' @param selected Character: name of selected groups
+#' @param groups Matrix: named groups with row indexes
+#' 
+#' @return Names of the matching rows
+getMatchingRowNames <- function(selected, groups, matches) {
+    # Get selected groups
+    g <- unlist(groups[selected])
+    
+    # Get names of the matching rows with the data
+    ns <- names(matches[matches %in% g])
+    ns <- unique(ns)
+    return(ns)
+}
+
+#' Assign one group for each clinical patient
+#' 
+#' @param groups Matrix: clinical groups
+#' @param patients Integer: total number of clinical patients
+#' @param includeOuterGroup Boolean: join the patients that have no groups?
+#' @param outerGroupName Character: name to give to outer group
+#' 
+#' @return Character vector where each element corresponds to the group of a
+#' clinical patient
+groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE, 
+                            outerGroupName="(Outer data)") {
+    if (length(groups) == 0) return(rep("Single group", patients))
+    
+    all <- unlist(groups)
+    names(all) <- rep(names(groups), sapply(groups, length))
+    
+    finalGroups <- rep(NA, patients)
+    for (each in unique(all))
+        finalGroups[each] <- paste(names(all[all == each]), collapse=", ")
+    
+    # Assign patients with no groups to the outer group
+    if (includeOuterGroup) finalGroups[is.na(finalGroups)] <- outerGroupName
+    
+    return(finalGroups)
+}
+
+#' Show a modal
+#' 
+#' You can also use \code{errorModal} and \code{warningModal} to use template 
+#' modals already stylised to show errors and warnings respectively.
+#' 
+#' @inheritParams bsModal2
+#' @param session Current Shiny session
+#' @param iconName Character: FontAwesome icon name to appear with the title
+#' @param printMessage Boolean: print to console? FALSE by default
+#' @param modalId Character: identifier
+#' 
+#' @importFrom shiny renderUI div icon
+#' @importFrom shinyBS toggleModal
+#' @seealso showAlert
+showModal <- function(session, title, ..., style = NULL,
+                      iconName = "exclamation-circle", footer = NULL,
+                      printMessage = FALSE, size = NULL,
+                      modalId = "modal") {
+    ns <- session$ns
+    session$output[[modalId]] <- renderUI({
+        bsModal2(ns("showModal"), style=style, div(icon(iconName), title),
+                 trigger=NULL, size=size, ..., footer=footer)})
+    toggleModal(session, "showModal", toggle = "open")
+    if (printMessage) print(content)
+}
+
+#' @rdname showModal
+errorModal <- function(session, title, ..., size = "small", footer = NULL) {
+    showModal(session, title, ..., footer=footer, style = "error", size = size,
+              printMessage = FALSE, iconName = "times-circle")
+}
+
+#' @rdname showModal
+warningModal <- function(session, title, ..., size = "small", footer = NULL) {
+    showModal(session, title, ..., footer=footer, style="warning", size = size,
+              printMessage = FALSE, iconName = "exclamation-circle")
+}
+
+#' @rdname showModal
+infoModal <- function(session, title, ..., size = "small", footer = NULL) {
+    showModal(session, title, ..., footer=footer, style = "info", size = size,
+              printMessage = FALSE, iconName = "info-circle")
+}
+
+#' Show a modal
+#' 
+#' You can also use \code{errorAlert} and \code{warningAlert} to use template 
+#' alerts already stylised to show errors and warnings respectively.
+#' 
+#' @param session Shiny session
+#' @param ... Arguments to render as elements of alert
+#' @param title Character: title of the alert (optional)
+#' @param style Character: style of the alert ("alert-danger", "alert-warning" 
+#' or NULL)
+#' @param dismissable Boolean: is the alert dismissable? TRUE by default
+#' @param alertId Character: alert identifier
+#' 
+#' @seealso showModal
+#' @importFrom shiny span h3 renderUI div tagList
+showAlert <- function(session, ..., title=NULL, style=NULL, dismissable=TRUE, 
+                      alertId="alert") {
+    ns <- session$ns
+    
+    if (dismissable) {
+        dismissable <- "alert-dismissible"
+        dismiss <- tags$button(type="button", class="close",
+                               "data-dismiss"="alert", "aria-label"="Close",
+                               span("aria-hidden"="true", "\u00D7"))
+    } else {
+        dismissable <- NULL
+        dismiss <- NULL
+    }
+    
+    if (!is.null(title)) title <- h3(title)
+    
+    session$output[[alertId]] <- renderUI({
+        tagList(
+            div(title, id="myAlert", class="alert", class=style, role="alert",
+                class="animated fadeIn", class=dismissable, dismiss, ...)
+        )
+    })
+}
+
+#' @rdname showAlert
+errorAlert <- function(session, ..., title=NULL, dismissable=TRUE,
+                       alertId="alert") {
+    showAlert(session, ..., style="alert-danger", title=title, 
+              dismissable=dismissable, alertId=alertId)
+}
+
+#' @rdname showAlert
+warningAlert <- function(session, ..., title=NULL, dismissable=TRUE,
+                         alertId="alert") {
+    showAlert(session, ..., style="alert-warning", title=title,
+              dismissable=dismissable, alertId=alertId)
+}
+
+removeAlert <- function(output, alertId="alert") {
+    output[[alertId]] <- renderUI(NULL)
+}
+
+#' Sample variance by row
+#' 
+#' Calculate the sample variance of each row in the given matrix
+#' 
+#' @param x Matrix
+#' @param na.rm Boolean: should the NAs be ignored? FALSE by default
+#' 
+#' @return Variance for each row
+rowVar <- function (x, na.rm = FALSE) {
+    means <- rowMeans(x, na.rm = na.rm)
+    meansSqDev <- (x - means)^2
+    squaresSum <- rowSums(meansSqDev, na.rm = na.rm)
+    nas <- rowSums(is.na(x))
+    return(squaresSum/(ncol(x) - nas - 1))
+}
+
+#' Return the type of a given sample
+#' 
+#' @param sample Character: ID of the sample
+#' @param filename Character: path to RDS file containing corresponding type
+#' 
+#' @return Types of the TCGA samples
+#' @export
+parseSampleGroups <- function(sample, 
+                              filename = system.file("extdata",  
+                                                     "TCGAsampleType.RDS",
+                                                     package="psichomics")) {
+    typeList <- readRDS(filename)
+    type <- gsub(".*?-([0-9]{2}).-.*", "\\1", sample, perl = TRUE)
+    return(typeList[type])
+}
+
+#' Create a progress object
+#' 
+#' @param message Character: progress message
+#' @param divisions Integer: number of divisions in the progress bar
+#' @param global Shiny's global variable
+#' @importFrom shiny Progress
+startProgress <- function(message, divisions, global = sharedData) {
+    print(message)
+    global$progress.divisions <- divisions
+    global$progress <- Progress$new()
+    global$progress$set(message = message, value = 0)
+}
+
+#' Update a progress object
+#' 
+#' @details If \code{divisions} isn't NULL, a progress bar is started with the 
+#' given divisions. If \code{value} is NULL, the progress bar will be 
+#' incremented by one; otherwise, the progress bar will be incremented by the
+#' integer given in value.
+#' 
+#' @inheritParams startProgress
+#' @param value Integer: current progress value
+#' @param max Integer: maximum progress value
+#' @param detail Character: detailed message
+#' @param console Boolean: print message to console? (TRUE by default)
+updateProgress <- function(message="Hang in there", value=NULL, max=NULL,
+                           detail=NULL, divisions=NULL, 
+                           global=sharedData, console=TRUE) {
+    if (!is.null(divisions)) {
+        startProgress(message, divisions, global)
+        return(NULL)
+    }
+    divisions <- global$progress.divisions
+    if (is.null(value)) {
+        value <- global$progress$getValue()
+        max <- global$progress$getMax()
+        value <- value + (max - value)
+    }
+    amount <- ifelse(is.null(max), value/divisions, 1/max/divisions)
+    global$progress$inc(amount = amount, message = message, detail = detail)
+    
+    if (!console)
+        return(invisible(TRUE))
+    
+    # Print message to console
+    if (!is.null(detail))
+        print(paste(message, detail, sep=": "))
+    else
+        print(message)
+    return(invisible(TRUE))
+}
+
+#' Close the progress even if there's an error
+#' 
+#' @param message Character: message to show in progress bar
+#' @param global Global Shiny variable where all data is stored
+closeProgress <- function(message=NULL, global = sharedData) {
+    # Close the progress even if there's an error
+    if (!is.null(message)) print(message)
+    global$progress$close()
+}
+
+#' Get number of significant digits
+#' @param n Numeric: number to round
+#' @importFrom shiny isolate
+signifDigits <- function(n) {
+    return(isolate(formatC(n, getSignificant(), format="g")))
+}
+
+#' Round by the given number of digits
+#' @param n Numeric: number to round
+roundDigits <- function(n) {
+    return(isolate(formatC(n, getPrecision(), format="f")))
 }
 
 #' Modified version of shinyBS::bsModal

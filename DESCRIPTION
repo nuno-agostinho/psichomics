@@ -56,7 +56,7 @@ Collate:
     'analysis_survival.R'
     'analysis_template.R'
     'utils.R'
-    'begin.R'
+    'globalAccess.R'
     'app.R'
     'data.R'
     'formats.R'

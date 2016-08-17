@@ -1,5 +1,10 @@
-#' @include begin.R
+#' @include globalAccess.R
 NULL
+
+# TODO(NunoA): increase allowed size and warn the user to wait for large files
+# Refuse files with size greater than the specified
+MB = 5000 # File size in MB
+options(shiny.maxRequestSize = MB * 1024^2)
 
 #' Get psichomics file inside a given directory
 #' @param ... character vectors, specifying subdirectory and file(s) within some
