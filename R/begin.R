@@ -62,9 +62,11 @@ getClinicalData <- reactive(getCategoryData()[["Clinical data"]])
 #' it uses the selected data category
 #' @return List of data frames of junction quantification
 getJunctionQuantification <- function(category=getCategory()) {
-    data <- getData()[[category]]
-    match <- sapply(data, attr, "dataType") == "Junction quantification"
-    if (any(match)) return(data[match])
+    if (!is.null(category)) {
+        data <- getData()[[category]]
+        match <- sapply(data, attr, "dataType") == "Junction quantification"
+        if (any(match)) return(data[match])
+    }
 }
 
 #' Get inclusion leves of the selected data category
