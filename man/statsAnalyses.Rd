@@ -4,8 +4,8 @@
 \alias{statsAnalyses}
 \title{Perform selected statistical analyses on multiple splicing events}
 \usage{
-statsAnalyses(psi, analyses = c("wilcoxRankSum", "wilcoxSignedRank",
-  "kruskal", "levene"), progress = printPaste)
+statsAnalyses(psi, groups = NULL, analyses = c("wilcoxRankSum",
+  "wilcoxSignedRank", "kruskal", "levene"), progress = printPaste)
 }
 \arguments{
 \item{psi}{Data frame or matrix: Alternative splicing event quantification}

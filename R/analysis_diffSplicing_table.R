@@ -277,9 +277,8 @@ diffSplicingTableUI <- function(id) {
                        "wilcoxSignedRank", "wilcoxRankSum")),
         # Disable checkbox of basic statistics
         tags$script('$("[value=basicStats]").attr("disabled", true);'),
-        helpText("If groups have only one sample for a particular",
-                 "alternative splicing event, the group will be",
-                 "discarded from the analyses."),
+        helpText("For each alternative splicing event, groups with only one",
+                 "non-missing value will be discarded from the analyses."),
         disabled(div(id=ns("downloadStats"), class="btn-group",
                      tags$button(class="btn btn-default dropdown-toggle",
                                  type="button", "data-toggle"="dropdown",

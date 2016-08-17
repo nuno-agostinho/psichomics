@@ -341,7 +341,7 @@ diffSplicingEventServer <- function(input, output, session) {
         # output$spearman <- renderUI(spearman(eventPSI, groups))
         
         output$survival <- renderUI({
-            tagList(h3("Survival analysis by quantification cut-off"),
+            tagList(h3("Survival analysis by splicing quantification cut-off"),
                     actionButton(session$ns("optimalSurv"), "Take me there"))
         })
     })

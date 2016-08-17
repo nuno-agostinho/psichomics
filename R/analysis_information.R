@@ -256,7 +256,6 @@ plotTranscripts <- function(info, eventPosition) {
     min <- min(transcripts$start)
     max <- max(transcripts$stop)
     
-    
     plotGenes(transcripts, chrom, min, max, fontsize=1.5)
     zoomsregion(eventPosition, highlight=TRUE)
     labelgenome(chrom, min, max, scale="Mb")

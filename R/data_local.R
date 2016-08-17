@@ -14,7 +14,6 @@ addLocalFile <- function(ns) {
         textInput(ns("localCategory"), label="Data category name"),
         selectizeInput(ns("localIgnore"), "Files/directories to ignore",
                        choices=getFirehoseDataTypes(),
-                       selected=c("RSEM_isoforms", "exon_quantification"),
                        multiple=TRUE, options=list(
                            # Allow to add new items
                            create=TRUE, createOnBlur=TRUE,

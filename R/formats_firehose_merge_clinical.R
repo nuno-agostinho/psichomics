@@ -39,7 +39,7 @@ firehoseMergeClinicalFormat <- function() {
         
         process = function(data) {
             col <- grep("stage.*pathologic_stage", colnames(data))
-            colnames(data)[col] <- paste(colnames(data)[col], "(tumour stage)")
+            colnames(data)[col] <- paste(colnames(data)[col], "(tumor_stage)")
             return(data)
         }
     )
