@@ -118,6 +118,17 @@ getGroupsFrom <- function(dataset, category = getCategory(), full=FALSE) {
 getClinicalMatchFrom <- function(dataset, category = getCategory())
     getGlobal(category, dataset, "clinicalMatch")
 
+#' Get the groups column for differential splicing analysis of a data category
+#' @note Needs to be called inside reactive function
+#' 
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' 
+#' @return Character value with the groups column used for differential splicing
+#' analysis
+getDiffSplicingGroups <- function(category = getCategory())
+    getGlobal(category, "diffSplicingGroups")
+
 #' Set element as globally accessible
 #' @details Set element inside the global variable
 #' @note Needs to be called inside reactive function
@@ -209,6 +220,15 @@ setSpecies <- function(value, category = getCategory())
 #' it uses the selected data category
 setAssemblyVersion <- function(value, category = getCategory())
     setGlobal(category, "assemblyVersion", value=value)
+
+#' Set the groups column for differential splicing analysis of a data category
+#' @note Needs to be called inside reactive function
+#' 
+#' @param value Character: assembly version
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+setDiffSplicingGroups <- function(value, category = getCategory())
+    setGlobal(category, "diffSplicingGroups", value=value)
 
 #' Set clinical matches from a given data type
 #' @note Needs to be called inside reactive function

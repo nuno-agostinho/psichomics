@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis_diffSplicing_table.R
 \name{diffSplicingTableUI}
 \alias{diffSplicingTableUI}
-\title{Interface for exploratory differential analyses}
+\title{Interface for differential analyses on all splicing events}
 \usage{
 diffSplicingTableUI(id)
 }
@@ -13,6 +13,6 @@ diffSplicingTableUI(id)
 HTML elements
 }
 \description{
-Interface for exploratory differential analyses
+Interface for differential analyses on all splicing events
 }
 
