@@ -12,6 +12,10 @@ diffSplicingEventUI <- function(id) {
         uiOutput(ns("modal")),
         sidebarLayout(
             sidebarPanel(
+                tags$b("Clinical groups on which to perform the analyses:"), 
+                tags$br(), tags$a(href="#", onclick="changeDiffSplicingGroup()",
+                                  textOutput(ns("groupsCol"))),
+                tags$br(),
                 numericInput(ns("bandwidth"), "Density bandwidth", 0.01, 
                              step=0.01),
                 h3("Non-parametric tests"),
@@ -323,10 +327,35 @@ diffSplicingEventServer <- function(input, output, session) {
         
         # Get splicing event's inclusion levels for all samples
         psi <- getInclusionLevels()
+        col <- getDiffSplicingGroups()
+        if (is.null(col) || col=="") return(NULL)
+        
+        output$groupsCol <- renderText(col)
+        
+        if (col == "Sample types") {
+            # Separate samples by their groups
+            ids <- names(psi)
+            groups <- parseSampleGroups(ids)
+        } else {
+            # Get groups from column of interest
+            clinical <- getClinicalData()
+            column <- clinical[[col]]
+            
+            # Match groups from patients with respective samples
+            matches <- getClinicalMatchFrom("Inclusion levels")
+            groups <- rep(NA, ncol(psi))
+            names(groups) <- colnames(psi)
+            samples <- toupper(names(matches))
+            groups[samples] <- as.character(column[matches])
+            
+            # Remove samples with no groups
+            nasGroups <- !is.na(groups)
+            psi       <- psi[nasGroups]
+            groups    <- groups[nasGroups]
+        }
         eventPSI <- as.numeric(psi[event, ])
         
         # Separate samples by their groups
-        groups <- parseSampleGroups(colnames(psi))
         eventPSI <- filterGroups(eventPSI, groups)
         groups <- names(eventPSI)
         
@@ -342,7 +371,8 @@ diffSplicingEventServer <- function(input, output, session) {
         
         output$survival <- renderUI({
             tagList(h3("Survival analysis by splicing quantification cut-off"),
-                    actionButton(session$ns("optimalSurv"), "Take me there"))
+                    actionButton(session$ns("optimalSurv"), "Take me there", 
+                                 class="btn-info"))
         })
     })
     

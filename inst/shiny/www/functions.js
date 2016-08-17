@@ -31,6 +31,17 @@ function showDiffSplicing (event) {
 }
 
 /**
+ * Navigate user to the selectize input where to change the clinical groups used
+ * for differential splicing analysis
+ */
+function changeDiffSplicingGroup () {
+    var diff = "All events (table)";
+    $("a[data-value*='" + diff + "']").tab("show");
+    $("#analyses-diffSplicing-diffSplicingTable-groupsCol")[0].selectize
+        .focus();
+}
+
+/**
  * Modify row of a table to include links to navigate user to the differential
  * splicing of the respective event
  * 

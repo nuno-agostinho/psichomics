@@ -251,7 +251,7 @@ levene.test <- function (y, group, location = c("median", "mean", "trim.mean"),
               class = "htest")
 }
 
-#' Interface for exploratory differential analyses
+#' Interface for differential analyses on all splicing events
 #' 
 #' @param id Character: identifier
 #' 
@@ -262,7 +262,9 @@ diffSplicingTableUI <- function(id) {
     ns <- NS(id)
     
     sidebar <- sidebarPanel(
-        uiOutput(ns("groupsInfo")),
+        selectizeInput(ns("groupsCol"), choices=NULL,
+                       "Clinical groups on which to perform the analyses"), 
+        uiOutput(ns("groupsInfo")), hr(),
         checkboxGroupInput(
             ns("statsChoices"),
             "Choose statistical analyses to perform:",
@@ -277,8 +279,8 @@ diffSplicingTableUI <- function(id) {
                        "wilcoxSignedRank", "wilcoxRankSum")),
         # Disable checkbox of basic statistics
         tags$script('$("[value=basicStats]").attr("disabled", true);'),
-        helpText("For each alternative splicing event, groups with only one",
-                 "non-missing value will be discarded from the analyses."),
+        helpText("For each alternative splicing event, groups with one or less",
+                 "non-missing values will be discarded."),
         disabled(div(id=ns("downloadStats"), class="btn-group",
                      tags$button(class="btn btn-default dropdown-toggle",
                                  type="button", "data-toggle"="dropdown",
@@ -305,6 +307,75 @@ diffSplicingTableUI <- function(id) {
                 highchartOutput(ns("densitySparklines"), 0, 0)
             )
         )
+    )
+}
+
+#' Create density sparklines for inclusion levels
+#' @param data Character: HTML-formatted data series of interest
+#' @param events Characater: event identifiers
+#' 
+#' @importFrom highcharter highchart hc_credits hc_tooltip hc_chart hc_title
+#' hc_xAxis hc_yAxis hc_exporting hc_legend hc_plotOptions
+#' @importFrom jsonlite toJSON
+#' 
+#' @return HTML element with sparkline data (character)
+createDensitySparklines <- function(data, events) {
+    hc <- highchart() %>%
+        hc_tooltip(
+            hideDelay=0, shared=TRUE, valueDecimals=getPrecision(),
+            headerFormat="<small>Inclusion levels: {point.x}</small><br/>",
+            pointFormat=paste(span(style="color:{point.color}", "\u25CF "),
+                              tags$b("{series.name}"), br())) %>%
+        hc_chart(width=120, height=20, backgroundColor="", type="areaspline", 
+                 margin=c(2, 0, 2, 0), style=list(overflow='visible')) %>%
+        hc_title(text="") %>%
+        hc_credits(enabled=FALSE) %>%
+        hc_xAxis(min=0, max=1, visible=FALSE) %>%
+        hc_yAxis(endOnTick=FALSE, startOnTick=FALSE, visible=FALSE) %>%
+        hc_exporting(enabled=FALSE) %>%
+        hc_legend(enabled=FALSE) %>%
+        hc_plotOptions(series=list(cursor="non", animation=FALSE, lineWidth=1,
+                                   marker=list(radius=1), fillOpacity=0.25))
+    hc <- as.character(toJSON(hc$x$hc_opts, auto_unbox=TRUE))
+    hc <- substr(hc, 1, nchar(hc)-1)
+    
+    json <- paste0(hc, ',"series":[', data, "]}")
+    sparklines <- sprintf(
+        paste('<sparkline onclick="showDiffSplicing(\'%s\')"',
+              'style="cursor:pointer;" data-sparkline=\'%s\'/>'), 
+        events, json)
+    return(sparklines)
+}
+
+#' Interface for calculating optimal cut-off and p-value for survival curves
+#' differences
+#' @param ns Namespace function
+optimSurvDiffUI <- function(ns) {
+    tagList(
+        hr(),
+        h3("Survival analyses by splicing quantification cut-off"),
+        helpText("For each splicing event, find the optimal splicing",
+                 "quantification cut-off that most significantly separates",
+                 "survival curves."),
+        radioButtons(ns("censoring"), "Data censoring", selected="right",
+                     inline=TRUE, choices=c(Left="left", Right="right",
+                                            Interval="interval", 
+                                            "Interval 2"="interval2")),
+        selectizeInput(ns("timeStart"), choices = NULL, "Follow up time"),
+        # If the chosen censoring contains the word 'interval', show this input
+        conditionalPanel(paste0(
+            "input[id='", ns("censoring"), "'].indexOf('interval') > -1"),
+            selectizeInput(ns("timeStop"), choices=NULL, "Ending time")),
+        helpText("In case there's no record for a patient, the",
+                 "days to last follow up will be used instead."),
+        selectizeInput(ns("event"), choices = NULL, 
+                       "Event of interest"),
+        radioButtons(
+            ns("selected"), "Perform survival analysis in:",
+            choices=c("Alternative splicing events shown in the screen"="shown",
+                      "All alternative splicing events (slow process)"="all")),
+        actionButton(ns("survival"), class="btn-primary",
+                     "Perform survival analysis")
     )
 }
 
@@ -398,74 +469,6 @@ singleStatsAnalyses <- function(vector, group, threshold=1, step=100,
     return(vector)
 }
 
-#' Create density sparklines for inclusion levels
-#' @param data Character: HTML-formatted data series of interest
-#' @param events Characater: event identifiers
-#' 
-#' @importFrom highcharter highchart hc_credits hc_tooltip hc_chart hc_title
-#' hc_xAxis hc_yAxis hc_exporting hc_legend hc_plotOptions
-#' @importFrom jsonlite toJSON
-#' 
-#' @return HTML element with sparkline data (character)
-createDensitySparklines <- function(data, events) {
-    hc <- highchart() %>%
-        hc_tooltip(
-            hideDelay=0, shared=TRUE,
-            headerFormat="<small>Inclusion levels: {point.x}</small><br/>",
-            pointFormat=paste(span(style="color:{point.color}", "\u25CF "),
-                              tags$b("{series.name}"), br())) %>%
-        hc_chart(width=120, height=20, backgroundColor="", type="areaspline", 
-                 margin=c(2, 0, 2, 0), style=list(overflow='visible')) %>%
-        hc_title(text="") %>%
-        hc_credits(enabled=FALSE) %>%
-        hc_xAxis(min=0, max=1, visible=FALSE) %>%
-        hc_yAxis(endOnTick=FALSE, startOnTick=FALSE, visible=FALSE) %>%
-        hc_exporting(enabled=FALSE) %>%
-        hc_legend(enabled=FALSE) %>%
-        hc_plotOptions(series=list(cursor="non", animation=FALSE, lineWidth=1,
-                                   marker=list(radius=1), fillOpacity=0.25))
-    hc <- as.character(toJSON(hc$x$hc_opts, auto_unbox=TRUE))
-    hc <- substr(hc, 1, nchar(hc)-1)
-    
-    json <- paste0(hc, ',"series":[', data, "]}")
-    sparklines <- sprintf(
-        paste('<sparkline onclick="showDiffSplicing(\'%s\')"',
-              'style="cursor:pointer;" data-sparkline=\'%s\'/>'), 
-        events, json)
-    return(sparklines)
-}
-
-#' Interface for calculating optimal cut-off and p-value for survival curves
-#' differences
-#' @param ns Namespace function
-optimSurvDiffUI <- function(ns) {
-    tagList(
-        hr(),
-        h3("Survival analyses by quantification cut-off"),
-        helpText("For each splicing event, find the optimal quantification",
-                 "cut-off that most significantly separates survival curves."),
-        radioButtons(ns("censoring"), "Data censoring", selected="right",
-                     inline=TRUE, choices=c(Left="left", Right="right",
-                                            Interval="interval", 
-                                            "Interval 2"="interval2")),
-        selectizeInput(ns("timeStart"), choices = NULL, "Follow up time"),
-        # If the chosen censoring contains the word 'interval', show this input
-        conditionalPanel(paste0(
-            "input[id='", ns("censoring"), "'].indexOf('interval') > -1"),
-            selectizeInput(ns("timeStop"), choices=NULL, "Ending time")),
-        helpText("In case there's no record for a patient, the",
-                 "days to last follow up will be used instead."),
-        selectizeInput(ns("event"), choices = NULL, 
-                       "Event of interest"),
-        radioButtons(
-            ns("selected"), "Perform survival analysis in:",
-            choices=c("Alternative splicing events shown in the screen"="shown",
-                      "All alternative splicing events (slow process)"="all")),
-        actionButton(ns("survival"), class="btn-primary",
-                     "Perform survival analysis")
-    )
-}
-
 #' Perform selected statistical analyses on multiple splicing events
 #' 
 #' @param psi Data frame or matrix: Alternative splicing event quantification
@@ -489,19 +492,20 @@ optimSurvDiffUI <- function(ns) {
 #' 
 #' @return Table of statistical analyses
 #' @export
-statsAnalyses <- function(psi, analyses=c("wilcoxRankSum",
-                                          "wilcoxSignedRank",
-                                          "kruskal", "levene"),
+statsAnalyses <- function(psi, groups=NULL, analyses=c("wilcoxRankSum",
+                                                       "wilcoxSignedRank",
+                                                       "kruskal", "levene"),
                           progress=printPaste) {
-    # Separate samples by their type
-    ids <- names(psi)
-    type <- parseSampleGroups(ids)
-    
     # cl <- parallel::makeCluster(getOption("cl.cores", getCores()))
     step <- 50 # Avoid updating progress for too few events
     progress("Performing statistical analysis", 
              divisions=5 + round(nrow(psi)/step))
     time <- Sys.time()
+    
+    if (is.null(groups)) {
+        ids <- names(psi)
+        groups <- parseSampleGroups(ids)
+    }
     
     count <- 0
     stats <- apply(psi, 1, function(...) {
@@ -509,7 +513,7 @@ statsAnalyses <- function(psi, analyses=c("wilcoxRankSum",
         if (count %% step == 0)
             progress("Performing statistical analysis", console=FALSE)
         return(singleStatsAnalyses(...))
-    }, factor(type), threshold=1, step=step, analyses=analyses)
+    }, factor(groups), threshold=1, step=step, analyses=analyses)
     print(Sys.time() - time)
     
     # Check the column names of the different columns
@@ -671,6 +675,7 @@ optimSurvDiff <- function(session, input, output) {
 #' @param session Shiny session
 #' 
 #' @importFrom shinyjs toggleState
+#' @importFrom DT replaceData dataTableProxy
 diffSplicingTableServer <- function(input, output, session) {
     ns <- session$ns
     
@@ -695,8 +700,7 @@ diffSplicingTableServer <- function(input, output, session) {
             groups <- tagList(groups, br(), bullet, each)
         
         return(tagList(
-            helpText("The data contains the following groups:", groups),
-            hr()))
+            helpText("The data contains the following sample types:", groups)))
     })
     
     observeEvent(input$missingInclusionLevels, 
@@ -707,65 +711,94 @@ diffSplicingTableServer <- function(input, output, session) {
         isolate({
             # Get event's inclusion levels
             psi <- getInclusionLevels()
+            col <- input$groupsCol
             statsChoices <- input$statsChoices
         })
         if (is.null(psi)) {
             missingDataModal(session, "Inclusion levels",
                              ns("missingInclusionLevels"))
             return(NULL)
+        } else if (is.null(col)) {
+            errorModal(session, "Select groups",
+                       "The groups on which to perform statistical analysis",
+                       "cannot be empty.")
         }
         
-        stats <- statsAnalyses(psi, statsChoices, progress=updateProgress)
+        
+        if (col == "Sample types") {
+            # Separate samples by their groups
+            ids <- names(psi)
+            groups <- parseSampleGroups(ids)
+        } else {
+            # Get groups from column of interest
+            clinical <- getClinicalData()
+            col <- clinical[[col]]
+            
+            # Match groups from patients with respective samples
+            matches <- getClinicalMatchFrom("Inclusion levels")
+            groups <- rep(NA, ncol(psi))
+            names(groups) <- colnames(psi)
+            samples <- toupper(names(matches))
+            groups[samples] <- as.character(col[matches])
+            
+            # Remove samples with no groups
+            nasGroups <- !is.na(groups)
+            psi       <- psi[nasGroups]
+            groups    <- groups[nasGroups]
+        }
+        
+        stats <- statsAnalyses(psi, groups, statsChoices, 
+                               progress=updateProgress)
+        
+        stats <- cbind(stats, "Optimal survival PSI cut-off"=NA,
+                       "Minimal survival p-value"=NA)
+        
         setDifferentialAnalyses(stats)
         closeProgress()
     })
     
-    # Show table and respective interface when statistical table is available
-    observe({
-        stats <- getDifferentialAnalyses()
-        
-        densityCol <- NULL
-        if (!is.null(stats)) densityCol <- match("Density", colnames(stats))
+    # # Render statistical table
+    # proxy <- dataTableProxy("statsTable")
+    # observe({
+    #     # Do not re-render whole table if only the survival data is added
+    #     if (!is.null(input$survival) && input$survival > 0) {
+    #         replaceData(proxy, getDifferentialAnalyses())
+    #     } else {
+    output$statsTable <- renderDataTableSparklines({
+        getDifferentialAnalyses()
+    }, style="bootstrap", selection="none", filter='top', server=TRUE,
+    extensions="Buttons", options=list(
+        pageLength=10, rowCallback=JS("createDiffSplicingLinks"), dom='Bfrtip',
+        buttons=I('colvis'),
+        columnDefs=list(list(targets=1, searchable=FALSE))))
+    # }
+    # })
+    
+    # Download whole table
+    output$downloadAll <- downloadHandler(
+        filename=paste(getCategories(), "Differential splicing analyses"),
+        content=function(file) {
+            stats <- getDifferentialAnalyses()
+            densityCol <- NULL
+            if (!is.null(stats)) densityCol <- match("Density", colnames(stats))
             
-        # Render statistical table
-        output$statsTable <- renderDataTableSparklines({
-            isolate(stats)
-        }, style="bootstrap", selection="none", filter='top', server=TRUE,
-        extensions=c("Buttons", "ColReorder"), options=list(
-            pageLength=10, rowCallback=JS("createDiffSplicingLinks"),
-            dom = 'Bfrtip', buttons=I('colvis'), colReorder=TRUE,
-            columnDefs=list(list(targets=densityCol, searchable=FALSE))))
-        
-        # Download whole table
-        output$downloadAll <- downloadHandler(
-            filename=paste(getCategories(), "Differential splicing analyses"),
-            content=function(file) {
-                stats <- getDifferentialAnalyses()
-                
-                densityCol <- NULL
-                if (!is.null(stats))
-                    densityCol <- match("Density", colnames(stats))
-                
-                write.table(stats[-densityCol], file, quote=FALSE, sep="\t",
-                            row.names=FALSE)
-            }
-        )
-        
-        # Download filtered table
-        output$downloadSubset <- downloadHandler(
-            filename=paste(getCategories(), "Differential splicing analyses"),
-            content=function(file) {
-                stats <- getDifferentialAnalyses()
-                
-                densityCol <- NULL
-                if (!is.null(stats))
-                    densityCol <- match("Density", colnames(stats))
-                
-                write.table(stats[input$statsTable_rows_all, -densityCol], 
-                            file, quote=FALSE, sep="\t", row.names=FALSE)
-            }
-        )
-    })
+            write.table(stats[-densityCol], file, quote=FALSE, sep="\t",
+                        row.names=FALSE)
+        }
+    )
+    
+    # Download filtered table
+    output$downloadSubset <- downloadHandler(
+        filename=paste(getCategories(), "Differential splicing analyses"),
+        content=function(file) {
+            stats <- getDifferentialAnalyses()
+            densityCol <- NULL
+            if (!is.null(stats)) densityCol <- match("Density", colnames(stats))
+            
+            write.table(stats[input$statsTable_rows_all, -densityCol], 
+                        file, quote=FALSE, sep="\t", row.names=FALSE)
+        }
+    )
     
     # Optimal survival difference given an inclusion level cut-off for a 
     # specific alternative splicing event
@@ -778,6 +811,31 @@ diffSplicingTableServer <- function(input, output, session) {
         else
             enable("downloadStats")
     })
+    
+    # Update groups columns
+    observe({
+        clinical <- getClinicalData()
+        psi <- getInclusionLevels()
+        
+        if (!is.null(clinical)) {
+            updateSelectizeInput(
+                session, "groupsCol", choices=list(
+                    "Clinical groups for samples"=c("Sample types"="Sample types"),
+                    "Clinical groups for patients"=names(clinical),
+                    "d"=c("Start typing to search for clinical groups"="")))
+        } else if (!is.null(psi)) {
+            updateSelectizeInput(
+                session, "groupsCol", choices=list(
+                    "Clinical groups for samples"=c("Sample types"="Sample types"),
+                    "d"=c("No clinical data loaded"="")))
+        } else {
+            updateSelectizeInput(session, "groupsCol", 
+                                 choices=c("No clinical data loaded"=""))
+        }
+    })
+    
+    # Update groups used for differential splicing analysis
+    observe( setDiffSplicingGroups(input$groupsCol) )
 }
 
 attr(diffSplicingTableUI, "loader") <- "diffSplicing"
