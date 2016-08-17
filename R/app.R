@@ -154,8 +154,9 @@ appUI <- function() {
     nav[[3]][[1]][[3]][[1]][[3]][[2]] <- shiny::tagAppendChild(
         nav[[3]][[1]][[3]][[1]][[3]][[2]], 
         tags$ul(class="nav navbar-nav navbar-right",
-                navSelectize("selectizeCategory", "Select data category"),
-                navSelectize("selectizeEvent", "Select splicing event",
+                navSelectize("selectizeCategory", "Selected data category",
+                             "Select data category"),
+                navSelectize("selectizeEvent", "Selected splicing event",
                              "Search by gene, chromosome and coordinates")))
     shinyUI(nav)
 }
@@ -175,17 +176,19 @@ appServer <- function(input, output, session) {
     # Update selectize input to show available categories
     observe({
         data <- getData()
-        if (!is.null(data))
+        if (!is.null(data)) {
             updateSelectizeInput(session, "selectizeCategoryElem",
                                  choices=names(data))
-        else
+            
+            # Set the category of the data
+            observeEvent(input$selectizeCategoryElem, 
+                         if (input$selectizeCategoryElem != "")
+                             setCategory(input$selectizeCategoryElem))
+        } else {
             updateSelectizeInput(session, "selectizeCategoryElem",
-                                 choices=list())
+                                 choices=list(), selected=list())
+        }
     })
-    
-    # Set the category of the data
-    observeEvent(input$selectizeCategoryElem, 
-                 setCategory(input$selectizeCategoryElem))
     
     # Update selectize event to show available events
     observe({
@@ -207,6 +210,7 @@ appServer <- function(input, output, session) {
         }
     })
     
+    # Show the selected category
     output$selectizeCategoryValue <- renderText({
         category <- getCategory()
         if (is.null(category))
@@ -217,6 +221,7 @@ appServer <- function(input, output, session) {
             return(category)
     })
     
+    # Show the selected event
     output$selectizeEventValue <- renderText({
         event <- getEvent()
         if (is.null(event))
