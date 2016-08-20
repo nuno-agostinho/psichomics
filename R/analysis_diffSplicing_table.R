@@ -293,8 +293,7 @@ diffSplicingTableUI <- function(id) {
                                                   "All data")),
                              tags$li(downloadLink(ns("downloadSubset"), 
                                                   "Filtered data"))))),
-        actionButton(ns("startAnalyses"), class="btn-primary", 
-                     "Perform analyses"),
+        processButton(ns("startAnalyses"), "Perform analyses"),
         uiOutput(ns("survivalOptions"))
     )
     
@@ -706,25 +705,13 @@ diffSplicingTableServer <- function(input, output, session) {
     observeEvent(input$missingInclusionLevels, 
                  missingDataGuide("Inclusion levels"))
     
-    # Perform statistical analyses
-    observeEvent(input$startAnalyses, {
-        isolate({
-            # Get event's inclusion levels
-            psi <- getInclusionLevels()
-            col <- input$groupsCol
-            statsChoices <- input$statsChoices
-        })
-        if (is.null(psi)) {
-            missingDataModal(session, "Inclusion levels",
-                             ns("missingInclusionLevels"))
-            return(NULL)
-        } else if (is.null(col)) {
-            errorModal(session, "Select groups",
-                       "The groups on which to perform statistical analysis",
-                       "cannot be empty.")
-        }
+    performStatsAnalyses <- reactive({
+        # Get event's inclusion levels
+        psi <- getInclusionLevels()
+        col <- input$groupsCol
+        statsChoices <- input$statsChoices
         
-        
+        startProcessButton("startAnalyses")
         if (col == "Sample types") {
             # Separate samples by their groups
             ids <- names(psi)
@@ -755,9 +742,38 @@ diffSplicingTableServer <- function(input, output, session) {
         
         setDifferentialAnalyses(stats)
         closeProgress()
+        endProcessButton("startAnalyses")
     })
     
-    # # Render statistical table
+    # Perform statistical analyses
+    observeEvent(input$startAnalyses, {
+        isolate({
+            # Get event's inclusion levels
+            psi <- getInclusionLevels()
+            col <- input$groupsCol
+            statsChoices <- input$statsChoices
+            diffSplicing <- getDifferentialAnalyses()
+        })
+        if (is.null(psi)) {
+            missingDataModal(session, "Inclusion levels",
+                             ns("missingInclusionLevels"))
+        } else if (is.null(col)) {
+            errorModal(session, "Select groups",
+                       "The groups on which to perform statistical analysis",
+                       "cannot be empty.")
+        } else if (!is.null(diffSplicing)) {
+            warningModal(session, "Differential analyses already performed",
+                         "Do you wish to replace the loaded analyses?",
+                         footer=actionButton(ns("replace"), "Replace",
+                                             class="btn-warning",
+                                             "data-dismiss"="modal"))
+        } else {
+            performStatsAnalyses()
+        }
+    })
+    
+    observeEvent(input$replace, performStatsAnalyses())
+    
     # proxy <- dataTableProxy("statsTable")
     # observe({
     #     # Do not re-render whole table if only the survival data is added
