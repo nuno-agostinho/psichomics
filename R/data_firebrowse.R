@@ -512,8 +512,7 @@ addTCGAdata <- function(ns) {
         bsTooltip(ns("dataFolder"), placement = "right",
                   options = list(container = "body"),
                   "Data not available in this folder will be downloaded."),
-        actionButton(class = "btn-primary", type = "button",
-                     ns("getFirehoseData"), "Load data"))
+        processButton(ns("getFirehoseData"), "Load data"))
 }
 
 firebrowseUI <- function(id, panel) {
@@ -559,7 +558,7 @@ checkFirebrowse <- function(ns) {
 #' @param replace Boolean: replace loaded data? TRUE by default
 #' @importFrom shinyjs disable enable 
 setFirehoseData <- function(input, output, session, replace=TRUE) {
-    disable("getFirehoseData")
+    startProcessButton("getFirehoseData")
     
     # Load data from Firehose
     data <- loadFirehoseData(folder = input$dataFolder,
@@ -592,7 +591,7 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
             setData(c(getData(), data))
     }
     closeProgress()
-    enable("getFirehoseData")
+    endProcessButton("getFirehoseData")
 }
 
 firebrowseServer <- function(input, output, session, active) {

@@ -101,6 +101,39 @@ renameDuplicated <- function(check, comp) {
     return(uniq)
 }
 
+#' Style button used to initiate a process
+#' 
+#' @param id Character: button identifier
+#' @param label Character: label
+#' @param ... Extra parameters to pass to \code{actionButton}
+#' @param class Character: class
+#' 
+#' @importFrom shinyjs hidden
+#' @importFrom shiny actionButton
+#' @return HTML for a button
+processButton <- function(id, label, ..., class="btn-primary") {
+    spinner <- tags$i(id=paste0(id, "Loading"), class="fa fa-spinner fa-spin")
+    button  <- actionButton(id, class=class, type="button", 
+                            label=div(hidden(spinner), label), ...)
+    return(button)
+}
+
+#' Style button to show processing is in progress
+#' @param id Character: button identifier
+#' @importFrom shinyjs show
+startProcessButton <- function(id) {
+    disable(id)
+    show(paste0(id, "Loading"))
+}
+
+#' Style button to show processing is not occurring
+#' @param id Character: button identifier
+#' @importFrom shinyjs hide
+endProcessButton <- function(id) {
+    enable(id)
+    hide(paste0(id, "Loading"))
+}
+
 #' Match given IDs with the clinical data
 #'
 #' @param ids Character: IDs of interest

@@ -38,9 +38,8 @@ inclusionLevelsInterface <- function(ns) {
                                          icon("question-circle")), value = 10),
         bsTooltip(ns("minReads"), placement = "right", 
                   options = list(container = "body"),
-                  "Reads below this threshold will be discarded"),
-        actionButton(ns("calcIncLevels"), class = "btn-primary",
-                     "Calculate inclusion levels"))
+                  "Read counts below this threshold will be discarded"),
+        processButton(ns("calcIncLevels"), "Calculate inclusion levels"))
 }
 
 #' Interface of the alternative splicing event quantification module
@@ -127,49 +126,79 @@ inclusionLevelsServer <- function(input, output, session) {
                                  choices=c(names(junctionQuant),
                                            "Select junction quantification"=""))
         } else {
-            updateSelectizeInput(session, "junctionQuant", 
+            updateSelectizeInput(session, "junctionQuant",
                                  choices=c("No junction quantification loaded"=""))
         }
     })
     
+    calcSplicing <- reactive({
+        startProcessButton("calcIncLevels")
+        eventType <- input$eventType
+        minReads  <- input$minReads
+        
+        if (is.null(eventType) || is.null(minReads)) return(NULL)
+        
+        # Read annotation
+        startProgress("Reading alternative splicing annotation",
+                      divisions = 3)
+        annot <- readRDS(system.file("extdata", input$annotation, 
+                                     package="psichomics"))
+        
+        # Set species and assembly version
+        if (grepl("Human", "Human (hg19/GRCh37)")) setSpecies("Human")
+        if (grepl("hg19", "Human (hg19/GRCh37)")) setAssemblyVersion("hg19")
+        
+        if (input$junctionQuant == "") return(
+            errorModal(session, "Select junction quantification",
+                       "Select a junction quantification dataset"))
+        junctionQuant <- getJunctionQuantification()[[input$junctionQuant]]
+        
+        # Calculate inclusion levels with annotation and junction
+        # quantification
+        updateProgress("Calculating inclusion levels")
+        psi <- quantifySplicing(annot, junctionQuant, eventType, minReads, 
+                                progress=updateProgress)
+        setInclusionLevels(psi)
+        
+        updateProgress("Matching clinical data")
+        match <- matchIdWithClinical(colnames(psi), getClinicalData())
+        setClinicalMatchFrom("Inclusion levels", match)
+        
+        closeProgress()
+        endProcessButton("calcIncLevels")
+    })
+    
     observeEvent(input$calcIncLevels, {
-        if(is.null(getData()) || is.null(getJunctionQuantification())) {
+        if (is.null(getData()) || is.null(getJunctionQuantification())) {
             missingDataModal(session, "Junction quantification",
                              ns("takeMeThere"))
+        } else if (!is.null(getInclusionLevels())) {
+            if (!is.null(getDifferentialAnalyses())) {
+                warningModal(session, "Warning",
+                             "The calculated differential splicing analyses",
+                             "will be discarded and the previously loaded",
+                             "inclusion levels will be replaced.",
+                             footer=actionButton(ns("discard"),
+                                                 "Discard and replace",
+                                                 class="btn-warning",
+                                                 "data-dismiss"="modal"))
+            } else {
+                warningModal(session, "Inclusion levels already quantified",
+                             "Do you wish to replace the inclusion levels",
+                             "loaded?",
+                             footer=actionButton(ns("replace"), "Replace",
+                                                 class="btn-warning",
+                                                 "data-dismiss"="modal"))
+            }
         } else {
-            eventType <- input$eventType
-            minReads  <- input$minReads
-            
-            if (is.null(eventType) || is.null(minReads)) return(NULL)
-            
-            # Read annotation
-            startProgress("Reading alternative splicing annotation",
-                          divisions = 3)
-            annot <- readRDS(system.file("extdata", input$annotation, 
-                                         package="psichomics"))
-            
-            # Set species and assembly version
-            if (grepl("Human", "Human (hg19/GRCh37)")) setSpecies("Human")
-            if (grepl("hg19", "Human (hg19/GRCh37)")) setAssemblyVersion("hg19")
-            
-            if (input$junctionQuant == "") return(
-                errorModal(session, "Select junction quantification",
-                           "Select a junction quantification dataset"))
-            junctionQuant <- getJunctionQuantification()[[input$junctionQuant]]
-            
-            # Calculate inclusion levels with annotation and junction
-            # quantification
-            updateProgress("Calculating inclusion levels")
-            psi <- quantifySplicing(annot, junctionQuant, eventType, 
-                                    minReads, progress=updateProgress)
-            setInclusionLevels(psi)
-            
-            updateProgress("Matching clinical data")
-            match <- matchIdWithClinical(colnames(psi), getClinicalData())
-            setClinicalMatchFrom("Inclusion levels", match)
-            
-            closeProgress()
+            calcSplicing()
         }
+    })
+    
+    observeEvent(input$replace, calcSplicing())
+    observeEvent(input$discard, {
+        setDifferentialAnalyses(NULL)
+        calcSplicing()
     })
 }
 

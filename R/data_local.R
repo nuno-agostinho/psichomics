@@ -18,7 +18,7 @@ addLocalFile <- function(ns) {
                            # Allow to add new items
                            create=TRUE, createOnBlur=TRUE,
                            placeholder="Input files to exclude")),
-        actionButton(ns("acceptFile"), class="btn-primary", "Load files")
+        processButton(ns("acceptFile"), "Load files")
     ) # end of list
 }
 
@@ -85,7 +85,7 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."), name="Data",
 #' 
 #' @importFrom shinyjs disable enable
 setLocalData <- function(input, output, session, replace=TRUE) {
-    disable("acceptFile")
+    startProcessButton("acceptFile")
     
     folder <- input$localFolder
     category <- input$localCategory
@@ -103,7 +103,7 @@ setLocalData <- function(input, output, session, replace=TRUE) {
     }
     
     closeProgress()
-    enable("acceptFile")
+    endProcessButton("acceptFile")
 }
 
 #' Server logic to load local data
