@@ -53,6 +53,7 @@ missingDataGuide <- function(dataType) {
 #' 
 #' @importFrom shinyBS bsTooltip
 #' @importFrom shiny NS div icon fluidRow column selectizeInput conditionalPanel
+#' navbarMenu
 #' 
 #' @return HTML element as character
 analysesUI <- function(id, tab) { 
@@ -62,6 +63,231 @@ analysesUI <- function(id, tab) {
     # Load available analyses
     ui <- lapply(uiList, function(ui) tabPanel(attr(ui, "name"), ui) )
     do.call(navbarMenu, c(list(icon=icon("flask"), "Analyses"), ui))
+}
+
+#' Process survival data to calculate survival curves
+#' 
+#' @param timeStart Character: name of column containing starting time of the
+#' interval or follow up time
+#' @param timeStop Character: name of column containing ending time of the 
+#' interval
+#' @param event Character: name of column containing time of the event of
+#' interest
+#' @param group Character: group of each individual
+#' @param clinical Data frame: clinical data
+#' 
+#' @details The event time will only be used to determine whether the event has
+#' happened (1) or not in case of NAs (0)
+#' 
+#' @return Data frame with terms needed to calculate survival curves
+processSurvData <- function(event, timeStart, timeStop, group, clinical) {
+    cols <- c(followup = "days_to_last_followup", start = timeStart,
+              stop = timeStop, event = event)
+    survTime <- lapply(cols, timePerPatient, clinical)
+    survTime <- as.data.frame(survTime)
+    
+    # Create new time using the starting time replacing the NAs with
+    # days to last follow up
+    nas <- is.na(survTime$start)
+    survTime$time <- survTime$start
+    survTime$time[nas] <- survTime$followup[nas]
+    
+    # Indicate event of interest and groups
+    survTime$event <- ifelse(!is.na(survTime$event), 1, 0)
+    survTime$groups <- group
+    
+    if (!is.null(timeStop)) {
+        # Create new time using the ending time replacing the NAs
+        # with days to last follow up
+        nas <- is.na(survTime$stop)
+        survTime$time2 <- survTime$stop
+        survTime$time2[nas] <- survTime$followup[nas]
+    }
+    return(survTime)
+}
+
+#' Get all columns matching a given string and return a single vector with the
+#' max time for each patient if available
+#'
+#' @param col Character: column of interest
+#' @param clinical Data.frame: clinical data
+#'
+#' @return Numeric vector with days recorded for columns of interest
+timePerPatient <- function(col, clinical) {
+    cols <- grep(col, names(clinical))
+    row <- apply(clinical[cols], 1, function(i)
+        if(!all(is.na(i))) max(as.numeric(i), na.rm = TRUE) else NA)
+    return(row)
+}
+
+#' Update available clinical attributes when the clinical data changes
+#' @param session Shiny session
+#' @importFrom shiny observe updateSelectizeInput
+updateClinicalParams <- function(session) {
+    observe({
+        clinical <- getClinicalData()
+        if (!is.null(clinical)) {
+            # Allow the user to select any "days_to" attribute available
+            daysTo <- grep("days_to_", names(clinical), value=TRUE, fixed=TRUE)
+            subDaysTo <- gsub(".*(days_to_.*)", "\\1", daysTo)
+            choices <- unique(subDaysTo)
+            names(choices) <- gsub("_", " ", choices, fixed=TRUE)
+            names(choices) <- capitalize(names(choices))
+            
+            # Update choices for starting time (follow up time)
+            updateSelectizeInput(session, "timeStart", choices=choices,
+                                 selected="days_to_death")
+            
+            # Update choices for ending time
+            updateSelectizeInput(session, "timeStop", choices=choices)
+            
+            # Update choices for events of interest
+            names(choices) <- gsub("Days to ", "", names(choices), fixed=TRUE)
+            names(choices) <- capitalize(names(choices))
+            updateSelectizeInput(session, "event",
+                                 choices=list(
+                                     "Suggested events"=choices,
+                                     "All clinical data columns"=names(clinical)),
+                                 selected="days_to_death")
+        }
+    })
+}
+
+#' Process survival curves terms to calculate survival curves
+#' 
+#' @details \code{timeStop} is only considered if \code{censoring} is either
+#' \code{interval} or \code{interval2}
+#'
+#' @inheritParams processSurvData
+#' @param censoring Character: censor using "left", "right", "interval" or
+#' "interval2"
+#' @param scale Character: rescale the survival time to "days", "weeks",
+#' "months" or "years"
+#' @param formulaStr Character: formula to use
+#' @param coxph Boolean: fit a Cox proportional hazards regression model? FALSE 
+#' by default
+#' 
+#' @importFrom stats formula
+#' @importFrom survival coxph Surv
+#'
+#' @return A list with a \code{formula} object and a data frame with terms
+#' needed to calculate survival curves
+#' @export
+processSurvTerms <- function(clinical, censoring, event, timeStart, timeStop, 
+                             group=NULL, formulaStr=NULL, coxph=FALSE, 
+                             scale="days") {
+    # Ignore timeStop if interval-censoring is not selected
+    if (!grepl("interval", censoring, fixed=TRUE) || timeStop == "") 
+        timeStop <- NULL
+    
+    # Check if using or not interval-censored data
+    formulaSurv <- ifelse(is.null(timeStop),
+                          "Surv(time/%s, event, type=censoring) ~", 
+                          "Surv(time/%s, time2, event, type=censoring) ~")
+    scale <- switch(scale, days=1, weeks=7, months=30.42, years=365.25)
+    formulaSurv <- sprintf(formulaSurv, scale)
+    
+    survTime <- processSurvData(event, timeStart, timeStop, group, clinical)
+    
+    # Estimate survival curves by groups or using formula
+    if (formulaStr == "" || is.null(formulaStr)) {
+        formulaTerms <- "groups"
+    } else {
+        formulaTerms <- formulaStr
+        survTime <- cbind(survTime, clinical)
+    }
+    
+    form <- formula(paste(formulaSurv, formulaTerms))
+    
+    if (coxph)
+        res <- coxph(form, data=survTime)
+    else
+        res <- list(form=form, survTime=survTime)
+    return(res)
+}
+
+#' Plot survival curves
+#' 
+#' @param surv Survival object
+#' @param interval Boolean: show interval ranges? FALSE by default
+#' @param mark Boolean: mark times? TRUE by default
+#' @param title Character: plot title
+#' @param pvalue Numeric: p-value of the survival curves
+#' @param scale Character: time scale; default is "days"
+#' 
+#' @importFrom shiny tags br
+#' 
+#' @return Plot of survival curves
+#' @export
+plotSurvivalCurves <- function(surv, mark=TRUE, interval=FALSE, pvalue=NULL, 
+                               title="Survival analysis", scale="days") {
+    hc <- hchart(surv, ranges=interval, markTimes=mark) %>%
+        hc_chart(zoomType="xy") %>%
+        hc_title(text=title) %>%
+        hc_yAxis(title=list(text="Proportion of individuals")) %>%
+        hc_xAxis(title=list(text=paste("Time in", scale))) %>%
+        hc_tooltip(
+            headerFormat = paste(
+                tags$small("{point.x}", scale), br(),
+                span(style="color:{point.color}", "\u25CF "),
+                tags$b("{series.name}"), br()),
+            pointFormat = paste(
+                "Records: {series.options.records}", br(),
+                "Events: {series.options.events}", br(),
+                "Median: {series.options.median}")) %>%
+        hc_tooltip(crosshairs=TRUE) %>%
+        hc_plotOptions(series=list(stickyTracking=FALSE))
+    
+    if (!is.null(pvalue))
+        hc <- hc_subtitle(hc, text=paste("log-rank p-value:", pvalue))
+    return(hc)
+}
+
+#' Check if survival analyses successfully completed or returned errors
+#' 
+#' @param session Shiny session
+#' @param ... Arguments to pass to function \code{processSurvTerms}
+#' 
+#' @importFrom shiny tags
+#' @return List with survival analysis results
+processSurvival <- function(session, ...) {
+    # Calculate survival curves
+    survTerms <- tryCatch(processSurvTerms(...), error=return)
+    if ("simpleError" %in% class(survTerms)) {
+        if (survTerms[[1]] == "The formula field can't be empty") {
+            errorModal(session, "Error in formula",
+                       "The formula field can't be empty.")
+        } else {
+            errorModal(session, "Formula error",
+                       "Maybe you misplaced a ", tags$kbd("+"), ", ",
+                       tags$kbd(":"), " or ", tags$kbd("*"), "?", br(),
+                       br(), "The following error was raised:", br(), 
+                       tags$code(survTerms$message))
+        }
+        return(NULL)
+    }
+    return(survTerms)
+}
+
+#' Test the survival difference between survival groups
+#' 
+#' @param ... Arguments to pass to \code{survdiff}
+#' 
+#' @importFrom survival survdiff
+#' 
+#' @return p-value of the survival difference or NA any error occurs
+#' @export
+testSurvival <- function (...) {
+    # If there's an error with survdiff, return NA
+    pvalue <- tryCatch({
+        # Test the difference between survival curves
+        diff <- survdiff(...)
+        
+        # Calculate p-value with 5 significant numbers
+        pvalue <- 1 - pchisq(diff$chisq, length(diff$n) - 1)
+        return(as.numeric(signifDigits(pvalue)))
+    }, error = function(e) NA)
+    return(pvalue)
 }
 
 #' Test the survival difference between two survival groups given a cutoff
