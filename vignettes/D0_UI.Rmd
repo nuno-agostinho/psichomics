@@ -356,3 +356,106 @@ that the suggestions are updated according to the group names available.
 # Debug
 To debug a Shiny app, you simply need to enter the command `browser()` and when
 running the Shiny app, the debug mode will start when hitting that command.
+
+# Experimental
+## K-means clustering
+```{r, eval=FALSE}
+data <- rbind(cbind(rnorm(10,0,0.5), rnorm(10,0,0.5)),
+              cbind(rnorm(15,5,0.5), rnorm(15,5,0.5)))
+cluster <- 3
+k <- kmeans(data, cluster)
+
+x <- split(data[, 1], k$cluster)
+y <- split(data[, 2], k$cluster)
+
+plot(data)
+for (i in seq_along(x)) {
+    pol <- chull(x[[i]], y[[i]])
+    polygon(x[[i]][pol], y[[i]][pol], col=i)
+}
+points(data, col="orange")
+```
+
+## Proxy data table
+```{r}
+library(shiny)
+library(DT)
+
+shinyApp(
+    ui = fluidPage(
+        
+        titlePanel("Sliders"),
+        
+        sidebarLayout(
+            sidebarPanel(
+                sliderInput("integer", "Integer:",
+                            min=0, max=1000, value=500),
+                
+                sliderInput("decimal", "Decimal:",
+                            min = 0, max = 1, value = 0.5, step= 0.1),
+                
+                sliderInput("range", "Range:",
+                            min = 1, max = 1000, value = c(200,500)),
+                
+                sliderInput("format", "Custom Format:",
+                            min = 0, max = 10000, value = 0, step = 2500,
+                            pre = "$", sep = ",", animate=TRUE),
+                
+                sliderInput("animation", "Looping Animation:", 1, 2000, 1,
+                            step = 10, animate=
+                                animationOptions(interval=300, loop=TRUE,playButton = "PLAY", pauseButton = "PAUSE"))
+            ),
+            
+            mainPanel(
+                tableOutput("values"),
+                DT::dataTableOutput('DTtable')
+            )
+        )
+    ), server = function(input, output, session) {
+        
+        # Reactive expression to compose a data frame containing all of
+        # the values
+        sliderValues <- reactive({
+            
+            # Compose data frame
+            data.frame(
+                Name = c("Integer", 
+                         "Decimal",
+                         "Range",
+                         "Custom Format",
+                         "Animation"),
+                Value = as.character(c(input$integer, 
+                                       input$decimal,
+                                       paste(input$range, collapse=' '),
+                                       input$format,
+                                       input$animation)), 
+                stringsAsFactors=FALSE)
+        }) 
+        
+        # Show the values using an HTML table
+        output$values <- renderTable({
+            sliderValues()
+        })
+        
+        proxy = dataTableProxy('DTtable')
+        observe({
+            if(input$decimal < 0.5) {
+                replaceData(proxy, data.frame(
+                    Name = c("Integer", 
+                             "Decimal",
+                             "Range",
+                             "Custom Format",
+                             "Animation"),
+                    Value = as.character(c(input$integer, 
+                                           input$decimal,
+                                           paste(input$range, collapse=' '),
+                                           input$format,
+                                           input$animation)), 
+                    stringsAsFactors=FALSE), rownames = FALSE)
+            } else {
+                output$DTtable = DT::renderDataTable(rownames = FALSE, 
+                                                     isolate(sliderValues()))
+            }
+        })
+    })
+```
