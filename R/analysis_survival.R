@@ -321,6 +321,16 @@ survivalServer <- function(input, output, session) {
         if (!is.null(survTerms)) {
             summary <- summary(survTerms)
             print(summary)
+            
+            # General statistical tests
+            tests <- rbind("Wald test"=summary$waldtest,
+                           "Log test"=summary$logtest,
+                           "Score (logrank) test"=summary$sctest)
+            colnames(tests) <- c("Value", "Degrees of freedom", "p-value")
+            
+            # Groups statistics
+            cox <- cbind(summary$coefficients,
+                         summary$conf.int[ , 2:4, drop=FALSE])
         }
         
         output$coxphUI <- renderUI({
@@ -328,10 +338,14 @@ survivalServer <- function(input, output, session) {
             
             len <- length(summary$na.action)
             tagList(
-                hr(), h3("Cox PH model ", tags$small(
-                    summary$n, " patients, ", summary$nevent, " events",
-                    if (len > 0) 
-                        paste0(" (", len, " missing values removed)"))),
+                hr(), 
+                downloadButton(ns("download"), "Download Cox model information",
+                               class="pull-right"),
+                h3("Cox", tags$abbr("PH", title="Proportional Hazards"), 
+                   "model", tags$small(
+                       summary$n, " patients, ", summary$nevent, " events",
+                       if (len > 0) 
+                           paste0(" (", len, " missing values removed)"))),
                 tags$b("Concordance: "), roundDigits(summary$concordance[[1]]),
                 tags$b("(SE: "), roundDigits(summary$concordance[[2]]),
                 tags$b(")"),
@@ -343,24 +357,44 @@ survivalServer <- function(input, output, session) {
             )
         })
         
-        output$coxGroups <- renderDataTable({
-            if (is.null(survTerms)) return(NULL)
-            
-            cox <- cbind(signifDigits(summary$coefficients),
-                         signifDigits(summary$conf.int[ , 2:4]))
-            return(cox)
-        }, style="bootstrap", selection='none', options=list(scrollX=TRUE))
+        output$download <- downloadHandler(
+            filename=paste(getCategory(), "Cox PH model", Sys.Date(), ".txt"),
+            content=function(file) { 
+                len <- length(summary$na.action)
+                info <- paste0(
+                    "Cox proportional hazards model\n",
+                    summary$n, "patients,", summary$nevent, "events",
+                    if (len > 0) paste0(" (", len, " missing values removed)"), 
+                    "\nConcordance: ", summary$concordance[[1]],
+                    "\nSE: ", summary$concordance[[2]],
+                    "\nR\u00B2: ", summary$rsq[[1]],
+                    "\nMax possible: " , summary$rsq[[2]], "\n")
+                
+                write(info, file=file)
+                suppressWarnings(
+                    write.table(tests, file=file, quote=FALSE, sep="\t", 
+                                append=TRUE))
+                write("", file=file, append=TRUE)
+                suppressWarnings(
+                    write.table(cox, file=file, quote=FALSE, sep="\t", 
+                                append=TRUE, col.names = NA))
+            }
+        )
         
         output$coxTests <- renderDataTable({
             if (is.null(survTerms)) return(NULL)
             
-            tests <- rbind("Wald test"=summary$waldtest,
-                           "Log test"=summary$logtest,
-                           "Score (logrank) test"=summary$sctest)
-            colnames(tests) <- c("Value", "Degrees of freedom", "p-value")
+            pvalue <- signifDigits(tests[, 3])
+            tests[, 1:2] <- roundDigits(tests[ , 1:2, drop=FALSE])
+            tests[, 3] <- pvalue
             return(tests)
         }, style="bootstrap", selection='none',
         options=list(info=FALSE, paging=FALSE, searching=FALSE, scrollX=TRUE))
+        
+        output$coxGroups <- renderDataTable({
+            if (is.null(survTerms)) return(NULL)
+            return(roundDigits(cox))
+        }, style="bootstrap", selection='none', options=list(scrollX=TRUE))
     })
     
     # Calculate optimal inclusion levels
@@ -385,6 +419,11 @@ survivalServer <- function(input, output, session) {
             return(helpText(icon("exclamation-circle"), 
                             "Please, select an alternative splicing event."))
         } else {
+            output$survival  <- renderHighchart(NULL)
+            output$coxphUI   <- renderUI(NULL)
+            # output$coxTests  <- renderDataTable(NULL)
+            # output$coxGroups <- renderDataTable(NULL)
+            
             # Get tumour sample IDs (matched normal and control samples are not
             # interesting for this survival analysis)
             match <- getClinicalMatchFrom("Inclusion levels")
