@@ -192,6 +192,31 @@ createDataTab <- function(index, data, name, input, output) {
 dataServer <- function(input, output, session) {
     ns <- session$ns
     
+    analysesDescription <- tagList(
+        fluidRow(
+            column(3, style="padding: 5px !important;",
+                   h4("Differential splicing analysis"),
+                   "Analyse alternative splicing quantification based on variance",
+                   "and median statistical tests. The groups available for",
+                   "differential analysis comprise sample types (e.g. normal",
+                   "versus tumour) and clinical attributes of patients (e.g.",
+                   "tumour stage)."),
+            column(3, style="padding: 5px !important;",
+                   h4("Gene, transcript and protein information"),
+                   "For a given splicing event, examine its gene's annotation",
+                   "and correspoding transcripts and proteins. Related",
+                   "research articles are also available."),
+            column(3, style="padding: 5px !important;",
+                   h4("Principal component analysis (PCA)"),
+                   "Explore alternative splicing quantification groups using",
+                   "associated clinical attributes."),
+            column(3, style="padding: 5px !important;",
+                   h4("Survival analysis"),
+                   "Analyse survival based on clinical attributes (e.g. tumour",
+                   "stage, gender and race). Additionally, study the impact of",
+                   "the quantification of a single alternative splicing event",
+                   "on patient survivability.")))
+    
     # Show welcome screen when there's no data loaded
     output$tablesOrAbout <- renderUI({
         if(is.null(getData())) {
@@ -199,16 +224,17 @@ dataServer <- function(input, output, session) {
             
             tagList(
                 h1("Welcome"),
-                "Analyse clinical and transcriptomic data from The Cancer",
-                "Genome Atlas (", tcga, ") with a focus on alternative splicing.",
-                h2("Instructions"),
-                tags$ol(id="list",
+                "Analyse alternative splicing based on transcriptomic and",
+                "clinical data from The Cancer Genome Atlas (", tcga, ").",
+                tags$br(), tags$br(), tags$ol(
+                    id="list",
                     tags$li("Load junction quantification and clinical data",
-                            "from ", tcga, ".", tags$br(), "Only these data",
-                            "types are currently supported."),
-                    tags$li("Quantify or load alternative splicing events.",
+                            "from ", tcga, ".", tags$br(), tags$small(
+                                style="color: gray;",
+                                "Note: more data types will be supported soon.")),
+                    tags$li("Quantify alternative splicing events.",
                             tags$br(),
-                            "The quantification is performed through the",
+                            "Quantification uses the values from the",
                             "percentage splicing index (PSI) metric.",
                             # "The following event types are available:",
                             # "skipped exon (SE), mutually exclusive exon",
@@ -217,23 +243,25 @@ dataServer <- function(input, output, session) {
                             # "(AFE and ALE).", tags$br(),
                             tags$br(), tags$small(
                                 style="color: gray;",
-                                "As ", tcga, " doesn't include exon-intron",
+                                "Note: as", tcga, "does not include exon-intron",
                                 "junction quantification, intron retention",
-                                "events are not measurable")),
+                                "events are not measurable.")),
                     tags$li("Explore statistically significant events or",
-                            "individual events of interest.", tags$br(),
-                            "Analyse clinical features such as tumour",
-                            "stage and survival and perform differential",
-                            "splicing analyses based on", tags$br(), "variance",
-                            "and median statistical tests. Annotation of the",
-                            "splicing events is also incorporated.")
-                ), br(), br(),
+                            "individual events of interest through the",
+                            "following analyses:"
+                            # "Analyse clinical features such as tumour",
+                            # "stage and survival and perform differential",
+                            # "splicing analyses based on", tags$br(), "variance",
+                            # "and median statistical tests. Annotation of the",
+                            #  "splicing events is also incorporated."
+                    )), analysesDescription, br(), br(),
                 p(style="text-align:right",
-                    tags$a(href="http://imm.medicina.ulisboa.pt/group/compbio/",
-                           target="_blank", "Nuno Morais Lab, iMM"), 
-                    "(Nuno Agostinho, 2015-2016)", br(),
-                    "Special thanks to my lab colleagues for their work-related",
-                    br(), "support and supporting chatter."
+                  tags$a(href="http://imm.medicina.ulisboa.pt/group/compbio/",
+                         target="_blank", "Nuno Morais Lab, iMM"), 
+                  "(", tags$a(href="mailto:nunodanielagostinho@gmail.com", 
+                              "Nuno Agostinho", icon("envelope-o")), ", 2015-2016)", br(),
+                  "Special thanks to my lab colleagues for their work-related",
+                  br(), "support and supporting chatter."
                 )
             )
         } else
