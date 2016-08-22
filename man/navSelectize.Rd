@@ -9,7 +9,9 @@ navSelectize(id, label, placeholder = label)
 \arguments{
 \item{id}{Character: input identifier}
 
-\item{label}{Character: label}
+\item{label}{Character: input label}
+
+\item{placeholder}{Character: input placeholder}
 }
 \value{
 HTML element to be included in a navigation bar

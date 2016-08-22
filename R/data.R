@@ -11,7 +11,7 @@
 #' @return Named character vector
 #' @export
 #' 
-#' @examples 
+#' @examples
 #' getFirehoseDataTypes()
 getFirehoseDataTypes <- function() {
     choices <- c(paste0(c("junction", "exon"),
@@ -36,7 +36,7 @@ loadedDataModal <- function(session, modalId, replaceButtonId, keepButtonId) {
                  footer = tagList(
                      actionButton(ns(keepButtonId), "data-dismiss"="modal",
                                   label="Keep both"),
-                     actionButton(ns(replaceButtonId), class = "btn-warning",
+                     actionButton(ns(replaceButtonId), class="btn-warning",
                                   "data-dismiss"="modal", label="Replace")),
                  modalId=modalId)
 }
@@ -97,7 +97,7 @@ dataUI <- function(id, tab) {
 #' @param tableId Character: id of the datatable
 #' @param description Character: description of the table (optional)
 #' @param columns Character: column names of the datatable
-#' @param colsToShow Boolean: columns to show
+#' @param visCols Boolean: visible columns
 #' @param data Data frame: dataset of interest
 #'
 #' @importFrom shinyBS bsTooltip
@@ -106,7 +106,7 @@ dataUI <- function(id, tab) {
 #' downloadButton
 #'
 #' @return The HTML code for a tabPanel template
-tabDataset <- function(ns, title, tableId, columns, colsToShow, data,
+tabDataset <- function(ns, title, tableId, columns, visCols, data,
                        description=NULL) {
     tablename <- ns(paste("table", tableId, sep="-"))
     
@@ -131,20 +131,13 @@ tabDataset <- function(ns, title, tableId, columns, colsToShow, data,
     names(choices) <- sprintf("%s (%s class)", columns, colType)
     
     visibleColumns <- selectizeInput(
-        paste(tablename, "columns", sep="-"), label="Columns to show", 
-        choices=choices, selected=colsToShow, multiple=TRUE, width="auto", 
+        paste(tablename, "columns", sep="-"), label="Visible columns", 
+        choices=choices, selected=visCols, multiple=TRUE, width="auto", 
         options=list(plugins=list('remove_button', 'drag_drop'),
                      render=I("{ item: function(item, escape) {
                                  return '<div>' + escape(item.value) + '</div>';
                                } }")))
-    
-    tooltip <- bsTooltip(paste(tablename, "columns", sep="-"),
-                         paste("Dataset columns to show; empty this input to",
-                               "show all columns (it can be slow for large",
-                               "datasets)"),
-                         placement = "top", options = list(container = "body"))
-    
-    tabPanel(title, br(), download, visibleColumns, tooltip, hr(),
+    tabPanel(title, br(), download, visibleColumns, hr(),
              dataTableOutput(tablename))
 }
 
@@ -164,10 +157,10 @@ createDataTab <- function(index, data, name, input, output) {
     # Only show default columns if they are defined (don't cause problems)
     subsetToShow <- table
     
-    colsToShow <- input[[paste(tablename, "columns", sep="-")]]
-    if (!is.null(colsToShow)) {
-        match <- colsToShow %in% colnames(table)
-        subsetToShow <- subset(table, select=colsToShow[match])
+    visCols <- input[[paste(tablename, "columns", sep="-")]]
+    if (!is.null(visCols)) {
+        match <- visCols %in% colnames(table)
+        subsetToShow <- subset(table, select=visCols[match])
     }
     
     output[[tablename]] <- renderDataTable(

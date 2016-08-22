@@ -361,6 +361,8 @@ queryEnsemblByGene <- function(gene, species, assembly) {
 #' 
 #' @param article PubMed article
 #' 
+#' @importFrom shiny tags h5
+#' 
 #' @return HTML to render an article's interface
 articleUI <- function(article) {
     authors <- article$authors$name
@@ -371,14 +373,12 @@ articleUI <- function(article) {
     }
     year <- strsplit(article$pubdate, " ")[[1]][[1]]
     description <- sprintf("%s (%s). %s, %s(%s).", authors, year, 
-                           article$source, article$volume, 
-                           article$issue)
+                           article$source, article$volume, article$issue)
     
     pmid <- article$articleids$value[1]
     tags$a(href=paste0("http://pubmed.gov/", pmid), target="_blank",
-           class="list-group-item",
-           h5(class="list-group-item-heading", 
-              article$title, tags$small(description)))
+           class="list-group-item", h5(class="list-group-item-heading", 
+                                       article$title, tags$small(description)))
 }
 
 #' Return the interface of relevant PubMed articles for a given splicing event

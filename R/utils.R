@@ -1,6 +1,6 @@
 ## Auxiliary functions used throughout the program
 
-#' Print how to start the graphical interface when attaching the package
+# Print how to start the graphical interface when attaching the package
 .onAttach <- function(libname, pkgname) {
     packageStartupMessage("Start the visual interface by running the function ",
                           "psichomics()")
@@ -425,7 +425,8 @@ roundDigits <- function(n) {
 #' NULL
 #' @param size Character: Modal size ("small", "default" or "large")
 #' 
-#' @importFrom shiny tags HTML
+#' @importFrom shiny tags HTML tagAppendAttributes
+#' @importFrom shinyBS bsModal
 #' @importFrom htmltools attachDependencies htmlDependency
 #' @importFrom utils packageVersion
 bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL, 
