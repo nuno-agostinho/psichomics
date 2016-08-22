@@ -74,8 +74,8 @@ survivalUI <- function(id) {
                     "with a", tags$kbd("+"), ". To analyse interactions, use", 
                     tags$kbd(":"), " (interactions are only usable with Cox",
                     "models). For example, ",
-                    tags$kbd("pathologic_stage : gender + race"), br(), br(),
-                    "Interesting attributes include", tags$b("pathologic_stage"), 
+                    tags$kbd("tumor_stage : gender + race"), br(), br(),
+                    "Interesting attributes include", tags$b("tumor_stage"), 
                     "to get tumour stages.")),
             conditionalPanel(
                 sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "psiCutoff"),

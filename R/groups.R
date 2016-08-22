@@ -80,7 +80,7 @@ groupByColumn <- function(ns, dataset) {
         helpText(
             "Automatically create groups according to the unique values of the",
             "selected column. For instance, to create groups by tumour stage,",
-            "type", tags$b("pathologic stage"), "and select the first",
+            "type", tags$b("tumor_stage"), "and select the first",
             "suggestion that appears."),
         selectizeInput(ns("groupColumn"), "Select column", width="auto", 
                        choices=c("Start typing to search for columns"="", 
