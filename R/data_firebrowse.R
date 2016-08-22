@@ -515,6 +515,14 @@ addTCGAdata <- function(ns) {
         processButton(ns("getFirehoseData"), "Load data"))
 }
 
+#' User interface of the TCGA/Firebrowse loader
+#' 
+#' @param id Character: identifier
+#' @param panel Function to enclose interface
+#' 
+#' @importFrom shiny NS
+#' 
+#' @return HTML of the interface
 firebrowseUI <- function(id, panel) {
     ns <- NS(id)
     

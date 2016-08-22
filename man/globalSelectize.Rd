@@ -9,7 +9,7 @@ globalSelectize(id, placeholder)
 \arguments{
 \item{id}{Character: input identifier}
 
-\item{label}{Character: label}
+\item{placeholder}{Character: input placeholder}
 }
 \value{
 HTML element for a global selectize input

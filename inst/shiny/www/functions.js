@@ -67,19 +67,6 @@ function createDiffSplicingLinks(row, data, index) {
     return row;
 }
 
-/**
- * Get selected checkboxes in the group section
- * 
- * @return Array with the selected checkboxes
- */
-function getSelectedCheckboxes() {
-    var selected = [];
-    $("input[name='checkGroups']:checked").each(function() {
-        selected.push($(this).attr('number'));
-    });
-    return(selected);
-}
-
 /* Get which checkboxes are checked in the groups section */
 Shiny.addCustomMessageHandler('getCheckedBoxes', function(variable) {   
     var selected = getSelectedCheckboxes();

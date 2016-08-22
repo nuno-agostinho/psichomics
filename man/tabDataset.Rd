@@ -4,7 +4,7 @@
 \alias{tabDataset}
 \title{Creates a tabPanel template for a datatable with a title and description}
 \usage{
-tabDataset(ns, title, tableId, columns, colsToShow, data, description = NULL)
+tabDataset(ns, title, tableId, columns, visCols, data, description = NULL)
 }
 \arguments{
 \item{ns}{Namespace function}
@@ -15,7 +15,7 @@ tabDataset(ns, title, tableId, columns, colsToShow, data, description = NULL)
 
 \item{columns}{Character: column names of the datatable}
 
-\item{colsToShow}{Boolean: columns to show}
+\item{visCols}{Boolean: visible columns}
 
 \item{data}{Data frame: dataset of interest}
 

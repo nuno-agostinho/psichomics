@@ -438,18 +438,11 @@ survivalServer <- function(input, output, session) {
                                     censoring=censoring, event=event,
                                     timeStart=timeStart, timeStop=timeStop,
                                     session=session)
-            
             slider <- tagList(
                 sliderInput(ns("psiCutoff"), value = 0.5, min=0, max=1,
                             step=0.01, paste(
                                 "Splicing quantification cut-off for the",
-                                "selected splicing event")),
-                bsTooltip(ns("psiCutoff"), placement="right", 
-                          options = list(container = "body"),
-                          paste("You can click on the white circle and then",
-                                "use the left and right arrows for finer",
-                                "control.")))
-            
+                                "selected splicing event")))
             observe({
                 if (!is.na(opt$value)) 
                     value <- opt$par
