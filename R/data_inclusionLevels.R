@@ -34,7 +34,7 @@ inclusionLevelsInterface <- function(ns) {
                                      "hg19_splicingAnnotation.RDS")),
         selectizeInput(ns("eventType"), "Event type(s)", selected = "SE",
                        choices=getSplicingEventTypes(), multiple = TRUE),
-        numericInput(ns("minReads"), div("Minimum reads threshold",
+        numericInput(ns("minReads"), div("Minimum read counts threshold",
                                          icon("question-circle")), value = 10),
         bsTooltip(ns("minReads"), placement = "right", 
                   options = list(container = "body"),
