@@ -380,8 +380,9 @@ loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
 #' \dontrun{
 #' loadFirehoseData(cohort = "ACC", data_type = "Clinical")
 #' }
-loadFirehoseData <- function(folder = "~/Downloads", data=NULL,
-                             exclude = c(".aux.", ".mage-tab.", "MANIFEST.txt"),
+loadFirehoseData <- function(folder=file.path(path.expand("~"), "Downloads"), 
+                             data=NULL, 
+                             exclude=c(".aux.", ".mage-tab.", "MANIFEST.txt"),
                              ..., progress = printPaste, download=TRUE) {
     args <- list(...)
     
@@ -507,7 +508,8 @@ addTCGAdata <- function(ns) {
                        multiple = TRUE, options = list(
                            placeholder = "Select data types")),
         textAreaInput(ns("dataFolder"), "Folder to store the data",
-                      value = "~/Downloads/",
+                      value = paste0(file.path(path.expand("~"), "Downloads"),
+                                     .Platform$file.sep),
                       placeholder = "Insert data folder"),
         bsTooltip(ns("dataFolder"), placement = "right",
                   options = list(container = "body"),
