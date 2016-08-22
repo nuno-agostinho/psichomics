@@ -69,6 +69,16 @@ getGlobal <- function(..., sep="_") sharedData[[paste(..., sep=sep)]]
 getDifferentialAnalyses <- function(category = getCategory())
     getGlobal(category, "differentialAnalyses")
 
+#' Get the table of differential analyses' survival data of a data category
+#' @note Needs to be called inside reactive function
+#' 
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' 
+#' @return Data frame of differential analyses' survival data
+getDifferentialAnalysesSurvival <- function(category = getCategory())
+    getGlobal(category, "diffAnalysesSurv")
+
 #' Get the species of a data category
 #' @note Needs to be called inside reactive function
 #' 
@@ -202,6 +212,15 @@ setGroupsFrom <- function(dataset, groups, category = getCategory())
 #' it uses the selected data category
 setDifferentialAnalyses <- function(table, category = getCategory())
     setGlobal(category, "differentialAnalyses", value=table)
+
+#' Set the table of differential analyses' survival data of a data category
+#' @note Needs to be called inside reactive function
+#' 
+#' @param table Character: differential analyses' survival data
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+setDifferentialAnalysesSurvival <- function(table, category = getCategory())
+    setGlobal(category, "diffAnalysesSurv", value=table)
 
 #' Set the species of a data category
 #' @note Needs to be called inside reactive function

@@ -198,6 +198,7 @@ inclusionLevelsServer <- function(input, output, session) {
     observeEvent(input$replace, calcSplicing())
     observeEvent(input$discard, {
         setDifferentialAnalyses(NULL)
+        setDifferentialAnalysesSurvival(NULL)
         calcSplicing()
     })
 }

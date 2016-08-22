@@ -144,3 +144,6 @@ table { white-space: nowrap; }
 
 /* Improve padding of content inside navigation tabs and pills */
 .tab-content { padding: 10px; }
+
+/* Style Highcharts tooltip outside of Highcharts container */
+.highcharts-container { overflow: visible !important; }
