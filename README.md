@@ -54,7 +54,7 @@ differential splicing analysis using non-parametric statistical tests.
 ## Data groups
 - **By column:** automatically create groups by selecting a specific column of 
 the dataset; for instance, to create a group for each tumour stage, start typing
-`pathologic stage`, select the appropriate field from the suggestions, click 
+`tumor_stage`, select the appropriate field from the suggestions, click 
 `Create group` and confirm that there is now one group for each stage.
 - **By row:** input specific rows to create a group
 - **By subset expression:** type a subset expression
