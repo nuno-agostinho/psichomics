@@ -301,10 +301,12 @@ diffSplicingTableUI <- function(id) {
         uiOutput(ns("survivalOptions")))
     
     td <- lapply(seq(10), function(i) {
+        chart <- highchartOutput(paste0(ns("curves"), i), height="100px")
+        chart[[1]] <- tagAppendAttributes(
+            chart[[1]], style="min-width: 150px;")
+        
         tags$td(style="word-wrap: break-word;", style="white-space: normal;", 
-                textOutput(paste0(ns("eventText"), i)),
-                highchartOutput(paste0(ns("curves"), i), width="150px",
-                                height="100px"),
+                textOutput(paste0(ns("eventText"), i)), chart,
                 uiOutput(paste0(ns("eventSurvStats"), i)))
     })
     
