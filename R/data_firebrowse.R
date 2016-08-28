@@ -568,7 +568,7 @@ checkFirebrowse <- function(ns) {
 #' @param replace Boolean: replace loaded data? TRUE by default
 #' @importFrom shinyjs disable enable 
 setFirehoseData <- function(input, output, session, replace=TRUE) {
-    startProcessButton("getFirehoseData")
+    time <- startProcess("getFirehoseData")
     
     # Load data from Firehose
     data <- loadFirehoseData(folder = input$dataFolder,
@@ -599,8 +599,7 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
         else
             setData(c(getData(), data))
     }
-    closeProgress()
-    endProcessButton("getFirehoseData")
+    endProcess("getFirehoseData", time)
 }
 
 firebrowseServer <- function(input, output, session, active) {

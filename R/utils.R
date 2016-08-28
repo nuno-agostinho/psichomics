@@ -118,20 +118,36 @@ processButton <- function(id, label, ..., class="btn-primary") {
     return(button)
 }
 
+#' Signal the program that a process is starting
+#' 
 #' Style button to show processing is in progress
+#' 
 #' @param id Character: button identifier
 #' @importFrom shinyjs show
-startProcessButton <- function(id) {
+#' @return Time the process started
+startProcess <- function(id) {
     disable(id)
     show(paste0(id, "Loading"))
+    return(Sys.time())
 }
 
-#' Style button to show processing is not occurring
+#' Signal the program that a process has ended
+#' 
+#' Style button to show processing is not occurring. Also, close the progress
+#' bar (if TRUE) and print the difference between the current time and a given
+#' time (if given time is not NULL)
+#' 
 #' @param id Character: button identifier
+#' @param time POSIXct: start time needed to show the interval time (if NULL, 
+#' the time interval is not displayed)
+#' @param closeProgressBar Boolean: close progress bar? TRUE by default
+#' 
 #' @importFrom shinyjs hide
-endProcessButton <- function(id) {
+endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
     enable(id)
     hide(paste0(id, "Loading"))
+    if (closeProgressBar) closeProgress()
+    if (!is.null(time)) print(Sys.time() - time)
 }
 
 #' Match given IDs with the clinical data

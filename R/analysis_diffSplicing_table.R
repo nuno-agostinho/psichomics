@@ -538,6 +538,7 @@ statsAnalyses <- function(psi, groups=NULL, analyses=c("wilcoxRankSum",
     
     # Convert matrix with the same name to data frames (way faster)
     progress("Preparing data")
+    time <- Sys.time()
     ll <- list()
     for (k in seq_along(uniq)) {
         df <- lapply(stats[match == k], data.frame)
@@ -556,19 +557,22 @@ statsAnalyses <- function(psi, groups=NULL, analyses=c("wilcoxRankSum",
     deltaVar <- df[, grepl("Variance", colnames(df)), drop=FALSE]
     if (ncol(deltaVar) == 2) {
         progress("Calculating delta variance and median")
+        time <- Sys.time()
         deltaVar <- deltaVar[, 2] - deltaVar[, 1]
         deltaMed <- df[, grepl("Median", colnames(df))]
         deltaMed <- deltaMed[, 2] - deltaMed[, 1]
         df <- cbind(df, deltaVar, deltaMed)
+        print(Sys.time() - time)
     }
     
     if (any("density" == analyses)) {
         progress("Calculating the density of inclusion levels")
+        time <- Sys.time()
         df[, "Density"] <- createDensitySparklines(df[, "Density"],
                                                    rownames(df))
+        print(Sys.time() - time)
     }
     # parallel::stopCluster(cl)
-    print(Sys.time() - time)
     return(df)
 }
 
@@ -617,7 +621,7 @@ optimSurvDiff <- function(session, input, output) {
     #' Calculate optimal survival cut-off for the inclusion levels of a given
     #' alternative splicing event
     observeEvent(input$survival, {
-        startProcessButton("survival")
+        time <- startProcess("survival")
         isolate({
             # Get tumour sample IDs (normal and control samples are not
             # interesting for survival analysis)
@@ -648,7 +652,7 @@ optimSurvDiff <- function(session, input, output) {
                 errorModal(session, "Error with selected events",
                            "Unfortunately, it's not possible to get events",
                            "shown in the table.")
-                closeProgress()
+                endProcess("survival")
                 return(NULL)
             }
         } else if ("filtered" %in% selected) {
@@ -658,8 +662,7 @@ optimSurvDiff <- function(session, input, output) {
                 errorModal(session, "Error with selected events",
                            "Unfortunately, it's not possible to get the events",
                            "from the table.")
-                closeProgress()
-                endProcessButton("survival")
+                endProcess("survival")
                 return(NULL)
             }
         } else if ("all" %in% selected) {
@@ -698,8 +701,7 @@ optimSurvDiff <- function(session, input, output) {
             for (col in names(df)) optimSurv[rownames(df), col] <- df[ , col]
             setDifferentialAnalysesSurvival(optimSurv)
         }
-        closeProgress()
-        endProcessButton("survival")
+        endProcess("survival", time)
     })
     
     # Update groups used for differential splicing analysis
@@ -863,7 +865,7 @@ diffSplicingTableServer <- function(input, output, session) {
         col <- input$groupsCol
         statsChoices <- input$statsChoices
         
-        startProcessButton("startAnalyses")
+        totalTime <- startProcess("startAnalyses")
         if (col == "Sample types") {
             # Separate samples by their groups
             ids <- names(psi)
@@ -890,8 +892,7 @@ diffSplicingTableServer <- function(input, output, session) {
                                progress=updateProgress)
         
         setDifferentialAnalyses(stats)
-        closeProgress()
-        endProcessButton("startAnalyses")
+        endProcess("startAnalyses", totalTime)
     })
     
     # Perform statistical analyses
