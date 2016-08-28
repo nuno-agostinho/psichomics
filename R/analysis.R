@@ -62,7 +62,7 @@ analysesUI <- function(id, tab) {
     
     # Load available analyses
     ui <- lapply(uiList, function(ui) tabPanel(attr(ui, "name"), ui) )
-    do.call(navbarMenu, c(list(icon=icon("flask"), "Analyses"), ui))
+    do.call(tab, c(list(icon="flask", title="Analyses", menu=TRUE), ui))
 }
 
 #' Process survival data to calculate survival curves

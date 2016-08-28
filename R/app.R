@@ -133,14 +133,37 @@ navSelectize <- function(id, label, placeholder=label) {
         tags$br(), textOutput(value)))
 }
 
+#' Modified tabPanel function to show icon and title
+#' 
+#' @note Icon is hidden at small viewports
+#' 
+#' @param title Character: title of the tab
+#' @param icon Character: name of the icon
+#' @param ... HTML elements to pass to tab
+#' @param menu Boolean: create a dropdown menu-like tab? FALSE by default
+#' 
+#' @importFrom shiny navbarMenu tabPanel
+#' @return HTML interface for a tab panel
+modTabPanel <- function(title, icon=NULL, ..., menu=FALSE) {
+    if (menu) 
+        func <- navbarMenu
+    else
+        func <- tabPanel
+    
+    if (is.null(icon))
+        func(title, ...)
+    else
+        func(tagList(icon(class="hidden-sm", icon), title), ...)
+}
+
 #' The user interface (ui) controls the layout and appearance of the app
 #' All the CSS modifications are in the file "shiny/www/styles.css"
 #' @importFrom shinyjs useShinyjs
-#' @importFrom shiny tabPanel includeCSS includeScript conditionalPanel div h4 
-#' icon shinyUI navbarPage
+#' @importFrom shiny includeCSS includeScript conditionalPanel div h4 icon
+#' shinyUI navbarPage tagAppendChild tagAppendAttributes
 #' @return HTML elements
 appUI <- function() {
-    uiList <- getUiFunctions(paste, "app", tabPanel,
+    uiList <- getUiFunctions(paste, "app", modTabPanel,
                              priority=c("dataUI", "analysesUI"))
     
     header <- tagList(
@@ -159,8 +182,13 @@ appUI <- function() {
         list(title="PS\u03A8chomics", id="nav", collapsible=TRUE, 
              header=header, position="fixed-top", footer=useShinyjs()),
         uiList))
+
+    # Hide the header from the navigation bar if the viewport is small
+    nav[[3]][[1]][[3]][[1]][[3]][[1]] <- tagAppendAttributes(
+        nav[[3]][[1]][[3]][[1]][[3]][[1]], class="hidden-sm")
     
-    nav[[3]][[1]][[3]][[1]][[3]][[2]] <- shiny::tagAppendChild(
+    # Add global selectize input elements to navigation bar
+    nav[[3]][[1]][[3]][[1]][[3]][[2]] <- tagAppendChild(
         nav[[3]][[1]][[3]][[1]][[3]][[2]], 
         tags$ul(class="nav navbar-nav navbar-right",
                 navSelectize("selectizeCategory", "Selected data category",

@@ -81,7 +81,7 @@ dataUI <- function(id, tab) {
     uiList <- getUiFunctions(ns, "data", bsCollapsePanel,
                              priority="localDataUI")
     
-    tab(title=div(icon("table"), "Data"),
+    tab(title="Data", icon="table",
         sidebarLayout(
             sidebarPanel(
                 do.call(bsCollapse, uiList)

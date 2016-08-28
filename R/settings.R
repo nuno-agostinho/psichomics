@@ -23,7 +23,7 @@ settingsUI <- function(id, tab) {
                                    min=1, step=1, width="auto")
     }
     
-    tab(title=div(icon("wrench"), "Settings"),
+    tab(title="Settings", icon="wrench",
         fluidRow(
             column(4, coresInput),
             column(4,
