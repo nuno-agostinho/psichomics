@@ -132,25 +132,29 @@ inclusionLevelsServer <- function(input, output, session) {
     })
     
     calcSplicing <- reactive({
-        startProcessButton("calcIncLevels")
         eventType <- input$eventType
         minReads  <- input$minReads
+        annotation <- input$annotation
         
-        if (is.null(eventType) || is.null(minReads)) return(NULL)
+        if (is.null(eventType) || is.null(minReads) || is.null(annotation))
+            return(NULL)
+        time <- startProcess("calcIncLevels")
         
         # Read annotation
-        startProgress("Reading alternative splicing annotation",
-                      divisions = 3)
-        annot <- readRDS(system.file("extdata", input$annotation, 
+        startProgress("Reading alternative splicing annotation", divisions=3)
+        annot <- readRDS(system.file("extdata", annotation,
                                      package="psichomics"))
         
         # Set species and assembly version
         if (grepl("Human", "Human (hg19/GRCh37)")) setSpecies("Human")
         if (grepl("hg19", "Human (hg19/GRCh37)")) setAssemblyVersion("hg19")
         
-        if (input$junctionQuant == "") return(
+        if (input$junctionQuant == "") {
             errorModal(session, "Select junction quantification",
-                       "Select a junction quantification dataset"))
+                       "Select a junction quantification dataset")
+            endProcess("calcIncLevels")
+            return(NULL)
+        }
         junctionQuant <- getJunctionQuantification()[[input$junctionQuant]]
         
         # Calculate inclusion levels with annotation and junction
@@ -164,8 +168,7 @@ inclusionLevelsServer <- function(input, output, session) {
         match <- matchIdWithClinical(colnames(psi), getClinicalData())
         setClinicalMatchFrom("Inclusion levels", match)
         
-        closeProgress()
-        endProcessButton("calcIncLevels")
+        endProcess("calcIncLevels", time)
     })
     
     observeEvent(input$calcIncLevels, {

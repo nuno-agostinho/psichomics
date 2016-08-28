@@ -87,7 +87,7 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."), name="Data",
 #' 
 #' @importFrom shinyjs disable enable
 setLocalData <- function(input, output, session, replace=TRUE) {
-    startProcessButton("acceptFile")
+    time <- startProcess("acceptFile")
     
     folder <- input$localFolder
     category <- input$localCategory
@@ -103,9 +103,7 @@ setLocalData <- function(input, output, session, replace=TRUE) {
         else
             setData(c(getData(), data))
     }
-    
-    closeProgress()
-    endProcessButton("acceptFile")
+    endProcess("acceptFile", time)
 }
 
 #' Server logic to load local data
