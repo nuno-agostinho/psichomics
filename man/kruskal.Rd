@@ -4,7 +4,7 @@
 \alias{kruskal}
 \title{Perform Kruskal's test and return interface to show the results}
 \usage{
-kruskal(psi, groups)
+kruskal(psi, groups, stat = NULL)
 }
 \arguments{
 \item{psi}{Numeric: quantification of one alternative splicing event}
