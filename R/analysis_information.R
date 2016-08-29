@@ -433,7 +433,10 @@ infoServer <- function(input, output, session) {
         species  <- tolower(getSpecies())
         assembly <- getAssemblyVersion()
         grch37   <- assembly == "hg19"
-        if(is.null(species) || is.null(assembly)) stop("NULL")
+        if(is.null(species) || is.null(assembly)) {
+            warning("No species or assembly information.")
+            return(NULL)
+        }
         
         path <- paste0("lookup/symbol/", species, "/", parsed$gene)
         info <- queryEnsembl(path, list(expand=1), grch37=grch37)

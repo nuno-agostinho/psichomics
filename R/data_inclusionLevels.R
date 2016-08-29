@@ -13,6 +13,17 @@ getSplicingEventTypes <- function() {
       "Alternative last exon (ALE)" = "ALE")
 }
 
+#' Splicing annotation files available
+#' @return Named character vector with splicing annotation files available
+#' @export
+#' 
+#' @examples
+#' getSplicingAnnotation()
+getSplicingAnnotation <- function() {
+    c("Chr1 (Human hg19)"="mini_annotation.RDS",
+      "Human (hg19/GRCh37)"="hg19_splicingAnnotation.RDS")
+}
+
 #' Interface to quantify alternative splicing
 #' 
 #' @param ns Namespace function
@@ -26,12 +37,11 @@ inclusionLevelsInterface <- function(ns) {
         uiOutput(ns("modal")),
         helpText("Measure exon inclusion levels from junction quantification.",
                  "This is also known as Percentage Spliced In (PSI)."),
-        selectizeInput(ns("junctionQuant"), "Junction quantification",
+        selectizeInput(ns("junctionQuant"), 
+                       "Alternative splicing junction quantification",
                        choices=NULL),
-        selectizeInput(ns("annotation"),
-                       "Alternative splicing event annotation",
-                       choices=c("Human (hg19/GRCh37)"=
-                                     "hg19_splicingAnnotation.RDS")),
+        selectizeInput(ns("annotation"), choices=getSplicingAnnotation(),
+                       "Alternative splicing event annotation"),
         selectizeInput(ns("eventType"), "Event type(s)", selected = "SE",
                        choices=getSplicingEventTypes(), multiple = TRUE),
         numericInput(ns("minReads"), div("Minimum read counts threshold",
@@ -146,8 +156,10 @@ inclusionLevelsServer <- function(input, output, session) {
                                      package="psichomics"))
         
         # Set species and assembly version
-        if (grepl("Human", "Human (hg19/GRCh37)")) setSpecies("Human")
-        if (grepl("hg19", "Human (hg19/GRCh37)")) setAssemblyVersion("hg19")
+        allAnnot <- getSplicingAnnotation()
+        annotID <- names(allAnnot)[match(annotation, allAnnot)]
+        if (grepl("Human", annotID)) setSpecies("Human")
+        if (grepl("hg19", annotID)) setAssemblyVersion("hg19")
         
         if (input$junctionQuant == "") {
             errorModal(session, "Select junction quantification",
@@ -157,8 +169,7 @@ inclusionLevelsServer <- function(input, output, session) {
         }
         junctionQuant <- getJunctionQuantification()[[input$junctionQuant]]
         
-        # Calculate inclusion levels with annotation and junction
-        # quantification
+        # Calculate inclusion levels with annotation and junction quantification
         updateProgress("Calculating inclusion levels")
         psi <- quantifySplicing(annot, junctionQuant, eventType, minReads, 
                                 progress=updateProgress)
