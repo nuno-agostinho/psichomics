@@ -4,12 +4,15 @@
 \alias{wilcox}
 \title{Perform Wilcox analysis and return interface to show the results}
 \usage{
-wilcox(psi, groups)
+wilcox(psi, groups, stat = NULL)
 }
 \arguments{
 \item{psi}{Numeric: quantification of one alternative splicing event}
 
 \item{groups}{Character: group of each PSI index}
+
+\item{stats}{Data frame or matrix: values of the analyses to be performed (if
+NULL, the analyses will be performed)}
 }
 \value{
 HTML elements

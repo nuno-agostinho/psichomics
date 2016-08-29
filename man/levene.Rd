@@ -4,7 +4,7 @@
 \alias{levene}
 \title{Perform Levene's test and return interface to show the results}
 \usage{
-levene(psi, groups)
+levene(psi, groups, stat = NULL)
 }
 \arguments{
 \item{psi}{Numeric: quantification of one alternative splicing event}

@@ -138,51 +138,76 @@ basicStats <- function(psi, groups) {
         deltaMedian <- NULL
     }
     
-    ui <- tagList(h4("Basic statistics"), deltaMedian,
-                  tags$b("Average variance: "),
-                  sum(vari)/length(vari))
+    ui <- tagList(h4("Basic statistics"), roundDigits(deltaMedian),
+                  tags$b("Average variance: "), 
+                  roundDigits(sum(vari)/length(vari)))
     return(ui)
 }
 
 #' Perform Wilcox analysis and return interface to show the results
 #' @param psi Numeric: quantification of one alternative splicing event
 #' @param groups Character: group of each PSI index
+#' @param stats Data frame or matrix: values of the analyses to be performed (if
+#' NULL, the analyses will be performed)
 #' 
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats wilcox.test
 #' @return HTML elements
-wilcox <- function(psi, groups) {
+wilcox <- function(psi, groups, stat=NULL) {
+    warn <- NULL
     group <- unique(groups)
     len <- length(group)
     
     if (len > 2) {
         return(tagList(h4("Wilcoxon test"),
-                       "Can only perform this test on 2 or 1 group."))
-    } else if (len == 2) {
-        psiA <- psi[groups == group[1]]
-        psiB <- psi[groups == group[2]]
-        stat <- tryCatch(list(stat=wilcox.test(psiA, psiB)), 
-                         warning=function(w)
-                             return(list(stat=wilcox.test(psiA, psiB),
-                                         warning=w)))
-    } else if (len == 1) {
-        stat <- tryCatch(list(stat=wilcox.test(psi)), warning=function(w)
-            return(list(stat=wilcox.test(psi), warning=w)))
+                       "Can only perform this test on 1 or 2 groups."))
+    } else if (!is.null(stat)) {
+        method      <- stat$`Wilcox method`
+        statistic   <- stat$`Wilcox statistic`
+        p.value     <- stat$`Wilcox p-value`
+        null.value  <- stat$`Wilcox null value`
+        alternative <- stat$`Wilcox alternative`
+        
+        adjusted <- grep("Wilcox p-value \\(.* adjusted\\)", colnames(stat), 
+                         value=TRUE)
+        if (length(adjusted) != 0) {
+            adjustMethod <- gsub(".*\\((.* adjusted)\\).*", "\\1", adjusted)
+            adjusted <- stat[ , adjusted]
+            label <- paste0("p-value (", adjustMethod, "): ")
+            adjusted <- tagList(tags$b(label), signifDigits(adjusted), br())
+        } else {
+            adjusted <- NULL
+        }
+    } else {
+        if (len == 2) {
+            psiA <- psi[groups == group[1]]
+            psiB <- psi[groups == group[2]]
+            stat <- tryCatch(list(stat=wilcox.test(psiA, psiB)), 
+                             warning=function(w)
+                                 return(list(stat=wilcox.test(psiA, psiB),
+                                             warning=w)))
+        } else if (len == 1) {
+            stat <- tryCatch(list(stat=wilcox.test(psi)), warning=function(w)
+                return(list(stat=wilcox.test(psi), warning=w)))
+        }
+        if ("warning" %in% names(stat))
+            warn <- tagList(
+                tags$code(paste("Warning:", stat$warning$message)), br())
+        
+        method      <- stat$stat$method
+        statistic   <- stat$stat$statistic
+        p.value     <- stat$stat$p.value
+        adjusted    <- NULL
+        null.value  <- stat$stat$null.value
+        alternative <- stat$stat$alternative
     }
     
-    if ("warning" %in% names(stat))
-        warn <- tagList(
-            tags$code(paste("Warning:", stat$warning$message)), br())
-    else
-        warn <- NULL
-    
     tagList(
-        h4(stat$stat$method), warn,
-        tags$b("Test value: "), stat$stat$statistic, br(),
-        tags$b("p-value: "), stat$stat$p.value, br(),
-        tags$b("Test parameters: "), stat$stat$parameter, br(),
-        tags$b("Location parameter: "), stat$stat$null.value, br(),
-        tags$b("Alternative hypothesis: "), stat$stat$alternative
+        h4(method), warn,
+        tags$b("Test value: "), roundDigits(statistic), br(),
+        tags$b("p-value: "), signifDigits(p.value), br(), adjusted,
+        tags$b("Location parameter: "), null.value, br(),
+        tags$b("Alternative hypothesis: "), alternative
     )
 }
 
@@ -190,24 +215,49 @@ wilcox <- function(psi, groups) {
 #' @inheritParams wilcox
 #' @importFrom shiny tagList tags h4 br
 #' @return HTML elements
-levene <- function(psi, groups) {
+levene <- function(psi, groups, stat=NULL) {
     len <- length(unique(groups))
-    if (len >= 2) {
+    if (len < 2) {
+        return(tagList(h4("Levene's Test for Homogeneity of Variance"),
+                       "Can only perform this test on 2 or more groups."))
+    } else if (!is.null(stat)) {
+        statistic <- stat$`Levene statistic`
+        p.value   <- stat$`Levene p-value`
+        non.bootstrap.p.value <- stat$`Levene non bootstrap p-value`
+        
+        adjusted <- grep("Levene .*p-value \\(.* adjusted\\)", colnames(stat), 
+                         value=TRUE)
+        if (length(adjusted) == 2) {
+            adjustMethod <- gsub(".*\\((.* adjusted)\\).*", "\\1", adjusted)
+            adjusted <- stat[ , adjusted]
+            label1 <- paste0("p-value (", adjustMethod[[1]], "): ")
+            label2 <- paste0("p-value without bootstrap (", adjustMethod[[2]],
+                             "): ")
+            adjustedNonBootstrap <- tagList(br(), tags$b(label2), 
+                                            signifDigits(adjusted[[1]]), br())
+            adjusted <- tagList(tags$b(label1), signifDigits(adjusted[[2]]), 
+                                br())
+        } else {
+            adjusted <- NULL
+            adjustedNonBootstrap <- NULL
+        }
+    } else {
         nas <- is.na(psi)
         stat <- levene.test(psi[!nas], factor(groups[!nas]))
-        tagList(
-            h4("Levene's Test for Homogeneity of Variance"),
-            tags$b("Test value: "), stat$statistic, br(),
-            tags$b("p-value: "), stat$p.value, br(),
-            tags$b("p-value without bootstrap: "), 
-            stat$non.bootstrap.p.value
-        )
-    } else {
-        tagList(
-            h4("Levene's Test for Homogeneity of Variance"),
-            "Can only perform this test on 2 or more groups."
-        )
+        statistic <- stat$statistic
+        p.value   <- stat$p.value
+        adjusted  <- NULL
+        non.bootstrap.p.value <- stat$non.bootstrap.p.value
+        adjustedNonBootstrap  <- NULL
     }
+    
+    tagList(
+        h4("Levene's Test for Homogeneity of Variance"),
+        tags$b("Test value: "), roundDigits(statistic), br(),
+        tags$b("p-value: "), signifDigits(p.value), br(), adjusted,
+        tags$b("p-value without bootstrap: "), 
+        signifDigits(non.bootstrap.p.value), adjustedNonBootstrap
+    )
 }
 
 #' Perform Kruskal's test and return interface to show the results
@@ -215,22 +265,40 @@ levene <- function(psi, groups) {
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats kruskal.test
 #' @return HTML elements
-kruskal <- function(psi, groups) {
+kruskal <- function(psi, groups, stat=NULL) {
     len <- length(unique(groups))
-    if (len >= 2) {
-        stat <- kruskal.test(psi, factor(groups))
-        tagList(
-            h4(stat$method),
-            tags$b("Test value (Chi squared): "), stat$statistic, br(),
-            tags$b("p-value: "), stat$p.value, br(),
-            tags$b("Degrees of freedom: "), stat$parameter
-        )
+    if (len < 2) {
+        return(tagList(h4("Kruskal test"),
+                       "Can only perform this test on 2 or more groups."))
+    } else if (!is.null(stat)) {
+        method    <- stat$`Kruskal method`
+        statistic <- stat$`Kruskal statistic`
+        p.value   <- stat$`Kruskal p-value`
+        parameter <- stat$`Kruskal parameter`
+        
+        adjusted <- grep("Kruskal p-value \\(.* adjusted\\)", colnames(stat), 
+                         value=TRUE)
+        if (length(adjusted) != 0) {
+            adjustMethod <- gsub(".*\\((.* adjusted)\\).*", "\\1", adjusted)
+            adjusted <- stat[ , adjusted]
+            label <- paste0("p-value (", adjustMethod, "): ")
+            adjusted <- tagList(tags$b(label), signifDigits(adjusted), br())
+        } else {
+            adjusted <- NULL
+        }
     } else {
-        tagList(
-            h4("Kruskal test"),
-            "Can only perform this test on 2 or more groups."
-        )
+        stat      <- kruskal.test(psi, factor(groups))
+        method    <- stat$method
+        statistic <- stat$statistic
+        p.value   <- stat$p.value
+        parameter <- stat$parameter
+        adjusted  <- NULL
     }
+    
+    tagList(h4(method),
+            tags$b("Test value (Chi squared): "), roundDigits(statistic), br(),
+            tags$b("p-value: "), signifDigits(p.value), br(), adjusted,
+            tags$b("Degrees of freedom: "), parameter)
 }
 
 #' Perform Fisher's exact test and return interface to show the results
@@ -355,6 +423,13 @@ diffSplicingEventServer <- function(input, output, session) {
         }
         eventPSI <- as.numeric(psi[event, ])
         
+        # Check if analyses were already performed
+        stats <- getDifferentialAnalyses()
+        if (!is.null(stats) && col == attr(stats, "groups"))
+            stat <- getDifferentialAnalyses()[event, ]
+        else
+            stat <- NULL
+        
         # Separate samples by their groups
         eventPSI <- filterGroups(eventPSI, groups)
         groups <- names(eventPSI)
@@ -363,9 +438,9 @@ diffSplicingEventServer <- function(input, output, session) {
         output$density <- renderHighchart(plot)
         
         output$basicStats <- renderUI(basicStats(eventPSI, groups))
-        output$wilcox     <- renderUI(wilcox(eventPSI, groups))
-        output$kruskal    <- renderUI(kruskal(eventPSI, groups))
-        output$levene     <- renderUI(levene(eventPSI, groups))
+        output$wilcox     <- renderUI(wilcox(eventPSI, groups, stat))
+        output$kruskal    <- renderUI(kruskal(eventPSI, groups, stat))
+        output$levene     <- renderUI(levene(eventPSI, groups, stat))
         # output$fisher   <- renderUI(fisher(eventPSI, groups))
         # output$spearman <- renderUI(spearman(eventPSI, groups))
         
