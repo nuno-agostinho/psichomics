@@ -476,18 +476,36 @@ statsAnalyses <- function(psi, groups=NULL, analyses=c("wilcoxRankSum",
     uniq <- unique(ns)
     match <- fmatch(ns, uniq)
     
-    # Convert matrix with the same name to data frames (way faster)
     progress("Preparing data")
     time <- Sys.time()
-    ll <- list()
-    for (k in seq_along(uniq)) {
-        df <- lapply(stats[match == k], data.frame)
-        ll <- c(ll, list(do.call(rbind, df)))
-    }
     
-    # Bind all data frames together
-    df <- do.call(rbind.fill, ll)
-    rownames(df) <- unlist(lapply(ll, rownames))
+    # # Convert matrix with the same name to data frames (way faster)
+    # ll <- list()
+    # for (k in seq_along(uniq)) {
+    #  df <- lapply(stats[match == k], data.frame)
+    #  ll <- c(ll, list(do.call(rbind, df)))
+    # }
+    # 
+    # # Bind all data frames together
+    # df <- do.call(rbind.fill, ll)
+    # rownames(df) <- unlist(lapply(ll, rownames))
+
+    # Convert list of lists to data frame
+    ll <- lapply(stats, function(i) lapply(i, unname))
+    ll <- lapply(ll, unlist)
+    ldf <- lapply(seq_along(uniq), function(k) {
+        elems <- match == k
+        df2 <- data.frame(t(as.data.frame(ll[elems])))
+        rownames(df2) <- names(stats)[elems]
+        return(df2)
+    })
+    df <- do.call(rbind.fill, ldf)
+    rownames(df) <- unlist(lapply(ldf, rownames))
+    
+    # Convert numeric columns to numeric
+    num <- suppressWarnings(apply(df, 2, as.numeric))
+    numericCols <- colSums(is.na(num)) != nrow(num)
+    df[ , numericCols] <- num[ , numericCols]
     print(Sys.time() - time)
     
     # Calculate delta variance and delta median if there are only 2 groups

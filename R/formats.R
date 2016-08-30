@@ -59,9 +59,6 @@ loadFile <- function(format, file) {
                              row.names = NULL)
     }
     
-    # Remove duplicated rows
-    if (!is.null(format$unique) && format$unique) loaded <- unique(loaded)
-    
     # Add column names from given row
     if (!is.null(format$colNames)) {
         if (skip != 0) {
@@ -75,10 +72,18 @@ loadFile <- function(format, file) {
         }
     }
     
-    # Add row names
+    # Add row names and remove duplicated rows
     rowNames <- NULL
-    if (!is.null(format$rowNames)) 
-        rowNames <- unlist(loaded[, format$rowNames])
+    if (!is.null(format$rowNames)) { 
+        rowNames <- as.character(loaded[, format$rowNames])
+        if (!is.null(format$unique) && format$unique) {
+            loaded <- loaded[!duplicated(rowNames), ]
+            rowNames <- as.character(loaded[, format$rowNames])
+        }
+    } else {
+        ## TODO(NunoA): Slow process... try to improve this
+        if (!is.null(format$unique) && format$unique) loaded <- unique(loaded)
+    }
     
     # Filter out unwanted columns
     if (!is.null(format$ignoreCols)) loaded <- loaded[ , -format$ignoreCols]
