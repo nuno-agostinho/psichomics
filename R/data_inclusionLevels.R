@@ -20,8 +20,7 @@ getSplicingEventTypes <- function() {
 #' @examples
 #' getSplicingAnnotation()
 getSplicingAnnotation <- function() {
-    c("Chr1 (Human hg19)"="mini_annotation.RDS",
-      "Human (hg19/GRCh37)"="hg19_splicingAnnotation.RDS")
+    c("Human (hg19/GRCh37)"="hg19_splicingAnnotation.RDS")
 }
 
 #' Interface to quantify alternative splicing

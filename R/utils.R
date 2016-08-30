@@ -300,7 +300,7 @@ showAlert <- function(session, ..., title=NULL, style=NULL, dismissable=TRUE,
     session$output[[alertId]] <- renderUI({
         tagList(
             div(title, id="myAlert", class="alert", class=style, role="alert",
-                class="animated fadeIn", class=dismissable, dismiss, ...)
+                class="animated bounceInUp", class=dismissable, dismiss, ...)
         )
     })
 }
