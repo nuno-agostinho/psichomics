@@ -2,7 +2,8 @@
 % Please edit documentation in R/analysis_pca.R
 \name{performPCA}
 \alias{performPCA}
-\title{Perform principal component analysis after processing NAs from data frame}
+\title{Perform principal component analysis after processing missing values from 
+data frame}
 \usage{
 performPCA(data, center = TRUE, scale. = FALSE, naTolerance = 30)
 }
@@ -21,12 +22,13 @@ performPCA(data, center = TRUE, scale. = FALSE, naTolerance = 30)
     equal the number of columns of \code{x} can be supplied.  The
     value is passed to \code{\link{scale}}.}
 
-\item{naTolerance}{Integer: percentage of NAs tolerance per row}
+\item{naTolerance}{Integer: percentage of NA tolerance}
 }
 \value{
 PCA result in a \code{prcomp} object
 }
 \description{
-Perform principal component analysis after processing NAs from data frame
+Perform principal component analysis after processing missing values from 
+data frame
 }
 

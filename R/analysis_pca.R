@@ -18,33 +18,45 @@
 ## Source:
 ## http://stackoverflow.com/questions/20260434/test-significance-of-clusters-on-a-pca-plot
 
-#' Perform principal component analysis after processing NAs from data frame
+#' Perform principal component analysis after processing missing values from 
+#' data frame
 #' 
 #' @inheritParams stats::prcomp
-#' @param naTolerance Integer: percentage of NAs tolerance per row
+#' @param naTolerance Integer: percentage of NA tolerance
 #' @param data Data frame: data
 #' 
 #' @importFrom stats prcomp
-#' @importFrom miscTools rowMedians
+#' @importFrom miscTools rowMedians colMedians
 #' 
 #' @return PCA result in a \code{prcomp} object
 performPCA <- function(data, center = TRUE, scale. = FALSE, naTolerance = 30) {
-    # Get individuals (rows) with less than a given percentage of NAs
-    nas <- apply(data, 1, function(row) sum(is.na(row)))
-    # hist(nas/ncol(data)*100)
-    data <- data[nas/ncol(data)*100 <= naTolerance, , drop = FALSE]
-    if (nrow(data) == 0) return(NULL)
+    # # Get individuals (rows) with less than a given percentage of NAs
+    # nas <- rowSums(is.na(data))
+    # # hist(nas/ncol(data)*100)
+    # data <- data[nas/ncol(data)*100 <= naTolerance, , drop = FALSE]
+    # if (nrow(data) == 0) return(NULL)
     
-    # Replace NAs with the medians for each individual (row)
-    medians <- rowMedians(data, na.rm=TRUE)
-    nas <- apply(data, 1, function(row) sum(is.na(row)))
+    # # Replace NAs with the medians for each individual (row)
+    # medians <- rowMedians(data, na.rm=TRUE)
+    # data[is.na(data)] <- rep(medians, sum(is.na(data)))
+    
+    # Get loadings (columns) with less than a given percentage of NAs
+    nas <- colSums(is.na(data))
+    data <- data[, nas/nrow(data)*100 <= naTolerance, drop = FALSE]
+    if (ncol(data) == 0) return(NULL)
+    
+    # Replace NAs with the medians for each loading (column)
+    medians <- colMedians(data, na.rm=TRUE)
+    nas <- colSums(is.na(data))
     data[is.na(data)] <- rep(medians, nas)
     
     # Perform principal component analysis
     pca <- prcomp(data, center = center, scale. = scale.)
     # PCA is useless if done with only one point
-    if (nrow(pca$x) == 1) return(NULL)
-    return(pca)
+    if (nrow(pca$x) == 1)
+        return(NULL)
+    else
+        return(pca)
 }
 
 #' User interface of the principal component analysis
@@ -63,21 +75,22 @@ pcaUI <- function(id) {
     tagList(
         uiOutput(ns("modal")),
         sidebarPanel(
-            selectizeInput(ns("dataForPCA"), "Data to perform PCA", choices=NULL,
+            selectizeInput(ns("dataForPCA"), "Data to perform PCA on",
+                           choices=NULL,
                            options=list(placeholder="No data available")),
             checkboxGroupInput(ns("preprocess"), "Preprocessing",
                                c("Center values" = "center",
                                  "Scale values" = "scale"),
                                selected = c("center")),
-            sliderInput(ns("naTolerance"),
-                        div("Percentage of missing values to tolerate per individual",
-                            icon("question-circle")),
-                        min = 0, max=100, value=30, post="%"),
+            sliderInput(ns("naTolerance"), div(
+                "Percentage of missing values to tolerate per event",
+                icon("question-circle")),
+                min = 0, max=100, value=30, post="%"),
             bsTooltip(ns("naTolerance"), placement="right", 
-                      paste("For individuals with a tolerable percentage of",
-                            "missing values, the median value is used to",
-                            "replace missing values. The remaining individuals",
-                            "are discarded."),
+                      paste("For events with a tolerable percentage of missing",
+                            "values, the median value is used to replace those",
+                            "missing values. The remaining events are",
+                            "discarded."),
                       options=list(container="body")),
             selectGroupsUI(ns("dataGroups"), "Filter data groups"),
             actionButton(ns("calculate"), class = "btn-primary", 
@@ -258,7 +271,7 @@ pcaServer <- function(input, output, session) {
                               scale. = "scale" %in% preprocess)
             if (is.null(pca)) {
                 errorModal(session, "No individuals to plot PCA", 
-                           "Try increasing the tolerance of NAs per individual.")
+                           "Try increasing the tolerance of NAs per event")
             }
             sharedData$inclusionLevelsPCA <- pca
         }
