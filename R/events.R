@@ -388,17 +388,15 @@ junctionString <- function(chr, strand, junc5, junc3) {
 #' columns and junctions as rows
 #' @param annotation Data.frame: alternative splicing annotation related to
 #' event type
-#' @param minReads Integer: minimum of reads to consider in calculations
+#' @param minReads Integer: minimum of total reads required to consider the
+#' quantification as valid (10 by default)
 #' 
 #' @importFrom fastmatch fmatch
 #' @return Matrix with inclusion levels
 calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
-                                     minReads = 0) {
+                                     minReads = 10) {
     chr <- annotation$Chromosome
     strand <- annotation$Strand
-    
-    # Ignore reads below the minimum reads threshold
-    if (minReads > 0) junctionQuant[junctionQuant < minReads] <- 0
     
     if (eventType == "SE") {
         # Create searchable strings for junctions
@@ -417,7 +415,10 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         
         # Calculate inclusion levels
         inc <- (incA + incB) / 2
-        psi <- inc/(excl + inc)
+        tot <- excl + inc
+        psi <- inc/tot
+        # Ignore PSI where total reads are below the threshold
+        psi[tot < minReads] <- NA
         rownames(psi) <- paste(eventType, chr, strand, annotation$C1.end, 
                                annotation$A1.start, annotation$A1.end,
                                annotation$C2.start, annotation$Gene, sep="_")
@@ -442,7 +443,10 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         # Calculate inclusion levels
         inc <- (incA + incB)
         exc <- (excA + excB)
-        psi <- inc/(inc + exc)
+        tot <- inc + exc
+        psi <- inc/tot
+        # Ignore PSI where total reads are below the threshold
+        psi[tot < minReads] <- NA
         rownames(psi) <- paste(eventType, chr, strand, annotation$C1.end,
                                annotation$A1.start, annotation$A1.end, 
                                annotation$A2.start, annotation$A2.end,
@@ -458,9 +462,13 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         coords <- rownames(junctionQuant)
         inc <- junctionQuant[fmatch(incStr, coords), ]
         exc <- junctionQuant[fmatch(excStr, coords), ]
+        tot <- inc + exc
         
         # Calculate inclusion levels
-        psi <- inc/(inc + exc)
+        psi <- inc/tot
+        # Ignore PSI where total reads are below the threshold
+        psi[tot < minReads] <- NA
+        
         rownames(psi) <- paste(eventType, chr, strand, annotation$C1.end, 
                                annotation$A1.end, annotation$C2.start, 
                                annotation$Gene, sep="_")
@@ -475,9 +483,13 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         coords <- rownames(junctionQuant)
         inc <- junctionQuant[fmatch(incStr, coords), ]
         exc <- junctionQuant[fmatch(excStr, coords), ]
+        tot <- inc + exc
         
         # Calculate inclusion levels
-        psi <- inc/(inc + exc)
+        psi <- inc/tot
+        # Ignore PSI where total reads are below the threshold
+        psi[tot < minReads] <- NA
+        
         rownames(psi) <- paste(eventType, chr, strand, annotation$C1.end,
                                annotation$A1.start, annotation$C2.start, 
                                annotation$Gene, sep = "_")
