@@ -48,7 +48,8 @@ inclusionLevelsInterface <- function(ns) {
                                          icon("question-circle")), value = 10),
         bsTooltip(ns("minReads"), placement = "right", 
                   options = list(container = "body"),
-                  "Read counts below this threshold will be discarded"),
+                  paste("Inclusion levels calculated with a number of read",
+                        "counts below this threshold are discarded.")),
         processButton(ns("calcIncLevels"), "Calculate inclusion levels"))
 }
 

@@ -5,7 +5,7 @@
 \title{Calculate inclusion levels using alternative splicing event annotation and
 junction quantification for many samples}
 \usage{
-calculateInclusionLevels(eventType, junctionQuant, annotation, minReads = 0)
+calculateInclusionLevels(eventType, junctionQuant, annotation, minReads = 10)
 }
 \arguments{
 \item{eventType}{Character: type of the alternative event to calculate}
@@ -16,7 +16,8 @@ columns and junctions as rows}
 \item{annotation}{Data.frame: alternative splicing annotation related to
 event type}
 
-\item{minReads}{Integer: minimum of reads to consider in calculations}
+\item{minReads}{Integer: minimum of total reads required to consider the
+quantification as valid (10 by default)}
 }
 \value{
 Matrix with inclusion levels
