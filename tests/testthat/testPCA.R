@@ -38,7 +38,7 @@ test_that("Center and scale the data", {
     expect_equal(pca, pca2)
 })
 
-test_that("Tolerate NAs per row", {
+test_that("Tolerate NAs per columns", {
     # Data has no NAs (therefore, naTolerance is irrelevant)
     pca <- performPCA(data, center=FALSE, scale.=FALSE, naTolerance=50)
     expect_is(pca, "prcomp")
@@ -53,24 +53,28 @@ test_that("Tolerate NAs per row", {
     expect_null(pca)
     expect_error(prcomp(all.nas, center=center, scale.=scale))
     
-    # Data is composed of roughly 50% NAs
-    nas.50 <- data
-    nas.50[replicate(4, sample(1:2, 50, replace=TRUE)) == 1] <- NA
+    # Fill with missing values (column 1 = 100% NAs, 2 = 50%, 3 = 34%, 4 = 26%)
+    nas <- data
+    nas[[1]][seq(1, length(nas[[1]]), 1)] <- NA
+    nas[[2]][seq(1, length(nas[[2]]), 2)] <- NA
+    nas[[3]][seq(1, length(nas[[3]]), 3)] <- NA
+    nas[[4]][seq(1, length(nas[[4]]), 4)] <- NA
     
-    # Tolerate rows containing 75% of NAs
-    pca <- performPCA(nas.50, center=FALSE, scale.=FALSE, naTolerance=75)
-    expect_is(pca, "prcomp")
-    expect_equal(rownames(nas.50)[rowSums(is.na(nas.50)) <= 3], rownames(pca$x))
+    # Tolerate columns containing 50% of NAs
+    pca <- performPCA(nas, center=FALSE, scale.=FALSE, naTolerance=50)
+    expect_equal(colnames(nas)[2:4], rownames(pca$rotation))
     
-    # Tolerate rows containing 50% of NAs
-    pca <- performPCA(nas.50, center=FALSE, scale.=FALSE, naTolerance=50)
-    expect_is(pca, "prcomp")
-    expect_equal(rownames(nas.50)[rowSums(is.na(nas.50)) <= 2], rownames(pca$x))
+    # Tolerate columns containing 49% of NAs
+    pca <- performPCA(nas, center=FALSE, scale.=FALSE, naTolerance=49)
+    expect_equal(colnames(nas)[3:4], rownames(pca$rotation))
     
-    # Tolerate rows containing 25% of NAs
-    pca <- performPCA(nas.50, center=FALSE, scale.=FALSE, naTolerance=25)
-    expect_is(pca, "prcomp")
-    expect_equal(rownames(nas.50)[rowSums(is.na(nas.50)) <= 1], rownames(pca$x))
+    # Tolerate columns containing 26% of NAs
+    pca <- performPCA(nas, center=FALSE, scale.=FALSE, naTolerance=26)
+    expect_equal(colnames(nas)[4], rownames(pca$rotation))
+    
+    # Tolerate columns containing 25% of NAs
+    pca <- performPCA(nas, center=FALSE, scale.=FALSE, naTolerance=25)
+    expect_null(pca)
 })
 
 test_that("Plot explained variance", {
