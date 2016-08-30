@@ -103,8 +103,9 @@ pcaUI <- function(id) {
                     selectGroupsUI(ns("colourGroups"),
                                    "Clinical groups to colour the PCA"),
                     checkboxGroupInput(ns("plotShow"), "Show in plot",
-                                       c("Individuals", "Event (loadings)"),
-                                       selected = c("Individuals")),
+                                       c("Samples (scores)"="individuals",
+                                         "Splicing event (loadings)"="events"),
+                                       selected="individuals"),
                     actionButton(ns("showVariancePlot"), "Show variance plot"),
                     actionButton(ns("plot"), class = "btn-primary", "Plot PCA")
                 )
@@ -337,7 +338,7 @@ pcaServer <- function(input, output, session) {
         output$scatterplot <- renderHighchart(
             if (!is.null(pcX) & !is.null(pcY))
                 plotPCA(pca, pcX, pcY, selected, clinical, match,
-                        "Individuals" %in% show, "Events (loadings)" %in% show))
+                        "individuals" %in% show, "events" %in% show))
     })
     
     observe({

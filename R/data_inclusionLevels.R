@@ -5,7 +5,7 @@
 #' @examples 
 #' getSplicingEventTypes()
 getSplicingEventTypes <- function() {
-    c("Exon skipping (SE)" = "SE",
+    c("Skipped exon (SE)" = "SE",
       "Mutually exclusive exons (MXE)" = "MXE",
       "Alternative 5' Splice Site (A5SS)" = "A5SS",
       "Alternative 3' Splice Site (A3SS)" = "A3SS",
@@ -36,7 +36,7 @@ inclusionLevelsInterface <- function(ns) {
     tagList(
         uiOutput(ns("modal")),
         helpText("Measure exon inclusion levels from junction quantification.",
-                 "This is also known as Percentage Spliced In (PSI)."),
+                 "The Percent Spliced-In (PSI) metric is used."),
         selectizeInput(ns("junctionQuant"), 
                        "Alternative splicing junction quantification",
                        choices=NULL),
