@@ -147,3 +147,6 @@ table { white-space: nowrap; }
 
 /* Style Highcharts tooltip outside of Highcharts container */
 .highcharts-container { overflow: visible !important; }
+
+/* Fix font weight glitch when clicking with a menu in the navigation bar */
+.navbar-fixed-top { border-radius: 1px; }
