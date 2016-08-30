@@ -441,6 +441,8 @@ groupsServer <- function(input, output, session, datasetName) {
             tagList(
                 hr(),
                 dataTableOutput(ns("groupsTable")),
+                helpText("Select groups by clicking on them in order to merge,",
+                         "intersect or remove selected groups."),
                 disabled(operations),
                 actionButton(ns("removeAll"), class="btn-danger", 
                              "Remove all groups")#,

@@ -15,7 +15,8 @@ survivalUI <- function(id) {
     ns <- NS(id)
     
     kaplanMeierOptions <- tagList(
-        checkboxInput(ns("markTimes"), "Show time marks", value = TRUE),
+        checkboxInput(ns("markTimes"), "Show censored observations",
+                      value = TRUE),
         checkboxInput(ns("ranges"), "Show interval ranges", value = FALSE)
     )
     
@@ -34,8 +35,8 @@ survivalUI <- function(id) {
                        "'].indexOf('interval') > -1"),
                 selectizeInput(ns("timeStop"), "Ending time",
                                choices=c("No clinical data loaded"=""))),
-            helpText("In case there's no record for a patient, the days to last",
-                     "follow up will be used instead."),
+            helpText("For patients for which there is no event reported, time",
+                     "to last follow up is used instead."),
             selectizeInput(ns("event"), "Event of interest",
                            choices=c("No clinical data loaded"="")),
             radioButtons(ns("scale"), "Display time in", inline=TRUE,

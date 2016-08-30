@@ -39,8 +39,8 @@ diffSplicingTableUI <- function(id) {
                        "wilcoxSignedRank", "wilcoxRankSum")),
         # Disable checkbox of basic statistics
         tags$script('$("[value=basicStats]").attr("disabled", true);'),
-        helpText("For each alternative splicing event, groups with one or less",
-                 "non-missing values will be discarded."), hr(),
+        helpText("For patients for which there is no event reported, time",
+                 "to last follow up is used instead."), hr(),
         selectizeInput(ns("pvalueAdjust"), selected="BH",
                        "Adjust p-values of statistical tests", pvalueAdjust),
         disabled(div(id=ns("downloadStats"), class="btn-group",
@@ -89,9 +89,8 @@ diffSplicingTableUI <- function(id) {
 optimSurvDiffUI <- function(ns) {
     tagList(
         hr(), h3("Survival analyses by splicing quantification cut-off"),
-        helpText("For each splicing event, find the optimal splicing",
-                 "quantification cut-off that most significantly separates",
-                 "survival curves."),
+        helpText("For each splicing event, find the PSI cut-off that maximizes",
+                 "differences in survival."),
         radioButtons(ns("censoring"), "Data censoring", selected="right",
                      inline=TRUE, choices=c(Left="left", Right="right",
                                             Interval="interval", 
@@ -106,12 +105,12 @@ optimSurvDiffUI <- function(ns) {
         selectizeInput(ns("event"), choices = NULL, 
                        "Event of interest"),
         radioButtons(
-            ns("selected"), "Perform survival analysis in:",
+            ns("selected"), "Perform survival analysis based on",
             choices=c(
                 "Splicing events shown in the screen"="shown",
                 "Filtered splicing events (may be a slow process)"="filtered",
                 "All splicing events (slow process)"="all")),
-        processButton(ns("survival"), "Plot optimal PSI cut-off")
+        processButton(ns("survival"), "Plot survival curves")
     )
 }
 
@@ -385,7 +384,7 @@ diffSplicingTableServer <- function(input, output, session) {
             groups <- tagList(groups, br(), bullet, each)
         
         return(tagList(
-            helpText("The data contains the following sample types:", groups)))
+            helpText("Sample types available in loaded data:", groups)))
     })
     
     observeEvent(input$missingInclusionLevels, 
