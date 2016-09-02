@@ -51,9 +51,10 @@ performPCA <- function(data, center = TRUE, scale. = FALSE, naTolerance = 30) {
     data[is.na(data)] <- rep(medians, nas)
     
     # Perform principal component analysis
-    pca <- prcomp(data, center = center, scale. = scale.)
+    pca <- tryCatch(prcomp(data, center=center, scale.=scale.), error=return)
+    
     # PCA is useless if done with only one point
-    if (nrow(pca$x) == 1)
+    if ("x" %in% names(pca) && nrow(pca$x) == 1)
         return(NULL)
     else
         return(pca)
@@ -273,6 +274,11 @@ pcaServer <- function(input, output, session) {
             if (is.null(pca)) {
                 errorModal(session, "No individuals to plot PCA", 
                            "Try increasing the tolerance of NAs per event")
+            } else if (inherits(pca, "error")) {
+                ## TODO(NunoA): what to do in this case?
+                errorModal(session, "PCA calculation error", 
+                           "Constant/zero columns cannot be resized to unit",
+                           "variance")
             }
             sharedData$inclusionLevelsPCA <- pca
         }
