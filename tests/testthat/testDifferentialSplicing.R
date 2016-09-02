@@ -109,7 +109,7 @@ test_that("Perform single statistical analyses", {
 })
 
 test_that("Plot distribution of splicing quantification per group", {
-    eventPSI <- as.numeric(psi[6, ])
+    eventPSI <- as.numeric(psi[2, ])
     plot <- plotDistribution(eventPSI, group)
     
     expect_is(plot, "highchart")
