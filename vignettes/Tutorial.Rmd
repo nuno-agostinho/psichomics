@@ -1,7 +1,7 @@
 ---
 title: 'PSIchomics tutorial: visual interface'
 author: "Nuno Saraiva-Agostinho"
-date: "26 August 2016"
+date: "2 September 2016"
 bibliography: refs.bib
 output:
     pdf_document:
@@ -24,12 +24,11 @@ quantification) and exons.
 
 # Installing and starting the program
 The [R language](https://www.r-project.org/) is required. Install PSIchomics by
-typing in an R console:
+typing the following in an R console:
 
 ```{r, eval=FALSE}
 install.packages("devtools")
-devtools::install_github("nuno-agostinho/psichomics", 
-                         auth_token = "b752621b2059cd64ac21d5f7e8418821feb81b81")
+devtools::install_github("nuno-agostinho/psichomics")
 ```
 
 After the installation, start the visual interface of the program in your 
@@ -174,11 +173,11 @@ navigation menu at the top and select **Differential splicing analysis**.
 
 1. Select the clinical groups on which to perform the analyses. For instance, 
 splicing events can be analysed based on sample types (i.e., tumour versus 
-normal tissue, if available) or stage of the disease. For now, select **Sample
-types**.
+normal tissue, if available) or clinical groups of the patients (e.g. stage of 
+the disease). For now, select **Sample types**.
 2. Confirm that all statistical analyses are checked.
-3. Confirm p-values will be adjusted according to the Benjamini-Hochberg's 
-method.
+3. Confirm p-values will be adjusted according to the **Benjamini-Hochberg's 
+method**.
 4. Click **Perform analyses**.
 
 When the analyses are completed, the results are shown in a filtrable and 
