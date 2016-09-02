@@ -532,25 +532,27 @@ statsAnalyses <- function(psi, groups=NULL, analyses=c("wilcoxRankSum",
     if (any(pvalueAdjust == c("BH", "BY", "bonferroni", "holm", "hochberg",
                               "hommel"))) {
         progress("Adjusting p-values", detail=pvalueAdjust)
-        time <- Sys.time()
         
         cols   <- grep("p.value", colnames(df), fixed=TRUE)
-        pvalue <- df[cols]
-        adjust <- apply(pvalue, 2, p.adjust, pvalueAdjust)
-        names  <- paste0(colnames(pvalue), " ", parenthesisOpen, 
-                         pvalueAdjust, " adjusted", parenthesisClose)
-        
-        if (!is.matrix(adjust))
-            adjust <- as.matrix(adjust)
-        colnames(adjust) <- names
-        
-        # Place the adjusted p-values columns next to the respective p-values
-        len <- ncol(df)
-        order <- seq(len)
-        for (i in seq_along(cols)) 
-            order <- append(order, len+i, after=which(order == cols[i]))
-        df <- cbind(df, adjust)[order]
-        print(Sys.time() - time)
+        if (length(cols > 0)) {
+            time <- Sys.time()
+            pvalue <- df[cols]
+            adjust <- apply(pvalue, 2, p.adjust, pvalueAdjust)
+            names  <- paste0(colnames(pvalue), " ", parenthesisOpen, 
+                             pvalueAdjust, " adjusted", parenthesisClose)
+            
+            if (!is.matrix(adjust))
+                adjust <- as.matrix(adjust)
+            colnames(adjust) <- names
+            
+            # Place the adjusted p-values next to the respective p-values
+            len <- ncol(df)
+            order <- seq(len)
+            for (i in seq_along(cols)) 
+                order <- append(order, len+i, after=which(order == cols[i]))
+            df <- cbind(df, adjust)[order]
+            print(Sys.time() - time)
+        }
     }
     
     # Properly set column names
