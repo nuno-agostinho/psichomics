@@ -1,11 +1,21 @@
-# psichomics [![Build Status](https://travis-ci.com/nuno-agostinho/psichomics.svg?token=WnQvrH4wCa4UkqjJquSq&branch=master)](https://travis-ci.com/nuno-agostinho/psichomics) [![codecov](https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg?token=huZOun5jSD)](https://codecov.io/gh/nuno-agostinho/psichomics)
-R package to quantify, analyse and visualise alternative splicing data
+# PSIchomics [![Build Status](https://travis-ci.com/nuno-agostinho/psichomics.svg?token=WnQvrH4wCa4UkqjJquSq&branch=master)](https://travis-ci.com/nuno-agostinho/psichomics) [![codecov](https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg?token=huZOun5jSD)](https://codecov.io/gh/nuno-agostinho/psichomics)
+R package to quantify, analyse and visualise alternative splicing data from 
+[The Cancer Genome Atlas (TCGA)](https://tcga-data.nci.nih.gov/docs/publications/tcga).
 
-## Start running
-If you want to install from [Bioconductor](https://www.bioconductor.org), you're
-out of luck. This package is not available in Bioconductor (yet?).
+## Available tutorials
 
-To start using this program, follow these steps:
+The following tutorial is available:
+
+* [Visual interface](http://rpubs.com/nuno-agostinho/psichomics-tutorial-visual)
+
+Other tutorials coming soon:
+
+* Command-line interface
+* Developers and other contributors
+
+## Install and start running
+This package is not available in [Bioconductor](https://www.bioconductor.org)
+yet. To install and start using this program, follow these steps:
 
 1. [Install R](https://www.r-project.org/)
 2. Open [RStudio](https://www.rstudio.com/products/rstudio) (or open a console, 
@@ -13,8 +23,7 @@ type `R` and press enter)
 3. Type the following to install, load and start the visual interface:
 ```r
 install.packages("devtools")
-devtools::install_github("nuno-agostinho/psichomics", 
-                         auth_token = "b752621b2059cd64ac21d5f7e8418821feb81b81")
+devtools::install_github("nuno-agostinho/psichomics")
 library(psichomics)
 psichomics()
 ```
