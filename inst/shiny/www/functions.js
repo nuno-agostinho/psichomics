@@ -48,7 +48,7 @@ function showDiffSplicing (event) {
 function changeDiffSplicingGroup () {
     var diff = "All events (table)";
     $("a[data-value*='" + diff + "']").tab("show");
-    $("#analyses-diffSplicing-diffSplicingTable-groupsCol")[0].selectize
+    $("#analyses-diffSplicing-diffSplicingTable-diffGroups")[0].selectize
         .focus();
 }
 

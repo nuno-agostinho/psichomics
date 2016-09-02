@@ -60,7 +60,7 @@ survivalUI <- function(id) {
                           "event")),
             conditionalPanel(
                 sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "groups"),
-                selectGroupsUI(ns("dataGroups"), "Clinical groups to plot"),
+                selectGroupsUI(ns("dataGroups"), label=NULL),
                 checkboxInput(ns("showOutGroup"), 
                               "Show data outside chosen groups",
                               value = FALSE)),
