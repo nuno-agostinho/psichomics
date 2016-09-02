@@ -88,7 +88,7 @@ if (isFirehoseUp()) {
         types <- getFirehoseDataTypes()
         expect_true(all(c("exon_expression",
                           "genes_normalized",
-                          "junction_quantification") %in% types))
+                          "junction_quantification") %in% types[[1]]))
     })
 
     # test_that("prepareFirehoseArchives prepares archives to be loaded", {

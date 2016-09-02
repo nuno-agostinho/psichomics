@@ -424,7 +424,7 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         # Ignore PSI values when total reads are below the threshold
         less <- tot < minReads | is.na(tot)
         psi <- as.data.frame(matrix(ncol=ncol(tot), nrow=nrow(tot)))
-        psi[less] <- inc[less]/tot[less]
+        psi[!less] <- inc[!less]/tot[!less]
         colnames(psi) <- colnames(inc)
         rm(inc)
         
