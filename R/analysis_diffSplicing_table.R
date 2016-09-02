@@ -22,10 +22,17 @@ diffSplicingTableUI <- function(id) {
                              "Hommel's method"="hommel"))
     
     sidebar <- sidebarPanel(
-        selectizeInput(ns("groupsCol"), choices=NULL,
-                       "Clinical groups on which to perform the analyses"), 
-        uiOutput(ns("groupsInfo")), hr(),
-        checkboxGroupInput(
+        radioButtons(ns("groupsSelect"), 
+                     "Clinical groups on which to perform the analyses",
+                     choices=c("Sample types"="samples",
+                               "Patients' clinical groups"="patients")),
+        conditionalPanel(
+            sprintf("input[id='%s'] == 'patients'", ns("groupsSelect")),
+            selectGroupsUI(ns("diffGroups"), label=NULL)),
+        conditionalPanel(
+            sprintf("input[id='%s'] == 'samples'", ns("groupsSelect")),
+            uiOutput(ns("groupsInfo"))), 
+        hr(), checkboxGroupInput(
             ns("statsChoices"),
             "Choose statistical analyses to perform:",
             # Basic stats is on and disabled by JavaScript
@@ -235,9 +242,6 @@ optimSurvDiff <- function(session, input, output) {
         endProcess("survival", time)
     })
     
-    # Update groups used for differential splicing analysis
-    observe( setDiffSplicingGroups(input$groupsCol) )
-    
     # Hide survival curves if there's no data
     observe({
         if (is.null(getDifferentialAnalysesSurvival()))
@@ -281,7 +285,7 @@ optimSurvDiff <- function(session, input, output) {
                     tags$b("p-value:"), pvalue)
             }
             
-            if (is.na(splicingEvent)) stat <- NULL
+            if (is.null(splicingEvent) || is.na(splicingEvent)) stat <- NULL
             output[[paste0("eventText", i)]] <- renderText(
                 gsub("_", " ", splicingEvent))
             output[[paste0("eventSurvStats", i)]] <- renderUI(stat)
@@ -363,6 +367,8 @@ optimSurvDiff <- function(session, input, output) {
 diffSplicingTableServer <- function(input, output, session) {
     ns <- session$ns
     
+    selectGroupsServer(session, "diffGroups", "Clinical data")
+    
     # Information on the data groups from TCGA
     output$groupsInfo <- renderUI({
         # Get event's inclusion levels
@@ -393,31 +399,36 @@ diffSplicingTableServer <- function(input, output, session) {
     performStatsAnalyses <- reactive({
         # Get event's inclusion levels
         psi <- getInclusionLevels()
-        col <- input$groupsCol
+        select <- input$groupsSelect
+        clinicalGroups <- input$diffGroups
         statsChoices <- input$statsChoices
         pvalueAdjust <- input$pvalueAdjust
         
         totalTime <- startProcess("startAnalyses")
-        if (col == "Sample types") {
+        if (select == "samples") {
             # Separate samples by their groups
             ids <- names(psi)
             groups <- parseSampleGroups(ids)
-        } else {
-            # Get groups from column of interest
-            clinical <- getClinicalData()
-            col <- clinical[[col]]
+            g <- "samples"
+        } else if (select == "patients") {
+            # Separate sample by clinical groups from patients
+            clinicalGroups <- getGroupsFrom("Clinical data")[clinicalGroups]
             
             # Match groups from patients with respective samples
             matches <- getClinicalMatchFrom("Inclusion levels")
             groups <- rep(NA, ncol(psi))
             names(groups) <- colnames(psi)
-            samples <- toupper(names(matches))
-            groups[samples] <- as.character(col[matches])
+            
+            for (g in seq_along(clinicalGroups)) {
+                m <- matches %in% clinicalGroups[[g]]
+                groups[m] <- names(clinicalGroups)[[g]]
+            }
             
             # Remove samples with no groups
             nasGroups <- !is.na(groups)
             psi       <- psi[nasGroups]
             groups    <- groups[nasGroups]
+            g <- groups
         }
         
         stats <- statsAnalyses(psi, groups, statsChoices, 
@@ -433,17 +444,38 @@ diffSplicingTableServer <- function(input, output, session) {
         isolate({
             # Get event's inclusion levels
             psi <- getInclusionLevels()
-            col <- input$groupsCol
+            select <- input$groupsSelect
+            clinicalGroups <- input$diffGroups
             statsChoices <- input$statsChoices
             diffSplicing <- getDifferentialAnalyses()
         })
         if (is.null(psi)) {
             missingDataModal(session, "Inclusion levels",
                              ns("missingInclusionLevels"))
-        } else if (is.null(col)) {
-            errorModal(session, "Select groups",
-                       "The groups on which to perform statistical analysis",
-                       "cannot be empty.")
+        } else if (select == "patients") {
+            if (is.null(clinicalGroups)) {
+                errorModal(session, "Select groups",
+                           "The groups on which to perform statistical analysis",
+                           "cannot be empty.")
+            } else {
+                clinicalGroups <- isolate(
+                    getGroupsFrom("Clinical data")[clinicalGroups])
+                intersection <- unlist(clinicalGroups)
+                names(intersection) <- rep(names(clinicalGroups), 
+                                           sapply(clinicalGroups, length))
+                dup <- duplicated(intersection) | duplicated(intersection, 
+                                                             fromLast=TRUE)
+                if (any(dup)) {
+                    intersected <- unique(names(intersection[dup]))
+                    errorModal(session, "Group intersection", 
+                               "Differential analysis cannot be carried with",
+                               "samples belonging to two groups. The following", 
+                               "groups share samples:",
+                               tags$kbd(paste(intersected, collapse = ", ")))
+                } else {
+                    performStatsAnalyses()
+                }
+            }
         } else if (!is.null(diffSplicing)) {
             warningModal(session, "Differential analyses already performed",
                          "Do you wish to replace the loaded analyses?",
@@ -507,26 +539,12 @@ diffSplicingTableServer <- function(input, output, session) {
             enable("downloadStats")
     })
     
-    # Update groups columns
     observe({
-        clinical <- getClinicalData()
-        psi <- getInclusionLevels()
-        
-        if (!is.null(clinical)) {
-            updateSelectizeInput(
-                session, "groupsCol", choices=list(
-                    "Clinical groups for samples"=c("Sample types"="Sample types"),
-                    "Clinical groups for patients"=names(clinical),
-                    "d"=c("Start typing to search for clinical groups"="")))
-        } else if (!is.null(psi)) {
-            updateSelectizeInput(
-                session, "groupsCol", choices=list(
-                    "Clinical groups for samples"=c("Sample types"="Sample types"),
-                    "d"=c("No clinical data loaded"="")))
-        } else {
-            updateSelectizeInput(session, "groupsCol", 
-                                 choices=c("No clinical data loaded"=""))
-        }
+        groups <- "samples"
+        input$groupsSelect
+        if (!is.null(input$groupsSelect) && input$groupsSelect != groups)
+            groups <- input$diffGroups
+        setDiffSplicingGroups(groups)
     })
 }
 

@@ -8,17 +8,24 @@
 #' 
 #' @return Interface for group selection
 selectGroupsUI <- function (
-    id, label, placeholder="Click in 'Groups' to create or edit groups") {
+    id, label, placeholder="Click on 'Groups' to create or edit groups") {
     editId <- paste0(id, "Edit")
     modalId <- paste0(id, "Modal")
-    fluidRow(
-        uiOutput(modalId),
-        column(10, selectizeInput(id, label, choices=NULL, multiple=TRUE,
+    groupSelect <- selectizeInput(id, label, choices=NULL, multiple=TRUE, 
                                   width="auto",
-                                  options=list(placeholder=placeholder))),
-        column(2, actionButton(editId, "Groups", 
-                               class="inline_selectize pull-right btn-info",
-                               style="z-index: 1; position: relative;")))
+                                  options=list(placeholder=placeholder))
+    
+    if (!is.null(label)) {
+        class <- "inline_selectize"
+    } else {
+        class <- NULL
+    }
+    
+    fluidRow(uiOutput(modalId),
+             column(10, groupSelect),
+             column(2, actionButton(editId, "Groups", class=class,
+                                    class="pull-right", class="btn-info",
+                                    style="z-index: 1; position: relative;")))
 }
 
 #' Group selection logic

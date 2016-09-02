@@ -398,23 +398,25 @@ diffSplicingEventServer <- function(input, output, session) {
         col <- getDiffSplicingGroups()
         if (is.null(col) || col=="") return(NULL)
         
-        output$groupsCol <- renderText(col)
+        output$groupsCol <- renderText(paste(col, collapse=", "))
         
-        if (col == "Sample types") {
+        if (identical(col, "samples")) {
             # Separate samples by their groups
             ids <- names(psi)
             groups <- parseSampleGroups(ids)
         } else {
-            # Get groups from column of interest
-            clinical <- getClinicalData()
-            column <- clinical[[col]]
+            # Separate sample by clinical groups from patients
+            clinicalGroups <- getGroupsFrom("Clinical data")[col]
             
             # Match groups from patients with respective samples
             matches <- getClinicalMatchFrom("Inclusion levels")
             groups <- rep(NA, ncol(psi))
             names(groups) <- colnames(psi)
-            samples <- toupper(names(matches))
-            groups[samples] <- as.character(column[matches])
+            
+            for (g in seq_along(clinicalGroups)) {
+                m <- matches %in% clinicalGroups[[g]]
+                groups[m] <- names(clinicalGroups)[[g]]
+            }
             
             # Remove samples with no groups
             nasGroups <- !is.na(groups)
