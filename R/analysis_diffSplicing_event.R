@@ -73,7 +73,7 @@ plotDistribution <- function(psi, groups, bandwidth=0.01, rug=TRUE,
     
     count <- 0
     plotLines <- list()
-    for (group in unique(groups)) {
+    for (group in sort(unique(groups))) {
         row  <- psi[groups == group]
         med  <- roundDigits(median(row, na.rm = TRUE))
         vari <- roundDigits(var(row, na.rm = TRUE))
@@ -132,14 +132,14 @@ basicStats <- function(psi, groups) {
     medi <- vapply(data, median, numeric(1), na.rm = TRUE)
     
     if (len == 2) {
-        deltaMedian <- tagList(
-            tags$b("|\u0394 Median|: "), abs(medi[2] - medi[1]), br())
+        deltaMedian <- tagList(tags$b("|\u0394 Median|: "), 
+                               roundDigits(abs(medi[2] - medi[1])), br())
     } else {
         deltaMedian <- NULL
     }
     
-    ui <- tagList(h4("Basic statistics"), roundDigits(deltaMedian),
-                  tags$b("Average variance: "), 
+    ui <- tagList(h4("Basic statistics"), deltaMedian,
+                  tags$b("Average variance: "),
                   roundDigits(sum(vari)/length(vari)))
     return(ui)
 }

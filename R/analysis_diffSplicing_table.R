@@ -104,11 +104,11 @@ optimSurvDiffUI <- function(ns) {
                                             "Interval 2"="interval2")),
         selectizeInput(ns("timeStart"), choices = NULL, "Follow up time"),
         # If the chosen censoring contains the word 'interval', show this input
-        conditionalPanel(paste0(
-            "input[id='", ns("censoring"), "'].indexOf('interval') > -1"),
+        conditionalPanel(
+            sprintf("input[id='%s'].indexOf('interval') > -1", ns("censoring")),
             selectizeInput(ns("timeStop"), choices=NULL, "Ending time")),
-        helpText("In case there's no record for a patient, the",
-                 "days to last follow up will be used instead."),
+        helpText("For each alternative splicing event, groups with one or less",
+                 "non-missing values are discarded."),
         selectizeInput(ns("event"), choices = NULL, 
                        "Event of interest"),
         radioButtons(
