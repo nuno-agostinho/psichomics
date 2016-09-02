@@ -148,7 +148,7 @@ endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
     hide(paste0(id, "Loading"))
     if (closeProgressBar) closeProgress()
     if (!is.null(time)) 
-        cat("Process finished in", format(Sys.time() - time), "\n")
+        message("Process finished in ", format(Sys.time() - time))
 }
 
 #' Match given IDs with the clinical data

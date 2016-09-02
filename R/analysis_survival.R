@@ -43,7 +43,7 @@ survivalUI <- function(id) {
                          c(Days="days", Weeks="weeks", Months="months", 
                            Years="years")),
             hr(),
-            radioButtons(ns("modelTerms"), selected="groups", inline=TRUE,
+            radioButtons(ns("modelTerms"), selected="groups",
                          div("Select groups for survival analysis",
                              icon("question-circle")),
                          choices=c("Clinical groups"="groups",

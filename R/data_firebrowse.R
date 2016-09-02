@@ -386,7 +386,7 @@ loadFirehoseData <- function(folder=file.path(path.expand("~"), "Downloads"),
                              ..., progress = printPaste, download=TRUE) {
     args <- list(...)
     
-    datasets <- getFirehoseDataTypes()
+    datasets <- unlist(getFirehoseDataTypes())
     # Data types to load
     args$data_type <- c(data[!data %in% datasets], "mRNASeq")
     # Datasets to ignore
