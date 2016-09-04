@@ -555,6 +555,12 @@ statsAnalyses <- function(psi, groups=NULL, analyses=c("wilcoxRankSum",
         }
     }
     
+    # Add splicing event information
+    progress("Include spicing event information")
+    info <- suppressWarnings(parseSplicingEvent(rownames(df)))
+    df <- cbind("Event type"=info$type, "Chromosome"=info$chrom,
+                "Strand"=info$strand, "Gene"=info$gene, df)
+    
     # Properly set column names
     col <- colnames(df)
     col <- gsub(parenthesisOpen,  "(", col, fixed=TRUE)
