@@ -340,6 +340,17 @@ rowVar <- function (x, na.rm = FALSE) {
     return(squaresSum/(ncol(x) - nas - 1))
 }
 
+#' Get the Downloads folder of the user
+getDownloadsFolder <- function() {
+    if (Sys.info()['sysname'] == "Windows")
+        folder <- dirname("~")
+    else
+        folder <- path.expand("~")
+    folder <- file.path(folder, "Downloads")
+    folder <- paste0(folder, .Platform$file.sep)
+    return(folder)
+}
+
 #' Return the type of a given sample
 #' 
 #' @param sample Character: ID of the sample

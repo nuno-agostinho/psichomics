@@ -397,7 +397,7 @@ loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
 #' \dontrun{
 #' loadFirehoseData(cohort = "ACC", data_type = "Clinical")
 #' }
-loadFirehoseData <- function(folder=file.path(path.expand("~"), "Downloads"), 
+loadFirehoseData <- function(folder=NULL, 
                              data=NULL, 
                              exclude=c(".aux.", ".mage-tab.", "MANIFEST.txt"),
                              ..., progress = printPaste, download=TRUE) {
@@ -425,6 +425,7 @@ loadFirehoseData <- function(folder=file.path(path.expand("~"), "Downloads"),
     base[!md5] <- file_path_sans_ext(base[!md5], compression = TRUE)
     
     # Check which files are missing from the given directory
+    if (is.null(folder)) folder <- getDownloadsFolder()
     downloadedFiles <- list.files(folder, recursive=TRUE, full.names=TRUE, 
                                   include.dirs=TRUE)
     downloadedMD5   <- file_ext(downloadedFiles) == "md5"
@@ -527,8 +528,7 @@ addTCGAdata <- function(ns) {
                        c("Clinical data"="Clinical", dataTypes), 
                        options = list(placeholder = "Select data types")),
         textAreaInput(ns("dataFolder"), "Folder to store the data",
-                      value = paste0(file.path(path.expand("~"), "Downloads"),
-                                     .Platform$file.sep),
+                      value = getDownloadsFolder(),
                       placeholder = "Insert data folder"),
         bsTooltip(ns("dataFolder"), placement = "right",
                   options = list(container = "body"),
