@@ -20,8 +20,19 @@ printPaste <- function(..., console=TRUE) {
 #' format$response
 getFirehoseDateFormat <- function() {
     query <- "%Y_%m_%d"
-    response <- "%a, %d %b %Y %H:%M:%S" 
+    response <- "%d %b %Y" 
     return(list(query=query, response=response))
+}
+
+#' Parse the date from a response
+#' @param string Character: dates
+#' @return Parsed date
+parseDateResponse <- function(string) {
+    format <- getFirehoseDateFormat()$response
+    date <- strsplit(string, " ")
+    date <- lapply(date, function(i) paste(i[2:4], collapse=" "))
+    date <- as.Date(unlist(date), format=format)
+    return(date)
 }
 
 #' Check if the Firehose API is running
@@ -317,8 +328,7 @@ parseUrlsFromFirehoseResponse <- function(res) {
     # Parse the query response
     parsed <- content(res, "text", encoding = "UTF8")
     parsed <- fromJSON(parsed)[[1]]
-    parsed$date <- as.Date(parsed$date,
-                           format = getFirehoseDateFormat()$response)
+    parsed$date <- parseDateResponse(parsed$date)
     
     # Get cohort names
     cohort <- getFirehoseCohorts()
