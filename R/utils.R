@@ -442,10 +442,8 @@ roundDigits <- function(n) {
 #' NULL
 #' @param size Character: Modal size ("small", "default" or "large")
 #' 
-#' @importFrom shiny tags HTML tagAppendAttributes
+#' @importFrom shiny tagAppendAttributes
 #' @importFrom shinyBS bsModal
-#' @importFrom htmltools attachDependencies htmlDependency
-#' @importFrom utils packageVersion
 bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL, 
                       style = NULL)  {
     if (is.null(size))

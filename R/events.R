@@ -244,8 +244,6 @@ getNumerics <- function(table, by = NULL, toNumeric = FALSE) {
 #' Full outer join all given annotation based on select columns
 #' @param annotation Data frame or matrix: alternative splicing annotation
 #' @param types Character: alternative splicing types
-#' 
-#' @importFrom dplyr full_join
 joinAnnotation <- function(annotation, types) {
     if (missing(types)) types <- names(annotation)
     joint <- lapply(types, function(type, annotation) {
@@ -266,7 +264,7 @@ joinAnnotation <- function(annotation, types) {
         })
         
         # Full join all the tables
-        res <- Reduce(function(x, y) full_join(x, y, by), tables)
+        res <- Reduce(function(x, y) dplyr::full_join(x, y, by), tables)
         names(res) <- unique(unlist(cols))
         
         # Remove equal rows
@@ -350,8 +348,6 @@ readAnnotation <- function(eventType, filename, rds = TRUE) {
 #' @param join List of lists of data frame
 #' @param eventType Character: type of event
 #' 
-#' @importFrom gplots venn
-#' 
 #' @return Venn diagram
 vennEvents <- function(join, eventType) {
     join <- join[[eventType]]
@@ -361,7 +357,7 @@ vennEvents <- function(join, eventType) {
     nas <- ifelse(nas, row(nas), NA)
     p <- lapply(1:ncol(nas), function(col) nas[!is.na(nas[ , col]), col])
     names(p) <- sapply(programs, function(x) unique(x[!is.na(x)]))
-    venn(p)
+    gplots::venn(p)
 }
 
 #' String used to search for matches in a junction quantification file
