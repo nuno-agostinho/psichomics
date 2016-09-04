@@ -4,12 +4,13 @@
 \alias{psichomics}
 \title{Start graphical interface of PSICHOMICS}
 \usage{
-psichomics(..., reload = FALSE)
+psichomics(..., reset = FALSE)
 }
 \arguments{
 \item{...}{Parameters to pass to the function runApp}
 
-\item{reload}{Boolean: reload package? FALSE by default}
+\item{reset}{Boolean: reset Shiny session? FALSE by default; requires the 
+package devtools to reset data}
 }
 \description{
 Start graphical interface of PSICHOMICS

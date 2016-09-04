@@ -28,7 +28,6 @@ Imports:
     rlist,
     shinyjs,
     stats,
-    stringr,
     survival,
     Sushi,
     tools,
