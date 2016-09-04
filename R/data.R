@@ -21,6 +21,7 @@ getFirehoseDataTypes <- function() {
         paste0(c("junction", "gene", "exon"),
                "_expression"), "genes_normalized"))
     names(choices[[1]]) <- capitalize(gsub("_", " ", choices[[1]]))
+    # names(choices[[1]])[1] <- "Exon-exon junction quantification"
     return(choices)
 }
 

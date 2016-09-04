@@ -493,6 +493,9 @@ addTCGAdata <- function(ns) {
     names(dates) <- dates
     names(dates)[1] <- paste(names(dates)[1], "(most recent)")
     
+    dataTypes <- getFirehoseDataTypes()
+    dataTypes[[1]] <- dataTypes[[1]][1]
+    
     tagList(
         uiOutput(ns("firebrowseDataModal")),
         uiOutput(ns("pathSuggestions")),
@@ -503,10 +506,9 @@ addTCGAdata <- function(ns) {
         selectizeInput(ns("firehoseDate"), "Date", dates, multiple = TRUE,
                        selected = NULL, options = list(
                            placeholder = "Select sample date")),
-        selectizeInput(ns("firehoseData"), "Data type",
-                       c("Clinical", getFirehoseDataTypes()), 
-                       multiple = TRUE, options = list(
-                           placeholder = "Select data types")),
+        selectizeInput(ns("firehoseData"), "Data type", multiple = TRUE,
+                       c("Clinical data"="Clinical", dataTypes), 
+                       options = list(placeholder = "Select data types")),
         textAreaInput(ns("dataFolder"), "Folder to store the data",
                       value = paste0(file.path(path.expand("~"), "Downloads"),
                                      .Platform$file.sep),
