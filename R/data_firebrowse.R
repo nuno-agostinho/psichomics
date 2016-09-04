@@ -280,6 +280,17 @@ prepareFirehoseArchives <- function(archive, md5, folder, outdir) {
         names(outdir)[col(m)[m]]
     })
     
+    # Rename files inside the folders to avoid paths above 260 characters
+    # (Windows' character limit)
+    filenames <- list.files(arc, full.names = TRUE)
+    basenames <- basename(filenames)
+    renamed <- gsub(".*?_.*?\\.(.*)\\.Level.*", "\\1", basenames)
+    renamed <- gsub("rnaseqv2__|unc_edu__Level_.__", "", renamed)
+    toRename <- filenames[basenames != renamed]
+    renamed <- renamed[basenames != renamed]
+    file.rename(toRename, file.path(dirname(toRename), renamed))
+    
+    # Organise downloaded folders
     file.rename(arc, file.path(dirname(arc), ns, basen))
     return(invisible(TRUE))
 }
