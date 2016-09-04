@@ -1,7 +1,3 @@
-#' @import stringr
-NULL
-#> NULL
-
 #' Parses splicing events of a specific event type from SUPPA
 #'
 #' @details More information about SUPPA available at
