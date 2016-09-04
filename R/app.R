@@ -278,14 +278,14 @@ appServer <- function(input, output, session) {
 #' Start graphical interface of PSICHOMICS
 #'
 #' @param ... Parameters to pass to the function runApp
-#' @param reload Boolean: reload package? FALSE by default
+#' @param reset Boolean: reset Shiny session? FALSE by default; requires the 
+#' package devtools to reset data
 #'
-#' @importFrom devtools load_all
 #' @importFrom shiny shinyApp runApp
 #'
 #' @export
-psichomics <- function(..., reload = FALSE) {
-    if (reload) load_all()
+psichomics <- function(..., reset=FALSE) {
+    if (reset) devtools::load_all()
     app <- shinyApp(appUI(), appServer)
     runApp(app, launch.browser = TRUE, ...)
 }

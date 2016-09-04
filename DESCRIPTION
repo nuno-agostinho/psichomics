@@ -7,7 +7,7 @@ Description: Automatically retrieve data from RNA-Seq sources such as TCGA
     or load your own files and process the data. This tool allows you to analyse
     and visualise alternative splicing.
 Depends:
-    R (>= 3.3),
+    R (>= 3.2),
     shiny,
     shinyBS
 License: What license is it under?
@@ -16,14 +16,10 @@ RoxygenNote: 5.0.1
 Imports:
     ggplot2,
     data.table,
-    devtools,
     digest,
-    dplyr,
     DT (>= 0.2),
     fastmatch,
-    gplots,
     highcharter (>= 0.4.0),
-    htmltools,
     httr,
     jsonlite,
     miscTools,
@@ -41,9 +37,6 @@ Imports:
 Suggests:
     testthat,
     knitr,
-    microbenchmark,
-    rbenchmark,
-    rmarkdown,
     parallel
 VignetteBuilder: knitr
 Collate:

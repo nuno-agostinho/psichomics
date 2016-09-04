@@ -303,11 +303,14 @@ kruskal <- function(psi, groups, stat=NULL) {
 
 #' Perform Fisher's exact test and return interface to show the results
 #' @inheritParams wilcox
+#' 
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats fisher.test
+#' @importFrom R.utils evalWithTimeout
+#' 
 #' @return HTML elements
 fisher <- function(psi, groups) {
-    stat <- try(R.utils::evalWithTimeout(
+    stat <- try(evalWithTimeout(
         fisher.test(psi, factor(groups)),
         timeout = 1,
         onTimeout = "error"))
