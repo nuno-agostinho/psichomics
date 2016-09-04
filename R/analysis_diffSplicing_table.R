@@ -46,8 +46,8 @@ diffSplicingTableUI <- function(id) {
                        "wilcoxSignedRank", "wilcoxRankSum")),
         # Disable checkbox of basic statistics
         tags$script('$("[value=basicStats]").attr("disabled", true);'),
-        helpText("For patients for which there is no event reported, time",
-                 "to last follow up is used instead."), hr(),
+        helpText("For each alternative splicing event, groups with one or less",
+                 "non-missing values are discarded."), hr(),
         selectizeInput(ns("pvalueAdjust"), selected="BH",
                        "Adjust p-values of statistical tests", pvalueAdjust),
         disabled(div(id=ns("downloadStats"), class="btn-group",
@@ -107,8 +107,8 @@ optimSurvDiffUI <- function(ns) {
         conditionalPanel(
             sprintf("input[id='%s'].indexOf('interval') > -1", ns("censoring")),
             selectizeInput(ns("timeStop"), choices=NULL, "Ending time")),
-        helpText("For each alternative splicing event, groups with one or less",
-                 "non-missing values are discarded."),
+        helpText("For patients for which there is no event reported, time",
+                 "to last follow up is used instead."),
         selectizeInput(ns("event"), choices = NULL, 
                        "Event of interest"),
         radioButtons(
