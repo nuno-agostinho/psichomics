@@ -32,7 +32,7 @@ NULL
 parseSuppaEvent <- function(event) {
     # Split event ID by semicolon and colon symbols
     id <- event
-    event <- str_split_fixed(event, pattern = ";|:|-", n = 12)
+    event <- stringr::str_split_fixed(event, pattern = ";|:|-", n = 12)
     event <- data.frame(event, stringsAsFactors = FALSE)
     
     # Create list with event attributes
