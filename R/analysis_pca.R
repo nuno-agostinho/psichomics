@@ -344,7 +344,9 @@ pcaServer <- function(input, output, session) {
         output$scatterplot <- renderHighchart(
             if (!is.null(pcX) & !is.null(pcY))
                 plotPCA(pca, pcX, pcY, selected, clinical, match,
-                        "individuals" %in% show, "events" %in% show))
+                        "individuals" %in% show, "events" %in% show)
+            else 
+                return(NULL))
     })
     
     observe({
