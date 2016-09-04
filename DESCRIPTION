@@ -10,7 +10,7 @@ Depends:
     R (>= 3.2),
     shiny,
     shinyBS
-License: What license is it under?
+License: MIT
 LazyData: true
 RoxygenNote: 5.0.1
 Imports:
