@@ -1,4 +1,4 @@
-# PSIchomics [![Build Status](https://travis-ci.org/nuno-agostinho/psichomics.svg?branch=master)](https://travis-ci.org/nuno-agostinho/psichomics) [![codecov](https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg?token=huZOun5jSD)](https://codecov.io/gh/nuno-agostinho/psichomics)
+# PSIchomics [![Build Status](https://travis-ci.org/nuno-agostinho/psichomics.svg?branch=master)](https://travis-ci.org/nuno-agostinho/psichomics) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/nuno-agostinho/psichomics?branch=master&svg=true)](https://ci.appveyor.com/project/nuno-agostinho/psichomics) [![codecov](https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg)](https://codecov.io/gh/nuno-agostinho/psichomics)
 R package to quantify, analyse and visualise alternative splicing data from 
 [The Cancer Genome Atlas (TCGA)](https://tcga-data.nci.nih.gov/docs/publications/tcga).
 
@@ -98,3 +98,8 @@ Nuno Saraiva-Agostinho (nunodanielagostinho@gmail.com)
 
 Special thanks to my lab colleagues for their work-related support and 
 supporting chatter.
+
+## Contributions
+Please note that this project is released with a 
+[Contributor Code of Conduct](CONDUCT.md). By participating in this project you 
+agree to abide by its terms.
