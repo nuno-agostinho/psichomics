@@ -21,4 +21,8 @@ the respective element is given in the name.
 Groups containing a number of non-missing values less than the threshold are
 discarded.
 }
+\examples{
+# Removes groups with less than two elements
+filterGroups(1:4, c("A", "B", "B", "D"), threshold=2)
+}
 
