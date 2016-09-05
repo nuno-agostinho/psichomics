@@ -91,7 +91,7 @@ match  <- seq(nrow(pca$x))
 names(match) <- rownames(pca$x)
 
 test_that("Plot all PCA individuals", {
-    hc <- plotPCA(pca, pcX="PC1", pcY="PC2", selected=NULL, groups, match)
+    hc <- plotPCA(pca, pcX="PC1", pcY="PC2")
     expect_is(hc, "highchart")
     
     opts <- hc$x$hc_opts
@@ -99,8 +99,7 @@ test_that("Plot all PCA individuals", {
 })
 
 test_that("Plot PCA individuals and colour all groups", {
-    hc <- plotPCA(pca, pcX="PC1", pcY="PC2", selected=names(groups), groups,
-                  match)
+    hc <- plotPCA(pca, pcX="PC1", pcY="PC2", groups, match)
     expect_is(hc, "highchart")
     
     opts <- hc$x$hc_opts
@@ -108,8 +107,7 @@ test_that("Plot PCA individuals and colour all groups", {
 })
 
 test_that("Plot PCA individuals and colour two groups", {
-    hc <- plotPCA(pca, pcX="PC1", pcY="PC2", selected=names(groups)[2:3], 
-                  groups, match)
+    hc <- plotPCA(pca, pcX="PC1", pcY="PC2", groups[2:3], match)
     expect_is(hc, "highchart")
     
     opts <- hc$x$hc_opts
@@ -117,16 +115,14 @@ test_that("Plot PCA individuals and colour two groups", {
 })
 
 test_that("Plot PCA loadings", {
-    hc <- plotPCA(pca, pcX="PC1", pcY="PC2", selected=NULL, groups, match, 
-                  loadings=TRUE)
+    hc <- plotPCA(pca, pcX="PC1", pcY="PC2", loadings=TRUE)
     expect_is(hc, "highchart")
     
     opts <- hc$x$hc_opts
     expect_is(opts$series[[2]], "list")
     
     # Colour two groups of individuals
-    hc <- plotPCA(pca, pcX="PC1", pcY="PC2", selected=names(groups)[2:3], 
-                  groups, match, loadings=TRUE)
+    hc <- plotPCA(pca, pcX="PC1", pcY="PC2", groups[2:3], match, loadings=TRUE)
     expect_is(hc, "highchart")
     
     opts <- hc$x$hc_opts

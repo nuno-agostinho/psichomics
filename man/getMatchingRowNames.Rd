@@ -2,19 +2,19 @@
 % Please edit documentation in R/utils.R
 \name{getMatchingRowNames}
 \alias{getMatchingRowNames}
-\title{Get row names matching selected groups}
+\title{Get row names from the given index}
 \usage{
-getMatchingRowNames(selected, groups, matches)
+getMatchingRowNames(index, matches)
 }
 \arguments{
-\item{selected}{Character: name of selected groups}
+\item{index}{Numeric}
 
-\item{groups}{Matrix: named groups with row indexes}
+\item{matches}{Numeric: matches between row names and index}
 }
 \value{
 Names of the matching rows
 }
 \description{
-Get row names matching selected groups
+Get row names from the given index
 }
 

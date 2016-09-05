@@ -6,11 +6,17 @@
 \usage{
 processDatasetNames(data)
 }
+\arguments{
+\item{data}{List of lists of data frames}
+}
+\value{
+Processed list of lists of data frames
+}
 \description{
 Process dataset names
 }
 \details{
-Avoid duplicated dataset names and add the respective technology to
-junction quantification
+Avoid duplicated names and append the technology used for junction
+quantification
 }
 

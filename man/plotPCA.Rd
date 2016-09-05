@@ -4,8 +4,8 @@
 \alias{plotPCA}
 \title{Create a scatterplot from a PCA object}
 \usage{
-plotPCA(pca, pcX = "PC1", pcY = "PC2", selected = NULL, clinical, match,
-  individuals = TRUE, loadings = FALSE)
+plotPCA(pca, pcX = "PC1", pcY = "PC2", clinicalGroups = NULL,
+  match = NULL, individuals = TRUE, loadings = FALSE)
 }
 \arguments{
 \item{pca}{\code{prcomp} object}
@@ -14,9 +14,10 @@ plotPCA(pca, pcX = "PC1", pcY = "PC2", selected = NULL, clinical, match,
 
 \item{pcY}{Character: name of the yAxis of interest from the PCA}
 
-\item{selected}{Character: selected groups to show}
+\item{clinicalGroups}{Matrix: groups to plot indicating the index of interest}
 
-\item{match}{Integer: clinical matches to a given dataset}
+\item{match}{Integer: matches between clinical patient identifiers and their 
+index}
 
 \item{individuals}{Boolean: plot PCA individuals (TRUE by default)}
 

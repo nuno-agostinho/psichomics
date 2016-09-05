@@ -20,6 +20,10 @@ infoModal(session, title, ..., size = "small", footer = NULL)
 \arguments{
 \item{session}{Current Shiny session}
 
+\item{title}{Character: modal title}
+
+\item{...}{Extra arguments to pass to bsModal2}
+
 \item{style}{Character: message style can be "warning", "error", "info" or 
 NULL}
 

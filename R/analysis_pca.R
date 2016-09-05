@@ -157,15 +157,16 @@ plotVariance <- function(pca) {
 #' @param pca \code{prcomp} object
 #' @param pcX Character: name of the xAxis of interest from the PCA
 #' @param pcY Character: name of the yAxis of interest from the PCA
-#' @param selected Character: selected groups to show
-#' @param match Integer: clinical matches to a given dataset
+#' @param clinicalGroups Matrix: groups to plot indicating the index of interest
+#' @param match Integer: matches between clinical patient identifiers and their 
+#' index
 #' @param individuals Boolean: plot PCA individuals (TRUE by default)
 #' @param loadings Boolean: plot PCA loadings/rotations (FALSE by default)
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip %>%
 #' hc_add_series_scatter
 #' @return Scatterplot as an Highcharter object
-plotPCA <- function(pca, pcX="PC1", pcY="PC2", selected=NULL, clinical, match,
+plotPCA <- function(pca, pcX="PC1", pcY="PC2", clinicalGroups=NULL, match=NULL, 
                     individuals=TRUE, loadings=FALSE) {
     imp <- summary(pca)$importance[2, ]
     perc <- as.numeric(imp)
@@ -183,14 +184,14 @@ plotPCA <- function(pca, pcX="PC1", pcY="PC2", selected=NULL, clinical, match,
     
     if (individuals) {
         df <- data.frame(pca$x)
-        if (is.null(selected)) {
+        if (is.null(clinicalGroups)) {
             hc <- hc_add_series_scatter(hc, df[[pcX]], df[[pcY]], 
                                         sample=rownames(df))
         } else {
             # Subset data by the selected clinical groups
             lowerNames <- tolower(rownames(df))
-            for (groupName in selected) {
-                rows <- getMatchingRowNames(groupName, clinical, match)
+            for (groupName in names(clinicalGroups)) {
+                rows <- getMatchingRowNames(clinicalGroups[[groupName]], match)
                 rows <- rownames(df)[lowerNames %in% tolower(rows)]
                 hc <- hc_add_series_scatter(
                     hc, df[rows, pcX], df[rows, pcY], name=groupName, 
@@ -244,7 +245,7 @@ pcaServer <- function(input, output, session) {
         } else {
             isolate({
                 selected <- input$dataGroups
-                clinical <- getGroupsFrom("Clinical data")
+                clinicalGroups <- getGroupsFrom("Clinical data")
                 match <- getClinicalMatchFrom("Inclusion levels")
                 
                 preprocess <- input$preprocess
@@ -253,7 +254,7 @@ pcaServer <- function(input, output, session) {
             
             # Subset data by the selected clinical groups
             if (!is.null(selected)) {
-                ns <- getMatchingRowNames(selected, clinical, match)
+                ns <- getMatchingRowNames(clinicalGroups[[selected]], match)
                 psi <- psi[ , toupper(ns)]
             }
             
@@ -337,16 +338,22 @@ pcaServer <- function(input, output, session) {
             pcY <- input$pcY
             selected <- input$colourGroups
             show <- input$plotShow
-            clinical <- getGroupsFrom("Clinical data")
+            clinicalGroups <- getGroupsFrom("Clinical data")
             match <- getClinicalMatchFrom("Inclusion levels")
         })
         
         output$scatterplot <- renderHighchart(
-            if (!is.null(pcX) & !is.null(pcY))
-                plotPCA(pca, pcX, pcY, selected, clinical, match,
+            if (!is.null(pcX) & !is.null(pcY)) {
+                if (is.null(selected))
+                    groups <- NULL
+                else
+                    groups <- clinicalGroups[selected]
+                
+                plotPCA(pca, pcX, pcY, groups, match,
                         "individuals" %in% show, "events" %in% show)
-            else 
-                return(NULL))
+            } else {
+                return(NULL)
+            })
     })
     
     observe({

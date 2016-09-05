@@ -11,6 +11,10 @@ statsAnalyses(psi, groups = NULL, analyses = c("wilcoxRankSum",
 \arguments{
 \item{psi}{Data frame or matrix: alternative splicing event quantification}
 
+\item{groups}{Character: group of each sample from the alternative splicing 
+event quantification (if NULL, sample types are used instead, e.g. normal, 
+tumour and metastasis)}
+
 \item{analyses}{Character: analyses to perform (see Details)}
 
 \item{pvalueAdjust}{Character: method used to adjust p-values (see Details)}

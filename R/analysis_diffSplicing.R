@@ -409,6 +409,9 @@ singleStatsAnalyses <- function(vector, group, threshold=1, step=100,
 #' Perform selected statistical analyses on multiple splicing events
 #' 
 #' @param psi Data frame or matrix: alternative splicing event quantification
+#' @param groups Character: group of each sample from the alternative splicing 
+#' event quantification (if NULL, sample types are used instead, e.g. normal, 
+#' tumour and metastasis)
 #' @param analyses Character: analyses to perform (see Details)
 #' @param pvalueAdjust Character: method used to adjust p-values (see Details)
 #' @param progress Function to track the progress

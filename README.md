@@ -1,4 +1,4 @@
-# PSIchomics [![Build Status](https://travis-ci.com/nuno-agostinho/psichomics.svg?token=WnQvrH4wCa4UkqjJquSq&branch=master)](https://travis-ci.com/nuno-agostinho/psichomics) [![codecov](https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg?token=huZOun5jSD)](https://codecov.io/gh/nuno-agostinho/psichomics)
+# PSIchomics [![Build Status](https://travis-ci.org/nuno-agostinho/psichomics.svg?branch=master)](https://travis-ci.org/nuno-agostinho/psichomics) [![codecov](https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg?token=huZOun5jSD)](https://codecov.io/gh/nuno-agostinho/psichomics)
 R package to quantify, analyse and visualise alternative splicing data from 
 [The Cancer Genome Atlas (TCGA)](https://tcga-data.nci.nih.gov/docs/publications/tcga).
 
