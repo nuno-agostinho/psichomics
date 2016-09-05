@@ -11,7 +11,7 @@ wilcox(psi, groups, stat = NULL)
 
 \item{groups}{Character: group of each PSI index}
 
-\item{stats}{Data frame or matrix: values of the analyses to be performed (if
+\item{stat}{Data frame or matrix: values of the analyses to be performed (if
 NULL, the analyses will be performed)}
 }
 \value{

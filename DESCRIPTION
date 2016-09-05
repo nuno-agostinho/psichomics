@@ -14,7 +14,6 @@ License: MIT
 LazyData: true
 RoxygenNote: 5.0.1
 Imports:
-    ggplot2,
     data.table,
     digest,
     DT (>= 0.2),
@@ -36,7 +35,11 @@ Imports:
 Suggests:
     testthat,
     knitr,
-    parallel
+    parallel,
+    devtools,
+    dplyr,
+    gplots,
+    stringr
 VignetteBuilder: knitr
 Collate:
     'analysis.R'

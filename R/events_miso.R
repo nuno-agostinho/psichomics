@@ -253,10 +253,12 @@ parseMisoGeneric <- function(event, validator, eventType, coord, plusIndex,
         plus <- strand == "+"
         # Plus strand
         iplus <- index[plus]
-        plusIndex <- sort(rep(iplus, length(plusIndex))) + rep(plusIndex, length(iplus))
+        plusIndex <- sort(rep(iplus, length(plusIndex))) + rep(plusIndex, 
+                                                               length(iplus))
         if (nrow(event[plus, ]) > 0) {
             parsed[plus, coord] <- matrix(unlist(
-                c(t(event[plusIndex, 4:5]))), ncol = length(coord), byrow = T)
+                c(t(event[plusIndex, 4:5]))), ncol = length(coord), 
+                byrow = TRUE)
         }
         # Minus strand
         minus <- !plus

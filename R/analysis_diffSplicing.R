@@ -415,6 +415,7 @@ singleStatsAnalyses <- function(vector, group, threshold=1, step=100,
 #' 
 #' @importFrom plyr rbind.fill
 #' @importFrom fastmatch fmatch
+#' @importFrom stats p.adjust
 #' 
 #' @details 
 #' The following statistical analyses may be performed by including the 
