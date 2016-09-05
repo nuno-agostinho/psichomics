@@ -285,7 +285,9 @@ appServer <- function(input, output, session) {
 #'
 #' @export
 #' @examples 
+#' \dontrun{
 #' psichomics()
+#' }
 psichomics <- function(..., reset=FALSE) {
     if (reset) devtools::load_all()
     app <- shinyApp(appUI(), appServer)

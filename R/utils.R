@@ -193,17 +193,14 @@ matchIdWithClinical <- function(ids, clinical) {
     return(clinicalRows)
 }
 
-#' Get row names matching selected groups
-#' @param selected Character: name of selected groups
-#' @param groups Matrix: named groups with row indexes
+#' Get row names from the given index
+#' 
+#' @param index Numeric
+#' @param matches Numeric: matches between row names and index
 #' 
 #' @return Names of the matching rows
-getMatchingRowNames <- function(selected, groups, matches) {
-    # Get selected groups
-    g <- unlist(groups[selected])
-    
-    # Get names of the matching rows with the data
-    ns <- names(matches[matches %in% g])
+getMatchingRowNames <- function(index, matches) {
+    ns <- names(matches[matches %in% index])
     ns <- unique(ns)
     return(ns)
 }
@@ -241,6 +238,8 @@ groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE,
 #' 
 #' @inheritParams bsModal2
 #' @param session Current Shiny session
+#' @param title Character: modal title
+#' @param ... Extra arguments to pass to bsModal2
 #' @param iconName Character: FontAwesome icon name to appear with the title
 #' @param printMessage Boolean: print to console? FALSE by default
 #' @param modalId Character: identifier

@@ -22,7 +22,7 @@
 #' psichomics:::queryEnsembl(path, query, grch37 = TRUE)
 queryEnsembl <- function(path, query, grch37 = TRUE) {
     url <- paste0("http://", if(grch37) "grch37.", "rest.ensembl.org")
-    resp <- tryCatch(GET(url, path=path, query=query, timeout(10)), 
+    resp <- tryCatch(GET(url, path=path, query=query, config=timeout(10)), 
                      error=return)
     
     if ("error" %in% class(resp)) 
@@ -471,7 +471,7 @@ infoServer <- function(input, output, session) {
             renderGeneticInfo(ns, info, species, assembly, grch37))
         
         output$plotTranscripts <- renderPlot(
-            plotTranscripts(info, parsed$pos))
+            plotTranscripts(info, parsed$pos[[1]]))
         
         # Show NULL so it doesn't show previous results when loading
         output$selectizeProtein <- renderUI("Loading...")

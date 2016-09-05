@@ -16,6 +16,8 @@ package devtools to reset data}
 Start graphical interface of PSICHOMICS
 }
 \examples{
+\dontrun{
 psichomics()
+}
 }
 
