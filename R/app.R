@@ -284,6 +284,8 @@ appServer <- function(input, output, session) {
 #' @importFrom shiny shinyApp runApp
 #'
 #' @export
+#' @examples 
+#' psichomics()
 psichomics <- function(..., reset=FALSE) {
     if (reset) devtools::load_all()
     app <- shinyApp(appUI(), appServer)

@@ -18,4 +18,7 @@ Types of the TCGA samples
 \description{
 Return the type of a given sample
 }
+\examples{
+parseSampleGroups(c("TCGA-01A-Tumour", "TCGA-10B-Normal"))
+}
 

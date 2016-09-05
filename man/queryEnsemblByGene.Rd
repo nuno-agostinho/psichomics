@@ -19,4 +19,7 @@ Information from Ensembl
 \description{
 Query information from Ensembl by a given gene
 }
+\examples{
+queryEnsemblByGene("BRCA1", "human", "hg19")
+}
 

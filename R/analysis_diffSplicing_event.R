@@ -365,6 +365,9 @@ spearman <- function(psi, groups) {
 #' @return Named vector with filtered elementes from valid groups. The group of 
 #' the respective element is given in the name.
 #' @export
+#' @examples 
+#' # Removes groups with less than two elements
+#' filterGroups(1:4, c("A", "B", "B", "D"), threshold=2)
 filterGroups <- function(vector, group, threshold=1) {
     names(vector) <- group
     vector <- lapply(unique(group), function(t) {

@@ -369,6 +369,8 @@ getDownloadsFolder <- function() {
 #' 
 #' @return Types of the TCGA samples
 #' @export
+#' @examples 
+#' parseSampleGroups(c("TCGA-01A-Tumour", "TCGA-10B-Normal"))
 parseSampleGroups <- function(sample, 
                               filename = system.file("extdata",  
                                                      "TCGAsampleType.RDS",

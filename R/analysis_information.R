@@ -109,6 +109,8 @@ queryPubMed <- function(primary, ..., top=3, field="abstract",
 #' 
 #' @return UniProt protein identifier
 #' @export
+#' @examples 
+#' ensemblToUniprot("ENSP00000445929")
 ensemblToUniprot <- function(protein) {
     external <- queryEnsembl(paste0("xrefs/id/", protein),
                              list("content-type"="application/json"),
@@ -359,6 +361,8 @@ queryEnsemblByEvent <- function(event, ...) {
 #' 
 #' @return Information from Ensembl
 #' @export
+#' @examples 
+#' queryEnsemblByGene("BRCA1", "human", "hg19")
 queryEnsemblByGene <- function(gene, species, assembly) {
     grch37 <- assembly == "hg19"
     path   <- paste0("lookup/symbol/", species, "/", gene)

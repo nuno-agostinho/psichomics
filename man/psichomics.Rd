@@ -15,4 +15,7 @@ package devtools to reset data}
 \description{
 Start graphical interface of PSICHOMICS
 }
+\examples{
+psichomics()
+}
 
