@@ -3,7 +3,6 @@
 #' @param id Character: identifier
 #' @param tab Function to create tabs
 #' 
-#' @importFrom parallel detectCores
 #' @importFrom shiny NS tagList sliderInput h4 helpText numericInput div icon
 #' fluidRow column textOutput
 #' 

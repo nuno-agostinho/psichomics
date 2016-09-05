@@ -10,6 +10,9 @@ kruskal(psi, groups, stat = NULL)
 \item{psi}{Numeric: quantification of one alternative splicing event}
 
 \item{groups}{Character: group of each PSI index}
+
+\item{stat}{Data frame or matrix: values of the analyses to be performed (if
+NULL, the analyses will be performed)}
 }
 \value{
 HTML elements

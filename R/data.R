@@ -43,6 +43,10 @@ loadedDataModal <- function(session, modalId, replaceButtonId, keepButtonId) {
                  modalId=modalId)
 }
 
+#' Process dataset names
+#' 
+#' @details Avoid duplicated dataset names and add the respective technology to
+#' junction quantification
 processDatasetNames <- function(data) {
     newData <- data
     # Avoid duplicate names in categories

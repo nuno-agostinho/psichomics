@@ -147,7 +147,7 @@ basicStats <- function(psi, groups) {
 #' Perform Wilcox analysis and return interface to show the results
 #' @param psi Numeric: quantification of one alternative splicing event
 #' @param groups Character: group of each PSI index
-#' @param stats Data frame or matrix: values of the analyses to be performed (if
+#' @param stat Data frame or matrix: values of the analyses to be performed (if
 #' NULL, the analyses will be performed)
 #' 
 #' @importFrom shiny tagList tags h4 br

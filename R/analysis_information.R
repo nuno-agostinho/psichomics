@@ -7,7 +7,7 @@
 #' @param grch37 Boolean: query the Ensembl GRCh37 API? TRUE by default;
 #' otherwise, query the most recent API
 #'
-#' @importFrom httr GET
+#' @importFrom httr GET timeout
 #' @importFrom jsonlite fromJSON
 #'
 #' @return Parsed response or NULL if there's no response
@@ -22,9 +22,15 @@
 #' psichomics:::queryEnsembl(path, query, grch37 = TRUE)
 queryEnsembl <- function(path, query, grch37 = TRUE) {
     url <- paste0("http://", if(grch37) "grch37.", "rest.ensembl.org")
-    resp <- tryCatch(GET(url, path=path, query=query), error=return)
-    if ("error" %in% class(resp)) return(NULL)
-    else if (http_error(resp)) return(NULL)
+    resp <- tryCatch(GET(url, path=path, query=query, timeout(10)), 
+                     error=return)
+    
+    if ("error" %in% class(resp)) 
+        return(NULL)
+    else if (http_error(resp)) 
+        return(NULL)
+    else if (is.null(resp))
+        return(NULL) # time out
     r <- content(resp, "text", encoding = "UTF8")
     return(fromJSON(r))
 }
@@ -107,6 +113,9 @@ ensemblToUniprot <- function(protein) {
     external <- queryEnsembl(paste0("xrefs/id/", protein),
                              list("content-type"="application/json"),
                              grch37=TRUE)
+    
+    if (is.null(external)) return(NULL)
+        
     db <- external[grepl("Uniprot", external$dbname), ]
     uniprot <- db$primary_id
     names(uniprot) <- sprintf("%s (%s)", db$display_id, db$db_display_name)
@@ -416,6 +425,7 @@ pubmedUI <- function(event, ...) {
 #' 
 #' @importFrom Sushi plotGenes zoomsregion labelgenome
 #' @importFrom highcharter highchart %>%
+#' @importFrom shiny fixedRow
 infoServer <- function(input, output, session) {
     ns <- session$ns
     
