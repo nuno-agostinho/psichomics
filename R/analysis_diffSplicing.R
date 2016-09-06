@@ -510,6 +510,13 @@ statsAnalyses <- function(psi, groups=NULL, analyses=c("wilcoxRankSum",
     num <- suppressWarnings(apply(df, 2, as.numeric))
     numericCols <- colSums(is.na(num)) != nrow(num)
     df[ , numericCols] <- num[ , numericCols]
+    
+    # Convert integer columns to integer
+    int <- apply(df[ , numericCols], 2, function(i) 
+        all(is.whole(i), na.rm=TRUE))
+    intCols <- numericCols
+    intCols[numericCols] <- int
+    df[ , intCols] <- apply(df[ , intCols], 2, as.integer)
     print(Sys.time() - time)
     
     # Calculate delta variance and delta median if there are only 2 groups
