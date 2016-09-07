@@ -45,6 +45,7 @@ Suggests:
     knitr,
     parallel,
     devtools,
+    rmarkdown,
     dplyr,
     gplots,
     stringr
