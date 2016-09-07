@@ -30,6 +30,7 @@ getFirehoseDataTypes <- function() {
 #' @param replaceButtonId Character: identifier of the button to replace data
 #' @param keepButtonId Character: identifier of the button to append data
 #' @param session Shiny session
+#' @return HTML elements for a warning modal reminding data is loaded
 loadedDataModal <- function(session, modalId, replaceButtonId, keepButtonId) {
     ns <- session$ns
     warningModal(session, "Data already loaded",

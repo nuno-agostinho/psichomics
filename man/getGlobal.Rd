@@ -2,7 +2,7 @@
 % Please edit documentation in R/globalAccess.R
 \name{getGlobal}
 \alias{getGlobal}
-\title{Get data from shared data}
+\title{Get data from global data}
 \usage{
 getGlobal(..., sep = "_")
 }
@@ -11,7 +11,10 @@ getGlobal(..., sep = "_")
 
 \item{sep}{Character to separate identifiers}
 }
+\value{
+Data from global data
+}
 \description{
-Get data from shared data
+Get data from global data
 }
 

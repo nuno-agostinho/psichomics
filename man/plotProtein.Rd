@@ -15,4 +15,9 @@ highchart object
 \description{
 Plot protein features
 }
+\examples{
+\dontrun{
+plotProtein("P38398")
+}
+}
 

@@ -26,4 +26,9 @@ Highcharter object with density plot
 The tooltip shows the median, variance, max, min and number of non-NA samples
 of each data series.
 }
+\examples{
+data <- sample(20, rep=TRUE)/20
+groups <- c(rep("A", 10), rep("B", 10))
+plotDistribution(data, groups)
+}
 

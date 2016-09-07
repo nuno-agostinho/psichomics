@@ -11,6 +11,9 @@ joinAnnotation(annotation, types)
 
 \item{types}{Character: alternative splicing types}
 }
+\value{
+List of annotation joined by alternative splicing event type
+}
 \description{
 Full outer join all given annotation based on select columns
 }

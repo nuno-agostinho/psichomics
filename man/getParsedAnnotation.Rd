@@ -6,6 +6,9 @@
 \usage{
 getParsedAnnotation()
 }
+\value{
+Parsed annotation
+}
 \description{
 Get the annotation for all event types
 }

@@ -15,6 +15,9 @@ getNumerics(table, by = NULL, toNumeric = FALSE)
 \item{toNumeric}{Boolean: which columns to convert to numeric (FALSE by 
 default)}
 }
+\value{
+Processed data matrix
+}
 \description{
 Convert a column to numeric if possible and ignore given columns composed
 of lists

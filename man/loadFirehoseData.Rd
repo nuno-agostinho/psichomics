@@ -5,7 +5,7 @@
 \title{Downloads and processes data from the Firehose API and loads it into R}
 \usage{
 loadFirehoseData(folder = NULL, data = NULL, exclude = c(".aux.",
-  ".mage-tab.", "MANIFEST.txt"), ..., progress = printPaste,
+  ".mage-tab.", "MANIFEST.txt"), ..., progress = echoProgress,
   download = TRUE)
 }
 \arguments{
@@ -20,7 +20,8 @@ from loading into R (by default, it excludes ".aux.", ".mage-tab." and
 
 \item{...}{Extra parameters to be passed to \code{\link{queryFirehoseData}}}
 
-\item{progress}{Function to show the progress (default is printPaste)}
+\item{progress}{Function to show the progress (default is to print progress
+to console)}
 
 \item{download}{Boolean: download missing files through the function
 \code{download.file} (TRUE by default)}

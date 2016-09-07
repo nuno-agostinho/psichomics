@@ -87,8 +87,7 @@ test_that("Plot explained variance", {
 pca <- performPCA(data, center=FALSE, scale.=FALSE)
 groups <- lapply(1:4, `*`, c(2, 5))
 names(groups) <- paste("Group", 1:4)
-match  <- seq(nrow(pca$x))
-names(match) <- rownames(pca$x)
+groups <- lapply(groups, function(i) rownames(pca$x)[i])
 
 test_that("Plot all PCA individuals", {
     hc <- plotPCA(pca, pcX="PC1", pcY="PC2")
@@ -99,7 +98,7 @@ test_that("Plot all PCA individuals", {
 })
 
 test_that("Plot PCA individuals and colour all groups", {
-    hc <- plotPCA(pca, pcX="PC1", pcY="PC2", groups, match)
+    hc <- plotPCA(pca, pcX="PC1", pcY="PC2", groups)
     expect_is(hc, "highchart")
     
     opts <- hc$x$hc_opts
@@ -107,7 +106,7 @@ test_that("Plot PCA individuals and colour all groups", {
 })
 
 test_that("Plot PCA individuals and colour two groups", {
-    hc <- plotPCA(pca, pcX="PC1", pcY="PC2", groups[2:3], match)
+    hc <- plotPCA(pca, pcX="PC1", pcY="PC2", groups[2:3])
     expect_is(hc, "highchart")
     
     opts <- hc$x$hc_opts
@@ -122,7 +121,7 @@ test_that("Plot PCA loadings", {
     expect_is(opts$series[[2]], "list")
     
     # Colour two groups of individuals
-    hc <- plotPCA(pca, pcX="PC1", pcY="PC2", groups[2:3], match, loadings=TRUE)
+    hc <- plotPCA(pca, pcX="PC1", pcY="PC2", groups[2:3], loadings=TRUE)
     expect_is(hc, "highchart")
     
     opts <- hc$x$hc_opts

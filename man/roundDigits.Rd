@@ -9,6 +9,9 @@ roundDigits(n)
 \arguments{
 \item{n}{Numeric: number to round}
 }
+\value{
+Formatted number with a given numeric presion
+}
 \description{
 Round by the given number of digits
 }

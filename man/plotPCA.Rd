@@ -5,7 +5,7 @@
 \title{Create a scatterplot from a PCA object}
 \usage{
 plotPCA(pca, pcX = "PC1", pcY = "PC2", clinicalGroups = NULL,
-  match = NULL, individuals = TRUE, loadings = FALSE)
+  individuals = TRUE, loadings = FALSE)
 }
 \arguments{
 \item{pca}{\code{prcomp} object}
@@ -16,9 +16,6 @@ plotPCA(pca, pcX = "PC1", pcY = "PC2", clinicalGroups = NULL,
 
 \item{clinicalGroups}{Matrix: groups to plot indicating the index of interest}
 
-\item{match}{Integer: matches between clinical patient identifiers and their 
-index}
-
 \item{individuals}{Boolean: plot PCA individuals (TRUE by default)}
 
 \item{loadings}{Boolean: plot PCA loadings/rotations (FALSE by default)}
@@ -28,5 +25,10 @@ Scatterplot as an Highcharter object
 }
 \description{
 Create a scatterplot from a PCA object
+}
+\examples{
+pca <- prcomp(USArrests)
+plotPCA(pca)
+plotPCA(pca, pcX="PC2", pcY="PC3")
 }
 

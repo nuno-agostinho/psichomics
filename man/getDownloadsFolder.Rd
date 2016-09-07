@@ -6,7 +6,13 @@
 \usage{
 getDownloadsFolder()
 }
+\value{
+Path to Downloads folder
+}
 \description{
 Get the Downloads folder of the user
+}
+\examples{
+getDownloadsFolder()
 }
 

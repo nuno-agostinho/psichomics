@@ -54,7 +54,7 @@ test_that("Test survival difference between groups", {
     formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
     survTerms <- processSurvTerms(clinical, censoring="right", event, timeStart,
                                   formulaStr=formulaStr)
-    pvalue <- testSurvival(survTerms$form, data=survTerms$survTime)
+    pvalue <- testSurvival(survTerms)
     expect_is(pvalue, "numeric")
     expect_equal(pvalue, 0.196, tolerance=1e-3)
 })
@@ -65,8 +65,8 @@ test_that("Plot survival curves", {
     formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
     survTerms <- processSurvTerms(clinical, censoring="right", event, timeStart,
                                   formulaStr=formulaStr)
-    surv <- survival::survfit(survTerms$form, data=survTerms$survTime)
-    pvalue <- testSurvival(survTerms$form, data=survTerms$survTime)
+    surv <- survfit(survTerms)
+    pvalue <- testSurvival(survTerms)
 
     plot <- plotSurvivalCurves(surv, pvalue=pvalue)
     expect_is(plot, "highchart")
@@ -82,8 +82,7 @@ test_that("Quantify optimal PSI cut-off", {
     event      <- "days_to_death"
     
     psi <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
-    opt <- optimalPSIcutoff(clinical, data=psi, filter=TRUE, event=event,
-                            timeStart=timeStart, censoring="right")
+    opt <- optimalPSIcutoff(clinical, psi, censoring="right", event, timeStart)
     expect_is(opt, "list")
     cutoff <- opt$par
     pvalue <- opt$value
@@ -103,8 +102,8 @@ test_that("Plot survival curves separated by PSI cut-off", {
     event      <- "days_to_death"
     survTerms <- processSurvTerms(clinical, censoring="right", event, timeStart,
                                   group=group)
-    surv <- survival::survfit(survTerms$form, data=survTerms$survTime)
-    pvalue <- testSurvival(survTerms$form, data=survTerms$survTime)
+    surv <- survfit(survTerms)
+    pvalue <- testSurvival(survTerms)
     plot <- plotSurvivalCurves(surv, pvalue=pvalue)
     
     expect_is(plot, "highchart")

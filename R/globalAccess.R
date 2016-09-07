@@ -7,34 +7,45 @@ NULL
 sharedData <- reactiveValues()
 
 #' Get global data
+#' @return Variable containing all data of interest
 getData <- reactive(sharedData$data)
 
-#' Get number of cores
+#' Get number of cores to use
+#' @return Numeric value with the number of cores to use
 getCores <- reactive(sharedData$cores)
 
 #' Get number of significant digits
+#' @return Numeric value regarding the number of significant digits
 getSignificant <- reactive(sharedData$significant)
 
 #' Get number of decimal places
+#' @return Numeric value regarding the number of decimal places
 getPrecision <- reactive(sharedData$precision)
 
-#' Get selected alternative splicing event
+#' Get selected alternative splicing event's identifer
+#' @return Alternative splicing event's identifier as a string
 getEvent <- reactive(sharedData$event)
 
 #' Get available data categories
+#' @return Name of all data categories
 getCategories <- reactive(names(getData()))
 
 #' Get selected data category
+#' @return Name of selected data category
 getCategory <- reactive(sharedData$category)
 
 #' Get data of selected data category
+#' @return If category is selected, returns the respective data as a data frame;
+#' otherwise, returns NULL
 getCategoryData <- reactive(
     if(!is.null(getCategory())) getData()[[getCategory()]])
 
 #' Get selected dataset
+#' @return List of data frames
 getActiveDataset <- reactive(sharedData$activeDataset)
 
 #' Get clinical data of the data category
+#' @return Data frame with clinical data
 getClinicalData <- reactive(getCategoryData()[["Clinical data"]])
 
 #' Get junction quantification data
@@ -51,12 +62,14 @@ getJunctionQuantification <- function(category=getCategory()) {
     }
 }
 
-#' Get inclusion leves of the selected data category
+#' Get alternative splicing quantification of the selected data category
+#' @return Data frame with the alternative splicing quantification
 getInclusionLevels <- reactive(getCategoryData()[["Inclusion levels"]])
 
-#' Get data from shared data
+#' Get data from global data
 #' @param ... Arguments to identify a variable
 #' @param sep Character to separate identifiers
+#' @return Data from global data
 getGlobal <- function(..., sep="_") sharedData[[paste(..., sep=sep)]]
 
 #' Get the table of differential analyses of a data category
@@ -166,7 +179,7 @@ setCores <- function(cores) setGlobal("cores", value=cores)
 setSignificant <- function(significant) setGlobal("significant", value=significant)
 
 #' Set number of decimal places
-#' @param precision Character: number of decimal places
+#' @param precision Numeric: number of decimal places
 #' @note Needs to be called inside reactive function
 setPrecision <- function(precision) setGlobal("precision", value=precision)
 

@@ -3,13 +3,16 @@
 \docType{data}
 \name{getInclusionLevels}
 \alias{getInclusionLevels}
-\title{Get inclusion leves of the selected data category}
+\title{Get alternative splicing quantification of the selected data category}
 \format{An object of class \code{reactive} of length 1.}
 \usage{
 getInclusionLevels
 }
+\value{
+Data frame with the alternative splicing quantification
+}
 \description{
-Get inclusion leves of the selected data category
+Get alternative splicing quantification of the selected data category
 }
 \keyword{datasets}
 

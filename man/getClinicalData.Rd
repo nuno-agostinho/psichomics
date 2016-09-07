@@ -8,6 +8,9 @@
 \usage{
 getClinicalData
 }
+\value{
+Data frame with clinical data
+}
 \description{
 Get clinical data of the data category
 }

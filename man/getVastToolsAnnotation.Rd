@@ -6,6 +6,9 @@
 \usage{
 getVastToolsAnnotation()
 }
+\value{
+Retrieve annotation from VAST-TOOLS
+}
 \description{
 Get VAST-TOOLS alternative splicing annotation
 }

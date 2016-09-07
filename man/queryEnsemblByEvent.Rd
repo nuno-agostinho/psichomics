@@ -17,4 +17,8 @@ Information from Ensembl
 \description{
 Query information from Ensembl by a given alternative splicing event
 }
+\examples{
+event <- c("SE_17_-_41251792_41249306_41249261_41246877_BRCA1")
+queryEnsemblByEvent(event, species="human", assembly="hg19")
+}
 

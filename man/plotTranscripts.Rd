@@ -14,4 +14,12 @@ plotTranscripts(info, eventPosition)
 \description{
 Plot transcripts
 }
+\examples{
+event <- "SE_12_-_7985318_7984360_7984200_7982602_SLC2A14"
+info  <- queryEnsemblByEvent(event, species="human", assembly="hg19")
+pos   <- parseSplicingEvent(event)$pos[[1]]
+\dontrun{
+plotTranscripts(info, pos)
+}
+}
 

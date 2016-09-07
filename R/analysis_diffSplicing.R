@@ -1,4 +1,7 @@
-#' Modified from lawstat::levene.test
+#' Faster version of lawstat::levene.test
+#' 
+#' @name lawstat::levene.test
+#' 
 #' @inheritParams lawstat::levene.test
 #' @importFrom stats anova lm
 #' @importFrom stats kruskal.test weighted.mean
@@ -341,9 +344,10 @@ createDensitySparklines <- function(data, events, delim=NULL) {
 #' @importFrom stats kruskal.test median wilcox.test var density
 #' 
 #' @return A row from a data frame with the results
-singleStatsAnalyses <- function(vector, group, threshold=1, step=100,
-                                analyses=c("wilcoxRankSum", "wilcoxSignedRank",
-                                           "kruskal", "levene")) {
+singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
+                               analyses=c("wilcoxRankSum", 
+                                          "wilcoxSignedRank",
+                                          "kruskal", "levene")) {
     series  <- split(vector, group)
     samples <- vapply(series, function(i) sum(!is.na(i)), integer(1))
     valid   <- names(series)[samples >= threshold]
@@ -446,10 +450,19 @@ singleStatsAnalyses <- function(vector, group, threshold=1, step=100,
 #' 
 #' @return Table of statistical analyses
 #' @export
-statsAnalyses <- function(psi, groups=NULL, analyses=c("wilcoxRankSum",
-                                                       "wilcoxSignedRank",
-                                                       "kruskal", "levene"),
-                          pvalueAdjust="BH", progress=printPaste) {
+#' @examples 
+#' # Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events
+#' eventType <- c("SE", "MXE")
+#' annot <- readFile("example_splicing_annotation.RDS")
+#' junctionQuant <- readFile("example_junction_quantification.RDS")
+#' 
+#' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+#' group <- c(rep("Normal", 3), rep("Tumour", 3))
+#' diffAnalyses(psi, group)
+diffAnalyses <- function(psi, groups=NULL, 
+                         analyses=c("wilcoxRankSum", "wilcoxSignedRank",
+                                    "kruskal", "levene"),
+                         pvalueAdjust="BH", progress=echoProgress) {
     # cl <- parallel::makeCluster(getOption("cl.cores", getCores()))
     step <- 50 # Avoid updating progress too frequently
     progress("Performing statistical analysis", 
@@ -471,7 +484,7 @@ statsAnalyses <- function(psi, groups=NULL, analyses=c("wilcoxRankSum",
         count <<- count + 1
         if (count %% step == 0)
             progress("Performing statistical analysis", console=FALSE)
-        return(singleStatsAnalyses(...))
+        return(singleDiffAnalyses(...))
     }, factor(groups), threshold=1, step=step, analyses=analyses)
     print(Sys.time() - time)
     
@@ -482,17 +495,6 @@ statsAnalyses <- function(psi, groups=NULL, analyses=c("wilcoxRankSum",
     
     progress("Preparing data")
     time <- Sys.time()
-    
-    # # Convert matrix with the same name to data frames (way faster)
-    # ll <- list()
-    # for (k in seq_along(uniq)) {
-    #  df <- lapply(stats[match == k], data.frame)
-    #  ll <- c(ll, list(do.call(rbind, df)))
-    # }
-    # 
-    # # Bind all data frames together
-    # df <- do.call(rbind.fill, ll)
-    # rownames(df) <- unlist(lapply(ll, rownames))
 
     # Convert list of lists to data frame
     ll <- lapply(stats, function(i) lapply(i, unname))
@@ -531,15 +533,6 @@ statsAnalyses <- function(psi, groups=NULL, analyses=c("wilcoxRankSum",
         print(Sys.time() - time)
     }
     
-    if (any("density" == analyses)) {
-        progress("Calculating the density of inclusion levels")
-        time <- Sys.time()
-        df[, "Density"] <- createDensitySparklines(
-            df[, "Density"], rownames(df), delim=c(parenthesisOpen, 
-                                                   parenthesisClose))
-        print(Sys.time() - time)
-    }
-    
     if (any(pvalueAdjust == c("BH", "BY", "bonferroni", "holm", "hochberg",
                               "hommel"))) {
         progress("Adjusting p-values", detail=pvalueAdjust)
@@ -571,6 +564,15 @@ statsAnalyses <- function(psi, groups=NULL, analyses=c("wilcoxRankSum",
     info <- suppressWarnings(parseSplicingEvent(rownames(df)))
     df <- cbind("Event type"=info$type, "Chromosome"=info$chrom,
                 "Strand"=info$strand, "Gene"=info$gene, df)
+    
+    if (any("density" == analyses)) {
+        progress("Calculating the density of inclusion levels")
+        time <- Sys.time()
+        df[, "Density"] <- createDensitySparklines(
+            df[, "Density"], rownames(df), delim=c(parenthesisOpen, 
+                                                   parenthesisClose))
+        print(Sys.time() - time)
+    }
     
     # Properly set column names
     col <- colnames(df)

@@ -198,7 +198,12 @@ parseUniprotXML <- function(xml) {
 #'
 #' @return highchart object
 #' @export
+#' @examples
+#' \dontrun{
+#' plotProtein("P38398")
+#' }
 plotProtein <- function(protein) {
+    cat("Retrieving protein annotation from UniProt...", fill=TRUE)
     xml     <- queryUniprot(protein, "xml")
     parsed  <- parseUniprotXML(xml)
     length  <- parsed$proteinLength
@@ -215,6 +220,7 @@ plotProtein <- function(protein) {
     # The diverse types of features available
     types <- unique(feature$type)
     
+    cat("Plotting protein domains...", fill=TRUE)
     featureList <- NULL
     # Reverse elements from features so the first ones (smaller Y) are above
     for (feat in nrow(feature):1) {
@@ -250,6 +256,14 @@ plotProtein <- function(protein) {
 #' 
 #' @importFrom shiny renderPlot
 #' @export
+#' 
+#' @examples
+#' event <- "SE_12_-_7985318_7984360_7984200_7982602_SLC2A14"
+#' info  <- queryEnsemblByEvent(event, species="human", assembly="hg19")
+#' pos   <- parseSplicingEvent(event)$pos[[1]]
+#' \dontrun{
+#' plotTranscripts(info, pos)
+#' }
 plotTranscripts <- function(info, eventPosition) {
     transcripts <- data.frame()
     
@@ -281,6 +295,7 @@ plotTranscripts <- function(info, eventPosition) {
 #' @param grch37 Boolean: use version GRCh37 of the genome?
 #' 
 #' @importFrom shiny renderUI h2 h4 plotOutput
+#' @return HTML elements to render gene, protein and transcript annotation
 renderGeneticInfo <- function(ns, info, species, assembly, grch37) {
     start <- as.numeric(info$start)
     end   <- as.numeric(info$end)
@@ -346,6 +361,9 @@ renderGeneticInfo <- function(ns, info, species, assembly, grch37) {
 #' 
 #' @return Information from Ensembl
 #' @export
+#' @examples 
+#' event <- c("SE_17_-_41251792_41249306_41249261_41246877_BRCA1")
+#' queryEnsemblByEvent(event, species="human", assembly="hg19")
 queryEnsemblByEvent <- function(event, ...) {
     gene <- parseEvent(event)$gene
     if (gene == "NA")
@@ -559,7 +577,7 @@ infoServer <- function(input, output, session) {
         } else {
             hc <- tryCatch(plotProtein(uniprot), error=return)
             if ("error" %in% hc) {
-                print("Some error occurred...")
+                warning("Some unknown error occurred")
             } else {
                 output$plotProtein <- renderHighchart(hc)
             }

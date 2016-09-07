@@ -93,6 +93,7 @@ diffSplicingTableUI <- function(id) {
 #' Interface for calculating optimal cut-off and p-value for survival curves
 #' differences
 #' @param ns Namespace function
+#' @return HTML elements to calculate optimal survival difference
 optimSurvDiffUI <- function(ns) {
     tagList(
         hr(), h3("Survival analyses by splicing quantification cut-off"),
@@ -209,10 +210,12 @@ optimSurvDiff <- function(session, input, output) {
         startProgress("Performing survival analysis", nrow(subset))
         
         opt <- apply(subset, 1, function(vector) {
-            v <- as.numeric(vector[toupper(names(tumour))])
+            # Retrieve numeric PSIs from tumour samples
+            eventPSI <- rep(NA, nrow(clinical))
+            eventPSI[tumour] <- as.numeric(vector[toupper(names(tumour))])
             
             opt <- suppressWarnings(
-                optim(0, testSurvivalCutoff, data=v, filter=tumour,
+                optim(0, testSurvivalCutoff, data=eventPSI, filter=tumour, 
                       group=groups, clinical=clinical, censoring=censoring,
                       timeStart=timeStart, timeStop=timeStop, event=event,
                       # Method and parameters interval
@@ -329,18 +332,19 @@ optimSurvDiff <- function(session, input, output) {
             if (!is.null(row) && !is.na(cutoff)) {
                 show(paste0("curves", i), anim=TRUE)
                 splicingEvent  <- rownames(optimSurv)[row]
-                eventPSI <- as.numeric(psi[splicingEvent, 
-                                           toupper(names(tumour))])
                 
-                group  <- rep(NA, nrow(clinical))
-                group[tumour] <- eventPSI >= cutoff
+                # Retrieve numeric PSIs from tumour samples
+                eventPSI <- rep(NA, nrow(clinical))
+                eventPSI[tumour] <- as.numeric(
+                    psi[splicingEvent, toupper(names(tumour))])
+                group <- eventPSI >= cutoff
+                
                 group[group == "TRUE"]  <- paste(">=", cutoff)
                 group[group == "FALSE"] <- paste("<", cutoff)
                 
-                survTerms <- processSurvTerms(
-                    clinical, censoring=censoring, event=event,
-                    timeStart=timeStart, timeStop=timeStop, group=group)
-                surv <- survfit(survTerms$form, data=survTerms$survTime)
+                survTerms <- processSurvTerms(clinical, censoring, event,
+                                              timeStart, timeStop, group)
+                surv <- survfit(survTerms)
                 
                 hc <- plotSurvivalCurves(surv, mark = FALSE, title=NULL) %>%
                     hc_legend(enabled=FALSE) %>%
@@ -396,7 +400,7 @@ diffSplicingTableServer <- function(input, output, session) {
     observeEvent(input$missingInclusionLevels, 
                  missingDataGuide("Inclusion levels"))
     
-    performStatsAnalyses <- reactive({
+    performDiffAnalyses <- reactive({
         # Get event's inclusion levels
         psi <- getInclusionLevels()
         select <- input$groupsSelect
@@ -409,7 +413,6 @@ diffSplicingTableServer <- function(input, output, session) {
             # Separate samples by their groups
             ids <- names(psi)
             groups <- parseSampleGroups(ids)
-            g <- "samples"
         } else if (select == "patients") {
             # Separate sample by clinical groups from patients
             clinicalGroups <- getGroupsFrom("Clinical data")[clinicalGroups]
@@ -428,12 +431,11 @@ diffSplicingTableServer <- function(input, output, session) {
             nasGroups <- !is.na(groups)
             psi       <- psi[nasGroups]
             groups    <- groups[nasGroups]
-            g <- groups
         }
         
-        stats <- statsAnalyses(psi, groups, statsChoices, 
-                               pvalueAdjust=pvalueAdjust,
-                               progress=updateProgress)
+        stats <- diffAnalyses(psi, groups, statsChoices, 
+                                      pvalueAdjust=pvalueAdjust,
+                                      progress=updateProgress)
         attr(stats, "groups") <- getDiffSplicingGroups()
         setDifferentialAnalyses(stats)
         endProcess("startAnalyses", totalTime)
@@ -473,7 +475,7 @@ diffSplicingTableServer <- function(input, output, session) {
                                "groups share samples:",
                                tags$kbd(paste(intersected, collapse = ", ")))
                 } else {
-                    performStatsAnalyses()
+                    performDiffAnalyses()
                 }
             }
         } else if (!is.null(diffSplicing)) {
@@ -483,11 +485,11 @@ diffSplicingTableServer <- function(input, output, session) {
                                              class="btn-warning",
                                              "data-dismiss"="modal"))
         } else {
-            performStatsAnalyses()
+            performDiffAnalyses()
         }
     })
     
-    observeEvent(input$replace, performStatsAnalyses())
+    observeEvent(input$replace, performDiffAnalyses())
     
     output$statsTable <- renderDataTableSparklines({
         stats <- getDifferentialAnalyses()

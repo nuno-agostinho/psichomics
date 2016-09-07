@@ -3,13 +3,16 @@
 \docType{data}
 \name{getCores}
 \alias{getCores}
-\title{Get number of cores}
+\title{Get number of cores to use}
 \format{An object of class \code{reactive} of length 1.}
 \usage{
 getCores
 }
+\value{
+Numeric value with the number of cores to use
+}
 \description{
-Get number of cores
+Get number of cores to use
 }
 \keyword{datasets}
 

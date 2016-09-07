@@ -13,14 +13,27 @@ getSplicingEventTypes <- function() {
       "Alternative last exon (ALE)" = "ALE")
 }
 
-#' Splicing annotation files available
+#' List the alternative splicing annotation files available
 #' @return Named character vector with splicing annotation files available
 #' @export
 #' 
 #' @examples
-#' getSplicingAnnotation()
-getSplicingAnnotation <- function() {
+#' listSplicingAnnotation()
+listSplicingAnnotation <- function() {
     c("Human (hg19/GRCh37)"="hg19_splicingAnnotation.RDS")
+}
+
+#' Load local file
+#' @param file Character: path to the file
+#' 
+#' @return Loaded file
+#' @export
+#' 
+#' @examples 
+#' annotList <- listSplicingAnnotation()
+#' annotation <- readFile(annotList[1])
+readFile <- function(file) {
+    readRDS(insideFile("extdata", file))
 }
 
 #' Interface to quantify alternative splicing
@@ -39,7 +52,7 @@ inclusionLevelsInterface <- function(ns) {
         selectizeInput(ns("junctionQuant"), 
                        "Alternative splicing junction quantification",
                        choices=NULL),
-        selectizeInput(ns("annotation"), choices=getSplicingAnnotation(),
+        selectizeInput(ns("annotation"), choices=listSplicingAnnotation(),
                        "Alternative splicing event annotation"),
         selectizeInput(ns("eventType"), "Event type(s)", selected = "SE",
                        choices=getSplicingEventTypes(), multiple = TRUE),
@@ -79,22 +92,14 @@ inclusionLevelsUI <- function(id, panel) {
 #' @export
 #' 
 #' @examples 
-#' \dontrun{
-#' annotation <- readRDS(system.file("extdata", "hg19_splicingAnnotation.RDS",
-#'                       package="psichomics"))
-#'                       
-#' data <- loadFirehoseData(cohort = "ACC", data=c("Clinical", 
-#'                                                 "junction_quantification"))
-#' junctionQuant <- data[[1]]$`Junction quantification (Illumina HiSeq)`
-#'                       
-#' # Check splicing event types that can be calculated
-#' getSplicingEventTypes()
+#' # Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events
+#' eventType <- c("SE", "MXE")
+#' annot <- readFile("example_splicing_annotation.RDS")
+#' junctionQuant <- readFile("example_junction_quantification.RDS")
 #' 
-#' eventType <- c("SE", "A5SS")
-#' quantifySplicing(annotation, junctionQuant, eventType, minReads=10)
-#' }
+#' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 quantifySplicing <- function(annotation, junctionQuant, eventType="SE", 
-                             minReads=10, progress=printPaste) {
+                             minReads=10, progress=echoProgress) {
     psi <- NULL
     for (i in seq_along(eventType)) {
         type <- eventType[[i]]
@@ -152,11 +157,10 @@ inclusionLevelsServer <- function(input, output, session) {
         
         # Read annotation
         startProgress("Reading alternative splicing annotation", divisions=3)
-        annot <- readRDS(system.file("extdata", annotation,
-                                     package="psichomics"))
+        annot <- readFile(annotation)
         
         # Set species and assembly version
-        allAnnot <- getSplicingAnnotation()
+        allAnnot <- listSplicingAnnotation()
         annotID <- names(allAnnot)[match(annotation, allAnnot)]
         if (grepl("Human", annotID)) setSpecies("Human")
         if (grepl("hg19", annotID)) setAssemblyVersion("hg19")
@@ -176,7 +180,7 @@ inclusionLevelsServer <- function(input, output, session) {
         setInclusionLevels(psi)
         
         updateProgress("Matching clinical data")
-        match <- matchIdWithClinical(colnames(psi), getClinicalData())
+        match <- getPatientFromSample(colnames(psi), getClinicalData())
         setClinicalMatchFrom("Inclusion levels", match)
         
         endProcess("calcIncLevels", time)

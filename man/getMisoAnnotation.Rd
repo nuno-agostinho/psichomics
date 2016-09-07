@@ -6,6 +6,9 @@
 \usage{
 getMisoAnnotation()
 }
+\value{
+Retrieve annotation from MISO
+}
 \description{
 Get MISO alternative splicing annotation
 }

@@ -12,6 +12,10 @@
 #' 
 #' @return Parsed event
 #' @export
+#' @examples 
+#' events <- c("SE_1_-_123_456_789_1024_TST",
+#'             "MX_3_+_473_578_686_736_834_937_HEY")
+#' parseSplicingEvent(events)
 parseSplicingEvent <- function(event) {
     event <- strsplit(event, "_")
     parsed <- data.frame(matrix(nrow=length(event)))
@@ -71,6 +75,16 @@ rm.null <- function(v) Filter(Negate(is.null), v)
 escape <- function(...) {
     # return(gsub("/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]", "\\$&", string))
     return(gsub("(\\W)", "\\\\\\1", paste0(...)))
+}
+
+#' Check if a number is whole
+#' 
+#' @param x Object to be tested
+#' @param tol Numeric: tolerance used for comparison
+#' 
+#' @return TRUE if number is whole; otherwise, FALSE
+is.whole <- function(x, tol=.Machine$double.eps^0.5) {
+    abs(x - round(x)) < tol
 }
 
 #' Rename vector to avoid duplicated values with comparison
@@ -162,28 +176,38 @@ endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
         message("Process finished in ", format(Sys.time() - time))
 }
 
-#' Match given IDs with the clinical data
+#' Match given sample identifiers and return the respective row in clinical data
 #'
-#' @param ids Character: IDs of interest
+#' @param sampleId Character: sample identifiers
 #' @param clinical Matrix or data.frame: clinical data 
+#' @param prefix Character: prefix to search for in clinical data
+#' @param lower Boolean: convert samples to lower case? TRUE by default
 #'
 #' @return Integer vector of the row number in clinical data corresponding to 
 #' the given IDs (named with the ID)
-matchIdWithClinical <- function(ids, clinical) {
+#' @export
+#' @examples 
+#' samples <- c("ABC", "DEF", "GHI", "JKL", "MNO")
+#' clinical <- data.frame(patient=paste0("patient-", samples),
+#'                        samples=tolower(samples))
+#' getPatientFromSample(samples, clinical, prefix="")
+getPatientFromSample <- function(sampleId, clinical, prefix="^tcga", 
+                                 lower=TRUE) {
     # All IDs are lower case in the clinical data
-    ids <- tolower(ids)
+    if (lower) sampleId <- tolower(sampleId)
     
     # Get all possible identifiers starting in "tcga" from the clinical data
-    idsIndex <- sapply(1:ncol(clinical), 
-                       function(i) length(grep("^tcga", clinical[[i]])) != 0)
-    clinicalIds <- clinical[, idsIndex]
+    idsIndex <- vapply(1:ncol(clinical), 
+                       function(i) length(grep(prefix, clinical[[i]])) != 0,
+                       logical(1))
+    clinicalIds <- clinical[, idsIndex, drop=FALSE]
     
     # Get the clinical data row corresponding to the given IDs
-    clinicalRows <- rep(NA, length(ids))
-    names(clinicalRows) <- ids
+    clinicalRows <- rep(NA, length(sampleId))
+    names(clinicalRows) <- sampleId
     for (col in 1:ncol(clinicalIds)) {
         # Check if any ID matches the current column of clinical IDs
-        match <- sapply(ids, grep, clinicalIds[ , col], fixed = TRUE)
+        match <- sapply(sampleId, grep, clinicalIds[ , col], fixed = TRUE)
         
         # All matched IDs will save their respective rows
         clinicalRows[lapply(match, length) != 0] <- unlist(match)
@@ -193,16 +217,43 @@ matchIdWithClinical <- function(ids, clinical) {
     return(clinicalRows)
 }
 
-#' Get row names from the given index
+#' Search samples in the clinical dataset and return the ones matching the given
+#' index
 #' 
-#' @param index Numeric
-#' @param matches Numeric: matches between row names and index
+#' @inheritParams getPatientFromSample
+#' @param index Numeric or list of numeric: patient row indexes
+#' @param samples Character: samples
+#' @param clinical Data frame or matrix: clinical dataset
+#' @param upper Boolean: convert identifiers to upper case? TRUE by default
+#' @param rm.NA Boolean: remove NAs? TRUE by default
 #' 
 #' @return Names of the matching rows
-getMatchingRowNames <- function(index, matches) {
-    ns <- names(matches[matches %in% index])
-    ns <- unique(ns)
-    return(ns)
+#' @export
+#' 
+#' @examples 
+#' samples <- c("ABC", "DEF", "GHI", "JKL", "MNO")
+#' clinical <- data.frame(patient=paste0("patient-", samples), 
+#'                        samples=tolower(samples))
+#' getMatchingSamples(c(1, 4), samples, clinical, prefix="")
+getMatchingSamples <- function(index, samples, clinical, upper=TRUE, 
+                               rm.NA=TRUE, prefix="^tcga") {
+    patient <- rep(NA, nrow(clinical))
+    p <- getPatientFromSample(samples, clinical, prefix=prefix)
+    patient[p] <- names(p)
+    
+    if (is.list(index)) {
+        match <- lapply(index, function(i) {
+            res <- patient[i]
+            if (upper) res <- toupper(res)
+            if (rm.NA) res <- res[!is.na(res)]
+            return(res)
+        })
+    } else {
+        match <- patient[index]
+        if (upper) match <- toupper(match)
+        if (rm.NA) match <- match[!is.na(match)]
+    }    
+    return(match)
 }
 
 #' Assign one group for each clinical patient
@@ -241,40 +292,39 @@ groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE,
 #' @param title Character: modal title
 #' @param ... Extra arguments to pass to bsModal2
 #' @param iconName Character: FontAwesome icon name to appear with the title
-#' @param printMessage Boolean: print to console? FALSE by default
+#' @param echo Boolean: print to console? FALSE by default
 #' @param modalId Character: identifier
 #' 
 #' @importFrom shiny renderUI div icon
 #' @importFrom shinyBS toggleModal
 #' @seealso showAlert
-showModal <- function(session, title, ..., style = NULL,
-                      iconName = "exclamation-circle", footer = NULL,
-                      printMessage = FALSE, size = NULL,
-                      modalId = "modal") {
+showModal <- function(session, title, ..., style=NULL,
+                      iconName="exclamation-circle", footer=NULL, echo=FALSE, 
+                      size=NULL, modalId = "modal") {
     ns <- session$ns
     session$output[[modalId]] <- renderUI({
         bsModal2(ns("showModal"), style=style, div(icon(iconName), title),
                  trigger=NULL, size=size, ..., footer=footer)})
     toggleModal(session, "showModal", toggle = "open")
-    if (printMessage) print(content)
+    if (echo) cat(content, fill=TRUE)
 }
 
 #' @rdname showModal
-errorModal <- function(session, title, ..., size = "small", footer = NULL) {
-    showModal(session, title, ..., footer=footer, style = "error", size = size,
-              printMessage = FALSE, iconName = "times-circle")
+errorModal <- function(session, title, ..., size="small", footer=NULL) {
+    showModal(session, title, ..., footer=footer, style="error", size=size,
+              echo=FALSE, iconName="times-circle")
 }
 
 #' @rdname showModal
-warningModal <- function(session, title, ..., size = "small", footer = NULL) {
-    showModal(session, title, ..., footer=footer, style="warning", size = size,
-              printMessage = FALSE, iconName = "exclamation-circle")
+warningModal <- function(session, title, ..., size="small", footer=NULL) {
+    showModal(session, title, ..., footer=footer, style="warning", size=size,
+              echo=FALSE, iconName="exclamation-circle")
 }
 
 #' @rdname showModal
-infoModal <- function(session, title, ..., size = "small", footer = NULL) {
-    showModal(session, title, ..., footer=footer, style = "info", size = size,
-              printMessage = FALSE, iconName = "info-circle")
+infoModal <- function(session, title, ..., size="small", footer=NULL) {
+    showModal(session, title, ..., footer=footer, style="info", size=size,
+              echo=FALSE, iconName="info-circle")
 }
 
 #' Show a modal
@@ -351,6 +401,11 @@ rowVar <- function (x, na.rm = FALSE) {
 }
 
 #' Get the Downloads folder of the user
+#' @return Path to Downloads folder
+#' @export
+#' 
+#' @examples 
+#' getDownloadsFolder()
 getDownloadsFolder <- function() {
     if (Sys.info()['sysname'] == "Windows")
         folder <- dirname("~")
@@ -386,7 +441,7 @@ parseSampleGroups <- function(sample,
 #' @param global Shiny's global variable
 #' @importFrom shiny Progress
 startProgress <- function(message, divisions, global = sharedData) {
-    print(message)
+    cat(message, fill=TRUE)
     global$progress.divisions <- divisions
     global$progress <- Progress$new()
     global$progress$set(message = message, value = 0)
@@ -425,9 +480,9 @@ updateProgress <- function(message="Hang in there", value=NULL, max=NULL,
     
     # Print message to console
     if (!is.null(detail))
-        print(paste(message, detail, sep=": "))
+        cat(paste(message, detail, sep=": "), fill=TRUE)
     else
-        print(message)
+        cat(message, fill=TRUE)
     return(invisible(TRUE))
 }
 
@@ -437,19 +492,21 @@ updateProgress <- function(message="Hang in there", value=NULL, max=NULL,
 #' @param global Global Shiny variable where all data is stored
 closeProgress <- function(message=NULL, global = sharedData) {
     # Close the progress even if there's an error
-    if (!is.null(message)) print(message)
+    if (!is.null(message)) cat(message, fill=TRUE)
     global$progress$close()
 }
 
 #' Get number of significant digits
 #' @param n Numeric: number to round
 #' @importFrom shiny isolate
+#' @return Formatted number with a given number of significant digits
 signifDigits <- function(n) {
     return(isolate(formatC(n, getSignificant(), format="g")))
 }
 
 #' Round by the given number of digits
 #' @param n Numeric: number to round
+#' @return Formatted number with a given numeric presion
 roundDigits <- function(n) {
     return(isolate(formatC(n, getPrecision(), format="f")))
 }
@@ -467,6 +524,8 @@ roundDigits <- function(n) {
 #' 
 #' @importFrom shiny tagAppendAttributes
 #' @importFrom shinyBS bsModal
+#' 
+#' @return HTML element to create a modified modal
 bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL, 
                       style = NULL)  {
     if (is.null(size))
@@ -646,6 +705,7 @@ updateTextAreaInput <- updateTextInput
 #' @param ranges Plot interval ranges? FALSE by default
 #' @param rangesOpacity Opacity of the interval ranges (0.3 by default)
 #' 
+#' @method hchart survfit
 #' @importFrom highcharter %>% hc_add_series highchart hc_tooltip hc_yAxis
 #' hc_plotOptions fa_icon_mark JS
 #' @importFrom rlist list.parse
@@ -658,6 +718,7 @@ updateTextAreaInput <- updateTextInput
 #' # Plot Kaplan-Meier curves
 #' require("survival")
 #' require("highcharter")
+#' require("survival")
 #' leukemia.surv <- survfit(Surv(time, status) ~ x, data = aml) 
 #' hchart(leukemia.surv)
 #' 
