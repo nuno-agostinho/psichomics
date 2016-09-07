@@ -5,7 +5,7 @@
 \title{Quantify alternative splicing events}
 \usage{
 quantifySplicing(annotation, junctionQuant, eventType = "SE", minReads = 10,
-  progress = printPaste)
+  progress = echoProgress)
 }
 \arguments{
 \item{annotation}{List of data frames: annotation for each alternative
@@ -27,19 +27,11 @@ Data frame with the quantification of the alternative splicing events
 Quantify alternative splicing events
 }
 \examples{
-\dontrun{
-annotation <- readRDS(system.file("extdata", "hg19_splicingAnnotation.RDS",
-                      package="psichomics"))
-                      
-data <- loadFirehoseData(cohort = "ACC", data=c("Clinical", 
-                                                "junction_quantification"))
-junctionQuant <- data[[1]]$`Junction quantification (Illumina HiSeq)`
-                      
-# Check splicing event types that can be calculated
-getSplicingEventTypes()
+# Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events
+eventType <- c("SE", "MXE")
+annot <- readFile("example_splicing_annotation.RDS")
+junctionQuant <- readFile("example_junction_quantification.RDS")
 
-eventType <- c("SE", "A5SS")
-quantifySplicing(annotation, junctionQuant, eventType, minReads=10)
-}
+psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 }
 

@@ -6,6 +6,9 @@
 \usage{
 loadFileFormats()
 }
+\value{
+Loaded file formats available
+}
 \description{
 Loads file formats
 }

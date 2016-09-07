@@ -7,7 +7,7 @@
 setPrecision(precision)
 }
 \arguments{
-\item{precision}{Character: number of decimal places}
+\item{precision}{Numeric: number of decimal places}
 }
 \description{
 Set number of decimal places

@@ -8,6 +8,9 @@
 \usage{
 getData
 }
+\value{
+Variable containing all data of interest
+}
 \description{
 Get global data
 }

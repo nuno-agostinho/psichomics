@@ -54,7 +54,7 @@ group <- c(rep("Normal", 3), rep("Tumour", 3))
 
 test_that("Perform all statistical analyses", {
     analyses <- c("wilcoxRankSum", "wilcoxSignedRank", "kruskal", "levene")
-    stats <- statsAnalyses(psi, group, analyses)
+    stats <- diffAnalyses(psi, group, analyses)
     
     expect_is(stats, "data.frame")
     expect_named(stats)
@@ -69,7 +69,7 @@ test_that("Perform all statistical analyses", {
 
 test_that("Perform single statistical analyses", {
     analyses <- c("wilcoxRankSum", "wilcoxSignedRank")
-    stats <- statsAnalyses(psi, group, analyses)
+    stats <- diffAnalyses(psi, group, analyses)
     
     expect_is(stats, "data.frame")
     expect_named(stats)
@@ -82,7 +82,7 @@ test_that("Perform single statistical analyses", {
     expect_true(any(grepl("Variance", names(stats))))
     
     analyses <- c("kruskal")
-    stats <- statsAnalyses(psi, group, analyses)
+    stats <- diffAnalyses(psi, group, analyses)
     
     expect_is(stats, "data.frame")
     expect_named(stats)
@@ -95,7 +95,7 @@ test_that("Perform single statistical analyses", {
     expect_true(any(grepl("Variance", names(stats))))
     
     analyses <- c("levene")
-    stats <- statsAnalyses(psi, group, analyses)
+    stats <- diffAnalyses(psi, group, analyses)
     
     expect_is(stats, "data.frame")
     expect_named(stats)

@@ -15,6 +15,9 @@ loadedDataModal(session, modalId, replaceButtonId, keepButtonId)
 
 \item{keepButtonId}{Character: identifier of the button to append data}
 }
+\value{
+HTML elements for a warning modal reminding data is loaded
+}
 \description{
 Create a modal warning the user of already loaded data
 }

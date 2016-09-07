@@ -8,6 +8,9 @@
 \usage{
 getActiveDataset
 }
+\value{
+List of data frames
+}
 \description{
 Get selected dataset
 }

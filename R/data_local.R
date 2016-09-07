@@ -53,7 +53,7 @@ localDataUI <- function(id, panel) {
 #' loadLocalFiles(folder, ignore)
 #' }
 loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."), name="Data",
-                           progress=printPaste) {
+                           progress=echoProgress) {
     # Get all files in the specified directory and subdirectories
     files <- list.files(folder, recursive=TRUE, full.names=TRUE)
     

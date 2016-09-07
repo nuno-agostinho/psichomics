@@ -4,8 +4,9 @@
 \alias{processSurvTerms}
 \title{Process survival curves terms to calculate survival curves}
 \usage{
-processSurvTerms(clinical, censoring, event, timeStart, timeStop,
-  group = NULL, formulaStr = NULL, coxph = FALSE, scale = "days")
+processSurvTerms(clinical, censoring, event, timeStart, timeStop = NULL,
+  group = NULL, formulaStr = NULL, coxph = FALSE, scale = "days",
+  followup = "days_to_last_followup")
 }
 \arguments{
 \item{clinical}{Data frame: clinical data}
@@ -31,6 +32,8 @@ by default}
 
 \item{scale}{Character: rescale the survival time to "days", "weeks",
 "months" or "years"}
+
+\item{followup}{Character: name of column containing follow up time}
 }
 \value{
 A list with a \code{formula} object and a data frame with terms
@@ -42,5 +45,22 @@ Process survival curves terms to calculate survival curves
 \details{
 \code{timeStop} is only considered if \code{censoring} is either
 \code{interval} or \code{interval2}
+}
+\examples{
+clinical <- read.table(text = "2549   NA ii  female
+                                840   NA i   female
+                                 NA 1204 iv    male
+                                 NA  383 iv  female
+                               1293   NA iii   male
+                                 NA 1355 ii    male")
+names(clinical) <- c("patient.days_to_last_followup", 
+                     "patient.days_to_death",
+                     "patient.stage_event.pathologic_stage",
+                     "patient.gender")
+timeStart  <- "days_to_death"
+event      <- "days_to_death"
+formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
+survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
+                               formulaStr=formulaStr)
 }
 

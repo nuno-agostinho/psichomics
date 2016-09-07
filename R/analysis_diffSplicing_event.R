@@ -51,6 +51,10 @@ diffSplicingEventUI <- function(id) {
 #' 
 #' @return Highcharter object with density plot
 #' @export
+#' @examples
+#' data <- sample(20, rep=TRUE)/20
+#' groups <- c(rep("A", 10), rep("B", 10))
+#' plotDistribution(data, groups)
 plotDistribution <- function(psi, groups, bandwidth=0.01, rug=TRUE, 
                              vLine=TRUE) {
     # Include X-axis zoom and hide markers

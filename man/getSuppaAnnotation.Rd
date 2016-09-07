@@ -6,6 +6,9 @@
 \usage{
 getSuppaAnnotation()
 }
+\value{
+Retrieve annotation from SUPPA
+}
 \description{
 Get SUPPA alternative splicing annotation
 }

@@ -11,6 +11,9 @@ insideFile(...)
 package. The default, none, returns the root of the package. Wildcards are
 not supported.}
 }
+\value{
+Loaded file
+}
 \description{
 Get psichomics file inside a given directory
 }

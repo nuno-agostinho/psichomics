@@ -17,6 +17,9 @@ renderGeneticInfo(ns, info, species, assembly, grch37)
 
 \item{grch37}{Boolean: use version GRCh37 of the genome?}
 }
+\value{
+HTML elements to render gene, protein and transcript annotation
+}
 \description{
 Render genetic information
 }

@@ -1,9 +1,9 @@
-#' Print progress to console
+#' Echo progress to console using \code{cat}
 #' 
 #' @param ... Strings to print to console
 #' @param console Boolean: print to console? TRUE by default
-printPaste <- function(..., console=TRUE) {
-    if (console) print(paste(...))
+echoProgress <- function(..., console=TRUE) {
+    if (console) cat(paste(...), fill=TRUE)
 }
 
 #' Returns the date format used by the Firehose API
@@ -102,6 +102,9 @@ queryFirehoseData <- function(format = "json", date = NULL, cohort = NULL,
     # Only allow these response formats
     format <- match.arg(format, c("json", "csv", "tsv"))
     
+    # Format date
+    if (!is.null(date)) date <- gsub("-", "_", date, fixed=TRUE)
+    
     # Process the parameters of the query
     labels <- list("format", "date", "cohort", "data_type", "tool", "platform",
                    "center", "level", "protocol", "page", "page_size",
@@ -191,7 +194,8 @@ getFirehoseCohorts <- function(cohort = NULL) {
 #' @param folder Character: directory to store the downloaded archives
 #' @param ... Extra parameters passed to the download function
 #' @param download Function to use to download files
-#' @param progress Function to show the progress (default is printPaste)
+#' @param progress Function to show the progress (default is to print progress
+#' to console)
 #' 
 #' @importFrom utils download.file
 #' 
@@ -205,14 +209,14 @@ getFirehoseCohorts <- function(cohort = NULL) {
 #' # Download without printing to console
 #' downloadFiles(url, "~/Pictures", quiet = TRUE)
 #' }
-downloadFiles <- function(url, folder, progress = printPaste,
+downloadFiles <- function(url, folder, progress = echoProgress,
                           download = download.file, ...) {
     destination <- file.path(folder, basename(url))
     for (i in seq_along(url)) {
         progress("Downloading file", detail = basename(url[i]), i, length(url))
         download(url[i], destination[i], ...)
     }
-    print("Downloading completed")
+    cat("Downloading completed", fill=TRUE)
     return(destination)
 }
 
@@ -270,7 +274,6 @@ prepareFirehoseArchives <- function(archive, md5, folder, outdir) {
                 paste(archive[!validFiles], collapse = "\n\t"))
     }
     
-    ## TODO(NunoA): Check if path.expand works in Windows
     # Extract the contents of the archives to the same folder
     invisible(lapply(archive, function(arc) untar(arc, exdir=dirname(arc))))
     
@@ -355,10 +358,11 @@ parseUrlsFromFirehoseResponse <- function(res) {
 #'
 #' @param folder Character: folder(s) in which to look for Firehose files
 #' @param exclude Character: files to exclude from the loading
-#' @param progress Function to show the progress (default is printPaste)
+#' @param progress Function to show the progress (default is to print progress
+#' to console)
 #' 
 #' @return List with loaded data.frames
-loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
+loadFirehoseFolders <- function(folder, exclude="", progress=echoProgress) {
     # Retrieve full path of the files inside the given folders
     files <- dir(folder, full.names=TRUE)
     
@@ -389,7 +393,8 @@ loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
 #' from loading into R (by default, it excludes ".aux.", ".mage-tab." and
 #' "MANIFEST.TXT" files)
 #' @param ... Extra parameters to be passed to \code{\link{queryFirehoseData}}
-#' @param progress Function to show the progress (default is printPaste)
+#' @param progress Function to show the progress (default is to print progress
+#' to console)
 #' @param download Boolean: download missing files through the function
 #' \code{download.file} (TRUE by default)
 #' 
@@ -410,7 +415,7 @@ loadFirehoseFolders <- function(folder, exclude="", progress = printPaste) {
 loadFirehoseData <- function(folder=NULL, 
                              data=NULL, 
                              exclude=c(".aux.", ".mage-tab.", "MANIFEST.txt"),
-                             ..., progress = printPaste, download=TRUE) {
+                             ..., progress = echoProgress, download=TRUE) {
     args <- list(...)
     
     datasets <- unlist(getFirehoseDataTypes())
@@ -419,7 +424,6 @@ loadFirehoseData <- function(folder=NULL,
     # Datasets to ignore
     exclude <- c(exclude, datasets[!datasets %in% data])
     
-    ## TODO(NunoA): Check if the default folder works in Windows
     # Query Firehose and get URLs for archives
     res <- do.call(queryFirehoseData, args)
     stop_for_status(res)
@@ -458,7 +462,7 @@ loadFirehoseData <- function(folder=NULL,
         if (download) {
             # Download missing files
             progress(divisions = 1)
-            print("Triggered the download of files")
+            cat("Triggered the download of files", fill=TRUE)
             
             dl <- download.file(missingFiles, destfile=file.path(
                 folder, basename(missingFiles)))
@@ -609,7 +613,7 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
     
     if (any(class(data) == "missing")) {
         updateProgress(divisions = 1)
-        print("Triggered the download of files")
+        cat("Triggered the download of files", fill=TRUE)
         
         # Download missing files through the browser
         iframe <- function(url) 

@@ -8,8 +8,9 @@ options(shiny.maxRequestSize = MB * 1024^2)
 
 #' Get psichomics file inside a given directory
 #' @param ... character vectors, specifying subdirectory and file(s) within some
-#'  package. The default, none, returns the root of the package. Wildcards are
-#'  not supported.
+#' package. The default, none, returns the root of the package. Wildcards are
+#' not supported.
+#' @return Loaded file
 insideFile <- function(...) {
     return(system.file(..., package="psichomics"))
 }

@@ -15,4 +15,9 @@ Parsed event
 \description{
 Parse an alternative splicing event based on a given identifier
 }
+\examples{
+events <- c("SE_1_-_123_456_789_1024_TST",
+            "MX_3_+_473_578_686_736_834_937_HEY")
+parseSplicingEvent(events)
+}
 

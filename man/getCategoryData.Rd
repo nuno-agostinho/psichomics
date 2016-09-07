@@ -8,6 +8,10 @@
 \usage{
 getCategoryData
 }
+\value{
+If category is selected, returns the respective data as a data frame;
+otherwise, returns NULL
+}
 \description{
 Get data of selected data category
 }

@@ -8,6 +8,9 @@
 \usage{
 getCategories
 }
+\value{
+Name of all data categories
+}
 \description{
 Get available data categories
 }

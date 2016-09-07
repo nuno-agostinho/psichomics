@@ -5,7 +5,7 @@
 \title{Perform principal component analysis after processing missing values from 
 data frame}
 \usage{
-performPCA(data, center = TRUE, scale. = FALSE, naTolerance = 30)
+performPCA(data, center = TRUE, scale. = FALSE, naTolerance = 0)
 }
 \arguments{
 \item{data}{Data frame: data}
@@ -30,5 +30,8 @@ PCA result in a \code{prcomp} object
 \description{
 Perform principal component analysis after processing missing values from 
 data frame
+}
+\examples{
+performPCA(USArrests)
 }
 

@@ -5,7 +5,7 @@
 \title{Load local files}
 \usage{
 loadLocalFiles(folder, ignore = c(".aux.", ".mage-tab."), name = "Data",
-  progress = printPaste)
+  progress = echoProgress)
 }
 \arguments{
 \item{folder}{Character: path to folder containing files of interest}

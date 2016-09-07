@@ -15,4 +15,8 @@ Plot variance as an Highcharter object
 \description{
 Create the explained variance plot
 }
+\examples{
+pca <- princomp(USArrests)
+plotVariance(pca)
+}
 

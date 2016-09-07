@@ -8,7 +8,7 @@
 \title{Show a modal}
 \usage{
 showModal(session, title, ..., style = NULL,
-  iconName = "exclamation-circle", footer = NULL, printMessage = FALSE,
+  iconName = "exclamation-circle", footer = NULL, echo = FALSE,
   size = NULL, modalId = "modal")
 
 errorModal(session, title, ..., size = "small", footer = NULL)
@@ -31,7 +31,7 @@ NULL}
 
 \item{footer}{UI set: List of elements to include in the footer}
 
-\item{printMessage}{Boolean: print to console? FALSE by default}
+\item{echo}{Boolean: print to console? FALSE by default}
 
 \item{size}{Character: Modal size ("small", "default" or "large")}
 

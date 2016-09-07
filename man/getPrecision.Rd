@@ -8,6 +8,9 @@
 \usage{
 getPrecision
 }
+\value{
+Numeric value regarding the number of decimal places
+}
 \description{
 Get number of decimal places
 }

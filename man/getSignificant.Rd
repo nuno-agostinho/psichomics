@@ -8,6 +8,9 @@
 \usage{
 getSignificant
 }
+\value{
+Numeric value regarding the number of significant digits
+}
 \description{
 Get number of significant digits
 }

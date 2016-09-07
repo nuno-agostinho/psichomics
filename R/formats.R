@@ -119,6 +119,7 @@ loadFile <- function(format, file) {
 }
 
 #' Loads file formats
+#' @return Loaded file formats available
 loadFileFormats <- function() {
     # Get all functions ending with "UI"
     fun <- ls(getNamespace("psichomics"), all.names=TRUE, pattern="Format$")

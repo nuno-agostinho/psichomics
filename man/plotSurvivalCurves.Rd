@@ -26,4 +26,9 @@ Plot of survival curves
 \description{
 Plot survival curves
 }
+\examples{
+require("survival")
+fit <- survfit(Surv(time, status) ~ x, data = aml)
+plotSurvivalCurves(fit)
+}
 

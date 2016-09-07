@@ -5,15 +5,13 @@
 \title{Calculate optimal alternative splicing quantification cut-off to separate
 survival curves}
 \usage{
-optimalPSIcutoff(clinical, data, filter, censoring, event, timeStart,
-  timeStop = NULL, session = NULL)
+optimalPSIcutoff(clinical, psi, censoring, event, timeStart, timeStop = NULL,
+  session = NULL, filter = TRUE)
 }
 \arguments{
 \item{clinical}{Data frame: clinical data}
 
-\item{data}{Numeric: elements of interest to test against the cut-off}
-
-\item{filter}{Boolean or numeric: interest of the data elements}
+\item{psi}{Numeric: PSI values to test against the cut-off}
 
 \item{censoring}{Character: censor using "left", "right", "interval" or
 "interval2"}
@@ -28,6 +26,8 @@ interval or follow up time}
 interval}
 
 \item{session}{Shiny session (only used for the visual interface)}
+
+\item{filter}{Boolean or numeric: elements to use (all by default)}
 }
 \value{
 Optimal alternative splicing quantification cut-off
@@ -39,5 +39,25 @@ survival curves
 \details{
 \code{timeStop} is only considered if \code{censoring} is either
 \code{interval} or \code{interval2}
+}
+\examples{
+clinical <- read.table(text = "2549   NA ii  female
+                                840   NA i   female
+                                 NA 1204 iv    male
+                                 NA  383 iv  female
+                               1293   NA iii   male
+                                 NA 1355 ii    male")
+names(clinical) <- c("patient.days_to_last_followup", 
+                     "patient.days_to_death",
+                     "patient.stage_event.pathologic_stage",
+                     "patient.gender")
+timeStart  <- "days_to_death"
+event      <- "days_to_death"
+formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
+survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
+                               formulaStr=formulaStr)
+
+psi <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
+opt <- optimalPSIcutoff(clinical, psi, "right", event, timeStart)
 }
 

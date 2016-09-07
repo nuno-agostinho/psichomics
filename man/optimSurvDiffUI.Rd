@@ -10,6 +10,9 @@ optimSurvDiffUI(ns)
 \arguments{
 \item{ns}{Namespace function}
 }
+\value{
+HTML elements to calculate optimal survival difference
+}
 \description{
 Interface for calculating optimal cut-off and p-value for survival curves
 differences

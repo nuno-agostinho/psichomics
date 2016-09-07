@@ -40,6 +40,7 @@ createJunctionsTemplate <- function(nrow, program = character(0),
 
 #' Get MISO alternative splicing annotation
 #' @importFrom utils read.delim
+#' @return Retrieve annotation from MISO
 getMisoAnnotation <- function() {
     types <- c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI", "TandemUTR")
     typesFile <- paste0("/genedata/Resources/Annotations/MISO/hg19/", types,
@@ -53,8 +54,7 @@ getMisoAnnotation <- function() {
     return(annot)
 }
 
-#' Parse MISO alternative splicing annotation
-#' @param annot Data frame or matrix: alternative splicing annotation
+#' @rdname parseMatsAnnotation
 #' @importFrom plyr rbind.fill
 parseMisoAnnotation <- function(annot) {
     events <- lapply(annot, parseMisoEvent)
@@ -64,6 +64,7 @@ parseMisoAnnotation <- function(annot) {
 
 #' Get SUPPA alternative splicing annotation
 #' @importFrom utils read.delim
+#' @return Retrieve annotation from SUPPA
 getSuppaAnnotation <- function() {
     types <- c("SE", "AF", "AL", "MX", "A5", "A3", "RI")
     typesFile <- paste0("~/Documents/psi_calculation/suppa/suppaEvents/hg19_", 
@@ -73,8 +74,7 @@ getSuppaAnnotation <- function() {
     return(annot)
 }
 
-#' Parse SUPPA alternative splicing annotation
-#' @param annot Data frame or matrix: alternative splicing annotation
+#' @rdname parseMatsAnnotation
 #' @importFrom plyr rbind.fill
 parseSuppaAnnotation <- function(annot) {
     eventsID <- lapply(annot, "[[", "event_id")
@@ -85,6 +85,7 @@ parseSuppaAnnotation <- function(annot) {
 
 #' Get MATS alternative splicing annotation
 #' @importFrom utils read.delim
+#' @return Retrieve annotation from MATS
 getMatsAnnotation <- function() {
     types <- c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI")
     typesFile <- paste("~/Documents/psi_calculation/mats_out/ASEvents/fromGTF",
@@ -96,9 +97,10 @@ getMatsAnnotation <- function() {
     return(annot)
 }
 
-#' Parse MATS alternative splicing annotation
+#' Parse alternative splicing annotation
 #' @param annot Data frame or matrix: alternative splicing annotation
 #' @importFrom plyr rbind.fill
+#' @return Parsed annotation
 parseMatsAnnotation <- function(annot) {
     types <- names(annot)
     events <- lapply(seq_along(annot), function(i)
@@ -121,6 +123,7 @@ parseMatsAnnotation <- function(annot) {
 
 #' Get VAST-TOOLS alternative splicing annotation
 #' @importFrom utils read.delim
+#' @return Retrieve annotation from VAST-TOOLS
 getVastToolsAnnotation <- function() {
     types <- c("ALT3", "ALT5", "COMBI", "IR", "MERGE3m", "MIC",
                rep(c("EXSK", "MULTI"), 1))
@@ -135,14 +138,13 @@ getVastToolsAnnotation <- function() {
     return(annot)
 }
 
-#' Parse VAST-TOOLS alternative splicing annotation
-#' @param annot Data frame or matrix: alternative splicing annotation
+#' @rdname parseMatsAnnotation
 #' @importFrom plyr rbind.fill
 parseVastToolsAnnotation <- function(annot) {
     types <- names(annot)
     events <- lapply(seq_along(annot),
                      function(i) {
-                         print(types[i])
+                         cat(types[i], fill=TRUE)
                          a <- annot[[i]]
                          if (nrow(a) > 0)
                              return(parseVastToolsEvent(a))
@@ -154,7 +156,9 @@ parseVastToolsAnnotation <- function(annot) {
 
 #' Returns the coordinates of interest for a given event type
 #' @param type Character: alternative splicing event type
-getCoordinates <- function(type) {
+#' @return Coordinates of interest according to the alternative splicing event 
+#' type
+getSplicingEventCoordinates <- function(type) {
     switch(type,
            "SE"   = c("C1.end", "A1.start", "A1.end", "C2.start"),
            "A3SS" = c("C1.end", "C2.start", "A1.start"),
@@ -168,32 +172,33 @@ getCoordinates <- function(type) {
 }
 
 #' Get the annotation for all event types
+#' @return Parsed annotation
 getParsedAnnotation <- function() {
-    print("Retrieving MISO annotation...")
+    cat("Retrieving MISO annotation...", fill=TRUE)
     annot <- getMisoAnnotation()
-    print("Parsing MISO annotation...")
+    cat("Parsing MISO annotation...", fill=TRUE)
     miso <- parseMisoAnnotation(annot)
     
-    print("Retrieving SUPPA annotation...")
+    cat("Retrieving SUPPA annotation...", fill=TRUE)
     annot <- getSuppaAnnotation()
-    print("Parsing SUPPA annotation...")
+    cat("Parsing SUPPA annotation...", fill=TRUE)
     suppa <- parseSuppaAnnotation(annot)
     
-    print("Retrieving VAST-TOOLS annotation...")
+    cat("Retrieving VAST-TOOLS annotation...", fill=TRUE)
     annot <- getVastToolsAnnotation()
-    print("Parsing VAST-TOOLS annotation...")
+    cat("Parsing VAST-TOOLS annotation...", fill=TRUE)
     vast <- parseVastToolsAnnotation(annot)
     
-    print("Retrieving MATS annotation...")
+    cat("Retrieving MATS annotation...", fill=TRUE)
     annot <- getMatsAnnotation()
-    print("Parsing MATS annotation...")
+    cat("Parsing MATS annotation...", fill=TRUE)
     mats <- parseMatsAnnotation(annot)
     
     events <- list(
         "miso" = miso, "mats" = mats, "vast-tools" = vast, "suppa" = suppa)
     
     # Remove the "chr" prefix from the chromosome field
-    print("Standarising chromosome field")
+    cat("Standarising chromosome field", fill=TRUE)
     for (each in seq_along(events)) {
         chr <- grepl("chr", events[[each]]$Chromosome)
         events[[each]]$Chromosome[chr] <-
@@ -214,6 +219,7 @@ getParsedAnnotation <- function() {
 #' @param toNumeric Boolean: which columns to convert to numeric (FALSE by 
 #' default)
 #' 
+#' @return Processed data matrix
 #' @examples
 #' event <- read.table(text = "ABC123 + 250 300 350
 #'                             DEF456 - 900 800 700")
@@ -244,13 +250,14 @@ getNumerics <- function(table, by = NULL, toNumeric = FALSE) {
 #' Full outer join all given annotation based on select columns
 #' @param annotation Data frame or matrix: alternative splicing annotation
 #' @param types Character: alternative splicing types
+#' @return List of annotation joined by alternative splicing event type
 joinAnnotation <- function(annotation, types) {
     if (missing(types)) types <- names(annotation)
     joint <- lapply(types, function(type, annotation) {
-        print(type)
+        cat(type, fill=TRUE)
         # Create vector with comparable columns
         id <- c("Strand", "Chromosome", "Event.type")
-        by <- c(id, getCoordinates(type))
+        by <- c(id, getSplicingEventCoordinates(type))
         toNumeric <- !by %in% id
         
         # Convert given columns to numeric if possible
@@ -292,7 +299,7 @@ writeAnnotation <- function(jointEvents, eventType,
                             showID = FALSE, rds = TRUE) {
     res <- jointEvents[[eventType]]
     # Show the columns Chromosome, Strand and coordinates of interest
-    by <- c("Chromosome", "Strand", getCoordinates(eventType))
+    by <- c("Chromosome", "Strand", getSplicingEventCoordinates(eventType))
     ord <- 0
     
     # Show the events' ID if desired

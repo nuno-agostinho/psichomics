@@ -8,6 +8,9 @@
 \usage{
 getCategory
 }
+\value{
+Name of selected data category
+}
 \description{
 Get selected data category
 }

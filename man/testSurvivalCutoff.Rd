@@ -4,14 +4,17 @@
 \alias{testSurvivalCutoff}
 \title{Test the survival difference between two survival groups given a cutoff}
 \usage{
-testSurvivalCutoff(cutoff, data, filter, ..., group = NULL, session = NULL)
+testSurvivalCutoff(cutoff, data, filter = TRUE, clinical, ..., group = NULL,
+  session = NULL)
 }
 \arguments{
 \item{cutoff}{Numeric: Cut-off of interest}
 
 \item{data}{Numeric: elements of interest to test against the cut-off}
 
-\item{filter}{Boolean or numeric: interest of the data elements}
+\item{filter}{Boolean or numeric: elements to use (all by default)}
+
+\item{clinical}{Data frame: clinical data}
 
 \item{...}{Arguments to pass to \code{processSurvTerms}}
 

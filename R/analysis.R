@@ -73,6 +73,7 @@ analysesUI <- function(id, tab) {
 #' interval
 #' @param event Character: name of column containing time of the event of
 #' interest
+#' @param followup Character: name of column containing follow up time
 #' @param group Character: group of each individual
 #' @param clinical Data frame: clinical data
 #' 
@@ -80,8 +81,9 @@ analysesUI <- function(id, tab) {
 #' happened (1) or not in case of NAs (0)
 #' 
 #' @return Data frame with terms needed to calculate survival curves
-processSurvData <- function(event, timeStart, timeStop, group, clinical) {
-    cols <- c(followup = "days_to_last_followup", start = timeStart,
+processSurvData <- function(event, timeStart, timeStop, followup, group, 
+                            clinical) {
+    cols <- c(followup = followup, start = timeStart,
               stop = timeStop, event = event)
     survTime <- lapply(cols, timePerPatient, clinical)
     survTime <- as.data.frame(survTime)
@@ -173,9 +175,27 @@ updateClinicalParams <- function(session) {
 #' @return A list with a \code{formula} object and a data frame with terms
 #' needed to calculate survival curves
 #' @export
-processSurvTerms <- function(clinical, censoring, event, timeStart, timeStop, 
-                             group=NULL, formulaStr=NULL, coxph=FALSE, 
-                             scale="days") {
+#' 
+#' @examples 
+#' clinical <- read.table(text = "2549   NA ii  female
+#'                                 840   NA i   female
+#'                                  NA 1204 iv    male
+#'                                  NA  383 iv  female
+#'                                1293   NA iii   male
+#'                                  NA 1355 ii    male")
+#' names(clinical) <- c("patient.days_to_last_followup", 
+#'                      "patient.days_to_death",
+#'                      "patient.stage_event.pathologic_stage",
+#'                      "patient.gender")
+#' timeStart  <- "days_to_death"
+#' event      <- "days_to_death"
+#' formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
+#' survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
+#'                                formulaStr=formulaStr)
+processSurvTerms <- function(clinical, censoring, event, timeStart, 
+                             timeStop=NULL, group=NULL, formulaStr=NULL, 
+                             coxph=FALSE, scale="days",
+                             followup="days_to_last_followup") {
     # Ignore timeStop if interval-censoring is not selected
     if (!grepl("interval", censoring, fixed=TRUE) || timeStop == "") 
         timeStop <- NULL
@@ -187,7 +207,8 @@ processSurvTerms <- function(clinical, censoring, event, timeStart, timeStop,
     scale <- switch(scale, days=1, weeks=7, months=30.42, years=365.25)
     formulaSurv <- sprintf(formulaSurv, scale)
     
-    survTime <- processSurvData(event, timeStart, timeStop, group, clinical)
+    survTime <- processSurvData(event, timeStart, timeStop, followup, group, 
+                                clinical)
     
     # Estimate survival curves by groups or using formula
     if (formulaStr == "" || is.null(formulaStr)) {
@@ -203,7 +224,75 @@ processSurvTerms <- function(clinical, censoring, event, timeStart, timeStop,
         res <- coxph(form, data=survTime)
     else
         res <- list(form=form, survTime=survTime)
+    class(res) <- c("survTerms", class(res))
     return(res)
+}
+
+#' Compute estime of a survival curve using processed survival terms
+#' 
+#' @param survTerms survTerms object: processed survival terms
+#' @param ... Extra arguments passed to \code{survfit}
+#' 
+#' @importFrom survival survfit
+#' @method survfit survTerms
+#' 
+#' @return an object of class "survfit". See survfit.object for details. Methods
+#' defined for survfit objects are print, plot, lines, and points.
+#' @export survfit.survTerms
+#'
+#' @examples 
+#' clinical <- read.table(text = "2549   NA ii  female
+#'                                 840   NA i   female
+#'                                  NA 1204 iv    male
+#'                                  NA  383 iv  female
+#'                                1293   NA iii   male
+#'                                  NA 1355 ii    male")
+#' names(clinical) <- c("patient.days_to_last_followup", 
+#'                      "patient.days_to_death",
+#'                      "patient.stage_event.pathologic_stage",
+#'                      "patient.gender")
+#' timeStart  <- "days_to_death"
+#' event      <- "days_to_death"
+#' formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
+#' survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
+#'                                formulaStr=formulaStr)
+#' require("survival")
+#' survfit(survTerms)
+survfit.survTerms <- function(survTerms, ...) {
+    survfit(survTerms$form, data=survTerms$survTime, ...)
+}
+
+#' Test difference between two or more survival curves using processed survival 
+#' terms
+#' 
+#' @param survTerms survTerms object: processed survival terms
+#' @param ... Extra arguments passed to \code{survdiff}
+#' 
+#' @importFrom survival survdiff
+#' 
+#' @return an object of class "survfit". See survfit.object for details. Methods
+#' defined for survfit objects are print, plot, lines, and points.
+#' @export
+#'
+#' @examples
+#' clinical <- read.table(text = "2549   NA ii  female
+#'                                 840   NA i   female
+#'                                  NA 1204 iv    male
+#'                                  NA  383 iv  female
+#'                                1293   NA iii   male
+#'                                  NA 1355 ii    male")
+#' names(clinical) <- c("patient.days_to_last_followup", 
+#'                      "patient.days_to_death",
+#'                      "patient.stage_event.pathologic_stage",
+#'                      "patient.gender")
+#' timeStart  <- "days_to_death"
+#' event      <- "days_to_death"
+#' formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
+#' survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
+#'                                formulaStr=formulaStr)
+#' survdiff.survTerms(survTerms)
+survdiff.survTerms <- function(survTerms, ...) {
+    survdiff(survTerms$form, data=survTerms$survTime, ...)
 }
 
 #' Plot survival curves
@@ -219,6 +308,10 @@ processSurvTerms <- function(clinical, censoring, event, timeStart, timeStop,
 #' 
 #' @return Plot of survival curves
 #' @export
+#' @examples 
+#' require("survival")
+#' fit <- survfit(Surv(time, status) ~ x, data = aml)
+#' plotSurvivalCurves(fit)
 plotSurvivalCurves <- function(surv, mark=TRUE, interval=FALSE, pvalue=NULL, 
                                title="Survival analysis", scale="days") {
     hc <- hchart(surv, ranges=interval, markTimes=mark) %>%
@@ -271,17 +364,32 @@ processSurvival <- function(session, ...) {
 
 #' Test the survival difference between survival groups
 #' 
-#' @param ... Arguments to pass to \code{survdiff}
+#' @inheritParams survdiff.survTerms
 #' 
-#' @importFrom survival survdiff
+#' @note Instead of raising errors, an NA is returned
 #' 
-#' @return p-value of the survival difference or NA any error occurs
+#' @return p-value of the survival difference or NA
 #' @export
-testSurvival <- function (...) {
+#' 
+#' @examples 
+#' require("survival")
+#' data <- aml
+#' timeStart  <- "event"
+#' event      <- "event"
+#' followup   <- "time"
+#' data$event  <- NA
+#' data$event[aml$status == 1] <- aml$time[aml$status == 1]
+#' censoring  <- "right"
+#' formulaStr <- "x"
+#' survTerms <- processSurvTerms(data, censoring=censoring, event=event, 
+#'                               timeStart=timeStart, followup=followup,
+#'                               formulaStr=formulaStr)
+#' testSurvival(survTerms)
+testSurvival <- function (survTerms, ...) {
     # If there's an error with survdiff, return NA
     pvalue <- tryCatch({
         # Test the difference between survival curves
-        diff <- survdiff(...)
+        diff <- survdiff.survTerms(survTerms, ...)
         
         # Calculate p-value with 5 significant numbers
         pvalue <- 1 - pchisq(diff$chisq, length(diff$n) - 1)
@@ -290,22 +398,78 @@ testSurvival <- function (...) {
     return(pvalue)
 }
 
+#' Label groups based on a given cut-off
+#' 
+#' @param data Numeric: test data
+#' @param cutoff Numeric: test cutoff
+#' @param label Character: label to prefix group names (NULL by default)
+#' @param filter Numeric or boolean: elements of interest in data (all by
+#' default)
+#' @param len Integer: desired length of data; the remaining length is filled 
+#' with NAs (optional)
+#' @param gte Boolean: test with greater than or equal to cutoff (TRUE) or use
+#' less than or equal to cutoff (FALSE)? TRUE by default
+#' 
+#' @return Labeled groups
+#' @export
+#' 
+#' @examples
+#' labelBasedOnCutoff(data=c(1, 0, 0, 1, 0, 1), cutoff=0.5)
+#' 
+#' labelBasedOnCutoff(data=c(1, 0, 0, 1, 0, 1), cutoff=0.5, "Ratio")
+#' 
+#' # Filter data
+#' labelBasedOnCutoff(data=c(1, 0, 0, 0.5, 0, 1), cutoff=0.5, 
+#'                    filter=c(FALSE, TRUE, TRUE, TRUE, FALSE, TRUE))
+#'                    
+#' # Use "greater than" instead of "greater than or equal to"
+#' labelBasedOnCutoff(data=c(1, 0, 0, 0.5, 0, 1), cutoff=0.5, gte=FALSE,
+#'                    filter=c(FALSE, TRUE, TRUE, TRUE, FALSE, TRUE))
+labelBasedOnCutoff <- function (data, cutoff, label=NULL, filter=TRUE, len=NULL,
+                                gte=TRUE) {
+    if (is.null(len)) len <- length(data)
+    group <- rep(NA, len)
+    
+    if (gte) {
+        comp <- `>=`
+        str1 <- ">="
+        str2 <- "<"
+    } else {
+        comp <- `>`
+        str1 <- ">"
+        str2 <- "<="
+    }
+    group[filter] <- comp(data[filter], cutoff)
+
+    # Assign a value based on the inclusion levels cut-off
+    if (is.null(label)) {
+        group[group == "TRUE"]  <- paste(str1, cutoff)
+        group[group == "FALSE"] <- paste(str2, cutoff)
+    } else {
+        group[group == "TRUE"]  <- paste(label, str1, cutoff)
+        group[group == "FALSE"] <- paste(label, str2, cutoff)
+    }
+    
+    length(group) <- len
+    return(group)
+}
+
 #' Test the survival difference between two survival groups given a cutoff
 #' 
 #' @inheritParams processSurvTerms
 #' @param cutoff Numeric: Cut-off of interest
 #' @param data Numeric: elements of interest to test against the cut-off
 #' @param group Pre-filled vector of missing values with the length of data
-#' @param filter Boolean or numeric: interest of the data elements
+#' @param filter Boolean or numeric: elements to use (all by default)
 #' @param ... Arguments to pass to \code{processSurvTerms}
 #' @param session Shiny session
 #' 
 #' @importFrom survival survdiff
 #' @return p-value of the survival difference
-testSurvivalCutoff <- function(cutoff, data, filter, ..., group=NULL, 
-                               session=NULL) {
+testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
+                               group=NULL, session=NULL) {
     if (is.null(group)) group <- rep(NA, nrow(clinical))
-    group[filter] <- data >= cutoff
+    group[filter] <- data[filter] >= cutoff
     
     # Assign a value based on the inclusion levels cut-off
     group[group == "TRUE"]  <- paste("Inclusion levels >=", cutoff)
@@ -313,14 +477,17 @@ testSurvivalCutoff <- function(cutoff, data, filter, ..., group=NULL,
     
     # Calculate survival curves
     if (!is.null(session)) {
-        survTerms <- processSurvival(session, group, ...)
+        survTerms <- processSurvival(session, group=group, clinical=clinical,
+                                     ...)
         if (is.null(survTerms)) return(NULL)
     } else {
-        survTerms <- tryCatch(processSurvTerms(group, ...), error=return)
+        survTerms <- tryCatch(processSurvTerms(group=group, clinical=clinical, 
+                                               ...), 
+                              error=return)
         if ("simpleError" %in% class(survTerms)) return(NA)
     }
     
-    pvalue <- testSurvival(survTerms$form, data=survTerms$survTime)
+    pvalue <- testSurvival(survTerms)
     return(pvalue)
 }
 

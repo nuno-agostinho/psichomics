@@ -23,6 +23,9 @@ bsModal2(id, title, trigger, ..., size = NULL, footer = NULL,
 \item{style}{Character: message style can be "warning", "error", "info" or 
 NULL}
 }
+\value{
+HTML element to create a modified modal
+}
 \description{
 bsModal is used within the UI to create a modal window. This allows to use
 the footer.

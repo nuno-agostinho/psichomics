@@ -6,6 +6,9 @@
 \usage{
 getMatsAnnotation()
 }
+\value{
+Retrieve annotation from MATS
+}
 \description{
 Get MATS alternative splicing annotation
 }
