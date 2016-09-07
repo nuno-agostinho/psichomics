@@ -48,7 +48,7 @@ quantification may be retrieved from TCGA.
 Data is downloaded from Firehose, a service that hosts TCGA data already merged 
 and formatted needed to run the downstream analyses. Before downloading data, 
 the available choices should be checked:
-```{r TCGA options}
+```{r TCGA options, eval=FALSE}
 # Available tumour types
 cohorts <- getFirehoseCohorts()
 
@@ -60,7 +60,7 @@ dataTypes <- getFirehoseDataTypes()
 ```
 
 After deciding on the options to use, download and load data of interest using:
-```{r download}
+```{r download, eval=FALSE}
 # Set download folder
 folder <- getDownloadsFolder()
 
@@ -69,7 +69,19 @@ folder <- getDownloadsFolder()
 data <- loadFirehoseData(folder=folder,
                          cohort="ACC",
                          data=c("Clinical", "junction_quantification"),
-                         date=date[1])
+                         date="2016-01-28")
+
+# Select clinical and junction quantification dataset
+clinical <- data[[1]]$`Clinical data`
+junctionQuant <- data[[1]]$`Junction quantification (Illumina HiSeq)`
+```
+
+> Note that only chromosome 22 is used in the following code snippets because of
+size restrictions
+
+```{r prepare examples, include=FALSE}
+clinical <- readRDS("ex_TCGA_clinical.RDS")
+junctionQuant <- readRDS("ex_TCGA_junction_quant_chr22.RDS")
 ```
 
 Data is only downloaded if the files are not present in the given folder. In 
@@ -105,9 +117,6 @@ To quantify splicing, select junction quantification,  data to use:
 # Min. reads threshold: number of reads required to quantify a splicing event
 minReads <- 10
 
-# Select junction quantification dataset
-junctionQuant <- data[[1]]$`Junction quantification (Illumina HiSeq)`
-
 # Load Human (hg19/GRCh37 assembly) annotation
 annotation <- readFile(listSplicingAnnotation()[1])
 
@@ -127,8 +136,6 @@ scenario. To create groups of patients based on clinical attributes (in this
 case, tumour stage and patient gender):
 
 ```{r survival groups}
-clinical <- data[[1]]$`Clinical data`
-
 # Get available groups in clinical data
 cols <- colnames(clinical)
 
@@ -202,8 +209,6 @@ PSI below and above that threshold) for a given splicing event.
 First, data for the selected alternative splicing event is required.
 
 ```{r splicing event data}
-clinical <- data[[1]]$`Clinical data`
-
 # Get tumour sample IDs (matched normal and control samples are not interesting 
 # for this survival analysis)
 match <- getPatientFromSample(colnames(psi), clinical)
@@ -229,7 +234,7 @@ optimalPvalue <- opt$value # Respective p-value
 Plot survival curves separated by the optimal quantification cut-off. To select
 a different cutoff, just
 
-```{r }
+```{r}
 cutoff <- optimalCutoff
 group <- labelBasedOnCutoff(eventPSI, cutoff, len=nrow(clinical), 
                             label="PSI values", filter=tumour)
@@ -245,7 +250,7 @@ plotSurvivalCurves(surv, pvalue=pvalue)
 Explore alternative splicing quantification groups using associated clinical
 attributes:
 
-```{r}
+```{r plot PCA variance}
 # Percentage of tolerance of missing values by splicing event: tolerated missing
 # values are replaced by the median value from the respective event
 naTolerance=0
@@ -260,7 +265,7 @@ plotVariance(pca)
 
 Let's plot the PCA by tumour stage:
 
-```{r}
+```{r plot PCA}
 # Select tumour stage
 stage <- clinical[[grep("tumor_stage", colnames(clinical), value=TRUE)]]
 stage <- as.character(stage)

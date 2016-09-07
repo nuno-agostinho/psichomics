@@ -23,19 +23,6 @@ listSplicingAnnotation <- function() {
     c("Human (hg19/GRCh37)"="hg19_splicingAnnotation.RDS")
 }
 
-#' Load local file
-#' @param file Character: path to the file
-#' 
-#' @return Loaded file
-#' @export
-#' 
-#' @examples 
-#' annotList <- listSplicingAnnotation()
-#' annotation <- readFile(annotList[1])
-readFile <- function(file) {
-    readRDS(insideFile("extdata", file))
-}
-
 #' Interface to quantify alternative splicing
 #' 
 #' @param ns Namespace function
@@ -94,8 +81,8 @@ inclusionLevelsUI <- function(id, panel) {
 #' @examples 
 #' # Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events
 #' eventType <- c("SE", "MXE")
-#' annot <- readFile("example_splicing_annotation.RDS")
-#' junctionQuant <- readFile("example_junction_quantification.RDS")
+#' annot <- readFile("ex_splicing_annotation.RDS")
+#' junctionQuant <- readFile("ex_junctionQuant.RDS")
 #' 
 #' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 quantifySplicing <- function(annotation, junctionQuant, eventType="SE", 
