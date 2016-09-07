@@ -1,5 +1,6 @@
 # PSIchomics [![Build Status](https://travis-ci.org/nuno-agostinho/psichomics.svg?branch=master)](https://travis-ci.org/nuno-agostinho/psichomics) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/nuno-agostinho/psichomics?branch=master&svg=true)](https://ci.appveyor.com/project/nuno-agostinho/psichomics) [![codecov](https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg)](https://codecov.io/gh/nuno-agostinho/psichomics)
-R package to quantify, analyse and visualise alternative splicing data from 
+R package with a visual interface to quantify, analyse and visualise alternative
+splicing data from 
 [The Cancer Genome Atlas (TCGA)](https://tcga-data.nci.nih.gov/docs/publications/tcga).
 
 ## Available tutorials
@@ -14,8 +15,8 @@ Other tutorials coming soon:
 * Developers and other contributors
 
 ## Install and start running
-This package is not available in [Bioconductor](https://www.bioconductor.org)
-yet. To install and start using this program, follow these steps:
+This package is not yet available in [Bioconductor](https://www.bioconductor.org).
+To install and start using this program, follow these steps:
 
 1. [Install R](https://www.r-project.org/)
 2. Open [RStudio](https://www.rstudio.com/products/rstudio) (or open a console, 
