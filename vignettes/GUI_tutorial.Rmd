@@ -3,13 +3,11 @@ title: 'PSIchomics tutorial: visual interface'
 author: "Nuno Saraiva-Agostinho"
 date: "5 September 2016"
 bibliography: refs.bib
-output:
-    pdf_document:
-        fig_caption: yes
-        fig_height: 1
-        fig_width: 1
-        number_sections: yes
-        toc: yes
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
 ---
 
 ---
