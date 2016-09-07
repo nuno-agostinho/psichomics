@@ -1,16 +1,24 @@
 Package: psichomics
 Title: Analyse and Visualise Alternative Splicing Data
 Version: 0.99.0
-Authors@R: person("Nuno", "Agostinho", email = "nunodanielagostinho@gmail.com", 
-    role = c("aut", "cre"))
-Description: Automatically retrieve data from RNA-Seq sources such as TCGA
-    or load your own files and process the data. This tool allows you to analyse
-    and visualise alternative splicing.
+Authors@R: c(
+    person("Nuno", "Saraiva Agostinho", , "nunodanielagostinho@gmail.com", 
+           role = c("aut", "cre")),
+    person("Nuno", "Barbosa Morais", role=c("aut", "led", "ths")),
+    person("Andr\u00E9", "Falc\u00E3o", role="ths"),
+    person("Lina", "Gallego Paez", role="ctb"),
+    person("Marie", "Bordone", role="ctb"),
+    person("Teresa", "Maia", role="ctb"),
+    person("Mariana", "Ferreira", role="ctb"),
+    person("Ana Carolina", "Leote", role="ctb"))
+Description: Automatically retrieve data from RNA-Seq sources such as The Cancer
+    Genome Atlas or load your own files and process the data. This tool allows 
+    you to analyse and visualise alternative splicing.
 Depends:
     R (>= 3.2),
     shiny,
     shinyBS
-License: MIT
+License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 5.0.1
 Imports:
