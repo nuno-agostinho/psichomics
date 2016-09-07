@@ -6,6 +6,28 @@
                           "psichomics()")
 }
 
+#' Get psichomics file inside a given directory
+#' @param ... character vectors, specifying subdirectory and file(s) within some
+#' package. The default, none, returns the root of the package. Wildcards are
+#' not supported.
+#' @return Loaded file
+insideFile <- function(...) {
+    return(system.file(..., package="psichomics"))
+}
+
+#' Load local file
+#' @param file Character: path to the file
+#' 
+#' @return Loaded file
+#' @export
+#' 
+#' @examples 
+#' annotList <- listSplicingAnnotation()
+#' annotation <- readFile(annotList[1])
+readFile <- function(file) {
+    readRDS(insideFile("extdata", file))
+}
+
 #' Parse an alternative splicing event based on a given identifier
 #' 
 #' @param event Character: event identifier

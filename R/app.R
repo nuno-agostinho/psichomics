@@ -6,15 +6,6 @@ NULL
 MB = 5000 # File size in MB
 options(shiny.maxRequestSize = MB * 1024^2)
 
-#' Get psichomics file inside a given directory
-#' @param ... character vectors, specifying subdirectory and file(s) within some
-#' package. The default, none, returns the root of the package. Wildcards are
-#' not supported.
-#' @return Loaded file
-insideFile <- function(...) {
-    return(system.file(..., package="psichomics"))
-}
-
 #' Check if a given function should be loaded by the calling module
 #' @param loader Character: name of the file responsible to load such function 
 #' @param FUN Function

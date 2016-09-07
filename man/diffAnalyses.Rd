@@ -54,8 +54,8 @@ respective string in the \code{pvalueAdjust} argument:
 \examples{
 # Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events
 eventType <- c("SE", "MXE")
-annot <- readFile("example_splicing_annotation.RDS")
-junctionQuant <- readFile("example_junction_quantification.RDS")
+annot <- readFile("ex_splicing_annotation.RDS")
+junctionQuant <- readFile("ex_junctionQuant.RDS")
 
 psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 group <- c(rep("Normal", 3), rep("Tumour", 3))
