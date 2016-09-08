@@ -48,7 +48,8 @@ Suggests:
     rmarkdown,
     dplyr,
     gplots,
-    stringr
+    stringr,
+    covr
 VignetteBuilder: knitr
 Collate:
     'analysis.R'
@@ -80,3 +81,5 @@ Collate:
 biocViews: Sequencing, RNASeq, AlternativeSplicing, DifferentialSplicing,
     Transcription, GUI, PrincipalComponent, Survival, BiomedicalInformatics,
     Transcriptomics, Visualization, MultipleComparison
+URL: https://github.com/nuno-agostinho/psichomics
+BugReports: https://github.com/nuno-agostinho/psichomics/issues
