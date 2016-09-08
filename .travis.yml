@@ -1,10 +1,9 @@
-language: r
-r: bioc-devel
-cache: packages
-warnings_are_errors: false
+# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
-r_packages:
-  - covr
+language: R
+r: bioc-devel
+sudo: false
+cache: packages
 
 after_success:
-  - Rscript -e 'library(covr); codecov(token = "e7511dae-1515-4189-85e8-a33f209542a3")'
+  - Rscript -e 'covr::codecov()'
