@@ -247,7 +247,7 @@ levene <- function(psi, groups, stat=NULL) {
         }
     } else {
         nas <- is.na(psi)
-        stat <- levene.test(psi[!nas], factor(groups[!nas]))
+        stat <- leveneTest(psi[!nas], factor(groups[!nas]))
         statistic <- stat$statistic
         p.value   <- stat$p.value
         adjusted  <- NULL
