@@ -49,7 +49,8 @@ Suggests:
     dplyr,
     gplots,
     stringr,
-    covr
+    covr,
+    car
 VignetteBuilder: knitr
 Collate:
     'analysis.R'
