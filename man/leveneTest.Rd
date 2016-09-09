@@ -33,9 +33,9 @@ Performs a Levene's test to assess the equality of variances
 vals <- sample(30, replace=TRUE)
 group <- lapply(list("A", "B", "C"), rep, 10)
 group <- unlist(group)
-leveneTest(vals, group)
+psichomics:::leveneTest(vals, group)
 
 ## Using Levene's test based on the mean
-leveneTest(vals, group, mean)
+psichomics:::leveneTest(vals, group, mean)
 }
 

@@ -38,7 +38,7 @@ test_that("Remove missing values", {
     expect_true(grepl("median", lev$method))
 })
 
-test_that("Factorise groups if groups are not factors", {
+test_that("Factorise groups", {
     lev_factor <- leveneTest(values, groups)
     expect_is(lev_factor, "htest")
     
@@ -53,4 +53,30 @@ test_that("Factorise groups if groups are not factors", {
     expect_equal(lev_char$statistic[[1]], car$`F value`[[1]])
     expect_equal(lev_char$p.value, car$`Pr(>F)`[[1]])
     expect_true(grepl("median", lev_char$method))
+})
+
+test_that("Re-factor groups (useful to redo levels)", {
+    notLow <- groups != "low"
+    groups <- groups[notLow]
+    values <- values[notLow]
+    
+    lev <- leveneTest(values, groups)
+    car <- car::leveneTest(values, groups)
+    
+    expect_is(lev, "htest")
+    expect_equal(lev$statistic[[1]], car$`F value`[[1]])
+    expect_equal(lev$p.value, car$`Pr(>F)`[[1]])
+    expect_true(grepl("median", lev$method))
+})
+
+test_that("Named values are calculated just as unnamed values", {
+    names(values) <- paste0("name", 1:length(values))
+    
+    lev <- leveneTest(values, groups)
+    car <- car::leveneTest(values, groups)
+    
+    expect_is(lev, "htest")
+    expect_equal(lev$statistic[[1]], car$`F value`[[1]])
+    expect_equal(lev$p.value, car$`Pr(>F)`[[1]])
+    expect_true(grepl("median", lev$method))
 })

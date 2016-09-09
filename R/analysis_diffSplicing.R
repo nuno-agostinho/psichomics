@@ -31,22 +31,19 @@ leveneTest <- function(x, g, centers=median) {
     x <- x[noNAs]
     g <- g[noNAs]
     
-    # Convert group to factors
-    if (!is.factor(g)) {
-        g <- as.factor(g)
-    }
+    # Convert groups to factors
+    g <- factor(g)
     
-    res <- vapply(split(x, g), centers, numeric(1))
+    res <- vapply(split(x, g, drop=TRUE), centers, numeric(1))
     spread <- abs(x - res[g])
     
     # Analysis of variance (ANOVA)
-    var <- anova(lm(spread ~ names(spread)))
+    var <- anova(lm(spread ~ g))
     statistic <- var$`F value`[1]
     pval <- var$`Pr(>F)`[1]
     
     centers <- deparse(substitute(centers))
-    rval <- list(statistic=c("W"=statistic), p.value=pval, 
-                 data.name=dname,
+    rval <- list(statistic=c("W"=statistic), p.value=pval, data.name=dname,
                  method=paste0("Levene's test (using the ", centers, ")"))
     class(rval) <- "htest"
     return(rval)
@@ -176,9 +173,8 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
     # Levene's test
     levene <- NULL
     if (any("levene" == analyses) && len >= 2) {
-        nas <- is.na(vector)
         levene <- suppressWarnings(
-            tryCatch(leveneTest(vector[!nas], group[!nas]), error=return))
+            tryCatch(leveneTest(vector, group), error=return))
         if (any("error" == class(levene))) levene <- NULL
     }
     
