@@ -13,7 +13,7 @@ renameDuplicated(check, comp)
 }
 \value{
 Character vector with renamed values if duplicated; else, it
-returns the usual values. Doesn't return the comparator values.
+returns the usual values. It doesn't return the comparator values.
 }
 \description{
 Renames values by adding an index to the end of duplicates.

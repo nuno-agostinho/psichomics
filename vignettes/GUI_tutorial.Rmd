@@ -1,7 +1,7 @@
 ---
 title: 'PSIchomics tutorial: visual interface'
-author: "Nuno Saraiva-Agostinho"
-date: "5 September 2016"
+author: "Nuno Saraiva Agostinho"
+date: "10 September 2016"
 bibliography: refs.bib
 output: rmarkdown::html_vignette
 vignette: >
@@ -21,8 +21,8 @@ RNA-Seq reads aligning to splice junctions (henceforth called junction
 quantification) and exons.
 
 # Installing and starting the program
-The [R language](https://www.r-project.org/) is required. Install PSIchomics by
-typing the following in an R console:
+Install PSIchomics by typing the following in an R console (the [R
+language](https://www.r-project.org/) is required.):
 
 ```{r, eval=FALSE}
 install.packages("devtools")
@@ -39,12 +39,12 @@ psichomics()
 
 # Downloading and loading TCGA data
 Quantification of alternative splicing is based on the porportion of isoforms 
-that include an exon (known as the percent spliced-in or PSI value) [@wang2008].
+that include a given exon, known as percent spliced-in or PSI [@wang2008].
 
 To estimate this value for each splicing event, both alternative splicing
-annotation and alternative splicing junction quantification are required. While
-alternative splicing annotation is already provided in the package, junction 
-quantification may be retrieved from TCGA.
+annotation and junction quantification are required. While alternative splicing
+annotation is provided by the package, junction quantification may be retrieved
+from TCGA.
 
 1. To load TCGA data, click on the blue panel **Load TCGA/Firehose data**.
 2. Fill in the **Tumour type** field with *Bladder Urothelial Carcinoma (BLCA)*.
@@ -58,7 +58,7 @@ folder, they will now start downloading. When all downloads have finished,
 proceed by clicking on **Load data** again with the exact same parameters.
 
 After the data finish loading, the on-screen instructions will be replaced by 
-the loaded datasets. Notes the following: 
+the loaded datasets. Please note the following: 
 
 - To optimize performance, not all clincal data columns will be visible by 
 default. However, columns of interest can be added or removed in the field 
@@ -66,9 +66,9 @@ default. However, columns of interest can be added or removed in the field
 - Each column of a dataset is sortable by clicking on it to toggle between 
 ascending and descending order and filtrable by clicking on and editing the 
 field below the column name. Filtering and sorting of loaded data have **no** 
-impact in the subsequent analysis available in the application.
+impact on the subsequent analyses available in the application.
 
-```{r, echo=FALSE, fig.retina=NULL, out.width='270pt'}
+```{r, echo=FALSE, fig.retina=NULL, out.width='400pt'}
 knitr::include_graphics("load_data.png")
 ```
 
@@ -90,7 +90,7 @@ total read counts below this threshold are discarded from further analyses.
 Click on **Calculate inclusion levels** to start quantifying alternative 
 splicing.
 
-```{r, echo=FALSE, fig.retina=NULL, out.width='270pt'}
+```{r, echo=FALSE, fig.retina=NULL, out.width='400pt'}
 knitr::include_graphics("quantify_splicing.png")
 ```
 
@@ -101,7 +101,7 @@ To analyse survival data, click on the **Analyses** tab located in the
 navigation menu at the top and select **Survival analysis**.
 
 Survival data can be analysed based on clinical attributes, for instance, by 
-tumour stage and patient gender based on time to death as the follow-up time and
+tumour stage and patient gender, using time to death as the follow-up time and
 death as the event of interest. The default options cater for this common 
 scenario. To create groups of patients based on clinical attributes (in this 
 case, tumour stage and patient gender):
@@ -113,7 +113,7 @@ case, tumour stage and patient gender):
     3. Click on **Create group**. New groups have now been created based on the 
     unique values of that column (NA, stage i, stage ii, stage iii and stage 
     iv).
-3. To create groups of patienties based on gender:
+3. To create groups of patients based on gender:
     1. Click on the field below **Select column**.
     2. Start typing `gender` and click the first relevant suggestion.
     3. Click on **Create group**.
@@ -128,7 +128,7 @@ groups to plot** and removing the patients' gender (see Figure 3). Information
 regarding number of individuals and events is returned when hovering over each 
 survival curve in the plot.
 
-```{r, echo=FALSE, fig.retina=NULL, out.width='480pt'}
+```{r, echo=FALSE, fig.retina=NULL, out.width='700pt'}
 knitr::include_graphics("survival.png")
 ```
 
@@ -148,8 +148,8 @@ attributes:
 4. Remove groups from **Filter data groups** to perform a PCA with all the data.
 5. Click on **Calculate PCA**.
 
-[^1]: Missing values are replaced with the median value from the respective 
-event.
+[^1]: Missing values are replaced with the median value for the respective 
+event across samples.
 
 After PCA is completed, its outcome can be plotted:
 
@@ -159,7 +159,7 @@ After PCA is completed, its outcome can be plotted:
 stages) to guide the colouring of points in the PCA plot.
 4. Click on **Plot PCA**.
 
-```{r, echo=FALSE, fig.retina=NULL}
+```{r, echo=FALSE, fig.retina=NULL, out.width='700pt'}
 knitr::include_graphics("pca.png")
 ```
 
@@ -181,7 +181,7 @@ method**.
 When the analyses are completed, the results are shown in a filtrable and 
 sortable  table.
 
-```{r, echo=FALSE, fig.retina=NULL, out.width='270pt'}
+```{r, echo=FALSE, fig.retina=NULL, out.width='350pt'}
 knitr::include_graphics("diff_splicing.png")
 ```
 
@@ -219,7 +219,7 @@ If an event is differentially spliced and it has an impact on patient
 survivability, this particular association with the studied disease might be already described in the
 literature (read more in section **Gene annotation**).
 
-```{r, echo=FALSE, fig.retina=NULL, out.width='270pt'}
+```{r, echo=FALSE, fig.retina=NULL, out.width='400pt'}
 knitr::include_graphics("psi_cutoff.png")
 ```
 
@@ -260,7 +260,8 @@ types, are available too.
 All feedback on the program, documentation and associated material (including
 this tutorial) is welcome. Please send any suggestions and comments to:
 
-| Nuno Saraiva-Agostinho (nunodanielagostinho@gmail.com)
-| [Computation Biology, IMM](http://imm.medicina.ulisboa.pt/group/compbio/)
+> Nuno Saraiva Agostinho (nunodanielagostinho@gmail.com)
+
+> [Computation Biology, IMM](http://imm.medicina.ulisboa.pt/group/compbio/)
 
 # References
