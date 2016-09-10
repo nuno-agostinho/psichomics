@@ -73,7 +73,7 @@ inclusionLevelsUI <- function(id, panel) {
 #' @param eventType Character: splicing event types to quantify
 #' @param minReads Integer: minimum of read counts to consider a junction read 
 #' in calculations
-#' @param progress Function to track the progess
+#' @param progress Function to track the progress
 #' 
 #' @return Data frame with the quantification of the alternative splicing events
 #' @export

@@ -70,7 +70,7 @@ diffSplicingUI <- function(id, tab) {
 
 #' Create density sparklines for inclusion levels
 #' @param data Character: HTML-formatted data series of interest
-#' @param events Characater: event identifiers
+#' @param events Character: event identifiers
 #' @param delim Character: left and right delimeters in groups that should be
 #' removed
 #' 

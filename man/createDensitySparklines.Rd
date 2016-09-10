@@ -9,7 +9,7 @@ createDensitySparklines(data, events, delim = NULL)
 \arguments{
 \item{data}{Character: HTML-formatted data series of interest}
 
-\item{events}{Characater: event identifiers}
+\item{events}{Character: event identifiers}
 
 \item{delim}{Character: left and right delimeters in groups that should be
 removed}
