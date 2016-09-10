@@ -471,7 +471,7 @@ diffSplicingTableServer <- function(input, output, session) {
                     intersected <- unique(names(intersection[dup]))
                     errorModal(session, "Group intersection", 
                                "Differential analysis cannot be carried with",
-                               "samples belonging to two groups. The following", 
+                               "samples belonging to two groups. The following",
                                "groups share samples:",
                                tags$kbd(paste(intersected, collapse = ", ")))
                 } else {
@@ -497,10 +497,10 @@ diffSplicingTableServer <- function(input, output, session) {
             # Remove columns of no interest
             return(stats[, !grepl("method|data.name", colnames(stats))])
         }
-    }, style="bootstrap", selection="none", filter='top', server=TRUE,
+    }, style="bootstrap", selection="none", filter="top", server=TRUE,
     extensions="Buttons", options=list(
         pageLength=10, rowCallback=JS("createDiffSplicingLinks"), 
-        dom='Bfrtip', buttons=I('colvis'),
+        dom="Bfrtip", buttons=I("colvis"),
         columnDefs=list(list(targets=1, searchable=FALSE))))
     
     # Download whole table

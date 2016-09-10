@@ -1,7 +1,7 @@
 ---
 title: 'PSIchomics tutorial: command-line interface (CLI)'
 author: "Nuno Saraiva-Agostinho"
-date: "6 September 2016"
+date: "10 September 2016"
 bibliography: refs.bib
 output: rmarkdown::html_vignette
 vignette: >
@@ -37,12 +37,12 @@ library(psichomics)
 
 # Retrieving TCGA data
 Quantification of alternative splicing is based on the porportion of isoforms 
-that include an exon (known as the percent spliced-in or PSI value) [@wang2008].
+that include a given exon, known as percent spliced-in or PSI [@wang2008].
 
 To estimate this value for each splicing event, both alternative splicing
-annotation and alternative splicing junction quantification are required. While
-alternative splicing annotation is already provided in the package, junction 
-quantification may be retrieved from TCGA.
+annotation and junction quantification are required. While alternative splicing
+annotation is provided by the package, junction quantification may be retrieved
+from TCGA.
 
 ## Download and load data from TCGA/Firehose
 Data is downloaded from Firehose, a service that hosts TCGA data already merged 
@@ -130,7 +130,7 @@ events <- rownames(psi)
 
 # Survival analysis
 Survival data can be analysed based on clinical attributes, for instance, by 
-tumour stage and patient gender based on time to death as the follow-up time and
+tumour stage and patient gender, using time to death as the follow-up time and
 death as the event of interest. The default options cater for this common 
 scenario. To create groups of patients based on clinical attributes (in this 
 case, tumour stage and patient gender):
@@ -252,7 +252,8 @@ attributes:
 
 ```{r plot PCA variance}
 # Percentage of tolerance of missing values by splicing event: tolerated missing
-# values are replaced by the median value from the respective event
+# values are replaced with the median value for the respective event across 
+# samples
 naTolerance=0
 
 # Perform principal component analysis (transpose alternative splicing

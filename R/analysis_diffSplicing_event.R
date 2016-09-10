@@ -12,7 +12,7 @@ diffSplicingEventUI <- function(id) {
         uiOutput(ns("modal")),
         sidebarLayout(
             sidebarPanel(
-                tags$b("Clinical groups on which to perform the analyses:"), 
+                tags$b("Clinical groups on which to perform the analyses:"),
                 tags$br(), tags$a(href="#", onclick="changeDiffSplicingGroup()",
                                   textOutput(ns("groupsCol"))),
                 tags$br(),

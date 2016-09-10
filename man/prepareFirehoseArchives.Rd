@@ -9,7 +9,7 @@ prepareFirehoseArchives(archive, md5, folder, outdir)
 \arguments{
 \item{archive}{Character: path to downloaded archives}
 
-\item{md5}{Characater: path to MD5 files of each archive}
+\item{md5}{Character: path to MD5 files of each archive}
 
 \item{folder}{Character: master directory where every archive will be 
 extracted}

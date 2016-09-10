@@ -245,7 +245,7 @@ checkIntegrity <- function(filesToCheck, md5file) {
 #' original downloaded archives.
 #'
 #' @param archive Character: path to downloaded archives
-#' @param md5 Characater: path to MD5 files of each archive
+#' @param md5 Character: path to MD5 files of each archive
 #' @param folder Character: master directory where every archive will be 
 #' extracted
 #' @param outdir Character: subdirectories where to move the extracted content
