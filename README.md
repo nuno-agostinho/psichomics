@@ -57,9 +57,9 @@ PSIchomics will try to process all the data contained in the given folder and
 sub-folders to search for files that can be loaded.
 
 ## Splicing Quantification
-To quantify alternative splicing based on the porportion of isoforms that 
-include an exon, the Percent Spliced-In (PSI or Ψ) metric is used [(Wang *et 
-al.*, 2008)](#references).
+The quantification of each alternative splicing event is based on the proportion
+of junction reads that support the inclusion isoform, known as percent 
+spliced-in or PSI [(Wang *et al.*, 2008)](#references).
 
 An estimate of this value is obtained based on the the proportion of reads 
 supporting the inclusion of an exon over the reads supporting both the inclusion
