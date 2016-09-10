@@ -6,7 +6,7 @@
 #' @param centers Function used to calculate how much values spread 
 #' (\code{median} by default; another common function used is \code{mean})
 #' 
-#' @importFrom stats complete.cases anova median
+#' @importFrom stats complete.cases anova median lm
 #' 
 #' @return A list with class \code{"htest"} containing the following components:
 #' \item{statistic}{the value of the test statistic with a name describing it.}
