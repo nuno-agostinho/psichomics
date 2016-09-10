@@ -15,7 +15,7 @@ renderDataTableSparklines(..., options = NULL)
 Render a data table with Sparkline HTML elements
 }
 \details{
-This slighlty modified version of \code{\link{renderDataTable}}
+This slightly modified version of \code{\link{renderDataTable}}
 calls a JavaScript function to convert the Sparkline HTML elements to
 interactive Highcharts
 }

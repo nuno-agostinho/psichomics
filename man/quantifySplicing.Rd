@@ -18,7 +18,7 @@ splicing event type}
 \item{minReads}{Integer: minimum of read counts to consider a junction read 
 in calculations}
 
-\item{progress}{Function to track the progess}
+\item{progress}{Function to track the progress}
 }
 \value{
 Data frame with the quantification of the alternative splicing events

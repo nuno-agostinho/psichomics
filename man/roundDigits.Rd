@@ -7,10 +7,10 @@
 roundDigits(n)
 }
 \arguments{
-\item{n}{Numeric: number to round}
+\item{n}{Numeric: number to roundhf}
 }
 \value{
-Formatted number with a given numeric presion
+Formatted number with a given numeric precision
 }
 \description{
 Round by the given number of digits

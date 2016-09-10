@@ -117,7 +117,7 @@ is.whole <- function(x, tol=.Machine$double.eps^0.5) {
 #' @param comp Character: values to compare with
 #'
 #' @return Character vector with renamed values if duplicated; else, it
-#' returns the usual values. Doesn't return the comparator values.
+#' returns the usual values. It doesn't return the comparator values.
 #'
 #' @examples
 #' psichomics:::renameDuplicated(check = c("blue", "red"), comp = c("green",
@@ -527,8 +527,8 @@ signifDigits <- function(n) {
 }
 
 #' Round by the given number of digits
-#' @param n Numeric: number to round
-#' @return Formatted number with a given numeric presion
+#' @param n Numeric: number to roundhf
+#' @return Formatted number with a given numeric precision
 roundDigits <- function(n) {
     return(isolate(formatC(n, getPrecision(), format="f")))
 }
@@ -869,7 +869,7 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
 
 #' Render a data table with Sparkline HTML elements
 #' 
-#' @details This slighlty modified version of \code{\link{renderDataTable}}
+#' @details This slightly modified version of \code{\link{renderDataTable}}
 #' calls a JavaScript function to convert the Sparkline HTML elements to
 #' interactive Highcharts
 #' 
