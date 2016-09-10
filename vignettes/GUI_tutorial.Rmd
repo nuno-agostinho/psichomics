@@ -21,8 +21,8 @@ RNA-Seq reads aligning to splice junctions (henceforth called junction
 quantification) and exons.
 
 # Installing and starting the program
-Install PSIchomics by typing the following in an R console (the [R
-language](https://www.r-project.org/) is required.):
+Install PSIchomics by typing the following in an R console (the 
+[R environment](https://www.r-project.org/) is required):
 
 ```{r, eval=FALSE}
 install.packages("devtools")
@@ -38,8 +38,9 @@ psichomics()
 ```
 
 # Downloading and loading TCGA data
-Quantification of alternative splicing is based on the porportion of isoforms 
-that include a given exon, known as percent spliced-in or PSI [@wang2008].
+The quantification of each alternative splicing event is based on the proportion
+of junction reads that support the inclusion isoform, known as percent 
+spliced-in or PSI [@wang2008].
 
 To estimate this value for each splicing event, both alternative splicing
 annotation and junction quantification are required. While alternative splicing
