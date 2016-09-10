@@ -4,7 +4,7 @@
 #' 
 #' @importFrom shinyjs disabled
 #' @importFrom shiny downloadLink selectizeInput uiOutput actionButton tags
-#' checkboxGroupInput helpText tagList sidebarLayout mainPanel textOutput
+#' checkboxGroupInput helpText tagList sidebarLayout mainPanel
 #' @importFrom DT dataTableOutput
 #' @importFrom highcharter highchartOutput
 #' 
@@ -71,7 +71,8 @@ diffSplicingTableUI <- function(id) {
             chart[[1]], style="min-width: 150px;")
         
         tags$td(style="word-wrap: break-word;", style="white-space: normal;", 
-                textOutput(paste0(ns("eventText"), i)), chart,
+                style="padding: 5px;",
+                uiOutput(paste0(ns("eventText"), i)), chart,
                 uiOutput(paste0(ns("eventSurvStats"), i)))
     })
     
@@ -94,7 +95,7 @@ diffSplicingTableUI <- function(id) {
 #' differences
 #' @param ns Namespace function
 #' @return HTML elements to calculate optimal survival difference
-optimSurvDiffUI <- function(ns) {
+optimSurvDiffOptions <- function(ns) {
     tagList(
         hr(), h3("Survival analyses by splicing quantification cut-off"),
         helpText("For each splicing event, find the PSI cut-off that maximizes",
@@ -137,7 +138,7 @@ optimSurvDiff <- function(session, input, output) {
     # Interface of survival analyses
     output$survivalOptions <- renderUI({
         if (!is.null(getDifferentialAnalyses()) && !is.null(getClinicalData()))
-            optimSurvDiffUI(ns)
+            optimSurvDiffOptions(ns)
     })
     
     # Update clinical parameters
@@ -280,18 +281,27 @@ optimSurvDiff <- function(session, input, output) {
                     "Survival analysis not yet requested for this event"))
             } else if (is.na(pvalue)) {
                 splicingEvent <- rownames(optimSurv)[row]
-                stat <- "No optimal PSI cut-off found for this event"
+                stat <- tagList(
+                    "No optimal PSI cut-off", tags$br(), "found for this event")
             } else {
                 splicingEvent  <- rownames(optimSurv)[row]
-                stat <- tagList(
-                    tags$b("PSI cut-off:"), roundDigits(cutoff), tags$br(),
-                    tags$b("p-value:"), pvalue)
+                stat <- tags$table(class="table", class="table-condensed", 
+                                   style="margin-bottom: 0",
+                                   tags$tbody(
+                                       tags$tr(tags$td(tags$b("PSI cut-off")),
+                                               tags$td(roundDigits(cutoff))),
+                                       tags$tr(tags$td(tags$b("p-value")),
+                                               tags$td(pvalue))))
             }
             
             if (is.null(splicingEvent) || is.na(splicingEvent)) stat <- NULL
-            output[[paste0("eventText", i)]] <- renderText(
-                gsub("_", " ", splicingEvent))
-            output[[paste0("eventSurvStats", i)]] <- renderUI(stat)
+            output[[paste0("eventText", i)]] <- renderUI(
+                tags$a(
+                    gsub("_", " ", splicingEvent), href="#",
+                    class="label label-default", style="display: inline-block;",
+                    style="white-space: normal;", 
+                    onclick=paste0("showSurvCutoff('", splicingEvent, "')")))
+            output[[paste0("eventSurvStats", i)]] <- renderUI(tags$small(stat))
         })
     })
     
@@ -348,7 +358,7 @@ optimSurvDiff <- function(session, input, output) {
                 
                 hc <- plotSurvivalCurves(surv, mark = FALSE, title=NULL) %>%
                     hc_legend(enabled=FALSE) %>%
-                    hc_xAxis(title=list(text="")) %>%
+                    hc_xAxis(title=list(text=""), showLastLabel=TRUE) %>%
                     hc_yAxis(title=list(text="")) %>%
                     hc_chart(zoomType=NULL)
             } else {
@@ -501,7 +511,7 @@ diffSplicingTableServer <- function(input, output, session) {
     extensions="Buttons", options=list(
         pageLength=10, rowCallback=JS("createDiffSplicingLinks"), 
         dom="Bfrtip", buttons=I("colvis"),
-        columnDefs=list(list(targets=1, searchable=FALSE))))
+        columnDefs=list(list(targets=5, searchable=FALSE))))
     
     # Download whole table
     output$downloadAll <- downloadHandler(
