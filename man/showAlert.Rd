@@ -4,7 +4,7 @@
 \alias{errorAlert}
 \alias{showAlert}
 \alias{warningAlert}
-\title{Show a modal}
+\title{Show an alert}
 \usage{
 showAlert(session, ..., title = NULL, style = NULL, dismissable = TRUE,
   alertId = "alert")
