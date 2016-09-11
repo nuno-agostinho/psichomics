@@ -1,0 +1,7 @@
+name: Publish Document
+account: rpubs
+server: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/208175/278fe124ee3d4f389cd94e530b695390
+bundleId: https://api.rpubs.com/api/v1/document/208175/278fe124ee3d4f389cd94e530b695390
+url: http://rpubs.com/nuno-agostinho/208175
+when: 1473543114.39062
