@@ -335,40 +335,62 @@ optimSurvDiff <- function(session, input, output) {
             selected  <- input$selected
         })
         
+        # Interface for the survival curves of 10 splicing events
         lapply(seq(10), function(i) {
-            row <- input$statsTable_rows_current[i]
-            cutoff <- optimSurv[row, 1]
-            
-            if (!is.null(row) && !is.na(cutoff)) {
-                show(paste0("curves", i), anim=TRUE)
-                splicingEvent  <- rownames(optimSurv)[row]
-                
-                # Retrieve numeric PSIs from tumour samples
-                eventPSI <- rep(NA, nrow(clinical))
-                eventPSI[tumour] <- as.numeric(
-                    psi[splicingEvent, toupper(names(tumour))])
-                group <- eventPSI >= cutoff
-                
-                group[group == "TRUE"]  <- paste(">=", cutoff)
-                group[group == "FALSE"] <- paste("<", cutoff)
-                
-                survTerms <- processSurvTerms(clinical, censoring, event,
-                                              timeStart, timeStop, group)
-                surv <- survfit(survTerms)
-                
-                hc <- plotSurvivalCurves(surv, mark = FALSE, title=NULL) %>%
-                    hc_legend(enabled=FALSE) %>%
-                    hc_xAxis(title=list(text=""), showLastLabel=TRUE) %>%
-                    hc_yAxis(title=list(text="")) %>%
-                    hc_chart(zoomType=NULL)
-            } else {
-                hc <- NULL
-                hide(paste0("curves", i), anim=TRUE)
-            }
-            
+            hc <- plotMiniSurvivalCurves(i, input, optimSurv, clinical, tumour,
+                                         psi, censoring, event, timeStart, 
+                                         timeStop)
             output[[paste0("curves", i)]] <- renderHighchart(hc)
         })
     })
+}
+
+#' Perform and plot survival curves
+#' 
+#' @inheritParams processSurvTerms
+#' @param survParams List of parameters to plot survival curves
+#' @param i Numeric: index of the survival curves plot of interest
+#' @param input Shiny input
+#' @param filter Numeric or character: filtered samples
+#' @param psi Data frame or matrix: alternative splicing quantification
+#' 
+#' @importFrom highcharter hc_legend hc_xAxis hc_yAxis hc_chart hc_plotOptions
+#' 
+#' @return A \code{"highchart"} object to plot
+plotMiniSurvivalCurves <- function(i, input, survParams, clinical, filter, psi, 
+                                   censoring, event, timeStart, timeStop) {
+    row <- input$statsTable_rows_current[i]
+    cutoff <- survParams[row, 1]
+    
+    if (!is.null(row) && !is.na(cutoff)) {
+        show(paste0("curves", i), anim=TRUE)
+        splicingEvent  <- rownames(survParams)[row]
+        
+        # Retrieve numeric PSIs from filtered samples
+        eventPSI <- rep(NA, nrow(clinical))
+        eventPSI[filter] <- as.numeric(
+            psi[splicingEvent, toupper(names(filter))])
+        group <- eventPSI >= cutoff
+        
+        group[group == "TRUE"]  <- paste(">=", cutoff)
+        group[group == "FALSE"] <- paste("<", cutoff)
+        
+        survTerms <- processSurvTerms(clinical, censoring, event, timeStart, 
+                                      timeStop, group)
+        surv <- survfit(survTerms)
+        
+        hc <- plotSurvivalCurves(surv, mark = FALSE, title=NULL) %>%
+            hc_legend(enabled=FALSE) %>%
+            hc_xAxis(title=list(text=""), showLastLabel=TRUE) %>%
+            hc_yAxis(title=list(text="")) %>%
+            hc_chart(zoomType=NULL) %>%
+            hc_chart(events=list(click=JS(paste0(
+                "function(e) { showSurvCutoff('", splicingEvent, "') }"))))
+    } else {
+        hc <- NULL
+        hide(paste0("curves", i), anim=TRUE)
+    }
+    return(hc)
 }
 
 #' Server logic of the exploratory differential analyses
