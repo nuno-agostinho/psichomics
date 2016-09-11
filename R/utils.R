@@ -304,52 +304,64 @@ groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE,
     return(finalGroups)
 }
 
-#' Show a modal
+#' Style and show a modal
 #' 
 #' You can also use \code{errorModal} and \code{warningModal} to use template 
 #' modals already stylised to show errors and warnings respectively.
 #' 
-#' @inheritParams bsModal2
 #' @param session Current Shiny session
 #' @param title Character: modal title
-#' @param ... Extra arguments to pass to bsModal2
+#' @param ... Extra arguments to pass to \code{shiny::modalDialog}
+#' @param style Character: style of the modal (NULL, "warning", "error" or 
+#' "info"; NULL by default)
 #' @param iconName Character: FontAwesome icon name to appear with the title
+#' @param footer HTML elements to use in footer
 #' @param echo Boolean: print to console? FALSE by default
-#' @param modalId Character: identifier
+#' @param size Character: size of the modal - "medium" (default), "small" or 
+#' "large"
+#' @param dismissButton Boolean: show dismiss button in footer? TRUE by default
 #' 
-#' @importFrom shiny renderUI div icon
+#' @importFrom shiny renderUI div icon showModal
 #' @importFrom shinyBS toggleModal
 #' @seealso showAlert
-showModal <- function(session, title, ..., style=NULL,
-                      iconName="exclamation-circle", footer=NULL, echo=FALSE, 
-                      size=NULL, modalId = "modal") {
-    ns <- session$ns
-    session$output[[modalId]] <- renderUI({
-        bsModal2(ns("showModal"), style=style, div(icon(iconName), title),
-                 trigger=NULL, size=size, ..., footer=footer)})
-    toggleModal(session, "showModal", toggle = "open")
+styleModal <- function(session, title, ..., style=NULL,
+                       iconName="exclamation-circle", footer=NULL, echo=FALSE, 
+                       size="medium", dismissButton=TRUE) {
+    
+    size <- switch(size, "small"="s", "large"="l", "medium"="m")
+    if (dismissButton) footer <- tagList(modalButton("Dismiss"), footer)
+    
+    modal <- modalDialog(..., title=div(icon(iconName), title), size=size,
+                         footer=footer, easyClose=TRUE)
+    if (!is.null(style)) {
+        style <- match.arg(style, c("info", "warning", "error"))
+        modal[[3]][[1]][[3]][[1]][[3]][[1]] <-
+            tagAppendAttributes(modal[[3]][[1]][[3]][[1]][[3]][[1]],
+                                class=style)
+    }
+    showModal(modal, session)
     if (echo) cat(content, fill=TRUE)
 }
 
-#' @rdname showModal
+#' @rdname styleModal
 errorModal <- function(session, title, ..., size="small", footer=NULL) {
-    showModal(session, title, ..., footer=footer, style="error", size=size,
-              echo=FALSE, iconName="times-circle")
+    styleModal(session, title, ..., footer=footer, style="error", size=size,
+               echo=FALSE, iconName="times-circle")
 }
 
-#' @rdname showModal
+#' @rdname styleModal
 warningModal <- function(session, title, ..., size="small", footer=NULL) {
-    showModal(session, title, ..., footer=footer, style="warning", size=size,
-              echo=FALSE, iconName="exclamation-circle")
+    styleModal(session, title, ..., footer=footer, style="warning", size=size,
+               echo=FALSE, iconName="exclamation-circle")
 }
 
-#' @rdname showModal
+#' @rdname styleModal
 infoModal <- function(session, title, ..., size="small", footer=NULL) {
-    showModal(session, title, ..., footer=footer, style="info", size=size,
-              echo=FALSE, iconName="info-circle")
+    styleModal(session, title, ..., footer=footer, style="info", size=size,
+               echo=FALSE, iconName="info-circle")
 }
 
-#' Show a modal
+#' Show an alert
 #' 
 #' You can also use \code{errorAlert} and \code{warningAlert} to use template 
 #' alerts already stylised to show errors and warnings respectively.
@@ -380,7 +392,8 @@ showAlert <- function(session, ..., title=NULL, style=NULL, dismissable=TRUE,
     
     if (!is.null(title)) title <- h3(title)
     
-    session$output[[alertId]] <- renderUI({
+    output <- session$output
+    output[[alertId]] <- renderUI({
         tagList(
             div(title, id="myAlert", class="alert", class=style, role="alert",
                 class="animated bounceInUp", class=dismissable, dismiss, ...)
@@ -626,90 +639,6 @@ textSuggestions <- function(id, words, novalue="No matching value", char=" ") {
     js <- HTML("<script>", var, js, "</script>")
     return(js)
 }
-
-#' Create a textarea input control
-#'
-#' Create a resizable input control for entry of unstructured text values
-#'
-#' @param inputId The \code{input} slot that will be used to access the value.
-#' @param label Display label for the control, or \code{NULL} for no label.
-#' @param value Initial value.
-#' @param width The width of the input, e.g. \code{'400px'}, or \code{'100\%'};
-#'   see \code{\link{validateCssUnit}}.
-#' @param placeholder A character string giving the user a hint as to what can
-#'   be entered into the control. Internet Explorer 8 and 9 do not support this
-#'   option.
-#' @return A textarea input control that can be added to a UI definition.
-#'
-#' @family input elements
-#' @seealso \code{\link{updateTextAreaInput}}
-#'
-#' @importFrom shiny div validateCssUnit
-#'
-#' @examples
-#' ## Only run examples in interactive R sessions
-#' \dontrun{
-#' if (interactive()) {
-#'
-#' ui <- fluidPage(
-#'   psichomics:::textAreaInput("caption", "Caption", "Data Summary",
-#'                              width = "1000px"),
-#'   verbatimTextOutput("value")
-#' )
-#' server <- function(input, output) {
-#'   output$value <- renderText({ input$caption })
-#' }
-#' shinyApp(ui, server)
-#' }
-#' }
-textAreaInput <- function(inputId, label, value = "", width = NULL,
-                          placeholder = NULL) {
-    div(class = "form-group shiny-input-container",
-        style = if (!is.null(width)) paste0("width: ", validateCssUnit(width), ";"),
-        tags$label(label, `for` = inputId),
-        tags$textarea(id = inputId, class = "form-control", placeholder = placeholder,
-                      paste(value, collapse = "\n"))
-    )
-}
-
-#' Change the value of a textarea input on the client
-#'
-#' @param value The value to set for the input object.
-#'
-#' @seealso \code{\link{textAreaInput}}
-#' @inheritParams shiny::updateTextInput
-#'
-#' @examples
-#' \dontrun{
-#' ## Only run examples in interactive R sessions
-#' if (interactive()) {
-#'
-#' ui <- fluidPage(
-#'   sliderInput("controller", "Controller", 0, 20, 10),
-#'   textAreaInput("inText", "Input textarea"),
-#'   textAreaInput("inText2", "Input textarea 2")
-#' )
-#'
-#' server <- function(input, output, session) {
-#'   observe({
-#'     # We'll use the input$controller variable multiple times, so save it as x
-#'     # for convenience.
-#'     x <- input$controller
-#'
-#'     # This will change the value of input$inText, based on x
-#'     updateTextAreaInput(session, "inText", value = paste("New text", x))
-#'
-#'     # Can also set the label, this time for input$inText2
-#'     updateTextAreaInput(session, "inText2",
-#'       label = paste("New label", x),
-#'       value = paste("New text", x))
-#'   })
-#' }
-#'
-#' shinyApp(ui, server)
-#' }
-#' }
-updateTextAreaInput <- updateTextInput
 
 #' Plot survival curves using Highcharts
 #' 

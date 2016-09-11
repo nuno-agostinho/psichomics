@@ -514,7 +514,7 @@ loadFirehoseData <- function(folder=NULL,
 #' @param ns Namespace function
 #' 
 #' @importFrom shinyBS bsTooltip
-#' @importFrom shiny tagList uiOutput selectizeInput actionButton
+#' @importFrom shiny tagList uiOutput selectizeInput actionButton textAreaInput
 #' @return A UI set that can be added to a UI definition
 addTCGAdata <- function(ns) {
     cohorts <- getFirehoseCohorts()

@@ -3,6 +3,7 @@
 #' @param ns Namespace function
 #' 
 #' @importFrom shiny tagList uiOutput textInput selectizeInput actionButton
+#' textAreaInput
 #' 
 #' @return A UI set that can be added to a UI definition
 addLocalFile <- function(ns) {

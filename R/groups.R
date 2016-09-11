@@ -47,7 +47,7 @@ selectGroupsServer <- function(session, id, datasetName) {
     showId <- uId <- paste0(id, "Show")
     uId <- paste0(id, "Call")
     
-    session$output[[modalId]] <- renderUI({
+    output[[modalId]] <- renderUI({
         bsModal2(ns(showId), style="info", trigger=NULL, size=NULL,
                  div(icon("object-group"), "Groups"), 
                  groupsUI(ns(uId), getCategoryData()[[datasetName]]))

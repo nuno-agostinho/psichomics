@@ -17,18 +17,12 @@ body { padding-top: 70px; }
     filter: opacity(80%);
 }
 
-/* Progress bar right below navbar and style progress display */
-.shiny-progress-container { top: 50px; }
-.shiny-progress .progress-text { 
+/* Style progress bar */
+.progress-text { width: auto; }
+#shiny-notification-panel { 
+    top: 50px; 
     width: auto; 
-    height: 18px; 
-    top: 0 !important;
-    padding: 0;
-    background-color: rgba(255, 255, 255, 0.70);
-}
-.shiny-progress .progress { 
-    height: 18px; 
-    border-radius: 0;
+    min-width: 250px;
 }
 
 /* Loading message located in the navbar at the right */

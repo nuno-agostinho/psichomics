@@ -7,7 +7,7 @@
 #' 
 #' @importFrom shinyBS bsTooltip
 #' @importFrom shiny NS tagList uiOutput sidebarPanel radioButtons helpText hr 
-#' selectizeInput checkboxInput sliderInput actionButton mainPanel
+#' selectizeInput checkboxInput sliderInput actionButton mainPanel textAreaInput
 #' conditionalPanel
 #' 
 #' @return Character with HTML

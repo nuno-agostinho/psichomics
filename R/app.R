@@ -6,6 +6,9 @@ NULL
 MB = 5000 # File size in MB
 options(shiny.maxRequestSize = MB * 1024^2)
 
+# Sanitize errors
+options(shiny.sanitize.errors = TRUE)
+
 #' Check if a given function should be loaded by the calling module
 #' @param loader Character: name of the file responsible to load such function 
 #' @param FUN Function
