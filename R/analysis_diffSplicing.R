@@ -308,11 +308,14 @@ diffAnalyses <- function(psi, groups=NULL,
     df[ , numericCols] <- num[ , numericCols]
     
     # Convert integer columns to integer
-    int <- apply(df[ , numericCols], 2, function(i) 
-        all(is.whole(i), na.rm=TRUE))
-    intCols <- numericCols
-    intCols[numericCols] <- int
-    df[ , intCols] <- apply(df[ , intCols], 2, as.integer)
+    if (any(numericCols)) {
+        int <- apply(df[ , numericCols, drop=FALSE], 2, function(i) 
+            all(is.whole(i), na.rm=TRUE))
+        intCols <- numericCols
+        intCols[numericCols] <- int
+        if (any(intCols))
+            df[ , intCols] <- apply(df[ , intCols, drop=FALSE], 2, as.integer)
+    }
     print(Sys.time() - time)
     
     # Calculate delta variance and delta median if there are only 2 groups
