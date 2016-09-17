@@ -179,6 +179,7 @@ optimSurvDiff <- function(session, input, output) {
             timeStop  <- input$timeStop
             event     <- input$event
             psi       <- getInclusionLevels()
+            statsTable <- getDifferentialAnalyses()
             optimSurv <- getDifferentialAnalysesSurvival()
             display   <- input$statsTable_rows_current
             filtered  <- input$statsTable_rows_all
@@ -187,7 +188,8 @@ optimSurvDiff <- function(session, input, output) {
         
         if ("shown" %in% selected) {
             if (!is.null(display)) {
-                subset <- psi[display, ]
+                events <- rownames(statsTable)[display]
+                subset <- psi[events, ]
             } else {
                 errorModal(session, "Error with selected events",
                            "Unfortunately, it's not possible to get events",
@@ -197,7 +199,8 @@ optimSurvDiff <- function(session, input, output) {
             }
         } else if ("filtered" %in% selected) {
             if (!is.null(filtered)) {
-                subset <- psi[filtered, ]
+                events <- rownames(statsTable)[filtered]
+                subset <- psi[events, ]
             } else {
                 errorModal(session, "Error with selected events",
                            "Unfortunately, it's not possible to get the events",
@@ -235,9 +238,9 @@ optimSurvDiff <- function(session, input, output) {
             df <- data.frame(t(opt))
             if (is.null(optimSurv)) {
                 # Prepare survival table
-                nas <- rep(NA, nrow(psi))
+                nas <- rep(NA, nrow(statsTable))
                 optimSurv <- data.frame(nas, nas)
-                rownames(optimSurv) <- rownames(psi)
+                rownames(optimSurv) <- rownames(statsTable)
                 colnames(optimSurv) <- colnames(df)
             }
             for (col in names(df)) optimSurv[rownames(df), col] <- df[ , col]
@@ -320,19 +323,12 @@ optimSurvDiff <- function(session, input, output) {
             types <- parseSampleGroups(names(match))
             tumour <- match[!grepl("Normal|Control", types)]
             
-            # Group samples by the inclusion levels cut-off
             clinical <- getClinicalData()
-            clinicalIDs <- nrow(clinical)
-            groups <- rep(NA, clinicalIDs)
-            
             censoring <- input$censoring
             timeStart <- input$timeStart
             timeStop  <- input$timeStop
             event     <- input$event
             psi       <- getInclusionLevels()
-            display   <- input$statsTable_rows_current
-            filtered  <- input$statsTable_rows_all
-            selected  <- input$selected
         })
         
         # Interface for the survival curves of 10 splicing events
@@ -470,6 +466,7 @@ diffSplicingTableServer <- function(input, output, session) {
                                       progress=updateProgress)
         attr(stats, "groups") <- getDiffSplicingGroups()
         setDifferentialAnalyses(stats)
+        setDifferentialAnalysesSurvival(NULL)
         endProcess("startAnalyses", totalTime)
     })
     
@@ -483,6 +480,8 @@ diffSplicingTableServer <- function(input, output, session) {
             statsChoices <- input$statsChoices
             diffSplicing <- getDifferentialAnalyses()
         })
+        
+        carryOn <- FALSE
         if (is.null(psi)) {
             missingDataModal(session, "Inclusion levels",
                              ns("missingInclusionLevels"))
@@ -507,9 +506,15 @@ diffSplicingTableServer <- function(input, output, session) {
                                "groups share samples:",
                                tags$kbd(paste(intersected, collapse = ", ")))
                 } else {
-                    performDiffAnalyses()
+                    carryOn <- TRUE
                 }
             }
+        } else if (select == "samples") {
+            carryOn <- TRUE
+        }
+        
+        if (!carryOn) {
+            return(NULL)
         } else if (!is.null(diffSplicing)) {
             warningModal(session, "Differential analyses already performed",
                          "Do you wish to replace the loaded analyses?",
