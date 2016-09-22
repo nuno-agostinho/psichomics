@@ -3,7 +3,7 @@ firehoseMergeClinicalFormat <- function() {
         tablename   = "Clinical data",      # Name of the created table
         filename    = "clin.merged.txt",    # Name of the file
         description = "Clinical data of the patients",
-        dataType    = "Clinical data",
+        dataType    = "Clinical data",      # General category for the data
         
         # Transpose the data? This is the first step before parsing the information!
         # After transposition, a row of the current data equals a column of the original

@@ -12,7 +12,7 @@ Authors@R: c(
     person("Mariana", "Ferreira", role="ctb"),
     person("Ana Carolina", "Leote", role="ctb"))
 Description: Automatically retrieve data from RNA-Seq sources such as The Cancer
-    Genome Atlas or load your own files and process the data. This tool allows 
+    Genome Atlas or load your own files and process the data. This tool allows
     you to analyse and visualise alternative splicing.
 Depends:
     R (>= 3.2),
@@ -74,9 +74,9 @@ Collate:
     'events_miso.R'
     'events_mats.R'
     'events.R'
-    'formats_firehose_gene_expression.R'
-    'formats_firehose_junction_quantification.R'
-    'formats_firehose_merge_clinical.R'
+    'formats_firehoseGeneExpression.R'
+    'formats_firehoseJunctionQuantification.R'
+    'formats_firehoseMergeClinical.R'
     'groups.R'
     'settings.R'
 biocViews: Sequencing, RNASeq, AlternativeSplicing, DifferentialSplicing,
