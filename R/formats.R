@@ -15,6 +15,7 @@ checkFileFormat <- function(format, head, filename) {
         return(FALSE)
     
     ## TODO(NunoA): account for comments
+    
     # Transpose data
     if (!is.null(format$transpose) && format$transpose)
         head <- t(head)
