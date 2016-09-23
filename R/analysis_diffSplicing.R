@@ -357,7 +357,7 @@ diffAnalyses <- function(psi, groups=NULL,
     }
     
     # Add splicing event information
-    progress("Include spicing event information")
+    progress("Include splicing event information")
     info <- suppressWarnings(parseSplicingEvent(rownames(df)))
     df <- cbind("Event type"=info$type, "Chromosome"=info$chrom,
                 "Strand"=info$strand, "Gene"=info$gene, df)

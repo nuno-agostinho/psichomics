@@ -1,6 +1,6 @@
 # PSIchomics [![Build Status](https://travis-ci.org/nuno-agostinho/psichomics.svg?branch=master)](https://travis-ci.org/nuno-agostinho/psichomics) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/nuno-agostinho/psichomics?branch=master&svg=true)](https://ci.appveyor.com/project/nuno-agostinho/psichomics) [![codecov](https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg)](https://codecov.io/gh/nuno-agostinho/psichomics)
-R package with a visual interface to quantify, analyse and visualise alternative
-splicing data from [The Cancer Genome Atlas (TCGA)][1].
+Interactive R package to quantify, analyse and visualise alternative splicing 
+data from [The Cancer Genome Atlas (TCGA)][1].
 
 ## Table of Contents
 
@@ -36,13 +36,12 @@ psichomics()
 
 ## Tutorials
 
-The following tutorial is available:
+The following tutorials are available:
 
 * [Visual interface](http://rpubs.com/nuno-agostinho/psichomics-tutorial-visual)
+* [Command-line interface](http://rpubs.com/nuno-agostinho/psichomics-cli-tutorial)
 
 Other tutorials coming soon:
-
-* Command-line interface
 * Developers and other contributors
 
 ## Data Input
