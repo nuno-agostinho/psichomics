@@ -367,7 +367,7 @@ renderGeneticInfo <- function(ns, info, species, assembly, grch37) {
 queryEnsemblByEvent <- function(event, ...) {
     gene <- parseEvent(event)$gene
     if (gene == "NA")
-        stop("This event has no gene associated")
+        stop("This event has no associated gene")
     return(queryEnsemblByGene(gene, ...))
 }
 

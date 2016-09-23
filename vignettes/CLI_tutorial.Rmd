@@ -1,7 +1,7 @@
 ---
 title: 'PSIchomics tutorial: command-line interface (CLI)'
-author: "Nuno Saraiva-Agostinho"
-date: "10 September 2016"
+author: "Nuno Saraiva Agostinho"
+date: "23 September 2016"
 bibliography: refs.bib
 output: rmarkdown::html_vignette
 vignette: >
@@ -12,13 +12,11 @@ vignette: >
 
 ---
 
-PSIchomics is an R package for the analysis of alternative splicing
-using data from
-[The Cancer Genome Atlas (TCGA)](https://tcga-data.nci.nih.gov/docs/publications/tcga),
-a repository of molecular data associated with 34 tumour types, including 
-clinical information and transcriptomic data, such as the quantification of
-RNA-Seq reads aligning to splice junctions (henceforth called junction
-quantification) and exons.
+PSIchomics is an interactive R package for the analysis of alternative splicing 
+using data from [The Cancer Genome Atlas (TCGA)][1], a repository of molecular 
+data associated with 34 tumour types, including clinical information and 
+transcriptomic data, such as the quantification of RNA-Seq reads aligning to
+splice junctions (henceforth called junction quantification) and exons.
 
 # Installing and starting the program
 Install PSIchomics by typing the following in an R console (the 
@@ -43,12 +41,13 @@ spliced-in or PSI [@wang2008].
 To estimate this value for each splicing event, both alternative splicing
 annotation and junction quantification are required. While alternative splicing
 annotation is provided by the package, junction quantification may be retrieved
-from TCGA.
+from [TCGA][1].
 
 ## Download and load data from TCGA/Firehose
-Data is downloaded from Firehose, a service that hosts TCGA data already merged 
-and formatted needed to run the downstream analyses. Before downloading data, 
+Data is downloaded from [Firehose][2], a service that hosts proccessed data from
+[TCGA][1] as required to run the downstream analyses. Before downloading data, 
 the available choices should be checked:
+
 ```{r TCGA options, eval=FALSE}
 # Available tumour types
 cohorts <- getFirehoseCohorts()
@@ -90,7 +89,6 @@ other words, if the files are already downloaded, the function will load the
 indicated files.
 
 ## Load local files
-To load local files, do the following:
 
 ```{r load local, eval=FALSE}
 folder <- "~/Downloads/Adrenocortical carcinoma 2016-01-28/"
@@ -99,27 +97,31 @@ data2 <- loadLocalFiles(folder, ignore=ignore)
 ```
 
 # Quantifying alternative splicing
-After loading the clinical and alternative splicing junction quantification data
-from TCGA, quantify alternative splicing using the loaded data.
+As previously mentioned, alternative splicing is quantified from junction 
+quantification (previously loaded) and an alternative splicing annotation file.
 
-First of all check which alternative splicing event types are supported and
-current annotation files available:
+To check current annotation files available and which alternative splicing event
+types are supported:
 ```{r quantify options}
+# Available alternative splicing annotation
+annotList <- listSplicingAnnotation()
+annotList
+
 # Available alternative splicing event types (skipped exon, alternative 
 # first/last exon, mutually exclusive exons, etc.)
 eventType <- getSplicingEventTypes()
-
-# Available alternative splicing annotation
-annotList <- listSplicingAnnotation()
+eventType
 ```
 
-To quantify splicing, select junction quantification,  data to use:
+To quantify splicing, select junction quantification and alternative splicing 
+annotation to be used:
 ```{r quantify splicing}
 # Min. reads threshold: number of reads required to quantify a splicing event
 minReads <- 10
 
 # Load Human (hg19/GRCh37 assembly) annotation
-annotation <- readFile(listSplicingAnnotation()[1])
+human <- listSplicingAnnotation()[1]
+annotation <- readFile(human)
 
 # Quantify splicing
 psi <- quantifySplicing(annotation, junctionQuant, eventType="SE", 
@@ -127,14 +129,14 @@ psi <- quantifySplicing(annotation, junctionQuant, eventType="SE",
 
 # Check the identifier of the splicing events in the resulting table
 events <- rownames(psi)
+head(events)
 ```
 
 # Survival analysis
 Survival data can be analysed based on clinical attributes, for instance, by 
 tumour stage and patient gender, using time to death as the follow-up time and
-death as the event of interest. The default options cater for this common 
-scenario. To create groups of patients based on clinical attributes (in this 
-case, tumour stage and patient gender):
+death as the event of interest. To create groups of patients based on clinical
+attributes (in this case, tumour stage and patient gender):
 
 ```{r survival groups}
 # Get available groups in clinical data
@@ -188,7 +190,9 @@ plotSurvivalCurves(surv, pvalue=pvalue)
 ```
 
 Information regarding number of individuals and events is returned when hovering
-over each survival curve in the plot.
+over each survival curve in the plot. The plot also allows zooming in by
+clicking and dragging and to omit data series by clicking on their name in the 
+legend.
 
 ## Cox Proportional Hazards model
 Calculate Cox proportional hazards model using the previously used parameters by
@@ -217,10 +221,13 @@ types <- parseSampleGroups(names(match))
 tumour <- match[!grepl("Normal|Control", types)]
 
 # Select a splicing event
-splicingEvent <- events[[6]]
+splicingEvent <- "SE_22_-_19175493_19175240_19175070_19171124_CLTCL1"
+
 # Match samples with clinical patients (remove non-matching samples)
 eventPSI <- rep(NA, nrow(clinical))
 eventPSI[tumour] <- as.numeric(psi[splicingEvent, toupper(names(tumour))])
+
+# Statistics of the alternative splicing event's quantification
 summary(eventPSI)
 ```
 
@@ -232,14 +239,12 @@ optimalCutoff <- opt$par # Optimal exon inclusion level
 optimalPvalue <- opt$value # Respective p-value
 ```
 
-Plot survival curves separated by the optimal quantification cut-off. To select
-a different cutoff, just
+Plot survival curves separated by the optimal quantification cut-off (or any
+other cutoff you prefer).
 
 ```{r}
 cutoff <- optimalCutoff
-ev <- eventPSI
-ev[-tumour] <- NA # Filter for tumour samples
-group <- labelBasedOnCutoff(ev, cutoff, label="PSI values")
+group <- labelBasedOnCutoff(eventPSI, cutoff, label="PSI values")
 survTerms <- processSurvTerms(clinical, censoring, event, timeStart, 
                               group=group)
 
@@ -281,6 +286,16 @@ clinicalGroups <- getMatchingSamples(clinicalGroups, colnames(psi), clinical)
 plotPCA(pca, pcX="PC1", pcY="PC2", clinicalGroups)
 ```
 
+What about comparing early stages (I and II) versus late stages (III and IV) of 
+the disease?
+```{r}
+g <- list(
+    "Early stages"=union(clinicalGroups$`stage i`, clinicalGroups$`stage ii`),
+    "Late stages"=clinicalGroups$`stage iv`
+)
+plotPCA(pca, pcX="PC1", pcY="PC2", g)
+```
+
 # Differential splicing analysis
 To analyse differencial splicing, choose which clinical groups on which to 
 perform the analyses. For instance, splicing events can be analysed based on 
@@ -297,7 +312,10 @@ pvalueAdjust <- "BH"
 stats <- diffAnalyses(psi, pvalueAdjust=pvalueAdjust)
 ```
 
-The following non-parametric statistical tests are performed by default:
+Differential splicing analysis returns a data frame with the results of the
+statistical tests, as well as other info, such as associated gene and number of
+samples per group. The following non-parametric statistical tests are performed 
+by default:
 
 * Wilcoxon rank sum test (`wilcoxRankSum`)
 * Wilcoxon signed rank test (`wilcoxSignedRank`)
@@ -305,38 +323,41 @@ The following non-parametric statistical tests are performed by default:
 * Levene's test (`levene`)
 
 To specify statistical tests, do as follows:
-
 ```{r diff splicing options}
 # Analyse by specific statistical analyses
-# analyses <- c("wilcoxRankSum", "wilcoxSignedRank")
-# stats <- diffAnalysis(psi, analyses=analyses, pvalueAdjust=pvalueAdjust)
- 
-# # Analyse by tumour stage I versus stage IV
-# clinicalGroups <- createGroupByColumn(stage, clinical)
-# clinicalGroups <- clinicalGroups[c("stage iii", "stage iv")]
-# match <- getMatchingSamples(clinicalGroups, colnames(psi), clinical)
-# 
-# groups <- rep(NA, nrow(clinical))
-# groups[unlist(clinicalGroups)] <- rep(names(clinicalGroups),
-#                                       lapply(clinicalGroups, length))
-# 
-# # Remove NAs
-# nas <- !is.na(groups)
-# psiFilter <- psi[ , nas]
-# g <- groups[!is.na(groups)]
-# 
-# stats <- diffAnalysis(psiFilter, groups=g, pvalueAdjust=pvalueAdjust)
+analyses <- c("wilcoxRankSum", "wilcoxSignedRank")
+stats <- diffAnalyses(psi, analyses=analyses, pvalueAdjust=pvalueAdjust)
+```
+
+To change the groups used to perform differential analyses:
+```{r diff splicing groups}
+# Analyse by tumour stage I versus stage IV (or you could use the same groups
+# already created for the PCA analysis)
+stage <- grep("tumor_stage", cols, value=TRUE)
+clinicalGroups <- createGroupByColumn(stage, clinical)[c("stage i", "stage iv")]
+
+# Get matching samples for these patients
+samples <- colnames(psi)
+match  <- getMatchingSamples(clinicalGroups, samples, clinical)
+groups <- groupPerSample(match, samples)
+
+# Remove NAs
+nas <- !is.na(groups)
+psiFilter <- psi[ , nas]
+g <- groups[!is.na(groups)]
+
+stats <- diffAnalyses(psiFilter, groups=g, pvalueAdjust=pvalueAdjust)
 ```
 
 ## Distribution of alternative splicing quantifications
 The distributions of different groups can be easily compared within a density 
 plot:
 
-```{r PSI distribution}
+```{r PSI distribution by sample types}
 # Retrieve inclusion levels of the event
 eventPSI <- as.numeric(psi[splicingEvent, ])
 
-# Separate samples by their groups (whether they are from primary tumour, normal
+# Separate samples by sample types (whether they are from primary tumour, normal
 # tissue, metastasis, etc.)
 groups <- parseSampleGroups(colnames(psi))
 
@@ -348,38 +369,66 @@ groups <- names(filteredPSI)
 plotDistribution(filteredPSI, groups)
 ```
 
+This particular tumour type only has samples from primary solid tumor. It is not
+that interesting, so let's use tumour stages instead:
+
+```{r PSI distribution by tumour stage}
+# Create group by stages
+stage <- grep("tumor_stage", cols, value=TRUE)
+groups <- createGroupByColumn(stage, clinical)
+
+# Get matching samples for these patients
+samples <- colnames(psi)
+match  <- getMatchingSamples(groups, samples, clinical)
+groups <- groupPerSample(match, samples)
+
+# Only accept a given threshold of non-missing values per group
+filteredPSI <- filterGroups(eventPSI, groups, threshold=1)
+groups <- names(filteredPSI)
+
+# Plot distribution of the event
+plotDistribution(filteredPSI, groups, bandwidth = 0.1)
+```
+
+Note that the median of the PSI values is increasing by group in this case.
+
 More information about each group is accessible by hovering the respective curve
-in the density plot. This plot also supports zooming by click-and-drag 
-and omitting data series by clicking on the respective name in the legend.
+in the density plot, including number of samples, median, variance and range of 
+the highlighted group. This plot also supports zooming by click-and-drag and
+omitting data series by clicking on the respective name in the legend.
 
 # Gene annotation
-If an event is differentially spliced and it has an impact on patient
-survivability, this particular association with the studied disease might be 
-already described in the literature.
-
-Retrieve and plot transcript information:
+You can also plot transcripts and proteins related to the gene associated to a
+given splicing event. To retrieve and plot transcript information from
+[ENSEMBL][4]:
 
 ```{r plot transcripts}
-splicingEvent <- "SE_12_-_7985318_7984360_7984200_7982602_SLC2A14"
+splicingEvent <- "SE_22_-_37584203_37582086_37581911_37581495_C1QTNF6"
 parsed <- parseSplicingEvent(splicingEvent)
 info <- queryEnsemblByEvent(splicingEvent, species="human", assembly="hg19")
 plotTranscripts(info, parsed$pos[[1]])
 ```
 
-Retrieve and plot protein information:
+To retrieve and plot protein information from [UniProt][5]:
 
 ```{r plot proteins}
 protein <- info$Transcript$Translation$id
-protein <- protein[[3]]
+protein <- protein[[2]]
 
+# Convert protein identifier from ENSEMBL to UniProt
 uniprot <- ensemblToUniprot(protein)
+uniprot
 uniprot <- uniprot[[1]]
 
 plotProtein(uniprot)
 ```
 
-The protein plot shows the UniProt matches for the selected transcript. Hover 
-the protein's rendered domains to obtain more information on them.
+The protein plot shows the [UniProt][5] matches for the selected transcript.
+Hover the protein's rendered domains to obtain more information on them.
+
+If an event is differentially spliced and it has an impact on patient
+survivability, this particular association with the studied disease might be 
+already described in the literature.
 
 # Feedback
 
@@ -387,6 +436,12 @@ All feedback on the program, documentation and associated material (including
 this tutorial) is welcome. Please send any suggestions and comments to:
 
 | Nuno Saraiva-Agostinho (nunodanielagostinho@gmail.com)
-| [Computation Biology, IMM](http://imm.medicina.ulisboa.pt/group/compbio/)
+| [Computation Biology, IMM][3]
 
 # References
+
+[1]: https://tcga-data.nci.nih.gov/docs/publications/tcga
+[2]: http://gdac.broadinstitute.org
+[3]: http://imm.medicina.ulisboa.pt/group/compbio
+[4]: http://www.ensembl.org
+[5]: http://www.uniprot.org
