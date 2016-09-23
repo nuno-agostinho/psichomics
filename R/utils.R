@@ -326,7 +326,7 @@ groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE,
 #' groups <- list(letters[1:3], letters[10:12], letters[5:8])
 #' names(groups) <- paste("Stage", 1:3)
 #' samples <- letters
-#' groupPerSample(groups)
+#' groupPerSample(groups, samples)
 groupPerSample <- function(groups, samples, includeOuterGroup=FALSE, 
                            outerGroupName="(Outer data)") {
     if (length(groups) == 0) return(rep("Single group", length(samples)))

@@ -10,7 +10,11 @@ skipIfFirebrowseIsUnavailable <- function() {
 
 test_that("isFirehoseUp checks if Firehose API is running", {
     link <- paste0("http://firebrowse.org/api/v1/Metadata/HeartBeat")
-    heartbeat <- GET(link, query = list(format = "json"))
+    heartbeat <- tryCatch(GET(link, query = list(format="json")), 
+                          error=return)
+    if ("error" %in% class(heartbeat))
+        skip("Couldn't resolve host name")
+    
     up <- isFirehoseUp()
     
     if (status_code(heartbeat) == 200)
@@ -98,6 +102,16 @@ test_that("getFirehoseDataTypes obtains the data types available in Firehose", {
     expect_true(all(c("exon_expression",
                       "genes_normalized",
                       "junction_quantification") %in% types[[1]]))
+})
+
+test_that("Parse the URLs from a Firehose response", {
+    res <- tryCatch(queryFirehoseData(cohort = "ACC"), error=return)
+    if ("error" %in% class(res))
+        skip("Couldn't resolve host name")
+    
+    url <- parseUrlsFromFirehoseResponse(res)
+    expect_equal(length(unique(names(url))), 1)
+    expect_true(grepl("Adrenocortical carcinoma", unique(names(url))))
 })
 
 # test_that("prepareFirehoseArchives prepares archives to be loaded", {
