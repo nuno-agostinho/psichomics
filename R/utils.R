@@ -363,7 +363,7 @@ groupPerSample <- function(groups, samples, includeOuterGroup=FALSE,
 #' "large"
 #' @param dismissButton Boolean: show dismiss button in footer? TRUE by default
 #' 
-#' @importFrom shiny renderUI div icon showModal
+#' @importFrom shiny renderUI div icon showModal modalButton modalDialog
 #' @importFrom shinyBS toggleModal
 #' @seealso showAlert
 styleModal <- function(session, title, ..., style=NULL,
