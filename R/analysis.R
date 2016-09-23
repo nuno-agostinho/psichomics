@@ -403,10 +403,6 @@ testSurvival <- function (survTerms, ...) {
 #' @param data Numeric: test data
 #' @param cutoff Numeric: test cutoff
 #' @param label Character: label to prefix group names (NULL by default)
-#' @param filter Numeric or boolean: elements of interest in data (all by
-#' default)
-#' @param len Integer: desired length of data; the remaining length is filled 
-#' with NAs (optional)
 #' @param gte Boolean: test with greater than or equal to cutoff (TRUE) or use
 #' less than or equal to cutoff (FALSE)? TRUE by default
 #' 
@@ -417,17 +413,11 @@ testSurvival <- function (survTerms, ...) {
 #' labelBasedOnCutoff(data=c(1, 0, 0, 1, 0, 1), cutoff=0.5)
 #' 
 #' labelBasedOnCutoff(data=c(1, 0, 0, 1, 0, 1), cutoff=0.5, "Ratio")
-#' 
-#' # Filter data
-#' labelBasedOnCutoff(data=c(1, 0, 0, 0.5, 0, 1), cutoff=0.5, 
-#'                    filter=c(FALSE, TRUE, TRUE, TRUE, FALSE, TRUE))
 #'                    
 #' # Use "greater than" instead of "greater than or equal to"
-#' labelBasedOnCutoff(data=c(1, 0, 0, 0.5, 0, 1), cutoff=0.5, gte=FALSE,
-#'                    filter=c(FALSE, TRUE, TRUE, TRUE, FALSE, TRUE))
-labelBasedOnCutoff <- function (data, cutoff, label=NULL, filter=TRUE, len=NULL,
-                                gte=TRUE) {
-    if (is.null(len)) len <- length(data)
+#' labelBasedOnCutoff(data=c(1, 0, 0, 0.5, 0, 1), cutoff=0.5, gte=FALSE)
+labelBasedOnCutoff <- function (data, cutoff, label=NULL, gte=TRUE) {
+    len <- length(data)
     group <- rep(NA, len)
     
     if (gte) {
@@ -439,7 +429,7 @@ labelBasedOnCutoff <- function (data, cutoff, label=NULL, filter=TRUE, len=NULL,
         str1 <- ">"
         str2 <- "<="
     }
-    group[filter] <- comp(data[filter], cutoff)
+    group <- comp(data, cutoff)
 
     # Assign a value based on the inclusion levels cut-off
     if (is.null(label)) {

@@ -10,9 +10,16 @@ parseMisoId(id)
 \item{id}{Character: MISO alternative splicing event identifier}
 }
 \value{
-Character with the ID parsed
+Character with the parsed ID
 }
 \description{
 Parse MISO's alternative splicing event identifier
+}
+\examples{
+id <- paste0(
+    "ID=ENSMUSG00000026150.chr1:82723803:82723911:+@chr1:82724642:82724813:",
+    "+@chr1:82725791:82726011:+.B;Parent=ENSMUSG00000026150.chr1:82723803:",
+    "82723911:+@chr1:82724642:82724813:+@chr1:82725791:82726011:+")
+psichomics:::parseMisoId(id)
 }
 

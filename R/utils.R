@@ -278,15 +278,22 @@ getMatchingSamples <- function(index, samples, clinical, upper=TRUE,
     return(match)
 }
 
-#' Assign one group for each clinical patient
+#' Assign one group to each patient
 #' 
-#' @param groups Matrix: clinical groups
-#' @param patients Integer: total number of clinical patients
+#' @param groups List of integers: clinical groups
+#' @param patients Integer: total number of clinical patients (remaining 
+#' patients will be filled with missing values)
 #' @param includeOuterGroup Boolean: join the patients that have no groups?
 #' @param outerGroupName Character: name to give to outer group
 #' 
 #' @return Character vector where each element corresponds to the group of a
 #' clinical patient
+#' @export
+#' 
+#' @examples 
+#' groups <- list(1:3, 4:7, 8:10)
+#' names(groups) <- paste("Stage", 1:3)
+#' groupPerPatient(groups)
 groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE, 
                             outerGroupName="(Outer data)") {
     if (length(groups) == 0) return(rep("Single group", patients))
@@ -297,6 +304,41 @@ groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE,
     finalGroups <- rep(NA, patients)
     for (each in unique(all))
         finalGroups[each] <- paste(names(all[all == each]), collapse=", ")
+    
+    # Assign patients with no groups to the outer group
+    if (includeOuterGroup) finalGroups[is.na(finalGroups)] <- outerGroupName
+    
+    return(finalGroups)
+}
+
+#' Assign one group to each sample
+#' 
+#' @param groups List of characters: list of samples
+#' @param samples Character: all available samples
+#' @param includeOuterGroup Boolean: join the patients that have no groups?
+#' @param outerGroupName Character: name to give to outer group
+#' 
+#' @return Character vector where each element corresponds to the group of a
+#' sample
+#' @export
+#' 
+#' @examples 
+#' groups <- list(letters[1:3], letters[10:12], letters[5:8])
+#' names(groups) <- paste("Stage", 1:3)
+#' samples <- letters
+#' groupPerSample(groups)
+groupPerSample <- function(groups, samples, includeOuterGroup=FALSE, 
+                           outerGroupName="(Outer data)") {
+    if (length(groups) == 0) return(rep("Single group", length(samples)))
+    
+    all <- unlist(groups)
+    names(all) <- rep(names(groups), sapply(groups, length))
+    
+    finalGroups <- rep(NA, length(samples))
+    for (each in unique(all)) {
+        i <- match(each, samples)
+        finalGroups[i] <- paste(names(all[all == each]), collapse=", ")
+    }
     
     # Assign patients with no groups to the outer group
     if (includeOuterGroup) finalGroups[is.na(finalGroups)] <- outerGroupName

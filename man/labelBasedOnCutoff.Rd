@@ -4,8 +4,7 @@
 \alias{labelBasedOnCutoff}
 \title{Label groups based on a given cut-off}
 \usage{
-labelBasedOnCutoff(data, cutoff, label = NULL, filter = TRUE, len = NULL,
-  gte = TRUE)
+labelBasedOnCutoff(data, cutoff, label = NULL, gte = TRUE)
 }
 \arguments{
 \item{data}{Numeric: test data}
@@ -13,12 +12,6 @@ labelBasedOnCutoff(data, cutoff, label = NULL, filter = TRUE, len = NULL,
 \item{cutoff}{Numeric: test cutoff}
 
 \item{label}{Character: label to prefix group names (NULL by default)}
-
-\item{filter}{Numeric or boolean: elements of interest in data (all by
-default)}
-
-\item{len}{Integer: desired length of data; the remaining length is filled 
-with NAs (optional)}
 
 \item{gte}{Boolean: test with greater than or equal to cutoff (TRUE) or use
 less than or equal to cutoff (FALSE)? TRUE by default}
@@ -33,13 +26,8 @@ Label groups based on a given cut-off
 labelBasedOnCutoff(data=c(1, 0, 0, 1, 0, 1), cutoff=0.5)
 
 labelBasedOnCutoff(data=c(1, 0, 0, 1, 0, 1), cutoff=0.5, "Ratio")
-
-# Filter data
-labelBasedOnCutoff(data=c(1, 0, 0, 0.5, 0, 1), cutoff=0.5, 
-                   filter=c(FALSE, TRUE, TRUE, TRUE, FALSE, TRUE))
                    
 # Use "greater than" instead of "greater than or equal to"
-labelBasedOnCutoff(data=c(1, 0, 0, 0.5, 0, 1), cutoff=0.5, gte=FALSE,
-                   filter=c(FALSE, TRUE, TRUE, TRUE, FALSE, TRUE))
+labelBasedOnCutoff(data=c(1, 0, 0, 0.5, 0, 1), cutoff=0.5, gte=FALSE)
 }
 
