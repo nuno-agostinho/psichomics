@@ -237,8 +237,9 @@ a different cutoff, just
 
 ```{r}
 cutoff <- optimalCutoff
-group <- labelBasedOnCutoff(eventPSI, cutoff, len=nrow(clinical), 
-                            label="PSI values", filter=tumour)
+ev <- eventPSI
+ev[-tumour] <- NA # Filter for tumour samples
+group <- labelBasedOnCutoff(ev, cutoff, label="PSI values")
 survTerms <- processSurvTerms(clinical, censoring, event, timeStart, 
                               group=group)
 
@@ -311,7 +312,7 @@ To specify statistical tests, do as follows:
 # stats <- diffAnalysis(psi, analyses=analyses, pvalueAdjust=pvalueAdjust)
  
 # # Analyse by tumour stage I versus stage IV
-# clinicalGroups <- split(seq(nrow(clinical)), stage)
+# clinicalGroups <- createGroupByColumn(stage, clinical)
 # clinicalGroups <- clinicalGroups[c("stage iii", "stage iv")]
 # match <- getMatchingSamples(clinicalGroups, colnames(psi), clinical)
 # 

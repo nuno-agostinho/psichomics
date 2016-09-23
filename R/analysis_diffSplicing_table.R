@@ -442,7 +442,7 @@ diffSplicingTableServer <- function(input, output, session) {
             ids <- names(psi)
             groups <- parseSampleGroups(ids)
         } else if (select == "patients") {
-            # Separate sample by clinical groups from patients
+            # Separate samples by clinical groups from patients
             clinicalGroups <- getGroupsFrom("Clinical data")[clinicalGroups]
             
             # Match groups from patients with respective samples

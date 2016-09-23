@@ -119,3 +119,23 @@ test_that("Plot distribution of splicing quantification per group", {
     # Plot two data series for each group (one of them is the rug plot)
     expect_length(plot$x$hc_opts$series, length(unique(group))*2)
 })
+
+test_that("Label groups based on a cut-off", {
+    data <- c(1, 0, 0, 1, 0.5, 1)
+    cutoff <- 0.5
+    
+    # Greater or equal than a cut-off (default)
+    group <- labelBasedOnCutoff(data, cutoff)
+    expect_is(group, "character")
+    expect_equal(group, paste(c(">=", "<", "<", ">=", ">=", ">="), cutoff))
+    
+    # Greater than a cut-off
+    group <- labelBasedOnCutoff(data, cutoff, gte=FALSE)
+    expect_equal(group, paste(c(">", "<=", "<=", ">", "<=", ">"), cutoff))
+    
+    # Add text to label before
+    label <- "Proportion"
+    group <- labelBasedOnCutoff(data, cutoff, label=label)
+    expect_equal(group,
+                 paste(label, c(">=", "<", "<", ">=", ">=", ">="), cutoff))
+})

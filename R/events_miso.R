@@ -276,7 +276,13 @@ parseMisoGeneric <- function(event, validator, eventType, coord, plusIndex,
 #'
 #' @param id Character: MISO alternative splicing event identifier
 #'
-#' @return Character with the ID parsed
+#' @return Character with the parsed ID
+#' @examples 
+#' id <- paste0(
+#'     "ID=ENSMUSG00000026150.chr1:82723803:82723911:+@chr1:82724642:82724813:",
+#'     "+@chr1:82725791:82726011:+.B;Parent=ENSMUSG00000026150.chr1:82723803:",
+#'     "82723911:+@chr1:82724642:82724813:+@chr1:82725791:82726011:+")
+#' psichomics:::parseMisoId(id)
 parseMisoId <- function(id) {
     id <- as.character(id)
     semicolon <- gregexpr(";", id, fixed = TRUE)

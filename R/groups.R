@@ -170,6 +170,58 @@ groupsUI <- function(id, dataset) {
     )
 }
 
+#' Create groups with the indexes from the unique values of a given column from
+#' a dataset
+#' 
+#' @param col Character: column name
+#' @param dataset Matrix or data frame: dataset
+#' 
+#' @return Named list with the indexes of each unique value from a given column
+#' @export
+#' 
+#' @examples 
+#' df <- data.frame(gender=c("male", "female"),
+#'                  stage=paste("stage", c(1, 3, 1, 4, 2, 3, 2, 2)))
+#' createGroupByColumn(col="stage", dataset=df)
+createGroupByColumn <- function(col, dataset) {
+    colData <- as.character(dataset[[col]])
+    
+    # Replace missing values for "NA" so they are found using the `which` function
+    colData[is.na(colData)] <- "NA"
+    
+    # Create groups according to the chosen column
+    groupNames <- sort(unique(colData))
+    group <- lapply(lapply(groupNames, `==`, colData), which)
+    names(group) <- groupNames
+    return(group)
+}
+
+#' Create groups from a given string of rows
+#' 
+#' @param session Shiny session
+#' @param rows Character: rows separated by a comma
+#' @param dataset Matrix or data frame: dataset
+#' 
+#' @importFrom shiny tags
+createGroupByRows <- function(session, rows, dataset) {
+    # Convert the given string into a sequence of numbers
+    strRows <- paste(rows, collapse=", ")
+    rows <- unlist(lapply(rows, function(row) eval(parse(text=row))))
+    rows <- sort(unique(rows))
+    
+    # Remove and warn if selected rows are greater than the rows number
+    gtRows <- rows > nrow(dataset)
+    if (any(gtRows)) {
+        removed <- paste(rows[gtRows], collapse=" ")
+        warningAlert(
+            session, sum(gtRows), " indexes were above the number of rows ",
+            "of the dataset (which is ", nrow(dataset), ").", br(),
+            "The following numbers were discarded:", tags$code(removed))
+        rows <- rows[!gtRows]
+    }
+    return(rows)
+}
+
 #' Set new groups according to the user input
 #' 
 #' @param session Shiny session
@@ -186,32 +238,11 @@ createGroupFromInput <- function (session, input, output, dataset,
     if (type == "Column") {
         col <- input$groupColumn
         if (col == "") return(NULL)
-        colData <- as.character(dataset[[col]])
-        
-        # Replace NAs for "NA" so they can be find using the `which` function
-        colData[is.na(colData)] <- "NA"
-        
-        # Create groups according to the chosen column
-        groupNames <- sort(unique(colData))
-        rows <- lapply(lapply(groupNames, `==`, colData), which)
-        group <- cbind(groupNames, type, col, rows)
+        group <- createGroupByColumn(col, dataset)
+        group <- cbind(names(group), "Column", col, group)
     } else if (type == "Rows") {
-        # Convert the given string into a sequence of numbers
         rows <- input$groupRows
-        strRows <- paste(rows, collapse=", ")
-        rows <- unlist(lapply(rows, function(row) eval(parse(text=row))))
-        rows <- sort(unique(rows))
-        
-        # Remove and warn if selected rows are greater than the rows number
-        gtRows <- rows > nrow(dataset)
-        if (any(gtRows)) {
-            removed <- paste(rows[gtRows], collapse=" ")
-            warningAlert(
-                session, sum(gtRows), " indexes were above the number of rows ",
-                "of the dataset (which is ", nrow(dataset), ").", br(),
-                "The following numbers were discarded:", tags$code(removed))
-            rows <- rows[!gtRows]
-        }
+        group <- createGroupByRows(session, dataset, rows)
         group <- cbind(input$groupName, type, strRows, list(rows))
     } else if (type == "Subset expression") {
         # Subset dataset using the given expression

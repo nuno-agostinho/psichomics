@@ -10,7 +10,7 @@ templateUI(id)
 \item{id}{Character: namespace identifier}
 }
 \value{
-HTML elements
+HTML elements for the interface of the template
 }
 \description{
 User interface of template
