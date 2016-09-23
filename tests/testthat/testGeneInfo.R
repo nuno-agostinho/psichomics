@@ -45,7 +45,10 @@ test_that("Convert Ensembl protein ID to UniProt ID", {
 })
 
 test_that("Plot UniProt protein", {
-    plot <- plotProtein("B7ZAC3")
+    plot <- tryCatch(plotProtein("B7ZAC3"), error=return)
+    if ("error" %in% class(plot))
+        skip("Couldn't resolve host name")
+    
     expect_is(plot, "highchart")
     expect_equal(plot$x$type, "chart")
     expect_equivalent(plot$x$hc_opts$xAxis[c("min", "max")], c(0, 520))
