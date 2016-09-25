@@ -304,6 +304,10 @@ diffAnalyses <- function(psi, groups=NULL,
     
     # Convert numeric columns to numeric
     num <- suppressWarnings(apply(df, 2, as.numeric))
+    if (!is.matrix(num)) {
+        num <- t(as.matrix(num))
+        rownames(num) <- rownames(df)
+    }
     numericCols <- colSums(is.na(num)) != nrow(num)
     df[ , numericCols] <- num[ , numericCols]
     
