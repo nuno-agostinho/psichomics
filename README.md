@@ -1,4 +1,4 @@
-# PSIchomics [![Build Status](https://travis-ci.org/nuno-agostinho/psichomics.svg?branch=master)](https://travis-ci.org/nuno-agostinho/psichomics) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/nuno-agostinho/psichomics?branch=master&svg=true)](https://ci.appveyor.com/project/nuno-agostinho/psichomics) [![codecov](https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg)](https://codecov.io/gh/nuno-agostinho/psichomics)
+# PSIchomics [![Build Status][8]][9] [![AppVeyor Build Status][10]][11] [![codecov][12]][13]
 Interactive R package to quantify, analyse and visualise alternative splicing 
 data from [The Cancer Genome Atlas (TCGA)][1].
 
@@ -25,8 +25,14 @@ This package is not yet available in [Bioconductor][2]. To install and start
 using this program, follow these steps:
 
 1. [Install R][3]
-2. Open [RStudio][4] (or open a console, type `R` and press enter)
-3. Type the following to install, load and start the visual interface:
+2. Depending on your operative system, install:
+    - [Rtools](https://cran.r-project.org/bin/windows/Rtools/) (Windows)
+    - [Xcode command-line tools](https://developer.apple.com/downloads) (Mac)
+    - **r-devel** or **r-base-dev** (Linux)
+3. Open [RStudio][4] (or open a console, type `R` and press enter)
+4. Type the following to install Bioconductor: 
+    - `source("https://bioconductor.org/biocLite.R"); biocLite("BiocInstaller")`
+5. Type the following to install, load and start the visual interface:
 ```r
 install.packages("devtools")
 devtools::install_github("nuno-agostinho/psichomics")
@@ -129,3 +135,9 @@ regulation in human tissue transcriptomes.*][7] Nature 456 (7221): 470–76.
 [5]: http://imm.medicina.ulisboa.pt/group/compbio
 [6]: CONDUCT.md
 [7]: http://www.nature.com/nature/journal/v456/n7221/full/nature07509.html
+[8]: https://travis-ci.org/nuno-agostinho/psichomics.svg?branch=master
+[9]: https://travis-ci.org/nuno-agostinho/psichomics
+[10]: https://ci.appveyor.com/api/projects/status/github/nuno-agostinho/psichomics?branch=master&svg=true
+[11]: https://ci.appveyor.com/project/nuno-agostinho/psichomics
+[12]: https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg
+[13]: https://codecov.io/gh/nuno-agostinho/psichomics
