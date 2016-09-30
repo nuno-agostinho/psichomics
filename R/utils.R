@@ -701,7 +701,6 @@ textSuggestions <- function(id, words, novalue="No matching value", char=" ") {
 #' @method hchart survfit
 #' @importFrom highcharter %>% hc_add_series highchart hc_tooltip hc_yAxis
 #' hc_plotOptions fa_icon_mark JS
-#' @importFrom rlist list.parse
 #' @importFrom stats setNames
 #' 
 #' @return Highcharts object to plot survival curves
@@ -711,7 +710,6 @@ textSuggestions <- function(id, words, novalue="No matching value", char=" ") {
 #' # Plot Kaplan-Meier curves
 #' require("survival")
 #' require("highcharter")
-#' require("survival")
 #' leukemia.surv <- survfit(Surv(time, status) ~ x, data = aml) 
 #' hchart(leukemia.surv)
 #' 
@@ -806,8 +804,7 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
             first <- NULL
         
         # Mark events
-        ls <- list.parse(df)
-        names(ls) <- NULL
+        ls <- lapply(seq(nrow(df)), function(i) as.list(df[i, ]))
         if (markTimes)
             ls[submark] <- lapply(ls[submark], c, marker=marker)
         

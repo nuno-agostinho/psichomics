@@ -41,7 +41,6 @@ Plot survival curves using Highcharts
 # Plot Kaplan-Meier curves
 require("survival")
 require("highcharter")
-require("survival")
 leukemia.surv <- survfit(Surv(time, status) ~ x, data = aml) 
 hchart(leukemia.surv)
 
