@@ -1,6 +1,6 @@
 Package: psichomics
 Title: Analyse and Visualise Alternative Splicing Data
-Version: 0.99.0
+Version: 0.99.1
 Authors@R: c(
     person("Nuno", "Saraiva Agostinho", , "nunodanielagostinho@gmail.com", 
            role = c("aut", "cre")),
@@ -32,7 +32,6 @@ Imports:
     miscTools,
     plyr,
     R.utils,
-    rlist,
     shinyjs,
     stats,
     survival,
