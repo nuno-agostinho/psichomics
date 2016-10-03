@@ -455,7 +455,7 @@ loadFirehoseData <- function(folder=NULL,
         !any(i %in% basename(downloadedFiles[!downloadedMD5])), 
         FUN.VALUE = logical(1))
     
-    if (sum(missing[!md5]) > 0) {
+    if (any(missing[!md5])) {
         missingFiles <- url[missing]
         class(missingFiles) <- c("missing", class(missingFiles))
 
@@ -464,8 +464,16 @@ loadFirehoseData <- function(folder=NULL,
             progress(divisions = 1)
             cat("Triggered the download of files", fill=TRUE)
             
-            dl <- download.file(missingFiles, destfile=file.path(
-                folder, basename(missingFiles)))
+            if (getOption("download.file.method") == "libcurl") {
+                dl <- download.file(missingFiles, destfile=file.path(
+                    folder, basename(missingFiles)))
+            } else {
+                for (k in seq_along(missingFiles)) {
+                    f <- missingFiles[k]
+                    dl <- download.file(
+                        f, destfile=file.path(folder, basename(f)))
+                }
+            }
             
             # Check again the files in the given directory
             downloadedFiles <- list.files(folder, recursive=TRUE, 
