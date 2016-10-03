@@ -201,7 +201,7 @@ appUI <- function() {
 #' @param output Output object
 #' @param session Session object
 #' 
-#' @importFrom shiny observe
+#' @importFrom shiny observe stopApp
 appServer <- function(input, output, session) {
     getServerFunctions("app", priority=c("dataServer", "analysesServer"))
     
