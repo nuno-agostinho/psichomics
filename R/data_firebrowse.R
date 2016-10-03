@@ -464,7 +464,7 @@ loadFirehoseData <- function(folder=NULL,
             progress(divisions = 1)
             cat("Triggered the download of files", fill=TRUE)
             
-            if (getOption("download.file.method") == "libcurl") {
+            if (identical(getOption("download.file.method"), "libcurl")) {
                 dl <- download.file(missingFiles, destfile=file.path(
                     folder, basename(missingFiles)))
             } else {
