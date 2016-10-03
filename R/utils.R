@@ -804,7 +804,7 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
             first <- NULL
         
         # Mark events
-        ls <- lapply(seq(nrow(df)), function(i) as.list(df[i, ]))
+        ls <- lapply(seq(nrow(df)), function(i) as.list(df[i, , drop=FALSE]))
         if (markTimes)
             ls[submark] <- lapply(ls[submark], c, marker=marker)
         
