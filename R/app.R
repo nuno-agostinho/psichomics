@@ -264,10 +264,10 @@ appServer <- function(input, output, session) {
             return(gsub("_", " ", event))
     })
     
-    # session$onSessionEnded(function() {
-    #     # Stop app and print message to console
-    #     suppressMessages(stopped <- stopApp(returnValue="Shiny app was closed"))
-    # })
+    session$onSessionEnded(function() {
+        # Stop app and print message to console
+        suppressMessages(stopApp(returnValue="PSIchomics was closed"))
+    })
 }
 
 #' Start graphical interface of PSICHOMICS
