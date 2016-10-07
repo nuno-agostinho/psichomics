@@ -12,6 +12,9 @@ psichomics(..., reset = FALSE)
 \item{reset}{Boolean: reset Shiny session? FALSE by default; requires the 
 package devtools to reset data}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Start graphical interface of PSICHOMICS
 }

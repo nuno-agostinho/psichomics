@@ -26,6 +26,7 @@ templateUI <- function(id) {
 #' 
 #' @importFrom shiny renderUI observeEvent isolate tagList tags
 #' @importFrom highcharter renderHighchart
+#' @return NULL (this function is used to modify the Shiny session's state)
 templateServer <- function(input, output, session) {
     # Wait for user to press the button
     observeEvent(input$submit, {

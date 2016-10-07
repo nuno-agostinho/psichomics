@@ -13,6 +13,9 @@ createGroupByRows(session, rows, dataset)
 
 \item{dataset}{Matrix or data frame: dataset}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Create groups from a given string of rows
 }

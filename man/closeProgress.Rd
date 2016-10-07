@@ -11,6 +11,9 @@ closeProgress(message = NULL, global = sharedData)
 
 \item{global}{Global Shiny variable where all data is stored}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Close the progress even if there's an error
 }

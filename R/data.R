@@ -161,6 +161,7 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
 #' 
 #' @importFrom DT renderDataTable
 #' @importFrom shiny downloadHandler br
+#' @return NULL (this function is used to modify the Shiny session's state)
 createDataTab <- function(index, data, name, input, output) {
     tablename <- paste("table", name, index, sep="-")
     

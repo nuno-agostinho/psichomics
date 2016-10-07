@@ -13,6 +13,9 @@ diffSplicingTableServer(input, output, session)
 
 \item{session}{Shiny session}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Server logic of the exploratory differential analyses
 }

@@ -14,6 +14,9 @@ setGroupsFrom(dataset, groups, category = getCategory())
 \item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
 it uses the selected data category}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Set groups from a given data type
 }

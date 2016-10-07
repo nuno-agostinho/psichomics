@@ -15,7 +15,7 @@ Description: Automatically retrieve data from RNA-Seq sources such as The Cancer
     Genome Atlas or load your own files and process the data. This tool allows
     you to analyse and visualise alternative splicing.
 Depends:
-    R (>= 3.2),
+    R (>= 3.3),
     shiny (>= 0.14),
     shinyBS
 License: MIT + file LICENSE

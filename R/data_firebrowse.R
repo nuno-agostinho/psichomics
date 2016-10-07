@@ -2,6 +2,7 @@
 #' 
 #' @param ... Strings to print to console
 #' @param console Boolean: print to console? TRUE by default
+#' @return NULL (this function is used to modify the Shiny session's state)
 echoProgress <- function(..., console=TRUE) {
     if (console) cat(paste(...), fill=TRUE)
 }

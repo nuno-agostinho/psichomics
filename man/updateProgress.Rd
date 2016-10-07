@@ -22,6 +22,9 @@ updateProgress(message = "Hang in there", value = NULL, max = NULL,
 
 \item{console}{Boolean: print message to console? (TRUE by default)}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Update a progress object
 }

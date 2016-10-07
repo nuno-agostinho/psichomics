@@ -15,6 +15,9 @@ groupsServer(input, output, session, datasetName)
 
 \item{datasetName}{Character: name of dataset}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Server function for data grouping
 }

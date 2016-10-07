@@ -159,6 +159,7 @@ getDiffSplicingGroups <- function(category = getCategory())
 #' @param ... Arguments to identify a variable
 #' @param value Any value to attribute to element
 #' @param sep Character to separate identifier
+#' @return NULL (this function is used to modify the Shiny session's state)
 setGlobal <- function(..., value, sep="_") {
     sharedData[[paste(..., sep=sep)]] <- value
 }
@@ -166,36 +167,43 @@ setGlobal <- function(..., value, sep="_") {
 #' Set data of the global data
 #' @note Needs to be called inside reactive function
 #' @param data Data frame or matrix to set as data
+#' @return NULL (this function is used to modify the Shiny session's state)
 setData <- function(data) setGlobal("data", value=data)
 
 #' Set number of cores
 #' @param cores Character: number of cores
 #' @note Needs to be called inside reactive function
+#' @return NULL (this function is used to modify the Shiny session's state)
 setCores <- function(cores) setGlobal("cores", value=cores)
 
 #' Set number of significant digits
 #' @param significant Character: number of significant digits
 #' @note Needs to be called inside reactive function
+#' @return NULL (this function is used to modify the Shiny session's state)
 setSignificant <- function(significant) setGlobal("significant", value=significant)
 
 #' Set number of decimal places
 #' @param precision Numeric: number of decimal places
+#' @return NULL (this function is used to modify the Shiny session's state)
 #' @note Needs to be called inside reactive function
 setPrecision <- function(precision) setGlobal("precision", value=precision)
 
 #' Set event
 #' @param event Character: event
 #' @note Needs to be called inside reactive function
+#' @return NULL (this function is used to modify the Shiny session's state)
 setEvent <- function(event) setGlobal("event", value=event)
 
 #' Set data category
 #' @param category Character: data category
 #' @note Needs to be called inside reactive function
+#' @return NULL (this function is used to modify the Shiny session's state)
 setCategory <- function(category) setGlobal("category", value=category)
 
 #' Set active dataset
 #' @param dataset Character: dataset
 #' @note Needs to be called inside reactive function
+#' @return NULL (this function is used to modify the Shiny session's state)
 setActiveDataset <- function(dataset) setGlobal("activeDataset", value=dataset)
 
 #' Set inclusion levels for a given data category
@@ -204,6 +212,7 @@ setActiveDataset <- function(dataset) setGlobal("activeDataset", value=dataset)
 #' @param value Data frame or matrix: inclusion levels
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
+#' @return NULL (this function is used to modify the Shiny session's state)
 setInclusionLevels <- function(value, category = getCategory())
     sharedData$data[[category]][["Inclusion levels"]] <- value
 
@@ -214,6 +223,7 @@ setInclusionLevels <- function(value, category = getCategory())
 #' @param groups Matrix: groups of dataset
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
+#' @return NULL (this function is used to modify the Shiny session's state)
 setGroupsFrom <- function(dataset, groups, category = getCategory())
     setGlobal(category, dataset, "groups", value=groups)
 
@@ -223,6 +233,7 @@ setGroupsFrom <- function(dataset, groups, category = getCategory())
 #' @param table Character: differential analyses table
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
+#' @return NULL (this function is used to modify the Shiny session's state)
 setDifferentialAnalyses <- function(table, category = getCategory())
     setGlobal(category, "differentialAnalyses", value=table)
 
@@ -232,6 +243,7 @@ setDifferentialAnalyses <- function(table, category = getCategory())
 #' @param table Character: differential analyses' survival data
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
+#' @return NULL (this function is used to modify the Shiny session's state)
 setDifferentialAnalysesSurvival <- function(table, category = getCategory())
     setGlobal(category, "diffAnalysesSurv", value=table)
 
@@ -241,6 +253,7 @@ setDifferentialAnalysesSurvival <- function(table, category = getCategory())
 #' @param value Character: species
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
+#' @return NULL (this function is used to modify the Shiny session's state)
 setSpecies <- function(value, category = getCategory())
     setGlobal(category, "species", value=value)
 
@@ -250,6 +263,7 @@ setSpecies <- function(value, category = getCategory())
 #' @param value Character: assembly version
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
+#' @return NULL (this function is used to modify the Shiny session's state)
 setAssemblyVersion <- function(value, category = getCategory())
     setGlobal(category, "assemblyVersion", value=value)
 
@@ -259,6 +273,7 @@ setAssemblyVersion <- function(value, category = getCategory())
 #' @param value Character: assembly version
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
+#' @return NULL (this function is used to modify the Shiny session's state)
 setDiffSplicingGroups <- function(value, category = getCategory())
     setGlobal(category, "diffSplicingGroups", value=value)
 
@@ -269,5 +284,6 @@ setDiffSplicingGroups <- function(value, category = getCategory())
 #' @param matches Vector of integers: clinical matches of dataset
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
+#' @return NULL (this function is used to modify the Shiny session's state)
 setClinicalMatchFrom <- function(dataset, matches, category = getCategory())
     setGlobal(category, dataset, "clinicalMatch", value=matches)

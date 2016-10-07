@@ -12,9 +12,12 @@ optimSurvDiff(session, input, output)
 
 \item{input}{Shiny input}
 
-\item{output}{Shiny output
+\item{output}{Shiny output}
+}
+\value{
+NULL (this function is used to modify the Shiny session's state)
 Calculate optimal survival cut-off for the inclusion levels of a given
-alternative splicing event}
+alternative splicing event
 }
 \description{
 Optimal survival difference given an inclusion level cut-off for a specific

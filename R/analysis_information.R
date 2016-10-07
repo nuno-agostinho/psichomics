@@ -138,6 +138,7 @@ infoUI <- function(id) {
 #' @param title Character: title of the message to show to the user
 #' @param description Character: description of the message to show to the user
 #' @importFrom shiny renderUI h3 br tags
+#' @return NULL (this function is used to modify the Shiny session's state)
 noinfo <- function(output, title="No information available for this event.",
                    description="Select another alternative splicing event.") {
     output$info <- renderUI( h3(title, br(), tags$small(description)) )
@@ -257,6 +258,7 @@ plotProtein <- function(protein) {
 #' @importFrom shiny renderPlot
 #' @export
 #' 
+#' @return NULL (this function is used to modify the Shiny session's state)
 #' @examples
 #' event <- "SE_12_-_7985318_7984360_7984200_7982602_SLC2A14"
 #' info  <- queryEnsemblByEvent(event, species="human", assembly="hg19")
@@ -448,6 +450,7 @@ pubmedUI <- function(event, ...) {
 #' @importFrom Sushi plotGenes zoomsregion labelgenome
 #' @importFrom highcharter highchart %>%
 #' @importFrom shiny fixedRow
+#' @return NULL (this function is used to modify the Shiny session's state)
 infoServer <- function(input, output, session) {
     ns <- session$ns
     

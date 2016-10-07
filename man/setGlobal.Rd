@@ -13,6 +13,9 @@ setGlobal(..., value, sep = "_")
 
 \item{sep}{Character to separate identifier}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Set element as globally accessible
 }

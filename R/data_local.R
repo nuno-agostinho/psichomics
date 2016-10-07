@@ -113,6 +113,7 @@ setLocalData <- function(input, output, session, replace=TRUE) {
 #' @param session Shiny session
 #' 
 #' @importFrom shiny updateTextInput
+#' @return NULL (this function is used to modify the Shiny session's state)
 localDataServer <- function(input, output, session) {
     ns <- session$ns
     

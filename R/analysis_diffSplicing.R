@@ -394,6 +394,7 @@ diffAnalyses <- function(psi, groups=NULL,
 #' 
 #' @importFrom shiny observe observeEvent updateSelectizeInput
 #' @importFrom shinyjs hide show
+#' @return NULL (this function is used to modify the Shiny session's state)
 diffSplicingServer <- function(input, output, session) {
     # Run server logic from the scripts
     server <- getServerFunctions("diffSplicing",

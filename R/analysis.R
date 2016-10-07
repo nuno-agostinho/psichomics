@@ -14,6 +14,7 @@
 #'  missingDataModal(session, buttonId, dataType)
 #'  observeEvent(input[[buttonInput]], missingDataGuide(dataType))
 #' }
+#' @return NULL (this function is used to modify the Shiny session's state)
 missingDataModal <- function(session, dataType, buttonId) {
     template <- function(buttonLabel) {
         errorModal(
@@ -125,6 +126,7 @@ timePerPatient <- function(col, clinical) {
 #' Update available clinical attributes when the clinical data changes
 #' @param session Shiny session
 #' @importFrom shiny observe updateSelectizeInput
+#' @return NULL (this function is used to modify the Shiny session's state)
 updateClinicalParams <- function(session) {
     observe({
         clinical <- getClinicalData()
@@ -488,6 +490,8 @@ testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
 #' 
 #' @importFrom shiny observe observeEvent updateSelectizeInput
 #' @importFrom shinyjs hide show
+#' 
+#' @return NULL (this function is used to modify the Shiny session's state)
 analysesServer <- function(input, output, session) {
     # Run server logic from the scripts
     server <- getServerFunctions("analysis")

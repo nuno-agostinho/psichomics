@@ -11,6 +11,9 @@ echoProgress(..., console = TRUE)
 
 \item{console}{Boolean: print to console? TRUE by default}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Echo progress to console using \code{cat}
 }

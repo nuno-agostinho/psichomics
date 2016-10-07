@@ -9,6 +9,9 @@ setPrecision(precision)
 \arguments{
 \item{precision}{Numeric: number of decimal places}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Set number of decimal places
 }

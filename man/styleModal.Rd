@@ -38,6 +38,9 @@ infoModal(session, title, ..., size = "small", footer = NULL)
 
 \item{dismissButton}{Boolean: show dismiss button in footer? TRUE by default}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 You can also use \code{errorModal} and \code{warningModal} to use template 
 modals already stylised to show errors and warnings respectively.

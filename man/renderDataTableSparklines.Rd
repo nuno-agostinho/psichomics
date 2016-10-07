@@ -11,6 +11,9 @@ renderDataTableSparklines(..., options = NULL)
 
 \item{options}{List of options to pass to \code{\link{renderDataTable}}}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Render a data table with Sparkline HTML elements
 }
