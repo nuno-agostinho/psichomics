@@ -9,6 +9,9 @@ setCategory(category)
 \arguments{
 \item{category}{Character: data category}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Set data category
 }

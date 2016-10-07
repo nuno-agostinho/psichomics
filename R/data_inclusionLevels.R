@@ -116,6 +116,7 @@ quantifySplicing <- function(annotation, junctionQuant, eventType="SE",
 #' @param session Shiny session
 #' 
 #' @importFrom shiny reactive observeEvent
+#' @return NULL (this function is used to modify the Shiny session's state)
 inclusionLevelsServer <- function(input, output, session) {
     ns <- session$ns
     

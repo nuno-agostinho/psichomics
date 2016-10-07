@@ -11,6 +11,9 @@ plotTranscripts(info, eventPosition)
 
 \item{eventPosition}{Numeric: coordinates of the alternative splicing event}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Plot transcripts
 }

@@ -229,6 +229,7 @@ plotPCA <- function(pca, pcX="PC1", pcY="PC2", clinicalGroups=NULL,
 #' @importFrom shinyjs runjs hide show
 #' @importFrom highcharter %>% hc_chart hc_xAxis hc_yAxis hc_tooltip
 #' @importFrom stats setNames
+#' @return NULL (this function is used to modify the Shiny session's state)
 pcaServer <- function(input, output, session) {
     ns <- session$ns
     

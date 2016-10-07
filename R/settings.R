@@ -48,6 +48,7 @@ settingsUI <- function(id, tab) {
 #' @param output Shiny output
 #' 
 #' @importFrom shiny observe renderText
+#' @return NULL (this function is used to modify the Shiny session's state)
 settingsServer <- function(input, output, session) {
     observe(setCores(input$cores))
     observe({

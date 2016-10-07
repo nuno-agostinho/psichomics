@@ -9,6 +9,9 @@ disableTab(tab)
 \arguments{
 \item{tab}{Character: tab to disable}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Disable a tab from the navbar
 }

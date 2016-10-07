@@ -132,6 +132,7 @@ optimSurvDiffOptions <- function(ns) {
 #' @param session Shiny session
 #' @param input Shiny input
 #' @param output Shiny output
+#' @return NULL (this function is used to modify the Shiny session's state)
 optimSurvDiff <- function(session, input, output) {
     ns <- session$ns
     
@@ -396,6 +397,7 @@ plotMiniSurvivalCurves <- function(i, input, survParams, clinical, filter, psi,
 #' 
 #' @importFrom shinyjs toggleState disable
 #' @importFrom DT replaceData dataTableProxy
+#' @return NULL (this function is used to modify the Shiny session's state)
 diffSplicingTableServer <- function(input, output, session) {
     ns <- session$ns
     

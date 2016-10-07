@@ -9,6 +9,9 @@ setEvent(event)
 \arguments{
 \item{event}{Character: event}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Set event
 }

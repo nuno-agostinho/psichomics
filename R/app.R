@@ -202,6 +202,7 @@ appUI <- function() {
 #' @param session Session object
 #' 
 #' @importFrom shiny observe stopApp
+#' @return NULL (this function is used to modify the Shiny session's state)
 appServer <- function(input, output, session) {
     getServerFunctions("app", priority=c("dataServer", "analysesServer"))
     
@@ -283,6 +284,7 @@ appServer <- function(input, output, session) {
 #' \dontrun{
 #' psichomics()
 #' }
+#' @return NULL (this function is used to modify the Shiny session's state)
 psichomics <- function(..., reset=FALSE) {
     if (reset) devtools::load_all()
     app <- shinyApp(appUI(), appServer)

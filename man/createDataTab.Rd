@@ -17,6 +17,9 @@ createDataTab(index, data, name, input, output)
 
 \item{output}{Shiny session output}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Render a specific data tab (including data table and related interface)
 }

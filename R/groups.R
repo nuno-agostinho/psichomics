@@ -203,6 +203,7 @@ createGroupByColumn <- function(col, dataset) {
 #' @param dataset Matrix or data frame: dataset
 #' 
 #' @importFrom shiny tags
+#' @return NULL (this function is used to modify the Shiny session's state)
 createGroupByRows <- function(session, rows, dataset) {
     # Convert the given string into a sequence of numbers
     strRows <- paste(rows, collapse=", ")
@@ -328,6 +329,7 @@ renameGroups <- function(new, old) {
 #' @param symbol Character: operation symbol
 #' @param datasetName Character: name of dataset
 #' @param sharedData Shiny app's global variable
+#' @return NULL (this function is used to modify the Shiny session's state)
 operateOnGroups <- function(input, session, FUN, buttonId, symbol=" ",
                             datasetName, sharedData=sharedData) {
     ns <- session$ns
@@ -372,6 +374,7 @@ operateOnGroups <- function(input, session, FUN, buttonId, symbol=" ",
 #' 
 #' @importFrom DT renderDataTable dataTableOutput
 #' @importFrom shinyjs disabled enable disable
+#' @return NULL (this function is used to modify the Shiny session's state)
 groupsServer <- function(input, output, session, datasetName) {
     ns <- session$ns
     

@@ -389,6 +389,7 @@ filterGroups <- function(vector, group, threshold=1) {
 #' 
 #' @importFrom highcharter renderHighchart
 #' @importFrom shinyjs runjs
+#' @return NULL (this function is used to modify the Shiny session's state)
 diffSplicingEventServer <- function(input, output, session) {
     observe({
         # Get selected event

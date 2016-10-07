@@ -9,6 +9,9 @@ setActiveDataset(dataset)
 \arguments{
 \item{dataset}{Character: dataset}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Set active dataset
 }

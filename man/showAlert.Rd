@@ -29,6 +29,9 @@ or NULL)}
 
 \item{alertId}{Character: alert identifier}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 You can also use \code{errorAlert} and \code{warningAlert} to use template 
 alerts already stylised to show errors and warnings respectively.

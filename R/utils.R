@@ -190,6 +190,7 @@ startProcess <- function(id) {
 #' @param closeProgressBar Boolean: close progress bar? TRUE by default
 #' 
 #' @importFrom shinyjs hide
+#' @return NULL (this function is used to modify the Shiny session's state)
 endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
     enable(id)
     hide(paste0(id, "Loading"))
@@ -366,6 +367,7 @@ groupPerSample <- function(groups, samples, includeOuterGroup=FALSE,
 #' @importFrom shiny renderUI div icon showModal modalButton modalDialog
 #' @importFrom shinyBS toggleModal
 #' @seealso showAlert
+#' @return NULL (this function is used to modify the Shiny session's state)
 styleModal <- function(session, title, ..., style=NULL,
                        iconName="exclamation-circle", footer=NULL, echo=FALSE, 
                        size="medium", dismissButton=TRUE) {
@@ -418,6 +420,7 @@ infoModal <- function(session, title, ..., size="small", footer=NULL) {
 #' 
 #' @seealso showModal
 #' @importFrom shiny span h3 renderUI div tagList
+#' @return NULL (this function is used to modify the Shiny session's state)
 showAlert <- function(session, ..., title=NULL, style=NULL, dismissable=TRUE, 
                       alertId="alert") {
     ns <- session$ns
@@ -517,6 +520,7 @@ parseSampleGroups <- function(sample,
 #' @param divisions Integer: number of divisions in the progress bar
 #' @param global Shiny's global variable
 #' @importFrom shiny Progress
+#' @return NULL (this function is used to modify the Shiny session's state)
 startProgress <- function(message, divisions, global = sharedData) {
     cat(message, fill=TRUE)
     global$progress.divisions <- divisions
@@ -536,6 +540,7 @@ startProgress <- function(message, divisions, global = sharedData) {
 #' @param max Integer: maximum progress value
 #' @param detail Character: detailed message
 #' @param console Boolean: print message to console? (TRUE by default)
+#' @return NULL (this function is used to modify the Shiny session's state)
 updateProgress <- function(message="Hang in there", value=NULL, max=NULL,
                            detail=NULL, divisions=NULL, 
                            global=sharedData, console=TRUE) {
@@ -567,6 +572,7 @@ updateProgress <- function(message="Hang in there", value=NULL, max=NULL,
 #' 
 #' @param message Character: message to show in progress bar
 #' @param global Global Shiny variable where all data is stored
+#' @return NULL (this function is used to modify the Shiny session's state)
 closeProgress <- function(message=NULL, global = sharedData) {
     # Close the progress even if there's an error
     if (!is.null(message)) cat(message, fill=TRUE)
@@ -625,6 +631,7 @@ bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL,
 #' Disable a tab from the navbar
 #' @importFrom shinyjs disable addClass
 #' @param tab Character: tab to disable
+#' @return NULL (this function is used to modify the Shiny session's state)
 disableTab <- function(tab) {
     # Style item as disabled
     addClass(selector = paste0(".navbar li:has(a[data-value=", tab, "])"),
@@ -636,6 +643,7 @@ disableTab <- function(tab) {
 #' Enable a tab from the navbar
 #' @importFrom shinyjs removeClass enable
 #' @param tab Character: tab to enable
+#' @return NULL (this function is used to modify the Shiny session's state)
 enableTab <- function(tab) {
     # Style item as enabled
     removeClass(selector = paste0(".navbar li:has(a[data-value=", tab, "])"),
@@ -845,6 +853,7 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
 #' 
 #' @param ... Arguments to pass to \code{\link{renderDataTable}}
 #' @param options List of options to pass to \code{\link{renderDataTable}}
+#' @return NULL (this function is used to modify the Shiny session's state)
 renderDataTableSparklines <- function(..., options=NULL) {
     # Escape is set to FALSE to render the Sparkline HTML elements
     renderDataTable(..., escape=FALSE, env=parent.frame(n=1), options=c(

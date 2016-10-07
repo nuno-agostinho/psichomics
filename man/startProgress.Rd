@@ -13,6 +13,9 @@ startProgress(message, divisions, global = sharedData)
 
 \item{global}{Shiny's global variable}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Create a progress object
 }

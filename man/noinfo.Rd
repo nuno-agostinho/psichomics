@@ -14,6 +14,9 @@ noinfo(output, title = "No information available for this event.",
 
 \item{description}{Character: description of the message to show to the user}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Interface when no information could be retrieved
 }

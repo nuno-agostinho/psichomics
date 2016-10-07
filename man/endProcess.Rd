@@ -14,6 +14,9 @@ the time interval is not displayed)}
 
 \item{closeProgressBar}{Boolean: close progress bar? TRUE by default}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Style button to show processing is not occurring. Also, close the progress
 bar (if TRUE) and print the difference between the current time and a given

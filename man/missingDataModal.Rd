@@ -20,6 +20,9 @@ missingDataGuide(dataType)
 \item{buttonId}{Character: identifier of button to take user to load missing 
 data}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Missing information modal template
 }
