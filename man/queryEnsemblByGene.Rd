@@ -4,14 +4,16 @@
 \alias{queryEnsemblByGene}
 \title{Query information from Ensembl by a given gene}
 \usage{
-queryEnsemblByGene(gene, species, assembly)
+queryEnsemblByGene(gene, species = NULL, assembly = NULL)
 }
 \arguments{
 \item{gene}{Character: gene identifier}
 
-\item{species}{Character: species}
+\item{species}{Character: species (can be NULL when handling an ENSEMBL
+identifier)}
 
-\item{assembly}{Character: assembly version}
+\item{assembly}{Character: assembly version (can be NULL when handling an
+ENSEMBL identifier)}
 }
 \value{
 Information from Ensembl
@@ -21,5 +23,6 @@ Query information from Ensembl by a given gene
 }
 \examples{
 queryEnsemblByGene("BRCA1", "human", "hg19")
+queryEnsemblByGene("ENSG00000139618")
 }
 
