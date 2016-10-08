@@ -38,197 +38,56 @@ createJunctionsTemplate <- function(nrow, program = character(0),
     return(parsed)
 }
 
-#' Get MISO alternative splicing annotation
-#' @importFrom utils read.delim
-#' @return Retrieve annotation from MISO
-getMisoAnnotation <- function() {
-    types <- c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI", "TandemUTR")
-    typesFile <- paste0("/genedata/Resources/Annotations/MISO/hg19/", types,
-                        ".hg19.gff3")
-    annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
-                    comment.char="#", header=FALSE)
-    
-    ## TODO: ALE events are baldy formatted, they have two consecutive gene
-    ## lines... remove them for now
-    annot[[3]] <- annot[[3]][-c(49507, 49508), ]
-    return(annot)
-}
-
-#' @rdname parseMatsAnnotation
-#' @importFrom plyr rbind.fill
-parseMisoAnnotation <- function(annot) {
-    events <- lapply(annot, parseMisoEvent)
-    events <- rbind.fill(events)
-    return(events)
-}
-
-#' Get SUPPA alternative splicing annotation
-#' @importFrom utils read.delim
-#' @return Retrieve annotation from SUPPA
-getSuppaAnnotation <- function() {
-    types <- c("SE", "AF", "AL", "MX", "A5", "A3", "RI")
-    typesFile <- paste0("~/Documents/psi_calculation/suppa/suppaEvents/hg19_", 
-                        types, ".ioe")
-    annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
-                    comment.char="#", header=TRUE)
-    return(annot)
-}
-
-#' @rdname parseMatsAnnotation
-#' @importFrom plyr rbind.fill
-parseSuppaAnnotation <- function(annot) {
-    eventsID <- lapply(annot, "[[", "event_id")
-    events <- lapply(eventsID, parseSuppaEvent)
-    events <- rbind.fill(events)
-    return(events)
-}
-
-#' Get MATS alternative splicing annotation
-#' @importFrom utils read.delim
-#' @return Retrieve annotation from MATS
-getMatsAnnotation <- function() {
-    types <- c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI")
-    typesFile <- paste("~/Documents/psi_calculation/mats_out/ASEvents/fromGTF",
-                       c(types, paste0("novelEvents.", types)), "txt",
-                       sep = ".")
-    names(typesFile) <- rep(types, 2)
-    annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
-                    comment.char="#", header=TRUE)
-    return(annot)
-}
-
-#' Parse alternative splicing annotation
-#' @param annot Data frame or matrix: alternative splicing annotation
-#' @importFrom plyr rbind.fill
-#' @return Parsed annotation
-parseMatsAnnotation <- function(annot) {
-    types <- names(annot)
-    events <- lapply(seq_along(annot), function(i)
-        if (nrow(annot[[i]]) > 0) 
-            return(parseMatsEvent(annot[[i]], types[[i]])))
-    events <- rbind.fill(events)
-    
-    # Sum 1 position to the start/end of MATS events (depending on the strand)
-    matsNames <- names(events)
-    plus <- events$Strand == "+"
-    # Plus
-    start <- matsNames[grep(".start", matsNames)]
-    events[plus, start] <- events[plus, start] + 1
-    # Minus
-    end <- matsNames[grep(".end", matsNames)]
-    events[!plus, end] <- events[!plus, end] + 1
-    
-    return(events)
-}
-
-#' Get VAST-TOOLS alternative splicing annotation
-#' @importFrom utils read.delim
-#' @return Retrieve annotation from VAST-TOOLS
-getVastToolsAnnotation <- function() {
-    types <- c("ALT3", "ALT5", "COMBI", "IR", "MERGE3m", "MIC",
-               rep(c("EXSK", "MULTI"), 1))
-    typesFile <- sprintf(
-        "/genedata/Resources/Software/vast-tools/VASTDB/Hsa/TEMPLATES/Hsa.%s.Template%s.txt",
-        types, c(rep("", 6), rep(".2", 2))#, rep(".2", 2))
-    )
-    names(typesFile) <- types
-    
-    annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
-                    comment.char="#", header=TRUE)
-    return(annot)
-}
-
-#' @rdname parseMatsAnnotation
-#' @importFrom plyr rbind.fill
-parseVastToolsAnnotation <- function(annot) {
-    types <- names(annot)
-    events <- lapply(seq_along(annot),
-                     function(i) {
-                         cat(types[i], fill=TRUE)
-                         a <- annot[[i]]
-                         if (nrow(a) > 0)
-                             return(parseVastToolsEvent(a))
-                     })
-    events <- rbind.fill(events)
-    events <- unique(events)
-    return(events)
-}
-
 #' Returns the coordinates of interest for a given event type
+#' 
 #' @param type Character: alternative splicing event type
-#' @return Coordinates of interest according to the alternative splicing event 
+#' @param sorting Boolean: get coordinates used for sorting and comparison 
+#' between different programs? FALSE by default
+#' 
+#' @return Coordinates of interest according to the alternative splicing event
 #' type
-getSplicingEventCoordinates <- function(type) {
-    switch(type,
-           "SE"   = c("C1.end", "A1.start", "A1.end", "C2.start"),
-           "A3SS" = c("C1.end", "C2.start", "A1.start"),
-           "A5SS" = c("C1.end", "C2.start", "A1.end"),
-           "AFE"  = c("C1.start", "C1.end", "A1.start", "A1.end"),
-           "ALE"  = c("A1.start", "A1.end", "C2.start", "C2.end"),
-           "RI"   = c("C1.start", "C1.end", "C2.start", "C2.end"),
-           "MXE"  = c("C1.end", "A1.start", "A1.end",
-                      "A2.start", "A2.end", "C2.start"), 
-           "TandemUTR" = c("C1.start", "C1.end", "A1.end"))
-}
-
-#' Get the annotation for all event types
-#' @return Parsed annotation
-getParsedAnnotation <- function() {
-    cat("Retrieving MISO annotation...", fill=TRUE)
-    annot <- getMisoAnnotation()
-    cat("Parsing MISO annotation...", fill=TRUE)
-    miso <- parseMisoAnnotation(annot)
+getSplicingEventCoordinates <- function(type, sorting=FALSE) {
+    coords <- switch(type,
+                     "SE"   = c("C1.end", "A1.start", "A1.end", "C2.start"),
+                     "A3SS" = c("C1.end", "C2.start", "A1.start"),
+                     "A5SS" = c("C1.end", "C2.start", "A1.end"),
+                     "AFE"  = c("C1.start", "C1.end", "A1.start", "A1.end"),
+                     "ALE"  = c("A1.start", "A1.end", "C2.start", "C2.end"),
+                     "RI"   = c("C1.start", "C1.end", "C2.start", "C2.end"),
+                     "MXE"  = c("C1.end", "A1.start", "A1.end",
+                                "A2.start", "A2.end", "C2.start"),
+                     "TandemUTR" = c("C1.start", "C1.end", "A1.end"))
     
-    cat("Retrieving SUPPA annotation...", fill=TRUE)
-    annot <- getSuppaAnnotation()
-    cat("Parsing SUPPA annotation...", fill=TRUE)
-    suppa <- parseSuppaAnnotation(annot)
-    
-    cat("Retrieving VAST-TOOLS annotation...", fill=TRUE)
-    annot <- getVastToolsAnnotation()
-    cat("Parsing VAST-TOOLS annotation...", fill=TRUE)
-    vast <- parseVastToolsAnnotation(annot)
-    
-    cat("Retrieving MATS annotation...", fill=TRUE)
-    annot <- getMatsAnnotation()
-    cat("Parsing MATS annotation...", fill=TRUE)
-    mats <- parseMatsAnnotation(annot)
-    
-    events <- list(
-        "miso" = miso, "mats" = mats, "vast-tools" = vast, "suppa" = suppa)
-    
-    # Remove the "chr" prefix from the chromosome field
-    cat("Standarising chromosome field", fill=TRUE)
-    for (each in seq_along(events)) {
-        chr <- grepl("chr", events[[each]]$Chromosome)
-        events[[each]]$Chromosome[chr] <-
-            gsub("chr", "", events[[each]]$Chromosome[chr])
+    if (sorting) {
+        coords <- switch(type,
+                         "A3SS" = c("C2.start", "A1.start"),
+                         "A5SS" = c("C1.end", "A1.end"),
+                         "AFE"  = c("A1.start", "A1.end", "C1.start", "C1.end"),
+                         "ALE"  = c("A1.start", "A1.end", "C2.start", "C2.end"),
+                         "MXE"  = c("A1.start", "A1.end", "A2.start", "A2.end"),
+                         "TandemUTR" = c("A1.end", "C1.end"))
     }
-    
-    events <- rbind.fill(events)
-    events <- dlply(events, .(Event.type))
-    events <- lapply(events, dlply, .(Program))
-    return(events)
+    return(coords)
 }
 
 #' Convert a column to numeric if possible and ignore given columns composed
 #' of lists
-#' 
+#'
 #' @param table Data matrix: table
 #' @param by Character: column names of interest
-#' @param toNumeric Boolean: which columns to convert to numeric (FALSE by 
+#' @param toNumeric Boolean: which columns to convert to numeric (FALSE by
 #' default)
-#' 
+#'
 #' @return Processed data matrix
 #' @examples
 #' event <- read.table(text = "ABC123 + 250 300 350
 #'                             DEF456 - 900 800 700")
 #' names(event) <- c("Event ID", "Strand", "C1.end", "A1.end", "A1.start")
-#' 
+#'
 #' # Let's change one column to character
 #' event[ , "C1.end"] <- as.character(event[ , "C1.end"])
 #' is.character(event[ , "C1.end"])
-#' 
+#'
 #' event <- psichomics:::getNumerics(event, by = c("Strand", "C1.end", "A1.end",
 #'                                   "A1.start"),
 #'                                   toNumeric = c(FALSE, TRUE, TRUE, TRUE))
@@ -247,13 +106,17 @@ getNumerics <- function(table, by = NULL, toNumeric = FALSE) {
     return(table)
 }
 
-#' Full outer join all given annotation based on select columns
-#' @param annotation Data frame or matrix: alternative splicing annotation
+#' Full outer join all given events based on select columns
+#' 
+#' @param events Data frame or matrix: alternative splicing events
 #' @param types Character: alternative splicing types
-#' @return List of annotation joined by alternative splicing event type
-joinAnnotation <- function(annotation, types) {
-    if (missing(types)) types <- names(annotation)
-    joint <- lapply(types, function(type, annotation) {
+#' 
+#' @importFrom dplyr full_join
+#' 
+#' @return List of events joined by alternative splicing event type
+joinEventsPerType <- function(events, types) {
+    if (missing(types)) types <- names(events)
+    joint <- lapply(types, function(type, events) {
         cat(type, fill=TRUE)
         # Create vector with comparable columns
         id <- c("Strand", "Chromosome", "Event.type")
@@ -261,7 +124,7 @@ joinAnnotation <- function(annotation, types) {
         toNumeric <- !by %in% id
         
         # Convert given columns to numeric if possible
-        tables <- lapply(annotation[[type]], getNumerics, by, toNumeric)
+        tables <- lapply(events[[type]], getNumerics, by, toNumeric)
         
         # Make the names of non-comparable columns distinct
         cols <- lapply(names(tables), function(k) {
@@ -271,83 +134,167 @@ joinAnnotation <- function(annotation, types) {
         })
         
         # Full join all the tables
-        res <- Reduce(function(x, y) dplyr::full_join(x, y, by), tables)
+        res <- Reduce(function(x, y) full_join(x, y, by), tables)
         names(res) <- unique(unlist(cols))
         
         # Remove equal rows
         return(unique(res))
-    }, annotation)
+    }, events)
     names(joint) <- types
     return(joint)
 }
 
-#' Write the annotation of an event type to a file
+#' Prepare annotation from alternative splicing events
+#'
+#' In case more than one data frame with alternative splicing events is given,
+#' the events are cross-referenced according to the chromosome, strand and 
+#' relevant coordinates per event type (see details).
+#'
+#' @param ... Data frame(s) of alternative splicing events to include in the
+#' annotation
+#'
+#' @details Events from two or more data frames are cross-referenced based on
+#' each event's chromosome, strand and specific coordinates relevant for each
+#' event type:
+#' \itemize{
+#'      \item Skipped exon: constitutive exon 1 end, alternative exon (start
+#'      and end) and constitutive exon 2 start
+#'      \item Mutually exclusive exon: constitutive exon 1 end, alternative exon
+#'      1 and 2 (start and end) and constitutive exon 2 start
+#'      \item Alternative 5' splice site: constitutive exon 1 end, alternative 
+#'      exon 1 end and constitutive exon 2 start
+#'      \item Alternative first exon: same as alternative 5' splice site
+#'      \item Alternative 3' splice site: constitutive exon 1 end, alternative
+#'      exon 1 start and constitutive exon 2 start
+#'      \item Alternative last exon: same as alternative 3' splice site
+#' }
+#'
+#' @note When cross-referencing events, gene information is discarded.
+#'
+#' @importFrom plyr rbind.fill dlply
+#'
+#' @return List of data frames with the annotation from different data frames
+#' joined by event type
+#' @export
+#' @examples 
+#' # Load sample files (SUPPA annotation)
+#' folder <- "extdata/eventsAnnotSample/suppa_output/suppaEvents"
+#' suppaOutput <- system.file(folder, package="psichomics")
 #' 
-#' @param jointEvents List of lists of data frame
-#' @param eventType Character: type of event
-#' @param filename Character: path to the annotation file
-#' @param showID Boolean: show the events' ID? FALSE by default
-#' @param rds Boolean: write to a RDS file? TRUE by default; otherwise, write to
-#' TXT
+#' # Parse and prepare SUPPA annotation
+#' suppa <- parseSuppaAnnotation(suppaOutput)
+#' annot <- prepareAnnotationFromEvents(suppa)
 #' 
-#' @importFrom utils write.table
+#' # Load sample files (rMATS annotation)
+#' folder <- "extdata/eventsAnnotSample/mats_output/ASEvents/"
+#' matsOutput <- system.file(folder, package="psichomics")
 #' 
-#' @return Invisible TRUE if everything's okay
-writeAnnotation <- function(jointEvents, eventType,
-                            filename = paste0("data/annotation_",
-                                              eventType, ".txt"),
-                            showID = FALSE, rds = TRUE) {
-    res <- jointEvents[[eventType]]
-    # Show the columns Chromosome, Strand and coordinates of interest
-    by <- c("Chromosome", "Strand", getSplicingEventCoordinates(eventType))
-    ord <- 0
+#' # Parse rMATS annotation and prepare combined annotation from rMATS and SUPPA
+#' mats <- parseMatsAnnotation(matsOutput)
+#' annot <- prepareAnnotationFromEvents(suppa, mats)
+prepareAnnotationFromEvents <- function(...) {
+    events <- list(...)
+    if (!all(vapply(events, is, "ASevents", FUN.VALUE=logical(1))))
+        warning("All variables should be an object of class ASevents")
     
-    # Show the events' ID if desired
-    if (showID) {
-        cols <- grep("Event.ID", names(res), value = TRUE)
-        by <- c(cols, by)
-        ord <- length(cols)
+    # Remove the "chr" prefix from the chromosome field
+    for (each in seq_along(events)) {
+        events[[each]]$Chromosome <- gsub("chr", "", events[[each]]$Chromosome)
     }
-    res <- subset(res, select = by)
     
-    ## TODO(NunoA): clean this mess
-    # Order by chromosome and coordinates
-    orderBy <- lapply(c(1 + ord, (3 + ord):ncol(res)),
-                      function(x) return(res[[x]]))
-    res <- res[do.call(order, orderBy), ]
+    # Organise splicing events by event type and then by program in a list of 
+    # list of dataframes
+    events <- rbind.fill(events)
+    events <- dlply(events, "Event.type")
+    events <- lapply(events, dlply, "Program")
     
-    res <- unique(res)
+    cat("Sorting coordinates...", fill=TRUE)
+    events <- sortCoordinates(events)
     
-    if (rds)
-        saveRDS(res, file = filename)
-    else
-        write.table(res, file = filename, quote = FALSE, row.names = FALSE, 
-                    sep = "\t")
-    return(invisible(TRUE))
-}
-
-#' Read the annotation of an event type from a file
-#' 
-#' @inheritParams writeAnnotation
-#' @param rds Boolean: read from a RDS file? TRUE by default; otherwise, read
-#' from table format
-#' @importFrom utils read.table
-#' 
-#' @return Data frame with the annotation
-readAnnotation <- function(eventType, filename, rds = TRUE) {
-    if (missing(filename)) {
-        filename <- file.path("data", paste0("annotation_", eventType))
-        filename <- paste0(filename, ifelse(rds, ".RDS", ".txt"))
+    cat("Joining events per event type...", fill=TRUE)
+    join <- joinEventsPerType(events)
+    
+    # If available, add 1st constitutive exon's end and 2nd constituve exon's 
+    # start from SUPPA or rMATS to AFE and ALE events, respectively, as other 
+    # programs may not state these coordinates
+    suppaAFE <- join$AFE$SUPPA.C2.start
+    matsAFE  <- join$AFE$MATS.C2.start
+    AFE.C2.start <- as.numeric( ifelse(
+        sapply(suppaAFE, is.null),
+        ifelse(sapply(matsAFE, is.null), NA, unlist(matsAFE)),
+        unlist(suppaAFE)))
+    
+    suppaALE <- join$ALE$SUPPA.C1.end
+    matsALE  <- join$ALE$MATS.C1.end
+    ALE.C1.end <- as.numeric( ifelse(
+        sapply(suppaALE, is.null),
+        ifelse(sapply(matsALE, is.null), NA, unlist(matsALE)),
+        unlist(suppaALE)))
+    
+    # Organise columns
+    annot <- lapply(names(join), function(i) {
+        # Include genes if there is only one column
+        geneCols <- grep(".Gene", names(join[[i]]), fixed=TRUE)
+        if (length(geneCols) == 1) {
+            gene <- "Gene"
+            names(join[[i]])[geneCols] <- gene
+            join[[i]][[gene]] <- as.list(join[[i]][[gene]])
+        } else {
+            gene <- NULL
+        }
+        
+        cols <- c("Chromosome", "Strand", gene, getSplicingEventCoordinates(i),
+                  grep("Event.ID", names(join[[i]]), value = TRUE))
+        return(join[[i]][, cols])
+    })
+    names(annot) <- names(join)
+    annot$AFE["C2.start"] <- AFE.C2.start
+    annot$ALE["C1.end"]   <- ALE.C1.end
+    events <- annot
+    
+    cat("Cleaning the annotation...", fill=TRUE)
+    types <- c(SE="Skipped exon", MXE="Mutually exclusive exon",
+               A3SS="Alternative 3' splice site", 
+               A5SS="Alternative 5' splice site",
+               AFE="Alternative first exon", ALE="Alternative last exon",
+               RI="Retained intron", TandemUTR="Tandem UTR")
+    
+    for (type in names(types)) {
+        if (!is.null(events[[type]]))
+            events[[type]] <- cbind("Event type"=types[[type]], events[[type]])
     }
+    events <- rbind.fill(events)
     
-    if (!file.exists(filename))
-        stop("Missing file.")
+    coords <- c("C1.start"="Constitutive exon 1 start",
+                "C1.end"="Constitutive exon 1 end",
+                "A1.start"="Alternative exon 1 start",
+                "A1.end"="Alternative exon 1 end",
+                "A2.start"="Alternative exon 2 start",
+                "A2.end"="Alternative exon 2 end",
+                "C2.start"="Constitutive exon 2 start",
+                "C2.end"="Constitutive exon 2 end")
+    m <- match(names(coords), names(events))
+    names(events)[m[!is.na(m)]] <- coords[!is.na(m)]
+    if (is.null(events$Gene)) events$Gene <- NA
+    eventId <- grep("Event.ID", names(events), value = TRUE)
     
-    if (rds)
-        read <- readRDS(filename)
-    else 
-        read <- read.table(filename, header = TRUE, stringsAsFactors = FALSE)
-    return(read)
+    # Order rows by event type, chromosome and the first exons coordinates and
+    # order columns
+    ord <- order(events$`Event type`, events$Chromosome,
+                 events$`Constitutive exon 1 start`,
+                 events$`Constitutive exon 1 end`,
+                 events$`Alternative exon 1 start`,
+                 events$`Alternative exon 1 end`)
+    events <- events[ord, c("Event type", "Chromosome", "Strand", "Gene",
+                            coords[!is.na(m)], eventId)]
+    
+    # Organise by event type and remove columns with NAs only
+    events <- split(events[-1], events$`Event type`)
+    for (type in names(events)) {
+        naCols <- apply(events[[type]], 2, function(col) all(is.na(col)))
+        events[[type]] <- events[[type]][!naCols]
+    }
+    return(events)
 }
 
 #' Compare the number of events from the different programs in a Venn diagram
@@ -355,8 +302,10 @@ readAnnotation <- function(eventType, filename, rds = TRUE) {
 #' @param join List of lists of data frame
 #' @param eventType Character: type of event
 #' 
-#' @return Venn diagram
+#' @return Venn diagrams for a given event type
 vennEvents <- function(join, eventType) {
+    if ( require("gplots") )
+        stop("You need the package gplots to plot Venn diagrams")
     join <- join[[eventType]]
     
     programs <- join[grep("Program", names(join))]
@@ -383,6 +332,50 @@ junctionString <- function(chr, strand, junc5, junc3) {
     return(res)
 }
 
+colsAsNumbers <- function(type, annotation) {
+    # Create vector with comparable columns
+    id <- c("Strand", "Chromosome", "Event.type")
+    by <- c(id, getSplicingEventCoordinates(type))
+    toNumeric <- !by %in% id
+    
+    # Convert given columns to numeric if possible
+    tables <- lapply(annotation[[type]], getNumerics, by, toNumeric)
+    return(tables)
+}
+
+#' Sort coordinates for some event types
+#' 
+#' Some programs sort the coordinates of specific event types differently. To
+#' make them all comparable across programs, the coordinates are ordered by
+#' increasing (plus strand) or descresing order (minus strand)
+#' 
+#' @param events List of data frames with alternative splicing events for a 
+#' given program
+#' 
+#' @return List of data frames with alternative splicing events for a given
+#' program
+sortCoordinates <- function(events) {
+    types <- names(events)
+    for (type in types) {
+        coord <- getSplicingEventCoordinates(type, sorting=TRUE)
+        events[[type]] <- colsAsNumbers(type, events)
+        if (!is.null(coord)) {
+            for (program in names(events[[type]])) {
+                print(paste(type, program))
+                table <- events[[type]][[program]]
+                plus <- table[["Strand"]] == "+"
+                plusOrd <- apply(table[plus, coord], 1, sort)
+                minusOrd <- apply(table[!plus, coord], 1, sort, decreasing=TRUE)
+                if (length(plusOrd) > 0)
+                    events[[type]][[program]][plus, coord] <- t(plusOrd)
+                if (length(minusOrd) > 0)
+                    events[[type]][[program]][!plus, coord] <- t(minusOrd)
+            }
+        }
+    }
+    return(events)
+}
+
 #' Calculate inclusion levels using alternative splicing event annotation and
 #' junction quantification for many samples
 #' 
@@ -398,17 +391,44 @@ junctionString <- function(chr, strand, junc5, junc3) {
 #' @return Matrix with inclusion levels
 calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                                      minReads = 10) {
+    # Prepare AFE and ALE events by removing duplicates based on the coordinates
+    # currently used to measure PSI values
+    if (eventType == "AFE") {
+        C2.start <- annotation$`Constitutive exon 2 start`
+        if (is.null(C2.start)) {
+            return(NULL)
+        } else {
+            annotation <- annotation[!is.na(C2.start), ]
+            annotation <- uniqueBy(annotation, "Constitutive exon 1 end",
+                                   "Alternative exon 1 end",
+                                   "Constitutive exon 2 start")
+        }
+    } else if (eventType == "ALE") {
+        C1.end <- annotation$`Constitutive exon 1 end`
+        if (is.null(C1.end)) {
+            return(NULL)
+        } else {
+            annotation <- annotation[!is.na(C1.end), ]
+            annotation <- uniqueBy(annotation, "Constitutive exon 1 end",
+                                   "Alternative exon 1 start",
+                                   "Constitutive exon 2 start")
+        }
+    }
+    
     chr <- annotation$Chromosome
     strand <- annotation$Strand
     
     if (eventType == "SE") {
         # Create searchable strings for junctions
         incAstr <- junctionString(chr, strand,
-                                  annotation$C1.end, annotation$A1.start)
+                                  annotation$`Constitutive exon 1 end`,
+                                  annotation$`Alternative exon 1 start`)
         incBstr <- junctionString(chr, strand,
-                                  annotation$A1.end, annotation$C2.start)
+                                  annotation$`Alternative exon 1 end`,
+                                  annotation$`Constitutive exon 2 start`)
         exclstr <- junctionString(chr, strand, 
-                                  annotation$C1.end, annotation$C2.start)
+                                  annotation$`Constitutive exon 1 end`, 
+                                  annotation$`Constitutive exon 2 start`)
         
         # Get specific junction quantification
         coords <- rownames(junctionQuant)
@@ -423,6 +443,8 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         
         tot <- excl + inc
         rm(excl)
+        if (nrow(tot) == 0)
+            return(NULL)
         
         # Ignore PSI values when total reads are below the threshold
         less <- tot < minReads | is.na(tot)
@@ -431,19 +453,26 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         colnames(psi) <- colnames(inc)
         rm(inc)
         
-        rownames(psi) <- paste(eventType, chr, strand, annotation$C1.end, 
-                               annotation$A1.start, annotation$A1.end,
-                               annotation$C2.start, annotation$Gene, sep="_")
+        rownames(psi) <- paste(eventType, chr, strand, 
+                               annotation$`Constitutive exon 1 end`, 
+                               annotation$`Alternative exon 1 start`, 
+                               annotation$`Alternative exon 1 end`,
+                               annotation$`Constitutive exon 2 start`,
+                               annotation$Gene, sep="_")
     } else if (eventType == "MXE") {
         # Create searchable strings for junctions
         incAstr <- junctionString(chr, strand,
-                                  annotation$C1.end, annotation$A1.start)
+                                  annotation$`Constitutive exon 1 end`,
+                                  annotation$`Alternative exon 1 start`)
         incBstr <- junctionString(chr, strand,
-                                  annotation$A1.end, annotation$C2.start)
+                                  annotation$`Alternative exon 1 end`,
+                                  annotation$`Constitutive exon 2 start`)
         excAstr <- junctionString(chr, strand,
-                                  annotation$C1.end, annotation$A2.start)
+                                  annotation$`Constitutive exon 1 end`,
+                                  annotation$`Alternative exon 2 start`)
         excBstr <- junctionString(chr, strand,
-                                  annotation$A2.end, annotation$C2.start)
+                                  annotation$`Alternative exon 2 end`,
+                                  annotation$`Constitutive exon 2 start`)
         
         # Get specific junction quantification
         coords <- rownames(junctionQuant)
@@ -456,54 +485,73 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         inc <- (incA + incB)
         exc <- (excA + excB)
         tot <- inc + exc
+        if (nrow(tot) == 0)
+            return(NULL)
+        
         psi <- inc/tot
         # Ignore PSI where total reads are below the threshold
         psi[tot < minReads] <- NA
-        rownames(psi) <- paste(eventType, chr, strand, annotation$C1.end,
-                               annotation$A1.start, annotation$A1.end, 
-                               annotation$A2.start, annotation$A2.end,
-                               annotation$C2.start, annotation$Gene, sep="_")
-    } else if (eventType == "A5SS" || eventType == "AFE") {
-        # Create searchable strings for junctions
-        incStr <- junctionString(chr, strand,
-                                 annotation$A1.end, annotation$C2.start)
-        excStr <- junctionString(chr, strand,
-                                 annotation$C1.end, annotation$C2.start)
-        
-        # Get specific junction quantification
-        coords <- rownames(junctionQuant)
-        inc <- junctionQuant[fmatch(incStr, coords), ]
-        exc <- junctionQuant[fmatch(excStr, coords), ]
-        tot <- inc + exc
-        
-        # Calculate inclusion levels
-        psi <- inc/tot
-        # Ignore PSI where total reads are below the threshold
-        psi[tot < minReads] <- NA
-        
-        rownames(psi) <- paste(eventType, chr, strand, annotation$C1.end, 
-                               annotation$A1.end, annotation$C2.start, 
+        rownames(psi) <- paste(eventType, chr, strand, 
+                               annotation$`Constitutive exon 1 end`,
+                               annotation$`Alternative exon 1 start`,
+                               annotation$`Alternative exon 1 end`, 
+                               annotation$`Alternative exon 2 start`, 
+                               annotation$`Alternative exon 2 end`,
+                               annotation$`Constitutive exon 2 start`,
                                annotation$Gene, sep="_")
-    } else if (eventType == "A3SS" || eventType == "ALE") {
+    } else if (eventType %in% c("A5SS", "AFE")) {
         # Create searchable strings for junctions
         incStr <- junctionString(chr, strand,
-                                 annotation$C1.end, annotation$A1.start)
+                                 annotation$`Alternative exon 1 end`, 
+                                 annotation$`Constitutive exon 2 start`)
         excStr <- junctionString(chr, strand,
-                                 annotation$C1.end, annotation$C2.start)
+                                 annotation$`Constitutive exon 1 end`,
+                                 annotation$`Constitutive exon 2 start`)
         
         # Get specific junction quantification
         coords <- rownames(junctionQuant)
         inc <- junctionQuant[fmatch(incStr, coords), ]
         exc <- junctionQuant[fmatch(excStr, coords), ]
         tot <- inc + exc
+        if (nrow(tot) == 0)
+            return(NULL)
         
         # Calculate inclusion levels
         psi <- inc/tot
         # Ignore PSI where total reads are below the threshold
         psi[tot < minReads] <- NA
         
-        rownames(psi) <- paste(eventType, chr, strand, annotation$C1.end,
-                               annotation$A1.start, annotation$C2.start, 
+        rownames(psi) <- paste(eventType, chr, strand, 
+                               annotation$`Constitutive exon 1 end`, 
+                               annotation$`Alternative exon 1 end`, 
+                               annotation$`Constitutive exon 2 start`, 
+                               annotation$Gene, sep="_")
+    } else if (eventType %in% c("A3SS", "ALE")) {
+        # Create searchable strings for junctions
+        incStr <- junctionString(chr, strand,
+                                 annotation$`Constitutive exon 1 end`,
+                                 annotation$`Alternative exon 1 start`)
+        excStr <- junctionString(chr, strand,
+                                 annotation$`Constitutive exon 1 end`, 
+                                 annotation$`Constitutive exon 2 start`)
+        
+        # Get specific junction quantification
+        coords <- rownames(junctionQuant)
+        inc <- junctionQuant[fmatch(incStr, coords), ]
+        exc <- junctionQuant[fmatch(excStr, coords), ]
+        tot <- inc + exc
+        if (nrow(tot) == 0)
+            return(NULL)
+        
+        # Calculate inclusion levels
+        psi <- inc/tot
+        # Ignore PSI where total reads are below the threshold
+        psi[tot < minReads] <- NA
+        
+        rownames(psi) <- paste(eventType, chr, strand,
+                               annotation$`Constitutive exon 1 end`,
+                               annotation$`Alternative exon 1 start`, 
+                               annotation$`Constitutive exon 2 start`, 
                                annotation$Gene, sep = "_")
     }
     

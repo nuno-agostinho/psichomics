@@ -1,3 +1,29 @@
+#' @rdname parseMisoAnnotation
+#' @export
+#' @examples 
+#' # Load sample files
+#' folder <- "extdata/eventsAnnotSample/suppa_output/suppaEvents"
+#' suppaOutput <- system.file(folder, package="psichomics")
+#' 
+#' suppa <- parseSuppaAnnotation(suppaOutput)
+parseSuppaAnnotation <- function(
+    folder,
+    types=c("SE", "AF", "AL", "MX", "A5", "A3", "RI"),
+    genome="hg19") {
+    
+    cat("Retrieving SUPPA annotation...", fill=TRUE)
+    typesFile <- file.path(folder, paste0(genome, "_", types, ".ioe"))
+    annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
+                    comment.char="#", header=TRUE)
+    
+    cat("Parsing SUPPA annotation...", fill=TRUE)
+    eventsID <- lapply(annot, "[[", "event_id")
+    events <- lapply(eventsID, parseSuppaEvent)
+    events <- rbind.fill(events)
+    class(events) <- c("ASevents", class(events))
+    return(events)
+}
+
 #' Parses splicing events of a specific event type from SUPPA
 #'
 #' @details More information about SUPPA available at

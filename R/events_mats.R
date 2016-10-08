@@ -1,3 +1,54 @@
+#' @rdname parseMisoAnnotation
+#' @param novelEvents Boolean: parse events dedected due to novel splice sites 
+#' (TRUE by default)
+#' @export
+#' @examples 
+#' # Load sample files
+#' folder <- "extdata/eventsAnnotSample/mats_output/ASEvents"
+#' matsOutput <- system.file(folder, package="psichomics")
+#' 
+#' mats <- parseMatsAnnotation(matsOutput)
+#' 
+#' # Do not parse novel events
+#' mats <- parseMatsAnnotation(matsOutput, novelEvents=FALSE)
+parseMatsAnnotation <- function(
+    folder,
+    types=c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI"),
+    genome="fromGTF",
+    novelEvents=TRUE) {
+    
+    cat("Retrieving rMATS annotation...", fill=TRUE)
+    if (novelEvents)
+        detected <- c(types, paste0("novelEvents.", types))
+    else
+        detected <- types
+    
+    typesFile <- file.path(folder, paste(genome, detected, "txt", sep="."))
+    names(typesFile) <- rep(types, length(typesFile)/length(types))
+    annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
+                    comment.char="#", header=TRUE)
+    
+    cat("Parsing rMATS annotation...", fill=TRUE)
+    types <- names(annot)
+    events <- lapply(seq_along(annot), function(i)
+        if (nrow(annot[[i]]) > 0)
+            return(parseMatsEvent(annot[[i]], types[[i]])))
+    events <- rbind.fill(events)
+    
+    # Sum 1 position to the start/end of MATS events (depending on the strand)
+    matsNames <- names(events)
+    plus <- events$Strand == "+"
+    # Plus
+    start <- matsNames[grep(".start", matsNames)]
+    events[plus, start] <- events[plus, start] + 1
+    # Minus
+    end <- matsNames[grep(".end", matsNames)]
+    events[!plus, end] <- events[!plus, end] + 1
+    
+    class(events) <- c("ASevents", class(events))
+    return(events)
+}
+
 #' Parse alternative splicing events from MATS
 #'
 #' @param event Data frame row: MATS splicing event

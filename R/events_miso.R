@@ -1,3 +1,56 @@
+#' Get events from alternative splicing annotation
+#'
+#' @param folder Character: path to folder
+#' @param types Character: type of events to retrieve (depends on the program of
+#' origin; see details)
+#' @param genome Character: genome of interest (for instance, "hg19"; depends on
+#' the program of origin)
+#'
+#' @importFrom utils read.delim
+#' @importFrom plyr rbind.fill
+#'
+#' @details Type of parseable events:
+#' \itemize{
+#'      \item Alternative 3' splice site
+#'      \item Alternative 5' splice site
+#'      \item Alternative first exon
+#'      \item Alternative last exon
+#'      \item Skipped exon (may include skipped micro-exons)
+#'      \item Mutually exclusive exon
+#'      \item Retained intron
+#'      \item Tandem UTR
+#' }
+#'
+#' @return Retrieve data frame with events based on a given alternative splicing
+#' annotation
+#' @export
+#' @examples 
+#' # Load sample files
+#' folder <- "extdata/eventsAnnotSample/miso_annotation"
+#' misoOutput <- system.file(folder, package="psichomics")
+#' 
+#' miso <- parseMisoAnnotation(misoOutput)
+parseMisoAnnotation <- function(
+    folder,
+    types=c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI", "TandemUTR"),
+    genome="hg19") {
+    
+    cat("Retrieving MISO annotation...", fill=TRUE)
+    typesFile <- file.path(folder, paste0(types, ".", genome, ".gff3"))
+    annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
+                    comment.char="#", header=FALSE)
+    
+    ## TODO: ALE events are baldy formatted, they have two consecutive gene
+    ## lines... remove them for now
+    annot[[3]] <- annot[[3]][-c(49507, 49508), ]
+    
+    cat("Parsing MISO annotation...", fill=TRUE)
+    events <- lapply(annot, parseMisoEvent)
+    events <- rbind.fill(events)
+    class(events) <- c("ASevents", class(events))
+    return(events)
+}
+
 #' Get rows of a data frame between two row indexes
 #'
 #' @details For a given iteration i, returns data from firstRow[i] to

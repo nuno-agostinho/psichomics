@@ -4,13 +4,16 @@
 \alias{getSplicingEventCoordinates}
 \title{Returns the coordinates of interest for a given event type}
 \usage{
-getSplicingEventCoordinates(type)
+getSplicingEventCoordinates(type, sorting = FALSE)
 }
 \arguments{
 \item{type}{Character: alternative splicing event type}
+
+\item{sorting}{Boolean: get coordinates used for sorting and comparison 
+between different programs? FALSE by default}
 }
 \value{
-Coordinates of interest according to the alternative splicing event 
+Coordinates of interest according to the alternative splicing event
 type
 }
 \description{

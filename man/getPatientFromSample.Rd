@@ -4,7 +4,8 @@
 \alias{getPatientFromSample}
 \title{Match given sample identifiers and return the respective row in clinical data}
 \usage{
-getPatientFromSample(sampleId, clinical, prefix = "^tcga", lower = TRUE)
+getPatientFromSample(sampleId, clinical, prefix = "^tcga", lower = TRUE,
+  rmNoMatches = TRUE)
 }
 \arguments{
 \item{sampleId}{Character: sample identifiers}
@@ -14,6 +15,8 @@ getPatientFromSample(sampleId, clinical, prefix = "^tcga", lower = TRUE)
 \item{prefix}{Character: prefix to search for in clinical data}
 
 \item{lower}{Boolean: convert samples to lower case? TRUE by default}
+
+\item{rmNoMatches}{Boolean: remove non-matching identifiers}
 }
 \value{
 Integer vector of the row number in clinical data corresponding to 
