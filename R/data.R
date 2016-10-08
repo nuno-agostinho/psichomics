@@ -123,7 +123,7 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
     
     downloadId <- paste(tablename, "download", sep="-")
     download <- downloadButton(downloadId, "Download whole dataset",
-                               "pull-right")
+                               class="pull-right btn-info")
     
     if(!is.null(description)) {
         description <- p(tags$strong("Table description:"), description)
@@ -153,6 +153,7 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
 }
 
 #' Render a specific data tab (including data table and related interface)
+#' 
 #' @param index Integer: index of the data to load
 #' @param data Data frame: data with everything to load
 #' @param name Character: name of the dataset
@@ -161,6 +162,8 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
 #' 
 #' @importFrom DT renderDataTable
 #' @importFrom shiny downloadHandler br
+#' @importFrom utils write.table
+#' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 createDataTab <- function(index, data, name, input, output) {
     tablename <- paste("table", name, index, sep="-")
@@ -227,7 +230,7 @@ dataServer <- function(input, output, session) {
     
     welcome <- tagList(
         h1("Welcome"), HTML(paste0(
-            "Analyse alternative splicing based on transcriptomic and",
+            "Analyse alternative splicing based on transcriptomic and ",
             "clinical data from The Cancer Genome Atlas (", tcga, ").")),
         tags$br(), tags$br(), tags$ol(
             id="list",

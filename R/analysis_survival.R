@@ -159,6 +159,8 @@ optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart,
 #' @importFrom highcharter hchart hc_chart hc_yAxis hc_xAxis hc_tooltip
 #' hc_subtitle hc_tooltip renderHighchart hc_title hc_plotOptions
 #' @importFrom DT dataTableOutput renderDataTable
+#' @importFrom utils write.table
+#' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 survivalServer <- function(input, output, session) {
     ns <- session$ns

@@ -47,13 +47,14 @@ parseDateResponse <- function(string) {
 #' @export
 #'
 #' @importFrom httr GET warn_for_status http_error
+#' @importFrom methods is
 #'
 #' @examples
 #' isFirehoseUp()
 isFirehoseUp <- function() {
     link <- paste0("http://firebrowse.org/api/v1/Metadata/HeartBeat")
     heartbeat <- tryCatch(GET(link, query=list(format="json")), error=return)
-    if ("simpleError" %in% class(heartbeat)) {
+    if (is(heartbeat, "error")) {
         return(FALSE)
     } else if (http_error(heartbeat)) {
         warn_for_status(heartbeat, "reach Firehose API")
@@ -604,12 +605,19 @@ checkFirebrowse <- function(ns) {
 }
 
 #' Set data from Firehose
+#' 
 #' @param input Shiny input
 #' @param output Shiny output
 #' @param session Shiny session
 #' @param replace Boolean: replace loaded data? TRUE by default
-#' @importFrom shinyjs disable enable 
+#' 
+#' @importFrom shinyjs disable enable
+#' @importFrom shiny div fluidRow column icon
+#' @importFrom shinyBS bsTooltip
+#' 
+#' @return NULL (this function is used to modify the Shiny session's state)
 setFirehoseData <- function(input, output, session, replace=TRUE) {
+    ns <- session$ns
     time <- startProcess("getFirehoseData")
     
     # Load data from Firehose

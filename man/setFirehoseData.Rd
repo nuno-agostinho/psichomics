@@ -15,6 +15,9 @@ setFirehoseData(input, output, session, replace = TRUE)
 
 \item{replace}{Boolean: replace loaded data? TRUE by default}
 }
+\value{
+NULL (this function is used to modify the Shiny session's state)
+}
 \description{
 Set data from Firehose
 }
