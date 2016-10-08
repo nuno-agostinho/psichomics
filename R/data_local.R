@@ -86,6 +86,8 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."), name="Data",
 #' @param replace Boolean: replace loaded data? TRUE by default
 #' 
 #' @importFrom shinyjs disable enable
+#' 
+#' @return NULL (this function is used to modify the Shiny session's state)
 setLocalData <- function(input, output, session, replace=TRUE) {
     time <- startProcess("acceptFile")
     

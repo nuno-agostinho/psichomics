@@ -391,12 +391,15 @@ plotMiniSurvivalCurves <- function(i, input, survParams, clinical, filter, psi,
 }
 
 #' Server logic of the exploratory differential analyses
+#' 
 #' @param input Shiny input
 #' @param output Shiny ouput
 #' @param session Shiny session
 #' 
 #' @importFrom shinyjs toggleState disable
 #' @importFrom DT replaceData dataTableProxy
+#' @importFrom utils write.table
+#' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 diffSplicingTableServer <- function(input, output, session) {
     ns <- session$ns
