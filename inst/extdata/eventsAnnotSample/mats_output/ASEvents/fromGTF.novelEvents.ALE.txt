@@ -1,0 +1,1 @@
+ID	GeneID	geneSymbol	chr	strand	distalExonStart_0base	distalExonEnd	proximalES	proximalEE	flankingES	flankingEE

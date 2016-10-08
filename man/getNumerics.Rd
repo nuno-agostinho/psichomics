@@ -12,7 +12,7 @@ getNumerics(table, by = NULL, toNumeric = FALSE)
 
 \item{by}{Character: column names of interest}
 
-\item{toNumeric}{Boolean: which columns to convert to numeric (FALSE by 
+\item{toNumeric}{Boolean: which columns to convert to numeric (FALSE by
 default)}
 }
 \value{

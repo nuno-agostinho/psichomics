@@ -1,6 +1,82 @@
-#' @import plyr
-NULL
-#> NULL
+#' @rdname parseMisoAnnotation
+#' @param complexEvents Boolean: should complex events in A3SS and A5SS be
+#' parsed? FALSE by default
+#' @export
+#' @examples 
+#' # Load sample files
+#' folder <- "extdata/eventsAnnotSample/VASTDB/Hsa/TEMPLATES"
+#' vastToolsOutput <- system.file(folder, package="psichomics")
+#' 
+#' vast <- parseVastToolsAnnotation(vastToolsOutput)
+parseVastToolsAnnotation <- function(
+    folder,
+    types=c("ALT3", "ALT5", "COMBI", "IR", "MERGE3m", "MIC", "EXSK", "MULTI"),
+    genome="Hsa",
+    complexEvents=FALSE) {
+    
+    cat("Retrieving VAST-TOOLS annotation...", fill=TRUE)
+    typesFile <- file.path(folder,
+                           sprintf("%s.%s.Template%s.txt", genome, types,
+                                   c(rep("", 6), rep(".2", 2))#, rep(".2", 2))
+                           ))
+    names(typesFile) <- types
+    
+    annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
+                    comment.char="#", header=TRUE)
+    
+    cat("Parsing VAST-TOOLS annotation...", fill=TRUE)
+    types <- names(annot)
+    skippedExon <- c("COMBI", "MERGE3m", "MIC", "EXSK", "MULTI")
+    events <- lapply(seq_along(annot),
+                     function(i) {
+                         type <- types[i]
+                         cat(type, fill=TRUE)
+                         a <- annot[[i]]
+                         if (nrow(a) > 0) {
+                             parsed <- parseVastToolsEvent(a)
+                             if (!complexEvents) {
+                                 if (type == "ALT3") {
+                                     filter <- !is.na(parsed$A1.start)
+                                     parsed <- parsed[filter, ]
+                                     parsed <- uniqueBy(parsed, "Chromosome",
+                                                        "Strand", "C1.end",
+                                                        "A1.start", "C2.start")
+                                 } else if (type == "ALT5") {
+                                     filter <- !is.na(parsed$A1.end)
+                                     parsed <- parsed[filter, ]
+                                     parsed <- uniqueBy(parsed, "Chromosome",
+                                                        "Strand", "C1.end",
+                                                        "A1.end", "C2.start")
+                                 } else if (type %in% skippedExon) {
+                                     C1.end   <- vapply(parsed$C1.end, length, 
+                                                        numeric(1)) > 1
+                                     A1.start <- vapply(parsed$A1.start, length, 
+                                                        numeric(1)) > 1
+                                     A1.end   <- vapply(parsed$A1.end, length, 
+                                                        numeric(1)) > 1
+                                     C2.start <- vapply(parsed$C2.start, length, 
+                                                        numeric(1)) > 1
+                                     filter <- !(C1.end | A1.start | A1.end | 
+                                                     C2.start)
+                                     parsed <- parsed[filter, ]
+                                 }
+                             }
+                             return(parsed)
+                         }
+                     })
+    events <- rbind.fill(events)
+    events <- unique(events)
+    names(events)[match("Gene.symbol", names(events))] <- "Gene"
+    
+    # Remove duplicated skipped exons from multiple event types
+    skipped <- events$Event.type == "SE"
+    uniq <- uniqueBy(events[skipped, ], "Chromosome", "Strand", 
+                     "C1.end", "A1.start", "A1.end", "C2.start")
+    events <- rbind(events[!skipped, ], uniq)
+    
+    class(events) <- c("ASevents", class(events))
+    return(events)
+}
 
 #' Parses an alternative splicing event from VAST-TOOLS
 #'

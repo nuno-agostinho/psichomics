@@ -376,7 +376,7 @@ styleModal <- function(session, title, ..., style=NULL,
     if (dismissButton) footer <- tagList(modalButton("Dismiss"), footer)
     
     modal <- modalDialog(..., title=div(icon(iconName), title), size=size,
-                         footer=footer, easyClose=TRUE)
+                         footer=footer, easyClose=FALSE)
     if (!is.null(style)) {
         style <- match.arg(style, c("info", "warning", "error"))
         modal[[3]][[1]][[3]][[1]][[3]][[1]] <-
@@ -435,7 +435,7 @@ showAlert <- function(session, ..., title=NULL, style=NULL, dismissable=TRUE,
         dismiss <- NULL
     }
     
-    if (!is.null(title)) title <- h3(title)
+    if (!is.null(title)) title <- h4(title)
     
     output <- session$output
     output[[alertId]] <- renderUI({
@@ -615,7 +615,7 @@ bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL,
         modal <- bsModal(id, title, trigger, ...)
     else
         modal <- bsModal(id, title, trigger, ..., size=size)
-        
+    
     if (!is.null(style)) {
         style <- match.arg(style, c("info", "warning", "error"))
         modal[[3]][[1]][[3]][[1]][[3]][[1]] <-
@@ -671,24 +671,24 @@ textSuggestions <- function(id, words, novalue="No matching value", char=" ") {
     var <- paste0(varId, ' = ["', paste(words, collapse = '", "'), '"];')
     
     js <- paste0('$("#', escape(id), '").textcomplete([{
-        match: /([a-zA-Z0-9_\\.]{1,})$/,
-        search: function(term, callback) {
-            var words = ', varId, ', sorted = [];
-            for (i = 0; i < words.length; i++) {
-                sorted[i] = fuzzy(words[i], term);
-            }
-            sorted.sort(fuzzy.matchComparator);
-            sorted = sorted.map(function(i) { return i.term; });
-            callback(sorted);
-        },
-        index: 1,
-        cache: true,
-        replace: function(word) {
-            return word + "', char ,'";
-        }}], { noResultsMessage: "', novalue, '"});')
+                 match: /([a-zA-Z0-9_\\.]{1,})$/,
+                 search: function(term, callback) {
+                 var words = ', varId, ', sorted = [];
+                 for (i = 0; i < words.length; i++) {
+                 sorted[i] = fuzzy(words[i], term);
+                 }
+                 sorted.sort(fuzzy.matchComparator);
+                 sorted = sorted.map(function(i) { return i.term; });
+                 callback(sorted);
+                 },
+                 index: 1,
+                 cache: true,
+                 replace: function(word) {
+                 return word + "', char ,'";
+                 }}], { noResultsMessage: "', novalue, '"});')
     js <- HTML("<script>", var, js, "</script>")
     return(js)
-}
+    }
 
 #' Plot survival curves using Highcharts
 #' 
@@ -858,4 +858,20 @@ renderDataTableSparklines <- function(..., options=NULL) {
     # Escape is set to FALSE to render the Sparkline HTML elements
     renderDataTable(..., escape=FALSE, env=parent.frame(n=1), options=c(
         list(drawCallback=JS("drawSparklines")), options))
+}
+
+#' Check unique rows of a data frame based on a set of its columns
+#' 
+#' @param data Data frame or matrix
+#' @param ... Name of columns
+#' 
+#' @return Data frame with unique values based on set of columns
+uniqueBy <- function(data, ...) {
+    copy <- data
+    rownames(copy) <- 1:nrow(copy)
+    # Get index of unique rows
+    uniq <- unique(subset(copy, select=c(...)))
+    ind <- rownames(uniq)
+    
+    return(data[as.numeric(ind), ])
 }

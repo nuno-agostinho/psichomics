@@ -4,7 +4,10 @@
 \alias{listSplicingAnnotation}
 \title{List the alternative splicing annotation files available}
 \usage{
-listSplicingAnnotation()
+listSplicingAnnotation(...)
+}
+\arguments{
+\item{...}{Custom annotation loaded}
 }
 \value{
 Named character vector with splicing annotation files available
