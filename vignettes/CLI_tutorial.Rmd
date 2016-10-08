@@ -1,7 +1,7 @@
 ---
 title: 'PSIchomics tutorial: command-line interface (CLI)'
 author: "Nuno Saraiva Agostinho"
-date: "23 September 2016"
+date: "8 October 2016"
 bibliography: refs.bib
 output: rmarkdown::html_vignette
 vignette: >
@@ -132,6 +132,17 @@ events <- rownames(psi)
 head(events)
 ```
 
+Notice that the event identifier (for instance,
+`SE_22_+_40760369_40760884_40761060_40762440_ADSL`) is composed of:
+
+- Event type (SE which stands for skipped exon)
+- Chromosome (22)
+- Strand (+)
+- Relevant coordinates depending on event type (in this case, the first
+constitutive exon's end, the alternative exon' start and end and the second
+constitutive exon's start)
+- Associated gene (ADSL)
+
 # Survival analysis
 Survival data can be analysed based on clinical attributes, for instance, by 
 tumour stage and patient gender, using time to death as the follow-up time and
@@ -158,8 +169,10 @@ Now, let's perform and plot survival analysis based on these groups.
 
 ```{r survival by tumour stage and gender}
 # Select column containing event and start time of interest
-timeStart  <- "days_to_death"
-event      <- "days_to_death"
+timeStart <- "days_to_death"
+# Events are retrieved based on the information available for time to event: if 
+# there is info for a patient, the event is considered as occurred
+event <- "days_to_death"
 
 # Create the right-hand side of a formula
 formulaStr <- paste(stage, "+", gender)
@@ -306,6 +319,10 @@ groups of the patients (e.g. stage of the disease).
 # Choose a method to use when adjusting p-values ("none" is valid)
 # help(p.adjust.methods)
 pvalueAdjust <- "BH"
+
+# Check sample types available (normal, tumour, etc.)
+types <- parseSampleGroups(colnames(psi))
+unique(types)
 
 # Analyse by sample types (by default) and perform all statistical analyses (by 
 # default)

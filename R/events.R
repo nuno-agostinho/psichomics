@@ -111,8 +111,6 @@ getNumerics <- function(table, by = NULL, toNumeric = FALSE) {
 #' @param events Data frame or matrix: alternative splicing events
 #' @param types Character: alternative splicing types
 #' 
-#' @importFrom dplyr full_join
-#' 
 #' @return List of events joined by alternative splicing event type
 joinEventsPerType <- function(events, types) {
     if (missing(types)) types <- names(events)
@@ -134,7 +132,7 @@ joinEventsPerType <- function(events, types) {
         })
         
         # Full join all the tables
-        res <- Reduce(function(x, y) full_join(x, y, by), tables)
+        res <- Reduce(function(x, y) dplyr::full_join(x, y, by), tables)
         names(res) <- unique(unlist(cols))
         
         # Remove equal rows
@@ -304,8 +302,6 @@ prepareAnnotationFromEvents <- function(...) {
 #' 
 #' @return Venn diagrams for a given event type
 vennEvents <- function(join, eventType) {
-    if ( require("gplots") )
-        stop("You need the package gplots to plot Venn diagrams")
     join <- join[[eventType]]
     
     programs <- join[grep("Program", names(join))]
