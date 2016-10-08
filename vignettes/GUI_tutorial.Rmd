@@ -1,7 +1,7 @@
 ---
 title: 'PSIchomics tutorial: visual interface'
 author: "Nuno Saraiva Agostinho"
-date: "23 September 2016"
+date: "8 October 2016"
 bibliography: refs.bib
 output: rmarkdown::html_vignette
 vignette: >
@@ -58,8 +58,9 @@ files will be downloaded to.
 folder, they will now start downloading. When all downloads have finished, 
 proceed by clicking on **Load data** again with the exact same parameters.
 
-After the data finish loading, the on-screen instructions will be replaced by 
-the loaded datasets. Please note the following: 
+After the data finish loading (keep an eye on the progress at the top-right 
+corner), the on-screen instructions will be replaced by the loaded datasets.
+Please note the following: 
 
 - To optimize performance, not all clincal data columns will be visible by 
 default. However, columns of interest can be added or removed in the field 
@@ -144,12 +145,14 @@ Explore alternative splicing quantification groups using associated clinical
 attributes:
 
 1. Check **Center values**.
-2. Uncheck **Scale values**.
-3. Set the tolerance of missing values[^1] to 30%.
+2. Uncheck **Scale values**[^1].
+3. Set the tolerance of missing values[^2] to 30%.
 4. Remove groups from **Filter data groups** to perform a PCA with all the data.
 5. Click on **Calculate PCA**.
 
-[^1]: Missing values are replaced with the median value for the respective 
+[^1]: As PSI values are fixed between an intervel of 0 to 1, there is no need to
+scale values.
+[^2]: Missing values are replaced with the median value for the respective 
 event across samples.
 
 After PCA is completed, its outcome can be plotted:

@@ -640,9 +640,22 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
         infoModal(
             session, "Wait for downloads to complete",
             "When the downloads finish, click the button", tags$b("Load data"), 
-            "again to load the data.", br(), br(), "Check if the folder", 
-            tags$b(input$dataFolder), "is the folder where files are being",
-            "downloaded.", modalId="firebrowseDataModal")
+            "again to process and load the downloaded data.", br(), br(), 
+            tags$div(
+                class="alert", class="alert-warning", role="alert",
+                fluidRow(style="display: flex; align-items: center;", column(
+                    10, "Confirm that files are being downloaded to the folder",
+                    tags$b(input$dataFolder)),
+                    column(2, tags$i(class="fa fa-question-circle", 
+                                     id=ns("helpDownloadFolder"))))),
+            bsTooltip(ns("helpDownloadFolder"), placement="right",
+                      paste("This program checks for files in the given",
+                            "folder. You can either:<br/>\u2022 Change the",
+                            "folder where the downloaded items are located",
+                            "<br/>\u2022 Move the downloaded items to the",
+                            "given folder"),
+                      options=list(container="body")),
+            modalId="firebrowseDataModal")
     } else if (!is.null(data)) {
         if(replace)
             setData(data)

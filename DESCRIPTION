@@ -38,7 +38,8 @@ Imports:
     Sushi,
     tools,
     utils,
-    XML
+    XML,
+    methods
 Suggests:
     testthat,
     knitr,
@@ -49,8 +50,7 @@ Suggests:
     gplots,
     stringr,
     covr,
-    car,
-    gplots
+    car
 VignetteBuilder: knitr
 Collate:
     'analysis.R'
