@@ -4,7 +4,8 @@
 \alias{noinfo}
 \title{Interface when no information could be retrieved}
 \usage{
-noinfo(output, title = "No information available for this event.",
+noinfo(output, title = paste("No information available for the gene",
+  "associated with this event."),
   description = "Select another alternative splicing event.")
 }
 \arguments{

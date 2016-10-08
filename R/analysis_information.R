@@ -139,7 +139,8 @@ infoUI <- function(id) {
 #' @param description Character: description of the message to show to the user
 #' @importFrom shiny renderUI h3 br tags
 #' @return NULL (this function is used to modify the Shiny session's state)
-noinfo <- function(output, title="No information available for this event.",
+noinfo <- function(output, title=paste("No information available for the gene",
+                                       "associated with this event."),
                    description="Select another alternative splicing event.") {
     output$info <- renderUI( h3(title, br(), tags$small(description)) )
 }
@@ -292,21 +293,27 @@ plotTranscripts <- function(info, eventPosition) {
 #' 
 #' @param ns Namespace function
 #' @param info Information as retrieved from ENSEMBL
-#' @param species Character: species name
-#' @param assembly Character: assembly version
-#' @param grch37 Boolean: use version GRCh37 of the genome?
+#' @param species Character: species name (NULL by default)
+#' @param assembly Character: assembly version (NULL by default)
+#' @param grch37 Boolean: use version GRCh37 of the genome? FALSE by default
 #' 
 #' @importFrom shiny renderUI h2 h4 plotOutput
 #' @return HTML elements to render gene, protein and transcript annotation
-renderGeneticInfo <- function(ns, info, species, assembly, grch37) {
+renderGeneticInfo <- function(ns, info, species=NULL, assembly=NULL, 
+                              grch37=FALSE) {
     start <- as.numeric(info$start)
     end   <- as.numeric(info$end)
     
+    if (!is.null(species))
+        ensembl <- tags$a("Ensembl", icon("external-link"), target="_blank",
+                          href=paste0("http://", if(grch37) { "grch37." }, 
+                                      "ensembl.org/", species, "/", 
+                                      "Gene/Summary?g=", info$id))
+    else
+        ensembl <- NULL
+    
     links <- tagList(
-        tags$a("Ensembl", icon("external-link"), target="_blank",
-               href=paste0("http://", if(grch37) { "grch37." },
-                           "ensembl.org/", species, "/",
-                           "Gene/Summary?g=", info$id)),
+        ensembl,
         tags$a("UCSC", icon("external-link"), target="_blank",
                href=paste0("https://genome.ucsc.edu/cgi-bin/hgTracks",
                            if(grch37) { "?db=hg19" }, "&position=chr",
@@ -325,14 +332,22 @@ renderGeneticInfo <- function(ns, info, species, assembly, grch37) {
     dtWidth  <- "width: 80px;"
     ddMargin <- "margin-left: 100px;"
     
+    if (!is.null(species)) {
+        if (!is.null(assembly))
+            speciesInfo <- sprintf("%s (%s assembly)", species, assembly)
+        else
+            speciesInfo <- species
+    } else {
+        speciesInfo <- "No species defined"
+    }
+    
     genetic <- tagList(
         h2(info$display_name, tags$small(info$id)),
         tags$dl(class="dl-horizontal",
                 tags$dt(style=dtWidth, "Species"),
-                tags$dd(style=ddMargin,
-                        sprintf("%s (%s assembly)", species, assembly)),
+                tags$dd(style=ddMargin, speciesInfo),
                 tags$dt(style=dtWidth, "Location"),
-                tags$dd(style=ddMargin,
+                tags$dd(style=ddMargin, 
                         sprintf("Chromosome %s: %s-%s (%s strand)",
                                 info$seq_region_name,
                                 format(start, big.mark=",", scientific=FALSE),
@@ -368,7 +383,7 @@ renderGeneticInfo <- function(ns, info, species, assembly, grch37) {
 #' queryEnsemblByEvent(event, species="human", assembly="hg19")
 queryEnsemblByEvent <- function(event, ...) {
     gene <- parseEvent(event)$gene
-    if (gene == "NA")
+    if (gene == "Hypothetical")
         stop("This event has no associated gene")
     return(queryEnsemblByGene(gene, ...))
 }
@@ -376,17 +391,27 @@ queryEnsemblByEvent <- function(event, ...) {
 #' Query information from Ensembl by a given gene
 #' 
 #' @param gene Character: gene identifier
-#' @param species Character: species
-#' @param assembly Character: assembly version
+#' @param species Character: species (can be NULL when handling an ENSEMBL
+#' identifier)
+#' @param assembly Character: assembly version (can be NULL when handling an
+#' ENSEMBL identifier)
 #' 
 #' @return Information from Ensembl
 #' @export
 #' @examples 
 #' queryEnsemblByGene("BRCA1", "human", "hg19")
-queryEnsemblByGene <- function(gene, species, assembly) {
-    grch37 <- assembly == "hg19"
-    path   <- paste0("lookup/symbol/", species, "/", gene)
-    info   <- queryEnsembl(path, list(expand=1), grch37=grch37)
+#' queryEnsemblByGene("ENSG00000139618")
+queryEnsemblByGene <- function(gene, species=NULL, assembly=NULL) {
+    if ( grepl("^ENSG", gene) ) {
+        path   <- paste0("lookup/id/", gene)
+        info <- queryEnsembl(path, list(expand=1))
+    } else {
+        if (is.null(species) || is.null(assembly))
+            stop("Species and assembly need to be non-NULL")
+        grch37 <- assembly == "hg19"
+        path <- paste0("lookup/symbol/", species, "/", gene)
+        info <- queryEnsembl(path, list(expand=1), grch37=grch37)
+    }
     return(info)
 }
 
@@ -450,6 +475,8 @@ pubmedUI <- function(event, ...) {
 #' @importFrom Sushi plotGenes zoomsregion labelgenome
 #' @importFrom highcharter highchart %>%
 #' @importFrom shiny fixedRow
+#' @importFrom methods is
+#' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 infoServer <- function(input, output, session) {
     ns <- session$ns
@@ -458,23 +485,28 @@ infoServer <- function(input, output, session) {
         event <- getEvent()
         if (is.null(getInclusionLevels()))
             return(noinfo(output, "Quantify alternative splicing",
-                          paste("To perform this analysis, you need to quantify",
-                                "alternative splicing.")))
+                          paste("To perform this analysis, alternative splicing",
+                                "must be quantified first.")))
         else if (is.null(event) || event == "") return(noinfo(output))
         
         parsed <- parseEvent(event)
-        if (parsed$gene == "NA") return(noinfo(output))
-        
         species  <- tolower(getSpecies())
         assembly <- getAssemblyVersion()
         grch37   <- assembly == "hg19"
-        if(is.null(species) || is.null(assembly)) {
-            warning("No species or assembly information.")
-            return(NULL)
-        }
         
-        path <- paste0("lookup/symbol/", species, "/", parsed$gene)
-        info <- queryEnsembl(path, list(expand=1), grch37=grch37)
+        info <- tryCatch(
+            queryEnsemblByEvent(event, species=species, assembly=assembly),
+            error=return)
+        
+        # Handle errors
+        if (is(info, "error")) {
+            if (grepl("Species and assembly", info$message)) {
+                warning("No species or assembly information.")
+                return(NULL)
+            } else if (grepl("no associated gene", info$message)) {
+                return(noinfo(output))
+            }
+        }
         
         if (is.null(info)) {
             output$info <- renderUI({ 
