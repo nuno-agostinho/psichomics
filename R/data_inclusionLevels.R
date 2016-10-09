@@ -55,6 +55,7 @@ inclusionLevelsInterface <- function(ns) {
                   options = list(container = "body"),
                   paste("Inclusion levels calculated with a number of read",
                         "counts below this threshold are discarded.")),
+        actionButton(ns("loadIncLevels"), "Load from file"),
         processButton(ns("calcIncLevels"), "Calculate inclusion levels"))
 }
 
@@ -109,7 +110,8 @@ quantifySplicing <- function(annotation, junctionQuant, eventType="SE",
         attr(psi, "description") <- paste("Exon and intron inclusion levels",
                                           "for any given alternative splicing",
                                           "event.")
-        attr(psi, "dataType") <- "Inclusion levels"
+        attr(psi, "dataType")  <- "Inclusion levels"
+        attr(psi, "tablename") <- "Inclusion levels"
     }
     return(psi)
 }
@@ -126,6 +128,7 @@ inclusionLevelsServer <- function(input, output, session) {
     ns <- session$ns
     
     observeEvent(input$takeMeThere, missingDataGuide("Junction quantification"))
+    observeEvent(input$takeMeToClinical, missingDataGuide("Clinical data"))
     
     observe({
         junctionQuant <- getJunctionQuantification()
@@ -157,14 +160,14 @@ inclusionLevelsServer <- function(input, output, session) {
         time <- startProcess("calcIncLevels")
         
         # Read annotation
-        startProgress("Reading alternative splicing annotation", divisions=3)
+        startProgress("Loading alternative splicing annotation", divisions=3)
         if (grepl("^/var/folders/", annotation)) { # if custom annotation
             annot <- readRDS(annotation)
         } else {
             annot <- readFile(annotation)
             
             # Set species and assembly version
-            allAnnot <- listSplicingAnnotation()
+            allAnnot <- listSplicingAnnotation()[[1]]
             annotID <- names(allAnnot)[match(annotation, allAnnot)]
             if (grepl("Human", annotID)) setSpecies("Human")
             if (grepl("hg19", annotID)) setAssemblyVersion("hg19")
@@ -218,6 +221,7 @@ inclusionLevelsServer <- function(input, output, session) {
         calcSplicing()
     })
     
+    # Show modal to load custom alternative splicing quantification
     observe({
         ns <- session$ns
         if (input$annotation == "loadAnnotation") {
@@ -243,6 +247,7 @@ inclusionLevelsServer <- function(input, output, session) {
         }
     })
     
+    # Load custom alternative splicing annotation
     observeEvent(input$loadCustom, {
         customAnnot <- input$customAnnot
         if (is.null(customAnnot)) {
@@ -260,6 +265,52 @@ inclusionLevelsServer <- function(input, output, session) {
             setAssemblyVersion(input$customAssembly)
             removeModal()
             removeAlert(output)
+        }
+    })
+    
+    # Show modal for loading alternative splicing quantification
+    observeEvent(input$loadIncLevels, {
+        ns <- session$ns
+        if (!is.null(getData())) {
+            infoModal(session, "Load alternative splicing quantification",
+                      fileInput(ns("customASquant"), "Choose a file"),
+                      selectizeInput(ns("customSpecies2"), "Species", 
+                                     choices="Human", options=list(create=TRUE)),
+                      selectizeInput(ns("customAssembly2"), "Assembly",
+                                     choices="hg19", options=list(create=TRUE)),
+                      footer=processButton(ns("loadASquant"), 
+                                           "Load quantification"))
+        } else {
+            missingDataModal(session, "Clinical data", ns("takeMeToClinical"))
+        }
+    })
+    
+    # Load alternative splicing quantification
+    observeEvent(input$loadASquant, {
+        if (!is.null(input$loadASquant)) {
+            time <- startProcess("loadIncLevels")
+            
+            startProgress("Loading alternative splicing quantification",
+                          divisions=2)
+            psi <- read.delim(input$customASquant$datapath, row.names=1, 
+                              check.names=FALSE)
+            attr(psi, "rowNames") <- TRUE
+            attr(psi, "description") <- paste("Exon and intron inclusion",
+                                              "levels for any given",
+                                              "alternative splicing event.")
+            attr(psi, "dataType")  <- "Inclusion levels"
+            attr(psi, "tablename") <- "Inclusion levels"
+            setInclusionLevels(psi)
+            
+            updateProgress("Matching clinical data")
+            match <- getPatientFromSample(colnames(psi), getClinicalData())
+            setClinicalMatchFrom("Inclusion levels", match)
+            
+            setSpecies(input$customSpecies2)
+            setAssemblyVersion(input$customAssembly2)
+            
+            removeModal()
+            endProcess("loadIncLevels", time)
         }
     })
 }
