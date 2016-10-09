@@ -273,11 +273,20 @@ inclusionLevelsServer <- function(input, output, session) {
         ns <- session$ns
         if (!is.null(getData())) {
             infoModal(session, "Load alternative splicing quantification",
+                      helpText("A table containing the sample identifiers as",
+                               "columns and the alternative splicing event",
+                               "identifiers as rows is recommended. The event",
+                               "identifier should be similar to:"),
+                      tags$kbd(style="word-wrap: break-word;",
+                               paste0("EventType_Chromosome_Strand_Coordinate1",
+                                      "_Coordinate2_..._Gene")),
+                      tags$hr(),
                       fileInput(ns("customASquant"), "Choose a file"),
                       selectizeInput(ns("customSpecies2"), "Species", 
                                      choices="Human", options=list(create=TRUE)),
                       selectizeInput(ns("customAssembly2"), "Assembly",
                                      choices="hg19", options=list(create=TRUE)),
+                      uiOutput(ns("alertIncLevels")),
                       footer=processButton(ns("loadASquant"), 
                                            "Load quantification"))
         } else {
@@ -292,24 +301,34 @@ inclusionLevelsServer <- function(input, output, session) {
             
             startProgress("Loading alternative splicing quantification",
                           divisions=2)
-            psi <- read.delim(input$customASquant$datapath, row.names=1, 
-                              check.names=FALSE)
-            attr(psi, "rowNames") <- TRUE
-            attr(psi, "description") <- paste("Exon and intron inclusion",
-                                              "levels for any given",
-                                              "alternative splicing event.")
-            attr(psi, "dataType")  <- "Inclusion levels"
-            attr(psi, "tablename") <- "Inclusion levels"
-            setInclusionLevels(psi)
-            
-            updateProgress("Matching clinical data")
-            match <- getPatientFromSample(colnames(psi), getClinicalData())
-            setClinicalMatchFrom("Inclusion levels", match)
-            
-            setSpecies(input$customSpecies2)
-            setAssemblyVersion(input$customAssembly2)
-            
-            removeModal()
+            psi <- tryCatch(read.delim(input$customASquant$datapath, 
+                                       row.names=1, check.names=FALSE),
+                            error=return, warning=return)
+            if (is(psi, "error")) {
+                errorAlert(session, title="Error:", 
+                           psi$message, alertId="alertIncLevels")
+            } else if (is(psi, "warning")) {
+                warningAlert(session, title="Warning:", 
+                             psi$message, alertId="alertIncLevels")
+            } else {
+                removeAlert(output, "alertIncLevels")
+                attr(psi, "rowNames") <- TRUE
+                attr(psi, "description") <- paste("Exon and intron inclusion",
+                                                  "levels for any given",
+                                                  "alternative splicing event.")
+                attr(psi, "dataType")  <- "Inclusion levels"
+                attr(psi, "tablename") <- "Inclusion levels"
+                setInclusionLevels(psi)
+                
+                updateProgress("Matching clinical data")
+                match <- getPatientFromSample(colnames(psi), getClinicalData())
+                setClinicalMatchFrom("Inclusion levels", match)
+                
+                setSpecies(input$customSpecies2)
+                setAssemblyVersion(input$customAssembly2)
+                
+                removeModal()
+            }
             endProcess("loadIncLevels", time)
         }
     })
