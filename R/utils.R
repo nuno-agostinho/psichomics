@@ -205,6 +205,7 @@ endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
 #' @param clinical Matrix or data.frame: clinical data 
 #' @param prefix Character: prefix to search for in clinical data
 #' @param lower Boolean: convert samples to lower case? TRUE by default
+#' @param rmNoMatches Boolean: remove non-matching identifiers
 #'
 #' @return Integer vector of the row number in clinical data corresponding to 
 #' the given IDs (named with the ID)
@@ -215,7 +216,7 @@ endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
 #'                        samples=tolower(samples))
 #' getPatientFromSample(samples, clinical, prefix="")
 getPatientFromSample <- function(sampleId, clinical, prefix="^tcga", 
-                                 lower=TRUE) {
+                                 lower=TRUE, rmNoMatches=TRUE) {
     # All IDs are lower case in the clinical data
     if (lower) sampleId <- tolower(sampleId)
     
@@ -236,7 +237,7 @@ getPatientFromSample <- function(sampleId, clinical, prefix="^tcga",
         clinicalRows[lapply(match, length) != 0] <- unlist(match)
     }
     # Remove non-matching IDs
-    clinicalRows <- clinicalRows[!is.na(clinicalRows)]
+    if (rmNoMatches) clinicalRows <- clinicalRows[!is.na(clinicalRows)]
     return(clinicalRows)
 }
 

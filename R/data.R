@@ -182,10 +182,14 @@ createDataTab <- function(index, data, name, input, output) {
         subsetToShow, style="bootstrap", selection='none', filter="top",
         options=list(pageLength=10))
     
-    output[[paste(tablename, "download", sep="-")]] <- downloadHandler(
+    downloadId <- paste(tablename, "download", sep="-")
+    output[[downloadId]] <- downloadHandler(
         filename = paste(name, attr(table, "tablename")),
-        content = function(file) write.table(table, file, quote = FALSE,
-                                             row.names = TRUE, sep = "\t"))
+        content = function(file) {
+            res <- cbind(rownames(table), table)
+            names(res)[1] <- attr(table, "dataType")
+            write.table(res, file, quote=FALSE, row.names=FALSE, sep="\t")
+        })
 }
 
 #' Server logic of the data module
