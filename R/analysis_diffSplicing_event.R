@@ -14,7 +14,7 @@ diffSplicingEventUI <- function(id) {
             sidebarPanel(
                 tags$b("Clinical groups on which to perform the analyses:"),
                 tags$br(), tags$a(href="#", onclick="changeDiffSplicingGroup()",
-                                  textOutput(ns("groupsCol"))),
+                                  uiOutput(ns("groupsCol"))),
                 tags$br(),
                 numericInput(ns("bandwidth"), "Density bandwidth", 0.01, 
                              step=0.01),
@@ -409,7 +409,12 @@ diffSplicingEventServer <- function(input, output, session) {
         col <- getDiffSplicingGroups()
         if (is.null(col) || col=="") return(NULL)
         
-        output$groupsCol <- renderText(paste(col, collapse=", "))
+        output$groupsCol <- renderUI({
+            if (col=="samples")
+                return("sample types")
+            else
+                return(paste(col, collapse=", "))
+        })
         
         if (identical(col, "samples")) {
             # Separate samples by their groups
