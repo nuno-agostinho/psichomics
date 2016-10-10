@@ -1,4 +1,3 @@
-## TODO(NunoA): project either individuals (as default) or events
 ## TODO(NunoA): add histogram in/above percentage of NAs per row to remove
 ## TODO(NunoA): add brushing capabilities (brush function from Shiny? only
 ## rectangle selection available?)
@@ -7,7 +6,7 @@
 
 ## TODO(NunoA): create clusters and use those clusters as groups of data
 ##
-##  km <- kmeans(scores, centers = 7, nstart = 5)
+##  km <- kmeans(scores, centers=7, nstart=5)
 ##  ggdata <- data.frame(scores, Cluster=km$cluster, Species=df$Species)
 ##  ggplot(ggdata) +
 ##      geom_point(aes(x=PC1, y=PC2, color=factor(Cluster)), size=5, shape=20) +
@@ -37,7 +36,7 @@ performPCA <- function(data, center=TRUE, scale.=FALSE, naTolerance=0) {
     # # Get individuals (rows) with less than a given percentage of NAs
     # nas <- rowSums(is.na(data))
     # # hist(nas/ncol(data)*100)
-    # data <- data[nas/ncol(data)*100 <= naTolerance, , drop = FALSE]
+    # data <- data[nas/ncol(data)*100 <= naTolerance, , drop=FALSE]
     # if (nrow(data) == 0) return(NULL)
     
     # # Replace NAs with the medians for each individual (row)
@@ -46,7 +45,7 @@ performPCA <- function(data, center=TRUE, scale.=FALSE, naTolerance=0) {
     
     # Get loadings (columns) with less than a given percentage of NAs
     nas <- colSums(is.na(data))
-    data <- data[, nas/nrow(data)*100 <= naTolerance, drop = FALSE]
+    data <- data[, nas/nrow(data)*100 <= naTolerance, drop=FALSE]
     if (ncol(data) == 0) return(NULL)
     
     # Replace NAs with the medians for each loading (column)
@@ -84,13 +83,13 @@ pcaUI <- function(id) {
                            choices=NULL,
                            options=list(placeholder="No data available")),
             checkboxGroupInput(ns("preprocess"), "Preprocessing",
-                               c("Center values" = "center",
-                                 "Scale values" = "scale"),
-                               selected = c("center")),
+                               c("Center values"="center",
+                                 "Scale values"="scale"),
+                               selected=c("center")),
             sliderInput(ns("naTolerance"), div(
                 "Percentage of missing values to tolerate per event",
                 icon("question-circle")),
-                min = 0, max=100, value=0, post="%"),
+                min=0, max=100, value=0, post="%"),
             bsTooltip(ns("naTolerance"), placement="right", 
                       paste("For events with a tolerable percentage of missing",
                             "values, the median value of the event across",
@@ -98,8 +97,7 @@ pcaUI <- function(id) {
                             "The remaining events are discarded."),
                       options=list(container="body")),
             selectGroupsUI(ns("dataGroups"), "Filter data groups"),
-            actionButton(ns("calculate"), class = "btn-primary", 
-                         "Calculate PCA"),
+            actionButton(ns("calculate"), class="btn-primary", "Calculate PCA"),
             hidden(
                 div(id=ns("pcaPlotUI"),
                     hr(),
@@ -107,16 +105,13 @@ pcaUI <- function(id) {
                     selectizeInput(ns("pcY"), "Choose Y axis", choices=NULL),
                     selectGroupsUI(ns("colourGroups"),
                                    "Clinical groups to colour the PCA"),
-                    checkboxGroupInput(ns("plotShow"), "Show in plot",
-                                       c("Samples (scores)"="individuals",
-                                         "Splicing event (loadings)"="events"),
-                                       selected="individuals"),
                     actionButton(ns("showVariancePlot"), "Show variance plot"),
-                    actionButton(ns("plot"), class = "btn-primary", "Plot PCA")
+                    actionButton(ns("plot"), class="btn-primary", "Plot PCA")
                 )
             )
         ), mainPanel(
-            highchartOutput(ns("scatterplot"))
+            highchartOutput(ns("scatterplot")),
+            highchartOutput(ns("scatterplotLoadings"))
         )
     )
 }
@@ -127,6 +122,7 @@ pcaUI <- function(id) {
 #' 
 #' @importFrom highcharter highchart hc_chart hc_title hc_add_series 
 #' hc_plotOptions hc_xAxis hc_yAxis hc_legend hc_tooltip hc_exporting
+#' @importFrom shiny tags
 #' 
 #' @return Plot variance as an Highcharter object
 #' @export
@@ -134,26 +130,36 @@ pcaUI <- function(id) {
 #' pca <- princomp(USArrests)
 #' plotVariance(pca)
 plotVariance <- function(pca) {
-    sdevSq <- pca$sdev ^ 2
-    ns <- paste("PC", seq_along(sdevSq))
+    eigenvalue <- unname( pca$sdev ^ 2 )
+    variance <- eigenvalue * 100 / sum(eigenvalue)
+    cumvar <- cumsum(variance)
+    ns <- paste("PC", seq_along(eigenvalue))
+    
+    # Prepare data
+    data <- lapply(seq(eigenvalue), function(i) {
+        return(list(y=variance[i], eigenvalue=eigenvalue[i], cumvar=cumvar[i]))
+    })
     
     hc <- highchart() %>%
-        hc_chart(zoomType = "xy", backgroundColor = NULL) %>%
-        hc_title(text = paste("Explained variance by each",
-                              "Principal Component (PC)")) %>%
-        hc_add_series(data = unname(sdevSq), type = "waterfall") %>%
-        hc_plotOptions(series = list(dataLabels = list(
-            align = "center", verticalAlign = "top", enabled = TRUE,
-            formatter = JS(
-                "function() {",
-                "var total = ", sum(sdevSq), ";",
-                "var perc = (this.y/total) * 100;",
-                "return (Highcharts.numberFormat(this.y) +'<br/>'+",
-                "Highcharts.numberFormat(perc) + '%')}")))) %>%
-        hc_xAxis(categories = ns, crosshair = TRUE) %>%
-        hc_yAxis(title = list(text = "Explained variance")) %>%
-        hc_legend(enabled = FALSE) %>%
-        hc_tooltip(pointFormat = '{point.name} {point.y:.2f} {point.perc}') %>%
+        hc_chart(zoomType="xy", backgroundColor=NULL) %>%
+        hc_title(text=paste("Explained variance by each",
+                            "Principal Component (PC)")) %>%
+        hc_add_series(data=data, type="waterfall", cumvar=cumvar) %>%
+        hc_plotOptions(series=list(dataLabels=list(
+            format=paste0("{point.eigenvalue:.2f}", tags$br(),
+                          "{point.y:.2f}%"),
+            align="center", verticalAlign="top", enabled=TRUE))) %>%
+        hc_xAxis(title=list(text="Principal Components"), 
+                 categories=seq(length(data)), crosshair=TRUE) %>%
+        hc_yAxis(title=list(text="Percentage of variances"), min=0, max=100) %>%
+        hc_legend(enabled=FALSE) %>%
+        hc_tooltip(
+            headerFormat=paste(tags$b("Principal component {point.x}"),
+                               tags$br()),
+            pointFormat=paste0(
+                "Eigenvalue: {point.eigenvalue:.2f}", tags$br(),
+                "Variance: {point.y:.2f}%", tags$br(),
+                "Cumulative variance: {point.cumvar:.2f}%")) %>%
         hc_exporting(enabled=TRUE, buttons=list(contextButton=list(
             text="Export", y=-50, verticalAlign="bottom", theme=list(fill=NULL)
         )))
@@ -175,23 +181,26 @@ plotVariance <- function(pca) {
 #' 
 #' @export
 #' @examples 
-#' pca <- prcomp(USArrests)
+#' pca <- prcomp(USArrests, scale=TRUE)
 #' plotPCA(pca)
-#' plotPCA(pca, pcX="PC2", pcY="PC3")
-plotPCA <- function(pca, pcX="PC1", pcY="PC2", clinicalGroups=NULL, 
+#' plotPCA(pca, pcX=2, pcY=3)
+plotPCA <- function(pca, pcX=1, pcY=2, clinicalGroups=NULL, 
                     individuals=TRUE, loadings=FALSE) {
+    if (is.character(pcX)) pcX <- as.numeric(gsub("[A-Z]", "", pcX))
+    if (is.character(pcY)) pcY <- as.numeric(gsub("[A-Z]", "", pcY))
+    
     imp <- summary(pca)$importance[2, ]
     perc <- as.numeric(imp)
-    names(perc) <- names(imp)
     
     label <- sprintf("%s (%s%% explained variance)",
-                     names(perc[c(pcX, pcY)]), 
+                     names(imp[c(pcX, pcY)]), 
                      roundDigits(perc[c(pcX, pcY)]*100))
     
     hc <- highchart() %>%
-        hc_chart(zoomType = "xy") %>%
-        hc_xAxis(title = list(text=label[1])) %>%
-        hc_yAxis(title = list(text=label[2])) %>%
+        hc_chart(zoomType="xy") %>%
+        hc_xAxis(title=list(text=label[1])) %>%
+        hc_yAxis(title=list(text=label[2]), gridLineWidth=0,
+                 minorGridLineWidth=0) %>%
         hc_tooltip(pointFormat="{point.sample}")
     
     if (individuals) {
@@ -213,9 +222,26 @@ plotPCA <- function(pca, pcX="PC1", pcY="PC2", clinicalGroups=NULL,
         }
     }
     if (loadings) {
-        m <- data.frame(pca$rotation)
+        sdev <- pca$sdev[c(pcX, pcY)]
+        eigenvalue <- sdev ^ 2
+        loadings <- data.frame(pca$rotation)[, c(pcX, pcY)]
+        # Correlation between variables and principal components
+        varCoord <- t(apply(loadings, 1, `*`, sdev))
+        # Contribution of the variables to the principal components
+        quality <- varCoord ^ 2
+        contribution <- t(t(quality) * 100 / colSums(quality))
+        # Total contribution for the selected principal components
+        totalContr <- t(apply(contribution, 1, `*`, eigenvalue))
+        totalContr <- apply(totalContr, 1, sum)
+        
+        names <- gsub("_", " ", rownames(loadings))
+        ## TODO(NunoA): color points with a gradient; see colorRampPalette()
         # For loadings, add series (but don't add to legend)
-        hc <- hc_add_series_scatter(hc, m[[pcX]], m[[pcY]])
+        hc <- hc_add_series_scatter(hc, varCoord[ , pcX], varCoord[ , pcY],
+                                    unname(totalContr), name="Loadings",
+                                    sample=names) %>%
+            hc_subtitle(text=paste("Bubble size: contribution of a variable",
+                                   "to the selected principal components"))
     }
     return(hc)
 }
@@ -284,9 +310,9 @@ pcaServer <- function(input, output, session) {
             psi <- t(psi)
             
             # Perform principal component analysis (PCA) on the subset data
-            pca <- performPCA(psi, naTolerance = naTolerance,
-                              center = "center" %in% preprocess,
-                              scale. = "scale" %in% preprocess)
+            pca <- performPCA(psi, naTolerance=naTolerance,
+                              center="center" %in% preprocess,
+                              scale.="scale" %in% preprocess)
             if (is.null(pca)) {
                 errorModal(session, "No individuals to plot PCA", 
                            "Try increasing the tolerance of NAs per event")
@@ -302,9 +328,8 @@ pcaServer <- function(input, output, session) {
     
     # Show variance plot
     observeEvent(input$showVariancePlot,
-                 infoModal(session, "Variance plot", 
-                           highchartOutput(ns("variancePlot")),
-                           size = "large"))
+                 infoModal(session, size="large", "Variance plot",
+                           highchartOutput(ns("variancePlot"))))
     
     # Update select inputs of the principal components
     observe({
@@ -352,7 +377,6 @@ pcaServer <- function(input, output, session) {
             pcX <- input$pcX
             pcY <- input$pcY
             selected <- input$colourGroups
-            show <- input$plotShow
             clinical <- getClinicalData()
             clinicalGroups <- getGroupsFrom("Clinical data")
             psi <- getInclusionLevels()
@@ -367,17 +391,35 @@ pcaServer <- function(input, output, session) {
                     groups <- getMatchingSamples(groups, colnames(psi),
                                                  clinical)
                 }
-                plotPCA(pca, pcX, pcY, groups, "individuals" %in% show, 
-                        "events" %in% show)
+                plotPCA(pca, pcX, pcY, groups) %>% 
+                    hc_chart(plotBackgroundColor="#FCFCFC") %>%
+                    hc_title(text="Clinical samples (PCA individuals)")
+            } else {
+                return(NULL)
+            })
+        
+        output$scatterplotLoadings <- renderHighchart(
+            if (!is.null(pcX) & !is.null(pcY)) {
+                plotPCA(pca, pcX, pcY, individuals=FALSE, loadings=TRUE) %>% 
+                    hc_chart(plotBackgroundColor="#FCFCFC") %>%
+                    hc_title(
+                        text="Alternative splicing events (PCA loadings)") %>%
+                    hc_plotOptions(
+                        series=list(cursor="pointer", point=list(events=list(
+                            click=JS("function() {
+                                         sample = this.options.sample;
+                                         sample = sample.replace(/ /g, '_');
+                                         showDiffSplicing(sample);
+                                      }")))))
             } else {
                 return(NULL)
             })
     })
     
-    observe({
-        pca <- sharedData$inclusionLevelsPCA
-        if (!is.null(pca)) shinyjs::show("pcaPlotUI", animType="fade")
-    })
+    observe(
+        if (!is.null(sharedData$inclusionLevelsPCA)) 
+            show("pcaPlotUI", animType="fade")
+    )
 }
 
 attr(pcaUI, "loader") <- "analysis"
