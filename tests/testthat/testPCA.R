@@ -81,7 +81,9 @@ test_that("Plot explained variance", {
     pca <- performPCA(data, center=FALSE, scale.=FALSE, naTolerance=0)
     hc <- plotVariance(pca)
     expect_is(hc, "highchart")
-    expect_equal(hc$x$hc_opts$series[[1]]$data, pca$sdev ^ 2)
+    eigenvalue <- vapply(hc$x$hc_opts$series[[1]]$data, "[[", "eigenvalue", 
+                         FUN.VALUE = numeric(1))
+    expect_equal(eigenvalue, pca$sdev ^ 2)
 })
 
 pca <- performPCA(data, center=FALSE, scale.=FALSE)
@@ -126,6 +128,5 @@ test_that("Plot PCA loadings", {
     
     opts <- hc$x$hc_opts
     namz <- sapply(opts$series, "[[", "name")
-    expect_equal(unlist(namz), names(groups)[2:3])
-    expect_null(namz[[3]])
+    expect_equal(unlist(namz), c(names(groups)[2:3], "Loadings"))
 })
