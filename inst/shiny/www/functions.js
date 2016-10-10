@@ -36,6 +36,10 @@ function changeEvent (event) {
  * @param {String} event Alternative splicing event
  */
 function showDiffSplicing (event) {
+    var tabName = "Differential splicing analysis";
+    $("ul[id='nav'] > li > ul > li > a[data-value*='" + tabName + "']")
+        .tab("show");
+    
     var diff = "Single event";
     $("a[data-value*='" + diff + "']").tab("show");
     changeEvent(event);

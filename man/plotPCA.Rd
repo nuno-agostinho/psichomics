@@ -4,7 +4,7 @@
 \alias{plotPCA}
 \title{Create a scatterplot from a PCA object}
 \usage{
-plotPCA(pca, pcX = "PC1", pcY = "PC2", clinicalGroups = NULL,
+plotPCA(pca, pcX = 1, pcY = 2, clinicalGroups = NULL,
   individuals = TRUE, loadings = FALSE)
 }
 \arguments{
@@ -27,8 +27,8 @@ Scatterplot as an Highcharter object
 Create a scatterplot from a PCA object
 }
 \examples{
-pca <- prcomp(USArrests)
+pca <- prcomp(USArrests, scale=TRUE)
 plotPCA(pca)
-plotPCA(pca, pcX="PC2", pcY="PC3")
+plotPCA(pca, pcX=2, pcY=3)
 }
 
