@@ -5,7 +5,7 @@
 \title{Perform statistical analysis on a given splicing event}
 \usage{
 singleDiffAnalyses(vector, group, threshold = 1, step = 100,
-  analyses = c("wilcoxRankSum", "wilcoxSignedRank", "kruskal", "levene"))
+  analyses = c("wilcoxRankSum", "ttest", "kruskal", "levene", "fligner"))
 }
 \arguments{
 \item{vector}{Numeric}
@@ -31,10 +31,11 @@ different groups
 The following statistical analyses may be performed by including the 
 respective string in the \code{analysis} argument:
 \itemize{
-     \item{Wilcoxon Rank Sum test - \code{wilcoxRankSum}}
-     \item{Wilcoxon Signed Rank test - \code{wilcoxSignedRank}}
-     \item{Kruskal test - \code{kruskal}}
-     \item{Levene's test - \code{levene}}
+     \item{\code{ttest} - Unpaired t-test (2 groups)}
+     \item{\code{wilcoxRankSum} - Wilcoxon Rank Sum test (2 groups)}
+     \item{\code{kruskal} - Kruskal test (2 or more groups)}
+     \item{\code{levene} - Levene's test (2 or more groups)}
+     \item{\code{fligner} - Fligner-Killeen test (2 or more groups)}
 }
 }
 

@@ -77,13 +77,15 @@ diffSplicingUI <- function(id, tab) {
 #' @importFrom highcharter highchart hc_credits hc_tooltip hc_chart hc_title
 #' hc_xAxis hc_yAxis hc_exporting hc_legend hc_plotOptions
 #' @importFrom jsonlite toJSON
+#' @importFrom shiny tags
 #' 
 #' @return HTML element with sparkline data (character)
 createDensitySparklines <- function(data, events, delim=NULL) {
     hc <- highchart() %>%
         hc_tooltip(
             hideDelay=0, shared=TRUE, valueDecimals=getPrecision(),
-            headerFormat="<small>Inclusion levels: {point.x}</small><br/>",
+            headerFormat=paste0(tags$small("Inclusion levels: {point.x:.2f}"),
+                                tags$br()),
             pointFormat=paste(span(style="color:{point.color}", "\u25CF "),
                               tags$b("{series.name}"), br())) %>%
         hc_chart(width=120, height=20, backgroundColor="", type="areaspline", 
@@ -122,10 +124,11 @@ createDensitySparklines <- function(data, events, delim=NULL) {
 #' The following statistical analyses may be performed by including the 
 #' respective string in the \code{analysis} argument:
 #' \itemize{
-#'      \item{Wilcoxon Rank Sum test - \code{wilcoxRankSum}}
-#'      \item{Wilcoxon Signed Rank test - \code{wilcoxSignedRank}}
-#'      \item{Kruskal test - \code{kruskal}}
-#'      \item{Levene's test - \code{levene}}
+#'      \item{\code{ttest} - Unpaired t-test (2 groups)}
+#'      \item{\code{wilcoxRankSum} - Wilcoxon Rank Sum test (2 groups)}
+#'      \item{\code{kruskal} - Kruskal test (2 or more groups)}
+#'      \item{\code{levene} - Levene's test (2 or more groups)}
+#'      \item{\code{fligner} - Fligner-Killeen test (2 or more groups)}
 #' }
 #' 
 #' @param vector Numeric
@@ -136,13 +139,13 @@ createDensitySparklines <- function(data, events, delim=NULL) {
 #' @param step Numeric: number of events before the progress bar is updated
 #' (a bigger number allows for a faster execution)
 #' 
-#' @importFrom stats kruskal.test median wilcox.test var density
+#' @importFrom stats kruskal.test median wilcox.test t.test var density
+#' @importFrom methods is
 #' 
 #' @return A row from a data frame with the results
 singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
-                               analyses=c("wilcoxRankSum", 
-                                          "wilcoxSignedRank",
-                                          "kruskal", "levene")) {
+                               analyses=c("wilcoxRankSum", "ttest", "kruskal",
+                                          "levene", "fligner")) {
     series  <- split(vector, group)
     samples <- vapply(series, function(i) sum(!is.na(i)), integer(1))
     valid   <- names(series)[samples >= threshold]
@@ -151,31 +154,48 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
     vector  <- vector[inGroup]
     len     <- length(valid)
     
-    # Wilcoxon tests
+    # Unpaired t-test (2 groups)
+    ttest <- NULL
+    if (any("ttest" == analyses) && len == 2 && all(samples > 1)) {
+        typeOne <- group == valid[1]
+        ttest <- tryCatch(t.test(vector[typeOne], vector[!typeOne]), 
+                          error=return)
+        if (is(ttest, "error")) ttest <- NULL
+    }
+    
+    # Wilcoxon test (2 groups)
     wilcox <- NULL
     if (any("wilcoxRankSum" == analyses) && len == 2) {
         # Wilcoxon rank sum test (Mann Whitney U test)
         typeOne <- group == valid[1]
         wilcox  <- suppressWarnings(wilcox.test(vector[typeOne],
                                                 vector[!typeOne]))
-    } else if (any("wilcoxSignedRank" == analyses) && len == 1) {
-        # Wilcoxon signed rank test
-        wilcox <- suppressWarnings(wilcox.test(vector))
+    # } else if (any("wilcoxSignedRank" == analyses) && len == 1) {
+    #     # Wilcoxon signed rank test
+    #     wilcox <- suppressWarnings(wilcox.test(vector))
     }
     
-    # Kruskal-Wallis test
+    # Kruskal-Wallis test (2 or more groups)
     kruskal <- NULL
     if (any("kruskal" == analyses) && len >= 2) {
         kruskal <- tryCatch(kruskal.test(vector, group), error=return)
         if (any("error" == class(kruskal))) kruskal <- NULL
     }
     
-    # Levene's test
+    # Levene's test (2 or more groups)
     levene <- NULL
     if (any("levene" == analyses) && len >= 2) {
         levene <- suppressWarnings(
             tryCatch(leveneTest(vector, group), error=return))
         if (any("error" == class(levene))) levene <- NULL
+    }
+    
+    # Fligner-Killeen test (2 or more groups)
+    fligner <- NULL
+    if (any("fligner" == analyses) && len >= 2) {
+        fligner <- suppressWarnings(
+            tryCatch(fligner.test(vector, group), error=return))
+        if (any("error" == class(fligner))) fligner <- NULL
     }
     
     # Density sparklines
@@ -198,8 +218,9 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
     med <- lapply(series, median, na.rm=TRUE) # Median
     var <- lapply(series, var, na.rm=TRUE) # Variance
     
-    vector <- c(Density=sparkline, Samples=samples, Wilcox=wilcox, 
-                Kruskal=kruskal, Levene=levene, Variance=var, Median=med)
+    vector <- c("PSI.distribution"=sparkline, Samples=samples, "T-test"=ttest, 
+                Wilcoxon=wilcox, Kruskal=kruskal, Levene=levene, 
+                "Fligner-Killeen"=fligner, Variance=var, Median=med)
     vector <- vector[!vapply(vector, is.null, logical(1))] # Remove NULL
     return(vector)
 }
@@ -222,12 +243,13 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
 #' The following statistical analyses may be performed by including the 
 #' respective string in the \code{analysis} argument:
 #' \itemize{
-#'      \item{\code{wilcoxRankSum}: Wilcoxon Rank Sum test}
-#'      \item{\code{wilcoxSignedRank}: Wilcoxon Signed Rank test}
-#'      \item{\code{kruskal}: Kruskal test}
-#'      \item{\code{levene}: Levene's test}
-#'      \item{\code{density}: Density plots (only usable through the visual 
-#'      interface)}
+#'      \item{\code{ttest} - Unpaired t-test (2 groups)}
+#'      \item{\code{wilcoxRankSum} - Wilcoxon Rank Sum test (2 groups)}
+#'      \item{\code{kruskal} - Kruskal test (2 or more groups)}
+#'      \item{\code{levene} - Levene's test (2 or more groups)}
+#'      \item{\code{fligner} - Fligner-Killeen test (2 or more groups)}
+#'      \item{\code{density} - Sample distribution per group (only usable 
+#'      through the visual interface)}
 #' }
 #' 
 #' The following methods for p-value adjustment are supported by using the 
@@ -254,8 +276,8 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
 #' group <- c(rep("Normal", 3), rep("Tumour", 3))
 #' diffAnalyses(psi, group)
 diffAnalyses <- function(psi, groups=NULL, 
-                         analyses=c("wilcoxRankSum", "wilcoxSignedRank",
-                                    "kruskal", "levene"),
+                         analyses=c("wilcoxRankSum", "ttest", "kruskal",
+                                    "levene", "fligner"),
                          pvalueAdjust="BH", progress=echoProgress) {
     # cl <- parallel::makeCluster(getOption("cl.cores", getCores()))
     step <- 50 # Avoid updating progress too frequently
@@ -369,8 +391,8 @@ diffAnalyses <- function(psi, groups=NULL,
     if (any("density" == analyses)) {
         progress("Calculating the density of inclusion levels")
         time <- Sys.time()
-        df[, "Density"] <- createDensitySparklines(
-            df[, "Density"], rownames(df), delim=c(parenthesisOpen, 
+        df[, "PSI.distribution"] <- createDensitySparklines(
+            df[, "PSI.distribution"], rownames(df), delim=c(parenthesisOpen, 
                                                    parenthesisClose))
         print(Sys.time() - time)
     }
@@ -381,6 +403,8 @@ diffAnalyses <- function(psi, groups=NULL,
     col <- gsub(parenthesisClose, ")", col, fixed=TRUE)
     col <- gsub(".", " ", col, fixed=TRUE)
     col <- gsub("p value", "p-value", col, fixed=TRUE)
+    col <- gsub("T test", "T-test", col, fixed=TRUE)
+    col <- gsub("Fligner Killeen", "Fligner-Killeen", col, fixed=TRUE)
     colnames(df) <- col
     
     # parallel::stopCluster(cl)

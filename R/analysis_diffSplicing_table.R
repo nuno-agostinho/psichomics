@@ -37,13 +37,15 @@ diffSplicingTableUI <- function(id) {
             "Choose statistical analyses to perform:",
             # Basic stats is on and disabled by JavaScript
             c("Variance and median"="basicStats",
-              "Wilcoxon signed rank test (1 group)"="wilcoxSignedRank",
+              "Unpaired t-test (2 groups)"="ttest",
               "Wilcoxon rank sum test (2 groups)"="wilcoxRankSum",
               "Kruskal-Wallis rank sum test (2 or more groups)"="kruskal", 
               "Levene's test (2 or more groups)"="levene",
-              "Alternative splicing quantification density"="density"),
-            selected=c("basicStats", "kruskal", "levene", "density",
-                       "wilcoxSignedRank", "wilcoxRankSum")),
+              "Fligner-Killeen test (2 or more groups)"="fligner",
+              "Distribution of alternative splicing quantification per group"=
+                  "density"),
+            selected=c("basicStats", "kruskal", "levene", "density", "ttest",
+                       "fligner", "wilcoxRankSum")),
         # Disable checkbox of basic statistics
         tags$script('$("[value=basicStats]").attr("disabled", true);'),
         helpText("For each alternative splicing event, groups with one or less",
@@ -56,7 +58,7 @@ diffSplicingTableUI <- function(id) {
                                  "aria-haspopup"="true",
                                  "aria-expanded"="false", 
                                  icon("download"), 
-                                 "Download table", tags$span(class="caret")),
+                                 "Save table", tags$span(class="caret")),
                      tags$ul(class="dropdown-menu", 
                              tags$li(downloadLink(ns("downloadAll"), 
                                                   "All data")),
@@ -551,7 +553,7 @@ diffSplicingTableServer <- function(input, output, session) {
         content=function(file) {
             stats <- getDifferentialAnalyses()
             densityCol <- NULL
-            if (!is.null(stats)) densityCol <- match("Density", colnames(stats))
+            if (!is.null(stats)) densityCol <- match("PSI distribution", colnames(stats))
             
             write.table(stats[-densityCol], file, quote=FALSE, sep="\t",
                         row.names=FALSE)
@@ -564,7 +566,7 @@ diffSplicingTableServer <- function(input, output, session) {
         content=function(file) {
             stats <- getDifferentialAnalyses()
             densityCol <- NULL
-            if (!is.null(stats)) densityCol <- match("Density", colnames(stats))
+            if (!is.null(stats)) densityCol <- match("PSI distribution", colnames(stats))
             
             write.table(stats[input$statsTable_rows_all, -densityCol], 
                         file, quote=FALSE, sep="\t", row.names=FALSE)
