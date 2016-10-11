@@ -152,6 +152,13 @@ getClinicalMatchFrom <- function(dataset, category = getCategory())
 getDiffSplicingGroups <- function(category = getCategory())
     getGlobal(category, "diffSplicingGroups")
 
+#' Get the URL links to download
+#' @note Needs to be called inside a reactive function
+#' 
+#' @return Character vector with URLs to download
+getURLtoDownload <- function()
+    getGlobal("URLtoDownload")
+
 #' Set element as globally accessible
 #' @details Set element inside the global variable
 #' @note Needs to be called inside reactive function
@@ -287,3 +294,12 @@ setDiffSplicingGroups <- function(value, category = getCategory())
 #' @return NULL (this function is used to modify the Shiny session's state)
 setClinicalMatchFrom <- function(dataset, matches, category = getCategory())
     setGlobal(category, dataset, "clinicalMatch", value=matches)
+
+#' Set URL links to download
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param url Character: URL links to download
+#' 
+#' @return NULL (this function is used to modify the Shiny session's state)
+setURLtoDownload <- function(url)
+    setGlobal("URLtoDownload", value=url)

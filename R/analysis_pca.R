@@ -160,9 +160,7 @@ plotVariance <- function(pca) {
                 "Eigenvalue: {point.eigenvalue:.2f}", tags$br(),
                 "Variance: {point.y:.2f}%", tags$br(),
                 "Cumulative variance: {point.cumvar:.2f}%")) %>%
-        hc_exporting(enabled=TRUE, buttons=list(contextButton=list(
-            text="Export", y=-50, verticalAlign="bottom", theme=list(fill=NULL)
-        )))
+        export_highcharts()
     return(hc)
 }
 
@@ -198,10 +196,11 @@ plotPCA <- function(pca, pcX=1, pcY=2, clinicalGroups=NULL,
     
     hc <- highchart() %>%
         hc_chart(zoomType="xy") %>%
-        hc_xAxis(title=list(text=label[1])) %>%
+        hc_xAxis(title=list(text=label[1]), crosshair=TRUE) %>%
         hc_yAxis(title=list(text=label[2]), gridLineWidth=0,
-                 minorGridLineWidth=0) %>%
-        hc_tooltip(pointFormat="{point.sample}")
+                 minorGridLineWidth=0, crosshair=TRUE) %>%
+        hc_tooltip(pointFormat="{point.sample}") %>%
+        export_highcharts()
     
     if (individuals) {
         df <- data.frame(pca$x)
