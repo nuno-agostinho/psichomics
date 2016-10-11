@@ -18,13 +18,16 @@ diffSplicingEventUI <- function(id) {
                 tags$br(),
                 numericInput(ns("bandwidth"), "Density bandwidth", 0.01, 
                              step=0.01),
-                h3("Non-parametric tests"),
                 uiOutput(ns("basicStats")), hr(),
                 # uiOutput(ns("spearman")), hr(),
                 # uiOutput(ns("fisher")), hr(),
+                h3("Parametric tests"),
+                uiOutput(ns("ttest")), hr(),
+                uiOutput(ns("levene")), hr(),
+                h3("Non-parametric tests"),
                 uiOutput(ns("wilcox")), hr(),
                 uiOutput(ns("kruskal")), hr(),
-                uiOutput(ns("levene")), hr(),
+                uiOutput(ns("fligner")), hr(),
                 uiOutput(ns("survival"))
             ), mainPanel(
                 highchartOutput(ns("density"))
@@ -61,7 +64,7 @@ plotDistribution <- function(psi, groups, bandwidth=0.01, rug=TRUE,
     hc <- highchart() %>%
         hc_chart(zoomType = "x") %>%
         hc_xAxis(min = 0, max = 1, title = list(
-            text = "Density of exon inclusion levels")) %>%
+            text = "Distribution of PSI values")) %>%
         hc_plotOptions(series = list(fillOpacity=0.3,
                                      marker = list(enabled = FALSE))) %>%
         hc_tooltip(
@@ -69,7 +72,7 @@ plotDistribution <- function(psi, groups, bandwidth=0.01, rug=TRUE,
                 span(style="color:{point.color}", "\u25CF "),
                 tags$b("{series.name}"), br()),
             pointFormat = paste(
-                "Inclusion level: {point.x}", br(),
+                "Inclusion level: {point.x:.2f}", br(),
                 "Number of samples: {series.options.samples}", br(),
                 "Median: {series.options.median}", br(),
                 "Variance: {series.options.var}", br(),
@@ -148,7 +151,7 @@ basicStats <- function(psi, groups) {
     return(ui)
 }
 
-#' Perform Wilcox analysis and return interface to show the results
+#' Perform Wilcoxon analysis and return interface to show the results
 #' @param psi Numeric: quantification of one alternative splicing event
 #' @param groups Character: group of each PSI index
 #' @param stat Data frame or matrix: values of the analyses to be performed (if
@@ -162,17 +165,17 @@ wilcox <- function(psi, groups, stat=NULL) {
     group <- unique(groups)
     len <- length(group)
     
-    if (len > 2) {
+    if (len != 2) {
         return(tagList(h4("Wilcoxon test"),
-                       "Can only perform this test on 1 or 2 groups."))
+                       "Can only perform this test on 2 groups."))
     } else if (!is.null(stat)) {
-        method      <- stat$`Wilcox method`
-        statistic   <- stat$`Wilcox statistic`
-        p.value     <- stat$`Wilcox p-value`
-        null.value  <- stat$`Wilcox null value`
-        alternative <- stat$`Wilcox alternative`
+        method      <- stat$`Wilcoxon method`
+        statistic   <- stat$`Wilcoxon statistic`
+        p.value     <- stat$`Wilcoxon p-value`
+        null.value  <- stat$`Wilcoxon null value`
+        alternative <- stat$`Wilcoxon alternative`
         
-        adjusted <- grep("Wilcox p-value \\(.* adjusted\\)", colnames(stat), 
+        adjusted <- grep("Wilcoxon p-value \\(.* adjusted\\)", colnames(stat), 
                          value=TRUE)
         if (length(adjusted) != 0) {
             adjustMethod <- gsub(".*\\((.* adjusted)\\).*", "\\1", adjusted)
@@ -183,17 +186,13 @@ wilcox <- function(psi, groups, stat=NULL) {
             adjusted <- NULL
         }
     } else {
-        if (len == 2) {
-            psiA <- psi[groups == group[1]]
-            psiB <- psi[groups == group[2]]
-            stat <- tryCatch(list(stat=wilcox.test(psiA, psiB)), 
-                             warning=function(w)
-                                 return(list(stat=wilcox.test(psiA, psiB),
-                                             warning=w)))
-        } else if (len == 1) {
-            stat <- tryCatch(list(stat=wilcox.test(psi)), warning=function(w)
-                return(list(stat=wilcox.test(psi), warning=w)))
-        }
+        psiA <- psi[groups == group[1]]
+        psiB <- psi[groups == group[2]]
+        stat <- tryCatch(list(stat=wilcox.test(psiA, psiB)), 
+                         warning=function(w)
+                             return(list(stat=wilcox.test(psiA, psiB),
+                                         warning=w)))
+        
         if ("warning" %in% names(stat))
             warn <- tagList(
                 tags$code(paste("Warning:", stat$warning$message)), br())
@@ -215,6 +214,70 @@ wilcox <- function(psi, groups, stat=NULL) {
     )
 }
 
+#' Perform unpaired t-test analysis and return interface to show the results
+#' @param psi Numeric: quantification of one alternative splicing event
+#' @param groups Character: group of each PSI index
+#' @param stat Data frame or matrix: values of the analyses to be performed (if
+#' NULL, the analyses will be performed)
+#' 
+#' @importFrom shiny tagList tags h4 br
+#' @importFrom stats t.test
+#' @return HTML elements
+ttest <- function(psi, groups, stat=NULL) {
+    warn <- NULL
+    group <- unique(groups)
+    len <- length(group)
+    
+    if (len != 2) {
+        return(tagList(h4("Unpaired t-test"),
+                       "Can only perform this test on 2 groups."))
+    } else if (!is.null(stat)) {
+        method      <- stat$`T-test method`
+        statistic   <- stat$`T-test statistic`
+        p.value     <- stat$`T-test p-value`
+        null.value  <- stat$`T-test null value`
+        alternative <- stat$`T-test alternative`
+        
+        adjusted <- grep("T-test p-value \\(.* adjusted\\)", colnames(stat), 
+                         value=TRUE)
+        if (length(adjusted) != 0) {
+            adjustMethod <- gsub(".*\\((.* adjusted)\\).*", "\\1", adjusted)
+            adjusted <- stat[ , adjusted]
+            label <- paste0("p-value (", adjustMethod, "): ")
+            adjusted <- tagList(tags$b(label), signifDigits(adjusted), br())
+        } else {
+            adjusted <- NULL
+        }
+    } else {
+        psiA <- psi[groups == group[1]]
+        psiB <- psi[groups == group[2]]
+        stat <- tryCatch(list(stat=t.test(psiA, psiB)), 
+                         warning=function(w)
+                             return(list(stat=t.test(psiA, psiB),
+                                         warning=w)))
+        
+        if ("warning" %in% names(stat))
+            warn <- tagList(
+                tags$code(paste("Warning:", stat$warning$message)), br())
+        
+        method      <- stat$stat$method
+        statistic   <- stat$stat$statistic
+        p.value     <- stat$stat$p.value
+        adjusted    <- NULL
+        null.value  <- stat$stat$null.value
+        alternative <- stat$stat$alternative
+    }
+    
+    tagList(
+        h4(method), warn,
+        tags$b("Test value: "), roundDigits(statistic), br(),
+        tags$b("p-value: "), signifDigits(p.value), br(), adjusted,
+        tags$b("Difference in means: "), null.value, br(),
+        tags$b("Alternative hypothesis: "), alternative
+    )
+}
+
+
 #' Perform Levene's test and return interface to show the results
 #' @inheritParams wilcox
 #' @importFrom shiny tagList tags h4 br
@@ -222,7 +285,7 @@ wilcox <- function(psi, groups, stat=NULL) {
 levene <- function(psi, groups, stat=NULL) {
     len <- length(unique(groups))
     if (len < 2) {
-        return(tagList(h4("Levene's Test for Homogeneity of Variance"),
+        return(tagList(h4("Levene's Test for Homogeneity of Variances"),
                        "Can only perform this test on 2 or more groups."))
     } else if (!is.null(stat)) {
         statistic <- stat$`Levene statistic`
@@ -241,6 +304,11 @@ levene <- function(psi, groups, stat=NULL) {
                                             signifDigits(adjusted[[1]]), br())
             adjusted <- tagList(tags$b(label1), signifDigits(adjusted[[2]]), 
                                 br())
+        } else if (length(adjusted) == 1) {
+            adjustMethod <- gsub(".*\\((.* adjusted)\\).*", "\\1", adjusted)
+            adjusted <- stat[ , adjusted]
+            label <- paste0("p-value (", adjustMethod, "): ")
+            adjusted <- tagList(tags$b(label), signifDigits(adjusted), br())
         } else {
             adjusted <- NULL
             adjustedNonBootstrap <- NULL
@@ -255,12 +323,57 @@ levene <- function(psi, groups, stat=NULL) {
         adjustedNonBootstrap  <- NULL
     }
     
+    if (!is.null(non.bootstrap.p.value)) {
+        nonBootstrap <- tagList(tags$b("p-value without bootstrap: "), 
+                                signifDigits(non.bootstrap.p.value), 
+                                adjustedNonBootstrap)
+    } else {
+        nonBootstrap <- NULL
+    }
+        
     tagList(
         h4("Levene's Test for Homogeneity of Variance"),
         tags$b("Test value: "), roundDigits(statistic), br(),
-        tags$b("p-value: "), signifDigits(p.value), br(), adjusted,
-        tags$b("p-value without bootstrap: "), 
-        signifDigits(non.bootstrap.p.value), adjustedNonBootstrap
+        tags$b("p-value: "), signifDigits(p.value), br(), adjusted, nonBootstrap
+    )
+}
+
+#' Perform Fligner-Killeen test and return interface to show the results
+#' @inheritParams wilcox
+#' @importFrom shiny tagList tags h4 br
+#' @importFrom stats fligner.test
+#' @return HTML elements
+fligner <- function(psi, groups, stat=NULL) {
+    len <- length(unique(groups))
+    if (len < 2) {
+        return(tagList(h4("Fligner-Killeen Test for Homogeneity of Variances"),
+                       "Can only perform this test on 2 or more groups."))
+    } else if (!is.null(stat)) {
+        statistic <- stat$`Fligner-Killeen statistic`
+        p.value   <- stat$`Fligner-Killeen p-value`
+
+        adjusted <- grep("Fligner-Killeen .*p-value \\(.* adjusted\\)", 
+                         colnames(stat), value=TRUE)
+        if (length(adjusted) != 0) {
+            adjustMethod <- gsub(".*\\((.* adjusted)\\).*", "\\1", adjusted)
+            adjusted <- stat[ , adjusted]
+            label <- paste0("p-value (", adjustMethod, "): ")
+            adjusted <- tagList(tags$b(label), signifDigits(adjusted), br())
+        } else {
+            adjusted <- NULL
+        }
+    } else {
+        nas <- is.na(psi)
+        stat <- fligner.test(psi[!nas], factor(groups[!nas]))
+        statistic <- stat$statistic
+        p.value   <- stat$p.value
+        adjusted  <- NULL
+    }
+    
+    tagList(
+        h4("Fligner-Killeen's Test for Homogeneity of Variance"),
+        tags$b("Test value: "), roundDigits(statistic), br(),
+        tags$b("p-value: "), signifDigits(p.value), br(), adjusted
     )
 }
 
@@ -410,7 +523,7 @@ diffSplicingEventServer <- function(input, output, session) {
         if (is.null(col) || col=="") return(NULL)
         
         output$groupsCol <- renderUI({
-            if (col=="samples")
+            if (identical(col, "samples"))
                 return("sample types")
             else
                 return(paste(col, collapse=", "))
@@ -443,7 +556,7 @@ diffSplicingEventServer <- function(input, output, session) {
         
         # Check if analyses were already performed
         stats <- getDifferentialAnalyses()
-        if (!is.null(stats) && col == attr(stats, "groups"))
+        if (!is.null(stats) && identical(col, attr(stats, "groups")))
             stat <- getDifferentialAnalyses()[event, ]
         else
             stat <- NULL
@@ -456,9 +569,11 @@ diffSplicingEventServer <- function(input, output, session) {
         output$density <- renderHighchart(plot)
         
         output$basicStats <- renderUI(basicStats(eventPSI, groups))
+        output$ttest      <- renderUI(ttest(eventPSI, groups, stat))
         output$wilcox     <- renderUI(wilcox(eventPSI, groups, stat))
         output$kruskal    <- renderUI(kruskal(eventPSI, groups, stat))
         output$levene     <- renderUI(levene(eventPSI, groups, stat))
+        output$fligner    <- renderUI(fligner(eventPSI, groups, stat))
         # output$fisher   <- renderUI(fisher(eventPSI, groups))
         # output$spearman <- renderUI(spearman(eventPSI, groups))
         

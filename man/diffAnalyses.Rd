@@ -4,8 +4,8 @@
 \alias{diffAnalyses}
 \title{Perform selected statistical analyses on multiple splicing events}
 \usage{
-diffAnalyses(psi, groups = NULL, analyses = c("wilcoxRankSum",
-  "wilcoxSignedRank", "kruskal", "levene"), pvalueAdjust = "BH",
+diffAnalyses(psi, groups = NULL, analyses = c("wilcoxRankSum", "ttest",
+  "kruskal", "levene", "fligner"), pvalueAdjust = "BH",
   progress = echoProgress)
 }
 \arguments{
@@ -31,12 +31,13 @@ Perform selected statistical analyses on multiple splicing events
 The following statistical analyses may be performed by including the 
 respective string in the \code{analysis} argument:
 \itemize{
-     \item{\code{wilcoxRankSum}: Wilcoxon Rank Sum test}
-     \item{\code{wilcoxSignedRank}: Wilcoxon Signed Rank test}
-     \item{\code{kruskal}: Kruskal test}
-     \item{\code{levene}: Levene's test}
-     \item{\code{density}: Density plots (only usable through the visual 
-     interface)}
+     \item{\code{ttest} - Unpaired t-test (2 groups)}
+     \item{\code{wilcoxRankSum} - Wilcoxon Rank Sum test (2 groups)}
+     \item{\code{kruskal} - Kruskal test (2 or more groups)}
+     \item{\code{levene} - Levene's test (2 or more groups)}
+     \item{\code{fligner} - Fligner-Killeen test (2 or more groups)}
+     \item{\code{density} - Sample distribution per group (only usable 
+     through the visual interface)}
 }
 
 The following methods for p-value adjustment are supported by using the 

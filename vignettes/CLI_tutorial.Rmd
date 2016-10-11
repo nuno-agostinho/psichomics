@@ -331,18 +331,18 @@ stats <- diffAnalyses(psi, pvalueAdjust=pvalueAdjust)
 
 Differential splicing analysis returns a data frame with the results of the
 statistical tests, as well as other info, such as associated gene and number of
-samples per group. The following non-parametric statistical tests are performed 
-by default:
+samples per group. The following statistical tests are performed by default:
 
+* Unpaired t-test (`ttest`)
 * Wilcoxon rank sum test (`wilcoxRankSum`)
-* Wilcoxon signed rank test (`wilcoxSignedRank`)
 * Kruskal test (`kruskal`)
 * Levene's test (`levene`)
+* Fligner-Killeen test (`fligner`)
 
 To specify statistical tests, do as follows:
 ```{r diff splicing options}
 # Analyse by specific statistical analyses
-analyses <- c("wilcoxRankSum", "wilcoxSignedRank")
+analyses <- c("wilcoxRankSum", "kruskal")
 stats <- diffAnalyses(psi, analyses=analyses, pvalueAdjust=pvalueAdjust)
 ```
 
