@@ -145,9 +145,9 @@ saveRDS(annot, file=annotFile)
 ## Quantifying alternative splicing using the created annotation
 The created alternative splicing annotation can then be used when quantifying
 alternative splicing events. To do so, when using the GUI version of PSIchomics,
-be sure to select the **Load annotation from RDS file...** option, click the
-button that appears below and select the recently created RDS file. Otherwise, 
-if you are using the CLI version, perform the following steps:
+be sure to select the **Load annotation from file...** option, click the button
+that appears below and select the recently created RDS file. Otherwise, if you
+are using the CLI version, perform the following steps:
 
 ```{r}
 annot <- readRDS(annotFile) # "file" is the path to the annotation file

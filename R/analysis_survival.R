@@ -274,7 +274,8 @@ survivalServer <- function(input, output, session) {
         
         # Plot survival curves
         hc <- plotSurvivalCurves(surv, markTimes, intRanges, pvalue, plotTitle, 
-                                 scale)
+                                 scale) %>%
+            export_highcharts(verticalAlign="center", y=53)
         if (!is.null(sub)) hc <- hc_subtitle(hc, text=sub)
         output$survival <- renderHighchart(hc)
     })

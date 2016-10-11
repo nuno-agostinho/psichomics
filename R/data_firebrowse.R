@@ -630,21 +630,17 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
     
     if (any(class(data) == "missing")) {
         updateProgress(divisions = 1)
-        cat("Triggered the download of files", fill=TRUE)
-        
-        # Download missing files through the browser
-        iframe <- function(url) 
-            tags$iframe(width=1, height=1, frameborder=0, src=url)
-        output$iframeDownload <- renderUI(lapply(data, iframe))
+        setURLtoDownload(data)
         
         infoModal(
-            session, "Wait for downloads to complete",
-            "When the downloads finish, click the button", tags$b("Load data"), 
+            session, "Download requested data",
+            "The requested data will be downloaded. When the downloads",
+            "finish, click the button", tags$b("Load data"), 
             "again to process and load the downloaded data.", br(), br(), 
             tags$div(
                 class="alert", class="alert-warning", role="alert",
                 fluidRow(style="display: flex; align-items: center;", column(
-                    10, "Confirm that files are being downloaded to the folder",
+                    10, "Confirm that files will be downloaded to the folder",
                     tags$b(input$dataFolder)),
                     column(2, tags$i(class="fa fa-question-circle", 
                                      id=ns("helpDownloadFolder"))))),
@@ -655,7 +651,9 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
                             "<br/>\u2022 Move the downloaded items to the",
                             "given folder"),
                       options=list(container="body")),
-            modalId="firebrowseDataModal")
+            modalId="firebrowseDataModal",
+            footer=actionButton(ns("acceptDownload"), "Download data",
+                                class="btn-primary", "data-dismiss"="modal"))
     } else if (!is.null(data)) {
         if(replace)
             setData(data)
@@ -724,6 +722,19 @@ firebrowseServer <- function(input, output, session, active) {
     # Load data when the user presses to load new data (keep previously loaded)
     observeEvent(input$firebrowseAppend,
                  setFirehoseData(input, output, session, replace=FALSE))
+    
+    # Download data through the browser
+    observeEvent(input$acceptDownload, {
+        url <- getURLtoDownload()
+        if (!is.null(url)) {
+            cat("Triggered file downloads", fill=TRUE)
+            # Download missing files through the browser
+            iframe <- function(url) 
+                tags$iframe(width=1, height=1, frameborder=0, src=url)
+            output$iframeDownload <- renderUI(lapply(url, iframe))
+            setURLtoDownload(NULL)
+        }
+    })
 }
 
 attr(firebrowseUI, "loader") <- "data"

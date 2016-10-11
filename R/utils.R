@@ -876,3 +876,19 @@ uniqueBy <- function(data, ...) {
     
     return(data[as.numeric(ind), ])
 }
+
+#' Add an exporting feature to a \code{highcharts} object
+#' 
+#' @param hc A \code{highcharts} object
+#' @param y Numeric: position
+#' @param verticalAlign Character: vertical alignment
+#' @param fill Character: colour fill
+#' @param text Character: button text
+#' 
+#' @return A \code{highcharts} object with an export button
+export_highcharts <- function(hc, y=-45, verticalAlign="bottom", 
+                              fill="transparent", text="Export") {
+    hc_exporting(hc, enabled=TRUE, buttons=list(
+        contextButton=list(text=text, y=y, verticalAlign=verticalAlign, 
+                           theme=list(fill=fill))))
+}
