@@ -5,6 +5,8 @@ data from [The Cancer Genome Atlas (TCGA)][1].
 ## Table of Contents
 
 * [Install and Start Running](#install-and-start-running)
+    * [Bioconductor Release](#bioconductor-release)
+    * [Development Version](#development-version)
 * [Tutorials](#tutorials)
 * [Data Input](#data-input)
     * [Download TCGA data](#download-tcga-data)
@@ -21,8 +23,20 @@ data from [The Cancer Genome Atlas (TCGA)][1].
 * [References](#references)
 
 ## Install and Start Running
-This package is not yet available in [Bioconductor][2]. To install and start 
-using this program, follow these steps:
+
+### Bioconductor Release
+
+To install from [Bioconductor][2], type the following in [RStudio][4] or in a
+command-line using R:
+
+```r
+## try http:// if https:// URLs are not supported
+source("https://bioconductor.org/biocLite.R")
+biocLite("psichomics")
+```
+
+### Development Version
+To install and start using the development version, follow these steps:
 
 1. [Install R][3]
 2. Depending on your operative system, install:
@@ -30,7 +44,7 @@ using this program, follow these steps:
     - [Xcode command-line tools](https://developer.apple.com/downloads) (Mac)
     - **r-devel** or **r-base-dev** (Linux)
 3. Open [RStudio][4] (or open a console, type `R` and press enter)
-4. Type the following to install Bioconductor: 
+4. Type the following to install [Bioconductor][2]: 
     - `source("https://bioconductor.org/biocLite.R"); biocLite("BiocInstaller")`
 5. Type the following to install, load and start the visual interface:
 ```r

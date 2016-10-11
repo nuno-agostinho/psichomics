@@ -319,8 +319,9 @@ plotSurvivalCurves <- function(surv, mark=TRUE, interval=FALSE, pvalue=NULL,
     hc <- hchart(surv, ranges=interval, markTimes=mark) %>%
         hc_chart(zoomType="xy") %>%
         hc_title(text=title) %>%
-        hc_yAxis(title=list(text="Proportion of individuals")) %>%
-        hc_xAxis(title=list(text=paste("Time in", scale))) %>%
+        hc_yAxis(title=list(text="Proportion of individuals"),
+                 crosshair=TRUE) %>%
+        hc_xAxis(title=list(text=paste("Time in", scale)), crosshair=TRUE) %>%
         hc_tooltip(
             headerFormat = paste(
                 tags$small("{point.x}", scale), br(),
@@ -330,7 +331,6 @@ plotSurvivalCurves <- function(surv, mark=TRUE, interval=FALSE, pvalue=NULL,
                 "Records: {series.options.records}", br(),
                 "Events: {series.options.events}", br(),
                 "Median: {series.options.median}")) %>%
-        hc_tooltip(crosshairs=TRUE) %>%
         hc_plotOptions(series=list(stickyTracking=FALSE))
     
     if (!is.null(pvalue))
