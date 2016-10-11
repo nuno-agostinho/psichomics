@@ -23,8 +23,9 @@ Install PSIchomics by typing the following in an R console (the
 [R environment](https://www.r-project.org/) is required):
 
 ```{r install, eval=FALSE}
-install.packages("devtools")
-devtools::install_github("nuno-agostinho/psichomics")
+## try http:// if https:// URLs are not supported
+source("https://bioconductor.org/biocLite.R")
+biocLite("psichomics")
 ```
 
 After the installation, load PSIchomics by typing:
@@ -112,6 +113,11 @@ annotList
 eventType <- getSplicingEventTypes()
 eventType
 ```
+
+Custom alternative splicing annotation obtained from SUPPA, rMATS, VAST-TOOLS or 
+MISO can also be provided. Interestingly, SUPPA and rMATS create their 
+annotation based on transcript annotation.
+[Read more here](http://rpubs.com/nuno-agostinho/alt-splicing-annotation).
 
 To quantify splicing, select junction quantification and alternative splicing 
 annotation to be used:

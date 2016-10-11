@@ -88,16 +88,14 @@ getUiFunctions <- function(ns, loader, ..., priority=NULL) {
 #' @return HTML element for a global selectize input
 globalSelectize <- function(id, placeholder) {
     elem <- paste0(id, "Elem")
+    hideElem <- paste0("$('#", id, "')[0].style.display = 'none';")
+    
     select <- selectizeInput(
-        elem, "", choices = NULL,
-        options = list(
-            onDropdownClose = I(
-                paste0("function($dropdown) { $('#", id,
-                       "')[0].style.display = 'none'; }")),
-            onBlur = I(
-                paste0("function() { $('#", id,
-                       "')[0].style.display = 'none'; }")),
-            placeholder = placeholder),
+        elem, "", choices=NULL,
+        options=list(
+            onItemAdd=I(paste0("function(value, $item) {", hideElem, "}")),
+            onBlur=I(paste0("function() {", hideElem, "}")),
+            placeholder=placeholder),
         width="auto")
     select[[3]][[1]] <- NULL
     select <- tagAppendAttributes(
@@ -117,14 +115,12 @@ navSelectize <- function(id, label, placeholder=label) {
         class="navbar-text",
         style="margin-top: 5px !important; margin-bottom: 0px !important;", 
         globalSelectize(id, placeholder),
-        tags$small(
-            tags$b(label),
-            tags$a(
-                href="#", "Change...",
-                onclick=paste0(
-                    '$("#', id, '")[0].style.display = "block";',
-                    '$("#', id, ' > div > select")[0].selectize.clear();',
-                    '$("#', id, ' > div > select")[0].selectize.focus();'))), 
+        tags$small(tags$b(label), tags$a(
+            href="#", "Change...",
+            onclick=paste0(
+                '$("#', id, '")[0].style.display = "block";',
+                '$("#', id, ' > div > select")[0].selectize.clear();',
+                '$("#', id, ' > div > select")[0].selectize.focus();'))), 
         tags$br(), textOutput(value)))
 }
 

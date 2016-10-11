@@ -122,7 +122,7 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
     tablename <- ns(paste("table", tableId, sep="-"))
     
     downloadId <- paste(tablename, "download", sep="-")
-    download <- downloadButton(downloadId, "Download whole dataset",
+    download <- downloadButton(downloadId, "Save table",
                                class="pull-right btn-info")
     
     if(!is.null(description)) {
@@ -146,11 +146,11 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
         choices=choices, selected=visCols, multiple=TRUE, width="auto", 
         options=list(plugins=list('remove_button', 'drag_drop'),
                      render=I("{ item: function(item, escape) {
-                                 return '<div>' + escape(item.value) + '</div>';
-                               } }")))
+                              return '<div>' + escape(item.value) + '</div>';
+} }")))
     tabPanel(title, br(), download, visibleColumns, hr(),
              dataTableOutput(tablename))
-}
+    }
 
 #' Render a specific data tab (including data table and related interface)
 #' 

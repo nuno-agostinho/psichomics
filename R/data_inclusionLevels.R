@@ -41,8 +41,8 @@ listSplicingAnnotation <- function(...) {
 inclusionLevelsInterface <- function(ns) {
     tagList(
         uiOutput(ns("modal")),
-        helpText("Measure exon inclusion levels from junction quantification.",
-                 "The Percent Spliced-In (PSI) metric is used."),
+        helpText("Exon inclusion levels are measured from junction",
+                 "quantification using the Percent Spliced-In (PSI) metric."),
         selectizeInput(ns("junctionQuant"), choices=NULL,
                        "Alternative splicing junction quantification"),
         selectizeInput(ns("annotation"), choices=listSplicingAnnotation(),
@@ -55,8 +55,8 @@ inclusionLevelsInterface <- function(ns) {
                   options = list(container = "body"),
                   paste("Inclusion levels calculated with a number of read",
                         "counts below this threshold are discarded.")),
-        actionButton(ns("loadIncLevels"), "Load from file"),
-        processButton(ns("calcIncLevels"), "Calculate inclusion levels"))
+        actionButton(ns("loadIncLevels"), "Load quantification from file"),
+        processButton(ns("calcIncLevels"), "Quantify events"))
 }
 
 #' Interface of the alternative splicing event quantification module
