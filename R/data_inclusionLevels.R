@@ -190,15 +190,13 @@ inclusionLevelsServer <- function(input, output, session) {
             }
         }
         time <- startProcess("calcIncLevels")
-        
+        startProgress("Quantifying alternative splicing...", divisions=3)
         # Read annotation
         if (grepl("^/var/folders/", annotation)) { # if custom annotation
-            startProgress("Loading alternative splicing annotation", 
-                          divisions=3)
+            updateProgress("Loading alternative splicing annotation")
             annot <- readRDS(annotation)
         } else if (grepl("^annotationHub_", annotation)) {
-            startProgress("Downloading alternative splicing annotation", 
-                          divisions=3)
+            updateProgress("Downloading alternative splicing annotation")
             annot <- loadAnnotation(annotation)
             
             # Set species and assembly version
