@@ -22,8 +22,7 @@ insideFile <- function(...) {
 #' @export
 #' 
 #' @examples 
-#' annotList <- listSplicingAnnotation()
-#' annotation <- readFile(annotList[1])
+#' junctionQuant <- readFile("ex_junctionQuant.RDS")
 readFile <- function(file) {
     readRDS(insideFile("extdata", file))
 }
@@ -36,7 +35,7 @@ readFile <- function(file) {
 #' @export
 #' @examples 
 #' events <- c("SE_1_-_123_456_789_1024_TST",
-#'             "MX_3_+_473_578_686_736_834_937_HEY")
+#'             "MX_3_+_473_578_686_736_834_937_HEY/YOU")
 #' parseSplicingEvent(events)
 parseSplicingEvent <- function(event) {
     event <- strsplit(event, "_")
@@ -48,9 +47,9 @@ parseSplicingEvent <- function(event) {
     parsed$type   <- vapply(event, "[[", 1, FUN.VALUE=character(1))
     parsed$chrom  <- vapply(event, "[[", 2, FUN.VALUE=character(1))
     parsed$strand <- vapply(event, "[[", 3, FUN.VALUE=character(1))
-    parsed$gene   <- vapply(seq_along(event), 
-                            function(i) event[[i]][[len[[i]]]],
-                            FUN.VALUE=character(1))
+    parsed$gene   <- strsplit(vapply(seq_along(event), 
+                                     function(i) event[[i]][[len[[i]]]],
+                                     FUN.VALUE=character(1)), "/")
     parsed$pos    <- lapply(seq_along(event), 
                             function(i) event[[i]][4:lenMinus1[[i]]])
     parsed$pos    <- lapply(parsed$pos, 
@@ -556,6 +555,7 @@ updateProgress <- function(message="Hang in there", value=NULL, max=NULL,
         value <- value + (max - value)
     }
     amount <- ifelse(is.null(max), value/divisions, 1/max/divisions)
+    if (is.null(detail)) detail <- "" # Force detail to not clean
     global$progress$inc(amount = amount, message = message, detail = detail)
     
     if (!console)
@@ -868,13 +868,9 @@ renderDataTableSparklines <- function(..., options=NULL) {
 #' 
 #' @return Data frame with unique values based on set of columns
 uniqueBy <- function(data, ...) {
-    copy <- data
-    rownames(copy) <- 1:nrow(copy)
-    # Get index of unique rows
-    uniq <- unique(subset(copy, select=c(...)))
-    ind <- rownames(uniq)
-    
-    return(data[as.numeric(ind), ])
+    sub <- subset(data, select=c(...))
+    uniq <- !duplicated(sub)
+    return(data[uniq, ])
 }
 
 #' Add an exporting feature to a \code{highcharts} object

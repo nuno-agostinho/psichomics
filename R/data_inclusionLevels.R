@@ -15,19 +15,27 @@ getSplicingEventTypes <- function() {
 
 #' List the alternative splicing annotation files available
 #' 
-#' @param ... Custom annotation loaded
-#' 
 #' @return Named character vector with splicing annotation files available
 #' @export
 #' 
 #' @examples
-#' listSplicingAnnotation()
-listSplicingAnnotation <- function(...) {
-    list(
-        "Available annotations"=c(
-            "Human (hg19/GRCh37)"="hg19_splicingAnnotation.RDS"),
-        "Custom annotation"=c(
-            ..., "Load annotation from file..."="loadAnnotation"))
+#' listSplicingAnnotations()
+listSplicingAnnotations <- function() {
+    c("Human (hg19/GRCh37)"="annotationHub_alternativeSplicingEvents.hg19")
+}
+
+#' List alternative splicing annotation files available, as well as custom 
+#' annotation
+#' 
+#' @param ... Custom annotation loaded
+#' 
+#' @return Named character vector with splicing annotation files available#' 
+#' @examples
+#' psichomics:::listAllAnnotations()
+listAllAnnotations <- function(...) {
+    list("Available annotation"=listSplicingAnnotations(),
+         "Custom annotation"=c(
+             ..., "Load annotation from file..."="loadAnnotation"))
 }
 
 #' Interface to quantify alternative splicing
@@ -45,7 +53,7 @@ inclusionLevelsInterface <- function(ns) {
                  "quantification using the Percent Spliced-In (PSI) metric."),
         selectizeInput(ns("junctionQuant"), choices=NULL,
                        "Alternative splicing junction quantification"),
-        selectizeInput(ns("annotation"), choices=listSplicingAnnotation(),
+        selectizeInput(ns("annotation"), choices=listAllAnnotations(),
                        "Alternative splicing event annotation"),
         selectizeInput(ns("eventType"), "Event type(s)", selected = "SE",
                        choices=getSplicingEventTypes(), multiple = TRUE),
@@ -91,7 +99,9 @@ inclusionLevelsUI <- function(id, panel) {
 #' junctionQuant <- readFile("ex_junctionQuant.RDS")
 #' 
 #' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
-quantifySplicing <- function(annotation, junctionQuant, eventType="SE", 
+quantifySplicing <- function(annotation, junctionQuant, 
+                             eventType=c("SE", "MXE", "ALE", "AFE", "A3SS", 
+                                         "A5SS"), 
                              minReads=10, progress=echoProgress) {
     psi <- NULL
     for (acronym in eventType) {
@@ -116,6 +126,27 @@ quantifySplicing <- function(annotation, junctionQuant, eventType="SE",
     return(psi)
 }
 
+#' Load alternative splicing annotation from AnnotationHub
+#' 
+#' @param annotation Character: annotation to load
+#' 
+#' @importFrom AnnotationHub AnnotationHub query
+#' 
+#' @return List of data frames containing the alternative splicing annotation
+#' per event type
+#' @export
+#' @examples 
+#' human <- listSplicingAnnotations()[[1]]
+#' \dontrun{
+#' annot <- loadAnnotation(human)
+#' }
+loadAnnotation <- function(annotation) {
+    ah <- AnnotationHub()
+    annot <- gsub("^annotationHub_", "", annotation)
+    annot <- ah[[names(query(ah, annot))]]
+    return(annot)
+}
+
 #' Server logic of the alternative splicing event quantification module
 #' 
 #' @param input Shiny input
@@ -123,6 +154,7 @@ quantifySplicing <- function(annotation, junctionQuant, eventType="SE",
 #' @param session Shiny session
 #' 
 #' @importFrom shiny reactive observeEvent fileInput helpText removeModal
+#' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 inclusionLevelsServer <- function(input, output, session) {
     ns <- session$ns
@@ -160,14 +192,17 @@ inclusionLevelsServer <- function(input, output, session) {
         time <- startProcess("calcIncLevels")
         
         # Read annotation
-        startProgress("Loading alternative splicing annotation", divisions=3)
         if (grepl("^/var/folders/", annotation)) { # if custom annotation
+            startProgress("Loading alternative splicing annotation", 
+                          divisions=3)
             annot <- readRDS(annotation)
-        } else {
-            annot <- readFile(annotation)
+        } else if (grepl("^annotationHub_", annotation)) {
+            startProgress("Downloading alternative splicing annotation", 
+                          divisions=3)
+            annot <- loadAnnotation(annotation)
             
             # Set species and assembly version
-            allAnnot <- listSplicingAnnotation()[[1]]
+            allAnnot <- listSplicingAnnotations()
             annotID <- names(allAnnot)[match(annotation, allAnnot)]
             if (grepl("Human", annotID)) setSpecies("Human")
             if (grepl("hg19", annotID)) setAssemblyVersion("hg19")
@@ -228,7 +263,7 @@ inclusionLevelsServer <- function(input, output, session) {
             url <- "http://rpubs.com/nuno-agostinho/alt-splicing-annotation"
             
             updateSelectizeInput(session, "annotation", 
-                                 selected=listSplicingAnnotation()[[1]])
+                                 selected=listSplicingAnnotations())
             infoModal(session, "Load alternative splicing annotation",
                       helpText("Load alternative splicing annotation from a",
                                "RDS file. To learn more on how to create a",
@@ -260,7 +295,7 @@ inclusionLevelsServer <- function(input, output, session) {
             custom <- customAnnot$datapath
             names(custom) <- customAnnot$name
             updateSelectizeInput(session, "annotation", selected=custom,
-                                 choices=listSplicingAnnotation(custom))
+                                 choices=listAllAnnotations(custom))
             setSpecies(input$customSpecies)
             setAssemblyVersion(input$customAssembly)
             removeModal()

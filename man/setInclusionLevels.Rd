@@ -19,6 +19,6 @@ NULL (this function is used to modify the Shiny session's state)
 Set inclusion levels for a given data category
 }
 \note{
-Needs to be called inside reactive function
+Needs to be called inside a reactive function
 }
 

@@ -17,6 +17,6 @@ Data frame of differential analyses
 Get the table of differential analyses of a data category
 }
 \note{
-Needs to be called inside reactive function
+Needs to be called inside a reactive function
 }
 

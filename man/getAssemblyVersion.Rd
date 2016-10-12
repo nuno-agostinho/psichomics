@@ -17,6 +17,6 @@ Character value with the assembly version
 Get the assembly version of a data category
 }
 \note{
-Needs to be called inside reactive function
+Needs to be called inside a reactive function
 }
 

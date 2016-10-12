@@ -387,34 +387,29 @@ sortCoordinates <- function(events) {
 #' @return Matrix with inclusion levels
 calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                                      minReads = 10) {
-    # Prepare AFE and ALE events by removing duplicates based on the coordinates
-    # currently used to measure PSI values
-    if (eventType == "AFE") {
-        C2.start <- annotation$`Constitutive exon 2 start`
-        if (is.null(C2.start)) {
-            return(NULL)
-        } else {
-            annotation <- annotation[!is.na(C2.start), ]
-            annotation <- uniqueBy(annotation, "Constitutive exon 1 end",
-                                   "Alternative exon 1 end",
-                                   "Constitutive exon 2 start")
-        }
-    } else if (eventType == "ALE") {
-        C1.end <- annotation$`Constitutive exon 1 end`
-        if (is.null(C1.end)) {
-            return(NULL)
-        } else {
-            annotation <- annotation[!is.na(C1.end), ]
-            annotation <- uniqueBy(annotation, "Constitutive exon 1 end",
-                                   "Alternative exon 1 start",
-                                   "Constitutive exon 2 start")
-        }
+    # Immediately return NULL if ALE and AFE events are missing coordinates
+    if (eventType == "AFE" && is.null(annotation$`Constitutive exon 2 start`)) {
+        return(NULL)
+    } else if (eventType == "ALE" && 
+               is.null(annotation$`Constitutive exon 1 end`)) {
+        return(NULL)
     }
     
-    chr <- annotation$Chromosome
-    strand <- annotation$Strand
+    if (is.null(annotation$Gene))
+        geneCol <- NULL
+    else
+        geneCol <- "Gene"
     
     if (eventType == "SE") {
+        # Remove duplicates based on columns used to create identifiers
+        annotation <- uniqueBy(annotation, "Chromosome", "Strand",
+                               "Constitutive exon 1 end",
+                               "Alternative exon 1 start",
+                               "Alternative exon 1 end",
+                               "Constitutive exon 2 start", geneCol)
+        chr <- annotation$Chromosome
+        strand <- annotation$Strand
+        
         # Create searchable strings for junctions
         incAstr <- junctionString(chr, strand,
                                   annotation$`Constitutive exon 1 end`,
@@ -449,13 +444,25 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         colnames(psi) <- colnames(inc)
         rm(inc)
         
-        rownames(psi) <- paste(eventType, chr, strand, 
+        # Prepare presentation of multigenes
+        multigene <- lapply(annotation$Gene, length) > 1
+        gene <- annotation$Gene
+        gene[multigene] <- lapply(gene[multigene], paste, collapse="/")
+        rownames(psi) <- paste(sep="_", eventType, chr, strand, 
                                annotation$`Constitutive exon 1 end`, 
                                annotation$`Alternative exon 1 start`, 
                                annotation$`Alternative exon 1 end`,
-                               annotation$`Constitutive exon 2 start`,
-                               annotation$Gene, sep="_")
+                               annotation$`Constitutive exon 2 start`, gene)
     } else if (eventType == "MXE") {
+        # Remove duplicates based on columns used to create identifiers
+        annotation <- uniqueBy(
+            annotation, "Chromosome", "Strand", "Constitutive exon 1 end", 
+            "Alternative exon 1 start", "Alternative exon 1 end",
+            "Alternative exon 2 start", "Alternative exon 2 end",
+            "Constitutive exon 2 start", geneCol)
+        chr <- annotation$Chromosome
+        strand <- annotation$Strand
+        
         # Create searchable strings for junctions
         incAstr <- junctionString(chr, strand,
                                   annotation$`Constitutive exon 1 end`,
@@ -487,15 +494,29 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         psi <- inc/tot
         # Ignore PSI where total reads are below the threshold
         psi[tot < minReads] <- NA
-        rownames(psi) <- paste(eventType, chr, strand, 
+        
+        # Prepare presentation of multigenes
+        multigene <- lapply(annotation$Gene, length) > 1
+        gene <- annotation$Gene
+        gene[multigene] <- lapply(gene[multigene], paste, collapse="/")
+        rownames(psi) <- paste(sep="_", eventType, chr, strand, 
                                annotation$`Constitutive exon 1 end`,
                                annotation$`Alternative exon 1 start`,
                                annotation$`Alternative exon 1 end`, 
                                annotation$`Alternative exon 2 start`, 
                                annotation$`Alternative exon 2 end`,
-                               annotation$`Constitutive exon 2 start`,
-                               annotation$Gene, sep="_")
+                               annotation$`Constitutive exon 2 start`, gene)
     } else if (eventType %in% c("A5SS", "AFE")) {
+        # Remove duplicates based on columns used to create identifiers
+        annotation <- annotation[!is.na(
+            annotation$`Constitutive exon 2 start`), ]
+        annotation <- uniqueBy(annotation, "Chromosome", "Strand",
+                               "Constitutive exon 1 end",
+                               "Alternative exon 1 end",
+                               "Constitutive exon 2 start", geneCol)
+        chr <- annotation$Chromosome
+        strand <- annotation$Strand
+        
         # Create searchable strings for junctions
         incStr <- junctionString(chr, strand,
                                  annotation$`Alternative exon 1 end`, 
@@ -517,12 +538,25 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         # Ignore PSI where total reads are below the threshold
         psi[tot < minReads] <- NA
         
-        rownames(psi) <- paste(eventType, chr, strand, 
+        # Prepare presentation of multigenes
+        multigene <- lapply(annotation$Gene, length) > 1
+        gene <- annotation$Gene
+        gene[multigene] <- lapply(gene[multigene], paste, collapse="/")
+        
+        rownames(psi) <- paste(sep="_", eventType, chr, strand, 
                                annotation$`Constitutive exon 1 end`, 
                                annotation$`Alternative exon 1 end`, 
-                               annotation$`Constitutive exon 2 start`, 
-                               annotation$Gene, sep="_")
+                               annotation$`Constitutive exon 2 start`, gene)
     } else if (eventType %in% c("A3SS", "ALE")) {
+        # Remove duplicates based on columns used to create identifiers
+        annotation <- annotation[!is.na(annotation$`Constitutive exon 1 end`), ]
+        annotation <- uniqueBy(annotation, "Chromosome", "Strand",
+                               "Constitutive exon 1 end",
+                               "Alternative exon 1 start",
+                               "Constitutive exon 2 start", geneCol)
+        chr <- annotation$Chromosome
+        strand <- annotation$Strand
+        
         # Create searchable strings for junctions
         incStr <- junctionString(chr, strand,
                                  annotation$`Constitutive exon 1 end`,
@@ -544,11 +578,15 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         # Ignore PSI where total reads are below the threshold
         psi[tot < minReads] <- NA
         
-        rownames(psi) <- paste(eventType, chr, strand,
+        # Prepare presentation of multigenes
+        multigene <- lapply(annotation$Gene, length) > 1
+        gene <- annotation$Gene
+        gene[multigene] <- lapply(gene[multigene], paste, collapse="/")
+        
+        rownames(psi) <- paste(sep="_", eventType, chr, strand,
                                annotation$`Constitutive exon 1 end`,
                                annotation$`Alternative exon 1 start`, 
-                               annotation$`Constitutive exon 2 start`, 
-                               annotation$Gene, sep = "_")
+                               annotation$`Constitutive exon 2 start`, gene)
     }
     
     # Clear rows with nothing but NAs

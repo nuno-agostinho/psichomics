@@ -19,6 +19,6 @@ Integer with clinical matches to a given dataset
 Get clinical matches from a given data type
 }
 \note{
-Needs to be called inside reactive function
+Needs to be called inside a reactive function
 }
 

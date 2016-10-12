@@ -16,6 +16,6 @@ NULL (this function is used to modify the Shiny session's state)
 Set number of significant digits
 }
 \note{
-Needs to be called inside reactive function
+Needs to be called inside a reactive function
 }
 

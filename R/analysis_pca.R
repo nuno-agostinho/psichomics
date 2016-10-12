@@ -97,7 +97,7 @@ pcaUI <- function(id) {
                             "The remaining events are discarded."),
                       options=list(container="body")),
             selectGroupsUI(ns("dataGroups"), "Filter data groups"),
-            actionButton(ns("calculate"), class="btn-primary", "Calculate PCA"),
+            processButton(ns("calculate"), "Calculate PCA"),
             hidden(
                 div(id=ns("pcaPlotUI"),
                     hr(),
@@ -106,7 +106,7 @@ pcaUI <- function(id) {
                     selectGroupsUI(ns("colourGroups"),
                                    "Clinical groups to colour the PCA"),
                     actionButton(ns("showVariancePlot"), "Show variance plot"),
-                    actionButton(ns("plot"), class="btn-primary", "Plot PCA")
+                    processButton(ns("plot"), "Plot PCA")
                 )
             )
         ), mainPanel(
@@ -282,6 +282,7 @@ pcaServer <- function(input, output, session) {
         if (is.null(psi)) {
             missingDataModal(session, "Inclusion levels", ns("takeMeThere"))
         } else {
+            time <- startProcess("calculate")
             isolate({
                 selected <- input$dataGroups
                 clinicalGroups <- getGroupsFrom("Clinical data")
@@ -303,6 +304,8 @@ pcaServer <- function(input, output, session) {
                 errorModal(session, "No data!", paste(
                     "Calculation returned nothing. Check if everything is as",
                     "expected and try again."))
+                endProcess("calculate", closeProgressBar=FALSE)
+                return(NULL)
             }
             
             # Transpose the data to have individuals as rows
@@ -320,8 +323,10 @@ pcaServer <- function(input, output, session) {
                 errorModal(session, "PCA calculation error", 
                            "Constant/zero columns cannot be resized to unit",
                            "variance")
+            } else {
+                setInclusionLevelsPCA(pca)
             }
-            sharedData$inclusionLevelsPCA <- pca
+            endProcess("calculate", closeProgressBar=FALSE)
         }
     })
     
@@ -332,7 +337,7 @@ pcaServer <- function(input, output, session) {
     
     # Update select inputs of the principal components
     observe({
-        pca <- sharedData$inclusionLevelsPCA
+        pca <- getInclusionLevelsPCA()
         if (is.null(pca)) {
             updateSelectizeInput(session, "pcX",
                                  choices=c("No PCA performed yet"=""))
@@ -358,7 +363,7 @@ pcaServer <- function(input, output, session) {
     
     # Plot the explained variance plot
     output$variancePlot <- renderHighchart({
-        pca <- sharedData$inclusionLevelsPCA
+        pca <- getInclusionLevelsPCA()
         if (is.null(pca)) {
             if (input$plot > 0) {
                 errorModal(session, "No PCA performed",
@@ -371,8 +376,9 @@ pcaServer <- function(input, output, session) {
     
     # Plot the principal component analysis
     observeEvent(input$plot, {
+        startProcess("plot")
         isolate({
-            pca <- sharedData$inclusionLevelsPCA
+            pca <- getInclusionLevelsPCA()
             pcX <- input$pcX
             pcY <- input$pcY
             selected <- input$colourGroups
@@ -413,10 +419,11 @@ pcaServer <- function(input, output, session) {
             } else {
                 return(NULL)
             })
+        endProcess("plot", closeProgressBar=FALSE)
     })
     
     observe(
-        if (!is.null(sharedData$inclusionLevelsPCA)) 
+        if (!is.null(getInclusionLevelsPCA()))
             show("pcaPlotUI", animType="fade")
     )
 }

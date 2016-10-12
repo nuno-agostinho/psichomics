@@ -1,6 +1,6 @@
 Package: psichomics
 Title: Analyse and Visualise Alternative Splicing Data
-Version: 0.99.5
+Version: 0.99.6
 Authors@R: c(
     person("Nuno", "Saraiva Agostinho", , "nunodanielagostinho@gmail.com", 
            role = c("aut", "cre")),
@@ -22,6 +22,7 @@ License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 5.0.1
 Imports:
+    AnnotationHub,
     data.table,
     digest,
     DT (>= 0.2),
