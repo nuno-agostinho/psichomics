@@ -1,7 +1,7 @@
 ---
 title: 'PSIchomics tutorial: visual interface'
 author: "Nuno Saraiva Agostinho"
-date: "8 October 2016"
+date: "12 October 2016"
 bibliography: refs.bib
 output: rmarkdown::html_vignette
 vignette: >
@@ -56,8 +56,9 @@ from TCGA.
 5. Confirm if the **Folder to store data** field contains the folder where the 
 files will be downloaded to.
 6. Click **Load data**. If the required files are not available in the given 
-folder, they will now start downloading. When all downloads have finished, 
-proceed by clicking on **Load data** again with the exact same parameters.
+folder, they will start downloading when you click **Download data** in the
+message that appears. When all downloads have finished, proceed by clicking on
+**Load data** again with the exact same parameters.
 
 After the data finish loading (keep an eye on the progress at the top-right 
 corner), the on-screen instructions will be replaced by the loaded datasets.
@@ -85,13 +86,17 @@ alternative splicing events** on the left.
 1. Select the junction quantification dataset to use from the loaded data. For 
 many tumour types, only one dataset is provided.
 2. Designate the alternative splicing event annotation. Currently, only the
-annotation for **Human (hg19/GRCh37 assembly)** is available.
+annotation for **Human (hg19/GRCh37 assembly)** is available[^3].
 3. Choose the event type(s) of interest (for instance, **Skipped exon (SE)**).
 4. Set the minimum read counts threshold to 10. Inclusion levels calculated with
 total read counts below this threshold are discarded from further analyses.
 
-Click on **Calculate inclusion levels** to start quantifying alternative 
-splicing.
+[^3]: You can create additional alternative splicing annotations for PSIchomics
+by parsing the annotation from programs like [VAST-TOOLS][4], [MISO][3],
+[SUPPA][1] and [rMATS][2]. For more information, 
+[read this tutorial](http://rpubs.com/nuno-agostinho/alt-splicing-annotation).
+
+Click on **Quantify events** to start quantifying alternative splicing.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='400pt'}
 knitr::include_graphics("quantify_splicing.png")
@@ -169,6 +174,12 @@ knitr::include_graphics("pca.png")
 ```
 
 **Figure 4:** Available options for PCA performance and plotting.
+
+Note that two PCA plots are rendered. The top plot shows the clinical samples 
+(individuals), while the plot below displays the alternative splicing events
+(loadings). The bubble size of the events represents the contribution of
+a given variable to the selected principal component. Each splicing event is
+clickable and it will show more information on that splicing event.
 
 # Differential splicing analysis
 To analyse differential splicing, click on the **Analyses** tab located in the
@@ -270,3 +281,8 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 > [Computation Biology, IMM](http://imm.medicina.ulisboa.pt/group/compbio/)
 
 # References
+
+[1]: https://bitbucket.org/regulatorygenomicsupf/suppa
+[2]: http://rnaseq-mats.sourceforge.net
+[3]: http://genes.mit.edu/burgelab/miso/
+[4]: https://github.com/vastgroup/vast-tools
