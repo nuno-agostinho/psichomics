@@ -385,8 +385,14 @@ diffAnalyses <- function(psi, groups=NULL,
     # Add splicing event information
     progress("Include splicing event information")
     info <- suppressWarnings(parseSplicingEvent(rownames(df)))
+    
+    # Prepare presentation of multigenes
+    multigene <- lapply(info$gene, length) > 1
+    infoGene <- info$gene
+    infoGene[multigene] <- lapply(infoGene[multigene], paste, collapse="/")
+    
     df <- cbind("Event type"=info$type, "Chromosome"=info$chrom,
-                "Strand"=info$strand, "Gene"=info$gene, df)
+                "Strand"=info$strand, "Gene"=unlist(infoGene), df)
     
     if (any("density" == analyses)) {
         progress("Calculating the density of inclusion levels")

@@ -22,6 +22,6 @@ Matrix with groups of a given dataset
 Get groups from a given data type
 }
 \note{
-Needs to be called inside reactive function
+Needs to be called inside a reactive function
 }
 

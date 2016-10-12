@@ -17,6 +17,6 @@ Data frame of differential analyses' survival data
 Get the table of differential analyses' survival data of a data category
 }
 \note{
-Needs to be called inside reactive function
+Needs to be called inside a reactive function
 }
 

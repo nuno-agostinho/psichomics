@@ -9,7 +9,7 @@ setGlobal(..., value, sep = "_")
 \arguments{
 \item{...}{Arguments to identify a variable}
 
-\item{value}{Any value to attribute to element}
+\item{value}{Any value to attribute to an element}
 
 \item{sep}{Character to separate identifier}
 }
@@ -23,6 +23,6 @@ Set element as globally accessible
 Set element inside the global variable
 }
 \note{
-Needs to be called inside reactive function
+Needs to be called inside a reactive function
 }
 

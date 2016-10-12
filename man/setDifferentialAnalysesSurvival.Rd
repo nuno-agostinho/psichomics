@@ -19,6 +19,6 @@ NULL (this function is used to modify the Shiny session's state)
 Set the table of differential analyses' survival data of a data category
 }
 \note{
-Needs to be called inside reactive function
+Needs to be called inside a reactive function
 }
 

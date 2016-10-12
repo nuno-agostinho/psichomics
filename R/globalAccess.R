@@ -49,7 +49,7 @@ getActiveDataset <- reactive(sharedData$activeDataset)
 getClinicalData <- reactive(getCategoryData()[["Clinical data"]])
 
 #' Get junction quantification data
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' 
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
@@ -73,7 +73,7 @@ getInclusionLevels <- reactive(getCategoryData()[["Inclusion levels"]])
 getGlobal <- function(..., sep="_") sharedData[[paste(..., sep=sep)]]
 
 #' Get the table of differential analyses of a data category
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' 
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
@@ -83,7 +83,7 @@ getDifferentialAnalyses <- function(category = getCategory())
     getGlobal(category, "differentialAnalyses")
 
 #' Get the table of differential analyses' survival data of a data category
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' 
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
@@ -93,7 +93,7 @@ getDifferentialAnalysesSurvival <- function(category = getCategory())
     getGlobal(category, "diffAnalysesSurv")
 
 #' Get the species of a data category
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' 
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
@@ -103,7 +103,7 @@ getSpecies <- function(category = getCategory())
     getGlobal(category, "species")
 
 #' Get the assembly version of a data category
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' 
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
@@ -113,7 +113,7 @@ getAssemblyVersion <- function(category = getCategory())
     getGlobal(category, "assemblyVersion")
 
 #' Get groups from a given data type
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' 
 #' @param dataset Character: data set (e.g. "Clinical data")
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
@@ -131,7 +131,7 @@ getGroupsFrom <- function(dataset, category = getCategory(), full=FALSE) {
 }
 
 #' Get clinical matches from a given data type
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' 
 #' @param dataset Character: data set (e.g. "Junction quantification")
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
@@ -142,7 +142,7 @@ getClinicalMatchFrom <- function(dataset, category = getCategory())
     getGlobal(category, dataset, "clinicalMatch")
 
 #' Get the groups column for differential splicing analysis of a data category
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' 
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
@@ -159,62 +159,73 @@ getDiffSplicingGroups <- function(category = getCategory())
 getURLtoDownload <- function()
     getGlobal("URLtoDownload")
 
+#' Get principal component analysis based on inclusion levels
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' 
+#' @return \code{prcomp} object (PCA) of inclusion levels
+getInclusionLevelsPCA <- function(category = getCategory())
+    getGlobal(category, "inclusionLevelsPCA")
+
 #' Set element as globally accessible
 #' @details Set element inside the global variable
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' 
 #' @param ... Arguments to identify a variable
-#' @param value Any value to attribute to element
+#' @param value Any value to attribute to an element
 #' @param sep Character to separate identifier
+#' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 setGlobal <- function(..., value, sep="_") {
     sharedData[[paste(..., sep=sep)]] <- value
 }
 
 #' Set data of the global data
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' @param data Data frame or matrix to set as data
 #' @return NULL (this function is used to modify the Shiny session's state)
 setData <- function(data) setGlobal("data", value=data)
 
 #' Set number of cores
 #' @param cores Character: number of cores
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' @return NULL (this function is used to modify the Shiny session's state)
 setCores <- function(cores) setGlobal("cores", value=cores)
 
 #' Set number of significant digits
 #' @param significant Character: number of significant digits
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' @return NULL (this function is used to modify the Shiny session's state)
 setSignificant <- function(significant) setGlobal("significant", value=significant)
 
 #' Set number of decimal places
 #' @param precision Numeric: number of decimal places
 #' @return NULL (this function is used to modify the Shiny session's state)
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 setPrecision <- function(precision) setGlobal("precision", value=precision)
 
 #' Set event
 #' @param event Character: event
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' @return NULL (this function is used to modify the Shiny session's state)
 setEvent <- function(event) setGlobal("event", value=event)
 
 #' Set data category
 #' @param category Character: data category
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' @return NULL (this function is used to modify the Shiny session's state)
 setCategory <- function(category) setGlobal("category", value=category)
 
 #' Set active dataset
 #' @param dataset Character: dataset
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' @return NULL (this function is used to modify the Shiny session's state)
 setActiveDataset <- function(dataset) setGlobal("activeDataset", value=dataset)
 
 #' Set inclusion levels for a given data category
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' 
 #' @param value Data frame or matrix: inclusion levels
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
@@ -224,7 +235,7 @@ setInclusionLevels <- function(value, category = getCategory())
     sharedData$data[[category]][["Inclusion levels"]] <- value
 
 #' Set groups from a given data type
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' 
 #' @param dataset Character: data set (e.g. "Clinical data")
 #' @param groups Matrix: groups of dataset
@@ -235,7 +246,7 @@ setGroupsFrom <- function(dataset, groups, category = getCategory())
     setGlobal(category, dataset, "groups", value=groups)
 
 #' Set the table of differential analyses of a data category
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' 
 #' @param table Character: differential analyses table
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
@@ -245,7 +256,7 @@ setDifferentialAnalyses <- function(table, category = getCategory())
     setGlobal(category, "differentialAnalyses", value=table)
 
 #' Set the table of differential analyses' survival data of a data category
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' 
 #' @param table Character: differential analyses' survival data
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
@@ -255,7 +266,7 @@ setDifferentialAnalysesSurvival <- function(table, category = getCategory())
     setGlobal(category, "diffAnalysesSurv", value=table)
 
 #' Set the species of a data category
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' 
 #' @param value Character: species
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
@@ -265,7 +276,7 @@ setSpecies <- function(value, category = getCategory())
     setGlobal(category, "species", value=value)
 
 #' Set the assembly version of a data category
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' 
 #' @param value Character: assembly version
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
@@ -275,7 +286,7 @@ setAssemblyVersion <- function(value, category = getCategory())
     setGlobal(category, "assemblyVersion", value=value)
 
 #' Set the groups column for differential splicing analysis of a data category
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' 
 #' @param value Character: assembly version
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
@@ -285,7 +296,7 @@ setDiffSplicingGroups <- function(value, category = getCategory())
     setGlobal(category, "diffSplicingGroups", value=value)
 
 #' Set clinical matches from a given data type
-#' @note Needs to be called inside reactive function
+#' @note Needs to be called inside a reactive function
 #' 
 #' @param dataset Character: data set (e.g. "Clinical data")
 #' @param matches Vector of integers: clinical matches of dataset
@@ -303,3 +314,14 @@ setClinicalMatchFrom <- function(dataset, matches, category = getCategory())
 #' @return NULL (this function is used to modify the Shiny session's state)
 setURLtoDownload <- function(url)
     setGlobal("URLtoDownload", value=url)
+
+#' Get principal component analysis based on inclusion levels
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param pca \code{prcomp} object (PCA) of inclusion levels
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' 
+#' @return NULL (this function is used to modify the Shiny session's state)
+setInclusionLevelsPCA <- function(pca, category=getCategory())
+    setGlobal(category, "inclusionLevelsPCA", value=pca)

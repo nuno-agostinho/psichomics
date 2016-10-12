@@ -21,6 +21,6 @@ NULL (this function is used to modify the Shiny session's state)
 Set clinical matches from a given data type
 }
 \note{
-Needs to be called inside reactive function
+Needs to be called inside a reactive function
 }
 

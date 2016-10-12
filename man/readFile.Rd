@@ -16,7 +16,6 @@ Loaded file
 Load local file
 }
 \examples{
-annotList <- listSplicingAnnotation()
-annotation <- readFile(annotList[1])
+junctionQuant <- readFile("ex_junctionQuant.RDS")
 }
 

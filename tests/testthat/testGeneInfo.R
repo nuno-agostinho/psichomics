@@ -7,7 +7,7 @@ test_that("Query Ensembl API by event", {
     expect_equal(parsed$type, "SE")
     expect_equal(parsed$chrom, "12")
     expect_equal(parsed$strand, "-")
-    expect_equal(parsed$gene, "SLC2A14")
+    expect_equal(parsed$gene[[1]], "SLC2A14")
     expect_equal(parsed$pos[[1]], c(7982602, 7985318))
     
     info <- queryEnsemblByEvent(event, species="human", assembly="hg19")
@@ -16,7 +16,7 @@ test_that("Query Ensembl API by event", {
         expect_is(info, "list")
         # Gene information
         expect_equal(info$seq_region_name, parsed$chrom)
-        expect_equal(info$display_name, parsed$gene)
+        expect_equal(info$display_name, parsed$gene[[1]])
         expect_equal(info$strand, -1)
         expect_equal(info$source, "ensembl_havana")
         expect_equal(info$object_type, "Gene")

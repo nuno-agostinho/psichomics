@@ -105,7 +105,7 @@ To check current annotation files available and which alternative splicing event
 types are supported:
 ```{r quantify options}
 # Available alternative splicing annotation
-annotList <- listSplicingAnnotation()
+annotList <- listSplicingAnnotations()
 annotList
 
 # Available alternative splicing event types (skipped exon, alternative 
@@ -126,10 +126,11 @@ annotation to be used:
 minReads <- 10
 
 # Load Human (hg19/GRCh37 assembly) annotation
-human <- listSplicingAnnotation()[1]
-annotation <- readFile(human)
+human <- listSplicingAnnotations()[[1]]
+annotation <- loadAnnotation(human)
 
-# Quantify splicing
+# Quantify splicing for skipped exon events (by default, all event types are 
+# calculated)
 psi <- quantifySplicing(annotation, junctionQuant, eventType="SE", 
                         minReads=minReads)
 

@@ -17,6 +17,6 @@ List of data frames of junction quantification
 Get junction quantification data
 }
 \note{
-Needs to be called inside reactive function
+Needs to be called inside a reactive function
 }
 

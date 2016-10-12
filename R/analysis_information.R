@@ -130,7 +130,9 @@ ensemblToUniprot <- function(protein) {
 #' @return HTML elements
 infoUI <- function(id) {
     ns <- NS(id)
-    uiOutput(ns("info"))
+    tagList(uiOutput(ns("geneSelection")),
+            uiOutput(ns("info")))
+    
 }
 
 #' Interface when no information could be retrieved
@@ -326,7 +328,10 @@ renderGeneticInfo <- function(ns, info, species=NULL, assembly=NULL,
                    icon("external-link"), target="_blank",
                    href=paste0("http://www.proteinatlas.org/", info$id, 
                                "/cancer"))
-        }
+        },
+        tags$a("VAST-DB", icon("external-link"), target="_blank",
+               href=paste0("http://vastdb.crg.eu/wiki/Gene:", info$id, 
+                           "@Genome:", assembly))
     )
     
     dtWidth  <- "width: 80px;"
@@ -439,15 +444,14 @@ articleUI <- function(article) {
                                        article$title, tags$small(description)))
 }
 
-#' Return the interface of relevant PubMed articles for a given splicing event
+#' Return the interface of relevant PubMed articles for a given gene
 #' 
-#' @param event Character: alternative splicing event identifier
+#' @param gene Character: gene
 #' @param ... Arguments to pass to \code{queryPubMed} function
 #' 
 #' @return HTML interface of relevant PubMed articles
-pubmedUI <- function(event, ...) {
-    event <- parseEvent(event)
-    pubmed <- queryPubMed(event$gene, ...)
+pubmedUI <- function(gene, ...) {
+    pubmed <- queryPubMed(gene, ...)
     
     articles <- pubmed[-1]
     articleList <- lapply(articles, articleUI)
@@ -489,14 +493,35 @@ infoServer <- function(input, output, session) {
                                 "must be quantified first.")))
         else if (is.null(event) || event == "") return(noinfo(output))
         
+        # Select gene in case there is more than one available
+        gene <- parseEvent(event)$gene[[1]]
+        if (length(gene) > 1) {
+            output$geneSelection <- renderUI({
+                fixedRow(
+                    column(3, h5("Select one of the genes that may be",
+                                 "associated with the event:")),
+                    column(3, selectizeInput(ns("selectedGene"), NULL, 
+                                             choices=gene)))
+            })
+        }
+    })
+    
+    observe({
+        event <- getEvent()
+        if (is.null(getInclusionLevels()) || is.null(event) || event == "")
+            return(NULL)
+        
         parsed <- parseEvent(event)
         species  <- tolower(getSpecies())
         assembly <- getAssemblyVersion()
         grch37   <- assembly == "hg19"
         
-        info <- tryCatch(
-            queryEnsemblByEvent(event, species=species, assembly=assembly),
-            error=return)
+        gene <- input$selectedGene
+        if (is.null(gene)) gene <- parsed$gene[[1]]
+        if (length(gene) > 1) return(NULL)
+        
+        info <- tryCatch(queryEnsemblByGene(gene, species=species, 
+                                            assembly=assembly), error=return)
         
         # Handle errors
         if (is(info, "error")) {
@@ -510,8 +535,8 @@ infoServer <- function(input, output, session) {
         
         if (is.null(info)) {
             output$info <- renderUI({ 
-                title <- "Ensembl API appears to be offline."
-                description <- paste("Please, try selecting another event or",
+                title <- "Ensembl API appears to give no response."
+                description <- paste("Please try selecting another event or",
                                      "try again later.")
                 noinfo <- h3(title, br(), tags$small(description))
                 fluidRow(column(6, noinfo), 
@@ -532,6 +557,8 @@ infoServer <- function(input, output, session) {
         
         output$selectizeProtein <- renderUI({
             transcripts <- info$Transcript$Translation$id
+            if (is.null(transcripts))
+                return(h4("No proteins retrieved from UniProt"))
             names(transcripts) <- info$Transcript$id
             transcripts <- transcripts[!is.na(transcripts)]
             
@@ -619,11 +646,21 @@ infoServer <- function(input, output, session) {
         }
     })
     
-    # Render relevant articles
+    # Render relevant articles according to available gene
     output$articles <- renderUI({
         event <- getEvent()
-        if (is.null(event)) return(NULL)
-        pubmedUI(event, "cancer", top=3)
+        
+        gene <- input$selectedGene
+        if (is.null(gene))
+            gene <- parseEvent(event)$gene[[1]]
+        
+        if (is.null(gene) || length(gene) > 1)
+            return(NULL)
+        else {
+            category <- unlist(strsplit(getCategory(), " "))
+            articles <- pubmedUI(gene, "cancer", category, top=3)
+            return(articles)
+        }
     })
 }
 

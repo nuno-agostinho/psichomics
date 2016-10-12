@@ -2,12 +2,12 @@
 % Please edit documentation in R/analysis_information.R
 \name{pubmedUI}
 \alias{pubmedUI}
-\title{Return the interface of relevant PubMed articles for a given splicing event}
+\title{Return the interface of relevant PubMed articles for a given gene}
 \usage{
-pubmedUI(event, ...)
+pubmedUI(gene, ...)
 }
 \arguments{
-\item{event}{Character: alternative splicing event identifier}
+\item{gene}{Character: gene}
 
 \item{...}{Arguments to pass to \code{queryPubMed} function}
 }
@@ -15,6 +15,6 @@ pubmedUI(event, ...)
 HTML interface of relevant PubMed articles
 }
 \description{
-Return the interface of relevant PubMed articles for a given splicing event
+Return the interface of relevant PubMed articles for a given gene
 }
 
