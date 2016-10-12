@@ -190,7 +190,7 @@ inclusionLevelsServer <- function(input, output, session) {
             }
         }
         time <- startProcess("calcIncLevels")
-        startProgress("Quantifying alternative splicing...", divisions=3)
+        startProgress("Quantifying alternative splicing", divisions=4)
         # Read annotation
         if (grepl("^/var/folders/", annotation)) { # if custom annotation
             updateProgress("Loading alternative splicing annotation")
@@ -332,8 +332,8 @@ inclusionLevelsServer <- function(input, output, session) {
         if (!is.null(input$loadASquant)) {
             time <- startProcess("loadIncLevels")
             
-            startProgress("Loading alternative splicing quantification",
-                          divisions=2)
+            startProgress("Wait a moment", divisions=2)
+            updateProgress("Loading alternative splicing quantification")
             psi <- tryCatch(read.delim(input$customASquant$datapath, 
                                        row.names=1, check.names=FALSE),
                             error=return, warning=return)
