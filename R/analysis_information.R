@@ -498,7 +498,8 @@ infoServer <- function(input, output, session) {
         if (length(gene) > 1) {
             output$geneSelection <- renderUI({
                 fixedRow(
-                    column(3, h5("Select one of the genes that may be",
+                    column(3, h5(style=" margin-top: 0;",
+                                 "Select one of the genes that may be",
                                  "associated with the event:")),
                     column(3, selectizeInput(ns("selectedGene"), NULL, 
                                              choices=gene)))
