@@ -1,0 +1,166 @@
+---
+title: 'Preparing an Alternative Splicing Annotation for PSIchomics'
+author: "Nuno Saraiva Agostinho"
+date: "6 October 2016"
+bibliography: refs.bib
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+  
+---
+  
+PSIchomics currently quantifies alternative splicing based on an alternative 
+splicing annotation for Human (hg19). This annotation was created based on the
+annotations from [MISO][3], [SUPPA][1], [VAST-TOOLS][4] and [rMATS][2].
+  
+The preparation of a new alternative splicing annotation for usage in PSIchomics
+starts by parsing the alternative splicing events. Currently, events from
+[SUPPA][1], [rMATS][2], [MISO][3] and [VAST-TOOLS][4] are parsable. Support can
+be extended for alternative splicing events from other programs. For more
+information, please contact Nuno Agostinho (nunodanielagostinho@gmail.com).
+  
+Also, do not forget to load the following packages:
+
+```{r, results='hide'}
+library(psichomics)
+library(plyr)
+```
+
+## SUPPA annotation
+[SUPPA][1] generates alternative splicing events based on a transcript 
+annotation. Start by running SUPPA's `generateEvents` script with a transcript 
+file (GTF format) for all event types, if desired. See [SUPPA's page][1] for 
+more information.
+
+The resulting output will include a directory containing tab-delimited files
+with alternative splicing events (one file for each event type). Hand the path
+of this directory to the function `parseSuppaAnnotation()`, prepare the 
+annotation using `prepareAnnotationFromEvents()` and save the output to a RDS 
+file:
+
+```{r, include=FALSE}
+suppaOutput <- system.file("extdata/eventsAnnotSample/suppa_output/suppaEvents",
+                           package="psichomics")
+suppaFile <- tempfile(fileext=".RDS")
+```
+
+```{r}
+# Replace `genome` for the string with the identifier before the first
+# underscore in the filenames of that directory (for instance, if one of your 
+# filenames of interest is "hg19_A3.ioe", the string would be "hg19")
+suppa <- parseSuppaAnnotation(suppaOutput, genome="hg19")
+annot <- prepareAnnotationFromEvents(suppa)
+
+# suppaFile <- "suppa_hg19_annotation.RDS"
+saveRDS(annot, file=suppaFile)
+```
+
+## rMATS annotation
+Just like [SUPPA][1], [rMATS][2] also allows to generate alternative splicing 
+events based on a transcript annotation, although two BAM or FASTQ files are 
+required to generate alternative splicing events. Read [rMATS's page][2] for 
+more information.
+
+The resulting output of [rMATS][2] is then handed out to the function
+`parseMatsAnnotation()`:
+
+```{r, include=FALSE}
+matsOutput <- system.file("extdata/eventsAnnotSample/mats_output/ASEvents/",
+                          package="psichomics")
+matsFile <- tempfile("mats", fileext=".RDS")
+```
+
+```{r}
+mats <- parseMatsAnnotation(
+    matsOutput,         # Output directory from rMATS
+    genome = "fromGTF", # Identifier of the filenames
+    novelEvents=TRUE)   # Parse novel events?
+annot <- prepareAnnotationFromEvents(mats)
+
+# matsFile <- "mats_hg19_annotation.RDS"
+saveRDS(annot, file=matsFile)
+```
+
+## MISO annotation
+Simply retrieve [MISO's alternative splicing annotation][5] and give the path 
+to the downlaoded folder as input.
+
+```{r, include=FALSE}
+misoAnnotation <- system.file("extdata/eventsAnnotSample/miso_annotation",
+                              package="psichomics")
+misoFile <- tempfile("miso", fileext=".RDS")
+```
+
+```{r}
+miso <- parseMisoAnnotation(misoAnnotation)
+annot <- prepareAnnotationFromEvents(miso)
+
+# misoFile <- "miso_AS_annotation_hg19.RDS"
+saveRDS(annot, file=misoFile)
+```
+
+## VAST-TOOLS annotation
+Simply retrieve [VAST-TOOLS's alternative splicing annotation][6] and give the 
+path to the downlaoded folder as input. Note that, however, complex events (i.e.
+alternative coordinates for the exon ends) are not yet parseable.
+
+```{r, include=FALSE}
+vastAnnotation <- system.file("extdata/eventsAnnotSample/VASTDB/Hsa/TEMPLATES/",
+                              package="psichomics")
+vastFile <- tempfile("vast", fileext=".RDS")
+```
+
+```{r}
+vast <- parseVastToolsAnnotation(vastAnnotation)
+annot <- prepareAnnotationFromEvents(vast)
+
+# vastFile <- "vast_AS_annotation_hg19.RDS"
+saveRDS(annot, file=vastFile)
+```
+
+## Combining annotation from different sources
+To combine the annotation from different sources, provide the parsed annotations
+of interest simultasneously to the function `prepareAnnotationFromEvents`:
+
+```{r, include=FALSE}
+annotFile <- tempfile(fileext=".RDS")
+```
+
+```{r}
+# Let's combine the annotation from SUPPA, MISO, rMATS and VAST-TOOLS
+suppa <- parseSuppaAnnotation(suppaOutput, genome="hg19")
+miso <- parseMisoAnnotation(misoAnnotation)
+mats <- parseMatsAnnotation(matsOutput, genome = "fromGTF", novelEvents=TRUE)
+vast <- parseVastToolsAnnotation(vastAnnotation)
+
+annot <- prepareAnnotationFromEvents(suppa, vast, mats, miso)
+
+# annotFile <- "AS_annotation_hg19.RDS"
+saveRDS(annot, file=annotFile)
+```
+
+## Quantifying alternative splicing using the created annotation
+The created alternative splicing annotation can then be used when quantifying
+alternative splicing events. To do so, when using the GUI version of PSIchomics,
+be sure to select the **Load annotation from file...** option, click the button
+that appears below and select the recently created RDS file. Otherwise, if you
+are using the CLI version, perform the following steps:
+
+```{r}
+annot <- readRDS(annotFile) # "file" is the path to the annotation file
+junctionQuant <- readFile("ex_junctionQuant.RDS") # example set
+
+psi <- quantifySplicing(annot, junctionQuant, 
+                        c("SE", "MXE", "A3SS", "A5SS", "AFE", "ALE"))
+psi # may have 0 rows because of the small junction quantification set
+```
+
+[1]: https://bitbucket.org/regulatorygenomicsupf/suppa
+[2]: http://rnaseq-mats.sourceforge.net
+[3]: http://genes.mit.edu/burgelab/miso/
+[4]: https://github.com/vastgroup/vast-tools
+[5]: https://miso.readthedocs.io/en/fastmiso/annotation.html
+[6]: http://vastdb.crg.eu/libs/
