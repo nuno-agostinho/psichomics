@@ -1,19 +1,22 @@
 Package: psichomics
-Title: Analyse and Visualise Alternative Splicing Data
-Version: 0.99.6
+Title: Graphical Interface for Alternative Splicing Quantification, Analysis and
+    Visualisation
+Version: 1.0.1
 Authors@R: c(
     person("Nuno", "Saraiva Agostinho", , "nunodanielagostinho@gmail.com", 
            role = c("aut", "cre")),
     person("Nuno", "Barbosa Morais", role=c("aut", "led", "ths")),
-    person("Andr\u00E9", "Falc\u00E3o", role="ths"),
+    person("André", "Falcão", role="ths"),
     person("Lina", "Gallego Paez", role="ctb"),
     person("Marie", "Bordone", role="ctb"),
     person("Teresa", "Maia", role="ctb"),
     person("Mariana", "Ferreira", role="ctb"),
     person("Ana Carolina", "Leote", role="ctb"))
-Description: Automatically retrieve data from RNA-Seq sources such as The Cancer
-    Genome Atlas or load your own files and process the data. This tool allows
-    you to analyse and visualise alternative splicing.
+Description: Package with a Shiny-based graphical interface for the integrated 
+    analysis of alternative splicing data from The Cancer Genome Atlas (TCGA). 
+    This tool interactively performs survival, principal components and 
+    differential splicing analyses with direct incorporation of clinical 
+    features (such as tumour stage or survival) associated with TCGA samples.
 Depends:
     R (>= 3.3),
     shiny (>= 0.14),
