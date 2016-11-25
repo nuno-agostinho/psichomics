@@ -206,7 +206,6 @@ createGroupByColumn <- function(col, dataset) {
 #' @return NULL (this function is used to modify the Shiny session's state)
 createGroupByRows <- function(session, rows, dataset) {
     # Convert the given string into a sequence of numbers
-    strRows <- paste(rows, collapse=", ")
     rows <- unlist(lapply(rows, function(row) eval(parse(text=row))))
     rows <- sort(unique(rows))
     
@@ -243,8 +242,9 @@ createGroupFromInput <- function (session, input, output, dataset,
         group <- cbind(names(group), "Column", col, group)
     } else if (type == "Rows") {
         rows <- input$groupRows
-        group <- createGroupByRows(session, dataset, rows)
-        group <- cbind(input$groupName, type, strRows, list(rows))
+        strRows <- paste(rows, collapse=", ")
+        allRows <- createGroupByRows(session, rows, dataset)
+        group <- cbind(input$groupName, type, strRows, list(allRows))
     } else if (type == "Subset expression") {
         # Subset dataset using the given expression
         expr <- input$groupExpression
@@ -336,7 +336,7 @@ operateOnGroups <- function(input, session, FUN, buttonId, symbol=" ",
     # Operate on selected groups when pressing the corresponding button
     observeEvent(input[[paste(buttonId, "button", sep="-")]], {
         # Get groups from the dataset
-        groups <- getGroupsFrom(datasetName, full=TRUE)
+        groups <- getGroupsFrom(datasetName, complete=TRUE)
         
         # Create new set
         new <- NULL
@@ -389,7 +389,7 @@ groupsServer <- function(input, output, session, datasetName) {
     observeEvent(input$createGroup, {
         removeAlert(output)
         
-        groups <- getGroupsFrom(datasetName, full=TRUE)
+        groups <- getGroupsFrom(datasetName, complete=TRUE)
         if (is.null(datasetName)) {
             errorAlert(session, "Data missing", "Load some data first.")
             return(NULL)
@@ -412,7 +412,7 @@ groupsServer <- function(input, output, session, datasetName) {
     
     # Render groups list and show interface to manage groups
     output$groupsTable <- renderDataTable({
-        groups <- getGroupsFrom(datasetName, full=TRUE)
+        groups <- getGroupsFrom(datasetName, complete=TRUE)
         
         # Show groups only if there is at least one group
         if (!is.null(groups) && nrow(groups) > 0) {
@@ -464,7 +464,7 @@ groupsServer <- function(input, output, session, datasetName) {
     
     # Render groups interface only if at least one group exists
     output$groupsList <- renderUI({
-        groups <- getGroupsFrom(datasetName, full=TRUE)
+        groups <- getGroupsFrom(datasetName, complete=TRUE)
         
         operationButton <- function(operation, operationId, ...) {
             actionButton(paste(operationId, "button", sep="-"), operation, ...)
