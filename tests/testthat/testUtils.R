@@ -59,3 +59,51 @@ test_that("Text suggestions create a runnable JS script", {
     # The library textcomplete is used
     expect_true(grepl(".textcomplete(", suggest, fixed=TRUE))
 })
+
+test_that("Create a button with a loading indicator", {
+    id <- "buttonId"
+    label <- "Click me!"
+    button <- processButton(id, label)
+    expect_equal(button[[2]]$id, id)
+    expect_equal(button[[2]]$type, "button")
+    expect_equal(button[[3]][[1]][[2]][[3]][[2]], label)
+    
+    icon <- button[[3]][[1]][[2]][[3]][[1]]
+    expect_equal(icon[[1]], "i")
+    expect_equal(icon[[2]][[2]], "fa fa-spinner fa-spin")
+    expect_equal(icon[[2]][[3]], "shinyjs-hide")
+})
+
+test_that("Retrieve patients from sample identifiers", {
+    samples <- c("ABC", "DEF", "GHI", "JKL", "MNO")
+    clinical <- data.frame(patient=paste0("patient-", samples),
+                           samples=tolower(samples))
+    patients <- getPatientFromSample(samples, clinical, prefix="")
+    expect_is(patients, "integer")
+    expect_equivalent(patients, 1:5)
+    expect_equal(names(patients), tolower(samples))
+    
+    # Do not remove non-matching identifiers (by default)
+    clinical[4:5, "samples"] <- NA
+    patients <- getPatientFromSample(samples, clinical, prefix="", 
+                                     rmNoMatches=FALSE)
+    expect_equivalent(patients, c(1:3, NA, NA))
+    expect_equal(names(patients), tolower(samples))
+    
+    # Remove non-matching identifiers
+    patients <- getPatientFromSample(samples, clinical, prefix="", 
+                                     rmNoMatches=TRUE)
+    expect_equivalent(patients, 1:3)
+    expect_equal(names(patients), tolower(samples[1:3]))
+})
+
+test_that("Retrieve samples from patient identifiers", {
+    samples <- c("ABC", "DEF", "GHI", "JKL", "MNO")
+    clinical <- data.frame(patient=paste0("patient-", samples), 
+                           samples=tolower(samples))
+    
+    ref <- c(1, 4)
+    match <- getMatchingSamples(ref, samples, clinical, prefix="")
+    expect_is(match, "character")
+    expect_equivalent(match, toupper(clinical$samples[ref]))
+})
