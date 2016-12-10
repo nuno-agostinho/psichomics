@@ -4,7 +4,7 @@
 \alias{getGroupsFrom}
 \title{Get groups from a given data type}
 \usage{
-getGroupsFrom(dataset, category = getCategory(), full = FALSE)
+getGroupsFrom(dataset, category = getCategory(), complete = FALSE)
 }
 \arguments{
 \item{dataset}{Character: data set (e.g. "Clinical data")}
@@ -12,8 +12,8 @@ getGroupsFrom(dataset, category = getCategory(), full = FALSE)
 \item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
 it uses the selected data category}
 
-\item{full}{Boolean: return all the information on groups (TRUE) or just the
-group names and respective indexes (FALSE)? FALSE by default}
+\item{complete}{Boolean: return all the information on groups (TRUE) or just 
+the group names and respective indexes (FALSE)? FALSE by default}
 }
 \value{
 Matrix with groups of a given dataset
