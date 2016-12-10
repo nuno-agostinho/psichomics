@@ -495,16 +495,16 @@ infoServer <- function(input, output, session) {
         
         # Select gene in case there is more than one available
         gene <- parseEvent(event)$gene[[1]]
-        if (length(gene) > 1) {
-            output$geneSelection <- renderUI({
+        output$geneSelection <- renderUI({
+            if (length(gene) > 1) {
                 fixedRow(
                     column(3, h5(style=" margin-top: 0;",
                                  "Select one of the genes that may be",
                                  "associated with the event:")),
                     column(3, selectizeInput(ns("selectedGene"), NULL, 
                                              choices=gene)))
-            })
-        }
+            }
+        })
     })
     
     observe({
@@ -517,9 +517,9 @@ infoServer <- function(input, output, session) {
         assembly <- getAssemblyVersion()
         grch37   <- assembly == "hg19"
         
-        gene <- input$selectedGene
-        if (is.null(gene)) gene <- parsed$gene[[1]]
-        if (length(gene) > 1) return(NULL)
+        gene <- parsed$gene[[1]]
+        if (length(gene) > 1)
+            gene <- input$selectedGene
         
         info <- tryCatch(queryEnsemblByGene(gene, species=species, 
                                             assembly=assembly), error=return)
@@ -650,12 +650,11 @@ infoServer <- function(input, output, session) {
     # Render relevant articles according to available gene
     output$articles <- renderUI({
         event <- getEvent()
+        gene <- parseEvent(event)$gene[[1]]
+        if (length(gene) > 1)
+            gene <- input$selectedGene
         
-        gene <- input$selectedGene
         if (is.null(gene))
-            gene <- parseEvent(event)$gene[[1]]
-        
-        if (is.null(gene) || length(gene) > 1)
             return(NULL)
         else {
             category <- unlist(strsplit(getCategory(), " "))

@@ -1,3 +1,20 @@
+1.0.3
+=====
+    
+    * Bug fixes regarding gene annotation:
+        - Fix disabled gene selection when choosing a splicing event associated with a single gene after selecting an event related to multiple genes
+        - Fix display of PubMed articles related to previously selected gene when selecting a single-gene-associated event after selecting an event related to multiple genes
+    * Bug fixes regarding groups:
+        - Fix groups by rows not working
+        - Fix group selection not working when only one group exists
+        - Improve argument name of getGroupsFrom()
+    * Other minor improvements
+
+1.0.2
+=====
+
+    * Fix UTF-8 encoding in author list
+
 1.0.1
 =====
 

@@ -118,16 +118,20 @@ getAssemblyVersion <- function(category = getCategory())
 #' @param dataset Character: data set (e.g. "Clinical data")
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
-#' @param full Boolean: return all the information on groups (TRUE) or just the
-#' group names and respective indexes (FALSE)? FALSE by default
+#' @param complete Boolean: return all the information on groups (TRUE) or just 
+#' the group names and respective indexes (FALSE)? FALSE by default
 #' 
 #' @return Matrix with groups of a given dataset
-getGroupsFrom <- function(dataset, category = getCategory(), full=FALSE) {
+getGroupsFrom <- function(dataset, category = getCategory(), complete=FALSE) {
     groups <- getGlobal(category, dataset, "groups")
-    if (full)
+    if (complete)
         return(groups)
-    else
-        return(groups[, "Rows"])
+    else {
+        g <- groups[, "Rows", drop=TRUE]
+        if (length(g) == 1)
+            names(g) <- rownames(groups)
+        return(g)
+    }
 }
 
 #' Get clinical matches from a given data type
