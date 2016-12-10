@@ -1,7 +1,8 @@
 Package: psichomics
 Title: Graphical Interface for Alternative Splicing Quantification, Analysis and
     Visualisation
-Version: 1.0.1
+Version: 1.0.2
+Encoding: UTF-8
 Authors@R: c(
     person("Nuno", "Saraiva Agostinho", , "nunodanielagostinho@gmail.com", 
            role = c("aut", "cre")),
@@ -12,10 +13,10 @@ Authors@R: c(
     person("Teresa", "Maia", role="ctb"),
     person("Mariana", "Ferreira", role="ctb"),
     person("Ana Carolina", "Leote", role="ctb"))
-Description: Package with a Shiny-based graphical interface for the integrated 
-    analysis of alternative splicing data from The Cancer Genome Atlas (TCGA). 
-    This tool interactively performs survival, principal components and 
-    differential splicing analyses with direct incorporation of clinical 
+Description: Package with a Shiny-based graphical interface for the integrated
+    analysis of alternative splicing data from The Cancer Genome Atlas (TCGA).
+    This tool interactively performs survival, principal components and
+    differential splicing analyses with direct incorporation of clinical
     features (such as tumour stage or survival) associated with TCGA samples.
 Depends:
     R (>= 3.3),
