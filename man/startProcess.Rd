@@ -10,7 +10,7 @@ startProcess(id)
 \item{id}{Character: button identifier}
 }
 \value{
-Time the process started
+Start time of the process
 }
 \description{
 Style button to show processing is in progress

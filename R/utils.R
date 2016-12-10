@@ -170,7 +170,7 @@ processButton <- function(id, label, ..., class="btn-primary") {
 #' 
 #' @param id Character: button identifier
 #' @importFrom shinyjs show
-#' @return Time the process started
+#' @return Start time of the process
 startProcess <- function(id) {
     disable(id)
     show(paste0(id, "Loading"))
@@ -235,7 +235,7 @@ getPatientFromSample <- function(sampleId, clinical, prefix="^tcga",
         # All matched IDs will save their respective rows
         clinicalRows[lapply(match, length) != 0] <- unlist(match)
     }
-    # Remove non-matching IDs
+    # Remove non-matching identifiers
     if (rmNoMatches) clinicalRows <- clinicalRows[!is.na(clinicalRows)]
     return(clinicalRows)
 }
