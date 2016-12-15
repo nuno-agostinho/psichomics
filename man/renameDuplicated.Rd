@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{renameDuplicated}
 \alias{renameDuplicated}
-\title{Rename vector to avoid duplicated values with comparison}
+\title{Rename vector to avoid duplicated values with another vector}
 \usage{
 renameDuplicated(check, comp)
 }
@@ -16,7 +16,8 @@ Character vector with renamed values if duplicated; else, it
 returns the usual values. It doesn't return the comparator values.
 }
 \description{
-Renames values by adding an index to the end of duplicates.
+Renames values by adding an index to the end of duplicates. This allows to
+prepare unique values in two vectors before a merge, for instance.
 }
 \examples{
 psichomics:::renameDuplicated(check = c("blue", "red"), comp = c("green",
