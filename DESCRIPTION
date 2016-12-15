@@ -24,9 +24,11 @@ License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 5.0.1
 Imports:
+    assertthat,
     AnnotationHub,
     data.table,
     digest,
+    dplyr,
     DT (>= 0.2),
     fastmatch,
     highcharter (>= 0.4.0),
