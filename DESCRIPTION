@@ -1,5 +1,6 @@
 Package: psichomics
-Title: Graphical Interface for Alternative Splicing Quantification, Analysis and Visualisation
+Title: Graphical Interface for Alternative Splicing Quantification, Analysis and
+    Visualisation
 Version: 1.0.3
 Encoding: UTF-8
 Authors@R: c( person("Nuno", "Saraiva Agostinho", ,
@@ -10,35 +11,80 @@ Authors@R: c( person("Nuno", "Saraiva Agostinho", ,
         role="ctb"), person("Teresa", "Maia", role="ctb"),
         person("Mariana", "Ferreira", role="ctb"), person("Ana
         Carolina", "Leote", role="ctb"))
-Description: Package with a Shiny-based graphical interface for the integrated 
-    analysis of alternative splicing data from The Cancer Genome Atlas (TCGA). 
-    This tool interactively performs survival, principal components and 
-    differential splicing analyses with direct incorporation of clinical 
+Description: Package with a Shiny-based graphical interface for the integrated
+    analysis of alternative splicing data from The Cancer Genome Atlas (TCGA).
+    This tool interactively performs survival, principal components and
+    differential splicing analyses with direct incorporation of clinical
     features (such as tumour stage or survival) associated with TCGA samples.
-Depends: R (>= 3.3), shiny (>= 0.14), shinyBS
+Depends:
+    R (>= 3.3),
+    shiny (>= 0.14),
+    shinyBS
 License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 5.0.1
-Imports: AnnotationHub, data.table, digest, DT (>= 0.2), fastmatch,
-        highcharter (>= 0.4.0), httr, jsonlite, miscTools, plyr,
-        R.utils, shinyjs, stats, survival, Sushi, tools, utils, XML,
-        methods
-Suggests: testthat, knitr, parallel, devtools, rmarkdown, dplyr,
-        gplots, stringr, covr, car
+Imports:
+    AnnotationHub,
+    data.table,
+    digest,
+    DT (>= 0.2),
+    fastmatch,
+    highcharter (>= 0.4.0),
+    httr,
+    jsonlite,
+    miscTools,
+    plyr,
+    R.utils,
+    shinyjs,
+    stats,
+    survival,
+    Sushi,
+    tools,
+    utils,
+    XML,
+    methods
+Suggests:
+    testthat,
+    knitr,
+    parallel,
+    devtools,
+    rmarkdown,
+    dplyr,
+    gplots,
+    stringr,
+    covr,
+    car
 VignetteBuilder: knitr
-Collate: 'analysis.R' 'analysis_diffSplicing.R'
-        'analysis_diffSplicing_event.R' 'analysis_diffSplicing_table.R'
-        'analysis_information.R' 'analysis_pca.R' 'analysis_survival.R'
-        'analysis_template.R' 'utils.R' 'globalAccess.R' 'app.R'
-        'data.R' 'formats.R' 'data_firebrowse.R'
-        'data_inclusionLevels.R' 'data_local.R' 'events_suppa.R'
-        'events_vastTools.R' 'events_miso.R' 'events_mats.R' 'events.R'
-        'formats_firehoseGeneExpression.R'
-        'formats_firehoseJunctionQuantification.R'
-        'formats_firehoseMergeClinical.R' 'groups.R' 'settings.R'
+Collate:
+    'analysis.R'
+    'analysis_diffSplicing.R'
+    'analysis_diffSplicing_event.R'
+    'analysis_diffSplicing_table.R'
+    'analysis_information.R'
+    'analysis_pca.R'
+    'analysis_survival.R'
+    'analysis_template.R'
+    'utils.R'
+    'globalAccess.R'
+    'app.R'
+    'data.R'
+    'formats.R'
+    'data_firebrowse.R'
+    'data_inclusionLevels.R'
+    'data_local.R'
+    'events_suppa.R'
+    'events_vastTools.R'
+    'events_miso.R'
+    'events_mats.R'
+    'events.R'
+    'formats_firehoseGeneExpression.R'
+    'formats_firehoseJunctionQuantification.R'
+    'formats_firehoseMergeClinical.R'
+    'groups.R'
+    'settings.R'
 biocViews: Sequencing, RNASeq, AlternativeSplicing,
-        DifferentialSplicing, Transcription, GUI, PrincipalComponent,
-        Survival, BiomedicalInformatics, Transcriptomics,
-        Visualization, MultipleComparison
+    DifferentialSplicing, Transcription, GUI, PrincipalComponent,
+    Survival, BiomedicalInformatics, Transcriptomics,
+    Visualization, MultipleComparison
 URL: https://github.com/nuno-agostinho/psichomics
 BugReports: https://github.com/nuno-agostinho/psichomics/issues
