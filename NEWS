@@ -2,7 +2,7 @@
 =====
 
     * Correctly load files and quantify alternative splicing for PRAD, OV and
-    PAAD
+    PAAD tumour types from The Cancer Genome Atlas (TCGA)
     * Fix author names and add contributor
 
 1.0.3
