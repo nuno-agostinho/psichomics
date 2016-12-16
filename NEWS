@@ -1,9 +1,21 @@
+1.0.4
+=====
+
+    * Correctly load files and quantify alternative splicing for PRAD, OV and
+    PAAD tumour types from The Cancer Genome Atlas (TCGA)
+    * Fix session disconnecting when exporting plots in Firefox
+    * Improve text and behaviour of fields to select datasets and AS events
+    * Fix author names and add contributor
+
 1.0.3
 =====
     
     * Bug fixes regarding gene annotation:
-        - Fix disabled gene selection when choosing a splicing event associated with a single gene after selecting an event related to multiple genes
-        - Fix display of PubMed articles related to previously selected gene when selecting a single-gene-associated event after selecting an event related to multiple genes
+        - Fix disabled gene selection when choosing a splicing event associated
+          with a single gene after selecting an event related to multiple genes
+        - Fix display of PubMed articles related to previously selected gene 
+          when selecting a single-gene-associated event after selecting an event
+          related to multiple genes
     * Bug fixes regarding groups:
         - Fix groups by rows not working
         - Fix group selection not working when only one group exists

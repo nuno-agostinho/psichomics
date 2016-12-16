@@ -33,4 +33,25 @@ test_that("Return the same check values if argument comp is of length 0", {
     comp <- character(0)
     res <- renameDuplicated(check, comp)
     expect_equal(res, check)
+    
+    check <- c("cat", "mouse", "cat")
+    comp <- character(0)
+    res <- renameDuplicated(check, comp)
+    expect_equal(res, c("cat", "mouse", "cat (1)"))
+})
+
+test_that("Return renamed vector in the original order", {
+    check <- c("cat", "mouse")
+    comp  <- c("cat")
+    res <- renameDuplicated(check, comp)
+    expect_equal(res, c("cat (1)", "mouse"))
+})
+
+test_that("Return renamed vector with no duplicates", {
+    check <- c("cat", "mouse", "cat")
+    comp  <- c("cat")
+    res <- renameDuplicated(check, comp)
+    expect_equal(res, c("cat (1)", "mouse", "cat (2)"))
+    
+    
 })

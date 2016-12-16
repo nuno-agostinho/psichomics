@@ -35,7 +35,7 @@ loadRequiredData <- function(dataType) {
     panel <- switch(dataType,
                     "Clinical data"="TCGA",
                     "Junction quantification"="TCGA",
-                    "Inclusion levels"="alternative"
+                    "Inclusion levels"="Alternative splicing"
     )
     
     return(sprintf("showDataPanel('%s');", panel))
