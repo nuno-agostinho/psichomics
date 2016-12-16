@@ -883,9 +883,11 @@ uniqueBy <- function(data, ...) {
 #' @return A \code{highcharts} object with an export button
 export_highcharts <- function(hc, y=-45, verticalAlign="bottom", 
                               fill="transparent", text="Export") {
-    hc_exporting(hc, enabled=TRUE, buttons=list(
-        contextButton=list(text=text, y=y, verticalAlign=verticalAlign, 
-                           theme=list(fill=fill))))
+    hc_exporting(hc, enabled=TRUE,
+                 formAttributes = list(target = "_blank"),
+                 buttons=list(contextButton=list(text=text, y=y,
+                                                 verticalAlign=verticalAlign, 
+                                                 theme=list(fill=fill))))
 }
 
 #' Modified function of highcharter::hc_add_series_scatter
