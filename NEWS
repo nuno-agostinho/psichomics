@@ -4,6 +4,7 @@
     * Correctly load files and quantify alternative splicing for PRAD, OV and
     PAAD tumour types from The Cancer Genome Atlas (TCGA)
     * Fix session disconnecting when exporting plots in Firefox
+    * Improve text and behaviour of fields to select datasets and AS events
     * Fix author names and add contributor
 
 1.0.3
