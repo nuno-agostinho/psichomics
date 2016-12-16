@@ -121,7 +121,7 @@ navSelectize <- function(id, label, placeholder=label) {
                 '$("#', id, '")[0].style.display = "block";',
                 '$("#', id, ' > div > select")[0].selectize.clear();',
                 '$("#', id, ' > div > select")[0].selectize.focus();'))), 
-        tags$br(), textOutput(value)))
+        tags$br(), uiOutput(value)))
 }
 
 #' Modified tabPanel function to show icon and title
@@ -182,8 +182,8 @@ appUI <- function() {
     nav[[3]][[1]][[3]][[1]][[3]][[2]] <- tagAppendChild(
         nav[[3]][[1]][[3]][[1]][[3]][[2]], 
         tags$ul(class="nav navbar-nav navbar-right",
-                navSelectize("selectizeCategory", "Selected data category",
-                             "Select data category"),
+                navSelectize("selectizeCategory", "Selected dataset",
+                             "Select dataset"),
                 navSelectize("selectizeEvent", "Selected splicing event",
                              "Search by gene, chromosome and coordinates")))
     shinyUI(nav)
@@ -198,8 +198,11 @@ appUI <- function() {
 #' @param session Session object
 #' 
 #' @importFrom shiny observe stopApp
+#' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 appServer <- function(input, output, session) {
+    ns <- session$ns
+    
     getServerFunctions("app", priority=c("dataServer", "analysesServer"))
     
     # Update selectize input to show available categories
@@ -236,25 +239,26 @@ appServer <- function(input, output, session) {
             # Replace with empty list since NULLs are dropped
             updateSelectizeInput(session, "selectizeEventElem", choices=list(),
                                  selected=list())
+            setEvent(NULL)
         }
     })
     
     # Show the selected category
-    output$selectizeCategoryValue <- renderText({
+    output$selectizeCategoryValue <- renderUI({
         category <- getCategory()
         if (is.null(category))
-            return("No data loaded")
+            return("No dataset loaded")
         else if(category == "")
-            return("No category selected")
+            return("No dataset selected")
         else
             return(category)
     })
     
     # Show the selected event
-    output$selectizeEventValue <- renderText({
+    output$selectizeEventValue <- renderUI({
         event <- getEvent()
         if (is.null(event))
-            return("No data loaded")
+            return("No events quantified")
         else if (event == "")
             return("No event selected")
         else
