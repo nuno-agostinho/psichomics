@@ -514,8 +514,9 @@ loadFirehoseData <- function(folder=NULL,
     folders <- fullPath(base[!md5])
     folders <- split(folders, categories)
     
-    # Load the files
+    # Load the files (but discard empty files with no rows)
     loaded <- lapply(folders, loadFirehoseFolders, exclude, progress)
+    loaded <- lapply(loaded, function(i) Filter(nrow, i))
     loaded <- processDatasetNames(loaded)
     return(loaded)
 }
