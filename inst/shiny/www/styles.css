@@ -1,6 +1,9 @@
 /* Avoids fixed-top navbar from obscuring content */
 body { padding-top: 70px; }
 
+/* Adds a pointer to every link (even without href defined) */
+a { cursor: pointer; }
+
 /* Hides shadows from well panels */
 .well {
     -moz-box-shadow: none;
