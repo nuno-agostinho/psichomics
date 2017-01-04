@@ -13,7 +13,7 @@ diffSplicingEventUI <- function(id) {
         sidebarLayout(
             sidebarPanel(
                 tags$b("Clinical groups on which to perform the analyses:"),
-                tags$br(), tags$a(href="#", onclick="changeDiffSplicingGroup()",
+                tags$br(), tags$a(onclick="changeDiffSplicingGroup()",
                                   uiOutput(ns("groupsCol"))),
                 tags$br(),
                 numericInput(ns("bandwidth"), "Density bandwidth", 0.01, 

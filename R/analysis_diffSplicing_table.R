@@ -304,7 +304,7 @@ optimSurvDiff <- function(session, input, output) {
             if (is.null(splicingEvent) || is.na(splicingEvent)) stat <- NULL
             output[[paste0("eventText", i)]] <- renderUI(
                 tags$a(
-                    gsub("_", " ", splicingEvent), href="#",
+                    gsub("_", " ", splicingEvent),
                     class="label label-default", style="display: inline-block;",
                     style="white-space: normal;", 
                     onclick=paste0("showSurvCutoff('", splicingEvent, "')")))
@@ -418,7 +418,7 @@ diffSplicingTableServer <- function(input, output, session) {
         if (is.null(psi)) return(tagList(
             helpText(icon("exclamation-circle"), 
                      "No alternative splicing quantification loaded.",
-                     tags$a(href="#", "Load or calculate it.",
+                     tags$a("Load or calculate it.",
                             onclick=loadRequiredData("Inclusion levels")))))
         
         # Separate samples by their type
