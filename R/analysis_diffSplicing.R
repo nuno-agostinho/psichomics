@@ -432,6 +432,39 @@ diffSplicingServer <- function(input, output, session) {
                                             "diffSplicingEventServer"))
 }
 
+#' Prepare groups of alternative splicing quantification for differential
+#' splicing analyses
+#' 
+#' @param psi Data frame or matrix: alternative splicing event quantification
+#' @param groups Character: groups of interest
+#' 
+#' @return Numeric vector containing alternative splicing quantification with
+#' the respective group as name
+prepareGroupsDiffSplicing <- function(psi, groups) {
+    if (isTRUE(attr(groups, "samples"))) {
+        # Separate samples by their groups
+        ids <- names(psi)
+        gr <- parseSampleGroups(ids)
+        gr[!gr %in% groups] <- NA
+    } else {
+        # Separate sample by clinical groups from patients
+        clinicalGroups <- getGroupsFrom("Clinical data")[groups]
+        
+        # Match groups from patients with respective samples
+        matches <- getClinicalMatchFrom("Inclusion levels")
+        gr <- rep(NA, ncol(psi))
+        names(gr) <- colnames(psi)
+        
+        for (g in seq_along(clinicalGroups)) {
+            m <- matches %in% clinicalGroups[[g]]
+            gr[m] <- names(clinicalGroups)[[g]]
+        }
+    }
+    # Remove samples with no groups
+    valid      <- !is.na(gr)
+    return( list(psi=psi[valid], groups=gr[valid]) )
+}
+
 attr(diffSplicingUI, "loader") <- "analysis"
 attr(diffSplicingUI, "name") <- "Differential splicing analysis"
 attr(diffSplicingServer, "loader") <- "analysis"
