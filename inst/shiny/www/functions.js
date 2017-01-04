@@ -1,4 +1,33 @@
 /**
+ * Update location according to browser navigation
+ * 
+ * Inspired by code available at
+ * https://github.com/daattali/advanced-shiny/blob/master/navigate-history
+ */
+shinyjs.init = function() {
+    window.onpopstate = function (event) {
+        Shiny.onInputChange('appLocation', location.search);
+    }
+}
+
+/**
+ * Update URL to reflect the current browser navigation
+ * @param {Object} params Pair key-value object containing URL parameters
+ * 
+ * Inspired by code available at
+ * https://github.com/daattali/advanced-shiny/blob/master/navigate-history
+ */
+updateHistory = function(params) {
+    var queryString = [];
+    for (var key in params) {
+        queryString.push(encodeURIComponent(key) + '=' + 
+            encodeURIComponent(params[key]));
+    }
+    queryString = '?' + queryString.join('&');
+    history.pushState(null, null, queryString)
+}
+
+/**
  * Change active tab to the Data panel and expand the panel with the given value
  * @param {String} panelVal Value of the panel to open
  */

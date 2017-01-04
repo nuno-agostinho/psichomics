@@ -4,14 +4,14 @@
 \alias{modTabPanel}
 \title{Modified tabPanel function to show icon and title}
 \usage{
-modTabPanel(title, icon = NULL, ..., menu = FALSE)
+modTabPanel(title, ..., icon = NULL, menu = FALSE)
 }
 \arguments{
 \item{title}{Character: title of the tab}
 
-\item{icon}{Character: name of the icon}
-
 \item{...}{HTML elements to pass to tab}
+
+\item{icon}{Character: name of the icon}
 
 \item{menu}{Boolean: create a dropdown menu-like tab? FALSE by default}
 }
