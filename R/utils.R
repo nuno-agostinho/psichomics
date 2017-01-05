@@ -900,6 +900,8 @@ export_highcharts <- function(hc, y=-45, verticalAlign="bottom",
 #' @importFrom dplyr data_frame mutate
 #' @importFrom assertthat assert_that
 #' @importFrom highcharter colorize list_parse hc_add_series
+#' 
+#' @return Highchart object containing information for a scatter plot
 hc_add_series_scatter <- function (hc, x, y, z = NULL, color = NULL, 
                                    label = NULL, showInLegend = FALSE, ...) 
 {
