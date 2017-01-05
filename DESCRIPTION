@@ -51,7 +51,6 @@ Suggests:
     parallel,
     devtools,
     rmarkdown,
-    dplyr,
     gplots,
     stringr,
     covr,

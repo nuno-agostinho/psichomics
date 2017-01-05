@@ -7,11 +7,11 @@
 browserHistory(navId, input, session)
 }
 \arguments{
+\item{navId}{Character: identifier of the navigation bar}
+
 \item{input}{Input object}
 
 \item{session}{Session object}
-
-\item{output}{Output object}
 }
 \value{
 NULL (this function is used to modify the Shiny session's state)
