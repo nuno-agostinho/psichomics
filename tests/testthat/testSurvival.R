@@ -16,11 +16,13 @@ test_that("Test processing survival terms", {
     survTerms <- processSurvTerms(clinical, censoring="right", event, timeStart,
                                   formulaStr=formulaStr)
     expect_is(survTerms, "list")
-    expect_length(survTerms, 2)
+    expect_length(survTerms, 3)
     expect_is(survTerms$form, "formula")
     expect_equal(as.character(survTerms$form)[[3]], formulaStr)
     expect_is(survTerms$survTime, "data.frame")
-    expect_identical(survTerms$survTime[5:8], clinical)
+    expect_true( all(survTerms$survTime[5:8] == clinical, na.rm=TRUE) )
+    expect_is(survTerms$scale, "character")
+    expect_equal(survTerms$scale, "days")
     
     # Check events
     event <- !is.na(clinical$patient.days_to_death)
@@ -112,4 +114,47 @@ test_that("Plot survival curves separated by PSI cut-off", {
     expect_match(plot$x$hc_opts$subtitle$text, as.character(pvalue))
     expect_equal(plot$x$hc_opts$chart$zoomType, "xy")
     expect_length(plot$x$hc_opts$series, 2)
+})
+
+test_that("Fit a Cox PH model for PSI cut-off separation", {
+    cutoff <- 0.5
+    group  <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6) >= cutoff
+    
+    group[group == "TRUE"]  <- paste("Inclusion levels >=", cutoff)
+    group[group == "FALSE"] <- paste("Inclusion levels <", cutoff)
+    
+    timeStart  <- "days_to_death"
+    event      <- "days_to_death"
+    expect_warning(
+        survTerms <- processSurvTerms(clinical, censoring="right", event,
+                                      timeStart, group=group, coxph=TRUE))
+    
+    expect_is(survTerms, "coxph")
+    expect_equal(survTerms$n, nrow(clinical))
+    
+    event <- !is.na(clinical$patient.days_to_death)
+    expect_equal(survTerms$nevent, sum(event))
+})
+
+test_that("Plot survival curves with no separation", {
+    cutoff <- 0.6
+    group  <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)/2 >= cutoff
+    
+    group[group == "TRUE"]  <- paste("Inclusion levels >=", cutoff)
+    group[group == "FALSE"] <- paste("Inclusion levels <", cutoff)
+    
+    timeStart  <- "days_to_death"
+    event      <- "days_to_death"
+    survTerms <- processSurvTerms(clinical, censoring="right", event, timeStart,
+                                  group=group)
+    surv <- survfit(survTerms)
+    pvalue <- testSurvival(survTerms)
+    plot <- plotSurvivalCurves(surv, pvalue=pvalue)
+    
+    expect_is(plot, "highchart")
+    expect_equal(plot$x$type, "chart")
+    expect_equivalent(plot$x$hc_opts$yAxis[c("min", "max")], c(0, 1))
+    expect_match(plot$x$hc_opts$subtitle$text, "NA")
+    expect_equal(plot$x$hc_opts$chart$zoomType, "xy")
+    expect_length(plot$x$hc_opts$series, 1)
 })

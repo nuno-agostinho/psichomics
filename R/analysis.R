@@ -68,26 +68,30 @@ analysesUI <- function(id, tab) {
 
 #' Process survival data to calculate survival curves
 #' 
-#' @param timeStart Character: name of column containing starting time of the
-#' interval or follow up time
-#' @param timeStop Character: name of column containing ending time of the 
-#' interval
-#' @param event Character: name of column containing time of the event of
-#' interest
-#' @param followup Character: name of column containing follow up time
+#' @inheritParams getColumnsTime
 #' @param group Character: group of each individual
 #' @param clinical Data frame: clinical data
+#' @param survTime survTime object: Times to follow up, time start, time stop
+#' and event (optional)
 #' 
 #' @details The event time will only be used to determine whether the event has
-#' happened (1) or not in case of NAs (0)
+#' occurred (1) or not (0) in case of missing values.
+#' 
+#' If \code{survTime} is NULL, the survival times will be fetch from the
+#' clinical dataset according to the names given in \code{timeStart},
+#' \code{timeStop}, \code{event} and \code{followup}. This can became quite slow
+#' when using the function in a for loop. If these variables are constant, 
+#' consider running the function \code{\link{getColumnsTime}} to retrieve the
+#' time of such columns once and hand the result to the \code{survTime} argument
+#' of this function.
 #' 
 #' @return Data frame with terms needed to calculate survival curves
 processSurvData <- function(event, timeStart, timeStop, followup, group, 
-                            clinical) {
-    cols <- c(followup = followup, start = timeStart,
-              stop = timeStop, event = event)
-    survTime <- lapply(cols, timePerPatient, clinical)
-    survTime <- as.data.frame(survTime)
+                            clinical, survTime=NULL) {
+    if ( is.null(survTime) ) {
+        survTime <- getColumnsTime(event, timeStart, timeStop, clinical,
+                                   followup)
+    }
     
     # Create new time using the starting time replacing the NAs with
     # days to last follow up
@@ -106,6 +110,29 @@ processSurvData <- function(event, timeStart, timeStop, followup, group,
         survTime$time2 <- survTime$stop
         survTime$time2[nas] <- survTime$followup[nas]
     }
+    return(survTime)
+}
+
+#' Retrieve the time for given columns in a clinical dataset
+#' 
+#' @param timeStart Character: name of column containing starting time of the
+#' interval or follow up time
+#' @param timeStop Character: name of column containing ending time of the 
+#' interval
+#' @param event Character: name of column containing time of the event of
+#' interest
+#' @param followup Character: name of column containing follow up time
+#' @param clinical Data frame: clinical data
+#' 
+#' @return Data frame containing the time for the given columns
+#' 
+#' @export
+getColumnsTime <- function(event, timeStart, timeStop, clinical,
+                           followup="days_to_last_followup") {
+    cols <- c(followup=followup, start=timeStart, stop=timeStop, event=event)
+    survTime <- lapply(cols, timePerPatient, clinical)
+    survTime <- as.data.frame(survTime)
+    class(survTime) <- c("data.frame", "survTime")
     return(survTime)
 }
 
@@ -158,9 +185,6 @@ updateClinicalParams <- function(session) {
 }
 
 #' Process survival curves terms to calculate survival curves
-#' 
-#' @details \code{timeStop} is only considered if \code{censoring} is either
-#' \code{interval} or \code{interval2}
 #'
 #' @inheritParams processSurvData
 #' @param censoring Character: censor using "left", "right", "interval" or
@@ -170,9 +194,22 @@ updateClinicalParams <- function(session) {
 #' @param formulaStr Character: formula to use
 #' @param coxph Boolean: fit a Cox proportional hazards regression model? FALSE 
 #' by default
+#' @param survTime survTime object: times to follow up, time start, time stop
+#' and event (optional)
 #' 
 #' @importFrom stats formula
 #' @importFrom survival coxph Surv
+#'
+#' @details \code{timeStop} is only considered if \code{censoring} is either
+#' \code{interval} or \code{interval2}
+#'
+#' If \code{survTime} is NULL, the survival times will be fetch from the
+#' clinical dataset according to the names given in \code{timeStart},
+#' \code{timeStop}, \code{event} and \code{followup}. This can became quite slow
+#' when using the function in a for loop. If these variables are constant, 
+#' consider running the function \code{\link{getColumnsTime}} to retrieve the
+#' time of such columns once and hand the result to the \code{survTime} argument
+#' of this function.
 #'
 #' @return A list with a \code{formula} object and a data frame with terms
 #' needed to calculate survival curves
@@ -197,7 +234,7 @@ updateClinicalParams <- function(session) {
 processSurvTerms <- function(clinical, censoring, event, timeStart, 
                              timeStop=NULL, group=NULL, formulaStr=NULL, 
                              coxph=FALSE, scale="days",
-                             followup="days_to_last_followup") {
+                             followup="days_to_last_followup", survTime=NULL) {
     # Ignore timeStop if interval-censoring is not selected
     if (!grepl("interval", censoring, fixed=TRUE) || timeStop == "") 
         timeStop <- NULL
@@ -206,26 +243,40 @@ processSurvTerms <- function(clinical, censoring, event, timeStart,
     formulaSurv <- ifelse(is.null(timeStop),
                           "Surv(time/%s, event, type=censoring) ~", 
                           "Surv(time/%s, time2, event, type=censoring) ~")
-    scale <- switch(scale, days=1, weeks=7, months=30.42, years=365.25)
+    scaleStr <- scale
+    scale <- switch(scaleStr, days=1, weeks=7, months=30.42, years=365.25)
     formulaSurv <- sprintf(formulaSurv, scale)
     
-    survTime <- processSurvData(event, timeStart, timeStop, followup, group, 
-                                clinical)
+    survData <- processSurvData(event, timeStart, timeStop, followup, group, 
+                                clinical, survTime)
     
     # Estimate survival curves by groups or using formula
     if (formulaStr == "" || is.null(formulaStr)) {
         formulaTerms <- "groups"
     } else {
         formulaTerms <- formulaStr
-        survTime <- cbind(survTime, clinical)
+        factor <- sapply(clinical, is.factor)
+        clinical[factor] <- lapply(clinical[factor], as.character)
+        survData <- cbind(survData, clinical)
     }
     
     form <- formula(paste(formulaSurv, formulaTerms))
     
-    if (coxph)
-        res <- coxph(form, data=survTime)
-    else
-        res <- list(form=form, survTime=survTime)
+    if (coxph) {
+        res <- coxph(form, data=survData)
+        
+        if (!is.null(res$xlevels$groups)) {
+            # Correct group names
+            name <- res$xlevels$groups[-1]
+            names(res$means) <- name
+            names(res$coefficients)  <- name
+            # names(res$wald.test)  <- name
+        }
+    } else {
+        res <- list(form=form, survTime=survData)
+    }
+    
+    res$scale <- scaleStr
     class(res) <- c("survTerms", class(res))
     return(res)
 }
@@ -261,7 +312,16 @@ processSurvTerms <- function(clinical, censoring, event, timeStart,
 #' require("survival")
 #' survfit(survTerms)
 survfit.survTerms <- function(survTerms, ...) {
-    survfit(survTerms$form, data=survTerms$survTime, ...)
+    res <- survfit(survTerms$form, data=survTerms$survTime, ...)
+    res$scale <- survTerms$scale
+    
+    # Correct group names
+    groups <- deparse(survTerms$form[[3]])
+    if (!is.null(res$strata) && groups == "groups") {
+        name <- paste0("^", groups, "=")
+        names(res$strata) <- gsub(name, "", names(res$strata))
+    }
+    return(res)
 }
 
 #' Test difference between two or more survival curves using processed survival 
@@ -315,7 +375,14 @@ survdiff.survTerms <- function(survTerms, ...) {
 #' fit <- survfit(Surv(time, status) ~ x, data = aml)
 #' plotSurvivalCurves(fit)
 plotSurvivalCurves <- function(surv, mark=TRUE, interval=FALSE, pvalue=NULL, 
-                               title="Survival analysis", scale="days") {
+                               title="Survival analysis", scale=NULL) {
+    if (is.null(scale)) {
+        if (is.null(surv$scale))
+            scale <- "days"
+        else
+            scale <- surv$scale
+    }
+    
     hc <- hchart(surv, ranges=interval, markTimes=mark) %>%
         hc_chart(zoomType="xy") %>%
         hc_title(text=title) %>%
@@ -349,9 +416,10 @@ processSurvival <- function(session, ...) {
     # Calculate survival curves
     survTerms <- tryCatch(processSurvTerms(...), error=return)
     if ("simpleError" %in% class(survTerms)) {
-        if (survTerms[[1]] == "The formula field can't be empty") {
-            errorModal(session, "Error in formula",
-                       "The formula field can't be empty.")
+        if (survTerms[[1]] == paste("contrasts can be applied only to",
+                                    "factors with 2 or more levels")) {
+            errorModal(session, "Formula error",
+                       "Cox models can only be applied to 2 or more groups.")
         } else {
             errorModal(session, "Formula error",
                        "Maybe you misplaced a ", tags$kbd("+"), ", ",
@@ -432,7 +500,7 @@ labelBasedOnCutoff <- function (data, cutoff, label=NULL, gte=TRUE) {
         str2 <- "<="
     }
     group <- comp(data, cutoff)
-
+    
     # Assign a value based on the inclusion levels cut-off
     if (is.null(label)) {
         group[group == "TRUE"]  <- paste(str1, cutoff)
@@ -480,6 +548,7 @@ testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
     }
     
     pvalue <- testSurvival(survTerms)
+    if (is.na(pvalue)) pvalue <- 1
     return(pvalue)
 }
 
