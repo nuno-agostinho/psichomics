@@ -804,7 +804,7 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
             submark <- mark
         } else {
             this <- data$group == name
-            df <- data[this]
+            df <- data[this, ]
             submark <- mark[this]
         }
         
