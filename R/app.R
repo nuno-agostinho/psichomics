@@ -195,11 +195,11 @@ appUI <- function() {
 #' and logic adapted from
 #' \url{https://github.com/daattali/advanced-shiny/blob/master/navigate-history}
 #' 
+#' @param navId Character: identifier of the navigation bar
 #' @param input Input object
-#' @param output Output object
 #' @param session Session object
 #' 
-#' @importFrom shiny observe parseQueryString
+#' @importFrom shiny observe parseQueryString updateTabsetPanel
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 browserHistory <- function(navId, input, session) {
