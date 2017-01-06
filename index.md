@@ -62,6 +62,7 @@ Other tutorials coming soon:
 * Developers and other contributors
 
 ## Data Input
+
 ### Download TCGA Data
 You can download data from [The Cancer Genome Atlas (TCGA)][1] using this
 package. Simply choose the cohort of interest, date of the sample, type of 
