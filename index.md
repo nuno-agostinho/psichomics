@@ -59,6 +59,7 @@ The following tutorials are available:
 * [Command-line interface](http://rpubs.com/nuno-agostinho/psichomics-cli-tutorial)
 
 Other tutorials coming soon:
+
 * Developers and other contributors
 
 ## Data Input
