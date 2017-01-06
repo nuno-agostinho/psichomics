@@ -128,7 +128,7 @@ remove the groups.
 All feedback on the program, documentation and associated material is welcome. 
 Please, send any suggestions and comments to the following contact:
 
-> Nuno Saraiva-Agostinho (nunodanielagostinho@gmail.com)
+> Nuno Saraiva-Agostinho ([nunodanielagostinho@gmail.com](mailto:nunodanielagostinho@gmail.com))
 
 > [Nuno Morais Lab, IMM][5]
 
