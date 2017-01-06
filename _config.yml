@@ -1,0 +1,8 @@
+title: Psichomics
+description: R package with a visual interface to quantify, analyse and visualise alternative splicing data
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-minimal
+
+gems:
+  - jekyll-mentions
