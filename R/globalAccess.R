@@ -10,6 +10,10 @@ sharedData <- reactiveValues()
 #' @return Variable containing all data of interest
 getData <- reactive(sharedData$data)
 
+#' Get if history browsing is automatic
+#' @return Boolean: is navigation of browser history automatic?
+getAutoNavigation <- reactive(sharedData$autoNavigation)
+
 #' Get number of cores to use
 #' @return Numeric value with the number of cores to use
 getCores <- reactive(sharedData$cores)
@@ -191,6 +195,12 @@ setGlobal <- function(..., value, sep="_") {
 #' @param data Data frame or matrix to set as data
 #' @return NULL (this function is used to modify the Shiny session's state)
 setData <- function(data) setGlobal("data", value=data)
+
+#' Set if history browsing is automatic
+#' @note Needs to be called inside a reactive function
+#' @param param Boolean: is navigation of browser history automatic?
+#' @return NULL (this function is used to modify the Shiny session's state)
+setAutoNavigation <- function(param) setGlobal("autoNavigation", value=param)
 
 #' Set number of cores
 #' @param cores Character: number of cores

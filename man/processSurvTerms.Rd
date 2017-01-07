@@ -6,7 +6,7 @@
 \usage{
 processSurvTerms(clinical, censoring, event, timeStart, timeStop = NULL,
   group = NULL, formulaStr = NULL, coxph = FALSE, scale = "days",
-  followup = "days_to_last_followup")
+  followup = "days_to_last_followup", survTime = NULL)
 }
 \arguments{
 \item{clinical}{Data frame: clinical data}
@@ -34,6 +34,9 @@ by default}
 "months" or "years"}
 
 \item{followup}{Character: name of column containing follow up time}
+
+\item{survTime}{survTime object: times to follow up, time start, time stop
+and event (optional)}
 }
 \value{
 A list with a \code{formula} object and a data frame with terms
@@ -45,6 +48,14 @@ Process survival curves terms to calculate survival curves
 \details{
 \code{timeStop} is only considered if \code{censoring} is either
 \code{interval} or \code{interval2}
+
+If \code{survTime} is NULL, the survival times will be fetch from the
+clinical dataset according to the names given in \code{timeStart},
+\code{timeStop}, \code{event} and \code{followup}. This can became quite slow
+when using the function in a for loop. If these variables are constant, 
+consider running the function \code{\link{getColumnsTime}} to retrieve the
+time of such columns once and hand the result to the \code{survTime} argument
+of this function.
 }
 \examples{
 clinical <- read.table(text = "2549   NA ii  female

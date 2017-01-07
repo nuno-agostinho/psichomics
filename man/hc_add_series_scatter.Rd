@@ -25,6 +25,9 @@ hc_add_series_scatter(hc, x, y, z = NULL, color = NULL, label = NULL,
 \item{...}{Aditional shared arguments for the data series 
 (\url{http://api.highcharts.com/highcharts#series}).}
 }
+\value{
+Highchart object containing information for a scatter plot
+}
 \description{
 Modified function of highcharter::hc_add_series_scatter
 }

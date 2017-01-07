@@ -5,7 +5,7 @@
 \title{Plot survival curves}
 \usage{
 plotSurvivalCurves(surv, mark = TRUE, interval = FALSE, pvalue = NULL,
-  title = "Survival analysis", scale = "days")
+  title = "Survival analysis", scale = NULL)
 }
 \arguments{
 \item{surv}{Survival object}
