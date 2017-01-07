@@ -13,7 +13,7 @@ diffSplicingEventUI <- function(id) {
         sidebarLayout(
             sidebarPanel(
                 tags$b("Clinical groups on which to perform the analyses:"),
-                tags$br(), tags$a(href="#", onclick="changeDiffSplicingGroup()",
+                tags$br(), tags$a(onclick="changeDiffSplicingGroup()",
                                   uiOutput(ns("groupsCol"))),
                 tags$br(),
                 numericInput(ns("bandwidth"), "Density bandwidth", 0.01, 
@@ -165,16 +165,19 @@ wilcox <- function(psi, groups, stat=NULL) {
     group <- unique(groups)
     len <- length(group)
     
-    if (len != 2) {
-        return(tagList(h4("Wilcoxon test"),
-                       "Can only perform this test on 2 groups."))
-    } else if (!is.null(stat)) {
+    p.value <- NULL
+    if (!is.null(stat)) {
         method      <- stat$`Wilcoxon method`
         statistic   <- stat$`Wilcoxon statistic`
         p.value     <- stat$`Wilcoxon p-value`
         null.value  <- stat$`Wilcoxon null value`
         alternative <- stat$`Wilcoxon alternative`
-        
+    }
+            
+    if (len != 2) {
+        return(tagList(h4("Wilcoxon test"),
+                       "Can only perform this test on 2 groups."))
+    } else if (!is.null(p.value)) {
         adjusted <- grep("Wilcoxon p-value \\(.* adjusted\\)", colnames(stat), 
                          value=TRUE)
         if (length(adjusted) != 0) {
@@ -227,17 +230,20 @@ ttest <- function(psi, groups, stat=NULL) {
     warn <- NULL
     group <- unique(groups)
     len <- length(group)
-    
-    if (len != 2) {
-        return(tagList(h4("Unpaired t-test"),
-                       "Can only perform this test on 2 groups."))
-    } else if (!is.null(stat)) {
+ 
+    p.value <- NULL
+    if (!is.null(stat)) {
         method      <- stat$`T-test method`
         statistic   <- stat$`T-test statistic`
         p.value     <- stat$`T-test p-value`
         null.value  <- stat$`T-test null value`
         alternative <- stat$`T-test alternative`
-        
+    }
+    
+    if (len != 2) {
+        return(tagList(h4("Unpaired t-test"),
+                       "Can only perform this test on 2 groups."))
+    } else if (!is.null(p.value)) {
         adjusted <- grep("T-test p-value \\(.* adjusted\\)", colnames(stat), 
                          value=TRUE)
         if (length(adjusted) != 0) {
@@ -283,15 +289,18 @@ ttest <- function(psi, groups, stat=NULL) {
 #' @importFrom shiny tagList tags h4 br
 #' @return HTML elements
 levene <- function(psi, groups, stat=NULL) {
+    p.value <- NULL
+    if (!is.null(stat)) {
+        statistic <- stat$`Levene statistic`
+        p.value   <- stat$`Levene p-value`
+        non.bootstrap.p.value <- stat$`Levene non bootstrap p-value`
+    }
+    
     len <- length(unique(groups))
     if (len < 2) {
         return(tagList(h4("Levene's Test for Homogeneity of Variances"),
                        "Can only perform this test on 2 or more groups."))
-    } else if (!is.null(stat)) {
-        statistic <- stat$`Levene statistic`
-        p.value   <- stat$`Levene p-value`
-        non.bootstrap.p.value <- stat$`Levene non bootstrap p-value`
-        
+    } else if (!is.null(p.value)) {
         adjusted <- grep("Levene .*p-value \\(.* adjusted\\)", colnames(stat), 
                          value=TRUE)
         if (length(adjusted) == 2) {
@@ -345,13 +354,17 @@ levene <- function(psi, groups, stat=NULL) {
 #' @return HTML elements
 fligner <- function(psi, groups, stat=NULL) {
     len <- length(unique(groups))
+    
+    p.value <- NULL
+    if (!is.null(stat)) {
+        statistic <- stat$`Fligner-Killeen statistic`
+        p.value   <- stat$`Fligner-Killeen p-value`
+    }
+    
     if (len < 2) {
         return(tagList(h4("Fligner-Killeen Test for Homogeneity of Variances"),
                        "Can only perform this test on 2 or more groups."))
-    } else if (!is.null(stat)) {
-        statistic <- stat$`Fligner-Killeen statistic`
-        p.value   <- stat$`Fligner-Killeen p-value`
-
+    } else if (!is.null(p.value)) {
         adjusted <- grep("Fligner-Killeen .*p-value \\(.* adjusted\\)", 
                          colnames(stat), value=TRUE)
         if (length(adjusted) != 0) {
@@ -384,15 +397,19 @@ fligner <- function(psi, groups, stat=NULL) {
 #' @return HTML elements
 kruskal <- function(psi, groups, stat=NULL) {
     len <- length(unique(groups))
-    if (len < 2) {
-        return(tagList(h4("Kruskal test"),
-                       "Can only perform this test on 2 or more groups."))
-    } else if (!is.null(stat)) {
+    
+    p.value <- NULL
+    if (!is.null(stat)) {
         method    <- stat$`Kruskal method`
         statistic <- stat$`Kruskal statistic`
         p.value   <- stat$`Kruskal p-value`
         parameter <- stat$`Kruskal parameter`
-        
+    }
+    
+    if (len < 2) {
+        return(tagList(h4("Kruskal test"),
+                       "Can only perform this test on 2 or more groups."))
+    } else if (!is.null(p.value)) {
         adjusted <- grep("Kruskal p-value \\(.* adjusted\\)", colnames(stat), 
                          value=TRUE)
         if (length(adjusted) != 0) {
@@ -521,47 +538,21 @@ diffSplicingEventServer <- function(input, output, session) {
         psi <- getInclusionLevels()
         col <- getDiffSplicingGroups()
         if (is.null(col) || col=="") return(NULL)
+        output$groupsCol <- renderUI( paste(col, collapse=", ") )
         
-        output$groupsCol <- renderUI({
-            if (identical(col, "samples"))
-                return("sample types")
-            else
-                return(paste(col, collapse=", "))
-        })
-        
-        if (identical(col, "samples")) {
-            # Separate samples by their groups
-            ids <- names(psi)
-            groups <- parseSampleGroups(ids)
-        } else {
-            # Separate sample by clinical groups from patients
-            clinicalGroups <- getGroupsFrom("Clinical data")[col]
-            
-            # Match groups from patients with respective samples
-            matches <- getClinicalMatchFrom("Inclusion levels")
-            groups <- rep(NA, ncol(psi))
-            names(groups) <- colnames(psi)
-            
-            for (g in seq_along(clinicalGroups)) {
-                m <- matches %in% clinicalGroups[[g]]
-                groups[m] <- names(clinicalGroups)[[g]]
-            }
-            
-            # Remove samples with no groups
-            nasGroups <- !is.na(groups)
-            psi       <- psi[nasGroups]
-            groups    <- groups[nasGroups]
-        }
-        eventPSI <- as.numeric(psi[event, ])
+        groups <- prepareGroupsDiffSplicing(psi, col)
+        psi <- groups$psi
+        groups <- groups$groups
         
         # Check if analyses were already performed
         stats <- getDifferentialAnalyses()
         if (!is.null(stats) && identical(col, attr(stats, "groups")))
-            stat <- getDifferentialAnalyses()[event, ]
+            stat <- stats[event, ]
         else
             stat <- NULL
         
         # Separate samples by their groups
+        eventPSI <- as.numeric(psi[event, ])
         eventPSI <- filterGroups(eventPSI, groups)
         groups <- names(eventPSI)
         

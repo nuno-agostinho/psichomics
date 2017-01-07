@@ -225,18 +225,16 @@ plotPCA <- function(pca, pcX=1, pcY=2, clinicalGroups=NULL,
         eigenvalue <- sdev ^ 2
         loadings <- data.frame(pca$rotation)[, c(pcX, pcY)]
         # Correlation between variables and principal components
-        varCoord <- t(apply(loadings, 1, `*`, sdev))
-        # Contribution of the variables to the principal components
-        quality <- varCoord ^ 2
-        contribution <- t(t(quality) * 100 / colSums(quality))
-        # Total contribution for the selected principal components
-        totalContr <- t(apply(contribution, 1, `*`, eigenvalue))
-        totalContr <- apply(totalContr, 1, sum)
+        varCoor <- t(loadings) * sdev
+        quality <- varCoor ^ 2
+        # Total contribution of the variables for the selected PCs
+        contr <- quality * 100 / rowSums(quality)
+        totalContr <- colSums(contr * eigenvalue)
         
         names <- gsub("_", " ", rownames(loadings))
         ## TODO(NunoA): color points with a gradient; see colorRampPalette()
         # For loadings, add series (but don't add to legend)
-        hc <- hc_add_series_scatter(hc, varCoord[ , pcX], varCoord[ , pcY],
+        hc <- hc_add_series_scatter(hc, varCoor[pcX, ], varCoor[pcY, ],
                                     unname(totalContr), name="Loadings",
                                     sample=names) %>%
             hc_subtitle(text=paste("Bubble size: contribution of a variable",

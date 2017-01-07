@@ -116,6 +116,8 @@ is.whole <- function(x, tol=.Machine$double.eps^0.5) {
 #' @param check Character: values to rename if duplicated
 #' @param comp Character: values to compare with
 #'
+#' @importFrom utils head
+#'
 #' @return Character vector with renamed values if duplicated; else, it
 #' returns the usual values. It doesn't return the comparator values.
 #'
@@ -801,8 +803,9 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
             names(df) <- c("x", "y", "low", "up")
             submark <- mark
         } else {
-            df <- subset(data, group == name)
-            submark <- mark[data$group == name]
+            this <- data$group == name
+            df <- data[this, ]
+            submark <- mark[this]
         }
         
         # Add first value if there is no value for time at 0 in the data
@@ -897,6 +900,8 @@ export_highcharts <- function(hc, y=-45, verticalAlign="bottom",
 #' @importFrom dplyr data_frame mutate
 #' @importFrom assertthat assert_that
 #' @importFrom highcharter colorize list_parse hc_add_series
+#' 
+#' @return Highchart object containing information for a scatter plot
 hc_add_series_scatter <- function (hc, x, y, z = NULL, color = NULL, 
                                    label = NULL, showInLegend = FALSE, ...) 
 {
