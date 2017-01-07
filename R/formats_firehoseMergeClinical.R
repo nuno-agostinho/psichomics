@@ -38,8 +38,13 @@ firehoseMergeClinicalFormat <- function() {
                  "patient.ethnicity", "patient.race_list.race"),
         
         process = function(data) {
+            # Modify column name to be more suggestive
             col <- grep("stage.*pathologic_stage", colnames(data))
             colnames(data)[col] <- paste0(colnames(data)[col], "_tumor_stage")
+            
+            # Remove columns only containing missing values
+            onlyNA <- colSums(is.na(data)) == nrow(data)
+            data <- data[ , !onlyNA]
             return(data)
         }
     )

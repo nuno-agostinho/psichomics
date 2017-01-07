@@ -116,7 +116,7 @@ navSelectize <- function(id, label, placeholder=label) {
         style="margin-top: 5px !important; margin-bottom: 0px !important;", 
         globalSelectize(id, placeholder),
         tags$small(tags$b(label), tags$a(
-            href="#", "Change...",
+            "Change...",
             onclick=paste0(
                 '$("#', id, '")[0].style.display = "block";',
                 '$("#', id, ' > div > select")[0].selectize.clear();',
@@ -135,16 +135,16 @@ navSelectize <- function(id, label, placeholder=label) {
 #' 
 #' @importFrom shiny navbarMenu tabPanel
 #' @return HTML interface for a tab panel
-modTabPanel <- function(title, icon=NULL, ..., menu=FALSE) {
-    if (menu) 
-        func <- navbarMenu
-    else
-        func <- tabPanel
-    
+modTabPanel <- function(title, ..., icon=NULL, menu=FALSE) {
     if (is.null(icon))
-        func(title, ...)
+        display <- title
     else
-        func(tagList(icon(class="hidden-sm", icon), title), ...)
+        display <- tagList(icon(class="hidden-sm", icon), title)
+    
+    if (menu)
+        navbarMenu(display, ...)
+    else
+        tabPanel(display, ..., value=title)
 }
 
 #' The user interface (ui) controls the layout and appearance of the app
@@ -189,6 +189,51 @@ appUI <- function() {
     shinyUI(nav)
 }
 
+#' Enable history navigation
+#' 
+#' Navigate app according to the location given by the navigation bar. Code
+#' and logic adapted from
+#' \url{https://github.com/daattali/advanced-shiny/blob/master/navigate-history}
+#' 
+#' @param navId Character: identifier of the navigation bar
+#' @param input Input object
+#' @param session Session object
+#' 
+#' @importFrom shiny observe parseQueryString updateTabsetPanel
+#' 
+#' @return NULL (this function is used to modify the Shiny session's state)
+browserHistory <- function(navId, input, session) {
+    # Update browser history when user changes the active tab
+    observeEvent(input[[navId]], {
+        autoNav <- getAutoNavigation()
+        if (isTRUE(autoNav))
+            setAutoNavigation(FALSE)
+        else
+            runjs(paste0("updateHistory({page: '", input[[navId]], "'})"))
+    })
+    
+    # Navigate to a tab according to a given query string
+    restorePage <- function(qs) {
+        data <- parseQueryString(qs)
+        if (!is.null(data$page)) {
+            setAutoNavigation(TRUE)
+            updateTabsetPanel(session, navId, data$page)
+        }
+    }
+    
+    # Navigate tabs while browsing history
+    observeEvent(input$appLocation, { restorePage(input$appLocation) })
+    
+    # When the app starts, restore previous history (if available)
+    observeEvent(session$clientData$url_search, {
+        if (nchar(session$clientData$url_search) > 1) {
+            # input[[navId]] is triggered but do not take the user anywhere
+            setAutoNavigation(TRUE)
+            restorePage(session$clientData$url_search)
+        }
+    })
+}
+
 #' Server function
 #'
 #' Instructions to build the Shiny app.
@@ -202,8 +247,8 @@ appUI <- function() {
 #' @return NULL (this function is used to modify the Shiny session's state)
 appServer <- function(input, output, session) {
     ns <- session$ns
-    
     getServerFunctions("app", priority=c("dataServer", "analysesServer"))
+    browserHistory("nav", input, session)
     
     # Update selectize input to show available categories
     observe({

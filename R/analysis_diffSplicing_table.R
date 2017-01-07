@@ -79,18 +79,19 @@ diffSplicingTableUI <- function(id) {
     })
     
     tagList(uiOutput(ns("modal")),
-            sidebarLayout(sidebar, 
-                          mainPanel(
-                              dataTableOutput(ns("statsTable")),
-                              highchartOutput(ns("densitySparklines"), 0, 0),
-                              hidden(
-                                  tags$table(id=ns("survTable"), class="table", 
-                                             class="table-bordered",
-                                             class="text-center",
-                                             style="margin-top: 20px;",
-                                             tags$tbody(
-                                                 do.call(tags$tr, td[1:5]),
-                                                 do.call(tags$tr, td[6:10])))))))
+            sidebarLayout(
+                sidebar, 
+                mainPanel(
+                    dataTableOutput(ns("statsTable")),
+                    highchartOutput(ns("densitySparklines"), 0, 0),
+                    hidden(
+                        tags$table(id=ns("survTable"), class="table", 
+                                   class="table-bordered",
+                                   class="text-center",
+                                   style="margin-top: 20px;",
+                                   tags$tbody(
+                                       do.call(tags$tr, td[1:5]),
+                                       do.call(tags$tr, td[6:10])))))))
 }
 
 #' Interface for calculating optimal cut-off and p-value for survival curves
@@ -303,7 +304,7 @@ optimSurvDiff <- function(session, input, output) {
             if (is.null(splicingEvent) || is.na(splicingEvent)) stat <- NULL
             output[[paste0("eventText", i)]] <- renderUI(
                 tags$a(
-                    gsub("_", " ", splicingEvent), href="#",
+                    gsub("_", " ", splicingEvent),
                     class="label label-default", style="display: inline-block;",
                     style="white-space: normal;", 
                     onclick=paste0("showSurvCutoff('", splicingEvent, "')")))
@@ -398,6 +399,7 @@ plotMiniSurvivalCurves <- function(i, input, survParams, clinical, filter, psi,
 #' @param output Shiny ouput
 #' @param session Shiny session
 #' 
+#' @importFrom shiny checkboxGroupInput
 #' @importFrom shinyjs toggleState disable
 #' @importFrom DT replaceData dataTableProxy
 #' @importFrom utils write.table
@@ -416,20 +418,17 @@ diffSplicingTableServer <- function(input, output, session) {
         if (is.null(psi)) return(tagList(
             helpText(icon("exclamation-circle"), 
                      "No alternative splicing quantification loaded.",
-                     tags$a(href="#", "Load or calculate it.",
+                     tags$a("Load or calculate it.",
                             onclick=loadRequiredData("Inclusion levels")))))
         
         # Separate samples by their type
         ids <- names(psi)
         type <- parseSampleGroups(ids)
         
-        bullet <- "\u2022"
-        groups <- NULL
-        for (each in unique(type))
-            groups <- tagList(groups, br(), bullet, each)
-        
-        return(tagList(
-            helpText("Sample types available in loaded data:", groups)))
+        groups <- unique(type)
+        checkboxGroupInput(ns("sampleTypes"),
+                           "Choose sample types for comparison:",
+                           groups, selected=groups)
     })
     
     observeEvent(input$missingInclusionLevels, 
@@ -442,35 +441,17 @@ diffSplicingTableServer <- function(input, output, session) {
         clinicalGroups <- input$diffGroups
         statsChoices <- input$statsChoices
         pvalueAdjust <- input$pvalueAdjust
+        col <- getDiffSplicingGroups()
+        if (is.null(col) || col=="") return(NULL)
         
         totalTime <- startProcess("startAnalyses")
-        if (select == "samples") {
-            # Separate samples by their groups
-            ids <- names(psi)
-            groups <- parseSampleGroups(ids)
-        } else if (select == "patients") {
-            # Separate samples by clinical groups from patients
-            clinicalGroups <- getGroupsFrom("Clinical data")[clinicalGroups]
-            
-            # Match groups from patients with respective samples
-            matches <- getClinicalMatchFrom("Inclusion levels")
-            groups <- rep(NA, ncol(psi))
-            names(groups) <- colnames(psi)
-            
-            for (g in seq_along(clinicalGroups)) {
-                m <- matches %in% clinicalGroups[[g]]
-                groups[m] <- names(clinicalGroups)[[g]]
-            }
-            
-            # Remove samples with no groups
-            nasGroups <- !is.na(groups)
-            psi       <- psi[nasGroups]
-            groups    <- groups[nasGroups]
-        }
+        groups <- prepareGroupsDiffSplicing(psi, col)
+        psi <- groups$psi
+        groups <- groups$groups
         
         stats <- diffAnalyses(psi, groups, statsChoices, 
-                                      pvalueAdjust=pvalueAdjust,
-                                      progress=updateProgress)
+                              pvalueAdjust=pvalueAdjust,
+                              progress=updateProgress)
         attr(stats, "groups") <- getDiffSplicingGroups()
         setDifferentialAnalyses(stats)
         setDifferentialAnalysesSurvival(NULL)
@@ -488,15 +469,19 @@ diffSplicingTableServer <- function(input, output, session) {
             diffSplicing <- getDifferentialAnalyses()
         })
         
+        emptyGroupsError <- function(session) {
+            errorModal(session, "Select groups",
+                       "The groups on which to perform statistical analysis",
+                       "cannot be empty.")
+        }
+        
         carryOn <- FALSE
         if (is.null(psi)) {
             missingDataModal(session, "Inclusion levels",
                              ns("missingInclusionLevels"))
         } else if (select == "patients") {
             if (is.null(clinicalGroups)) {
-                errorModal(session, "Select groups",
-                           "The groups on which to perform statistical analysis",
-                           "cannot be empty.")
+                emptyGroupsError(session)
             } else {
                 clinicalGroups <- isolate(
                     getGroupsFrom("Clinical data")[clinicalGroups])
@@ -517,7 +502,10 @@ diffSplicingTableServer <- function(input, output, session) {
                 }
             }
         } else if (select == "samples") {
-            carryOn <- TRUE
+            if (is.null(input$sampleTypes))
+                emptyGroupsError(session)
+            else
+                carryOn <- TRUE
         }
         
         if (!carryOn) {
@@ -553,7 +541,8 @@ diffSplicingTableServer <- function(input, output, session) {
         content=function(file) {
             stats <- getDifferentialAnalyses()
             densityCol <- NULL
-            if (!is.null(stats)) densityCol <- match("PSI distribution", colnames(stats))
+            if (!is.null(stats)) densityCol <- match("PSI distribution", 
+                                                     colnames(stats))
             
             write.table(stats[-densityCol], file, quote=FALSE, sep="\t",
                         row.names=FALSE)
@@ -566,7 +555,8 @@ diffSplicingTableServer <- function(input, output, session) {
         content=function(file) {
             stats <- getDifferentialAnalyses()
             densityCol <- NULL
-            if (!is.null(stats)) densityCol <- match("PSI distribution", colnames(stats))
+            if (!is.null(stats)) densityCol <- match("PSI distribution", 
+                                                     colnames(stats))
             
             write.table(stats[input$statsTable_rows_all, -densityCol], 
                         file, quote=FALSE, sep="\t", row.names=FALSE)
@@ -586,10 +576,13 @@ diffSplicingTableServer <- function(input, output, session) {
     })
     
     observe({
-        groups <- "samples"
-        input$groupsSelect
-        if (!is.null(input$groupsSelect) && input$groupsSelect != groups)
+        groups <- NULL
+        if (!is.null(input$groupsSelect) && input$groupsSelect != "samples") {
             groups <- input$diffGroups
+        } else if (!is.null(input$sampleTypes)) {
+            groups <- input$sampleTypes
+            attr(groups, "samples") <- TRUE
+        }
         setDiffSplicingGroups(groups)
     })
 }
