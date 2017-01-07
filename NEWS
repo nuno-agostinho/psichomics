@@ -1,5 +1,27 @@
-1.0.4
-=====
+1.0.5 (7 Jan, 2017)
+===================
+
+    * Navigate history using the browser forward and back buttons
+    * Fix delay when displaying large data by removing columns containing 
+    missing values exclusively
+    * Principal component analysis:
+        - Improve speed when calculating total contribution of each variable to
+        the principal components
+    * Survival analysis:
+        - Shorten calculation of optimal PSI that minimises the survival
+        difference
+        - Improve visual cues of optimal PSI cut-off and present p-value of 
+        selected PSI cut-off
+        - Fix ambiguous error messages
+        - Fix incorrect Cox model results for formula-based calculations
+        - Fix null Cox models crashing the program
+    * Differential splicing analysis:
+        - Select sample types for differential splicing analysis
+        - Fix statistical tests not displaying for individual events after
+        differentially analysing all events using the other statistical tests
+
+1.0.4 (18 Dec, 2016)
+====================
 
     * Correctly load files and quantify alternative splicing for PRAD, OV and
     PAAD tumour types from The Cancer Genome Atlas (TCGA)
@@ -7,8 +29,8 @@
     * Improve text and behaviour of fields to select datasets and AS events
     * Fix author names and add contributor
 
-1.0.3
-=====
+1.0.3 (13 Dec, 2016)
+====================
     
     * Bug fixes regarding gene annotation:
         - Fix disabled gene selection when choosing a splicing event associated
@@ -22,18 +44,18 @@
         - Improve argument name of getGroupsFrom()
     * Other minor improvements
 
-1.0.2
-=====
+1.0.2 (3 Dec, 2016)
+===================
 
     * Fix UTF-8 encoding in author list
 
-1.0.1
-=====
+1.0.1 (1 Dec, 2016)
+===================
 
     * Improve metadata (title, description, authors and vignette titles)
 
-PSIchomics v1.0.0 (Release date: 2016-10-05)
-==============
+1.0.0 (5 Oct, 2016)
+===================
     
-    * First release of PSIchomics
+    * First release of psichomics
     * Quantify, analyse and visualise alternative splicing data

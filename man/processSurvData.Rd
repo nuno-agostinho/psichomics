@@ -4,7 +4,8 @@
 \alias{processSurvData}
 \title{Process survival data to calculate survival curves}
 \usage{
-processSurvData(event, timeStart, timeStop, followup, group, clinical)
+processSurvData(event, timeStart, timeStop, followup, group, clinical,
+  survTime = NULL)
 }
 \arguments{
 \item{event}{Character: name of column containing time of the event of
@@ -21,6 +22,9 @@ interval}
 \item{group}{Character: group of each individual}
 
 \item{clinical}{Data frame: clinical data}
+
+\item{survTime}{survTime object: Times to follow up, time start, time stop
+and event (optional)}
 }
 \value{
 Data frame with terms needed to calculate survival curves
@@ -30,6 +34,14 @@ Process survival data to calculate survival curves
 }
 \details{
 The event time will only be used to determine whether the event has
-happened (1) or not in case of NAs (0)
+occurred (1) or not (0) in case of missing values.
+
+If \code{survTime} is NULL, the survival times will be fetch from the
+clinical dataset according to the names given in \code{timeStart},
+\code{timeStop}, \code{event} and \code{followup}. This can became quite slow
+when using the function in a for loop. If these variables are constant, 
+consider running the function \code{\link{getColumnsTime}} to retrieve the
+time of such columns once and hand the result to the \code{survTime} argument
+of this function.
 }
 
