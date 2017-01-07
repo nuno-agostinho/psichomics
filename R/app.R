@@ -248,7 +248,6 @@ browserHistory <- function(navId, input, session) {
 appServer <- function(input, output, session) {
     ns <- session$ns
     getServerFunctions("app", priority=c("dataServer", "analysesServer"))
-    
     browserHistory("nav", input, session)
     
     # Update selectize input to show available categories
