@@ -552,6 +552,55 @@ testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
     return(pvalue)
 }
 
+#' Calculate optimal alternative splicing quantification cut-off to separate
+#' survival curves
+#'
+#' @details \code{timeStop} is only considered if \code{censoring} is either
+#' \code{interval} or \code{interval2}
+#'
+#' @inheritParams processSurvTerms
+#' @inheritParams testSurvivalCutoff
+#' @param psi Numeric: PSI values to test against the cut-off
+#' @param session Shiny session (only used for the visual interface)
+#' 
+#' @return Optimal alternative splicing quantification cut-off
+#' @export
+#' 
+#' @examples 
+#' clinical <- read.table(text = "2549   NA ii  female
+#'                                 840   NA i   female
+#'                                  NA 1204 iv    male
+#'                                  NA  383 iv  female
+#'                                1293   NA iii   male
+#'                                  NA 1355 ii    male")
+#' names(clinical) <- c("patient.days_to_last_followup", 
+#'                      "patient.days_to_death",
+#'                      "patient.stage_event.pathologic_stage",
+#'                      "patient.gender")
+#' timeStart  <- "days_to_death"
+#' event      <- "days_to_death"
+#' formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
+#' survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
+#'                                formulaStr=formulaStr)
+#' 
+#' psi <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
+#' opt <- optimalPSIcutoff(clinical, psi, "right", event, timeStart)
+optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart, 
+                             timeStop=NULL, session=NULL, filter=TRUE) {
+    groups <- rep(NA, nrow(clinical))
+    survTime <- getColumnsTime(event, timeStart, timeStop, clinical)
+    
+    # Supress warnings from failed calculations while optimising
+    opt <- suppressWarnings(
+        optim(0, testSurvivalCutoff, group=groups, data=psi, filter=filter,
+              clinical=clinical, censoring=censoring, timeStart=timeStart, 
+              timeStop=timeStop, event=event, survTime=survTime, 
+              session=session,
+              # Method and parameters interval
+              method="Brent", lower=0, upper=1))
+    return(opt)
+}
+
 #' Server logic for the analyses
 #' @param input Shiny input
 #' @param output Shiny ouput
