@@ -222,12 +222,8 @@ optimSurvDiff <- function(session, input, output) {
             eventPSI <- rep(NA, nrow(clinical))
             eventPSI[tumour] <- as.numeric(vector[toupper(names(tumour))])
             
-            opt <- suppressWarnings(
-                optim(0, testSurvivalCutoff, data=eventPSI, filter=tumour, 
-                      group=groups, clinical=clinical, censoring=censoring,
-                      timeStart=timeStart, timeStop=timeStop, event=event,
-                      # Method and parameters interval
-                      method="Brent", lower=0, upper=1))
+            opt <- optimalPSIcutoff(clinical, eventPSI, censoring, event, 
+                                    timeStart, timeStop, filter=tumour)
             
             updateProgress("Survival analysis", console=FALSE)
             return(c("Optimal survival PSI cut-off"=opt$par,

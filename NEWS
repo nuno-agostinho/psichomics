@@ -1,3 +1,10 @@
+1.0.6 (10 Jan, 2017)
+====================
+
+    * Differential splicing analysis:
+        - Shorten speed of the calculation for the optimal PSI cut-off that 
+        minimises the survival difference
+
 1.0.5 (7 Jan, 2017)
 ===================
 
