@@ -4,8 +4,8 @@
 \alias{plotPCA}
 \title{Create a scatterplot from a PCA object}
 \usage{
-plotPCA(pca, pcX = 1, pcY = 2, clinicalGroups = NULL,
-  individuals = TRUE, loadings = FALSE)
+plotPCA(pca, pcX = 1, pcY = 2, groups = NULL, individuals = TRUE,
+  loadings = FALSE)
 }
 \arguments{
 \item{pca}{\code{prcomp} object}
@@ -14,12 +14,12 @@ plotPCA(pca, pcX = 1, pcY = 2, clinicalGroups = NULL,
 
 \item{pcY}{Character: name of the yAxis of interest from the PCA}
 
+\item{groups}{Matrix: groups to plot indicating the index of interest of the
+samples (use clinical or sample groups)}
+
 \item{individuals}{Boolean: plot PCA individuals (TRUE by default)}
 
 \item{loadings}{Boolean: plot PCA loadings/rotations (FALSE by default)}
-
-\item{groups}{Matrix: groups to plot indicating the index of interest of the
-samples (use clinical or sample groups)}
 }
 \value{
 Scatterplot as an Highcharter object
