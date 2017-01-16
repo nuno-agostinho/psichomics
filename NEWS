@@ -17,6 +17,9 @@
         - Shorten time taken to calculate principal components and to render the
         loadings plot
         - Fix loadings plot error when rendering some principal components
+    * Survival analysis:
+        - Fix incorrect number of patients from the survival groups in the
+        contextual information for the selected cut-off (below the slider)
 
 1.0.5 (7 Jan, 2017)
 ===================
