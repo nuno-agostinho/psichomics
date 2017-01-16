@@ -14,11 +14,12 @@ plotPCA(pca, pcX = 1, pcY = 2, clinicalGroups = NULL,
 
 \item{pcY}{Character: name of the yAxis of interest from the PCA}
 
-\item{clinicalGroups}{Matrix: groups to plot indicating the index of interest}
-
 \item{individuals}{Boolean: plot PCA individuals (TRUE by default)}
 
 \item{loadings}{Boolean: plot PCA loadings/rotations (FALSE by default)}
+
+\item{groups}{Matrix: groups to plot indicating the index of interest of the
+samples (use clinical or sample groups)}
 }
 \value{
 Scatterplot as an Highcharter object
@@ -30,5 +31,8 @@ Create a scatterplot from a PCA object
 pca <- prcomp(USArrests, scale=TRUE)
 plotPCA(pca)
 plotPCA(pca, pcX=2, pcY=3)
+
+# Plot both individuals and loadings
+plotPCA(pca, pcX=2, pcY=3, loadings=TRUE)
 }
 
