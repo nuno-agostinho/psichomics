@@ -527,13 +527,8 @@ labelBasedOnCutoff <- function (data, cutoff, label=NULL, gte=TRUE) {
 #' @importFrom survival survdiff
 #' @return p-value of the survival difference
 testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
-                               group=NULL, session=NULL) {
-    if (is.null(group)) group <- rep(NA, nrow(clinical))
-    group[filter] <- data[filter] >= cutoff
-    
-    # Assign a value based on the inclusion levels cut-off
-    group[group == "TRUE"]  <- paste("Inclusion levels >=", cutoff)
-    group[group == "FALSE"] <- paste("Inclusion levels <", cutoff)
+                               session=NULL) {
+    group <- labelBasedOnCutoff(data, cutoff, label="Inclusion levels")
     
     # Calculate survival curves
     if (!is.null(session)) {
@@ -586,9 +581,8 @@ testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
 #' psi <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
 #' opt <- optimalPSIcutoff(clinical, psi, "right", event, timeStart)
 optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart, 
-                             timeStop=NULL, followup="days_to_followup",
+                             timeStop=NULL, followup="days_to_last_followup",
                              session=NULL, filter=TRUE, survTime=NULL) {
-    groups <- rep(NA, nrow(clinical))
     if ( is.null(survTime) ) {
         survTime <- getColumnsTime(clinical, event, timeStart, timeStop,
                                    followup)
@@ -596,10 +590,10 @@ optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart,
     
     # Supress warnings from failed calculations while optimising
     opt <- suppressWarnings(
-        optim(0, testSurvivalCutoff, group=groups, data=psi, filter=filter,
-              clinical=clinical, censoring=censoring, timeStart=timeStart, 
-              timeStop=timeStop, event=event, followup=followup, 
-              survTime=survTime, session=session,
+        optim(0, testSurvivalCutoff, data=psi, filter=filter, clinical=clinical,
+              censoring=censoring, timeStart=timeStart, timeStop=timeStop, 
+              event=event, followup=followup, survTime=survTime,
+              session=session,
               # Method and parameters interval
               method="Brent", lower=0, upper=1))
     return(opt)
