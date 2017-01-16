@@ -129,4 +129,10 @@ test_that("Plot PCA loadings", {
     opts <- hc$x$hc_opts
     namz <- sapply(opts$series, "[[", "name")
     expect_equal(unlist(namz), c(names(groups)[2:3], "Loadings"))
+
+    # Plot different principal components
+    hc <- plotPCA(pca, pcX="PC3", pcY="PC4", loadings=TRUE)
+    expect_is(hc, "highchart")
+    expect_equal(hc$x$hc_opts$series[[2]]$name, "Loadings")
+    expect_equal(hc$x$hc_opts$series[[2]]$type, "bubble")
 })
