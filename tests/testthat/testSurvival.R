@@ -82,23 +82,19 @@ test_that("Plot survival curves", {
 test_that("Quantify optimal PSI cut-off", {
     timeStart  <- "days_to_death"
     event      <- "days_to_death"
+    data       <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
     
-    psi <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
-    opt <- optimalPSIcutoff(clinical, psi, censoring="right", event, timeStart)
+    opt <- optimalPSIcutoff(clinical, data, censoring="right", event, timeStart)
     expect_is(opt, "list")
-    cutoff <- opt$par
-    pvalue <- opt$value
-    expect_equal(cutoff, 0.618034, tol=1e-6)
-    expect_equal(pvalue, 0.0269, tol=1e-4)
+    expect_equal(cutoff <- opt$par, 0.618034, tol=1e-6)
+    expect_equal(pvalue <- opt$value, 0.0269, tol=1e-4)
     expect_equal(opt$convergence, 0)
 })
 
 test_that("Plot survival curves separated by PSI cut-off", {
     cutoff <- 0.5
-    group  <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6) >= cutoff
-    
-    group[group == "TRUE"]  <- paste("Inclusion levels >=", cutoff)
-    group[group == "FALSE"] <- paste("Inclusion levels <", cutoff)
+    data   <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
+    group  <- labelBasedOnCutoff(data, cutoff, "Inclusion levels")
     
     timeStart  <- "days_to_death"
     event      <- "days_to_death"
@@ -118,10 +114,8 @@ test_that("Plot survival curves separated by PSI cut-off", {
 
 test_that("Fit a Cox PH model for PSI cut-off separation", {
     cutoff <- 0.5
-    group  <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6) >= cutoff
-    
-    group[group == "TRUE"]  <- paste("Inclusion levels >=", cutoff)
-    group[group == "FALSE"] <- paste("Inclusion levels <", cutoff)
+    data   <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
+    group <- labelBasedOnCutoff(data, cutoff, "Inclusion levels")
     
     timeStart  <- "days_to_death"
     event      <- "days_to_death"
@@ -138,10 +132,8 @@ test_that("Fit a Cox PH model for PSI cut-off separation", {
 
 test_that("Plot survival curves with no separation", {
     cutoff <- 0.6
-    group  <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)/2 >= cutoff
-    
-    group[group == "TRUE"]  <- paste("Inclusion levels >=", cutoff)
-    group[group == "FALSE"] <- paste("Inclusion levels <", cutoff)
+    data   <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)/2
+    group  <- labelBasedOnCutoff(data, cutoff, "Inclusion levels")
     
     timeStart  <- "days_to_death"
     event      <- "days_to_death"

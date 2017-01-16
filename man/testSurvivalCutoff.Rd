@@ -4,7 +4,7 @@
 \alias{testSurvivalCutoff}
 \title{Test the survival difference between two survival groups given a cutoff}
 \usage{
-testSurvivalCutoff(cutoff, data, filter = TRUE, clinical, ..., group = NULL,
+testSurvivalCutoff(cutoff, data, filter = TRUE, clinical, ...,
   session = NULL)
 }
 \arguments{
@@ -18,9 +18,9 @@ testSurvivalCutoff(cutoff, data, filter = TRUE, clinical, ..., group = NULL,
 
 \item{...}{Arguments to pass to \code{processSurvTerms}}
 
-\item{group}{Pre-filled vector of missing values with the length of data}
-
 \item{session}{Shiny session}
+
+\item{group}{Pre-filled vector of missing values with the length of data}
 }
 \value{
 p-value of the survival difference

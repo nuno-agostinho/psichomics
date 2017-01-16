@@ -6,7 +6,7 @@
 survival curves}
 \usage{
 optimalPSIcutoff(clinical, psi, censoring, event, timeStart, timeStop = NULL,
-  followup = "days_to_followup", session = NULL, filter = TRUE,
+  followup = "days_to_last_followup", session = NULL, filter = TRUE,
   survTime = NULL)
 }
 \arguments{
