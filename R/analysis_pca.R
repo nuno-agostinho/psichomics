@@ -169,7 +169,8 @@ plotVariance <- function(pca) {
 #' @param pca \code{prcomp} object
 #' @param pcX Character: name of the xAxis of interest from the PCA
 #' @param pcY Character: name of the yAxis of interest from the PCA
-#' @param clinicalGroups Matrix: groups to plot indicating the index of interest
+#' @param groups Matrix: groups to plot indicating the index of interest of the
+#' samples (use clinical or sample groups)
 #' @param individuals Boolean: plot PCA individuals (TRUE by default)
 #' @param loadings Boolean: plot PCA loadings/rotations (FALSE by default)
 #' 
@@ -178,10 +179,13 @@ plotVariance <- function(pca) {
 #' @return Scatterplot as an Highcharter object
 #' 
 #' @export
-#' @examples 
+#' @examples
 #' pca <- prcomp(USArrests, scale=TRUE)
 #' plotPCA(pca)
 #' plotPCA(pca, pcX=2, pcY=3)
+#' 
+#' # Plot both individuals and loadings
+#' plotPCA(pca, pcX=2, pcY=3, loadings=TRUE)
 plotPCA <- function(pca, pcX=1, pcY=2, clinicalGroups=NULL, 
                     individuals=TRUE, loadings=FALSE) {
     if (is.character(pcX)) pcX <- as.numeric(gsub("[A-Z]", "", pcX))
@@ -234,7 +238,7 @@ plotPCA <- function(pca, pcX=1, pcY=2, clinicalGroups=NULL,
         names <- gsub("_", " ", rownames(loadings))
         ## TODO(NunoA): color points with a gradient; see colorRampPalette()
         # For loadings, add series (but don't add to legend)
-        hc <- hc_add_series_scatter(hc, varCoor[pcX, ], varCoor[pcY, ],
+        hc <- hc_add_series_scatter(hc, varCoor[1, ], varCoor[2, ],
                                     unname(totalContr), name="Loadings",
                                     sample=names) %>%
             hc_subtitle(text=paste("Bubble size: contribution of a variable",
@@ -382,6 +386,7 @@ pcaServer <- function(input, output, session) {
             selected <- input$colourGroups
             clinical <- getClinicalData()
             clinicalGroups <- getGroupsFrom("Clinical data")
+            match <- getClinicalMatchFrom("Inclusion levels")
             psi <- getInclusionLevels()
         })
         
@@ -392,7 +397,7 @@ pcaServer <- function(input, output, session) {
                 else {
                     groups <- clinicalGroups[selected]
                     groups <- getMatchingSamples(groups, colnames(psi),
-                                                 clinical)
+                                                 clinical, match=match)
                 }
                 plotPCA(pca, pcX, pcY, groups) %>% 
                     hc_chart(plotBackgroundColor="#FCFCFC") %>%
