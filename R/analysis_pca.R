@@ -45,7 +45,7 @@ performPCA <- function(data, center=TRUE, scale.=FALSE, naTolerance=0) {
     
     # Get loadings (columns) with less than a given percentage of NAs
     nas <- colSums(is.na(data))
-    data <- data[, nas/nrow(data)*100 <= naTolerance, drop=FALSE]
+    data <- data[, nas/nrow(data) * 100 <= naTolerance, drop=FALSE]
     if (ncol(data) == 0) return(NULL)
     
     # Replace NAs with the medians for each loading (column)
@@ -96,7 +96,8 @@ pcaUI <- function(id) {
                             "samples is used to replace those missing values.",
                             "The remaining events are discarded."),
                       options=list(container="body")),
-            selectGroupsUI(ns("dataGroups"), "Filter data groups"),
+            selectGroupsUI(ns("dataGroups"),
+                           "Samples on which to perform PCA by groups"),
             processButton(ns("calculate"), "Calculate PCA"),
             hidden(
                 div(id=ns("pcaPlotUI"),
@@ -127,7 +128,7 @@ pcaUI <- function(id) {
 #' @return Plot variance as an Highcharter object
 #' @export
 #' @examples 
-#' pca <- princomp(USArrests)
+#' pca <- prcomp(USArrests)
 #' plotVariance(pca)
 plotVariance <- function(pca) {
     eigenvalue <- unname( pca$sdev ^ 2 )
@@ -186,8 +187,8 @@ plotVariance <- function(pca) {
 #' 
 #' # Plot both individuals and loadings
 #' plotPCA(pca, pcX=2, pcY=3, loadings=TRUE)
-plotPCA <- function(pca, pcX=1, pcY=2, clinicalGroups=NULL, 
-                    individuals=TRUE, loadings=FALSE) {
+plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE, 
+                    loadings=FALSE) {
     if (is.character(pcX)) pcX <- as.numeric(gsub("[A-Z]", "", pcX))
     if (is.character(pcY)) pcY <- as.numeric(gsub("[A-Z]", "", pcY))
     
@@ -208,13 +209,13 @@ plotPCA <- function(pca, pcX=1, pcY=2, clinicalGroups=NULL,
     
     if (individuals) {
         df <- data.frame(pca$x)
-        if (is.null(clinicalGroups)) {
+        if (is.null(groups)) {
             hc <- hc_add_series_scatter(hc, df[[pcX]], df[[pcY]], 
                                         sample=rownames(df))
         } else {
             # Colour data by the selected clinical groups
-            for (group in names(clinicalGroups)) {
-                rows <- clinicalGroups[[group]]
+            for (group in names(groups)) {
+                rows <- groups[[group]]
                 values <- df[rows, ]
                 if (!all(is.na(values))) {
                     hc <- hc_add_series_scatter(
@@ -296,8 +297,10 @@ pcaServer <- function(input, output, session) {
             
             # Subset data by the selected clinical groups
             if (!is.null(selected)) {
-                ns <- getMatchingSamples(clinicalGroups[selected],
-                                         samples=colnames(psi), clinical)
+                match <- isolate( getClinicalMatchFrom("Inclusion levels") )
+                ns <- getMatchingSamples(clinicalGroups[selected], 
+                                         samples=colnames(psi), clinical, 
+                                         match=match)
                 psi <- psi[ , unlist(ns)]
             }
             
@@ -341,10 +344,9 @@ pcaServer <- function(input, output, session) {
     observe({
         pca <- getInclusionLevelsPCA()
         if (is.null(pca)) {
-            updateSelectizeInput(session, "pcX",
-                                 choices=c("No PCA performed yet"=""))
-            updateSelectizeInput(session, "pcY",
-                                 choices=c("No PCA performed yet"=""))
+            choices <- c("No PCA performed yet"="")
+            updateSelectizeInput(session, "pcX", choices=choices)
+            updateSelectizeInput(session, "pcY", choices=choices)
             return(NULL)
         }
         
@@ -395,9 +397,9 @@ pcaServer <- function(input, output, session) {
                 if (is.null(selected))
                     groups <- NULL
                 else {
-                    groups <- clinicalGroups[selected]
-                    groups <- getMatchingSamples(groups, colnames(psi),
-                                                 clinical, match=match)
+                    groups <- getMatchingSamples(
+                        clinicalGroups[selected], colnames(psi), clinical,
+                        match=match)
                 }
                 plotPCA(pca, pcX, pcY, groups) %>% 
                     hc_chart(plotBackgroundColor="#FCFCFC") %>%

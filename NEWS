@@ -11,7 +11,8 @@
         navigating to the page where the analysis is performed for all events
         - Improve readability of statistical tests
     * Principal component analysis:
-        - Shorten time taken to render the loadings plot
+        - Shorten time taken to calculate principal components and to render the
+        loadings plot
         - Fix loadings plot error when rendering some principal components
 
 1.0.5 (7 Jan, 2017)
