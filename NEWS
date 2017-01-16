@@ -5,11 +5,14 @@
         - Fix major bug where samples could be placed in the wrong groups
         - Shorten speed of the calculation for the optimal PSI cut-off that 
         minimises the survival difference
+        - Fix not performing statistical tests for two selected sample types
+        while analysing a single event with three or more sample types
         - Fix differential analysis on one splicing event not working when using
         `diffAnalyses()` function
         - Fix differential analysis not showing for individual events before
         navigating to the page where the analysis is performed for all events
-        - Improve readability of statistical tests
+        - Improve readability and information of statistical tests for single
+        events
     * Principal component analysis:
         - Shorten time taken to calculate principal components and to render the
         loadings plot
