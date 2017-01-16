@@ -1,4 +1,4 @@
-1.0.6 (10 Jan, 2017)
+1.0.6 (16 Jan, 2017)
 ====================
 
     * Differential splicing analysis:
@@ -20,6 +20,8 @@
     * Survival analysis:
         - Fix incorrect number of patients from the survival groups in the
         contextual information for the selected cut-off (below the slider)
+    * Protein annotation:
+        - Warn user when trying to render proteins with no domains
 
 1.0.5 (7 Jan, 2017)
 ===================
