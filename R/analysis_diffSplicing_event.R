@@ -9,7 +9,7 @@ diffSplicingEventUI <- function(id) {
     ns <- NS(id)
     
     card <- function(...) {
-        div(class="col-sm-6 col-md-4 col-lg-3",
+        div(class="col-sm-6 col-md-4",
             div(class="thumbnail", style="background:#eee;",
                 div(class="caption", ...)))
     }
@@ -149,13 +149,18 @@ basicStats <- function(psi, groups) {
     if (len == 2) {
         deltaMedian <- tagList(tags$b("|\u0394 Median|: "), 
                                roundDigits(abs(medi[2] - medi[1])), br())
+        deltaVar <- tagList(tags$b("|\u0394 Variance|: "), 
+                            roundDigits(abs(vari[2] - vari[1])), br())
     } else {
         deltaMedian <- NULL
+        deltaVar <- NULL
     }
     
-    ui <- tagList(h4("Basic statistics"), deltaMedian,
-                  tags$b("Average variance: "),
-                  roundDigits(sum(vari)/length(vari)))
+    avgMedian <- roundDigits( mean(medi) )
+    avgVar <- roundDigits( mean(vari) )
+    ui <- tagList(h4("Basic statistics"),
+                  tags$b("Average median: "), avgMedian, br(), deltaMedian,
+                  tags$b("Average variance: "), avgVar, br(), deltaVar)
     return(ui)
 }
 
@@ -219,10 +224,10 @@ wilcox <- function(psi, groups, stat=NULL) {
     tagList(
         h4(method), warn,
         tags$b("Test value: "), roundDigits(statistic), br(),
-        tags$b("p-value: "), signifDigits(p.value), br(), adjusted,
         tags$b("Location parameter: "), null.value, br(),
-        tags$b("Alternative hypothesis: "), alternative
-    )
+        tags$b("Alternative hypothesis: "), alternative,
+        div(style="text-align:right",
+            tags$b("p-value: "), signifDigits(p.value), br(), adjusted))
 }
 
 #' Perform unpaired t-test analysis and return interface to show the results
@@ -246,6 +251,9 @@ ttest <- function(psi, groups, stat=NULL) {
         p.value     <- stat$`T-test p-value`
         null.value  <- stat$`T-test null value`
         alternative <- stat$`T-test alternative`
+        parameter   <- stat$`T-test parameter`
+        int1        <- stat$`T-test conf int1`
+        int2        <- stat$`T-test conf int2`
     }
     
     if (len != 2) {
@@ -280,15 +288,21 @@ ttest <- function(psi, groups, stat=NULL) {
         adjusted    <- NULL
         null.value  <- stat$stat$null.value
         alternative <- stat$stat$alternative
+        parameter   <- stat$stat$parameter
+        int1        <- stat$stat$conf.int[[1]]
+        int2        <- stat$stat$conf.int[[2]]
     }
     
     tagList(
         h4(method), warn,
         tags$b("Test value: "), roundDigits(statistic), br(),
-        tags$b("p-value: "), signifDigits(p.value), br(), adjusted,
+        tags$b("Test parameter: "), parameter, br(),
         tags$b("Difference in means: "), null.value, br(),
-        tags$b("Alternative hypothesis: "), alternative
-    )
+        tags$b("Alternative hypothesis: "), alternative, br(),
+        tags$b("95\u0025 confidence interval: "), roundDigits(int1),
+        roundDigits(int2),
+        div(style="text-align:right",
+            tags$b("p-value: "), signifDigits(p.value), br(), adjusted))
 }
 
 
@@ -351,8 +365,9 @@ levene <- function(psi, groups, stat=NULL) {
     tagList(
         h4("Levene's Test for Homogeneity of Variance"),
         tags$b("Test value: "), roundDigits(statistic), br(),
-        tags$b("p-value: "), signifDigits(p.value), br(), adjusted, nonBootstrap
-    )
+        div(style="text-align:right",
+            tags$b("p-value: "), signifDigits(p.value), br(), adjusted,
+            nonBootstrap))
 }
 
 #' Perform Fligner-Killeen test and return interface to show the results
@@ -367,6 +382,7 @@ fligner <- function(psi, groups, stat=NULL) {
     if (!is.null(stat)) {
         statistic <- stat$`Fligner-Killeen statistic`
         p.value   <- stat$`Fligner-Killeen p-value`
+        parameter <- stat$`Fligner-Killeen parameter`
     }
     
     if (len < 2) {
@@ -389,13 +405,15 @@ fligner <- function(psi, groups, stat=NULL) {
         statistic <- stat$statistic
         p.value   <- stat$p.value
         adjusted  <- NULL
+        parameter <- stat$parameter
     }
     
     tagList(
         h4("Fligner-Killeen's Test for Homogeneity of Variance"),
         tags$b("Test value: "), roundDigits(statistic), br(),
-        tags$b("p-value: "), signifDigits(p.value), br(), adjusted
-    )
+        tags$b("Test parameter: "), parameter, br(),
+        div(style="text-align:right",
+            tags$b("p-value: "), signifDigits(p.value), br(), adjusted))
 }
 
 #' Perform Kruskal's test and return interface to show the results
@@ -438,9 +456,10 @@ kruskal <- function(psi, groups, stat=NULL) {
     }
     
     tagList(h4(method),
-            tags$b("Test value (Chi squared): "), roundDigits(statistic), br(),
-            tags$b("p-value: "), signifDigits(p.value), br(), adjusted,
-            tags$b("Degrees of freedom: "), parameter)
+            tags$b("Test value \u03C7\u00B2: "), roundDigits(statistic), br(),
+            tags$b("Degrees of freedom: "), parameter,
+            div(style="text-align:right",
+                tags$b("p-value: "), signifDigits(p.value), br(), adjusted))
 }
 
 #' Perform Fisher's exact test and return interface to show the results
