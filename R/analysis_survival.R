@@ -495,11 +495,10 @@ survivalServer <- function(input, output, session) {
                                       timeStop, group)
         surv <- survfit(survTerms)
         pvalue <- testSurvival(survTerms)
-        strata <- unname(surv$strata)
         
         patients <- NULL
         if (!is.na(pvalue) && pvalue < 1)
-            patients <- paste0("(", strata[1], " vs ", strata[2], " patients)")
+            patients <- paste0("(", surv$n[1], " vs ", surv$n[2], " patients)")
         
         output$thisPvalue <- renderUI(
             tagList(
