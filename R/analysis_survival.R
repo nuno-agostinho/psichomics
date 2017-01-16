@@ -1,6 +1,3 @@
-## TODO(NunoA): Should groups be merged if there's an intersection?
-## TODO(NunoA): How to correctly do interval censoring?
-
 #' User interface of survival analysis
 #' 
 #' @param id Character: namespace identifier

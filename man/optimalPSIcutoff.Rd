@@ -6,7 +6,8 @@
 survival curves}
 \usage{
 optimalPSIcutoff(clinical, psi, censoring, event, timeStart, timeStop = NULL,
-  session = NULL, filter = TRUE)
+  followup = "days_to_followup", session = NULL, filter = TRUE,
+  survTime = NULL)
 }
 \arguments{
 \item{clinical}{Data frame: clinical data}
@@ -25,9 +26,14 @@ interval or follow up time}
 \item{timeStop}{Character: name of column containing ending time of the 
 interval}
 
+\item{followup}{Character: name of column containing follow up time}
+
 \item{session}{Shiny session (only used for the visual interface)}
 
 \item{filter}{Boolean or numeric: elements to use (all by default)}
+
+\item{survTime}{survTime object: times to follow up, time start, time stop
+and event (optional)}
 }
 \value{
 Optimal alternative splicing quantification cut-off
