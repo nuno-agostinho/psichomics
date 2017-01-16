@@ -22,7 +22,22 @@ test_that("Perform all statistical analyses", {
     expect_true(any(grepl("Variance", names(stats))))
 })
 
-test_that("Perform single statistical analyses", {
+test_that("Perform all statistical analyses for a single event", {
+    analyses <- c("wilcoxRankSum", "wilcoxSignedRank", "kruskal", "levene")
+    stats <- diffAnalyses(psi[1, ], group, analyses)
+    
+    expect_is(stats, "data.frame")
+    expect_named(stats)
+    expect_true(all(stats$Samples.Normal == 3))
+    expect_true(all(stats$Samples.Tumour == 3))
+    expect_true(any(grepl("Wilcox", names(stats))))
+    expect_true(any(grepl("Levene", names(stats))))
+    expect_true(any(grepl("Kruskal", names(stats))))
+    expect_true(any(grepl("Median", names(stats))))
+    expect_true(any(grepl("Variance", names(stats))))
+})
+
+test_that("Perform single statistical tests", {
     analyses <- c("wilcoxRankSum", "wilcoxSignedRank")
     stats <- diffAnalyses(psi, group, analyses)
     

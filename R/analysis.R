@@ -89,7 +89,7 @@ analysesUI <- function(id, tab) {
 processSurvData <- function(event, timeStart, timeStop, followup, group, 
                             clinical, survTime=NULL) {
     if ( is.null(survTime) ) {
-        survTime <- getColumnsTime(event, timeStart, timeStop, clinical,
+        survTime <- getColumnsTime(clinical, event, timeStart, timeStop,
                                    followup)
     }
     
@@ -127,7 +127,7 @@ processSurvData <- function(event, timeStart, timeStop, followup, group,
 #' @return Data frame containing the time for the given columns
 #' 
 #' @export
-getColumnsTime <- function(event, timeStart, timeStop, clinical,
+getColumnsTime <- function(clinical, event, timeStart, timeStop=NULL,
                            followup="days_to_last_followup") {
     cols <- c(followup=followup, start=timeStart, stop=timeStop, event=event)
     survTime <- lapply(cols, timePerPatient, clinical)
@@ -586,16 +586,20 @@ testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
 #' psi <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
 #' opt <- optimalPSIcutoff(clinical, psi, "right", event, timeStart)
 optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart, 
-                             timeStop=NULL, session=NULL, filter=TRUE) {
+                             timeStop=NULL, followup="days_to_followup",
+                             session=NULL, filter=TRUE, survTime=NULL) {
     groups <- rep(NA, nrow(clinical))
-    survTime <- getColumnsTime(event, timeStart, timeStop, clinical)
+    if ( is.null(survTime) ) {
+        survTime <- getColumnsTime(clinical, event, timeStart, timeStop,
+                                   followup)
+    }
     
     # Supress warnings from failed calculations while optimising
     opt <- suppressWarnings(
         optim(0, testSurvivalCutoff, group=groups, data=psi, filter=filter,
               clinical=clinical, censoring=censoring, timeStart=timeStart, 
-              timeStop=timeStop, event=event, survTime=survTime, 
-              session=session,
+              timeStop=timeStop, event=event, followup=followup, 
+              survTime=survTime, session=session,
               # Method and parameters interval
               method="Brent", lower=0, upper=1))
     return(opt)

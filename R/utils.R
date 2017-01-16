@@ -221,7 +221,7 @@ getPatientFromSample <- function(sampleId, clinical, prefix="^tcga",
     if (lower) sampleId <- tolower(sampleId)
     
     # Get all possible identifiers starting in "tcga" from the clinical data
-    idsIndex <- vapply(1:ncol(clinical), 
+    idsIndex <- vapply(1:ncol(clinical),
                        function(i) length(grep(prefix, clinical[[i]])) != 0,
                        logical(1))
     clinicalIds <- clinical[, idsIndex, drop=FALSE]
@@ -250,6 +250,8 @@ getPatientFromSample <- function(sampleId, clinical, prefix="^tcga",
 #' @param clinical Data frame or matrix: clinical dataset
 #' @param upper Boolean: convert identifiers to upper case? TRUE by default
 #' @param rm.NA Boolean: remove NAs? TRUE by default
+#' @param match Integer: vector of patient index with the sample identifiers as
+#' name to save time (optional)
 #' 
 #' @return Names of the matching rows
 #' @export
@@ -260,24 +262,26 @@ getPatientFromSample <- function(sampleId, clinical, prefix="^tcga",
 #'                        samples=tolower(samples))
 #' getMatchingSamples(c(1, 4), samples, clinical, prefix="")
 getMatchingSamples <- function(index, samples, clinical, upper=TRUE, 
-                               rm.NA=TRUE, prefix="^tcga") {
+                               rm.NA=TRUE, prefix="^tcga", match=NULL) {
     patient <- rep(NA, nrow(clinical))
-    p <- getPatientFromSample(samples, clinical, prefix=prefix)
-    patient[p] <- names(p)
+    if (is.null(match))
+        match <- getPatientFromSample(samples, clinical, prefix=prefix)
+    match <- match[!is.na(match)]
+    patient[match] <- names(match)
     
     if (is.list(index)) {
-        match <- lapply(index, function(i) {
+        samples <- lapply(index, function(i) {
             res <- patient[i]
             if (upper) res <- toupper(res)
             if (rm.NA) res <- res[!is.na(res)]
             return(res)
         })
     } else {
-        match <- patient[index]
-        if (upper) match <- toupper(match)
-        if (rm.NA) match <- match[!is.na(match)]
-    }    
-    return(match)
+        samples <- patient[index]
+        if (upper) samples <- toupper(samples)
+        if (rm.NA) samples <- samples[!is.na(samples)]
+    }
+    return(samples)
 }
 
 #' Assign one group to each patient

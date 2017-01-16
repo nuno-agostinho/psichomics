@@ -8,6 +8,12 @@
 diffSplicingEventUI <- function(id) {
     ns <- NS(id)
     
+    card <- function(...) {
+        div(class="col-sm-6 col-md-4 col-lg-3",
+            div(class="thumbnail", style="background:#eee;",
+                div(class="caption", ...)))
+    }
+    
     tagList(
         uiOutput(ns("modal")),
         sidebarLayout(
@@ -21,16 +27,18 @@ diffSplicingEventUI <- function(id) {
                 uiOutput(ns("basicStats")), hr(),
                 # uiOutput(ns("spearman")), hr(),
                 # uiOutput(ns("fisher")), hr(),
-                h3("Parametric tests"),
-                uiOutput(ns("ttest")), hr(),
-                uiOutput(ns("levene")), hr(),
-                h3("Non-parametric tests"),
-                uiOutput(ns("wilcox")), hr(),
-                uiOutput(ns("kruskal")), hr(),
-                uiOutput(ns("fligner")), hr(),
                 uiOutput(ns("survival"))
             ), mainPanel(
-                highchartOutput(ns("density"))
+                highchartOutput(ns("density")),
+                h4("Parametric tests"),
+                div(class="row",
+                    card(uiOutput(ns("ttest"))),
+                    card(uiOutput(ns("levene")))),
+                h4("Non-parametric tests"),
+                div(class="row",
+                    card(uiOutput(ns("wilcox"))),
+                    card(uiOutput(ns("kruskal"))),
+                    card(uiOutput(ns("fligner"))))
             )
         )
     )
