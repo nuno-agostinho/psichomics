@@ -445,7 +445,9 @@ prepareGroupsDiffSplicing <- function(psi, groups) {
         # Separate samples by their groups
         ids <- names(psi)
         sampleGroups <- parseSampleGroups(ids)
-        sampleGroups[!sampleGroups %in% groups] <- NA
+        filter <- sampleGroups %in% groups
+        sampleGroups <- sampleGroups[filter]
+        psi <- psi[filter]
     } else {
         clinicalGroups <- getGroupsFrom("Clinical data")[groups]
         samples <- colnames(psi)
