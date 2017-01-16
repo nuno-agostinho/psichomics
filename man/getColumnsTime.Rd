@@ -4,10 +4,12 @@
 \alias{getColumnsTime}
 \title{Retrieve the time for given columns in a clinical dataset}
 \usage{
-getColumnsTime(event, timeStart, timeStop, clinical,
+getColumnsTime(clinical, event, timeStart, timeStop = NULL,
   followup = "days_to_last_followup")
 }
 \arguments{
+\item{clinical}{Data frame: clinical data}
+
 \item{event}{Character: name of column containing time of the event of
 interest}
 
@@ -16,8 +18,6 @@ interval or follow up time}
 
 \item{timeStop}{Character: name of column containing ending time of the 
 interval}
-
-\item{clinical}{Data frame: clinical data}
 
 \item{followup}{Character: name of column containing follow up time}
 }
