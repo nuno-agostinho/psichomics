@@ -66,6 +66,48 @@ analysesUI <- function(id, tab) {
     do.call(tab, c(list(icon="flask", title="Analyses", menu=TRUE), ui))
 }
 
+#' Assign alternative splicing quantification to patients based on their samples
+#' 
+#' Match filtered samples with clinical patients to retrieve alternative
+#' splicing quantification per clinical patient. Only one sample can be matched
+#' with one patient. Normal and control samples are filtered out by default.
+#' 
+#' @param psi Data frame or matrix: alternative splicing quantification per
+#' samples
+#' @param match Matrix: match between samples and clinical patients
+#' @param clinical Data frame or matrix: clinical dataset
+#' @param pattern Character: pattern to use when filtering sample types (normal 
+#' and control samples are filtered by default)
+#' @param filterOut Boolean: filter out (TRUE) or filter in (FALSE) samples with
+#' the given pattern; by default, filter out
+#' 
+#' @return Alternative splicing quantification per clinical patients
+#' @export
+getPSIperPatient <- function(psi, match, clinical,
+                             pattern=c("Normal", "Control"), filterOut=TRUE) {
+    # Get sample identifiers of interest
+    types <- parseSampleGroups(names(match))
+    
+    pattern <- paste(pattern, collapse="|")
+    filter <- grepl(pattern, types)
+    if (filterOut) filter <- !filter
+    
+    match_tumour <- match[filter]
+    match_tumour <- match_tumour[!is.na(match_tumour)]
+    
+    # Remove duplicates (only one sample type for each patient)
+    match_tumour <- match_tumour[!duplicated(match_tumour)]
+    
+    # Match samples with clinical patients (remove non-matching samples)
+    clinicalPSI <- data.frame(matrix(NA, nrow=nrow(psi),
+                                     ncol=length(match_tumour)))
+    clinicalPSI[ , match_tumour] <- psi[ , toupper(names(match_tumour))]
+    
+    colnames(clinicalPSI) <- rownames(clinical)
+    rownames(clinicalPSI) <- rownames(psi)
+    return(clinicalPSI)
+}
+
 #' Process survival data to calculate survival curves
 #' 
 #' @inheritParams getColumnsTime
@@ -574,9 +616,6 @@ testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
 #'                      "patient.gender")
 #' timeStart  <- "days_to_death"
 #' event      <- "days_to_death"
-#' formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
-#' survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
-#'                                formulaStr=formulaStr)
 #' 
 #' psi <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
 #' opt <- optimalPSIcutoff(clinical, psi, "right", event, timeStart)

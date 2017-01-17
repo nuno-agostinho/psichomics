@@ -59,9 +59,6 @@ names(clinical) <- c("patient.days_to_last_followup",
                      "patient.gender")
 timeStart  <- "days_to_death"
 event      <- "days_to_death"
-formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
-survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
-                               formulaStr=formulaStr)
 
 psi <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
 opt <- optimalPSIcutoff(clinical, psi, "right", event, timeStart)

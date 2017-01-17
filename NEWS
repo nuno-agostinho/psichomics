@@ -20,6 +20,8 @@
     * Survival analysis:
         - Fix incorrect number of patients from the survival groups in the
         contextual information for the selected cut-off (below the slider)
+        - Improve how alternative splicing quantification is assigned to
+        patients based on their samples
     * Protein annotation:
         - Warn user when trying to render proteins with no domains
 
