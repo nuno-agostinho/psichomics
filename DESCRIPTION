@@ -18,7 +18,7 @@ Description: Package with a Shiny-based graphical interface for the integrated
     features (such as tumour stage or survival) associated with TCGA samples.
 Depends:
     R (>= 3.3),
-    shiny (>= 0.14),
+    shiny (>= 1.0.0),
     shinyBS
 License: MIT + file LICENSE
 LazyData: true
@@ -31,7 +31,7 @@ Imports:
     dplyr,
     DT (>= 0.2),
     fastmatch,
-    highcharter (>= 0.4.0),
+    highcharter (>= 0.5.0),
     httr,
     jsonlite,
     miscTools,

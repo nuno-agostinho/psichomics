@@ -58,7 +58,7 @@ diffSplicingEventUI <- function(id) {
 #' density estimates
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_plotOptions hc_tooltip
-#' JS hc_add_series_scatter hc_add_series_density
+#' JS
 #' @importFrom stats median var density
 #' 
 #' @return Highcharter object with density plot
@@ -101,12 +101,11 @@ plotDistribution <- function(psi, groups, rug=TRUE, vLine=TRUE, ...) {
         # Calculate the density of inclusion levels for each sample group
         den <- density(row, na.rm=TRUE, ...)
         hc <- hc %>%
-            hc_add_series_density(den, name=group, area=TRUE, median=med, 
-                                  var=vari, samples=samples, max=max, 
-                                  color=color, min=min)
+            hc_add_series(den, type="area", name=group, median=med, var=vari,
+                          samples=samples, max=max, color=color, min=min)
         # Rug plot
         if (rug) {
-            hc <- hc_add_series_scatter(
+            hc <- hc_scatter(
                 hc, row, rep(0, length(row)), name=group, marker=list(
                     enabled=TRUE, symbol="circle", radius=4, fillColor=color),
                 median=med, var=vari, samples=samples, max=max, min=min)
@@ -566,7 +565,7 @@ diffSplicingEventServer <- function(input, output, session) {
         psi <- getInclusionLevels()
         col <- getDiffSplicingGroups()
         if (is.null(col) || col=="") {
-            sample <- colnames(psi)
+            samples <- colnames(psi)
             types <- parseSampleGroups(samples)
             col <- unique(types)
             attr(col, "samples") <- TRUE
