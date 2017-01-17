@@ -890,40 +890,32 @@ uniqueBy <- function(data, ...) {
 #' @return A \code{highcharts} object with an export button
 export_highcharts <- function(hc, y=-45, verticalAlign="bottom", 
                               fill="transparent", text="Export") {
-    hc_exporting(hc, enabled=TRUE,
-                 formAttributes = list(target = "_blank"),
-                 buttons=list(contextButton=list(text=text, y=y,
-                                                 verticalAlign=verticalAlign, 
-                                                 theme=list(fill=fill))))
+    hc_exporting(hc, enabled=TRUE, buttons=list(
+        contextButton=list(text=text, y=y, verticalAlign=verticalAlign, 
+                           theme=list(fill=fill))))
 }
 
-#' Modified function of highcharter::hc_add_series_scatter
+#' Create scatter plot
 #' 
-#' @inheritParams highcharter::hc_add_series_scatter
+#' Create a scatter plot using \code{highcharter}
 #' 
-#' @importFrom dplyr data_frame mutate
-#' @importFrom assertthat assert_that
-#' @importFrom highcharter colorize list_parse hc_add_series
+#' @param hc \code{Highchart} object
+#' @param x Numeric: X axis
+#' @param y Numeric: Y axis
+#' @param z Numeric: Z axis to set the bubble size (optional)
+#' @param label Character: data label for each point (optional)
+#' @param showInLegend Boolean: show the data in the legend box? FALSE by
+#' default
+#' @param ... Extra attributes of the data series to plot
+#' 
+#' @importFrom highcharter hc_add_series list_parse
 #' 
 #' @return Highchart object containing information for a scatter plot
-hc_add_series_scatter <- function (hc, x, y, z = NULL, color = NULL, 
-                                   label = NULL, showInLegend = FALSE, ...) 
-{
-    assert_that(length(x) == length(y), is.numeric(x), is.numeric(y))
-    df <- data_frame(x, y)
-    if (!is.null(z)) {
-        assert_that(length(x) == length(z))
-        df <- df %>% mutate(z = z)
-    }
-    if (!is.null(color)) {
-        assert_that(length(x) == length(color))
-        cols <- colorize(color)
-        df <- df %>% mutate(valuecolor = color, color = cols)
-    }
-    if (!is.null(label)) {
-        assert_that(length(x) == length(label))
-        df <- df %>% mutate(label = label)
-    }
+hc_scatter <- function (hc, x, y, z=NULL, label=NULL, showInLegend=FALSE, ...) {
+    df <- data.frame(x, y)
+    if (!is.null(z)) df <- cbind(df, z=z)
+    if (!is.null(label)) df <- cbind(df, label=label)
+    
     args <- list(...)
     for (i in seq_along(args)) {
         if (!is.list(args[[i]]) && length(x) == length(args[[i]]) && 
@@ -934,15 +926,17 @@ hc_add_series_scatter <- function (hc, x, y, z = NULL, color = NULL,
             args[[i]] <- character(0)
         }
     }
+    
     args <- Filter(length, args)
     ds <- list_parse(df)
     type <- ifelse(!is.null(z), "bubble", "scatter")
-    if (!is.null(label)) {
-        dlopts <- list(enabled = TRUE, format = "{point.label}")
-    }
-    else {
-        dlopts <- list(enabled = FALSE)
-    }
-    do.call("hc_add_series", c(list(hc, data = ds, type = type, 
-                                    showInLegend = showInLegend, dataLabels = dlopts), args))
+    
+    if (!is.null(label))
+        dlopts <- list(enabled=TRUE, format="{point.label}")
+    else
+        dlopts <- list(enabled=FALSE)
+    
+    do.call("hc_add_series", c(list(hc, data=ds, type=type, 
+                                    showInLegend=showInLegend,
+                                    dataLabels=dlopts), args))
 }

@@ -176,7 +176,6 @@ plotVariance <- function(pca) {
 #' @param loadings Boolean: plot PCA loadings/rotations (FALSE by default)
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip %>%
-#' hc_add_series_scatter
 #' @return Scatterplot as an Highcharter object
 #' 
 #' @export
@@ -210,15 +209,14 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
     if (individuals) {
         df <- data.frame(pca$x)
         if (is.null(groups)) {
-            hc <- hc_add_series_scatter(hc, df[[pcX]], df[[pcY]], 
-                                        sample=rownames(df))
+            hc <- hc_scatter(hc, df[[pcX]], df[[pcY]], sample=rownames(df))
         } else {
             # Colour data by the selected clinical groups
             for (group in names(groups)) {
                 rows <- groups[[group]]
                 values <- df[rows, ]
                 if (!all(is.na(values))) {
-                    hc <- hc_add_series_scatter(
+                    hc <- hc_scatter(
                         hc, values[[pcX]], values[[pcY]], name=group, 
                         sample=rownames(values), showInLegend=TRUE)
                 }
@@ -239,9 +237,8 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
         names <- gsub("_", " ", rownames(loadings))
         ## TODO(NunoA): color points with a gradient; see colorRampPalette()
         # For loadings, add series (but don't add to legend)
-        hc <- hc_add_series_scatter(hc, varCoor[1, ], varCoor[2, ],
-                                    unname(totalContr), name="Loadings",
-                                    sample=names) %>%
+        hc <- hc_scatter(hc, varCoor[1, ], varCoor[2, ], unname(totalContr), 
+                         name="Loadings", sample=names) %>%
             hc_subtitle(text=paste("Bubble size: contribution of a variable",
                                    "to the selected principal components"))
     }
