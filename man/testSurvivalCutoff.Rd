@@ -19,8 +19,6 @@ testSurvivalCutoff(cutoff, data, filter = TRUE, clinical, ...,
 \item{...}{Arguments to pass to \code{processSurvTerms}}
 
 \item{session}{Shiny session}
-
-\item{group}{Pre-filled vector of missing values with the length of data}
 }
 \value{
 p-value of the survival difference

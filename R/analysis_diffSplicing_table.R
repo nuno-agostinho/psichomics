@@ -215,7 +215,7 @@ optimSurvDiff <- function(session, input, output) {
         
         opt <- apply(clinicalPSI, 1, function(eventPSI) {
             opt <- optimalPSIcutoff(clinical, eventPSI, censoring, event, 
-                                    timeStart, timeStop, filter=tumour)
+                                    timeStart, timeStop)
             
             updateProgress("Survival analysis", console=FALSE)
             return(c("Optimal survival PSI cut-off"=opt$par,
@@ -405,9 +405,8 @@ diffSplicingTableServer <- function(input, output, session) {
                             onclick=loadRequiredData("Inclusion levels")))))
         
         # Separate samples by their type
-        ids <- names(psi)
-        type <- parseSampleGroups(ids)
-        
+        samples <- colnames(psi)
+        type <- parseSampleGroups(samples)
         groups <- unique(type)
         checkboxGroupInput(ns("sampleTypes"),
                            "Choose sample types for comparison:",
