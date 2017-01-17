@@ -418,10 +418,9 @@ survivalServer <- function(input, output, session) {
             eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
             
             # Calculate optimal alternative splicing quantification cut-off
-            opt <- optimalPSIcutoff(clinical, eventPSI, filter=tumour, 
-                                    censoring=censoring, event=event,
-                                    timeStart=timeStart, timeStop=timeStop,
-                                    session=session)
+            opt <- optimalPSIcutoff(clinical, eventPSI, censoring=censoring, 
+                                    event=event, timeStart=timeStart, 
+                                    timeStop=timeStop, session=session)
             
             observe({
                 value <- 0.5
