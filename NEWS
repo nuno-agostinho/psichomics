@@ -1,6 +1,7 @@
-1.0.6 (16 Jan, 2017)
+1.0.6 (17 Jan, 2017)
 ====================
 
+    * Update tutorials with more relevant and complex examples
     * Update minimum versions required of highcharter (0.5.0) and shiny (1.0.0):
         - Fix function usage as according to new version of highcharter
         - Remove blank tab opening when exporting plots from Highcharts
