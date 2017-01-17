@@ -4,7 +4,7 @@
 \alias{plotMiniSurvivalCurves}
 \title{Perform and plot survival curves}
 \usage{
-plotMiniSurvivalCurves(i, input, survParams, clinical, filter, psi, censoring,
+plotMiniSurvivalCurves(i, input, survParams, clinical, match, psi, censoring,
   event, timeStart, timeStop)
 }
 \arguments{
@@ -16,7 +16,7 @@ plotMiniSurvivalCurves(i, input, survParams, clinical, filter, psi, censoring,
 
 \item{clinical}{Data frame: clinical data}
 
-\item{filter}{Numeric or character: filtered samples}
+\item{match}{Integer: samples matched with clinical patients}
 
 \item{psi}{Data frame or matrix: alternative splicing quantification}
 
