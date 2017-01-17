@@ -1,6 +1,9 @@
 1.0.6 (16 Jan, 2017)
 ====================
 
+    * Update minimum versions required of highcharter (0.5.0) and shiny (1.0.0):
+        - Fix function usage as according to new version of highcharter
+        - Remove blank tab opening when exporting plots from Highcharts
     * Differential splicing analysis:
         - Fix major bug where samples could be placed in the wrong groups
         - Shorten speed of the calculation for the optimal PSI cut-off that 
