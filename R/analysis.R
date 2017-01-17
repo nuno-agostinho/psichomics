@@ -561,7 +561,6 @@ labelBasedOnCutoff <- function (data, cutoff, label=NULL, gte=TRUE) {
 #' @inheritParams processSurvTerms
 #' @param cutoff Numeric: Cut-off of interest
 #' @param data Numeric: elements of interest to test against the cut-off
-#' @param group Pre-filled vector of missing values with the length of data
 #' @param filter Boolean or numeric: elements to use (all by default)
 #' @param ... Arguments to pass to \code{processSurvTerms}
 #' @param session Shiny session

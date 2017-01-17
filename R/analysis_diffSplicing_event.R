@@ -22,8 +22,8 @@ diffSplicingEventUI <- function(id) {
                 tags$br(), tags$a(onclick="changeDiffSplicingGroup()",
                                   uiOutput(ns("groupsCol"))),
                 tags$br(),
-                numericInput(ns("bandwidth"), "Density bandwidth", 0.01, 
-                             step=0.01),
+                numericInput(ns("bandwidth"), "Density smoothing bandwidth",
+                             0.01, step=0.01, min=0.01),
                 uiOutput(ns("basicStats")), hr(),
                 # uiOutput(ns("spearman")), hr(),
                 # uiOutput(ns("fisher")), hr(),
@@ -50,11 +50,12 @@ diffSplicingEventUI <- function(id) {
 #' of each data series.
 #' 
 #' @inheritParams wilcox
-#' @param bandwidth Numeric: density bandwidth
 #' @param rug Boolean: include rug plot to better visualise data distribution 
 #' (TRUE by default)
 #' @param vLine Boolean: include vertical plot lines to indicate the mean and
 #' median of each group even when those groups are omitted
+#' @param ... Extra parameters passed to \code{density} to create the kernel
+#' density estimates
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_plotOptions hc_tooltip
 #' JS hc_add_series_scatter hc_add_series_density
@@ -66,8 +67,7 @@ diffSplicingEventUI <- function(id) {
 #' data <- sample(20, rep=TRUE)/20
 #' groups <- c(rep("A", 10), rep("B", 10))
 #' plotDistribution(data, groups)
-plotDistribution <- function(psi, groups, bandwidth=0.01, rug=TRUE, 
-                             vLine=TRUE) {
+plotDistribution <- function(psi, groups, rug=TRUE, vLine=TRUE, ...) {
     # Include X-axis zoom and hide markers
     hc <- highchart() %>%
         hc_chart(zoomType = "x") %>%
@@ -90,16 +90,16 @@ plotDistribution <- function(psi, groups, bandwidth=0.01, rug=TRUE,
     plotLines <- list()
     for (group in sort(unique(groups))) {
         row  <- psi[groups == group]
-        med  <- roundDigits(median(row, na.rm = TRUE))
-        vari <- roundDigits(var(row, na.rm = TRUE))
-        max  <- roundDigits(max(row, na.rm = TRUE))
-        min  <- roundDigits(min(row, na.rm = TRUE))
+        med  <- roundDigits(median(row, na.rm=TRUE))
+        vari <- roundDigits(var(row, na.rm=TRUE))
+        max  <- roundDigits(max(row, na.rm=TRUE))
+        min  <- roundDigits(min(row, na.rm=TRUE))
         samples <- sum(!is.na(row))
         
         color <- JS("Highcharts.getOptions().colors[", count, "]")
         
         # Calculate the density of inclusion levels for each sample group
-        den <- density(row, bw = bandwidth, na.rm = TRUE)
+        den <- density(row, na.rm=TRUE, ...)
         hc <- hc %>%
             hc_add_series_density(den, name=group, area=TRUE, median=med, 
                                   var=vari, samples=samples, max=max, 
@@ -557,14 +557,20 @@ diffSplicingEventServer <- function(input, output, session) {
         bandwidth <- input$bandwidth
         if (bandwidth <= 0 || is.na(bandwidth)) {
             errorModal(session, "Bandwidth must have a positive value",
-                       "Insert a number higher than 0.")
+                       "The density smoothing bandwidth requires a number",
+                       "higher than 0.")
             return(NULL)
         }
         
         # Get splicing event's inclusion levels for all samples
         psi <- getInclusionLevels()
         col <- getDiffSplicingGroups()
-        if (is.null(col) || col=="") return(NULL)
+        if (is.null(col) || col=="") {
+            sample <- colnames(psi)
+            types <- parseSampleGroups(samples)
+            col <- unique(types)
+            attr(col, "samples") <- TRUE
+        }
         output$groupsCol <- renderUI( paste(col, collapse=", ") )
         
         groups <- prepareGroupsDiffSplicing(psi, col)
@@ -583,7 +589,7 @@ diffSplicingEventServer <- function(input, output, session) {
         eventPSI <- filterGroups(eventPSI, groups)
         groups <- names(eventPSI)
         
-        plot <- plotDistribution(eventPSI, groups, bandwidth)
+        plot <- plotDistribution(eventPSI, groups, bw=input$bandwidth)
         output$density <- renderHighchart(plot)
         
         output$basicStats <- renderUI(basicStats(eventPSI, groups))
