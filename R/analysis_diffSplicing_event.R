@@ -56,6 +56,7 @@ diffSplicingEventUI <- function(id) {
 #' median of each group even when those groups are omitted
 #' @param ... Extra parameters passed to \code{density} to create the kernel
 #' density estimates
+#' @param title Character: plot title
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_plotOptions hc_tooltip
 #' JS
@@ -67,7 +68,8 @@ diffSplicingEventUI <- function(id) {
 #' data <- sample(20, rep=TRUE)/20
 #' groups <- c(rep("A", 10), rep("B", 10))
 #' plotDistribution(data, groups)
-plotDistribution <- function(psi, groups, rug=TRUE, vLine=TRUE, ...) {
+plotDistribution <- function(psi, groups, rug=TRUE, vLine=TRUE, ..., 
+                             title=NULL) {
     # Include X-axis zoom and hide markers
     hc <- highchart() %>%
         hc_chart(zoomType = "x") %>%
@@ -84,7 +86,10 @@ plotDistribution <- function(psi, groups, rug=TRUE, vLine=TRUE, ...) {
                 "Number of samples: {series.options.samples}", br(),
                 "Median: {series.options.median}", br(),
                 "Variance: {series.options.var}", br(),
-                "Range: {series.options.min} - {series.options.max}"))
+                "Range: {series.options.min} - {series.options.max}")) %>%
+        export_highcharts()
+    
+    if (!is.null(title)) hc <- hc %>% hc_title(text=title)
     
     count <- 0
     plotLines <- list()
@@ -588,7 +593,8 @@ diffSplicingEventServer <- function(input, output, session) {
         eventPSI <- filterGroups(eventPSI, groups)
         groups <- names(eventPSI)
         
-        plot <- plotDistribution(eventPSI, groups, bw=input$bandwidth)
+        plot <- plotDistribution(eventPSI, groups, bw=input$bandwidth,
+                                 title=gsub("_", " ", event))
         output$density <- renderHighchart(plot)
         
         output$basicStats <- renderUI(basicStats(eventPSI, groups))

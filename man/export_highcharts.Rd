@@ -4,19 +4,18 @@
 \alias{export_highcharts}
 \title{Add an exporting feature to a \code{highcharts} object}
 \usage{
-export_highcharts(hc, y = -45, verticalAlign = "bottom",
-  fill = "transparent", text = "Export")
+export_highcharts(hc, fill = "transparent", text = "Export")
 }
 \arguments{
 \item{hc}{A \code{highcharts} object}
 
-\item{y}{Numeric: position}
-
-\item{verticalAlign}{Character: vertical alignment}
-
 \item{fill}{Character: colour fill}
 
 \item{text}{Character: button text}
+
+\item{y}{Numeric: position}
+
+\item{verticalAlign}{Character: vertical alignment}
 }
 \value{
 A \code{highcharts} object with an export button

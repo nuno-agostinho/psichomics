@@ -218,7 +218,8 @@ plotProtein <- function(protein) {
                  max=length, allowDecimals=FALSE) %>%
         hc_yAxis(visible=FALSE) %>%
         hc_tooltip(pointFormat="<b>{series.name} {point.id}</b>
-                   <br>{point.variant}{point.description}")
+                   <br>{point.variant}{point.description}") %>%
+        export_highcharts()
     
     # The diverse types of features available
     types <- unique(feature$type)
