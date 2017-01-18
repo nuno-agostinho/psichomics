@@ -6,6 +6,7 @@
         - Fix function usage as according to new version of highcharter
         - More options available when exporting plots (PNG, JPEG, SVG, XLS and
         CSV)
+    * Faster alternative splicing quantification
     * Differential splicing analysis:
         - Fix major bug where samples could be placed in the wrong groups
         - Shorten speed of the calculation for the optimal PSI cut-off that 
