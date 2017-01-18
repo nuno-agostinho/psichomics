@@ -110,7 +110,7 @@ survivalUI <- function(id) {
 #' @importFrom stats pchisq optim
 #' @importFrom survival survdiff
 #' @importFrom highcharter hchart hc_chart hc_yAxis hc_xAxis hc_tooltip
-#' hc_subtitle hc_tooltip renderHighchart hc_title hc_plotOptions
+#' hc_subtitle hc_tooltip renderHighchart hc_plotOptions
 #' @importFrom DT dataTableOutput renderDataTable
 #' @importFrom utils write.table
 #' 
@@ -227,7 +227,7 @@ survivalServer <- function(input, output, session) {
         # Plot survival curves
         hc <- plotSurvivalCurves(surv, markTimes, intRanges, pvalue, plotTitle, 
                                  scale) %>%
-            export_highcharts(verticalAlign="center", y=53)
+            export_highcharts()
         if (!is.null(sub)) hc <- hc_subtitle(hc, text=sub)
         output$survival <- renderHighchart(hc)
     })
