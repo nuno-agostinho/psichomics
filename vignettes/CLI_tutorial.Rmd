@@ -86,7 +86,6 @@ files.
 
 ```{r prepare examples, include=FALSE}
 clinical <- readRDS("BRCA_clinical.RDS")
-junctionQuant <- readRDS("BRCA_psi.RDS")
 ```
 
 ## Load local files
@@ -124,14 +123,13 @@ To quantify alternative splicing, first select the junction quantification,
 alternative splicing annotation and alternative splicing event type(s) of 
 interest:
 
-```{r prepare to quantify splicing}
-# Min. reads threshold: number of reads required to quantify a splicing event
-minReads <- 10
-
+```{r prepare to quantify splicing, eval=FALSE}
 # Load Human (hg19/GRCh37 assembly) annotation
 human <- listSplicingAnnotations()[[1]]
 annotation <- loadAnnotation(human)
+```
 
+```{r event types}
 # Available alternative splicing event types (skipped exon, alternative 
 # first/last exon, mutually exclusive exons, etc.)
 eventType <- getSplicingEventTypes()
@@ -142,10 +140,19 @@ eventType <- "SE"
 Afterwards, quantify alternative splicing using the previously defined
 parameters:
 
-```{r quantify splicing}
+```{r quantify splicing, eval=FALSE}
+# Min. reads threshold: number of reads required to quantify a splicing event
+minReads <- 10
+
 psi <- quantifySplicing(annotation, junctionQuant, eventType=eventType, 
                         minReads=minReads)
+```
 
+```{r load splicing, echo=FALSE}
+psi <- readRDS("BRCA_psi.RDS")
+```
+
+```{r check splicing events}
 # Check the identifier of the splicing events in the resulting table
 events <- rownames(psi)
 head(events)
@@ -327,7 +334,7 @@ By default, differential splicing analysis is performed by sample types (i.e.
 tumour, normal, metastasis, etc) for multiple parametric and non-parametric
 statistical tests. Let's analyse the previous splicing event found:
 
-```{r diff splicing}
+```{r diff splicing 1}
 # Choose a method to use when adjusting p-values ("none" is valid)
 # help(p.adjust.methods)
 pvalueAdjust <- "BH"
@@ -361,7 +368,7 @@ Not all statistical tests are performed depending on the number of groups
 available. Check if any tests show statistical significance using only tumour
 against normal samples (for instance, Log-rank p-values below 0.05):
 
-```{r}
+```{r diff splicing 2}
 filter <- grep("Tumor|Normal", types)
 gr_event <- types[filter]
 eventPSI <- eventPSI[filter]
@@ -381,7 +388,7 @@ median and variance.
 Now, change the groups to *positive* and *negative* for ER expression and check
 if any of the tests show statistical significance:
 
-```{r}
+```{r diff splicing 3}
 # Filter alternative splicing quantification by positive or negative ER
 # expression; match between patient information and samples as such:
 erGroups <- getMatchingSamples(groups[c("negative", "positive")], samples, 
