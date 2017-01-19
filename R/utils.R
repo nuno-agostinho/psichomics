@@ -882,8 +882,6 @@ uniqueBy <- function(data, ...) {
 #' Add an exporting feature to a \code{highcharts} object
 #' 
 #' @param hc A \code{highcharts} object
-#' @param y Numeric: position
-#' @param verticalAlign Character: vertical alignment
 #' @param fill Character: colour fill
 #' @param text Character: button text
 #' 
