@@ -12,10 +12,6 @@ export_highcharts(hc, fill = "transparent", text = "Export")
 \item{fill}{Character: colour fill}
 
 \item{text}{Character: button text}
-
-\item{y}{Numeric: position}
-
-\item{verticalAlign}{Character: vertical alignment}
 }
 \value{
 A \code{highcharts} object with an export button
