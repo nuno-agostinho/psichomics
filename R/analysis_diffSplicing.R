@@ -369,7 +369,7 @@ diffAnalyses <- function(psi, groups=NULL,
                              pvalueAdjust, " adjusted", parenthesisClose)
             
             if (!is.matrix(adjust))
-                adjust <- as.matrix(adjust)
+                adjust <- t(as.matrix(adjust))
             colnames(adjust) <- names
             
             # Place the adjusted p-values next to the respective p-values
@@ -444,25 +444,21 @@ prepareGroupsDiffSplicing <- function(psi, groups) {
     if (isTRUE(attr(groups, "samples"))) {
         # Separate samples by their groups
         ids <- names(psi)
-        gr <- parseSampleGroups(ids)
-        gr[!gr %in% groups] <- NA
+        sampleGroups <- parseSampleGroups(ids)
+        filter <- sampleGroups %in% groups
+        sampleGroups <- sampleGroups[filter]
+        psi <- psi[filter]
     } else {
-        # Separate sample by clinical groups from patients
         clinicalGroups <- getGroupsFrom("Clinical data")[groups]
+        samples <- colnames(psi)
+        match   <- getClinicalMatchFrom("Inclusion levels")
         
-        # Match groups from patients with respective samples
-        matches <- getClinicalMatchFrom("Inclusion levels")
-        gr <- rep(NA, ncol(psi))
-        names(gr) <- colnames(psi)
-        
-        for (g in seq_along(clinicalGroups)) {
-            m <- matches %in% clinicalGroups[[g]]
-            gr[m] <- names(clinicalGroups)[[g]]
-        }
+        sampleGroups <- getMatchingSamples(clinicalGroups, samples, match=match,
+                                           clinical=getClinicalData())
+        psi <- psi[ , unlist(sampleGroups)]
+        sampleGroups <- rep(names(sampleGroups), sapply(sampleGroups, length))
     }
-    # Remove samples with no groups
-    valid      <- !is.na(gr)
-    return( list(psi=psi[valid], groups=gr[valid]) )
+    return( list(psi=psi, groups=sampleGroups) )
 }
 
 attr(diffSplicingUI, "loader") <- "analysis"

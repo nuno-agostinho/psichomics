@@ -353,7 +353,7 @@ operateOnGroups <- function(input, session, FUN, buttonId, symbol=" ",
         }
         
         # Remove selected groups
-        if (identical(FUN, "remove"))# || input$removeSetsUsed)
+        if (identical(FUN, "remove")) # || input$removeSetsUsed)
             groups <- groups[-selected, , drop=FALSE]
         
         # Add new groups to top (if there are any)
@@ -452,6 +452,11 @@ groupsServer <- function(input, output, session, datasetName) {
     operateOnGroups(input, session, FUN="remove", buttonId=removeId,
                     datasetName=datasetName)
     
+    # Rename selected groups
+    renameId <- "renameGroups"
+    operateOnGroups(input, session, FUN="rename", buttonId=renameId,
+                    datasetName=datasetName)
+    
     # Merge selected groups
     mergeId <- "mergeGroups"
     operateOnGroups(input, session, FUN=union, buttonId=mergeId, 
@@ -472,21 +477,23 @@ groupsServer <- function(input, output, session, datasetName) {
         
         # Don't show anything when there are no groups
         if (!is.null(groups) && nrow(groups) > 0) {
-            operations <- div(id=ns("setOperations"), class="btn-group",
-                              operationButton("Merge", ns(mergeId)),
-                              operationButton("Intersect", ns(intersectId)),
-                              # actionButton("complementGroups", ns("Complement")),
-                              # actionButton("subtractGroups", ns("Subtract")),
-                              operationButton("Remove", ns(removeId),
-                                              icon=icon("times")))
+            operations <- div(
+                id=ns("setOperations"), class="btn-group",
+                operationButton("Merge", ns(mergeId)),
+                operationButton("Intersect", ns(intersectId)),
+                # operationButton("Complement", ns(complementId)),
+                # operationButton("Subtract", ns(subtractId)),
+                operationButton("Rename", ns(renameId), icon=icon("pencil")),
+                operationButton("Remove", ns(removeId), class="btn-danger",
+                                icon=icon("times")))
             tagList(
                 hr(),
                 dataTableOutput(ns("groupsTable")),
-                helpText("Select groups by clicking on them in order to merge,",
-                         "intersect or remove selected groups."),
+                helpText("Select groups by clicking on each one to perform the",
+                         "following actions on them."),
                 disabled(operations),
-                actionButton(ns("removeAll"), class="btn-danger", 
-                             "Remove all groups")#,
+                actionButton(ns("removeAll"), class="btn-danger",
+                             class="pull-right", "Remove all groups")
                 #checkboxInput(ns("removeSetsUsed"), "Remove original groups",
                 #              value=TRUE)
             )

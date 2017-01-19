@@ -1,3 +1,36 @@
+1.0.6 (17 Jan, 2017)
+====================
+
+    * Update tutorials with more relevant and complex examples
+    * Update minimum versions required of highcharter (0.5.0) and shiny (1.0.0):
+        - Fix function usage as according to new version of highcharter
+        - More options available when exporting plots (PNG, JPEG, SVG, XLS and
+        CSV)
+    * Faster alternative splicing quantification
+    * Differential splicing analysis:
+        - Fix major bug where samples could be placed in the wrong groups
+        - Shorten speed of the calculation for the optimal PSI cut-off that 
+        minimises the survival difference
+        - Fix not performing statistical tests for two selected sample types
+        while analysing a single event with three or more sample types
+        - Fix differential analysis on one splicing event not working when using
+        `diffAnalyses()` function
+        - Fix differential analysis not showing for individual events before
+        navigating to the page where the analysis is performed for all events
+        - Improve readability and information of statistical tests for single
+        events
+    * Principal component analysis:
+        - Shorten time taken to calculate principal components and to render the
+        loadings plot
+        - Fix loadings plot error when rendering some principal components
+    * Survival analysis:
+        - Fix incorrect number of patients from the survival groups in the
+        contextual information for the selected cut-off (below the slider)
+        - Improve how alternative splicing quantification is assigned to
+        patients based on their samples
+    * Protein annotation:
+        - Warn user when trying to render proteins with no domains
+
 1.0.5 (7 Jan, 2017)
 ===================
 

@@ -105,5 +105,13 @@ test_that("Retrieve samples from patient identifiers", {
     ref <- c(1, 4)
     match <- getMatchingSamples(ref, samples, clinical, prefix="")
     expect_is(match, "character")
-    expect_equivalent(match, toupper(clinical$samples[ref]))
+    expect_equivalent(match[], toupper(clinical$samples[ref]))
+    
+    # Retrieve samples when previously matched
+    patients <- getPatientFromSample(samples, clinical, prefix="", 
+                                     rmNoMatches=FALSE)
+    match <- getMatchingSamples(ref, samples, clinical, prefix="",
+                                match=patients)
+    expect_is(match, "character")
+    expect_equivalent(match[], toupper(clinical$samples[ref]))
 })
