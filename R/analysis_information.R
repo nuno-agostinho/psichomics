@@ -25,12 +25,8 @@ queryEnsembl <- function(path, query, grch37 = TRUE) {
     resp <- tryCatch(GET(url, path=path, query=query, config=timeout(10)), 
                      error=return)
     
-    if ("error" %in% class(resp)) 
-        return(NULL)
-    else if (http_error(resp)) 
-        return(NULL)
-    else if (is.null(resp))
-        return(NULL) # time out
+    if (is(resp, "error") || http_error(resp) || is.null(resp)) # Time out
+        return(NULL) # for instance, time out
     r <- content(resp, "text", encoding = "UTF8")
     return(fromJSON(r))
 }
@@ -185,11 +181,14 @@ parseUniprotXML <- function(xml) {
     
     # Convert list of characters to data frame of characters
     feature <- ldply(l, rbind)
-    for (col in 1:ncol(feature))
-        feature[[col]] <- as.character(feature[[col]])
+    if (ncol(feature) > 0) {
+        for (col in 1:ncol(feature))
+            feature[[col]] <- as.character(feature[[col]])
+        
+        feature$start <- as.numeric(feature$start)
+        feature$stop <- as.numeric(feature$stop)
+    }
     
-    feature$start <- as.numeric(feature$start)
-    feature$stop <- as.numeric(feature$stop)
     return(list(proteinLength=proteinLength, feature=feature))
 }
 
@@ -219,13 +218,18 @@ plotProtein <- function(protein) {
                  max=length, allowDecimals=FALSE) %>%
         hc_yAxis(visible=FALSE) %>%
         hc_tooltip(pointFormat="<b>{series.name} {point.id}</b>
-                   <br>{point.variant}{point.description}")
+                   <br>{point.variant}{point.description}") %>%
+        export_highcharts()
     
     # The diverse types of features available
     types <- unique(feature$type)
     
     cat("Plotting protein domains...", fill=TRUE)
     featureList <- NULL
+    
+    if (nrow(feature) == 0)
+        stop("This protein has no annotated domains in UniProt.")
+    
     # Reverse elements from features so the first ones (smaller Y) are above
     for (feat in nrow(feature):1) {
         feat <- feature[feat, ]
@@ -478,7 +482,7 @@ pubmedUI <- function(gene, ...) {
 #' 
 #' @importFrom Sushi plotGenes zoomsregion labelgenome
 #' @importFrom highcharter highchart %>%
-#' @importFrom shiny fixedRow
+#' @importFrom shiny fixedRow safeError
 #' @importFrom methods is
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
@@ -639,11 +643,12 @@ infoServer <- function(input, output, session) {
             output$plotProtein <- renderHighchart(NULL)
         } else {
             hc <- tryCatch(plotProtein(uniprot), error=return)
-            if ("error" %in% hc) {
-                warning("Some unknown error occurred")
-            } else {
-                output$plotProtein <- renderHighchart(hc)
-            }
+            output$plotProtein <- renderHighchart({
+                if (is(hc, "error"))
+                    stop(safeError(hc$message))
+                
+                return(hc)
+            })
         }
     })
     

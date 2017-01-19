@@ -6,7 +6,7 @@
 index}
 \usage{
 getMatchingSamples(index, samples, clinical, upper = TRUE, rm.NA = TRUE,
-  prefix = "^tcga")
+  prefix = "^tcga", match = NULL)
 }
 \arguments{
 \item{index}{Numeric or list of numeric: patient row indexes}
@@ -20,6 +20,9 @@ getMatchingSamples(index, samples, clinical, upper = TRUE, rm.NA = TRUE,
 \item{rm.NA}{Boolean: remove NAs? TRUE by default}
 
 \item{prefix}{Character: prefix to search for in clinical data}
+
+\item{match}{Integer: vector of patient index with the sample identifiers as
+name to save time (optional)}
 }
 \value{
 Names of the matching rows

@@ -167,24 +167,16 @@ optimSurvDiff <- function(session, input, output) {
     observeEvent(input$survival, {
         time <- startProcess("survival")
         isolate({
-            # Get tumour sample IDs (normal and control samples are not
-            # interesting for survival analysis)
-            match <- getClinicalMatchFrom("Inclusion levels")
-            types <- parseSampleGroups(names(match))
-            tumour <- match[!grepl("Normal|Control", types)]
-            
-            # Group samples by the inclusion levels cut-off
-            clinical <- getClinicalData()
-            clinicalIDs <- nrow(clinical)
-            groups <- rep(NA, clinicalIDs)
-            
+            clinical      <- getClinicalData()
+            psi           <- getInclusionLevels()
+            match         <- getClinicalMatchFrom("Inclusion levels")
+            statsTable    <- getDifferentialAnalyses()
+            optimSurv     <- getDifferentialAnalysesSurvival()
+            # User input
             censoring <- input$censoring
             timeStart <- input$timeStart
             timeStop  <- input$timeStop
             event     <- input$event
-            psi       <- getInclusionLevels()
-            statsTable <- getDifferentialAnalyses()
-            optimSurv <- getDifferentialAnalysesSurvival()
             display   <- input$statsTable_rows_current
             filtered  <- input$statsTable_rows_all
             selected  <- input$selected
@@ -217,17 +209,13 @@ optimSurvDiff <- function(session, input, output) {
         }
         startProgress("Performing survival analysis", nrow(subset))
         
-        opt <- apply(subset, 1, function(vector) {
-            # Retrieve numeric PSIs from tumour samples
-            eventPSI <- rep(NA, nrow(clinical))
-            eventPSI[tumour] <- as.numeric(vector[toupper(names(tumour))])
-            
-            opt <- suppressWarnings(
-                optim(0, testSurvivalCutoff, data=eventPSI, filter=tumour, 
-                      group=groups, clinical=clinical, censoring=censoring,
-                      timeStart=timeStart, timeStop=timeStop, event=event,
-                      # Method and parameters interval
-                      method="Brent", lower=0, upper=1))
+        # Assign alternative splicing quantification to patients based on their
+        # samples
+        clinicalPSI <- getPSIperPatient(subset, match, clinical)
+        
+        opt <- apply(clinicalPSI, 1, function(eventPSI) {
+            opt <- optimalPSIcutoff(clinical, eventPSI, censoring, event, 
+                                    timeStart, timeStop)
             
             updateProgress("Survival analysis", console=FALSE)
             return(c("Optimal survival PSI cut-off"=opt$par,
@@ -321,23 +309,19 @@ optimSurvDiff <- function(session, input, output) {
         }
         
         isolate({
-            # Get tumour sample IDs (normal and control samples are not
-            # interesting for survival analysis)
-            match <- getClinicalMatchFrom("Inclusion levels")
-            types <- parseSampleGroups(names(match))
-            tumour <- match[!grepl("Normal|Control", types)]
-            
-            clinical <- getClinicalData()
+            clinical      <- getClinicalData()
+            psi           <- getInclusionLevels()
+            match         <- getClinicalMatchFrom("Inclusion levels")
+            # User input
             censoring <- input$censoring
             timeStart <- input$timeStart
             timeStop  <- input$timeStop
             event     <- input$event
-            psi       <- getInclusionLevels()
         })
         
         # Interface for the survival curves of 10 splicing events
         lapply(seq(10), function(i) {
-            hc <- plotMiniSurvivalCurves(i, input, optimSurv, clinical, tumour,
+            hc <- plotMiniSurvivalCurves(i, input, optimSurv, clinical, match,
                                          psi, censoring, event, timeStart, 
                                          timeStop)
             output[[paste0("curves", i)]] <- renderHighchart(hc)
@@ -351,13 +335,13 @@ optimSurvDiff <- function(session, input, output) {
 #' @param survParams List of parameters to plot survival curves
 #' @param i Numeric: index of the survival curves plot of interest
 #' @param input Shiny input
-#' @param filter Numeric or character: filtered samples
+#' @param match Integer: samples matched with clinical patients
 #' @param psi Data frame or matrix: alternative splicing quantification
 #' 
 #' @importFrom highcharter hc_legend hc_xAxis hc_yAxis hc_chart hc_plotOptions
 #' 
 #' @return A \code{"highchart"} object to plot
-plotMiniSurvivalCurves <- function(i, input, survParams, clinical, filter, psi, 
+plotMiniSurvivalCurves <- function(i, input, survParams, clinical, match, psi, 
                                    censoring, event, timeStart, timeStop) {
     row <- input$statsTable_rows_current[i]
     cutoff <- survParams[row, 1]
@@ -366,14 +350,13 @@ plotMiniSurvivalCurves <- function(i, input, survParams, clinical, filter, psi,
         show(paste0("curves", i), anim=TRUE)
         splicingEvent  <- rownames(survParams)[row]
         
-        # Retrieve numeric PSIs from filtered samples
-        eventPSI <- rep(NA, nrow(clinical))
-        eventPSI[filter] <- as.numeric(
-            psi[splicingEvent, toupper(names(filter))])
-        group <- eventPSI >= cutoff
+        # Assign alternative splicing quantification to patients based on their
+        # samples
+        clinicalPSI <- getPSIperPatient(psi, match, clinical)
+        eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
         
-        group[group == "TRUE"]  <- paste(">=", cutoff)
-        group[group == "FALSE"] <- paste("<", cutoff)
+        # Assign a value based on the inclusion levels cut-off
+        group <- labelBasedOnCutoff(eventPSI, cutoff, label="")
         
         survTerms <- processSurvTerms(clinical, censoring, event, timeStart, 
                                       timeStop, group)
@@ -422,9 +405,8 @@ diffSplicingTableServer <- function(input, output, session) {
                             onclick=loadRequiredData("Inclusion levels")))))
         
         # Separate samples by their type
-        ids <- names(psi)
-        type <- parseSampleGroups(ids)
-        
+        samples <- colnames(psi)
+        type <- parseSampleGroups(samples)
         groups <- unique(type)
         checkboxGroupInput(ns("sampleTypes"),
                            "Choose sample types for comparison:",
