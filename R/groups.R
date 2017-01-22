@@ -341,7 +341,7 @@ operateOnGroups <- function(input, session, FUN, buttonId, symbol=" ",
         # Create new set
         new <- NULL
         selected <- input$groupsTable_rows_selected
-        if (!identical(FUN, "remove")) {
+        if (!identical(FUN, "remove") && !identical(FUN, "rename")) {
             mergedFields <- lapply(1:3, function(i) {
                 names <- paste(groups[selected, i], collapse=symbol)
                 # Add parenthesis around new expression
@@ -361,6 +361,17 @@ operateOnGroups <- function(input, session, FUN, buttonId, symbol=" ",
             new <- renameGroups(new, groups)
             groups <- rbind(new, groups)
         }
+        
+        # Rename selected group
+        if (identical(FUN, "rename")) {
+            renamed <- groups[selected, , drop=FALSE]
+            renamed[[1]] <- input$newGroupName
+            
+            # Avoid groups with the same name
+            renamed <- renameGroups(renamed, groups[-selected, , drop=FALSE])
+            groups[selected, ] <- renamed[ , ]
+            rownames(groups)[selected] <- groups[[selected, 1]]
+        }
         setGroupsFrom(datasetName, groups)
     })
 }
@@ -373,7 +384,7 @@ operateOnGroups <- function(input, session, FUN, buttonId, symbol=" ",
 #' @param session Shiny session
 #' 
 #' @importFrom DT renderDataTable dataTableOutput
-#' @importFrom shinyjs disabled enable disable
+#' @importFrom shinyjs disabled enable disable hidden show hide
 #' @return NULL (this function is used to modify the Shiny session's state)
 groupsServer <- function(input, output, session, datasetName) {
     ns <- session$ns
@@ -438,18 +449,14 @@ groupsServer <- function(input, output, session, datasetName) {
                      '<"pull-right"f><"clearfix">>>',
                      'rt<"row view-pager"<"col-sm-12"<"text-center"ip>>>')))
     
-    # Disable buttons if there's no row selected
-    observe({
-        if (!is.null(input$groupsTable_rows_selected)) {
-            enable("setOperations")
-        } else {
-            disable("setOperations")
-        }
-    })
-    
     # Remove selected groups
     removeId <- "removeGroups"
     operateOnGroups(input, session, FUN="remove", buttonId=removeId,
+                    datasetName=datasetName)
+    
+    # Rename selected groups
+    renameId <- "renameGroupName"
+    operateOnGroups(input, session, FUN="rename", buttonId=renameId,
                     datasetName=datasetName)
     
     # Merge selected groups
@@ -461,6 +468,31 @@ groupsServer <- function(input, output, session, datasetName) {
     intersectId <- "intersectGroups"
     operateOnGroups(input, session, FUN=intersect, datasetName=datasetName,
                     buttonId=intersectId, symbol=" \u2229 ")
+    
+    # Disable set operations if there's no row selected
+    observe({
+        if (!is.null(input$groupsTable_rows_selected))
+            enable("setOperations")
+        else
+            disable("setOperations")
+    })
+    
+    # Show group rename if one group is selected
+    observe({
+        if (length(input$groupsTable_rows_selected) == 1)
+            show("renameAlert", anim=TRUE, time=0.2)
+        else
+            hide("renameAlert", anim=TRUE, time=0.2)
+    })
+    
+    # Disable rename button if no new name was given
+    observe({
+        renameButton <- paste(renameId, "button", sep="-")
+        if (is.null(input$newGroupName) || input$newGroupName == "")
+            disable(renameButton)
+        else
+            enable(renameButton)
+    })
     
     # Render groups interface only if at least one group exists
     output$groupsList <- renderUI({
@@ -480,16 +512,36 @@ groupsServer <- function(input, output, session, datasetName) {
                 # operationButton("Subtract", ns(subtractId)),
                 operationButton("Remove", ns(removeId), class="btn-danger",
                                 icon=icon("times")))
+            
+            removeAllButton <- actionButton(ns("removeAll"), class="btn-danger",
+                                            class="pull-right",
+                                            "Remove all groups",
+                                            icon=icon("trash"))
+            
+            renameButton <- operationButton("Rename", ns(renameId),
+                                            class="pull-right",
+                                            icon=icon("pencil"))
+            nameField <- textInput(ns("newGroupName"), label=NULL, 
+                                   placeholder="Rename selected group")
+            nameField$attribs$style <- "margin: 0"
+            renameInterface <- div(
+                id=ns("renameAlert"), class="alert", role="alert",
+                class="alert-info", #class="animated bounceInUp",
+                style=" margin-top: 10px; margin-bottom: 0px;",
+                div(class="row",
+                    div(class="col-md-10", nameField),
+                    div(class="col-md-2", renameButton)))
+            
             tagList(
                 hr(),
                 dataTableOutput(ns("groupsTable")),
                 helpText("Select groups by clicking on each one to perform the",
                          "following actions on them."),
-                disabled(operations),
-                actionButton(ns("removeAll"), class="btn-danger",
-                             class="pull-right", "Remove all groups")
+                operations,
+                removeAllButton,
                 #checkboxInput(ns("removeSetsUsed"), "Remove original groups",
                 #              value=TRUE)
+                hidden(renameInterface)
             )
         }
     })
