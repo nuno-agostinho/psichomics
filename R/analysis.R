@@ -96,11 +96,11 @@ getPSIperPatient <- function(psi, match, clinical,
     match_tumour <- match_tumour[!is.na(match_tumour)]
     
     # Remove duplicates (only one sample type for each patient)
+    ## TODO: prioritise by sample types of interest
     match_tumour <- match_tumour[!duplicated(match_tumour)]
     
     # Match samples with clinical patients (remove non-matching samples)
-    clinicalPSI <- data.frame(matrix(NA, nrow=nrow(psi),
-                                     ncol=length(match_tumour)))
+    clinicalPSI <- data.frame(matrix(NA, nrow=nrow(psi), ncol=nrow(clinical)))
     clinicalPSI[ , match_tumour] <- psi[ , toupper(names(match_tumour))]
     
     colnames(clinicalPSI) <- rownames(clinical)

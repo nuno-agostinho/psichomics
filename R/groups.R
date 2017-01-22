@@ -452,11 +452,6 @@ groupsServer <- function(input, output, session, datasetName) {
     operateOnGroups(input, session, FUN="remove", buttonId=removeId,
                     datasetName=datasetName)
     
-    # Rename selected groups
-    renameId <- "renameGroups"
-    operateOnGroups(input, session, FUN="rename", buttonId=renameId,
-                    datasetName=datasetName)
-    
     # Merge selected groups
     mergeId <- "mergeGroups"
     operateOnGroups(input, session, FUN=union, buttonId=mergeId, 
@@ -483,7 +478,6 @@ groupsServer <- function(input, output, session, datasetName) {
                 operationButton("Intersect", ns(intersectId)),
                 # operationButton("Complement", ns(complementId)),
                 # operationButton("Subtract", ns(subtractId)),
-                operationButton("Rename", ns(renameId), icon=icon("pencil")),
                 operationButton("Remove", ns(removeId), class="btn-danger",
                                 icon=icon("times")))
             tagList(
