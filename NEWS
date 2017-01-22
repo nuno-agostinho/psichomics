@@ -1,3 +1,10 @@
+1.0.7 (22 Jan, 2017)
+====================
+
+    * Survival analysis:
+        - Fix error caused by some non-matched patients not being in the
+        patient-sample matching matrix
+
 1.0.6 (17 Jan, 2017)
 ====================
 
