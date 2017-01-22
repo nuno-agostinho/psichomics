@@ -8,6 +8,12 @@
 diffSplicingEventUI <- function(id) {
     ns <- NS(id)
     
+    card <- function(...) {
+        div(class="col-sm-6 col-md-4",
+            div(class="thumbnail", style="background:#eee;",
+                div(class="caption", ...)))
+    }
+    
     tagList(
         uiOutput(ns("modal")),
         sidebarLayout(
@@ -16,21 +22,23 @@ diffSplicingEventUI <- function(id) {
                 tags$br(), tags$a(onclick="changeDiffSplicingGroup()",
                                   uiOutput(ns("groupsCol"))),
                 tags$br(),
-                numericInput(ns("bandwidth"), "Density bandwidth", 0.01, 
-                             step=0.01),
+                numericInput(ns("bandwidth"), "Density smoothing bandwidth",
+                             0.01, step=0.01, min=0.01),
                 uiOutput(ns("basicStats")), hr(),
                 # uiOutput(ns("spearman")), hr(),
                 # uiOutput(ns("fisher")), hr(),
-                h3("Parametric tests"),
-                uiOutput(ns("ttest")), hr(),
-                uiOutput(ns("levene")), hr(),
-                h3("Non-parametric tests"),
-                uiOutput(ns("wilcox")), hr(),
-                uiOutput(ns("kruskal")), hr(),
-                uiOutput(ns("fligner")), hr(),
                 uiOutput(ns("survival"))
             ), mainPanel(
-                highchartOutput(ns("density"))
+                highchartOutput(ns("density")),
+                h4("Parametric tests"),
+                div(class="row",
+                    card(uiOutput(ns("ttest"))),
+                    card(uiOutput(ns("levene")))),
+                h4("Non-parametric tests"),
+                div(class="row",
+                    card(uiOutput(ns("wilcox"))),
+                    card(uiOutput(ns("kruskal"))),
+                    card(uiOutput(ns("fligner"))))
             )
         )
     )
@@ -42,14 +50,16 @@ diffSplicingEventUI <- function(id) {
 #' of each data series.
 #' 
 #' @inheritParams wilcox
-#' @param bandwidth Numeric: density bandwidth
 #' @param rug Boolean: include rug plot to better visualise data distribution 
 #' (TRUE by default)
 #' @param vLine Boolean: include vertical plot lines to indicate the mean and
 #' median of each group even when those groups are omitted
+#' @param ... Extra parameters passed to \code{density} to create the kernel
+#' density estimates
+#' @param title Character: plot title
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_plotOptions hc_tooltip
-#' JS hc_add_series_scatter hc_add_series_density
+#' JS
 #' @importFrom stats median var density
 #' 
 #' @return Highcharter object with density plot
@@ -58,8 +68,8 @@ diffSplicingEventUI <- function(id) {
 #' data <- sample(20, rep=TRUE)/20
 #' groups <- c(rep("A", 10), rep("B", 10))
 #' plotDistribution(data, groups)
-plotDistribution <- function(psi, groups, bandwidth=0.01, rug=TRUE, 
-                             vLine=TRUE) {
+plotDistribution <- function(psi, groups, rug=TRUE, vLine=TRUE, ..., 
+                             title=NULL) {
     # Include X-axis zoom and hide markers
     hc <- highchart() %>%
         hc_chart(zoomType = "x") %>%
@@ -76,29 +86,31 @@ plotDistribution <- function(psi, groups, bandwidth=0.01, rug=TRUE,
                 "Number of samples: {series.options.samples}", br(),
                 "Median: {series.options.median}", br(),
                 "Variance: {series.options.var}", br(),
-                "Range: {series.options.min} - {series.options.max}"))
+                "Range: {series.options.min} - {series.options.max}")) %>%
+        export_highcharts()
+    
+    if (!is.null(title)) hc <- hc %>% hc_title(text=title)
     
     count <- 0
     plotLines <- list()
     for (group in sort(unique(groups))) {
         row  <- psi[groups == group]
-        med  <- roundDigits(median(row, na.rm = TRUE))
-        vari <- roundDigits(var(row, na.rm = TRUE))
-        max  <- roundDigits(max(row, na.rm = TRUE))
-        min  <- roundDigits(min(row, na.rm = TRUE))
+        med  <- roundDigits(median(row, na.rm=TRUE))
+        vari <- roundDigits(var(row, na.rm=TRUE))
+        max  <- roundDigits(max(row, na.rm=TRUE))
+        min  <- roundDigits(min(row, na.rm=TRUE))
         samples <- sum(!is.na(row))
         
         color <- JS("Highcharts.getOptions().colors[", count, "]")
         
         # Calculate the density of inclusion levels for each sample group
-        den <- density(row, bw = bandwidth, na.rm = TRUE)
+        den <- density(row, na.rm=TRUE, ...)
         hc <- hc %>%
-            hc_add_series_density(den, name=group, area=TRUE, median=med, 
-                                  var=vari, samples=samples, max=max, 
-                                  color=color, min=min)
+            hc_add_series(den, type="area", name=group, median=med, var=vari,
+                          samples=samples, max=max, color=color, min=min)
         # Rug plot
         if (rug) {
-            hc <- hc_add_series_scatter(
+            hc <- hc_scatter(
                 hc, row, rep(0, length(row)), name=group, marker=list(
                     enabled=TRUE, symbol="circle", radius=4, fillColor=color),
                 median=med, var=vari, samples=samples, max=max, min=min)
@@ -141,13 +153,18 @@ basicStats <- function(psi, groups) {
     if (len == 2) {
         deltaMedian <- tagList(tags$b("|\u0394 Median|: "), 
                                roundDigits(abs(medi[2] - medi[1])), br())
+        deltaVar <- tagList(tags$b("|\u0394 Variance|: "), 
+                            roundDigits(abs(vari[2] - vari[1])), br())
     } else {
         deltaMedian <- NULL
+        deltaVar <- NULL
     }
     
-    ui <- tagList(h4("Basic statistics"), deltaMedian,
-                  tags$b("Average variance: "),
-                  roundDigits(sum(vari)/length(vari)))
+    avgMedian <- roundDigits( mean(medi) )
+    avgVar <- roundDigits( mean(vari) )
+    ui <- tagList(h4("Basic statistics"),
+                  tags$b("Average median: "), avgMedian, br(), deltaMedian,
+                  tags$b("Average variance: "), avgVar, br(), deltaVar)
     return(ui)
 }
 
@@ -211,10 +228,10 @@ wilcox <- function(psi, groups, stat=NULL) {
     tagList(
         h4(method), warn,
         tags$b("Test value: "), roundDigits(statistic), br(),
-        tags$b("p-value: "), signifDigits(p.value), br(), adjusted,
         tags$b("Location parameter: "), null.value, br(),
-        tags$b("Alternative hypothesis: "), alternative
-    )
+        tags$b("Alternative hypothesis: "), alternative,
+        div(style="text-align:right",
+            tags$b("p-value: "), signifDigits(p.value), br(), adjusted))
 }
 
 #' Perform unpaired t-test analysis and return interface to show the results
@@ -238,6 +255,9 @@ ttest <- function(psi, groups, stat=NULL) {
         p.value     <- stat$`T-test p-value`
         null.value  <- stat$`T-test null value`
         alternative <- stat$`T-test alternative`
+        parameter   <- stat$`T-test parameter`
+        int1        <- stat$`T-test conf int1`
+        int2        <- stat$`T-test conf int2`
     }
     
     if (len != 2) {
@@ -272,15 +292,21 @@ ttest <- function(psi, groups, stat=NULL) {
         adjusted    <- NULL
         null.value  <- stat$stat$null.value
         alternative <- stat$stat$alternative
+        parameter   <- stat$stat$parameter
+        int1        <- stat$stat$conf.int[[1]]
+        int2        <- stat$stat$conf.int[[2]]
     }
     
     tagList(
         h4(method), warn,
         tags$b("Test value: "), roundDigits(statistic), br(),
-        tags$b("p-value: "), signifDigits(p.value), br(), adjusted,
+        tags$b("Test parameter: "), parameter, br(),
         tags$b("Difference in means: "), null.value, br(),
-        tags$b("Alternative hypothesis: "), alternative
-    )
+        tags$b("Alternative hypothesis: "), alternative, br(),
+        tags$b("95\u0025 confidence interval: "), roundDigits(int1),
+        roundDigits(int2),
+        div(style="text-align:right",
+            tags$b("p-value: "), signifDigits(p.value), br(), adjusted))
 }
 
 
@@ -343,8 +369,9 @@ levene <- function(psi, groups, stat=NULL) {
     tagList(
         h4("Levene's Test for Homogeneity of Variance"),
         tags$b("Test value: "), roundDigits(statistic), br(),
-        tags$b("p-value: "), signifDigits(p.value), br(), adjusted, nonBootstrap
-    )
+        div(style="text-align:right",
+            tags$b("p-value: "), signifDigits(p.value), br(), adjusted,
+            nonBootstrap))
 }
 
 #' Perform Fligner-Killeen test and return interface to show the results
@@ -359,6 +386,7 @@ fligner <- function(psi, groups, stat=NULL) {
     if (!is.null(stat)) {
         statistic <- stat$`Fligner-Killeen statistic`
         p.value   <- stat$`Fligner-Killeen p-value`
+        parameter <- stat$`Fligner-Killeen parameter`
     }
     
     if (len < 2) {
@@ -381,13 +409,15 @@ fligner <- function(psi, groups, stat=NULL) {
         statistic <- stat$statistic
         p.value   <- stat$p.value
         adjusted  <- NULL
+        parameter <- stat$parameter
     }
     
     tagList(
         h4("Fligner-Killeen's Test for Homogeneity of Variance"),
         tags$b("Test value: "), roundDigits(statistic), br(),
-        tags$b("p-value: "), signifDigits(p.value), br(), adjusted
-    )
+        tags$b("Test parameter: "), parameter, br(),
+        div(style="text-align:right",
+            tags$b("p-value: "), signifDigits(p.value), br(), adjusted))
 }
 
 #' Perform Kruskal's test and return interface to show the results
@@ -430,9 +460,10 @@ kruskal <- function(psi, groups, stat=NULL) {
     }
     
     tagList(h4(method),
-            tags$b("Test value (Chi squared): "), roundDigits(statistic), br(),
-            tags$b("p-value: "), signifDigits(p.value), br(), adjusted,
-            tags$b("Degrees of freedom: "), parameter)
+            tags$b("Test value \u03C7\u00B2: "), roundDigits(statistic), br(),
+            tags$b("Degrees of freedom: "), parameter,
+            div(style="text-align:right",
+                tags$b("p-value: "), signifDigits(p.value), br(), adjusted))
 }
 
 #' Perform Fisher's exact test and return interface to show the results
@@ -530,14 +561,20 @@ diffSplicingEventServer <- function(input, output, session) {
         bandwidth <- input$bandwidth
         if (bandwidth <= 0 || is.na(bandwidth)) {
             errorModal(session, "Bandwidth must have a positive value",
-                       "Insert a number higher than 0.")
+                       "The density smoothing bandwidth requires a number",
+                       "higher than 0.")
             return(NULL)
         }
         
         # Get splicing event's inclusion levels for all samples
         psi <- getInclusionLevels()
         col <- getDiffSplicingGroups()
-        if (is.null(col) || col=="") return(NULL)
+        if (is.null(col) || col=="") {
+            samples <- colnames(psi)
+            types <- parseSampleGroups(samples)
+            col <- unique(types)
+            attr(col, "samples") <- TRUE
+        }
         output$groupsCol <- renderUI( paste(col, collapse=", ") )
         
         groups <- prepareGroupsDiffSplicing(psi, col)
@@ -556,7 +593,8 @@ diffSplicingEventServer <- function(input, output, session) {
         eventPSI <- filterGroups(eventPSI, groups)
         groups <- names(eventPSI)
         
-        plot <- plotDistribution(eventPSI, groups, bandwidth)
+        plot <- plotDistribution(eventPSI, groups, bw=input$bandwidth,
+                                 title=gsub("_", " ", event))
         output$density <- renderHighchart(plot)
         
         output$basicStats <- renderUI(basicStats(eventPSI, groups))

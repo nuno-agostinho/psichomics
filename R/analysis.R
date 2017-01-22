@@ -66,6 +66,48 @@ analysesUI <- function(id, tab) {
     do.call(tab, c(list(icon="flask", title="Analyses", menu=TRUE), ui))
 }
 
+#' Assign alternative splicing quantification to patients based on their samples
+#' 
+#' Match filtered samples with clinical patients to retrieve alternative
+#' splicing quantification per clinical patient. Only one sample can be matched
+#' with one patient. Normal and control samples are filtered out by default.
+#' 
+#' @param psi Data frame or matrix: alternative splicing quantification per
+#' samples
+#' @param match Matrix: match between samples and clinical patients
+#' @param clinical Data frame or matrix: clinical dataset
+#' @param pattern Character: pattern to use when filtering sample types (normal 
+#' and control samples are filtered by default)
+#' @param filterOut Boolean: filter out (TRUE) or filter in (FALSE) samples with
+#' the given pattern; by default, filter out
+#' 
+#' @return Alternative splicing quantification per clinical patients
+#' @export
+getPSIperPatient <- function(psi, match, clinical,
+                             pattern=c("Normal", "Control"), filterOut=TRUE) {
+    # Get sample identifiers of interest
+    types <- parseSampleGroups(names(match))
+    
+    pattern <- paste(pattern, collapse="|")
+    filter <- grepl(pattern, types)
+    if (filterOut) filter <- !filter
+    
+    match_tumour <- match[filter]
+    match_tumour <- match_tumour[!is.na(match_tumour)]
+    
+    # Remove duplicates (only one sample type for each patient)
+    match_tumour <- match_tumour[!duplicated(match_tumour)]
+    
+    # Match samples with clinical patients (remove non-matching samples)
+    clinicalPSI <- data.frame(matrix(NA, nrow=nrow(psi),
+                                     ncol=length(match_tumour)))
+    clinicalPSI[ , match_tumour] <- psi[ , toupper(names(match_tumour))]
+    
+    colnames(clinicalPSI) <- rownames(clinical)
+    rownames(clinicalPSI) <- rownames(psi)
+    return(clinicalPSI)
+}
+
 #' Process survival data to calculate survival curves
 #' 
 #' @inheritParams getColumnsTime
@@ -89,7 +131,7 @@ analysesUI <- function(id, tab) {
 processSurvData <- function(event, timeStart, timeStop, followup, group, 
                             clinical, survTime=NULL) {
     if ( is.null(survTime) ) {
-        survTime <- getColumnsTime(event, timeStart, timeStop, clinical,
+        survTime <- getColumnsTime(clinical, event, timeStart, timeStop,
                                    followup)
     }
     
@@ -127,7 +169,7 @@ processSurvData <- function(event, timeStart, timeStop, followup, group,
 #' @return Data frame containing the time for the given columns
 #' 
 #' @export
-getColumnsTime <- function(event, timeStart, timeStop, clinical,
+getColumnsTime <- function(clinical, event, timeStart, timeStop=NULL,
                            followup="days_to_last_followup") {
     cols <- c(followup=followup, start=timeStart, stop=timeStop, event=event)
     survTime <- lapply(cols, timePerPatient, clinical)
@@ -519,7 +561,6 @@ labelBasedOnCutoff <- function (data, cutoff, label=NULL, gte=TRUE) {
 #' @inheritParams processSurvTerms
 #' @param cutoff Numeric: Cut-off of interest
 #' @param data Numeric: elements of interest to test against the cut-off
-#' @param group Pre-filled vector of missing values with the length of data
 #' @param filter Boolean or numeric: elements to use (all by default)
 #' @param ... Arguments to pass to \code{processSurvTerms}
 #' @param session Shiny session
@@ -527,13 +568,8 @@ labelBasedOnCutoff <- function (data, cutoff, label=NULL, gte=TRUE) {
 #' @importFrom survival survdiff
 #' @return p-value of the survival difference
 testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
-                               group=NULL, session=NULL) {
-    if (is.null(group)) group <- rep(NA, nrow(clinical))
-    group[filter] <- data[filter] >= cutoff
-    
-    # Assign a value based on the inclusion levels cut-off
-    group[group == "TRUE"]  <- paste("Inclusion levels >=", cutoff)
-    group[group == "FALSE"] <- paste("Inclusion levels <", cutoff)
+                               session=NULL) {
+    group <- labelBasedOnCutoff(data, cutoff, label="Inclusion levels")
     
     # Calculate survival curves
     if (!is.null(session)) {
@@ -550,6 +586,55 @@ testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
     pvalue <- testSurvival(survTerms)
     if (is.na(pvalue)) pvalue <- 1
     return(pvalue)
+}
+
+#' Calculate optimal alternative splicing quantification cut-off to separate
+#' survival curves
+#'
+#' @details \code{timeStop} is only considered if \code{censoring} is either
+#' \code{interval} or \code{interval2}
+#'
+#' @inheritParams processSurvTerms
+#' @inheritParams testSurvivalCutoff
+#' @param psi Numeric: PSI values to test against the cut-off
+#' @param session Shiny session (only used for the visual interface)
+#' 
+#' @return Optimal alternative splicing quantification cut-off
+#' @export
+#' 
+#' @examples 
+#' clinical <- read.table(text = "2549   NA ii  female
+#'                                 840   NA i   female
+#'                                  NA 1204 iv    male
+#'                                  NA  383 iv  female
+#'                                1293   NA iii   male
+#'                                  NA 1355 ii    male")
+#' names(clinical) <- c("patient.days_to_last_followup", 
+#'                      "patient.days_to_death",
+#'                      "patient.stage_event.pathologic_stage",
+#'                      "patient.gender")
+#' timeStart  <- "days_to_death"
+#' event      <- "days_to_death"
+#' 
+#' psi <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
+#' opt <- optimalPSIcutoff(clinical, psi, "right", event, timeStart)
+optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart, 
+                             timeStop=NULL, followup="days_to_last_followup",
+                             session=NULL, filter=TRUE, survTime=NULL) {
+    if ( is.null(survTime) ) {
+        survTime <- getColumnsTime(clinical, event, timeStart, timeStop,
+                                   followup)
+    }
+    
+    # Supress warnings from failed calculations while optimising
+    opt <- suppressWarnings(
+        optim(0, testSurvivalCutoff, data=psi, filter=filter, clinical=clinical,
+              censoring=censoring, timeStart=timeStart, timeStop=timeStop, 
+              event=event, followup=followup, survTime=survTime,
+              session=session,
+              # Method and parameters interval
+              method="Brent", lower=0, upper=1))
+    return(opt)
 }
 
 #' Server logic for the analyses

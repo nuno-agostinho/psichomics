@@ -1,6 +1,3 @@
-## TODO(NunoA): Should groups be merged if there's an intersection?
-## TODO(NunoA): How to correctly do interval censoring?
-
 #' User interface of survival analysis
 #' 
 #' @param id Character: namespace identifier
@@ -101,55 +98,6 @@ survivalUI <- function(id) {
     )
 }
 
-#' Calculate optimal alternative splicing quantification cut-off to separate
-#' survival curves
-#'
-#' @details \code{timeStop} is only considered if \code{censoring} is either
-#' \code{interval} or \code{interval2}
-#'
-#' @inheritParams processSurvTerms
-#' @inheritParams testSurvivalCutoff
-#' @param psi Numeric: PSI values to test against the cut-off
-#' @param session Shiny session (only used for the visual interface)
-#' 
-#' @return Optimal alternative splicing quantification cut-off
-#' @export
-#' 
-#' @examples 
-#' clinical <- read.table(text = "2549   NA ii  female
-#'                                 840   NA i   female
-#'                                  NA 1204 iv    male
-#'                                  NA  383 iv  female
-#'                                1293   NA iii   male
-#'                                  NA 1355 ii    male")
-#' names(clinical) <- c("patient.days_to_last_followup", 
-#'                      "patient.days_to_death",
-#'                      "patient.stage_event.pathologic_stage",
-#'                      "patient.gender")
-#' timeStart  <- "days_to_death"
-#' event      <- "days_to_death"
-#' formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
-#' survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
-#'                                formulaStr=formulaStr)
-#' 
-#' psi <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
-#' opt <- optimalPSIcutoff(clinical, psi, "right", event, timeStart)
-optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart, 
-                             timeStop=NULL, session=NULL, filter=TRUE) {
-    groups <- rep(NA, nrow(clinical))
-    survTime <- getColumnsTime(event, timeStart, timeStop, clinical)
-    
-    # Supress warnings from failed calculations while optimising
-    opt <- suppressWarnings(
-        optim(0, testSurvivalCutoff, group=groups, data=psi, filter=filter,
-              clinical=clinical, censoring=censoring, timeStart=timeStart, 
-              timeStop=timeStop, event=event, survTime=survTime, 
-              session=session,
-              # Method and parameters interval
-              method="Brent", lower=0, upper=1))
-    return(opt)
-}
-
 #' Server logic of survival analysis
 #' 
 #' @param input Shiny input
@@ -162,7 +110,7 @@ optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart,
 #' @importFrom stats pchisq optim
 #' @importFrom survival survdiff
 #' @importFrom highcharter hchart hc_chart hc_yAxis hc_xAxis hc_tooltip
-#' hc_subtitle hc_tooltip renderHighchart hc_title hc_plotOptions
+#' hc_subtitle hc_tooltip renderHighchart hc_plotOptions
 #' @importFrom DT dataTableOutput renderDataTable
 #' @importFrom utils write.table
 #' 
@@ -196,8 +144,11 @@ survivalServer <- function(input, output, session) {
     # Plot survival curves
     observeEvent(input$survivalCurves, {
         isolate({
+            clinical      <- getClinicalData()
+            psi           <- getInclusionLevels()
+            match         <- getClinicalMatchFrom("Inclusion levels")
+            splicingEvent <- getEvent()
             # Get user input
-            clinical   <- getClinicalData()
             timeStart  <- input$timeStart
             timeStop   <- input$timeStop
             event      <- input$event
@@ -207,8 +158,6 @@ survivalServer <- function(input, output, session) {
             formulaStr <- input$formula
             intRanges  <- input$ranges
             markTimes  <- input$markTimes
-            psi        <- getInclusionLevels()
-            splicingEvent <- getEvent()
             psiCutoff  <- input$psiCutoff
             scale      <- input$scale
             # Get chosen groups
@@ -233,22 +182,14 @@ survivalServer <- function(input, output, session) {
                 return(NULL)
             }
             
-            # Get tumour sample IDs (matched normal and control samples are not
-            # interesting for this survival analysis)
-            match <- getClinicalMatchFrom("Inclusion levels")
-            types <- parseSampleGroups(names(match))
-            tumour <- match[!grepl("Normal|Control", types)]
-            
-            # Retrieve numeric PSIs from tumour samples
-            eventPSI <- rep(NA, nrow(clinical))
-            eventPSI[tumour] <- as.numeric(
-                psi[splicingEvent, toupper(names(tumour))])
-            groups <- eventPSI >= psiCutoff
+            # Assign alternative splicing quantification to patients based on
+            # their samples
+            clinicalPSI <- getPSIperPatient(psi, match, clinical)
+            eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
             
             # Assign a value based on the inclusion levels cut-off
-            # groups[is.na(groups)] <- "NA"
-            groups[groups == "TRUE"]  <- paste("Inclusion levels >=", psiCutoff)
-            groups[groups == "FALSE"] <- paste("Inclusion levels <", psiCutoff)
+            groups <- labelBasedOnCutoff(eventPSI, psiCutoff,
+                                         "Inclusion levels")
             formulaStr <- NULL
         } else if (modelTerms == "formula") {
             if (input$formula == "" || is.null(input$formula)) {
@@ -286,7 +227,7 @@ survivalServer <- function(input, output, session) {
         # Plot survival curves
         hc <- plotSurvivalCurves(surv, markTimes, intRanges, pvalue, plotTitle, 
                                  scale) %>%
-            export_highcharts(verticalAlign="center", y=53)
+            export_highcharts()
         if (!is.null(sub)) hc <- hc_subtitle(hc, text=sub)
         output$survival <- renderHighchart(hc)
     })
@@ -294,8 +235,11 @@ survivalServer <- function(input, output, session) {
     # Fit Cox Proportional Hazards model
     observeEvent(input$coxModel, {
         isolate({
+            clinical      <- getClinicalData()
+            psi           <- getInclusionLevels()
+            match         <- getClinicalMatchFrom("Inclusion levels")
+            splicingEvent <- getEvent()
             # Get user input
-            clinical   <- getClinicalData()
             timeStart  <- input$timeStart
             timeStop   <- input$timeStop
             event      <- input$event
@@ -304,8 +248,6 @@ survivalServer <- function(input, output, session) {
             modelTerms <- input$modelTerms
             formulaStr <- input$formula
             intRanges  <- input$ranges
-            psi        <- getInclusionLevels()
-            splicingEvent <- getEvent()
             psiCutoff  <- input$psiCutoff
             scale      <- input$scale
             # Get chosen groups
@@ -331,22 +273,15 @@ survivalServer <- function(input, output, session) {
                 return(NULL)
             }
             
-            # Get tumour sample IDs (matched normal and control samples are not
-            # interesting for this survival analysis)
-            match <- getClinicalMatchFrom("Inclusion levels")
-            types <- parseSampleGroups(names(match))
-            tumour <- match[!grepl("Normal|Control", types)]
-            
-            # Retrieve numeric PSIs from tumour samples
-            eventPSI <- rep(NA, nrow(clinical))
-            eventPSI[tumour] <- as.numeric(
-                psi[splicingEvent, toupper(names(tumour))])
-            groups <- eventPSI >= psiCutoff
+            # Assign alternative splicing quantification to patients based on
+            # their samples
+            clinicalPSI <- getPSIperPatient(psi, match, clinical)
+            eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
             
             # Assign a value based on the inclusion levels cut-off
-            # groups[is.na(groups)] <- "NA"
-            groups[groups == "TRUE"]  <- paste("Inclusion levels >=", psiCutoff)
-            groups[groups == "FALSE"] <- paste("Inclusion levels <", psiCutoff)
+            groups <- labelBasedOnCutoff(eventPSI, psiCutoff,
+                                         "Inclusion levels")
+            
             formulaStr <- NULL
         } else if (modelTerms == "formula") {
             if (input$formula == "" || is.null(input$formula)) {
@@ -451,14 +386,15 @@ survivalServer <- function(input, output, session) {
     
     # Calculate optimal inclusion levels
     output$optimalPsi <- renderUI({
-        # Get user input
         clinical      <- getClinicalData()
+        psi           <- getInclusionLevels()
+        match         <- getClinicalMatchFrom("Inclusion levels")
+        splicingEvent <- getEvent()
+        # Get user input
         timeStart     <- input$timeStart
         timeStop      <- input$timeStop
         event         <- input$event
         censoring     <- input$censoring
-        psi           <- getInclusionLevels()
-        splicingEvent <- getEvent()
         
         if (is.null(clinical)) {
             return(helpText(icon("exclamation-circle"), 
@@ -476,22 +412,15 @@ survivalServer <- function(input, output, session) {
             # output$coxTests  <- renderDataTable(NULL)
             # output$coxGroups <- renderDataTable(NULL)
             
-            # Get tumour sample IDs (matched normal and control samples are not
-            # interesting for this survival analysis)
-            match <- getClinicalMatchFrom("Inclusion levels")
-            types <- parseSampleGroups(names(match))
-            tumour <- match[!grepl("Normal|Control", types)]
-            
-            # Retrieve numeric PSIs from tumour samples
-            eventPSI <- rep(NA, nrow(clinical))
-            eventPSI[tumour] <- as.numeric(
-                psi[splicingEvent, toupper(names(tumour))])
+            # Assign alternative splicing quantification to patients based on
+            # their samples
+            clinicalPSI <- getPSIperPatient(psi, match, clinical)
+            eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
             
             # Calculate optimal alternative splicing quantification cut-off
-            opt <- optimalPSIcutoff(clinical, eventPSI, filter=tumour, 
-                                    censoring=censoring, event=event,
-                                    timeStart=timeStart, timeStop=timeStop,
-                                    session=session)
+            opt <- optimalPSIcutoff(clinical, eventPSI, censoring=censoring, 
+                                    event=event, timeStart=timeStart, 
+                                    timeStop=timeStop, session=session)
             
             observe({
                 value <- 0.5
@@ -518,40 +447,38 @@ survivalServer <- function(input, output, session) {
         }
     })
     
+    # Update contextual information for selected PSI cut-off
     observeEvent(input$psiCutoff, {
         clinical      <- getClinicalData()
+        psi           <- getInclusionLevels()
+        match         <- getClinicalMatchFrom("Inclusion levels")
+        splicingEvent <- getEvent()
+        # Get user input
         timeStart     <- input$timeStart
         timeStop      <- input$timeStop
         event         <- input$event
         censoring     <- input$censoring
-        psi           <- getInclusionLevels()
-        splicingEvent <- getEvent()
+        psiCutoff     <- input$psiCutoff
         
         if (is.null(getEvent()) || getEvent() == "" || 
             is.null(getInclusionLevels()) || is.null(clinical)) return(NULL)
         
-        # Get tumour sample IDs (matched normal and control samples are not
-        # interesting for this survival analysis)
-        match <- getClinicalMatchFrom("Inclusion levels")
-        types <- parseSampleGroups(names(match))
-        tumour <- match[!grepl("Normal|Control", types)]
+        # Assign alternative splicing quantification to patients based on their
+        # samples
+        clinicalPSI <- getPSIperPatient(psi, match, clinical)
+        eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
         
-        # Retrieve numeric PSIs from tumour samples
-        eventPSI <- rep(NA, nrow(clinical))
-        eventPSI[tumour] <- as.numeric(
-            psi[splicingEvent, toupper(names(tumour))])
+        # Assign a value based on the inclusion levels cut-off
+        groups <- labelBasedOnCutoff(eventPSI, psiCutoff, "Inclusion levels")
         
-        group <- labelBasedOnCutoff(eventPSI, input$psiCutoff,
-                                    label="Inclusion levels")
         survTerms <- processSurvTerms(clinical, censoring, event, timeStart,
-                                      timeStop, group)
+                                      timeStop, groups)
         surv <- survfit(survTerms)
         pvalue <- testSurvival(survTerms)
-        strata <- unname(surv$strata)
         
         patients <- NULL
         if (!is.na(pvalue) && pvalue < 1)
-            patients <- paste0("(", strata[1], " vs ", strata[2], " patients)")
+            patients <- paste0("(", surv$n[1], " vs ", surv$n[2], " patients)")
         
         output$thisPvalue <- renderUI(
             tagList(

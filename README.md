@@ -45,7 +45,7 @@ To install and start using the development version, follow these steps:
     - **r-devel** or **r-base-dev** (Linux)
 3. Open [RStudio][4] (or open a console, type `R` and press enter)
 4. Type the following to install [Bioconductor][2]: 
-    - `source("https://bioconductor.org/biocLite.R"); biocLite("BiocInstaller")`
+    - `source("https://bioconductor.org/biocLite.R")`
 5. Type the following to install, load and start the visual interface:
 ```r
 install.packages("devtools")

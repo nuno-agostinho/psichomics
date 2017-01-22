@@ -437,22 +437,16 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         if (nrow(tot) == 0)
             return(NULL)
         
-        # Ignore PSI values when total reads are below the threshold
-        less <- tot < minReads | is.na(tot)
-        psi <- as.data.frame(matrix(ncol=ncol(tot), nrow=nrow(tot)))
-        psi[!less] <- inc[!less]/tot[!less]
-        colnames(psi) <- colnames(inc)
-        rm(inc)
-        
         # Prepare presentation of multigenes
         multigene <- lapply(annotation$Gene, length) > 1
         gene <- annotation$Gene
         gene[multigene] <- lapply(gene[multigene], paste, collapse="/")
-        rownames(psi) <- paste(sep="_", eventType, chr, strand, 
-                               annotation$`Constitutive exon 1 end`, 
-                               annotation$`Alternative exon 1 start`, 
-                               annotation$`Alternative exon 1 end`,
-                               annotation$`Constitutive exon 2 start`, gene)
+        
+        eventNames <- paste(sep="_", eventType, chr, strand, 
+                            annotation$`Constitutive exon 1 end`, 
+                            annotation$`Alternative exon 1 start`, 
+                            annotation$`Alternative exon 1 end`,
+                            annotation$`Constitutive exon 2 start`, gene)
     } else if (eventType == "MXE") {
         # Remove duplicates based on columns used to create identifiers
         annotation <- uniqueBy(
@@ -491,21 +485,18 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         if (nrow(tot) == 0)
             return(NULL)
         
-        psi <- inc/tot
-        # Ignore PSI where total reads are below the threshold
-        psi[tot < minReads] <- NA
-        
         # Prepare presentation of multigenes
         multigene <- lapply(annotation$Gene, length) > 1
         gene <- annotation$Gene
         gene[multigene] <- lapply(gene[multigene], paste, collapse="/")
-        rownames(psi) <- paste(sep="_", eventType, chr, strand, 
-                               annotation$`Constitutive exon 1 end`,
-                               annotation$`Alternative exon 1 start`,
-                               annotation$`Alternative exon 1 end`, 
-                               annotation$`Alternative exon 2 start`, 
-                               annotation$`Alternative exon 2 end`,
-                               annotation$`Constitutive exon 2 start`, gene)
+        
+        eventNames <- paste(sep="_", eventType, chr, strand, 
+                            annotation$`Constitutive exon 1 end`,
+                            annotation$`Alternative exon 1 start`,
+                            annotation$`Alternative exon 1 end`, 
+                            annotation$`Alternative exon 2 start`, 
+                            annotation$`Alternative exon 2 end`,
+                            annotation$`Constitutive exon 2 start`, gene)
     } else if (eventType %in% c("A5SS", "AFE")) {
         # Remove duplicates based on columns used to create identifiers
         annotation <- annotation[!is.na(
@@ -533,20 +524,15 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         if (nrow(tot) == 0)
             return(NULL)
         
-        # Calculate inclusion levels
-        psi <- inc/tot
-        # Ignore PSI where total reads are below the threshold
-        psi[tot < minReads] <- NA
-        
         # Prepare presentation of multigenes
         multigene <- lapply(annotation$Gene, length) > 1
         gene <- annotation$Gene
         gene[multigene] <- lapply(gene[multigene], paste, collapse="/")
         
-        rownames(psi) <- paste(sep="_", eventType, chr, strand, 
-                               annotation$`Constitutive exon 1 end`, 
-                               annotation$`Alternative exon 1 end`, 
-                               annotation$`Constitutive exon 2 start`, gene)
+        eventNames <- paste(sep="_", eventType, chr, strand, 
+                            annotation$`Constitutive exon 1 end`, 
+                            annotation$`Alternative exon 1 end`, 
+                            annotation$`Constitutive exon 2 start`, gene)
     } else if (eventType %in% c("A3SS", "ALE")) {
         # Remove duplicates based on columns used to create identifiers
         annotation <- annotation[!is.na(annotation$`Constitutive exon 1 end`), ]
@@ -573,23 +559,27 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         if (nrow(tot) == 0)
             return(NULL)
         
-        # Calculate inclusion levels
-        psi <- inc/tot
-        # Ignore PSI where total reads are below the threshold
-        psi[tot < minReads] <- NA
-        
         # Prepare presentation of multigenes
         multigene <- lapply(annotation$Gene, length) > 1
         gene <- annotation$Gene
         gene[multigene] <- lapply(gene[multigene], paste, collapse="/")
         
-        rownames(psi) <- paste(sep="_", eventType, chr, strand,
-                               annotation$`Constitutive exon 1 end`,
-                               annotation$`Alternative exon 1 start`, 
-                               annotation$`Constitutive exon 2 start`, gene)
+        eventNames <- paste(sep="_", eventType, chr, strand,
+                            annotation$`Constitutive exon 1 end`,
+                            annotation$`Alternative exon 1 start`, 
+                            annotation$`Constitutive exon 2 start`, gene)
     }
     
-    # Clear rows with nothing but NAs
+    # Calculate inclusion levels
+    psi <- inc/tot
+    
+    # Ignore PSI values when total reads are below the threshold
+    psi[tot < minReads | is.na(tot)] <- NA
+    colnames(psi) <- colnames(inc)
+    rownames(psi) <- eventNames
+    rm(inc)
+    
+    # Clear rows with nothing but missing values
     naRows <- rowSums(!is.na(psi)) == 0
     return(psi[!naRows, ])
 }

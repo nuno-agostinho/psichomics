@@ -221,7 +221,7 @@ getPatientFromSample <- function(sampleId, clinical, prefix="^tcga",
     if (lower) sampleId <- tolower(sampleId)
     
     # Get all possible identifiers starting in "tcga" from the clinical data
-    idsIndex <- vapply(1:ncol(clinical), 
+    idsIndex <- vapply(1:ncol(clinical),
                        function(i) length(grep(prefix, clinical[[i]])) != 0,
                        logical(1))
     clinicalIds <- clinical[, idsIndex, drop=FALSE]
@@ -250,6 +250,8 @@ getPatientFromSample <- function(sampleId, clinical, prefix="^tcga",
 #' @param clinical Data frame or matrix: clinical dataset
 #' @param upper Boolean: convert identifiers to upper case? TRUE by default
 #' @param rm.NA Boolean: remove NAs? TRUE by default
+#' @param match Integer: vector of patient index with the sample identifiers as
+#' name to save time (optional)
 #' 
 #' @return Names of the matching rows
 #' @export
@@ -260,24 +262,26 @@ getPatientFromSample <- function(sampleId, clinical, prefix="^tcga",
 #'                        samples=tolower(samples))
 #' getMatchingSamples(c(1, 4), samples, clinical, prefix="")
 getMatchingSamples <- function(index, samples, clinical, upper=TRUE, 
-                               rm.NA=TRUE, prefix="^tcga") {
+                               rm.NA=TRUE, prefix="^tcga", match=NULL) {
     patient <- rep(NA, nrow(clinical))
-    p <- getPatientFromSample(samples, clinical, prefix=prefix)
-    patient[p] <- names(p)
+    if (is.null(match))
+        match <- getPatientFromSample(samples, clinical, prefix=prefix)
+    match <- match[!is.na(match)]
+    patient[match] <- names(match)
     
     if (is.list(index)) {
-        match <- lapply(index, function(i) {
+        samples <- lapply(index, function(i) {
             res <- patient[i]
             if (upper) res <- toupper(res)
             if (rm.NA) res <- res[!is.na(res)]
             return(res)
         })
     } else {
-        match <- patient[index]
-        if (upper) match <- toupper(match)
-        if (rm.NA) match <- match[!is.na(match)]
-    }    
-    return(match)
+        samples <- patient[index]
+        if (upper) samples <- toupper(samples)
+        if (rm.NA) samples <- samples[!is.na(samples)]
+    }
+    return(samples)
 }
 
 #' Assign one group to each patient
@@ -878,48 +882,61 @@ uniqueBy <- function(data, ...) {
 #' Add an exporting feature to a \code{highcharts} object
 #' 
 #' @param hc A \code{highcharts} object
-#' @param y Numeric: position
-#' @param verticalAlign Character: vertical alignment
 #' @param fill Character: colour fill
 #' @param text Character: button text
 #' 
+#' @importFrom highcharter hc_exporting JS
+#' 
 #' @return A \code{highcharts} object with an export button
-export_highcharts <- function(hc, y=-45, verticalAlign="bottom", 
-                              fill="transparent", text="Export") {
+export_highcharts <- function(hc, fill="transparent", text="Export") {
+    export <- list(
+        list(text="PNG image",
+             onclick=JS("function () { 
+                            this.exportChart({ type: 'image/png' }); }")),
+        list(text="JPEG image",
+             onclick=JS("function () { 
+                            this.exportChart({ type: 'image/jpeg' }); }")),
+        list(text="SVG vector image",
+             onclick=JS("function () { 
+                            this.exportChart({ type: 'image/svg+xml' }); }")),
+        list(text="PDF document",
+             onclick=JS("function () { 
+                            this.exportChart({ type: 'application/pdf' }); }")),
+        list(separator=TRUE),
+        list(text="CSV document",
+             onclick=JS("function () { this.downloadCSV(); }")),
+        list(text="XLS document",
+             onclick=JS("function () { this.downloadXLS(); }"))
+    )
+    
     hc_exporting(hc, enabled=TRUE,
-                 formAttributes = list(target = "_blank"),
-                 buttons=list(contextButton=list(text=text, y=y,
-                                                 verticalAlign=verticalAlign, 
-                                                 theme=list(fill=fill))))
+                 formAttributes=list(target="_blank"),
+                 buttons=list(contextButton=list(
+                     text=text, theme=list(fill=fill),
+                     menuItems=export)))
 }
 
-#' Modified function of highcharter::hc_add_series_scatter
+#' Create scatter plot
 #' 
-#' @inheritParams highcharter::hc_add_series_scatter
+#' Create a scatter plot using \code{highcharter}
 #' 
-#' @importFrom dplyr data_frame mutate
-#' @importFrom assertthat assert_that
-#' @importFrom highcharter colorize list_parse hc_add_series
+#' @param hc \code{Highchart} object
+#' @param x Numeric: X axis
+#' @param y Numeric: Y axis
+#' @param z Numeric: Z axis to set the bubble size (optional)
+#' @param label Character: data label for each point (optional)
+#' @param showInLegend Boolean: show the data in the legend box? FALSE by
+#' default
+#' @param ... Extra attributes of the data series to plot
+#' 
+#' @importFrom highcharter hc_add_series list_parse
 #' 
 #' @return Highchart object containing information for a scatter plot
-hc_add_series_scatter <- function (hc, x, y, z = NULL, color = NULL, 
-                                   label = NULL, showInLegend = FALSE, ...) 
-{
-    assert_that(length(x) == length(y), is.numeric(x), is.numeric(y))
-    df <- data_frame(x, y)
-    if (!is.null(z)) {
-        assert_that(length(x) == length(z))
-        df <- df %>% mutate(z = z)
-    }
-    if (!is.null(color)) {
-        assert_that(length(x) == length(color))
-        cols <- colorize(color)
-        df <- df %>% mutate(valuecolor = color, color = cols)
-    }
-    if (!is.null(label)) {
-        assert_that(length(x) == length(label))
-        df <- df %>% mutate(label = label)
-    }
+hc_scatter <- function (hc, x, y, z=NULL, label=NULL, showInLegend=FALSE, ...) {
+    df <- data.frame(x, y)
+    if (!is.null(z)) df <- cbind(df, z=z)
+    if (!is.null(label)) df <- cbind(df, label=label)
+    
     args <- list(...)
     for (i in seq_along(args)) {
         if (!is.list(args[[i]]) && length(x) == length(args[[i]]) && 
@@ -930,15 +947,17 @@ hc_add_series_scatter <- function (hc, x, y, z = NULL, color = NULL,
             args[[i]] <- character(0)
         }
     }
+    
     args <- Filter(length, args)
     ds <- list_parse(df)
     type <- ifelse(!is.null(z), "bubble", "scatter")
-    if (!is.null(label)) {
-        dlopts <- list(enabled = TRUE, format = "{point.label}")
-    }
-    else {
-        dlopts <- list(enabled = FALSE)
-    }
-    do.call("hc_add_series", c(list(hc, data = ds, type = type, 
-                                    showInLegend = showInLegend, dataLabels = dlopts), args))
+    
+    if (!is.null(label))
+        dlopts <- list(enabled=TRUE, format="{point.label}")
+    else
+        dlopts <- list(enabled=FALSE)
+    
+    do.call("hc_add_series", c(list(hc, data=ds, type=type, 
+                                    showInLegend=showInLegend,
+                                    dataLabels=dlopts), args))
 }

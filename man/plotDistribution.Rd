@@ -4,20 +4,23 @@
 \alias{plotDistribution}
 \title{Plot distribution through a density plot}
 \usage{
-plotDistribution(psi, groups, bandwidth = 0.01, rug = TRUE, vLine = TRUE)
+plotDistribution(psi, groups, rug = TRUE, vLine = TRUE, ..., title = NULL)
 }
 \arguments{
 \item{psi}{Numeric: quantification of one alternative splicing event}
 
 \item{groups}{Character: group of each PSI index}
 
-\item{bandwidth}{Numeric: density bandwidth}
-
 \item{rug}{Boolean: include rug plot to better visualise data distribution 
 (TRUE by default)}
 
 \item{vLine}{Boolean: include vertical plot lines to indicate the mean and
 median of each group even when those groups are omitted}
+
+\item{...}{Extra parameters passed to \code{density} to create the kernel
+density estimates}
+
+\item{title}{Character: plot title}
 }
 \value{
 Highcharter object with density plot

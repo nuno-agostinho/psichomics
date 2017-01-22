@@ -1,7 +1,7 @@
 Package: psichomics
 Title: Graphical Interface for Alternative Splicing Quantification, Analysis and
     Visualisation
-Version: 1.0.5
+Version: 1.0.6
 Encoding: UTF-8
 Authors@R: c( person("Nuno", "Saraiva-Agostinho", ,
         "nunodanielagostinho@gmail.com", role = c("aut", "cre")),
@@ -18,20 +18,19 @@ Description: Package with a Shiny-based graphical interface for the integrated
     features (such as tumour stage or survival) associated with TCGA samples.
 Depends:
     R (>= 3.3),
-    shiny (>= 0.14),
+    shiny (>= 1.0.0),
     shinyBS
 License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 5.0.1
 Imports:
-    assertthat,
     AnnotationHub,
     data.table,
     digest,
     dplyr,
     DT (>= 0.2),
     fastmatch,
-    highcharter (>= 0.4.0),
+    highcharter (>= 0.5.0),
     httr,
     jsonlite,
     miscTools,
