@@ -167,6 +167,7 @@ survivalServer <- function(input, output, session) {
         
         if (is.null(clinical)) {
             missingDataModal(session, "Clinical data", ns("missingClinical"))
+            return(NULL)
         } else if (modelTerms == "groups") {
             # Assign one group for each clinical patient
             groups <- groupPerPatient(chosen, nrow(clinical), outGroup)
