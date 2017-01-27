@@ -2,8 +2,8 @@
 =====
 
     * Fix clinical data dependency:
-        - Fix error where junction quantification was matched to clinical data
-        even if clinical data were not loaded
+        - Fix error where samples from junction quantification were matched to
+        clinical information even if clinical data were not loaded
         - Inform user when clinical data is not loaded while trying to plot
         survival curves
 
