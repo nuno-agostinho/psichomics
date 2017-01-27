@@ -1,3 +1,10 @@
+1.0.8
+=====
+
+    * Fix clinical data dependency:
+        - Fix error where junction quantification was matched to clinical data
+        even if clinical data were not loaded
+
 1.0.7 (22 Jan, 2017)
 ====================
 
