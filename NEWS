@@ -4,6 +4,8 @@
     * Fix clinical data dependency:
         - Fix error where junction quantification was matched to clinical data
         even if clinical data were not loaded
+        - Inform user when clinical data is not loaded while trying to plot
+        survival curves
 
 1.0.7 (22 Jan, 2017)
 ====================
