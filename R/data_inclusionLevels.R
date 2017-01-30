@@ -213,10 +213,12 @@ inclusionLevelsServer <- function(input, output, session) {
                                 progress=updateProgress)
         setInclusionLevels(psi)
         
-        updateProgress("Matching clinical data")
-        match <- getPatientFromSample(colnames(psi), getClinicalData())
-        setClinicalMatchFrom("Inclusion levels", match)
-        
+        clinical <- getClinicalData()
+        if (!is.null(clinical)) {
+            updateProgress("Matching clinical data")
+            match <- getPatientFromSample(colnames(psi), clinical)
+            setClinicalMatchFrom("Inclusion levels", match)
+        }
         endProcess("calcIncLevels", time)
     })
     
@@ -353,9 +355,12 @@ inclusionLevelsServer <- function(input, output, session) {
                 attr(psi, "tablename") <- "Inclusion levels"
                 setInclusionLevels(psi)
                 
-                updateProgress("Matching clinical data")
-                match <- getPatientFromSample(colnames(psi), getClinicalData())
-                setClinicalMatchFrom("Inclusion levels", match)
+                clinical <- getClinicalData()
+                if (!is.null(clinical)) {
+                    updateProgress("Matching clinical data")
+                    match <- getPatientFromSample(colnames(psi), clinical)
+                    setClinicalMatchFrom("Inclusion levels", match)
+                }
                 
                 setSpecies(input$customSpecies2)
                 setAssemblyVersion(input$customAssembly2)
