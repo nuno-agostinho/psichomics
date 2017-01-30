@@ -6,6 +6,7 @@
         clinical information even if clinical data were not loaded
         - Inform user when clinical data is not loaded while trying to plot
         survival curves
+    * Rename clinical groups
 
 1.0.7 (22 Jan, 2017)
 ====================
