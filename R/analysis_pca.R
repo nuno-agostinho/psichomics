@@ -12,7 +12,7 @@
 ##      geom_point(aes(x=PC1, y=PC2, color=factor(Cluster)), size=5, shape=20) +
 ##      stat_ellipse(aes(x=PC1,y=PC2,fill=factor(Cluster)),
 ##          geom="polygon", level=0.95, alpha=0.2) +
-##      guides(color=guide_legend("Cluster"),fill=guide_legend("Cluster"))
+##      guides(color=guide_legend("Cluster"), fill=guide_legend("Cluster"))
 ## 
 ## Source:
 ## http://stackoverflow.com/questions/20260434/test-significance-of-clusters-on-a-pca-plot
@@ -107,7 +107,7 @@ pcaUI <- function(id) {
                     selectGroupsUI(ns("colourGroups"),
                                    "Clinical groups to colour the PCA"),
                     actionButton(ns("showVariancePlot"), "Show variance plot"),
-                    processButton(ns("plot"), "Plot PCA")
+                    actionButton(ns("plot"), "Plot PCA", class="btn-primary")
                 )
             )
         ), mainPanel(
@@ -377,7 +377,6 @@ pcaServer <- function(input, output, session) {
     
     # Plot the principal component analysis
     observeEvent(input$plot, {
-        startProcess("plot")
         isolate({
             pca <- getInclusionLevelsPCA()
             pcX <- input$pcX
@@ -421,7 +420,6 @@ pcaServer <- function(input, output, session) {
             } else {
                 return(NULL)
             })
-        endProcess("plot", closeProgressBar=FALSE)
     })
     
     observe(
