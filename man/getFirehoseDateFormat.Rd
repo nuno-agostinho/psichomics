@@ -21,4 +21,3 @@ format$query
 # date format to parse a date in a response from Firehose API
 format$response
 }
-

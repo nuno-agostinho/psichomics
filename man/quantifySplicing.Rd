@@ -33,4 +33,3 @@ junctionQuant <- readFile("ex_junctionQuant.RDS")
 
 psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 }
-

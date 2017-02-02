@@ -56,4 +56,3 @@ matsOutput <- system.file(folder, package="psichomics")
 mats <- parseMatsAnnotation(matsOutput)
 annot <- prepareAnnotationFromEvents(suppa, mats)
 }
-

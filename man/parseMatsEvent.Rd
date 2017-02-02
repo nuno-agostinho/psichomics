@@ -36,4 +36,3 @@ event <- read.table(text = "
 ")
 psichomics:::parseMatsEvent(event, "A3SS")
 }
-

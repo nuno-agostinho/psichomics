@@ -62,4 +62,3 @@ psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 group <- c(rep("Normal", 3), rep("Tumour", 3))
 diffAnalyses(psi, group)
 }
-

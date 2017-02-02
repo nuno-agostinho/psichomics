@@ -17,4 +17,3 @@ HTML elements
 \description{
 Creates UI elements for the grouping feature
 }
-

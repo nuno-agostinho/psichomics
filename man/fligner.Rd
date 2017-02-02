@@ -20,4 +20,3 @@ HTML elements
 \description{
 Perform Fligner-Killeen test and return interface to show the results
 }
-

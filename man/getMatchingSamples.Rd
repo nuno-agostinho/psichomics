@@ -37,4 +37,3 @@ clinical <- data.frame(patient=paste0("patient-", samples),
                        samples=tolower(samples))
 getMatchingSamples(c(1, 4), samples, clinical, prefix="")
 }
-

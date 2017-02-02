@@ -25,4 +25,3 @@ For faster execution, this function uses the \code{readr} library. This
 function ignores subfolders of the given folder (which means that files 
 inside subfolders are NOT loaded).
 }
-

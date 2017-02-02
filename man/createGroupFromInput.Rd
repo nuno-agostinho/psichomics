@@ -23,4 +23,3 @@ Matrix with the group names and respective indexes
 \description{
 Set new groups according to the user input
 }
-

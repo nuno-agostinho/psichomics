@@ -22,4 +22,3 @@ id <- paste0(
     "82723911:+@chr1:82724642:82724813:+@chr1:82725791:82726011:+")
 psichomics:::parseMisoId(id)
 }
-

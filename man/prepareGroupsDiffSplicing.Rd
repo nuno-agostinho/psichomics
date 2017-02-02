@@ -20,4 +20,3 @@ the respective group as name
 Prepare groups of alternative splicing quantification for differential
 splicing analyses
 }
-

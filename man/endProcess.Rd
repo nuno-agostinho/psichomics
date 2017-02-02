@@ -22,4 +22,3 @@ Style button to show processing is not occurring. Also, close the progress
 bar (if TRUE) and print the difference between the current time and a given
 time (if given time is not NULL)
 }
-

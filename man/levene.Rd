@@ -20,4 +20,3 @@ HTML elements
 \description{
 Perform Levene's test and return interface to show the results
 }
-

@@ -20,4 +20,3 @@ Plot protein features
 plotProtein("P38398")
 }
 }
-

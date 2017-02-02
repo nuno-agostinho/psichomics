@@ -15,4 +15,3 @@ HTML element
 \description{
 User interface of the principal component analysis
 }
-

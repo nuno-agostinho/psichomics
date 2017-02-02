@@ -44,4 +44,3 @@ consider running the function \code{\link{getColumnsTime}} to retrieve the
 time of such columns once and hand the result to the \code{survTime} argument
 of this function.
 }
-

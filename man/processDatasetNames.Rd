@@ -19,4 +19,3 @@ Process dataset names
 Avoid duplicated names and append the technology used for junction
 quantification
 }
-

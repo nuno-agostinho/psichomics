@@ -24,4 +24,3 @@ Get groups from a given data type
 \note{
 Needs to be called inside a reactive function
 }
-

@@ -19,4 +19,3 @@ Server logic for group selection
 \description{
 Group selection logic
 }
-

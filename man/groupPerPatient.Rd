@@ -29,4 +29,3 @@ groups <- list(1:3, 4:7, 8:10)
 names(groups) <- paste("Stage", 1:3)
 groupPerPatient(groups)
 }
-

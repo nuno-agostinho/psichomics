@@ -21,4 +21,3 @@ Set the table of differential analyses' survival data of a data category
 \note{
 Needs to be called inside a reactive function
 }
-

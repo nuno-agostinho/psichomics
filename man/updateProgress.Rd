@@ -34,4 +34,3 @@ given divisions. If \code{value} is NULL, the progress bar will be
 incremented by one; otherwise, the progress bar will be incremented by the
 integer given in value.
 }
-

@@ -17,4 +17,3 @@ TRUE if number is whole; otherwise, FALSE
 \description{
 Check if a number is whole
 }
-

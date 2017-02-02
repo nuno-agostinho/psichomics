@@ -21,4 +21,3 @@ Invisible TRUE
 \description{
 Matches server functions from a given loader
 }
-

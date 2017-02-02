@@ -17,4 +17,3 @@ HTML element as character
 \description{
 User interface for the data analyses
 }
-

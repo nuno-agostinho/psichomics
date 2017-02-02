@@ -22,4 +22,3 @@ protein <- "P51587"
 format <- "xml"
 psichomics:::queryUniprot(protein, format)
 }
-

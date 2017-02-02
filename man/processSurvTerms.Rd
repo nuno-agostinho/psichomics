@@ -74,4 +74,3 @@ formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
 survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
                                formulaStr=formulaStr)
 }
-

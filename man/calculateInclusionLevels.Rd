@@ -26,4 +26,3 @@ Matrix with inclusion levels
 Calculate inclusion levels using alternative splicing event annotation and
 junction quantification for many samples
 }
-

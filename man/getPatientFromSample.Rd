@@ -31,4 +31,3 @@ clinical <- data.frame(patient=paste0("patient-", samples),
                        samples=tolower(samples))
 getPatientFromSample(samples, clinical, prefix="")
 }
-
