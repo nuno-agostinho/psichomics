@@ -27,4 +27,3 @@ Data frame containing the time for the given columns
 \description{
 Retrieve the time for given columns in a clinical dataset
 }
-

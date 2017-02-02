@@ -38,4 +38,3 @@ psichomics:::leveneTest(vals, group)
 ## Using Levene's test based on the mean
 psichomics:::leveneTest(vals, group, mean)
 }
-

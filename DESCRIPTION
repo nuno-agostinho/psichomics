@@ -22,7 +22,7 @@ Depends:
     shinyBS
 License: MIT + file LICENSE
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.0
 Imports:
     AnnotationHub,
     data.table,

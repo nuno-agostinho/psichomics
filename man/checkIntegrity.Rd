@@ -20,4 +20,3 @@ for files with non-matching md5sums
 Compute the 32-byte MD5 hashes of one or more files and check with given md5
 file
 }
-

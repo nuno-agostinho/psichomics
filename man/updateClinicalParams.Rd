@@ -15,4 +15,3 @@ NULL (this function is used to modify the Shiny session's state)
 \description{
 Update available clinical attributes when the clinical data changes
 }
-

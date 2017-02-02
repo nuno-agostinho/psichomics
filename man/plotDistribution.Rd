@@ -34,4 +34,3 @@ data <- sample(20, rep=TRUE)/20
 groups <- c(rep("A", 10), rep("B", 10))
 plotDistribution(data, groups)
 }
-

@@ -21,4 +21,3 @@ Set the groups column for differential splicing analysis of a data category
 \note{
 Needs to be called inside a reactive function
 }
-

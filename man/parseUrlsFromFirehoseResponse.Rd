@@ -19,4 +19,3 @@ Retrieve URLs from a response to a Firehose data query
 res <- psichomics:::queryFirehoseData(cohort = "ACC")
 url <- psichomics:::parseUrlsFromFirehoseResponse(res)
 }
-

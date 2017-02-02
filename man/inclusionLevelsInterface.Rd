@@ -15,4 +15,3 @@ HTML elements
 \description{
 Interface to quantify alternative splicing
 }
-

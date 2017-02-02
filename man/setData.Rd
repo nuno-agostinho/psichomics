@@ -18,4 +18,3 @@ Set data of the global data
 \note{
 Needs to be called inside a reactive function
 }
-

@@ -14,4 +14,3 @@ HTML elements
 The user interface (ui) controls the layout and appearance of the app
 All the CSS modifications are in the file "shiny/www/styles.css"
 }
-

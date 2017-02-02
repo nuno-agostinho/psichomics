@@ -42,4 +42,3 @@ annotation <- read.delim(gff3, header=FALSE, comment.char="#")
 IDcolumn <- 9
 psichomics:::parseMisoEventID(eventID, annotation, IDcolumn)
 }
-

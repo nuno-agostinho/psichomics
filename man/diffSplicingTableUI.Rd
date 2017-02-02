@@ -15,4 +15,3 @@ HTML elements
 \description{
 Interface for differential analyses on all splicing events
 }
-

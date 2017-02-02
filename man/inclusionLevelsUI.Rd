@@ -17,4 +17,3 @@ HTML elements
 \description{
 Interface of the alternative splicing event quantification module
 }
-

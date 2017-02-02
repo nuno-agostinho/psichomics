@@ -17,4 +17,3 @@ HTML elements
 \description{
 User interface to group by grep expression
 }
-

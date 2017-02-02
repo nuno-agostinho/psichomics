@@ -15,4 +15,3 @@ List the alternative splicing annotation files available
 \examples{
 listSplicingAnnotations()
 }
-

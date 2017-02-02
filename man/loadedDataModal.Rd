@@ -21,4 +21,3 @@ HTML elements for a warning modal reminding data is loaded
 \description{
 Create a modal warning the user of already loaded data
 }
-

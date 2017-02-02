@@ -55,4 +55,3 @@ dates <- format(dates, psichomics:::getFirehoseDateFormat()$query)
 
 psichomics:::queryFirehoseData(date = dates[2], cohort = cohort)
 }
-

@@ -19,4 +19,3 @@ Numeric vector with days recorded for columns of interest
 Get all columns matching a given string and return a single vector with the
 max time for each patient if available
 }
-
