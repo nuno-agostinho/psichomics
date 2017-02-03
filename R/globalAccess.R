@@ -76,6 +76,26 @@ getInclusionLevels <- reactive(getCategoryData()[["Inclusion levels"]])
 #' @return Data from global data
 getGlobal <- function(..., sep="_") sharedData[[paste(..., sep=sep)]]
 
+#' Get the identifier of patients for a given category
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' 
+#' @return Character vector with identifier of patients
+getPatientId <- function(category = getCategory())
+    getGlobal(category, "patients")
+
+#' Get the identifier of samples for a given category
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' 
+#' @return Character vector with identifier of samples
+getSampleId <- function(category = getCategory())
+    getGlobal(category, "samples")
+
 #' Get the table of differential analyses of a data category
 #' @note Needs to be called inside a reactive function
 #' 
@@ -124,18 +144,29 @@ getAssemblyVersion <- function(category = getCategory())
 #' it uses the selected data category
 #' @param complete Boolean: return all the information on groups (TRUE) or just 
 #' the group names and respective indexes (FALSE)? FALSE by default
+#' @param samples Boolean: show groups by samples (TRUE) or patients (FALSE)?
+#' FALSE by default
 #' 
 #' @return Matrix with groups of a given dataset
-getGroupsFrom <- function(dataset, category = getCategory(), complete=FALSE) {
+getGroupsFrom <- function(dataset, category = getCategory(), complete=FALSE,
+                          samples=FALSE) {
     groups <- getGlobal(category, dataset, "groups")
-    if (complete)
-        return(groups)
-    else {
-        g <- groups[, "Rows", drop=TRUE]
-        if (length(g) == 1)
-            names(g) <- rownames(groups)
-        return(g)
-    }
+    
+    # Return all data if requested
+    if (complete) return(groups)
+    
+    if (samples)
+        col <- "Samples"
+    else
+        col <- "Patients"
+    
+    # Check if data of interest is available
+    if (!col %in% colnames(groups)) return(NULL)
+    
+    # If available, return data of interest
+    g <- groups[ , col, drop=TRUE]
+    if (length(g) == 1) names(g) <- rownames(groups)
+    return(g)
 }
 
 #' Get clinical matches from a given data type
@@ -258,6 +289,40 @@ setInclusionLevels <- function(value, category = getCategory())
 #' @return NULL (this function is used to modify the Shiny session's state)
 setGroupsFrom <- function(dataset, groups, category = getCategory())
     setGlobal(category, dataset, "groups", value=groups)
+
+#' Set the identifier of patients for a data category
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param value Character: identifier of patients
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' @return NULL (this function is used to modify the Shiny session's state)
+setPatientId <- function(value, category = getCategory())
+    setGlobal(category, "patients", value=value)
+
+#' Set the identifier of samples for a data category
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param value Character: identifier of samples
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' @return NULL (this function is used to modify the Shiny session's state)
+setSampleId <- function(value, category = getCategory()) {
+    setGlobal(category, "samples", value=value)
+    
+    # Update groups if previously made with patient only
+    clinical <- getClinicalData()
+    match <- getClinicalMatchFrom("Inclusion levels")
+    group <- getGroupsFrom("Clinical data", complete=TRUE)
+    
+    if (!is.null(clinical) && !is.null(value) && !is.null(match) &&
+        !is.null(group)) {
+        patients <- group[ , "Patients"]
+        samples <- getMatchingSamples(patients, value, clinical, match=match)
+        group <- cbind(group, "Samples"=samples)
+    }
+    setGroupsFrom("Clinical data", group)
+}
 
 #' Set the table of differential analyses of a data category
 #' @note Needs to be called inside a reactive function
