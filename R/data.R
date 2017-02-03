@@ -316,6 +316,15 @@ dataServer <- function(input, output, session) {
     # Change the active dataset
     observe( setActiveDataset(input$datasetTab) )
     
+    # Update patient identifiers when clinical data is available
+    observe({
+        clinical <- getClinicalData()
+        if ( !is.null(clinical) )
+            setPatientId(rownames(clinical))
+        else
+            setPatientId(NULL)
+    })
+    
     # Run server logic from the scripts
     getServerFunctions("data", priority="localDataServer")
 }

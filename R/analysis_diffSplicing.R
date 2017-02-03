@@ -449,12 +449,7 @@ prepareGroupsDiffSplicing <- function(psi, groups) {
         sampleGroups <- sampleGroups[filter]
         psi <- psi[filter]
     } else {
-        clinicalGroups <- getGroupsFrom("Clinical data")[groups]
-        samples <- colnames(psi)
-        match   <- getClinicalMatchFrom("Inclusion levels")
-        
-        sampleGroups <- getMatchingSamples(clinicalGroups, samples, match=match,
-                                           clinical=getClinicalData())
+        sampleGroups <- getGroupsFrom("Clinical data", samples=TRUE)[groups]
         psi <- psi[ , unlist(sampleGroups)]
         sampleGroups <- rep(names(sampleGroups), sapply(sampleGroups, length))
     }

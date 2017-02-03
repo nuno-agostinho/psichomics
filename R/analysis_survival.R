@@ -18,6 +18,7 @@ survivalUI <- function(id) {
     )
     
     modelChoices <- c(
+        "No groups"="none",
         "Clinical groups"="groups",
         "Clinical groups (interaction)"="formula",
         "Inclusion levels cut-off from the selected splicing event"="psiCutoff")
@@ -106,6 +107,8 @@ survivalUI <- function(id) {
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 checkSurvivalInput <- function (session, input, coxph=FALSE) {
+    ns <- session$ns
+    
     isolate({
         clinical      <- getClinicalData()
         psi           <- getInclusionLevels()
@@ -131,6 +134,9 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
     if (is.null(clinical)) {
         missingDataModal(session, "Clinical data", ns("missingClinical"))
         return(NULL)
+    } else if (modelTerms == "none") {
+        groups <- groupPerPatient(NULL, nrow(clinical), outGroup)
+        formulaStr <- NULL
     } else if (modelTerms == "groups") {
         # Assign one group for each clinical patient
         groups <- groupPerPatient(chosen, nrow(clinical), outGroup)
@@ -191,7 +197,7 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
 survivalServer <- function(input, output, session) {
     ns <- session$ns
     
-    selectGroupsServer(session, "dataGroups", "Clinical data")
+    selectGroupsServer(session, "dataGroups")
     
     # Update available clinical data attributes to use in a formula
     output$formulaSuggestions <- renderUI({

@@ -14,20 +14,27 @@ diffSplicingEventUI <- function(id) {
                 div(class="caption", ...)))
     }
     
+    # Take user to the survival analysis by PSI cut-off
+    survival <- tagList(
+        actionButton(ns("optimalSurv1"), onclick="showSurvCutoff()",
+                     "Survival analysis by PSI cut-off", 
+                     class="btn-info btn-md btn-block",
+                     class="visible-lg visible-md"),
+        actionButton(ns("optimalSurv2"), onclick="showSurvCutoff()",
+                     "Survival analysis by PSI cut-off", 
+                     class="btn-info btn-xs btn-block",
+                     class="visible-sm visible-xs"))
+    
     tagList(
         uiOutput(ns("modal")),
         sidebarLayout(
             sidebarPanel(
-                tags$b("Clinical groups on which to perform the analyses:"),
-                tags$br(), tags$a(onclick="changeDiffSplicingGroup()",
-                                  uiOutput(ns("groupsCol"))),
-                tags$br(),
+                selectGroupsUI(ns("diffGroups"),
+                               label="Groups on which to perform the analyses"),
                 numericInput(ns("bandwidth"), "Density smoothing bandwidth",
-                             0.01, step=0.01, min=0.01),
-                uiOutput(ns("basicStats")), hr(),
-                # uiOutput(ns("spearman")), hr(),
-                # uiOutput(ns("fisher")), hr(),
-                uiOutput(ns("survival"))
+                             0.01, step=0.01, min=0.01), hr(),
+                uiOutput(ns("basicStats")),
+                survival
             ), mainPanel(
                 highchartOutput(ns("density")),
                 h4("Parametric tests"),
@@ -552,6 +559,8 @@ filterGroups <- function(vector, group, threshold=1) {
 #' @importFrom shinyjs runjs
 #' @return NULL (this function is used to modify the Shiny session's state)
 diffSplicingEventServer <- function(input, output, session) {
+    selectGroupsServer(session, "diffGroups")
+    
     observe({
         # Get selected event
         event <- getEvent()
@@ -566,16 +575,15 @@ diffSplicingEventServer <- function(input, output, session) {
             return(NULL)
         }
         
-        # Get splicing event's inclusion levels for all samples
+        # Get splicing event's inclusion levels
         psi <- getInclusionLevels()
-        col <- getDiffSplicingGroups()
-        if (is.null(col) || col=="") {
+        col <- input$diffGroups
+        if ( is.null(col) ) {
             samples <- colnames(psi)
             types <- parseSampleGroups(samples)
             col <- unique(types)
             attr(col, "samples") <- TRUE
         }
-        output$groupsCol <- renderUI( paste(col, collapse=", ") )
         
         groups <- prepareGroupsDiffSplicing(psi, col)
         psi <- groups$psi
@@ -605,16 +613,7 @@ diffSplicingEventServer <- function(input, output, session) {
         output$fligner    <- renderUI(fligner(eventPSI, groups, stat))
         # output$fisher   <- renderUI(fisher(eventPSI, groups))
         # output$spearman <- renderUI(spearman(eventPSI, groups))
-        
-        output$survival <- renderUI({
-            tagList(h3("Survival analysis by splicing quantification cut-off"),
-                    actionButton(session$ns("optimalSurv"), "Take me there", 
-                                 class="btn-info"))
-        })
     })
-    
-    # Take user to the survival curves separation by a quantification cut-off
-    observeEvent(input$optimalSurv, runjs("showSurvCutoff()"))
 }
 
 attr(diffSplicingEventUI, "loader") <- "diffSplicing"
