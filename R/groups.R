@@ -32,12 +32,12 @@ selectGroupsUI <- function (
 #' 
 #' @param session Shiny session
 #' @param id Character: identifier of the group selection
-#' @param datasetName Character: name of the dataset of interest
 #' 
 #' @importFrom shinyjs enable disable onclick toggleClass
 #' 
 #' @return Server logic for group selection
-selectGroupsServer <- function(session, id, datasetName) {
+selectGroupsServer <- function(session, id) {
+    datasetName <- "Clinical data"
     ns <- session$ns
     input <- session$input
     output <- session$output
@@ -76,72 +76,6 @@ selectGroupsServer <- function(session, id, datasetName) {
     })
 }
 
-#' User interface to group by column
-#' 
-#' @param ns Namespace function
-#' @param dataset Data frame: dataset of interest
-#' 
-#' @return HTML elements
-groupByColumn <- function(ns, dataset) {
-    tagList(
-        helpText(
-            "Automatically create groups according to the unique values of the",
-            "selected column. For instance, to create groups by tumour stage,",
-            "type", tags$b("tumor_stage"), "and select the first",
-            "suggestion that appears."),
-        selectizeInput(ns("groupColumn"), "Select column", width="auto", 
-                       choices=c("Start typing to search for columns"="", 
-                                 names(dataset)))
-    )}
-
-#' User interface to group by row
-#' 
-#' @param ns Namespace function
-#' 
-#' @return HTML elements
-groupByRow <- function(ns) {
-    tagList(
-        selectizeInput(
-            ns("groupRows"), "Row indexes", choices=NULL, multiple=TRUE,
-            # Allow to add new items
-            width="auto", options=list(
-                create=TRUE, createOnBlur=TRUE,
-                # Hide discarded user-created items in the dropdown
-                persist=FALSE)),
-        helpText("Type ", tags$kbd("1:6, 8, 10:19"), "to create a group with",
-                 "rows 1 to 6, 8 and 10 to 19.")
-    )
-}
-
-#' User interface to group by subset expression
-#' 
-#' @param ns Namespace function
-#' 
-#' @return HTML elements
-groupByExpression <- function(ns) {
-    tagList (
-        textInput(ns("groupExpression"), "Subset expression", width="auto"),
-        helpText('Type ', tags$kbd('X > 8 & Y == "alive"'), ' to select rows',
-                 'with values higher than 8 for column X and "alive" for',
-                 'column Y.'),
-        uiOutput(ns("groupExpressionSuggestions"))
-    )
-}
-
-#' User interface to group by grep expression
-#' 
-#' @param ns Namespace function
-#' @param dataset Data frame: dataset of interest
-#' 
-#' @return HTML elements
-groupByGrep <- function(ns, dataset) {
-    tagList (
-        textInput(ns("grepExpression"), "Regular expression", width="auto"),
-        selectizeInput(ns("grepColumn"), "Select column to GREP",
-                       choices=c("Start typing to search for columns"="",
-                                 names(dataset)), width="auto")
-    )}
-
 #' Creates UI elements for the grouping feature
 #' @param id Character: identifier
 #' @param dataset Data frame or matrix: dataset of interest
@@ -149,25 +83,268 @@ groupByGrep <- function(ns, dataset) {
 groupsUI <- function(id, dataset) {
     ns <- NS(id)
     
+    groupOptions <- function(id) {
+        if (id == "Patients") {
+            choices <- getPatientId()
+            example <- tagList(
+                "For instance, to create groups by tumour stage, type",
+                tags$b("tumor_stage"), "and select the first suggestion.")
+        } else if (id == "Samples") {
+            choices <- samples <- getSampleId()
+            example <- NULL
+            if (!is.null(samples)) {
+                dataset <- data.frame(parseSampleGroups(samples))
+                rownames(dataset) <- samples
+                colnames(dataset) <- "Sample types"
+            } else {
+                dataset <- NULL
+            }
+        }
+        
+        tagList(
+            tabPanel("Attribute", groupByAttribute(ns, dataset, id, example)),
+            tabPanel("Index/Identifier", groupById(ns, id, choices)),
+            "----", "Advanced options",
+            tabPanel("Subset expression", groupByExpression(ns, id)),
+            tabPanel("Regular expression", groupByGrep(ns, dataset, id)))
+    }
+    
     checkId <- function (sign, what)
         sprintf("input[id='%s'] %s '%s'", ns("subsetBy"), sign, what)
     tagList(
         uiOutput(ns("alert")),
-        radioButtons(ns("subsetBy"), "Subset by", inline=TRUE,
-                     c("Column", "Rows", "Subset expression",
-                       "Regular expression")),
-        conditionalPanel(checkId("==", "Column"), groupByColumn(ns, dataset)),
-        conditionalPanel(checkId("==", "Rows"), groupByRow(ns)),
-        conditionalPanel(checkId("==", "Subset expression"), 
-                         groupByExpression(ns)),
-        conditionalPanel(checkId("==", "Regular expression"), 
-                         groupByGrep(ns, dataset)),
-        conditionalPanel(checkId("!=", "Column"),
-                         textInput(ns("groupName"), "Group name", width="auto",
-                                   placeholder="Unnamed")),
-        actionButton(ns("createGroup"), "Create group", class ="btn-primary"),
-        uiOutput(ns("groupsList"))
+        tabsetPanel(
+            id=ns("groupBy"), type="pills",
+            do.call("navbarMenu",
+                    c("Group by patients", groupOptions("Patients"))),
+            do.call("navbarMenu",
+                    c("Group by samples", groupOptions("Samples")))),
+        uiOutput(ns("groupsList")))
+}
+
+#' User interface to group by attribute
+#' 
+#' @param ns Namespace function
+#' @param dataset Data frame: dataset of interest
+#' @param id Character: identifier
+#' @param example Character: text to show as an example
+#' 
+#' @return HTML elements
+groupByAttribute <- function(ns, dataset, id, example) {
+    if (!is.null(example)) example <- tagList(" ", example)
+    
+    tagList(
+        helpText("Automatically create groups according to the unique values",
+                 "for the selected attribute.", example),
+        selectizeInput(ns(paste0("groupAttribute", id)), "Select attribute",
+                       width="auto", choices=c(
+                           "Start typing to search for attributes"="", 
+                           names(dataset))),
+        actionButton(ns(paste0("createGroupAttribute", id)), "Create group",
+                     class ="btn-primary")
+    )}
+
+#' User interface to group by row
+#' 
+#' @inheritParams groupByAttribute
+#' @param choices Character: identifier suggestions
+#' 
+#' @return HTML elements
+groupById <- function(ns, id, choices) {
+    tagList(
+        selectizeInput(
+            ns(paste0("groupRows", id)), paste(id, "indexes or identifiers"),
+            choices=choices, multiple=TRUE,
+            # Allow to add new items
+            width="auto", options=list(
+                create=TRUE, createOnBlur=TRUE,
+                # Hide discarded user-created items in the dropdown
+                persist=FALSE)),
+        helpText("Type ", tags$kbd("1:6, 8, 10:19"), "to create a group with",
+                 "rows 1 to 6, 8 and 10 to 19."),
+        textInput(ns(paste0("groupNameRows", id)), "Group name", width="auto",
+                  placeholder="Unnamed"),
+        actionButton(ns(paste0("createGroupRows", id)), "Create group", 
+                     class="btn-primary")
     )
+}
+
+#' User interface to group by subset expression
+#' 
+#' @inheritParams groupByAttribute
+#' 
+#' @return HTML elements
+groupByExpression <- function(ns, id) {
+    tagList (
+        textInput(ns(paste0("groupExpression", id)), "Subset expression",
+                  width="auto"),
+        helpText('Type ', tags$kbd('X > 8 & Y == "alive"'), ' to select rows',
+                 'with values higher than 8 for column X and "alive" for',
+                 'column Y.'),
+        uiOutput(ns(paste0("groupExpressionSuggestions", id))),
+        textInput(ns(paste0("groupNameSubset", id)), "Group name", width="auto",
+                  placeholder="Unnamed"),
+        actionButton(ns(paste0("createGroupSubset", id)), "Create group",
+                     class="btn-primary")
+    )
+}
+
+#' User interface to group by grep expression
+#' 
+#' @inheritParams groupByAttribute
+#' 
+#' @return HTML elements
+groupByGrep <- function(ns, dataset, id) {
+    tagList (
+        textInput(ns(paste0("grepExpression", id)), "Regular expression",
+                  width="auto"),
+        selectizeInput(ns(paste0("grepColumn", id)), "Select column to GREP",
+                       choices=c("Start typing to search for columns"="",
+                                 names(dataset)), width="auto"),
+        textInput(ns(paste0("groupNameRegex", id)), "Group name", width="auto",
+                  placeholder="Unnamed"),
+        actionButton(ns(paste0("createGroupRegex", id)), "Create group", 
+                     class="btn-primary")
+    )}
+
+#' Prepare to create group according to specific details
+#' @param session Shåiny session
+#' @param input Shiny input
+#' @param output Shiny output
+#' @param dataset Matrix or data frame: dataset
+#' @param id Character: identifier of the group selection
+#' @param type Character: type of group to create
+#' 
+#' @return NULL (this function is used to modify the Shiny session's state)
+createGroup <- function(session, input, output, dataset, id, type) {
+    removeAlert(output)
+    groups <- getGroupsFrom("Clinical data", complete=TRUE)
+    new <- createGroupFromInput(session, input, output, dataset, id, type)
+    
+    if (!is.null(new)) {
+        # Rename duplicated group names
+        new <- renameGroups(new, groups)
+        
+        # Append the new group(s) to the groups already created
+        groups <- rbind(new, groups)
+        setGroupsFrom("Clinical data", groups)
+    }
+    updateSelectizeInput(session, paste0("groupAttribute", id),
+                         selected=character())
+}
+
+#' Set new groups according to the user input
+#' 
+#' @param session Shiny session
+#' @param input Shiny input
+#' @param output Shiny output
+#' @param dataset Data frame or matrix: dataset of interest
+#' @param id Character: identifier of the group selection
+#' @param type Character: type of group to create
+#' 
+#' @return Matrix with the group names and respective indexes
+createGroupFromInput <- function (session, input, output, dataset, id, type) {
+    if (type == "Attribute") {
+        col <- input[[paste0("groupAttribute", id)]]
+        if (col == "") return(NULL)
+        group <- createGroupByAttribute(col, dataset)
+        group <- cbind(names(group), type, col, group)
+    } else if (type == "Index/Identifier") {
+        rows <- input[[paste0("groupRows", id)]]
+        strRows <- paste(rows, collapse=", ")
+        
+        identifiers <- switch(id, "Patients"=getPatientId(),
+                              "Samples"=getSampleId())
+        
+        allRows <- createGroupById(session, rows, dataset, identifiers)
+        group <- cbind(input[[paste0("groupNameRows", id)]], type, strRows,
+                       list(allRows))
+    } else if (type == "Subset") {
+        # Subset dataset using the given expression
+        expr <- input[[paste0("groupExpression", id)]]
+        # Test expression before running
+        set <- tryCatch(subset(dataset, eval(parse(text=expr))), error=return)
+        
+        # Show error to the user
+        if ("simpleError" %in% class(set)) {
+            errorAlert(session, "Error in the subset expression.",
+                       "Check if column names are correct.", br(),
+                       "The following error was raised:",
+                       tags$code(set$message))
+            return(NULL)
+        }
+        
+        rows <- match(rownames(set), rownames(dataset))
+        group <- cbind(input[[paste0("groupNameSubset", id)]], type, expr,
+                       list(rows))
+    } else if (type == "Regex") {
+        # Subset dataset column using given regular expression
+        col <- input[[paste0("grepColumn", id)]]
+        colData <- as.character(dataset[[col]])
+        expr <- input[[paste0("grepExpression", id)]]
+        
+        # Test expression before running
+        set <- tryCatch(grep(expr, colData), error=return)
+        
+        # Show error to the user
+        if ("simpleError" %in% class(set)) {
+            errorAlert(session, "GREP expression error",
+                       "The following error was raised:", br(),
+                       tags$code(set$message))
+            return(NULL)
+        }
+        
+        strRows <- sprintf('"%s" in %s', expr, col)
+        group <- cbind(input[[paste0("groupNameRegex", id)]], "GREP", strRows, 
+                       list(set))
+    }
+    
+    # Name group if empty
+    if (group[[1]] == "") group[[1]] <- "Unnamed"
+    
+    # Standardise rows
+    ns <- c("Names", "Subset", "Input", id)
+    if (is.matrix(group))
+        colnames(group) <- ns
+    else
+        names(group) <- ns
+    rownames(group) <- NULL
+    
+    clinical <- getClinicalData()
+    samples <- getSampleId()
+    match <- getClinicalMatchFrom("Inclusion levels")
+    
+    # Replace sample indexes with sample names
+    if (id == "Samples") {
+        group[ , "Samples"] <- lapply(group[ , "Samples"],
+                                      function(i) samples[i])
+    }
+    
+    # Match patients with samples (or vice-versa)
+    if (!is.null(clinical) && !is.null(samples) && !is.null(match)) {
+        if (id == "Patients") {
+            patients <- group[ , "Patients"]
+            samples <- getMatchingSamples(patients, samples, clinical,
+                                          match=match)
+            group <- cbind(group, "Samples"=samples)
+        } else if (id == "Samples") {
+            patients <- lapply(group[ , "Samples"],
+                               function(i) {
+                                   m <- match[tolower(i)]
+                                   return(m[!is.na(m)])
+                               })
+            group <- cbind(group, "Patients"=patients)
+            group <- group[ , c(1:3, 5, 4), drop=FALSE]
+        }
+    }
+    return(group)
+}
+
+#' @inherit createGroupByAttribute
+#' @export
+createGroupByColumn <- function(col, dataset) {
+    .Deprecated("createGroupByAttribute")
+    createGroupByAttribute(col, dataset)
 }
 
 #' Create groups with the indexes from the unique values of a given column from
@@ -182,8 +359,8 @@ groupsUI <- function(id, dataset) {
 #' @examples 
 #' df <- data.frame(gender=c("male", "female"),
 #'                  stage=paste("stage", c(1, 3, 1, 4, 2, 3, 2, 2)))
-#' createGroupByColumn(col="stage", dataset=df)
-createGroupByColumn <- function(col, dataset) {
+#' createGroupByAttribute(col="stage", dataset=df)
+createGroupByAttribute <- function(col, dataset) {
     colData <- as.character(dataset[[col]])
     
     # Replace missing values for "NA" so they are found using the `which` function
@@ -201,99 +378,32 @@ createGroupByColumn <- function(col, dataset) {
 #' @param session Shiny session
 #' @param rows Character: rows separated by a comma
 #' @param dataset Matrix or data frame: dataset
+#' @param identifiers Character: available identifiers
 #' 
 #' @importFrom shiny tags
 #' @return NULL (this function is used to modify the Shiny session's state)
-createGroupByRows <- function(session, rows, dataset) {
-    # Convert the given string into a sequence of numbers
-    rows <- unlist(lapply(rows, function(row) eval(parse(text=row))))
-    rows <- sort(unique(rows))
+createGroupById <- function(session, rows, dataset, identifiers) {
+    # Check which strings match available identifiers
+    matched <- rows %in% identifiers
+    match <- match(rows[matched], identifiers)
     
-    # Remove and warn if selected rows are greater than the rows number
-    gtRows <- rows > nrow(dataset)
-    if (any(gtRows)) {
-        removed <- paste(rows[gtRows], collapse=" ")
+    # Convert remaining parsable strings to a sequence of numbers
+    parsable <- grepl("^[0-9]*:?[0-9]*$", rows[!matched])
+    parsed <- unlist(lapply(rows[!matched][parsable],
+                            function(row) eval(parse(text=row))))
+    parsed <- sort(unique(parsed))
+    # Check indexes higher than the number of patients available
+    valid <- parsed <= length(identifiers)
+    
+    # Warn about invalid input
+    invalid <- union(rows[!matched][!parsable], parsed[!valid])
+    if (length(invalid) > 0) {
+        discarded <- paste(invalid, collapse=", ")
         warningAlert(
-            session, sum(gtRows), " indexes were above the number of rows ",
-            "of the dataset (which is ", nrow(dataset), ").", br(),
-            "The following numbers were discarded:", tags$code(removed))
-        rows <- rows[!gtRows]
+            session, "The following ", length(invalid),
+            " indexes or identifiers were discarded:", tags$code(discarded))
     }
-    return(rows)
-}
-
-#' Set new groups according to the user input
-#' 
-#' @param session Shiny session
-#' @param input Shiny input
-#' @param output Shiny output
-#' @param dataset Data frame or matrix: dataset of interest
-#' @param datasetName Character: name of the dataset
-#' 
-#' @return Matrix with the group names and respective indexes
-createGroupFromInput <- function (session, input, output, dataset,
-                                  datasetName) {
-    type <- input$subsetBy
-    
-    if (type == "Column") {
-        col <- input$groupColumn
-        if (col == "") return(NULL)
-        group <- createGroupByColumn(col, dataset)
-        group <- cbind(names(group), "Column", col, group)
-    } else if (type == "Rows") {
-        rows <- input$groupRows
-        strRows <- paste(rows, collapse=", ")
-        allRows <- createGroupByRows(session, rows, dataset)
-        group <- cbind(input$groupName, type, strRows, list(allRows))
-    } else if (type == "Subset expression") {
-        # Subset dataset using the given expression
-        expr <- input$groupExpression
-        
-        # Test expression before running
-        set <- tryCatch(subset(dataset, eval(parse(text=expr))),
-                        error=return)
-        
-        # Show error to the user
-        if ("simpleError" %in% class(set)) {
-            errorAlert(session, "Error in the subset expression.",
-                       "Check if column names are correct.", br(),
-                       "The following error was raised:",
-                       tags$code(set$message))
-            return(NULL)
-        }
-        
-        rows <- match(rownames(set), rownames(dataset))
-        group <- cbind(input$groupName, type, expr, list(rows))
-    } else if (type == "Regular expression") {
-        # Subset dataset column using given regular expression
-        col <- input$grepColumn
-        colData <- as.character(dataset[[col]])
-        expr <- input$grepExpression
-        
-        # Test expression before running
-        set <- tryCatch(grep(expr, colData), error=return)
-        
-        # Show error to the user
-        if ("simpleError" %in% class(set)) {
-            errorAlert(session, "GREP expression error",
-                       "The following error was raised:", br(),
-                       tags$code(set$message))
-            return(NULL)
-        }
-        
-        strRows <- sprintf('"%s" in %s', expr, col)
-        group <- cbind(input$groupName, "GREP", strRows, list(set))
-    } 
-    # Name group if empty
-    if (group[[1]] == "") group[[1]] <- "Unnamed"
-    # Standarise rows
-    ns <- c("Names", "Subset", "Input", "Rows")
-    if (is.matrix(group))
-        colnames(group) <- ns
-    else
-        names(group) <- ns
-    rownames(group) <- NULL
-    return(group)
+    return(union(match, parsed[valid]))
 }
 
 #' Rename duplicated names from a new group
@@ -348,8 +458,26 @@ operateOnGroups <- function(input, session, FUN, buttonId, symbol=" ",
                 names <- paste0("(", names, ")")
                 return(names)
             })
-            rowNumbers <- sort(as.numeric(Reduce(FUN, groups[selected, 4])))
-            new <- matrix(c(mergedFields, list(rowNumbers)), ncol=4)
+            ncol <- 3
+            
+            if ("Patients" %in% colnames(groups)) {
+                rowNumbers <- sort(as.numeric(
+                    Reduce(FUN, groups[selected, "Patients"])))
+                patients <- list(rowNumbers)
+                ncol <- ncol + 1
+            } else {
+                patients <- NULL
+            }
+            
+            if ("Samples" %in% colnames(groups)) {
+                rowNumbers <- Reduce(FUN, groups[selected ,"Samples"])
+                samples <- list(rowNumbers)
+                ncol <- ncol + 1
+            } else {
+                samples <- NULL
+            }
+            
+            new <- matrix(c(mergedFields, patients, samples), ncol=ncol)
         }
         
         # Remove selected groups
@@ -389,36 +517,46 @@ operateOnGroups <- function(input, session, FUN, buttonId, symbol=" ",
 groupsServer <- function(input, output, session, datasetName) {
     ns <- session$ns
     
-    # Update available attributes to suggest in the subset expression
-    output$groupExpressionSuggestions <- renderUI({
-        if (!is.null(datasetName))
-            textSuggestions(ns("groupExpression"),
-                            names(getCategoryData()[[datasetName]]))
+    # Create new group(s)
+    createGroupOptions <- function(id, dataset) {
+        # Update available attributes to suggest in the subset expression
+        output[[paste0("groupExpressionSuggestions", id)]] <- renderUI({
+            if (id == "Patients") {
+                suggest <- names(getClinicalData())
+            } else if (id == "Samples") {
+                suggest <- "Sample types"
+            }
+            
+            textSuggestions(ns(paste0("groupExpression", id)), suggest)
+        })
+        
+        observeEvent(input[[paste0("createGroupAttribute", id)]], {
+            createGroup(session, input, output, dataset, id, type="Attribute")
+        })
+        observeEvent(input[[paste0("createGroupRows", id)]], {
+            createGroup(session, input, output, dataset, id, 
+                        type="Index/Identifier")
+        })
+        observeEvent(input[[paste0("createGroupSubset", id)]], {
+            createGroup(session, input, output, dataset, id, type="Subset")
+        })
+        observeEvent(input[[paste0("createGroupRegex", id)]], {
+            createGroup(session, input, output, dataset, id, type="Regex")
+        })
+    }
+    
+    observe({
+        createGroupOptions("Patients", getCategoryData()[[datasetName]])
     })
     
-    # Create a new group when clicking on the createGroup button
-    observeEvent(input$createGroup, {
-        removeAlert(output)
-        
-        groups <- getGroupsFrom(datasetName, complete=TRUE)
-        if (is.null(datasetName)) {
-            errorAlert(session, "Data missing", "Load some data first.")
-            return(NULL)
+    observe({
+        samples <- getSampleId()
+        if (!is.null(samples)) {
+            dataset <- data.frame(parseSampleGroups(samples))
+            rownames(dataset) <- samples
+            colnames(dataset) <- "Sample types"
+            createGroupOptions("Samples", dataset)
         }
-        
-        new <- createGroupFromInput(session, input, output, 
-                                    getCategoryData()[[datasetName]],
-                                    datasetName)
-        if (!is.null(new)) {
-            # Rename duplicated group names
-            new <- renameGroups(new, groups)
-            
-            # Append the new group(s) to the groups already created
-            groups <- rbind(new, groups)
-            setGroupsFrom(datasetName, groups)
-        }
-        
-        updateSelectizeInput(session, "groupColumn", selected=character())
     })
     
     # Render groups list and show interface to manage groups
@@ -427,17 +565,25 @@ groupsServer <- function(input, output, session, datasetName) {
         
         # Show groups only if there is at least one group
         if (!is.null(groups) && nrow(groups) > 0) {
-            # Show number of rows for each group
-            rows <- lapply(groups[ , 4], length)
-            groups[ , 4] <- unlist(rows)
+            show <- NULL
+            
+            # Show number of patients for each group (if available)
+            if ("Patients" %in% colnames(groups)) {
+                patients <- lapply(groups[ , "Patients"], length)
+                groups[ , "Patients"] <- unlist(patients)
+                show <- c(show, 4)
+            }
+            
+            # Show number of samples for each group (if available)
+            if ("Samples" %in% colnames(groups)) {
+                samples <- lapply(groups[ , "Samples"], length)
+                groups[ , "Samples"] <- unlist(samples)
+                show <- c(show, max(show) + 1)
+            }
             
             # Ordering the groups (plus safety net for cases with one row)
-            ord <- c(1, 4, 2, 3)
-            ordered <- groups[ , ord]
-            if (!is.matrix(ordered)) {
-                ordered <- matrix(ordered, ncol=4)
-                colnames(ordered) <- colnames(groups)[ord]
-            }
+            ord <- c(1, show, 2, 3)
+            ordered <- groups[ , ord, drop=FALSE]
             return(ordered)
         }
     }, style="bootstrap", escape=FALSE, server=TRUE, rownames=FALSE,
@@ -469,20 +615,36 @@ groupsServer <- function(input, output, session, datasetName) {
     operateOnGroups(input, session, FUN=intersect, datasetName=datasetName,
                     buttonId=intersectId, symbol=" \u2229 ")
     
-    # Disable set operations if there's no row selected
+    # Disable set operations according to the selected rows
     observe({
-        if (!is.null(input$groupsTable_rows_selected))
-            enable("setOperations")
-        else
-            disable("setOperations")
+        mergeButton <- paste(mergeId, "button", sep="-")
+        intersectButton <- paste(intersectId, "button", sep="-")
+        removeButton <- paste(removeId, "button", sep="-")
+        
+        if (length(input$groupsTable_rows_selected) == 1) {
+            # One row selected
+            disable(mergeButton)
+            disable(intersectButton)
+            enable(removeButton)
+        } else if (length(input$groupsTable_rows_selected) > 1) {
+            enable(mergeButton)
+            enable(intersectButton)
+            enable(removeButton)
+        } else {
+            # No row selected
+            disable(mergeButton)
+            disable(intersectButton)
+            disable(removeButton)
+        }
     })
     
-    # Show group rename if one group is selected
+    # Show group rename if only one group is selected
     observe({
-        if (length(input$groupsTable_rows_selected) == 1)
+        if (length(input$groupsTable_rows_selected) == 1) {
             show("renameAlert", anim=TRUE, time=0.2)
-        else
+        } else {
             hide("renameAlert", anim=TRUE, time=0.2)
+        }
     })
     
     # Disable rename button if no new name was given
@@ -526,18 +688,17 @@ groupsServer <- function(input, output, session, datasetName) {
             nameField$attribs$style <- "margin: 0"
             renameInterface <- div(
                 id=ns("renameAlert"), class="alert", role="alert",
-                class="alert-info", #class="animated bounceInUp",
+                class="alert-info",
                 style=" margin-top: 10px; margin-bottom: 0px;",
-                div(class="row",
-                    div(class="col-md-10", nameField),
-                    div(class="col-md-2", renameButton)))
+                div(class="input-group", nameField,
+                    div(class="input-group-btn", renameButton)))
             
             tagList(
                 hr(),
                 dataTableOutput(ns("groupsTable")),
                 helpText("Select groups by clicking on each one to perform the",
                          "following actions on them."),
-                operations,
+                disabled(operations),
                 removeAllButton,
                 #checkboxInput(ns("removeSetsUsed"), "Remove original groups",
                 #              value=TRUE)

@@ -219,6 +219,7 @@ inclusionLevelsServer <- function(input, output, session) {
             match <- getPatientFromSample(colnames(psi), clinical)
             setClinicalMatchFrom("Inclusion levels", match)
         }
+        setSampleId(colnames(psi))
         endProcess("calcIncLevels", time)
     })
     
@@ -361,6 +362,7 @@ inclusionLevelsServer <- function(input, output, session) {
                     match <- getPatientFromSample(colnames(psi), clinical)
                     setClinicalMatchFrom("Inclusion levels", match)
                 }
+                setSampleId(colnames(psi))
                 
                 setSpecies(input$customSpecies2)
                 setAssemblyVersion(input$customAssembly2)

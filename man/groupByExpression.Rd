@@ -4,10 +4,12 @@
 \alias{groupByExpression}
 \title{User interface to group by subset expression}
 \usage{
-groupByExpression(ns)
+groupByExpression(ns, id)
 }
 \arguments{
 \item{ns}{Namespace function}
+
+\item{id}{Character: identifier}
 }
 \value{
 HTML elements

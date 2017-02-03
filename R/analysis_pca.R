@@ -258,8 +258,8 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
 pcaServer <- function(input, output, session) {
     ns <- session$ns
     
-    selectGroupsServer(session, "dataGroups", "Clinical data")
-    selectGroupsServer(session, "colourGroups", "Clinical data")
+    selectGroupsServer(session, "dataGroups")
+    selectGroupsServer(session, "colourGroups")
     
     # Update available data input
     observe({
@@ -285,26 +285,19 @@ pcaServer <- function(input, output, session) {
             time <- startProcess("calculate")
             isolate({
                 selected <- input$dataGroups
-                clinicalGroups <- getGroupsFrom("Clinical data")
-                clinical <- getClinicalData()
-                
+                groups <- getGroupsFrom("Clinical data", samples=TRUE)[selected]
                 preprocess <- input$preprocess
                 naTolerance <- input$naTolerance
             })
             
             # Subset data by the selected clinical groups
-            if (!is.null(selected)) {
-                match <- isolate( getClinicalMatchFrom("Inclusion levels") )
-                ns <- getMatchingSamples(clinicalGroups[selected], 
-                                         samples=colnames(psi), clinical, 
-                                         match=match)
-                psi <- psi[ , unlist(ns)]
-            }
+            if (!is.null(selected))
+                psi <- psi[ , unlist(groups)]
             
             # Raise error if data has no rows
             if (nrow(psi) == 0) {
                 errorModal(session, "No data!", paste(
-                    "Calculation returned nothing. Check if everything is as",
+                    "PCA returned nothing. Check if everything is as",
                     "expected and try again."))
                 endProcess("calculate", closeProgressBar=FALSE)
                 return(NULL)
@@ -382,21 +375,11 @@ pcaServer <- function(input, output, session) {
             pcX <- input$pcX
             pcY <- input$pcY
             selected <- input$colourGroups
-            clinical <- getClinicalData()
-            clinicalGroups <- getGroupsFrom("Clinical data")
-            match <- getClinicalMatchFrom("Inclusion levels")
-            psi <- getInclusionLevels()
+            groups <- getGroupsFrom("Clinical data", samples=TRUE)[selected]
         })
         
         output$scatterplot <- renderHighchart(
             if (!is.null(pcX) & !is.null(pcY)) {
-                if (is.null(selected))
-                    groups <- NULL
-                else {
-                    groups <- getMatchingSamples(
-                        clinicalGroups[selected], colnames(psi), clinical,
-                        match=match)
-                }
                 plotPCA(pca, pcX, pcY, groups) %>% 
                     hc_chart(plotBackgroundColor="#FCFCFC") %>%
                     hc_title(text="Clinical samples (PCA individuals)")
