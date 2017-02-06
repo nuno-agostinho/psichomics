@@ -40,6 +40,22 @@ function showDataPanel(panelVal) {
 }
 
 /**
+ * Change active tab to the Data panel and expand the panel with the given value
+ * @param {String} panelVal Value of the panel to open
+ * @param {String} modal Identifier of the modal to close (optional)
+ */
+function showDataPanel(panelVal, modal) {
+    // Close modal
+    $(modal).modal("hide");
+    
+    // Open Data tab
+    $("ul[id='nav'] > li > a[data-value*='Data']").tab("show");
+    
+    // Expand panel of interest
+    $("div[value*='" + panelVal + "'] > div[role='tabpanel']").collapse("show");
+}
+
+/**
  * Navigate user to survival analysis by quantification cut-off
  * @param {String} event Alternative splicing event
  */

@@ -30,10 +30,12 @@ diffSplicingEventUI <- function(id) {
         sidebarLayout(
             sidebarPanel(
                 selectGroupsUI(ns("diffGroups"),
-                               label="Groups on which to perform the analyses"),
+                               label="Groups of samples to analyse",
+                               noGroupsLabel="All samples as one group",
+                               groupsLabel="Samples by selected groups"),
                 numericInput(ns("bandwidth"), "Density smoothing bandwidth",
                              0.01, step=0.01, min=0.01), hr(),
-                uiOutput(ns("basicStats")),
+                uiOutput(ns("basicStats")), hr(),
                 survival
             ), mainPanel(
                 highchartOutput(ns("density")),
@@ -577,21 +579,22 @@ diffSplicingEventServer <- function(input, output, session) {
         
         # Get splicing event's inclusion levels
         psi <- getInclusionLevels()
-        col <- input$diffGroups
-        if ( is.null(col) ) {
-            samples <- colnames(psi)
-            types <- parseSampleGroups(samples)
-            col <- unique(types)
-            attr(col, "samples") <- TRUE
-        }
+        if (is.null(psi)) return(NULL)
         
-        groups <- prepareGroupsDiffSplicing(psi, col)
-        psi <- groups$psi
-        groups <- groups$groups
+        # Prepare groups of samples to analyse
+        groups <- getSelectedGroups(input, "diffGroups", samples=TRUE)
+        if ( !is.null(groups) ) {
+            attrGroups <- groups
+            psi <- psi[ , unlist(groups)]
+            groups <- rep(names(groups), sapply(groups, length))
+        } else {
+            attrGroups <- "All samples"
+            groups <- rep(attrGroups, ncol(psi))
+        }
         
         # Check if analyses were already performed
         stats <- getDifferentialAnalyses()
-        if (!is.null(stats) && identical(col, attr(stats, "groups")))
+        if (!is.null(stats) && identical(attrGroups, attr(stats, "groups")))
             stat <- stats[event, ]
         else
             stat <- NULL

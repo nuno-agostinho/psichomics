@@ -96,8 +96,9 @@ pcaUI <- function(id) {
                             "samples is used to replace those missing values.",
                             "The remaining events are discarded."),
                       options=list(container="body")),
-            selectGroupsUI(ns("dataGroups"),
-                           "Samples on which to perform PCA by groups"),
+            selectGroupsUI(ns("dataGroups"), "Samples to use for PCA",
+                           noGroupsLabel="All samples",
+                           groupsLabel="Samples from selected groups"),
             processButton(ns("calculate"), "Calculate PCA"),
             hidden(
                 div(id=ns("pcaPlotUI"),
@@ -105,7 +106,9 @@ pcaUI <- function(id) {
                     selectizeInput(ns("pcX"), "Choose X axis", choices=NULL),
                     selectizeInput(ns("pcY"), "Choose Y axis", choices=NULL),
                     selectGroupsUI(ns("colourGroups"),
-                                   "Clinical groups to colour the PCA"),
+                                   "Sample colouring",
+                                   noGroupsLabel="Do not colour samples",
+                                   groupsLabel="Colour using selected groups"),
                     actionButton(ns("showVariancePlot"), "Show variance plot"),
                     actionButton(ns("plot"), "Plot PCA", class="btn-primary")
                 )
@@ -276,23 +279,24 @@ pcaServer <- function(input, output, session) {
     observeEvent(input$calculate, {
         if (input$dataForPCA == "Inclusion levels")
             psi <- isolate(getInclusionLevels())
-        else
+        else {
+            missingDataModal(session, "Inclusion levels", ns("takeMeThere"))
             return(NULL)
+        }
+            
         
         if (is.null(psi)) {
             missingDataModal(session, "Inclusion levels", ns("takeMeThere"))
         } else {
             time <- startProcess("calculate")
             isolate({
-                selected <- input$dataGroups
-                groups <- getGroupsFrom("Clinical data", samples=TRUE)[selected]
+                groups <- getSelectedGroups(input, "dataGroups", samples=TRUE)
                 preprocess <- input$preprocess
                 naTolerance <- input$naTolerance
             })
             
             # Subset data by the selected clinical groups
-            if (!is.null(selected))
-                psi <- psi[ , unlist(groups)]
+            if ( !is.null(groups) ) psi <- psi[ , unlist(groups)]
             
             # Raise error if data has no rows
             if (nrow(psi) == 0) {
@@ -374,8 +378,7 @@ pcaServer <- function(input, output, session) {
             pca <- getInclusionLevelsPCA()
             pcX <- input$pcX
             pcY <- input$pcY
-            selected <- input$colourGroups
-            groups <- getGroupsFrom("Clinical data", samples=TRUE)[selected]
+            groups <- getSelectedGroups(input, "colourGroups", samples=TRUE)
         })
         
         output$scatterplot <- renderHighchart(

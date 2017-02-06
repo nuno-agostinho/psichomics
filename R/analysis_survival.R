@@ -127,8 +127,7 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
         psiCutoff  <- input$psiCutoff
         scale      <- input$scale
         # Get chosen groups
-        dataGroups <- input$dataGroups
-        chosen <- getGroupsFrom("Clinical data")[dataGroups]
+        chosen <- getSelectedGroups(input, "dataGroups")
     })
     
     if (is.null(clinical)) {
