@@ -3,29 +3,60 @@
 #' @param id Character: identifier of the group selection
 #' @param label Character: selectize label
 #' @param placeholder Character: selectize placeholder
+#' @param noGroupsLabel Character: label to show when no groups may be selected
+#' (if NULL, the option to show no groups will not be shown)
+#' @param groupsLabel Character: label to show to the option of using groups
+#' when no groups may be selected
 #' 
 #' @importFrom shiny fluidRow column uiOutput selectizeInput actionButton
+#' radioButtons
+#' 
+#' @note To allow the user to (explicitly) select no groups, pass the 
+#' \code{noGroupsLabel} and \code{groupsLabel} arguments.
+#' 
+#' @seealso selectGroupsServer getSelectedGroups
 #' 
 #' @return Interface for group selection
 selectGroupsUI <- function (
-    id, label, placeholder="Click on 'Groups' to create or edit groups") {
+    id, label, placeholder="Click on 'Groups' to create or edit groups",
+    noGroupsLabel=NULL, groupsLabel=NULL) {
     editId <- paste0(id, "Edit")
     modalId <- paste0(id, "Modal")
     groupSelect <- selectizeInput(id, label, choices=NULL, multiple=TRUE, 
                                   width="auto",
                                   options=list(placeholder=placeholder))
     
-    if (!is.null(label)) {
-        class <- "inline_selectize"
-    } else {
-        class <- NULL
+    if ( !is.null(label) ) {
+        if ( is.null(noGroupsLabel) ) {
+            label <- column(12, groupSelect$children[[1]])
+        } else {
+            # Use label in radio buttons instead
+            radioLabel <- groupSelect$children[[1]]
+            label <- NULL
+        }
+        groupSelect$children[[1]] <- NULL
     }
     
-    fluidRow(uiOutput(modalId),
-             column(10, groupSelect),
-             column(2, actionButton(editId, "Groups", class=class,
-                                    class="pull-right", class="btn-info",
-                                    style="z-index: 1; position: relative;")))
+    select <- fluidRow(
+        uiOutput(modalId), label,
+        column(10, groupSelect),
+        column(2, actionButton(
+            editId, "Groups", class="pull-right", class="btn-info",
+            style="z-index: 1; position: relative;")))
+    
+    if ( !is.null(noGroupsLabel) ) {
+        noGroupsId <- paste0(id, "Selection")
+        
+        choices <- c("noGroups", "groups")
+        names(choices) <- c(noGroupsLabel, groupsLabel)
+        
+        select <- tagList(
+            radioButtons(noGroupsId, radioLabel, choices=choices),
+            conditionalPanel(
+                sprintf("input[id='%s'] == '%s'", noGroupsId, "groups"),
+                select))
+    }
+    return(select)
 }
 
 #' Group selection logic
@@ -49,8 +80,7 @@ selectGroupsServer <- function(session, id) {
     
     output[[modalId]] <- renderUI({
         bsModal2(ns(showId), style="info", trigger=NULL, size=NULL,
-                 div(icon("object-group"), "Groups"), 
-                 groupsUI(ns(uId), getCategoryData()[[datasetName]]))
+                 div(icon("object-group"), "Groups"), groupsUI(ns(uId)))
     })
     
     # Toggle group selection interface when clicking the "Edit" button
@@ -61,7 +91,8 @@ selectGroupsServer <- function(session, id) {
     
     # Update groups shown in the interface
     observe({
-        groups <- names(getGroupsFrom(datasetName))
+        groups <- getGroupsFrom(datasetName, complete=TRUE)
+        groups <- rownames(groups)
         if (is.null(groups)) {
             # Disable selection and animate button when clicking disabled input
             groups <- list()
@@ -77,48 +108,62 @@ selectGroupsServer <- function(session, id) {
 }
 
 #' Creates UI elements for the grouping feature
+#' 
 #' @param id Character: identifier
-#' @param dataset Data frame or matrix: dataset of interest
+#' 
 #' @return HTML elements
-groupsUI <- function(id, dataset) {
+groupsUI <- function(id) {
     ns <- NS(id)
     
-    groupOptions <- function(id) {
+    groupOptions <- function(id, loaded) {
         if (id == "Patients") {
+            title <- "Group by patients"
             choices <- getPatientId()
+            dataset <- getClinicalData()
             example <- tagList(
                 "For instance, to create groups by tumour stage, type",
                 tags$b("tumor_stage"), "and select the first suggestion.")
         } else if (id == "Samples") {
-            choices <- samples <- getSampleId()
+            title <- "Group by samples"
+            choices <- getSampleId()
+            dataset <- getSampleInfo()
             example <- NULL
-            if (!is.null(samples)) {
-                dataset <- data.frame(parseSampleGroups(samples))
-                rownames(dataset) <- samples
-                colnames(dataset) <- "Sample types"
-            } else {
-                dataset <- NULL
-            }
         }
         
-        tagList(
-            tabPanel("Attribute", groupByAttribute(ns, dataset, id, example)),
-            tabPanel("Index/Identifier", groupById(ns, id, choices)),
-            "----", "Advanced options",
-            tabPanel("Subset expression", groupByExpression(ns, id)),
-            tabPanel("Regular expression", groupByGrep(ns, dataset, id)))
+        missingData <- function(dataset, message, linkText)
+            div(class="alert alert-danger", role="alert",
+                icon("exclamation-circle"), message,
+                tags$a(linkText, onclick=loadRequiredData(
+                    dataset, paste0(substr(ns(id), 1, 28), "Show"))))
+        
+        if (loaded) {
+            navbarMenu(
+                title,
+                tabPanel("Attribute",
+                         groupByAttribute(ns, dataset, id, example)),
+                tabPanel("Index/Identifier", groupById(ns, id, choices)),
+                "----", "Advanced options",
+                tabPanel("Subset expression", groupByExpression(ns, id)),
+                tabPanel("Regular expression", groupByGrep(ns, dataset, id)))
+        } else if ( id == "Patients" ) {
+            tabPanel(title, missingData(
+                "Clinical data",
+                "No clinical data loaded to create groups by patients.",
+                "Please, load clinical data."))
+        } else if ( id == "Samples" ) {
+            tabPanel(title, missingData(
+                "Inclusion levels",
+                paste("No alternative splicing quantification loaded to create",
+                      "groups by samples."),
+                "Please, load or calculate it."))
+        }
     }
     
-    checkId <- function (sign, what)
-        sprintf("input[id='%s'] %s '%s'", ns("subsetBy"), sign, what)
     tagList(
         uiOutput(ns("alert")),
-        tabsetPanel(
-            id=ns("groupBy"), type="pills",
-            do.call("navbarMenu",
-                    c("Group by patients", groupOptions("Patients"))),
-            do.call("navbarMenu",
-                    c("Group by samples", groupOptions("Samples")))),
+        tabsetPanel(id=ns("groupBy"), type="pills",
+                    groupOptions("Patients", !is.null(getPatientId()) ),
+                    groupOptions("Samples", !is.null(getSampleId()) )),
         uiOutput(ns("groupsList")))
 }
 
@@ -139,7 +184,7 @@ groupByAttribute <- function(ns, dataset, id, example) {
         selectizeInput(ns(paste0("groupAttribute", id)), "Select attribute",
                        width="auto", choices=c(
                            "Start typing to search for attributes"="", 
-                           names(dataset))),
+                           colnames(dataset))),
         actionButton(ns(paste0("createGroupAttribute", id)), "Create group",
                      class ="btn-primary")
     )}
@@ -208,21 +253,25 @@ groupByGrep <- function(ns, dataset, id) {
     )}
 
 #' Prepare to create group according to specific details
-#' @param session Shåiny session
+#' @param session Shiny session
 #' @param input Shiny input
 #' @param output Shiny output
-#' @param dataset Matrix or data frame: dataset
 #' @param id Character: identifier of the group selection
 #' @param type Character: type of group to create
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
-createGroup <- function(session, input, output, dataset, id, type) {
+createGroup <- function(session, input, output, id, type) {
     removeAlert(output)
-    groups <- getGroupsFrom("Clinical data", complete=TRUE)
+    
+    if (id == "Patients")
+        dataset <- getClinicalData()
+    else if (id == "Samples")
+        dataset <- getSampleInfo()
     new <- createGroupFromInput(session, input, output, dataset, id, type)
     
     if (!is.null(new)) {
         # Rename duplicated group names
+        groups <- getGroupsFrom("Clinical data", complete=TRUE)
         new <- renameGroups(new, groups)
         
         # Append the new group(s) to the groups already created
@@ -504,6 +553,46 @@ operateOnGroups <- function(input, session, FUN, buttonId, symbol=" ",
     })
 }
 
+#' Present groups table
+#' 
+#' @param datasetName Character: name of dataset
+#' 
+#' @return Matrix with groups ordered (or NULL if no groups exist)
+showGroupsTable <- function(datasetName) {
+    groups <- getGroupsFrom(datasetName, complete=TRUE)
+    
+    # Show groups only if there is at least one group
+    if (!is.null(groups) && nrow(groups) > 0) {
+        show <- NULL
+        
+        # Show number of patients for each group (if available)
+        showPatients <- "Patients" %in% colnames(groups)
+        if (showPatients) {
+            patients <- lapply(groups[ , "Patients"], length)
+            groups[ , "Patients"] <- unlist(patients)
+            show <- 4
+        }
+        
+        # Show number of samples for each group (if available)
+        showSamples <- "Samples" %in% colnames(groups)
+        if (showSamples) {
+            samples <- lapply(groups[ , "Samples"], length)
+            groups[ , "Samples"] <- unlist(samples)
+            if (showPatients)
+                show <- c(4, 5)
+            else
+                show <- 4
+        }
+        
+        # Ordering the groups (plus safety net for cases with one row)
+        ord <- c(1, show, 2, 3)
+        ordered <- groups[ , ord, drop=FALSE]
+        return(ordered)
+    } else {
+        return(NULL)
+    }
+}
+
 #' Server function for data grouping
 #'
 #' @inheritParams operateOnGroups
@@ -518,82 +607,46 @@ groupsServer <- function(input, output, session, datasetName) {
     ns <- session$ns
     
     # Create new group(s)
-    createGroupOptions <- function(id, dataset) {
-        # Update available attributes to suggest in the subset expression
-        output[[paste0("groupExpressionSuggestions", id)]] <- renderUI({
-            if (id == "Patients") {
-                suggest <- names(getClinicalData())
-            } else if (id == "Samples") {
-                suggest <- "Sample types"
-            }
-            
-            textSuggestions(ns(paste0("groupExpression", id)), suggest)
+    createGroupOptions <- function(id) {
+        observeEvent(input[[paste0("createGroupAttribute", id)]], {
+            createGroup(session, input, output, id, type="Attribute")
         })
         
-        observeEvent(input[[paste0("createGroupAttribute", id)]], {
-            createGroup(session, input, output, dataset, id, type="Attribute")
-        })
         observeEvent(input[[paste0("createGroupRows", id)]], {
-            createGroup(session, input, output, dataset, id, 
-                        type="Index/Identifier")
+            createGroup(session, input, output, id, type="Index/Identifier")
         })
+        
         observeEvent(input[[paste0("createGroupSubset", id)]], {
-            createGroup(session, input, output, dataset, id, type="Subset")
+            createGroup(session, input, output, id, type="Subset")
         })
+        # Update available attributes to suggest in the subset expression
+        output[[paste0("groupExpressionSuggestions", id)]] <- renderUI({
+            if (id == "Patients")
+                dataset <- getClinicalData()
+            else if (id == "Samples")
+                dataset <- getSampleInfo()
+            textSuggestions(ns(paste0("groupExpression", id)), names(dataset))
+        })
+        
         observeEvent(input[[paste0("createGroupRegex", id)]], {
-            createGroup(session, input, output, dataset, id, type="Regex")
+            createGroup(session, input, output, id, type="Regex")
         })
     }
     
-    observe({
-        createGroupOptions("Patients", getCategoryData()[[datasetName]])
-    })
-    
-    observe({
-        samples <- getSampleId()
-        if (!is.null(samples)) {
-            dataset <- data.frame(parseSampleGroups(samples))
-            rownames(dataset) <- samples
-            colnames(dataset) <- "Sample types"
-            createGroupOptions("Samples", dataset)
-        }
-    })
+    observe( createGroupOptions("Patients") )
+    observe( createGroupOptions("Samples") )
     
     # Render groups list and show interface to manage groups
-    output$groupsTable <- renderDataTable({
-        groups <- getGroupsFrom(datasetName, complete=TRUE)
-        
-        # Show groups only if there is at least one group
-        if (!is.null(groups) && nrow(groups) > 0) {
-            show <- NULL
-            
-            # Show number of patients for each group (if available)
-            if ("Patients" %in% colnames(groups)) {
-                patients <- lapply(groups[ , "Patients"], length)
-                groups[ , "Patients"] <- unlist(patients)
-                show <- c(show, 4)
-            }
-            
-            # Show number of samples for each group (if available)
-            if ("Samples" %in% colnames(groups)) {
-                samples <- lapply(groups[ , "Samples"], length)
-                groups[ , "Samples"] <- unlist(samples)
-                show <- c(show, max(show) + 1)
-            }
-            
-            # Ordering the groups (plus safety net for cases with one row)
-            ord <- c(1, show, 2, 3)
-            ordered <- groups[ , ord, drop=FALSE]
-            return(ordered)
-        }
-    }, style="bootstrap", escape=FALSE, server=TRUE, rownames=FALSE,
-    options=list(pageLength=10, lengthChange=FALSE, scrollX=TRUE,
-                 ordering=FALSE,
-                 # Stack DataTable elements so they fit in the container
-                 dom=paste0(
-                     '<"row view-filter"<"col-sm-12"<"pull-left"l>',
-                     '<"pull-right"f><"clearfix">>>',
-                     'rt<"row view-pager"<"col-sm-12"<"text-center"ip>>>')))
+    output$groupsTable <- renderDataTable(
+        showGroupsTable(datasetName), style="bootstrap", escape=FALSE, 
+        server=TRUE, rownames=FALSE,
+        options=list(pageLength=10, lengthChange=FALSE, scrollX=TRUE,
+                     ordering=FALSE,
+                     # Stack DataTable elements so they fit in the container
+                     dom=paste0(
+                         '<"row view-filter"<"col-sm-12"<"pull-left"l>',
+                         '<"pull-right"f><"clearfix">>>',
+                         'rt<"row view-pager"<"col-sm-12"<"text-center"ip>>>')))
     
     # Remove selected groups
     removeId <- "removeGroups"
@@ -640,11 +693,10 @@ groupsServer <- function(input, output, session, datasetName) {
     
     # Show group rename if only one group is selected
     observe({
-        if (length(input$groupsTable_rows_selected) == 1) {
+        if (length(input$groupsTable_rows_selected) == 1)
             show("renameAlert", anim=TRUE, time=0.2)
-        } else {
+        else
             hide("renameAlert", anim=TRUE, time=0.2)
-        }
     })
     
     # Disable rename button if no new name was given
@@ -708,6 +760,69 @@ groupsServer <- function(input, output, session, datasetName) {
     })
     
     observeEvent(input$removeAll, setGroupsFrom(datasetName, NULL))
+}
+
+#' Server function for data grouping (one call)
+#' 
+#' These functions only run once instead of running for every instance of groups
+#' 
+#' @inheritParams groupsServer
+#' 
+#' @return NULL (this function is used to modify the Shiny session's state)
+groupsServerOnce <- function(input, output, session) {
+    # Update groups according to the availability of sample identifiers
+    observe({
+        group <- getGroupsFrom("Clinical data", complete=TRUE)
+        # Ignore if there are no groups
+        if (is.null(group)) return(NULL)
+        
+        samples <- getSampleId()
+        clinical <- getClinicalData()
+        match <- getClinicalMatchFrom("Inclusion levels")
+        showSamples <- "Samples" %in% colnames(group)
+        
+        if ( is.null(samples) && showSamples ) {
+            # Remove sample identifiers from groups
+            if ( "Patients" %in% colnames(group) ) {
+                # Groups are made with patients and samples; only remove samples
+                group <- group[ , -match("Samples", colnames(group))]
+            } else {
+                # Groups are only made of samples; remove all groups
+                group <- NULL
+            }
+            setGroupsFrom("Clinical data", group)
+        } else if ( !is.null(samples) && !showSamples && !is.null(clinical) &&
+                    !is.null(match) ) {
+            # Update groups if previously made with patients only
+            patients <- group[ , "Patients"]
+            samples <- getMatchingSamples(patients, samples, clinical,
+                                          match=match)
+            group <- cbind(group, "Samples"=samples)
+            setGroupsFrom("Clinical data", group)
+        }
+    })
+}
+
+#' Get selected groups for a given group selection element
+#' 
+#' @param input Shiny input
+#' @param id Character: identifier of the group selection element
+#' @inheritParams getGroupsFrom
+#' 
+#' @return List with selected groups (or NULL if no groups were selected)
+getSelectedGroups <- function(input, id, samples=FALSE,
+                              dataset="Clinical data") {
+    selection <- input[[paste0(id, "Selection")]]
+    noGroups  <- !is.null(selection) && selection == "noGroups"
+    selected  <- input[[id]]
+    
+    if ( noGroups || is.null(selected) ) {
+        # User selects no groups (either explicitly or not)
+        groups <- NULL
+    } else {
+        groups <- getGroupsFrom(dataset, samples=samples)[selected]
+    }
+    return(groups)
 }
 
 # attr(groupsUI, "loader") <- "data"

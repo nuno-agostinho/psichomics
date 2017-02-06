@@ -8,7 +8,7 @@
 \usage{
 missingDataModal(session, dataType, buttonId)
 
-loadRequiredData(dataType)
+loadRequiredData(dataType, modal = NULL)
 
 missingDataGuide(dataType)
 }
@@ -19,6 +19,8 @@ missingDataGuide(dataType)
 
 \item{buttonId}{Character: identifier of button to take user to load missing 
 data}
+
+\item{modal}{Character: modal identifier}
 }
 \value{
 NULL (this function is used to modify the Shiny session's state)

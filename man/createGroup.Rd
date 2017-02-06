@@ -4,16 +4,14 @@
 \alias{createGroup}
 \title{Prepare to create group according to specific details}
 \usage{
-createGroup(session, input, output, dataset, id, type)
+createGroup(session, input, output, id, type)
 }
 \arguments{
-\item{session}{Shåiny session}
+\item{session}{Shiny session}
 
 \item{input}{Shiny input}
 
 \item{output}{Shiny output}
-
-\item{dataset}{Matrix or data frame: dataset}
 
 \item{id}{Character: identifier of the group selection}
 

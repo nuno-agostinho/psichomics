@@ -22,8 +22,9 @@ diffSplicingTableUI <- function(id) {
                              "Hommel's method"="hommel"))
     
     sidebar <- sidebarPanel(
-        selectGroupsUI(ns("diffGroups"),
-                       label="Groups on which to perform the analyses"),
+        selectGroupsUI(ns("diffGroups"), label="Groups of samples to analyse",
+                       noGroupsLabel="All samples as one group",
+                       groupsLabel="Samples by selected groups"),
         checkboxGroupInput(
             ns("statsChoices"),
             "Choose statistical analyses to perform:",
@@ -393,18 +394,24 @@ diffSplicingTableServer <- function(input, output, session) {
         psi <- getInclusionLevels()
         statsChoices <- input$statsChoices
         pvalueAdjust <- input$pvalueAdjust
-        col <- getDiffSplicingGroups()
-        if (is.null(col) || col=="") return(NULL)
         
         totalTime <- startProcess("startAnalyses")
-        groups <- prepareGroupsDiffSplicing(psi, col)
-        psi <- groups$psi
-        groups <- groups$groups
+        
+        # Prepare groups of samples to analyse
+        groups <- getSelectedGroups(input, "diffGroups", samples=TRUE)
+        if ( !is.null(groups) ) {
+            attrGroups <- groups
+            psi <- psi[ , unlist(groups)]
+            groups <- rep(names(groups), sapply(groups, length))
+        } else {
+            attrGroups <- "All samples"
+            groups <- rep(attrGroups, ncol(psi))
+        }
         
         stats <- diffAnalyses(psi, groups, statsChoices,
                               pvalueAdjust=pvalueAdjust,
                               progress=updateProgress)
-        attr(stats, "groups") <- col
+        attr(stats, "groups") <- attrGroups
         setDifferentialAnalyses(stats)
         setDifferentialAnalysesSurvival(NULL)
         endProcess("startAnalyses", totalTime)
@@ -412,26 +419,12 @@ diffSplicingTableServer <- function(input, output, session) {
     
     # Perform statistical analyses
     observeEvent(input$startAnalyses, {
-        isolate({
-            # Get event's inclusion levels
-            psi <- getInclusionLevels()
-            groups <- input$diffGroups
-            statsChoices <- input$statsChoices
-            diffSplicing <- getDifferentialAnalyses()
-        })
-        
+        psi <- isolate(getInclusionLevels())
+        diffAnalyses <- isolate(getDifferentialAnalyses())
         if ( is.null(psi) ) {
             missingDataModal(session, "Inclusion levels",
                              ns("missingInclusionLevels"))
-            return(NULL)
-        } else if ( is.null(groups) ) {
-            errorModal(session, "Select groups",
-                       "The groups on which to perform statistical analysis",
-                       "cannot be empty.")
-            return(NULL)
-        }
-        
-        if ( !is.null(diffSplicing) ) {
+        } else if ( !is.null(diffAnalyses) ) {
             warningModal(session, "Differential analyses already performed",
                          "Do you wish to replace the loaded analyses?",
                          footer=actionButton(ns("replace"), "Replace",
@@ -495,8 +488,6 @@ diffSplicingTableServer <- function(input, output, session) {
         else
             enable("downloadStats")
     })
-    
-    observe( setDiffSplicingGroups(input$diffGroups) )
 }
 
 attr(diffSplicingTableUI, "loader") <- "diffSplicing"

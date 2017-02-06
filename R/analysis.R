@@ -31,14 +31,18 @@ missingDataModal <- function(session, dataType, buttonId) {
 }
 
 #' @rdname missingDataModal
-loadRequiredData <- function(dataType) {
+#' @param modal Character: modal identifier
+loadRequiredData <- function(dataType, modal=NULL) {
     panel <- switch(dataType,
                     "Clinical data"="TCGA",
                     "Junction quantification"="TCGA",
                     "Inclusion levels"="Alternative splicing"
     )
     
-    return(sprintf("showDataPanel('%s');", panel))
+    if ( is.null(modal) )
+        return(sprintf("showDataPanel('%s');", panel))
+    else
+        return(sprintf("showDataPanel('%s', '#%s');", panel, modal))
 }
 
 #' @rdname missingDataModal
