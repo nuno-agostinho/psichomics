@@ -72,7 +72,7 @@ getInclusionLevels <- reactive(getCategoryData()[["Inclusion levels"]])
 
 #' Get sample information of the selected data category
 #' @return Data frame with sample information
-getSampleInfo <- reactive(getCategoryData()[["Sample information"]])
+getSampleInfo <- reactive(getCategoryData()[["Sample metadata"]])
 
 #' Get data from global data
 #' @param ... Arguments to identify a variable
@@ -280,7 +280,7 @@ setInclusionLevels <- function(value, category = getCategory())
 #' it uses the selected data category
 #' @return NULL (this function is used to modify the Shiny session's state)
 setSampleInfo <- function(value, category = getCategory())
-    sharedData$data[[category]][["Sample information"]] <- value
+    sharedData$data[[category]][["Sample metadata"]] <- value
 
 #' Set groups from a given data type
 #' @note Needs to be called inside a reactive function

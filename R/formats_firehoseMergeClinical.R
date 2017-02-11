@@ -42,6 +42,9 @@ firehoseMergeClinicalFormat <- function() {
             col <- grep("stage.*pathologic_stage", colnames(data))
             colnames(data)[col] <- paste0(colnames(data)[col], "_tumor_stage")
             
+            # Transform patient identifiers to upper case
+            rownames(data) <- toupper(rownames(data))
+            
             # Remove columns only containing missing values
             onlyNA <- colSums(is.na(data)) == nrow(data)
             data <- data[ , !onlyNA]

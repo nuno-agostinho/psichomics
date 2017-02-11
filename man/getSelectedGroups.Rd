@@ -4,7 +4,8 @@
 \alias{getSelectedGroups}
 \title{Get selected groups for a given group selection element}
 \usage{
-getSelectedGroups(input, id, samples = FALSE, dataset = "Clinical data")
+getSelectedGroups(input, id, samples = FALSE, dataset = "Clinical data",
+  filter = NULL)
 }
 \arguments{
 \item{input}{Shiny input}
@@ -15,6 +16,8 @@ getSelectedGroups(input, id, samples = FALSE, dataset = "Clinical data")
 FALSE by default}
 
 \item{dataset}{Character: data set (e.g. "Clinical data")}
+
+\item{filter}{Character: only get groups passed}
 }
 \value{
 List with selected groups (or NULL if no groups were selected)

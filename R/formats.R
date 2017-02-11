@@ -42,6 +42,7 @@ checkFileFormat <- function(format, head, filename) {
 #' name of the data frame
 #' 
 #' @importFrom data.table fread
+#' @importFrom stringr str_split_fixed
 #' 
 #' @return Data frame with the loaded file
 loadFile <- function(format, file) {

@@ -54,15 +54,15 @@ test_that("Calculate inclusion levels for exon skipping with minimum reads", {
                                 90 98 93 92 90 91
                                 30 24 92 26 13 29")
     names(junctionQuant) <- c(paste("Normal", 1:3), paste("Cancer", 1:3))
-    rownames(junctionQuant) <- c("chr1:32:+,chr1:35:+",
-                                 "chr1:32:+,chr1:38:+",
-                                 "chr1:37:+,chr1:38:+",
-                                 "chr2:32:+,chr2:35:+",
-                                 "chr2:32:+,chr2:38:+",
-                                 "chr2:37:+,chr2:38:+",
-                                 "chr3:32:+,chr3:35:+",
-                                 "chr3:32:+,chr3:38:+",
-                                 "chr3:37:+,chr3:38:+")
+    rownames(junctionQuant) <- c("chr1:32:35:+",
+                                 "chr1:32:38:+",
+                                 "chr1:37:38:+",
+                                 "chr2:32:35:+",
+                                 "chr2:32:38:+",
+                                 "chr2:37:38:+",
+                                 "chr3:32:35:+",
+                                 "chr3:32:38:+",
+                                 "chr3:37:38:+")
     psi <- calculateInclusionLevels(eventType, junctionQuant, annot, minReads)
     
     expect_equal(nrow(psi), 2) # Discard first event based on few reads
@@ -100,12 +100,12 @@ test_that("Calculate inclusion levels for alternative 5' splice site", {
                                 30 24 92 26 13 29
                                 10 18 13 12 10 21")
     names(junctionQuant) <- c(paste("Normal", 1:3), paste("Cancer", 1:3))
-    rownames(junctionQuant) <- c("chr1:32:+,chr1:37:+",
-                                 "chr1:35:+,chr1:37:+",
-                                 "chr2:32:+,chr2:37:+",
-                                 "chr2:35:+,chr2:37:+",
-                                 "chr3:32:+,chr3:37:+",
-                                 "chr3:35:+,chr3:37:+")
+    rownames(junctionQuant) <- c("chr1:32:37:+",
+                                 "chr1:35:37:+",
+                                 "chr2:32:37:+",
+                                 "chr2:35:37:+",
+                                 "chr3:32:37:+",
+                                 "chr3:35:37:+")
     psi <- calculateInclusionLevels(eventType, junctionQuant, annot)
     
     expect_true(all(psi[1, ] == 0.5)) # Same reads for all junctions
@@ -129,12 +129,12 @@ test_that("Calculate inclusion levels for alternative 3' splice site", {
                                 10 18 13 12 10 21
                                 30 24 92 26 13 29")
     names(junctionQuant) <- c(paste("Normal", 1:3), paste("Cancer", 1:3))
-    rownames(junctionQuant) <- c("chr1:32:+,chr1:35:+",
-                                 "chr1:32:+,chr1:37:+",
-                                 "chr2:32:+,chr2:35:+",
-                                 "chr2:32:+,chr2:37:+",
-                                 "chr3:32:+,chr3:35:+",
-                                 "chr3:32:+,chr3:37:+")
+    rownames(junctionQuant) <- c("chr1:32:35:+",
+                                 "chr1:32:37:+",
+                                 "chr2:32:35:+",
+                                 "chr2:32:37:+",
+                                 "chr3:32:35:+",
+                                 "chr3:32:37:+")
     psi <- calculateInclusionLevels(eventType, junctionQuant, annot)
     
     expect_true(all(psi[1, ] == 0.5)) # Same reads for all junctions
