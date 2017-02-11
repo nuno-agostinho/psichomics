@@ -398,7 +398,8 @@ diffSplicingTableServer <- function(input, output, session) {
         totalTime <- startProcess("startAnalyses")
         
         # Prepare groups of samples to analyse
-        groups <- getSelectedGroups(input, "diffGroups", samples=TRUE)
+        groups <- getSelectedGroups(input, "diffGroups", samples=TRUE,
+                                    filter=colnames(psi))
         if ( !is.null(groups) ) {
             attrGroups <- groups
             psi <- psi[ , unlist(groups)]

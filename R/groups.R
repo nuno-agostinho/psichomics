@@ -130,11 +130,11 @@ groupsUI <- function(id) {
             example <- NULL
         }
         
+        modalId <- gsub("(.*)Call\\-.*", "\\1Show", ns(id))
         missingData <- function(dataset, message, linkText)
             div(class="alert alert-danger", role="alert",
                 icon("exclamation-circle"), message,
-                tags$a(linkText, onclick=loadRequiredData(
-                    dataset, paste0(substr(ns(id), 1, 28), "Show"))))
+                tags$a(linkText, onclick=loadRequiredData( modalId )))
         
         if (loaded) {
             navbarMenu(
@@ -148,14 +148,13 @@ groupsUI <- function(id) {
         } else if ( id == "Patients" ) {
             tabPanel(title, missingData(
                 "Clinical data",
-                "No clinical data loaded to create groups by patients.",
+                "No clinical data loaded to group by patients.",
                 "Please, load clinical data."))
         } else if ( id == "Samples" ) {
             tabPanel(title, missingData(
                 "Inclusion levels",
-                paste("No alternative splicing quantification loaded to create",
-                      "groups by samples."),
-                "Please, load or calculate it."))
+                "No sample information loaded to group by samples.",
+                "Please, load sample information."))
         }
     }
     
@@ -377,11 +376,11 @@ createGroupFromInput <- function (session, input, output, dataset, id, type) {
                                           match=match)
             group <- cbind(group, "Samples"=samples)
         } else if (id == "Samples") {
-            patients <- lapply(group[ , "Samples"],
-                               function(i) {
-                                   m <- match[tolower(i)]
-                                   return(m[!is.na(m)])
-                               })
+            samples <- group[ , "Samples"]
+            patients <- lapply(group[ , "Samples"], function(i) {
+                m <- match[i]
+                return(m[!is.na(m)])
+            })
             group <- cbind(group, "Patients"=patients)
             group <- group[ , c(1:3, 5, 4), drop=FALSE]
         }
@@ -808,10 +807,11 @@ groupsServerOnce <- function(input, output, session) {
 #' @param input Shiny input
 #' @param id Character: identifier of the group selection element
 #' @inheritParams getGroupsFrom
+#' @param filter Character: only get groups passed
 #' 
 #' @return List with selected groups (or NULL if no groups were selected)
-getSelectedGroups <- function(input, id, samples=FALSE,
-                              dataset="Clinical data") {
+getSelectedGroups <- function(input, id, samples=FALSE, dataset="Clinical data",
+                              filter=NULL) {
     selection <- input[[paste0(id, "Selection")]]
     noGroups  <- !is.null(selection) && selection == "noGroups"
     selected  <- input[[id]]
@@ -821,6 +821,9 @@ getSelectedGroups <- function(input, id, samples=FALSE,
         groups <- NULL
     } else {
         groups <- getGroupsFrom(dataset, samples=samples)[selected]
+        
+        if (!is.null(filter))
+            groups <- lapply(groups, function(i) i[i %in% filter])
     }
     return(groups)
 }

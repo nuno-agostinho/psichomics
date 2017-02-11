@@ -1,4 +1,4 @@
-firehoseJunctionQuantificationFormat <- function() {
+firehoseJunctionReadsFormat <- function() {
     list(
         tablename   = "Junction quantification",   # Name of the created table
         filename    = "junction_quantification",   # Name of the file
@@ -30,8 +30,17 @@ firehoseJunctionQuantificationFormat <- function() {
         unique = TRUE,    # Remove duplicated rows
         
         # Default columns to show (NULL to show all)
-        show = NULL
+        show = NULL,
+        
+        process = function(data) {
+            # Transform junction positions for easier parsing
+            cols <- str_split_fixed(rownames(data), ":|,", 6)
+            rownames(data) <- sprintf(
+                "%s:%s:%s:%s",
+                cols[ , 1], cols[ , 2], cols[ , 5], cols[ , 3])
+            return(data)
+        }
     )
 }
 
-attr(firehoseJunctionQuantificationFormat, "loader") <- "formats"
+attr(firehoseJunctionReadsFormat, "loader") <- "formats"

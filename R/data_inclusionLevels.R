@@ -4,8 +4,11 @@
 #' @inheritParams getClinicalMatchFrom
 #' 
 #' @return Data frame containing metadata associated with each TCGA sample
-parseTcgaSampleInfo <- function (samples, category) {
-    info <- data.frame(parseSampleGroups(samples))
+parseTcgaSampleInfo <- function (samples, category=getCategory()) {
+    parsed <- parseSampleGroups(samples)
+    if ( all(is.na(parsed)) ) return(NULL)
+    
+    info <- data.frame(parsed)
     colnames(info) <- "Sample types"
     rownames(info) <- samples
     
@@ -13,16 +16,16 @@ parseTcgaSampleInfo <- function (samples, category) {
     patients <- getPatientId()
     if ( !is.null(patients) ) {
         match <- getClinicalMatchFrom("Inclusion levels", category)
-        match <- match[tolower(samples)]
-        patients <- toupper(patients[match])
+        match <- match[samples]
+        patients <- patients[match]
         info <- cbind(info, "Patient ID"=patients)
     }
     
     # Metadata
     attr(info, "rowNames") <- TRUE
-    attr(info, "description") <- paste("Metadata for TCGA samples.")
-    attr(info, "dataType")  <- "Sample data"
-    attr(info, "tablename") <- "Sample data"
+    attr(info, "description") <- "Metadata for TCGA samples"
+    attr(info, "dataType")  <- "Sample metadata"
+    attr(info, "tablename") <- "Sample metadata"
     return(info)
 }
 
@@ -283,9 +286,12 @@ inclusionLevelsServer <- function(input, output, session) {
             match <- getPatientFromSample(colnames(psi), clinical)
             setClinicalMatchFrom("Inclusion levels", match)
         }
+        
         samples <- colnames(psi)
-        setSampleId(samples)
-        setSampleInfo(parseTcgaSampleInfo(samples, getCategory()))
+        parsed <- parseTcgaSampleInfo(samples) 
+        if ( !is.null(parsed) )
+            setSampleInfo(parsed)
+        
         endProcess("calcIncLevels", time)
     })
     
@@ -445,8 +451,9 @@ inclusionLevelsServer <- function(input, output, session) {
             setInclusionLevels(psi)
             
             samples <- colnames(psi)
-            setSampleId(samples)
-            setSampleInfo(parseTcgaSampleInfo(samples, getCategory()))
+            parsed <- parseTcgaSampleInfo(samples) 
+            if ( !is.null(parsed) )
+                setSampleInfo(parsed)
             
             setSpecies(input$customSpecies2)
             setAssemblyVersion(input$customAssembly2)

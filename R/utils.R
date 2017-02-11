@@ -203,42 +203,47 @@ endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
 #'
 #' @param sampleId Character: sample identifiers
 #' @param clinical Matrix or data.frame: clinical data 
-#' @param prefix Character: prefix to search for in clinical data
-#' @param lower Boolean: convert samples to lower case? TRUE by default
 #' @param rmNoMatches Boolean: remove non-matching identifiers
 #'
 #' @return Integer vector of the row number in clinical data corresponding to 
 #' the given IDs (named with the ID)
 #' @export
 #' @examples 
-#' samples <- c("ABC", "DEF", "GHI", "JKL", "MNO")
-#' clinical <- data.frame(patient=paste0("patient-", samples),
-#'                        samples=tolower(samples))
-#' getPatientFromSample(samples, clinical, prefix="")
-getPatientFromSample <- function(sampleId, clinical, prefix="^tcga", 
-                                 lower=TRUE, rmNoMatches=TRUE) {
-    # All IDs are lower case in the clinical data
-    if (lower) sampleId <- tolower(sampleId)
-    
-    # Get all possible identifiers starting in "tcga" from the clinical data
-    idsIndex <- vapply(1:ncol(clinical),
-                       function(i) length(grep(prefix, clinical[[i]])) != 0,
-                       logical(1))
-    clinicalIds <- clinical[, idsIndex, drop=FALSE]
-    
-    # Get the clinical data row corresponding to the given IDs
-    clinicalRows <- rep(NA, length(sampleId))
-    names(clinicalRows) <- sampleId
-    for (col in 1:ncol(clinicalIds)) {
-        # Check if any ID matches the current column of clinical IDs
-        match <- sapply(sampleId, grep, clinicalIds[ , col], fixed = TRUE)
+#' samples <- c("TCGA-ABC", "TCGA-DEF", "TCGA-GHI", "TCGA-JKL", "TCGA-MNO")
+#' clinical <- data.frame(patient=paste0("patient-", samples), samples=samples)
+#' getPatientFromSample(samples, clinical)
+getPatientFromSample <- function(sampleId, clinical, rmNoMatches=TRUE) {
+    # Check if samples are from TCGA
+    if ( any(grepl("^TCGA", sampleId)) ) {
+        # Get all possible identifiers starting in "tcga" from the clinical data
+        idsIndex <- vapply(1:ncol(clinical),
+                           function(i) length(grep("^tcga", 
+                                                   clinical[[i]])) != 0,
+                           logical(1))
+        clinicalIds <- clinical[, idsIndex, drop=FALSE]
         
-        # All matched IDs will save their respective rows
-        clinicalRows[lapply(match, length) != 0] <- unlist(match)
+        # Get the clinical data row corresponding to the given IDs
+        clinicalRows <- rep(NA, length(sampleId))
+        names(clinicalRows) <- sampleId
+        samples <- tolower(sampleId)
+        for (col in 1:ncol(clinicalIds)) {
+            # Check if any ID matches the current column of clinical IDs
+            match <- sapply(samples, grep, clinicalIds[ , col], fixed = TRUE)
+            
+            # All matched IDs will save their respective rows
+            clinicalRows[lapply(match, length) != 0] <- unlist(match)
+        }
+        # Remove non-matching identifiers
+        if (rmNoMatches) clinicalRows <- clinicalRows[!is.na(clinicalRows)]
+        return(clinicalRows)
+    } else if ( any(grepl("^GTEX", sampleId)) ) {
+        # Retrieve GTEx patient ID from beginning of the sample ID
+        clinicalRows <- gsub("(GTEX-.*?)-.*", "\\1", sampleId)
+        names(clinicalRows) <- sampleId
+        return(clinicalRows)
+    } else {
+        return(NULL)
     }
-    # Remove non-matching identifiers
-    if (rmNoMatches) clinicalRows <- clinicalRows[!is.na(clinicalRows)]
-    return(clinicalRows)
 }
 
 #' Search samples in the clinical dataset and return the ones matching the given
@@ -248,7 +253,6 @@ getPatientFromSample <- function(sampleId, clinical, prefix="^tcga",
 #' @param index Numeric or list of numeric: patient row indexes
 #' @param samples Character: samples
 #' @param clinical Data frame or matrix: clinical dataset
-#' @param upper Boolean: convert identifiers to upper case? TRUE by default
 #' @param rm.NA Boolean: remove NAs? TRUE by default
 #' @param match Integer: vector of patient index with the sample identifiers as
 #' name to save time (optional)
@@ -257,12 +261,11 @@ getPatientFromSample <- function(sampleId, clinical, prefix="^tcga",
 #' @export
 #' 
 #' @examples 
-#' samples <- c("ABC", "DEF", "GHI", "JKL", "MNO")
-#' clinical <- data.frame(patient=paste0("patient-", samples), 
-#'                        samples=tolower(samples))
+#' samples <- c("TCGA-ABC", "TCGA-DEF", "TCGA-GHI", "TCGA-JKL", "TCGA-MNO")
+#' clinical <- data.frame(patient=paste0("patient-", samples), samples=samples)
 #' getMatchingSamples(c(1, 4), samples, clinical, prefix="")
-getMatchingSamples <- function(index, samples, clinical, upper=TRUE, 
-                               rm.NA=TRUE, prefix="^tcga", match=NULL) {
+getMatchingSamples <- function(index, samples, clinical, rm.NA=TRUE,
+                               prefix="^tcga", match=NULL) {
     patient <- rep(NA, nrow(clinical))
     if (is.null(match))
         match <- getPatientFromSample(samples, clinical, prefix=prefix)
@@ -272,13 +275,11 @@ getMatchingSamples <- function(index, samples, clinical, upper=TRUE,
     if (is.list(index)) {
         samples <- lapply(index, function(i) {
             res <- patient[i]
-            if (upper) res <- toupper(res)
             if (rm.NA) res <- res[!is.na(res)]
             return(res)
         })
     } else {
         samples <- patient[index]
-        if (upper) samples <- toupper(samples)
         if (rm.NA) samples <- samples[!is.na(samples)]
     }
     return(samples)

@@ -8,7 +8,7 @@
 \usage{
 missingDataModal(session, dataType, buttonId)
 
-loadRequiredData(dataType, modal = NULL)
+loadRequiredData(modal = NULL)
 
 missingDataGuide(dataType)
 }

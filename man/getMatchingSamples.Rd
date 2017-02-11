@@ -5,8 +5,8 @@
 \title{Search samples in the clinical dataset and return the ones matching the given
 index}
 \usage{
-getMatchingSamples(index, samples, clinical, upper = TRUE, rm.NA = TRUE,
-  prefix = "^tcga", match = NULL)
+getMatchingSamples(index, samples, clinical, rm.NA = TRUE, prefix = "^tcga",
+  match = NULL)
 }
 \arguments{
 \item{index}{Numeric or list of numeric: patient row indexes}
@@ -15,11 +15,7 @@ getMatchingSamples(index, samples, clinical, upper = TRUE, rm.NA = TRUE,
 
 \item{clinical}{Data frame or matrix: clinical dataset}
 
-\item{upper}{Boolean: convert identifiers to upper case? TRUE by default}
-
 \item{rm.NA}{Boolean: remove NAs? TRUE by default}
-
-\item{prefix}{Character: prefix to search for in clinical data}
 
 \item{match}{Integer: vector of patient index with the sample identifiers as
 name to save time (optional)}
@@ -32,8 +28,7 @@ Search samples in the clinical dataset and return the ones matching the given
 index
 }
 \examples{
-samples <- c("ABC", "DEF", "GHI", "JKL", "MNO")
-clinical <- data.frame(patient=paste0("patient-", samples), 
-                       samples=tolower(samples))
+samples <- c("TCGA-ABC", "TCGA-DEF", "TCGA-GHI", "TCGA-JKL", "TCGA-MNO")
+clinical <- data.frame(patient=paste0("patient-", samples), samples=samples)
 getMatchingSamples(c(1, 4), samples, clinical, prefix="")
 }

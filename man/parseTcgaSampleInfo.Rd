@@ -4,7 +4,7 @@
 \alias{parseTcgaSampleInfo}
 \title{Parse and prepare sample information from TCGA samples}
 \usage{
-parseTcgaSampleInfo(samples, category)
+parseTcgaSampleInfo(samples, category = getCategory())
 }
 \arguments{
 \item{samples}{Character: sample identifiers}

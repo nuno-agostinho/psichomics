@@ -290,7 +290,8 @@ pcaServer <- function(input, output, session) {
         } else {
             time <- startProcess("calculate")
             isolate({
-                groups <- getSelectedGroups(input, "dataGroups", samples=TRUE)
+                groups <- getSelectedGroups(input, "dataGroups", samples=TRUE,
+                                            filter=colnames(psi))
                 preprocess <- input$preprocess
                 naTolerance <- input$naTolerance
             })
@@ -378,7 +379,12 @@ pcaServer <- function(input, output, session) {
             pca <- getInclusionLevelsPCA()
             pcX <- input$pcX
             pcY <- input$pcY
-            groups <- getSelectedGroups(input, "colourGroups", samples=TRUE)
+            
+            if ( !is.null(pca$x) )
+                groups <- getSelectedGroups(input, "colourGroups", samples=TRUE,
+                                            filter=rownames(pca$x))
+            else
+                groups <- NULL
         })
         
         output$scatterplot <- renderHighchart(

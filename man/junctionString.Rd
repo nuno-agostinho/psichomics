@@ -4,7 +4,7 @@
 \alias{junctionString}
 \title{String used to search for matches in a junction quantification file}
 \usage{
-junctionString(chr, strand, junc5, junc3)
+junctionString(chr, strand, junc5, junc3, showStrand)
 }
 \arguments{
 \item{chr}{Character: chromosome}

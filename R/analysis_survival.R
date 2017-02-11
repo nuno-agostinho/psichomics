@@ -14,8 +14,7 @@ survivalUI <- function(id) {
     kaplanMeierOptions <- tagList(
         checkboxInput(ns("markTimes"), "Show censored observations",
                       value = TRUE),
-        checkboxInput(ns("ranges"), "Show interval ranges", value = FALSE)
-    )
+        checkboxInput(ns("ranges"), "Show interval ranges", value = FALSE))
     
     modelChoices <- c(
         "No groups"="none",
@@ -72,15 +71,16 @@ survivalUI <- function(id) {
                     placeholder="Start typing to suggest clinical attributes"),
                 uiOutput(ns("formulaSuggestions")),
                 helpText(
-                    "To analyse a series of attributes, separate each attribute",
-                    "with a", tags$kbd("+"), ". To analyse interactions, use", 
-                    tags$kbd(":"), " (interactions are only usable with Cox",
-                    "models). For example, ",
+                    "To analyse a series of attributes, separate each",
+                    "attribute with a", tags$kbd("+"), ". To analyse", 
+                    "interactions, use", tags$kbd(":"), " (interactions are",
+                    "only usable with Cox models). For example, ",
                     tags$kbd("tumor_stage : gender + race"), br(), br(),
                     "Interesting attributes include", tags$b("tumor_stage"), 
                     "to get tumour stages.")),
             conditionalPanel(
-                sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "psiCutoff"),
+                sprintf("input[id='%s'] == '%s'", ns("modelTerms"),
+                        "psiCutoff"),
                 uiOutput(ns("optimalPsi"))),
             hr(),
             bsCollapse(open="KM options",
@@ -405,7 +405,7 @@ survivalServer <- function(input, output, session) {
                     slider, div(class="alert alert-success",
                                 tags$b("Optimal cut-off:"), round(opt$par, 5), 
                                 br(), tags$b("Minimal log-rank p-value:"),
-                                round(opt$value, 3))))
+                            round(opt$value, 3))))
             } else {
                 return(tagList(
                     slider, div(class="alert alert-warning", "No optimal",

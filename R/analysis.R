@@ -32,17 +32,9 @@ missingDataModal <- function(session, dataType, buttonId) {
 
 #' @rdname missingDataModal
 #' @param modal Character: modal identifier
-loadRequiredData <- function(dataType, modal=NULL) {
-    panel <- switch(dataType,
-                    "Clinical data"="TCGA",
-                    "Junction quantification"="TCGA",
-                    "Inclusion levels"="Alternative splicing"
-    )
-    
-    if ( is.null(modal) )
-        return(sprintf("showDataPanel('%s');", panel))
-    else
-        return(sprintf("showDataPanel('%s', '#%s');", panel, modal))
+loadRequiredData <- function( modal=NULL ) {
+    modal <- ifelse(is.null(modal), "null", modal)
+    return(sprintf("showDataPanel('#%s');", modal))
 }
 
 #' @rdname missingDataModal
@@ -105,7 +97,7 @@ getPSIperPatient <- function(psi, match, clinical,
     
     # Match samples with clinical patients (remove non-matching samples)
     clinicalPSI <- data.frame(matrix(NA, nrow=nrow(psi), ncol=nrow(clinical)))
-    clinicalPSI[ , match_tumour] <- psi[ , toupper(names(match_tumour))]
+    clinicalPSI[ , match_tumour] <- psi[ , names(match_tumour)]
     
     colnames(clinicalPSI) <- rownames(clinical)
     rownames(clinicalPSI) <- rownames(psi)

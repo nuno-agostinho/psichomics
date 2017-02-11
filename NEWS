@@ -1,8 +1,7 @@
 1.0.8
 =====
 
-    * Create table containing TCGA sample metadata when calculating or loading
-    alternative splicing quantification
+    * Support GTEx data loading and analysis
     * Fix clinical data dependency:
         - Fix error when trying to load a file containing alternative splicing
         quantification without first loading clinical data
@@ -19,6 +18,8 @@
         - Alert user when groups cannot be created due to missing data
     * Differential splicing analysis:
         - Analyse all samples as one group
+    * Create table containing TCGA sample metadata when calculating or loading
+    alternative splicing quantification
     * Minor UI improvements
 
 1.0.7 (22 Jan, 2017)
