@@ -5,8 +5,8 @@
 \title{Search samples in the clinical dataset and return the ones matching the given
 index}
 \usage{
-getMatchingSamples(index, samples, clinical, rm.NA = TRUE, prefix = "^tcga",
-  match = NULL)
+getMatchingSamples(index, samples, clinical, rm.NA = TRUE, match = NULL,
+  showMatch = FALSE)
 }
 \arguments{
 \item{index}{Numeric or list of numeric: patient row indexes}
@@ -19,16 +19,22 @@ getMatchingSamples(index, samples, clinical, rm.NA = TRUE, prefix = "^tcga",
 
 \item{match}{Integer: vector of patient index with the sample identifiers as
 name to save time (optional)}
+
+\item{showMatch}{Boolean: show matching patient index? FALSE by default}
 }
 \value{
-Names of the matching rows
+Names of the matching samples (if \code{showMatch} is \code{TRUE},
+a integer vector with the patient index and the matching samples as names is
+shown)
 }
 \description{
 Search samples in the clinical dataset and return the ones matching the given
 index
 }
 \examples{
-samples <- c("TCGA-ABC", "TCGA-DEF", "TCGA-GHI", "TCGA-JKL", "TCGA-MNO")
-clinical <- data.frame(patient=paste0("patient-", samples), samples=samples)
-getMatchingSamples(c(1, 4), samples, clinical, prefix="")
+patients <- c("GTEX-ABC", "GTEX-DEF", "GTEX-GHI", "GTEX-JKL", "GTEX-MNO")
+samples <- paste0(patients, "-sample")
+clinical <- data.frame(samples=samples)
+rownames(clinical) <- patients
+getMatchingSamples(c(1, 4), samples, clinical)
 }

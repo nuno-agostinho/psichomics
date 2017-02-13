@@ -21,7 +21,9 @@ the given IDs (named with the ID)
 Match given sample identifiers and return the respective row in clinical data
 }
 \examples{
-samples <- c("TCGA-ABC", "TCGA-DEF", "TCGA-GHI", "TCGA-JKL", "TCGA-MNO")
-clinical <- data.frame(patient=paste0("patient-", samples), samples=samples)
+patients <- c("GTEX-ABC", "GTEX-DEF", "GTEX-GHI", "GTEX-JKL", "GTEX-MNO")
+samples <- paste0(patients, "-sample")
+clinical <- data.frame(samples=samples)
+rownames(clinical) <- patients
 getPatientFromSample(samples, clinical)
 }

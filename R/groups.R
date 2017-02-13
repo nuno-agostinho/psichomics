@@ -379,7 +379,7 @@ createGroupFromInput <- function (session, input, output, dataset, id, type) {
             samples <- group[ , "Samples"]
             patients <- lapply(group[ , "Samples"], function(i) {
                 m <- match[i]
-                return(m[!is.na(m)])
+                return(unique(m[!is.na(m)]))
             })
             group <- cbind(group, "Patients"=patients)
             group <- group[ , c(1:3, 5, 4), drop=FALSE]
