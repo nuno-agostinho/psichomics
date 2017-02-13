@@ -170,10 +170,27 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
         }
     }
     
-    survTerms <- processSurvival(session, clinical, censoring, event, 
-                                 timeStart, timeStop, groups, formulaStr, 
-                                 scale=scale, coxph=coxph)
-    return(survTerms)
+    interval <- grepl("interval", censoring)
+    if (event == "") {
+        errorModal(session, "Empty field for event",
+                   "Please, select the event of interest.")
+    } else if (timeStart == "") {
+        if (!interval) {
+            errorModal(session, "Empty field for follow up time",
+                       "Please, select follow up time.")
+        } else {
+            errorModal(session, "Empty field for starting time",
+                       "Please, select starting time.")
+        }
+    } else if (timeStop == "" && interval) {
+        errorModal(session, "Empty field for ending time",
+                   "Please, select ending time to use interval censoring.")
+    } else {
+        survTerms <- processSurvival(session, clinical, censoring, event, 
+                                     timeStart, timeStop, groups, formulaStr, 
+                                     scale=scale, coxph=coxph)
+        return(survTerms)
+    }
 }
 
 #' Server logic of survival analysis

@@ -18,6 +18,8 @@
         - Alert user when groups cannot be created due to missing data
     * Differential splicing analysis:
         - Analyse all samples as one group
+    * Survival analysis:
+        - Select any clinical attribute for starting/follow up and ending times
     * Create table containing TCGA sample metadata when calculating or loading
     alternative splicing quantification
     * Minor UI improvements
