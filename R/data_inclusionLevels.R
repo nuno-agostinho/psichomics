@@ -280,13 +280,6 @@ inclusionLevelsServer <- function(input, output, session) {
                                 progress=updateProgress)
         setInclusionLevels(psi)
         
-        clinical <- getClinicalData()
-        if (!is.null(clinical)) {
-            updateProgress("Matching clinical data")
-            match <- getPatientFromSample(colnames(psi), clinical)
-            setClinicalMatchFrom("Inclusion levels", match)
-        }
-        
         samples <- colnames(psi)
         parsed <- parseTcgaSampleInfo(samples) 
         if ( !is.null(parsed) )
@@ -439,13 +432,6 @@ inclusionLevelsServer <- function(input, output, session) {
                 data <- processDatasetNames(data)
                 setData(data)
                 setCategory(name)
-            } else {
-                clinical <- getClinicalData()
-                if (!is.null(clinical)) {
-                    updateProgress("Matching clinical data")
-                    match <- getPatientFromSample(colnames(psi), clinical)
-                    setClinicalMatchFrom("Inclusion levels", match)
-                }
             }
             
             setInclusionLevels(psi)

@@ -319,6 +319,18 @@ dataServer <- function(input, output, session) {
             setSampleId(NULL)
     })
     
+    # Match clinical data with sample information
+    observe({
+        clinical <- getClinicalData()
+        samples  <- getSampleId()
+        if ( !is.null(clinical) && !is.null(samples) ) {
+            startProgress("Matching patients with samples...", 1)
+            match <- getPatientFromSample(samples, clinical)
+            setClinicalMatchFrom("Inclusion levels", match)
+            closeProgress("Matching process concluded")
+        }
+    })
+    
     # Run server logic from the scripts
     getServerFunctions("data", priority="localDataServer")
 }
