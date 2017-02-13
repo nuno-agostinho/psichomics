@@ -297,7 +297,7 @@ pcaServer <- function(input, output, session) {
             })
             
             # Subset data by the selected clinical groups
-            if ( !is.null(groups) ) psi <- psi[ , unlist(groups)]
+            if ( !is.null(groups) ) psi <- psi[ , unlist(groups), drop=FALSE]
             
             # Raise error if data has no rows
             if (nrow(psi) == 0) {
