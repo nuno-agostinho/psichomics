@@ -14,6 +14,8 @@ junctionString(chr, strand, junc5, junc3, showStrand)
 \item{junc5}{Integer: 5' end junction}
 
 \item{junc3}{Integer: 3' end junction}
+
+\item{showStrand}{Boolean: include strand?}
 }
 \value{
 Formatted character string

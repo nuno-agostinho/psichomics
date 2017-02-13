@@ -1,6 +1,10 @@
 #' Interface to load local data
-#' 
+#'
+#' @importFrom shiny textInput
 #' @importFrom shinyBS bsCollapse bsCollapsePanel
+#' 
+#' @param id Character: namespace identifier
+#' @param panel Function to deal with the interface
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state) 
 localDataUI <- function(id, panel) {
