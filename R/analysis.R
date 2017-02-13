@@ -203,21 +203,27 @@ updateClinicalParams <- function(session) {
             names(choices) <- gsub("_", " ", choices, fixed=TRUE)
             names(choices) <- capitalize(names(choices))
             
-            # Update choices for starting time (follow up time)
-            updateSelectizeInput(session, "timeStart", choices=choices,
-                                 selected="days_to_death")
+            # Update choices for starting or follow up time
+            updateSelectizeInput(
+                session, "timeStart", choices=list(
+                    "Suggested events"=choices,
+                    "All clinical data columns"=names(clinical)),
+                selected="days_to_death")
             
             # Update choices for ending time
-            updateSelectizeInput(session, "timeStop", choices=choices)
+            updateSelectizeInput(
+                session, "timeStop", choices=list(
+                    "Suggested events"=choices,
+                    "All clinical data columns"=names(clinical)))
             
             # Update choices for events of interest
             names(choices) <- gsub("Days to ", "", names(choices), fixed=TRUE)
             names(choices) <- capitalize(names(choices))
-            updateSelectizeInput(session, "event",
-                                 choices=list(
-                                     "Suggested events"=choices,
-                                     "All clinical data columns"=names(clinical)),
-                                 selected="days_to_death")
+            updateSelectizeInput(
+                session, "event", choices=list(
+                    "Suggested events"=choices,
+                    "All clinical data columns"=names(clinical)),
+                selected="days_to_death")
         }
     })
 }
