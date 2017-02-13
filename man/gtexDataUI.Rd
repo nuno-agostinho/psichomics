@@ -6,6 +6,11 @@
 \usage{
 gtexDataUI(id, panel)
 }
+\arguments{
+\item{id}{Character: namespace identifier}
+
+\item{panel}{Function to deal with the interface}
+}
 \value{
 NULL (this function is used to modify the Shiny session's state)
 }

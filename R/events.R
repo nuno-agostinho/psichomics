@@ -313,10 +313,12 @@ vennEvents <- function(join, eventType) {
 }
 
 #' String used to search for matches in a junction quantification file
+#'
 #' @param chr Character: chromosome
 #' @param strand Character: strand
 #' @param junc5 Integer: 5' end junction
 #' @param junc3 Integer: 3' end junction
+#' @param showStrand Boolean: include strand?
 #' 
 #' @return Formatted character string
 junctionString <- function(chr, strand, junc5, junc3, showStrand) {

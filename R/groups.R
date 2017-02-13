@@ -193,6 +193,8 @@ groupByAttribute <- function(ns, dataset, id, example) {
 #' @inheritParams groupByAttribute
 #' @param choices Character: identifier suggestions
 #' 
+#' @importFrom shiny textInput
+#' 
 #' @return HTML elements
 groupById <- function(ns, id, choices) {
     tagList(
@@ -217,6 +219,8 @@ groupById <- function(ns, id, choices) {
 #' 
 #' @inheritParams groupByAttribute
 #' 
+#' @importFrom shiny textInput
+#' 
 #' @return HTML elements
 groupByExpression <- function(ns, id) {
     tagList (
@@ -236,6 +240,8 @@ groupByExpression <- function(ns, id) {
 #' User interface to group by grep expression
 #' 
 #' @inheritParams groupByAttribute
+#' 
+#' @importFrom shiny textInput
 #' 
 #' @return HTML elements
 groupByGrep <- function(ns, dataset, id) {
@@ -601,6 +607,8 @@ showGroupsTable <- function(datasetName) {
 #' 
 #' @importFrom DT renderDataTable dataTableOutput
 #' @importFrom shinyjs disabled enable disable hidden show hide
+#' @importFrom shiny textInput
+#' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 groupsServer <- function(input, output, session, datasetName) {
     ns <- session$ns

@@ -37,6 +37,7 @@ Imports:
     plyr,
     R.utils,
     shinyjs,
+    stringr,
     stats,
     survival,
     Sushi,
@@ -51,7 +52,6 @@ Suggests:
     devtools,
     rmarkdown,
     gplots,
-    stringr,
     covr,
     car
 VignetteBuilder: knitr

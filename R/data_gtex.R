@@ -3,6 +3,9 @@
 #' @importFrom shinyBS bsCollapse bsCollapsePanel
 #' @importFrom shiny helpText fileInput
 #' 
+#' @param id Character: namespace identifier
+#' @param panel Function to deal with the interface
+#' 
 #' @return NULL (this function is used to modify the Shiny session's state) 
 gtexDataUI <- function(id, panel) {
     ns <- NS(id)
