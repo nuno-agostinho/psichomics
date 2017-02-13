@@ -14,8 +14,11 @@ parseTcgaSampleInfo <- function (samples, category=getCategory()) {
     
     # Patient match
     patients <- getPatientId()
+    match <- getClinicalMatchFrom("Inclusion levels", category)
     if ( !is.null(patients) ) {
-        match <- getClinicalMatchFrom("Inclusion levels", category)
+        if (is.null(match))
+            match <- getPatientFromSample(samples, patients)
+        
         match <- match[samples]
         patients <- patients[match]
         info <- cbind(info, "Patient ID"=patients)
