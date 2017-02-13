@@ -289,7 +289,7 @@ scale  <- FALSE
 
 # Match patients with samples
 samples <- colnames(psi)
-match <- getPatientFromSample(samples, clinical, rmNoMatches=FALSE)
+match <- getPatientFromSample(samples, clinical)
 
 # Filter alternative splicing quantification to colour values by positive or
 # negative ER expression

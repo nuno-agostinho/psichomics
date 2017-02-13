@@ -4,14 +4,13 @@
 \alias{getPatientFromSample}
 \title{Match given sample identifiers and return the respective row in clinical data}
 \usage{
-getPatientFromSample(sampleId, clinical, rmNoMatches = TRUE)
+getPatientFromSample(sampleId, patientId)
 }
 \arguments{
 \item{sampleId}{Character: sample identifiers}
 
-\item{clinical}{Matrix or data.frame: clinical data}
-
-\item{rmNoMatches}{Boolean: remove non-matching identifiers}
+\item{patientId}{Character: clinical patient identifiers (if a matrix or data
+frame is given, its rownames will be retrieved as patient identifiers)}
 }
 \value{
 Integer vector of the row number in clinical data corresponding to 
@@ -23,7 +22,5 @@ Match given sample identifiers and return the respective row in clinical data
 \examples{
 patients <- c("GTEX-ABC", "GTEX-DEF", "GTEX-GHI", "GTEX-JKL", "GTEX-MNO")
 samples <- paste0(patients, "-sample")
-clinical <- data.frame(samples=samples)
-rownames(clinical) <- patients
-getPatientFromSample(samples, clinical)
+getPatientFromSample(samples, patients)
 }
