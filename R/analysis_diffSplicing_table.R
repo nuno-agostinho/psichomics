@@ -402,7 +402,7 @@ diffSplicingTableServer <- function(input, output, session) {
                                     filter=colnames(psi))
         if ( !is.null(groups) ) {
             attrGroups <- groups
-            psi <- psi[ , unlist(groups)]
+            psi <- psi[ , unlist(groups), drop=FALSE]
             groups <- rep(names(groups), sapply(groups, length))
         } else {
             attrGroups <- "All samples"
