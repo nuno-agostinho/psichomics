@@ -4,14 +4,15 @@
 #' @param id Character: identifier
 #' @importFrom highcharter highchartOutput
 #' @importFrom shiny tagList uiOutput NS sidebarLayout numericInput h3 mainPanel
+#' actionButton
 #' @return Character with the HTML interface
 diffSplicingEventUI <- function(id) {
     ns <- NS(id)
     
-    card <- function(...) {
+    card <- function(id) {
         div(class="col-sm-6 col-md-4",
             div(class="thumbnail", style="background:#eee;",
-                div(class="caption", ...)))
+                div(class="caption", uiOutput(ns(id)))))
     }
     
     # Take user to the survival analysis by PSI cut-off
@@ -34,21 +35,22 @@ diffSplicingEventUI <- function(id) {
                                noGroupsLabel="All samples as one group",
                                groupsLabel="Samples by selected groups"),
                 numericInput(ns("bandwidth"), "Density smoothing bandwidth",
-                             0.01, step=0.01, min=0.01), hr(),
+                             0.01, step=0.01, min=0.01),
+                actionButton(ns("analyse"), "Perform analyses",
+                             class="btn-primary"),
                 uiOutput(ns("basicStats")), hr(),
                 survival
             ), mainPanel(
                 highchartOutput(ns("density")),
                 h4("Parametric tests"),
                 div(class="row",
-                    card(uiOutput(ns("ttest"))),
-                    card(uiOutput(ns("levene")))),
+                    card("ttest"),
+                    card("levene")),
                 h4("Non-parametric tests"),
                 div(class="row",
-                    card(uiOutput(ns("wilcox"))),
-                    card(uiOutput(ns("kruskal"))),
-                    card(uiOutput(ns("fligner"))))
-            )
+                    card("wilcox"),
+                    card("kruskal"),
+                    card("fligner")))
         )
     )
 }
@@ -171,7 +173,7 @@ basicStats <- function(psi, groups) {
     
     avgMedian <- roundDigits( mean(medi) )
     avgVar <- roundDigits( mean(vari) )
-    ui <- tagList(h4("Basic statistics"),
+    ui <- tagList(hr(), h4("Basic statistics"),
                   tags$b("Average median: "), avgMedian, br(), deltaMedian,
                   tags$b("Average variance: "), avgVar, br(), deltaVar)
     return(ui)
@@ -561,12 +563,26 @@ filterGroups <- function(vector, group, threshold=1) {
 #' @importFrom shinyjs runjs
 #' @return NULL (this function is used to modify the Shiny session's state)
 diffSplicingEventServer <- function(input, output, session) {
+    ns <- session$ns
+    
     selectGroupsServer(session, "diffGroups")
     
-    observe({
+    observeEvent(input$analyse, {
+        # Get splicing event's inclusion levels
+        psi <- getInclusionLevels()
+        if (is.null(psi)) {
+            missingDataModal(session, "Inclusion levels",
+                             ns("missingInclusionLevels"))
+            return(NULL)
+        }
+        
         # Get selected event
         event <- getEvent()
-        if (is.null(event) || event == "") return(NULL)
+        if (is.null(event) || event == "") {
+            errorModal(session, "No event selected",
+                       "Please, select an alternative splicing event.")
+            return(NULL)
+        }
         
         # Check if bandwidth is valid
         bandwidth <- input$bandwidth
@@ -576,10 +592,6 @@ diffSplicingEventServer <- function(input, output, session) {
                        "higher than 0.")
             return(NULL)
         }
-        
-        # Get splicing event's inclusion levels
-        psi <- getInclusionLevels()
-        if (is.null(psi)) return(NULL)
         
         # Prepare groups of samples to analyse
         groups <- getSelectedGroups(input, "diffGroups", samples=TRUE,
@@ -618,6 +630,9 @@ diffSplicingEventServer <- function(input, output, session) {
         # output$fisher   <- renderUI(fisher(eventPSI, groups))
         # output$spearman <- renderUI(spearman(eventPSI, groups))
     })
+    
+    observeEvent(input$missingInclusionLevels, 
+                 missingDataGuide("Inclusion levels"))
 }
 
 attr(diffSplicingEventUI, "loader") <- "diffSplicing"
