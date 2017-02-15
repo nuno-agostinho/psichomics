@@ -25,11 +25,13 @@ checkFileFormat <- function(format, head, filename) {
     if (is.null(format$rowCheck) || !format$rowCheck) {
         if (nrow(head) < lenCheck) return(FALSE)
         # Select wanted row and check for a match
-        return(all(head[1:lenCheck, format$checkIndex] == format$check))
+        desired <- trimws(head[1:lenCheck, format$checkIndex])
+        return(all(desired == format$check))
     } else {
         if (ncol(head) < lenCheck) return(FALSE)
         # Select wanted column and check for a match
-        return(all(head[format$checkIndex, 1:lenCheck] == format$check))
+        desired <- trimws(head[format$checkIndex, 1:lenCheck])
+        return(all(desired == format$check))
     }
 }
 
