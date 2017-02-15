@@ -97,7 +97,7 @@ inclusionLevelsInterface <- function(ns) {
                   options = list(container = "body"),
                   paste("Inclusion levels calculated with a number of read",
                         "counts below this threshold are discarded.")),
-        actionButton(ns("loadIncLevels"), "Load quantification from file"),
+        actionButton(ns("loadIncLevels"), "Load from file"),
         processButton(ns("calcIncLevels"), "Quantify events"))
 }
 
