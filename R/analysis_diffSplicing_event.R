@@ -187,6 +187,8 @@ basicStats <- function(psi, groups) {
 #' 
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats wilcox.test
+#' @importFrom R.utils capitalize
+#' 
 #' @return HTML elements
 wilcox <- function(psi, groups, stat=NULL) {
     warn <- NULL
@@ -225,8 +227,8 @@ wilcox <- function(psi, groups, stat=NULL) {
                                          warning=w)))
         
         if ("warning" %in% names(stat))
-            warn <- tagList(
-                tags$code(paste("Warning:", stat$warning$message)), br())
+            warn <- tags$div(class="alert alert-warning", role="alert",
+                             capitalize(stat$warning$message))
         
         method      <- stat$stat$method
         statistic   <- stat$stat$statistic
@@ -253,6 +255,8 @@ wilcox <- function(psi, groups, stat=NULL) {
 #' 
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats t.test
+#' @importFrom R.utils capitalize
+#' 
 #' @return HTML elements
 ttest <- function(psi, groups, stat=NULL) {
     warn <- NULL
@@ -291,11 +295,33 @@ ttest <- function(psi, groups, stat=NULL) {
         stat <- tryCatch(list(stat=t.test(psiA, psiB)), 
                          warning=function(w)
                              return(list(stat=t.test(psiA, psiB),
-                                         warning=w)))
+                                         warning=w)),
+                         error=return)
+        if (is(stat, "error")) {
+            message <- stat$message
+            check <- "not enough '%s' observations"
+            checkX <- sprintf(check, "x")
+            checkY <- sprintf(check, "y")
+            
+            fewObservations <- function(name)
+                tagList("Not enough observations in group", tags$b(name),
+                        "to perform this statistical test.")
+            
+            if (message == checkX)
+                message <- fewObservations(group[1])
+            else if (message == checkY)
+                message <- fewObservations(group[2])
+            else
+                message <- capitalize(message)
+            
+            error <- tagList(h4("t-test"), tags$div(class="alert alert-danger",
+                                                    role="alert", message))
+            return(error)
+        }
         
         if ("warning" %in% names(stat))
-            warn <- tagList(
-                tags$code(paste("Warning:", stat$warning$message)), br())
+            warn <- tags$div(class="alert alert-warning", role="alert",
+                             capitalize(stat$warning$message))
         
         method      <- stat$stat$method
         statistic   <- stat$stat$statistic
