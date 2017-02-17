@@ -206,14 +206,14 @@ updateClinicalParams <- function(session) {
             # Update choices for starting or follow up time
             updateSelectizeInput(
                 session, "timeStart", choices=list(
-                    "Suggested events"=choices,
+                    "Suggested times"=choices,
                     "All clinical data columns"=names(clinical)),
                 selected="days_to_death")
             
             # Update choices for ending time
             updateSelectizeInput(
                 session, "timeStop", choices=list(
-                    "Suggested events"=choices,
+                    "Suggested times"=choices,
                     "All clinical data columns"=names(clinical)))
             
             # Update choices for events of interest
