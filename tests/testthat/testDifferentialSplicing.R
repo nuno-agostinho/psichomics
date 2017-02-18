@@ -96,16 +96,22 @@ test_that("Label groups based on a cut-off", {
     
     # Greater or equal than a cut-off (default)
     group <- labelBasedOnCutoff(data, cutoff)
+    group <- gsub("&gt;", ">", group)
+    group <- gsub("&lt;", "<", group)
     expect_is(group, "character")
     expect_equal(group, paste(c(">=", "<", "<", ">=", ">=", ">="), cutoff))
     
     # Greater than a cut-off
     group <- labelBasedOnCutoff(data, cutoff, gte=FALSE)
+    group <- gsub("&gt;", ">", group)
+    group <- gsub("&lt;", "<", group)
     expect_equal(group, paste(c(">", "<=", "<=", ">", "<=", ">"), cutoff))
     
     # Add text to label before
     label <- "Proportion"
     group <- labelBasedOnCutoff(data, cutoff, label=label)
+    group <- gsub("&gt;", ">", group)
+    group <- gsub("&lt;", "<", group)
     expect_equal(group,
                  paste(label, c(">=", "<", "<", ">=", ">=", ">="), cutoff))
 })
