@@ -31,14 +31,10 @@ missingDataModal <- function(session, dataType, buttonId) {
 }
 
 #' @rdname missingDataModal
-loadRequiredData <- function(dataType) {
-    panel <- switch(dataType,
-                    "Clinical data"="TCGA",
-                    "Junction quantification"="TCGA",
-                    "Inclusion levels"="Alternative splicing"
-    )
-    
-    return(sprintf("showDataPanel('%s');", panel))
+#' @param modal Character: modal identifier
+loadRequiredData <- function( modal=NULL ) {
+    modal <- ifelse(is.null(modal), "null", modal)
+    return(sprintf("showDataPanel('#%s');", modal))
 }
 
 #' @rdname missingDataModal
@@ -101,7 +97,7 @@ getPSIperPatient <- function(psi, match, clinical,
     
     # Match samples with clinical patients (remove non-matching samples)
     clinicalPSI <- data.frame(matrix(NA, nrow=nrow(psi), ncol=nrow(clinical)))
-    clinicalPSI[ , match_tumour] <- psi[ , toupper(names(match_tumour))]
+    clinicalPSI[ , match_tumour] <- psi[ , names(match_tumour)]
     
     colnames(clinicalPSI) <- rownames(clinical)
     rownames(clinicalPSI) <- rownames(psi)
@@ -207,21 +203,27 @@ updateClinicalParams <- function(session) {
             names(choices) <- gsub("_", " ", choices, fixed=TRUE)
             names(choices) <- capitalize(names(choices))
             
-            # Update choices for starting time (follow up time)
-            updateSelectizeInput(session, "timeStart", choices=choices,
-                                 selected="days_to_death")
+            # Update choices for starting or follow up time
+            updateSelectizeInput(
+                session, "timeStart", choices=list(
+                    "Suggested times"=choices,
+                    "All clinical data columns"=names(clinical)),
+                selected="days_to_death")
             
             # Update choices for ending time
-            updateSelectizeInput(session, "timeStop", choices=choices)
+            updateSelectizeInput(
+                session, "timeStop", choices=list(
+                    "Suggested times"=choices,
+                    "All clinical data columns"=names(clinical)))
             
             # Update choices for events of interest
             names(choices) <- gsub("Days to ", "", names(choices), fixed=TRUE)
             names(choices) <- capitalize(names(choices))
-            updateSelectizeInput(session, "event",
-                                 choices=list(
-                                     "Suggested events"=choices,
-                                     "All clinical data columns"=names(clinical)),
-                                 selected="days_to_death")
+            updateSelectizeInput(
+                session, "event", choices=list(
+                    "Suggested events"=choices,
+                    "All clinical data columns"=names(clinical)),
+                selected="days_to_death")
         }
     })
 }
@@ -534,12 +536,12 @@ labelBasedOnCutoff <- function (data, cutoff, label=NULL, gte=TRUE) {
     
     if (gte) {
         comp <- `>=`
-        str1 <- ">="
-        str2 <- "<"
+        str1 <- "&gt;="
+        str2 <- "&lt;"
     } else {
         comp <- `>`
-        str1 <- ">"
-        str2 <- "<="
+        str1 <- "&gt;"
+        str2 <- "&lt;="
     }
     group <- comp(data, cutoff)
     

@@ -26,4 +26,3 @@ p-value of the survival difference
 \description{
 Test the survival difference between two survival groups given a cutoff
 }
-

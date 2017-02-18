@@ -19,4 +19,3 @@ NULL (this function is used to modify the Shiny session's state)
 \description{
 Server logic for the analyses of a single alternative splicing event
 }
-

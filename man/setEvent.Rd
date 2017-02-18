@@ -18,4 +18,3 @@ Set event
 \note{
 Needs to be called inside a reactive function
 }
-

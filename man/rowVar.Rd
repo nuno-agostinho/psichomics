@@ -17,4 +17,3 @@ Variance for each row
 \description{
 Calculate the sample variance of each row in the given matrix
 }
-

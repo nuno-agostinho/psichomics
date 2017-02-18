@@ -4,14 +4,12 @@
 \alias{selectGroupsServer}
 \title{Group selection logic}
 \usage{
-selectGroupsServer(session, id, datasetName)
+selectGroupsServer(session, id)
 }
 \arguments{
 \item{session}{Shiny session}
 
 \item{id}{Character: identifier of the group selection}
-
-\item{datasetName}{Character: name of the dataset of interest}
 }
 \value{
 Server logic for group selection
@@ -19,4 +17,3 @@ Server logic for group selection
 \description{
 Group selection logic
 }
-

@@ -18,4 +18,3 @@ Convert a protein's Ensembl identifier to UniProt identifier
 \examples{
 ensemblToUniprot("ENSP00000445929")
 }
-

@@ -18,4 +18,3 @@ Set active dataset
 \note{
 Needs to be called inside a reactive function
 }
-

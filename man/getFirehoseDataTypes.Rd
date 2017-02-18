@@ -15,4 +15,3 @@ Get data types available from Firehose
 \examples{
 getFirehoseDataTypes()
 }
-

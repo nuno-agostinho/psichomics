@@ -15,4 +15,3 @@ Splicing event types available
 \examples{
 getSplicingEventTypes()
 }
-

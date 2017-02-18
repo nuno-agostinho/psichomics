@@ -18,4 +18,3 @@ warning with the status code and a brief explanation.
 \examples{
 isFirehoseUp()
 }
-

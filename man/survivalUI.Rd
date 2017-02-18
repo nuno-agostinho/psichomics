@@ -15,4 +15,3 @@ Character with HTML
 \description{
 User interface of survival analysis
 }
-

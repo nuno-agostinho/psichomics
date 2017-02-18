@@ -23,4 +23,3 @@ alternative splicing event
 Optimal survival difference given an inclusion level cut-off for a specific
 alternative splicing event
 }
-

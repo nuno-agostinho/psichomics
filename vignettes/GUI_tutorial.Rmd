@@ -1,7 +1,7 @@
 ---
 title: 'psichomics tutorial: visual interface'
 author: "Nuno Saraiva-Agostinho"
-date: "17 January 2016"
+date: "18 February 2016"
 bibliography: refs.bib
 output:
     rmarkdown::html_vignette:
@@ -14,11 +14,13 @@ vignette: >
 
 ---
 
-psichomics is an interactive R package for the analysis of alternative splicing
-using data from [The Cancer Genome Atlas (TCGA)][5], a repository of molecular
-data associated with 34 tumour types, including clinical information and
-transcriptomic data, such as the quantification of RNA-Seq reads aligning to
-splice junctions (henceforth called junction quantification) and exons.
+psichomics is an interactive R package for the analysis of alternative splicing 
+using data from [The Cancer Genome Atlas (TCGA)][5] (containing molecular data
+associated with 34 tumour types) and from the [Genotype-Tissue Expression][8]
+project (containing data for multiple normal human tissues). The data available
+in these including clinical information and transcriptomic data, such as the
+quantification of RNA-Seq reads aligning to splice junctions (henceforth called
+junction quantification) and exons.
 
 # Installing and starting the program
 Install psichomics by typing the following in an R console (the 
@@ -49,7 +51,7 @@ annotation is provided by the package, junction quantification may be retrieved
 from TCGA. For instance, load breast cancer data by following these 
 instructions:
 
-1. To load TCGA data, click on the blue panel **Load TCGA/Firehose data**.
+1. To load TCGA data, click on the blue panel **Download/load TCGA data**.
 2. Fill in the **Tumour type** field with *Breast invasive carcinoma (BRCA)*.
 3. Set the most recent date in the **Date** field.
 4. In the **Data type** field, select *clinical* and *junction quantification*
@@ -127,29 +129,30 @@ tamoxifen:
 4. Display time in **years**.
 5. Click on the blue button **Groups**.
 6. To create groups of patients based on ER expression:
-    1. Select to subset by **Column**.
-    2. Click on the field below **Select column**.
-    3. Start typing `estrogen_receptor` and click the first suggestion.
-    4. Click on **Create group**. New groups have now been created based on the 
-    unique values of that column (*NA*, *indeterminate*, *negative* and
+    1. Click on the field below **Select attribute**.
+    2. Start typing `estrogen_receptor` and click the first suggestion.
+    3. Click on **Create group**. New groups have now been created based on the 
+    unique values of that attribute (*NA*, *indeterminate*, *negative* and
     *positive*).
-    5. Click on the *indeterminate* and *NA* groups and click on **Remove** as
+    4. Click on the *indeterminate* and *NA* groups and click on **Remove** as
     these groups will not be needed for this tutorial.
 7. To create groups of patients treated with tamoxifen:
-    1. Select to subset by **Regular expression**.
-    2. In **Regular expression**, type *tamoxi.\*en* (to retrieve records with
-    either *tamoxifen* or *tamoxiphen*).
-    3. Name the group as *tamoxifen*.
-    4. Click on the field below **Select column to GREP**, type *drug_name* and
+    1. Click **Group by patients** and select **Regular expression**.
+    2. In the **Regular expression** field, type *tamoxi.\*en* (to retrieve
+    records with either *tamoxifen* or *tamoxiphen*).
+    3. Click on the field below **Select column to GREP**, type *drug_name* and
     select the first suggestion.
+    4. Name the group as *tamoxifen*.
     5. Click on **Create group**.
-    6. Go back to step 7.4 and create groups with the second, the third and the
+    6. Go back to step 7.3 and create groups with the second, the third and the
     fourth suggestion[^4].
     7. Select all the *tamoxifen* groups by clicking on them one by one and 
     click on **Merge**.
-    8. Close the group selection interface by clicking on the **Close** button.
-8. In the group selection field, select the merged group and the *positive*
-group for ER expression.
+    8. Rename the created group by selecting it, scrolling down to the bottom,
+    writing **tamoxifen merged** in the text field and clicking **Rename**.
+    9. Close the group selection interface by clicking on the **Close** button.
+8. In the group selection field, select the *tamoxifen merged* group and the
+*positive* group for ER expression.
 9. Plot survival curves and fit a Cox proportional hazards (PH) model by 
 clicking on the respective buttons at the bottom.
 
@@ -188,19 +191,9 @@ expression:
 2. In data preprocessing, check **Center values** and uncheck 
 **Scale values**[^2].
 4. Set the tolerance of missing values[^3] to 0%.
-5. Click on the blue **Groups** button:
-6. To create groups of patients based on ER expression:
-    1. Click on the field below **Select column**.
-    2. Start typing `estrogen_receptor` and click the first suggestion.
-    3. Click on **Create group**. New groups have now been created based on the 
-    unique values of that column (*NA*, *indeterminate*, *negative* and
-    *positive*).
-    4. Click on the *indeterminate* and *NA* groups and click on **Remove** as
-    these groups will not be needed for this tutorial.
-    5. Click **Close**.
-7. Confirm that **Filter data groups** contains the groups **positive** and
-**negative**.
-5. Click on **Calculate PCA**.
+5. In **Samples to use for PCA**, click on **Samples from selected groups** and
+select the *positive* and *negative* groups for ER expression.
+7. Click on **Calculate PCA**.
 
 [^2]: As PSI values are fixed between an interval of 0 to 1, there is no need to
 scale values.
@@ -210,12 +203,12 @@ event across samples.
 After PCA is performed, options to plot the PCA result appear. Note that the
 explained variance of each principal component is shown next to the respective
 component. The **variance plot** is also available to compare the explained
-variance across principal components.
+variance across principal components (by clicking **Show variance plot**). Now:
 
 1. Choose **PC1** (principal component 1) as the X axis.
-2. Choose **PC2** (principal component 2) as the Y axis.
-3. Select groups of interest (for instance, the previously created groups) to 
-guide the colouring of points in the PCA plot.
+2. Choose **PC2** as the Y axis.
+3. Select the *positive* and *negative* groups to guide the colouring of samples
+in the PCA plot.
 4. Click on **Plot PCA**.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='700pt'}
@@ -228,7 +221,7 @@ Two PCA plots are then rendered. The plot above is a **score plot** that shows
 the clinical samples, while the **loadings plot** below displays the variables 
 (in this case, alternative splicing events). The bubble size of the loadings 
 plot represent the total contribution of each alternative splicing event to the
-selected principal components. By clicking in one alternative splicing event, 
+selected principal components. By clicking on one alternative splicing event, 
 the respective differential splicing analysis will be shown.
 
 Note that the clinical samples from ER-positive individuals (i.e. patients whose
@@ -240,28 +233,34 @@ splicing event to perform differential splicing analysis.
 
 ## Differential splicing analysis
 
-By default, differential splicing analysis is performed by sample types (i.e.
-tumour, normal, metastasis, etc) for multiple parametric and non-parametric
-statistical tests.
+In **Groups of samples to analyse**, check **Samples by selected groups** and
+select the *negative* and *positive* groups for ER-expression. Click 
+**Perform analyses** to plot the PSI distribution and calculate multiple 
+parametric and non-parametric statistical tests based on the selected groups.
+Check if any of the tests show statistical significance (for instance, p-values 
+below 0.05).
+
+Also of interest:
 
 * Hover each group in the plot to compare the respective number of samples,
 median and variance.
 * To zoom in a specific region, click-and-drag in the region of interest.
 * To hide or show groups, click on their name in the legend.
 
-Not all statistical tests are available depending on the number of groups
-available. To edit the groups, click in the group names on the left (under 
-**Clinical groups on which to perform the analyses**). In here, uncheck 
-*Metastasis* and click *Single event* above the grey box to go back. The 
-statistical tests presented are now only performed using the samples that match
-the other two groups. Check if any tests show statistical significance (for
-instance, Log-rank p-values below 0.05).
+Moreover, it may be interesting to compare the distribution of normal versus
+tumour samples. To do so, click **Groups**. In the group selection dialog, click
+**Group by samples** and then on **Attribute**. In the **Select attribute**
+field, select **Sample types** and click **Create group**. The groups
+*Solid Tissue Normal*, *Primary solid Tumor* and *Metastatic* are then created. 
+Click the **Close** button to dismiss.
 
-Now, try to change the groups to *positive* and *negative* for ER expression and
-check if any of the tests show statistical significance.
+Now, to compare the distributions of the newly created groups, select only these
+three groups in the **Samples by selected groups** field and click on **Perform
+analyses**. Not all statistical tests are available depending on the number of
+groups available. Check if any statistical tests show statistical significance.
 
-To study survival analysis by splicing quantification cut-off, click on the
-blue **Take me there** button at the bottom of the grey box.
+To study survival analysis by alternative splicing quantification cut-off, click
+on the blue **Survival analysis by PSI cut-off** button at the sidebar box.
 
 ## Survival analysis
 
@@ -315,20 +314,18 @@ articles** to be directed to PubMed.
 # Exploring differential splicing analysis
 
 To analyse differential splicing, click on the **Analyses** tab located in the
-navigation menu at the top and select **Differential splicing analysis**.
+navigation menu at the top and select **Differential splicing analysis**. Scroll
+to the top of the page and click on **All events (table)**.
 
-1. Select the clinical groups on which to perform the analyses. For instance, 
-splicing events can be analysed based on sample types (i.e., tumour versus 
-normal tissue, if available) or clinical groups of the patients (e.g. stage of 
-the disease). Select **Patient's clinical groups** and input the *positive* and
-*negative* ER-expression groups.
-2. Confirm that all statistical analyses are checked.
-3. Confirm p-values will be adjusted according to the **Benjamini-Hochberg's 
-method**.
-4. Click **Perform analyses**.
+1. In **Groups of samples to analyse**, click on **Samples by selected groups**.
+2. Select the *positive* and *negative* ER-expression groups.
+3. Confirm that all statistical analyses of interest are checked.
+4. Confirm p-values will be adjusted according to the
+**Benjamini-Hochberg's method**.
+5. Click on **Perform analyses**.
 
-When the analyses are completed, the results are shown in a filtrable and 
-sortable  table.
+When the analyses complete, the results are shown in a filtrable and sortable
+table.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='350pt'}
 knitr::include_graphics("diff_splicing.png")
@@ -339,12 +336,12 @@ knitr::include_graphics("diff_splicing.png")
 ## Statistical significance
 Select statistically significant splicing events by performing the following:
 
-1. Find a column whose name is *Fligner-Killeen p-value (BH adjusted)*
-(**Horizontal scrolling** is required to visualise all available columns).
-2. Click the box, labeled **All**, just below the column name to its contents to
+1. Find a column whose name is *Fligner-Killeen p-value (BH adjusted)*. Note
+that **Horizontal scrolling** is required to visualise all available columns.
+2. Click the box, labeled **All**, just below the column name and filter the
 values between 0 and around 0.05.
-3. Sort the values by the difference in variance by clicking once on **Delta
-variance**.
+3. Sort the values by the difference in variance by clicking once on
+**Delta variance**.
 
 ## Distribution of alternative splicing quantifications
 
@@ -354,7 +351,7 @@ clicking on the plot (or its respective event identifier), a page dedicated to
 that alternative splicing event's statistics and exhibiting the density plot in 
 greater detail will show up.
 
-To go back to the table with all events, click in the button above the grey box
+To go back to the table with all events, click on the button above the grey box
 titled **All events (table)**.
 
 ## Survival analysis
@@ -397,7 +394,7 @@ event.
 # Exploring an alternative splicing event of interest
 
 At any time during these analyses, the alternative splicing event of interest
-may be changed by clicking in **Change...** in the top-right corner relative to
+may be changed by clicking on **Change...** in the top-right corner relative to
 the selected alternative splicing event. Any analyses that depend on the 
 selected alternative splicing event are now performed based on the currently
 selected event.
@@ -432,3 +429,4 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 [5]: https://tcga-data.nci.nih.gov/docs/publications/tcga
 [6]: http://rpubs.com/nuno-agostinho/alt-splicing-annotation
 [7]: http://imm.medicina.ulisboa.pt/group/compbio
+[8]: http://gtexportal.org

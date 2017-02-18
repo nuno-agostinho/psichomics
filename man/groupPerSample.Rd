@@ -29,4 +29,3 @@ names(groups) <- paste("Stage", 1:3)
 samples <- letters
 groupPerSample(groups, samples)
 }
-

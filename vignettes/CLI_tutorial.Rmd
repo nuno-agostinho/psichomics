@@ -1,7 +1,7 @@
 ---
 title: 'psichomics tutorial: command-line interface (CLI)'
 author: "Nuno Saraiva-Agostinho"
-date: "17 January 2016"
+date: "15 February 2016"
 bibliography: refs.bib
 output: 
     rmarkdown::html_vignette:
@@ -15,10 +15,12 @@ vignette: >
 ---
 
 psichomics is an interactive R package for the analysis of alternative splicing 
-using data from [The Cancer Genome Atlas (TCGA)][1], a repository of molecular 
-data associated with 34 tumour types, including clinical information and 
-transcriptomic data, such as the quantification of RNA-Seq reads aligning to
-splice junctions (henceforth called junction quantification) and exons.
+using data from [The Cancer Genome Atlas (TCGA)][1] (containing molecular data
+associated with 34 tumour types) and from the [Genotype-Tissue Expression][]
+project (containing data for multiple normal human tissues). The data available
+in these including clinical information and transcriptomic data, such as the
+quantification of RNA-Seq reads aligning to splice junctions (henceforth called
+junction quantification) and exons.
 
 # Installing and starting the program
 Install psichomics by typing the following in an R console (the 
@@ -36,7 +38,7 @@ After the installation, load psichomics by typing:
 library(psichomics)
 ```
 
-# Retrieving TCGA data
+# Retrieving data
 The quantification of each alternative splicing event is based on the proportion
 of junction reads that support the inclusion isoform, known as percent 
 spliced-in or PSI [@wang2008].
@@ -94,8 +96,11 @@ To load local files instead, indicate the folder of interest. Any files located
 in this folder and sub-folders will be attempted to load. To avoid errors during
 this process, files of interest should be put in a dedicated folder.
 
+For instance, to load GTEx files, create a directory called **GTEx**, put all
+files of interest inside that folder and follow these commands:
+
 ```{r load local, eval=FALSE}
-folder <- "~/Downloads/Breast invasive carcinoma 2016-01-28/"
+folder <- "~/Downloads/GTEx/"
 ignore <- c(".aux.", ".mage-tab.")
 data <- loadLocalFiles(folder, ignore=ignore)
 
@@ -289,7 +294,7 @@ scale  <- FALSE
 
 # Match patients with samples
 samples <- colnames(psi)
-match <- getPatientFromSample(samples, clinical, rmNoMatches=FALSE)
+match <- getPatientFromSample(samples, clinical)
 
 # Filter alternative splicing quantification to colour values by positive or
 # negative ER expression
@@ -599,3 +604,4 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 [4]: http://www.ensembl.org
 [5]: http://www.uniprot.org
 [6]: http://rpubs.com/nuno-agostinho/alt-splicing-annotation
+[7]: http://gtexportal.org

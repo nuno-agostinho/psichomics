@@ -17,4 +17,3 @@ HTML elements to calculate optimal survival difference
 Interface for calculating optimal cut-off and p-value for survival curves
 differences
 }
-

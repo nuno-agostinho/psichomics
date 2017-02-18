@@ -29,4 +29,3 @@ Match filtered samples with clinical patients to retrieve alternative
 splicing quantification per clinical patient. Only one sample can be matched
 with one patient. Normal and control samples are filtered out by default.
 }
-

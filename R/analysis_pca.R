@@ -12,7 +12,7 @@
 ##      geom_point(aes(x=PC1, y=PC2, color=factor(Cluster)), size=5, shape=20) +
 ##      stat_ellipse(aes(x=PC1,y=PC2,fill=factor(Cluster)),
 ##          geom="polygon", level=0.95, alpha=0.2) +
-##      guides(color=guide_legend("Cluster"),fill=guide_legend("Cluster"))
+##      guides(color=guide_legend("Cluster"), fill=guide_legend("Cluster"))
 ## 
 ## Source:
 ## http://stackoverflow.com/questions/20260434/test-significance-of-clusters-on-a-pca-plot
@@ -96,18 +96,22 @@ pcaUI <- function(id) {
                             "samples is used to replace those missing values.",
                             "The remaining events are discarded."),
                       options=list(container="body")),
-            selectGroupsUI(ns("dataGroups"),
-                           "Samples on which to perform PCA by groups"),
+            selectGroupsUI(ns("dataGroups"), "Samples to use for PCA",
+                           noGroupsLabel="All samples",
+                           groupsLabel="Samples from selected groups"),
             processButton(ns("calculate"), "Calculate PCA"),
             hidden(
                 div(id=ns("pcaPlotUI"),
                     hr(),
-                    selectizeInput(ns("pcX"), "Choose X axis", choices=NULL),
-                    selectizeInput(ns("pcY"), "Choose Y axis", choices=NULL),
-                    selectGroupsUI(ns("colourGroups"),
-                                   "Clinical groups to colour the PCA"),
+                    selectizeInput(ns("pcX"), choices=NULL,
+                                   "Choose principal component for the X axis"),
+                    selectizeInput(ns("pcY"), choices=NULL,
+                                   "Choose principal component for the Y axis"),
+                    selectGroupsUI(ns("colourGroups"), "Sample colouring",
+                                   noGroupsLabel="Do not colour samples",
+                                   groupsLabel="Colour using selected groups"),
                     actionButton(ns("showVariancePlot"), "Show variance plot"),
-                    processButton(ns("plot"), "Plot PCA")
+                    actionButton(ns("plot"), "Plot PCA", class="btn-primary")
                 )
             )
         ), mainPanel(
@@ -258,8 +262,8 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
 pcaServer <- function(input, output, session) {
     ns <- session$ns
     
-    selectGroupsServer(session, "dataGroups", "Clinical data")
-    selectGroupsServer(session, "colourGroups", "Clinical data")
+    selectGroupsServer(session, "dataGroups")
+    selectGroupsServer(session, "colourGroups")
     
     # Update available data input
     observe({
@@ -276,35 +280,30 @@ pcaServer <- function(input, output, session) {
     observeEvent(input$calculate, {
         if (input$dataForPCA == "Inclusion levels")
             psi <- isolate(getInclusionLevels())
-        else
+        else {
+            missingDataModal(session, "Inclusion levels", ns("takeMeThere"))
             return(NULL)
+        }
+            
         
         if (is.null(psi)) {
             missingDataModal(session, "Inclusion levels", ns("takeMeThere"))
         } else {
             time <- startProcess("calculate")
             isolate({
-                selected <- input$dataGroups
-                clinicalGroups <- getGroupsFrom("Clinical data")
-                clinical <- getClinicalData()
-                
+                groups <- getSelectedGroups(input, "dataGroups", samples=TRUE,
+                                            filter=colnames(psi))
                 preprocess <- input$preprocess
                 naTolerance <- input$naTolerance
             })
             
             # Subset data by the selected clinical groups
-            if (!is.null(selected)) {
-                match <- isolate( getClinicalMatchFrom("Inclusion levels") )
-                ns <- getMatchingSamples(clinicalGroups[selected], 
-                                         samples=colnames(psi), clinical, 
-                                         match=match)
-                psi <- psi[ , unlist(ns)]
-            }
+            if ( !is.null(groups) ) psi <- psi[ , unlist(groups), drop=FALSE]
             
             # Raise error if data has no rows
             if (nrow(psi) == 0) {
                 errorModal(session, "No data!", paste(
-                    "Calculation returned nothing. Check if everything is as",
+                    "PCA returned nothing. Check if everything is as",
                     "expected and try again."))
                 endProcess("calculate", closeProgressBar=FALSE)
                 return(NULL)
@@ -377,27 +376,20 @@ pcaServer <- function(input, output, session) {
     
     # Plot the principal component analysis
     observeEvent(input$plot, {
-        startProcess("plot")
         isolate({
             pca <- getInclusionLevelsPCA()
             pcX <- input$pcX
             pcY <- input$pcY
-            selected <- input$colourGroups
-            clinical <- getClinicalData()
-            clinicalGroups <- getGroupsFrom("Clinical data")
-            match <- getClinicalMatchFrom("Inclusion levels")
-            psi <- getInclusionLevels()
+            
+            if ( !is.null(pca$x) )
+                groups <- getSelectedGroups(input, "colourGroups", samples=TRUE,
+                                            filter=rownames(pca$x))
+            else
+                groups <- NULL
         })
         
         output$scatterplot <- renderHighchart(
             if (!is.null(pcX) & !is.null(pcY)) {
-                if (is.null(selected))
-                    groups <- NULL
-                else {
-                    groups <- getMatchingSamples(
-                        clinicalGroups[selected], colnames(psi), clinical,
-                        match=match)
-                }
                 plotPCA(pca, pcX, pcY, groups) %>% 
                     hc_chart(plotBackgroundColor="#FCFCFC") %>%
                     hc_title(text="Clinical samples (PCA individuals)")
@@ -421,7 +413,6 @@ pcaServer <- function(input, output, session) {
             } else {
                 return(NULL)
             })
-        endProcess("plot", closeProgressBar=FALSE)
     })
     
     observe(

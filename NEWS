@@ -1,3 +1,29 @@
+1.0.8
+=====
+
+    * Support GTEx data loading and analysis
+    * Fix clinical data dependency:
+        - Fix error when trying to load a file containing alternative splicing
+        quantification without first loading clinical data
+        - Fix error where samples from junction quantification were matched to
+        clinical information even if clinical data were not loaded
+        - Inform user when clinical data is not loaded while trying to plot
+        survival curves
+    * Improve data grouping:
+        - Create sample groups like patient groups and perform set operations
+        between any created groups
+        - Create groups using patient and sample identifiers
+        - Check number of patients and samples per group
+        - Rename selected groups
+        - Alert user when groups cannot be created due to missing data
+    * Differential splicing analysis:
+        - Analyse all samples as one group
+    * Survival analysis:
+        - Select any clinical attribute for starting/follow up and ending times
+    * Create table containing TCGA sample metadata when calculating or loading
+    alternative splicing quantification
+    * Minor UI improvements
+
 1.0.7 (22 Jan, 2017)
 ====================
 

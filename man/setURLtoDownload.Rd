@@ -18,4 +18,3 @@ Set URL links to download
 \note{
 Needs to be called inside a reactive function
 }
-

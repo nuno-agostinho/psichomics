@@ -70,11 +70,35 @@ getJunctionQuantification <- function(category=getCategory()) {
 #' @return Data frame with the alternative splicing quantification
 getInclusionLevels <- reactive(getCategoryData()[["Inclusion levels"]])
 
+#' Get sample information of the selected data category
+#' @return Data frame with sample information
+getSampleInfo <- reactive(getCategoryData()[["Sample metadata"]])
+
 #' Get data from global data
 #' @param ... Arguments to identify a variable
 #' @param sep Character to separate identifiers
 #' @return Data from global data
 getGlobal <- function(..., sep="_") sharedData[[paste(..., sep=sep)]]
+
+#' Get the identifier of patients for a given category
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' 
+#' @return Character vector with identifier of patients
+getPatientId <- function(category = getCategory())
+    getGlobal(category, "patients")
+
+#' Get the identifier of samples for a given category
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' 
+#' @return Character vector with identifier of samples
+getSampleId <- function(category = getCategory())
+    getGlobal(category, "samples")
 
 #' Get the table of differential analyses of a data category
 #' @note Needs to be called inside a reactive function
@@ -124,18 +148,29 @@ getAssemblyVersion <- function(category = getCategory())
 #' it uses the selected data category
 #' @param complete Boolean: return all the information on groups (TRUE) or just 
 #' the group names and respective indexes (FALSE)? FALSE by default
+#' @param samples Boolean: show groups by samples (TRUE) or patients (FALSE)?
+#' FALSE by default
 #' 
 #' @return Matrix with groups of a given dataset
-getGroupsFrom <- function(dataset, category = getCategory(), complete=FALSE) {
+getGroupsFrom <- function(dataset, category = getCategory(), complete=FALSE,
+                          samples=FALSE) {
     groups <- getGlobal(category, dataset, "groups")
-    if (complete)
-        return(groups)
-    else {
-        g <- groups[, "Rows", drop=TRUE]
-        if (length(g) == 1)
-            names(g) <- rownames(groups)
-        return(g)
-    }
+    
+    # Return all data if requested
+    if (complete) return(groups)
+    
+    if (samples)
+        col <- "Samples"
+    else
+        col <- "Patients"
+    
+    # Check if data of interest is available
+    if (!col %in% colnames(groups)) return(NULL)
+    
+    # If available, return data of interest
+    g <- groups[ , col, drop=TRUE]
+    if (length(g) == 1) names(g) <- rownames(groups)
+    return(g)
 }
 
 #' Get clinical matches from a given data type
@@ -148,17 +183,6 @@ getGroupsFrom <- function(dataset, category = getCategory(), complete=FALSE) {
 #' @return Integer with clinical matches to a given dataset
 getClinicalMatchFrom <- function(dataset, category = getCategory())
     getGlobal(category, dataset, "clinicalMatch")
-
-#' Get the groups column for differential splicing analysis of a data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' 
-#' @return Character value with the groups column used for differential splicing
-#' analysis
-getDiffSplicingGroups <- function(category = getCategory())
-    getGlobal(category, "diffSplicingGroups")
 
 #' Get the URL links to download
 #' @note Needs to be called inside a reactive function
@@ -248,6 +272,16 @@ setActiveDataset <- function(dataset) setGlobal("activeDataset", value=dataset)
 setInclusionLevels <- function(value, category = getCategory())
     sharedData$data[[category]][["Inclusion levels"]] <- value
 
+#' Set sample information for a given data category
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param value Data frame or matrix: sample information
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' @return NULL (this function is used to modify the Shiny session's state)
+setSampleInfo <- function(value, category = getCategory())
+    sharedData$data[[category]][["Sample metadata"]] <- value
+
 #' Set groups from a given data type
 #' @note Needs to be called inside a reactive function
 #' 
@@ -258,6 +292,26 @@ setInclusionLevels <- function(value, category = getCategory())
 #' @return NULL (this function is used to modify the Shiny session's state)
 setGroupsFrom <- function(dataset, groups, category = getCategory())
     setGlobal(category, dataset, "groups", value=groups)
+
+#' Set the identifier of patients for a data category
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param value Character: identifier of patients
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' @return NULL (this function is used to modify the Shiny session's state)
+setPatientId <- function(value, category = getCategory())
+    setGlobal(category, "patients", value=value)
+
+#' Set the identifier of samples for a data category
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param value Character: identifier of samples
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' @return NULL (this function is used to modify the Shiny session's state)
+setSampleId <- function(value, category = getCategory())
+    setGlobal(category, "samples", value=value)
 
 #' Set the table of differential analyses of a data category
 #' @note Needs to be called inside a reactive function
@@ -298,16 +352,6 @@ setSpecies <- function(value, category = getCategory())
 #' @return NULL (this function is used to modify the Shiny session's state)
 setAssemblyVersion <- function(value, category = getCategory())
     setGlobal(category, "assemblyVersion", value=value)
-
-#' Set the groups column for differential splicing analysis of a data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param value Character: assembly version
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' @return NULL (this function is used to modify the Shiny session's state)
-setDiffSplicingGroups <- function(value, category = getCategory())
-    setGlobal(category, "diffSplicingGroups", value=value)
 
 #' Set clinical matches from a given data type
 #' @note Needs to be called inside a reactive function
