@@ -1,5 +1,5 @@
 title: psichomics
-description: R package with a visual interface to quantify, analyse and visualise alternative splicing data
+description: Interactive R package to quantify, analyse and visualise alternative splicing data from The Cancer Genome Atlas (TCGA) or the Genotype-Tissue Expression (GTEx).
 google_analytics: 
 show_downloads: true
 theme: jekyll-theme-minimal
