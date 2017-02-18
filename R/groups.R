@@ -24,7 +24,9 @@ selectGroupsUI <- function (
     modalId <- paste0(id, "Modal")
     groupSelect <- selectizeInput(id, label, choices=NULL, multiple=TRUE, 
                                   width="auto",
-                                  options=list(placeholder=placeholder))
+                                  options=list(placeholder=placeholder,
+                                               plugins=list('remove_button',
+                                                            'drag_drop')))
     
     if ( !is.null(label) ) {
         if ( is.null(noGroupsLabel) ) {
