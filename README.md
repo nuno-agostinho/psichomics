@@ -118,17 +118,18 @@ transcripts and proteins. Related research articles are also available.
 
 ## Data Groups
 
-- **By column:** automatically create groups by selecting a specific column of 
-the dataset; for instance, to create a group for each tumour stage, start typing
-`tumor_stage`, select the appropriate field from the suggestions, click 
-`Create group` and confirm that there is now one group for each stage.
-- **By row:** input specific rows to create a group
+- **By attribute:** automatically create groups by selecting a specific
+attribute of the dataset; for instance, to create a group for each tumour stage,
+start typing `tumor_stage`, select the appropriate field from the suggestions,
+click on `Create group` and confirm that there is now one group for each stage.
+- **By index or identifiers:** input specific index or identifiers to create a
+group
 - **By subset expression:** type a subset expression
 - **By GREP expression:** apply a GREP expression over a specific column of the 
 dataset
 
-You can also select groups by clicking on them in order to merge, intersect or 
-remove the groups.
+Groups can also be selected in order to be merged, intersected, removed or
+renamed.
 
 ## Feedback
 All feedback on the program, documentation and associated material is welcome. 

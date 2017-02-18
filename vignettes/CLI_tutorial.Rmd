@@ -201,7 +201,7 @@ cols <- colnames(clinical)
 
 # Check the name from which to retrieve groups of interest
 er_expr <- grep("estrogen_receptor_status", cols, value=TRUE)[1]
-er_expr <- createGroupByColumn(col=er_expr, dataset=clinical)
+er_expr <- createGroupByAttribute(col=er_expr, dataset=clinical)
 
 # Discard values other than "positive" and "negative" for ER expression
 er_expr <- er_expr[c("positive", "negative")]
