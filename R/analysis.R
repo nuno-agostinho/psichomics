@@ -536,12 +536,12 @@ labelBasedOnCutoff <- function (data, cutoff, label=NULL, gte=TRUE) {
     
     if (gte) {
         comp <- `>=`
-        str1 <- ">="
-        str2 <- "<"
+        str1 <- "&gt;="
+        str2 <- "&lt;"
     } else {
         comp <- `>`
-        str1 <- ">"
-        str2 <- "<="
+        str1 <- "&gt;"
+        str2 <- "&lt;="
     }
     group <- comp(data, cutoff)
     
