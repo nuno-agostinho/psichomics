@@ -20,4 +20,3 @@ annotation
 \examples{
 psichomics:::listAllAnnotations()
 }
-

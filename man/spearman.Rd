@@ -17,4 +17,3 @@ HTML elements
 \description{
 Perform Spearman's test and return interface to show the results
 }
-

@@ -4,7 +4,7 @@ df <- data.frame(gender=c("male", "female"),
                  stage=paste("stage", c(1, 3, 1, 4, 2, 3, 2, 2)))
 
 test_that("Create groups by column", {
-    group <- createGroupByColumn(col="stage", dataset=df)
+    group <- createGroupByAttribute(col="stage", dataset=df)
     expect_is(group, "list")
     expect_equal(names(group), paste("stage", 1:4))
     expect_equivalent(unlist(group), c(1, 3, 5, 7, 8, 2, 6, 4))

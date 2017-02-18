@@ -15,4 +15,3 @@ Formatted number with a given number of significant digits
 \description{
 Get number of significant digits
 }
-

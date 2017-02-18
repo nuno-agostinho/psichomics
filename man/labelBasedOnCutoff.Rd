@@ -30,4 +30,3 @@ labelBasedOnCutoff(data=c(1, 0, 0, 1, 0, 1), cutoff=0.5, "Ratio")
 # Use "greater than" instead of "greater than or equal to"
 labelBasedOnCutoff(data=c(1, 0, 0, 0.5, 0, 1), cutoff=0.5, gte=FALSE)
 }
-

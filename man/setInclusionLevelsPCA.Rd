@@ -21,4 +21,3 @@ Get principal component analysis based on inclusion levels
 \note{
 Needs to be called inside a reactive function
 }
-

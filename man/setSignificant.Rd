@@ -18,4 +18,3 @@ Set number of significant digits
 \note{
 Needs to be called inside a reactive function
 }
-

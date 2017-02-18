@@ -30,4 +30,3 @@ Get rows of a data frame between two row indexes
 For a given iteration i, returns data from firstRow[i] to
 lastRow[i]
 }
-

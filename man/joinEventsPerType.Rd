@@ -17,4 +17,3 @@ List of events joined by alternative splicing event type
 \description{
 Full outer join all given events based on select columns
 }
-

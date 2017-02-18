@@ -17,4 +17,3 @@ HTML of the interface
 \description{
 User interface of the TCGA/Firebrowse loader
 }
-

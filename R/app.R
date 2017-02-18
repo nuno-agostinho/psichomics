@@ -247,6 +247,7 @@ browserHistory <- function(navId, input, session) {
 #' @return NULL (this function is used to modify the Shiny session's state)
 appServer <- function(input, output, session) {
     ns <- session$ns
+    groupsServerOnce(input, output, session)
     getServerFunctions("app", priority=c("dataServer", "analysesServer"))
     browserHistory("nav", input, session)
     
@@ -285,6 +286,7 @@ appServer <- function(input, output, session) {
             updateSelectizeInput(session, "selectizeEventElem", choices=list(),
                                  selected=list())
             setEvent(NULL)
+            setSampleId(NULL)
         }
     })
     

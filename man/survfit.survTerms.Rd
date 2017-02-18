@@ -37,4 +37,3 @@ survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
 require("survival")
 survfit(survTerms)
 }
-

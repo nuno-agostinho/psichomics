@@ -566,15 +566,22 @@ addTCGAdata <- function(ns) {
 #' @param id Character: identifier
 #' @param panel Function to enclose interface
 #' 
-#' @importFrom shiny NS
+#' @importFrom shiny NS helpText icon a
 #' 
 #' @return HTML of the interface
 firebrowseUI <- function(id, panel) {
     ns <- NS(id)
     
     panel(style="info",
-          title=list(icon("plus-circle"), "Load TCGA/Firehose data"),
-          value="Load TCGA/Firehose data", uiOutput(ns("checkFirebrowse")))
+          title=list(icon("plus-circle"), "Download/load TCGA data"),
+          value="Load TCGA/Firehose data",
+          helpText("TCGA data is downloaded using the",
+                   a(href="http://firebrowse.org", target="_blank",
+                     "Firebrowse"), "API."),
+          div(id=ns("firehoseLoading"), class="progress",
+              div(class="progress-bar progress-bar-striped active",
+                  role="progressbar", style="width: 100%", "Loading")),
+          uiOutput(ns("checkFirebrowse")))
 }
 
 #' Return an user interface depending on the status of the Firebrowse API
@@ -586,6 +593,7 @@ firebrowseUI <- function(id, panel) {
 #' @param ns Namespace function
 #' 
 #' @importFrom shiny br icon tagList actionButton
+#' @importFrom shinyjs hide
 #' 
 #' @return HTML elements
 checkFirebrowse <- function(ns) {
@@ -594,14 +602,16 @@ checkFirebrowse <- function(ns) {
         updateProgress("Loading interface")
         ui <- addTCGAdata(ns)
     } else {
-        ui <- tagList(icon("exclamation-circle"),
-                      "Firebrowse seems to be offline at the moment.", br(), 
-                      br(), actionButton(ns("refreshFirebrowse"),
-                                         icon=icon("refresh"),
-                                         "Check Firebrowse again", 
-                                         class="btn-primary"))
+        ui <- div(class="alert alert-danger", role="alert",
+                  icon("exclamation-circle"),
+                  "Firebrowse API appears to be offline at the moment.", br(), 
+                  br(), actionButton(ns("refreshFirebrowse"),
+                                     icon=icon("refresh"),
+                                     "Check Firebrowse again", 
+                                     class="btn-danger btn-block"))
     }
     closeProgress("Firebrowse interface loaded")
+    hide("firehoseLoading")
     return(ui)
 }
 
@@ -656,10 +666,12 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
             footer=actionButton(ns("acceptDownload"), "Download data",
                                 class="btn-primary", "data-dismiss"="modal"))
     } else if (!is.null(data)) {
-        if(replace)
+        if(replace) {
             setData(data)
-        else
-            setData(c(getData(), data))
+        } else {
+            data <- processDatasetNames(c(getData(), data))
+            setData(data)
+        }
     }
     endProcess("getFirehoseData", time)
 }

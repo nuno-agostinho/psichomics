@@ -15,4 +15,3 @@ Get the Downloads folder of the user
 \examples{
 getDownloadsFolder()
 }
-

@@ -14,10 +14,10 @@ survivalUI <- function(id) {
     kaplanMeierOptions <- tagList(
         checkboxInput(ns("markTimes"), "Show censored observations",
                       value = TRUE),
-        checkboxInput(ns("ranges"), "Show interval ranges", value = FALSE)
-    )
+        checkboxInput(ns("ranges"), "Show interval ranges", value = FALSE))
     
     modelChoices <- c(
+        "No groups"="none",
         "Clinical groups"="groups",
         "Clinical groups (interaction)"="formula",
         "Inclusion levels cut-off from the selected splicing event"="psiCutoff")
@@ -71,15 +71,16 @@ survivalUI <- function(id) {
                     placeholder="Start typing to suggest clinical attributes"),
                 uiOutput(ns("formulaSuggestions")),
                 helpText(
-                    "To analyse a series of attributes, separate each attribute",
-                    "with a", tags$kbd("+"), ". To analyse interactions, use", 
-                    tags$kbd(":"), " (interactions are only usable with Cox",
-                    "models). For example, ",
+                    "To analyse a series of attributes, separate each",
+                    "attribute with a", tags$kbd("+"), ". To analyse", 
+                    "interactions, use", tags$kbd(":"), " (interactions are",
+                    "only usable with Cox models). For example, ",
                     tags$kbd("tumor_stage : gender + race"), br(), br(),
                     "Interesting attributes include", tags$b("tumor_stage"), 
                     "to get tumour stages.")),
             conditionalPanel(
-                sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "psiCutoff"),
+                sprintf("input[id='%s'] == '%s'", ns("modelTerms"),
+                        "psiCutoff"),
                 uiOutput(ns("optimalPsi"))),
             hr(),
             bsCollapse(open="KM options",
@@ -96,6 +97,100 @@ survivalUI <- function(id) {
             uiOutput(ns("coxphUI"))
         )
     )
+}
+
+#' Prepare survival terms in case of valid input
+#' 
+#' @param session Shiny session
+#' @param input Shiny input
+#' @param coxph Boolean: preprare data for Cox models? FALSE by default
+#' 
+#' @return NULL (this function is used to modify the Shiny session's state)
+checkSurvivalInput <- function (session, input, coxph=FALSE) {
+    ns <- session$ns
+    
+    isolate({
+        clinical      <- getClinicalData()
+        psi           <- getInclusionLevels()
+        match         <- getClinicalMatchFrom("Inclusion levels")
+        splicingEvent <- getEvent()
+        # Get user input
+        timeStart  <- input$timeStart
+        timeStop   <- input$timeStop
+        event      <- input$event
+        censoring  <- input$censoring
+        outGroup   <- input$showOutGroup
+        modelTerms <- input$modelTerms
+        formulaStr <- input$formula
+        intRanges  <- input$ranges
+        markTimes  <- input$markTimes
+        psiCutoff  <- input$psiCutoff
+        scale      <- input$scale
+        # Get chosen groups
+        chosen <- getSelectedGroups(input, "dataGroups")
+    })
+    
+    if (is.null(clinical)) {
+        missingDataModal(session, "Clinical data", ns("missingClinical"))
+        return(NULL)
+    } else if (modelTerms == "none") {
+        groups <- groupPerPatient(NULL, nrow(clinical), outGroup)
+        formulaStr <- NULL
+    } else if (modelTerms == "groups") {
+        # Assign one group for each clinical patient
+        groups <- groupPerPatient(chosen, nrow(clinical), outGroup)
+        formulaStr <- NULL
+    } else if (modelTerms == "psiCutoff") {
+        if (is.null(psi)) {
+            missingDataModal(session, "Inclusion levels",
+                             ns("missingInclusionLevels"))
+            return(NULL)
+        } else if (is.null(splicingEvent) || splicingEvent == "") {
+            errorModal(session, "No event selected",
+                       "Select an alternative splicing event.")
+            return(NULL)
+        }
+        
+        # Assign alternative splicing quantification to patients based on
+        # their samples
+        clinicalPSI <- getPSIperPatient(psi, match, clinical)
+        eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
+        
+        # Assign a value based on the inclusion levels cut-off
+        groups <- labelBasedOnCutoff(eventPSI, psiCutoff,
+                                     "Inclusion levels")
+        formulaStr <- NULL
+    } else if (modelTerms == "formula") {
+        if (input$formula == "" || is.null(input$formula)) {
+            errorModal(session, "Empty formula",
+                       "Please, fill the formula field.")
+            return(NULL)
+        } else {
+            groups <- NULL
+        }
+    }
+    
+    interval <- grepl("interval", censoring)
+    if (event == "") {
+        errorModal(session, "Empty field for event",
+                   "Please, select the event of interest.")
+    } else if (timeStart == "") {
+        if (!interval) {
+            errorModal(session, "Empty field for follow up time",
+                       "Please, select follow up time.")
+        } else {
+            errorModal(session, "Empty field for starting time",
+                       "Please, select starting time.")
+        }
+    } else if (timeStop == "" && interval) {
+        errorModal(session, "Empty field for ending time",
+                   "Please, select ending time to use interval censoring.")
+    } else {
+        survTerms <- processSurvival(session, clinical, censoring, event, 
+                                     timeStart, timeStop, groups, formulaStr, 
+                                     scale=scale, coxph=coxph)
+        return(survTerms)
+    }
 }
 
 #' Server logic of survival analysis
@@ -118,7 +213,7 @@ survivalUI <- function(id) {
 survivalServer <- function(input, output, session) {
     ns <- session$ns
     
-    selectGroupsServer(session, "dataGroups", "Clinical data")
+    selectGroupsServer(session, "dataGroups")
     
     # Update available clinical data attributes to use in a formula
     output$formulaSuggestions <- renderUI({
@@ -144,68 +239,19 @@ survivalServer <- function(input, output, session) {
     # Plot survival curves
     observeEvent(input$survivalCurves, {
         isolate({
-            clinical      <- getClinicalData()
-            psi           <- getInclusionLevels()
-            match         <- getClinicalMatchFrom("Inclusion levels")
             splicingEvent <- getEvent()
             # Get user input
-            timeStart  <- input$timeStart
-            timeStop   <- input$timeStop
-            event      <- input$event
-            censoring  <- input$censoring
-            outGroup   <- input$showOutGroup
             modelTerms <- input$modelTerms
-            formulaStr <- input$formula
             intRanges  <- input$ranges
             markTimes  <- input$markTimes
             psiCutoff  <- input$psiCutoff
             scale      <- input$scale
-            # Get chosen groups
-            dataGroups <- input$dataGroups
-            chosen <- getGroupsFrom("Clinical data")[dataGroups]
         })
         
-        if (is.null(clinical)) {
-            missingDataModal(session, "Clinical data", ns("missingClinical"))
-        } else if (modelTerms == "groups") {
-            # Assign one group for each clinical patient
-            groups <- groupPerPatient(chosen, nrow(clinical), outGroup)
-            formulaStr <- NULL
-        } else if (modelTerms == "psiCutoff") {
-            if (is.null(psi)) {
-                missingDataModal(session, "Inclusion levels",
-                                 ns("missingInclusionLevels"))
-                return(NULL)
-            } else if (is.null(splicingEvent) || splicingEvent == "") {
-                errorModal(session, "No event selected",
-                           "Select an alternative splicing event.")
-                return(NULL)
-            }
-            
-            # Assign alternative splicing quantification to patients based on
-            # their samples
-            clinicalPSI <- getPSIperPatient(psi, match, clinical)
-            eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
-            
-            # Assign a value based on the inclusion levels cut-off
-            groups <- labelBasedOnCutoff(eventPSI, psiCutoff,
-                                         "Inclusion levels")
-            formulaStr <- NULL
-        } else if (modelTerms == "formula") {
-            if (input$formula == "" || is.null(input$formula)) {
-                errorModal(session, "Empty formula",
-                           "Please, fill the formula field.")
-                return(NULL)
-            } else {
-                groups <- NULL
-            }
-        }
-        
-        survTerms <- processSurvival(session, clinical, censoring, event, 
-                                     timeStart, timeStop, groups, formulaStr, 
-                                     scale=scale)
+        survTerms <- checkSurvivalInput(session, input)
         if (is.null(survTerms)) return(NULL)
-        surv <- tryCatch(survfit(survTerms), error = return)
+        
+        surv <- tryCatch(survfit(survTerms), error=return)
         if ("simpleError" %in% class(surv)) {
             errorModal(session, "Formula error",
                        "The following error was raised:", br(),
@@ -226,77 +272,15 @@ survivalServer <- function(input, output, session) {
         
         # Plot survival curves
         hc <- plotSurvivalCurves(surv, markTimes, intRanges, pvalue, plotTitle, 
-                                 scale) %>%
-            export_highcharts()
+                                 scale) %>% export_highcharts()
         if (!is.null(sub)) hc <- hc_subtitle(hc, text=sub)
         output$survival <- renderHighchart(hc)
     })
     
     # Fit Cox Proportional Hazards model
     observeEvent(input$coxModel, {
-        isolate({
-            clinical      <- getClinicalData()
-            psi           <- getInclusionLevels()
-            match         <- getClinicalMatchFrom("Inclusion levels")
-            splicingEvent <- getEvent()
-            # Get user input
-            timeStart  <- input$timeStart
-            timeStop   <- input$timeStop
-            event      <- input$event
-            censoring  <- input$censoring
-            outGroup   <- input$showOutGroup
-            modelTerms <- input$modelTerms
-            formulaStr <- input$formula
-            intRanges  <- input$ranges
-            psiCutoff  <- input$psiCutoff
-            scale      <- input$scale
-            # Get chosen groups
-            dataGroups <- input$dataGroups
-            chosen <- getGroupsFrom("Clinical data")[dataGroups]
-        })
+        survTerms <- checkSurvivalInput(session, input, coxph=TRUE)
         
-        if (is.null(clinical)) {
-            missingDataModal(session, "Clinical data", ns("missingClinical"))
-            return(NULL)
-        } else if (modelTerms == "groups") {
-            # Assign one group for each clinical patient
-            groups <- groupPerPatient(chosen, nrow(clinical), outGroup)
-            formulaStr <- NULL
-        } else if (modelTerms == "psiCutoff") {
-            if (is.null(psi)) {
-                missingDataModal(session, "Inclusion levels",
-                                 ns("missingInclusionLevels"))
-                return(NULL)
-            } else if (is.null(splicingEvent) || splicingEvent == "") {
-                errorModal(session, "No event selected",
-                           "Select an alternative splicing event.")
-                return(NULL)
-            }
-            
-            # Assign alternative splicing quantification to patients based on
-            # their samples
-            clinicalPSI <- getPSIperPatient(psi, match, clinical)
-            eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
-            
-            # Assign a value based on the inclusion levels cut-off
-            groups <- labelBasedOnCutoff(eventPSI, psiCutoff,
-                                         "Inclusion levels")
-            
-            formulaStr <- NULL
-        } else if (modelTerms == "formula") {
-            if (input$formula == "" || is.null(input$formula)) {
-                errorModal(session, "Empty formula",
-                           "Please, fill the formula field.")
-                return(NULL)
-            } else {
-                groups <- NULL
-            }
-        }
-        
-        # Calculate survival curves
-        survTerms <- processSurvival(session, clinical, censoring, event,
-                                     timeStart, timeStop, groups, formulaStr, 
-                                     coxph=TRUE, scale=scale)
         if (!is.null(survTerms)) {
             summary <- summary(survTerms)
             print(summary)
@@ -438,7 +422,7 @@ survivalServer <- function(input, output, session) {
                     slider, div(class="alert alert-success",
                                 tags$b("Optimal cut-off:"), round(opt$par, 5), 
                                 br(), tags$b("Minimal log-rank p-value:"),
-                                round(opt$value, 3))))
+                            round(opt$value, 3))))
             } else {
                 return(tagList(
                     slider, div(class="alert alert-warning", "No optimal",

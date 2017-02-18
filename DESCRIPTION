@@ -1,7 +1,7 @@
 Package: psichomics
 Title: Graphical Interface for Alternative Splicing Quantification, Analysis and
     Visualisation
-Version: 1.0.7
+Version: 1.0.8
 Encoding: UTF-8
 Authors@R: c( person("Nuno", "Saraiva-Agostinho", ,
         "nunodanielagostinho@gmail.com", role = c("aut", "cre")),
@@ -22,7 +22,7 @@ Depends:
     shinyBS
 License: MIT + file LICENSE
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 Imports:
     AnnotationHub,
     data.table,
@@ -37,6 +37,7 @@ Imports:
     plyr,
     R.utils,
     shinyjs,
+    stringr,
     stats,
     survival,
     Sushi,
@@ -51,11 +52,10 @@ Suggests:
     devtools,
     rmarkdown,
     gplots,
-    stringr,
     covr,
     car
 VignetteBuilder: knitr
-Collate:
+Collate: 
     'analysis.R'
     'analysis_diffSplicing.R'
     'analysis_diffSplicing_event.R'
@@ -70,6 +70,7 @@ Collate:
     'data.R'
     'formats.R'
     'data_firebrowse.R'
+    'data_gtex.R'
     'data_inclusionLevels.R'
     'data_local.R'
     'events_suppa.R'
@@ -78,8 +79,11 @@ Collate:
     'events_mats.R'
     'events.R'
     'formats_firehoseGeneExpression.R'
-    'formats_firehoseJunctionQuantification.R'
+    'formats_firehoseJunctionReads.R'
     'formats_firehoseMergeClinical.R'
+    'formats_gtexClinical.R'
+    'formats_gtexJunctionReads.R'
+    'formats_gtexSampleInfo.R'
     'groups.R'
     'settings.R'
 biocViews: Sequencing, RNASeq, AlternativeSplicing,

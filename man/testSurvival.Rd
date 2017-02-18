@@ -35,4 +35,3 @@ survTerms <- processSurvTerms(data, censoring=censoring, event=event,
                               formulaStr=formulaStr)
 testSurvival(survTerms)
 }
-

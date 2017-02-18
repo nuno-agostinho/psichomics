@@ -1,5 +1,17 @@
 context("Parse SUPPA splicing events")
 
+test_that("parseSuppaAnnotation parses annotation from SUPPA", {
+    folder <- "extdata/eventsAnnotSample/suppa_output/suppaEvents"
+    suppaOutput <- system.file(folder, package="psichomics")
+    
+    suppa <- parseSuppaAnnotation(suppaOutput)
+    expect_is(suppa, "ASevents")
+    expect_equal(length(suppa), 14)
+    expect_equal(unique(suppa$Program), "SUPPA")
+    expect_equal(unique(suppa$Chromosome), "20")
+    expect_equal(unique(suppa$Strand), "+")
+})
+
 test_that("parseSuppaEvent parses multiple exon skipping event IDs at once", {
     # Load all types of events to test
     events <- c(

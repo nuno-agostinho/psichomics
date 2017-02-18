@@ -17,4 +17,3 @@ HTML element for a global selectize input
 \description{
 Create a selectize input available from any page
 }
-

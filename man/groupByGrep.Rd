@@ -4,12 +4,14 @@
 \alias{groupByGrep}
 \title{User interface to group by grep expression}
 \usage{
-groupByGrep(ns, dataset)
+groupByGrep(ns, dataset, id)
 }
 \arguments{
 \item{ns}{Namespace function}
 
 \item{dataset}{Data frame: dataset of interest}
+
+\item{id}{Character: identifier}
 }
 \value{
 HTML elements
@@ -17,4 +19,3 @@ HTML elements
 \description{
 User interface to group by grep expression
 }
-

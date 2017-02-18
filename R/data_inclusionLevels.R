@@ -1,3 +1,37 @@
+#' Parse and prepare sample information from TCGA samples
+#' 
+#' @param samples Character: sample identifiers
+#' @inheritParams getClinicalMatchFrom
+#' 
+#' @return Data frame containing metadata associated with each TCGA sample
+parseTcgaSampleInfo <- function (samples, category=getCategory()) {
+    parsed <- parseSampleGroups(samples)
+    if ( all(is.na(parsed)) ) return(NULL)
+    
+    info <- data.frame(parsed)
+    colnames(info) <- "Sample types"
+    rownames(info) <- samples
+    
+    # Patient match
+    patients <- getPatientId()
+    match <- getClinicalMatchFrom("Inclusion levels", category)
+    if ( !is.null(patients) ) {
+        if (is.null(match))
+            match <- getPatientFromSample(samples, patients)
+        
+        match <- match[samples]
+        patients <- patients[match]
+        info <- cbind(info, "Patient ID"=patients)
+    }
+    
+    # Metadata
+    attr(info, "rowNames") <- TRUE
+    attr(info, "description") <- "Metadata for TCGA samples"
+    attr(info, "dataType")  <- "Sample metadata"
+    attr(info, "tablename") <- "Sample metadata"
+    return(info)
+}
+
 #' Splicing event types available
 #' @return Named character vector with splicing event types
 #' @export
@@ -63,7 +97,7 @@ inclusionLevelsInterface <- function(ns) {
                   options = list(container = "body"),
                   paste("Inclusion levels calculated with a number of read",
                         "counts below this threshold are discarded.")),
-        actionButton(ns("loadIncLevels"), "Load quantification from file"),
+        actionButton(ns("loadIncLevels"), "Load from file"),
         processButton(ns("calcIncLevels"), "Quantify events"))
 }
 
@@ -154,6 +188,7 @@ loadAnnotation <- function(annotation) {
 #' @param session Shiny session
 #' 
 #' @importFrom shiny reactive observeEvent fileInput helpText removeModal
+#' @importFrom tools file_path_sans_ext
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 inclusionLevelsServer <- function(input, output, session) {
@@ -169,9 +204,44 @@ inclusionLevelsServer <- function(input, output, session) {
                                  choices=c(names(junctionQuant),
                                            "Select junction quantification"=""))
         } else {
-            updateSelectizeInput(session, "junctionQuant",
-                                 choices=c("No junction quantification loaded"=""))
+            updateSelectizeInput(
+                session, "junctionQuant",
+                choices=c("No junction quantification loaded"=""))
         }
+    })
+    
+    observeEvent(input$calcIncLevels, {
+        if (is.null(getData()) || is.null(getJunctionQuantification())) {
+            missingDataModal(session, "Junction quantification",
+                             ns("takeMeThere"))
+        } else if (!is.null(getInclusionLevels())) {
+            if (!is.null(getDifferentialAnalyses())) {
+                warningModal(session, "Warning",
+                             "The calculated differential splicing analyses",
+                             "will be discarded and the previously loaded",
+                             "inclusion levels will be replaced.",
+                             footer=actionButton(ns("discard"),
+                                                 "Discard and replace",
+                                                 class="btn-warning",
+                                                 "data-dismiss"="modal"))
+            } else {
+                warningModal(session, "Inclusion levels already quantified",
+                             "Do you wish to replace the inclusion levels",
+                             "loaded?",
+                             footer=actionButton(ns("replace"), "Replace",
+                                                 class="btn-warning",
+                                                 "data-dismiss"="modal"))
+            }
+        } else {
+            calcSplicing()
+        }
+    })
+    
+    observeEvent(input$replace, calcSplicing())
+    observeEvent(input$discard, {
+        setDifferentialAnalyses(NULL)
+        setDifferentialAnalysesSurvival(NULL)
+        calcSplicing()
     })
     
     calcSplicing <- reactive({
@@ -213,45 +283,12 @@ inclusionLevelsServer <- function(input, output, session) {
                                 progress=updateProgress)
         setInclusionLevels(psi)
         
-        updateProgress("Matching clinical data")
-        match <- getPatientFromSample(colnames(psi), getClinicalData())
-        setClinicalMatchFrom("Inclusion levels", match)
+        samples <- colnames(psi)
+        parsed <- parseTcgaSampleInfo(samples) 
+        if ( !is.null(parsed) )
+            setSampleInfo(parsed)
         
         endProcess("calcIncLevels", time)
-    })
-    
-    observeEvent(input$calcIncLevels, {
-        if (is.null(getData()) || is.null(getJunctionQuantification())) {
-            missingDataModal(session, "Junction quantification",
-                             ns("takeMeThere"))
-        } else if (!is.null(getInclusionLevels())) {
-            if (!is.null(getDifferentialAnalyses())) {
-                warningModal(session, "Warning",
-                             "The calculated differential splicing analyses",
-                             "will be discarded and the previously loaded",
-                             "inclusion levels will be replaced.",
-                             footer=actionButton(ns("discard"),
-                                                 "Discard and replace",
-                                                 class="btn-warning",
-                                                 "data-dismiss"="modal"))
-            } else {
-                warningModal(session, "Inclusion levels already quantified",
-                             "Do you wish to replace the inclusion levels",
-                             "loaded?",
-                             footer=actionButton(ns("replace"), "Replace",
-                                                 class="btn-warning",
-                                                 "data-dismiss"="modal"))
-            }
-        } else {
-            calcSplicing()
-        }
-    })
-    
-    observeEvent(input$replace, calcSplicing())
-    observeEvent(input$discard, {
-        setDifferentialAnalyses(NULL)
-        setDifferentialAnalysesSurvival(NULL)
-        calcSplicing()
     })
     
     # Show modal to load custom alternative splicing quantification
@@ -304,66 +341,115 @@ inclusionLevelsServer <- function(input, output, session) {
     # Show modal for loading alternative splicing quantification
     observeEvent(input$loadIncLevels, {
         ns <- session$ns
-        if (!is.null(getData())) {
-            infoModal(session, "Load alternative splicing quantification",
-                      helpText("A table containing the sample identifiers as",
-                               "columns and the alternative splicing event",
-                               "identifiers as rows is recommended. The event",
-                               "identifier should be similar to:"),
-                      tags$kbd(style="word-wrap: break-word;",
-                               paste0("EventType_Chromosome_Strand_Coordinate1",
-                                      "_Coordinate2_..._Gene")),
-                      tags$hr(),
-                      fileInput(ns("customASquant"), "Choose a file"),
-                      selectizeInput(ns("customSpecies2"), "Species", 
-                                     choices="Human", options=list(create=TRUE)),
-                      selectizeInput(ns("customAssembly2"), "Assembly",
-                                     choices="hg19", options=list(create=TRUE)),
-                      uiOutput(ns("alertIncLevels")),
-                      footer=processButton(ns("loadASquant"), 
-                                           "Load quantification"))
+        
+        infoModal(
+            session, "Load alternative splicing quantification",
+            helpText("A table containing the sample identifiers as columns and",
+                     "the alternative splicing event identifiers as rows is",
+                     "recommended. The event identifier should be similar to:"),
+            tags$kbd(style="word-wrap: break-word;",
+                     paste0("EventType_Chromosome_Strand_Coordinate1_",
+                            "_Coordinate2_..._Gene")),
+            tags$hr(),
+            fileInput(ns("customASquant"), "Choose a file"),
+            selectizeInput(ns("customSpecies2"), "Species", choices="Human",
+                           options=list(create=TRUE)),
+            selectizeInput(ns("customAssembly2"), "Assembly", choices="hg19",
+                           options=list(create=TRUE)),
+            uiOutput(ns("alertIncLevels")),
+            footer=processButton(ns("loadASquant"), "Load quantification"))
+    })
+    
+    observeEvent(input$loadASquant, {
+        if (!is.null(getInclusionLevels())) {
+            if (!is.null(getDifferentialAnalyses())) {
+                warningModal(session, "Warning",
+                             "The calculated differential splicing analyses",
+                             "will be discarded and the previously loaded",
+                             "inclusion levels will be replaced.",
+                             footer=actionButton(ns("discard2"),
+                                                 "Discard and replace",
+                                                 class="btn-warning",
+                                                 "data-dismiss"="modal"))
+            } else {
+                warningModal(session, "Inclusion levels already quantified",
+                             "Do you wish to replace the inclusion levels",
+                             "loaded?",
+                             footer=actionButton(ns("replace2"), "Replace",
+                                                 class="btn-warning",
+                                                 "data-dismiss"="modal"))
+            }
         } else {
-            missingDataModal(session, "Clinical data", ns("takeMeToClinical"))
+            loadSplicing()
         }
     })
     
+    observeEvent(input$replace2, {
+        setSampleId(NULL)
+        setGroupsFrom("Clinical data", NULL)
+        loadSplicing()
+    })
+    observeEvent(input$discard2, {
+        setDifferentialAnalyses(NULL)
+        setDifferentialAnalysesSurvival(NULL)
+        setSampleId(NULL)
+        setGroupsFrom("Clinical data", NULL)
+        loadSplicing()
+    })
+    
     # Load alternative splicing quantification
-    observeEvent(input$loadASquant, {
-        if (!is.null(input$loadASquant)) {
-            time <- startProcess("loadIncLevels")
-            
-            startProgress("Wait a moment", divisions=2)
-            updateProgress("Loading alternative splicing quantification")
-            psi <- tryCatch(read.delim(input$customASquant$datapath, 
-                                       row.names=1, check.names=FALSE),
-                            error=return, warning=return)
-            if (is(psi, "error")) {
-                errorAlert(session, title="Error:", 
+    loadSplicing <- reactive({
+        time <- startProcess("loadIncLevels")
+        
+        startProgress("Wait a moment", divisions=2)
+        updateProgress("Loading alternative splicing quantification")
+        psi <- tryCatch(read.delim(input$customASquant$datapath, 
+                                   row.names=1, check.names=FALSE),
+                        error=return, warning=return)
+        if (is(psi, "error")) {
+            if (psi$message == paste("'file' must be a character string or",
+                                     "connection"))
+                errorAlert(session, title="Error", "No file was provided",
+                           alertId="alertIncLevels")
+            else
+                errorAlert(session, title="Error", 
                            psi$message, alertId="alertIncLevels")
-            } else if (is(psi, "warning")) {
-                warningAlert(session, title="Warning:", 
-                             psi$message, alertId="alertIncLevels")
-            } else {
-                removeAlert(output, "alertIncLevels")
-                attr(psi, "rowNames") <- TRUE
-                attr(psi, "description") <- paste("Exon and intron inclusion",
-                                                  "levels for any given",
-                                                  "alternative splicing event.")
-                attr(psi, "dataType")  <- "Inclusion levels"
-                attr(psi, "tablename") <- "Inclusion levels"
-                setInclusionLevels(psi)
+        } else if (is(psi, "warning")) {
+            warningAlert(session, title="Warning", 
+                         psi$message, alertId="alertIncLevels")
+        } else {
+            removeAlert(output, "alertIncLevels")
+            attr(psi, "rowNames") <- TRUE
+            attr(psi, "description") <- paste("Exon and intron inclusion",
+                                              "levels for any given",
+                                              "alternative splicing event.")
+            attr(psi, "dataType")  <- "Inclusion levels"
+            attr(psi, "tablename") <- "Inclusion levels"
+            
+            if ( is.null(getData()) ) {
+                name <- file_path_sans_ext( input$customASquant$name )
+                name <- gsub(" Inclusion levels$", "", name)
+                if (name == "") name <- "Unnamed"
                 
-                updateProgress("Matching clinical data")
-                match <- getPatientFromSample(colnames(psi), getClinicalData())
-                setClinicalMatchFrom("Inclusion levels", match)
-                
-                setSpecies(input$customSpecies2)
-                setAssemblyVersion(input$customAssembly2)
-                
-                removeModal()
+                data <- setNames(list(list("Inclusion levels"=psi)), name)
+                data <- processDatasetNames(data)
+                setData(data)
+                setCategory(name)
             }
-            endProcess("loadIncLevels", time)
+            
+            setInclusionLevels(psi)
+            
+            samples <- colnames(psi)
+            parsed <- parseTcgaSampleInfo(samples) 
+            if ( !is.null(parsed) )
+                setSampleInfo(parsed)
+            
+            setSpecies(input$customSpecies2)
+            setAssemblyVersion(input$customAssembly2)
+            
+            removeModal()
         }
+        endProcess("loadIncLevels", time)
     })
 }
 

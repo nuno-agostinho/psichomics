@@ -1,5 +1,16 @@
 context("Parse VAST-TOOLS splicing events")
 
+test_that("parseVastToolsAnnotation parses annotation from VAST-tools", {
+    folder <- "extdata/eventsAnnotSample/VASTDB/Hsa/TEMPLATES"
+    vastToolsOutput <- system.file(folder, package="psichomics")
+    
+    vast <- parseVastToolsAnnotation(vastToolsOutput)
+    expect_is(vast, "ASevents")
+    expect_equal(length(vast), 14)
+    expect_equal(unique(vast$Program), "VAST-TOOLS")
+    expect_equal(unique(vast$Strand), c("-", "+"))
+})
+
 test_that("parseVastToolsEvent parses exon skipping event", {
     events <- read.table(
         text = "

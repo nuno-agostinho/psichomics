@@ -21,4 +21,3 @@ Set inclusion levels for a given data category
 \note{
 Needs to be called inside a reactive function
 }
-

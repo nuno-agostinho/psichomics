@@ -15,13 +15,11 @@
 #' getFirehoseDataTypes()
 getFirehoseDataTypes <- function() {
     choices <- list("RNA sequencing"=c(
-        paste0(c("junction", "exon"),
-               "_quantification"), "Preprocess",
+        paste0(c("junction", "exon"), "_quantification"), "Preprocess",
         paste0("RSEM_", c("isoforms", "genes")),
         paste0(c("junction", "gene", "exon"),
                "_expression"), "genes_normalized"))
     names(choices[[1]]) <- capitalize(gsub("_", " ", choices[[1]]))
-    # names(choices[[1]])[1] <- "Exon-exon junction quantification"
     return(choices)
 }
 
@@ -94,11 +92,8 @@ dataUI <- function(id, tab) {
     
     tab(title="Data", icon="table",
         sidebarLayout(
-            sidebarPanel(
-                do.call(bsCollapse, uiList)
-            ),
-            mainPanel( uiOutput(ns("tablesOrAbout")) ))
-    )
+            sidebarPanel( do.call(bsCollapse, c(id=ns("accordion"), uiList)) ),
+            mainPanel( uiOutput(ns("tablesOrAbout")) ) ))
 }
 
 #' Creates a tabPanel template for a datatable with a title and description
@@ -127,10 +122,7 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
     
     if(!is.null(description)) {
         description <- p(tags$strong("Table description:"), description)
-        download <- fluidRow(
-            column(10, description),
-            column(2, download)
-        )
+        download <- fluidRow(column(10, description), column(2, download))
     }
     
     # Get class of each column
@@ -144,13 +136,12 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
     visibleColumns <- selectizeInput(
         paste(tablename, "columns", sep="-"), label="Visible columns", 
         choices=choices, selected=visCols, multiple=TRUE, width="auto", 
-        options=list(plugins=list('remove_button', 'drag_drop'),
-                     render=I("{ item: function(item, escape) {
-                              return '<div>' + escape(item.value) + '</div>';
-} }")))
+        options=list(plugins=list('remove_button', 'drag_drop'), render=I(
+            "{ item: function(item, escape) {
+                return '<div>' + escape(item.value) + '</div>'; } }")))
     tabPanel(title, br(), download, visibleColumns, hr(),
              dataTableOutput(tablename))
-    }
+}
 
 #' Render a specific data tab (including data table and related interface)
 #' 
@@ -231,15 +222,17 @@ dataServer <- function(input, output, session) {
                    "on patient survivability.")))
     
     tcga <- tags$abbr(title="The Cancer Genome Atlas", "TCGA")
+    gtex <- tags$abbr(title="Genotype-Tissue Expression", "GTEx")
     
     welcome <- tagList(
         h1("Welcome"), HTML(paste0(
             "Analyse alternative splicing based on transcriptomic and ",
-            "clinical data from The Cancer Genome Atlas (", tcga, ").")),
+            "clinical data from The Cancer Genome Atlas (", tcga, ") or the ",
+            "Genotype-Tissue Expression (", gtex, ") project.")),
         tags$br(), tags$br(), tags$ol(
             id="list",
             tags$li("Load clinical data and alternative splicing",
-                    "junction quantification from ", tcga, ".", 
+                    "junction quantification from", tcga, "or", gtex, ".", 
                     tags$br(), tags$small(
                         style="color: gray;",
                         "More data types will soon be supported.")),
@@ -258,22 +251,15 @@ dataServer <- function(input, output, session) {
                         "events are not measurable.")),
             tags$li("Explore statistically significant events or",
                     "individual events of interest through the",
-                    "following analyses:"
-                    # "Analyse clinical features such as tumour",
-                    # "stage and survival and perform differential",
-                    # "splicing analyses based on", tags$br(), "variance",
-                    # "and median statistical tests. Annotation of the",
-                    #  "splicing events is also incorporated."
-            )), analysesDescription, br(), br(),
+                    "following analyses:")), 
+        analysesDescription, br(), br(),
         p(style="text-align:right",
           tags$a(href="http://imm.medicina.ulisboa.pt/group/compbio/",
                  target="_blank", "Nuno Morais Lab, iMM"), 
           "(", tags$a(href="mailto:nunodanielagostinho@gmail.com", 
                       "Nuno Agostinho", icon("envelope-o")), ", 2015-2016)", 
           br(), "Special thanks to my lab colleagues for their work-related",
-          br(), "support and supporting chatter."
-        )
-    )
+          br(), "support and supporting chatter."))
     
     # Show welcome screen when there's no data loaded
     output$tablesOrAbout <- renderUI({
@@ -315,6 +301,35 @@ dataServer <- function(input, output, session) {
     
     # Change the active dataset
     observe( setActiveDataset(input$datasetTab) )
+    
+    # Update patient identifiers when clinical data is available
+    observe({
+        clinical <- getClinicalData()
+        if ( !is.null(clinical) )
+            setPatientId(rownames(clinical))
+        else
+            setPatientId(NULL)
+    })
+    
+    observe({
+        sampleInfo <- getSampleInfo()
+        if ( !is.null(sampleInfo) )
+            setSampleId( rownames(sampleInfo) )
+        else
+            setSampleId(NULL)
+    })
+    
+    # Match clinical data with sample information
+    observe({
+        patients <- getPatientId()
+        samples  <- getSampleId()
+        if ( !is.null(patients) && !is.null(samples) ) {
+            startProgress("Matching patients with samples...", 1)
+            match <- getPatientFromSample(samples, patients)
+            setClinicalMatchFrom("Inclusion levels", match)
+            closeProgress("Matching process concluded")
+        }
+    })
     
     # Run server logic from the scripts
     getServerFunctions("data", priority="localDataServer")

@@ -30,4 +30,3 @@ event <- read.table(text =
 )
 psichomics:::parseVastToolsEvent(event)
 }
-

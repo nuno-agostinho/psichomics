@@ -1,6 +1,7 @@
-# PSIchomics [![Build Status][8]][9] [![AppVeyor Build Status][10]][11] [![codecov][12]][13]
+# psichomics [![Build Status][8]][9] [![AppVeyor Build Status][10]][11] [![codecov][12]][13]
 Interactive R package to quantify, analyse and visualise alternative splicing 
-data from [The Cancer Genome Atlas (TCGA)][1].
+data from [The Cancer Genome Atlas (TCGA)][1] or the [Genotype-Tissue Expression
+(GTEx)][13].
 
 ## Table of Contents
 
@@ -10,6 +11,7 @@ data from [The Cancer Genome Atlas (TCGA)][1].
 * [Tutorials](#tutorials)
 * [Data Input](#data-input)
     * [Download TCGA data](#download-tcga-data)
+    * [Load GTEx data](#load-gtex-data)
     * [Load User Files](#load-user-files)
 * [Splicing Quantification](#splicing-quantification)
 * [Data Analyses](#data-analyses)
@@ -66,13 +68,16 @@ Other tutorials coming soon:
 
 ## Data Input
 ### Download TCGA Data
-You can download data from [The Cancer Genome Atlas (TCGA)][1] using this
-package. Simply choose the cohort of interest, date of the sample, type of 
-interest and so on.
+psichomics allows to download data from the [TCGA][1] inside the app. Simply
+choose the cohort of interest, date of the sample, type of interest and so on.
+
+### Load GTEx Data
+To load GTEx data, first download it from the [GTEx Portal][13]. Clinical data,
+sample information and junction quantification from GTEx are supported.
 
 ### Load User Files
 To load your own files, simply choose the folder where the data is located. 
-PSIchomics will try to process all the data contained in the given folder and
+psichomics will try to process all the data contained in the given folder and
 sub-folders to search for files that can be loaded.
 
 ## Splicing Quantification
@@ -131,7 +136,7 @@ Please, send any suggestions and comments to the following contact:
 
 > Nuno Saraiva-Agostinho (nunodanielagostinho@gmail.com)
 
-> [Nuno Morais Lab, IMM][5]
+> [Nuno Morais Lab, Instituto de Medicina Molecular][5]
 
 ## Contributions
 Please note that this project is released with a [Contributor Code of Conduct]
@@ -155,3 +160,4 @@ regulation in human tissue transcriptomes.*][7] Nature 456 (7221): 470–76.
 [11]: https://ci.appveyor.com/project/nuno-agostinho/psichomics
 [12]: https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg
 [13]: https://codecov.io/gh/nuno-agostinho/psichomics
+[14]: http://www.gtexportal.org

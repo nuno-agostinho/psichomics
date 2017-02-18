@@ -31,4 +31,3 @@ ignore <- c(".aux.", ".mage-tab.", "junction quantification")
 loadLocalFiles(folder, ignore)
 }
 }
-

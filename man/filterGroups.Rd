@@ -25,4 +25,3 @@ discarded.
 # Removes groups with less than two elements
 filterGroups(1:4, c("A", "B", "B", "D"), threshold=2)
 }
-

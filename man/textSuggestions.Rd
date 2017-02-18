@@ -25,4 +25,3 @@ Uses the JavaScript library jquery.textcomplete
 words <- c("tumor_stage", "age", "gender")
 psichomics:::textSuggestions("textareaid", words)
 }
-
