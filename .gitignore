@@ -4,4 +4,4 @@
 .DS_Store
 inst/doc
 .RDataTmp
-vignettes/rsconnect
+vignettes/rsconnect/*
