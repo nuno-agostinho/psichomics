@@ -28,4 +28,3 @@ Highchart object containing information for a scatter plot
 \description{
 Create a scatter plot using \code{highcharter}
 }
-

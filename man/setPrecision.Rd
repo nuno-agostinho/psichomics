@@ -18,4 +18,3 @@ Set number of decimal places
 \note{
 Needs to be called inside a reactive function
 }
-

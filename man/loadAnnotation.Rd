@@ -22,4 +22,3 @@ human <- listSplicingAnnotations()[[1]]
 annot <- loadAnnotation(human)
 }
 }
-

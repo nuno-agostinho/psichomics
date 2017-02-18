@@ -38,4 +38,3 @@ survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
                                formulaStr=formulaStr)
 survdiff.survTerms(survTerms)
 }
-

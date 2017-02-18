@@ -34,4 +34,3 @@ md5 <- paste0(file, ".md5")
 prepareFirehoseArchives(archive = file, md5 = paste0(file, ".md5"))
 }
 }
-

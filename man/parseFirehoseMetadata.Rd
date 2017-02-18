@@ -27,4 +27,3 @@ psichomics:::parseFirehoseMetadata("Cohorts")
 # Get the abbreviation and description of the selected cohorts
 psichomics:::parseFirehoseMetadata("Cohorts", cohort = c("ACC", "BRCA"))
 }
-

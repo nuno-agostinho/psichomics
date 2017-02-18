@@ -25,4 +25,3 @@ pos   <- parseSplicingEvent(event)$pos[[1]]
 plotTranscripts(info, pos)
 }
 }
-

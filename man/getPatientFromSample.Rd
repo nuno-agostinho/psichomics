@@ -4,19 +4,13 @@
 \alias{getPatientFromSample}
 \title{Match given sample identifiers and return the respective row in clinical data}
 \usage{
-getPatientFromSample(sampleId, clinical, prefix = "^tcga", lower = TRUE,
-  rmNoMatches = TRUE)
+getPatientFromSample(sampleId, patientId)
 }
 \arguments{
 \item{sampleId}{Character: sample identifiers}
 
-\item{clinical}{Matrix or data.frame: clinical data}
-
-\item{prefix}{Character: prefix to search for in clinical data}
-
-\item{lower}{Boolean: convert samples to lower case? TRUE by default}
-
-\item{rmNoMatches}{Boolean: remove non-matching identifiers}
+\item{patientId}{Character: clinical patient identifiers (if a matrix or data
+frame is given, its rownames will be retrieved as patient identifiers)}
 }
 \value{
 Integer vector of the row number in clinical data corresponding to 
@@ -26,9 +20,7 @@ the given IDs (named with the ID)
 Match given sample identifiers and return the respective row in clinical data
 }
 \examples{
-samples <- c("ABC", "DEF", "GHI", "JKL", "MNO")
-clinical <- data.frame(patient=paste0("patient-", samples),
-                       samples=tolower(samples))
-getPatientFromSample(samples, clinical, prefix="")
+patients <- c("GTEX-ABC", "GTEX-DEF", "GTEX-GHI", "GTEX-JKL", "GTEX-MNO")
+samples <- paste0(patients, "-sample")
+getPatientFromSample(samples, patients)
 }
-

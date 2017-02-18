@@ -39,4 +39,3 @@ Downloads and processes data from the Firehose API and loads it into R
 loadFirehoseData(cohort = "ACC", data_type = "Clinical")
 }
 }
-

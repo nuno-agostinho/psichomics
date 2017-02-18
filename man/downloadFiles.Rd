@@ -34,4 +34,3 @@ downloadFiles(url, "~/Pictures")
 downloadFiles(url, "~/Pictures", quiet = TRUE)
 }
 }
-

@@ -2,6 +2,36 @@ context("Parse MISO splicing events")
 
 library(fastmatch)
 
+test_that("parseMisoAnnotation parses annotation from MISO", {
+    folder <- "extdata/eventsAnnotSample/miso_annotation"
+    misoOutput <- system.file(folder, package="psichomics")
+    
+    miso <- parseMisoAnnotation(misoOutput)
+    expect_is(miso, "ASevents")
+    expect_equal(length(miso), 13)
+    expect_equal(unique(miso$Program), "MISO")
+    expect_equal(unique(miso$Strand), c("-", "+"))
+})
+
+test_that("parseMisoEventID parses an event identifier from MISO", {
+    eventID <- c("114785@uc001sok.1@uc001soj.1", "114784@uc001bxm.1@uc001bxn.1")
+    # the annotation is one of the GFF3 files needed to run MISO
+    gff3 <- system.file("extdata", "miso_AS_annot_example.gff3", 
+                        package="psichomics")
+    annotation <- read.delim(gff3, header=FALSE, comment.char="#")
+    IDcolumn <- 9
+    event <- parseMisoEventID(eventID, annotation, IDcolumn)
+    
+    expect_is(event, "list")
+    expect_length(event, 2)
+    expect_is(event[[1]], "data.frame")
+    expect_equal(unique(event[[1]][[2]]), factor("AFE"))
+    expect_equivalent(event[[1]][[3]][[1]], factor("gene"))
+    expect_is(event[[2]], "data.frame")
+    expect_equal(unique(event[[2]][[2]]), factor("AFE"))
+    expect_equivalent(event[[2]][[3]][[1]], factor("gene"))
+})
+
 test_that("getValidEvents returns valid events depending on the validator", {
     event <- read.table(text = "
                         chr1 SE gene 17233 18061  .  -  .

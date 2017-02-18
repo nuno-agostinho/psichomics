@@ -19,4 +19,3 @@ Create the explained variance plot
 pca <- prcomp(USArrests)
 plotVariance(pca)
 }
-

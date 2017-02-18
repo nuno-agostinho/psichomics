@@ -1,13 +1,16 @@
-#' Creates a UI set with options to add a file from the local storage
+#' Interface to load local data
+#'
+#' @importFrom shiny textInput
+#' @importFrom shinyBS bsCollapse bsCollapsePanel
 #' 
-#' @param ns Namespace function
+#' @param id Character: namespace identifier
+#' @param panel Function to deal with the interface
 #' 
-#' @importFrom shiny tagList uiOutput textInput selectizeInput actionButton
-#' textAreaInput
-#' 
-#' @return A UI set that can be added to a UI definition
-addLocalFile <- function(ns) {
-    tagList(
+#' @return NULL (this function is used to modify the Shiny session's state) 
+localDataUI <- function(id, panel) {
+    ns <- NS(id)
+    
+    addLocalFile <- tagList(
         uiOutput(ns("localDataModal")),
         uiOutput(ns("pathSuggestions")),
         textAreaInput(ns("localFolder"), "Folder where data is stored",
@@ -20,17 +23,11 @@ addLocalFile <- function(ns) {
                            # Allow to add new items
                            create=TRUE, createOnBlur=TRUE,
                            placeholder="Input files to exclude")),
-        processButton(ns("acceptFile"), "Load files")
-    ) # end of list
-}
-
-#' @importFrom shinyBS bsCollapse bsCollapsePanel
-localDataUI <- function(id, panel) {
-    ns <- NS(id)
+        processButton(ns("acceptFile"), "Load files"))
     
     panel(
         style="info", title=list(icon("plus-circle"), "Load local files"),
-        value="Load local files", addLocalFile(ns))
+        value="Load local files", addLocalFile)
 }
 
 #' Load local files
@@ -100,10 +97,12 @@ setLocalData <- function(input, output, session, replace=TRUE) {
     data <- loadLocalFiles(folder, name=category, ignore, progress)
     
     if (!is.null(data)) {
-        if(replace)
+        if(replace) {
             setData(data)
-        else
-            setData(c(getData(), data))
+        } else {
+            data <- processDatasetNames(c(getData(), data))
+            setData(data)
+        }
     }
     endProcess("acceptFile", time)
 }
@@ -147,8 +146,8 @@ localDataServer <- function(input, output, session) {
             if (file.exists(folder)){
                 # Asking for a folder, not a file
                 errorModal(session, "Folder not found",
-                           "The path is directing to a file, but only folders are",
-                           "accepted. Please, insert the path to a folder.",
+                           "The path is directing to a file, but only folders",
+                           "are accepted. Please, insert the path to a folder.",
                            modalId="localDataModal")
             } else {
                 # Folder not found

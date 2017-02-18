@@ -18,4 +18,3 @@ Load local file
 \examples{
 junctionQuant <- readFile("ex_junctionQuant.RDS")
 }
-

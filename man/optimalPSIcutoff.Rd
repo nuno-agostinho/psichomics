@@ -63,4 +63,3 @@ event      <- "days_to_death"
 psi <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
 opt <- optimalPSIcutoff(clinical, psi, "right", event, timeStart)
 }
-

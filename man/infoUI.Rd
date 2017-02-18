@@ -15,4 +15,3 @@ HTML elements
 \description{
 Information's user interface
 }
-

@@ -19,4 +19,3 @@ A \code{highcharts} object with an export button
 \description{
 Add an exporting feature to a \code{highcharts} object
 }
-

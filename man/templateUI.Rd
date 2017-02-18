@@ -15,4 +15,3 @@ HTML elements for the interface of the template
 \description{
 User interface of template
 }
-

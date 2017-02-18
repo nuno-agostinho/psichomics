@@ -17,4 +17,3 @@ response
 \examples{
 if (isFirehoseUp()) getFirehoseDates()
 }
-

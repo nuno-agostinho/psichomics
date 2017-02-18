@@ -4,12 +4,10 @@
 \alias{groupsUI}
 \title{Creates UI elements for the grouping feature}
 \usage{
-groupsUI(id, dataset)
+groupsUI(id)
 }
 \arguments{
 \item{id}{Character: identifier}
-
-\item{dataset}{Data frame or matrix: dataset of interest}
 }
 \value{
 HTML elements
@@ -17,4 +15,3 @@ HTML elements
 \description{
 Creates UI elements for the grouping feature
 }
-

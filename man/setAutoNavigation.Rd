@@ -18,4 +18,3 @@ Set if history browsing is automatic
 \note{
 Needs to be called inside a reactive function
 }
-
