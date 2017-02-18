@@ -17,4 +17,3 @@ Boolean vector
 \description{
 Check if a given function should be loaded by the calling module
 }
-

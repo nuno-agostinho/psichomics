@@ -27,4 +27,3 @@ The HTML code for a tabPanel template
 \description{
 Creates a tabPanel template for a datatable with a title and description
 }
-

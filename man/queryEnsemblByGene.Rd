@@ -25,4 +25,3 @@ Query information from Ensembl by a given gene
 queryEnsemblByGene("BRCA1", "human", "hg19")
 queryEnsemblByGene("ENSG00000139618")
 }
-

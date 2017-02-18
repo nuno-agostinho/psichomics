@@ -15,4 +15,3 @@ Character with the HTML interface
 \description{
 Interface for the analysis of an alternative splicing event
 }
-

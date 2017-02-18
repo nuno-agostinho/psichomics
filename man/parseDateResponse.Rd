@@ -15,4 +15,3 @@ Parsed date
 \description{
 Parse the date from a response
 }
-

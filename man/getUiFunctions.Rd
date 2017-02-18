@@ -23,4 +23,3 @@ List of functions related to the given loader
 \description{
 Matches user interface (UI) functions from a given loader
 }
-

@@ -19,4 +19,3 @@ Query the Firehose API for the cohorts available
 \examples{
 if (isFirehoseUp()) getFirehoseCohorts()
 }
-

@@ -34,4 +34,3 @@ data frame
 \examples{
 performPCA(USArrests)
 }
-

@@ -23,4 +23,3 @@ accordingly.
 The resulting data frame includes the attribute "tablename" with the
 name of the data frame
 }
-

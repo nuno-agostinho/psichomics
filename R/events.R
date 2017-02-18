@@ -313,18 +313,22 @@ vennEvents <- function(join, eventType) {
 }
 
 #' String used to search for matches in a junction quantification file
+#'
 #' @param chr Character: chromosome
 #' @param strand Character: strand
 #' @param junc5 Integer: 5' end junction
 #' @param junc3 Integer: 3' end junction
+#' @param showStrand Boolean: include strand?
 #' 
 #' @return Formatted character string
-junctionString <- function(chr, strand, junc5, junc3) {
+junctionString <- function(chr, strand, junc5, junc3, showStrand) {
     plus <- strand == "+"
     first <- ifelse(plus, junc5, junc3)
     last <- ifelse(plus, junc3, junc5)
-    res <- sprintf("chr%s:%s:%s,chr%s:%s:%s",
-                   chr, first, strand, chr, last, strand)
+    if (showStrand)
+        res <- sprintf("chr%s:%s:%s:%s", chr, first, last, strand)
+    else
+        res <- sprintf("chr%s:%s:%s", chr, first, last)
     return(res)
 }
 
@@ -400,6 +404,9 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
     else
         geneCol <- "Gene"
     
+    coords <- rownames(junctionQuant)
+    showStrand <- any(grepl("\\+|\\-", coords))
+    
     if (eventType == "SE") {
         # Remove duplicates based on columns used to create identifiers
         annotation <- uniqueBy(annotation, "Chromosome", "Strand",
@@ -413,13 +420,16 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         # Create searchable strings for junctions
         incAstr <- junctionString(chr, strand,
                                   annotation$`Constitutive exon 1 end`,
-                                  annotation$`Alternative exon 1 start`)
+                                  annotation$`Alternative exon 1 start`,
+                                  showStrand)
         incBstr <- junctionString(chr, strand,
                                   annotation$`Alternative exon 1 end`,
-                                  annotation$`Constitutive exon 2 start`)
+                                  annotation$`Constitutive exon 2 start`,
+                                  showStrand)
         exclstr <- junctionString(chr, strand, 
                                   annotation$`Constitutive exon 1 end`, 
-                                  annotation$`Constitutive exon 2 start`)
+                                  annotation$`Constitutive exon 2 start`,
+                                  showStrand)
         
         # Get specific junction quantification
         coords <- rownames(junctionQuant)
@@ -460,16 +470,20 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         # Create searchable strings for junctions
         incAstr <- junctionString(chr, strand,
                                   annotation$`Constitutive exon 1 end`,
-                                  annotation$`Alternative exon 1 start`)
+                                  annotation$`Alternative exon 1 start`,
+                                  showStrand)
         incBstr <- junctionString(chr, strand,
                                   annotation$`Alternative exon 1 end`,
-                                  annotation$`Constitutive exon 2 start`)
+                                  annotation$`Constitutive exon 2 start`,
+                                  showStrand)
         excAstr <- junctionString(chr, strand,
                                   annotation$`Constitutive exon 1 end`,
-                                  annotation$`Alternative exon 2 start`)
+                                  annotation$`Alternative exon 2 start`,
+                                  showStrand)
         excBstr <- junctionString(chr, strand,
                                   annotation$`Alternative exon 2 end`,
-                                  annotation$`Constitutive exon 2 start`)
+                                  annotation$`Constitutive exon 2 start`,
+                                  showStrand)
         
         # Get specific junction quantification
         coords <- rownames(junctionQuant)
@@ -511,10 +525,12 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         # Create searchable strings for junctions
         incStr <- junctionString(chr, strand,
                                  annotation$`Alternative exon 1 end`, 
-                                 annotation$`Constitutive exon 2 start`)
+                                 annotation$`Constitutive exon 2 start`,
+                                 showStrand)
         excStr <- junctionString(chr, strand,
                                  annotation$`Constitutive exon 1 end`,
-                                 annotation$`Constitutive exon 2 start`)
+                                 annotation$`Constitutive exon 2 start`,
+                                 showStrand)
         
         # Get specific junction quantification
         coords <- rownames(junctionQuant)
@@ -546,10 +562,12 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         # Create searchable strings for junctions
         incStr <- junctionString(chr, strand,
                                  annotation$`Constitutive exon 1 end`,
-                                 annotation$`Alternative exon 1 start`)
+                                 annotation$`Alternative exon 1 start`,
+                                 showStrand)
         excStr <- junctionString(chr, strand,
                                  annotation$`Constitutive exon 1 end`, 
-                                 annotation$`Constitutive exon 2 start`)
+                                 annotation$`Constitutive exon 2 start`,
+                                 showStrand)
         
         # Get specific junction quantification
         coords <- rownames(junctionQuant)

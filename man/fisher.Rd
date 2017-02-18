@@ -17,4 +17,3 @@ HTML elements
 \description{
 Perform Fisher's exact test and return interface to show the results
 }
-

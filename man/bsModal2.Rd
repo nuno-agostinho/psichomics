@@ -30,4 +30,3 @@ HTML element to create a modified modal
 bsModal is used within the UI to create a modal window. This allows to use
 the footer.
 }
-

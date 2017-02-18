@@ -4,7 +4,8 @@
 \alias{getGroupsFrom}
 \title{Get groups from a given data type}
 \usage{
-getGroupsFrom(dataset, category = getCategory(), complete = FALSE)
+getGroupsFrom(dataset, category = getCategory(), complete = FALSE,
+  samples = FALSE)
 }
 \arguments{
 \item{dataset}{Character: data set (e.g. "Clinical data")}
@@ -14,6 +15,9 @@ it uses the selected data category}
 
 \item{complete}{Boolean: return all the information on groups (TRUE) or just 
 the group names and respective indexes (FALSE)? FALSE by default}
+
+\item{samples}{Boolean: show groups by samples (TRUE) or patients (FALSE)?
+FALSE by default}
 }
 \value{
 Matrix with groups of a given dataset
@@ -24,4 +28,3 @@ Get groups from a given data type
 \note{
 Needs to be called inside a reactive function
 }
-

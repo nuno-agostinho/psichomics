@@ -17,4 +17,3 @@ HTML elements
 \description{
 User interface of the settings
 }
-

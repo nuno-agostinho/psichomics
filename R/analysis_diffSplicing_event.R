@@ -4,42 +4,53 @@
 #' @param id Character: identifier
 #' @importFrom highcharter highchartOutput
 #' @importFrom shiny tagList uiOutput NS sidebarLayout numericInput h3 mainPanel
+#' actionButton
 #' @return Character with the HTML interface
 diffSplicingEventUI <- function(id) {
     ns <- NS(id)
     
-    card <- function(...) {
+    card <- function(id) {
         div(class="col-sm-6 col-md-4",
             div(class="thumbnail", style="background:#eee;",
-                div(class="caption", ...)))
+                div(class="caption", uiOutput(ns(id)))))
     }
+    
+    # Take user to the survival analysis by PSI cut-off
+    survival <- tagList(
+        actionButton(ns("optimalSurv1"), onclick="showSurvCutoff()",
+                     "Survival analysis by PSI cut-off", 
+                     class="btn-info btn-md btn-block",
+                     class="visible-lg visible-md"),
+        actionButton(ns("optimalSurv2"), onclick="showSurvCutoff()",
+                     "Survival analysis by PSI cut-off", 
+                     class="btn-info btn-xs btn-block",
+                     class="visible-sm visible-xs"))
     
     tagList(
         uiOutput(ns("modal")),
         sidebarLayout(
             sidebarPanel(
-                tags$b("Clinical groups on which to perform the analyses:"),
-                tags$br(), tags$a(onclick="changeDiffSplicingGroup()",
-                                  uiOutput(ns("groupsCol"))),
-                tags$br(),
+                selectGroupsUI(ns("diffGroups"),
+                               label="Groups of samples to analyse",
+                               noGroupsLabel="All samples as one group",
+                               groupsLabel="Samples by selected groups"),
                 numericInput(ns("bandwidth"), "Density smoothing bandwidth",
                              0.01, step=0.01, min=0.01),
+                actionButton(ns("analyse"), "Perform analyses",
+                             class="btn-primary"),
                 uiOutput(ns("basicStats")), hr(),
-                # uiOutput(ns("spearman")), hr(),
-                # uiOutput(ns("fisher")), hr(),
-                uiOutput(ns("survival"))
+                survival
             ), mainPanel(
                 highchartOutput(ns("density")),
                 h4("Parametric tests"),
                 div(class="row",
-                    card(uiOutput(ns("ttest"))),
-                    card(uiOutput(ns("levene")))),
+                    card("ttest"),
+                    card("levene")),
                 h4("Non-parametric tests"),
                 div(class="row",
-                    card(uiOutput(ns("wilcox"))),
-                    card(uiOutput(ns("kruskal"))),
-                    card(uiOutput(ns("fligner"))))
-            )
+                    card("wilcox"),
+                    card("kruskal"),
+                    card("fligner")))
         )
     )
 }
@@ -162,7 +173,7 @@ basicStats <- function(psi, groups) {
     
     avgMedian <- roundDigits( mean(medi) )
     avgVar <- roundDigits( mean(vari) )
-    ui <- tagList(h4("Basic statistics"),
+    ui <- tagList(hr(), h4("Basic statistics"),
                   tags$b("Average median: "), avgMedian, br(), deltaMedian,
                   tags$b("Average variance: "), avgVar, br(), deltaVar)
     return(ui)
@@ -176,6 +187,8 @@ basicStats <- function(psi, groups) {
 #' 
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats wilcox.test
+#' @importFrom R.utils capitalize
+#' 
 #' @return HTML elements
 wilcox <- function(psi, groups, stat=NULL) {
     warn <- NULL
@@ -214,8 +227,8 @@ wilcox <- function(psi, groups, stat=NULL) {
                                          warning=w)))
         
         if ("warning" %in% names(stat))
-            warn <- tagList(
-                tags$code(paste("Warning:", stat$warning$message)), br())
+            warn <- tags$div(class="alert alert-warning", role="alert",
+                             capitalize(stat$warning$message))
         
         method      <- stat$stat$method
         statistic   <- stat$stat$statistic
@@ -242,6 +255,8 @@ wilcox <- function(psi, groups, stat=NULL) {
 #' 
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats t.test
+#' @importFrom R.utils capitalize
+#' 
 #' @return HTML elements
 ttest <- function(psi, groups, stat=NULL) {
     warn <- NULL
@@ -280,11 +295,33 @@ ttest <- function(psi, groups, stat=NULL) {
         stat <- tryCatch(list(stat=t.test(psiA, psiB)), 
                          warning=function(w)
                              return(list(stat=t.test(psiA, psiB),
-                                         warning=w)))
+                                         warning=w)),
+                         error=return)
+        if (is(stat, "error")) {
+            message <- stat$message
+            check <- "not enough '%s' observations"
+            checkX <- sprintf(check, "x")
+            checkY <- sprintf(check, "y")
+            
+            fewObservations <- function(name)
+                tagList("Not enough observations in group", tags$b(name),
+                        "to perform this statistical test.")
+            
+            if (message == checkX)
+                message <- fewObservations(group[1])
+            else if (message == checkY)
+                message <- fewObservations(group[2])
+            else
+                message <- capitalize(message)
+            
+            error <- tagList(h4("t-test"), tags$div(class="alert alert-danger",
+                                                    role="alert", message))
+            return(error)
+        }
         
         if ("warning" %in% names(stat))
-            warn <- tagList(
-                tags$code(paste("Warning:", stat$warning$message)), br())
+            warn <- tags$div(class="alert alert-warning", role="alert",
+                             capitalize(stat$warning$message))
         
         method      <- stat$stat$method
         statistic   <- stat$stat$statistic
@@ -552,10 +589,26 @@ filterGroups <- function(vector, group, threshold=1) {
 #' @importFrom shinyjs runjs
 #' @return NULL (this function is used to modify the Shiny session's state)
 diffSplicingEventServer <- function(input, output, session) {
-    observe({
+    ns <- session$ns
+    
+    selectGroupsServer(session, "diffGroups")
+    
+    observeEvent(input$analyse, {
+        # Get splicing event's inclusion levels
+        psi <- getInclusionLevels()
+        if (is.null(psi)) {
+            missingDataModal(session, "Inclusion levels",
+                             ns("missingInclusionLevels"))
+            return(NULL)
+        }
+        
         # Get selected event
         event <- getEvent()
-        if (is.null(event) || event == "") return(NULL)
+        if (is.null(event) || event == "") {
+            errorModal(session, "No event selected",
+                       "Please, select an alternative splicing event.")
+            return(NULL)
+        }
         
         # Check if bandwidth is valid
         bandwidth <- input$bandwidth
@@ -566,24 +619,21 @@ diffSplicingEventServer <- function(input, output, session) {
             return(NULL)
         }
         
-        # Get splicing event's inclusion levels for all samples
-        psi <- getInclusionLevels()
-        col <- getDiffSplicingGroups()
-        if (is.null(col) || col=="") {
-            samples <- colnames(psi)
-            types <- parseSampleGroups(samples)
-            col <- unique(types)
-            attr(col, "samples") <- TRUE
+        # Prepare groups of samples to analyse
+        groups <- getSelectedGroups(input, "diffGroups", samples=TRUE,
+                                    filter=colnames(psi))
+        if ( !is.null(groups) ) {
+            attrGroups <- groups
+            psi <- psi[ , unlist(groups), drop=FALSE]
+            groups <- rep(names(groups), sapply(groups, length))
+        } else {
+            attrGroups <- "All samples"
+            groups <- rep(attrGroups, ncol(psi))
         }
-        output$groupsCol <- renderUI( paste(col, collapse=", ") )
-        
-        groups <- prepareGroupsDiffSplicing(psi, col)
-        psi <- groups$psi
-        groups <- groups$groups
         
         # Check if analyses were already performed
         stats <- getDifferentialAnalyses()
-        if (!is.null(stats) && identical(col, attr(stats, "groups")))
+        if (!is.null(stats) && identical(attrGroups, attr(stats, "groups")))
             stat <- stats[event, ]
         else
             stat <- NULL
@@ -605,16 +655,10 @@ diffSplicingEventServer <- function(input, output, session) {
         output$fligner    <- renderUI(fligner(eventPSI, groups, stat))
         # output$fisher   <- renderUI(fisher(eventPSI, groups))
         # output$spearman <- renderUI(spearman(eventPSI, groups))
-        
-        output$survival <- renderUI({
-            tagList(h3("Survival analysis by splicing quantification cut-off"),
-                    actionButton(session$ns("optimalSurv"), "Take me there", 
-                                 class="btn-info"))
-        })
     })
     
-    # Take user to the survival curves separation by a quantification cut-off
-    observeEvent(input$optimalSurv, runjs("showSurvCutoff()"))
+    observeEvent(input$missingInclusionLevels, 
+                 missingDataGuide("Inclusion levels"))
 }
 
 attr(diffSplicingEventUI, "loader") <- "diffSplicing"

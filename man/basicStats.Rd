@@ -18,4 +18,3 @@ HTML elements
 Variance and median of each group. If data has 2 groups, also calculates the
 delta variance and delta median.
 }
-

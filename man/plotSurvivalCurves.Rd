@@ -31,4 +31,3 @@ require("survival")
 fit <- survfit(Surv(time, status) ~ x, data = aml)
 plotSurvivalCurves(fit)
 }
-

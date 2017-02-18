@@ -1,5 +1,24 @@
 context("Parse MATS splicing events")
 
+test_that("parseMatsAnnotation parses annotation from rMATS", {
+    folder <- "extdata/eventsAnnotSample/mats_output/ASEvents"
+    matsOutput <- system.file(folder, package="psichomics")
+    mats <- parseMatsAnnotation(matsOutput)
+    expect_equal(nrow(mats), 83)
+    expect_is(mats, "ASevents")
+    expect_equal(length(mats), 15)
+    expect_equal(unique(mats$Program), "MATS")
+    expect_equal(unique(mats$Strand), c("-", "+"))
+    
+    # Do not parse novel events
+    mats <- parseMatsAnnotation(matsOutput, novelEvents=FALSE)
+    expect_equal(nrow(mats), 63)
+    expect_is(mats, "ASevents")
+    expect_equal(length(mats), 15)
+    expect_equal(unique(mats$Program), "MATS")
+    expect_equal(unique(mats$Strand), c("-", "+"))
+})
+
 test_that("parseMatsEvent parses alt. 3' splice site events", {
     event <- read.table(text = "
         3658 ENSG00000067715 SYT1 chr12 + 79685787 79685910 79685796 79685910 79679566 79679751 3658 252 102 73 16 58 56 0.0342916452301 0.274333161841 0.705 0.815 -0.11

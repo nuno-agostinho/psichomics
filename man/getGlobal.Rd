@@ -17,4 +17,3 @@ Data from global data
 \description{
 Get data from global data
 }
-

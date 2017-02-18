@@ -34,7 +34,7 @@ trying to match only skipped exons event IDs, only use the annotation of
 skipped exons instead of using a mega annotation with all event types.
 }
 \examples{
-eventID <- c("2217@uc002poi.1@uc002poe.1", "57705@uc009xob.1@uc001jgy.2")
+eventID <- c("114785@uc001sok.1@uc001soj.1", "114784@uc001bxm.1@uc001bxn.1")
 # the annotation is one of the GFF3 files needed to run MISO
 gff3 <- system.file("extdata", "miso_AS_annot_example.gff3", 
                     package="psichomics")
@@ -42,4 +42,3 @@ annotation <- read.delim(gff3, header=FALSE, comment.char="#")
 IDcolumn <- 9
 psichomics:::parseMisoEventID(eventID, annotation, IDcolumn)
 }
-

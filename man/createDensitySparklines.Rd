@@ -20,4 +20,3 @@ HTML element with sparkline data (character)
 \description{
 Create density sparklines for inclusion levels
 }
-

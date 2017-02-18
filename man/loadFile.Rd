@@ -21,4 +21,3 @@ Loads a file according to its format
 The resulting data frame includes the attribute "tablename" with the
 name of the data frame
 }
-

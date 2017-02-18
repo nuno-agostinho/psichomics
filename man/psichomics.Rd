@@ -23,4 +23,3 @@ Start graphical interface of PSICHOMICS
 psichomics()
 }
 }
-
