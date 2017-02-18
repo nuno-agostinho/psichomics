@@ -1,13 +1,14 @@
-[![Build Status](https://travis-ci.org/nuno-agostinho/psichomics.svg?branch=master)](https://travis-ci.org/nuno-agostinho/psichomics) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/nuno-agostinho/psichomics?branch=master&svg=true)](https://ci.appveyor.com/project/nuno-agostinho/psichomics) [![codecov](https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg)](https://codecov.io/gh/nuno-agostinho/psichomics)
+[![Build Status][8]][9] [![AppVeyor Build Status][10]][11] [![codecov][12]][13]
 
 ## Table of Contents
 
 * [Install and Start Running](#install-and-start-running)
-    * [Bioconductor](#bioconductor)
+    * [Bioconductor Release](#bioconductor-release)
     * [Development Version](#development-version)
 * [Tutorials](#tutorials)
 * [Data Input](#data-input)
     * [Download TCGA data](#download-tcga-data)
+    * [Load GTEx data](#load-gtex-data)
     * [Load User Files](#load-user-files)
 * [Splicing Quantification](#splicing-quantification)
 * [Data Analyses](#data-analyses)
@@ -22,7 +23,8 @@
 
 ## Install and Start Running
 
-### Bioconductor
+### Bioconductor Release
+
 To install from [Bioconductor][2], type the following in [RStudio][4] or in a
 command-line using R:
 
@@ -41,7 +43,7 @@ To install and start using the development version, follow these steps:
     - [Xcode command-line tools](https://developer.apple.com/downloads) (Mac)
     - **r-devel** or **r-base-dev** (Linux)
 3. Open [RStudio][4] (or open a console, type `R` and press enter)
-4. Type the following to install Bioconductor: 
+4. Type the following to install [Bioconductor][2]: 
     - `source("https://bioconductor.org/biocLite.R")`
 5. Type the following to install, load and start the visual interface:
 ```r
@@ -59,19 +61,21 @@ The following tutorials are available:
 * [Command-line interface](http://rpubs.com/nuno-agostinho/psichomics-cli-tutorial)
 
 Other tutorials coming soon:
-
 * Developers and other contributors
 
 ## Data Input
 
 ### Download TCGA Data
-You can download data from [The Cancer Genome Atlas (TCGA)][1] using this
-package. Simply choose the cohort of interest, date of the sample, type of 
-interest and so on.
+psichomics allows to download data from the [TCGA][1] inside the app. Simply
+choose the cohort of interest, date of the sample, type of interest and so on.
+
+### Load GTEx Data
+To load GTEx data, first download it from the [GTEx Portal][13]. Clinical data,
+sample information and junction quantification from GTEx are supported.
 
 ### Load User Files
 To load your own files, simply choose the folder where the data is located. 
-PSIchomics will try to process all the data contained in the given folder and
+psichomics will try to process all the data contained in the given folder and
 sub-folders to search for files that can be loaded.
 
 ## Splicing Quantification
@@ -125,18 +129,21 @@ You can also select groups by clicking on them in order to merge, intersect or
 remove the groups.
 
 ## Feedback
+
 All feedback on the program, documentation and associated material is welcome. 
 Please, send any suggestions and comments to the following contact:
 
-> Nuno Saraiva-Agostinho ([nunodanielagostinho@gmail.com](mailto:nunodanielagostinho@gmail.com))
+> Nuno Saraiva-Agostinho (nunodanielagostinho@gmail.com)
 
-> [Nuno Morais Lab, IMM][5]
+> [Nuno Morais Lab, Instituto de Medicina Molecular][5]
 
 ## Contributions
+
 Please note that this project is released with a [Contributor Code of Conduct]
 [6]. By participating in this project you agree to abide by its terms.
 
 ## References
+
 Wang, E. T., R. Sandberg, S. Luo, I. Khrebtukova, L. Zhang, C. Mayr, S. F. 
 Kingsmore, G. P. Schroth, and C. B. Burge. 2008. [*Alternative isoform 
 regulation in human tissue transcriptomes.*][7] Nature 456 (7221): 470–76.
@@ -148,3 +155,10 @@ regulation in human tissue transcriptomes.*][7] Nature 456 (7221): 470–76.
 [5]: http://imm.medicina.ulisboa.pt/group/compbio
 [6]: CONDUCT.md
 [7]: http://www.nature.com/nature/journal/v456/n7221/full/nature07509.html
+[8]: https://travis-ci.org/nuno-agostinho/psichomics.svg?branch=master
+[9]: https://travis-ci.org/nuno-agostinho/psichomics
+[10]: https://ci.appveyor.com/api/projects/status/github/nuno-agostinho/psichomics?branch=master&svg=true
+[11]: https://ci.appveyor.com/project/nuno-agostinho/psichomics
+[12]: https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg
+[13]: https://codecov.io/gh/nuno-agostinho/psichomics
+[14]: http://www.gtexportal.org
