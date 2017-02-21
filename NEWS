@@ -1,5 +1,5 @@
-1.0.8
-=====
+1.0.8 (21 Feb, 2017)
+====================
 
     * Support GTEx data loading and analysis
     * Fix clinical data dependency:
