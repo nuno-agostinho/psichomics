@@ -1,7 +1,11 @@
 # psichomics [![Build Status][8]][9] [![AppVeyor Build Status][10]][11] [![codecov][12]][13]
-Interactive R package to quantify, analyse and visualise alternative splicing 
-data from [The Cancer Genome Atlas (TCGA)][1] or the [Genotype-Tissue Expression
-(GTEx)][13].
+Interactive R package with a Shiny-based graphical interface for the
+quantification, analysis and visualisation of alternative splicing data from
+[The Cancer Genome Atlas (TCGA)][1] or the
+[Genotype-Tissue Expression (GTEx) project][13]. This tool interactively 
+performs survival, principal components and differential splicing analyses with
+direct incorporation of clinical features (such as tumour stage or survival) 
+associated with TCGA and GTEx samples.
 
 ## Table of Contents
 
