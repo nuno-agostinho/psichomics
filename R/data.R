@@ -4,7 +4,7 @@
 ## TODO(NunoA): render UI for each data table instead of rendering UI for all
 ## so there's no refresh
 
-#' Get data types available from Firehose
+#' Get data types available from Firebrowse
 #' 
 #' @importFrom R.utils capitalize
 #' 
@@ -12,8 +12,8 @@
 #' @export
 #' 
 #' @examples
-#' getFirehoseDataTypes()
-getFirehoseDataTypes <- function() {
+#' getFirebrowseDataTypes()
+getFirebrowseDataTypes <- function() {
     choices <- list("RNA sequencing"=c(
         paste0(c("junction", "exon"), "_quantification"), "Preprocess",
         paste0("RSEM_", c("isoforms", "genes")),
@@ -22,6 +22,9 @@ getFirehoseDataTypes <- function() {
     names(choices[[1]]) <- capitalize(gsub("_", " ", choices[[1]]))
     return(choices)
 }
+
+#' @rdname getFirebrowseDataTypes
+getFirehoseDataTypes <- getFirebrowseDataTypes
 
 #' Create a modal warning the user of already loaded data
 #' @param modalId Character: identifier of the modal

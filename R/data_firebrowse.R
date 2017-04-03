@@ -7,72 +7,78 @@ echoProgress <- function(..., console=TRUE) {
     if (console) cat(paste(...), fill=TRUE)
 }
 
-#' Returns the date format used by the Firehose API
+#' Returns the date format used by the Firebrowse web API
 #'
-#' @return Named list with Firehose API's date formats
+#' @return Named list with Fireweb web API's date formats
 #'
 #' @examples
-#' format <- psichomics:::getFirehoseDateFormat()
+#' format <- psichomics:::getFirebrowseDateFormat()
 #' 
-#' # date format to use in a query to Firehose API
+#' # date format to use in a query to Firebrowse web API
 #' format$query
 #' 
-#' # date format to parse a date in a response from Firehose API
+#' # date format to parse a date in a response from Firebrowse web API
 #' format$response
-getFirehoseDateFormat <- function() {
+getFirebrowseDateFormat <- function() {
     query <- "%Y_%m_%d"
     response <- "%d %b %Y" 
     return(list(query=query, response=response))
 }
 
+#' @aliases getFirebrowseDateFormat
+getFirehoseDateFormat <- getFirebrowseDateFormat
+
 #' Parse the date from a response
 #' @param string Character: dates
 #' @return Parsed date
 parseDateResponse <- function(string) {
-    format <- getFirehoseDateFormat()$response
+    format <- getFirebrowseDateFormat()$response
     date <- strsplit(string, " ")
     date <- lapply(date, function(i) paste(i[2:4], collapse=" "))
     date <- as.Date(unlist(date), format=format)
     return(date)
 }
 
-#' Check if the Firehose API is running
+#' Check if the Firebrowse web API is running
 #'
-#' The Firehose API is running if it returns the status condition 200; if
+#' The Firebrowse web API is running if it returns the status condition 200; if
 #' this is not the status code obtained from the API, the function will raise a
 #' warning with the status code and a brief explanation.
 #'
-#' @return Invisible TRUE if the Firehose API is working; otherwise, raises a
-#' warning
+#' @return Invisible TRUE if the Firebrowse web API is working; otherwise, 
+#' raises a warning
 #' @export
 #'
 #' @importFrom httr GET warn_for_status http_error
 #' @importFrom methods is
 #'
 #' @examples
-#' isFirehoseUp()
-isFirehoseUp <- function() {
+#' isFirebrowseUp()
+isFirebrowseUp <- function() {
     link <- paste0("http://firebrowse.org/api/v1/Metadata/HeartBeat")
     heartbeat <- tryCatch(GET(link, query=list(format="json")), error=return)
     if (is(heartbeat, "error")) {
         return(FALSE)
     } else if (http_error(heartbeat)) {
-        warn_for_status(heartbeat, "reach Firehose API")
+        warn_for_status(heartbeat, "reach Firebrowse web API")
         return(FALSE)
     } else {
         return(TRUE)
     }
 }
 
-#' Query the Firehose API for TCGA data
+#' @rdname isFirebrowseUp
+isFirehoseUp <- isFirebrowseUp
+
+#' Query the Firebrowse web API for TCGA data
 #'
 #' @param format Character: response format as JSON (default), CSV or TSV
-#' @param date Character: dates of the data retrieval by Firehose (by default,
+#' @param date Character: dates of the data retrieval by Firebrowse (by default,
 #' it uses the most recent data available)
 #' @param cohort Character: abbreviation of the cohorts (by default, returns
 #' data for all cohorts)
 #' @param data_type Character: data types (optional)
-#' @param tool Character: data produced by the selected Firehose tools
+#' @param tool Character: data produced by the selected Firebrowse tools
 #' (optional)
 #' @param platform Character: data generation platforms (optional)
 #' @param center Character: data generation centers (optional)
@@ -84,23 +90,23 @@ isFirehoseUp <- function() {
 #' @param sort_by String: column used to sort the data (by default, it sorts by
 #' cohort)
 #'
-#' @return Response from the Firehose API (it needs to be parsed)
+#' @return Response from the Firebrowse web API (it needs to be parsed)
 #'
 #' @importFrom httr GET
 #'
 #' @examples
-#' cohort <- psichomics:::getFirehoseCohorts()[1]
-#' psichomics:::queryFirehoseData(cohort = cohort, data_type = "mRNASeq")
+#' cohort <- psichomics:::getFirebrowseCohorts()[1]
+#' psichomics:::queryFirebrowseData(cohort = cohort, data_type = "mRNASeq")
 #' 
 #' # Querying for data from a specific date
-#' dates <- psichomics:::getFirehoseDates()
-#' dates <- format(dates, psichomics:::getFirehoseDateFormat()$query)
+#' dates <- psichomics:::getFirebrowseDates()
+#' dates <- format(dates, psichomics:::getFirebrowseDateFormat()$query)
 #' 
-#' psichomics:::queryFirehoseData(date = dates[2], cohort = cohort)
-queryFirehoseData <- function(format = "json", date = NULL, cohort = NULL, 
-                              data_type = NULL, tool = NULL, platform = NULL,
-                              center = NULL, level = NULL, protocol = NULL,
-                              page = NULL, page_size = NULL, sort_by = NULL) {
+#' psichomics:::queryFirebrowseData(date = dates[2], cohort = cohort)
+queryFirebrowseData <- function(format = "json", date = NULL, cohort = NULL, 
+                                data_type = NULL, tool = NULL, platform = NULL,
+                                center = NULL, level = NULL, protocol = NULL,
+                                page = NULL, page_size = NULL, sort_by = NULL) {
     # Only allow these response formats
     format <- match.arg(format, c("json", "csv", "tsv"))
     
@@ -124,7 +130,10 @@ queryFirehoseData <- function(format = "json", date = NULL, cohort = NULL,
     return(response)
 }
 
-#' Query the Firehose API for metadata and parse the response
+#' @rdname queryFirebrowseData
+queryFirehoseData <- queryFirebrowseData
+
+#' Query the Firebrowse web API for metadata and parse the response
 #'
 #' @param type Character: metadata to retrieve
 #' @param ... Character: parameters to pass to query (optional)
@@ -135,15 +144,15 @@ queryFirehoseData <- function(format = "json", date = NULL, cohort = NULL,
 #' @importFrom jsonlite fromJSON
 #'
 #' @examples
-#' psichomics:::parseFirehoseMetadata("Dates")
-#' psichomics:::parseFirehoseMetadata("Centers")
-#' psichomics:::parseFirehoseMetadata("HeartBeat")
+#' psichomics:::parseFirebrowseMetadata("Dates")
+#' psichomics:::parseFirebrowseMetadata("Centers")
+#' psichomics:::parseFirebrowseMetadata("HeartBeat")
 #' 
 #' # Get the abbreviation and description of all cohorts available
-#' psichomics:::parseFirehoseMetadata("Cohorts")
+#' psichomics:::parseFirebrowseMetadata("Cohorts")
 #' # Get the abbreviation and description of the selected cohorts
-#' psichomics:::parseFirehoseMetadata("Cohorts", cohort = c("ACC", "BRCA"))
-parseFirehoseMetadata <- function(type, ...) {
+#' psichomics:::parseFirebrowseMetadata("Cohorts", cohort = c("ACC", "BRCA"))
+parseFirebrowseMetadata <- function(type, ...) {
     # Remove NULL arguments
     args <- Filter(Negate(is.null), list(...))
     
@@ -158,22 +167,28 @@ parseFirehoseMetadata <- function(type, ...) {
     return(response)
 }
 
-#' Query the Firehose API for the datestamps of the data available and parse the
-#' response
+#' @rdname parseFirebrowseMetadata
+parseFirehoseMetadata <- parseFirebrowseMetadata
+
+#' Query the Firebrowse web API for the datestamps of the data available and 
+#' parse the response
 #'
 #' @return Date with datestamps of the data available
 #' @export
 #' 
 #' @examples
-#' if (isFirehoseUp()) getFirehoseDates()
-getFirehoseDates <- function() {
-    dates <- parseFirehoseMetadata("Dates")$Dates
-    format <- getFirehoseDateFormat()
+#' if (isFirebroswUp()) getFirebrowseDates()
+getFirebrowseDates <- function() {
+    dates <- parseFirebrowseMetadata("Dates")$Dates
+    format <- getFirebrowseDateFormat()
     dates <- as.Date(dates, format$query)
     return(dates)
 }
 
-#' Query the Firehose API for the cohorts available
+#' @rdname getFirebrowseDates
+getFirehoseDates <- getFirebrowseDates
+
+#' Query the Firebrowse web API for the cohorts available
 #'
 #' @param cohort Character: filter by given cohorts (optional)
 #'
@@ -182,13 +197,16 @@ getFirehoseDates <- function() {
 #' @export
 #'
 #' @examples
-#' if (isFirehoseUp()) getFirehoseCohorts()
-getFirehoseCohorts <- function(cohort = NULL) {
-    response <- parseFirehoseMetadata("Cohorts", cohort=cohort)
+#' if (isFirebrowseUp()) getFirebrowseCohorts()
+getFirebrowseCohorts <- function(cohort = NULL) {
+    response <- parseFirebrowseMetadata("Cohorts", cohort=cohort)
     cohorts <- response$Cohorts[[2]]
     names(cohorts) <- response$Cohorts[[1]]
     return(cohorts)
 }
+
+#' @rdname getFirebrowseCohorts
+getFirehoseCohorts <- getFirebrowseCohorts
 
 #' Download files to a given directory
 #'
@@ -240,11 +258,11 @@ checkIntegrity <- function(filesToCheck, md5file) {
     return(md5sums %in% md5table)
 }
 
-#' Prepares Firehose archives in a given directory
+#' Prepares Firebrowse archives in a given directory
 #'
-#' Checks Firehose archives' integrity using the MD5 files, extracts the content
-#' of the archives, moves the content to newly-created folders and removes the 
-#' original downloaded archives.
+#' Checks Firebrowse archives' integrity using the MD5 files, extracts the 
+#' content of the archives, moves the content to newly-created folders and 
+#' removes the original downloaded archives.
 #'
 #' @param archive Character: path to downloaded archives
 #' @param md5 Character: path to MD5 files of each archive
@@ -263,9 +281,9 @@ checkIntegrity <- function(filesToCheck, md5file) {
 #'     "Merge_Clinical.Level_1.2015110100.0.0.tar.gz")
 #' md5 <- paste0(file, ".md5")
 #' \dontrun{
-#' prepareFirehoseArchives(archive = file, md5 = paste0(file, ".md5"))
+#' prepareFirebrowseArchives(archive = file, md5 = paste0(file, ".md5"))
 #' }
-prepareFirehoseArchives <- function(archive, md5, folder, outdir) {
+prepareFirebrowseArchives <- function(archive, md5, folder, outdir) {
     # Check integrety of the downloaded archives with the MD5 files
     validFiles <- simplify2array(Map(checkIntegrity, archive, md5))
     
@@ -317,9 +335,12 @@ prepareFirehoseArchives <- function(archive, md5, folder, outdir) {
     return(invisible(TRUE))
 }
 
-#' Retrieve URLs from a response to a Firehose data query
+#' @rdname prepareFirebrowseArchives
+prepareFirehoseArchives <- prepareFirebrowseArchives
+
+#' Retrieve URLs from a response to a Firebrowse data query
 #'
-#' @param res Response from httr::GET to a Firehose data query
+#' @param res Response from httr::GET to a Firebrowse data query
 #'
 #' @return Named character with URLs
 #' 
@@ -327,16 +348,16 @@ prepareFirehoseArchives <- function(archive, md5, folder, outdir) {
 #' @importFrom httr content
 #'
 #' @examples
-#' res <- psichomics:::queryFirehoseData(cohort = "ACC")
-#' url <- psichomics:::parseUrlsFromFirehoseResponse(res)
-parseUrlsFromFirehoseResponse <- function(res) {
+#' res <- psichomics:::queryFirebrowseData(cohort = "ACC")
+#' url <- psichomics:::parseUrlsFromFirebrowseResponse(res)
+parseUrlsFromFirebrowseResponse <- function(res) {
     # Parse the query response
     parsed <- content(res, "text", encoding = "UTF8")
     parsed <- fromJSON(parsed)[[1]]
     parsed$date <- parseDateResponse(parsed$date)
     
     # Get cohort names
-    cohort <- getFirehoseCohorts()
+    cohort <- getFirebrowseCohorts()
     cohort <- cohort[parsed$cohort]
     
     ## TODO(NunoA): maybe this could be simplified?
@@ -348,7 +369,10 @@ parseUrlsFromFirehoseResponse <- function(res) {
     return(link)
 }
 
-#' Load Firehose folders
+#' @rdname parseUrlsFromFirebrowseResponse
+parseUrlsFromFirehoseResponse <- parseUrlsFromFirebrowseResponse
+
+#' Load Firebrowse folders
 #'
 #' Loads the files present in each folder as a data.frame.
 #' 
@@ -358,13 +382,13 @@ parseUrlsFromFirehoseResponse <- function(res) {
 #'
 #' @include formats.R
 #'
-#' @param folder Character: folder(s) in which to look for Firehose files
+#' @param folder Character: folder(s) in which to look for Firebrowse files
 #' @param exclude Character: files to exclude from the loading
 #' @param progress Function to show the progress (default is to print progress
 #' to console)
 #' 
 #' @return List with loaded data.frames
-loadFirehoseFolders <- function(folder, exclude="", progress=echoProgress) {
+loadFirebrowseFolders <- function(folder, exclude="", progress=echoProgress) {
     # Retrieve full path of the files inside the given folders
     files <- dir(folder, full.names=TRUE)
     
@@ -386,7 +410,10 @@ loadFirehoseFolders <- function(folder, exclude="", progress=echoProgress) {
     return(loaded)
 }
 
-#' Downloads and processes data from the Firehose API and loads it into R
+#' @rdname loadFirebrowseFolders
+loadFirehoseFolders <- loadFirebrowseFolders
+
+#' Downloads and processes data from the Firebrowse web API and loads it into R
 #' 
 #' @param folder Character: directory to store the downloaded archives (by
 #' default, it saves in the user's "Downloads" folder)
@@ -394,7 +421,7 @@ loadFirehoseFolders <- function(folder, exclude="", progress=echoProgress) {
 #' @param exclude Character: files and folders to exclude from downloading and
 #' from loading into R (by default, it excludes ".aux.", ".mage-tab." and
 #' "MANIFEST.TXT" files)
-#' @param ... Extra parameters to be passed to \code{\link{queryFirehoseData}}
+#' @param ... Extra parameters to be passed to \code{\link{queryFirebrowseData}}
 #' @param progress Function to show the progress (default is to print progress
 #' to console)
 #' @param download Boolean: download missing files through the function
@@ -412,24 +439,24 @@ loadFirehoseFolders <- function(folder, exclude="", progress=echoProgress) {
 #' 
 #' @examples 
 #' \dontrun{
-#' loadFirehoseData(cohort = "ACC", data_type = "Clinical")
+#' loadFirebrowseData(cohort = "ACC", data_type = "Clinical")
 #' }
-loadFirehoseData <- function(folder=NULL, 
+loadFirebrowseData <- function(folder=NULL, 
                              data=NULL, 
                              exclude=c(".aux.", ".mage-tab.", "MANIFEST.txt"),
                              ..., progress = echoProgress, download=TRUE) {
     args <- list(...)
     
-    datasets <- unlist(getFirehoseDataTypes())
+    datasets <- unlist(getFirebrowseDataTypes())
     # Data types to load
     args$data_type <- c(data[!data %in% datasets], "mRNASeq")
     # Datasets to ignore
     exclude <- c(exclude, datasets[!datasets %in% data])
     
-    # Query Firehose and get URLs for archives
-    res <- do.call(queryFirehoseData, args)
+    # Query Firebrowse and get URLs for archives
+    res <- do.call(queryFirebrowseData, args)
     stop_for_status(res)
-    url <- parseUrlsFromFirehoseResponse(res)
+    url <- parseUrlsFromFirebrowseResponse(res)
     
     # Don't download specific items
     exclude <- paste(escape(exclude), collapse = "|")
@@ -500,8 +527,8 @@ loadFirehoseData <- function(folder=NULL,
         # Extract the content, check intergrity, move archives to newly-created
         # folders and remove original archives
         progress("Extracting archives...", divisions = 1 + length(folders))
-        prepareFirehoseArchives(fullPath(archives[tar]), 
-                                fullPath(base[md5][tar]), folder, folders)
+        prepareFirebrowseArchives(fullPath(archives[tar]), 
+                                  fullPath(base[md5][tar]), folder, folders)
         progress("Archives prepared")
     } else {
         # Set the progress bar to the number of folders to load
@@ -515,41 +542,44 @@ loadFirehoseData <- function(folder=NULL,
     folders <- split(folders, categories)
     
     # Load the files (but discard empty files with no rows)
-    loaded <- lapply(folders, loadFirehoseFolders, exclude, progress)
+    loaded <- lapply(folders, loadFirebrowseFolders, exclude, progress)
     loaded <- lapply(loaded, function(i) Filter(nrow, i))
     loaded <- processDatasetNames(loaded)
     return(loaded)
 }
 
-#' Creates a UI set with options to add data from TCGA/Firehose
+#' @rdname loadFirebrowseData
+loadFirehoseData <- loadFirebrowseData
+
+#' Creates a UI set with options to add data from TCGA/Firebrowse
 #' @param ns Namespace function
 #' 
 #' @importFrom shinyBS bsTooltip
 #' @importFrom shiny tagList uiOutput selectizeInput actionButton textAreaInput
 #' @return A UI set that can be added to a UI definition
 addTCGAdata <- function(ns) {
-    cohorts <- getFirehoseCohorts()
+    cohorts <- getFirebrowseCohorts()
     acronyms <- names(cohorts)
     names(acronyms) <- sprintf("%s (%s)", cohorts, names(cohorts))
     
-    dates <- as.character(getFirehoseDates())
+    dates <- as.character(getFirebrowseDates())
     names(dates) <- dates
     names(dates)[1] <- paste(names(dates)[1], "(most recent)")
     
-    dataTypes <- getFirehoseDataTypes()
+    dataTypes <- getFirebrowseDataTypes()
     dataTypes[[1]] <- dataTypes[[1]][1]
     
     tagList(
         uiOutput(ns("firebrowseDataModal")),
         uiOutput(ns("pathSuggestions")),
         uiOutput(ns("iframeDownload")),
-        selectizeInput(ns("firehoseCohort"), "Tumour type", acronyms,
+        selectizeInput(ns("firebrowseCohort"), "Tumour type", acronyms,
                        multiple = TRUE,
                        options = list(placeholder = "Select cohort(s)")),
-        selectizeInput(ns("firehoseDate"), "Date", dates, multiple = TRUE,
+        selectizeInput(ns("firebrowseDate"), "Date", dates, multiple = TRUE,
                        selected = NULL, options = list(
                            placeholder = "Select sample date")),
-        selectizeInput(ns("firehoseData"), "Data type", multiple = TRUE,
+        selectizeInput(ns("firebrowseData"), "Data type", multiple = TRUE,
                        c("Clinical data"="Clinical", dataTypes), 
                        options = list(placeholder = "Select data types")),
         textAreaInput(ns("dataFolder"), "Folder to store the data",
@@ -558,7 +588,7 @@ addTCGAdata <- function(ns) {
         bsTooltip(ns("dataFolder"), placement = "right",
                   options = list(container = "body"),
                   "Data not available in this folder will be downloaded."),
-        processButton(ns("getFirehoseData"), "Load data"))
+        processButton(ns("getFirebrowseData"), "Load data"))
 }
 
 #' User interface of the TCGA/Firebrowse loader
@@ -574,11 +604,11 @@ firebrowseUI <- function(id, panel) {
     
     panel(style="info",
           title=list(icon("plus-circle"), "Download/load TCGA data"),
-          value="Load TCGA/Firehose data",
+          value="Load TCGA/Firebrowse data",
           helpText("TCGA data is downloaded using the",
                    a(href="http://firebrowse.org", target="_blank",
                      "Firebrowse"), "API."),
-          div(id=ns("firehoseLoading"), class="progress",
+          div(id=ns("firebrowseLoading"), class="progress",
               div(class="progress-bar progress-bar-striped active",
                   role="progressbar", style="width: 100%", "Loading")),
           uiOutput(ns("checkFirebrowse")))
@@ -598,7 +628,7 @@ firebrowseUI <- function(id, panel) {
 #' @return HTML elements
 checkFirebrowse <- function(ns) {
     startProgress("Checking Firebrowse API", 1)
-    if (isFirehoseUp()) {
+    if (isFirebrowseUp()) {
         updateProgress("Loading interface")
         ui <- addTCGAdata(ns)
     } else {
@@ -611,11 +641,11 @@ checkFirebrowse <- function(ns) {
                                      class="btn-danger btn-block"))
     }
     closeProgress("Firebrowse interface loaded")
-    hide("firehoseLoading")
+    hide("firebrowseLoading")
     return(ui)
 }
 
-#' Set data from Firehose
+#' Set data from Firebrowse
 #' 
 #' @param input Shiny input
 #' @param output Shiny output
@@ -627,17 +657,17 @@ checkFirebrowse <- function(ns) {
 #' @importFrom shinyBS bsTooltip
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
-setFirehoseData <- function(input, output, session, replace=TRUE) {
+setFirebrowseData <- function(input, output, session, replace=TRUE) {
     ns <- session$ns
-    time <- startProcess("getFirehoseData")
+    time <- startProcess("getFirebrowseData")
     
-    # Load data from Firehose
-    data <- loadFirehoseData(folder = input$dataFolder,
-                             cohort = input$firehoseCohort,
-                             date = gsub("-", "_", input$firehoseDate),
-                             data = input$firehoseData,
-                             progress = updateProgress,
-                             download = FALSE)
+    # Load data from Firebrowse
+    data <- loadFirebrowseData(folder = input$dataFolder,
+                               cohort = input$firebrowseCohort,
+                               date = gsub("-", "_", input$firebrowseDate),
+                               data = input$firebrowseData,
+                               progress = updateProgress,
+                               download = FALSE)
     
     if (any(class(data) == "missing")) {
         updateProgress(divisions = 1)
@@ -673,7 +703,7 @@ setFirehoseData <- function(input, output, session, replace=TRUE) {
             setData(data)
         }
     }
-    endProcess("getFirehoseData", time)
+    endProcess("getFirebrowseData", time)
 }
 
 firebrowseServer <- function(input, output, session, active) {
@@ -705,16 +735,16 @@ firebrowseServer <- function(input, output, session, active) {
     })
     
     # Check if data is already loaded and ask the user if it should be replaced
-    observeEvent(input$getFirehoseData, {
-        if (length(isolate(input$firehoseCohort)) == 0) {
+    observeEvent(input$getFirebrowseData, {
+        if (length(isolate(input$firebrowseCohort)) == 0) {
             errorModal(session, "No tumour type",
                        "Please, input a tumour type.", 
                        modalId="firebrowseDataModal")
-        } else if (length(isolate(input$firehoseDate)) == 0) {
+        } else if (length(isolate(input$firebrowseDate)) == 0) {
             errorModal(session, "No date",
                        "Please, input date of samples of interest.",
                        modalId="firebrowseDataModal")
-        } else if (length(isolate(input$firehoseData)) == 0) {
+        } else if (length(isolate(input$firebrowseData)) == 0) {
             errorModal(session, "No data types",
                        "Please, input data types of interest.",
                        modalId="firebrowseDataModal")
@@ -724,17 +754,17 @@ firebrowseServer <- function(input, output, session, active) {
                             "firebrowseReplace",
                             "firebrowseAppend")
         } else {
-            setFirehoseData(input, output, session)
+            setFirebrowseData(input, output, session)
         }
     })
     
     # Load data when the user presses to replace data
     observeEvent(input$firebrowseReplace,
-                 setFirehoseData(input, output, session, replace=TRUE))
+                 setFirebrowseData(input, output, session, replace=TRUE))
     
     # Load data when the user presses to load new data (keep previously loaded)
     observeEvent(input$firebrowseAppend,
-                 setFirehoseData(input, output, session, replace=FALSE))
+                 setFirebrowseData(input, output, session, replace=FALSE))
     
     # Download data through the browser
     observeEvent(input$acceptDownload, {
