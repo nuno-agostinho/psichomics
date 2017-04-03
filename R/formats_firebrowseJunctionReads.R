@@ -1,9 +1,10 @@
-firehoseGeneExpressionFormat <- function() {
+firebrowseJunctionReadsFormat <- function() {
     list(
-        tablename   = "RSEM gene expression",   # Name of the created table
-        filename    = "RSEM_genes_normalized",   # Name of the file
-        description = "Normalised gene expression from RSEM",
-        dataType    = "Gene expression",
+        tablename   = "Junction quantification",   # Name of the created table
+        filename    = "junction_quantification",   # Name of the file
+        description = "Read counts of splicing junctions",
+        dataType    = "Junction quantification",
+        matchName   = TRUE, # Should the file name be matched?
         
         # Transpose the data? This is the first step before parsing the information!
         # After transposition, a row of the current data equals a column of the original
@@ -15,7 +16,7 @@ firehoseGeneExpressionFormat <- function() {
         checkIndex  = 2,     # Index of the row or column used to check the format
         
         # File string to check
-        check = c("gene_id", rep("normalized_count", 5)),
+        check = c("junction", "raw_counts", "raw_counts", "raw_counts", "raw_counts"),
         
         # Parsing information
         delim       = "\t",  # Delimiter used to separate fields
@@ -26,11 +27,20 @@ firehoseGeneExpressionFormat <- function() {
         commentChar = NULL,  # String to identify comments (these lines will be ignored)
         
         # Other options
-        unique = FALSE,    # Remove duplicated rows
+        unique = TRUE,    # Remove duplicated rows
         
         # Default columns to show (NULL to show all)
-        show = NULL
+        show = NULL,
+        
+        process = function(data) {
+            # Transform junction positions for easier parsing
+            cols <- str_split_fixed(rownames(data), ":|,", 6)
+            rownames(data) <- sprintf(
+                "%s:%s:%s:%s",
+                cols[ , 1], cols[ , 2], cols[ , 5], cols[ , 3])
+            return(data)
+        }
     )
 }
 
-attr(firehoseGeneExpressionFormat, "loader") <- "formats"
+attr(firebrowseJunctionReadsFormat, "loader") <- "formats"
