@@ -48,20 +48,20 @@ annotation and junction quantification are required. While alternative splicing
 annotation is provided by the package, junction quantification may be retrieved
 from [TCGA][1].
 
-## Download and load data from TCGA/Firehose
-Data is downloaded from [Firehose][2], a service that hosts proccessed data from
-[TCGA][1] as required to run the downstream analyses. Before downloading data, 
-check the following available options:
+## Download and load data from TCGA/Firebrowse
+Data is downloaded from [Firebrowse][2], a service that hosts proccessed data
+from [TCGA][1] as required to run the downstream analyses. Before downloading 
+data, check the following available options:
 
 ```{r TCGA options}
 # Available tumour types
-cohorts <- getFirehoseCohorts()
+cohorts <- getFirebrowseCohorts()
 
 # Available sample dates
-date <- getFirehoseDates()
+date <- getFirebrowseDates()
 
 # Available data types
-dataTypes <- getFirehoseDataTypes()
+dataTypes <- getFirebrowseDataTypes()
 ```
 
 After deciding on the options to use, download and load data of interest using:
@@ -70,8 +70,8 @@ After deciding on the options to use, download and load data of interest using:
 folder <- getDownloadsFolder()
 
 # Download and load most recent junction quantification and clinical data from
-# TCGA/Firehose for Adrenocortical Carcinoma
-data <- loadFirehoseData(folder=folder,
+# TCGA/Firebrowse for Adrenocortical Carcinoma
+data <- loadFirebrowseData(folder=folder,
                          cohort="BRCA",
                          data=c("Clinical", "junction_quantification"),
                          date="2016-01-28")
@@ -599,7 +599,7 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 # References
 
 [1]: https://tcga-data.nci.nih.gov/docs/publications/tcga
-[2]: http://gdac.broadinstitute.org
+[2]: http://firebrowse.org
 [3]: http://imm.medicina.ulisboa.pt/group/compbio
 [4]: http://www.ensembl.org
 [5]: http://www.uniprot.org
