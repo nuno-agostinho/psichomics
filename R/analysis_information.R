@@ -439,9 +439,19 @@ articleUI <- function(article) {
         authors <- paste(authors, collapse=" and ")
     }
     year <- strsplit(article$pubdate, " ")[[1]][[1]]
-    description <- sprintf("%s (%s). %s, %s(%s).", authors, year, 
-                           article$source, article$volume, article$issue)
+    description <- sprintf("%s (%s)", authors, year)
     
+    source <- article$source
+    if (source != "") description <- sprintf("%s. %s", description, source)
+    
+    volume <- article$volume
+    issue <- article$issue
+    if (volume != "" && issue != "")
+        description <- sprintf("%s, %s(%s)", description, volume, issue)
+    else if (volume != "")
+        description <- sprintf("%s, %s", description, volume)
+    
+    description <- sprintf("%s.", description)
     pmid <- article$articleids$value[1]
     tags$a(href=paste0("http://pubmed.gov/", pmid), target="_blank",
            class="list-group-item", h5(class="list-group-item-heading", 
@@ -456,7 +466,6 @@ articleUI <- function(article) {
 #' @return HTML interface of relevant PubMed articles
 pubmedUI <- function(gene, ...) {
     pubmed <- queryPubMed(gene, ...)
-    
     articles <- pubmed[-1]
     articleList <- lapply(articles, articleUI)
     
