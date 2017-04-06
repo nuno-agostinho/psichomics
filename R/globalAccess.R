@@ -110,6 +110,36 @@ getSampleId <- function(category = getCategory())
 getDifferentialAnalyses <- function(category = getCategory())
     getGlobal(category, "differentialAnalyses")
 
+#' Get the filtered table of differential analyses of a data category
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' 
+#' @return Filtered data frame of differential analyses
+getDifferentialAnalysesFiltered <- function(category = getCategory())
+    getGlobal(category, "differentialAnalysesFiltered")
+
+#' Get highlighted events from differential analyses of a data category
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' 
+#' @return Integer of indexes relative to a table of differential analyses
+getDifferentialAnalysesHighlightedEvents <- function(category = getCategory())
+    getGlobal(category, "differentialAnalysesHighlighted")
+
+#' Get brushed events from differential analyses of a data category
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' 
+#' @return Integer of indexes relative to a table of differential analyses
+getDifferentialAnalysesBrushedEvents <- function(category = getCategory())
+    getGlobal(category, "differentialAnalysesBrushed")
+
 #' Get the table of differential analyses' survival data of a data category
 #' @note Needs to be called inside a reactive function
 #' 
@@ -322,6 +352,39 @@ setSampleId <- function(value, category = getCategory())
 #' @return NULL (this function is used to modify the Shiny session's state)
 setDifferentialAnalyses <- function(table, category = getCategory())
     setGlobal(category, "differentialAnalyses", value=table)
+
+#' Set the filtered table of differential analyses of a data category
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param table Character: filtered differential analyses table
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' @return NULL (this function is used to modify the Shiny session's state)
+setDifferentialAnalysesFiltered <- function(table, category = getCategory())
+    setGlobal(category, "differentialAnalysesFiltered", value=table)
+
+#' Set highlighted events from differential analyses of a data category
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param events Integer: indexes relative to a table of differential analyses
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' 
+#' @return NULL (this function is used to modify the Shiny session's state)
+setDifferentialAnalysesHighlightedEvents <- function(events, 
+                                                     category = getCategory())
+    setGlobal(category, "differentialAnalysesHighlighted", value=events)
+
+#' Set brushed events from differential analyses of a data category
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param events Integer: indexes relative to a table of differential analyses
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' 
+#' @return NULL (this function is used to modify the Shiny session's state)
+setDifferentialAnalysesBrushedEvents <- function(events, category=getCategory())
+    setGlobal(category, "differentialAnalysesBrushed", value=events)
 
 #' Set the table of differential analyses' survival data of a data category
 #' @note Needs to be called inside a reactive function
