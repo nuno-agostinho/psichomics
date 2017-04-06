@@ -230,7 +230,7 @@ survivalServer <- function(input, output, session) {
     })
     
     # Update available clinical attributes when the clinical data changes
-    updateClinicalParams(session)
+    observe( updateClinicalParams(session, getClinicalData()) )
     
     observeEvent(input$missingClinical, missingDataGuide("Clinical data"))
     observeEvent(input$missingInclusionLevels,

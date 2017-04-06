@@ -11,7 +11,7 @@ a { cursor: pointer; }
     box-shadow: none;
 }
 
-/* Alert appears fixed on the top right above other elements */
+/* Alerts appear fixed on the top right above other elements */
 .sbs-alert {
     position: fixed;
     right: 10px;
@@ -147,3 +147,10 @@ table { white-space: nowrap; }
 
 /* Fix font weight glitch when clicking with a menu in the navigation bar */
 .navbar-fixed-top { border-radius: 1px; }
+
+/* Improve readability of links in selected rows of DataTables */
+tr.active > td > a:link {
+    color: white;
+    text-decoration: underline;
+}
+tr.active > td > a:hover { font-weight: bold; }

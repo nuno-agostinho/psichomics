@@ -4,10 +4,12 @@
 \alias{updateClinicalParams}
 \title{Update available clinical attributes when the clinical data changes}
 \usage{
-updateClinicalParams(session)
+updateClinicalParams(session, clinical)
 }
 \arguments{
 \item{session}{Shiny session}
+
+\item{clinical}{Data frame: clinical data}
 }
 \value{
 NULL (this function is used to modify the Shiny session's state)
