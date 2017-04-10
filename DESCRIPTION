@@ -1,7 +1,7 @@
 Package: psichomics
 Title: Graphical Interface for Alternative Splicing Quantification, Analysis and
     Visualisation
-Version: 1.0.8
+Version: 1.2.0
 Encoding: UTF-8
 Authors@R: c( person("Nuno", "Saraiva-Agostinho", ,
         "nunodanielagostinho@gmail.com", role = c("aut", "cre")),
@@ -34,6 +34,7 @@ Imports:
     DT (>= 0.2),
     fastmatch,
     ggplot2,
+    grDevices,
     highcharter (>= 0.5.0),
     httr,
     jsonlite,

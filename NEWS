@@ -1,3 +1,20 @@
+1.2.0 (10 Apr, 2017)
+====================
+
+    * Differential splicing analyses:
+        * Add volcano plot to represent events through selected attributes, such
+        as p-values and descriptive statistics (e.g. median and variance) 
+        between groups of interest
+        * Transform values of the X and Y axis in the plot using log
+        transformed, inverted and absolute values, for instance
+        * Highlight events in the plot based on values of the X and Y axis
+        * Click and drag in the plot to select events
+        * Table of differential analyses per alternative splicing event is
+        filtered according to highlighted and selected events in the plot
+    * Improve display of article information when data is missing
+    * Consistently use Firebrowse and Firehose across the package
+    * Update documentation
+
 1.0.8 (21 Feb, 2017)
 ====================
 

@@ -201,7 +201,7 @@ updateClinicalParams <- function(session, clinical) {
         daysTo <- grep("days_to_", names(clinical), value=TRUE, fixed=TRUE)
         subDaysTo <- gsub(".*(days_to_.*)", "\\1", daysTo)
         choices <- unique(subDaysTo)
-        names(choices) <- gsub("_", " ", choices, fixed=TRUE)
+        names(choices) <- parseSplicingEvent(choices, char=TRUE)
         names(choices) <- capitalize(names(choices))
         
         # Update choices for starting or follow up time

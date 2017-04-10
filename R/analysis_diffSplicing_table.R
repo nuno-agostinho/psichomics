@@ -313,7 +313,7 @@ optimSurvDiff <- function(session, input, output) {
             if (is.null(splicingEvent) || is.na(splicingEvent)) stat <- NULL
             output[[paste0("eventText", i)]] <- renderUI(
                 tags$a(
-                    gsub("_", " ", splicingEvent),
+                    parseSplicingEvent(splicingEvent, char=TRUE),
                     class="label label-default", style="display: inline-block;",
                     style="white-space: normal;", 
                     onclick=paste0("showSurvCutoff('", splicingEvent, "')")))
@@ -418,15 +418,15 @@ plotMiniSurvivalCurves <- function(i, input, index, survParams, clinical,
 #' @param df Data frame
 #' @param x Character: name of the variable used for the X axis
 #' @param y Character: name of the variable used for the Y axis
-#' @param params List of parameters to pass to \link{\code{geom_point}} related
-#' to most points
+#' @param params List of parameters to pass to \code{\link[ggplot2]{geom_point}}
+#' related to most points
 #' @param highlightX Integer: region of points in X axis to highlight
 #' @param highlightY Integer: region of points in Y axis to highlight
-#' @param highlightParams List of parameters to pass to \link{\code{geom_point}}
-#' related to highlighted points
+#' @param highlightParams List of parameters to pass to
+#' \code{\link[ggplot2]{geom_point}} related to highlighted points
 #' @param selected Integer: index of rows/points to be coloured
-#' @param selectedParams List of parameters to pass to \link{\code{geom_point}}
-#' related to selected points
+#' @param selectedParams List of parameters to pass to 
+#' \code{\link[ggplot2]{geom_point}} related to selected points
 #' 
 #' @importFrom ggplot2 ggplot aes_string geom_point theme_light
 #' 
@@ -485,7 +485,7 @@ createEventPlotting <- function(df, x, y, params, highlightX, highlightY,
 #' 
 #' @inheritParams createEventPlotting
 #' @param hover Mouse hover information for a given plot as retrieved from
-#' \code{\link{shiny::hoverOpts}}
+#' \code{\link[shiny]{hoverOpts}}
 #' 
 #' @importFrom shiny tags nearPoints wellPanel
 #' 
@@ -518,7 +518,8 @@ createTooltip <- function(df, hover, x, y) {
                    tags$thead(
                        tags$tr(
                            tags$td(tags$b("Event")),
-                           tags$td(rownames(point))
+                           tags$td(
+                               parseSplicingEvent(rownames(point), char=TRUE))
                        )
                    ),
                    tags$tbody(
@@ -711,10 +712,12 @@ transformData <- function(input, df, x, y) {
 #' @param session Shiny session
 #' 
 #' @importFrom shiny checkboxGroupInput
+#' @importFrom shinyBS updateCollapse
 #' @importFrom shinyjs toggleState disable
 #' @importFrom DT replaceData dataTableProxy
 #' @importFrom utils write.table
 #' @importFrom colourpicker colourInput
+#' @importFrom grDevices palette
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 diffSplicingTableServer <- function(input, output, session) {
@@ -944,6 +947,9 @@ diffSplicingTableServer <- function(input, output, session) {
                 rowFilter <- TRUE
             }
             setDifferentialAnalysesFiltered(stats[rowFilter, ])
+            
+            # Properly display event identifiers
+            rownames(stats) <- parseSplicingEvent(rownames(stats), char=TRUE)
             return(stats[rowFilter, colFilter])
         }
     }, style="bootstrap", filter="top", server=TRUE, # selection="none",

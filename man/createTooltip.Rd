@@ -10,7 +10,7 @@ createTooltip(df, hover, x, y)
 \item{df}{Data frame}
 
 \item{hover}{Mouse hover information for a given plot as retrieved from
-\code{\link{shiny::hoverOpts}}}
+\code{\link[shiny]{hoverOpts}}}
 
 \item{x}{Character: name of the variable used for the X axis}
 
