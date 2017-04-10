@@ -273,7 +273,7 @@ appServer <- function(input, output, session) {
         psi <- getInclusionLevels()
         if (!is.null(psi)) {
             choices <- rownames(psi)
-            names(choices) <- gsub("_", " ", rownames(psi))
+            names(choices) <- parseSplicingEvent(choices, char=TRUE)
             choices <- sort(choices)
             updateSelectizeInput(session, "selectizeEventElem", choices=choices)
             
@@ -309,7 +309,7 @@ appServer <- function(input, output, session) {
         else if (event == "")
             return("No event selected")
         else
-            return(gsub("_", " ", event))
+            return(parseSplicingEvent(event, char=TRUE))
     })
     
     session$onSessionEnded(function() {

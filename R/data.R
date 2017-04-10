@@ -19,7 +19,8 @@ getFirebrowseDataTypes <- function() {
         paste0("RSEM_", c("isoforms", "genes")),
         paste0(c("junction", "gene", "exon"),
                "_expression"), "genes_normalized"))
-    names(choices[[1]]) <- capitalize(gsub("_", " ", choices[[1]]))
+    names(choices[[1]]) <- capitalize(
+        parseSplicingEvent(choices[[1]], char=TRUE))
     return(choices)
 }
 

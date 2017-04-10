@@ -644,7 +644,7 @@ diffSplicingEventServer <- function(input, output, session) {
         groups <- names(eventPSI)
         
         plot <- plotDistribution(eventPSI, groups, bw=input$bandwidth,
-                                 title=gsub("_", " ", event))
+                                 title=parseSplicingEvent(event, char=TRUE))
         output$density <- renderHighchart(plot)
         
         output$basicStats <- renderUI(basicStats(eventPSI, groups))

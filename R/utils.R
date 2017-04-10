@@ -30,6 +30,8 @@ readFile <- function(file) {
 #' Parse an alternative splicing event based on a given identifier
 #' 
 #' @param event Character: event identifier
+#' @param char Boolean: return a single character instead of list with parsed
+#' values? FALSE by default
 #' 
 #' @return Parsed event
 #' @export
@@ -37,7 +39,9 @@ readFile <- function(file) {
 #' events <- c("SE_1_-_123_456_789_1024_TST",
 #'             "MX_3_+_473_578_686_736_834_937_HEY/YOU")
 #' parseSplicingEvent(events)
-parseSplicingEvent <- function(event) {
+parseSplicingEvent <- function(event, char=FALSE) {
+    if (char) return(gsub("_", " ", event, fixed=TRUE))
+    
     event <- strsplit(event, "_")
     parsed <- data.frame(matrix(nrow=length(event)))
     
