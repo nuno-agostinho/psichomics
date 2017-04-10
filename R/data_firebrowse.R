@@ -177,7 +177,7 @@ parseFirehoseMetadata <- parseFirebrowseMetadata
 #' @export
 #' 
 #' @examples
-#' if (isFirebroswUp()) getFirebrowseDates()
+#' if (isFirebrowseUp()) getFirebrowseDates()
 getFirebrowseDates <- function() {
     dates <- parseFirebrowseMetadata("Dates")$Dates
     format <- getFirebrowseDateFormat()

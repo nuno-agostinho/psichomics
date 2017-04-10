@@ -238,7 +238,7 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
         contr <- quality * 100 / rowSums(quality)
         totalContr <- colSums(contr * eigenvalue)
         
-        names <- gsub("_", " ", rownames(loadings))
+        names <- parseSplicingEvent(rownames(loadings), char=TRUE)
         ## TODO(NunoA): color points with a gradient; see colorRampPalette()
         # For loadings, add series (but don't add to legend)
         hc <- hc_scatter(hc, varCoor[1, ], varCoor[2, ], unname(totalContr), 

@@ -18,5 +18,5 @@ Query the Firebrowse web API for the datestamps of the data available and
 parse the response
 }
 \examples{
-if (isFirebroswUp()) getFirebrowseDates()
+if (isFirebrowseUp()) getFirebrowseDates()
 }
