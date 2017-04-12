@@ -128,8 +128,6 @@ dataUI <- function(id, tab) {
     
     welcome <- div(
         id=ns("welcome"),
-        actionButton(ns("clickHere"), "Click here!"),
-        div(id="container"),
         h1("Welcome"), HTML(paste0(
             "Analyse alternative splicing based on transcriptomic and ",
             "clinical data from The Cancer Genome Atlas (", tcga, ") or the ",
