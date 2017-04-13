@@ -4,7 +4,7 @@
 ## TODO(NunoA): render UI for each data table instead of rendering UI for all
 ## so there's no refresh
 
-#' Get data types available from Firehose
+#' Get data types available from Firebrowse
 #' 
 #' @importFrom R.utils capitalize
 #' 
@@ -12,16 +12,20 @@
 #' @export
 #' 
 #' @examples
-#' getFirehoseDataTypes()
-getFirehoseDataTypes <- function() {
+#' getFirebrowseDataTypes()
+getFirebrowseDataTypes <- function() {
     choices <- list("RNA sequencing"=c(
         paste0(c("junction", "exon"), "_quantification"), "Preprocess",
         paste0("RSEM_", c("isoforms", "genes")),
         paste0(c("junction", "gene", "exon"),
                "_expression"), "genes_normalized"))
-    names(choices[[1]]) <- capitalize(gsub("_", " ", choices[[1]]))
+    names(choices[[1]]) <- capitalize(
+        parseSplicingEvent(choices[[1]], char=TRUE))
     return(choices)
 }
+
+#' @rdname getFirebrowseDataTypes
+getFirehoseDataTypes <- getFirebrowseDataTypes
 
 #' Create a modal warning the user of already loaded data
 #' @param modalId Character: identifier of the modal
@@ -82,18 +86,88 @@ processDatasetNames <- function(data) {
 }
 
 #' User interface of the data module
+#' 
 #' @param id Character: identifier
 #' @param tab Function to create tab
+#' 
+#' @importFrom shinyjs hidden
+#' 
 #' @return HTML elements
 dataUI <- function(id, tab) {
     ns <- NS(id)
     uiList <- getUiFunctions(ns, "data", bsCollapsePanel,
                              priority="localDataUI")
     
+    tcga <- tags$abbr(title="The Cancer Genome Atlas", "TCGA")
+    gtex <- tags$abbr(title="Genotype-Tissue Expression", "GTEx")
+    
+    analysesDescription <- tagList(
+        fluidRow(
+            column(3, style="padding: 5px !important;",
+                   h4("Differential splicing analysis"),
+                   "Analyse alternative splicing quantification based on",
+                   "variance and median statistical tests. The groups",
+                   "available for differential analysis comprise sample types",
+                   "(e.g. normal versus tumour) and clinical attributes of",
+                   "patients (e.g. tumour stage)."),
+            column(3, style="padding: 5px !important;",
+                   h4("Gene, transcript and protein information"),
+                   "For a given splicing event, examine its gene's annotation",
+                   "and corresponding transcripts and proteins. Related",
+                   "research articles are also available."),
+            column(3, style="padding: 5px !important;",
+                   h4("Principal component analysis (PCA)"),
+                   "Explore alternative splicing quantification groups using",
+                   "associated clinical attributes."),
+            column(3, style="padding: 5px !important;",
+                   h4("Survival analysis"),
+                   "Analyse survival based on clinical attributes (e.g. tumour",
+                   "stage, gender and race). Additionally, study the impact of",
+                   "the quantification of a single alternative splicing event",
+                   "on patient survivability.")))
+    
+    welcome <- div(
+        id=ns("welcome"),
+        h1("Welcome"), HTML(paste0(
+            "Analyse alternative splicing based on transcriptomic and ",
+            "clinical data from The Cancer Genome Atlas (", tcga, ") or the ",
+            "Genotype-Tissue Expression (", gtex, ") project.")),
+        tags$br(), tags$br(), tags$ol(
+            id="list",
+            tags$li("Load clinical data and alternative splicing",
+                    "junction quantification from", tcga, "or", gtex, ".", 
+                    tags$br(), tags$small(
+                        style="color: gray;",
+                        "More data types will soon be supported.")),
+            tags$li("Quantify alternative splicing events based on the",
+                    "values from the percentage splicing index (PSI)",
+                    "metric.",
+                    # "The following event types are available:",
+                    # "skipped exon (SE), mutually exclusive exon",
+                    # "(MXE), alternative 3' and 5' splice site (A3SS",
+                    # "and A5SS) and alternative first and last exon",
+                    # "(AFE and ALE).", tags$br(),
+                    tags$br(), tags$small(
+                        style="color: gray;",
+                        "Note: as", tcga, "does not include exon-intron",
+                        "junction quantification, intron retention",
+                        "events are not measurable.")),
+            tags$li("Explore statistically significant events or",
+                    "individual events of interest through the",
+                    "following analyses:")), 
+        analysesDescription, br(), br(),
+        p(style="text-align:right",
+          tags$a(href="http://imm.medicina.ulisboa.pt/group/compbio/",
+                 target="_blank", "Nuno Morais Lab, iMM"), 
+          "(", tags$a(href="mailto:nunodanielagostinho@gmail.com", 
+                      "Nuno Agostinho", icon("envelope-o")), ", 2015-2016)", 
+          br(), "Special thanks to my lab colleagues for their work-related",
+          br(), "support and supporting chatter."))
+    
     tab(title="Data", icon="table",
         sidebarLayout(
             sidebarPanel( do.call(bsCollapse, c(id=ns("accordion"), uiList)) ),
-            mainPanel( uiOutput(ns("tablesOrAbout")) ) ))
+            mainPanel( welcome, uiOutput(ns("tablesOrAbout")) ) ))
 }
 
 #' Creates a tabPanel template for a datatable with a title and description
@@ -191,82 +265,20 @@ createDataTab <- function(index, data, name, input, output) {
 #'
 #' @importFrom shiny selectInput tabsetPanel tags h1 h2 HTML fluidRow column
 #' tagList
+#' @importFrom shinyjs show hide
 #'
 #' @return Part of the server logic related to this tab
 dataServer <- function(input, output, session) {
     ns <- session$ns
     
-    analysesDescription <- tagList(
-        fluidRow(
-            column(3, style="padding: 5px !important;",
-                   h4("Differential splicing analysis"),
-                   "Analyse alternative splicing quantification based on variance",
-                   "and median statistical tests. The groups available for",
-                   "differential analysis comprise sample types (e.g. normal",
-                   "versus tumour) and clinical attributes of patients (e.g.",
-                   "tumour stage)."),
-            column(3, style="padding: 5px !important;",
-                   h4("Gene, transcript and protein information"),
-                   "For a given splicing event, examine its gene's annotation",
-                   "and corresponding transcripts and proteins. Related",
-                   "research articles are also available."),
-            column(3, style="padding: 5px !important;",
-                   h4("Principal component analysis (PCA)"),
-                   "Explore alternative splicing quantification groups using",
-                   "associated clinical attributes."),
-            column(3, style="padding: 5px !important;",
-                   h4("Survival analysis"),
-                   "Analyse survival based on clinical attributes (e.g. tumour",
-                   "stage, gender and race). Additionally, study the impact of",
-                   "the quantification of a single alternative splicing event",
-                   "on patient survivability.")))
-    
-    tcga <- tags$abbr(title="The Cancer Genome Atlas", "TCGA")
-    gtex <- tags$abbr(title="Genotype-Tissue Expression", "GTEx")
-    
-    welcome <- tagList(
-        h1("Welcome"), HTML(paste0(
-            "Analyse alternative splicing based on transcriptomic and ",
-            "clinical data from The Cancer Genome Atlas (", tcga, ") or the ",
-            "Genotype-Tissue Expression (", gtex, ") project.")),
-        tags$br(), tags$br(), tags$ol(
-            id="list",
-            tags$li("Load clinical data and alternative splicing",
-                    "junction quantification from", tcga, "or", gtex, ".", 
-                    tags$br(), tags$small(
-                        style="color: gray;",
-                        "More data types will soon be supported.")),
-            tags$li("Quantify alternative splicing events based on the",
-                    "values from the percentage splicing index (PSI)",
-                    "metric.",
-                    # "The following event types are available:",
-                    # "skipped exon (SE), mutually exclusive exon",
-                    # "(MXE), alternative 3' and 5' splice site (A3SS",
-                    # "and A5SS) and alternative first and last exon",
-                    # "(AFE and ALE).", tags$br(),
-                    tags$br(), tags$small(
-                        style="color: gray;",
-                        "Note: as", tcga, "does not include exon-intron",
-                        "junction quantification, intron retention",
-                        "events are not measurable.")),
-            tags$li("Explore statistically significant events or",
-                    "individual events of interest through the",
-                    "following analyses:")), 
-        analysesDescription, br(), br(),
-        p(style="text-align:right",
-          tags$a(href="http://imm.medicina.ulisboa.pt/group/compbio/",
-                 target="_blank", "Nuno Morais Lab, iMM"), 
-          "(", tags$a(href="mailto:nunodanielagostinho@gmail.com", 
-                      "Nuno Agostinho", icon("envelope-o")), ", 2015-2016)", 
-          br(), "Special thanks to my lab colleagues for their work-related",
-          br(), "support and supporting chatter."))
-    
     # Show welcome screen when there's no data loaded
     output$tablesOrAbout <- renderUI({
-        if(is.null(getData()))
-            welcome
-        else
+        if(is.null(getData())) {
+            show("welcome", anim=TRUE, animType="fade")
+        } else {
+            hide("welcome", anim=TRUE, animType="fade")
             uiOutput(ns("datatabs"))
+        }
     })
     
     # Render tables when data changes

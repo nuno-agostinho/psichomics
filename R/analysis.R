@@ -189,43 +189,50 @@ timePerPatient <- function(col, clinical) {
 }
 
 #' Update available clinical attributes when the clinical data changes
+#' 
 #' @param session Shiny session
+#' @param clinical Data frame: clinical data
+#' 
 #' @importFrom shiny observe updateSelectizeInput
 #' @return NULL (this function is used to modify the Shiny session's state)
-updateClinicalParams <- function(session) {
-    observe({
-        clinical <- getClinicalData()
-        if (!is.null(clinical)) {
-            # Allow the user to select any "days_to" attribute available
-            daysTo <- grep("days_to_", names(clinical), value=TRUE, fixed=TRUE)
-            subDaysTo <- gsub(".*(days_to_.*)", "\\1", daysTo)
-            choices <- unique(subDaysTo)
-            names(choices) <- gsub("_", " ", choices, fixed=TRUE)
-            names(choices) <- capitalize(names(choices))
-            
-            # Update choices for starting or follow up time
-            updateSelectizeInput(
-                session, "timeStart", choices=list(
-                    "Suggested times"=choices,
-                    "All clinical data columns"=names(clinical)),
-                selected="days_to_death")
-            
-            # Update choices for ending time
-            updateSelectizeInput(
-                session, "timeStop", choices=list(
-                    "Suggested times"=choices,
-                    "All clinical data columns"=names(clinical)))
-            
-            # Update choices for events of interest
-            names(choices) <- gsub("Days to ", "", names(choices), fixed=TRUE)
-            names(choices) <- capitalize(names(choices))
-            updateSelectizeInput(
-                session, "event", choices=list(
-                    "Suggested events"=choices,
-                    "All clinical data columns"=names(clinical)),
-                selected="days_to_death")
-        }
-    })
+updateClinicalParams <- function(session, clinical) {
+    if (!is.null(clinical)) {
+        # Allow the user to select any "days_to" attribute available
+        daysTo <- grep("days_to_", names(clinical), value=TRUE, fixed=TRUE)
+        subDaysTo <- gsub(".*(days_to_.*)", "\\1", daysTo)
+        choices <- unique(subDaysTo)
+        names(choices) <- parseSplicingEvent(choices, char=TRUE)
+        names(choices) <- capitalize(names(choices))
+        
+        # Update choices for starting or follow up time
+        updateSelectizeInput(
+            session, "timeStart", choices=list(
+                "Suggested times"=choices,
+                "All clinical data columns"=names(clinical)),
+            selected="days_to_death")
+        
+        # Update choices for ending time
+        updateSelectizeInput(
+            session, "timeStop", choices=list(
+                "Suggested times"=choices,
+                "All clinical data columns"=names(clinical)))
+        
+        # Update choices for events of interest
+        names(choices) <- gsub("Days to ", "", names(choices), fixed=TRUE)
+        names(choices) <- capitalize(names(choices))
+        updateSelectizeInput(
+            session, "event", choices=list(
+                "Suggested events"=choices,
+                "All clinical data columns"=names(clinical)),
+            selected="days_to_death")
+    } else {
+        updateSelectizeInput(session, "timeStart", 
+                             choices=c("No clinical data loaded"=""))
+        updateSelectizeInput(session, "timeStop", 
+                             choices=c("No clinical data loaded"=""))
+        updateSelectizeInput(session, "event", 
+                             choices=c("No clinical data loaded"=""))
+    }
 }
 
 #' Process survival curves terms to calculate survival curves

@@ -18,7 +18,7 @@ localDataUI <- function(id, panel) {
                       placeholder="Insert local folder"),
         textInput(ns("localCategory"), label="Data category name"),
         selectizeInput(ns("localIgnore"), "Files/directories to ignore",
-                       choices=getFirehoseDataTypes(),
+                       choices=getFirebrowseDataTypes(),
                        multiple=TRUE, options=list(
                            # Allow to add new items
                            create=TRUE, createOnBlur=TRUE,
