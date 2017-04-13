@@ -11,6 +11,10 @@
         * Click and drag in the plot to select events
         * Table of differential analyses per alternative splicing event is
         filtered according to highlighted and selected events in the plot
+    * Gene, protein and transcript information:
+        * Transcript plot is now interactive and zoomable
+        * Protein are now rendered based on selected transcript alone
+        * Faster parsing of Uniprot's web API response
     * When clicking on previews of differential splicing and survival analyses,
     the appropriate analyses will now be shown with the respective options
     * Fix buggy browser history when the user is directed to a different tab

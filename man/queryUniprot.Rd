@@ -4,10 +4,10 @@
 \alias{queryUniprot}
 \title{Query the Uniprot REST API}
 \usage{
-queryUniprot(protein, format = "xml")
+queryUniprot(molecule, format = "xml")
 }
 \arguments{
-\item{protein}{Character: protein to query}
+\item{molecule}{Character: protein or transcript to query}
 
 \item{format}{Character: format of the response}
 }
@@ -21,4 +21,8 @@ Query the Uniprot REST API
 protein <- "P51587"
 format <- "xml"
 psichomics:::queryUniprot(protein, format)
+
+transcript <- "ENST00000488540"
+format <- "xml"
+psichomics:::queryUniprot(transcript, format)
 }
