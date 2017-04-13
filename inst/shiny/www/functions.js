@@ -111,6 +111,9 @@ function showSurvCutoff(event, autoParams = false) {
     var surv = "Survival analysis";
     $("ul[id='nav'] > li > ul > li > a[data-value*='" + surv + "']").click();
     
+    // Set PSI cutoff
+    $("input[value='psiCutoff']").click();
+    
     if (!autoParams) { return; }
     
     if (event !== null) {
@@ -143,7 +146,6 @@ function showSurvCutoff(event, autoParams = false) {
                 .setValue(event);
         }
     }
-    $("input[value='psiCutoff']").click();
     // Perform survival analyses
     setTimeout(function() {
         $("button[id='" + survivalPage + "-survivalCurves']")[0].click();
