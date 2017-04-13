@@ -33,7 +33,7 @@ queryEnsembl <- function(path, query, grch37 = TRUE) {
 
 #' Query the Uniprot REST API
 #'
-#' @param protein Character: protein to query
+#' @param molecule Character: protein or transcript to query
 #' @param format Character: format of the response
 #'
 #' @importFrom httr GET
@@ -45,9 +45,13 @@ queryEnsembl <- function(path, query, grch37 = TRUE) {
 #' protein <- "P51587"
 #' format <- "xml"
 #' psichomics:::queryUniprot(protein, format)
-queryUniprot <- function(protein, format="xml") {
+#' 
+#' transcript <- "ENST00000488540"
+#' format <- "xml"
+#' psichomics:::queryUniprot(transcript, format)
+queryUniprot <- function(molecule, format="xml") {
     url <- "http://www.uniprot.org"
-    path <- paste0("uniprot/", protein, ".", format)
+    path <- paste0("uniprot/?query=", molecule, "&format=", format)
     resp <- GET(url, path=path)
     warn_for_status(resp)
     r <- content(resp, "text", encoding = "UTF8")
@@ -147,15 +151,18 @@ noinfo <- function(output, title=paste("No information available for the gene",
 #'
 #' @param xml response from Uniprot
 #'
-#' @importFrom XML xmlTreeParse xmlRoot getNodeSet xmlAttrs xmlToList
+#' @importFrom XML xmlTreeParse xmlRoot xmlAttrs xmlToList xmlName xmlChildren
 #' @importFrom plyr ldply
 #' @return List containing protein length and data frame of protein features
 parseUniprotXML <- function(xml) {
     doc <- xmlTreeParse(xml)
     root <- xmlRoot(doc)[[1]]
-    featureNodes <- getNodeSet(root, "//feature")
+    
+    # Extract protein length and features
+    names <- vapply(xmlChildren(root), xmlName, character(1))
+    featureNodes  <- root[names == "feature"]
     proteinLength <- as.numeric(
-        xmlAttrs(getNodeSet(root, "//sequence[@length]")[[1]])[[1]])
+        xmlAttrs(root[names == "sequence"][[1]])["length"])
     
     # Convert list of XMLNodes to list of characters
     l <- lapply(featureNodes, function(feat) {
@@ -194,7 +201,7 @@ parseUniprotXML <- function(xml) {
 
 #' Plot protein features
 #'
-#' @param protein Character: UniProt protein identifier
+#' @param molecule Character: UniProt protein or Ensembl transcript identifier
 #'
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip
 #' hc_add_series
@@ -203,11 +210,16 @@ parseUniprotXML <- function(xml) {
 #' @export
 #' @examples
 #' \dontrun{
-#' plotProtein("P38398")
+#' protein <- "P38398"
+#' plotProtein(protein)
+#' 
+#' transcript <- "ENST00000488540"
+#' plotProtein(transcript)
 #' }
-plotProtein <- function(protein) {
+plotProtein <- function(molecule) {
     cat("Retrieving protein annotation from UniProt...", fill=TRUE)
-    xml     <- queryUniprot(protein, "xml")
+    xml     <- queryUniprot(molecule, "xml")
+    if (xml == "") return(NULL)
     parsed  <- parseUniprotXML(xml)
     length  <- parsed$proteinLength
     feature <- parsed$feature
@@ -257,15 +269,40 @@ plotProtein <- function(protein) {
     return(hc)
 }
 
+#' HTML code to plot a X-ranges series
+#' 
+#' @param hc \code{highcharter} object
+#' 
+#' @importFrom shiny tagList tags includeScript div
+#' @importFrom htmltools browsable
+#' @importFrom jsonlite toJSON
+#' 
+#' @return HTML elements
+plottableXranges <- function(hc) {
+    hc <- toJSON(hc$x$hc_opts, auto_unbox=TRUE)
+    hc <- gsub('"---|---"', "", hc)
+    
+    browsable(tagList(
+        tags$script(src="https://code.highcharts.com/highcharts.js"),
+        tags$script(src="https://code.highcharts.com/modules/exporting.js"),
+        includeScript("inst/shiny/www/highcharts.ext.js"),
+        div(id="container"), 
+        tags$script(sprintf("Highcharts.chart('container', %s)", hc))))
+}
+
 #' Plot transcripts
 #' 
 #' @param info Information retrieved from ENSEMBL
 #' @param eventPosition Numeric: coordinates of the alternative splicing event
+#' @param shiny Boolean: is the function running in a Shiny session? FALSE by
+#' default
 #' 
-#' @importFrom shiny renderPlot
-#' @export
+#' @importFrom highcharter highchart hc_chart hc_title hc_legend hc_xAxis
+#' hc_yAxis hc_plotOptions hc_tooltip hc_series
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @export
+#' 
 #' @examples
 #' event <- "SE_12_-_7985318_7984360_7984200_7982602_SLC2A14"
 #' info  <- queryEnsemblByEvent(event, species="human", assembly="hg19")
@@ -273,26 +310,68 @@ plotProtein <- function(protein) {
 #' \dontrun{
 #' plotTranscripts(info, pos)
 #' }
-plotTranscripts <- function(info, eventPosition) {
-    transcripts <- data.frame()
+plotTranscripts <- function(info, eventPosition, shiny=FALSE) {
+    eventStart <- eventPosition[1]
+    eventEnd   <- eventPosition[2]
     
+    data <- list()
     for (i in 1:nrow(info$Transcript)) {
-        transcriptId <- info$Transcript[i, "id"]
-        nn <- info$Transcript$Exon[[i]]
-        transcripts <- rbind(
-            transcripts,
-            data.frame(chrom=nn$seq_region_name, start=nn$start,
-                       stop=nn$end, gene=transcriptId, score=0,
-                       strand=nn$strand))
+        transcript <- info$Transcript[i, ]
+        name    <- transcript$id
+        display <- transcript$display_name
+        strand  <- ifelse(transcript$strand == 1, "plus", "minus")
+        chr     <- transcript$seq_region_name
+        start   <- transcript$start
+        end     <- transcript$end
+        biotype <- gsub("_", " ", transcript$biotype)
+        
+        # Prepare exons
+        elements <- list()
+        exons <- transcript$Exon[[1]]
+        for (k in 1:nrow(exons)) {
+            exon  <- exons[k, ]
+            start <- exon$start
+            end   <- exon$end
+            elements <- c(elements,
+                          list(list(name="exon", x=start, x2=end, y=0,
+                                    width=20)))
+        }
+        # Prepare introns
+        introns <- NULL
+        introns$start <- head(sort(exons$end), length(exons$end) - 1)
+        introns$end   <- sort(exons$start)[-1]
+        for (j in 1:length(introns$start)) {
+            start <- introns$start[[j]]
+            end   <- introns$end[[j]]
+            elements <- c(elements,
+                          list(list(name="intron", x=start, x2=end, y=0,
+                                    width=5)))
+        }
+        data <- c(data, list(list(name=name, borderRadius=0, pointWidth=10,
+                                  display=display, strand=strand, chr=chr, 
+                                  biotype=biotype, data=elements)))
     }
     
-    chrom <- paste0("chr", transcripts$chrom)
-    min <- min(transcripts$start)
-    max <- max(transcripts$stop)
+    # Plot transcripts
+    hc <- highchart() %>%
+        hc_chart(type="xrange", zoomType="x") %>%
+        hc_title(text="") %>%
+        hc_legend(enabled=FALSE) %>%
+        hc_xAxis(title=list(text="Position (nucleotides)"),
+                 showFirstLabel=TRUE, showLastLabel=TRUE,
+                 plotBands=list(color="#7cb5ec50", from=eventStart, 
+                                to=eventEnd, label=list(
+                                    text="Splicing Event", y=10,
+                                    style=list(fontWeight="bold")))) %>%
+        hc_yAxis(title=list(text=""), visible=FALSE) %>%
+        hc_plotOptions(series=list(borderWidth=0.5)) %>%
+        hc_tooltip(followPointer=TRUE)
+    hc <- do.call("hc_series", c(list(hc), data))
     
-    plotGenes(transcripts, chrom, min, max, fontsize=1.5)
-    zoomsregion(eventPosition, highlight=TRUE)
-    labelgenome(chrom, min, max, scale="Mb")
+    if (shiny)
+        hc <- hc %>% hc_plotOptions(series=list(cursor="pointer", events=list(
+            click="---function(e) { setTranscript(this.name); }---")))
+    plottableXranges(hc)
 }
 
 #' Render genetic information
@@ -375,8 +454,9 @@ renderGeneticInfo <- function(ns, info, species=NULL, assembly=NULL,
         fluidRow(column(6, genetic),
                  column(6, uiOutput(ns("articles")))),
         h4("Transcripts"), 
-        plotOutput(ns("plotTranscripts"), height="200px"),
+        uiOutput(ns("plotTranscripts")),
         uiOutput(ns("selectizeProtein")),
+        uiOutput(ns("proteinInfo")),
         highchartOutput(ns("plotProtein"), height="200px"))
 }
 
@@ -439,9 +519,19 @@ articleUI <- function(article) {
         authors <- paste(authors, collapse=" and ")
     }
     year <- strsplit(article$pubdate, " ")[[1]][[1]]
-    description <- sprintf("%s (%s). %s, %s(%s).", authors, year, 
-                           article$source, article$volume, article$issue)
+    description <- sprintf("%s (%s)", authors, year)
     
+    source <- article$source
+    if (source != "") description <- sprintf("%s. %s", description, source)
+    
+    volume <- article$volume
+    issue <- article$issue
+    if (volume != "" && issue != "")
+        description <- sprintf("%s, %s(%s)", description, volume, issue)
+    else if (volume != "")
+        description <- sprintf("%s, %s", description, volume)
+    
+    description <- sprintf("%s.", description)
     pmid <- article$articleids$value[1]
     tags$a(href=paste0("http://pubmed.gov/", pmid), target="_blank",
            class="list-group-item", h5(class="list-group-item-heading", 
@@ -456,7 +546,6 @@ articleUI <- function(article) {
 #' @return HTML interface of relevant PubMed articles
 pubmedUI <- function(gene, ...) {
     pubmed <- queryPubMed(gene, ...)
-    
     articles <- pubmed[-1]
     articleList <- lapply(articles, articleUI)
     
@@ -553,72 +642,35 @@ infoServer <- function(input, output, session) {
         output$info <- renderUI(
             renderGeneticInfo(ns, info, species, assembly, grch37))
         
-        output$plotTranscripts <- renderPlot(
-            plotTranscripts(info, parsed$pos[[1]]))
+        output$plotTranscripts <- renderUI({
+            event <- getEvent()
+            if (is.null(event)) return(NULL)
+            info  <- queryEnsemblByEvent(event, species="human", assembly="hg19")
+            pos   <- parseSplicingEvent(event)$pos[[1]]
+            plotTranscripts(info, parsed$pos[[1]], shiny=TRUE)
+        })
         
         # Show NULL so it doesn't show previous results when loading
         output$selectizeProtein <- renderUI("Loading...")
+        output$proteinInfo <- renderUI(NULL)
         output$plotProtein <- renderHighchart(NULL)
         
         output$selectizeProtein <- renderUI({
-            transcripts <- info$Transcript$Translation$id
-            if (is.null(transcripts))
-                return(h4("No proteins retrieved from UniProt"))
-            names(transcripts) <- info$Transcript$id
-            transcripts <- transcripts[!is.na(transcripts)]
-            
+            transcripts <- info$Transcript$id
             tagList(
                 fixedRow(
                     column(3, selectizeInput(ns("selectedTranscript"),
                                              label="Select transcript", 
-                                             choices=transcripts, width="auto")),
-                    column(3, selectizeInput(ns("selectedProtein"),
-                                             label="Select protein",
-                                             choices=NULL, width="auto")),
+                                             choices=transcripts,
+                                             width="auto")),
                     column(3, uiOutput(ns("proteinLink"), 
                                        class="inline_selectize"))))
         })
     })
     
-    # Check UniProt proteins matching a given Ensembl transcript
-    observe({
-        ensembl  <- input$selectedTranscript
-        species  <- tolower(getSpecies())
-        assembly <- getAssemblyVersion()
-        grch37   <- assembly == "hg19"
-        
-        if (is.null(ensembl) || is.null(species) || is.null(assembly)) {
-            updateSelectizeInput(session, "selectedProtein", 
-                                 choices=c("No UniProt match"=""))
-        } else {
-            # Look up matching identifiers from Uniprot
-            external <- queryEnsembl(paste0("xrefs/id/", ensembl),
-                                     list("content-type"="application/json"),
-                                     grch37=grch37)
-            if (is.null(external)) {
-                updateSelectizeInput(
-                    session, "selectedProtein", 
-                    choices=c("Ensembl API appears to be offline"=""))
-            } else {
-                db <- external[grepl("Uniprot", external$dbname), ]
-                if (nrow(db) == 0) {
-                    updateSelectizeInput(session, "selectedProtein", 
-                                         choices=c("No UniProt match"=""))
-                }
-                uniprot <- db$primary_id
-                names(uniprot) <- sprintf("%s (%s)", db$display_id,
-                                          db$db_display_name)
-                updateSelectizeInput(session, "selectedProtein", 
-                                     choices=uniprot)
-            }
-        }
-    })
-    
-    # Update protein links depending on chosen transcript and protein
+    # Update links depending on chosen transcript
     observe({
         ensembl <- input$selectedTranscript
-        uniprot <- input$selectedProtein
-        
         species  <- tolower(getSpecies())
         assembly <- getAssemblyVersion()
         grch37   <- assembly == "hg19"
@@ -629,7 +681,7 @@ infoServer <- function(input, output, session) {
         ensemblLink <- tags$a("Ensembl", icon("external-link"), target="_blank",
                               class="btn btn-link", href=href)
         
-        href <- paste0("http://www.uniprot.org/uniprot/", uniprot)
+        href <- paste0("http://www.uniprot.org/uniprot/?query=", ensembl)
         links <- tagList(ensemblLink, 
                          tags$a("Uniprot", icon("external-link"), href=href,
                                 target="_blank", class="btn btn-link"))
@@ -638,17 +690,20 @@ infoServer <- function(input, output, session) {
     
     # Plot UniProt proteins
     observe({
-        uniprot <- input$selectedProtein
-        if (is.null(uniprot) || uniprot == "") {
+        transcript <- input$selectedTranscript
+        if (is.null(transcript) || transcript == "") {
+            output$proteinInfo <- renderUI(NULL)
             output$plotProtein <- renderHighchart(NULL)
         } else {
-            hc <- tryCatch(plotProtein(uniprot), error=return)
-            output$plotProtein <- renderHighchart({
+            hc <- tryCatch(plotProtein(transcript), error=return)
+            output$proteinInfo <- renderUI({
                 if (is(hc, "error"))
                     stop(safeError(hc$message))
-                
-                return(hc)
+                else if (is.null(hc))
+                    helpText("Protein information from Uniprot for this",
+                             "transcript is not available.")
             })
+            output$plotProtein <- renderHighchart(hc)
         }
     })
     

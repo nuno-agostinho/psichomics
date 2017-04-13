@@ -1,7 +1,7 @@
 Package: psichomics
 Title: Graphical Interface for Alternative Splicing Quantification, Analysis and
     Visualisation
-Version: 1.1.8
+Version: 1.1.9
 Encoding: UTF-8
 Authors@R: c( person("Nuno", "Saraiva-Agostinho", ,
         "nunodanielagostinho@gmail.com", role = c("aut", "cre")),
@@ -11,11 +11,13 @@ Authors@R: c( person("Nuno", "Saraiva-Agostinho", ,
         role="ctb"), person("Teresa", "Maia", role="ctb"),
         person("Mariana", "Ferreira", role="ctb"), person("Ana Carolina", 
         "Leote", role="ctb"), person("Bernardo", "Almeida", role="ctb"))
-Description: Package with a Shiny-based graphical interface for the integrated
-    analysis of alternative splicing data from The Cancer Genome Atlas (TCGA).
-    This tool interactively performs survival, principal components and
-    differential splicing analyses with direct incorporation of clinical
-    features (such as tumour stage or survival) associated with TCGA samples.
+Description: Interactive R package with a Shiny-based graphical interface for
+    the quantification, analysis and visualisation of alternative splicing data 
+    from The Cancer Genome Atlas (TCGA) or the Genotype-Tissue Expression (GTEx)
+    project. This tool interactively performs survival, principal components and
+    differential splicing analyses with direct incorporation of clinical 
+    features (such as tumour stage or survival) associated with TCGA and GTEx
+    samples.
 Depends:
     R (>= 3.3),
     shiny (>= 1.0.0),
@@ -25,12 +27,16 @@ LazyData: true
 RoxygenNote: 6.0.1
 Imports:
     AnnotationHub,
+    colourpicker,
     data.table,
     digest,
     dplyr,
     DT (>= 0.2),
     fastmatch,
+    ggplot2,
+    grDevices,
     highcharter (>= 0.5.0),
+    htmltools,
     httr,
     jsonlite,
     miscTools,
@@ -78,9 +84,9 @@ Collate:
     'events_miso.R'
     'events_mats.R'
     'events.R'
-    'formats_firehoseGeneExpression.R'
-    'formats_firehoseJunctionReads.R'
-    'formats_firehoseMergeClinical.R'
+    'formats_firebrowseGeneExpression.R'
+    'formats_firebrowseJunctionReads.R'
+    'formats_firebrowseMergeClinical.R'
     'formats_gtexClinical.R'
     'formats_gtexJunctionReads.R'
     'formats_gtexSampleInfo.R'

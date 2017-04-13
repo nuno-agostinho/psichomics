@@ -1,4 +1,4 @@
-firehoseMergeClinicalFormat <- function() {
+firebrowseMergeClinicalFormat <- function() {
     list(
         tablename   = "Clinical data",      # Name of the created table
         filename    = "clin.merged.txt",    # Name of the file
@@ -53,4 +53,4 @@ firehoseMergeClinicalFormat <- function() {
     )
 }
 
-attr(firehoseMergeClinicalFormat, "loader") <- "formats"
+attr(firebrowseMergeClinicalFormat, "loader") <- "formats"

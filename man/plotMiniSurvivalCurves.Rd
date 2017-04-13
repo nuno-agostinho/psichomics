@@ -4,13 +4,15 @@
 \alias{plotMiniSurvivalCurves}
 \title{Perform and plot survival curves}
 \usage{
-plotMiniSurvivalCurves(i, input, survParams, clinical, match, psi, censoring,
-  event, timeStart, timeStop)
+plotMiniSurvivalCurves(i, input, index, survParams, clinical, match, psi,
+  censoring, event, timeStart, timeStop)
 }
 \arguments{
-\item{i}{Numeric: index of the survival curves plot of interest}
+\item{i}{Integer: index of the survival curves plot of interest}
 
 \item{input}{Shiny input}
+
+\item{index}{Integer: index of event to draw}
 
 \item{survParams}{List of parameters to plot survival curves}
 

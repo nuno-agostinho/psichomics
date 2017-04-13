@@ -1,5 +1,31 @@
-1.0.8
-=====
+1.2.0 (10 Apr, 2017)
+====================
+
+    * Differential splicing analyses:
+        * Add volcano plot to represent events through selected attributes, such
+        as p-values and descriptive statistics (e.g. median and variance) 
+        between groups of interest
+        * Transform values of the X and Y axis in the plot using log
+        transformed, inverted and absolute values, for instance
+        * Highlight events in the plot based on values of the X and Y axis
+        * Click and drag in the plot to select events
+        * Table of differential analyses per alternative splicing event is
+        filtered according to highlighted and selected events in the plot
+    * Gene, protein and transcript information:
+        * Transcript plot is now interactive and zoomable
+        * Protein are now rendered based on selected transcript alone
+        * Faster parsing of Uniprot's web API response
+        * Improve display of article information when data is missing
+    * Principal component analysis:
+        * Improve presentation of available options
+    * When clicking on previews of differential splicing and survival analyses,
+    the appropriate analyses will now be shown with the respective options
+    * Fix buggy browser history when the user is directed to a different tab
+    * Consistently use Firebrowse and Firehose across the package
+    * Update documentation
+
+1.0.8 (21 Feb, 2017)
+====================
 
     * Support GTEx data loading and analysis
     * Fix clinical data dependency:

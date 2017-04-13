@@ -109,7 +109,7 @@ createDensitySparklines <- function(data, events, delim=NULL) {
     
     json <- paste0(hc, ',"series":[', data, "]}")
     sparklines <- sprintf(
-        paste('<sparkline onclick="showDiffSplicing(\'%s\')"',
+        paste('<sparkline onclick="showDiffSplicing(\'%s\', true)"',
               'style="cursor:pointer;" data-sparkline=\'%s\'/>'), 
         events, json)
     return(sparklines)
@@ -422,7 +422,7 @@ diffAnalyses <- function(psi, groups=NULL,
 #' @param output Shiny ouput
 #' @param session Shiny session
 #' 
-#' @importFrom shiny observe observeEvent updateSelectizeInput
+#' @importFrom shiny observe observeEvent updateSelectizeInput renderPlot
 #' @importFrom shinyjs hide show
 #' @return NULL (this function is used to modify the Shiny session's state)
 diffSplicingServer <- function(input, output, session) {

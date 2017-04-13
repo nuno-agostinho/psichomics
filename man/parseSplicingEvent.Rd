@@ -4,10 +4,13 @@
 \alias{parseSplicingEvent}
 \title{Parse an alternative splicing event based on a given identifier}
 \usage{
-parseSplicingEvent(event)
+parseSplicingEvent(event, char = FALSE)
 }
 \arguments{
 \item{event}{Character: event identifier}
+
+\item{char}{Boolean: return a single character instead of list with parsed
+values? FALSE by default}
 }
 \value{
 Parsed event
