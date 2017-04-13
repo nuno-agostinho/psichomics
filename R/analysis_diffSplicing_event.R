@@ -17,11 +17,11 @@ diffSplicingEventUI <- function(id) {
     
     # Take user to the survival analysis by PSI cut-off
     survival <- tagList(
-        actionButton(ns("optimalSurv1"), onclick="showSurvCutoff()",
+        actionButton(ns("optimalSurv1"), onclick="showSurvCutoff(null, false)",
                      "Survival analysis by PSI cut-off", 
                      class="btn-info btn-md btn-block",
                      class="visible-lg visible-md"),
-        actionButton(ns("optimalSurv2"), onclick="showSurvCutoff()",
+        actionButton(ns("optimalSurv2"), onclick="showSurvCutoff(null, false)",
                      "Survival analysis by PSI cut-off", 
                      class="btn-info btn-xs btn-block",
                      class="visible-sm visible-xs"))

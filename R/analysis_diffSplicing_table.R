@@ -316,7 +316,8 @@ optimSurvDiff <- function(session, input, output) {
                     parseSplicingEvent(splicingEvent, char=TRUE),
                     class="label label-default", style="display: inline-block;",
                     style="white-space: normal;", 
-                    onclick=paste0("showSurvCutoff('", splicingEvent, "')")))
+                    onclick=paste0("showSurvCutoff('", splicingEvent,
+                                   "', true)")))
             output[[paste0("eventSurvStats", i)]] <- renderUI(tags$small(stat))
         })
     })
@@ -405,7 +406,8 @@ plotMiniSurvivalCurves <- function(i, input, index, survParams, clinical,
             hc_yAxis(title=list(text="")) %>%
             hc_chart(zoomType=NULL) %>%
             hc_chart(events=list(click=JS(paste0(
-                "function(e) { showSurvCutoff('", splicingEvent, "') }"))))
+                "function(e) { showSurvCutoff('", splicingEvent,
+                ", true') }"))))
     } else {
         hc <- NULL
         hide(paste0("curves", i), anim=TRUE)

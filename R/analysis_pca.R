@@ -79,41 +79,51 @@ pcaUI <- function(id) {
     tagList(
         uiOutput(ns("modal")),
         sidebarPanel(
-            selectizeInput(ns("dataForPCA"), "Data to perform PCA on",
-                           choices=NULL,
-                           options=list(placeholder="No data available")),
-            checkboxGroupInput(ns("preprocess"), "Preprocessing",
-                               c("Center values"="center",
-                                 "Scale values"="scale"),
-                               selected=c("center")),
-            sliderInput(ns("naTolerance"), div(
-                "Percentage of missing values to tolerate per event",
-                icon("question-circle")),
-                min=0, max=100, value=0, post="%"),
-            bsTooltip(ns("naTolerance"), placement="right", 
-                      paste("For events with a tolerable percentage of missing",
-                            "values, the median value of the event across",
-                            "samples is used to replace those missing values.",
-                            "The remaining events are discarded."),
-                      options=list(container="body")),
-            selectGroupsUI(ns("dataGroups"), "Samples to use for PCA",
-                           noGroupsLabel="All samples",
-                           groupsLabel="Samples from selected groups"),
-            processButton(ns("calculate"), "Calculate PCA"),
-            hidden(
-                div(id=ns("pcaPlotUI"),
-                    hr(),
-                    selectizeInput(ns("pcX"), choices=NULL,
-                                   "Choose principal component for the X axis"),
-                    selectizeInput(ns("pcY"), choices=NULL,
-                                   "Choose principal component for the Y axis"),
-                    selectGroupsUI(ns("colourGroups"), "Sample colouring",
-                                   noGroupsLabel="Do not colour samples",
-                                   groupsLabel="Colour using selected groups"),
-                    actionButton(ns("showVariancePlot"), "Show variance plot"),
-                    actionButton(ns("plot"), "Plot PCA", class="btn-primary")
-                )
-            )
+            bsCollapse(
+                id=ns("pcaCollapse"), open="Perform PCA",
+                bsCollapsePanel(
+                    "Perform PCA", style="info",
+                    selectizeInput(ns("dataForPCA"), "Data to perform PCA on",
+                                   choices=NULL, options=list(
+                                       placeholder="No data available")),
+                    checkboxGroupInput(ns("preprocess"), "Preprocessing",
+                                       c("Center values"="center",
+                                         "Scale values"="scale"),
+                                       selected=c("center")),
+                    sliderInput(ns("naTolerance"), div(
+                        "Percentage of missing values to tolerate per event",
+                        icon("question-circle")),
+                        min=0, max=100, value=0, post="%"),
+                    bsTooltip(ns("naTolerance"), placement="right", paste(
+                        "For events with a tolerable percentage of missing",
+                        "values, the median value of the event across",
+                        "samples is used to replace those missing values.",
+                        "The remaining events are discarded."),
+                        options=list(container="body")),
+                    selectGroupsUI(ns("dataGroups"), "Samples to use for PCA",
+                                   noGroupsLabel="All samples",
+                                   groupsLabel="Samples from selected groups"),
+                    processButton(ns("calculate"), "Calculate PCA")),
+                bsCollapsePanel(
+                    "Plot PCA", style="info",
+                    div(id=ns("noPcaPlotUI"),
+                        helpText("No PCA performed yet.")),
+                    hidden(
+                        div(id=ns("pcaPlotUI"),
+                            selectizeInput(
+                                ns("pcX"), choices=NULL,
+                                "Choose principal component for the X axis"),
+                            selectizeInput(
+                                ns("pcY"), choices=NULL,
+                                "Choose principal component for the Y axis"),
+                            selectGroupsUI(
+                                ns("colourGroups"), "Sample colouring",
+                                noGroupsLabel="Do not colour samples",
+                                groupsLabel="Colour using selected groups"),
+                            actionButton(ns("showVariancePlot"), 
+                                         "Show variance plot"),
+                            actionButton(ns("plot"), "Plot PCA",
+                                         class="btn-primary")))))
         ), mainPanel(
             highchartOutput(ns("scatterplot")),
             highchartOutput(ns("scatterplotLoadings"))
@@ -284,7 +294,6 @@ pcaServer <- function(input, output, session) {
             missingDataModal(session, "Inclusion levels", ns("takeMeThere"))
             return(NULL)
         }
-            
         
         if (is.null(psi)) {
             missingDataModal(session, "Inclusion levels", ns("takeMeThere"))
@@ -327,6 +336,7 @@ pcaServer <- function(input, output, session) {
             } else {
                 setInclusionLevelsPCA(pca)
             }
+            updateCollapse(session, "pcaCollapse", "Plot PCA")
             endProcess("calculate", closeProgressBar=FALSE)
         }
     })
@@ -408,7 +418,7 @@ pcaServer <- function(input, output, session) {
                             click=JS("function() {
                                          sample = this.options.sample;
                                          sample = sample.replace(/ /g, '_');
-                                         showDiffSplicing(sample);
+                                         showDiffSplicing(sample, false);
                                       }")))))
             } else {
                 return(NULL)
@@ -416,8 +426,13 @@ pcaServer <- function(input, output, session) {
     })
     
     observe(
-        if (!is.null(getInclusionLevelsPCA()))
+        if (!is.null(getInclusionLevelsPCA())) {
+            hide("noPcaPlotUI", animType="fade")
             show("pcaPlotUI", animType="fade")
+        } else {
+            show("noPcaPlotUI", animType="fade")
+            hide("pcaPlotUI", animType="fade")
+        }
     )
 }
 

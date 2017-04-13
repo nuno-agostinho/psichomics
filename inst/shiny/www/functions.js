@@ -63,10 +63,10 @@ function setTranscript (transcript) {
 
 /**
  * Navigate user to differential splicing of a given alternative splicing event
- * and properly set expected options
  * @param {String} event Alternative splicing event
+ * @param {Boolean} autoParams Automatically set expected parameters
  */
-function showDiffSplicing (event) {
+function showDiffSplicing (event, autoParams = false) {
     // Navigate to differential splicing analyses for a single event
     var tabName = "Differential splicing analysis";
     $("ul[id='nav'] > li > ul > li > a[data-value*='" + tabName + "']").click();
@@ -75,6 +75,8 @@ function showDiffSplicing (event) {
     
     // Change currently selected splicing event
     changeEvent(event);
+    
+    if (!autoParams) { return; }
     
     // Set whether using groups or not
     allEventsPage = "analyses-diffSplicing-diffSplicingTable";
@@ -97,18 +99,20 @@ function showDiffSplicing (event) {
 }
 
 /**
- * Navigate user to survival analysis by quantification cut-off and properly set
- * expected options
+ * Navigate user to survival analysis by quantification cut-off
  * @param {String} event Alternative splicing event
+ * @param {Boolean} autoParams Automatically set expected parameters
  */
-function showSurvCutoff(event) {
+function showSurvCutoff(event, autoParams = false) {
     // Change currently selected splicing event
     if (event !== null) changeEvent(event);
     
     // Navigate to survival analyses
     var surv = "Survival analysis";
     $("ul[id='nav'] > li > ul > li > a[data-value*='" + surv + "']").click();
-        
+    
+    if (!autoParams) { return; }
+    
     if (event !== null) {
         allEventsPage = "analyses-diffSplicing-diffSplicingTable";
         survivalPage = "analyses-survival";
