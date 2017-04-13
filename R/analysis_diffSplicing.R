@@ -109,7 +109,7 @@ createDensitySparklines <- function(data, events, delim=NULL) {
     
     json <- paste0(hc, ',"series":[', data, "]}")
     sparklines <- sprintf(
-        paste('<sparkline onclick="showDiffSplicing(\'%s\')"',
+        paste('<sparkline onclick="showDiffSplicing(\'%s\', true)"',
               'style="cursor:pointer;" data-sparkline=\'%s\'/>'), 
         events, json)
     return(sparklines)

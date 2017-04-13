@@ -15,10 +15,12 @@
         * Transcript plot is now interactive and zoomable
         * Protein are now rendered based on selected transcript alone
         * Faster parsing of Uniprot's web API response
+        * Improve display of article information when data is missing
+    * Principal component analysis:
+        * Improve presentation of available options
     * When clicking on previews of differential splicing and survival analyses,
     the appropriate analyses will now be shown with the respective options
     * Fix buggy browser history when the user is directed to a different tab
-    * Improve display of article information when data is missing
     * Consistently use Firebrowse and Firehose across the package
     * Update documentation
 
