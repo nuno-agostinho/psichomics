@@ -4,10 +4,10 @@
 \alias{plotProtein}
 \title{Plot protein features}
 \usage{
-plotProtein(protein)
+plotProtein(molecule)
 }
 \arguments{
-\item{protein}{Character: UniProt protein identifier}
+\item{molecule}{Character: UniProt protein or Ensembl transcript identifier}
 }
 \value{
 highchart object
@@ -17,6 +17,10 @@ Plot protein features
 }
 \examples{
 \dontrun{
-plotProtein("P38398")
+protein <- "P38398"
+plotProtein(protein)
+
+transcript <- "ENST00000488540"
+plotProtein(transcript)
 }
 }

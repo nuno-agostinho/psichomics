@@ -53,6 +53,15 @@ function changeEvent (event) {
 }
 
 /**
+ * Set selected transcript
+ * @param {String} transcript Transcript identifier
+ */
+function setTranscript (transcript) {
+    $("select[id*='selectedTranscript']").selectize()[0].selectize
+        .setValue(transcript);
+}
+
+/**
  * Navigate user to differential splicing of a given alternative splicing event
  * and properly set expected options
  * @param {String} event Alternative splicing event
@@ -162,51 +171,6 @@ setInterval(function() {
     document.title = ($('html').hasClass('shiny-busy')) ?
         '[R] PSΨchomics' : 'PSΨchomics';
     }, 500);
-
-/* Highcharts sparkline constructor */
-$(function() {
-    Highcharts.SparkLine = function(a, b, c) {
-        var hasRenderToArg = typeof a === 'string' || a.nodeName,
-            options = arguments[hasRenderToArg ? 1 : 0],
-            defaultOptions = {
-                chart: {
-                    renderTo: (options.chart && options.chart.renderTo) || this
-                }
-            };
-
-        options = Highcharts.merge(defaultOptions, options);
-
-        return hasRenderToArg ?
-            new Highcharts.Chart(a, options, c) :
-            new Highcharts.Chart(options, b);
-    };
-});
-
-/** Position the Highcharts tooltip to a relative point
- * @param {Number} width Tooltip's width
- * @param {Number} height Tooltip's height
- * @param {Object} point Position of interest
- * @return {Object} X and Y coordinates
- */
-function tooltipPos (width, height, point) {
-    return {
-        x: point.plotX - width / 2,
-        y: point.plotY - height * 1.2
-    };
-}
-
-/** Draw sparklines based on the JSON code from the Sparkline HTML element
- */ 
-function drawSparklines() {
-    var $data = $('sparkline'), sparkline, obj;
-
-    for (var i = 0; i < $data.length; i += 1) {
-        sparkline = $($data[i]);
-        obj = sparkline.data('sparkline'); // Obtain the JSON code
-        obj.tooltip.positioner = tooltipPos; // Correctly position the tooltip
-        sparkline.highcharts('SparkLine', obj);
-    }
-}
 
 $.fn.extend({
     /**
