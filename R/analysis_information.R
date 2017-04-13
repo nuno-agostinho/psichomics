@@ -298,7 +298,7 @@ plottableXranges <- function(hc) {
 #' default
 #' 
 #' @importFrom highcharter highchart hc_chart hc_title hc_legend hc_xAxis
-#' hc_yAxis hc_plotOptions hc_tooltip
+#' hc_yAxis hc_plotOptions hc_tooltip hc_series
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 #' @export
