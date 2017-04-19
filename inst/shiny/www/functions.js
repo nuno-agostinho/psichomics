@@ -166,7 +166,7 @@ function createDiffSplicingLinks(row, data, index) {
     var eventID = event.replace(/ /g, "_");
     
     $('td:eq(0)', row).html("<a onclick='showDiffSplicing(\"" + eventID +
-        "\")' href='javascript:void(0);' " + 
+        "\", autoParams=true)' href='javascript:void(0);' " + 
         "title='Differential splicing analyses for " + event + "'>" + event +
         "</a>");
     return row;

@@ -8,6 +8,10 @@
         * Fix error when plotting single-exon transcripts
         * Protein name, length and function are now presented when available
         * Improved general presentation of the information
+    * Differential splicing analyses:
+        * When clicking on the table link to navigate to the differential
+        splicing analyses of a single event, the appropriate analyses will now
+        be automatically rendered with the respective options, as expected
 
 1.1.9 (10 Apr, 2017)
 ====================
