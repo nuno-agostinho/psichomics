@@ -632,13 +632,10 @@ checkFirebrowse <- function(ns) {
         updateProgress("Loading interface")
         ui <- addTCGAdata(ns)
     } else {
-        ui <- div(class="alert alert-danger", role="alert",
-                  icon("exclamation-circle"),
-                  "Firebrowse API appears to be offline at the moment.", br(), 
-                  br(), actionButton(ns("refreshFirebrowse"),
-                                     icon=icon("refresh"),
-                                     "Check Firebrowse again", 
-                                     class="btn-danger btn-block"))
+        ui <- errorDialog("Firebrowse API appears to be offline at the moment.",
+                          buttonId=ns("refreshFirebrowse"), 
+                          buttonLabel="Check Firebrowse again",
+                          buttonIcon="refresh")
     }
     closeProgress("Firebrowse interface loaded")
     hide("firebrowseLoading")
