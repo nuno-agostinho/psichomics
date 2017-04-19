@@ -4,10 +4,13 @@
 \alias{plottableXranges}
 \title{HTML code to plot a X-ranges series}
 \usage{
-plottableXranges(hc)
+plottableXranges(hc, shiny = FALSE)
 }
 \arguments{
 \item{hc}{\code{highcharter} object}
+
+\item{shiny}{Boolean: is the function running in a Shiny session? FALSE by
+default}
 }
 \value{
 HTML elements
