@@ -76,38 +76,52 @@ performPCA <- function(data, center=TRUE, scale.=FALSE, naTolerance=0) {
 #' @return HTML element
 pcaUI <- function(id) {
     ns <- NS(id)
+    
+    pcaOptions <- div(
+        id=ns("pcaOptions"),
+        selectizeInput(ns("dataForPCA"), "Data to perform PCA on",
+                       choices=NULL, options=list(
+                           placeholder="No data available")),
+        checkboxGroupInput(ns("preprocess"), "Preprocessing",
+                           c("Center values"="center",
+                             "Scale values"="scale"),
+                           selected=c("center")),
+        sliderInput(ns("naTolerance"), div(
+            "Percentage of missing values to tolerate per event",
+            icon("question-circle")),
+            min=0, max=100, value=0, post="%"),
+        bsTooltip(ns("naTolerance"), placement="right", paste(
+            "For events with a tolerable percentage of missing",
+            "values, the median value of the event across",
+            "samples is used to replace those missing values.",
+            "The remaining events are discarded."),
+            options=list(container="body")),
+        selectGroupsUI(ns("dataGroups"), "Samples to use for PCA",
+                       noGroupsLabel="All samples",
+                       groupsLabel="Samples from selected groups"),
+        processButton(ns("calculate"), "Calculate PCA")
+    )
+    
     tagList(
         uiOutput(ns("modal")),
         sidebarPanel(
             bsCollapse(
                 id=ns("pcaCollapse"), open="Perform PCA",
                 bsCollapsePanel(
-                    "Perform PCA", style="info",
-                    selectizeInput(ns("dataForPCA"), "Data to perform PCA on",
-                                   choices=NULL, options=list(
-                                       placeholder="No data available")),
-                    checkboxGroupInput(ns("preprocess"), "Preprocessing",
-                                       c("Center values"="center",
-                                         "Scale values"="scale"),
-                                       selected=c("center")),
-                    sliderInput(ns("naTolerance"), div(
-                        "Percentage of missing values to tolerate per event",
-                        icon("question-circle")),
-                        min=0, max=100, value=0, post="%"),
-                    bsTooltip(ns("naTolerance"), placement="right", paste(
-                        "For events with a tolerable percentage of missing",
-                        "values, the median value of the event across",
-                        "samples is used to replace those missing values.",
-                        "The remaining events are discarded."),
-                        options=list(container="body")),
-                    selectGroupsUI(ns("dataGroups"), "Samples to use for PCA",
-                                   noGroupsLabel="All samples",
-                                   groupsLabel="Samples from selected groups"),
-                    processButton(ns("calculate"), "Calculate PCA")),
+                    list(icon("tasks"), "Perform PCA"),
+                    value="Perform PCA", style="info",
+                    errorDialog(
+                        "No alternative splicing quantification is available.",
+                        id=ns("pcaOptionsDialog"),
+                        buttonLabel="Alternative splicing quantification",
+                        buttonIcon="calculator",
+                        buttonId=ns("loadIncLevels")),
+                    hidden(pcaOptions)),
                 bsCollapsePanel(
-                    "Plot PCA", style="info",
-                    div(id=ns("noPcaPlotUI"),
-                        helpText("No PCA performed yet.")),
+                    list(icon("binoculars"), "Plot PCA"),
+                    value="Plot PCA", style="info",
+                    errorDialog("PCA has not yet been performed.",
+                                id=ns("noPcaPlotUI")),
                     hidden(
                         div(id=ns("pcaPlotUI"),
                             selectizeInput(
@@ -275,6 +289,26 @@ pcaServer <- function(input, output, session) {
     selectGroupsServer(session, "dataGroups")
     selectGroupsServer(session, "colourGroups")
     
+    observe({
+        if (is.null(getInclusionLevels())) {
+            hide("pcaOptions")
+            show("pcaOptionsDialog")
+        } else {
+            show("pcaOptions")
+            hide("pcaOptionsDialog")
+        }
+    })
+    
+    observe({
+        if (!is.null(getInclusionLevelsPCA())) {
+            hide("noPcaPlotUI", animType="fade")
+            show("pcaPlotUI", animType="fade")
+        } else {
+            show("noPcaPlotUI", animType="fade")
+            hide("pcaPlotUI", animType="fade")
+        }
+    })
+    
     # Update available data input
     observe({
         inclusionLevels <- getInclusionLevels()
@@ -284,6 +318,7 @@ pcaServer <- function(input, output, session) {
         }
     })
     
+    observeEvent(input$loadIncLevels, missingDataGuide("Inclusion levels"))
     observeEvent(input$takeMeThere, missingDataGuide("Inclusion levels"))
     
     # Perform principal component analysis (PCA)
@@ -350,7 +385,7 @@ pcaServer <- function(input, output, session) {
     observe({
         pca <- getInclusionLevelsPCA()
         if (is.null(pca)) {
-            choices <- c("No PCA performed yet"="")
+            choices <- c("PCA has not yet been performed"="")
             updateSelectizeInput(session, "pcX", choices=choices)
             updateSelectizeInput(session, "pcY", choices=choices)
             return(NULL)
@@ -376,7 +411,7 @@ pcaServer <- function(input, output, session) {
         pca <- getInclusionLevelsPCA()
         if (is.null(pca)) {
             if (input$plot > 0) {
-                errorModal(session, "No PCA performed",
+                errorModal(session, "PCA has not yet been performed",
                            "Perform a PCA and plot it afterwards.")
             }
             return(NULL)
@@ -424,16 +459,6 @@ pcaServer <- function(input, output, session) {
                 return(NULL)
             })
     })
-    
-    observe(
-        if (!is.null(getInclusionLevelsPCA())) {
-            hide("noPcaPlotUI", animType="fade")
-            show("pcaPlotUI", animType="fade")
-        } else {
-            show("noPcaPlotUI", animType="fade")
-            hide("pcaPlotUI", animType="fade")
-        }
-    )
 }
 
 attr(pcaUI, "loader") <- "analysis"

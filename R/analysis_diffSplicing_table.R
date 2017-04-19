@@ -23,7 +23,8 @@ diffSplicingTableUI <- function(id) {
                              "Hochberg's method"="hochberg",
                              "Hommel's method"="hommel"))
     
-    statAnalysesOptions <- tagList(
+    statAnalysesOptions <- div(
+        id=ns("statAnalysesOptions"),
         selectGroupsUI(ns("diffGroups"), label="Groups of samples to analyse",
                        noGroupsLabel="All samples as one group",
                        groupsLabel="Samples by selected groups"),
@@ -79,7 +80,15 @@ diffSplicingTableUI <- function(id) {
             id=ns("diffAnalysesCollapse"), open="statAnalyses",
             bsCollapsePanel(
                 list(icon("tasks"), "Perform statistical analyses"),
-                value="statAnalyses", statAnalysesOptions, style="info"),
+                value="statAnalyses", style="info",
+                errorDialog(
+                    paste("Alternative splicing quantification is required for",
+                          "differential splicing analysis."),
+                    id=ns("missingIncLevels"),
+                    buttonLabel="Alternative splicing quantification",
+                    buttonIcon="calculator",
+                    buttonId=ns("loadIncLevels")),
+                hidden(statAnalysesOptions)),
             bsCollapsePanel(
                 list(icon("tasks"), "Event plot options and table filtering"),
                 style="info", value="plotEvents", uiOutput(ns("eventOptions"))),
@@ -88,7 +97,12 @@ diffSplicingTableUI <- function(id) {
                      "Survival analyses by splicing quantification cut-off"),
                 style="info", value="survivalOptionsPanel",
                 hidden(div(id=ns("survivalOptions"), survivalOptions)),
-                div(id=ns("noSurvivalOptions"), "No survival data available"))),
+                errorDialog("Differential splicing analysis not yet performed.",
+                            id=ns("survivalOptions-missingDiffAnalyses")),
+                errorDialog("Clinical data is not loaded.",
+                            id=ns("survivalOptions-missingClinicalData"),
+                            buttonLabel="Load survival data",
+                            buttonId=ns("loadClinical")))),
         hr(),
         disabled(div(id=ns("downloadStats"), class="btn-group",
                      tags$button(class="btn btn-default dropdown-toggle",
@@ -150,13 +164,22 @@ optimSurvDiff <- function(session, input, output) {
     # Interface of survival analyses
     observe({
         clinical <- getClinicalData()
-        if (!is.null(getDifferentialAnalyses()) && !is.null(clinical)) {
+        diffAn   <- getDifferentialAnalyses()
+        
+        if (!is.null(clinical) && !is.null(diffAn)) {
+            hide("survivalOptions-missingClinicalData")
+            hide("survivalOptions-missingDiffAnalyses")
             show("survivalOptions")
-            hide("noSurvivalOptions")
             updateClinicalParams(session, clinical)
         } else {
             hide("survivalOptions")
-            show("noSurvivalOptions")
+            if (is.null(clinical)) {
+                show("survivalOptions-missingClinicalData")
+                hide("survivalOptions-missingDiffAnalyses")
+            } else if (is.null(diffAn)) {
+                hide("survivalOptions-missingClinicalData")
+                show("survivalOptions-missingDiffAnalyses")
+            }
         }
     })
     
@@ -727,6 +750,19 @@ diffSplicingTableServer <- function(input, output, session) {
     
     selectGroupsServer(session, "diffGroups")
     
+    observe({
+        psi <- getInclusionLevels()
+        if (is.null(psi)) {
+            show("missingIncLevels")
+            hide("statAnalysesOptions")
+        } else {
+            hide("missingIncLevels")
+            show("statAnalysesOptions")
+        }
+    })
+    
+    observeEvent(input$loadClinical, missingDataGuide("Clinical data"))
+    observeEvent(input$loadIncLevels, missingDataGuide("Inclusion levels"))
     observeEvent(input$missingInclusionLevels, 
                  missingDataGuide("Inclusion levels"))
     
@@ -794,7 +830,9 @@ diffSplicingTableServer <- function(input, output, session) {
     output$eventOptions <- renderUI({
         stats <- getDifferentialAnalyses()
         if (is.null(stats))
-            return("Perform differential splicing analyses, first.")
+            return(errorDialog(
+                "Differential splicing analysis not yet performed.",
+                id=ns("missingDiffAnalyses")))
         eventPlotOptions(ns, stats)
     })
     

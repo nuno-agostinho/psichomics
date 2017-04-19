@@ -43,7 +43,7 @@ NULL (this function is used to modify the Shiny session's state)
 }
 \description{
 You can also use \code{errorModal} and \code{warningModal} to use template 
-modals already stylised to show errors and warnings respectively.
+modals already stylised to show errors and warnings, respectively.
 }
 \seealso{
 showAlert

@@ -16,7 +16,9 @@ diffSplicingEventUI <- function(id) {
     }
     
     # Take user to the survival analysis by PSI cut-off
-    survival <- tagList(
+    survival <- div(
+        id=ns("survivalButton"),
+        hr(),
         actionButton(ns("optimalSurv1"), onclick="showSurvCutoff(null, false)",
                      "Survival analysis by PSI cut-off", 
                      class="btn-info btn-md btn-block",
@@ -26,33 +28,47 @@ diffSplicingEventUI <- function(id) {
                      class="btn-info btn-xs btn-block",
                      class="visible-sm visible-xs"))
     
+    singleEventOptions <- div(
+        id=ns("singleEventOptions"),
+        selectGroupsUI(
+            ns("diffGroups"),
+            label="Groups of samples to analyse",
+            noGroupsLabel="All samples as one group",
+            groupsLabel="Samples by selected groups"),
+        numericInput(ns("bandwidth"), "Density smoothing bandwidth",
+                     0.01, step=0.01, min=0.01),
+        actionButton(ns("analyse"), "Perform analyses",
+                     class="btn-primary"),
+        uiOutput(ns("basicStats")),
+        hidden(survival))
+    
+    singleEventInfo <- div(
+        id=ns("singleEventInfo"),
+        highchartOutput(ns("density")),
+        h4("Parametric tests"),
+        div(class="row",
+            card("ttest"),
+            card("levene")),
+        h4("Non-parametric tests"),
+        div(class="row",
+            card("wilcox"),
+            card("kruskal"),
+            card("fligner")))
+    
     tagList(
         uiOutput(ns("modal")),
         sidebarLayout(
             sidebarPanel(
-                selectGroupsUI(ns("diffGroups"),
-                               label="Groups of samples to analyse",
-                               noGroupsLabel="All samples as one group",
-                               groupsLabel="Samples by selected groups"),
-                numericInput(ns("bandwidth"), "Density smoothing bandwidth",
-                             0.01, step=0.01, min=0.01),
-                actionButton(ns("analyse"), "Perform analyses",
-                             class="btn-primary"),
-                uiOutput(ns("basicStats")), hr(),
-                survival
-            ), mainPanel(
-                highchartOutput(ns("density")),
-                h4("Parametric tests"),
-                div(class="row",
-                    card("ttest"),
-                    card("levene")),
-                h4("Non-parametric tests"),
-                div(class="row",
-                    card("wilcox"),
-                    card("kruskal"),
-                    card("fligner")))
-        )
-    )
+                errorDialog(
+                    paste("Alternative splicing quantification is required for",
+                          "differential splicing analysis."),
+                    id=ns("missingIncLevels"),
+                    buttonLabel="Alternative splicing quantification",
+                    buttonIcon="calculator",
+                    buttonId=ns("missingIncLevelsButton")),
+                hidden(singleEventOptions)),
+            mainPanel(
+                hidden(singleEventInfo) )))
 }
 
 #' Plot distribution through a density plot
@@ -586,7 +602,8 @@ filterGroups <- function(vector, group, threshold=1) {
 #' @param session Shiny session
 #' 
 #' @importFrom highcharter renderHighchart
-#' @importFrom shinyjs runjs
+#' @importFrom shinyjs show hide
+#' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 diffSplicingEventServer <- function(input, output, session) {
     ns <- session$ns
@@ -655,10 +672,31 @@ diffSplicingEventServer <- function(input, output, session) {
         output$fligner    <- renderUI(fligner(eventPSI, groups, stat))
         # output$fisher   <- renderUI(fisher(eventPSI, groups))
         # output$spearman <- renderUI(spearman(eventPSI, groups))
+        
+        show("survivalButton")
+        show("singleEventInfo")
     })
     
     observeEvent(input$missingInclusionLevels, 
                  missingDataGuide("Inclusion levels"))
+    
+    observeEvent(input$missingIncLevelsButton, 
+                 missingDataGuide("Inclusion levels"))
+    
+    # Toggle options only if required data is available
+    observe({
+        # Get splicing event's inclusion levels
+        psi <- getInclusionLevels()
+        if (is.null(psi)) {
+            show("missingIncLevels")
+            hide("singleEventOptions")
+            hide("survivalButton")
+            hide("singleEventInfo")
+        } else {
+            hide("missingIncLevels")
+            show("singleEventOptions")
+        }
+    })
 }
 
 attr(diffSplicingEventUI, "loader") <- "diffSplicing"

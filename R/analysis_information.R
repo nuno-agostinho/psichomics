@@ -139,12 +139,15 @@ infoUI <- function(id) {
 #' @param output Shiny output
 #' @param title Character: title of the message to show to the user
 #' @param description Character: description of the message to show to the user
+#' @inheritDotParams errorDialog -description
+#' 
 #' @importFrom shiny renderUI h3 br tags
+#' 
 #' @return NULL (this function is used to modify the Shiny session's state)
-noinfo <- function(output, title=paste("No information available for the gene",
-                                       "associated with this event."),
-                   description="Select another alternative splicing event.") {
-    output$info <- renderUI( h3(title, br(), tags$small(description)) )
+noinfo <- function(output, description=paste(
+    "No information available for the gene associated with this event."), ...) {
+    output$info <- renderUI(
+        errorDialog(description, style="width: 400px;", ...))
 }
 
 #' Parse XML from Uniprot's RESTful service
@@ -658,9 +661,12 @@ infoServer <- function(input, output, session) {
     observe({
         event <- getEvent()
         if (is.null(getInclusionLevels()))
-            return(noinfo(output, "Quantify alternative splicing",
-                          paste("To perform this analysis, alternative splicing",
-                                "must be quantified first.")))
+            return(noinfo(
+                output,
+                "Alternative splicing quantification is not loaded.",
+                buttonLabel="Alternative splicing quantification",
+                buttonIcon="calculator",
+                buttonId=ns("loadIncLevels")))
         else if (is.null(event) || event == "") return(noinfo(output))
         
         # Select gene in case there is more than one available
@@ -676,6 +682,8 @@ infoServer <- function(input, output, session) {
             }
         })
     })
+    
+    observeEvent(input$loadIncLevels, missingDataGuide("Inclusion levels"))
     
     observe({
         event <- getEvent()

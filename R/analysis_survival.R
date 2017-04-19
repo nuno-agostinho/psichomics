@@ -22,75 +22,83 @@ survivalUI <- function(id) {
         "Clinical groups (interaction)"="formula",
         "Inclusion levels cut-off from the selected splicing event"="psiCutoff")
     
+    survival <- div(
+        id=ns("survivalOptions"),
+        radioButtons(ns("censoring"), "Data censoring", selected="right",
+                     inline=TRUE, choices=c(Left="left", Right="right",
+                                            Interval="interval",
+                                            "Interval 2" = "interval2")),
+        selectizeInput(ns("timeStart"), "Follow up time",
+                       choices=c("No clinical data loaded"="")),
+        # If chosen censoring contains the word 'interval', ask end time
+        conditionalPanel(
+            paste0("input[id='", ns("censoring"),
+                   "'].indexOf('interval') > -1"),
+            selectizeInput(ns("timeStop"), "Ending time",
+                           choices=c("No clinical data loaded"=""))),
+        helpText("For patients for which there is no event reported, time",
+                 "to last follow up is used instead."),
+        selectizeInput(ns("event"), "Event of interest",
+                       choices=c("No clinical data loaded"="")),
+        radioButtons(ns("scale"), "Display time in", inline=TRUE,
+                     c(Days="days", Weeks="weeks", Months="months", 
+                       Years="years")),
+        hr(),
+        radioButtons(ns("modelTerms"), selected="groups",
+                     div("Select groups for survival analysis",
+                         icon("question-circle")),
+                     choices=modelChoices),
+        bsTooltip(ns("modelTerms"), placement="right", 
+                  options = list(container = "body"),
+                  paste(
+                      "Perform survival analysis using:<br/>\u2022",
+                      "User-created <b>clinical groups</b><br/>\u2022",
+                      "A formula that can test clinical attributes with",
+                      "<b>interactions</b><br/>\u2022 <b>Inclusion levels",
+                      "cut-off</b> from the selected alternative splicing",
+                      "event")),
+        conditionalPanel(
+            sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "groups"),
+            selectGroupsUI(ns("dataGroups"), label=NULL),
+            checkboxInput(ns("showOutGroup"), 
+                          "Show data outside chosen groups",
+                          value = FALSE)),
+        conditionalPanel(
+            sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "formula"),
+            textAreaInput(
+                ns("formula"), "Formula with clinical attributes", 
+                placeholder="Start typing to suggest clinical attributes"),
+            uiOutput(ns("formulaSuggestions")),
+            helpText(
+                "To analyse a series of attributes, separate each",
+                "attribute with a", tags$kbd("+"), ". To analyse", 
+                "interactions, use", tags$kbd(":"), " (interactions are",
+                "only usable with Cox models). For example, ",
+                tags$kbd("tumor_stage : gender + race"), br(), br(),
+                "Interesting attributes include", tags$b("tumor_stage"), 
+                "to get tumour stages.")),
+        conditionalPanel(
+            sprintf("input[id='%s'] == '%s'", ns("modelTerms"),
+                    "psiCutoff"),
+            uiOutput(ns("optimalPsi"))),
+        hr(),
+        bsCollapse(open="KM options",
+                   bsCollapsePanel(tagList(icon("sliders"),
+                                           "Kaplan-Meier plot options"),
+                                   value="KM options",
+                                   kaplanMeierOptions, style="info")),
+        actionButton(ns("coxModel"), "Fit Cox PH model"),
+        actionButton(ns("survivalCurves"), class="btn-primary",
+                     "Plot survival curves"))
+    
     tagList(
         uiOutput(ns("modal")),
         sidebarPanel(
-            radioButtons(ns("censoring"), "Data censoring", selected="right",
-                         inline=TRUE, choices=c(Left="left", Right="right",
-                                                Interval="interval",
-                                                "Interval 2" = "interval2")),
-            selectizeInput(ns("timeStart"), "Follow up time",
-                           choices=c("No clinical data loaded"="")),
-            # If chosen censoring contains the word 'interval', ask end time
-            conditionalPanel(
-                paste0("input[id='", ns("censoring"),
-                       "'].indexOf('interval') > -1"),
-                selectizeInput(ns("timeStop"), "Ending time",
-                               choices=c("No clinical data loaded"=""))),
-            helpText("For patients for which there is no event reported, time",
-                     "to last follow up is used instead."),
-            selectizeInput(ns("event"), "Event of interest",
-                           choices=c("No clinical data loaded"="")),
-            radioButtons(ns("scale"), "Display time in", inline=TRUE,
-                         c(Days="days", Weeks="weeks", Months="months", 
-                           Years="years")),
-            hr(),
-            radioButtons(ns("modelTerms"), selected="groups",
-                         div("Select groups for survival analysis",
-                             icon("question-circle")),
-                         choices=modelChoices),
-            bsTooltip(ns("modelTerms"), placement="right", 
-                      options = list(container = "body"),
-                      paste(
-                          "Perform survival analysis using:<br/>\u2022",
-                          "User-created <b>clinical groups</b><br/>\u2022",
-                          "A formula that can test clinical attributes with",
-                          "<b>interactions</b><br/>\u2022 <b>Inclusion levels",
-                          "cut-off</b> from the selected alternative splicing",
-                          "event")),
-            conditionalPanel(
-                sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "groups"),
-                selectGroupsUI(ns("dataGroups"), label=NULL),
-                checkboxInput(ns("showOutGroup"), 
-                              "Show data outside chosen groups",
-                              value = FALSE)),
-            conditionalPanel(
-                sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "formula"),
-                textAreaInput(
-                    ns("formula"), "Formula with clinical attributes", 
-                    placeholder="Start typing to suggest clinical attributes"),
-                uiOutput(ns("formulaSuggestions")),
-                helpText(
-                    "To analyse a series of attributes, separate each",
-                    "attribute with a", tags$kbd("+"), ". To analyse", 
-                    "interactions, use", tags$kbd(":"), " (interactions are",
-                    "only usable with Cox models). For example, ",
-                    tags$kbd("tumor_stage : gender + race"), br(), br(),
-                    "Interesting attributes include", tags$b("tumor_stage"), 
-                    "to get tumour stages.")),
-            conditionalPanel(
-                sprintf("input[id='%s'] == '%s'", ns("modelTerms"),
-                        "psiCutoff"),
-                uiOutput(ns("optimalPsi"))),
-            hr(),
-            bsCollapse(open="KM options",
-                       bsCollapsePanel(tagList(icon("sliders"),
-                                               "Kaplan-Meier plot options"),
-                                       value="KM options",
-                                       kaplanMeierOptions, style="info")),
-            actionButton(ns("coxModel"), "Fit Cox PH model"),
-            actionButton(ns("survivalCurves"), class="btn-primary",
-                         "Plot survival curves")
+            errorDialog("No clinical data is available.",
+                        id=ns("survivalDialog"),
+                        buttonId=ns("loadClinical"),
+                        buttonLabel="Load clinical data"),
+            hidden(survival)
         ),
         mainPanel(
             highchartOutput(ns("survival")),
@@ -214,6 +222,17 @@ survivalServer <- function(input, output, session) {
     ns <- session$ns
     
     selectGroupsServer(session, "dataGroups")
+    
+    observe({
+        if (is.null(getClinicalData())) {
+            show("survivalDialog")
+            hide("survivalOptions")
+        } else {
+            hide("survivalDialog")
+            show("survivalOptions")
+        }
+    })
+    observeEvent(input$loadClinical, missingDataGuide("Clinical data"))
     
     # Update available clinical data attributes to use in a formula
     output$formulaSuggestions <- renderUI({
