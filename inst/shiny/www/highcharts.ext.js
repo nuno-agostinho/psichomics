@@ -17,8 +17,8 @@
             headerFormat: "",
             pointFormat: "<span style=\"color:{point.color}\">\u25CF</span>  " + 
                 "<b>{series.name} ({series.options.display}): {point.name}" +
-                "</b><br/><small>chr{series.options.chr}: {point.x:,.0f} to" +
-                "{point.x2:,.0f} {series.options.strand} strand)<br/>" + 
+                "</b><br/><small>chr{series.options.chr}: {point.x:,.0f} to " +
+                "{point.x2:,.0f} ({series.options.strand} strand)<br/>" + 
                 "<i>{series.options.biotype}</i></small>"
         }
     });
@@ -80,7 +80,7 @@
                 point.shapeArgs = {
                     x: plotX,
                     y: point.plotY + metrics.offset * 1.5 + 40 / point.width,
-                    width: plotX2 - plotX,
+                    width: plotX2 - plotX > 0 ? plotX2 - plotX : 0,
                     height: point.width
                 };
                 point.tooltipPos[0] += width / 2 + plotX / 2;

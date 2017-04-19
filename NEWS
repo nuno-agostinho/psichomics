@@ -1,4 +1,15 @@
-1.2.0 (10 Apr, 2017)
+1.1.10 (18 Apr, 2017)
+====================
+
+    * Gene, protein and transcript information:
+        * Fix tooltip text presentation in transcript plot
+        * Fix JavaScript issues when zooming the transcript plot
+        * Fix error when plotting events associated with multiple genes
+        * Fix error when plotting single-exon transcripts
+        * Protein name, length and function are now presented when available
+        * Improved general presentation of the information
+
+1.1.9 (10 Apr, 2017)
 ====================
 
     * Differential splicing analyses:
@@ -19,7 +30,8 @@
     * Principal component analysis:
         * Improve presentation of available options
     * When clicking on previews of differential splicing and survival analyses,
-    the appropriate analyses will now be shown with the respective options
+    the appropriate analyses will now be automatically rendered with the 
+    respective options
     * Fix buggy browser history when the user is directed to a different tab
     * Consistently use Firebrowse and Firehose across the package
     * Update documentation
