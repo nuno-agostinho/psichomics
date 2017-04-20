@@ -81,6 +81,9 @@ listAllAnnotations <- function(...) {
 #' 
 #' @return HTML elements
 inclusionLevelsInterface <- function(ns) {
+    eventTypes <- getSplicingEventTypes()
+    names(eventTypes) <- sprintf("%s (%s)", names(eventTypes), eventTypes)
+    
     options <- div(
         id=ns("options"),
         selectizeInput(ns("junctionQuant"), choices=NULL,
@@ -88,7 +91,7 @@ inclusionLevelsInterface <- function(ns) {
         selectizeInput(ns("annotation"), choices=listAllAnnotations(),
                        "Alternative splicing event annotation"),
         selectizeInput(ns("eventType"), "Event type(s)", selected = "SE",
-                       choices=getSplicingEventTypes(), multiple = TRUE),
+                       choices=eventTypes, multiple = TRUE),
         numericInput(ns("minReads"), div("Minimum read counts' threshold",
                                          icon("question-circle")), value = 10),
         bsTooltip(ns("minReads"), placement = "right", 

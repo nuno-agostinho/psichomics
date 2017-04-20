@@ -9,9 +9,13 @@
         * Protein name, length and function are now presented when available
         * Improved general presentation of the information
     * Differential splicing analyses:
-        * When clicking on the table link to navigate to the differential
-        splicing analyses of a single event, the appropriate analyses will now
-        be automatically rendered with the respective options, as expected
+        * Click and drag in the plot to zoom in and subsequently filter events
+        shown in the table
+        * Decreased step of sliders
+        * Improve interface of previewed survival curves
+        * When clicking on a table link to navigate to differential splicing
+        analyses of a single event, the appropriate analyses will now be
+        automatically rendered with the respective options, as expected
     * Improve dialogs regarding missing data and other minor interface elements
 
 1.1.9 (10 Apr, 2017)
@@ -24,7 +28,6 @@
         * Transform values of the X and Y axis in the plot using log
         transformed, inverted and absolute values, for instance
         * Highlight events in the plot based on values of the X and Y axis
-        * Click and drag in the plot to select events
         * Table of differential analyses per alternative splicing event is
         filtered according to highlighted and selected events in the plot
     * Gene, protein and transcript information:

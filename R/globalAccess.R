@@ -130,15 +130,26 @@ getDifferentialAnalysesFiltered <- function(category = getCategory())
 getDifferentialAnalysesHighlightedEvents <- function(category = getCategory())
     getGlobal(category, "differentialAnalysesHighlighted")
 
-#' Get brushed events from differential analyses of a data category
+#' Get plot coordinates for zooming from differential analyses of a data
+#' category
 #' @note Needs to be called inside a reactive function
 #' 
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
 #' 
-#' @return Integer of indexes relative to a table of differential analyses
-getDifferentialAnalysesBrushedEvents <- function(category = getCategory())
-    getGlobal(category, "differentialAnalysesBrushed")
+#' @return Integer of X and Y axes coordinates
+getDifferentialAnalysesZoom <- function(category = getCategory())
+    getGlobal(category, "differentialAnalysesZoom")
+
+#' Get selected points in the differential analysis table of a data category
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' 
+#' @return Integer containing index of selected points
+getDifferentialAnalysesSelected <- function(category = getCategory())
+    getGlobal(category, "differentialAnalysesSelected")
 
 #' Get the table of differential analyses' survival data of a data category
 #' @note Needs to be called inside a reactive function
@@ -375,16 +386,28 @@ setDifferentialAnalysesHighlightedEvents <- function(events,
                                                      category = getCategory())
     setGlobal(category, "differentialAnalysesHighlighted", value=events)
 
-#' Set brushed events from differential analyses of a data category
+#' Set plot coordinates for zooming from differential analyses of a data
+#' category
 #' @note Needs to be called inside a reactive function
 #' 
-#' @param events Integer: indexes relative to a table of differential analyses
+#' @param brush Integer: X and Y coordinates
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
-setDifferentialAnalysesBrushedEvents <- function(events, category=getCategory())
-    setGlobal(category, "differentialAnalysesBrushed", value=events)
+setDifferentialAnalysesZoom <- function(zoom, category=getCategory())
+    setGlobal(category, "differentialAnalysesZoom", value=zoom)
+
+#' Set selected points in the differential analysis table of a data category
+#' @note Needs to be called inside a reactive function
+#' 
+#' @param points Integer: index of selected points
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' 
+#' @return NULL (this function is used to modify the Shiny session's state)
+setDifferentialAnalysesSelected <- function(points, category=getCategory())
+    setGlobal(category, "differentialAnalysesSelected", value=points)
 
 #' Set the table of differential analyses' survival data of a data category
 #' @note Needs to be called inside a reactive function
