@@ -4,10 +4,10 @@
 \alias{eventPlotOptions}
 \title{Options for event plotting}
 \usage{
-eventPlotOptions(ns, df)
+eventPlotOptions(session, df)
 }
 \arguments{
-\item{ns}{Namespace function}
+\item{session}{Shiny session}
 
 \item{df}{Data frame}
 }
