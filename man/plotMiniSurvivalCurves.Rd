@@ -35,7 +35,7 @@ interval or follow up time}
 interval}
 }
 \value{
-A \code{"highchart"} object to plot
+A \code{highchart} object to plot
 }
 \description{
 Perform and plot survival curves

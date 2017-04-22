@@ -7,8 +7,8 @@
 shinyjs.init = function() {
     window.onpopstate = function (event) {
         Shiny.onInputChange('appLocation', location.search);
-    }
-}
+    };
+};
 
 /**
  * Update URL to reflect the current browser navigation
@@ -24,8 +24,8 @@ updateHistory = function(params) {
             encodeURIComponent(params[key]));
     }
     queryString = '?' + queryString.join('&');
-    history.pushState(null, null, queryString)
-}
+    history.pushState(null, null, queryString);
+};
 
 /**
  * Change active tab to the Data panel and collapse data panels
@@ -166,7 +166,7 @@ function createDiffSplicingLinks(row, data, index) {
     var eventID = event.replace(/ /g, "_");
     
     $('td:eq(0)', row).html("<a onclick='showDiffSplicing(\"" + eventID +
-        "\")' href='javascript:void(0);' " + 
+        "\", autoParams=true)' href='javascript:void(0);' " + 
         "title='Differential splicing analyses for " + event + "'>" + event +
         "</a>");
     return row;

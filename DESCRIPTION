@@ -1,7 +1,7 @@
 Package: psichomics
 Title: Graphical Interface for Alternative Splicing Quantification, Analysis and
     Visualisation
-Version: 1.1.9
+Version: 1.1.10
 Encoding: UTF-8
 Authors@R: c( person("Nuno", "Saraiva-Agostinho", ,
         "nunodanielagostinho@gmail.com", role = c("aut", "cre")),
@@ -91,7 +91,7 @@ Collate:
     'formats_gtexJunctionReads.R'
     'formats_gtexSampleInfo.R'
     'groups.R'
-    'settings.R'
+    'help.R'
 biocViews: Sequencing, RNASeq, AlternativeSplicing,
     DifferentialSplicing, Transcription, GUI, PrincipalComponent,
     Survival, BiomedicalInformatics, Transcriptomics,

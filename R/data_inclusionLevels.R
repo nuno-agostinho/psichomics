@@ -81,24 +81,33 @@ listAllAnnotations <- function(...) {
 #' 
 #' @return HTML elements
 inclusionLevelsInterface <- function(ns) {
-    tagList(
-        uiOutput(ns("modal")),
-        helpText("Exon inclusion levels are measured from junction",
-                 "quantification using the Percent Spliced-In (PSI) metric."),
+    eventTypes <- getSplicingEventTypes()
+    names(eventTypes) <- sprintf("%s (%s)", names(eventTypes), eventTypes)
+    
+    options <- div(
+        id=ns("options"),
         selectizeInput(ns("junctionQuant"), choices=NULL,
                        "Alternative splicing junction quantification"),
         selectizeInput(ns("annotation"), choices=listAllAnnotations(),
                        "Alternative splicing event annotation"),
         selectizeInput(ns("eventType"), "Event type(s)", selected = "SE",
-                       choices=getSplicingEventTypes(), multiple = TRUE),
-        numericInput(ns("minReads"), div("Minimum read counts threshold",
+                       choices=eventTypes, multiple = TRUE),
+        numericInput(ns("minReads"), div("Minimum read counts' threshold",
                                          icon("question-circle")), value = 10),
         bsTooltip(ns("minReads"), placement = "right", 
                   options = list(container = "body"),
                   paste("Inclusion levels calculated with a number of read",
-                        "counts below this threshold are discarded.")),
+                        "counts below this threshold are discarded.")))
+    
+    tagList(
+        uiOutput(ns("modal")),
+        helpText("Exon inclusion levels are measured from junction",
+                 "quantification using the Percent Spliced-In (PSI) metric."),
+        errorDialog("No junction quantification is loaded.",
+                    id=ns("missingData"), style="margin: 10px;"),
+        hidden(options),
         actionButton(ns("loadIncLevels"), "Load from file"),
-        processButton(ns("calcIncLevels"), "Quantify events"))
+        hidden(processButton(ns("calcIncLevels"), "Quantify events")))
 }
 
 #' Interface of the alternative splicing event quantification module
@@ -193,10 +202,8 @@ loadAnnotation <- function(annotation) {
 #' @return NULL (this function is used to modify the Shiny session's state)
 inclusionLevelsServer <- function(input, output, session) {
     ns <- session$ns
-    
-    observeEvent(input$takeMeThere, missingDataGuide("Junction quantification"))
-    observeEvent(input$takeMeToClinical, missingDataGuide("Clinical data"))
-    
+    observeEvent(input$missing, missingDataGuide("Junction quantification"))
+
     observe({
         junctionQuant <- getJunctionQuantification()
         if (!is.null(junctionQuant)) {
@@ -210,10 +217,21 @@ inclusionLevelsServer <- function(input, output, session) {
         }
     })
     
+    observe({
+        if (is.null(getData()) || is.null(getJunctionQuantification())) {
+            hide("options")
+            hide("calcIncLevels")
+            show("missingData")
+        } else {
+            show("options")
+            show("calcIncLevels")
+            hide("missingData")
+        }
+    })
+    
     observeEvent(input$calcIncLevels, {
         if (is.null(getData()) || is.null(getJunctionQuantification())) {
-            missingDataModal(session, "Junction quantification",
-                             ns("takeMeThere"))
+            missingDataModal(session, "Junction quantification", ns("missing"))
         } else if (!is.null(getInclusionLevels())) {
             if (!is.null(getDifferentialAnalyses())) {
                 warningModal(session, "Warning",
