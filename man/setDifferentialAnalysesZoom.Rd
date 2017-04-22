@@ -8,10 +8,10 @@ category}
 setDifferentialAnalysesZoom(zoom, category = getCategory())
 }
 \arguments{
+\item{zoom}{Integer: X and Y coordinates}
+
 \item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
 it uses the selected data category}
-
-\item{brush}{Integer: X and Y coordinates}
 }
 \value{
 NULL (this function is used to modify the Shiny session's state)
