@@ -4,12 +4,13 @@
 \alias{plotTranscripts}
 \title{Plot transcripts}
 \usage{
-plotTranscripts(info, eventPosition, shiny = FALSE)
+plotTranscripts(info, eventPosition = NULL, shiny = FALSE)
 }
 \arguments{
 \item{info}{Information retrieved from ENSEMBL}
 
-\item{eventPosition}{Numeric: coordinates of the alternative splicing event}
+\item{eventPosition}{Numeric: coordinates of the alternative splicing event;
+NULL by default}
 
 \item{shiny}{Boolean: is the function running in a Shiny session? FALSE by
 default}

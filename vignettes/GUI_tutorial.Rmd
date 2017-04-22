@@ -1,7 +1,7 @@
 ---
 title: 'psichomics tutorial: visual interface'
 author: "Nuno Saraiva-Agostinho"
-date: "18 February 2016"
+date: "22 April 2016"
 bibliography: refs.bib
 output:
     rmarkdown::html_vignette:
@@ -14,13 +14,14 @@ vignette: >
 
 ---
 
-psichomics is an interactive R package for the analysis of alternative splicing 
-using data from [The Cancer Genome Atlas (TCGA)][5] (containing molecular data
-associated with 34 tumour types) and from the [Genotype-Tissue Expression][8]
-project (containing data for multiple normal human tissues). The data available
-in these including clinical information and transcriptomic data, such as the
-quantification of RNA-Seq reads aligning to splice junctions (henceforth called
-junction quantification) and exons.
+psichomics is an interactive R package for integrative analyses of alternative
+splicing using data from [The Cancer Genome Atlas (TCGA)][5] (containing 
+molecular data associated with 34 tumour types) and from the
+[Genotype-Tissue Expression (GTEx)][8] project (containing data for multiple
+normal human tissues). The data leveraged from these projects includes clinical 
+information and transcriptomic data, such as the quantification of RNA-Seq reads
+aligning to splice junctions (henceforth called junction quantification) and
+exons.
 
 # Installing and starting the program
 Install psichomics by typing the following in an R console (the 
@@ -76,7 +77,7 @@ field below the column name. Filtering and sorting of loaded data have **no**
 impact on the subsequent analyses available in the application.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='400pt'}
-knitr::include_graphics("load_data.png")
+knitr::include_graphics("img/1_load_data.png")
 ```
 
 **Figure 1:** Available options for TCGA data loading.
@@ -102,7 +103,7 @@ by parsing the annotation from programs like [VAST-TOOLS][4], [MISO][3],
 Click on **Quantify events** to start quantifying alternative splicing.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='400pt'}
-knitr::include_graphics("quantify_splicing.png")
+knitr::include_graphics("img/2_quantify_splicing.png")
 ```
 
 **Figure 2:** Available options for alternative splicing quantification.
@@ -156,8 +157,9 @@ tamoxifen:
 9. Plot survival curves and fit a Cox proportional hazards (PH) model by 
 clicking on the respective buttons at the bottom.
 
-[^4]: Unfortunately, TCGA data divides drugs taken by patients through multiple
-columns. Here, only the majority of tamoxifen-treated patients are selected.
+[^4]: Unfortunately, drugs administred to patients are spanned across multiple
+columns in TCGA data. Here, only the majority of tamoxifen-treated patients are
+selected.
 
 The resulting plot will return the survival curves for:
 
@@ -166,17 +168,16 @@ The resulting plot will return the survival curves for:
 * non-ER-positive tamoxifen-treated patients.
 
 Information regarding number of individuals and events is returned when hovering
-over each survival curve in the plot. The plot also allows zooming in by
-clicking and dragging and to omit data series by clicking on their name in the 
-legend.
+over a survival curve in the plot. The plot also allows zooming in by clicking 
+and dragging and to omit data series by clicking on their name in the legend.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='400pt'}
-knitr::include_graphics("survival.png")
+knitr::include_graphics("img/3_survival.png")
 ```
 
 **Figure 3:** Available options for patient survival.
 
-# Exploring principal component analysis
+# Exploring the results of principal component analyses
 
 Principal component analysis (PCA) is a technique to reduce data dimensionality
 by identifying variable combinations (called principal components) that explain
@@ -195,8 +196,8 @@ expression:
 select the *positive* and *negative* groups for ER expression.
 7. Click on **Calculate PCA**.
 
-[^2]: As PSI values are fixed between an interval of 0 to 1, there is no need to
-scale values.
+[^2]: As PSI values are fixed between a closed interval from 0 to 1, values are
+already scaled.
 [^3]: Missing values are replaced with the median value for the respective 
 event across samples.
 
@@ -212,7 +213,7 @@ in the PCA plot.
 4. Click on **Plot PCA**.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='700pt'}
-knitr::include_graphics("pca.png")
+knitr::include_graphics("img/4_pca.png")
 ```
 
 **Figure 4:** Available options for PCA performance and plotting.
@@ -220,16 +221,17 @@ knitr::include_graphics("pca.png")
 Two PCA plots are then rendered. The plot above is a **score plot** that shows
 the clinical samples, while the **loadings plot** below displays the variables 
 (in this case, alternative splicing events). The bubble size of the loadings 
-plot represent the total contribution of each alternative splicing event to the
+plot represents the total contribution of each alternative splicing event to the
 selected principal components. By clicking on one alternative splicing event, 
 the respective differential splicing analysis will be shown.
 
 Note that the clinical samples from ER-positive individuals (i.e. patients whose
 cancer cells express estrogen receptors) seem to separate from samples from
-ER-negative individuals along the principal component 1. There is one 
+ER-negative individuals along the principal component 2. There is one 
 alternative splicing event that may contribute to this separation:
 *SE 10 + 79797062 79799962 79799983 79800373 RPS24*. Click on this alternative 
-splicing event to perform differential splicing analysis.
+splicing event (the one with the lowest value for PC2 in the loadings plot) to
+perform differential splicing analysis.
 
 ## Differential splicing analysis
 
@@ -279,7 +281,7 @@ Click the buttons *Plot survival curves* and/or *Fit Cox PH model* whenever this
 slider is changed to update the Kaplan-Meier plot and/or the Cox model.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='350pt'}
-knitr::include_graphics("psi_cutoff_2.png")
+knitr::include_graphics("img/5_psi_cutoff_2.png")
 ```
 
 **Figure 5:** Options to adjust the alternative splicing quantification cut-off
@@ -311,70 +313,93 @@ articles** to be directed to PubMed.
     any domains are annotated in the alternative and/or constitutive exons of 
     the splicing event.
 
-# Exploring differential splicing analysis
+# Exploring the results of differential splicing analyses
 
 To analyse differential splicing, click on the **Analyses** tab located in the
 navigation menu at the top and select **Differential splicing analysis**. Scroll
-to the top of the page and click on **All events (table)**.
+to the top of the page and click on **Exploratory (all events)**.
 
-1. In **Groups of samples to analyse**, click on **Samples by selected groups**.
-2. Select the *positive* and *negative* ER-expression groups.
-3. Confirm that all statistical analyses of interest are checked.
-4. Confirm p-values will be adjusted according to the
+1. Click on the blue panel **Perform statistical analyses** (if not open
+already).
+2. In **Groups of samples to analyse**, click on **Samples by selected groups**.
+3. Select the *positive* and *negative* ER-expression groups.
+4. Confirm that all statistical analyses of interest are checked.
+5. Confirm p-values will be adjusted according to the
 **Benjamini-Hochberg's method**.
-5. Click on **Perform analyses**.
+6. Click on **Perform analyses**.
 
-When the analyses complete, the results are shown in a filtrable and sortable
-table.
+When the analyses complete, the results are shown in a plot and in a filtrable
+and sortable table.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='350pt'}
-knitr::include_graphics("diff_splicing.png")
+knitr::include_graphics("img/6_diff_splicing.png")
 ```
 
 **Figure 6:** Options for differential splicing analysis.
 
-## Statistical significance
-Select statistically significant splicing events by performing the following:
+## Filtering alternative splicing events
+Filter events in both the plot and the table by a considerable difference in
+median between the selected groups:
 
-1. Find a column whose name is *Fligner-Killeen p-value (BH adjusted)*. Note
-that **Horizontal scrolling** is required to visualise all available columns.
-2. Click the box, labeled **All**, just below the column name and filter the
-values between 0 and around 0.05.
-3. Sort the values by the difference in variance by clicking once on
-**Delta variance**.
+1. Click on the blue panel **Event plot options and table filtering** (if not 
+open already).
+2. Click on the **X axis** tab.
+3. Check if *Delta median* is selected for the X axis.
+4. Click on **Highlight points based on Y values** and select values lower than
+-0.2 and higher than 0.2. To do so, drag the slider's minimum to -0.2 and the
+maximum to 0.2 and check **Invert highlighted values**.
 
-## Distribution of alternative splicing quantifications
+Next, filter statistically significant splicing events:
 
-The statistical analyses table provides a column with a density plot of the
-distribution of the alternative splicing quantification for each event. By 
-clicking on the plot (or its respective event identifier), a page dedicated to 
-that alternative splicing event's statistics and exhibiting the density plot in 
-greater detail will show up.
+1. Click on the **Y axis** tab.
+2. Select *Fligner-Killeen p-value (BH adjusted)* for the Y axis.
+3. In **Data transformation of Y values**, select *-log10(y)*.
+4. Click on **Highlight points based on Y values** and change the minimum value
+to filter significant events. For instance, to consider a p-value of 0.01 or
+lower, the minimum should be 2, i.e. -log10(0.01).
 
-To go back to the table with all events, click on the button above the grey box
-titled **All events (table)**.
+Please, now turn your attention to the table below the plot. The table is
+filtered according to highlighted events currently shown in the plot. If you
+zoom in (by clicking and dragging in the plot), the table will be filtered
+according to the highlighted events in the zoomed area. If no events are 
+highlighted in the plot, the table presents all events currently shown in the
+plot.
 
-## Survival analysis
+The table itself is also filtrable and sortable. For instance, to sort the table
+by the difference in variance, click once on **Delta variance**. Note that
+**horizontal scrolling** is required to visualise all available columns.
 
-To study the impact of an alternative splicing event on prognosis, survival data
-can be incorporated for 10 splicing events shown in the table at a time, by
-default. After performing differential splicing analysis, the options shown in 
-**Figure 7** appear. Given the slow process of calculating the optimal splicing
-quantification cut-off for multiple events, it is recommended to perform this on
-either the events shown on-screen or after filtering the table for 
-differentially spliced events supported by statistical significance.
+The table also provides a column with a density plot of the distribution of the
+alternative splicing quantification for each event. By clicking on the density
+plot (or its respective event identifier), a page dedicated to that alternative
+splicing event's statistics and exhibiting the density plot in greater detail 
+will show up. To go back to the table with all events, scroll to the top and 
+click on the button titled **Exploratory (all events)**.
 
-Perform survival analysis by alternative splicing quantification cut-off:
+## Performing multiple survival analysis
 
-1. Check **right** data censoring.
-2. Use *days to death* for the **follow up time**.
-3. Use *death* as the **event of interest**.
-4. Select to perform survival analyses based on the **splicing events shown in
+To study the impact of an alternative splicing event on prognosis, survival
+curves can be calculated for multiple splicing events. Given the slow process of
+calculating the optimal splicing quantification cut-off for multiple events, it
+is recommended to perform this on either the events shown on-screen or after
+filtering the table for  differentially spliced events supported by statistical
+significance. Survival curves are presented according to the respective 
+on-screen splicing events in the table.
+
+Perform survival analysis by alternative splicing quantification cut-off, as
+according to the following:
+
+1. Click on the blue panel
+**Survival analyses by splicing quantification cut-off** to open it.
+2. Check **right** data censoring.
+3. Use *days to death* for the **follow up time**.
+4. Use *death* as the **event of interest**.
+5. Select to perform survival analyses based on the **splicing events shown in
 the screen**.
-5. Click on **Plot survival curves**.
+6. Click on **Plot survival curves**.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='400pt'}
-knitr::include_graphics("psi_cutoff.png")
+knitr::include_graphics("img/7_psi_cutoff.png")
 ```
 
 **Figure 7:** Available options for survival analysis.

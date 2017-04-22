@@ -353,7 +353,7 @@ groupPerSample <- function(groups, samples, includeOuterGroup=FALSE,
 #' Style and show a modal
 #' 
 #' You can also use \code{errorModal} and \code{warningModal} to use template 
-#' modals already stylised to show errors and warnings respectively.
+#' modals already stylised to show errors and warnings, respectively.
 #' 
 #' @param session Current Shiny session
 #' @param title Character: modal title
@@ -408,7 +408,7 @@ infoModal <- function(session, title, ..., size="small", footer=NULL) {
                echo=FALSE, iconName="info-circle")
 }
 
-#' Show an alert
+#' Show or remove an alert
 #' 
 #' You can also use \code{errorAlert} and \code{warningAlert} to use template 
 #' alerts already stylised to show errors and warnings respectively.
@@ -463,8 +463,42 @@ warningAlert <- function(session, ..., title=NULL, dismissable=TRUE,
               dismissable=dismissable, alertId=alertId)
 }
 
+#' @rdname showAlert
+#' 
+#' @param output Shiny output
 removeAlert <- function(output, alertId="alert") {
     output[[alertId]] <- renderUI(NULL)
+}
+
+#' Error alert in the style of a dialog box with a button
+#' 
+#' @param id Character: identifier (NULL by default)
+#' @param description Character: description
+#' @param buttonId Character: button identifier (NULL by default)
+#' @param buttonLabel Character: button label (NULL by default)
+#' @param buttonIcon Character: button icon (NULL by default)
+#' @param ... Extra parameters when creating the alert
+#'
+#' @importFrom shiny icon div actionButton
+#'
+#' @return HTML elements
+errorDialog <- function(description, ..., buttonLabel=NULL, buttonIcon=NULL, 
+                        buttonId=NULL, id=NULL) {
+    if (!is.null(buttonLabel)) {
+        if (!is.null(buttonIcon))
+            icon <- icon(buttonIcon)
+        else
+            icon <- NULL
+        button <- tagList(br(), br(),
+                          actionButton(buttonId, icon=icon, buttonLabel, 
+                                       class="btn-danger btn-block"))
+    } else {
+        button <- NULL
+    }
+    
+    div(id=id, class="alert alert-danger", role="alert",
+        style="margin-bottom: 0px;", icon("exclamation-circle"), description, 
+        button, ...)
 }
 
 #' Sample variance by row

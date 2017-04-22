@@ -5,7 +5,7 @@
 \title{Create plot for events}
 \usage{
 createEventPlotting(df, x, y, params, highlightX, highlightY, highlightParams,
-  selected, selectedParams)
+  selected, selectedParams, xlim, ylim)
 }
 \arguments{
 \item{df}{Data frame}
@@ -28,6 +28,10 @@ related to most points}
 
 \item{selectedParams}{List of parameters to pass to 
 \code{\link[ggplot2]{geom_point}} related to selected points}
+
+\item{xlim}{Numeric: limits of X axis}
+
+\item{ylim}{Numeric: limits of Y axis}
 }
 \value{
 HTML elements

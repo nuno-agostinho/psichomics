@@ -4,16 +4,22 @@
 \alias{noinfo}
 \title{Interface when no information could be retrieved}
 \usage{
-noinfo(output, title = paste("No information available for the gene",
-  "associated with this event."),
-  description = "Select another alternative splicing event.")
+noinfo(output,
+  description = paste("No information available for the gene associated with this event."),
+  ...)
 }
 \arguments{
 \item{output}{Shiny output}
 
-\item{title}{Character: title of the message to show to the user}
-
 \item{description}{Character: description of the message to show to the user}
+
+\item{...}{Arguments passed on to \code{errorDialog}
+\describe{
+  \item{id}{Character: identifier (NULL by default)}
+  \item{buttonId}{Character: button identifier (NULL by default)}
+  \item{buttonLabel}{Character: button label (NULL by default)}
+  \item{buttonIcon}{Character: button icon (NULL by default)}
+}}
 }
 \value{
 NULL (this function is used to modify the Shiny session's state)

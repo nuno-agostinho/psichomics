@@ -4,7 +4,8 @@
 \alias{showAlert}
 \alias{errorAlert}
 \alias{warningAlert}
-\title{Show an alert}
+\alias{removeAlert}
+\title{Show or remove an alert}
 \usage{
 showAlert(session, ..., title = NULL, style = NULL, dismissable = TRUE,
   alertId = "alert")
@@ -14,6 +15,8 @@ errorAlert(session, ..., title = NULL, dismissable = TRUE,
 
 warningAlert(session, ..., title = NULL, dismissable = TRUE,
   alertId = "alert")
+
+removeAlert(output, alertId = "alert")
 }
 \arguments{
 \item{session}{Shiny session}
@@ -28,6 +31,8 @@ or NULL)}
 \item{dismissable}{Boolean: is the alert dismissable? TRUE by default}
 
 \item{alertId}{Character: alert identifier}
+
+\item{output}{Shiny output}
 }
 \value{
 NULL (this function is used to modify the Shiny session's state)

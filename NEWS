@@ -1,4 +1,31 @@
-1.2.0 (10 Apr, 2017)
+1.1.10 (18 Apr, 2017)
+====================
+
+    * Gene, protein and transcript information:
+        * Fix tooltip text presentation in transcript plot
+        * Fix JavaScript issues when zooming the transcript plot
+        * Fix error when plotting events associated with multiple genes
+        * Fix error when plotting single-exon transcripts
+        * Protein name, length and function are now presented when available
+        * Improved general presentation of the information
+    * Differential splicing analyses:
+        * Click and drag in the plot to zoom in and subsequently filter events
+        shown in the table
+        * Decreased step of sliders
+        * Improve interface of previewed survival curves
+        * When clicking on a table link to navigate to differential splicing
+        analyses of a single event, the appropriate analyses will now be
+        automatically rendered with the respective options, as expected
+    * Settings (renamed to "Help"):
+        * Add links to tutorials and user feedback
+        * Add app information and acknowledgments
+        * Remove unused option for choosing cores (all performed operations are
+        still single-core, given the difficulty of working with multiprocesses
+        in Shiny)
+    * Improve dialogs regarding missing data and other minor interface elements
+    * Update documentation with volcano plot
+
+1.1.9 (10 Apr, 2017)
 ====================
 
     * Differential splicing analyses:
@@ -8,7 +35,6 @@
         * Transform values of the X and Y axis in the plot using log
         transformed, inverted and absolute values, for instance
         * Highlight events in the plot based on values of the X and Y axis
-        * Click and drag in the plot to select events
         * Table of differential analyses per alternative splicing event is
         filtered according to highlighted and selected events in the plot
     * Gene, protein and transcript information:
@@ -19,7 +45,8 @@
     * Principal component analysis:
         * Improve presentation of available options
     * When clicking on previews of differential splicing and survival analyses,
-    the appropriate analyses will now be shown with the respective options
+    the appropriate analyses will now be automatically rendered with the 
+    respective options
     * Fix buggy browser history when the user is directed to a different tab
     * Consistently use Firebrowse and Firehose across the package
     * Update documentation
