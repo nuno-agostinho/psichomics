@@ -17,6 +17,7 @@
         analyses of a single event, the appropriate analyses will now be
         automatically rendered with the respective options, as expected
     * Improve dialogs regarding missing data and other minor interface elements
+    * Update documentation with volcano plot
 
 1.1.9 (10 Apr, 2017)
 ====================
