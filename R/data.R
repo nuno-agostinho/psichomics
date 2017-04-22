@@ -160,7 +160,8 @@ dataUI <- function(id, tab) {
           tags$a(href="http://imm.medicina.ulisboa.pt/group/compbio/",
                  target="_blank", "Nuno Morais Lab, iMM"), 
           "(", tags$a(href="mailto:nunodanielagostinho@gmail.com", 
-                      "Nuno Agostinho", icon("envelope-o")), ", 2015-2016)", 
+                      "Nuno Saraiva-Agostinho", icon("envelope-o")),
+          ", 2015-2017)", 
           br(), "Special thanks to my lab colleagues for their work-related",
           br(), "support and supporting chatter."))
     

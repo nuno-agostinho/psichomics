@@ -91,7 +91,7 @@ Collate:
     'formats_gtexJunctionReads.R'
     'formats_gtexSampleInfo.R'
     'groups.R'
-    'settings.R'
+    'help.R'
 biocViews: Sequencing, RNASeq, AlternativeSplicing,
     DifferentialSplicing, Transcription, GUI, PrincipalComponent,
     Survival, BiomedicalInformatics, Transcriptomics,

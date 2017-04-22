@@ -16,6 +16,12 @@
         * When clicking on a table link to navigate to differential splicing
         analyses of a single event, the appropriate analyses will now be
         automatically rendered with the respective options, as expected
+    * Settings (renamed to "Help"):
+        * Add links to tutorials and user feedback
+        * Add app information and acknowledgments
+        * Remove unused option for choosing cores (all performed operations are
+        still single-core, given the difficulty of working with multiprocesses
+        in Shiny)
     * Improve dialogs regarding missing data and other minor interface elements
     * Update documentation with volcano plot
 
