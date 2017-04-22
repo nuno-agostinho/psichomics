@@ -390,7 +390,7 @@ setDifferentialAnalysesHighlightedEvents <- function(events,
 #' category
 #' @note Needs to be called inside a reactive function
 #' 
-#' @param brush Integer: X and Y coordinates
+#' @param zoom Integer: X and Y coordinates
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
 #' 

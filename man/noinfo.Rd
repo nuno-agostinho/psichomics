@@ -20,8 +20,6 @@ noinfo(output,
   \item{buttonLabel}{Character: button label (NULL by default)}
   \item{buttonIcon}{Character: button icon (NULL by default)}
 }}
-
-\item{title}{Character: title of the message to show to the user}
 }
 \value{
 NULL (this function is used to modify the Shiny session's state)
