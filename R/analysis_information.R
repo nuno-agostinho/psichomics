@@ -137,7 +137,6 @@ infoUI <- function(id) {
 
 #' Interface when no information could be retrieved
 #' @param output Shiny output
-#' @param title Character: title of the message to show to the user
 #' @param description Character: description of the message to show to the user
 #' @inheritDotParams errorDialog -description
 #' 

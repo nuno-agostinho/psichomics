@@ -77,7 +77,7 @@ field below the column name. Filtering and sorting of loaded data have **no**
 impact on the subsequent analyses available in the application.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='400pt'}
-knitr::include_graphics("img/1. load data.png")
+knitr::include_graphics("img/1_load_data.png")
 ```
 
 **Figure 1:** Available options for TCGA data loading.
@@ -103,7 +103,7 @@ by parsing the annotation from programs like [VAST-TOOLS][4], [MISO][3],
 Click on **Quantify events** to start quantifying alternative splicing.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='400pt'}
-knitr::include_graphics("img/2. quantify splicing.png")
+knitr::include_graphics("img/2_quantify_splicing.png")
 ```
 
 **Figure 2:** Available options for alternative splicing quantification.
@@ -172,7 +172,7 @@ over a survival curve in the plot. The plot also allows zooming in by clicking
 and dragging and to omit data series by clicking on their name in the legend.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='400pt'}
-knitr::include_graphics("img/3. survival.png")
+knitr::include_graphics("img/3_survival.png")
 ```
 
 **Figure 3:** Available options for patient survival.
@@ -213,7 +213,7 @@ in the PCA plot.
 4. Click on **Plot PCA**.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='700pt'}
-knitr::include_graphics("img/4. pca.png")
+knitr::include_graphics("img/4_pca.png")
 ```
 
 **Figure 4:** Available options for PCA performance and plotting.
@@ -281,7 +281,7 @@ Click the buttons *Plot survival curves* and/or *Fit Cox PH model* whenever this
 slider is changed to update the Kaplan-Meier plot and/or the Cox model.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='350pt'}
-knitr::include_graphics("img/5. psi cutoff 2.png")
+knitr::include_graphics("img/5_psi_cutoff_2.png")
 ```
 
 **Figure 5:** Options to adjust the alternative splicing quantification cut-off
@@ -332,7 +332,7 @@ When the analyses complete, the results are shown in a plot and in a filtrable
 and sortable table.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='350pt'}
-knitr::include_graphics("img/6. diff splicing.png")
+knitr::include_graphics("img/6_diff_splicing.png")
 ```
 
 **Figure 6:** Options for differential splicing analysis.
@@ -399,7 +399,7 @@ the screen**.
 6. Click on **Plot survival curves**.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='400pt'}
-knitr::include_graphics("img/7. psi cutoff.png")
+knitr::include_graphics("img/7_psi_cutoff.png")
 ```
 
 **Figure 7:** Available options for survival analysis.
