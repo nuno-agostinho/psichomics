@@ -7,8 +7,8 @@
 shinyjs.init = function() {
     window.onpopstate = function (event) {
         Shiny.onInputChange('appLocation', location.search);
-    }
-}
+    };
+};
 
 /**
  * Update URL to reflect the current browser navigation
@@ -24,8 +24,8 @@ updateHistory = function(params) {
             encodeURIComponent(params[key]));
     }
     queryString = '?' + queryString.join('&');
-    history.pushState(null, null, queryString)
-}
+    history.pushState(null, null, queryString);
+};
 
 /**
  * Change active tab to the Data panel and collapse data panels
