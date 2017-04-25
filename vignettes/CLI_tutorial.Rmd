@@ -467,7 +467,7 @@ It is also possible to plot transcripts and proteins related to the gene
 associated to a given splicing event. To retrieve and plot transcript
 information from [ENSEMBL][4]:
 
-```{r plot transcripts, eval=FALSE}
+```{r plot transcripts}
 parsed <- parseSplicingEvent(event)
 info <- queryEnsemblByEvent(event, species="human", assembly="hg19")
 plotTranscripts(info, parsed$pos[[1]])

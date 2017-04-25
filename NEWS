@@ -1,4 +1,11 @@
-1.1.10 (18 Apr, 2017)
+1.2.1 (24 Apr, 2017)
+====================
+
+    * Gene, protein and transcript information:
+        * Fix missing file required for transcript plots
+    * Update command-line interface tutorial to render a transcript plot
+
+1.2.0 (22 Apr, 2017)
 ====================
 
     * Gene, protein and transcript information:
@@ -25,7 +32,7 @@
     * Improve dialogs regarding missing data and other minor interface elements
     * Update documentation with volcano plot
 
-1.1.9 (10 Apr, 2017)
+1.0.9 (10 Apr, 2017)
 ====================
 
     * Differential splicing analyses:

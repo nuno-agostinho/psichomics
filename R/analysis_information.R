@@ -296,7 +296,7 @@ plottableXranges <- function(hc, shiny=FALSE) {
     hc <- toJSON(hc$x$hc_opts, auto_unbox=TRUE)
     hc <- gsub('"---|---"', "", hc)
     
-    extended <- includeScript("inst/shiny/www/highcharts.ext.js")
+    extended <- includeScript(insideFile("shiny", "www", "highcharts.ext.js"))
     
     if (shiny) {
         # No need to load Highcharts in Shiny
