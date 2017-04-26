@@ -19,7 +19,7 @@ Description: Interactive R package with a Shiny-based graphical interface for
     features (such as tumour stage or survival) associated with TCGA and GTEx
     samples.
 Depends:
-    R (>= 3.3),
+    R (>= 3.4),
     shiny (>= 1.0.0),
     shinyBS
 License: MIT + file LICENSE
