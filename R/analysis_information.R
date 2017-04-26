@@ -648,7 +648,6 @@ renderProteinInfo <- function(protein, transcript, species, assembly) {
 #' @param output Shiny output
 #' @param session Shiny session
 #' 
-#' @importFrom Sushi plotGenes zoomsregion labelgenome
 #' @importFrom highcharter highchart %>%
 #' @importFrom shiny fixedRow safeError
 #' @importFrom methods is
