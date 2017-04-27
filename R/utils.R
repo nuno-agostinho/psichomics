@@ -993,3 +993,35 @@ hc_scatter <- function (hc, x, y, z=NULL, label=NULL, showInLegend=FALSE, ...) {
                                     showInLegend=showInLegend,
                                     dataLabels=dlopts), args))
 }
+
+#' Create an icon based on set operations
+#' 
+#' Based on the \code{\link[shiny]{icon}} function
+#' 
+#' @inheritParams shiny::icon
+#' @param ... Extra arguments for the icon HTML element
+#' 
+#' @importFrom shiny icon
+#' @importFrom htmltools htmlDependency
+#' 
+#' @return Icon element
+setOperationIcon <- function (name, class=NULL, ...) {
+    if (length(list(...)) == 0) {
+        style <- paste("font-size: 20px;", "line-height: 0;",
+                       "vertical-align: bottom;", "display: inline-block;")
+    } else {
+        style <- NULL
+    }
+    
+    prefix <- "set"
+    iconClass <- ""
+    if (!is.null(name)) 
+        iconClass <- paste0(prefix, " ", prefix, "-", name)
+    if (!is.null(class)) 
+        iconClass <- paste(iconClass, class)
+    iconTag <- tags$i(class=iconClass, style=style, ...)
+    htmlDependencies(iconTag) <- htmlDependency(
+        "set-operations", "1.0",
+        c(href="set-operations"), stylesheet = "css/set-operations.css")
+    return(iconTag)
+}

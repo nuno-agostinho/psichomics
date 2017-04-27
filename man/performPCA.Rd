@@ -17,7 +17,7 @@ performPCA(data, center = TRUE, scale. = FALSE, naTolerance = 0)
 
 \item{scale.}{a logical value indicating whether the variables should
     be scaled to have unit variance before the analysis takes
-    place. The default is \code{FALSE} for consistency with S, but
+    place.  The default is \code{FALSE} for consistency with S, but
     in general scaling is advisable.  Alternatively, a vector of length
     equal the number of columns of \code{x} can be supplied.  The
     value is passed to \code{\link{scale}}.}
