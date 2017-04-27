@@ -484,78 +484,142 @@ renameGroups <- function(new, old) {
     return(new)
 }
 
+#' Perform set operations on selected groups
+#'
+#' @param operation Character: set operation
+#' @param groups Matrix: groups
+#' @param selected Integer: index of rows regarding selected groups
+#' @param symbol Character: Unicode symbol to visually indicate the operation
+#' performed (" " by default)
+#' @param newGroupName Character: name of a group to be renamed (only required
+#' when the operation to be performed is \code{rename})
+#' @param patients Integer: all patient indexes (only required when the
+#' operation to be performed is \code{complement})
+#' @param samples Integer: all sample indexes (only required when the
+#' operation to be performed is \code{complement})
+#' 
+#' @return Matrix containing groups (new group is the first row)
+setOperation <- function(operation, groups, selected, symbol=" ", 
+                         newGroupName=NULL, patients=NULL, samples=NULL) {
+    # Create new set
+    new <- NULL
+    if (!identical(operation, "remove") && !identical(operation, "rename")) {
+        mergedFields <- lapply(1:3, function(i) {
+            start <- NULL
+            if (operation == "complement" && symbol != " ") {
+                start  <- symbol
+                symbol <- " \u222A "
+            }
+            
+            if (length(selected) > 1) {
+                names <- paste(groups[selected, i], collapse=symbol)
+                # Add parenthesis around new expression
+                names <- paste0("(", names, ")")
+            } else {
+                names <- groups[selected, i]
+            }
+            
+            if (!is.null(start)) {
+                names <- paste0("(", start, names, ")")
+            }
+            return(names)
+        })
+        ncol <- 3
+        
+        operate <- function(col) {
+            if (operation == "union") {
+                Reduce("union", groups[selected, col])
+            } else if (operation == "intersect") {
+                Reduce("intersect", groups[selected, col])
+            } else if (operation == "subtract") {
+                setdiff(groups[[selected[1], col]], groups[[selected[2], col]])
+            } else if (operation == "symDiff") {
+                setdiff(Reduce("union", groups[selected, col]),
+                        Reduce("intersect", groups[selected, col]))
+            } else if (operation == "complement") {
+                if (col == "Samples")
+                    universe <- samples
+                else
+                    universe <- patients
+                setdiff(universe, Reduce(union, groups[selected, col]))
+            }
+        }
+        
+        if ("Samples" %in% colnames(groups)) {
+            rowNumbers <- operate("Samples")
+            samples <- list(rowNumbers)
+            ncol <- ncol + 1
+        } else {
+            samples <- NULL
+        }
+        
+        if ("Patients" %in% colnames(groups)) {
+            rowNumbers <- sort(as.numeric(operate("Patients")))
+            patients <- list(rowNumbers)
+            ncol <- ncol + 1
+        } else {
+            patients <- NULL
+        }
+        
+        new <- matrix(c(mergedFields, patients, samples), ncol=ncol)
+    }
+    
+    # Add new groups to the top
+    if (!is.null(new)) {
+        new <- renameGroups(new, groups)
+        groups <- rbind(new, groups)
+    }
+    
+    if (identical(operation, "remove")) { # || input$removeSetsUsed)
+        # Remove selected groups
+        groups <- groups[-selected, , drop=FALSE]
+    } else if (identical(operation, "rename")) {
+        # Rename selected group
+        renamed <- groups[selected, , drop=FALSE]
+        renamed[[1]] <- newGroupName
+        
+        # Avoid groups with the same name
+        renamed <- renameGroups(renamed, groups[-selected, , drop=FALSE])
+        groups[selected, ] <- renamed[ , ]
+        rownames(groups)[selected] <- groups[[selected, 1]]
+    }
+    return(groups)
+}
+
 #' Set operations on groups
 #' 
 #' This function can be used on groups to merge, intersect, subtract, etc.
 #' 
 #' @param input Shiny input
 #' @param session Shiny session
-#' @param FUN Function: operation to set
 #' @param buttonId Character: ID of the button to trigger operation
-#' @param symbol Character: operation symbol
 #' @param datasetName Character: name of dataset
 #' @param sharedData Shiny app's global variable
+#' 
+#' @inheritParams setOperation
+#' 
 #' @return NULL (this function is used to modify the Shiny session's state)
-operateOnGroups <- function(input, session, FUN, buttonId, symbol=" ",
+operateOnGroups <- function(input, session, operation, buttonId, symbol=" ",
                             datasetName, sharedData=sharedData) {
     ns <- session$ns
     # Operate on selected groups when pressing the corresponding button
     observeEvent(input[[paste(buttonId, "button", sep="-")]], {
         # Get groups from the dataset
         groups <- getGroupsFrom(datasetName, complete=TRUE)
-        
-        # Create new set
-        new <- NULL
         selected <- input$groupsTable_rows_selected
-        if (!identical(FUN, "remove") && !identical(FUN, "rename")) {
-            mergedFields <- lapply(1:3, function(i) {
-                names <- paste(groups[selected, i], collapse=symbol)
-                # Add parenthesis around new expression
-                names <- paste0("(", names, ")")
-                return(names)
-            })
-            ncol <- 3
-            
-            if ("Patients" %in% colnames(groups)) {
-                rowNumbers <- sort(as.numeric(
-                    Reduce(FUN, groups[selected, "Patients"])))
-                patients <- list(rowNumbers)
-                ncol <- ncol + 1
-            } else {
-                patients <- NULL
-            }
-            
-            if ("Samples" %in% colnames(groups)) {
-                rowNumbers <- Reduce(FUN, groups[selected ,"Samples"])
-                samples <- list(rowNumbers)
-                ncol <- ncol + 1
-            } else {
-                samples <- NULL
-            }
-            
-            new <- matrix(c(mergedFields, patients, samples), ncol=ncol)
+        
+        if (operation == "subtract") {
+            selected  <- sort(selected)
+        } else if (operation == "subtract2") {
+            selected  <- rev(sort(selected))
+            operation <- "subtract"
         }
         
-        # Remove selected groups
-        if (identical(FUN, "remove")) # || input$removeSetsUsed)
-            groups <- groups[-selected, , drop=FALSE]
-        
-        # Add new groups to top (if there are any)
-        if (!is.null(new)) {
-            new <- renameGroups(new, groups)
-            groups <- rbind(new, groups)
-        }
-        
-        # Rename selected group
-        if (identical(FUN, "rename")) {
-            renamed <- groups[selected, , drop=FALSE]
-            renamed[[1]] <- input$newGroupName
-            
-            # Avoid groups with the same name
-            renamed <- renameGroups(renamed, groups[-selected, , drop=FALSE])
-            groups[selected, ] <- renamed[ , ]
-            rownames(groups)[selected] <- groups[[selected, 1]]
-        }
+        newGroupName <- input$newGroupName
+        patients <- seq(getPatientId())
+        samples  <- seq(getSampleId())
+        groups   <- setOperation(operation, groups, selected, symbol,
+                                 newGroupName, patients, samples)
         setGroupsFrom(datasetName, groups)
     })
 }
@@ -659,44 +723,100 @@ groupsServer <- function(input, output, session, datasetName) {
     
     # Remove selected groups
     removeId <- "removeGroups"
-    operateOnGroups(input, session, FUN="remove", buttonId=removeId,
+    operateOnGroups(input, session, operation="remove", buttonId=removeId,
                     datasetName=datasetName)
     
     # Rename selected groups
     renameId <- "renameGroupName"
-    operateOnGroups(input, session, FUN="rename", buttonId=renameId,
+    operateOnGroups(input, session, operation="rename", buttonId=renameId,
                     datasetName=datasetName)
     
     # Merge selected groups
     mergeId <- "mergeGroups"
-    operateOnGroups(input, session, FUN=union, buttonId=mergeId, 
+    operateOnGroups(input, session, operation="union", buttonId=mergeId, 
                     symbol=" \u222A ", datasetName=datasetName)
     
     # Intersect selected groups
     intersectId <- "intersectGroups"
-    operateOnGroups(input, session, FUN=intersect, datasetName=datasetName,
-                    buttonId=intersectId, symbol=" \u2229 ")
+    operateOnGroups(input, session, operation="intersect",
+                    datasetName=datasetName, buttonId=intersectId, 
+                    symbol=" \u2229 ")
+    
+    # The following set operations are organised inside a "More" button
+    moreId <- "moreSetOperations"
+    
+    # Complement of selected group(s)
+    complementId <- "complementGroups"
+    operateOnGroups(input, session, operation="complement",
+                    datasetName=datasetName, buttonId=complementId, 
+                    symbol="U \u005c ")
+    
+    # Subtract elements from selected group
+    subtractId  <- "subtractGroups"
+    operateOnGroups(input, session, operation="subtract",
+                    datasetName=datasetName, buttonId=subtractId, 
+                    symbol=" \u005c ")
+    
+    subtract2Id <- "subtract2Groups"
+    operateOnGroups(input, session, operation="subtract2",
+                    datasetName=datasetName, buttonId=subtract2Id, 
+                    symbol=" \u005c ")
+    
+    # Symmetric difference of selected group(s)
+    symDiffId <- "symDiffGroups"
+    operateOnGroups(input, session, operation="symDiff",
+                    datasetName=datasetName, buttonId=symDiffId,
+                    symbol=" \u2A01 ")
     
     # Disable set operations according to the selected rows
     observe({
-        mergeButton <- paste(mergeId, "button", sep="-")
-        intersectButton <- paste(intersectId, "button", sep="-")
-        removeButton <- paste(removeId, "button", sep="-")
+        getButtonId <- function(id) paste(id, "button", sep="-")
+        mergeButton      <- getButtonId(mergeId)
+        intersectButton  <- getButtonId(intersectId)
+        removeButton     <- getButtonId(removeId)
         
-        if (length(input$groupsTable_rows_selected) == 1) {
-            # One row selected
-            disable(mergeButton)
-            disable(intersectButton)
-            enable(removeButton)
-        } else if (length(input$groupsTable_rows_selected) > 1) {
-            enable(mergeButton)
-            enable(intersectButton)
+        getListId <- function(id) paste(id, "list", sep="-")
+        moreButton       <- moreId
+        complementButton <- getListId(complementId)
+        subtractButton   <- getListId(subtractId)
+        subtractButton2  <- getListId(subtract2Id)
+        symDiffButton    <- getListId(symDiffId)
+        
+        selectedRows <- length(input$groupsTable_rows_selected)
+        # Number of groups selected to enable each set operation
+        # - complement: >= 1
+        # - remove:     >= 1
+        # - subtract:   2
+        # - merge:      >= 2
+        # - intersect:  >= 2
+        # - sym diff:   >= 2
+        
+        if (selectedRows >= 1) {
+            enable(moreButton)
+            enable(complementButton)
             enable(removeButton)
         } else {
-            # No row selected
+            disable(moreButton)
+            disable(complementButton)
+            disable(removeButton)
+        }
+        
+        if (selectedRows == 2) {
+            enable(subtractButton)
+            enable(subtractButton2)
+        } else {
+            disable(subtractButton)
+            disable(subtractButton2)
+        }
+        
+        if (selectedRows >= 2) {
+            enable(mergeButton)
+            enable(intersectButton)
+            enable(symDiffButton)
+        } else {
             disable(mergeButton)
             disable(intersectButton)
-            disable(removeButton)
+            disable(symDiffButton)
         }
     })
     
@@ -721,19 +841,61 @@ groupsServer <- function(input, output, session, datasetName) {
     output$groupsList <- renderUI({
         groups <- getGroupsFrom(datasetName, complete=TRUE)
         
-        operationButton <- function(operation, operationId, ...) {
-            actionButton(paste(operationId, "button", sep="-"), operation, ...)
+        operationElement <- function(operation, ..., id=NULL, icon=NULL,
+                                     FUN=actionButton, width=NULL) {
+            buttonId <- paste(id, "button", sep="-")
+            button <- FUN(buttonId, operation, icon=icon, width=width, ...)
+            
+            if (identical(FUN, actionLink)) {
+                itemId <-paste(id, "list", sep="-")
+                button <- tags$li(id=itemId, button)
+            }
+            return(button)
         }
+        
+        operationButton <- function(...) operationElement(..., FUN=actionButton)
+        operationLink   <- function(...) operationElement(..., FUN=actionLink)
         
         # Don't show anything when there are no groups
         if (!is.null(groups) && nrow(groups) > 0) {
             operations <- div(
                 id=ns("setOperations"), class="btn-group",
-                operationButton("Merge", ns(mergeId)),
-                operationButton("Intersect", ns(intersectId)),
-                # operationButton("Complement", ns(complementId)),
-                # operationButton("Subtract", ns(subtractId)),
-                operationButton("Remove", ns(removeId), class="btn-danger",
+                operationButton("Merge", id=ns(mergeId),
+                                icon=setOperationIcon("union")),
+                operationButton("Intersect", id=ns(intersectId),
+                                icon=setOperationIcon("intersect")),
+                tags$div(
+                    class="btn-group", role="group",
+                    tags$button("More", id=ns(moreId), tags$span(class="caret"),
+                                class="btn btn-default dropdown-toggle",
+                                "data-toggle"="dropdown",
+                                "aria-haspopup"="true", "aria-expanded"="true"),
+                    tags$ul(
+                        class="dropdown-menu",
+                        operationLink(
+                            "Complement", id=ns(complementId),
+                            helpText("Create a group with elements outside the",
+                                     "selected group(s)"),
+                            icon=setOperationIcon("complement")),
+                        operationLink(
+                            "Subtract elements from upper-selected group",
+                            helpText("Create a group with the exclusive",
+                                     "elementes from the upper-selected group"),
+                            id=ns(subtractId),
+                            icon=setOperationIcon("difference-AB")),
+                        operationLink(
+                            "Subtract elements from lower-selected group",
+                            helpText("Create a group with the exclusive",
+                                     "elementes from the lower-selected group"),
+                            id=ns(subtract2Id),
+                            icon=setOperationIcon("difference-BA")),
+                        operationLink(
+                            "Symmetric difference",
+                            helpText("Create a group with the non-intersecting",
+                                     "elements of selected groups"),
+                            id=ns(symDiffId),
+                            icon=setOperationIcon("symmetric-difference")))),
+                operationButton("Remove", id=ns(removeId), class="btn-danger",
                                 icon=icon("times")))
             
             removeAllButton <- actionButton(ns("removeAll"), class="btn-danger",
@@ -741,7 +903,7 @@ groupsServer <- function(input, output, session, datasetName) {
                                             "Remove all groups",
                                             icon=icon("trash"))
             
-            renameButton <- operationButton("Rename", ns(renameId),
+            renameButton <- operationButton("Rename", id=ns(renameId),
                                             class="pull-right",
                                             icon=icon("pencil"))
             nameField <- textInput(ns("newGroupName"), label=NULL, 

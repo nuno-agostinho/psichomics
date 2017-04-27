@@ -325,7 +325,7 @@ appServer <- function(input, output, session) {
 #' @param reset Boolean: reset Shiny session? FALSE by default; requires the 
 #' package devtools to reset data
 #'
-#' @importFrom shiny shinyApp runApp
+#' @importFrom shiny shinyApp runApp addResourcePath
 #'
 #' @export
 #' @examples 
@@ -334,6 +334,10 @@ appServer <- function(input, output, session) {
 #' }
 #' @return NULL (this function is used to modify the Shiny session's state)
 psichomics <- function(..., reset=FALSE) {
+    # Add icons related to set operations
+    addResourcePath("set-operations",
+                    insideFile("shiny", "www", "set-operations"))
+    
     if (reset) devtools::load_all()
     app <- shinyApp(appUI(), appServer)
     runApp(app, launch.browser = TRUE, ...)
