@@ -319,7 +319,7 @@ appServer <- function(input, output, session) {
     })
 }
 
-#' Start graphical interface of PSICHOMICS
+#' Start graphical interface of psichomics
 #'
 #' @param ... Parameters to pass to the function runApp
 #' @param reset Boolean: reset Shiny session? FALSE by default; requires the 

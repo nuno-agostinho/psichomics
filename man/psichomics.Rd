@@ -2,7 +2,7 @@
 % Please edit documentation in R/app.R
 \name{psichomics}
 \alias{psichomics}
-\title{Start graphical interface of PSICHOMICS}
+\title{Start graphical interface of psichomics}
 \usage{
 psichomics(..., reset = FALSE)
 }
@@ -16,7 +16,7 @@ package devtools to reset data}
 NULL (this function is used to modify the Shiny session's state)
 }
 \description{
-Start graphical interface of PSICHOMICS
+Start graphical interface of psichomics
 }
 \examples{
 \dontrun{

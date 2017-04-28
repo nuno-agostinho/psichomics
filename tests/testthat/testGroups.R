@@ -183,7 +183,7 @@ test_that("Set intersect", {
     df2 <- setOperation("intersect", df, selected)
     
     samples  <- Reduce(intersect, df[selected, "Samples"])
-    patients <- Reduce(intersect, df[selected, "Samples"])
+    patients <- Reduce(intersect, df[selected, "Patients"])
     patients <- unique(c(patients, returnPatients(samples)))
     
     expect_equal(sort(df2[[1, "Samples"]]), sort(samples))
