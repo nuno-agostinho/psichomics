@@ -1,5 +1,5 @@
 ---
-title: 'Preparing an Alternative Splicing Annotation for PSIchomics'
+title: 'Preparing an Alternative Splicing Annotation for psichomics'
 author: "Nuno Saraiva Agostinho"
 date: "6 October 2016"
 bibliography: refs.bib
@@ -12,11 +12,11 @@ vignette: >
   
 ---
   
-PSIchomics currently quantifies alternative splicing based on an alternative 
+psichomics currently quantifies alternative splicing based on an alternative 
 splicing annotation for Human (hg19). This annotation was created based on the
 annotations from [MISO][3], [SUPPA][1], [VAST-TOOLS][4] and [rMATS][2].
   
-The preparation of a new alternative splicing annotation for usage in PSIchomics
+The preparation of a new alternative splicing annotation for usage in psichomics
 starts by parsing the alternative splicing events. Currently, events from
 [SUPPA][1], [rMATS][2], [MISO][3] and [VAST-TOOLS][4] are parsable. Support can
 be extended for alternative splicing events from other programs. For more
@@ -144,7 +144,7 @@ saveRDS(annot, file=annotFile)
 
 ## Quantifying alternative splicing using the created annotation
 The created alternative splicing annotation can then be used when quantifying
-alternative splicing events. To do so, when using the GUI version of PSIchomics,
+alternative splicing events. To do so, when using the GUI version of psichomics,
 be sure to select the **Load annotation from file...** option, click the button
 that appears below and select the recently created RDS file. Otherwise, if you
 are using the CLI version, perform the following steps:

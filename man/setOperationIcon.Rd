@@ -7,16 +7,9 @@
 setOperationIcon(name, class = NULL, ...)
 }
 \arguments{
-\item{name}{Name of icon. Icons are drawn from the
-\href{{http://fontawesome.io/icons/}{Font Awesome}} and
-\href{{http://getbootstrap.com/components/#glyphicons}{Glyphicons"}}
-libraries. Note that the "fa-" and "glyphicon-" prefixes should not be used
-in icon names (i.e. the "fa-calendar" icon should be referred to as
-"calendar")}
+\item{name}{Character: icon name}
 
-\item{class}{Additional classes to customize the style of the icon (see the
-\href{{http://fontawesome.io/examples/}{usage examples}} for details on
-supported styles).}
+\item{class}{Character: additional classes to customise the icon element}
 
 \item{...}{Extra arguments for the icon HTML element}
 }

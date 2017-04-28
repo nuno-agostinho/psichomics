@@ -20,7 +20,7 @@ Description: Interactive R package with a Shiny-based graphical interface for
     samples.
 Depends:
     R (>= 3.4),
-    shiny (>= 1.0.0),
+    shiny (>= 1.0.3),
     shinyBS
 License: MIT + file LICENSE
 LazyData: true

@@ -9,7 +9,7 @@
 #' when no groups may be selected
 #' 
 #' @importFrom shiny fluidRow column uiOutput selectizeInput actionButton
-#' radioButtons
+#' radioButtons actionLink
 #' 
 #' @note To allow the user to (explicitly) select no groups, pass the 
 #' \code{noGroupsLabel} and \code{groupsLabel} arguments.

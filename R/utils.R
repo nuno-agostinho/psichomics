@@ -998,11 +998,12 @@ hc_scatter <- function (hc, x, y, z=NULL, label=NULL, showInLegend=FALSE, ...) {
 #' 
 #' Based on the \code{\link[shiny]{icon}} function
 #' 
-#' @inheritParams shiny::icon
+#' @param name Character: icon name
+#' @param class Character: additional classes to customise the icon element
 #' @param ... Extra arguments for the icon HTML element
 #' 
 #' @importFrom shiny icon
-#' @importFrom htmltools htmlDependency
+#' @importFrom htmltools htmlDependency htmlDependencies htmlDependencies<-
 #' 
 #' @return Icon element
 setOperationIcon <- function (name, class=NULL, ...) {
