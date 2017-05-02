@@ -4,8 +4,8 @@
 \alias{setOperation}
 \title{Perform set operations on selected groups}
 \usage{
-setOperation(operation, groups, selected, symbol = " ", newGroupName = NULL,
-  patients = NULL, samples = NULL)
+setOperation(operation, groups, selected, symbol = " ", groupName = NULL,
+  patients = NULL, samples = NULL, matches = NULL)
 }
 \arguments{
 \item{operation}{Character: set operation}
@@ -17,14 +17,17 @@ setOperation(operation, groups, selected, symbol = " ", newGroupName = NULL,
 \item{symbol}{Character: Unicode symbol to visually indicate the operation
 performed (" " by default)}
 
-\item{newGroupName}{Character: name of a group to be renamed (only required
-when the operation to be performed is \code{rename})}
+\item{groupName}{Character: group name (automatically created if NULL or
+\code{""})}
 
 \item{patients}{Integer: all patient indexes (only required when the
 operation to be performed is \code{complement})}
 
 \item{samples}{Integer: all sample indexes (only required when the
 operation to be performed is \code{complement})}
+
+\item{matches}{Integer: match between samples (as names) and patients (as
+values)}
 }
 \value{
 Matrix containing groups (new group is the first row)

@@ -491,16 +491,19 @@ renameGroups <- function(new, old) {
 #' @param selected Integer: index of rows regarding selected groups
 #' @param symbol Character: Unicode symbol to visually indicate the operation
 #' performed (" " by default)
-#' @param newGroupName Character: name of a group to be renamed (only required
-#' when the operation to be performed is \code{rename})
+#' @param groupName Character: group name (automatically created if NULL or
+#' \code{""})
 #' @param patients Integer: all patient indexes (only required when the
 #' operation to be performed is \code{complement})
 #' @param samples Integer: all sample indexes (only required when the
 #' operation to be performed is \code{complement})
+#' @param matches Integer: match between samples (as names) and patients (as
+#' values)
 #' 
 #' @return Matrix containing groups (new group is the first row)
 setOperation <- function(operation, groups, selected, symbol=" ", 
-                         newGroupName=NULL, patients=NULL, samples=NULL) {
+                         groupName=NULL, patients=NULL, samples=NULL,
+                         matches=NULL) {
     # Create new set
     new <- NULL
     if (!identical(operation, "remove") && !identical(operation, "rename")) {
@@ -516,7 +519,7 @@ setOperation <- function(operation, groups, selected, symbol=" ",
                 # Add parenthesis around new expression
                 names <- paste0("(", names, ")")
             } else {
-                names <- groups[selected, i]
+                names <- as.character(groups[selected, i])
             }
             
             if (!is.null(start)) {
@@ -524,6 +527,8 @@ setOperation <- function(operation, groups, selected, symbol=" ",
             }
             return(names)
         })
+        if ( !is.null(groupName) && !identical(groupName, "") )
+            mergedFields[[1]] <- groupName
         ncol <- 3
         
         operate <- function(col) {
@@ -532,6 +537,8 @@ setOperation <- function(operation, groups, selected, symbol=" ",
             } else if (operation == "intersect") {
                 Reduce("intersect", groups[selected, col])
             } else if (operation == "subtract") {
+                if (length(selected) != 2)
+                    stop("set subtract requires 2 groups")
                 setdiff(groups[[selected[1], col]], groups[[selected[2], col]])
             } else if (operation == "symDiff") {
                 setdiff(Reduce("union", groups[selected, col]),
@@ -546,21 +553,28 @@ setOperation <- function(operation, groups, selected, symbol=" ",
         }
         
         if ("Samples" %in% colnames(groups)) {
-            rowNumbers <- operate("Samples")
-            samples <- list(rowNumbers)
+            samples <- operate("Samples")
             ncol <- ncol + 1
         } else {
             samples <- NULL
         }
         
         if ("Patients" %in% colnames(groups)) {
-            rowNumbers <- sort(as.numeric(operate("Patients")))
-            patients <- list(rowNumbers)
+            patients <- sort(as.numeric(operate("Patients")))
+            if (!is.null(samples) && !is.null(matches)) {
+                # Include patients if their samples were included in same group
+                matched  <- unname(matches[samples])
+                matched  <- matched[!is.na(matched)]
+                if (length(matched) > 0)
+                    patients <- unique(c(patients, matched))
+            }
             ncol <- ncol + 1
         } else {
             patients <- NULL
         }
         
+        if (!is.null(patients)) patients <- list(patients)
+        if (!is.null(samples)) samples <- list(samples)
         new <- matrix(c(mergedFields, patients, samples), ncol=ncol)
     }
     
@@ -576,12 +590,12 @@ setOperation <- function(operation, groups, selected, symbol=" ",
     } else if (identical(operation, "rename")) {
         # Rename selected group
         renamed <- groups[selected, , drop=FALSE]
-        renamed[[1]] <- newGroupName
+        renamed[, "Names"] <- groupName
         
         # Avoid groups with the same name
         renamed <- renameGroups(renamed, groups[-selected, , drop=FALSE])
         groups[selected, ] <- renamed[ , ]
-        rownames(groups)[selected] <- groups[[selected, 1]]
+        rownames(groups)[selected] <- groups[selected, "Names"]
     }
     return(groups)
 }
@@ -615,11 +629,12 @@ operateOnGroups <- function(input, session, operation, buttonId, symbol=" ",
             operation <- "subtract"
         }
         
-        newGroupName <- input$newGroupName
-        patients <- seq(getPatientId())
-        samples  <- seq(getSampleId())
-        groups   <- setOperation(operation, groups, selected, symbol,
-                                 newGroupName, patients, samples)
+        groupName      <- input$groupName
+        patients       <- seq(getPatientId())
+        samples        <- seq(getSampleId())
+        matches        <- getClinicalMatchFrom("Inclusion levels")
+        groups <- setOperation(operation, groups, selected, symbol, groupName, 
+                               patients, samples, matches)
         setGroupsFrom(datasetName, groups)
     })
 }
@@ -831,7 +846,7 @@ groupsServer <- function(input, output, session, datasetName) {
     # Disable rename button if no new name was given
     observe({
         renameButton <- paste(renameId, "button", sep="-")
-        if (is.null(input$newGroupName) || input$newGroupName == "")
+        if (is.null(input$groupName) || input$groupName == "")
             disable(renameButton)
         else
             enable(renameButton)
@@ -906,7 +921,7 @@ groupsServer <- function(input, output, session, datasetName) {
             renameButton <- operationButton("Rename", id=ns(renameId),
                                             class="pull-right",
                                             icon=icon("pencil"))
-            nameField <- textInput(ns("newGroupName"), label=NULL, 
+            nameField <- textInput(ns("groupName"), label=NULL, 
                                    placeholder="Rename selected group")
             nameField$attribs$style <- "margin: 0"
             renameInterface <- div(

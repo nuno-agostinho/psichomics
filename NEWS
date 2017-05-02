@@ -1,10 +1,10 @@
 1.2.2 (27 Apr, 2017)
 ====================
 
-    * Add new set operations when grouping:
-        * Perform set complement, subtract and symmetric difference
     * Fix differential splicing analyses' table not always rendering the
     respective data
+    * Add new set operations when grouping (such as complement, subtraction and
+    symmetric difference)
 
 1.2.1 (24 Apr, 2017)
 ====================
