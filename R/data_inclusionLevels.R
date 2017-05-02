@@ -78,6 +78,7 @@ listAllAnnotations <- function(...) {
 #' 
 #' @importFrom shiny tagList uiOutput selectizeInput numericInput actionButton
 #' @importFrom shinyBS bsTooltip
+#' @importFrom shinyjs hidden disabled
 #' 
 #' @return HTML elements
 inclusionLevelsInterface <- function(ns) {
@@ -107,7 +108,7 @@ inclusionLevelsInterface <- function(ns) {
                     id=ns("missingData"), style="margin: 10px;"),
         hidden(options),
         actionButton(ns("loadIncLevels"), "Load from file"),
-        hidden(processButton(ns("calcIncLevels"), "Quantify events")))
+        disabled(processButton(ns("calcIncLevels"), "Quantify events")))
 }
 
 #' Interface of the alternative splicing event quantification module
@@ -198,6 +199,7 @@ loadAnnotation <- function(annotation) {
 #' 
 #' @importFrom shiny reactive observeEvent fileInput helpText removeModal
 #' @importFrom tools file_path_sans_ext
+#' @importFrom shinyjs enable disable hide show
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 inclusionLevelsServer <- function(input, output, session) {
@@ -220,11 +222,11 @@ inclusionLevelsServer <- function(input, output, session) {
     observe({
         if (is.null(getData()) || is.null(getJunctionQuantification())) {
             hide("options")
-            hide("calcIncLevels")
+            disable("calcIncLevels")
             show("missingData")
         } else {
             show("options")
-            show("calcIncLevels")
+            enable("calcIncLevels")
             hide("missingData")
         }
     })
