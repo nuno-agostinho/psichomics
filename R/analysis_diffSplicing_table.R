@@ -1098,7 +1098,10 @@ diffSplicingTableServer <- function(input, output, session) {
             } else {
                 rowFilter <- TRUE
             }
-            stats <- stats[rowFilter, ]
+            
+            # Remove columns of no interest
+            colFilter <- !grepl("method|data.name", colnames(stats))
+            stats <- stats[rowFilter, colFilter]
             
             # Keep previously selected rows if possible
             before <- isolate(getDifferentialAnalysesFiltered())
@@ -1121,7 +1124,7 @@ diffSplicingTableServer <- function(input, output, session) {
             
             dataTableAjax(session, stats, outputId="statsTable")
             reloadData(proxy)
-            selectRows(proxy, selected)
+            if (!is.null(selected)) selectRows(proxy, selected)
         }
     })
     
