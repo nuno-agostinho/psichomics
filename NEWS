@@ -3,6 +3,8 @@
 
     * Add new set operations when grouping:
         * Perform set complement, subtract and symmetric difference
+    * Fix differential splicing analyses' table not always rendering the
+    respective data
 
 1.2.1 (24 Apr, 2017)
 ====================
