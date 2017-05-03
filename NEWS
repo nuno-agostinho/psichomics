@@ -5,6 +5,10 @@
     respective data
     * Add new set operations when grouping (such as complement, subtraction and
     symmetric difference)
+    * Principal component analysis:
+        * When clicking on a alternative splicing event in the loadings plot, 
+        the appropriate differential splicing analyses will now be automatically
+        rendered with the respective options, as expected
     * Survival analysis:
         * Properly set the title of survival curves based on the selected
         alternative splicing event's quantification
