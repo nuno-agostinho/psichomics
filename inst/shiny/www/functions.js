@@ -64,9 +64,12 @@ function setTranscript (transcript) {
 /**
  * Navigate user to differential splicing of a given alternative splicing event
  * @param {String} event Alternative splicing event
- * @param {Boolean} autoParams Automatically set expected parameters
+ * @param {Boolean} autoParams Automatically set expected parameters based on
+ * the choices for the exploratory differential analyses
+ * @param {String} groupSelectize Identifier of the group selection element to
+ * automatically set expected parameters based on its values
  */
-function showDiffSplicing (event, autoParams = false) {
+function showDiffSplicing (event, autoParams = false, groupSelectize = null) {
     // Navigate to differential splicing analyses for a single event
     var tabName = "Differential splicing analysis";
     $("ul[id='nav'] > li > ul > li > a[data-value*='" + tabName + "']").click();
@@ -76,19 +79,22 @@ function showDiffSplicing (event, autoParams = false) {
     // Change currently selected splicing event
     changeEvent(event);
     
-    if (!autoParams) { return; }
+    if (autoParams) {
+        groupSelectize = "analyses-diffSplicing-diffSplicingTable-diffGroups";
+    } else if (groupSelectize === null) {
+        return;
+    }
     
     // Set whether using groups or not
-    allEventsPage = "analyses-diffSplicing-diffSplicingTable";
     singleEventPage = "analyses-diffSplicing-diffSplicingEvent";
-    groups = $("input[type='radio'][name='" + allEventsPage +
-        "-diffGroupsSelection']:checked")[0].value;
+    groups = $("input[type='radio'][name='" + groupSelectize +
+        "Selection']:checked")[0].value;
     $("input[type='radio'][name='" + singleEventPage +
         "-diffGroupsSelection'][value=" + groups + "]").click();
         
     if (groups == "groups") {
         // Set selected groups
-        items = $("select[id='" + allEventsPage + "-diffGroups']")[0].selectize
+        items = $("select[id='" + groupSelectize + "']")[0].selectize
             .items;
         $("select[id='" + singleEventPage + "-diffGroups']")[0].selectize
             .setValue(items);

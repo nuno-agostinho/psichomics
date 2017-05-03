@@ -450,11 +450,13 @@ pcaServer <- function(input, output, session) {
                         text="Alternative splicing events (PCA loadings)") %>%
                     hc_plotOptions(
                         series=list(cursor="pointer", point=list(events=list(
-                            click=JS("function() {
+                            click=JS(
+                                paste0("function() {
                                          sample = this.options.sample;
                                          sample = sample.replace(/ /g, '_');
-                                         showDiffSplicing(sample, false);
-                                      }")))))
+                                         showDiffSplicing(sample, false, '",
+                                            ns("colourGroups"), "');
+                                      }"))))))
             } else {
                 return(NULL)
             })
