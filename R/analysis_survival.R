@@ -281,7 +281,7 @@ survivalServer <- function(input, output, session) {
         pvalue <- testSurvival(survTerms)
         
         if (modelTerms == "psiCutoff") {
-            plotTitle <- splicingEvent
+            plotTitle <- parseSplicingEvent(splicingEvent, char=TRUE)
             sub <- paste0("Splicing quantification cut-off: ", psiCutoff,
                           "; Log-rank p-value: ", pvalue)
         } else {
