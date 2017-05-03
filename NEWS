@@ -5,6 +5,9 @@
     respective data
     * Add new set operations when grouping (such as complement, subtraction and
     symmetric difference)
+    * Survival analysis:
+        * Properly set the title of survival curves based on the selected
+        alternative splicing event's quantification
 
 1.2.1 (24 Apr, 2017)
 ====================
