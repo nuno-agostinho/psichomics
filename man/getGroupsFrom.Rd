@@ -11,7 +11,7 @@ getGroupsFrom(dataset, category = getCategory(), complete = FALSE,
 setGroupsFrom(dataset, groups, category = getCategory())
 }
 \arguments{
-\item{dataset}{Character: data set (e.g. "Clinical data")}
+\item{dataset}{Character: data set name (e.g. "Clinical data")}
 
 \item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
 it uses the selected data category}
@@ -32,8 +32,6 @@ as they are only used to modify the Shiny session's state
 Get or set groups from a given data type
 }
 \seealso{
-\code{\link{psichomics:::getEvent}},
-\code{\link{psichomics:::getClinicalMatchFrom}},
-\code{\link{psichomics:::getGroupsFrom}} and
-\code{\link{psichomics:::getDifferentialAnalyses}}
+\code{\link{getEvent}}, \code{\link{getClinicalMatchFrom}},
+\code{\link{getGroupsFrom}} and \code{\link{getDifferentialAnalyses}}
 }

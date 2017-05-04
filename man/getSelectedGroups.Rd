@@ -15,7 +15,7 @@ getSelectedGroups(input, id, samples = FALSE, dataset = "Clinical data",
 \item{samples}{Boolean: show groups by samples (TRUE) or patients (FALSE)?
 FALSE by default}
 
-\item{dataset}{Character: data set (e.g. "Clinical data")}
+\item{dataset}{Character: data set name (e.g. "Clinical data")}
 
 \item{filter}{Character: only get groups passed}
 }

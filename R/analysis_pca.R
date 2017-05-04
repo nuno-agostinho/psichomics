@@ -14,8 +14,7 @@
 ##          geom="polygon", level=0.95, alpha=0.2) +
 ##      guides(color=guide_legend("Cluster"), fill=guide_legend("Cluster"))
 ## 
-## Source:
-## http://stackoverflow.com/questions/20260434/test-significance-of-clusters-on-a-pca-plot
+## Source: http://stackoverflow.com/questions/20260434
 
 #' Perform principal component analysis after processing missing values from 
 #' data frame
