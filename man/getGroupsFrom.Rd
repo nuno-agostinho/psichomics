@@ -2,10 +2,13 @@
 % Please edit documentation in R/globalAccess.R
 \name{getGroupsFrom}
 \alias{getGroupsFrom}
-\title{Get groups from a given data type}
+\alias{setGroupsFrom}
+\title{Get or set groups from a given data type}
 \usage{
 getGroupsFrom(dataset, category = getCategory(), complete = FALSE,
   samples = FALSE)
+
+setGroupsFrom(dataset, groups, category = getCategory())
 }
 \arguments{
 \item{dataset}{Character: data set (e.g. "Clinical data")}
@@ -18,13 +21,19 @@ the group names and respective indexes (FALSE)? FALSE by default}
 
 \item{samples}{Boolean: show groups by samples (TRUE) or patients (FALSE)?
 FALSE by default}
+
+\item{groups}{Matrix: groups of dataset}
 }
 \value{
-Matrix with groups of a given dataset
+Getters return globally accessible data, whereas setters return NULL 
+as they are only used to modify the Shiny session's state
 }
 \description{
-Get groups from a given data type
+Get or set groups from a given data type
 }
-\note{
-Needs to be called inside a reactive function
+\seealso{
+\code{\link{psichomics:::getEvent}},
+\code{\link{psichomics:::getClinicalMatchFrom}},
+\code{\link{psichomics:::getGroupsFrom}} and
+\code{\link{psichomics:::getDifferentialAnalyses}}
 }

@@ -2,22 +2,31 @@
 % Please edit documentation in R/globalAccess.R
 \name{getClinicalMatchFrom}
 \alias{getClinicalMatchFrom}
-\title{Get clinical matches from a given data type}
+\alias{setClinicalMatchFrom}
+\title{Get or set clinical matches from a given data type}
 \usage{
 getClinicalMatchFrom(dataset, category = getCategory())
+
+setClinicalMatchFrom(dataset, matches, category = getCategory())
 }
 \arguments{
-\item{dataset}{Character: data set (e.g. "Junction quantification")}
+\item{dataset}{Character: data set name (e.g. "Junction quantification")}
 
 \item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
 it uses the selected data category}
+
+\item{matches}{Vector of integers: clinical matches of dataset}
 }
 \value{
-Integer with clinical matches to a given dataset
+Getters return globally accessible data, whereas setters return NULL 
+as they are only used to modify the Shiny session's state
 }
 \description{
-Get clinical matches from a given data type
+Get or set clinical matches from a given data type
 }
-\note{
-Needs to be called inside a reactive function
+\seealso{
+\code{\link{psichomics:::getEvent}},
+\code{\link{psichomics:::getClinicalMatchFrom}},
+\code{\link{psichomics:::getGroupsFrom}} and
+\code{\link{psichomics:::getDifferentialAnalyses}}
 }

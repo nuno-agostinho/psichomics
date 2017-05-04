@@ -2,13 +2,119 @@
 % Please edit documentation in R/globalAccess.R
 \name{getEvent}
 \alias{getEvent}
-\title{Get selected alternative splicing event's identifer}
+\alias{setEvent}
+\alias{getCategories}
+\alias{getCategory}
+\alias{setCategory}
+\alias{getCategoryData}
+\alias{getActiveDataset}
+\alias{setActiveDataset}
+\alias{getClinicalData}
+\alias{getJunctionQuantification}
+\alias{getInclusionLevels}
+\alias{setInclusionLevels}
+\alias{getInclusionLevelsPCA}
+\alias{setInclusionLevelsPCA}
+\alias{getSampleInfo}
+\alias{setSampleInfo}
+\alias{getPatientId}
+\alias{setPatientId}
+\alias{getSampleId}
+\alias{setSampleId}
+\alias{getSpecies}
+\alias{setSpecies}
+\alias{getAssemblyVersion}
+\alias{setAssemblyVersion}
+\alias{getURLtoDownload}
+\alias{setURLtoDownload}
+\title{Set or get central elements}
 \usage{
 getEvent()
+
+setEvent(event)
+
+getCategories()
+
+getCategory()
+
+setCategory(category)
+
+getCategoryData()
+
+getActiveDataset()
+
+setActiveDataset(dataset)
+
+getClinicalData()
+
+getJunctionQuantification(category = getCategory())
+
+getInclusionLevels()
+
+setInclusionLevels(incLevels, category = getCategory())
+
+getInclusionLevelsPCA(category = getCategory())
+
+setInclusionLevelsPCA(pca, category = getCategory())
+
+getSampleInfo()
+
+setSampleInfo(info, category = getCategory())
+
+getPatientId(category = getCategory())
+
+setPatientId(patients, category = getCategory())
+
+getSampleId(category = getCategory())
+
+setSampleId(samples, category = getCategory())
+
+getSpecies(category = getCategory())
+
+setSpecies(species, category = getCategory())
+
+getAssemblyVersion(category = getCategory())
+
+setAssemblyVersion(assembly, category = getCategory())
+
+getURLtoDownload()
+
+setURLtoDownload(url)
+}
+\arguments{
+\item{event}{Character: alternative splicing event}
+
+\item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
+it uses the selected data category}
+
+\item{dataset}{Character: dataset name}
+
+\item{incLevels}{Data frame or matrix: inclusion levels}
+
+\item{pca}{\code{prcomp} object (PCA) of inclusion levels}
+
+\item{info}{Data frame or matrix: sample information}
+
+\item{patients}{Character: identifier of patients}
+
+\item{samples}{Character: identifier of samples}
+
+\item{species}{Character: species}
+
+\item{assembly}{Character: assembly version}
+
+\item{url}{Character: URL links to download}
 }
 \value{
-Alternative splicing event's identifier as a string
+Getters return globally accessible data, whereas setters return NULL 
+as they are only used to modify the Shiny session's state
 }
 \description{
-Get selected alternative splicing event's identifer
+Set or get central elements
+}
+\seealso{
+\code{\link{psichomics:::getEvent}},
+\code{\link{psichomics:::getClinicalMatchFrom}},
+\code{\link{psichomics:::getGroupsFrom}} and
+\code{\link{psichomics:::getDifferentialAnalyses}}
 }

@@ -2,20 +2,73 @@
 % Please edit documentation in R/globalAccess.R
 \name{getDifferentialAnalyses}
 \alias{getDifferentialAnalyses}
-\title{Get the table of differential analyses of a data category}
+\alias{setDifferentialAnalyses}
+\alias{getDifferentialAnalysesFiltered}
+\alias{setDifferentialAnalysesFiltered}
+\alias{getDifferentialAnalysesHighlightedEvents}
+\alias{setDifferentialAnalysesHighlightedEvents}
+\alias{getDifferentialAnalysesZoom}
+\alias{setDifferentialAnalysesZoom}
+\alias{getDifferentialAnalysesSelected}
+\alias{setDifferentialAnalysesSelected}
+\alias{getDifferentialAnalysesSurvival}
+\alias{setDifferentialAnalysesSurvival}
+\alias{getDifferentialAnalysesColumns}
+\alias{setDifferentialAnalysesColumns}
+\title{Get or set differential analyses' elements for a data category}
 \usage{
 getDifferentialAnalyses(category = getCategory())
+
+setDifferentialAnalyses(differential, category = getCategory())
+
+getDifferentialAnalysesFiltered(category = getCategory())
+
+setDifferentialAnalysesFiltered(differential, category = getCategory())
+
+getDifferentialAnalysesHighlightedEvents(category = getCategory())
+
+setDifferentialAnalysesHighlightedEvents(events, category = getCategory())
+
+getDifferentialAnalysesZoom(category = getCategory())
+
+setDifferentialAnalysesZoom(zoom, category = getCategory())
+
+getDifferentialAnalysesSelected(category = getCategory())
+
+setDifferentialAnalysesSelected(events, category = getCategory())
+
+getDifferentialAnalysesSurvival(category = getCategory())
+
+setDifferentialAnalysesSurvival(survival, category = getCategory())
+
+getDifferentialAnalysesColumns(category = getCategory())
+
+setDifferentialAnalysesColumns(columns, category = getCategory())
 }
 \arguments{
 \item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
 it uses the selected data category}
+
+\item{differential}{Data frame or matrix: differential analyses table}
+
+\item{events}{Integer: index of events}
+
+\item{zoom}{Integer: range of X and Y coordinates for zooming}
+
+\item{survival}{Data frame or matrix: differential analyses' survival data}
+
+\item{columns}{Character: differential analyses' column names}
 }
 \value{
-Data frame of differential analyses
+Getters return globally accessible data, whereas setters return NULL 
+as they are only used to modify the Shiny session's state
 }
 \description{
-Get the table of differential analyses of a data category
+Get or set differential analyses' elements for a data category
 }
-\note{
-Needs to be called inside a reactive function
+\seealso{
+\code{\link{psichomics:::getEvent}},
+\code{\link{psichomics:::getClinicalMatchFrom}},
+\code{\link{psichomics:::getGroupsFrom}} and
+\code{\link{psichomics:::getDifferentialAnalyses}}
 }
