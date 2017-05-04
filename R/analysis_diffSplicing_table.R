@@ -47,7 +47,7 @@ diffSplicingTableUI <- function(id) {
         helpText("For each alternative splicing event, groups with one or less",
                  "non-missing values are discarded."), hr(),
         selectizeInput(ns("pvalueAdjust"), selected="BH",
-                       "Adjust p-values of statistical tests", pvalueAdjust),
+                       "P-value adjustment", pvalueAdjust),
         processButton(ns("startAnalyses"), "Perform analyses"))
     
     eventOptions <- div(
@@ -83,7 +83,7 @@ diffSplicingTableUI <- function(id) {
                          plotPointsStyle(
                              ns, "highlighted", "Highlighted points",
                              help=paste("Highlight points in the X and Y axes",
-                                        "options"),
+                                        "options."),
                              size=3, colour="orange", alpha=0.5)),
                 tabPanel("Selected in the table",
                          plotPointsStyle(
@@ -645,12 +645,8 @@ transformOptions <- function(label, type=NULL) {
     transform <- c("No transformation"="no",
                    "|%s|"="abs",
                    "-%s"="inv",
-                   "log10(%s)"="log10",
                    "log10(|%s|)"="log10abs",
-                   "log10(-%s)"="log10-",
-                   "-log10(%s)"="-log10",
-                   "-log10(|%s|)"="-log10abs",
-                   "-log10(-%s)"="-log10-")
+                   "-log10(|%s|)"="-log10abs")
     names(transform) <- sprintf(names(transform), label)
     
     if (!is.null(type)) {
@@ -680,16 +676,13 @@ transformValues <- function(val, type, avoidZero=TRUE) {
         val[zeroes] <- val[zeroes] + .Machine$double.xmin
     }
     
-    trans <- switch(type,
-                    "no"=val,
-                    "abs"=abs(val),
-                    "inv"=-val,
-                    "log10"=log10(val),
-                    "log10abs"=log10(abs(val)),
-                    "log10-"=log10(-val),
-                    "-log10"=-log10(val),
-                    "-log10abs"=-log10(abs(val)),
-                    "-log10-"=-log10(-val))
+    trans <- suppressWarnings(
+        switch(type,
+               "no"=val,
+               "abs"=abs(val),
+               "inv"=-val,
+               "log10abs"=log10(abs(val)),
+               "-log10abs"=-log10(abs(val))))
     return(trans)
 }
 
@@ -1041,17 +1034,18 @@ diffSplicingTableServer <- function(input, output, session) {
     # Save selected points in the table
     observe({
         selected <- input$statsTable_rows_selected
-        if (!is.null(selected)) setDifferentialAnalysesSelected(selected)
+        setDifferentialAnalysesSelected(selected)
     })
     
     # Render table with sparklines
     output$statsTable <- renderDataTableSparklines({
         stats <- getDifferentialAnalyses()
         if (!is.null(stats)) {
-            # Remove columns of no interest
-            colFilter <- !grepl("method|data.name", colnames(stats))
-            stats <- stats[ , colFilter]
-            return(stats)
+            # Discard columns of no interest
+            cols <- colnames(stats)
+            cols <- cols[!grepl("method|data.name", cols)]
+            setDifferentialAnalysesColumns(cols)
+            return(stats[ , cols])
         }
     }, style="bootstrap", filter="top", server=TRUE, # selection="none",
     extensions="Buttons", options=list(
@@ -1089,6 +1083,7 @@ diffSplicingTableServer <- function(input, output, session) {
                 }
             }
             
+            # Filter rows based on highlighted and/or zoomed in events
             if (!is.null(events) && !is.null(zoomed)) {
                 rowFilter <- intersect(events, zoomed)  
             } else if (!is.null(events)) {
@@ -1098,10 +1093,7 @@ diffSplicingTableServer <- function(input, output, session) {
             } else {
                 rowFilter <- TRUE
             }
-            
-            # Remove columns of no interest
-            colFilter <- !grepl("method|data.name", colnames(stats))
-            stats <- stats[rowFilter, colFilter]
+            stats <- stats[rowFilter, ]
             
             # Keep previously selected rows if possible
             before <- isolate(getDifferentialAnalysesFiltered())
@@ -1121,6 +1113,10 @@ diffSplicingTableServer <- function(input, output, session) {
             names(eventTypes) <- getSplicingEventTypes()
             stats[["Event type"]] <- as.character(
                 eventTypes[stats[["Event type"]]])
+            
+            # Keep columns from data table (else, no data will be rendered)
+            cols  <- getDifferentialAnalysesColumns()
+            stats <- stats[ , cols]
             
             dataTableAjax(session, stats, outputId="statsTable")
             reloadData(proxy)
