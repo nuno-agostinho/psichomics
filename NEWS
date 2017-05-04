@@ -1,207 +1,192 @@
-1.2.2 (27 Apr, 2017)
-====================
+# 1.2.2 (4 May, 2017)
 
-    * Add new set operations when grouping (such as complement, subtraction and
-    symmetric difference)
-    * Differential splicing analysis:
-        * Fix data not being rendered in the table when zooming if data
-        transformation was applied to any of the axes
-        * Discard options that return invalid data and fix warnings when
-        transforming invalid values
-        * Fix points highlighted after deselecting the only selected row of the
-        table
-    * Principal component analysis:
-        * When clicking on a alternative splicing event in the loadings plot, 
-        the appropriate differential splicing analyses will now be automatically
-        rendered with the respective options, as expected
-    * Survival analysis:
-        * Properly set the title of survival curves based on the selected
-        alternative splicing event's quantification
+* Update minimum version required of shiny (1.0.3)
+* Add new set operations when grouping (such as complement, subtraction and
+symmetric difference)
+* Differential splicing analysis:
+    - Fix data not being rendered in the table when zooming after data
+    transformation was applied
+    - Discard options that return invalid data and fix warnings when
+    transforming invalid values
+    - Fix points highlighted after deselecting the only selected row of the
+    table
+* Principal component analysis:
+    - When clicking on a alternative splicing event in the loadings plot, the
+    appropriate differential splicing analyses will now be automatically
+    rendered with the respective options, as expected
+* Survival analysis:
+    - Properly set the title of survival curves based on the selected
+    alternative splicing event's quantification
 
-1.2.1 (24 Apr, 2017)
-====================
+# 1.2.1 (24 Apr, 2017)
 
-    * Gene, protein and transcript information:
-        * Fix missing file required for transcript plots
-    * Update command-line interface tutorial to render a transcript plot
+* Gene, protein and transcript information:
+    - Fix missing file required for transcript plots
+* Update command-line interface tutorial to render a transcript plot
 
-1.2.0 (22 Apr, 2017)
-====================
+# 1.2.0 (22 Apr, 2017)
 
-    * Gene, protein and transcript information:
-        * Fix tooltip text presentation in transcript plot
-        * Fix JavaScript issues when zooming the transcript plot
-        * Fix error when plotting events associated with multiple genes
-        * Fix error when plotting single-exon transcripts
-        * Protein name, length and function are now presented when available
-        * Improved general presentation of the information
-    * Differential splicing analyses:
-        * Click and drag in the plot to zoom in and subsequently filter events
-        shown in the table
-        * Decreased step of sliders
-        * Improve interface of previewed survival curves
-        * When clicking on a table link to navigate to differential splicing
-        analyses of a single event, the appropriate analyses will now be
-        automatically rendered with the respective options, as expected
-    * Settings (renamed to "Help"):
-        * Add links to tutorials and user feedback
-        * Add app information and acknowledgments
-        * Remove unused option for choosing cores (all performed operations are
-        still single-core, given the difficulty of working with multiprocesses
-        in Shiny)
-    * Improve dialogs regarding missing data and other minor interface elements
-    * Update documentation with volcano plot
+* Gene, protein and transcript information:
+    - Fix tooltip text presentation in transcript plot
+    - Fix JavaScript issues when zooming the transcript plot
+    - Fix error when plotting events associated with multiple genes
+    - Fix error when plotting single-exon transcripts
+    - Protein name, length and function are now presented when available
+    - Improved general presentation of the information
+* Differential splicing analyses:
+    - Click and drag in the plot to zoom in and subsequently filter events
+    shown in the table
+    - Decreased step of sliders
+    - Improve interface of previewed survival curves
+    - When clicking on a table link to navigate to differential splicing
+    analyses of a single event, the appropriate analyses will now be
+    automatically rendered with the respective options, as expected
+* Settings (renamed to "Help"):
+    - Add links to tutorials and user feedback
+    - Add app information and acknowledgments
+    - Remove unused option for choosing cores (all performed operations are 
+    still single-core, given the difficulty of working with multiprocesses in
+    Shiny)
+* Improve dialogs regarding missing data and other minor interface elements
+* Update documentation with volcano plot
 
-1.0.9 (10 Apr, 2017)
-====================
+# 1.0.9 (10 Apr, 2017)
 
-    * Differential splicing analyses:
-        * Add volcano plot to represent events through selected attributes, such
-        as p-values and descriptive statistics (e.g. median and variance) 
-        between groups of interest
-        * Transform values of the X and Y axis in the plot using log
-        transformed, inverted and absolute values, for instance
-        * Highlight events in the plot based on values of the X and Y axis
-        * Table of differential analyses per alternative splicing event is
-        filtered according to highlighted and selected events in the plot
-    * Gene, protein and transcript information:
-        * Transcript plot is now interactive and zoomable
-        * Protein are now rendered based on selected transcript alone
-        * Faster parsing of Uniprot's web API response
-        * Improve display of article information when data is missing
-    * Principal component analysis:
-        * Improve presentation of available options
-    * When clicking on previews of differential splicing and survival analyses,
-    the appropriate analyses will now be automatically rendered with the 
-    respective options
-    * Fix buggy browser history when the user is directed to a different tab
-    * Consistently use Firebrowse and Firehose across the package
-    * Update documentation
+* Differential splicing analyses:
+    - Add volcano plot to represent events through selected attributes, such as
+    p-values and descriptive statistics (e.g. median and variance) between 
+    groups of interest
+    - Transform values of the X and Y axis in the plot using log transformed, 
+    inverted and absolute values, for instance
+    - Highlight events in the plot based on values of the X and Y axis
+    - Table of differential analyses per alternative splicing event is filtered
+    according to highlighted and selected events in the plot
+* Gene, protein and transcript information:
+    - Transcript plot is now interactive and zoomable
+    - Protein are now rendered based on selected transcript alone
+    - Faster parsing of Uniprot's web API response
+    - Improve display of article information when data is missing
+* Principal component analysis:
+    - Improve presentation of available options
+* When clicking on previews of differential splicing and survival analyses, the
+appropriate analyses will now be automatically rendered with the respective
+options
+* Fix buggy browser history when the user is directed to a different tab
+* Consistently use Firebrowse and Firehose across the package
+* Update documentation
 
-1.0.8 (21 Feb, 2017)
-====================
+# 1.0.8 (21 Feb, 2017)
 
-    * Support GTEx data loading and analysis
-    * Fix clinical data dependency:
-        - Fix error when trying to load a file containing alternative splicing
-        quantification without first loading clinical data
-        - Fix error where samples from junction quantification were matched to
-        clinical information even if clinical data were not loaded
-        - Inform user when clinical data is not loaded while trying to plot
-        survival curves
-    * Improve data grouping:
-        - Create sample groups like patient groups and perform set operations
-        between any created groups
-        - Create groups using patient and sample identifiers
-        - Check number of patients and samples per group
-        - Rename selected groups
-        - Alert user when groups cannot be created due to missing data
-    * Differential splicing analysis:
-        - Analyse all samples as one group
-    * Survival analysis:
-        - Select any clinical attribute for starting/follow up and ending times
-    * Create table containing TCGA sample metadata when calculating or loading
-    alternative splicing quantification
-    * Minor UI improvements
+* Support GTEx data loading and analysis
+* Fix clinical data dependency:
+    - Fix error when trying to load a file containing alternative splicing
+    quantification without first loading clinical data
+    - Fix error where samples from junction quantification were matched to
+    clinical information even if clinical data were not loaded
+    - Inform user when clinical data is not loaded while trying to plot survival
+    curves
+* Improve data grouping:
+    - Create sample groups like patient groups and perform set operations
+    between any created groups
+    - Create groups using patient and sample identifiers
+    - Check number of patients and samples per group
+    - Rename selected groups
+    - Alert user when groups cannot be created due to missing data
+* Differential splicing analysis:
+    - Analyse all samples as one group
+* Survival analysis:
+    - Select any clinical attribute for starting/follow up and ending times
+* Create table containing TCGA sample metadata when calculating or loading
+alternative splicing quantification
+* Minor UI improvements
 
-1.0.7 (22 Jan, 2017)
-====================
+# 1.0.7 (22 Jan, 2017)
 
-    * Survival analysis:
-        - Fix error caused by some non-matched patients not being in the
-        patient-sample matching matrix
+* Survival analysis:
+    - Fix error caused by some non-matched patients not being in the 
+    patient-sample matching matrix
 
-1.0.6 (17 Jan, 2017)
-====================
+# 1.0.6 (17 Jan, 2017)
 
-    * Update tutorials with more relevant and complex examples
-    * Update minimum versions required of highcharter (0.5.0) and shiny (1.0.0):
-        - Fix function usage as according to new version of highcharter
-        - More options available when exporting plots (PNG, JPEG, SVG, XLS and
-        CSV)
-    * Faster alternative splicing quantification
-    * Differential splicing analysis:
-        - Fix major bug where samples could be placed in the wrong groups
-        - Shorten speed of the calculation for the optimal PSI cut-off that 
-        minimises the survival difference
-        - Fix not performing statistical tests for two selected sample types
-        while analysing a single event with three or more sample types
-        - Fix differential analysis on one splicing event not working when using
-        `diffAnalyses()` function
-        - Fix differential analysis not showing for individual events before
-        navigating to the page where the analysis is performed for all events
-        - Improve readability and information of statistical tests for single
-        events
-    * Principal component analysis:
-        - Shorten time taken to calculate principal components and to render the
-        loadings plot
-        - Fix loadings plot error when rendering some principal components
-    * Survival analysis:
-        - Fix incorrect number of patients from the survival groups in the
-        contextual information for the selected cut-off (below the slider)
-        - Improve how alternative splicing quantification is assigned to
-        patients based on their samples
-    * Protein annotation:
-        - Warn user when trying to render proteins with no domains
+* Update tutorials with more relevant and complex examples
+* Update minimum versions required of highcharter (0.5.0) and shiny (1.0.0):
+    - Fix function usage as according to new version of highcharter
+    - More options available when exporting plots (PNG, JPEG, SVG, XLS and CSV)
+* Faster alternative splicing quantification
+* Differential splicing analysis:
+    - Fix major bug where samples could be placed in the wrong groups
+    - Shorten speed of the calculation for the optimal PSI cut-off that 
+    minimises the survival difference
+    - Fix not performing statistical tests for two selected sample types while
+    analysing a single event with three or more sample types
+    - Fix differential analysis on one splicing event not working when using
+    `diffAnalyses()` function
+    - Fix differential analysis not showing for individual events before
+    navigating to the page where the analysis is performed for all events
+    - Improve readability and information of statistical tests for single events
+* Principal component analysis:
+    - Shorten time taken to calculate principal components and to render the
+    loadings plot
+    - Fix loadings plot error when rendering some principal components
+* Survival analysis:
+    - Fix incorrect number of patients from the survival groups in the 
+    contextual information for the selected cut-off (below the slider)
+    - Improve how alternative splicing quantification is assigned to patients
+    based on their samples
+* Protein annotation:
+    - Warn user when trying to render proteins with no domains
 
-1.0.5 (7 Jan, 2017)
-===================
+# 1.0.5 (7 Jan, 2017)
 
-    * Navigate history using the browser forward and back buttons
-    * Fix delay when displaying large data by removing columns containing 
-    missing values exclusively
-    * Principal component analysis:
-        - Improve speed when calculating total contribution of each variable to
-        the principal components
-    * Survival analysis:
-        - Shorten calculation of optimal PSI that minimises the survival
-        difference
-        - Improve visual cues of optimal PSI cut-off and present p-value of 
-        selected PSI cut-off
-        - Fix ambiguous error messages
-        - Fix incorrect Cox model results for formula-based calculations
-        - Fix null Cox models crashing the program
-    * Differential splicing analysis:
-        - Select sample types for differential splicing analysis
-        - Fix statistical tests not displaying for individual events after
-        differentially analysing all events using the other statistical tests
+* Navigate history using the browser forward and back buttons
+* Fix delay when displaying large data by removing columns containing missing
+values exclusively
+* Principal component analysis:
+    - Improve speed when calculating total contribution of each variable to the
+    principal components
+* Survival analysis:
+    - Shorten calculation of optimal PSI that minimises the survival difference
+    - Improve visual cues of optimal PSI cut-off and present p-value of selected
+    PSI cut-off
+    - Fix ambiguous error messages
+    - Fix incorrect Cox model results for formula-based calculations
+    - Fix null Cox models crashing the program
+* Differential splicing analysis:
+    - Select sample types for differential splicing analysis
+    - Fix statistical tests not displaying for individual events after
+    differentially analysing all events using the other statistical tests
 
-1.0.4 (18 Dec, 2016)
-====================
+# 1.0.4 (18 Dec, 2016)
 
-    * Correctly load files and quantify alternative splicing for PRAD, OV and
-    PAAD tumour types from The Cancer Genome Atlas (TCGA)
-    * Fix session disconnecting when exporting plots in Firefox
-    * Improve text and behaviour of fields to select datasets and AS events
-    * Fix author names and add contributor
+* Correctly load files and quantify alternative splicing for PRAD, OV and PAAD
+tumour types from The Cancer Genome Atlas (TCGA)
+* Fix session disconnecting when exporting plots in Firefox
+* Improve text and behaviour of fields to select datasets and AS events
+* Fix author names and add contributor
 
-1.0.3 (13 Dec, 2016)
-====================
+# 1.0.3 (13 Dec, 2016)
     
-    * Bug fixes regarding gene annotation:
-        - Fix disabled gene selection when choosing a splicing event associated
-          with a single gene after selecting an event related to multiple genes
-        - Fix display of PubMed articles related to previously selected gene 
-          when selecting a single-gene-associated event after selecting an event
-          related to multiple genes
-    * Bug fixes regarding groups:
-        - Fix groups by rows not working
-        - Fix group selection not working when only one group exists
-        - Improve argument name of getGroupsFrom()
-    * Other minor improvements
+* Bug fixes regarding gene annotation:
+    - Fix disabled gene selection when choosing a splicing event associated with
+    a single gene after selecting an event related to multiple genes
+    - Fix display of PubMed articles related to previously selected gene when
+    selecting a single-gene-associated event after selecting an event related to
+    multiple genes
+* Bug fixes regarding groups:
+    - Fix groups by rows not working
+    - Fix group selection not working when only one group exists
+    - Improve argument name of getGroupsFrom()
+* Other minor improvements
 
-1.0.2 (3 Dec, 2016)
-===================
+# 1.0.2 (3 Dec, 2016)
 
-    * Fix UTF-8 encoding in author list
+* Fix UTF-8 encoding in author list
 
-1.0.1 (1 Dec, 2016)
-===================
+# 1.0.1 (1 Dec, 2016)
 
-    * Improve metadata (title, description, authors and vignette titles)
+* Improve metadata (title, description, authors and vignette titles)
 
-1.0.0 (5 Oct, 2016)
-===================
+# 1.0.0 (5 Oct, 2016)
     
-    * First release of psichomics
-    * Quantify, analyse and visualise alternative splicing data
+* First release of psichomics
+* Quantify, analyse and visualise alternative splicing data

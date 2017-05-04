@@ -14,9 +14,9 @@
 \alias{setPrecision}
 \title{Get or set globally accessible elements}
 \usage{
-getGlobal(..., sep = "_")
+getGlobal(category = getCategory(), ..., sep = "_")
 
-setGlobal(..., value, sep = "_")
+setGlobal(category = getCategory(), ..., value, sep = "_")
 
 setData(data)
 
@@ -37,6 +37,9 @@ getPrecision()
 setPrecision(integer)
 }
 \arguments{
+\item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
+it uses the selected data category}
+
 \item{...}{Arguments to identify a variable}
 
 \item{sep}{Character to separate identifiers}
@@ -48,9 +51,6 @@ setPrecision(integer)
 \item{auto}{Boolean: enable automatic navigation of browser history?}
 
 \item{integer}{Integer: value of the setting}
-
-\item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
-it uses the selected data category}
 }
 \value{
 Getters return globally accessible data, whereas setters return NULL 
@@ -63,8 +63,6 @@ Get or set globally accessible elements
 Needs to be called inside a reactive function
 }
 \seealso{
-\code{\link{psichomics:::getEvent}},
-\code{\link{psichomics:::getClinicalMatchFrom}},
-\code{\link{psichomics:::getGroupsFrom}} and
-\code{\link{psichomics:::getDifferentialAnalyses}}
+\code{\link{getEvent}}, \code{\link{getClinicalMatchFrom}},
+\code{\link{getGroupsFrom}} and \code{\link{getDifferentialAnalyses}}
 }

@@ -67,8 +67,6 @@ as they are only used to modify the Shiny session's state
 Get or set differential analyses' elements for a data category
 }
 \seealso{
-\code{\link{psichomics:::getEvent}},
-\code{\link{psichomics:::getClinicalMatchFrom}},
-\code{\link{psichomics:::getGroupsFrom}} and
-\code{\link{psichomics:::getDifferentialAnalyses}}
+\code{\link{getEvent}}, \code{\link{getClinicalMatchFrom}},
+\code{\link{getGroupsFrom}} and \code{\link{getDifferentialAnalyses}}
 }

@@ -8,26 +8,26 @@ sharedData <- reactiveValues()
 
 #' Get or set globally accessible elements
 #' 
-#' @param ... Arguments to identify a variable
-#' @param sep Character to separate identifiers
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
 #' it uses the selected data category
+#' @param ... Arguments to identify a variable
+#' @param sep Character to separate identifiers
 #' 
 #' @note Needs to be called inside a reactive function
 #' 
-#' @seealso \code{\link{psichomics:::getEvent}},
-#' \code{\link{psichomics:::getClinicalMatchFrom}},
-#' \code{\link{psichomics:::getGroupsFrom}} and
-#' \code{\link{psichomics:::getDifferentialAnalyses}}
+#' @seealso \code{\link{getEvent}}, \code{\link{getClinicalMatchFrom}},
+#' \code{\link{getGroupsFrom}} and \code{\link{getDifferentialAnalyses}}
 #' 
 #' @return Getters return globally accessible data, whereas setters return NULL 
 #' as they are only used to modify the Shiny session's state
-getGlobal <- function(..., sep="_") sharedData[[paste(..., sep=sep)]]
+getGlobal <- function(category=getCategory(), ..., sep="_") {
+    sharedData[[paste(category, ..., sep=sep)]]
+}
 
 #' @rdname getGlobal
 #' @param value Value to attribute to an element
-setGlobal <- function(..., value, sep="_") {
-    sharedData[[paste(..., sep=sep)]] <- value
+setGlobal <- function(category=getCategory(), ..., value, sep="_") {
+    sharedData[[paste(category, ..., sep=sep)]] <- value
 }
 
 #' Get global data
@@ -127,7 +127,7 @@ getSampleInfo <- reactive(getCategoryData()[["Sample metadata"]])
 #' @rdname getEvent
 #' @param info Data frame or matrix: sample information
 setSampleInfo <- function(info, category=getCategory())
-    sharedData$data[[category]][["Sample metadata"]] <- value
+    sharedData$data[[category]][["Sample metadata"]] <- info
 
 #' @rdname getEvent
 getPatientId <- function(category=getCategory())
@@ -219,11 +219,11 @@ setGroupsFrom <- function(dataset, groups, category=getCategory())
 
 #' Get or set differential analyses' elements for a data category
 #' @inherit getGlobal
-#' @param differential Data frame or matrix: differential analyses table
 getDifferentialAnalyses <- function(category=getCategory())
     getGlobal(category, "differentialAnalyses")
 
 #' @rdname getDifferentialAnalyses
+#' @param differential Data frame or matrix: differential analyses table
 setDifferentialAnalyses <- function(differential, category=getCategory())
     setGlobal(category, "differentialAnalyses", value=differential)
 
