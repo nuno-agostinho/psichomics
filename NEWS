@@ -17,6 +17,7 @@ symmetric difference)
 * Survival analysis:
     - Properly set the title of survival curves based on the selected
     alternative splicing event's quantification
+    - Improve readability of Cox PH models
 
 # 1.2.1 (24 Apr, 2017)
 

@@ -301,6 +301,12 @@ survivalServer <- function(input, output, session) {
         survTerms <- checkSurvivalInput(session, input, coxph=TRUE)
         
         if (!is.null(survTerms)) {
+            # Properly set group names
+            names(survTerms$coefficients) <- 
+                gsub("&gt;", ">", names(survTerms$coefficients), fixed=TRUE)
+            names(survTerms$coefficients) <- 
+                gsub("&lt;", "<", names(survTerms$coefficients), fixed=TRUE)
+            
             summary <- summary(survTerms)
             print(summary)
             
@@ -318,6 +324,12 @@ survivalServer <- function(input, output, session) {
                 # Groups statistics
                 cox <- cbind(summary$coefficients,
                              summary$conf.int[ , 2:4, drop=FALSE])
+                
+                # Properly set colnames and order them
+                colnames(cox) <- c("Coefficient", "Hazard ratio", 
+                                   "Standard error", "Wald test", "p-value", 
+                                   "1 / Hazard ratio", "Lower 95%", "Upper 95%")
+                cox <- cox[ , c(1, 3:2, 7:8, 6, 4:5), drop=FALSE]
             }
         }
         
@@ -327,16 +339,16 @@ survivalServer <- function(input, output, session) {
             len <- length(summary$na.action)
             tagList(
                 hr(), 
-                downloadButton(ns("download"), "Download Cox model information",
-                               class="pull-right"),
+                downloadButton(ns("download"), "Save Cox model information",
+                               class="pull-right btn-info"),
                 h3("Cox", tags$abbr("PH", title="Proportional Hazards"), 
                    "model", tags$small(
-                       summary$n, " patients, ", summary$nevent, " events",
-                       if (len > 0) 
+                       summary$n, " patients with ", summary$nevent, " events",
+                       if (len > 0)
                            paste0(" (", len, " missing values removed)"))),
                 tags$b("Concordance: "), roundDigits(summary$concordance[[1]]),
-                tags$b("(SE: "), roundDigits(summary$concordance[[2]]),
-                tags$b(")"),
+                tags$b("(standard error: "), 
+                roundDigits(summary$concordance[[2]]), tags$b(")"),
                 br(), tags$b("R\u00B2: "), roundDigits(summary$rsq[[1]]), 
                 tags$b("(max possible: "), roundDigits(summary$rsq[[2]]),
                 tags$b(")"), 
@@ -380,10 +392,18 @@ survivalServer <- function(input, output, session) {
         options=list(info=FALSE, paging=FALSE, searching=FALSE, scrollX=TRUE))
         
         output$coxGroups <- renderDataTable({
-            if (is.null(survTerms))
-                return(NULL)
-            else
-                return(roundDigits(cox))
+            if (is.null(survTerms)) return(NULL)
+            
+            cox <- roundDigits(cox)
+            cox[ , "Coefficient"] <- paste(cox[ , "Coefficient"],
+                                           cox[ , "Standard error"], 
+                                           sep = " \u00B1 ")
+            cox[ , "Lower 95%"] <- sprintf("%s to %s",
+                                           cox[ , "Lower 95%"],
+                                           cox[ , "Upper 95%"])
+            colnames(cox)[4] <- "95% CI"
+            cox <- cox[ , -c(2, 5:6), drop=FALSE]
+            return(cox)
         }, style="bootstrap", selection='none', options=list(scrollX=TRUE))
     })
     
