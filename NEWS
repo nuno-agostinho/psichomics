@@ -3,6 +3,7 @@
 * Update minimum version required of shiny (1.0.3)
 * Add new set operations when grouping (such as complement, subtraction and
 symmetric difference)
+* Filter quantification of alternative splicing events based on a list of genes
 * Differential splicing analysis:
     - Fix data not being rendered in the table when zooming after data
     transformation was applied

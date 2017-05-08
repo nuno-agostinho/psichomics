@@ -27,20 +27,56 @@ readFile <- function(file) {
     readRDS(insideFile("extdata", file))
 }
 
+#' Splicing event types available
+#' 
+#' @param acronymsAsNames Boolean: return acronyms as names? FALSE by default
+#' 
+#' @return Named character vector with splicing event types
+#' @export
+#' 
+#' @examples 
+#' getSplicingEventTypes()
+getSplicingEventTypes <- function(acronymsAsNames=FALSE) {
+    types <- c("Skipped exon" = "SE",
+               "Mutually exclusive exon" = "MXE",
+               "Alternative 5' splice site" = "A5SS",
+               "Alternative 3' splice site" = "A3SS",
+               "Alternative first exon" = "AFE",
+               "Alternative last exon" = "ALE")
+    if (acronymsAsNames) {
+        tmp        <- names(types)
+        names(tmp) <- types
+        types      <- tmp
+    }
+    return(types)
+}
+
 #' Parse an alternative splicing event based on a given identifier
 #' 
 #' @param event Character: event identifier
 #' @param char Boolean: return a single character instead of list with parsed
 #' values? FALSE by default
+#' @param extendEventType Boolean: return extended name of event type? FALSE by
+#' default
 #' 
 #' @return Parsed event
 #' @export
 #' @examples 
 #' events <- c("SE_1_-_123_456_789_1024_TST",
-#'             "MX_3_+_473_578_686_736_834_937_HEY/YOU")
+#'             "MXE_3_+_473_578_686_736_834_937_HEY/YOU")
 #' parseSplicingEvent(events)
-parseSplicingEvent <- function(event, char=FALSE) {
-    if (char) return(gsub("_", " ", event, fixed=TRUE))
+parseSplicingEvent <- function(event, char=FALSE, extendEventType=FALSE) {
+    if (char) {
+        event <- gsub("_", " ", event, fixed=TRUE)
+        if (extendEventType) {
+            space    <- sapply(gregexpr(" ", event), "[[", 1)
+            acronym  <- substr(event, 1, space - 1)
+            event    <- substr(event, space + 1, sapply(event, nchar))
+            extended <- getSplicingEventTypes(acronymsAsNames=TRUE)[acronym]
+            event    <- paste(extended, event)
+        }
+        return(event)
+    }
     
     event <- strsplit(event, "_")
     parsed <- data.frame(matrix(nrow=length(event)))
@@ -58,6 +94,9 @@ parseSplicingEvent <- function(event, char=FALSE) {
                             function(i) event[[i]][4:lenMinus1[[i]]])
     parsed$pos    <- lapply(parsed$pos, 
                             function(i) range(as.numeric(i)))
+    
+    if (extendEventType)
+        parsed$type <- getSplicingEventTypes(acronymsAsNames=TRUE)[parsed$type]
     
     parsed[,1] <- NULL
     return(parsed)

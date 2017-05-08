@@ -32,21 +32,6 @@ parseTcgaSampleInfo <- function (samples, category=getCategory()) {
     return(info)
 }
 
-#' Splicing event types available
-#' @return Named character vector with splicing event types
-#' @export
-#' 
-#' @examples 
-#' getSplicingEventTypes()
-getSplicingEventTypes <- function() {
-    c("Skipped exon" = "SE",
-      "Mutually exclusive exon" = "MXE",
-      "Alternative 5' splice site" = "A5SS",
-      "Alternative 3' splice site" = "A3SS",
-      "Alternative first exon" = "AFE",
-      "Alternative last exon" = "ALE")
-}
-
 #' List the alternative splicing annotation files available
 #' 
 #' @return Named character vector with splicing annotation files available
@@ -67,7 +52,7 @@ listSplicingAnnotations <- function() {
 #' @examples
 #' psichomics:::listAllAnnotations()
 listAllAnnotations <- function(...) {
-    list("Available annotation"=listSplicingAnnotations(),
+    list("Available annotation files"=listSplicingAnnotations(),
          "Custom annotation"=c(
              ..., "Load annotation from file..."="loadAnnotation"))
 }
@@ -85,6 +70,12 @@ inclusionLevelsInterface <- function(ns) {
     eventTypes <- getSplicingEventTypes()
     names(eventTypes) <- sprintf("%s (%s)", names(eventTypes), eventTypes)
     
+    filterGenesSelectize <- selectizeInput(
+        ns("filterGenes"), label=NULL, selected=NULL, multiple=TRUE,
+        choices=c("Type to search for genes..."=""), options=list(
+            # Allow to add new items
+            create=TRUE, createOnBlur=TRUE))
+    
     options <- div(
         id=ns("options"),
         selectizeInput(ns("junctionQuant"), choices=NULL,
@@ -95,10 +86,42 @@ inclusionLevelsInterface <- function(ns) {
                        choices=eventTypes, multiple = TRUE),
         numericInput(ns("minReads"), div("Minimum read counts' threshold",
                                          icon("question-circle")), value = 10),
+        bsCollapse(
+            bsCollapsePanel(
+                title=tagList(icon("filter"),
+                              "Filter splicing events by genes"), 
+                value="Filter by genes",
+                radioButtons(
+                    ns("filter"),
+                    "Filter splicing events",
+                    c("Do not filter splicing events"="noFilter",
+                      "Filter by selected genes"="select",
+                      "Filter by genes imported from a file"="file")),
+                conditionalPanel(
+                    sprintf("input[id='%s'] == '%s'", ns("filter"), "select"),
+                    div(id=ns("geneOptionsLoading"), class="progress",
+                        div(class="progress-bar progress-bar-striped active",
+                            role="progressbar", style="width:100%", "Loading")),
+                    hidden(div(id=ns("geneOptions"),
+                        filterGenesSelectize,
+                        div(id=ns("geneLoadingIcon"),
+                            style="position: relative;",
+                            # div(class="fa fa-spinner fa-spin",
+                            #     style="position:absolute;", 
+                            #     style="right:6px;",
+                            #     style="bottom: 24px;", style="z-index: 2;")),
+                        helpText("Presented genes are based on the selected",
+                                 "alternative splicing annotation."))))),
+                conditionalPanel(
+                    sprintf("input[id='%s'] == '%s'", ns("filter"), "file"),
+                    fileInput(ns("filterGenesFile"), NULL),
+                    helpText("Provide a file with gene symbols separated by a",
+                             "space, comma, tab or new line. For instance: ",
+                             tags$code("BRCA1, BRAF, ABL"))))),
         bsTooltip(ns("minReads"), placement = "right", 
                   options = list(container = "body"),
-                  paste("Inclusion levels calculated with a number of read",
-                        "counts below this threshold are discarded.")))
+                  paste("Discard alternative splicing quantified using a",
+                        "number of reads below this threshold.")))
     
     tagList(
         uiOutput(ns("modal")),
@@ -133,9 +156,14 @@ inclusionLevelsUI <- function(id, panel) {
 #' @param minReads Integer: minimum of read counts to consider a junction read 
 #' in calculations
 #' @param progress Function to track the progress
+#' @param filter Character: gene symbols for which the splicing quantification 
+#' of associated splicing events is performed (by default, all splicing events 
+#' undergo splicing quantification)
 #' 
 #' @return Data frame with the quantification of the alternative splicing events
 #' @export
+#' 
+#' @importFrom fastmatch %fin%
 #' 
 #' @examples 
 #' # Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events
@@ -146,27 +174,41 @@ inclusionLevelsUI <- function(id, panel) {
 quantifySplicing <- function(annotation, junctionQuant, 
                              eventType=c("SE", "MXE", "ALE", "AFE", "A3SS", 
                                          "A5SS"), 
-                             minReads=10, progress=echoProgress) {
+                             minReads=10, progress=echoProgress, filter=NULL) {
+    if (!is.null(filter)) {
+        # Filter for given gene symbols
+        filter <- unique(filter)
+        annotation <- lapply(annotation, function(df) {
+            # Check which genes are present in the filter by unlisting them all
+            # (register the respective event's index for each gene)
+            genes      <- df$Gene
+            valid      <- as.vector(unlist(genes)) %fin% filter
+            eventGenes <- vapply(genes, length, numeric(1), USE.NAMES=FALSE)
+            eventIndex <- rep(seq(genes), eventGenes)
+            return(df[unique(eventIndex[valid]), ])
+        })
+    }
+    
     psi <- NULL
     for (acronym in eventType) {
         eventTypes <- getSplicingEventTypes()
         type <- names(eventTypes)[[match(acronym, eventTypes)]]
+        thisAnnot <- annotation[[type]]
+        progress("Calculating inclusion levels", type, value=acronym, 
+                 max=length(eventType))
         
-        if (!is.null(annotation[[type]])) {
-            progress("Calculating inclusion levels", type, value=acronym, 
-                     max=length(eventType))
+        if (!is.null(thisAnnot) && nrow(thisAnnot) > 0) {
             psi <- rbind(psi, calculateInclusionLevels(
-                acronym, junctionQuant, annotation[[type]], minReads))
+                acronym, junctionQuant, thisAnnot, minReads))
         }
     }
-    if (!is.null(psi)) {
-        attr(psi, "rowNames") <- TRUE
-        attr(psi, "description") <- paste("Exon and intron inclusion levels",
-                                          "for any given alternative splicing",
-                                          "event.")
-        attr(psi, "dataType")  <- "Inclusion levels"
-        attr(psi, "tablename") <- "Inclusion levels"
-    }
+    if (is.null(psi)) psi <- data.frame(NULL)
+    attr(psi, "rowNames") <- TRUE
+    attr(psi, "description") <- paste("Exon and intron inclusion levels",
+                                      "for any given alternative splicing",
+                                      "event.")
+    attr(psi, "dataType")  <- "Inclusion levels"
+    attr(psi, "tablename") <- "Inclusion levels"
     return(psi)
 }
 
@@ -191,127 +233,12 @@ loadAnnotation <- function(annotation) {
     return(annot)
 }
 
-#' Server logic of the alternative splicing event quantification module
+#' Set of functions to load a custom alternative splicing annotation
 #' 
-#' @param input Shiny input
-#' @param output Shiny ouput
-#' @param session Shiny session
-#' 
-#' @importFrom shiny reactive observeEvent fileInput helpText removeModal
-#' @importFrom tools file_path_sans_ext
-#' @importFrom shinyjs enable disable hide show
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
-inclusionLevelsServer <- function(input, output, session) {
-    ns <- session$ns
-    observeEvent(input$missing, missingDataGuide("Junction quantification"))
-
-    observe({
-        junctionQuant <- getJunctionQuantification()
-        if (!is.null(junctionQuant)) {
-            updateSelectizeInput(session, "junctionQuant",
-                                 choices=c(names(junctionQuant),
-                                           "Select junction quantification"=""))
-        } else {
-            updateSelectizeInput(
-                session, "junctionQuant",
-                choices=c("No junction quantification loaded"=""))
-        }
-    })
-    
-    observe({
-        if (is.null(getData()) || is.null(getJunctionQuantification())) {
-            hide("options")
-            disable("calcIncLevels")
-            show("missingData")
-        } else {
-            show("options")
-            enable("calcIncLevels")
-            hide("missingData")
-        }
-    })
-    
-    observeEvent(input$calcIncLevels, {
-        if (is.null(getData()) || is.null(getJunctionQuantification())) {
-            missingDataModal(session, "Junction quantification", ns("missing"))
-        } else if (!is.null(getInclusionLevels())) {
-            if (!is.null(getDifferentialAnalyses())) {
-                warningModal(session, "Warning",
-                             "The calculated differential splicing analyses",
-                             "will be discarded and the previously loaded",
-                             "inclusion levels will be replaced.",
-                             footer=actionButton(ns("discard"),
-                                                 "Discard and replace",
-                                                 class="btn-warning",
-                                                 "data-dismiss"="modal"))
-            } else {
-                warningModal(session, "Inclusion levels already quantified",
-                             "Do you wish to replace the inclusion levels",
-                             "loaded?",
-                             footer=actionButton(ns("replace"), "Replace",
-                                                 class="btn-warning",
-                                                 "data-dismiss"="modal"))
-            }
-        } else {
-            calcSplicing()
-        }
-    })
-    
-    observeEvent(input$replace, calcSplicing())
-    observeEvent(input$discard, {
-        setDifferentialAnalyses(NULL)
-        setDifferentialAnalysesSurvival(NULL)
-        calcSplicing()
-    })
-    
-    calcSplicing <- reactive({
-        eventType <- input$eventType
-        minReads  <- input$minReads
-        annotation <- input$annotation
-        
-        if (is.null(eventType) || is.null(minReads) || is.null(annotation)) {
-            return(NULL)
-        } else {
-            if (input$junctionQuant == "") {
-                errorModal(session, "Select junction quantification",
-                           "Select a junction quantification dataset")
-                endProcess("calcIncLevels")
-                return(NULL)
-            }
-        }
-        time <- startProcess("calcIncLevels")
-        startProgress("Quantifying alternative splicing", divisions=4)
-        # Read annotation
-        if (grepl("^/var/folders/", annotation)) { # if custom annotation
-            updateProgress("Loading alternative splicing annotation")
-            annot <- readRDS(annotation)
-        } else if (grepl("^annotationHub_", annotation)) {
-            updateProgress("Downloading alternative splicing annotation")
-            annot <- loadAnnotation(annotation)
-            
-            # Set species and assembly version
-            allAnnot <- listSplicingAnnotations()
-            annotID <- names(allAnnot)[match(annotation, allAnnot)]
-            if (grepl("Human", annotID)) setSpecies("Human")
-            if (grepl("hg19", annotID)) setAssemblyVersion("hg19")
-        }
-        junctionQuant <- getJunctionQuantification()[[input$junctionQuant]]
-        
-        # Calculate inclusion levels with annotation and junction quantification
-        updateProgress("Calculating inclusion levels")
-        psi <- quantifySplicing(annot, junctionQuant, eventType, minReads, 
-                                progress=updateProgress)
-        setInclusionLevels(psi)
-        
-        samples <- colnames(psi)
-        parsed <- parseTcgaSampleInfo(samples) 
-        if ( !is.null(parsed) )
-            setSampleInfo(parsed)
-        
-        endProcess("calcIncLevels", time)
-    })
-    
-    # Show modal to load custom alternative splicing quantification
+#' @importFrom shiny tags
+#' @inherit inclusionLevelsServer
+loadCustomSplicingAnnotationSet <- function(session, input, output) {
+    # Show modal for loading custom splicing annotation
     observe({
         ns <- session$ns
         if (input$annotation == "loadAnnotation") {
@@ -338,7 +265,7 @@ inclusionLevelsServer <- function(input, output, session) {
         }
     })
     
-    # Load custom alternative splicing annotation
+    # Load custom splicing annotation
     observeEvent(input$loadCustom, {
         customAnnot <- input$customAnnot
         if (is.null(customAnnot)) {
@@ -358,7 +285,13 @@ inclusionLevelsServer <- function(input, output, session) {
             removeAlert(output)
         }
     })
-    
+}
+
+#' Set of functions to load splicing quantification
+#' 
+#' @importFrom shiny tags
+#' @inherit inclusionLevelsServer
+loadSplicingQuantificationSet <- function(input, session, output) {
     # Show modal for loading alternative splicing quantification
     observeEvent(input$loadIncLevels, {
         ns <- session$ns
@@ -381,6 +314,7 @@ inclusionLevelsServer <- function(input, output, session) {
             footer=processButton(ns("loadASquant"), "Load quantification"))
     })
     
+    # Show warnings if needed before loading splicing quantification
     observeEvent(input$loadASquant, {
         if (!is.null(getInclusionLevels())) {
             if (!is.null(getDifferentialAnalyses())) {
@@ -405,11 +339,14 @@ inclusionLevelsServer <- function(input, output, session) {
         }
     })
     
+    # Replace previous splicing quantification
     observeEvent(input$replace2, {
         setSampleId(NULL)
         setGroupsFrom("Clinical data", NULL)
         loadSplicing()
     })
+    
+    # Discard differential analyses and replace previous splicing quantification
     observeEvent(input$discard2, {
         setDifferentialAnalyses(NULL)
         setDifferentialAnalysesSurvival(NULL)
@@ -472,6 +409,213 @@ inclusionLevelsServer <- function(input, output, session) {
         }
         endProcess("loadIncLevels", time)
     })
+}
+
+#' Read custom or remote annotation
+#' @inherit inclusionLevelsServer
+#' @param annotation Character: chosen annotation
+#' @param showProgress Boolean: show progress? FALSE by default
+readAnnot <- function(session, annotation, showProgress=FALSE) {
+    annot <- NULL
+    if (grepl("^/var/folders/", annotation)) { # if custom annotation
+        if (showProgress)
+            updateProgress("Loading alternative splicing annotation")
+        annot <- readRDS(annotation)
+    } else if (grepl("^annotationHub_", annotation)) {
+        if (showProgress)
+            updateProgress("Downloading alternative splicing annotation")
+        annot <- loadAnnotation(annotation)
+        
+        # Set species and assembly version
+        allAnnot <- listSplicingAnnotations()
+        annotID <- names(allAnnot)[match(annotation, allAnnot)]
+        if (grepl("Human", annotID)) setSpecies("Human")
+        if (grepl("hg19", annotID)) setAssemblyVersion("hg19")
+    }
+    return(annot)
+}
+
+#' Set of functions to quantify alternative splicing
+#' 
+#' @importFrom shiny tags
+#' @inherit inclusionLevelsServer
+quantifySplicingSet <- function(session, input) {
+    ns <- session$ns
+    
+    # Show warnings if needed before calculating inclusion levels
+    observeEvent(input$calcIncLevels, {
+        if (is.null(getData()) || is.null(getJunctionQuantification())) {
+            missingDataModal(session, "Junction quantification", ns("missing"))
+        } else if (!is.null(getInclusionLevels())) {
+            if (!is.null(getDifferentialAnalyses())) {
+                warningModal(session, "Warning",
+                             "The calculated differential splicing analyses",
+                             "will be discarded and the previously loaded",
+                             "inclusion levels will be replaced.",
+                             footer=actionButton(ns("discard"),
+                                                 "Discard and replace",
+                                                 class="btn-warning",
+                                                 "data-dismiss"="modal"))
+            } else {
+                warningModal(session, "Inclusion levels already quantified",
+                             "Do you wish to replace the inclusion levels",
+                             "loaded?",
+                             footer=actionButton(ns("replace"), "Replace",
+                                                 class="btn-warning",
+                                                 "data-dismiss"="modal"))
+            }
+        } else {
+            calcSplicing()
+        }
+    })
+    
+    observeEvent(input$replace, calcSplicing())
+    observeEvent(input$discard, {
+        setDifferentialAnalyses(NULL)
+        setDifferentialAnalysesSurvival(NULL)
+        calcSplicing()
+    })
+    
+    # Calculate inclusion levels
+    calcSplicing <- reactive({
+        eventType  <- input$eventType
+        minReads   <- input$minReads
+        annotation <- input$annotation
+        
+        if (is.null(eventType) || is.null(minReads) || is.null(annotation)) {
+            return(NULL)
+        } else {
+            if (input$junctionQuant == "") {
+                errorModal(session, "Select junction quantification",
+                           "Select a junction quantification dataset")
+                endProcess("calcIncLevels")
+                return(NULL)
+            }
+        }
+        time <- startProcess("calcIncLevels")
+        startProgress("Quantifying alternative splicing", divisions=4)
+        # Read annotation
+        annot <- readAnnot(session, annotation, showProgress=TRUE)
+        junctionQuant <- getJunctionQuantification()[[input$junctionQuant]]
+        
+        # Filter alternative splicing events based on their genes
+        filter <- NULL
+        if (input$filter == "select") {
+            # Filter genes based on select input
+            filter <- input$filterGenes
+            if (identical(filter, "")) filter <- NULL
+        } else if (input$filter == "file") {
+            # Filter genes provided in a file
+            doc    <- input$filterGenesFile
+            filter <- fread(doc$datapath, header=FALSE)
+            if (nrow(filter) == 1) {
+                filter <- as.character(filter)
+            } else if (nrow(filter) > 1) {
+                filter <- as.character(filter[[1]])
+            } else {
+                filter <- NULL
+            }
+        }
+        
+        # Quantify splicing with splicing annotation and junction quantification
+        updateProgress("Calculating inclusion levels")
+        psi <- quantifySplicing(annot, junctionQuant, eventType, minReads, 
+                                progress=updateProgress, filter=filter)
+        setInclusionLevels(psi)
+        
+        samples <- colnames(psi)
+        parsed <- parseTcgaSampleInfo(samples) 
+        if ( !is.null(parsed) )
+            setSampleInfo(parsed)
+        
+        endProcess("calcIncLevels", time)
+    })
+}
+
+#' Server logic of the alternative splicing event quantification module
+#' 
+#' @param input Shiny input
+#' @param output Shiny ouput
+#' @param session Shiny session
+#' 
+#' @importFrom shiny reactive observeEvent fileInput helpText removeModal
+#' @importFrom tools file_path_sans_ext
+#' @importFrom shinyjs enable disable hide show
+#' @importFrom data.table fread
+#' 
+#' @return NULL (this function is used to modify the Shiny session's state)
+inclusionLevelsServer <- function(input, output, session) {
+    ns <- session$ns
+    observeEvent(input$missing, missingDataGuide("Junction quantification"))
+
+    # Update available junction quantification according to loaded files
+    observe({
+        junctionQuant <- getJunctionQuantification()
+        if (!is.null(junctionQuant)) {
+            updateSelectizeInput(session, "junctionQuant",
+                                 choices=c(names(junctionQuant),
+                                           "Select junction quantification"=""))
+        } else {
+            updateSelectizeInput(
+                session, "junctionQuant",
+                choices=c("No junction quantification loaded"=""))
+        }
+    })
+    
+    # Warn user if junction quantification is not loaded
+    observe({
+        if (is.null(getData()) || is.null(getJunctionQuantification())) {
+            hide("options")
+            disable("calcIncLevels")
+            show("missingData")
+        } else {
+            show("options")
+            enable("calcIncLevels")
+            hide("missingData")
+        }
+    })
+    
+    # Update gene symbols for filtering based on selected annotation
+    observe({
+        annotation <- input$annotation
+        filter <- input$filter
+        
+        # Avoid loading if already loaded
+        if (filter == "select" && !is.null(annotation) &&
+            !annotation %in% c("", "loadAnnotation") && 
+            !identical(annotation, getAnnotationName())) {
+            # Show loading bar
+            show("geneOptionsLoading")
+            hide("geneOptions")
+            
+            annotation <- input$annotation
+            startProgress("Loading alternative splicing annotation",
+                          divisions=2)
+            annot <- readAnnot(session, annotation, showProgress=TRUE)
+            updateProgress("Preparing gene list")
+            genes <- sort(unique(unlist(lapply(annot, "[[", "Gene"))))
+            updateSelectizeInput(session, "filterGenes", choices=genes,
+                                 selected=character(0), server=TRUE)
+            closeProgress("Gene list prepared")
+            
+            setAnnotationName(annotation)
+            # Show gene options set
+            hide("geneOptionsLoading")
+            show("geneOptions")
+        }
+    })
+    
+    # # Toggle visibility of loading icon
+    # observe({
+    #     toggle("geneLoadingIcon",
+    #            selector = paste0(
+    #                '$("#data-inclusionLevels-filterGenes").parent()',
+    #                '.children("div.selectize-control").hasClass("loading")'))
+    # })
+    
+    quantifySplicingSet(session, input)
+    loadCustomSplicingAnnotationSet(session, input, output)
+    loadSplicingQuantificationSet(session, input, output)
 }
 
 attr(inclusionLevelsUI, "loader") <- "data"

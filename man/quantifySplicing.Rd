@@ -5,7 +5,8 @@
 \title{Quantify alternative splicing events}
 \usage{
 quantifySplicing(annotation, junctionQuant, eventType = c("SE", "MXE", "ALE",
-  "AFE", "A3SS", "A5SS"), minReads = 10, progress = echoProgress)
+  "AFE", "A3SS", "A5SS"), minReads = 10, progress = echoProgress,
+  filter = NULL)
 }
 \arguments{
 \item{annotation}{List of data frames: annotation for each alternative
@@ -19,6 +20,10 @@ splicing event type}
 in calculations}
 
 \item{progress}{Function to track the progress}
+
+\item{filter}{Character: gene symbols for which the splicing quantification 
+of associated splicing events is performed (by default, all splicing events 
+undergo splicing quantification)}
 }
 \value{
 Data frame with the quantification of the alternative splicing events
