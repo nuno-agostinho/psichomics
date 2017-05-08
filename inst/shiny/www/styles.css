@@ -11,6 +11,12 @@ a { cursor: pointer; }
     box-shadow: none;
 }
 
+/* As selectize choices load quickly, avoid changes from default state */
+.selectize-control.form-control.shinyjs-resettable.multi.loading {
+    margin-top: 10px;
+    text-align: left;
+}
+
 /* Alerts appear fixed on the top right above other elements */
 .sbs-alert {
     position: fixed;

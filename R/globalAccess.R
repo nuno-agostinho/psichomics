@@ -166,6 +166,15 @@ setAssemblyVersion <- function(assembly, category=getCategory())
     setGlobal(category, "assemblyVersion", value=assembly)
 
 #' @rdname getEvent
+getAnnotationName <- function(category=getCategory())
+    getGlobal(category, "annotName")
+
+#' @rdname getEvent
+#' @param annotName Character: annotation name
+setAnnotationName <- function(annotName, category=getCategory())
+    setGlobal(category, "annotName", value=annotName)
+
+#' @rdname getEvent
 getURLtoDownload <- function() getGlobal("URLtoDownload")
 
 #' @rdname getEvent

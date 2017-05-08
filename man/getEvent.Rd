@@ -25,6 +25,8 @@
 \alias{setSpecies}
 \alias{getAssemblyVersion}
 \alias{setAssemblyVersion}
+\alias{getAnnotationName}
+\alias{setAnnotationName}
 \alias{getURLtoDownload}
 \alias{setURLtoDownload}
 \title{Set or get central elements}
@@ -77,6 +79,10 @@ getAssemblyVersion(category = getCategory())
 
 setAssemblyVersion(assembly, category = getCategory())
 
+getAnnotationName(category = getCategory())
+
+setAnnotationName(annotName, category = getCategory())
+
 getURLtoDownload()
 
 setURLtoDownload(url)
@@ -102,6 +108,8 @@ it uses the selected data category}
 \item{species}{Character: species}
 
 \item{assembly}{Character: assembly version}
+
+\item{annotName}{Character: annotation name}
 
 \item{url}{Character: URL links to download}
 }
