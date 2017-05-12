@@ -609,29 +609,28 @@ createTooltip <- function(df, hover, x, y) {
     yRange  <- hover$range$bottom - hover$range$top
     top_px  <- hover$range$top + top_pct * yRange + 2
     
+    event  <- parseSplicingEvent(rownames(point), extendEventType=TRUE)
+    trItem <- function(key, value) tags$tr(tags$td(tags$b(key)), tags$td(value))
+    strand <- ifelse(event$strand == "+", "forward", "reverse")
+    
     # Tooltip
     wellPanel(
         class = "well-sm",
-        style = paste0("position:absolute; z-index:100;",
+        style = paste0("position: absolute; z-index: 100;",
                        "background-color: rgba(245, 245, 245, 0.85); ",
                        "right:", right_px, "px; top:", top_px, "px;"),
         tags$table(class="table table-condensed", style="margin-bottom: 0;",
-                   tags$thead(
-                       tags$tr(
-                           tags$td(tags$b("Event")),
-                           tags$td(
-                               parseSplicingEvent(rownames(point), char=TRUE))
-                       )
-                   ),
+                   tags$thead(trItem("Gene", 
+                                     paste(event$gene[[1]], collapse=" or "))),
                    tags$tbody(
-                       tags$tr(
-                           tags$td(tags$b(x)),
-                           tags$td(point[[x]])
-                       ),
-                       tags$tr(
-                           tags$td(tags$b(y)),
-                           tags$td(point[[y]]))))
-    )
+                       trItem("Event type", event$type),
+                       trItem("Coordinates", 
+                              sprintf("chr %s: %s to %s (%s strand)",
+                                      event$chrom,
+                                      event$pos[[1]][[1]], event$pos[[1]][[2]],
+                                      strand)),
+                       trItem(x, roundDigits(point[[x]])),
+                       trItem(y, roundDigits(point[[y]])))))
 }
 
 #' Show variable transformation(s)

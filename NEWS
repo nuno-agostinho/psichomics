@@ -5,12 +5,13 @@
 symmetric difference)
 * Filter quantification of alternative splicing events based on a list of genes
 * Differential splicing analysis:
-    - Fix data not being rendered in the table when zooming after data
-    transformation was applied
-    - Discard options that return invalid data and fix warnings when
+    - Fix data not being rendered in the table when zooming in the plot after 
+    data transformation was applied
+    - Discard options that return invalid data and fix warnings when 
     transforming invalid values
-    - Fix points highlighted after deselecting the only selected row of the
-    table
+    - Fix point that remains highlighted in the plot after deselecting the only
+    selected row of the table
+    - Improve readibility of plot's tooltip
 * Principal component analysis:
     - When clicking on a alternative splicing event in the loadings plot, the
     appropriate differential splicing analyses will now be automatically
