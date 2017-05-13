@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis.R
 \name{optimalPSIcutoff}
 \alias{optimalPSIcutoff}
-\title{Calculate optimal alternative splicing quantification cut-off to separate
+\title{Calculate optimal alternative splicing quantification cutoff to separate
 survival curves}
 \usage{
 optimalPSIcutoff(clinical, psi, censoring, event, timeStart, timeStop = NULL,
@@ -12,7 +12,7 @@ optimalPSIcutoff(clinical, psi, censoring, event, timeStart, timeStop = NULL,
 \arguments{
 \item{clinical}{Data frame: clinical data}
 
-\item{psi}{Numeric: PSI values to test against the cut-off}
+\item{psi}{Numeric: PSI values to test against the cutoff}
 
 \item{censoring}{Character: censor using "left", "right", "interval" or
 "interval2"}
@@ -36,10 +36,10 @@ interval}
 and event (optional)}
 }
 \value{
-Optimal alternative splicing quantification cut-off
+Optimal alternative splicing quantification cutoff
 }
 \description{
-Calculate optimal alternative splicing quantification cut-off to separate
+Calculate optimal alternative splicing quantification cutoff to separate
 survival curves
 }
 \details{

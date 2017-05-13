@@ -15,16 +15,16 @@ diffSplicingEventUI <- function(id) {
                 div(class="caption", uiOutput(ns(id)))))
     }
     
-    # Take user to the survival analysis by PSI cut-off
+    # Take user to the survival analysis by PSI cutoff
     survival <- div(
         id=ns("survivalButton"),
         hr(),
         actionButton(ns("optimalSurv1"), onclick="showSurvCutoff(null, false)",
-                     "Survival analysis by PSI cut-off", 
+                     "Survival analysis by PSI cutoff", 
                      class="btn-info btn-md btn-block",
                      class="visible-lg visible-md"),
         actionButton(ns("optimalSurv2"), onclick="showSurvCutoff(null, false)",
-                     "Survival analysis by PSI cut-off", 
+                     "Survival analysis by PSI cutoff", 
                      class="btn-info btn-xs btn-block",
                      class="visible-sm visible-xs"))
     

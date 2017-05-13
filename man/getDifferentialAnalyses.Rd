@@ -13,6 +13,8 @@
 \alias{setDifferentialAnalysesSelected}
 \alias{getDifferentialAnalysesSurvival}
 \alias{setDifferentialAnalysesSurvival}
+\alias{getDifferentialAnalysesResetPaging}
+\alias{setDifferentialAnalysesResetPaging}
 \alias{getDifferentialAnalysesColumns}
 \alias{setDifferentialAnalysesColumns}
 \title{Get or set differential analyses' elements for a data category}
@@ -41,6 +43,10 @@ getDifferentialAnalysesSurvival(category = getCategory())
 
 setDifferentialAnalysesSurvival(survival, category = getCategory())
 
+getDifferentialAnalysesResetPaging(category = getCategory())
+
+setDifferentialAnalysesResetPaging(reset, category = getCategory())
+
 getDifferentialAnalysesColumns(category = getCategory())
 
 setDifferentialAnalysesColumns(columns, category = getCategory())
@@ -56,6 +62,8 @@ it uses the selected data category}
 \item{zoom}{Integer: range of X and Y coordinates for zooming}
 
 \item{survival}{Data frame or matrix: differential analyses' survival data}
+
+\item{reset}{Character: reset paging of differential analyses table?}
 
 \item{columns}{Character: differential analyses' column names}
 }

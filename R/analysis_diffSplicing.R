@@ -69,17 +69,12 @@ diffSplicingUI <- function(id, tab) {
 }
 
 #' Create density sparklines for inclusion levels
-#' @param data Character: HTML-formatted data series of interest
-#' @param events Character: event identifiers
-#' @param delim Character: left and right delimeters in groups that should be
-#' removed
 #' 
 #' @importFrom highcharter highchart hc_credits hc_tooltip hc_chart hc_title
 #' hc_xAxis hc_yAxis hc_exporting hc_legend hc_plotOptions
-#' @importFrom jsonlite toJSON
 #' @importFrom shiny tags
 #' 
-#' @return HTML element with sparkline data (character)
+#' @inherit createSparklines
 createDensitySparklines <- function(data, events, delim=NULL) {
     hc <- highchart() %>%
         hc_tooltip(
@@ -98,6 +93,22 @@ createDensitySparklines <- function(data, events, delim=NULL) {
         hc_legend(enabled=FALSE) %>%
         hc_plotOptions(series=list(cursor="non", animation=FALSE, lineWidth=1,
                                    marker=list(radius=1), fillOpacity=0.25))
+    createSparklines(hc, data, events, FUN="showDiffSplicing", delim)
+}
+
+#' Create sparkline charts to be used in a data table
+#' 
+#' @param hc Highcharts object
+#' @param data Character: HTML-formatted data series of interest
+#' @param events Character: event identifiers
+#' @param FUN Character: JavaScript function to execute when clicking on a chart
+#' @param delim Character: left and right delimeters in groups that should be
+#' removed (NULL by default)
+#' 
+#' @importFrom jsonlite toJSON
+#' 
+#' @return HTML element with sparkline data
+createSparklines <- function(hc, data, events, FUN, delim=NULL) {
     hc <- as.character(toJSON(hc$x$hc_opts, auto_unbox=TRUE))
     hc <- substr(hc, 1, nchar(hc)-1)
     
@@ -109,9 +120,9 @@ createDensitySparklines <- function(data, events, delim=NULL) {
     
     json <- paste0(hc, ',"series":[', data, "]}")
     sparklines <- sprintf(
-        paste('<sparkline onclick="showDiffSplicing(\'%s\', true)"',
+        paste('<sparkline onclick="%s(\'%s\', true)"',
               'style="cursor:pointer;" data-sparkline=\'%s\'/>'), 
-        events, json)
+        FUN, events, json)
     return(sparklines)
 }
 
@@ -218,7 +229,11 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
     med <- lapply(series, median, na.rm=TRUE) # Median
     var <- lapply(series, var, na.rm=TRUE) # Variance
     
-    vector <- c("PSI.distribution"=sparkline, Samples=samples, "T-test"=ttest, 
+    vector <- c("PSI.distribution"=sparkline,
+                "Survival by PSI cutoff"=NA,
+                "Optimal PSI cutoff"=as.numeric(NA),
+                "Log-rank p-value"=as.numeric(NA),
+                Samples=samples, "T-test"=ttest,
                 Wilcoxon=wilcox, Kruskal=kruskal, Levene=levene, 
                 "Fligner-Killeen"=fligner, Variance=var, Median=med)
     vector <- vector[!vapply(vector, is.null, logical(1))] # Remove NULL
@@ -360,7 +375,7 @@ diffAnalyses <- function(psi, groups=NULL,
                               "hommel"))) {
         progress("Adjusting p-values", detail=pvalueAdjust)
         
-        cols   <- grep("p.value", colnames(df), fixed=TRUE)
+        cols   <- grep("p.value", colnames(df), fixed=TRUE)[-1]
         if (length(cols > 0)) {
             time <- Sys.time()
             pvalue <- df[cols]
@@ -384,7 +399,8 @@ diffAnalyses <- function(psi, groups=NULL,
     
     # Add splicing event information
     progress("Include splicing event information")
-    info <- suppressWarnings(parseSplicingEvent(rownames(df)))
+    info <- suppressWarnings(parseSplicingEvent(rownames(df), 
+                                                extendEventType=TRUE))
     
     # Prepare presentation of multigenes
     multigene <- lapply(info$gene, length) > 1
@@ -399,7 +415,7 @@ diffAnalyses <- function(psi, groups=NULL,
         time <- Sys.time()
         df[, "PSI.distribution"] <- createDensitySparklines(
             df[, "PSI.distribution"], rownames(df), delim=c(parenthesisOpen, 
-                                                   parenthesisClose))
+                                                            parenthesisClose))
         print(Sys.time() - time)
     }
     

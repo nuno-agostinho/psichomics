@@ -450,7 +450,6 @@ plotSurvivalCurves <- function(surv, mark=TRUE, interval=FALSE, pvalue=NULL,
                 "Events: {series.options.events}", br(),
                 "Median: {series.options.median}")) %>%
         hc_plotOptions(series=list(stickyTracking=FALSE))
-    
     if (!is.null(pvalue))
         hc <- hc_subtitle(hc, text=paste("log-rank p-value:", pvalue))
     return(hc)
@@ -519,7 +518,7 @@ testSurvival <- function (survTerms, ...) {
     return(pvalue)
 }
 
-#' Label groups based on a given cut-off
+#' Label groups based on a given cutoff
 #' 
 #' @param data Numeric: test data
 #' @param cutoff Numeric: test cutoff
@@ -552,7 +551,7 @@ labelBasedOnCutoff <- function (data, cutoff, label=NULL, gte=TRUE) {
     }
     group <- comp(data, cutoff)
     
-    # Assign a value based on the inclusion levels cut-off
+    # Assign a value based on the inclusion levels cutoff
     if (is.null(label)) {
         group[group == "TRUE"]  <- paste(str1, cutoff)
         group[group == "FALSE"] <- paste(str2, cutoff)
@@ -568,8 +567,8 @@ labelBasedOnCutoff <- function (data, cutoff, label=NULL, gte=TRUE) {
 #' Test the survival difference between two survival groups given a cutoff
 #' 
 #' @inheritParams processSurvTerms
-#' @param cutoff Numeric: Cut-off of interest
-#' @param data Numeric: elements of interest to test against the cut-off
+#' @param cutoff Numeric: Cutoff of interest
+#' @param data Numeric: elements of interest to test against the cutoff
 #' @param filter Boolean or numeric: elements to use (all by default)
 #' @param ... Arguments to pass to \code{processSurvTerms}
 #' @param session Shiny session
@@ -597,7 +596,7 @@ testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
     return(pvalue)
 }
 
-#' Calculate optimal alternative splicing quantification cut-off to separate
+#' Calculate optimal alternative splicing quantification cutoff to separate
 #' survival curves
 #'
 #' @details \code{timeStop} is only considered if \code{censoring} is either
@@ -605,10 +604,10 @@ testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
 #'
 #' @inheritParams processSurvTerms
 #' @inheritParams testSurvivalCutoff
-#' @param psi Numeric: PSI values to test against the cut-off
+#' @param psi Numeric: PSI values to test against the cutoff
 #' @param session Shiny session (only used for the visual interface)
 #' 
-#' @return Optimal alternative splicing quantification cut-off
+#' @return Optimal alternative splicing quantification cutoff
 #' @export
 #' 
 #' @examples 
