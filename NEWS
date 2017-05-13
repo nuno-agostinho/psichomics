@@ -1,10 +1,19 @@
-# 1.2.2 (4 May, 2017)
+# 1.2.2 (15 May, 2017)
 
 * Update minimum version required of shiny (1.0.3)
 * Add new set operations when grouping (such as complement, subtraction and
 symmetric difference)
 * Filter quantification of alternative splicing events based on a list of genes
 * Differential splicing analysis:
+    - Improve survival curves based on the optimal alternative splicing
+    quantification cutoff:
+        - Include the survival curve previews in 3 new columns within the
+        differential splicing analyses table, instead of below that table
+        - Those columns consist of the survival curves, the optimal PSI cutoff
+        and the respective log-rank test's p-value
+        - Allow to use survival data when plotting and table filtering
+        - Include the optimal PSI cutoff and the respective log-rank test's 
+        p-value in exported tables
     - Fix data not being rendered in the table when zooming in the plot after 
     data transformation was applied
     - Discard options that return invalid data and fix warnings when 
@@ -118,8 +127,8 @@ alternative splicing quantification
 * Faster alternative splicing quantification
 * Differential splicing analysis:
     - Fix major bug where samples could be placed in the wrong groups
-    - Shorten speed of the calculation for the optimal PSI cut-off that 
-    minimises the survival difference
+    - Shorten speed of the calculation for the optimal PSI cutoff that minimises
+    the survival difference
     - Fix not performing statistical tests for two selected sample types while
     analysing a single event with three or more sample types
     - Fix differential analysis on one splicing event not working when using
@@ -133,7 +142,7 @@ alternative splicing quantification
     - Fix loadings plot error when rendering some principal components
 * Survival analysis:
     - Fix incorrect number of patients from the survival groups in the 
-    contextual information for the selected cut-off (below the slider)
+    contextual information for the selected cutoff (below the slider)
     - Improve how alternative splicing quantification is assigned to patients
     based on their samples
 * Protein annotation:
@@ -149,8 +158,8 @@ values exclusively
     principal components
 * Survival analysis:
     - Shorten calculation of optimal PSI that minimises the survival difference
-    - Improve visual cues of optimal PSI cut-off and present p-value of selected
-    PSI cut-off
+    - Improve visual cues of optimal PSI cutoff and present p-value of selected
+    PSI cutoff
     - Fix ambiguous error messages
     - Fix incorrect Cox model results for formula-based calculations
     - Fix null Cox models crashing the program

@@ -105,7 +105,7 @@ function showDiffSplicing (event, autoParams = false, groupSelectize = null) {
 }
 
 /**
- * Navigate user to survival analysis by quantification cut-off
+ * Navigate user to survival analysis by quantification cutoff
  * @param {String} event Alternative splicing event
  * @param {Boolean} autoParams Automatically set expected parameters
  */

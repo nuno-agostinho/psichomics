@@ -15,7 +15,7 @@ gtexDataUI <- function(id, panel) {
           uiOutput(ns("modal")),
           helpText("Please, download files from the",
                    a(href="http://www.gtexportal.org", target="_blank",
-                     "GTEx Data Portal.")),
+                     "GTEx Data Portal"), "and load them here."),
           fileInput(ns("inputSampleInfo"),
                     "Choose file with GTEx sample attributes"),
           fileInput(ns("inputSubjectInfo"),

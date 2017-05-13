@@ -90,18 +90,18 @@ test_that("Plot distribution of splicing quantification per group", {
     expect_length(plot$x$hc_opts$series, length(unique(group))*2)
 })
 
-test_that("Label groups based on a cut-off", {
+test_that("Label groups based on a cutoff", {
     data <- c(1, 0, 0, 1, 0.5, 1)
     cutoff <- 0.5
     
-    # Greater or equal than a cut-off (default)
+    # Greater or equal than a cutoff (default)
     group <- labelBasedOnCutoff(data, cutoff)
     group <- gsub("&gt;", ">", group)
     group <- gsub("&lt;", "<", group)
     expect_is(group, "character")
     expect_equal(group, paste(c(">=", "<", "<", ">=", ">=", ">="), cutoff))
     
-    # Greater than a cut-off
+    # Greater than a cutoff
     group <- labelBasedOnCutoff(data, cutoff, gte=FALSE)
     group <- gsub("&gt;", ">", group)
     group <- gsub("&lt;", "<", group)

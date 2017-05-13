@@ -282,6 +282,15 @@ setDifferentialAnalysesSurvival <- function(survival, category=getCategory())
     setGlobal(category, "diffAnalysesSurv", value=survival)
 
 #' @rdname getDifferentialAnalyses
+getDifferentialAnalysesResetPaging <- function(category=getCategory())
+    getGlobal(category, "diffAnalysesResetPaging")
+
+#' @rdname getDifferentialAnalyses
+#' @param reset Character: reset paging of differential analyses table?
+setDifferentialAnalysesResetPaging <- function(reset, category=getCategory())
+    setGlobal(category, "diffAnalysesResetPaging", value=reset)
+
+#' @rdname getDifferentialAnalyses
 getDifferentialAnalysesColumns <- function(category=getCategory())
     getGlobal(category, "diffAnalysesCols")
 

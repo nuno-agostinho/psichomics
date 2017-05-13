@@ -20,7 +20,7 @@ survivalUI <- function(id) {
         "No groups"="none",
         "Clinical groups"="groups",
         "Clinical groups (interaction)"="formula",
-        "Inclusion levels cut-off from the selected splicing event"="psiCutoff")
+        "Inclusion levels cutoff from the selected splicing event"="psiCutoff")
     
     survival <- div(
         id=ns("survivalOptions"),
@@ -55,7 +55,7 @@ survivalUI <- function(id) {
                       "User-created <b>clinical groups</b><br/>\u2022",
                       "A formula that can test clinical attributes with",
                       "<b>interactions</b><br/>\u2022 <b>Inclusion levels",
-                      "cut-off</b> from the selected alternative splicing",
+                      "cutoff</b> from the selected alternative splicing",
                       "event")),
         conditionalPanel(
             sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "groups"),
@@ -164,7 +164,7 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
         clinicalPSI <- getPSIperPatient(psi, match, clinical)
         eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
         
-        # Assign a value based on the inclusion levels cut-off
+        # Assign a value based on the inclusion levels cutoff
         groups <- labelBasedOnCutoff(eventPSI, psiCutoff,
                                      "Inclusion levels")
         formulaStr <- NULL
@@ -282,7 +282,7 @@ survivalServer <- function(input, output, session) {
         
         if (modelTerms == "psiCutoff") {
             plotTitle <- parseSplicingEvent(splicingEvent, char=TRUE)
-            sub <- paste0("Splicing quantification cut-off: ", psiCutoff,
+            sub <- paste0("Splicing quantification cutoff: ", psiCutoff,
                           "; Log-rank p-value: ", pvalue)
         } else {
             plotTitle <- "Survival analysis"
@@ -440,7 +440,7 @@ survivalServer <- function(input, output, session) {
             clinicalPSI <- getPSIperPatient(psi, match, clinical)
             eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
             
-            # Calculate optimal alternative splicing quantification cut-off
+            # Calculate optimal alternative splicing quantification cutoff
             opt <- optimalPSIcutoff(clinical, eventPSI, censoring=censoring, 
                                     event=event, timeStart=timeStart, 
                                     timeStop=timeStop, session=session)
@@ -453,24 +453,24 @@ survivalServer <- function(input, output, session) {
             
             slider <- tagList(
                 sliderInput(ns("psiCutoff"), value = 0.5, min=0, max=1,
-                            step=0.01, "Splicing quantification cut-off"),
+                            step=0.01, "Splicing quantification cutoff"),
                 uiOutput(ns("thisPvalue")))
             
             if (!is.na(opt$value) && opt$value < 1) {
                 return(tagList(
                     slider, div(class="alert alert-success",
-                                tags$b("Optimal cut-off:"), round(opt$par, 5), 
+                                tags$b("Optimal cutoff:"), round(opt$par, 5), 
                                 br(), tags$b("Minimal log-rank p-value:"),
                             round(opt$value, 3))))
             } else {
                 return(tagList(
                     slider, div(class="alert alert-warning", "No optimal",
-                                "cut-off was found for this splicing event.")))
+                                "cutoff was found for this splicing event.")))
             }
         }
     })
     
-    # Update contextual information for selected PSI cut-off
+    # Update contextual information for selected PSI cutoff
     observeEvent(input$psiCutoff, {
         clinical      <- getClinicalData()
         psi           <- getInclusionLevels()
@@ -491,7 +491,7 @@ survivalServer <- function(input, output, session) {
         clinicalPSI <- getPSIperPatient(psi, match, clinical)
         eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
         
-        # Assign a value based on the inclusion levels cut-off
+        # Assign a value based on the inclusion levels cutoff
         groups <- labelBasedOnCutoff(eventPSI, psiCutoff, "Inclusion levels")
         
         survTerms <- processSurvTerms(clinical, censoring, event, timeStart,
@@ -506,7 +506,7 @@ survivalServer <- function(input, output, session) {
         output$thisPvalue <- renderUI(
             tagList(
                 div(style="text-align:right; font-size:small",
-                    tags$b("p-value of selected cut-off:"), round(pvalue, 3),
+                    tags$b("p-value of selected cutoff:"), round(pvalue, 3),
                     patients),
                 tags$br()))
     })

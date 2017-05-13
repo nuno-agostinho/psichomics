@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis.R
 \name{labelBasedOnCutoff}
 \alias{labelBasedOnCutoff}
-\title{Label groups based on a given cut-off}
+\title{Label groups based on a given cutoff}
 \usage{
 labelBasedOnCutoff(data, cutoff, label = NULL, gte = TRUE)
 }
@@ -20,7 +20,7 @@ less than or equal to cutoff (FALSE)? TRUE by default}
 Labeled groups
 }
 \description{
-Label groups based on a given cut-off
+Label groups based on a given cutoff
 }
 \examples{
 labelBasedOnCutoff(data=c(1, 0, 0, 1, 0, 1), cutoff=0.5)

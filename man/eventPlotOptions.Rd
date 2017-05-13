@@ -4,12 +4,16 @@
 \alias{eventPlotOptions}
 \title{Options for event plotting}
 \usage{
-eventPlotOptions(session, df)
+eventPlotOptions(session, df, xAxis, yAxis)
 }
 \arguments{
 \item{session}{Shiny session}
 
 \item{df}{Data frame}
+
+\item{xAxis}{Character: currently selected variable for the X axis}
+
+\item{yAxis}{Character: currently selected variable for the Y axis}
 }
 \value{
 HTML elements

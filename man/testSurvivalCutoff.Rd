@@ -8,9 +8,9 @@ testSurvivalCutoff(cutoff, data, filter = TRUE, clinical, ...,
   session = NULL)
 }
 \arguments{
-\item{cutoff}{Numeric: Cut-off of interest}
+\item{cutoff}{Numeric: Cutoff of interest}
 
-\item{data}{Numeric: elements of interest to test against the cut-off}
+\item{data}{Numeric: elements of interest to test against the cutoff}
 
 \item{filter}{Boolean or numeric: elements to use (all by default)}
 
