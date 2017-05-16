@@ -568,20 +568,25 @@ addTCGAdata <- function(ns) {
     
     dataTypes <- getFirebrowseDataTypes()
     dataTypes[[1]] <- dataTypes[[1]][1]
+    dataTypes <- c("Clinical data"="Clinical", dataTypes)
     
     tagList(
         uiOutput(ns("firebrowseDataModal")),
         uiOutput(ns("pathSuggestions")),
         uiOutput(ns("iframeDownload")),
         selectizeInput(ns("firebrowseCohort"), "Tumour type", acronyms,
-                       multiple = TRUE,
-                       options = list(placeholder = "Select cohort(s)")),
+                       multiple = TRUE, options = list(
+                           placeholder = "Select cohort(s)",
+                           plugins=list("remove_button"))),
         selectizeInput(ns("firebrowseDate"), "Date", dates, multiple = TRUE,
-                       selected = NULL, options = list(
-                           placeholder = "Select sample date")),
+                       selected = dates[1], options = list(
+                           placeholder = "Select sample date",
+                           plugins=list("remove_button"))),
         selectizeInput(ns("firebrowseData"), "Data type", multiple = TRUE,
-                       c("Clinical data"="Clinical", dataTypes), 
-                       options = list(placeholder = "Select data types")),
+                       dataTypes, selected=dataTypes,
+                       options = list(
+                           placeholder = "Select data types",
+                           plugins=list("remove_button"))),
         textAreaInput(ns("dataFolder"), "Folder to store the data",
                       value = getDownloadsFolder(),
                       placeholder = "Insert data folder"),

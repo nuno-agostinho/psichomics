@@ -49,8 +49,7 @@ missingDataGuide <- function(dataType) {
 #' @param tab Function to process HTML elements
 #' 
 #' @importFrom shinyBS bsTooltip
-#' @importFrom shiny NS div icon fluidRow column selectizeInput conditionalPanel
-#' navbarMenu
+#' @importFrom shiny NS div icon fluidRow column conditionalPanel navbarMenu
 #' 
 #' @return HTML element as character
 analysesUI <- function(id, tab) { 
@@ -650,7 +649,7 @@ optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart,
 #' @param output Shiny ouput
 #' @param session Shiny session
 #' 
-#' @importFrom shiny observe observeEvent updateSelectizeInput
+#' @importFrom shiny observe observeEvent
 #' @importFrom shinyjs hide show
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)

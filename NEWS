@@ -1,4 +1,4 @@
-# 1.2.2 (15 May, 2017)
+# 1.2.2 (16 May, 2017)
 
 * Update minimum version required of shiny (1.0.3)
 * Add new set operations when grouping (such as complement, subtraction and
