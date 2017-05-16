@@ -54,8 +54,7 @@ leveneTest <- function(x, g, centers=median) {
 #' @param id Character: identifier
 #' @param tab Function to process HTML elements
 #' 
-#' @importFrom shinyBS bsTooltip
-#' @importFrom shiny NS div icon fluidRow column selectizeInput conditionalPanel
+#' @importFrom shiny NS
 #' 
 #' @return HTML element as character
 diffSplicingUI <- function(id, tab) { 
@@ -438,7 +437,7 @@ diffAnalyses <- function(psi, groups=NULL,
 #' @param output Shiny ouput
 #' @param session Shiny session
 #' 
-#' @importFrom shiny observe observeEvent updateSelectizeInput renderPlot
+#' @importFrom shiny observe observeEvent renderPlot
 #' @importFrom shinyjs hide show
 #' @return NULL (this function is used to modify the Shiny session's state)
 diffSplicingServer <- function(input, output, session) {
