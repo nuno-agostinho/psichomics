@@ -415,6 +415,8 @@ survdiff.survTerms <- function(survTerms, ...) {
 #' @param title Character: plot title
 #' @param pvalue Numeric: p-value of the survival curves
 #' @param scale Character: time scale; default is "days"
+#' @param auto Boolean: return the plot automatically prepared (TRUE) or only
+#' the bare minimum (FALSE)? TRUE by default
 #' 
 #' @importFrom shiny tags br
 #' 
@@ -425,30 +427,36 @@ survdiff.survTerms <- function(survTerms, ...) {
 #' fit <- survfit(Surv(time, status) ~ x, data = aml)
 #' plotSurvivalCurves(fit)
 plotSurvivalCurves <- function(surv, mark=TRUE, interval=FALSE, pvalue=NULL, 
-                               title="Survival analysis", scale=NULL) {
-    if (is.null(scale)) {
-        if (is.null(surv$scale))
-            scale <- "days"
-        else
-            scale <- surv$scale
+                               title="Survival analysis", scale=NULL,
+                               auto=TRUE) {
+    hc <- hchart(surv, ranges=interval, markTimes=mark)
+    if (auto) {
+        if (is.null(scale)) {
+            if (is.null(surv$scale))
+                scale <- "days"
+            else
+                scale <- surv$scale
+        }
+        
+        hc <- hc %>%
+            hc_chart(zoomType="xy") %>%
+            hc_title(text=title) %>%
+            hc_yAxis(title=list(text="Proportion of individuals"),
+                     crosshair=TRUE) %>%
+            hc_xAxis(title=list(text=paste("Time in", scale)),
+                     crosshair=TRUE) %>%
+            hc_tooltip(
+                headerFormat = paste(
+                    tags$small("{point.x}", scale), br(),
+                    span(style="color:{point.color}", "\u25CF "),
+                    tags$b("{series.name}"), br()),
+                pointFormat = paste(
+                    "Records: {series.options.records}", br(),
+                    "Events: {series.options.events}", br(),
+                    "Median: {series.options.median}")) %>%
+            hc_plotOptions(series=list(stickyTracking=FALSE))
     }
     
-    hc <- hchart(surv, ranges=interval, markTimes=mark) %>%
-        hc_chart(zoomType="xy") %>%
-        hc_title(text=title) %>%
-        hc_yAxis(title=list(text="Proportion of individuals"),
-                 crosshair=TRUE) %>%
-        hc_xAxis(title=list(text=paste("Time in", scale)), crosshair=TRUE) %>%
-        hc_tooltip(
-            headerFormat = paste(
-                tags$small("{point.x}", scale), br(),
-                span(style="color:{point.color}", "\u25CF "),
-                tags$b("{series.name}"), br()),
-            pointFormat = paste(
-                "Records: {series.options.records}", br(),
-                "Events: {series.options.events}", br(),
-                "Median: {series.options.median}")) %>%
-        hc_plotOptions(series=list(stickyTracking=FALSE))
     if (!is.null(pvalue))
         hc <- hc_subtitle(hc, text=paste("log-rank p-value:", pvalue))
     return(hc)

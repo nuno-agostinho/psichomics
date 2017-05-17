@@ -112,12 +112,12 @@ createSparklines <- function(hc, data, events, FUN, delim=NULL) {
     hc <- substr(hc, 1, nchar(hc)-1)
     
     # Remove artificial delimeters
-    if (!is.null(delim)) {
+    if (!is.null(delim) && length(delim) == 2) {
         data <- gsub(delim[[1]], "", data)
         data <- gsub(delim[[2]], "", data)
     }
     
-    json <- paste0(hc, ',"series":[', data, "]}")
+    json <- paste0(hc, ',"series":', data, "}")
     sparklines <- sprintf(
         paste('<sparkline onclick="%s(\'%s\', true)"',
               'style="cursor:pointer;" data-sparkline=\'%s\'/>'), 
@@ -222,6 +222,7 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
         }
         sparkline <- paste(sprintf('{"name":"%s", "data":[%s]}', 
                                    names(validSeries), data), collapse=",")
+        sparkline <- paste("[", sparkline, "]")
     }
     
     # Variance and median
