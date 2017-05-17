@@ -42,8 +42,9 @@ diffSplicingTableUI <- function(id) {
                   "density"),
             selected=c("basicStats", "kruskal", "levene", "density", "ttest",
                        "fligner", "wilcoxRankSum")),
-        # Disable checkbox of basic statistics
+        # Disable checkbox of basic statistics and of PSI distribution
         tags$script('$("[value=basicStats]").attr("disabled", true);'),
+        tags$script('$("[value=density]").attr("disabled", true);'),
         helpText("For each alternative splicing event, groups with one or less",
                  "non-missing values are discarded."), hr(),
         selectizeInput(ns("pvalueAdjust"), selected="BH",
@@ -188,11 +189,49 @@ diffSplicingTableUI <- function(id) {
                 highchartOutput(ns("highchartsSparklines"), 0, 0))))
 }
 
+#' Create survival data based on a PSI cutoff
+#' 
+#' Data is presented in the table for statistical analyses
+#' 
+#' @inheritParams optimalPSIcutoff
+#' 
+#' @importFrom shiny tags
+#' @importFrom jsonlite toJSON
+#' @importFrom highcharter hc_title hc_legend hc_xAxis hc_yAxis hc_tooltip 
+#' hc_chart hc_plotOptions
+createOptimalSurvData <- function(eventPSI, clinical, censoring, event, 
+                                      timeStart, timeStop) {
+    opt <- optimalPSIcutoff(clinical, eventPSI, censoring, event, 
+                            timeStart, timeStop)
+    
+    # Assign splicing quantification to patients based on their samples
+    eventPSI <- as.numeric(eventPSI)
+    
+    # Assign a value based on the inclusion levels cutoff
+    cutoff <- opt$par
+    group  <- labelBasedOnCutoff(eventPSI, cutoff, label="")
+    
+    survTerms <- processSurvTerms(clinical, censoring, event, timeStart, 
+                                  timeStop, group)
+    surv <- survfit(survTerms)
+    hc <- plotSurvivalCurves(surv, mark=FALSE, auto=FALSE)
+    
+    # Remove JavaScript used for colouring each series
+    for (i in seq(hc$x$hc_opts$series))
+        hc$x$hc_opts$series[[i]]$color <- NULL
+    
+    hc <- as.character(toJSON(hc$x$hc_opts$series, auto_unbox=TRUE))
+    
+    updateProgress("Survival analysis", console=FALSE)
+    return(c("Optimal survival PSI cutoff"=cutoff,
+             "Minimal survival p-value"=opt$value,
+             "Survival curves"=hc))
+}
+
 #' Optimal survival difference given an inclusion level cutoff for a specific
 #' alternative splicing event
 #' 
 #' @importFrom shinyjs runjs show hide
-#' @importFrom shiny renderText
 #' 
 #' @param session Shiny session
 #' @param input Shiny input
@@ -286,29 +325,55 @@ optimSurvDiffSet <- function(session, input, output) {
         # samples
         clinicalPSI <- getPSIperPatient(subset, match, clinical)
         
-        opt <- apply(clinicalPSI, 1, function(eventPSI) {
-            opt <- optimalPSIcutoff(clinical, eventPSI, censoring, event, 
-                                    timeStart, timeStop)
-            
-            updateProgress("Survival analysis", console=FALSE)
-            return(c("Optimal survival PSI cutoff"=opt$par,
-                     "Minimal survival p-value"=opt$value))
-        })
+        opt <- apply(clinicalPSI, 1, createOptimalSurvData, clinical, 
+                     censoring, event, timeStart, timeStop)
         
         if (length(opt) == 0) {
             errorModal(session, "No survival analyses",
                        "Optimal PSI cutoff for the selected alternative",
                        "splicing events returned no survival analyses.")
         } else {
-            df <- data.frame(t(opt))
+            df <- data.frame(t(opt), stringsAsFactors=FALSE)
             if (is.null(optimSurv)) {
                 # Prepare survival table
                 nas <- rep(NA, nrow(statsTable))
-                optimSurv <- data.frame(nas, nas)
+                optimSurv <- data.frame(as.numeric(nas), as.numeric(nas),
+                                        as.character(nas),
+                                        stringsAsFactors=FALSE)
                 rownames(optimSurv) <- rownames(statsTable)
                 colnames(optimSurv) <- colnames(df)
             }
-            for (col in names(df)) optimSurv[rownames(df), col] <- df[ , col]
+            
+            optimSurv[rownames(df), 1] <- as.numeric(df[ , 1])
+            optimSurv[rownames(df), 2] <- as.numeric(df[ , 2])
+            
+            # Prepare survival charts
+            hc <- highchart() %>%
+                hc_title(text=NULL) %>%
+                hc_legend(enabled=FALSE) %>%
+                hc_xAxis(title=list(text=""), showLastLabel=TRUE, visible=FALSE,
+                         crosshair=FALSE) %>%
+                hc_yAxis(title=list(text=""), endOnTick=FALSE, crosshair=FALSE,
+                         startOnTick=FALSE, visible=FALSE)  %>%
+                hc_tooltip(
+                    headerFormat=paste(
+                        tags$small("{point.x}", scale <- "days"), br(),
+                        span(style="color:{point.color}", "\u25CF "),
+                        tags$b("{series.name}"), br()),
+                    pointFormat=paste(
+                        "Records: {series.options.records}", br(),
+                        "Events: {series.options.events}", br(),
+                        "Median: {series.options.median}")) %>%
+                hc_chart(zoomType=NULL, width=120, height=20, 
+                         backgroundColor="", margin=c(2, 0, 2, 0), 
+                         style=list(overflow='visible')) %>%
+                hc_plotOptions(series=list(stickyTracking=FALSE, cursor="non",
+                                           animation=FALSE, fillOpacity=0.25,
+                                           marker=list(radius=1)))
+            data <- as.character(df[ , 3])
+            optimSurv[rownames(df), 3] <- createSparklines(hc, data, 
+                                                           rownames(df),
+                                                           "showSurvCutoff")
             setDifferentialAnalysesResetPaging(FALSE)
             setDifferentialAnalysesSurvival(optimSurv)
         }
@@ -330,67 +395,6 @@ optimSurvDiffSet <- function(session, input, output) {
         
         endProcess("survival", time)
     })
-}
-
-#' Create sparklines for survival curves
-#' 
-#' @inheritParams processSurvTerms
-#' @param input Shiny input
-#' @param survParams List of parameters to plot survival curves
-#' @param match Integer: samples matched with clinical patients
-#' @param psi Data frame or matrix: alternative splicing quantification
-#' 
-#' @importFrom highcharter hc_legend hc_xAxis hc_yAxis hc_chart hc_plotOptions
-#' @importFrom stats complete.cases
-#' @importFrom jsonlite toJSON
-#' 
-#' @return A \code{highchart} object to plot
-createSurvivalSparklines <- function(input, survParams, clinical, match, psi,
-                                     censoring, event, timeStart, timeStop) {
-    clinicalPSI <- getPSIperPatient(psi, match, clinical)
-    cutoff      <- as.numeric(survParams[ , 1])
-    
-    sparklines <- lapply(1:nrow(clinicalPSI), function(index) {
-        thisCutoff <- cutoff[index]
-        if (!is.na(thisCutoff)) {
-            # Assign splicing quantification to patients based on their samples
-            eventPSI <- as.numeric(clinicalPSI[index, ])
-            
-            # Assign a value based on the inclusion levels cutoff
-            group  <- labelBasedOnCutoff(eventPSI, thisCutoff, label="")
-            
-            survTerms <- processSurvTerms(clinical, censoring, event, timeStart, 
-                                          timeStop, group)
-            surv <- survfit(survTerms)
-            
-            hc <- plotSurvivalCurves(surv, mark=FALSE, title=NULL) %>%
-                hc_legend(enabled=FALSE) %>%
-                hc_xAxis(title=list(text=""), showLastLabel=TRUE,
-                         visible=FALSE, crosshair=FALSE) %>%
-                hc_yAxis(title=list(text=""), endOnTick=FALSE, crosshair=FALSE,
-                         startOnTick=FALSE, visible=FALSE) %>%
-                hc_chart(zoomType=NULL, width=120, height=20, 
-                         backgroundColor="", margin=c(2, 0, 2, 0), 
-                         style=list(overflow='visible')) %>%
-                hc_plotOptions(series=list(cursor="non", animation=FALSE, 
-                                           marker=list(radius=1),
-                                           fillOpacity=0.25))
-            
-            for (i in seq(hc$x$hc_opts$series)) {
-                hc$x$hc_opts$series[[i]]$color <- NULL
-            }
-            hc <- as.character(toJSON(hc$x$hc_opts, auto_unbox=TRUE))
-        } else {
-            hc <- NULL
-        }
-        return(hc)
-    })
-    
-    res <- sprintf(paste('<sparkline onclick="showSurvCutoff(\'%s\', true)"',
-                         'style="cursor:pointer;" data-sparkline=\'%s\'/>'), 
-                   rownames(survParams), sparklines)
-    res[sapply(sparklines, is.null)] <- NA
-    return(res)
 }
 
 #' Create plot for events
@@ -499,8 +503,8 @@ createTooltip <- function(df, hover, x, y) {
     
     # Tooltip
     wellPanel(
-        class = "well-sm",
-        style = paste0("position: absolute; z-index: 100;",
+        class="well-sm",
+        style=paste0("position: absolute; z-index: 100;",
                        "background-color: rgba(245, 245, 245, 0.85); ",
                        "right:", right_px, "px; top:", top_px, "px;"),
         tags$table(class="table table-condensed", style="margin-bottom: 0;",
@@ -993,9 +997,7 @@ diffAnalysesTableSet <- function(session, input, output) {
                 
                 stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
                 stats[["Log rank p-value"]]   <- optimSurv[[2]]
-                stats[["Survival by PSI cutoff"]] <- createSurvivalSparklines(
-                    input, optimSurv, clinical, match, psi, censoring, event, 
-                    timeStart, timeStop)
+                stats[["Survival by PSI cutoff"]] <- optimSurv[[3]]
             }
             
             # Filter by highlighted events and events in the zoomed area
