@@ -7,6 +7,8 @@ performs survival, principal components and differential splicing analyses with
 direct incorporation of clinical features (such as tumour stage or survival) 
 associated with TCGA and GTEx samples.
 
+![Screen shot](screenshot.png)
+
 ## Table of Contents
 
 * [Install and Start Running](#install-and-start-running)
