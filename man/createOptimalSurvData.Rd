@@ -7,6 +7,9 @@
 createOptimalSurvData(eventPSI, clinical, censoring, event, timeStart, timeStop)
 }
 \arguments{
+\item{eventPSI}{Numeric: alternative splicing quantification for multiple
+samples relative to a single splicing event}
+
 \item{clinical}{Data frame: clinical data}
 
 \item{censoring}{Character: censor using "left", "right", "interval" or
@@ -20,6 +23,10 @@ interval or follow up time}
 
 \item{timeStop}{Character: name of column containing ending time of the 
 interval}
+}
+\value{
+Survival data including optimal PSI cutoff, minimal survival p-value
+and HTML element required to plot survival curves
 }
 \description{
 Data is presented in the table for statistical analyses

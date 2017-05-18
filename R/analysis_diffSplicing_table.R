@@ -194,13 +194,18 @@ diffSplicingTableUI <- function(id) {
 #' Data is presented in the table for statistical analyses
 #' 
 #' @inheritParams optimalPSIcutoff
+#' @param eventPSI Numeric: alternative splicing quantification for multiple
+#' samples relative to a single splicing event
 #' 
 #' @importFrom shiny tags
 #' @importFrom jsonlite toJSON
 #' @importFrom highcharter hc_title hc_legend hc_xAxis hc_yAxis hc_tooltip 
 #' hc_chart hc_plotOptions
+#' 
+#' @return Survival data including optimal PSI cutoff, minimal survival p-value
+#' and HTML element required to plot survival curves
 createOptimalSurvData <- function(eventPSI, clinical, censoring, event, 
-                                      timeStart, timeStop) {
+                                  timeStart, timeStop) {
     opt <- optimalPSIcutoff(clinical, eventPSI, censoring, event, 
                             timeStart, timeStop)
     

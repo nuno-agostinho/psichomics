@@ -146,8 +146,9 @@ Please, send any suggestions and comments to the following contact:
 > [Nuno Morais Lab, Instituto de Medicina Molecular][5]
 
 ## Contributions
-Please note that this project is released with a [Contributor Code of Conduct]
-[6]. By participating in this project you agree to abide by its terms.
+Please note that this project is released with a 
+[Contributor Code of Conduct][6]. By participating in this project you agree to
+abide by its terms.
 
 ## References
 Wang, E. T., R. Sandberg, S. Luo, I. Khrebtukova, L. Zhang, C. Mayr, S. F. 
