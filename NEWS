@@ -8,16 +8,16 @@ symmetric difference)
     - Improve survival curves based on the optimal alternative splicing
     quantification cutoff:
         - Include the survival curve previews in 3 new columns within the
-        differential splicing analyses table, instead of below that table
-        - Those columns consist of the survival curves, the optimal PSI cutoff
-        and the respective log-rank test's p-value
-        - Allow to use survival data when plotting and table filtering
+        differential splicing analyses table, instead of below that table; those
+        columns consist of the survival curves, the optimal PSI cutoff and the 
+        respective log-rank test's p-value
+        - Allow to use survival data when plotting and table sorting
         - Include the optimal PSI cutoff and the respective log-rank test's 
         p-value in exported tables
     - Fix data not being rendered in the table when zooming in the plot after 
     data transformation was applied
-    - Discard options that return invalid data and fix warnings when 
-    transforming invalid values
+    - Discard value transformations that may return invalid data for the values
+    chosen for the X and Y axes
     - Fix point that remains highlighted in the plot after deselecting the only
     selected row of the table
     - Improve readibility of plot's tooltip
@@ -26,8 +26,8 @@ symmetric difference)
     appropriate differential splicing analyses will now be automatically
     rendered with the respective options, as expected
 * Survival analysis:
-    - Properly set the title of survival curves based on the selected
-    alternative splicing event's quantification
+    - Properly set the title of survival curves based on the selected splicing
+    event's quantification
     - Improve readability of Cox PH models
 
 # 1.2.1 (24 Apr, 2017)
