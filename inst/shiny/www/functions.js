@@ -37,11 +37,10 @@ function showDataPanel(modal) {
     }
     
     // Open Data tab
-    $("ul[id='nav'] > li > a[data-value*='Data']").click();
+    $("#nav > li > a[data-value*='Data']").click();
     
     // Collapse data panels
-    $("div[id='data-accordion'] > div > div[class*='panel-collapse']")
-        .collapse('hide');
+    $("#data-accordion > div > div[class*='panel-collapse']").collapse('hide');
 }
 
 /**
@@ -49,7 +48,7 @@ function showDataPanel(modal) {
  * @param {String} event Alternative splicing event
  */
 function changeEvent (event) {
-    $("select[id*='selectizeEvent']").selectize()[0].selectize.setValue(event);
+    $("#selectizeEventElem").selectize()[0].selectize.setValue(event);
 }
 
 /**
@@ -72,7 +71,7 @@ function setTranscript (transcript) {
 function showDiffSplicing (event, autoParams = false, groupSelectize = null) {
     // Navigate to differential splicing analyses for a single event
     var tabName = "Differential splicing analysis";
-    $("ul[id='nav'] > li > ul > li > a[data-value*='" + tabName + "']").click();
+    $("#nav > li > ul > li > a[data-value*='" + tabName + "']").click();
     var diff = "Single event";
     $("a[data-value*='" + diff + "']").click();
     
@@ -82,6 +81,7 @@ function showDiffSplicing (event, autoParams = false, groupSelectize = null) {
     if (autoParams) {
         groupSelectize = "analyses-diffSplicing-diffSplicingTable-diffGroups";
     } else if (groupSelectize === null) {
+        $('html, body').animate({ scrollTop: 0 }, 'slow'); // Scroll to top
         return;
     }
     
@@ -94,14 +94,13 @@ function showDiffSplicing (event, autoParams = false, groupSelectize = null) {
         
     if (groups == "groups") {
         // Set selected groups
-        items = $("select[id='" + groupSelectize + "']")[0].selectize
-            .items;
-        $("select[id='" + singleEventPage + "-diffGroups']")[0].selectize
-            .setValue(items);
+        items = $("#" + groupSelectize)[0].selectize.items;
+        $("#" + singleEventPage + "-diffGroups")[0].selectize.setValue(items);
     }
     
     // Perform statistical analyses for a single event
-    $("button[id='" + singleEventPage + "-analyse']")[0].click();
+    $("#" + singleEventPage + "-analyse")[0].click();
+    $('html, body').animate({ scrollTop: 0 }, 'slow'); // Scroll to top
 }
 
 /**
@@ -115,16 +114,23 @@ function showSurvCutoff(event, autoParams = false) {
     
     // Navigate to survival analyses
     var surv = "Survival analysis";
-    $("ul[id='nav'] > li > ul > li > a[data-value*='" + surv + "']").click();
+    $("#nav > li > ul > li > a[data-value*='" + surv + "']").click();
+    
+    var survivalPage = "analyses-survival";
+    if (autoParams) {
+        // Perform survival analyses once the optimal PSI is calculated
+        $("#" + survivalPage + "-psiCutoff").one('change', function(){
+            setTimeout(function() {
+                $("#" + survivalPage + "-survivalCurves")[0].click();
+            }, 500);
+        });
+    }
     
     // Set PSI cutoff
     $("input[value='psiCutoff']").click();
     
-    if (!autoParams) { return; }
-    
-    if (event !== null) {
-        allEventsPage = "analyses-diffSplicing-diffSplicingTable";
-        survivalPage = "analyses-survival";
+    if (autoParams && event !== null) {
+        var allEventsPage = "analyses-diffSplicing-diffSplicingTable";
         
         // Set censoring interval
         censoring = $("input[type='radio'][name='" + allEventsPage +
@@ -133,29 +139,20 @@ function showSurvCutoff(event, autoParams = false) {
             censoring + "]").click();
         
         // Set follow up time or starting time
-        timeStart = $("select[id='" + allEventsPage + "-timeStart']")[0]
-            .selectize.items;
-        $("select[id='" + survivalPage + "-timeStart']")[0].selectize
-            .setValue(timeStart);
+        timeStart = $("#" + allEventsPage + "-timeStart")[0].selectize.items;
+        $("#" + survivalPage + "-timeStart")[0].selectize.setValue(timeStart);
             
         // Set event of interest
-        event = $("select[id='" + allEventsPage + "-event']")[0].selectize
-            .items;
-        $("select[id='" + survivalPage + "-event']")[0].selectize
-            .setValue(event);
+        event = $("#" + allEventsPage + "-event")[0].selectize.items;
+        $("#" + survivalPage + "-event")[0].selectize.setValue(event);
             
         if (censoring == "interval" || censoring == "interval2") {
             // Set ending time
-            timeStop = $("select[id='" + allEventsPage + "-timeStop']")[0]
-                .selectize.items;
-            $("select[id='" + survivalPage + "-timeStop']")[0].selectize
-                .setValue(event);
+            timeStop = $("#" + allEventsPage + "-timeStop")[0].selectize.items;
+            $("#" + survivalPage + "-timeStop")[0].selectize.setValue(event);
         }
     }
-    // Perform survival analyses
-    setTimeout(function() {
-        $("button[id='" + survivalPage + "-survivalCurves']")[0].click();
-    }, 2000);
+    $('html, body').animate({ scrollTop: 0 }, 'slow'); // Scroll to top
 }
 
 /**

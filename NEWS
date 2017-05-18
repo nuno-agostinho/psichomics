@@ -14,6 +14,8 @@ symmetric difference)
         - Allow to use survival data when plotting and table sorting
         - Include the optimal PSI cutoff and the respective log-rank test's 
         p-value in exported tables
+        - Fix link to survival analyses using the previously calculated PSI
+        cutoff
     - Fix data not being rendered in the table when zooming in the plot after 
     data transformation was applied
     - Discard value transformations that may return invalid data for the values
