@@ -6,6 +6,7 @@
 #' @importFrom shiny NS tagList uiOutput sidebarPanel radioButtons helpText hr 
 #' selectizeInput checkboxInput sliderInput actionButton mainPanel textAreaInput
 #' conditionalPanel
+#' @importFrom shinyjs hidden
 #' 
 #' @return Character with HTML
 survivalUI <- function(id) {
@@ -80,6 +81,8 @@ survivalUI <- function(id) {
         conditionalPanel(
             sprintf("input[id='%s'] == '%s'", ns("modelTerms"),
                     "psiCutoff"),
+            hidden(sliderInput(ns("psiCutoff"), value=0.5, min=0, max=1,
+                               step=0.01, "Splicing quantification cutoff")),
             uiOutput(ns("optimalPsi"))),
         hr(),
         bsCollapse(open="KM options",
@@ -216,6 +219,7 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
 #' hc_subtitle hc_tooltip renderHighchart hc_plotOptions
 #' @importFrom DT dataTableOutput renderDataTable
 #' @importFrom utils write.table
+#' @importFrom shinyjs show hide
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 survivalServer <- function(input, output, session) {
@@ -420,13 +424,16 @@ survivalServer <- function(input, output, session) {
         censoring     <- input$censoring
         
         if (is.null(clinical)) {
+            hide("psiCutoff")
             return(helpText(icon("exclamation-circle"), 
                             "Please, load clinical data."))
         } else if (is.null(getInclusionLevels())) {
+            hide("psiCutoff")
             return(helpText(icon("exclamation-circle"),
                             "Please, load or calculate the quantification of",
                             "alternative splicing events."))
         } else if (is.null(getEvent()) || getEvent() == "") {
+            hide("psiCutoff")
             return(helpText(icon("exclamation-circle"), 
                             "Please, select an alternative splicing event."))
         } else {
@@ -451,10 +458,8 @@ survivalServer <- function(input, output, session) {
                 updateSliderInput(session, "psiCutoff", value=value)
             })
             
-            slider <- tagList(
-                sliderInput(ns("psiCutoff"), value = 0.5, min=0, max=1,
-                            step=0.01, "Splicing quantification cutoff"),
-                uiOutput(ns("thisPvalue")))
+            show("psiCutoff")
+            slider <- uiOutput(ns("thisPvalue"))
             
             if (!is.na(opt$value) && opt$value < 1) {
                 return(tagList(
