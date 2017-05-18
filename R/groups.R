@@ -891,7 +891,7 @@ groupsServer <- function(input, output, session, datasetName) {
                             "Complement", id=ns(complementId),
                             helpText("Create a group with elements outside the",
                                      "selected group(s)"),
-                            icon=setOperationIcon("complement")),
+                            icon=setOperationIcon("complement-AB")),
                         operationLink(
                             "Subtract elements from upper-selected group",
                             helpText("Create a group with the exclusive",
