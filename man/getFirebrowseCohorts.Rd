@@ -3,7 +3,7 @@
 \name{getFirebrowseCohorts}
 \alias{getFirebrowseCohorts}
 \alias{getFirehoseCohorts}
-\title{Query the Firebrowse web API for the cohorts available}
+\title{Query the Firebrowse web API for available cohorts}
 \usage{
 getFirebrowseCohorts(cohort = NULL)
 
@@ -17,7 +17,7 @@ Character with cohort abbreviations (as values) and description (as
 names)
 }
 \description{
-Query the Firebrowse web API for the cohorts available
+Query the Firebrowse web API for available cohorts
 }
 \examples{
 if (isFirebrowseUp()) getFirebrowseCohorts()

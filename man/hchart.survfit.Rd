@@ -11,7 +11,10 @@
 \arguments{
 \item{object}{A survfit object as returned from the \code{survfit} function}
 
-\item{...}{Extra parameters to pass to \code{hc_add_series} function}
+\item{...}{Arguments passed on to \code{highcharter::hc_add_series}
+\describe{
+  \item{}{}
+}}
 
 \item{fun}{Name of function or function used to transform the survival curve:
 \code{log} will put y axis on log scale, \code{event} plots cumulative events

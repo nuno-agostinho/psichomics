@@ -7,9 +7,7 @@
 }
 
 #' Get psichomics file inside a given directory
-#' @param ... character vectors, specifying subdirectory and file(s) within some
-#' package. The default, none, returns the root of the package. Wildcards are
-#' not supported.
+#' @inheritParams base::system.file
 #' @return Loaded file
 insideFile <- function(...) {
     return(system.file(..., package="psichomics"))
@@ -195,11 +193,11 @@ renameDuplicated <- function(check, comp) {
 #' 
 #' @param id Character: button identifier
 #' @param label Character: label
-#' @param ... Extra parameters to pass to \code{actionButton}
+#' @inheritDotParams shiny::actionButton -inputId -label
 #' @param class Character: class
 #' 
 #' @importFrom shinyjs hidden
-#' @importFrom shiny actionButton
+#' @importFrom shiny tags actionButton
 #' @return HTML for a button
 processButton <- function(id, label, ..., class="btn-primary") {
     spinner <- tags$i(id=paste0(id, "Loading"), class="fa fa-spinner fa-spin")
@@ -770,7 +768,7 @@ textSuggestions <- function(id, words, novalue="No matching value", char=" ") {
 #' Plot survival curves using Highcharts
 #' 
 #' @param object A survfit object as returned from the \code{survfit} function
-#' @param ... Extra parameters to pass to \code{hc_add_series} function
+#' @inheritDotParams highcharter::hc_add_series -hc -data
 #' @param fun Name of function or function used to transform the survival curve:
 #' \code{log} will put y axis on log scale, \code{event} plots cumulative events
 #' (f(y) = 1-y), \code{cumhaz} plots the cumulative hazard function (f(y) =
@@ -929,7 +927,7 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
 #' 
 #' @importFrom DT renderDataTable JS
 #' 
-#' @param ... Arguments to pass to \code{\link{renderDataTable}}
+#' @inheritDotParams shiny::renderDataTable -options -escape -env
 #' @param options List of options to pass to \code{\link{renderDataTable}}
 #' @return NULL (this function is used to modify the Shiny session's state)
 renderDataTableSparklines <- function(..., options=NULL) {
@@ -998,7 +996,7 @@ export_highcharts <- function(hc, fill="transparent", text="Export") {
 #' @param label Character: data label for each point (optional)
 #' @param showInLegend Boolean: show the data in the legend box? FALSE by
 #' default
-#' @param ... Extra attributes of the data series to plot
+#' @inheritDotParams highcharter::hc_add_series -hc -data
 #' 
 #' @importFrom highcharter hc_add_series list_parse
 #' 

@@ -7,7 +7,20 @@
 renderDataTableSparklines(..., options = NULL)
 }
 \arguments{
-\item{...}{Arguments to pass to \code{\link{renderDataTable}}}
+\item{...}{Arguments passed on to \code{shiny::renderDataTable}
+\describe{
+  \item{expr}{An expression that returns a data frame or a matrix.}
+  \item{searchDelay}{The delay for searching, in milliseconds (to avoid too
+frequent search requests).}
+  \item{callback}{A JavaScript function to be applied to the DataTable object.
+This is useful for DataTables plug-ins, which often require the DataTable
+instance to be available (\url{http://datatables.net/extensions/}).}
+  \item{quoted}{Is \code{expr} a quoted expression (with \code{quote()})? This
+is useful if you want to save an expression in a variable.}
+  \item{outputArgs}{A list of arguments to be passed through to the implicit
+call to \code{\link{dataTableOutput}} when \code{renderDataTable} is used
+in an interactive R Markdown document.}
+}}
 
 \item{options}{List of options to pass to \code{\link{renderDataTable}}}
 }

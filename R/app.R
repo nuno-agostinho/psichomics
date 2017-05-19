@@ -130,7 +130,7 @@ navSelectize <- function(id, label, placeholder=label) {
 #' 
 #' @param title Character: title of the tab
 #' @param icon Character: name of the icon
-#' @param ... HTML elements to pass to tab
+#' @param ... HTML elements to render
 #' @param menu Boolean: create a dropdown menu-like tab? FALSE by default
 #' 
 #' @importFrom shiny navbarMenu tabPanel
@@ -315,15 +315,15 @@ appServer <- function(input, output, session) {
     
     session$onSessionEnded(function() {
         # Stop app and print message to console
-        suppressMessages(stopApp(returnValue="PSIchomics was closed"))
+        suppressMessages(stopApp(returnValue="psichomics was closed"))
     })
 }
 
 #' Start graphical interface of psichomics
 #'
-#' @param ... Parameters to pass to the function runApp
+#' @inheritDotParams shiny::runApp -appDir -launch.browser
 #' @param reset Boolean: reset Shiny session? FALSE by default; requires the 
-#' package devtools to reset data
+#' package \code{devtools} to reset data
 #'
 #' @importFrom shiny shinyApp runApp addResourcePath
 #'

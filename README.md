@@ -97,7 +97,7 @@ and exclusion of that exon. To measure this estimate, both alternative splicing
 annotation and the quantification of RNA-Seq reads aligning to splice junctions
 (junction quantification) are required. While alternative splicing Human (hg19
 assembly) annotation is provided by the package, junction quantification may be
-retrieved from [TCGA][1].
+retrieved from [TCGA][1] (automatically) or from [GTEx][14] (manually).
 
 ## Data Analyses
 The program performs survival and principal component analyses, as well as

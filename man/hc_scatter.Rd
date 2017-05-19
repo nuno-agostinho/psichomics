@@ -20,7 +20,10 @@ hc_scatter(hc, x, y, z = NULL, label = NULL, showInLegend = FALSE, ...)
 \item{showInLegend}{Boolean: show the data in the legend box? FALSE by
 default}
 
-\item{...}{Extra attributes of the data series to plot}
+\item{...}{Arguments passed on to \code{highcharter::hc_add_series}
+\describe{
+  \item{}{}
+}}
 }
 \value{
 Highchart object containing information for a scatter plot

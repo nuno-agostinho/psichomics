@@ -9,7 +9,13 @@ pubmedUI(gene, ...)
 \arguments{
 \item{gene}{Character: gene}
 
-\item{...}{Arguments to pass to \code{queryPubMed} function}
+\item{...}{Arguments passed on to \code{queryPubMed}
+\describe{
+  \item{top}{Numeric: number of articles to retrieve (3 by default)}
+  \item{field}{Character: field of interest where to look for terms ("abstract"
+by default)}
+  \item{sort}{Character: sort by a given parameter ("relevance" by default)}
+}}
 }
 \value{
 HTML interface of relevant PubMed articles

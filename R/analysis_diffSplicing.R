@@ -2,6 +2,9 @@
 #' 
 #' Performs a Levene's test to assess the equality of variances
 #' 
+#' @details The implementation of this function is based on
+#' \code{car:::leveneTest.default} with a more standard result.
+#' 
 #' @inheritParams stats::kruskal.test
 #' @param centers Function used to calculate how much values spread 
 #' (\code{median} by default; another common function used is \code{mean})
@@ -398,7 +401,7 @@ diffAnalyses <- function(psi, groups=NULL,
     }
     
     # Add splicing event information
-    progress("Include splicing event information")
+    progress("Including splicing event information")
     info <- suppressWarnings(parseSplicingEvent(rownames(df), 
                                                 extendEventType=TRUE))
     

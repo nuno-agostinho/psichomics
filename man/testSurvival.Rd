@@ -8,8 +8,6 @@ testSurvival(survTerms, ...)
 }
 \arguments{
 \item{survTerms}{survTerms object: processed survival terms}
-
-\item{...}{Extra arguments passed to \code{survdiff}}
 }
 \value{
 p-value of the survival difference or NA
