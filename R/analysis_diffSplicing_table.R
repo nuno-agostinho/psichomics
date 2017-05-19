@@ -366,6 +366,7 @@ optimSurvDiffSet <- function(session, input, output) {
                         span(style="color:{point.color}", "\u25CF "),
                         tags$b("{series.name}"), br()),
                     pointFormat=paste(
+                        "Survival proportion: {point.y:.3f}", br(),
                         "Records: {series.options.records}", br(),
                         "Events: {series.options.events}", br(),
                         "Median: {series.options.median}")) %>%

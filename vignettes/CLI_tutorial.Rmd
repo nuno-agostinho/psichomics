@@ -147,7 +147,7 @@ Afterwards, quantify alternative splicing using the previously defined
 parameters:
 
 ```{r quantify splicing, eval=FALSE}
-# Min. reads threshold: number of reads required to quantify a splicing event
+# Discard alternative splicing quantified using few reads
 minReads <- 10
 
 psi <- quantifySplicing(annotation, junctionQuant, eventType=eventType, 
@@ -545,10 +545,10 @@ events <- rownames(diff[filter, ])
 # Assign alternative splicing quantification to patients based on their samples
 clinicalPSI <- getPSIperPatient(psi, match, clinical)
 
-# Get time for all survival analyses of interest (the same for all, so this is
-# faster)
+# Get time for all survival analyses of interest (as this is the same for all,
+# pre-fetching this information speeds the following loop)
 daysToDeath <- "days_to_death"
-survTime <- getColumnsTime(clinical, event=daysToDeath, timeStart=daysToDeath)
+survTime <- getAttributesTime(clinical, event=daysToDeath, timeStart=daysToDeath)
 
 # Prepare progress bar
 min <- 1

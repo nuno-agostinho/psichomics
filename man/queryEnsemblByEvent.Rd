@@ -9,7 +9,13 @@ queryEnsemblByEvent(event, ...)
 \arguments{
 \item{event}{Character: alternative splicing event identifier}
 
-\item{...}{Arguments to pass to \code{queryEnsemblByGene}}
+\item{...}{Arguments passed on to \code{queryEnsemblByGene}
+\describe{
+  \item{species}{Character: species (can be NULL when handling an ENSEMBL
+identifier)}
+  \item{assembly}{Character: assembly version (can be NULL when handling an
+ENSEMBL identifier)}
+}}
 }
 \value{
 Information from Ensembl

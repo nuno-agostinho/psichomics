@@ -3,19 +3,17 @@
 \name{getFirebrowseDates}
 \alias{getFirebrowseDates}
 \alias{getFirehoseDates}
-\title{Query the Firebrowse web API for the datestamps of the data available and 
-parse the response}
+\title{Query the Firebrowse web API for the available data datestamps}
 \usage{
 getFirebrowseDates()
 
 getFirehoseDates()
 }
 \value{
-Date with datestamps of the data available
+Parsed date with datestamps of the data available
 }
 \description{
-Query the Firebrowse web API for the datestamps of the data available and 
-parse the response
+Query the Firebrowse web API for the available data datestamps
 }
 \examples{
 if (isFirebrowseUp()) getFirebrowseDates()

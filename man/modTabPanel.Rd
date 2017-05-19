@@ -9,7 +9,7 @@ modTabPanel(title, ..., icon = NULL, menu = FALSE)
 \arguments{
 \item{title}{Character: title of the tab}
 
-\item{...}{HTML elements to pass to tab}
+\item{...}{HTML elements to render}
 
 \item{icon}{Character: name of the icon}
 

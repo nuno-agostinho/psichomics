@@ -74,7 +74,7 @@ inclusionLevelsInterface <- function(ns) {
         ns("filterGenes"), label=NULL, selected=NULL, multiple=TRUE,
         choices=c("Type to search for genes..."=""), options=list(
             # Allow to add new items
-            create=TRUE, createOnBlur=TRUE))
+            create=TRUE, createOnBlur=TRUE, plugins=list("remove_button")))
     
     options <- div(
         id=ns("options"),
@@ -83,7 +83,8 @@ inclusionLevelsInterface <- function(ns) {
         selectizeInput(ns("annotation"), choices=listAllAnnotations(),
                        "Alternative splicing event annotation"),
         selectizeInput(ns("eventType"), "Event type(s)", selected = "SE",
-                       choices=eventTypes, multiple = TRUE),
+                       choices=eventTypes, multiple = TRUE, 
+                       options=list(plugins=list("remove_button"))),
         numericInput(ns("minReads"), div("Minimum read counts' threshold",
                                          icon("question-circle")), value = 10),
         bsCollapse(
@@ -153,8 +154,8 @@ inclusionLevelsUI <- function(id, panel) {
 #' splicing event type
 #' @param junctionQuant Data frame: junction quantification
 #' @param eventType Character: splicing event types to quantify
-#' @param minReads Integer: minimum of read counts to consider a junction read 
-#' in calculations
+#' @param minReads Integer: discard alternative splicing quantified using a
+#' number of reads below this threshold
 #' @param progress Function to track the progress
 #' @param filter Character: gene symbols for which the splicing quantification 
 #' of associated splicing events is performed (by default, all splicing events 

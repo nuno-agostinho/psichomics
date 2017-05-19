@@ -103,15 +103,21 @@ queryPubMed <- function(primary, ..., top=3, field="abstract",
     return(c(search=list(search), metadata))
 }
 
-#' Convert a protein's Ensembl identifier to UniProt identifier
+#' Convert an Ensembl identifier to the respective UniProt identifier
 #' 
-#' @param protein Character: Ensembl protein identifier
+#' @param protein Character: Ensembl identifier
 #' 
 #' @return UniProt protein identifier
 #' @export
 #' @examples 
-#' ensemblToUniprot("ENSP00000445929")
+#' gene <- "ENSG00000173262"
+#' ensemblToUniprot(gene)
+#' 
+#' protein <- "ENSP00000445929"
+#' ensemblToUniprot(protein)
 ensemblToUniprot <- function(protein) {
+    if(length(protein) != 1) stop("Only pass one Ensembl identifier")
+    
     external <- queryEnsembl(paste0("xrefs/id/", protein),
                              list("content-type"="application/json"),
                              grch37=TRUE)
@@ -495,7 +501,7 @@ renderGeneticInfo <- function(ns, info, species=NULL, assembly=NULL,
 #' Query information from Ensembl by a given alternative splicing event
 #' 
 #' @param event Character: alternative splicing event identifier
-#' @param ... Arguments to pass to \code{queryEnsemblByGene}
+#' @inheritDotParams queryEnsemblByGene -gene
 #' 
 #' @return Information from Ensembl
 #' @export
@@ -573,7 +579,7 @@ articleUI <- function(article) {
 #' Return the interface of relevant PubMed articles for a given gene
 #' 
 #' @param gene Character: gene
-#' @param ... Arguments to pass to \code{queryPubMed} function
+#' @inheritDotParams queryPubMed -primary
 #' 
 #' @return HTML interface of relevant PubMed articles
 pubmedUI <- function(gene, ...) {

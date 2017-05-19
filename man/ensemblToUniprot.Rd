@@ -2,19 +2,23 @@
 % Please edit documentation in R/analysis_information.R
 \name{ensemblToUniprot}
 \alias{ensemblToUniprot}
-\title{Convert a protein's Ensembl identifier to UniProt identifier}
+\title{Convert an Ensembl identifier to the respective UniProt identifier}
 \usage{
 ensemblToUniprot(protein)
 }
 \arguments{
-\item{protein}{Character: Ensembl protein identifier}
+\item{protein}{Character: Ensembl identifier}
 }
 \value{
 UniProt protein identifier
 }
 \description{
-Convert a protein's Ensembl identifier to UniProt identifier
+Convert an Ensembl identifier to the respective UniProt identifier
 }
 \examples{
-ensemblToUniprot("ENSP00000445929")
+gene <- "ENSG00000173262"
+ensemblToUniprot(gene)
+
+protein <- "ENSP00000445929"
+ensemblToUniprot(protein)
 }

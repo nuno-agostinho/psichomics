@@ -105,7 +105,7 @@ getPSIperPatient <- function(psi, match, clinical,
 
 #' Process survival data to calculate survival curves
 #' 
-#' @inheritParams getColumnsTime
+#' @inheritParams getAttributesTime
 #' @param group Character: group of each individual
 #' @param clinical Data frame: clinical data
 #' @param survTime survTime object: Times to follow up, time start, time stop
@@ -118,7 +118,7 @@ getPSIperPatient <- function(psi, match, clinical,
 #' clinical dataset according to the names given in \code{timeStart},
 #' \code{timeStop}, \code{event} and \code{followup}. This can became quite slow
 #' when using the function in a for loop. If these variables are constant, 
-#' consider running the function \code{\link{getColumnsTime}} to retrieve the
+#' consider running the function \code{\link{getAttributesTime}} to retrieve the
 #' time of such columns once and hand the result to the \code{survTime} argument
 #' of this function.
 #' 
@@ -126,8 +126,8 @@ getPSIperPatient <- function(psi, match, clinical,
 processSurvData <- function(event, timeStart, timeStop, followup, group, 
                             clinical, survTime=NULL) {
     if ( is.null(survTime) ) {
-        survTime <- getColumnsTime(clinical, event, timeStart, timeStop,
-                                   followup)
+        survTime <- getAttributesTime(clinical, event, timeStart, timeStop,
+                                      followup)
     }
     
     # Create new time using the starting time replacing the NAs with
@@ -164,13 +164,22 @@ processSurvData <- function(event, timeStart, timeStop, followup, group,
 #' @return Data frame containing the time for the given columns
 #' 
 #' @export
-getColumnsTime <- function(clinical, event, timeStart, timeStop=NULL,
-                           followup="days_to_last_followup") {
+getAttributesTime <- function(clinical, event, timeStart, timeStop=NULL,
+                              followup="days_to_last_followup") {
     cols <- c(followup=followup, start=timeStart, stop=timeStop, event=event)
     survTime <- lapply(cols, timePerPatient, clinical)
     survTime <- as.data.frame(survTime)
     class(survTime) <- c("data.frame", "survTime")
     return(survTime)
+}
+
+#' @inherit getAttributesTime
+#' @export
+getColumnsTime <- function(clinical, event, timeStart, timeStop=NULL,
+                           followup="days_to_last_followup") {
+    .Deprecated("getAttributesTime")
+    getAttributesTime(clinical=clinical, event=event, timeStart=timeStart, 
+                      timeStop=timeStop, followup=followup)
 }
 
 #' Get all columns matching a given string and return a single vector with the
@@ -257,7 +266,7 @@ updateClinicalParams <- function(session, clinical) {
 #' clinical dataset according to the names given in \code{timeStart},
 #' \code{timeStop}, \code{event} and \code{followup}. This can became quite slow
 #' when using the function in a for loop. If these variables are constant, 
-#' consider running the function \code{\link{getColumnsTime}} to retrieve the
+#' consider running the function \code{\link{getAttributesTime}} to retrieve the
 #' time of such columns once and hand the result to the \code{survTime} argument
 #' of this function.
 #'
@@ -334,7 +343,7 @@ processSurvTerms <- function(clinical, censoring, event, timeStart,
 #' Compute estime of a survival curve using processed survival terms
 #' 
 #' @param survTerms survTerms object: processed survival terms
-#' @param ... Extra arguments passed to \code{survfit}
+#' @inheritDotParams survival::survfit.formula -formula -data
 #' 
 #' @importFrom survival survfit
 #' @method survfit survTerms
@@ -378,7 +387,7 @@ survfit.survTerms <- function(survTerms, ...) {
 #' terms
 #' 
 #' @param survTerms survTerms object: processed survival terms
-#' @param ... Extra arguments passed to \code{survdiff}
+#' @inheritDotParams survival::survdiff -formula -data
 #' 
 #' @importFrom survival survdiff
 #' 
@@ -441,16 +450,17 @@ plotSurvivalCurves <- function(surv, mark=TRUE, interval=FALSE, pvalue=NULL,
         hc <- hc %>%
             hc_chart(zoomType="xy") %>%
             hc_title(text=title) %>%
-            hc_yAxis(title=list(text="Proportion of individuals"),
+            hc_yAxis(title=list(text="Survival proportion"),
                      crosshair=TRUE) %>%
             hc_xAxis(title=list(text=paste("Time in", scale)),
                      crosshair=TRUE) %>%
             hc_tooltip(
                 headerFormat = paste(
-                    tags$small("{point.x}", scale), br(),
+                    tags$small("{point.x:.3f}", scale), br(),
                     span(style="color:{point.color}", "\u25CF "),
                     tags$b("{series.name}"), br()),
                 pointFormat = paste(
+                    "Survival proportion: {point.y:.3f}", br(),
                     "Records: {series.options.records}", br(),
                     "Events: {series.options.events}", br(),
                     "Median: {series.options.median}")) %>%
@@ -465,7 +475,7 @@ plotSurvivalCurves <- function(surv, mark=TRUE, interval=FALSE, pvalue=NULL,
 #' Check if survival analyses successfully completed or returned errors
 #' 
 #' @param session Shiny session
-#' @param ... Arguments to pass to function \code{processSurvTerms}
+#' @inheritDotParams processSurvTerms
 #' 
 #' @importFrom shiny tags
 #' @return List with survival analysis results
@@ -518,7 +528,7 @@ testSurvival <- function (survTerms, ...) {
         # Test the difference between survival curves
         diff <- survdiff.survTerms(survTerms, ...)
         
-        # Calculate p-value with 5 significant numbers
+        # Calculate p-value with given significant digits
         pvalue <- 1 - pchisq(diff$chisq, length(diff$n) - 1)
         return(as.numeric(signifDigits(pvalue)))
     }, error = function(e) NA)
@@ -577,7 +587,7 @@ labelBasedOnCutoff <- function (data, cutoff, label=NULL, gte=TRUE) {
 #' @param cutoff Numeric: Cutoff of interest
 #' @param data Numeric: elements of interest to test against the cutoff
 #' @param filter Boolean or numeric: elements to use (all by default)
-#' @param ... Arguments to pass to \code{processSurvTerms}
+#' @inheritDotParams processSurvTerms -group -clinical
 #' @param session Shiny session
 #' 
 #' @importFrom survival survdiff
@@ -637,8 +647,8 @@ optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart,
                              timeStop=NULL, followup="days_to_last_followup",
                              session=NULL, filter=TRUE, survTime=NULL) {
     if ( is.null(survTime) ) {
-        survTime <- getColumnsTime(clinical, event, timeStart, timeStop,
-                                   followup)
+        survTime <- getAttributesTime(clinical, event, timeStart, timeStop,
+                                      followup)
     }
     
     # Supress warnings from failed calculations while optimising

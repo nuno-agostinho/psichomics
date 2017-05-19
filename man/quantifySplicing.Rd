@@ -16,8 +16,8 @@ splicing event type}
 
 \item{eventType}{Character: splicing event types to quantify}
 
-\item{minReads}{Integer: minimum of read counts to consider a junction read 
-in calculations}
+\item{minReads}{Integer: discard alternative splicing quantified using a
+number of reads below this threshold}
 
 \item{progress}{Function to track the progress}
 

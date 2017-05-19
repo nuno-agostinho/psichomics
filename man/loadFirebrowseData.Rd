@@ -23,7 +23,26 @@ default, it saves in the user's "Downloads" folder)}
 from loading into R (by default, it excludes ".aux.", ".mage-tab." and
 "MANIFEST.TXT" files)}
 
-\item{...}{Extra parameters to be passed to \code{\link{queryFirebrowseData}}}
+\item{...}{Arguments passed on to \code{queryFirebrowseData}
+\describe{
+  \item{format}{Character: response format as JSON (default), CSV or TSV}
+  \item{date}{Character: dates of the data retrieval by Firebrowse (by default,
+it uses the most recent data available)}
+  \item{cohort}{Character: abbreviation of the cohorts (by default, returns
+data for all cohorts)}
+  \item{data_type}{Character: data types (optional)}
+  \item{tool}{Character: data produced by the selected Firebrowse tools
+(optional)}
+  \item{platform}{Character: data generation platforms (optional)}
+  \item{center}{Character: data generation centers (optional)}
+  \item{level}{Integer: data levels (optional)}
+  \item{protocol}{Character: sample characterization protocols (optional)}
+  \item{page}{Integer: page of the results to return (optional)}
+  \item{page_size}{Integer: number of records per page of results; max is 2000
+(optional)}
+  \item{sort_by}{String: column used to sort the data (by default, it sorts by
+cohort)}
+}}
 
 \item{progress}{Function to show the progress (default is to print progress
 to console)}

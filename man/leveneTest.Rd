@@ -28,6 +28,10 @@ A list with class \code{"htest"} containing the following components:
 \description{
 Performs a Levene's test to assess the equality of variances
 }
+\details{
+The implementation of this function is based on
+\code{car:::leveneTest.default} with a more standard result.
+}
 \examples{
 
 vals <- sample(30, replace=TRUE)

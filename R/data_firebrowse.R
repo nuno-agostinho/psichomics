@@ -39,7 +39,7 @@ parseDateResponse <- function(string) {
     return(date)
 }
 
-#' Check if the Firebrowse web API is running
+#' Check whether the Firebrowse web API is running
 #'
 #' The Firebrowse web API is running if it returns the status condition 200; if
 #' this is not the status code obtained from the API, the function will raise a
@@ -133,12 +133,12 @@ queryFirebrowseData <- function(format = "json", date = NULL, cohort = NULL,
 #' @rdname queryFirebrowseData
 queryFirehoseData <- queryFirebrowseData
 
-#' Query the Firebrowse web API for metadata and parse the response
+#' Query the Firebrowse web API for metadata
 #'
 #' @param type Character: metadata to retrieve
 #' @param ... Character: parameters to pass to query (optional)
 #'
-#' @return List with parsed JSON response
+#' @return List with parsed response
 #'
 #' @importFrom httr GET content
 #' @importFrom jsonlite fromJSON
@@ -170,10 +170,9 @@ parseFirebrowseMetadata <- function(type, ...) {
 #' @rdname parseFirebrowseMetadata
 parseFirehoseMetadata <- parseFirebrowseMetadata
 
-#' Query the Firebrowse web API for the datestamps of the data available and 
-#' parse the response
+#' Query the Firebrowse web API for the available data datestamps
 #'
-#' @return Date with datestamps of the data available
+#' @return Parsed date with datestamps of the data available
 #' @export
 #' 
 #' @examples
@@ -188,7 +187,7 @@ getFirebrowseDates <- function() {
 #' @rdname getFirebrowseDates
 getFirehoseDates <- getFirebrowseDates
 
-#' Query the Firebrowse web API for the cohorts available
+#' Query the Firebrowse web API for available cohorts
 #'
 #' @param cohort Character: filter by given cohorts (optional)
 #'
@@ -421,7 +420,7 @@ loadFirehoseFolders <- loadFirebrowseFolders
 #' @param exclude Character: files and folders to exclude from downloading and
 #' from loading into R (by default, it excludes ".aux.", ".mage-tab." and
 #' "MANIFEST.TXT" files)
-#' @param ... Extra parameters to be passed to \code{\link{queryFirebrowseData}}
+#' @inheritDotParams queryFirebrowseData
 #' @param progress Function to show the progress (default is to print progress
 #' to console)
 #' @param download Boolean: download missing files through the function
@@ -608,7 +607,7 @@ firebrowseUI <- function(id, panel) {
     ns <- NS(id)
     
     panel(style="info",
-          title=list(icon("plus-circle"), "Download/load TCGA data"),
+          title=list(icon("plus-circle"), "Download and load TCGA data"),
           value="Load TCGA/Firebrowse data",
           helpText("TCGA data is downloaded using the",
                    a(href="http://firebrowse.org", target="_blank",
