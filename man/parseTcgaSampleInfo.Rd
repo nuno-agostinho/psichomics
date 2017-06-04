@@ -2,19 +2,29 @@
 % Please edit documentation in R/data_inclusionLevels.R
 \name{parseTcgaSampleInfo}
 \alias{parseTcgaSampleInfo}
-\title{Parse and prepare sample information from TCGA samples}
+\title{Parse sample information from TCGA samples}
 \usage{
-parseTcgaSampleInfo(samples, category = getCategory())
+parseTcgaSampleInfo(samples, patients, match)
 }
 \arguments{
 \item{samples}{Character: sample identifiers}
 
-\item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
-it uses the selected data category}
+\item{patients}{Character: patient identifiers}
+
+\item{match}{Integer: match between samples and patients}
 }
 \value{
 Data frame containing metadata associated with each TCGA sample
 }
 \description{
-Parse and prepare sample information from TCGA samples
+Parse sample information from TCGA samples
+}
+\examples{
+samples <- c("TCGA-3C-AAAU-01A-11R-A41B-07", "TCGA-3C-AALI-01A-11R-A41B-07",
+             "TCGA-3C-AALJ-01A-31R-A41B-07", "TCGA-3C-AALK-01A-11R-A41B-07", 
+             "TCGA-4H-AAAK-01A-12R-A41B-07", "TCGA-5L-AAT0-01A-12R-A41B-07")
+patients <- substr(samples, 1, 12)
+match <- getPatientFromSample(samples, patients)
+
+parseTcgaSampleInfo(samples, patients, match)
 }

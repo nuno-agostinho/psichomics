@@ -1,9 +1,11 @@
-# 1.2.2 (18 May, 2017)
+# 1.2.2 (4 Jun, 2017)
 
 * Update minimum version required of shiny (1.0.3)
 * Add new set operations when grouping (such as complement, subtraction and
 symmetric difference)
-* Filter quantification of alternative splicing events based on a list of genes
+* Filter splicing events that occur within one or more genes of interest, if
+desired
+* Parse sample information from TCGA samples using `parseTcgaSampleInfo`
 * Differential splicing analysis:
     - Improve survival curves based on the optimal alternative splicing
     quantification cutoff:
