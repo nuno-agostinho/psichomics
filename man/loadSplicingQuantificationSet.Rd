@@ -4,12 +4,12 @@
 \alias{loadSplicingQuantificationSet}
 \title{Set of functions to load splicing quantification}
 \usage{
-loadSplicingQuantificationSet(input, session, output)
+loadSplicingQuantificationSet(session, input, output)
 }
 \arguments{
-\item{input}{Shiny input}
-
 \item{session}{Shiny session}
+
+\item{input}{Shiny input}
 
 \item{output}{Shiny ouput}
 }
