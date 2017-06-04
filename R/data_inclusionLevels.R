@@ -1,10 +1,21 @@
-#' Parse and prepare sample information from TCGA samples
+#' Parse sample information from TCGA samples
 #' 
 #' @param samples Character: sample identifiers
-#' @inheritParams getClinicalMatchFrom
+#' @param patients Character: patient identifiers
+#' @param match Integer: match between samples and patients
 #' 
 #' @return Data frame containing metadata associated with each TCGA sample
-parseTcgaSampleInfo <- function (samples, category=getCategory()) {
+#' @export
+#' 
+#' @examples
+#' samples <- c("TCGA-3C-AAAU-01A-11R-A41B-07", "TCGA-3C-AALI-01A-11R-A41B-07",
+#'              "TCGA-3C-AALJ-01A-31R-A41B-07", "TCGA-3C-AALK-01A-11R-A41B-07", 
+#'              "TCGA-4H-AAAK-01A-12R-A41B-07", "TCGA-5L-AAT0-01A-12R-A41B-07")
+#' patients <- substr(samples, 1, 12)
+#' match <- getPatientFromSample(samples, patients)
+#' 
+#' parseTcgaSampleInfo(samples, patients, match)
+parseTcgaSampleInfo <- function (samples, patients, match) {
     parsed <- parseSampleGroups(samples)
     if ( all(is.na(parsed)) ) return(NULL)
     
@@ -13,8 +24,6 @@ parseTcgaSampleInfo <- function (samples, category=getCategory()) {
     rownames(info) <- samples
     
     # Patient match
-    patients <- getPatientId()
-    match <- getClinicalMatchFrom("Inclusion levels", category)
     if ( !is.null(patients) ) {
         if (is.null(match))
             match <- getPatientFromSample(samples, patients)
@@ -398,8 +407,10 @@ loadSplicingQuantificationSet <- function(input, session, output) {
             
             setInclusionLevels(psi)
             
-            samples <- colnames(psi)
-            parsed <- parseTcgaSampleInfo(samples) 
+            samples  <- colnames(psi)
+            patients <- getPatientId()
+            match    <- getClinicalMatchFrom("Inclusion levels")
+            parsed   <- parseTcgaSampleInfo(samples, patients, match)
             if ( !is.null(parsed) )
                 setSampleInfo(parsed)
             
@@ -524,8 +535,10 @@ quantifySplicingSet <- function(session, input) {
                                 progress=updateProgress, filter=filter)
         setInclusionLevels(psi)
         
-        samples <- colnames(psi)
-        parsed <- parseTcgaSampleInfo(samples) 
+        samples  <- colnames(psi)
+        patients <- getPatientId()
+        match    <- getClinicalMatchFrom("Inclusion levels")
+        parsed   <- parseTcgaSampleInfo(samples, patients, match)
         if ( !is.null(parsed) )
             setSampleInfo(parsed)
         
