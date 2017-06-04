@@ -301,11 +301,11 @@ loadCustomSplicingAnnotationSet <- function(session, input, output) {
 #' 
 #' @importFrom shiny tags
 #' @inherit inclusionLevelsServer
-loadSplicingQuantificationSet <- function(input, session, output) {
+loadSplicingQuantificationSet <- function(session, input, output) {
+    ns <- session$ns
+    
     # Show modal for loading alternative splicing quantification
     observeEvent(input$loadIncLevels, {
-        ns <- session$ns
-        
         infoModal(
             session, "Load alternative splicing quantification",
             helpText("A table containing the sample identifiers as columns and",
