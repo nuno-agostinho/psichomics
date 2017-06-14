@@ -2,10 +2,9 @@
 % Please edit documentation in R/analysis.R
 \name{getPSIperPatient}
 \alias{getPSIperPatient}
-\title{Assign alternative splicing quantification to patients based on their samples}
+\title{Assign the alternative splicing quantification of a single sample to patients}
 \usage{
-getPSIperPatient(psi, match, clinical, pattern = c("Normal", "Control"),
-  filterOut = TRUE)
+getPSIperPatient(psi, match, clinical, pattern = NULL, filterOut = TRUE)
 }
 \arguments{
 \item{psi}{Data frame or matrix: alternative splicing quantification per
@@ -15,17 +14,34 @@ samples}
 
 \item{clinical}{Data frame or matrix: clinical dataset}
 
-\item{pattern}{Character: pattern to use when filtering sample types (normal 
-and control samples are filtered by default)}
+\item{pattern}{Character: pattern to use when filtering sample types (NULL by
+default, i.e. no filtering occurs)}
 
-\item{filterOut}{Boolean: filter out (TRUE) or filter in (FALSE) samples with
-the given pattern; by default, filter out}
+\item{filterOut}{Boolean: filter out (TRUE) or filter in (FALSE) sample types
+based on a given pattern; by default, sample types are filtered out}
 }
 \value{
 Alternative splicing quantification per clinical patients
 }
 \description{
+Assign alternative splicing quantification to patients based on the frequency
+of the respective type of their samples.
+}
+\details{
 Match filtered samples with clinical patients to retrieve alternative
-splicing quantification per clinical patient. Only one sample can be matched
-with one patient. Normal and control samples are filtered out by default.
+splicing quantification per clinical patient. One single sample is matched to
+a patient based on the sample type frequency. For instance, imagine that:
+
+\itemize{
+    \item{10 patients have a tumour and control sample;}
+    \item{5 patients have a tumour sample;}
+    \item{2 patients have only a control sample;}
+    \item{2 patientas have only a metastasis sample.}
+}
+ 
+In total, there are 15 tumour, 12 control and 2 metastasis samples. As tumour
+samples are the majority, tumour samples will be matched to patients. 
+Patients without tumour samples will then be matched to control samples (2nd
+most frequent sample type), if available. Finally, the remaining patients 
+will be matched to metastasis samples.
 }

@@ -61,46 +61,105 @@ analysesUI <- function(id, tab) {
     do.call(tab, c(list(icon="flask", title="Analyses", menu=TRUE), ui))
 }
 
-#' Assign alternative splicing quantification to patients based on their samples
+#' Assign the alternative splicing quantification of a single sample to patients
 #' 
+#' Assign alternative splicing quantification to patients based on the frequency
+#' of the respective type of their samples.
+#' 
+#' @details
 #' Match filtered samples with clinical patients to retrieve alternative
-#' splicing quantification per clinical patient. Only one sample can be matched
-#' with one patient. Normal and control samples are filtered out by default.
+#' splicing quantification per clinical patient. One single sample is matched to
+#' a patient based on the sample type frequency. For instance, imagine that:
+#' 
+#' \itemize{
+#'     \item{10 patients have a tumour and control sample;}
+#'     \item{5 patients have a tumour sample;}
+#'     \item{2 patients have only a control sample;}
+#'     \item{2 patientas have only a metastasis sample.}
+#' }
+#'  
+#' In total, there are 15 tumour, 12 control and 2 metastasis samples. As tumour
+#' samples are the majority, tumour samples will be matched to patients. 
+#' Patients without tumour samples will then be matched to control samples (2nd
+#' most frequent sample type), if available. Finally, the remaining patients 
+#' will be matched to metastasis samples.
 #' 
 #' @param psi Data frame or matrix: alternative splicing quantification per
 #' samples
-#' @param match Matrix: match between samples and clinical patients
 #' @param clinical Data frame or matrix: clinical dataset
-#' @param pattern Character: pattern to use when filtering sample types (normal 
-#' and control samples are filtered by default)
-#' @param filterOut Boolean: filter out (TRUE) or filter in (FALSE) samples with
-#' the given pattern; by default, filter out
+#' @param pattern Character: pattern to use when filtering sample types (NULL by
+#' default, i.e. no filtering occurs)
+#' @param filterOut Boolean: filter out (TRUE) or filter in (FALSE) sample types
+#' based on a given pattern; by default, sample types are filtered out
+#' 
+#' @inheritParams matchPatientToSingleSample
 #' 
 #' @return Alternative splicing quantification per clinical patients
 #' @export
-getPSIperPatient <- function(psi, match, clinical,
-                             pattern=c("Normal", "Control"), filterOut=TRUE) {
+getPSIperPatient <- function(psi, match, clinical, pattern=NULL, 
+                             filterOut=TRUE) {
     # Get sample identifiers of interest
     types <- parseSampleGroups(names(match))
     
-    pattern <- paste(pattern, collapse="|")
-    filter <- grepl(pattern, types)
-    if (filterOut) filter <- !filter
+    if (!is.null(pattern)) {
+        # Filter sample types based on a user-defined pattern
+        pattern <- paste(pattern, collapse="|")
+        filter <- grepl(pattern, types)
+        if (filterOut) filter <- !filter
+    } else {
+        filter <- TRUE
+    }
     
-    match_tumour <- match[filter]
-    match_tumour <- match_tumour[!is.na(match_tumour)]
+    matchFiltered <- match[filter]
+    matchFiltered <- matchFiltered[!is.na(matchFiltered)]
     
-    # Remove duplicates (only one sample type for each patient)
-    ## TODO: prioritise by sample types of interest
-    match_tumour <- match_tumour[!duplicated(match_tumour)]
+    # Assign only one sample per patient based on sample type frequency
+    matchSingle <- matchPatientToSingleSample(matchFiltered)
     
     # Match samples with clinical patients (remove non-matching samples)
     clinicalPSI <- data.frame(matrix(NA, nrow=nrow(psi), ncol=nrow(clinical)))
-    clinicalPSI[ , match_tumour] <- psi[ , names(match_tumour)]
+    clinicalPSI[ , matchSingle] <- psi[ , names(matchSingle)]
     
     colnames(clinicalPSI) <- rownames(clinical)
     rownames(clinicalPSI) <- rownames(psi)
     return(clinicalPSI)
+}
+
+#' Match patients to a single sample according to sample type frequency
+#'
+#' Only one sample per patient is returned. For patients with more than one
+#' sample, the attributed sample is chosen according to the frequency of its
+#' type.
+#'
+#' @param match Matrix: match between samples and clinical patients
+#'
+#' @return Integer containing the patient and the respective sample as its name
+matchPatientToSingleSample <- function(match) {
+    # Get frequency of sample types
+    types <- parseSampleGroups(names(match))
+    freq  <- names(sort(table(types), decreasing=TRUE))
+    # Create a list of patient-sample matches based on sample types
+    matchByType <- split(match, types)
+    # Order the list based on the frequency of the sample types
+    matchByType <- matchByType[freq]
+    
+    # Filter out duplicated items based on the items found on previous list
+    # indexes
+    filterDuplicatedItems <- function(i, aList) {
+        if (i == 1) {
+            diff <- TRUE
+        } else {
+            previous <- Reduce(union, aList[seq(i - 1)])
+            diff <- !aList[[i]] %in% previous
+        }
+        return(aList[[i]][diff])
+    }
+    
+    # Match patients to a single sample according to sample type frequency
+    res <- unlist(lapply(seq(matchByType), filterDuplicatedItems, matchByType))
+    # Remove potentially duplicated samples of the same sample type
+    res <- res[!duplicated(res)]
+    return(res)
 }
 
 #' Process survival data to calculate survival curves

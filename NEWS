@@ -33,6 +33,11 @@ desired
     - Properly set the title of survival curves based on the selected splicing
     event's quantification
     - Improve readability of Cox PH models
+    - When performing survival analyses by alternative splicing cutoff, each
+    patient is assigned the PSI value from the respective sample; for patients
+    with more than one sample, the assigned sample is chosen based on the most
+    frequent sample type across all patients (before, the first matched 
+    non-normal or non-control samples were used)
 
 # 1.2.1 (24 Apr, 2017)
 
