@@ -459,10 +459,16 @@ fligner <- function(psi, groups, stat=NULL) {
     } else {
         nas <- is.na(psi)
         stat <- fligner.test(psi[!nas], factor(groups[!nas]))
-        statistic <- stat$statistic
-        p.value   <- stat$p.value
-        adjusted  <- NULL
-        parameter <- stat$parameter
+        if (is.infinite(stat$statistic)) {
+            statistic <- NaN
+            p.value   <- NA
+            parameter <- NaN
+        } else {
+            statistic <- stat$statistic
+            p.value   <- stat$p.value
+            parameter <- stat$parameter
+        }
+        adjusted <- NULL
     }
     
     tagList(

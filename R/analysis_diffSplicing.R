@@ -208,7 +208,8 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
     if (any("fligner" == analyses) && len >= 2) {
         fligner <- suppressWarnings(
             tryCatch(fligner.test(vector, group), error=return))
-        if (any("error" == class(fligner))) fligner <- NULL
+        if (any("error" == class(fligner)) || is.infinite(fligner$statistic))
+            fligner <- NULL
     }
     
     # Density sparklines

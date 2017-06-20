@@ -7,6 +7,8 @@ symmetric difference)
 desired
 * Parse sample information from TCGA samples using `parseTcgaSampleInfo`
 * Differential splicing analysis:
+    - Return p-value of NA instead of 0 when the value of Fligner-Killeen's Test
+    for Homogeneity of Variance is infinite
     - Improve survival curves based on the optimal alternative splicing
     quantification cutoff:
         - Include the survival curve previews in 3 new columns within the
