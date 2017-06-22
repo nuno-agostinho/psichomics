@@ -4,12 +4,12 @@
 \alias{groupByGrep}
 \title{User interface to group by grep expression}
 \usage{
-groupByGrep(ns, dataset, id)
+groupByGrep(ns, cols, id)
 }
 \arguments{
 \item{ns}{Namespace function}
 
-\item{dataset}{Data frame: dataset of interest}
+\item{cols}{Character or list: name of columns to show}
 
 \item{id}{Character: identifier}
 }

@@ -1,11 +1,13 @@
 # 1.2.2 (4 Jun, 2017)
 
 * Update minimum version required of shiny (1.0.3)
-* Add new set operations when grouping (such as complement, subtraction and
-symmetric difference)
 * Filter splicing events that occur within one or more genes of interest, if
 desired
 * Parse sample information from TCGA samples using `parseTcgaSampleInfo`
+* Data grouping:
+    * Add new set operations when grouping (such as complement, subtraction and
+    symmetric difference)
+    * Suggest attributes of interest when creating groups
 * Differential splicing analysis:
     - Return p-value of NA instead of 0 when the value of Fligner-Killeen's Test
     for Homogeneity of Variance is infinite

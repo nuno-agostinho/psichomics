@@ -139,14 +139,27 @@ groupsUI <- function(id) {
                 tags$a(linkText, onclick=loadRequiredData( modalId )))
         
         if (loaded) {
+            suggestedCols <- attr(dataset, "show")
+            if (!is.null(suggestedCols)) {
+                cols <- colnames(dataset)
+                suggestedIndex <- match(suggestedCols, cols)
+                suggestedIndex <- suggestedIndex[!is.na(suggestedIndex)]
+                cols <- list("Start typing to search for attributes"="",
+                             "Suggested attributes"=cols[suggestedIndex],
+                             "Other attributes"=cols[-suggestedIndex])
+            } else {
+                cols <- colnames(dataset)
+                cols <- c("Start typing to search for columns"="", cols)
+            }
+            
             navbarMenu(
                 title,
                 tabPanel("Attribute",
-                         groupByAttribute(ns, dataset, id, example)),
+                         groupByAttribute(ns, cols, id, example)),
                 tabPanel("Index/Identifier", groupById(ns, id, choices)),
                 "----", "Advanced options",
                 tabPanel("Subset expression", groupByExpression(ns, id)),
-                tabPanel("Regular expression", groupByGrep(ns, dataset, id)))
+                tabPanel("Regular expression", groupByGrep(ns, cols, id)))
         } else if ( id == "Patients" ) {
             tabPanel(title, missingData(
                 "Clinical data",
@@ -171,21 +184,19 @@ groupsUI <- function(id) {
 #' User interface to group by attribute
 #' 
 #' @param ns Namespace function
-#' @param dataset Data frame: dataset of interest
+#' @param cols Character or list: name of columns to show
 #' @param id Character: identifier
 #' @param example Character: text to show as an example
 #' 
 #' @return HTML elements
-groupByAttribute <- function(ns, dataset, id, example) {
+groupByAttribute <- function(ns, cols, id, example) {
     if (!is.null(example)) example <- tagList(" ", example)
     
     tagList(
         helpText("Automatically create groups according to the unique values",
                  "for the selected attribute.", example),
         selectizeInput(ns(paste0("groupAttribute", id)), "Select attribute",
-                       width="auto", choices=c(
-                           "Start typing to search for attributes"="", 
-                           colnames(dataset))),
+                       width="auto", choices=cols),
         actionButton(ns(paste0("createGroupAttribute", id)), "Create group",
                      class ="btn-primary")
     )}
@@ -246,13 +257,12 @@ groupByExpression <- function(ns, id) {
 #' @importFrom shiny textInput
 #' 
 #' @return HTML elements
-groupByGrep <- function(ns, dataset, id) {
+groupByGrep <- function(ns, cols, id) {
     tagList (
         textInput(ns(paste0("grepExpression", id)), "Regular expression",
                   width="auto"),
         selectizeInput(ns(paste0("grepColumn", id)), "Select column to GREP",
-                       choices=c("Start typing to search for columns"="",
-                                 names(dataset)), width="auto"),
+                       choices=cols, width="auto"),
         textInput(ns(paste0("groupNameRegex", id)), "Group name", width="auto",
                   placeholder="Unnamed"),
         actionButton(ns(paste0("createGroupRegex", id)), "Create group", 
@@ -629,12 +639,12 @@ operateOnGroups <- function(input, session, operation, buttonId, symbol=" ",
             operation <- "subtract"
         }
         
-        groupName      <- input$groupName
-        patients       <- seq(getPatientId())
-        samples        <- seq(getSampleId())
-        matches        <- getClinicalMatchFrom("Inclusion levels")
-        groups <- setOperation(operation, groups, selected, symbol, groupName, 
-                               patients, samples, matches)
+        groupName <- input$groupName
+        patients  <- seq(getPatientId())
+        samples   <- seq(getSampleId())
+        matches   <- getClinicalMatchFrom("Inclusion levels")
+        groups    <- setOperation(operation, groups, selected, symbol, 
+                                  groupName, patients, samples, matches)
         setGroupsFrom(datasetName, groups)
     })
 }
