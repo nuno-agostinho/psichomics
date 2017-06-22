@@ -166,7 +166,7 @@ inclusionLevelsUI <- function(id, panel) {
 #' @param minReads Integer: discard alternative splicing quantified using a
 #' number of reads below this threshold
 #' @param progress Function to track the progress
-#' @param filter Character: gene symbols for which the splicing quantification 
+#' @param genes Character: gene symbols for which the splicing quantification 
 #' of associated splicing events is performed (by default, all splicing events 
 #' undergo splicing quantification)
 #' 
@@ -184,15 +184,15 @@ inclusionLevelsUI <- function(id, panel) {
 quantifySplicing <- function(annotation, junctionQuant, 
                              eventType=c("SE", "MXE", "ALE", "AFE", "A3SS", 
                                          "A5SS"), 
-                             minReads=10, progress=echoProgress, filter=NULL) {
-    if (!is.null(filter)) {
+                             minReads=10, progress=echoProgress, genes=NULL) {
+    if (!is.null(genes)) {
         # Filter for given gene symbols
-        filter <- unique(filter)
+        genes <- unique(genes)
         annotation <- lapply(annotation, function(df) {
-            # Check which genes are present in the filter by unlisting them all
-            # (register the respective event's index for each gene)
+            # Check which genes are desired by unlisting them all (register the 
+            # respective event's index for each gene)
             genes      <- df$Gene
-            valid      <- as.vector(unlist(genes)) %fin% filter
+            valid      <- as.vector(unlist(genes)) %fin% genes
             eventGenes <- vapply(genes, length, numeric(1), USE.NAMES=FALSE)
             eventIndex <- rep(seq(genes), eventGenes)
             return(df[unique(eventIndex[valid]), ])
@@ -532,7 +532,7 @@ quantifySplicingSet <- function(session, input) {
         # Quantify splicing with splicing annotation and junction quantification
         updateProgress("Calculating inclusion levels")
         psi <- quantifySplicing(annot, junctionQuant, eventType, minReads, 
-                                progress=updateProgress, filter=filter)
+                                progress=updateProgress, genes=filter)
         setInclusionLevels(psi)
         
         samples  <- colnames(psi)

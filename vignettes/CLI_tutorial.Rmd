@@ -73,9 +73,9 @@ folder <- getDownloadsFolder()
 # Download and load most recent junction quantification and clinical data from
 # TCGA/Firebrowse for Adrenocortical Carcinoma
 data <- loadFirebrowseData(folder=folder,
-                         cohort="BRCA",
-                         data=c("Clinical", "junction_quantification"),
-                         date="2016-01-28")
+                           cohort="BRCA",
+                           data=c("Clinical", "junction_quantification"),
+                           date="2016-01-28")
 
 # Select clinical and junction quantification dataset
 clinical <- data[[1]]$`Clinical data`
@@ -107,7 +107,8 @@ data <- loadLocalFiles(folder, ignore=ignore)
 
 # Select clinical and junction quantification dataset
 clinical <- data[[1]]$`Clinical data`
-junctionQuant <- data[[1]]$`Junction quantification (Illumina HiSeq)`
+metadata <- data[[1]]$`Sample metadata`
+junctionQuant <- data[[1]]$`Junction quantification`
 ```
 
 # Quantifying alternative splicing
