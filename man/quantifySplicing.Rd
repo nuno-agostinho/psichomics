@@ -6,7 +6,7 @@
 \usage{
 quantifySplicing(annotation, junctionQuant, eventType = c("SE", "MXE", "ALE",
   "AFE", "A3SS", "A5SS"), minReads = 10, progress = echoProgress,
-  filter = NULL)
+  genes = NULL)
 }
 \arguments{
 \item{annotation}{List of data frames: annotation for each alternative
@@ -21,7 +21,7 @@ number of reads below this threshold}
 
 \item{progress}{Function to track the progress}
 
-\item{filter}{Character: gene symbols for which the splicing quantification 
+\item{genes}{Character: gene symbols for which the splicing quantification 
 of associated splicing events is performed (by default, all splicing events 
 undergo splicing quantification)}
 }

@@ -1,10 +1,10 @@
-/* Avoids fixed-top navbar from obscuring content */
+/* Avoid fixed-top navbar from obscuring content */
 body { padding-top: 70px; }
 
-/* Adds a pointer to every link (even without href defined) */
+/* Add a pointer to every link (even without href defined) */
 a { cursor: pointer; }
 
-/* Hides shadows from well panels */
+/* Hide inset shadows from well panels */
 .well {
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
@@ -43,6 +43,13 @@ a { cursor: pointer; }
     font-size: 100%;
     color: gray;
     z-index: 1050;
+}
+
+/* Show shadows in the outer box of loading message */
+#loadmessage span {
+    -webkit-box-shadow: 0 0 10px 0 white;
+    -moz-box-shadow: 0 0 10px 0 white;
+    box-shadow: 0 0 10px 0 white;
 }
 
 /* Properly sets the loading message when the navbar is collapsed */
