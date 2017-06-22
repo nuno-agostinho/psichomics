@@ -4,12 +4,12 @@
 \alias{groupByAttribute}
 \title{User interface to group by attribute}
 \usage{
-groupByAttribute(ns, dataset, id, example)
+groupByAttribute(ns, cols, id, example)
 }
 \arguments{
 \item{ns}{Namespace function}
 
-\item{dataset}{Data frame: dataset of interest}
+\item{cols}{Character or list: name of columns to show}
 
 \item{id}{Character: identifier}
 
