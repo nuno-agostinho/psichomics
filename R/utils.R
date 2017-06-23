@@ -258,19 +258,19 @@ getPatientFromSample <- function(sampleId, patientId) {
         patientId <- rownames(patientId)
     
     # Extract patient identifiers from sample ID and then retrieve their index
-    extractPatientIndex <- function(pattern) {
-        clinicalRows <- gsub(pattern, "\\1", sampleId)
-        clinicalRows <- match(clinicalRows, patientId)
-        names(clinicalRows) <- sampleId
+    extractPatientIndex <- function(pattern, samples, patients) {
+        clinicalRows <- gsub(pattern, "\\1", samples)
+        clinicalRows <- match(clinicalRows, patients)
+        names(clinicalRows) <- samples
         return(clinicalRows)
     }
     
     if ( any(grepl("^TCGA", sampleId)) ) {
         # Retrieve TCGA patient index
-        extractPatientIndex("(TCGA-.*?-.*?)-.*")
+        extractPatientIndex("(TCGA-.*?-.*?)-.*", sampleId, patientId)
     } else if ( any(grepl("^GTEX", sampleId)) ) {
         # Retrieve GTEx patient index
-        extractPatientIndex("(GTEX-.*?)-.*")
+        extractPatientIndex("(GTEX-.*?)-.*", sampleId, patientId)
     } else {
         return(NULL)
     }
@@ -507,7 +507,7 @@ removeAlert <- function(output, alertId="alert") {
     output[[alertId]] <- renderUI(NULL)
 }
 
-#' Error alert in the style of a dialog box with a button
+#' Alert in the style of a dialog box with a button
 #' 
 #' @param id Character: identifier (NULL by default)
 #' @param description Character: description
@@ -515,28 +515,44 @@ removeAlert <- function(output, alertId="alert") {
 #' @param buttonLabel Character: button label (NULL by default)
 #' @param buttonIcon Character: button icon (NULL by default)
 #' @param ... Extra parameters when creating the alert
+#' @param type Character: type of alert (error or warning)
 #'
 #' @importFrom shiny icon div actionButton
 #'
 #' @return HTML elements
-errorDialog <- function(description, ..., buttonLabel=NULL, buttonIcon=NULL, 
-                        buttonId=NULL, id=NULL) {
+inlineDialog <- function(description, ..., buttonLabel=NULL, buttonIcon=NULL, 
+                         buttonId=NULL, id=NULL, type=c("error", "warning")) {
+    type <- match.arg(type)
+    if (identical(type, "error")) type <- "danger"
+    typeIcon <- switch(type, danger="exclamation-circle",
+                       warning="exclamation-triangle")
+    
     if (!is.null(buttonLabel)) {
         if (!is.null(buttonIcon))
             icon <- icon(buttonIcon)
         else
             icon <- NULL
-        button <- tagList(br(), br(),
-                          actionButton(buttonId, icon=icon, buttonLabel, 
-                                       class="btn-danger btn-block"))
+        
+        typeClass <- sprintf("btn-%s btn-block", type)
+        button <- tagList(br(), br(), actionButton(buttonId, icon=icon, 
+                                                   buttonLabel,
+                                                   class=typeClass))
     } else {
         button <- NULL
     }
     
-    div(id=id, class="alert alert-danger", role="alert",
-        style="margin-bottom: 0px;", icon("exclamation-circle"), description, 
-        button, ...)
+    typeClass <- sprintf("alert alert-%s", type)
+    div(id=id, class=typeClass, role="alert", style="margin-bottom: 0px;",
+        icon(typeIcon), description, button, ...)
 }
+
+#' @rdname inlineDialog
+errorDialog <- function(description, ...)
+    inlineDialog(description, ..., type="error")
+
+#' @rdname inlineDialog
+warningDialog <- function(description, ...)
+    inlineDialog(description, ..., type="warning")
 
 #' Sample variance by row
 #' 

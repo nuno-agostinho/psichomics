@@ -1,8 +1,10 @@
-# 1.2.2 (4 Jun, 2017)
+# 1.2.2 (23 Jun, 2017)
 
 * Update minimum version required of shiny (1.0.3)
-* Filter splicing events that occur within one or more genes of interest, if
-desired
+* Filter GTEx junction quantification based on tissues of interest (all tissues
+are loaded by default)
+* Quantify splicing based on splicing events that occur within a list of one or
+more genes (all splicing events are still quantified by default)
 * Parse sample information from TCGA samples using `parseTcgaSampleInfo`
 * Data grouping:
     * Add new set operations when grouping (such as complement, subtraction and
