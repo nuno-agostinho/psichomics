@@ -3,8 +3,8 @@ NULL
 
 # TODO(NunoA): increase allowed size and warn the user to wait for large files
 # Refuse files with size greater than the specified
-MB = 5000 # File size in MB
-options(shiny.maxRequestSize = MB * 1024^2)
+MB = 20 # File size in GB
+options(shiny.maxRequestSize = MB * 1024^5)
 
 # Sanitize errors
 options(shiny.sanitize.errors = TRUE)

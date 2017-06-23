@@ -561,6 +561,7 @@ processSurvival <- function(session, ...) {
 #' Test the survival difference between survival groups
 #' 
 #' @inheritParams survdiff.survTerms
+#' @inheritDotParams survival::survdiff -formula -data
 #' 
 #' @note Instead of raising errors, an NA is returned
 #' 
@@ -573,7 +574,7 @@ processSurvival <- function(session, ...) {
 #' timeStart  <- "event"
 #' event      <- "event"
 #' followup   <- "time"
-#' data$event  <- NA
+#' data$event <- NA
 #' data$event[aml$status == 1] <- aml$time[aml$status == 1]
 #' censoring  <- "right"
 #' formulaStr <- "x"

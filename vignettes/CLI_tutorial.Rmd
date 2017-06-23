@@ -91,14 +91,42 @@ files.
 clinical <- readRDS("BRCA_clinical.RDS")
 ```
 
-## Load local files
+## Load GTEx files
+
+First, GTEx data needs to be downloaded from the
+[GTEx Portal](http://gtexportal.org). Afterwards, load GTEx data (subject
+phenotype, sample attributes and junction quantification for given tissues) by
+following these commands:
+
+```{r load GTEx, eval=FALSE}
+subjectPhenotype <- "~/Desktop/GTEx_Data_V6_Annotations_SubjectPhenotypesDS.txt"
+sampleAttributes <- "~/Desktop/GTEx_Data_V6_Annotations_SampleAttributesDS.txt"
+junctionQuant    <- "~/Desktop/GTEx/GTEx_junction_reads.txt"
+
+# Check GTEx tissues available based on the sample attributes
+getGtexTissues(sampleAttributes)
+
+tissues <- c("blood", "brain")
+gtex <- loadGtexData(subjectPhenotype, sampleAttributes, junctionQuant, tissues)
+```
+
+If you desire to load junction quantification for all tissues, you can also do
+it using the following commands:
+
+```{r load all GTEx, eval=FALSE}
+tissues <- NULL
+gtex <- loadGtexData(subjectPhenotype, sampleAttributes, junctionQuant, tissues)
+```
+
+## Load unspecified local files
 
 To load local files instead, indicate the folder of interest. Any files located
 in this folder and sub-folders will be attempted to load. To avoid errors during
 this process, files of interest should be put in a dedicated folder.
 
-For instance, to load GTEx files, create a directory called **GTEx**, put all
-files of interest inside that folder and follow these commands:
+For instance, to load GTEx files in this way, create a directory called
+**GTEx**, put all files of interest inside that folder and follow these 
+commands:
 
 ```{r load local, eval=FALSE}
 folder <- "~/Downloads/GTEx/"
@@ -108,7 +136,7 @@ data <- loadLocalFiles(folder, ignore=ignore)
 # Select clinical and junction quantification dataset
 clinical <- data[[1]]$`Clinical data`
 metadata <- data[[1]]$`Sample metadata`
-junctionQuant <- data[[1]]$`Junction quantification`
+junctionQuant <- data[[1]]$`Junction quantification (Illumina HiSeq)`
 ```
 
 # Quantifying alternative splicing
