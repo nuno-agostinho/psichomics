@@ -83,7 +83,7 @@ survivalUI <- function(id) {
                     "psiCutoff"),
             hidden(sliderInput(ns("psiCutoff"), value=0.5, min=0, max=1,
                                step=0.01, "Splicing quantification cutoff")),
-            uiOutput(ns("optimalPsi"))),
+            uiOutput(ns("pvaluePlot"))),
         hr(),
         bsCollapse(open="KM options",
                    bsCollapsePanel(tagList(icon("sliders"),
@@ -412,7 +412,7 @@ survivalServer <- function(input, output, session) {
     })
     
     # Calculate optimal inclusion levels
-    output$optimalPsi <- renderUI({
+    output$pvaluePlot <- renderUI({
         clinical      <- getClinicalData()
         psi           <- getInclusionLevels()
         match         <- getClinicalMatchFrom("Inclusion levels")
@@ -459,18 +459,59 @@ survivalServer <- function(input, output, session) {
             })
             
             show("psiCutoff")
-            slider <- uiOutput(ns("thisPvalue"))
+            slider <- uiOutput(ns("cutoffPvalue"))
+            categories <- seq(0, 0.99, 0.01)
+            
+            survTime <- getAttributesTime(clinical, event, timeStart, timeStop)
+            pvalues <- lapply(
+                categories, testSurvivalCutoff, data=eventPSI,
+                clinical=clinical, censoring=censoring, timeStart=timeStart, 
+                timeStop=timeStop, event=event, survTime=survTime, 
+                session=session, survivalInfo=TRUE)
+            
+            patients     <- lapply(pvalues, function(n) attr(n, "info")$n)
+            noSeparation <- vapply(patients, length, numeric(1)) == 1
+            patients[noSeparation] <- NA
+            patients1 <- vapply(patients, "[[", 1, FUN.VALUE = numeric(1))
+            patients2 <- NA
+            patients2[!noSeparation] <- vapply(patients[!noSeparation], 
+                                               "[[", 2, FUN.VALUE = numeric(1))
+            
+            pvalues      <- -log10(unlist(pvalues))
+            significance <- -log10(0.05)
+            
+            data <- data.frame(x=categories, y=pvalues, 
+                               patients1=patients1, patients2=patients2)
+            data <- list_parse(data)
+            
+            label <- tags$label(class="control-label",
+                                "-log₁₀(p-value) plot by cutoff")
+            pvaluePlot <- highchart(height="100px") %>%
+                hc_add_series(data=data,
+                              zones=list(list(value=significance,
+                                              color="lightgray"))) %>%
+                hc_chart(zoomType="x") %>%
+                hc_xAxis(tickInterval=0.1, showLastLabel=TRUE, endOnTick=TRUE,
+                         min=0, max=1) %>%
+                hc_yAxis(crosshair=list(color="gray", width=1, 
+                                        dashStyle="shortdash"),
+                         labels=list(enabled=FALSE)) %>%
+                hc_legend(NULL) %>% 
+                hc_tooltip(formatter=JS(
+                    "function() { return getPvaluePlotTooltip(this); }")) %>%
+                hc_plotOptions(series=list(
+                    cursor="pointer",
+                    point=list(events=list(click=JS(
+                        "function () { setPSIcutoffSlider(this.x) }"))),
+                    marker=list(radius=2)))
             
             if (!is.na(opt$value) && opt$value < 1) {
-                return(tagList(
-                    slider, div(class="alert alert-success",
-                                tags$b("Optimal cutoff:"), round(opt$par, 5), 
-                                br(), tags$b("Minimal log-rank p-value:"),
-                            round(opt$value, 3))))
+                return(tagList(slider, label, pvaluePlot))
             } else {
                 return(tagList(
-                    slider, div(class="alert alert-warning", "No optimal",
-                                "cutoff was found for this splicing event.")))
+                    slider, label, pvaluePlot,
+                    div(class="alert alert-warning", "No adequate",
+                        "cutoff was found for this splicing event.")))
             }
         }
     })
@@ -496,24 +537,21 @@ survivalServer <- function(input, output, session) {
         clinicalPSI <- getPSIperPatient(psi, match, clinical)
         eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
         
-        # Assign a value based on the inclusion levels cutoff
-        groups <- labelBasedOnCutoff(eventPSI, psiCutoff, "Inclusion levels")
-        
-        survTerms <- processSurvTerms(clinical, censoring, event, timeStart,
-                                      timeStop, groups)
-        surv <- survfit(survTerms)
-        pvalue <- testSurvival(survTerms)
+        pvalue <- testSurvivalCutoff(
+            psiCutoff, data=eventPSI, clinical=clinical, censoring=censoring, 
+            timeStart=timeStart, timeStop=timeStop, event=event, 
+            session=session, survivalInfo = TRUE)
+        surv <- attr(pvalue, "info")
         
         patients <- NULL
         if (!is.na(pvalue) && pvalue < 1)
             patients <- paste0("(", surv$n[1], " vs ", surv$n[2], " patients)")
         
-        output$thisPvalue <- renderUI(
-            tagList(
-                div(style="text-align:right; font-size:small",
-                    tags$b("p-value of selected cutoff:"), round(pvalue, 3),
-                    patients),
-                tags$br()))
+        output$cutoffPvalue <- renderUI(
+            tagList(div(style="text-align:right; font-size:small",
+                        tags$b("p-value of selected cutoff:"), round(pvalue, 3),
+                        patients),
+                    tags$br()))
     })
 }
 

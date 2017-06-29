@@ -175,6 +175,38 @@ function createDiffSplicingLinks(row, data, index) {
     return row;
 }
 
+/**
+ * Update slider value for PSI cutoff
+ * 
+ * @param {Numeric} value Slider value
+ */
+function setPSIcutoffSlider(value) {
+    $("input[id*='psiCutoff']").data("ionRangeSlider").update({from: value});
+}
+
+/**
+ * Get tooltip for p-value plot in survival analysis
+ * 
+ * @param {Object} object Tooltip object
+ * 
+ * @return HTML object that renders the appropriate tooltip
+ */
+function getPvaluePlotTooltip(object) {
+    head = 'PSI cutoff: ' + object.point.x + '<br/>';
+    minuslog10pvalue = '-log₁₀(p-value): ' + object.point.y.toFixed(3) +
+        ' <span style=\"color:' + object.point.color + '\">' +
+        '\u25CF</span><br/>';
+    pvalue = 'p-value: ' + Math.pow(10, -object.point.y).toFixed(3) + "<br/>";
+    
+    patients = '';
+    if(object.point.patients2 !== null) {
+        patients = object.point.patients1 + ' vs ' + object.point.patients2 +
+            ' patients';
+    }
+    
+    return head + minuslog10pvalue + pvalue + patients;
+}
+
 /* Change document title to reflect whether the app is busy */
 setInterval(function() {
     document.title = ($('html').hasClass('shiny-busy')) ?

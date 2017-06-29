@@ -649,11 +649,12 @@ labelBasedOnCutoff <- function (data, cutoff, label=NULL, gte=TRUE) {
 #' @param filter Boolean or numeric: elements to use (all by default)
 #' @inheritDotParams processSurvTerms -group -clinical
 #' @param session Shiny session
+#' @param survivalInfo Boolean: return extra survival information
 #' 
 #' @importFrom survival survdiff
 #' @return p-value of the survival difference
 testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
-                               session=NULL) {
+                               session=NULL, survivalInfo=FALSE) {
     group <- labelBasedOnCutoff(data, cutoff, label="Inclusion levels")
     
     # Calculate survival curves
@@ -670,6 +671,7 @@ testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
     
     pvalue <- testSurvival(survTerms)
     if (is.na(pvalue)) pvalue <- 1
+    if (survivalInfo) attr(pvalue, "info") <- survfit(survTerms)
     return(pvalue)
 }
 
