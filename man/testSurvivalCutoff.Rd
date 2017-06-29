@@ -5,7 +5,7 @@
 \title{Test the survival difference between two survival groups given a cutoff}
 \usage{
 testSurvivalCutoff(cutoff, data, filter = TRUE, clinical, ...,
-  session = NULL)
+  session = NULL, survivalInfo = FALSE)
 }
 \arguments{
 \item{cutoff}{Numeric: Cutoff of interest}
@@ -37,6 +37,8 @@ interval}
 }}
 
 \item{session}{Shiny session}
+
+\item{survivalInfo}{Boolean: return extra survival information}
 }
 \value{
 p-value of the survival difference

@@ -44,6 +44,8 @@ more genes (all splicing events are still quantified by default)
     with more than one sample, the assigned sample is chosen based on the most
     frequent sample type across all patients (before, the first matched 
     non-normal or non-control samples were used)
+    - Add p-value plot to visually infer the significance of survival analyses
+    based on multiple alternative splicing cutoffs
 
 # 1.2.1 (24 Apr, 2017)
 
