@@ -111,7 +111,8 @@ inclusionLevelsInterface <- function(ns) {
                     sprintf("input[id='%s'] == '%s'", ns("filter"), "select"),
                     div(id=ns("geneOptionsLoading"), class="progress",
                         div(class="progress-bar progress-bar-striped active",
-                            role="progressbar", style="width:100%", "Loading")),
+                            role="progressbar", style="width:100%",
+                            "Loading genes from annotation")),
                     hidden(div(id=ns("geneOptions"),
                         filterGenesSelectize,
                         div(id=ns("geneLoadingIcon"),
@@ -187,16 +188,18 @@ quantifySplicing <- function(annotation, junctionQuant,
                              minReads=10, progress=echoProgress, genes=NULL) {
     if (!is.null(genes)) {
         # Filter for given gene symbols
-        genes <- unique(genes)
-        annotation <- lapply(annotation, function(df) {
+        filterByGenes <- function(df, genes) {
             # Check which genes are desired by unlisting them all (register the 
             # respective event's index for each gene)
-            genes      <- df$Gene
-            valid      <- as.vector(unlist(genes)) %fin% genes
-            eventGenes <- vapply(genes, length, numeric(1), USE.NAMES=FALSE)
-            eventIndex <- rep(seq(genes), eventGenes)
+            allGenes   <- df$Gene
+            valid      <- as.vector(unlist(allGenes)) %fin% genes
+            eventGenes <- vapply(allGenes, length, numeric(1), USE.NAMES=FALSE)
+            eventIndex <- rep(seq(allGenes), eventGenes)
             return(df[unique(eventIndex[valid]), ])
-        })
+        }
+        
+        genes <- unique(genes)
+        annotation <- lapply(annotation, filterByGenes, genes)
     }
     
     psi <- NULL
