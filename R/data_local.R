@@ -12,10 +12,8 @@ localDataUI <- function(id, panel) {
     
     addLocalFile <- tagList(
         uiOutput(ns("localDataModal")),
-        uiOutput(ns("pathSuggestions")),
-        textAreaInput(ns("localFolder"), "Folder where data is stored",
-                      value=getDownloadsFolder(), 
-                      placeholder="Insert local folder"),
+        fileBrowserInput(ns("localFolder"), "Folder where data is stored",
+                         placeholder="No folder selected"),
         textInput(ns("localCategory"), label="Data category name"),
         selectizeInput(ns("localIgnore"), "Files/directories to ignore",
                        choices=getFirebrowseDataTypes(),
@@ -120,24 +118,7 @@ localDataServer <- function(input, output, session) {
     
     # # The button is only enabled if it meets the conditions that follow
     # observe(toggleState("acceptFile", input$species != ""))
-    
-    # Update available clinical data attributes to use in a formula
-    output$pathSuggestions <- renderUI({
-        checkInside <- function(path, showFiles=FALSE) {
-            if (substr(path, nchar(path), nchar(path)) == "/") {
-                content <- list.files(path, full.names=TRUE)
-            } else {
-                content <- list.files(dirname(path), full.names=TRUE)
-            }
-            
-            # Show only directories if showFiles is FALSE
-            if (!showFiles) content <- content[dir.exists(content)]
-            return(basename(content))
-        }
-        
-        textSuggestions(ns("localFolder"), checkInside(input$localFolder),
-                        char=.Platform$file.sep)
-    })
+    prepareFileBrowser(session, input, "localFolder", directory=TRUE)
     
     # If data is loaded, let user replace or append to loaded data
     observeEvent(input$acceptFile, {
@@ -179,7 +160,8 @@ localDataServer <- function(input, output, session) {
     # Update category name input based on given folder
     observe({
         folder <- input$localFolder
-        updateTextInput(session, "localCategory", value=basename(folder))
+        if (!is.null(folder))
+            updateTextInput(session, "localCategory", value=basename(folder))
     })
 }
 

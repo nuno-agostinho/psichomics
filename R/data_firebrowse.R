@@ -571,7 +571,6 @@ addTCGAdata <- function(ns) {
     
     tagList(
         uiOutput(ns("firebrowseDataModal")),
-        uiOutput(ns("pathSuggestions")),
         uiOutput(ns("iframeDownload")),
         selectizeInput(ns("firebrowseCohort"), "Tumour type", acronyms,
                        multiple = TRUE, options = list(
@@ -586,9 +585,9 @@ addTCGAdata <- function(ns) {
                        options = list(
                            placeholder = "Select data types",
                            plugins=list("remove_button"))),
-        textAreaInput(ns("dataFolder"), "Folder to store the data",
-                      value = getDownloadsFolder(),
-                      placeholder = "Insert data folder"),
+        fileBrowserInput(ns("dataFolder"), "Folder to store the data",
+                         value=getDownloadsFolder(),
+                         placeholder="No folder selected"),
         bsTooltip(ns("dataFolder"), placement = "right",
                   options = list(container = "body"),
                   "Data not available in this folder will be downloaded."),
@@ -710,6 +709,8 @@ setFirebrowseData <- function(input, output, session, replace=TRUE) {
 firebrowseServer <- function(input, output, session, active) {
     ns <- session$ns
     
+    prepareFileBrowser(session, input, "dataFolder", directory=TRUE)
+    
     # If Firebrowse is unaccessible, allow user to try again
     output$checkFirebrowse <- renderUI(isolate(checkFirebrowse(ns)))
     observeEvent(input$refreshFirebrowse,
@@ -717,23 +718,6 @@ firebrowseServer <- function(input, output, session, active) {
     
     # # The button is only enabled if it meets the conditions that follow
     # observe(toggleState("acceptFile", input$species != ""))
-    
-    # Update available clinical data attributes to use in a formula
-    output$pathSuggestions <- renderUI({
-        checkInside <- function(path, showFiles=FALSE) {
-            if (substr(path, nchar(path), nchar(path)) == "/")
-                content <- list.files(path, full.names = TRUE)
-            else
-                content <- list.files(dirname(path), full.names = TRUE)
-            
-            # Show only directories if showFiles is FALSE
-            if (!showFiles) content <- content[dir.exists(content)]
-            return(basename(content))
-        }
-        
-        textSuggestions(ns("dataFolder"), checkInside(input$dataFolder),
-                        char=.Platform$file.sep)
-    })
     
     # Check if data is already loaded and ask the user if it should be replaced
     observeEvent(input$getFirebrowseData, {

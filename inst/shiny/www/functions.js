@@ -229,3 +229,40 @@ $.fn.extend({
             });
     }
 });
+
+(function() {
+ /* Shiny Registration */
+    var fileBrowserInputBinding = new Shiny.InputBinding();
+    $.extend(fileBrowserInputBinding, {
+        find: function(scope) {
+            return( $(scope).find(".fileBrowser-input") );
+        },
+        getId: function(el) { return($(el).attr('id')); },
+        getValue: function(el) {
+ return($(el).data('val') || 0); },
+        setValue: function(el, value) { $(el).data('val', value); },
+        receiveMessage: function(el, data) {
+            // This is used for receiving messages that tell the input object to do
+            // things, such as setting values (including min, max, and others).
+            var $widget = $(el).parentsUntil('.fileBrowser-input-container')
+                .parent();
+            var $path = $widget.find('input.fileBrowser-input-chosen-dir');
+
+            if (data.path) {                $path.val(data.path);
+                $path.trigger('change');
+            }
+        },
+        subscribe: function(el, callback) {
+            $(el).on("click.fileBrowserInputBinding", function(e) {
+                var $el = $(this);
+                var val = $el.data('val') || 0;
+                $el.data('val', val + 1);
+                callback();
+            });
+        },
+        unsubscribe: function(el) { $(el).off(".fileBrowserInputBinding"); }
+    });
+    Shiny.inputBindings
+        .register(fileBrowserInputBinding,
+            "oddhypothesis.fileBrowsernputBinding");
+})();

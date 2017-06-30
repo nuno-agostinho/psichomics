@@ -17,12 +17,18 @@ gtexDataUI <- function(id, panel) {
           helpText("Please, download files from the",
                    a(href="http://www.gtexportal.org", target="_blank",
                      "GTEx Data Portal"), "and load them here."),
-          fileInput(ns("inputSampleInfo"),
-                    "Choose file with GTEx sample attributes (TXT file)"),
-          fileInput(ns("inputSubjectInfo"),
-                    "Choose file with GTEx subject phenotypes (TXT file)"),
-          fileInput(ns("inputJunctionQuant"), 
-                    "Choose file with GTEx junction read counts"),
+          fileBrowserInput(
+              ns("sampleInfo"),
+              "Choose file with GTEx sample attributes (TXT file)",
+              placeholder="No file selected"),
+          fileBrowserInput(
+              ns("subjectInfo"),
+              "Choose file with GTEx subject phenotypes (TXT file)",
+              placeholder="No file selected"),
+          fileBrowserInput(
+              ns("junctionQuant"), 
+              "Choose file with GTEx junction read counts",
+              placeholder="No file selected"),
           bsCollapse(id=ns("filterCollapse"),
               bsCollapsePanel(
                   title=tagList(icon("filter"), "Filter tissue(s) to load"), 
@@ -194,25 +200,43 @@ loadGtexData <- function(clinical=NULL, sampleMetadata=NULL, junctionQuant=NULL,
 
 #' Shiny wrapper to load GTEx data
 #' 
+#' @param session Shiny session
 #' @param input Shiny input
 #' @param replace Boolean: replace loaded data? TRUE by default
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
-loadGtexDataShiny <- function(input, replace=TRUE) {
+loadGtexDataShiny <- function(session, input, replace=TRUE) {
     tissue <- input$tissues
     
-    time <- startProcess("load")
-    data <- loadGtexData(clinical=input$inputSubjectInfo,
-                         sampleMetadata=input$inputSampleInfo,
-                         junctionQuant=input$inputJunctionQuant,
-                         tissue=tissue, progress=updateProgress)
+    subjectInfo <- input$subjectInfo
+    if (is.null(subjectInfo) || identical(subjectInfo, "")) 
+        subjectInfo <- NULL
     
-    if (!is.null(data)) {
-        if (!replace) data <- c(getData(), data)
-        data <- processDatasetNames(data)
-        setData(data)
+    sampleInfo <- input$sampleInfo
+    if (is.null(sampleInfo) || identical(sampleInfo, "")) 
+        sampleInfo <- NULL
+    
+    junctionQuant <- input$junctionQuant
+    if (is.null(junctionQuant) || identical(junctionQuant, ""))
+        junctionQuant <- NULL
+    
+    if (any(!is.null(c(subjectInfo, sampleInfo, junctionQuant)))) {
+        time <- startProcess("load")
+        data <- loadGtexData(clinical=subjectInfo,
+                             sampleMetadata=sampleInfo,
+                             junctionQuant=junctionQuant,
+                             tissue=tissue, progress=updateProgress)
+        
+        if (!is.null(data)) {
+            if (!replace) data <- c(getData(), data)
+            data <- processDatasetNames(data)
+            setData(data)
+        }
+        endProcess("load", time)
+    } else {
+        errorModal(session, "No file provided",
+                   "Please input at least one GTEx file.", modalId="modal")
     }
-    endProcess("load", time)
 }
 
 #' Server logic to load GTEx data
@@ -227,16 +251,20 @@ loadGtexDataShiny <- function(input, replace=TRUE) {
 gtexDataServer <- function(input, output, session) {
     ns <- session$ns
     
+    prepareFileBrowser(session, input, "sampleInfo")
+    prepareFileBrowser(session, input, "subjectInfo")
+    prepareFileBrowser(session, input, "junctionQuant")
+    
     observeEvent(input$load, {
         if (!is.null(getData()))
             loadedDataModal(session, "modal", "replace", "append")
         else
-            loadGtexDataShiny(input)
+            loadGtexDataShiny(session, input)
     })
     
     # Select available tissues from GTEx
     showAvailableTissues <- reactive({
-        sampleMetadata <- input$inputSampleInfo
+        sampleMetadata <- input$sampleInfo
         progressBar    <- "loadingAvailableTissues"
         tissueSelect   <- "tissues"
         alert          <- "missingData"
@@ -246,7 +274,7 @@ gtexDataServer <- function(input, output, session) {
         fadeOut <- function(id, ...) hide(id, anim=TRUE, ...)
         
         fadeOut(progressBar)
-        if (!is.null(sampleMetadata)) {
+        if (!is.null(sampleMetadata) && !identical(sampleMetadata, "")) {
             fadeOut(tissueSelect)
             
             tissues <- tryCatch(getGtexTissues(sampleMetadata), error=return,
@@ -279,8 +307,8 @@ gtexDataServer <- function(input, output, session) {
     })
     
     # Replace or append data to existing data
-    observeEvent(input$replace, loadGtexDataShiny(input, replace=TRUE))
-    observeEvent(input$append,  loadGtexDataShiny(input, replace=FALSE))
+    observeEvent(input$replace, loadGtexDataShiny(session, input, replace=TRUE))
+    observeEvent(input$append, loadGtexDataShiny(session, input, replace=FALSE))
 }
 
 attr(gtexDataUI, "loader") <- "data"
