@@ -171,7 +171,7 @@ appUI <- function() {
                              icon("flask", "fa-spin"), "Working...")))))
     
     nav <- do.call(navbarPage, c(
-        list(title="PS\u03A8chomics", id="nav", collapsible=TRUE, 
+        list(title="psichomics", id="nav", collapsible=TRUE, 
              header=header, position="fixed-top", footer=useShinyjs()),
         uiList))
 
@@ -207,10 +207,12 @@ browserHistory <- function(navId, input, session) {
     # Update browser history when user changes the active tab
     observeEvent(input[[navId]], {
         autoNav <- getAutoNavigation()
-        if (isTRUE(autoNav))
+        if (isTRUE(autoNav)) {
             setAutoNavigation(FALSE)
-        else
-            runjs(paste0("updateHistory({page: '", input[[navId]], "'})"))
+        } else {
+            # Update browser history
+            runjs(paste0("updateHistory({ page: '", input[[navId]], "'})"))
+        }
     })
     
     # Navigate to a tab according to a given query string
@@ -224,15 +226,6 @@ browserHistory <- function(navId, input, session) {
     
     # Navigate tabs while browsing history
     observeEvent(input$appLocation, { restorePage(input$appLocation) })
-    
-    # When the app starts, restore previous history (if available)
-    observeEvent(session$clientData$url_search, {
-        if (nchar(session$clientData$url_search) > 1) {
-            # input[[navId]] is triggered but do not take the user anywhere
-            setAutoNavigation(TRUE)
-            restorePage(session$clientData$url_search)
-        }
-    })
 }
 
 #' Server function

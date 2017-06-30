@@ -17,7 +17,7 @@ shinyjs.init = function() {
  * Inspired by code available at
  * https://github.com/daattali/advanced-shiny/blob/master/navigate-history
  */
-updateHistory = function(params) {
+function updateHistory(params) {
     var queryString = [];
     for (var key in params) {
         queryString.push(encodeURIComponent(key) + '=' + 
@@ -25,7 +25,7 @@ updateHistory = function(params) {
     }
     queryString = '?' + queryString.join('&');
     history.pushState(null, null, queryString);
-};
+}
 
 /**
  * Change active tab to the Data panel and collapse data panels
@@ -210,7 +210,7 @@ function getPvaluePlotTooltip(object) {
 /* Change document title to reflect whether the app is busy */
 setInterval(function() {
     document.title = ($('html').hasClass('shiny-busy')) ?
-        '[R] PSΨchomics' : 'PSΨchomics';
+        '🤔 psichomics' : 'psichomics';
     }, 500);
 
 $.fn.extend({
