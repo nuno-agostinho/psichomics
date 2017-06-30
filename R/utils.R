@@ -1079,3 +1079,178 @@ setOperationIcon <- function (name, class=NULL, ...) {
         c(href="set-operations"), stylesheet = "css/set-operations.css")
     return(iconTag)
 }
+
+#' Interactive folder selection using a native dialog
+#'
+#' @param default Character: path to initial folder
+#' @param caption Character: caption on the selection dialog
+#' @param multiple Boolean: allow to select multiple files?
+#' @param directory Boolean: allow to select directories instead of files?
+#' @param system Character: system name
+#'
+#' @details
+#' For macOS, it uses an Apple Script to display a folder selection dialog. With
+#' \code{default = NA}, the initial folder selection is determined by default
+#' behavior of the "choose folder" Apple Script command.  Otherwise, paths are
+#' expanded with \link{path.expand}.
+#'
+#' In Windows, it uses either `utils::choose.files` or `utils::choose.dir`.
+#'
+#' @source Original code by wleepang:
+#' https://github.com/wleepang/shiny-directory-input
+#'
+#' @return A length one character vector, character NA if 'Cancel' was selected.
+fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
+                        directory=FALSE, system=Sys.info()['sysname']) {
+    if (system == 'Darwin') {
+        directory <- ifelse(directory, "folder", "file")
+        multiple  <- ifelse(multiple, "with multiple selections allowed", "")
+        
+        if (!is.null(caption) && nzchar(caption)) {
+            prompt <- sprintf("with prompt \\\"%s\\\"", caption)
+        } else {
+            prompt <- ""
+        }
+        
+        # Default location
+        if (!is.null(default) && nzchar(default)) {
+            default <- sprintf("default location \\\"%s\\\"",
+                               path.expand(default))
+        } else {
+            default <- ""
+        }
+        
+        args <- '-e "POSIX path of (choose %s %s %s %s)"'
+        args <- sprintf(args, directory, multiple, prompt, default)
+        
+        suppressWarnings({
+            path <- system2("osascript", args=args, stderr=TRUE)
+        })
+        
+        # Return NA if user cancels the action
+        if (!is.null(attr(path, "status")) && attr(path, "status")) {
+            # user canceled
+            return(NA)
+        }
+    } else if (system == 'Linux') {
+        directory <- ifelse(directory, "--directory", "")
+        multiple  <- ifelse(multiple, "--multiple", "")
+        
+        if (!is.null(caption) && nzchar(caption)) {
+            prompt <- sprintf("--title='%s'", caption)
+        } else {
+            prompt <- ""
+        }
+        
+        args <- " --file-selection %s %s %s"
+        args <- sprintf(args, directory, multiple, prompt)
+        
+        suppressWarnings({
+            path <- system2("zenity", args=args, stderr=TRUE)
+        })
+        
+        # Return NA if user cancels the action
+        if (!is.null(attr(path, "status")) && attr(path, "status")) {
+            return(NA) # Cancelled by user
+        }
+        # Error: Gtk-Message: GtkDialog mapped without a transient parent
+        if(length(path) == 2) path <- path[2]
+    } else if (system == "Windows") {
+        if (is.null(default)) default <- ""
+        if (is.null(caption)) caption <- ""
+        
+        if (directory)
+            path <- utils::choose.dir(default, caption)
+        else
+            path <- utils::choose.files(default, caption, multiple)
+    }
+    
+    if (identical(path, "")) path <- NULL
+    return(path)
+}
+
+#' File browser input
+#'
+#' Input to interactively select a file or directory on the server
+#'
+#' @param id Character: input identifier
+#' @param label Character: input label (NULL to show no label)
+#' @param value Character: initial value (paths are expanded via
+#' \code{\link{path.expand}})
+#' @param placeholder Character: placeholder when no file or folder is selected
+#'
+#' @details
+#' This widget relies on \link{\code{fileBrowser}} to present an interactive
+#' dialog to users for selecting a directory on the local filesystem. Therefore,
+#' this widget is intended for shiny apps that are run locally - i.e. on the
+#' same system that files/directories are to be accessed - and not from hosted
+#' applications (e.g. from shinyapps.io).
+#'
+#' @source Original code by wleepang:
+#' https://github.com/wleepang/shiny-directory-input
+#'
+#' @return
+#' A file browser input control that can be added to a UI definition.
+#'
+#' @seealso
+#' \link{updateFileBrowserInput}, \link{prepareFileBrowser},
+#' \link[utils]{choose.dir}
+fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL) {
+    if (!is.null(value) && !is.na(value)) value <- path.expand(value)
+    if (is.null(placeholder)) placeholder <- ""
+    
+    tagList(
+        div(class='form-group fileBrowser-input-container',
+            shiny:::`%AND%`(label, tags$label(label)),
+            div(class='input-group shiny-input-container', style='width:100%;',
+                div(class="input-group-btn",
+                    div(class="btn btn-default fileBrowser-input",
+                        id=sprintf("%sButton", id), 'Browse...')),
+                tags$input(
+                    id=id, value=value, type='text', readonly='readonly',
+                    placeholder=placeholder,
+                    class='form-control fileBrowser-input-chosen-dir'))))
+}
+
+#' Change the value of a fileBrowserInput on the client
+#'
+#' @param session Shiny session
+#' @param id Character: input identifier
+#' @param value Character: file or directory path
+#' @param ... Additional arguments passed to \link{\code{fileBrowser}}. Only
+#' used if \code{value} is \code{NULL}.
+#'
+#' @details
+#' Sends a message to the client, telling it to change the value of the input
+#' object. For \code{fileBrowserInput} objects, this changes the value displayed
+#' in the text-field and triggers a client-side change event. A directory
+#' selection dialog is not displayed.
+#'
+#' @source Original code by wleepang:
+#' https://github.com/wleepang/shiny-directory-input
+#'
+#' @return NULL (this function is used to modify the Shiny session's state)
+updateFileBrowserInput <- function(session, id, ..., value=NULL) {
+    if (is.null(value)) value <- fileBrowser(...)
+    
+    button <- sprintf("%sButton", id)
+    session$sendInputMessage(button, list(path=value))
+}
+
+#' Prepare file browser dialog and update the input's value accordingly to
+#' selected file or directory
+#'
+#' @param session Shiny session
+#' @param input Shiny input
+#' @param id Character: input identifier
+#' @inheritDotParams fileBrowser
+#'
+#' @return NULL (this function is used to modify the Shiny session's state)
+prepareFileBrowser <- function(session, input, id, ...) {
+    buttonId <- sprintf("%sButton", id)
+    observeEvent(input[[buttonId]], {
+        if (input[[buttonId]] > 0) { # Prevent execution on initial launch
+            updateFileBrowserInput(session, id, ...)
+        }
+    })
+}

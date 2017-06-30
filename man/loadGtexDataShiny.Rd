@@ -4,9 +4,11 @@
 \alias{loadGtexDataShiny}
 \title{Shiny wrapper to load GTEx data}
 \usage{
-loadGtexDataShiny(input, replace = TRUE)
+loadGtexDataShiny(session, input, replace = TRUE)
 }
 \arguments{
+\item{session}{Shiny session}
+
 \item{input}{Shiny input}
 
 \item{replace}{Boolean: replace loaded data? TRUE by default}
