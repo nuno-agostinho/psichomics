@@ -6,6 +6,7 @@ are loaded by default)
 * Quantify splicing based on splicing events that occur within a list of one or
 more genes (all splicing events are still quantified by default)
 * Parse sample information from TCGA samples using `parseTcgaSampleInfo`
+* Fix inconsistent browser history navigation
 * Data grouping:
     * Add new set operations when grouping (such as complement, subtraction and
     symmetric difference)
@@ -45,7 +46,7 @@ more genes (all splicing events are still quantified by default)
     frequent sample type across all patients (before, the first matched 
     non-normal or non-control samples were used)
     - Add p-value plot to visually infer the significance of survival analyses
-    based on multiple alternative splicing cutoffs
+    based on multiple alternative splicing quantification cutoffs
 
 # 1.2.1 (24 Apr, 2017)
 
