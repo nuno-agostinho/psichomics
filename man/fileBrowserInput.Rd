@@ -5,7 +5,7 @@
 \title{File browser input}
 \source{
 Original code by wleepang:
-https://github.com/wleepang/shiny-directory-input
+\url{https://github.com/wleepang/shiny-directory-input}
 }
 \usage{
 fileBrowserInput(id, label, value = NULL, placeholder = NULL)
@@ -27,13 +27,12 @@ A file browser input control that can be added to a UI definition.
 Input to interactively select a file or directory on the server
 }
 \details{
-This widget relies on \link{\code{fileBrowser}} to present an interactive
+This widget relies on \code{\link{fileBrowser}} to present an interactive
 dialog to users for selecting a directory on the local filesystem. Therefore,
 this widget is intended for shiny apps that are run locally - i.e. on the
 same system that files/directories are to be accessed - and not from hosted
 applications (e.g. from shinyapps.io).
 }
 \seealso{
-\link{updateFileBrowserInput}, \link{prepareFileBrowser},
-\link[utils]{choose.dir}
+\link{updateFileBrowserInput} and \link{prepareFileBrowser}
 }

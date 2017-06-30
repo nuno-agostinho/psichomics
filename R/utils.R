@@ -1097,7 +1097,7 @@ setOperationIcon <- function (name, class=NULL, ...) {
 #' In Windows, it uses either `utils::choose.files` or `utils::choose.dir`.
 #'
 #' @source Original code by wleepang:
-#' https://github.com/wleepang/shiny-directory-input
+#' \url{https://github.com/wleepang/shiny-directory-input}
 #'
 #' @return A length one character vector, character NA if 'Cancel' was selected.
 fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
@@ -1180,28 +1180,35 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
 #' @param placeholder Character: placeholder when no file or folder is selected
 #'
 #' @details
-#' This widget relies on \link{\code{fileBrowser}} to present an interactive
+#' This widget relies on \code{\link{fileBrowser}} to present an interactive
 #' dialog to users for selecting a directory on the local filesystem. Therefore,
 #' this widget is intended for shiny apps that are run locally - i.e. on the
 #' same system that files/directories are to be accessed - and not from hosted
 #' applications (e.g. from shinyapps.io).
 #'
 #' @source Original code by wleepang:
-#' https://github.com/wleepang/shiny-directory-input
+#' \url{https://github.com/wleepang/shiny-directory-input}
 #'
 #' @return
 #' A file browser input control that can be added to a UI definition.
 #'
 #' @seealso
-#' \link{updateFileBrowserInput}, \link{prepareFileBrowser},
-#' \link[utils]{choose.dir}
+#' \link{updateFileBrowserInput} and \link{prepareFileBrowser}
 fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL) {
     if (!is.null(value) && !is.na(value)) value <- path.expand(value)
     if (is.null(placeholder)) placeholder <- ""
     
+    check <- function (x, y) {
+        # Based on shiny:::`%AND%`
+        if (!is.null(x) && !is.na(x)) 
+            if (!is.null(y) && !is.na(y)) 
+                return(y)
+        return(NULL)
+    }
+    
     tagList(
         div(class='form-group fileBrowser-input-container',
-            shiny:::`%AND%`(label, tags$label(label)),
+            check(label, tags$label(label)),
             div(class='input-group shiny-input-container', style='width:100%;',
                 div(class="input-group-btn",
                     div(class="btn btn-default fileBrowser-input",
@@ -1217,7 +1224,7 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL) {
 #' @param session Shiny session
 #' @param id Character: input identifier
 #' @param value Character: file or directory path
-#' @param ... Additional arguments passed to \link{\code{fileBrowser}}. Only
+#' @param ... Additional arguments passed to \code{\link{fileBrowser}}. Only
 #' used if \code{value} is \code{NULL}.
 #'
 #' @details
@@ -1227,7 +1234,7 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL) {
 #' selection dialog is not displayed.
 #'
 #' @source Original code by wleepang:
-#' https://github.com/wleepang/shiny-directory-input
+#' \url{https://github.com/wleepang/shiny-directory-input}
 #'
 #' @return NULL (this function is used to modify the Shiny session's state)
 updateFileBrowserInput <- function(session, id, ..., value=NULL) {

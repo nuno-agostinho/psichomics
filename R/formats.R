@@ -39,8 +39,7 @@ checkFileFormat <- function(format, head, filename) {
 #' 
 #' @inheritParams checkFileFormat
 #' @param file Character: file to load
-#' @inheritDotParams data.table::fread -input -sep -header -stringsAsFactors 
-#' -data.table -skip
+#' @param ... Extra parameters passed to \link[data.table]{fread}
 #' 
 #' @details The resulting data frame includes the attribute "tablename" with the
 #' name of the data frame
@@ -155,8 +154,7 @@ loadFileFormats <- function() {
 #' 
 #' @param file Character: file to parse
 #' @param formats List of file formats to check
-#' @inheritDotParams data.table::fread -input -sep -header -stringsAsFactors 
-#' -data.table -skip
+#' @param ... Extra parameters passed to \link[data.table]{fread}
 #' 
 #' @details The resulting data frame includes the attribute "tablename" with the
 #' name of the data frame
