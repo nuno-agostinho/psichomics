@@ -109,7 +109,7 @@ firebrowseMergeClinicalFormat <- function() {
                 smk[smk == 1] <- "Lifelong Non-Smoker"
                 smk[smk == 2] <- "Current Smoker"
                 smk[smk == 3] <- "Reformed Smoker for > 15 years"
-                smk[smk == 4] <- "Reformed Smoker for ≤ 15 years"
+                smk[smk == 4] <- "Reformed Smoker for <= 15 years"
                 smk[smk == 5] <- "Reformed Smoker, Unspecified Duration"
                 smk[smk == 6] <- "Smoker at Diagnosis"
                 smk[smk == 7] <- "Smoking history not documented"

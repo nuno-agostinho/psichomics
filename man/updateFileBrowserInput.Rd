@@ -5,7 +5,7 @@
 \title{Change the value of a fileBrowserInput on the client}
 \source{
 Original code by wleepang:
-https://github.com/wleepang/shiny-directory-input
+\url{https://github.com/wleepang/shiny-directory-input}
 }
 \usage{
 updateFileBrowserInput(session, id, ..., value = NULL)
@@ -15,7 +15,7 @@ updateFileBrowserInput(session, id, ..., value = NULL)
 
 \item{id}{Character: input identifier}
 
-\item{...}{Additional arguments passed to \link{\code{fileBrowser}}. Only
+\item{...}{Additional arguments passed to \code{\link{fileBrowser}}. Only
 used if \code{value} is \code{NULL}.}
 
 \item{value}{Character: file or directory path}

@@ -5,7 +5,7 @@
 \title{Interactive folder selection using a native dialog}
 \source{
 Original code by wleepang:
-https://github.com/wleepang/shiny-directory-input
+\url{https://github.com/wleepang/shiny-directory-input}
 }
 \usage{
 fileBrowser(default = NULL, caption = NULL, multiple = FALSE,

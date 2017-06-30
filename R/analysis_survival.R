@@ -485,7 +485,7 @@ survivalServer <- function(input, output, session) {
             data <- list_parse(data)
             
             label <- tags$label(class="control-label",
-                                "-log₁₀(p-value) plot by cutoff")
+                                "-log\u2081\u2080(p-value) plot by cutoff")
             pvaluePlot <- highchart(height="100px") %>%
                 hc_add_series(data=data,
                               zones=list(list(value=significance,
