@@ -240,29 +240,37 @@ endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
         message("Process finished in ", format(Sys.time() - time))
 }
 
-#' Match given sample identifiers and return the respective row in clinical data
+#' Get patients from given samples
 #'
 #' @param sampleId Character: sample identifiers
-#' @param patientId Character: clinical patient identifiers (if a matrix or data
-#' frame is given, its rownames will be retrieved as patient identifiers)
+#' @param patientId Character: patient identifiers to filter by (optional; if a
+#' matrix or data frame is given, its rownames will be used to infer the patient
+#' identifiers)
 #'
-#' @return Integer vector of the row number in clinical data corresponding to 
-#' the given IDs (named with the ID)
+#' @return Character: patient identifiers corresponding to the given samples
+#' 
 #' @export
-#' @examples 
-#' patients <- c("GTEX-ABC", "GTEX-DEF", "GTEX-GHI", "GTEX-JKL", "GTEX-MNO")
-#' samples <- paste0(patients, "-sample")
+#' @examples
+#' samples <- paste0("GTEX-", c("ABC", "DEF", "GHI", "JKL", "MNO"), "-sample")
+#' getPatientFromSample(samples)
+#' 
+#' # Filter returned samples based on available patients
+#' patients <- paste0("GTEX-", c("DEF", "MNO"))
 #' getPatientFromSample(samples, patients)
-getPatientFromSample <- function(sampleId, patientId) {
-    if (is.matrix(patientId) || is.data.frame(patientId))
+getPatientFromSample <- function(sampleId, patientId=NULL) {
+    if (!is.null(patientId) && 
+        (is.matrix(patientId) || is.data.frame(patientId))) {
         patientId <- rownames(patientId)
+    }
     
     # Extract patient identifiers from sample ID and then retrieve their index
-    extractPatientIndex <- function(pattern, samples, patients) {
-        clinicalRows <- gsub(pattern, "\\1", samples)
-        clinicalRows <- match(clinicalRows, patients)
-        names(clinicalRows) <- samples
-        return(clinicalRows)
+    extractPatientIndex <- function(pattern, samples, allPatients) {
+        patient <- gsub(pattern, "\\1", samples)
+        names(patient) <- samples
+        
+        # Filter by patients of interest
+        if (!is.null(allPatients)) patient <- patient[patient %in% allPatients]
+        return(patient)
     }
     
     if ( any(grepl("^TCGA", sampleId)) ) {
@@ -276,12 +284,11 @@ getPatientFromSample <- function(sampleId, patientId) {
     }
 }
 
-#' Search samples in the clinical dataset and return the ones matching the given
-#' index
+#' Get samples matching the given patients
 #' 
 #' @inheritParams getPatientFromSample
-#' @param index Numeric or list of numeric: patient row indexes
-#' @param samples Character: samples
+#' @param patients Character or list of characters: patient identifiers
+#' @param samples Character: sample identifiers
 #' @param clinical Data frame or matrix: clinical dataset
 #' @param rm.NA Boolean: remove NAs? TRUE by default
 #' @param match Integer: vector of patient index with the sample identifiers as
@@ -289,8 +296,8 @@ getPatientFromSample <- function(sampleId, patientId) {
 #' @param showMatch Boolean: show matching patient index? FALSE by default
 #' 
 #' @return Names of the matching samples (if \code{showMatch} is \code{TRUE},
-#' a integer vector with the patient index and the matching samples as names is
-#' shown)
+#' a character with the patients as values and their respective samples as names
+#' is returned)
 #' @export
 #' 
 #' @examples 
@@ -298,21 +305,21 @@ getPatientFromSample <- function(sampleId, patientId) {
 #' samples <- paste0(patients, "-sample")
 #' clinical <- data.frame(samples=samples)
 #' rownames(clinical) <- patients
-#' getMatchingSamples(c(1, 4), samples, clinical)
-getMatchingSamples <- function(index, samples, clinical, rm.NA=TRUE,
+#' getMatchingSamples(patients[c(1, 4)], samples, clinical)
+getMatchingSamples <- function(patients, samples, clinical, rm.NA=TRUE,
                                match=NULL, showMatch=FALSE) {
     if (is.null(match))
         match <- getPatientFromSample(samples, clinical)
     
-    if (is.list(index)) {
-        samples <- lapply(index, function(i) {
+    if (is.list(patients)) {
+        samples <- lapply(patients, function(i) {
             res <- match[match %in% i]
             if (!showMatch) res <- unique(names(res))
             if (rm.NA) res <- res[!is.na(res)]
             return(res)
         })
     } else {
-        samples <- match[match %in% index]
+        samples <- match[match %in% patients]
         if (!showMatch) samples <- unique(names(samples))
         if (rm.NA) samples <- samples[!is.na(samples)]
     }
@@ -322,34 +329,23 @@ getMatchingSamples <- function(index, samples, clinical, rm.NA=TRUE,
 #' Assign one group to each patient
 #' 
 #' @param groups List of integers: clinical groups
-#' @param patients Integer: total number of clinical patients (remaining 
-#' patients will be filled with missing values)
+#' @param patients Integer: total number of patients
 #' @param includeOuterGroup Boolean: join the patients that have no groups?
 #' @param outerGroupName Character: name to give to outer group
 #' 
-#' @return Character vector where each element corresponds to the group of a
-#' clinical patient
+#' @return Character vector where each element corresponds to the group of the
+#' respective clinical patient
 #' @export
 #' 
 #' @examples 
 #' groups <- list(1:3, 4:7, 8:10)
 #' names(groups) <- paste("Stage", 1:3)
 #' groupPerPatient(groups)
-groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE, 
+groupPerPatient <- function(groups, patients=NULL, includeOuterGroup=FALSE, 
                             outerGroupName="(Outer data)") {
-    if (length(groups) == 0) return(rep("Single group", patients))
-    
-    all <- unlist(groups)
-    names(all) <- rep(names(groups), sapply(groups, length))
-    
-    finalGroups <- rep(NA, patients)
-    for (each in unique(all))
-        finalGroups[each] <- paste(names(all[all == each]), collapse=", ")
-    
-    # Assign patients with no groups to the outer group
-    if (includeOuterGroup) finalGroups[is.na(finalGroups)] <- outerGroupName
-    
-    return(finalGroups)
+    .Deprecated("groupPerElem")
+    if (!includeOuterGroup) outerGroupName <- NULL
+    groupPerElem(groups, patients, outerGroupName)
 }
 
 #' Assign one group to each sample
@@ -370,19 +366,48 @@ groupPerPatient <- function(groups, patients, includeOuterGroup=FALSE,
 #' groupPerSample(groups, samples)
 groupPerSample <- function(groups, samples, includeOuterGroup=FALSE, 
                            outerGroupName="(Outer data)") {
-    if (length(groups) == 0) return(rep("Single group", length(samples)))
+    .Deprecated("groupPerElem")
+    if (!includeOuterGroup) outerGroupName <- NULL
+    groupPerElem(groups, samples, outerGroupName)
+}
+
+#' Assign one group to each element
+#' 
+#' @param groups List of integers: groups of elements
+#' @param elem Character: all elements available (NULL by default)
+#' @param outerGroupName Character: name to give to outer group (NA by default; 
+#' set to NULL to only show elements matched to their respective groups)
+#' 
+#' @return Character vector where each element corresponds to the group of the
+#' respective element
+#' @export
+#' 
+#' @examples 
+#' groups <- list(1:3, 4:7, 8:10)
+#' names(groups) <- paste("Stage", 1:3)
+#' groupPerElem(groups)
+groupPerElem <- function(groups, elem=NULL, outerGroupName=NA) {
+    if (length(groups) == 0) {
+        singleGroup <- "Single group"
+        if (length(elem) > 0)
+            return(rep(singleGroup, length(elem)))
+        else
+            return(singleGroup)
+    }
     
     all <- unlist(groups)
     names(all) <- rep(names(groups), sapply(groups, length))
     
-    finalGroups <- rep(NA, length(samples))
-    for (each in unique(all)) {
-        i <- match(each, samples)
-        finalGroups[i] <- paste(names(all[all == each]), collapse=", ")
+    finalGroups <- NULL
+    if (!is.null(elem) && !is.null(outerGroupName)) {
+        finalGroups <- rep(outerGroupName, length(elem))
+        names(finalGroups) <- elem
     }
     
-    # Assign patients with no groups to the outer group
-    if (includeOuterGroup) finalGroups[is.na(finalGroups)] <- outerGroupName
+    for (each in unique(all)) {
+        each <- as.character(each) # Force to use numeric identifiers as names
+        finalGroups[each] <- paste(names(all[all == each]), collapse=", ")
+    }
     
     return(finalGroups)
 }

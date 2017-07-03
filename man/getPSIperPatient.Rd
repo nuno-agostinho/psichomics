@@ -10,7 +10,7 @@ getPSIperPatient(psi, match, clinical, pattern = NULL, filterOut = TRUE)
 \item{psi}{Data frame or matrix: alternative splicing quantification per
 samples}
 
-\item{match}{Matrix: match between samples and clinical patients}
+\item{match}{Matrix: match between samples and patients}
 
 \item{clinical}{Data frame or matrix: clinical dataset}
 

@@ -308,7 +308,7 @@ createGroup <- function(session, input, output, id, type) {
 #' @param id Character: identifier of the group selection
 #' @param type Character: type of group to create
 #' 
-#' @return Matrix with the group names and respective indexes
+#' @return Matrix with the group names and respective elements
 createGroupFromInput <- function (session, input, output, dataset, id, type) {
     if (type == "Attribute") {
         col <- input[[paste0("groupAttribute", id)]]
@@ -341,6 +341,7 @@ createGroupFromInput <- function (session, input, output, dataset, id, type) {
         }
         
         rows <- match(rownames(set), rownames(dataset))
+        rows <- rownames(dataset)[rows]
         group <- cbind(input[[paste0("groupNameSubset", id)]], type, expr,
                        list(rows))
     } else if (type == "Regex") {
@@ -360,6 +361,7 @@ createGroupFromInput <- function (session, input, output, dataset, id, type) {
             return(NULL)
         }
         
+        set <- rownames(dataset)[set]
         strRows <- sprintf('"%s" in %s', expr, col)
         group <- cbind(input[[paste0("groupNameRegex", id)]], "GREP", strRows, 
                        list(set))
@@ -413,21 +415,23 @@ createGroupByColumn <- function(col, dataset) {
     createGroupByAttribute(col, dataset)
 }
 
-#' Create groups with the indexes from the unique values of a given column from
-#' a dataset
+#' Create groups based on the unique values of a given column
 #' 
 #' @param col Character: column name
 #' @param dataset Matrix or data frame: dataset
 #' 
-#' @return Named list with the indexes of each unique value from a given column
+#' @return Named list with each unique value from a given column and respective
+#' elements
 #' @export
 #' 
 #' @examples 
 #' df <- data.frame(gender=c("male", "female"),
 #'                  stage=paste("stage", c(1, 3, 1, 4, 2, 3, 2, 2)))
+#' rownames(df) <- paste0("patient-", LETTERS[1:8])
 #' createGroupByAttribute(col="stage", dataset=df)
 createGroupByAttribute <- function(col, dataset) {
     colData <- as.character(dataset[[col]])
+    names(colData) <- rownames(dataset)
     
     # Replace missing values for "NA" so they are found using the `which` function
     colData[is.na(colData)] <- "NA"
@@ -436,18 +440,19 @@ createGroupByAttribute <- function(col, dataset) {
     groupNames <- sort(unique(colData))
     group <- lapply(lapply(groupNames, `==`, colData), which)
     names(group) <- groupNames
+    group <- sapply(group, names)
     return(group)
 }
 
-#' Create groups from a given string of rows
+#' Create groups based on given row indexes or identifiers
 #' 
 #' @param session Shiny session
-#' @param rows Character: rows separated by a comma
+#' @param rows Character: comma-separated row indexes or identifiers
 #' @param dataset Matrix or data frame: dataset
 #' @param identifiers Character: available identifiers
 #' 
 #' @importFrom shiny tags
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @return Character: values based on given row indexes or identifiers
 createGroupById <- function(session, rows, dataset, identifiers) {
     # Check which strings match available identifiers
     matched <- rows %in% identifiers
@@ -469,7 +474,8 @@ createGroupById <- function(session, rows, dataset, identifiers) {
             session, "The following ", length(invalid),
             " indexes or identifiers were discarded:", tags$code(discarded))
     }
-    return(union(match, parsed[valid]))
+    rows <- rownames(dataset)[unique(union(match, parsed[valid]))]
+    return(rows)
 }
 
 #' Rename duplicated names from a new group
@@ -503,14 +509,14 @@ renameGroups <- function(new, old) {
 #' performed (" " by default)
 #' @param groupName Character: group name (automatically created if NULL or
 #' \code{""})
-#' @param patients Integer: all patient indexes (only required when the
-#' operation to be performed is \code{complement})
-#' @param samples Integer: all sample indexes (only required when the
-#' operation to be performed is \code{complement})
-#' @param matches Integer: match between samples (as names) and patients (as
+#' @param patients Character: all patients (required when performing the
+#' \code{complement} operation)
+#' @param samples Character: all samples (required when performing the 
+#' \code{complement} operation)
+#' @param matches Character: match between samples (as names) and patients (as
 #' values)
 #' 
-#' @return Matrix containing groups (new group is the first row)
+#' @return Matrix containing groups (new group is in the first row)
 setOperation <- function(operation, groups, selected, symbol=" ", 
                          groupName=NULL, patients=NULL, samples=NULL,
                          matches=NULL) {
@@ -570,7 +576,7 @@ setOperation <- function(operation, groups, selected, symbol=" ",
         }
         
         if ("Patients" %in% colnames(groups)) {
-            patients <- sort(as.numeric(operate("Patients")))
+            patients <- operate("Patients")
             if (!is.null(samples) && !is.null(matches)) {
                 # Include patients if their samples were included in same group
                 matched  <- unname(matches[samples])

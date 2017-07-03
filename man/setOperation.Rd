@@ -20,17 +20,17 @@ performed (" " by default)}
 \item{groupName}{Character: group name (automatically created if NULL or
 \code{""})}
 
-\item{patients}{Integer: all patient indexes (only required when the
-operation to be performed is \code{complement})}
+\item{patients}{Character: all patients (required when performing the
+\code{complement} operation)}
 
-\item{samples}{Integer: all sample indexes (only required when the
-operation to be performed is \code{complement})}
+\item{samples}{Character: all samples (required when performing the 
+\code{complement} operation)}
 
-\item{matches}{Integer: match between samples (as names) and patients (as
+\item{matches}{Character: match between samples (as names) and patients (as
 values)}
 }
 \value{
-Matrix containing groups (new group is the first row)
+Matrix containing groups (new group is in the first row)
 }
 \description{
 Perform set operations on selected groups

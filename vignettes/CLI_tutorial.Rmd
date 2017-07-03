@@ -99,15 +99,16 @@ phenotype, sample attributes and junction quantification for given tissues) by
 following these commands:
 
 ```{r load GTEx, eval=FALSE}
-subjectPhenotype <- "~/Desktop/GTEx_Data_V6_Annotations_SubjectPhenotypesDS.txt"
-sampleAttributes <- "~/Desktop/GTEx_Data_V6_Annotations_SampleAttributesDS.txt"
-junctionQuant    <- "~/Desktop/GTEx/GTEx_junction_reads.txt"
+# Replace with the correct path to these files
+subjects <- "~/Downloads/GTEx_Data_V6_Annotations_SubjectPhenotypesDS.txt"
+sampleAttributes <- "~/Downloads/GTEx_Data_V6_Annotations_SampleAttributesDS.txt"
+junctionQuant <- "~/Downloads/GTEx_junction_reads.txt"
 
 # Check GTEx tissues available based on the sample attributes
 getGtexTissues(sampleAttributes)
 
 tissues <- c("blood", "brain")
-gtex <- loadGtexData(subjectPhenotype, sampleAttributes, junctionQuant, tissues)
+gtex <- loadGtexData(subjects, sampleAttributes, junctionQuant, tissues)
 ```
 
 If you desire to load junction quantification for all tissues, you can also do
@@ -245,7 +246,10 @@ er_expr <- er_expr[c("positive", "negative")]
 drug_name <- grep("drug_name", cols, value=TRUE)[1:23]
 
 # Using the previous columns, look for either "tamoxifen" or "tamoxiphen"
-tamoxifen <- lapply(drug_name, function(i) grep("tamoxi.*", clinical[ , i]))
+tamoxifen <- lapply(drug_name, function(i) {
+    rows <- grep("tamoxi.*", clinical[ , i])
+    rownames(clinical)[rows]
+})
 
 # Collect all previous results and create a single list named tamoxifen
 tamoxifen <- sort(unique(unlist(tamoxifen)))
@@ -255,8 +259,8 @@ tamoxifen <- list("tamoxifen"=tamoxifen)
 groups <- c(er_expr, tamoxifen)
 
 # Assign each patient to a group
-patients <- nrow(clinical)
-g <- groupPerPatient(groups[c("tamoxifen", "positive")], patients)
+patients <- rownames(clinical)
+g <- groupPerElem(groups[c("tamoxifen", "positive")], patients)
 
 # Append the created groups to the clinical dataset
 cl <- cbind(clinical, groups=g)

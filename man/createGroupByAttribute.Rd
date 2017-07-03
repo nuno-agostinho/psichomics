@@ -2,8 +2,7 @@
 % Please edit documentation in R/groups.R
 \name{createGroupByAttribute}
 \alias{createGroupByAttribute}
-\title{Create groups with the indexes from the unique values of a given column from
-a dataset}
+\title{Create groups based on the unique values of a given column}
 \usage{
 createGroupByAttribute(col, dataset)
 }
@@ -13,14 +12,15 @@ createGroupByAttribute(col, dataset)
 \item{dataset}{Matrix or data frame: dataset}
 }
 \value{
-Named list with the indexes of each unique value from a given column
+Named list with each unique value from a given column and respective
+elements
 }
 \description{
-Create groups with the indexes from the unique values of a given column from
-a dataset
+Create groups based on the unique values of a given column
 }
 \examples{
 df <- data.frame(gender=c("male", "female"),
                  stage=paste("stage", c(1, 3, 1, 4, 2, 3, 2, 2)))
+rownames(df) <- paste0("patient-", LETTERS[1:8])
 createGroupByAttribute(col="stage", dataset=df)
 }

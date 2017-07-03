@@ -19,7 +19,7 @@ interval}
 
 \item{followup}{Character: name of column containing follow up time}
 
-\item{group}{Character: group of each individual}
+\item{group}{Character: group relative to each patient}
 
 \item{clinical}{Data frame: clinical data}
 

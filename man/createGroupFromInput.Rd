@@ -20,7 +20,7 @@ createGroupFromInput(session, input, output, dataset, id, type)
 \item{type}{Character: type of group to create}
 }
 \value{
-Matrix with the group names and respective indexes
+Matrix with the group names and respective elements
 }
 \description{
 Set new groups according to the user input

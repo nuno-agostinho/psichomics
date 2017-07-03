@@ -2,25 +2,28 @@
 % Please edit documentation in R/utils.R
 \name{getPatientFromSample}
 \alias{getPatientFromSample}
-\title{Match given sample identifiers and return the respective row in clinical data}
+\title{Get patients from given samples}
 \usage{
-getPatientFromSample(sampleId, patientId)
+getPatientFromSample(sampleId, patientId = NULL)
 }
 \arguments{
 \item{sampleId}{Character: sample identifiers}
 
-\item{patientId}{Character: clinical patient identifiers (if a matrix or data
-frame is given, its rownames will be retrieved as patient identifiers)}
+\item{patientId}{Character: patient identifiers to filter by (optional; if a
+matrix or data frame is given, its rownames will be used to infer the patient
+identifiers)}
 }
 \value{
-Integer vector of the row number in clinical data corresponding to 
-the given IDs (named with the ID)
+Character: patient identifiers corresponding to the given samples
 }
 \description{
-Match given sample identifiers and return the respective row in clinical data
+Get patients from given samples
 }
 \examples{
-patients <- c("GTEX-ABC", "GTEX-DEF", "GTEX-GHI", "GTEX-JKL", "GTEX-MNO")
-samples <- paste0(patients, "-sample")
+samples <- paste0("GTEX-", c("ABC", "DEF", "GHI", "JKL", "MNO"), "-sample")
+getPatientFromSample(samples)
+
+# Filter returned samples based on available patients
+patients <- paste0("GTEX-", c("DEF", "MNO"))
 getPatientFromSample(samples, patients)
 }

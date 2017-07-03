@@ -7,7 +7,7 @@
 matchPatientToSingleSample(match)
 }
 \arguments{
-\item{match}{Matrix: match between samples and clinical patients}
+\item{match}{Matrix: match between samples and patients}
 }
 \value{
 Integer containing the patient and the respective sample as its name
