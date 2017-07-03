@@ -122,6 +122,7 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
     
     isolate({
         clinical      <- getClinicalData()
+        patients      <- getPatientId()
         psi           <- getInclusionLevels()
         match         <- getClinicalMatchFrom("Inclusion levels")
         splicingEvent <- getEvent()
@@ -141,15 +142,20 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
         chosen <- getSelectedGroups(input, "dataGroups")
     })
     
+    if (outGroup)
+        outGroupName <- "(Outer data)"
+    else
+        outGroupName <- NA
+    
     if (is.null(clinical)) {
         missingDataModal(session, "Clinical data", ns("missingClinical"))
         return(NULL)
     } else if (modelTerms == "none") {
-        groups <- groupPerPatient(NULL, nrow(clinical), outGroup)
+        groups <- groupPerElem(NULL, patients, outGroupName)
         formulaStr <- NULL
     } else if (modelTerms == "groups") {
         # Assign one group for each clinical patient
-        groups <- groupPerPatient(chosen, nrow(clinical), outGroup)
+        groups <- groupPerElem(chosen, patients, outGroupName)
         formulaStr <- NULL
     } else if (modelTerms == "psiCutoff") {
         if (is.null(psi)) {
@@ -168,8 +174,7 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
         eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
         
         # Assign a value based on the inclusion levels cutoff
-        groups <- labelBasedOnCutoff(eventPSI, psiCutoff,
-                                     "Inclusion levels")
+        groups <- labelBasedOnCutoff(eventPSI, psiCutoff, "Inclusion levels")
         formulaStr <- NULL
     } else if (modelTerms == "formula") {
         if (input$formula == "" || is.null(input$formula)) {

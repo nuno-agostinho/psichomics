@@ -4,22 +4,21 @@
 \alias{groupPerPatient}
 \title{Assign one group to each patient}
 \usage{
-groupPerPatient(groups, patients, includeOuterGroup = FALSE,
+groupPerPatient(groups, patients = NULL, includeOuterGroup = FALSE,
   outerGroupName = "(Outer data)")
 }
 \arguments{
 \item{groups}{List of integers: clinical groups}
 
-\item{patients}{Integer: total number of clinical patients (remaining 
-patients will be filled with missing values)}
+\item{patients}{Integer: total number of patients}
 
 \item{includeOuterGroup}{Boolean: join the patients that have no groups?}
 
 \item{outerGroupName}{Character: name to give to outer group}
 }
 \value{
-Character vector where each element corresponds to the group of a
-clinical patient
+Character vector where each element corresponds to the group of the
+respective clinical patient
 }
 \description{
 Assign one group to each patient

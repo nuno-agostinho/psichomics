@@ -80,21 +80,10 @@ test_that("Retrieve patients from sample identifiers", {
     clinical <- data.frame(samples=samples)
     rownames(clinical) <- patients
     
-    patients <- getPatientFromSample(samples, clinical)
-    expect_is(patients, "integer")
-    expect_equivalent(patients, 1:5)
-    expect_equal(names(patients), samples)
-    
-    # # Do not remove non-matching identifiers (by default)
-    # clinical[4:5, "samples"] <- NA
-    # patients <- getPatientFromSample(samples, clinical)
-    # expect_equivalent(patients, c(1:3, NA, NA))
-    # expect_equal(names(patients), samples)
-    
-    # # Remove non-matching identifiers
-    # patients <- getPatientFromSample(samples, clinical)
-    # expect_equivalent(patients, 1:3)
-    # expect_equal(names(patients), samples[1:3])
+    match <- getPatientFromSample(samples, clinical)
+    expect_is(match, "character")
+    expect_equivalent(match, patients)
+    expect_equal(names(match), samples)
 })
 
 test_that("Retrieve samples from patient identifiers", {
@@ -104,13 +93,14 @@ test_that("Retrieve samples from patient identifiers", {
     rownames(clinical) <- patients
     
     ref <- c(1, 4)
-    match <- getMatchingSamples(ref, samples, clinical)
+    match <- getMatchingSamples(patients[ref], samples, clinical)
     expect_is(match, "character")
     expect_equivalent(match[], as.character(clinical$samples[ref]))
     
     # Retrieve samples when previously matched
     patients <- getPatientFromSample(samples, clinical)
-    match <- getMatchingSamples(ref, samples, clinical, match=patients)
+    match <- getMatchingSamples(patients[ref], samples, clinical, 
+                                match=patients)
     expect_is(match, "character")
     expect_equivalent(match[], as.character(clinical$samples[ref]))
 })

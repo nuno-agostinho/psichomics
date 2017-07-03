@@ -2,22 +2,22 @@
 % Please edit documentation in R/groups.R
 \name{createGroupById}
 \alias{createGroupById}
-\title{Create groups from a given string of rows}
+\title{Create groups based on given row indexes or identifiers}
 \usage{
 createGroupById(session, rows, dataset, identifiers)
 }
 \arguments{
 \item{session}{Shiny session}
 
-\item{rows}{Character: rows separated by a comma}
+\item{rows}{Character: comma-separated row indexes or identifiers}
 
 \item{dataset}{Matrix or data frame: dataset}
 
 \item{identifiers}{Character: available identifiers}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+Character: values based on given row indexes or identifiers
 }
 \description{
-Create groups from a given string of rows
+Create groups based on given row indexes or identifiers
 }

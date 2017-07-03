@@ -118,10 +118,9 @@ getPSIperPatient <- function(psi, match, clinical, pattern=NULL,
     
     # Match samples with clinical patients (remove non-matching samples)
     clinicalPSI <- data.frame(matrix(NA, nrow=nrow(psi), ncol=nrow(clinical)))
-    clinicalPSI[ , matchSingle] <- psi[ , names(matchSingle)]
-    
     colnames(clinicalPSI) <- rownames(clinical)
     rownames(clinicalPSI) <- rownames(psi)
+    clinicalPSI[ , matchSingle] <- psi[ , names(matchSingle)]
     return(clinicalPSI)
 }
 
@@ -131,7 +130,7 @@ getPSIperPatient <- function(psi, match, clinical, pattern=NULL,
 #' sample, the attributed sample is chosen according to the frequency of its
 #' type.
 #'
-#' @param match Matrix: match between samples and clinical patients
+#' @param match Matrix: match between samples and patients
 #'
 #' @return Integer containing the patient and the respective sample as its name
 matchPatientToSingleSample <- function(match) {
@@ -165,7 +164,7 @@ matchPatientToSingleSample <- function(match) {
 #' Process survival data to calculate survival curves
 #' 
 #' @inheritParams getAttributesTime
-#' @param group Character: group of each individual
+#' @param group Character: group relative to each patient
 #' @param clinical Data frame: clinical data
 #' @param survTime survTime object: Times to follow up, time start, time stop
 #' and event (optional)
@@ -197,7 +196,10 @@ processSurvData <- function(event, timeStart, timeStop, followup, group,
     
     # Indicate event of interest and groups
     survTime$event <- ifelse(!is.na(survTime$event), 1, 0)
-    survTime$groups <- group
+    if (!is.null(names(group)))
+        survTime[names(group), "groups"] <- group
+    else
+        survTime$groups <- group
     
     if (!is.null(timeStop)) {
         # Create new time using the ending time replacing the NAs

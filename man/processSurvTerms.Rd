@@ -23,7 +23,7 @@ interval or follow up time}
 \item{timeStop}{Character: name of column containing ending time of the 
 interval}
 
-\item{group}{Character: group of each individual}
+\item{group}{Character: group relative to each patient}
 
 \item{formulaStr}{Character: formula to use}
 

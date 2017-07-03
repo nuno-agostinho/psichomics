@@ -2,16 +2,15 @@
 % Please edit documentation in R/utils.R
 \name{getMatchingSamples}
 \alias{getMatchingSamples}
-\title{Search samples in the clinical dataset and return the ones matching the given
-index}
+\title{Get samples matching the given patients}
 \usage{
-getMatchingSamples(index, samples, clinical, rm.NA = TRUE, match = NULL,
+getMatchingSamples(patients, samples, clinical, rm.NA = TRUE, match = NULL,
   showMatch = FALSE)
 }
 \arguments{
-\item{index}{Numeric or list of numeric: patient row indexes}
+\item{patients}{Character or list of characters: patient identifiers}
 
-\item{samples}{Character: samples}
+\item{samples}{Character: sample identifiers}
 
 \item{clinical}{Data frame or matrix: clinical dataset}
 
@@ -24,17 +23,16 @@ name to save time (optional)}
 }
 \value{
 Names of the matching samples (if \code{showMatch} is \code{TRUE},
-a integer vector with the patient index and the matching samples as names is
-shown)
+a character with the patients as values and their respective samples as names
+is returned)
 }
 \description{
-Search samples in the clinical dataset and return the ones matching the given
-index
+Get samples matching the given patients
 }
 \examples{
 patients <- c("GTEX-ABC", "GTEX-DEF", "GTEX-GHI", "GTEX-JKL", "GTEX-MNO")
 samples <- paste0(patients, "-sample")
 clinical <- data.frame(samples=samples)
 rownames(clinical) <- patients
-getMatchingSamples(c(1, 4), samples, clinical)
+getMatchingSamples(patients[c(1, 4)], samples, clinical)
 }
