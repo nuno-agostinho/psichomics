@@ -382,12 +382,6 @@ createGroupFromInput <- function (session, input, output, dataset, id, type) {
     samples <- getSampleId()
     match <- getClinicalMatchFrom("Inclusion levels")
     
-    # Replace sample indexes with sample names
-    if (id == "Samples") {
-        group[ , "Samples"] <- lapply(group[ , "Samples"],
-                                      function(i) samples[i])
-    }
-    
     # Match patients with samples (or vice-versa)
     if (!is.null(clinical) && !is.null(samples) && !is.null(match)) {
         if (id == "Patients") {
