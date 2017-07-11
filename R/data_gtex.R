@@ -62,7 +62,10 @@ gtexDataUI <- function(id, panel) {
 getGtexTissues <- function(sampleMetadata) {
     tissueCol <- "Tissue Type (area of retrieval)"
     metadata  <- loadGtexFile(sampleMetadata, "Sample")
-    tissues   <- levels(metadata[[tissueCol]])
+    freq      <- table(metadata[[tissueCol]])
+    
+    tissues        <- names(freq)
+    names(tissues) <- sprintf("%s (%s samples)", names(freq), as.vector(freq))
     return(tissues[-match("", tissues)])
 }
 

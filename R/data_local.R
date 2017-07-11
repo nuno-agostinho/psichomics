@@ -13,7 +13,8 @@ localDataUI <- function(id, panel) {
     addLocalFile <- tagList(
         uiOutput(ns("localDataModal")),
         fileBrowserInput(ns("localFolder"), "Folder where data is stored",
-                         placeholder="No folder selected"),
+                         placeholder="No folder selected",
+                         value=getDownloadsFolder()),
         textInput(ns("localCategory"), label="Data category name"),
         selectizeInput(ns("localIgnore"), "Files/directories to ignore",
                        choices=getFirebrowseDataTypes(),
@@ -64,7 +65,10 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."), name="Data",
     formats <- loadFileFormats()
     for (each in seq_along(files)) {
         progress("Processing file", detail = basename(files[each]))
-        loaded[[each]] <- parseValidFile(files[each], formats)
+        loadedFile <- tryCatch(parseValidFile(files[each], formats),
+                               warning=return, error=return)
+        if (!is(loadedFile, "warning") && !is(loadedFile, "error"))
+            loaded[[each]] <- loadedFile
     }
     names(loaded) <- sapply(loaded, attr, "tablename")
     loaded <- Filter(length, loaded)
