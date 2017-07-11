@@ -23,8 +23,3 @@ respective clinical patient
 \description{
 Assign one group to each patient
 }
-\examples{
-groups <- list(1:3, 4:7, 8:10)
-names(groups) <- paste("Stage", 1:3)
-groupPerPatient(groups)
-}

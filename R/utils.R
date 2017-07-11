@@ -336,11 +336,6 @@ getMatchingSamples <- function(patients, samples, clinical, rm.NA=TRUE,
 #' @return Character vector where each element corresponds to the group of the
 #' respective clinical patient
 #' @export
-#' 
-#' @examples 
-#' groups <- list(1:3, 4:7, 8:10)
-#' names(groups) <- paste("Stage", 1:3)
-#' groupPerPatient(groups)
 groupPerPatient <- function(groups, patients=NULL, includeOuterGroup=FALSE, 
                             outerGroupName="(Outer data)") {
     .Deprecated("groupPerElem")
@@ -358,12 +353,6 @@ groupPerPatient <- function(groups, patients=NULL, includeOuterGroup=FALSE,
 #' @return Character vector where each element corresponds to the group of a
 #' sample
 #' @export
-#' 
-#' @examples 
-#' groups <- list(letters[1:3], letters[10:12], letters[5:8])
-#' names(groups) <- paste("Stage", 1:3)
-#' samples <- letters
-#' groupPerSample(groups, samples)
 groupPerSample <- function(groups, samples, includeOuterGroup=FALSE, 
                            outerGroupName="(Outer data)") {
     .Deprecated("groupPerElem")

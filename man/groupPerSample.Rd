@@ -23,9 +23,3 @@ sample
 \description{
 Assign one group to each sample
 }
-\examples{
-groups <- list(letters[1:3], letters[10:12], letters[5:8])
-names(groups) <- paste("Stage", 1:3)
-samples <- letters
-groupPerSample(groups, samples)
-}

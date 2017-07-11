@@ -280,7 +280,6 @@ appServer <- function(input, output, session) {
             updateSelectizeInput(session, "selectizeEventElem", choices=list(),
                                  selected=list())
             setEvent(NULL)
-            setSampleId(NULL)
         }
     })
     

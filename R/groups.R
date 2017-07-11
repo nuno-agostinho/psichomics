@@ -434,7 +434,7 @@ createGroupByAttribute <- function(col, dataset) {
     groupNames <- sort(unique(colData))
     group <- lapply(lapply(groupNames, `==`, colData), which)
     names(group) <- groupNames
-    group <- sapply(group, names)
+    group <- lapply(group, names)
     return(group)
 }
 
