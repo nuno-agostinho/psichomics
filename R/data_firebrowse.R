@@ -543,6 +543,14 @@ loadFirebrowseData <- function(folder=NULL,
     # Load the files (but discard empty files with no rows)
     loaded <- lapply(folders, loadFirebrowseFolders, exclude, progress)
     loaded <- lapply(loaded, function(i) Filter(nrow, i))
+    
+    # Load TCGA sample metadata
+    junctionQuant <- loaded[[1]]$`Junction quantification`
+    if (!is.null(junctionQuant)) {
+        samples <- colnames(junctionQuant)
+        if (any(grepl("^TCGA", samples)))
+            loaded[[1]]$"Sample metadata" <- parseTcgaSampleInfo(samples)
+    }
     loaded <- processDatasetNames(loaded)
     return(loaded)
 }

@@ -27,6 +27,40 @@ getFirebrowseDataTypes <- function() {
 #' @rdname getFirebrowseDataTypes
 getFirehoseDataTypes <- getFirebrowseDataTypes
 
+#' Parse sample information from TCGA samples
+#' 
+#' @param samples Character: sample identifiers
+#' @param match Integer: match between samples and patients (NULL by default;
+#' performs the match)
+#' 
+#' @return Data frame containing metadata associated with each TCGA sample
+#' @export
+#' 
+#' @examples
+#' samples <- c("TCGA-3C-AAAU-01A-11R-A41B-07", "TCGA-3C-AALI-01A-11R-A41B-07",
+#'              "TCGA-3C-AALJ-01A-31R-A41B-07", "TCGA-3C-AALK-01A-11R-A41B-07", 
+#'              "TCGA-4H-AAAK-01A-12R-A41B-07", "TCGA-5L-AAT0-01A-12R-A41B-07")
+#' 
+#' parseTcgaSampleInfo(samples)
+parseTcgaSampleInfo <- function (samples, match=NULL) {
+    parsed <- parseSampleGroups(samples)
+    if ( all(is.na(parsed)) ) return(NULL)
+    
+    info <- data.frame(parsed)
+    colnames(info) <- "Sample types"
+    rownames(info) <- samples
+    
+    if (is.null(match)) match <- getPatientFromSample(samples)
+    info <- cbind(info, "Patient ID"=match)
+    
+    # Metadata
+    attr(info, "rowNames") <- TRUE
+    attr(info, "description") <- "Metadata for TCGA samples"
+    attr(info, "dataType")  <- "Sample metadata"
+    attr(info, "tablename") <- "Sample metadata"
+    return(info)
+}
+
 #' Create a modal warning the user of already loaded data
 #' @param modalId Character: identifier of the modal
 #' @param replaceButtonId Character: identifier of the button to replace data

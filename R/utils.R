@@ -246,6 +246,7 @@ endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
 #' @param patientId Character: patient identifiers to filter by (optional; if a
 #' matrix or data frame is given, its rownames will be used to infer the patient
 #' identifiers)
+#' @param na Boolean: return NA for samples with no matching patients
 #'
 #' @return Character: patient identifiers corresponding to the given samples
 #' 
@@ -257,7 +258,7 @@ endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
 #' # Filter returned samples based on available patients
 #' patients <- paste0("GTEX-", c("DEF", "MNO"))
 #' getPatientFromSample(samples, patients)
-getPatientFromSample <- function(sampleId, patientId=NULL) {
+getPatientFromSample <- function(sampleId, patientId=NULL, na=FALSE) {
     if (!is.null(patientId) && 
         (is.matrix(patientId) || is.data.frame(patientId))) {
         patientId <- rownames(patientId)
@@ -268,8 +269,15 @@ getPatientFromSample <- function(sampleId, patientId=NULL) {
         patient <- gsub(pattern, "\\1", samples)
         names(patient) <- samples
         
-        # Filter by patients of interest
-        if (!is.null(allPatients)) patient <- patient[patient %in% allPatients]
+        if (!is.null(allPatients)) {
+            # Filter by patients of interest
+            if (na) {
+                # Return NA as the corresponding patient
+                patient[!patient %in% allPatients] <- NA
+            } else {
+                patient <- patient[patient %in% allPatients]
+            }
+        }
         return(patient)
     }
     
