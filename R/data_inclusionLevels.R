@@ -1,46 +1,3 @@
-#' Parse sample information from TCGA samples
-#' 
-#' @param samples Character: sample identifiers
-#' @param patients Character: patient identifiers
-#' @param match Integer: match between samples and patients
-#' 
-#' @return Data frame containing metadata associated with each TCGA sample
-#' @export
-#' 
-#' @examples
-#' samples <- c("TCGA-3C-AAAU-01A-11R-A41B-07", "TCGA-3C-AALI-01A-11R-A41B-07",
-#'              "TCGA-3C-AALJ-01A-31R-A41B-07", "TCGA-3C-AALK-01A-11R-A41B-07", 
-#'              "TCGA-4H-AAAK-01A-12R-A41B-07", "TCGA-5L-AAT0-01A-12R-A41B-07")
-#' patients <- substr(samples, 1, 12)
-#' match <- getPatientFromSample(samples, patients)
-#' 
-#' parseTcgaSampleInfo(samples, patients, match)
-parseTcgaSampleInfo <- function (samples, patients, match) {
-    parsed <- parseSampleGroups(samples)
-    if ( all(is.na(parsed)) ) return(NULL)
-    
-    info <- data.frame(parsed)
-    colnames(info) <- "Sample types"
-    rownames(info) <- samples
-    
-    # Patient match
-    if ( !is.null(patients) ) {
-        if (is.null(match))
-            match <- getPatientFromSample(samples, patients)
-        
-        match <- match[samples]
-        patients <- patients[match]
-        info <- cbind(info, "Patient ID"=patients)
-    }
-    
-    # Metadata
-    attr(info, "rowNames") <- TRUE
-    attr(info, "description") <- "Metadata for TCGA samples"
-    attr(info, "dataType")  <- "Sample metadata"
-    attr(info, "tablename") <- "Sample metadata"
-    return(info)
-}
-
 #' List the alternative splicing annotation files available
 #' 
 #' @return Named character vector with splicing annotation files available
@@ -405,19 +362,10 @@ loadSplicingQuantificationSet <- function(session, input, output) {
                 setData(data)
                 setCategory(name)
             }
-            
             setInclusionLevels(psi)
-            
-            samples  <- colnames(psi)
-            patients <- getPatientId()
-            match    <- getClinicalMatchFrom("Inclusion levels")
-            parsed   <- parseTcgaSampleInfo(samples, patients, match)
-            if ( !is.null(parsed) )
-                setSampleInfo(parsed)
             
             setSpecies(input$customSpecies2)
             setAssemblyVersion(input$customAssembly2)
-            
             removeModal()
         }
         endProcess("loadIncLevels", time)
@@ -535,13 +483,6 @@ quantifySplicingSet <- function(session, input) {
         psi <- quantifySplicing(annot, junctionQuant, eventType, minReads, 
                                 progress=updateProgress, genes=filter)
         setInclusionLevels(psi)
-        
-        samples  <- colnames(psi)
-        patients <- getPatientId()
-        match    <- getClinicalMatchFrom("Inclusion levels")
-        parsed   <- parseTcgaSampleInfo(samples, patients, match)
-        if ( !is.null(parsed) )
-            setSampleInfo(parsed)
         
         endProcess("calcIncLevels", time)
     })

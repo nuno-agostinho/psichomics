@@ -1,7 +1,7 @@
 ---
 title: 'psichomics tutorial: command-line interface (CLI)'
 author: "Nuno Saraiva-Agostinho"
-date: "22 April 2016"
+date: "13 July 2017"
 bibliography: refs.bib
 output: 
     rmarkdown::html_vignette:
@@ -79,6 +79,7 @@ data <- loadFirebrowseData(folder=folder,
 
 # Select clinical and junction quantification dataset
 clinical <- data[[1]]$`Clinical data`
+metadata <- data[[1]]$`Sample metadata`
 junctionQuant <- data[[1]]$`Junction quantification (Illumina HiSeq)`
 ```
 

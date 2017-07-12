@@ -73,6 +73,14 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."), name="Data",
     names(loaded) <- sapply(loaded, attr, "tablename")
     loaded <- Filter(length, loaded)
     
+    # Load TCGA sample metadata
+    junctionQuant <- loaded$`Junction quantification`
+    if (!is.null(junctionQuant)) {
+        samples <- colnames(junctionQuant)
+        if (any(grepl("^TCGA", samples)))
+            loaded$"Sample metadata" <- parseTcgaSampleInfo(samples)
+    }
+    
     data <- setNames(list(loaded), name)
     data <- processDatasetNames(data)
     return(data)
