@@ -102,12 +102,7 @@ inclusionLevelsInterface <- function(ns) {
         disabled(processButton(ns("calcIncLevels"), "Quantify events")))
 }
 
-#' Interface of the alternative splicing event quantification module
-#' 
-#' @param id Character: identifier
-#' @param panel Function to process HTML elements
-#' 
-#' @return HTML elements
+#' @rdname appUI
 inclusionLevelsUI <- function(id, panel) {
     ns <- NS(id)
     title <- "Alternative splicing quantification"
@@ -182,7 +177,7 @@ quantifySplicing <- function(annotation, junctionQuant,
     return(psi)
 }
 
-#' Load alternative splicing annotation from AnnotationHub
+#' Load alternative splicing annotation from \code{AnnotationHub}
 #' 
 #' @param annotation Character: annotation to load
 #' 
@@ -488,18 +483,12 @@ quantifySplicingSet <- function(session, input) {
     })
 }
 
-#' Server logic of the alternative splicing event quantification module
-#' 
-#' @param input Shiny input
-#' @param output Shiny ouput
-#' @param session Shiny session
+#' @rdname appServer
 #' 
 #' @importFrom shiny reactive observeEvent fileInput helpText removeModal
 #' @importFrom tools file_path_sans_ext
 #' @importFrom shinyjs enable disable hide show
 #' @importFrom data.table fread
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
 inclusionLevelsServer <- function(input, output, session) {
     ns <- session$ns
     observeEvent(input$missing, missingDataGuide("Junction quantification"))

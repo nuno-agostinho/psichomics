@@ -9,7 +9,7 @@ echoProgress <- function(..., console=TRUE) {
 
 #' Returns the date format used by the Firebrowse web API
 #'
-#' @return Named list with Fireweb web API's date formats
+#' @return Named list with Firebrowse web API's date formats
 #'
 #' @examples
 #' format <- psichomics:::getFirebrowseDateFormat()
@@ -72,7 +72,8 @@ isFirehoseUp <- isFirebrowseUp
 
 #' Query the Firebrowse web API for TCGA data
 #'
-#' @param format Character: response format as JSON (default), CSV or TSV
+#' @param format Character: response format as \code{JSON} (default), \code{CSV}
+#' or \code{TSV}
 #' @param date Character: dates of the data retrieval by Firebrowse (by default,
 #' it uses the most recent data available)
 #' @param cohort Character: abbreviation of the cohorts (by default, returns
@@ -81,7 +82,7 @@ isFirehoseUp <- isFirebrowseUp
 #' @param tool Character: data produced by the selected Firebrowse tools
 #' (optional)
 #' @param platform Character: data generation platforms (optional)
-#' @param center Character: data generation centers (optional)
+#' @param center Character: data generation centres (optional)
 #' @param level Integer: data levels (optional)
 #' @param protocol Character: sample characterization protocols (optional)
 #' @param page Integer: page of the results to return (optional)
@@ -239,17 +240,17 @@ downloadFiles <- function(url, folder, progress = echoProgress,
     return(destination)
 }
 
-#' Compute the 32-byte MD5 hashes of one or more files and check with given md5
-#' file
+#' Compute the 32-byte \code{MD5} hashes of one or more files and check with
+#' given \code{md5} file
 #'
-#' @param filesToCheck Character: files to calculate and match MD5 hashes
-#' @param md5file Character: file containing correct MD5 hashes
+#' @param filesToCheck Character: files to calculate and match \code{MD5} hashes
+#' @param md5file Character: file containing correct \code{MD5} hashes
 #'
 #' @importFrom digest digest
 #' @importFrom utils read.table
 #'
-#' @return Logical vector showing TRUE for files with matching md5sums and FALSE
-#' for files with non-matching md5sums
+#' @return Logical vector showing TRUE for files with matching \code{md5sums} 
+#' and \code{FALSE} for files with non-matching \code{md5sums}
 checkIntegrity <- function(filesToCheck, md5file) {
     if (is.na(md5file)) return(FALSE)
     md5sums <- digest(file = filesToCheck)
@@ -339,7 +340,7 @@ prepareFirehoseArchives <- prepareFirebrowseArchives
 
 #' Retrieve URLs from a response to a Firebrowse data query
 #'
-#' @param res Response from httr::GET to a Firebrowse data query
+#' @param res Response from \code{httr::GET} to a Firebrowse data query
 #'
 #' @return Named character with URLs
 #' 
@@ -418,8 +419,8 @@ loadFirehoseFolders <- loadFirebrowseFolders
 #' default, it saves in the user's "Downloads" folder)
 #' @param data Character: data to load
 #' @param exclude Character: files and folders to exclude from downloading and
-#' from loading into R (by default, it excludes ".aux.", ".mage-tab." and
-#' "MANIFEST.TXT" files)
+#' from loading into R (by default, it excludes \code{.aux.}, \code{.mage-tab.}
+#' and \code{MANIFEST.TXT} files)
 #' @inheritDotParams queryFirebrowseData
 #' @param progress Function to show the progress (default is to print progress
 #' to console)
@@ -602,14 +603,10 @@ addTCGAdata <- function(ns) {
         processButton(ns("getFirebrowseData"), "Load data"))
 }
 
-#' User interface of the TCGA/Firebrowse loader
-#' 
-#' @param id Character: identifier
+#' @rdname appUI
 #' @param panel Function to enclose interface
 #' 
 #' @importFrom shiny NS helpText icon a
-#' 
-#' @return HTML of the interface
 firebrowseUI <- function(id, panel) {
     ns <- NS(id)
     
@@ -714,6 +711,7 @@ setFirebrowseData <- function(input, output, session, replace=TRUE) {
     endProcess("getFirebrowseData", time)
 }
 
+#' @rdname appServer
 firebrowseServer <- function(input, output, session, active) {
     ns <- session$ns
     

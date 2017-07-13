@@ -15,7 +15,7 @@ createSparklines(hc, data, events, FUN, delim = NULL)
 
 \item{FUN}{Character: JavaScript function to execute when clicking on a chart}
 
-\item{delim}{Character: left and right delimeters in groups that should be
+\item{delim}{Character: left and right delimiters in groups that should be
 removed (NULL by default)}
 }
 \value{

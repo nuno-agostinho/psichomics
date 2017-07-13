@@ -2,12 +2,12 @@
 % Please edit documentation in R/analysis.R
 \name{survfit.survTerms}
 \alias{survfit.survTerms}
-\title{Compute estime of a survival curve using processed survival terms}
+\title{Compute estimate of a survival curve using processed survival terms}
 \usage{
 \method{survfit}{survTerms}(survTerms, ...)
 }
 \arguments{
-\item{survTerms}{survTerms object: processed survival terms}
+\item{survTerms}{\code{survTerms} object: processed survival terms}
 
 \item{...}{Arguments passed on to \code{survival::survfit.formula}
 \describe{
@@ -40,11 +40,12 @@
 }}
 }
 \value{
-an object of class "survfit". See survfit.object for details. Methods
-defined for survfit objects are print, plot, lines, and points.
+\code{survfit} object. See \code{survfit.object} for details. Methods
+defined for survfit objects are \code{print}, \code{plot}, \code{lines}, and 
+\code{points}.
 }
 \description{
-Compute estime of a survival curve using processed survival terms
+Compute estimate of a survival curve using processed survival terms
 }
 \examples{
 clinical <- read.table(text = "2549   NA ii  female

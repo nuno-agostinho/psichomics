@@ -42,9 +42,9 @@ infoModal(session, title, ..., size = "small", footer = NULL)
 NULL (this function is used to modify the Shiny session's state)
 }
 \description{
-You can also use \code{errorModal} and \code{warningModal} to use template 
-modals already stylised to show errors and warnings, respectively.
+You can also use \code{errorModal} and \code{warningModal} to use a template 
+modal already stylised to show errors and warnings, respectively.
 }
 \seealso{
-showAlert
+\code{\link{showAlert}}
 }

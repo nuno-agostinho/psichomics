@@ -7,7 +7,7 @@
 readAnnot(session, annotation, showProgress = FALSE)
 }
 \arguments{
-\item{session}{Shiny session}
+\item{session}{Session object}
 
 \item{annotation}{Character: chosen annotation}
 

@@ -16,7 +16,8 @@ queryFirehoseData(format = "json", date = NULL, cohort = NULL,
   sort_by = NULL)
 }
 \arguments{
-\item{format}{Character: response format as JSON (default), CSV or TSV}
+\item{format}{Character: response format as \code{JSON} (default), \code{CSV}
+or \code{TSV}}
 
 \item{date}{Character: dates of the data retrieval by Firebrowse (by default,
 it uses the most recent data available)}
@@ -31,7 +32,7 @@ data for all cohorts)}
 
 \item{platform}{Character: data generation platforms (optional)}
 
-\item{center}{Character: data generation centers (optional)}
+\item{center}{Character: data generation centres (optional)}
 
 \item{level}{Integer: data levels (optional)}
 

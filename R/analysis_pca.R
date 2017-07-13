@@ -62,17 +62,13 @@ performPCA <- function(data, center=TRUE, scale.=FALSE, naTolerance=0) {
         return(pca)
 }
 
-#' User interface of the principal component analysis
-#' 
-#' @param id Character: identifier
+#' @rdname appUI
 #' 
 #' @importFrom highcharter highchartOutput
 #' @importFrom shinyBS bsTooltip
 #' @importFrom shiny checkboxGroupInput sidebarPanel tagList uiOutput hr
 #' sliderInput actionButton selectizeInput
 #' @importFrom shinyjs hidden
-#' 
-#' @return HTML element
 pcaUI <- function(id) {
     ns <- NS(id)
     
@@ -195,15 +191,15 @@ plotVariance <- function(pca) {
 #' Create a scatterplot from a PCA object
 #' 
 #' @param pca \code{prcomp} object
-#' @param pcX Character: name of the xAxis of interest from the PCA
-#' @param pcY Character: name of the yAxis of interest from the PCA
+#' @param pcX Character: name of the X axis of interest from the PCA
+#' @param pcY Character: name of the Y axis of interest from the PCA
 #' @param groups Matrix: groups to plot indicating the index of interest of the
 #' samples (use clinical or sample groups)
 #' @param individuals Boolean: plot PCA individuals (TRUE by default)
 #' @param loadings Boolean: plot PCA loadings/rotations (FALSE by default)
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip %>%
-#' @return Scatterplot as an Highcharter object
+#' @return Scatterplot as an \code{highcharter} object
 #' 
 #' @export
 #' @examples
@@ -272,16 +268,11 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
     return(hc)
 }
 
-#' Server logic for the principal component analysis
-#' 
-#' @param input Shiny input
-#' @param output Shiny output
-#' @param session Shiny session
+#' @rdname appServer
 #' 
 #' @importFrom shinyjs runjs hide show
 #' @importFrom highcharter %>% hc_chart hc_xAxis hc_yAxis hc_tooltip
 #' @importFrom stats setNames
-#' @return NULL (this function is used to modify the Shiny session's state)
 pcaServer <- function(input, output, session) {
     ns <- session$ns
     

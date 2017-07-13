@@ -52,14 +52,8 @@ leveneTest <- function(x, g, centers=median) {
     return(rval)
 }
 
-#' User interface for the differential splicing analyses
-#' 
-#' @param id Character: identifier
-#' @param tab Function to process HTML elements
-#' 
+#' @rdname appUI
 #' @importFrom shiny NS
-#' 
-#' @return HTML element as character
 diffSplicingUI <- function(id, tab) { 
     ns <- NS(id)
     uiList <- getUiFunctions(ns, "diffSplicing", 
@@ -104,7 +98,7 @@ createDensitySparklines <- function(data, events, delim=NULL) {
 #' @param data Character: HTML-formatted data series of interest
 #' @param events Character: event identifiers
 #' @param FUN Character: JavaScript function to execute when clicking on a chart
-#' @param delim Character: left and right delimeters in groups that should be
+#' @param delim Character: left and right delimiters in groups that should be
 #' removed (NULL by default)
 #' 
 #' @importFrom jsonlite toJSON
@@ -114,7 +108,7 @@ createSparklines <- function(hc, data, events, FUN, delim=NULL) {
     hc <- as.character(toJSON(hc$x$hc_opts, auto_unbox=TRUE))
     hc <- substr(hc, 1, nchar(hc)-1)
     
-    # Remove artificial delimeters
+    # Remove artificial delimiters
     if (!is.null(delim) && length(delim) == 2) {
         data <- gsub(delim[[1]], "", data)
         data <- gsub(delim[[2]], "", data)
@@ -309,7 +303,7 @@ diffAnalyses <- function(psi, groups=NULL,
         groups <- parseSampleGroups(ids)
     }
     
-    # Add artificial delimeters (required to identify group names later on)
+    # Add artificial delimiters (required to identify group names later on)
     parenthesisOpen  <- ".delim1."
     parenthesisClose <- ".delim2."
     groups <- paste0(parenthesisOpen, groups, parenthesisClose)
@@ -437,14 +431,10 @@ diffAnalyses <- function(psi, groups=NULL,
     return(df)
 }
 
-#' Server logic for the differential splicing analyses
-#' @param input Shiny input
-#' @param output Shiny ouput
-#' @param session Shiny session
+#' @rdname appServer
 #' 
 #' @importFrom shiny observe observeEvent renderPlot
 #' @importFrom shinyjs hide show
-#' @return NULL (this function is used to modify the Shiny session's state)
 diffSplicingServer <- function(input, output, session) {
     # Run server logic from the scripts
     server <- getServerFunctions("diffSplicing",

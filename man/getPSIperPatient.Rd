@@ -36,7 +36,7 @@ a patient based on the sample type frequency. For instance, imagine that:
     \item{10 patients have a tumour and control sample;}
     \item{5 patients have a tumour sample;}
     \item{2 patients have only a control sample;}
-    \item{2 patientas have only a metastasis sample.}
+    \item{2 patients have only a metastasis sample.}
 }
  
 In total, there are 15 tumour, 12 control and 2 metastasis samples. As tumour

@@ -1,13 +1,8 @@
-#' Interface to load GTEx data
+#' @rdname appUI
 #' 
 #' @importFrom shinyBS bsCollapse bsCollapsePanel
 #' @importFrom shiny helpText fileInput
 #' @importFrom shinyjs hidden
-#' 
-#' @param id Character: namespace identifier
-#' @param panel Function to deal with the interface
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state) 
 gtexDataUI <- function(id, panel) {
     ns <- NS(id)
     
@@ -69,7 +64,7 @@ getGtexTissues <- function(sampleMetadata) {
     return(tissues[-match("", tissues)])
 }
 
-#' Load GTEX file
+#' Load GTEx file
 #'
 #' @param path Character: path to file
 #' @param pattern Character: pattern of the format type to load file
@@ -242,15 +237,8 @@ loadGtexDataShiny <- function(session, input, replace=TRUE) {
     }
 }
 
-#' Server logic to load GTEx data
-#' 
-#' @param input Shiny input
-#' @param output Shiny ouput
-#' @param session Shiny session
-#' 
+#' @rdname appServer
 #' @importFrom shinyjs show hide
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
 gtexDataServer <- function(input, output, session) {
     ns <- session$ns
     

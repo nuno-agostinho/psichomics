@@ -29,13 +29,13 @@ a scalar parameter that controls the type of test.
 }}
 }
 \value{
-p-value of the survival difference or NA
+p-value of the survival difference or \code{NA}
 }
 \description{
 Test the survival difference between survival groups
 }
 \note{
-Instead of raising errors, an NA is returned
+Instead of raising errors, an \code{NA} is returned
 }
 \examples{
 require("survival")

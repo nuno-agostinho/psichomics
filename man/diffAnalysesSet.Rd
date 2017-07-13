@@ -7,11 +7,11 @@
 diffAnalysesSet(session, input, output)
 }
 \arguments{
-\item{session}{Shiny session}
+\item{session}{Session object}
 
-\item{input}{Shiny input}
+\item{input}{Input object}
 
-\item{output}{Shiny ouput}
+\item{output}{Output object}
 }
 \value{
 NULL (this function is used to modify the Shiny session's state)

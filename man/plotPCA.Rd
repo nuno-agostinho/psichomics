@@ -10,9 +10,9 @@ plotPCA(pca, pcX = 1, pcY = 2, groups = NULL, individuals = TRUE,
 \arguments{
 \item{pca}{\code{prcomp} object}
 
-\item{pcX}{Character: name of the xAxis of interest from the PCA}
+\item{pcX}{Character: name of the X axis of interest from the PCA}
 
-\item{pcY}{Character: name of the yAxis of interest from the PCA}
+\item{pcY}{Character: name of the Y axis of interest from the PCA}
 
 \item{groups}{Matrix: groups to plot indicating the index of interest of the
 samples (use clinical or sample groups)}
@@ -22,7 +22,7 @@ samples (use clinical or sample groups)}
 \item{loadings}{Boolean: plot PCA loadings/rotations (FALSE by default)}
 }
 \value{
-Scatterplot as an Highcharter object
+Scatterplot as an \code{highcharter} object
 }
 \description{
 Create a scatterplot from a PCA object

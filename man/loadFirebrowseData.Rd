@@ -20,12 +20,13 @@ default, it saves in the user's "Downloads" folder)}
 \item{data}{Character: data to load}
 
 \item{exclude}{Character: files and folders to exclude from downloading and
-from loading into R (by default, it excludes ".aux.", ".mage-tab." and
-"MANIFEST.TXT" files)}
+from loading into R (by default, it excludes \code{.aux.}, \code{.mage-tab.}
+and \code{MANIFEST.TXT} files)}
 
 \item{...}{Arguments passed on to \code{queryFirebrowseData}
 \describe{
-  \item{format}{Character: response format as JSON (default), CSV or TSV}
+  \item{format}{Character: response format as \code{JSON} (default), \code{CSV}
+or \code{TSV}}
   \item{date}{Character: dates of the data retrieval by Firebrowse (by default,
 it uses the most recent data available)}
   \item{cohort}{Character: abbreviation of the cohorts (by default, returns
@@ -34,7 +35,7 @@ data for all cohorts)}
   \item{tool}{Character: data produced by the selected Firebrowse tools
 (optional)}
   \item{platform}{Character: data generation platforms (optional)}
-  \item{center}{Character: data generation centers (optional)}
+  \item{center}{Character: data generation centres (optional)}
   \item{level}{Integer: data levels (optional)}
   \item{protocol}{Character: sample characterization protocols (optional)}
   \item{page}{Integer: page of the results to return (optional)}

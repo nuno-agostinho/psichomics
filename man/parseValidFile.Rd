@@ -22,6 +22,6 @@ Tries to recognise the file format and parses the content of the given file
 accordingly.
 }
 \details{
-The resulting data frame includes the attribute "tablename" with the
-name of the data frame
+The resulting data frame includes the attribute \code{tablename} 
+with the name of the data frame
 }

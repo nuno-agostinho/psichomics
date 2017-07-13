@@ -11,7 +11,7 @@ createDensitySparklines(data, events, delim = NULL)
 
 \item{events}{Character: event identifiers}
 
-\item{delim}{Character: left and right delimeters in groups that should be
+\item{delim}{Character: left and right delimiters in groups that should be
 removed (NULL by default)}
 }
 \value{

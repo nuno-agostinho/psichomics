@@ -11,10 +11,10 @@ queryEnsemblByEvent(event, ...)
 
 \item{...}{Arguments passed on to \code{queryEnsemblByGene}
 \describe{
-  \item{species}{Character: species (can be NULL when handling an ENSEMBL
+  \item{species}{Character: species (can be NULL when handling an Ensembl
 identifier)}
   \item{assembly}{Character: assembly version (can be NULL when handling an
-ENSEMBL identifier)}
+Ensembl identifier)}
 }}
 }
 \value{

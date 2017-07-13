@@ -1,12 +1,7 @@
-#' Interface to load local data
-#'
+#' @rdname appUI
+#' 
 #' @importFrom shiny textInput
 #' @importFrom shinyBS bsCollapse bsCollapsePanel
-#' 
-#' @param id Character: namespace identifier
-#' @param panel Function to deal with the interface
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state) 
 localDataUI <- function(id, panel) {
     ns <- NS(id)
     
@@ -117,14 +112,8 @@ setLocalData <- function(input, output, session, replace=TRUE) {
     endProcess("acceptFile", time)
 }
 
-#' Server logic to load local data
-#' 
-#' @param input Shiny input
-#' @param output Shiny ouput
-#' @param session Shiny session
-#' 
+#' @rdname appServer
 #' @importFrom shiny updateTextInput
-#' @return NULL (this function is used to modify the Shiny session's state)
 localDataServer <- function(input, output, session) {
     ns <- session$ns
     

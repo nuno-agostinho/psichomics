@@ -4,7 +4,7 @@
 \alias{inlineDialog}
 \alias{errorDialog}
 \alias{warningDialog}
-\title{Alert in the style of a dialog box with a button}
+\title{Alert in the style of a dialogue box with a button}
 \usage{
 inlineDialog(description, ..., buttonLabel = NULL, buttonIcon = NULL,
   buttonId = NULL, id = NULL, type = c("error", "warning"))
@@ -32,5 +32,5 @@ warningDialog(description, ...)
 HTML elements
 }
 \description{
-Alert in the style of a dialog box with a button
+Alert in the style of a dialogue box with a button
 }

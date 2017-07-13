@@ -7,7 +7,7 @@
 getFirebrowseDateFormat()
 }
 \value{
-Named list with Fireweb web API's date formats
+Named list with Firebrowse web API's date formats
 }
 \description{
 Returns the date format used by the Firebrowse web API

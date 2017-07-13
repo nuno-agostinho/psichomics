@@ -17,7 +17,7 @@ labelBasedOnCutoff(data, cutoff, label = NULL, gte = TRUE)
 less than or equal to cutoff (FALSE)? TRUE by default}
 }
 \value{
-Labeled groups
+Labelled groups
 }
 \description{
 Label groups based on a given cutoff

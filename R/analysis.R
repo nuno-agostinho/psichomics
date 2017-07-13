@@ -43,15 +43,13 @@ missingDataGuide <- function(dataType) {
     runjs(js)
 }
 
-#' User interface for the data analyses
+#' @rdname appUI
 #' 
 #' @param id Character: identifier
 #' @param tab Function to process HTML elements
 #' 
 #' @importFrom shinyBS bsTooltip
 #' @importFrom shiny NS div icon fluidRow column conditionalPanel navbarMenu
-#' 
-#' @return HTML element as character
 analysesUI <- function(id, tab) { 
     ns <- NS(id)
     uiList <- getUiFunctions(ns, "analysis")
@@ -75,7 +73,7 @@ analysesUI <- function(id, tab) {
 #'     \item{10 patients have a tumour and control sample;}
 #'     \item{5 patients have a tumour sample;}
 #'     \item{2 patients have only a control sample;}
-#'     \item{2 patientas have only a metastasis sample.}
+#'     \item{2 patients have only a metastasis sample.}
 #' }
 #'  
 #' In total, there are 15 tumour, 12 control and 2 metastasis samples. As tumour
@@ -166,8 +164,8 @@ matchPatientToSingleSample <- function(match) {
 #' @inheritParams getAttributesTime
 #' @param group Character: group relative to each patient
 #' @param clinical Data frame: clinical data
-#' @param survTime survTime object: Times to follow up, time start, time stop
-#' and event (optional)
+#' @param survTime \code{survTime} object: Times to follow up, time start, time 
+#' stop and event (optional)
 #' 
 #' @details The event time will only be used to determine whether the event has
 #' occurred (1) or not (0) in case of missing values.
@@ -401,16 +399,17 @@ processSurvTerms <- function(clinical, censoring, event, timeStart,
     return(res)
 }
 
-#' Compute estime of a survival curve using processed survival terms
+#' Compute estimate of a survival curve using processed survival terms
 #' 
-#' @param survTerms survTerms object: processed survival terms
+#' @param survTerms \code{survTerms} object: processed survival terms
 #' @inheritDotParams survival::survfit.formula -formula -data
 #' 
 #' @importFrom survival survfit
 #' @method survfit survTerms
 #' 
-#' @return an object of class "survfit". See survfit.object for details. Methods
-#' defined for survfit objects are print, plot, lines, and points.
+#' @return \code{survfit} object. See \code{survfit.object} for details. Methods
+#' defined for survfit objects are \code{print}, \code{plot}, \code{lines}, and 
+#' \code{points}.
 #' @export survfit.survTerms
 #'
 #' @examples 
@@ -565,9 +564,9 @@ processSurvival <- function(session, ...) {
 #' @inheritParams survdiff.survTerms
 #' @inheritDotParams survival::survdiff -formula -data
 #' 
-#' @note Instead of raising errors, an NA is returned
+#' @note Instead of raising errors, an \code{NA} is returned
 #' 
-#' @return p-value of the survival difference or NA
+#' @return p-value of the survival difference or \code{NA}
 #' @export
 #' 
 #' @examples 
@@ -605,7 +604,7 @@ testSurvival <- function (survTerms, ...) {
 #' @param gte Boolean: test with greater than or equal to cutoff (TRUE) or use
 #' less than or equal to cutoff (FALSE)? TRUE by default
 #' 
-#' @return Labeled groups
+#' @return Labelled groups
 #' @export
 #' 
 #' @examples
@@ -726,15 +725,10 @@ optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart,
     return(opt)
 }
 
-#' Server logic for the analyses
-#' @param input Shiny input
-#' @param output Shiny ouput
-#' @param session Shiny session
+#' @rdname appServer
 #' 
 #' @importFrom shiny observe observeEvent
 #' @importFrom shinyjs hide show
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
 analysesServer <- function(input, output, session) {
     # Run server logic from the scripts
     server <- getServerFunctions("analysis")

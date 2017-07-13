@@ -7,11 +7,11 @@
 groupsServerOnce(input, output, session)
 }
 \arguments{
-\item{input}{Shiny input}
+\item{input}{Input object}
 
-\item{output}{Shiny output}
+\item{output}{Output object}
 
-\item{session}{Shiny session}
+\item{session}{Session object}
 }
 \value{
 NULL (this function is used to modify the Shiny session's state)

@@ -9,11 +9,11 @@ queryEnsemblByGene(gene, species = NULL, assembly = NULL)
 \arguments{
 \item{gene}{Character: gene identifier}
 
-\item{species}{Character: species (can be NULL when handling an ENSEMBL
+\item{species}{Character: species (can be NULL when handling an Ensembl
 identifier)}
 
 \item{assembly}{Character: assembly version (can be NULL when handling an
-ENSEMBL identifier)}
+Ensembl identifier)}
 }
 \value{
 Information from Ensembl

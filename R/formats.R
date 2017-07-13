@@ -41,8 +41,8 @@ checkFileFormat <- function(format, head, filename) {
 #' @param file Character: file to load
 #' @param ... Extra parameters passed to \link[data.table]{fread}
 #' 
-#' @details The resulting data frame includes the attribute "tablename" with the
-#' name of the data frame
+#' @details The resulting data frame includes the attribute \code{tablename} 
+#' with the name of the data frame
 #' 
 #' @importFrom data.table fread
 #' @importFrom stringr str_split_fixed
@@ -156,8 +156,8 @@ loadFileFormats <- function() {
 #' @param formats List of file formats to check
 #' @param ... Extra parameters passed to \link[data.table]{fread}
 #' 
-#' @details The resulting data frame includes the attribute "tablename" with the
-#' name of the data frame
+#' @details The resulting data frame includes the attribute \code{tablename} 
+#' with the name of the data frame
 #' 
 #' @importFrom utils read.delim
 #' @importFrom data.table fread
