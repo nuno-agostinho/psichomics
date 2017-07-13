@@ -32,5 +32,5 @@ To allow the user to (explicitly) select no groups, pass the
 \code{noGroupsLabel} and \code{groupsLabel} arguments.
 }
 \seealso{
-selectGroupsServer getSelectedGroups
+\code{\link{selectGroupsServer}} and \code{\link{getSelectedGroups}}
 }

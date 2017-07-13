@@ -14,7 +14,7 @@
 #' @note To allow the user to (explicitly) select no groups, pass the 
 #' \code{noGroupsLabel} and \code{groupsLabel} arguments.
 #' 
-#' @seealso selectGroupsServer getSelectedGroups
+#' @seealso \code{\link{selectGroupsServer}} and \code{\link{getSelectedGroups}}
 #' 
 #' @return Interface for group selection
 selectGroupsUI <- function (
@@ -109,11 +109,7 @@ selectGroupsServer <- function(session, id) {
     })
 }
 
-#' Creates UI elements for the grouping feature
-#' 
-#' @param id Character: identifier
-#' 
-#' @return HTML elements
+#' @rdname appUI
 groupsUI <- function(id) {
     ns <- NS(id)
     
@@ -689,18 +685,13 @@ showGroupsTable <- function(datasetName) {
     }
 }
 
-#' Server function for data grouping
+#' @rdname appServer
 #'
 #' @inheritParams operateOnGroups
-#' @param input Shiny input
-#' @param output Shiny output
-#' @param session Shiny session
 #' 
 #' @importFrom DT renderDataTable dataTableOutput
 #' @importFrom shinyjs disabled enable disable hidden show hide
 #' @importFrom shiny textInput
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
 groupsServer <- function(input, output, session, datasetName) {
     ns <- session$ns
     
@@ -905,13 +896,13 @@ groupsServer <- function(input, output, session, datasetName) {
                         operationLink(
                             "Subtract elements from upper-selected group",
                             helpText("Create a group with the exclusive",
-                                     "elementes from the upper-selected group"),
+                                     "elements from the upper-selected group"),
                             id=ns(subtractId),
                             icon=setOperationIcon("difference-AB")),
                         operationLink(
                             "Subtract elements from lower-selected group",
                             helpText("Create a group with the exclusive",
-                                     "elementes from the lower-selected group"),
+                                     "elements from the lower-selected group"),
                             id=ns(subtract2Id),
                             icon=setOperationIcon("difference-BA")),
                         operationLink(

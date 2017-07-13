@@ -1,14 +1,10 @@
-#' User interface of survival analysis
-#' 
-#' @param id Character: namespace identifier
+#' @rdname appUI
 #' 
 #' @importFrom shinyBS bsTooltip
 #' @importFrom shiny NS tagList uiOutput sidebarPanel radioButtons helpText hr 
 #' selectizeInput checkboxInput sliderInput actionButton mainPanel textAreaInput
 #' conditionalPanel
 #' @importFrom shinyjs hidden
-#' 
-#' @return Character with HTML
 survivalUI <- function(id) {
     ns <- NS(id)
     
@@ -114,7 +110,7 @@ survivalUI <- function(id) {
 #' 
 #' @param session Shiny session
 #' @param input Shiny input
-#' @param coxph Boolean: preprare data for Cox models? FALSE by default
+#' @param coxph Boolean: prepare data for Cox models? FALSE by default
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 checkSurvivalInput <- function (session, input, coxph=FALSE) {
@@ -209,11 +205,7 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
     }
 }
 
-#' Server logic of survival analysis
-#' 
-#' @param input Shiny input
-#' @param output Shiny ouput
-#' @param session Shiny session
+#' @rdname appServer
 #' 
 #' @importFrom R.utils capitalize
 #' @importFrom shiny renderUI observe updateSelectizeInput observeEvent isolate 
@@ -225,8 +217,6 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
 #' @importFrom DT dataTableOutput renderDataTable
 #' @importFrom utils write.table
 #' @importFrom shinyjs show hide
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
 survivalServer <- function(input, output, session) {
     ns <- session$ns
     

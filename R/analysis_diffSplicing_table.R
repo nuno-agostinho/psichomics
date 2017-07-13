@@ -1,6 +1,4 @@
-#' Interface for differential analyses on all splicing events
-#' 
-#' @param id Character: identifier
+#' @rdname appUI
 #' 
 #' @importFrom shinyjs disabled hidden
 #' @importFrom shiny downloadLink selectizeInput uiOutput actionButton tags
@@ -9,8 +7,6 @@
 #' @importFrom shinyBS bsCollapse bsCollapsePanel
 #' @importFrom DT dataTableOutput
 #' @importFrom highcharter highchartOutput
-#' 
-#' @return HTML elements
 diffSplicingTableUI <- function(id) {
     ns <- NS(id)
     pvalueAdjust <- list("No p-value adjustment"="none",
@@ -1128,13 +1124,7 @@ diffAnalysesTableSet <- function(session, input, output) {
     )
 }
 
-#' Server logic of the exploratory differential analyses
-#' 
-#' @param input Shiny input
-#' @param output Shiny ouput
-#' @param session Shiny session
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @rdname appServer
 diffSplicingTableServer <- function(input, output, session) {
     ns <- session$ns
     

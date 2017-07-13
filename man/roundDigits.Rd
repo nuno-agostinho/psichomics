@@ -7,7 +7,7 @@
 roundDigits(n)
 }
 \arguments{
-\item{n}{Numeric: number to roundhf}
+\item{n}{Numeric: number to round}
 }
 \value{
 Formatted number with a given numeric precision

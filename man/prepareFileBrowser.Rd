@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{prepareFileBrowser}
 \alias{prepareFileBrowser}
-\title{Prepare file browser dialog and update the input's value accordingly to
+\title{Prepare file browser dialogue and update the input's value accordingly to
 selected file or directory}
 \usage{
 prepareFileBrowser(session, input, id, ...)
@@ -17,7 +17,7 @@ prepareFileBrowser(session, input, id, ...)
 \item{...}{Arguments passed on to \code{fileBrowser}
 \describe{
   \item{default}{Character: path to initial folder}
-  \item{caption}{Character: caption on the selection dialog}
+  \item{caption}{Character: caption on the selection dialogue}
   \item{multiple}{Boolean: allow to select multiple files?}
   \item{directory}{Boolean: allow to select directories instead of files?}
   \item{system}{Character: system name}
@@ -27,6 +27,6 @@ prepareFileBrowser(session, input, id, ...)
 NULL (this function is used to modify the Shiny session's state)
 }
 \description{
-Prepare file browser dialog and update the input's value accordingly to
+Prepare file browser dialogue and update the input's value accordingly to
 selected file or directory
 }

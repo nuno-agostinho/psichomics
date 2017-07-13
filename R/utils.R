@@ -160,7 +160,7 @@ is.whole <- function(x, tol=.Machine$double.eps^0.5) {
 #' @importFrom utils head
 #'
 #' @return Character vector with renamed values if duplicated; else, it
-#' returns the usual values. It doesn't return the comparator values.
+#' returns the usual values. It does not return the comparator values.
 #'
 #' @examples
 #' psichomics:::renameDuplicated(check = c("blue", "red"), comp = c("green",
@@ -226,8 +226,8 @@ startProcess <- function(id) {
 #' time (if given time is not NULL)
 #' 
 #' @param id Character: button identifier
-#' @param time POSIXct: start time needed to show the interval time (if NULL, 
-#' the time interval is not displayed)
+#' @param time \code{POSIXct} object: start time needed to show the interval
+#' time (if NULL, the time interval is not displayed)
 #' @param closeProgressBar Boolean: close progress bar? TRUE by default
 #' 
 #' @importFrom shinyjs hide
@@ -411,8 +411,8 @@ groupPerElem <- function(groups, elem=NULL, outerGroupName=NA) {
 
 #' Style and show a modal
 #' 
-#' You can also use \code{errorModal} and \code{warningModal} to use template 
-#' modals already stylised to show errors and warnings, respectively.
+#' You can also use \code{errorModal} and \code{warningModal} to use a template 
+#' modal already stylised to show errors and warnings, respectively.
 #' 
 #' @param session Current Shiny session
 #' @param title Character: modal title
@@ -428,7 +428,7 @@ groupPerElem <- function(groups, elem=NULL, outerGroupName=NA) {
 #' 
 #' @importFrom shiny renderUI div icon showModal modalButton modalDialog
 #' @importFrom shinyBS toggleModal
-#' @seealso showAlert
+#' @seealso \code{\link{showAlert}}
 #' @return NULL (this function is used to modify the Shiny session's state)
 styleModal <- function(session, title, ..., style=NULL,
                        iconName="exclamation-circle", footer=NULL, echo=FALSE, 
@@ -477,23 +477,23 @@ infoModal <- function(session, title, ..., size="small", footer=NULL) {
 #' @param title Character: title of the alert (optional)
 #' @param style Character: style of the alert ("alert-danger", "alert-warning" 
 #' or NULL)
-#' @param dismissable Boolean: is the alert dismissable? TRUE by default
+#' @param dismissible Boolean: is the alert dismissible? TRUE by default
 #' @param alertId Character: alert identifier
 #' 
-#' @seealso showModal
+#' @seealso \code{\link{showModal}}
 #' @importFrom shiny span h3 renderUI div tagList
 #' @return NULL (this function is used to modify the Shiny session's state)
-showAlert <- function(session, ..., title=NULL, style=NULL, dismissable=TRUE, 
+showAlert <- function(session, ..., title=NULL, style=NULL, dismissible=TRUE, 
                       alertId="alert") {
     ns <- session$ns
     
-    if (dismissable) {
-        dismissable <- "alert-dismissible"
+    if (dismissible) {
+        dismissible <- "alert-dismissible"
         dismiss <- tags$button(type="button", class="close",
                                "data-dismiss"="alert", "aria-label"="Close",
                                span("aria-hidden"="true", "\u00D7"))
     } else {
-        dismissable <- NULL
+        dismissible <- NULL
         dismiss <- NULL
     }
     
@@ -503,23 +503,23 @@ showAlert <- function(session, ..., title=NULL, style=NULL, dismissable=TRUE,
     output[[alertId]] <- renderUI({
         tagList(
             div(title, id="myAlert", class="alert", class=style, role="alert",
-                class="animated bounceInUp", class=dismissable, dismiss, ...)
+                class="animated bounceInUp", class=dismissible, dismiss, ...)
         )
     })
 }
 
 #' @rdname showAlert
-errorAlert <- function(session, ..., title=NULL, dismissable=TRUE,
+errorAlert <- function(session, ..., title=NULL, dismissible=TRUE,
                        alertId="alert") {
     showAlert(session, ..., style="alert-danger", title=title, 
-              dismissable=dismissable, alertId=alertId)
+              dismissible=dismissible, alertId=alertId)
 }
 
 #' @rdname showAlert
-warningAlert <- function(session, ..., title=NULL, dismissable=TRUE,
+warningAlert <- function(session, ..., title=NULL, dismissible=TRUE,
                          alertId="alert") {
     showAlert(session, ..., style="alert-warning", title=title,
-              dismissable=dismissable, alertId=alertId)
+              dismissible=dismissible, alertId=alertId)
 }
 
 #' @rdname showAlert
@@ -529,7 +529,7 @@ removeAlert <- function(output, alertId="alert") {
     output[[alertId]] <- renderUI(NULL)
 }
 
-#' Alert in the style of a dialog box with a button
+#' Alert in the style of a dialogue box with a button
 #' 
 #' @param id Character: identifier (NULL by default)
 #' @param description Character: description
@@ -642,7 +642,7 @@ startProgress <- function(message, divisions, global = sharedData) {
 
 #' Update a progress object
 #' 
-#' @details If \code{divisions} isn't NULL, a progress bar is started with the 
+#' @details If \code{divisions} is not NULL, a progress bar is started with the 
 #' given divisions. If \code{value} is NULL, the progress bar will be 
 #' incremented by one; otherwise, the progress bar will be incremented by the
 #' integer given in value.
@@ -701,27 +701,28 @@ signifDigits <- function(n) {
 }
 
 #' Round by the given number of digits
-#' @param n Numeric: number to roundhf
+#' @param n Numeric: number to round
 #' @return Formatted number with a given numeric precision
 roundDigits <- function(n) {
     return(isolate(formatC(n, getPrecision(), format="f")))
 }
 
-#' Modified version of shinyBS::bsModal
+#' Modified version of \code{shinyBS::bsModal}
 #' 
-#' bsModal is used within the UI to create a modal window. This allows to use
-#' the footer.
+#' \code{bsModal} is used within the UI to create a modal window. This allows to
+#' modify the modal footer.
 #' 
 #' @inheritParams shinyBS::bsModal
 #' @param footer UI set: List of elements to include in the footer
-#' @param style Character: message style can be "warning", "error", "info" or 
-#' NULL
-#' @param size Character: Modal size ("small", "default" or "large")
+#' @param style Character: message style can be \code{warning}, \code{error}, 
+#' \code{info} or \code{NULL}
+#' @param size Character: Modal size (\code{small}, \code{default} or 
+#' \code{large})
 #' 
 #' @importFrom shiny tagAppendAttributes
 #' @importFrom shinyBS bsModal
 #' 
-#' @return HTML element to create a modified modal
+#' @return HTML elements
 bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL, 
                       style = NULL)  {
     if (is.null(size))
@@ -741,9 +742,9 @@ bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL,
     return(modal)
 }
 
-#' Disable a tab from the navbar
+#' Enable or disable a tab from the \code{navbar}
 #' @importFrom shinyjs disable addClass
-#' @param tab Character: tab to disable
+#' @param tab Character: tab
 #' @return NULL (this function is used to modify the Shiny session's state)
 disableTab <- function(tab) {
     # Style item as disabled
@@ -753,10 +754,8 @@ disableTab <- function(tab) {
     disable(selector = paste0(".navbar li a[data-value=", tab, "]"))
 }
 
-#' Enable a tab from the navbar
+#' @rdname disableTab
 #' @importFrom shinyjs removeClass enable
-#' @param tab Character: tab to enable
-#' @return NULL (this function is used to modify the Shiny session's state)
 enableTab <- function(tab) {
     # Style item as enabled
     removeClass(selector = paste0(".navbar li:has(a[data-value=", tab, "])"),
@@ -765,9 +764,9 @@ enableTab <- function(tab) {
     enable(selector = paste0(".navbar li a[data-value=", tab, "]"))
 }
 
-#' Create script for autocompletion of text input
+#' Create script for auto-completion of text input
 #' 
-#' Uses the JavaScript library jquery.textcomplete
+#' Uses the JavaScript library \code{jquery.textcomplete}
 #' 
 #' @param id Character: input ID
 #' @param words Character: words to suggest
@@ -814,8 +813,8 @@ textSuggestions <- function(id, words, novalue="No matching value", char=" ") {
 #' (f(y) = log(-log(y)) along with log scale for the x-axis.
 #' @param markTimes Label curves marked at each censoring time? TRUE by default
 #' @param symbol Symbol to use as marker (plus sign by default)
-#' @param markerColor Color of the marker ("black" by default); use NULL to use
-#' the respective color of each series
+#' @param markerColor Colour of the marker ("black" by default); use NULL to use
+#' the respective colour of each series
 #' @param ranges Plot interval ranges? FALSE by default
 #' @param rangesOpacity Opacity of the interval ranges (0.3 by default)
 #' 
@@ -824,7 +823,7 @@ textSuggestions <- function(id, words, novalue="No matching value", char=" ") {
 #' hc_plotOptions fa_icon_mark JS
 #' @importFrom stats setNames
 #' 
-#' @return Highcharts object to plot survival curves
+#' @return \code{highcharter} object to plot survival curves
 #' 
 #' @examples
 #' 
@@ -957,10 +956,10 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
     return(hc)
 }
 
-#' Render a data table with Sparkline HTML elements
+#' Render a data table with sparkline HTML elements
 #' 
 #' @details This slightly modified version of \code{\link{renderDataTable}}
-#' calls a JavaScript function to convert the Sparkline HTML elements to
+#' calls a JavaScript function to convert the sparkline HTML elements to
 #' interactive Highcharts
 #' 
 #' @importFrom DT renderDataTable JS
@@ -1038,7 +1037,7 @@ export_highcharts <- function(hc, fill="transparent", text="Export") {
 #' 
 #' @importFrom highcharter hc_add_series list_parse
 #' 
-#' @return Highchart object containing information for a scatter plot
+#' @return \code{highcharter} object containing information for a scatter plot
 hc_scatter <- function (hc, x, y, z=NULL, label=NULL, showInLegend=FALSE, ...) {
     df <- data.frame(x, y)
     if (!is.null(z)) df <- cbind(df, z=z)
@@ -1102,19 +1101,19 @@ setOperationIcon <- function (name, class=NULL, ...) {
     return(iconTag)
 }
 
-#' Interactive folder selection using a native dialog
+#' Interactive folder selection using a native dialogue
 #'
 #' @param default Character: path to initial folder
-#' @param caption Character: caption on the selection dialog
+#' @param caption Character: caption on the selection dialogue
 #' @param multiple Boolean: allow to select multiple files?
 #' @param directory Boolean: allow to select directories instead of files?
 #' @param system Character: system name
 #'
 #' @details
-#' For macOS, it uses an Apple Script to display a folder selection dialog. With
-#' \code{default = NA}, the initial folder selection is determined by default
-#' behavior of the "choose folder" Apple Script command.  Otherwise, paths are
-#' expanded with \link{path.expand}.
+#' For macOS, it uses an Apple Script to display a folder selection dialogue. 
+#' With \code{default = NA}, the initial folder selection is determined by 
+#' default behaviour of the "choose folder" Apple Script command.  Otherwise, 
+#' paths are expanded with \link{path.expand}.
 #'
 #' In Windows, it uses either `utils::choose.files` or `utils::choose.dir`.
 #'
@@ -1203,10 +1202,10 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
 #'
 #' @details
 #' This widget relies on \code{\link{fileBrowser}} to present an interactive
-#' dialog to users for selecting a directory on the local filesystem. Therefore,
-#' this widget is intended for shiny apps that are run locally - i.e. on the
-#' same system that files/directories are to be accessed - and not from hosted
-#' applications (e.g. from shinyapps.io).
+#' dialogue to users for selecting a directory on the local filesystem. 
+#' Therefore, this widget is intended for shiny apps that are run locally - i.e. 
+#' on the same system that files/directories are to be accessed - and not from 
+#' hosted applications (e.g. from \url{https://www.shinyapps.io}).
 #'
 #' @source Original code by wleepang:
 #' \url{https://github.com/wleepang/shiny-directory-input}
@@ -1253,7 +1252,7 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL) {
 #' Sends a message to the client, telling it to change the value of the input
 #' object. For \code{fileBrowserInput} objects, this changes the value displayed
 #' in the text-field and triggers a client-side change event. A directory
-#' selection dialog is not displayed.
+#' selection dialogue is not displayed.
 #'
 #' @source Original code by wleepang:
 #' \url{https://github.com/wleepang/shiny-directory-input}
@@ -1266,7 +1265,7 @@ updateFileBrowserInput <- function(session, id, ..., value=NULL) {
     session$sendInputMessage(button, list(path=value))
 }
 
-#' Prepare file browser dialog and update the input's value accordingly to
+#' Prepare file browser dialogue and update the input's value accordingly to
 #' selected file or directory
 #'
 #' @param session Shiny session

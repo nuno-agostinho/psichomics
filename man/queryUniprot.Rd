@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis_information.R
 \name{queryUniprot}
 \alias{queryUniprot}
-\title{Query the Uniprot REST API}
+\title{Query the UniProt REST API}
 \usage{
 queryUniprot(molecule, format = "xml")
 }
@@ -15,7 +15,7 @@ queryUniprot(molecule, format = "xml")
 Parsed response
 }
 \description{
-Query the Uniprot REST API
+Query the UniProt REST API
 }
 \examples{
 protein <- "P51587"

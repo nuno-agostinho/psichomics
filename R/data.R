@@ -119,14 +119,8 @@ processDatasetNames <- function(data) {
     return(newData)
 }
 
-#' User interface of the data module
-#' 
-#' @param id Character: identifier
-#' @param tab Function to create tab
-#' 
+#' @rdname appUI
 #' @importFrom shinyjs hidden
-#' 
-#' @return HTML elements
 dataUI <- function(id, tab) {
     ns <- NS(id)
     uiList <- getUiFunctions(ns, "data", bsCollapsePanel,
@@ -205,13 +199,14 @@ dataUI <- function(id, tab) {
             mainPanel( welcome, uiOutput(ns("tablesOrAbout")) ) ))
 }
 
-#' Creates a tabPanel template for a datatable with a title and description
+#' Creates a \code{tabPanel} template for a \code{datatable} with a title and
+#' description
 #'
 #' @param ns Namespace function
 #' @param title Character: tab title
-#' @param tableId Character: id of the datatable
+#' @param tableId Character: id of the \code{datatable}
 #' @param description Character: description of the table (optional)
-#' @param columns Character: column names of the datatable
+#' @param columns Character: column names of the \code{datatable}
 #' @param visCols Boolean: visible columns
 #' @param data Data frame: dataset of interest
 #'
@@ -220,7 +215,7 @@ dataUI <- function(id, tab) {
 #' @importFrom shiny hr br tabPanel selectizeInput column fluidRow p mainPanel
 #' downloadButton
 #'
-#' @return The HTML code for a tabPanel template
+#' @return HTML elements
 tabDataset <- function(ns, title, tableId, columns, visCols, data,
                        description=NULL) {
     tablename <- ns(paste("table", tableId, sep="-"))
@@ -292,17 +287,11 @@ createDataTab <- function(index, data, name, input, output) {
         })
 }
 
-#' Server logic of the data module
-#'
-#' @param input Shiny input
-#' @param output Shiny output
-#' @param session Shiny session
+#' @rdname appServer
 #'
 #' @importFrom shiny selectInput tabsetPanel tags h1 h2 HTML fluidRow column
 #' tagList
 #' @importFrom shinyjs show hide
-#'
-#' @return Part of the server logic related to this tab
 dataServer <- function(input, output, session) {
     ns <- session$ns
     

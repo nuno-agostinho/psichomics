@@ -26,7 +26,7 @@ default}
 }}
 }
 \value{
-Highchart object containing information for a scatter plot
+\code{highcharter} object containing information for a scatter plot
 }
 \description{
 Create a scatter plot using \code{highcharter}

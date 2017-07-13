@@ -10,7 +10,7 @@ renderGeneticInfo(ns, info, species = NULL, assembly = NULL,
 \arguments{
 \item{ns}{Namespace function}
 
-\item{info}{Information as retrieved from ENSEMBL}
+\item{info}{Information as retrieved from Ensembl}
 
 \item{species}{Character: species name (NULL by default)}
 

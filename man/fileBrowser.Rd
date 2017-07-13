@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{fileBrowser}
 \alias{fileBrowser}
-\title{Interactive folder selection using a native dialog}
+\title{Interactive folder selection using a native dialogue}
 \source{
 Original code by wleepang:
 \url{https://github.com/wleepang/shiny-directory-input}
@@ -14,7 +14,7 @@ fileBrowser(default = NULL, caption = NULL, multiple = FALSE,
 \arguments{
 \item{default}{Character: path to initial folder}
 
-\item{caption}{Character: caption on the selection dialog}
+\item{caption}{Character: caption on the selection dialogue}
 
 \item{multiple}{Boolean: allow to select multiple files?}
 
@@ -26,13 +26,13 @@ fileBrowser(default = NULL, caption = NULL, multiple = FALSE,
 A length one character vector, character NA if 'Cancel' was selected.
 }
 \description{
-Interactive folder selection using a native dialog
+Interactive folder selection using a native dialogue
 }
 \details{
-For macOS, it uses an Apple Script to display a folder selection dialog. With
-\code{default = NA}, the initial folder selection is determined by default
-behavior of the "choose folder" Apple Script command.  Otherwise, paths are
-expanded with \link{path.expand}.
+For macOS, it uses an Apple Script to display a folder selection dialogue. 
+With \code{default = NA}, the initial folder selection is determined by 
+default behaviour of the "choose folder" Apple Script command.  Otherwise, 
+paths are expanded with \link{path.expand}.
 
 In Windows, it uses either `utils::choose.files` or `utils::choose.dir`.
 }

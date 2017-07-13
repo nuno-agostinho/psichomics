@@ -23,8 +23,8 @@ interval}
 
 \item{clinical}{Data frame: clinical data}
 
-\item{survTime}{survTime object: Times to follow up, time start, time stop
-and event (optional)}
+\item{survTime}{\code{survTime} object: Times to follow up, time start, time 
+stop and event (optional)}
 }
 \value{
 Data frame with terms needed to calculate survival curves

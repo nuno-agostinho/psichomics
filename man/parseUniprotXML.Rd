@@ -2,16 +2,16 @@
 % Please edit documentation in R/analysis_information.R
 \name{parseUniprotXML}
 \alias{parseUniprotXML}
-\title{Parse XML from Uniprot's RESTful service}
+\title{Parse XML from UniProt's RESTful service}
 \usage{
 parseUniprotXML(xml)
 }
 \arguments{
-\item{xml}{response from Uniprot}
+\item{xml}{response from UniProt}
 }
 \value{
 List containing protein length and data frame of protein features
 }
 \description{
-Parse XML from Uniprot's RESTful service
+Parse XML from UniProt's RESTful service
 }

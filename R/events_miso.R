@@ -3,13 +3,13 @@
 #' @param folder Character: path to folder
 #' @param types Character: type of events to retrieve (depends on the program of
 #' origin; see details)
-#' @param genome Character: genome of interest (for instance, "hg19"; depends on
-#' the program of origin)
+#' @param genome Character: genome of interest (for instance, \code{hg19};
+#' depends on the program of origin)
 #'
 #' @importFrom utils read.delim
 #' @importFrom plyr rbind.fill
 #'
-#' @details Type of parseable events:
+#' @details Type of parsable events:
 #' \itemize{
 #'      \item Alternative 3' splice site
 #'      \item Alternative 5' splice site
@@ -53,8 +53,8 @@ parseMisoAnnotation <- function(
 
 #' Get rows of a data frame between two row indexes
 #'
-#' @details For a given iteration i, returns data from firstRow[i] to
-#' lastRow[i]
+#' @details For a given iteration i, returns data from \code{firstRow[i]} to
+#' \code{lastRow[i]}
 #'
 #' @param i Integer: current iteration
 #' @param data Data.frame: contains the data of interest

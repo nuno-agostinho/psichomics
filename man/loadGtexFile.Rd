@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_gtex.R
 \name{loadGtexFile}
 \alias{loadGtexFile}
-\title{Load GTEX file}
+\title{Load GTEx file}
 \usage{
 loadGtexFile(path, pattern, samples = NULL)
 }
@@ -17,5 +17,5 @@ loadGtexFile(path, pattern, samples = NULL)
 Loaded file as a data frame
 }
 \description{
-Load GTEX file
+Load GTEx file
 }

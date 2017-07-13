@@ -7,7 +7,7 @@
 plotTranscripts(info, eventPosition = NULL, shiny = FALSE)
 }
 \arguments{
-\item{info}{Information retrieved from ENSEMBL}
+\item{info}{Information retrieved from Ensembl}
 
 \item{eventPosition}{Numeric: coordinates of the alternative splicing event;
 NULL by default}

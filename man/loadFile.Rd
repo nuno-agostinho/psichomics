@@ -20,6 +20,6 @@ Data frame with the loaded file
 Loads a file according to its format
 }
 \details{
-The resulting data frame includes the attribute "tablename" with the
-name of the data frame
+The resulting data frame includes the attribute \code{tablename} 
+with the name of the data frame
 }

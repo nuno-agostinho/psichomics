@@ -47,7 +47,7 @@ getServerFunctions <- function(loader, ..., priority=NULL) {
 
 #' Matches user interface (UI) functions from a given loader
 #' 
-#' @param ns Shiny function to create namespaced IDs
+#' @param ns Shiny function to create IDs within a namespace
 #' @param loader Character: loader to run the functions
 #' @param ... Extra arguments to pass to the user interface (UI) functions
 #' @param priority Character: name of functions to prioritise by the given
@@ -105,7 +105,7 @@ globalSelectize <- function(id, placeholder) {
     return(select)
 }
 
-#' Create a special selectize input in the navigatin bar
+#' Create a special selectize input in the navigation bar
 #' @inheritParams globalSelectize
 #' @param label Character: input label
 #' @return HTML element to be included in a navigation bar
@@ -124,7 +124,7 @@ navSelectize <- function(id, label, placeholder=label) {
         tags$br(), uiOutput(value)))
 }
 
-#' Modified tabPanel function to show icon and title
+#' Modified \code{tabPanel} function to show icon and title
 #' 
 #' @note Icon is hidden at small viewports
 #' 
@@ -134,7 +134,7 @@ navSelectize <- function(id, label, placeholder=label) {
 #' @param menu Boolean: create a dropdown menu-like tab? FALSE by default
 #' 
 #' @importFrom shiny navbarMenu tabPanel
-#' @return HTML interface for a tab panel
+#' @return HTML interface
 modTabPanel <- function(title, ..., icon=NULL, menu=FALSE) {
     if (is.null(icon))
         display <- title
@@ -147,11 +147,15 @@ modTabPanel <- function(title, ..., icon=NULL, menu=FALSE) {
         tabPanel(display, ..., value=title)
 }
 
-#' The user interface (ui) controls the layout and appearance of the app
-#' All the CSS modifications are in the file "shiny/www/styles.css"
+#' User interface
+#' 
+#' The user interface (UI) controls the layout and appearance of the app. All
+#' CSS modifications are in the file \code{shiny/www/styles.css}
+#' 
 #' @importFrom shinyjs useShinyjs
 #' @importFrom shiny includeCSS includeScript conditionalPanel div h4 icon
 #' shinyUI navbarPage tagAppendChild tagAppendAttributes
+#' 
 #' @return HTML elements
 appUI <- function() {
     uiList <- getUiFunctions(paste, "app", modTabPanel,
@@ -228,9 +232,9 @@ browserHistory <- function(navId, input, session) {
     observeEvent(input$appLocation, { restorePage(input$appLocation) })
 }
 
-#' Server function
-#'
-#' Instructions to build the Shiny app.
+#' Server logic
+#' 
+#' Instructions to build the Shiny app
 #'
 #' @param input Input object
 #' @param output Output object

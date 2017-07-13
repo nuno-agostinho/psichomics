@@ -31,7 +31,7 @@ queryEnsembl <- function(path, query, grch37 = TRUE) {
     return(fromJSON(r))
 }
 
-#' Query the Uniprot REST API
+#' Query the UniProt REST API
 #'
 #' @param molecule Character: protein or transcript to query
 #' @param format Character: format of the response
@@ -130,10 +130,8 @@ ensemblToUniprot <- function(protein) {
     return(uniprot)
 }
 
-#' Information's user interface
-#' @param id Character: identifier
+#' @rdname appUI
 #' @importFrom shiny uiOutput
-#' @return HTML elements
 infoUI <- function(id) {
     ns <- NS(id)
     tagList(uiOutput(ns("geneSelection")),
@@ -155,9 +153,9 @@ noinfo <- function(output, description=paste(
         errorDialog(description, style="width: 400px;", ...))
 }
 
-#' Parse XML from Uniprot's RESTful service
+#' Parse XML from UniProt's RESTful service
 #'
-#' @param xml response from Uniprot
+#' @param xml response from UniProt
 #'
 #' @importFrom XML xmlTreeParse xmlRoot xmlAttrs xmlToList xmlName xmlChildren
 #' @importFrom plyr ldply
@@ -221,7 +219,7 @@ parseUniprotXML <- function(xml) {
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip
 #' hc_add_series
 #'
-#' @return highchart object
+#' @return \code{highcharter} object
 #' @export
 #' @examples
 #' \dontrun{
@@ -322,7 +320,7 @@ plottableXranges <- function(hc, shiny=FALSE) {
 
 #' Plot transcripts
 #' 
-#' @param info Information retrieved from ENSEMBL
+#' @param info Information retrieved from Ensembl
 #' @param eventPosition Numeric: coordinates of the alternative splicing event;
 #' NULL by default
 #' @param shiny Boolean: is the function running in a Shiny session? FALSE by
@@ -414,7 +412,7 @@ plotTranscripts <- function(info, eventPosition=NULL, shiny=FALSE) {
 #' Render genetic information
 #' 
 #' @param ns Namespace function
-#' @param info Information as retrieved from ENSEMBL
+#' @param info Information as retrieved from Ensembl
 #' @param species Character: species name (NULL by default)
 #' @param assembly Character: assembly version (NULL by default)
 #' @param grch37 Boolean: use version GRCh37 of the genome? FALSE by default
@@ -518,10 +516,10 @@ queryEnsemblByEvent <- function(event, ...) {
 #' Query information from Ensembl by a given gene
 #' 
 #' @param gene Character: gene identifier
-#' @param species Character: species (can be NULL when handling an ENSEMBL
+#' @param species Character: species (can be NULL when handling an Ensembl
 #' identifier)
 #' @param assembly Character: assembly version (can be NULL when handling an
-#' ENSEMBL identifier)
+#' Ensembl identifier)
 #' 
 #' @return Information from Ensembl
 #' @export
@@ -635,7 +633,7 @@ renderProteinInfo <- function(protein, transcript, species, assembly) {
                           target="_blank")
     
     href <- paste0("http://www.uniprot.org/uniprot/?query=", transcript)
-    uniprotLink <- tags$a("Uniprot", icon("external-link"), href=href,
+    uniprotLink <- tags$a("UniProt", icon("external-link"), href=href,
                           target="_blank")
     links <- column(2, tags$label("External links"),
                     tags$ul(class="list-inline",
@@ -648,17 +646,11 @@ renderProteinInfo <- function(protein, transcript, species, assembly) {
         return(links)
 }
 
-#' Server logic
-#' 
-#' @param input Shiny input
-#' @param output Shiny output
-#' @param session Shiny session
+#' @rdname appServer
 #' 
 #' @importFrom highcharter highchart %>%
 #' @importFrom shiny fixedRow safeError
 #' @importFrom methods is
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
 infoServer <- function(input, output, session) {
     ns <- session$ns
     
@@ -787,7 +779,7 @@ infoServer <- function(input, output, session) {
                 if (is(hc, "error"))
                     stop(safeError(hc$message))
                 else if (is.null(hc))
-                    helpText("Protein information from Uniprot for this",
+                    helpText("Protein information from UniProt for this",
                              "transcript is not available.")
             })
             output$plotProtein <- renderHighchart(hc)

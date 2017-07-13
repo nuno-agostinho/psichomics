@@ -2,21 +2,21 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{checkIntegrity}
 \alias{checkIntegrity}
-\title{Compute the 32-byte MD5 hashes of one or more files and check with given md5
-file}
+\title{Compute the 32-byte \code{MD5} hashes of one or more files and check with
+given \code{md5} file}
 \usage{
 checkIntegrity(filesToCheck, md5file)
 }
 \arguments{
-\item{filesToCheck}{Character: files to calculate and match MD5 hashes}
+\item{filesToCheck}{Character: files to calculate and match \code{MD5} hashes}
 
-\item{md5file}{Character: file containing correct MD5 hashes}
+\item{md5file}{Character: file containing correct \code{MD5} hashes}
 }
 \value{
-Logical vector showing TRUE for files with matching md5sums and FALSE
-for files with non-matching md5sums
+Logical vector showing TRUE for files with matching \code{md5sums} 
+and \code{FALSE} for files with non-matching \code{md5sums}
 }
 \description{
-Compute the 32-byte MD5 hashes of one or more files and check with given md5
-file
+Compute the 32-byte \code{MD5} hashes of one or more files and check with
+given \code{md5} file
 }

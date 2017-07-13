@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_inclusionLevels.R
 \name{loadAnnotation}
 \alias{loadAnnotation}
-\title{Load alternative splicing annotation from AnnotationHub}
+\title{Load alternative splicing annotation from \code{AnnotationHub}}
 \usage{
 loadAnnotation(annotation)
 }
@@ -14,7 +14,7 @@ List of data frames containing the alternative splicing annotation
 per event type
 }
 \description{
-Load alternative splicing annotation from AnnotationHub
+Load alternative splicing annotation from \code{AnnotationHub}
 }
 \examples{
 human <- listSplicingAnnotations()[[1]]

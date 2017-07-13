@@ -1,11 +1,10 @@
 ## TODO(NunoA): plot using boxplots
 
-#' Interface for the analysis of an alternative splicing event
-#' @param id Character: identifier
+#' @rdname appUI
+#'
 #' @importFrom highcharter highchartOutput
 #' @importFrom shiny tagList uiOutput NS sidebarLayout numericInput h3 mainPanel
 #' actionButton
-#' @return Character with the HTML interface
 diffSplicingEventUI <- function(id) {
     ns <- NS(id)
     
@@ -586,7 +585,7 @@ spearman <- function(psi, groups) {
 #' @param group Character: group of the elements
 #' @param threshold Integer: number of valid non-missing values by group
 #' 
-#' @return Named vector with filtered elementes from valid groups. The group of 
+#' @return Named vector with filtered elements from valid groups. The group of 
 #' the respective element is given in the name.
 #' @export
 #' @examples 
@@ -602,15 +601,10 @@ filterGroups <- function(vector, group, threshold=1) {
     return(unlist(vector))
 }
 
-#' Server logic for the analyses of a single alternative splicing event
-#' @param input Shiny input
-#' @param output Shiny ouput
-#' @param session Shiny session
+#' @rdname appServer
 #' 
 #' @importFrom highcharter renderHighchart
 #' @importFrom shinyjs show hide
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
 diffSplicingEventServer <- function(input, output, session) {
     ns <- session$ns
     

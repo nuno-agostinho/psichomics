@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{renderDataTableSparklines}
 \alias{renderDataTableSparklines}
-\title{Render a data table with Sparkline HTML elements}
+\title{Render a data table with sparkline HTML elements}
 \usage{
 renderDataTableSparklines(..., options = NULL)
 }
@@ -28,10 +28,10 @@ in an interactive R Markdown document.}
 NULL (this function is used to modify the Shiny session's state)
 }
 \description{
-Render a data table with Sparkline HTML elements
+Render a data table with sparkline HTML elements
 }
 \details{
 This slightly modified version of \code{\link{renderDataTable}}
-calls a JavaScript function to convert the Sparkline HTML elements to
+calls a JavaScript function to convert the sparkline HTML elements to
 interactive Highcharts
 }
