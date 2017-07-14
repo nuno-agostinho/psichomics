@@ -1065,11 +1065,14 @@ diffAnalysesTableSet <- function(session, input, output) {
             type <- sapply(cols, function(i) class(stats[[i]]))
             numericCols <- cols[type == "numeric"]
             
-            for (col in numericCols) {
-                stats[ , col] <- suppressWarnings(
-                    as.numeric(signifDigits(stats[ , col])))
+            # Round numbers based on significant digits
+            if (nrow(stats) > 0) {
+                for (col in numericCols) {
+                    stats[ , col] <- suppressWarnings(
+                        as.numeric(signifDigits(stats[ , col])))
+                }
             }
-                
+            
             dataTableAjax(session, stats, outputId="statsTable")
             reloadData(proxy, resetPaging=resetPaging)
             if (!is.null(selected)) selectRows(proxy, selected)
