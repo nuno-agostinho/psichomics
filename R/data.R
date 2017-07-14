@@ -61,6 +61,25 @@ parseTcgaSampleInfo <- function (samples, match=NULL) {
     return(info)
 }
 
+#' Prepare TCGA sample metadata from loaded datasets
+#' 
+#' If no TCGA datasets apply, the input is returned
+#' 
+#' @param data List of list of data frames
+#' 
+#' @return List of list of data frames
+loadTCGAsampleMetadata <- function(data) {
+    for (i in seq(data)) {
+        junctionQuant <- data[[i]]$`Junction quantification`
+        if (!is.null(junctionQuant)) {
+            samples <- colnames(junctionQuant)
+            if (any(grepl("^TCGA", samples)))
+                data[[i]]$"Sample metadata" <- parseTcgaSampleInfo(samples)
+        }
+    }
+    return(data)
+}
+
 #' Create a modal warning the user of already loaded data
 #' @param modalId Character: identifier of the modal
 #' @param replaceButtonId Character: identifier of the button to replace data
