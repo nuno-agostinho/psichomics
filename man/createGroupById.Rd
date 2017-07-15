@@ -4,14 +4,12 @@
 \alias{createGroupById}
 \title{Create groups based on given row indexes or identifiers}
 \usage{
-createGroupById(session, rows, dataset, identifiers)
+createGroupById(session, rows, identifiers)
 }
 \arguments{
 \item{session}{Shiny session}
 
 \item{rows}{Character: comma-separated row indexes or identifiers}
-
-\item{dataset}{Matrix or data frame: dataset}
 
 \item{identifiers}{Character: available identifiers}
 }

@@ -117,7 +117,6 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
     ns <- session$ns
     
     isolate({
-        clinical      <- getClinicalData()
         patients      <- getPatientId()
         psi           <- getInclusionLevels()
         match         <- getClinicalMatchFrom("Inclusion levels")
@@ -136,6 +135,10 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
         scale      <- input$scale
         # Get chosen groups
         chosen <- getSelectedGroups(input, "dataGroups")
+        # Get clinical data for the required attributes
+        followup <- "days_to_last_followup"
+        clinical <- getClinicalDataForSurvival(timeStart, timeStop, event,
+                                               followup, formulaStr=formulaStr)
     })
     
     if (outGroup)
@@ -143,7 +146,7 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
     else
         outGroupName <- NA
     
-    if (is.null(clinical)) {
+    if ( is.null(patients) ) {
         missingDataModal(session, "Clinical data", ns("missingClinical"))
         return(NULL)
     } else if (modelTerms == "none") {
@@ -166,7 +169,7 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
         
         # Assign alternative splicing quantification to patients based on
         # their samples
-        clinicalPSI <- getPSIperPatient(psi, match, clinical)
+        clinicalPSI <- getPSIperPatient(psi, match, patients=patients)
         eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
         
         # Assign a value based on the inclusion levels cutoff
@@ -223,7 +226,7 @@ survivalServer <- function(input, output, session) {
     selectGroupsServer(session, "dataGroups")
     
     observe({
-        if (is.null(getClinicalData())) {
+        if ( is.null(getPatientAttributes()) ) {
             show("survivalDialog")
             hide("survivalOptions")
         } else {
@@ -235,8 +238,7 @@ survivalServer <- function(input, output, session) {
     
     # Update available clinical data attributes to use in a formula
     output$formulaSuggestions <- renderUI({
-        attributes <- names(getClinicalData())
-        textSuggestions(ns("formula"), attributes)
+        textSuggestions(ns("formula"), getPatientAttributes())
     })
     
     # Update selectize input label depending on the chosen censoring type
@@ -248,7 +250,7 @@ survivalServer <- function(input, output, session) {
     })
     
     # Update available clinical attributes when the clinical data changes
-    observe( updateClinicalParams(session, getClinicalData()) )
+    observe( updateClinicalParams(session, getPatientAttributes()) )
     
     observeEvent(input$missingClinical, missingDataGuide("Clinical data"))
     observeEvent(input$missingInclusionLevels,
@@ -408,7 +410,7 @@ survivalServer <- function(input, output, session) {
     
     # Calculate optimal inclusion levels
     output$pvaluePlot <- renderUI({
-        clinical      <- getClinicalData()
+        patients      <- getPatientId()
         psi           <- getInclusionLevels()
         match         <- getClinicalMatchFrom("Inclusion levels")
         splicingEvent <- getEvent()
@@ -417,8 +419,12 @@ survivalServer <- function(input, output, session) {
         timeStop      <- input$timeStop
         event         <- input$event
         censoring     <- input$censoring
+        # Get clinical data for the required attributes
+        followup <- "days_to_last_followup"
+        clinical <- getClinicalDataForSurvival(timeStart, timeStop, event,
+                                               followup)
         
-        if (is.null(clinical)) {
+        if (is.null(patients)) {
             hide("psiCutoff")
             return(helpText(icon("exclamation-circle"), 
                             "Please, load clinical data."))
@@ -439,7 +445,7 @@ survivalServer <- function(input, output, session) {
             
             # Assign alternative splicing quantification to patients based on
             # their samples
-            clinicalPSI <- getPSIperPatient(psi, match, clinical)
+            clinicalPSI <- getPSIperPatient(psi, match, patients=patients)
             eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
             
             # Calculate optimal alternative splicing quantification cutoff
@@ -513,7 +519,7 @@ survivalServer <- function(input, output, session) {
     
     # Update contextual information for selected PSI cutoff
     observeEvent(input$psiCutoff, {
-        clinical      <- getClinicalData()
+        patients      <- getPatientId()
         psi           <- getInclusionLevels()
         match         <- getClinicalMatchFrom("Inclusion levels")
         splicingEvent <- getEvent()
@@ -523,13 +529,17 @@ survivalServer <- function(input, output, session) {
         event         <- input$event
         censoring     <- input$censoring
         psiCutoff     <- input$psiCutoff
+        # Get clinical data for the required attributes
+        followup <- "days_to_last_followup"
+        clinical <- getClinicalDataForSurvival(timeStart, timeStop, event,
+                                               followup)
         
-        if (is.null(getEvent()) || getEvent() == "" || 
-            is.null(getInclusionLevels()) || is.null(clinical)) return(NULL)
+        if (is.null(splicingEvent) || splicingEvent == "" || 
+            is.null(psi) || is.null(patients)) return(NULL)
         
         # Assign alternative splicing quantification to patients based on their
         # samples
-        clinicalPSI <- getPSIperPatient(psi, match, clinical)
+        clinicalPSI <- getPSIperPatient(psi, match, patients=patients)
         eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
         
         pvalue <- testSurvivalCutoff(
