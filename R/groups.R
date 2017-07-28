@@ -636,8 +636,8 @@ operateOnGroups <- function(input, session, operation, buttonId, symbol=" ",
         }
         
         groupName <- input$groupName
-        patients  <- seq(getPatientId())
-        samples   <- seq(getSampleId())
+        patients  <- getPatientId()
+        samples   <- getSampleId()
         matches   <- getClinicalMatchFrom("Inclusion levels")
         groups    <- setOperation(operation, groups, selected, symbol, 
                                   groupName, patients, samples, matches)
