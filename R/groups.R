@@ -9,7 +9,7 @@
 #' when no groups may be selected
 #' 
 #' @importFrom shiny fluidRow column uiOutput selectizeInput actionButton
-#' radioButtons actionLink
+#' radioButtons actionLink downloadLink
 #' 
 #' @note To allow the user to (explicitly) select no groups, pass the 
 #' \code{noGroupsLabel} and \code{groupsLabel} arguments.
@@ -66,7 +66,7 @@ selectGroupsUI <- function (
 #' @param session Shiny session
 #' @param id Character: identifier of the group selection
 #' 
-#' @importFrom shinyjs enable disable onclick toggleClass
+#' @importFrom shinyjs enable disable onclick toggleClass runjs
 #' 
 #' @return Server logic for group selection
 selectGroupsServer <- function(session, id) {
@@ -110,6 +110,7 @@ selectGroupsServer <- function(session, id) {
 }
 
 #' @rdname appUI
+#' @importFrom shinyBS bsCollapse bsCollapsePanel
 groupsUI <- function(id) {
     ns <- NS(id)
     
@@ -169,13 +170,200 @@ groupsUI <- function(id) {
         }
     }
     
+    anyPatients <- !is.null(getPatientId())
+    anySamples  <- !is.null(getSampleId())
+    
     tagList(
         uiOutput(ns("alert")),
-        tabsetPanel(id=ns("groupBy"), type="pills",
-                    groupOptions("Patients", !is.null(getPatientId()) ),
-                    groupOptions("Samples", !is.null(getSampleId()) )),
-        uiOutput(ns("groupsList")))
+        tags$div(
+            class="well",
+            tabsetPanel(id=ns("groupBy"), type="pills",
+                        groupOptions("Patients", anyPatients),
+                        groupOptions("Samples", anySamples))),
+        bsCollapse(
+            id=ns("groupCollapse"),
+            bsCollapsePanel(
+                title=tagList(icon("list-ul"), "Data groups"),
+                value="Data groups", style="info",
+                renderGroupInterface(ns))))
 }
+
+#' Render group interface
+#' 
+#' @param ns Namespace function
+#' 
+#' @importFrom shiny actionButton actionLink downloadLink tags
+#' @importFrom shinyjs disabled
+#' 
+#' @return HTML elements
+renderGroupInterface <- function(ns) {
+    renameId <- "renameGroupName"
+    removeId <- "removeGroups"
+    
+    # Set operations
+    mergeId      <- "mergeGroups"
+    intersectId  <- "intersectGroups"
+    moreId       <- "moreSetOperations"
+    complementId <- "complementGroups"
+    subtractId   <- "subtractGroups"
+    subtract2Id  <- "subtract2Groups"
+    symDiffId    <- "symDiffGroups"
+    
+    # Save and load groups
+    saveLoadId           <- "saveLoadGroups"
+    saveSelectedGroupsId <- "saveSelectedGroups"
+    saveAllGroupsId      <- "saveAllGroups"
+    loadGroupsId         <- "loadGroups"
+    
+    operationElement <- function(operation, ..., id=NULL, icon=NULL,
+                                 FUN=actionButton, width=NULL, disable=TRUE) {
+        buttonId <- paste(id, "button", sep="-")
+        button <- FUN(buttonId, operation, icon=icon, width=width, ...)
+        
+        if (identical(FUN, actionLink) || identical(FUN, downloadLink)) {
+            itemId <- paste(id, "list", sep="-")
+            button <- tags$li(id=itemId, button)
+        }
+        
+        if (disable) button <- disabled(button)
+        return(button)
+    }
+    
+    operationButton <- function(...) operationElement(..., FUN=actionButton)
+    operationLink   <- function(...) operationElement(..., FUN=actionLink)
+    downloadContent <- function(...) operationElement(..., FUN=downloadLink)
+    
+    # Set operations
+    complementLink <- operationLink(
+        "Complement", id=ns(complementId),
+        helpText("Create a group with the elements outside the",
+                 "selected group(s)"),
+        icon=setOperationIcon("complement-AB"),
+        disable=FALSE)
+    
+    subtractLink <- operationLink(
+        "Subtract elements from upper-selected group",
+        helpText("Create a group with the exclusive",
+                 "elements from the upper-selected group"),
+        id=ns(subtractId),
+        icon=setOperationIcon("difference-AB"))
+    
+    subtract2Link <- operationLink(
+        "Subtract elements from lower-selected group",
+        helpText("Create a group with the exclusive",
+                 "elements from the lower-selected group"),
+        id=ns(subtract2Id),
+        icon=setOperationIcon("difference-BA"))
+    
+    symDiffLink <- operationLink(
+        "Symmetric difference",
+        helpText("Create a group with the non-intersecting",
+                 "elements of selected groups"),
+        id=ns(symDiffId),
+        icon=setOperationIcon("symmetric-difference"))
+    
+    operations <- div(
+        id=ns("setOperations"), class="btn-group",
+        operationButton("Merge", id=ns(mergeId),
+                        icon=setOperationIcon("union")),
+        operationButton("Intersect", id=ns(intersectId),
+                        icon=setOperationIcon("intersect")),
+        tags$div(
+            class="btn-group", role="group",
+            tags$button("More", id=ns(moreId), tags$span(class="caret"),
+                        class="btn btn-default dropdown-toggle",
+                        "data-toggle"="dropdown",
+                        "aria-haspopup"="true", "aria-expanded"="true"),
+            tags$ul(class="dropdown-menu",
+                    complementLink,
+                    subtractLink,
+                    subtract2Link,
+                    symDiffLink)))
+    
+    # Save and load groups
+    saveSelectedGroupsLink <- downloadContent(
+        icon("user"), 
+        "Retrieve patients/samples from selected group(s)",
+        class=NULL,
+        helpText("Export a file containing patient and/or sample",
+                 "identifiers by group"),
+        id=ns(saveSelectedGroupsId))
+    
+    saveAllGroupsLink <- downloadContent(
+        icon("users"), class=NULL,
+        "Retrieve patients/samples from all groups",
+        helpText("Export a file containing patient and/or sample",
+                 "identifiers by group"),
+        id=ns(saveAllGroupsId),
+        disable=FALSE)
+    
+    loadGroupsLink <- operationLink(
+        "Load groups",
+        helpText("Import a file containing patient and/or sample",
+                 "identifiers by group"),
+        id=ns(loadGroupsId),
+        icon=icon("folder-open"),
+        disable=FALSE)
+    
+    saveLoadGroups <- tags$div(
+        class="btn-group", role="group",
+        tags$button(icon("user-circle"), id=ns(saveLoadId),
+                    tags$span(class="caret"),
+                    class="btn btn-default dropdown-toggle",
+                    "data-toggle"="dropdown",
+                    "aria-haspopup"="true", "aria-expanded"="true"),
+        tags$ul(class="dropdown-menu",
+                saveSelectedGroupsLink,
+                saveAllGroupsLink,
+                tags$li(role="separator", class="divider"),
+                loadGroupsLink))
+    
+    removeButton <- operationButton("Remove", id=ns(removeId),
+                                    class="btn-danger",
+                                    icon=icon("times"))
+    
+    removeAllLink <- operationLink("Remove all groups",
+                                   id=ns("removeAll"),
+                                   class="li-danger",
+                                   icon=icon("trash"),
+                                   disable=FALSE)
+    
+    # Rename interface
+    renameButton <- operationButton("Rename", id=ns(renameId),
+                                    class="pull-right",
+                                    icon=icon("pencil"))
+    nameField <- textInput(ns("groupName"), label=NULL, 
+                           placeholder="Rename selected group")
+    nameField$attribs$style <- "margin: 0"
+    renameInterface <- div(
+        id=ns("renameAlert"), class="alert", role="alert",
+        class="alert-info",
+        style=" margin-top: 10px; margin-bottom: 0px;",
+        div(class="input-group", nameField,
+            div(class="input-group-btn", renameButton)))
+    
+    tagList(
+        dataTableOutput(ns("groupsTable")),
+        helpText("Select groups by clicking on each one to perform the",
+                 "following actions on them."),
+        operations,
+        saveLoadGroups,
+        tags$div(class="btn-group pull-right",
+                 removeButton,
+                 tags$button(type="button", tags$span(class="caret"),
+                             class="btn btn-danger dropdown-toggle",
+                             "data-toggle"="dropdown",
+                             "aria-haspopup"="true",
+                             "aria-expanded"="false"),
+                 tags$ul(class="dropdown-menu",
+                         style="background-color: #d9534f;",
+                         style="border-color: #d43f3a;",
+                         removeAllLink)),
+        #checkboxInput(ns("removeSetsUsed"), "Remove original groups",
+        #              value=TRUE)
+        hidden(renameInterface))
+}
+
 
 #' User interface to group by attribute
 #' 
@@ -280,19 +468,31 @@ createGroup <- function(session, input, output, id, type) {
         dataset <- getClinicalData()
     else if (id == "Samples")
         dataset <- getSampleInfo()
-    new <- createGroupFromInput(session, input, output, dataset, id, type)
     
-    if (!is.null(new)) {
-        # Rename duplicated group names
-        groups <- getGroupsFrom("Clinical data", complete=TRUE)
-        new <- renameGroups(new, groups)
-        
-        # Append the new group(s) to the groups already created
-        groups <- rbind(new, groups)
-        setGroupsFrom("Clinical data", groups)
-    }
+    new <- createGroupFromInput(session, input, output, dataset, id, type)
+    if (!is.null(new))
+        appendNewGroups(new)
+    
     updateSelectizeInput(session, paste0("groupAttribute", id),
                          selected=character())
+}
+
+#' Append new groups to already existing groups
+#' 
+#' Retrieve previous groups, rename duplicated group names in the new groups
+#' and append new groups to the previous ones
+#' 
+#' @param new Rows of groups to be added
+#' 
+#' @return NULL (this function is used to modify the Shiny session's state)
+appendNewGroups <- function(new) {
+    # Rename duplicated group names
+    groups <- getGroupsFrom("Clinical data", complete=TRUE)
+    new <- renameGroups(new, groups)
+    
+    # Append the new group(s) to the groups already created
+    groups <- rbind(new, groups)
+    setGroupsFrom("Clinical data", groups)
 }
 
 #' Set new groups according to the user input
@@ -386,11 +586,11 @@ createGroupFromInput <- function (session, input, output, dataset, id, type) {
                                           match=match)
             group <- cbind(group, "Samples"=samples)
         } else if (id == "Samples") {
-            samples <- group[ , "Samples"]
-            patients <- lapply(group[ , "Samples"], function(i) {
+            samples2patients <- function(i, match) {
                 m <- match[i]
                 return(unique(m[!is.na(m)]))
-            })
+            }
+            patients <- lapply(group[ , "Samples"], samples2patients, match)
             group <- cbind(group, "Patients"=patients)
             group <- group[ , c(1:3, 5, 4), drop=FALSE]
         }
@@ -513,7 +713,7 @@ setOperation <- function(operation, groups, selected, symbol=" ",
     # Create new set
     new <- NULL
     if (!identical(operation, "remove") && !identical(operation, "rename")) {
-        mergedFields <- lapply(1:3, function(i) {
+        setOperationString <- function(i) {
             start <- NULL
             if (operation == "complement" && symbol != " ") {
                 start  <- symbol
@@ -529,12 +729,16 @@ setOperation <- function(operation, groups, selected, symbol=" ",
             }
             
             if (!is.null(start)) {
-                names <- paste0("(", start, names, ")")
+                if (!is.null(selected))
+                    names <- paste0("(", start, names, ")")
+                else
+                    names <- "Universe"
             }
             return(names)
-        })
+        }
+        setOperated <- lapply(1:3, setOperationString)
         if ( !is.null(groupName) && !identical(groupName, "") )
-            mergedFields[[1]] <- groupName
+            setOperated[[1]] <- groupName
         ncol <- 3
         
         operate <- function(col) {
@@ -558,14 +762,14 @@ setOperation <- function(operation, groups, selected, symbol=" ",
             }
         }
         
-        if ("Samples" %in% colnames(groups)) {
+        if ("Samples" %in% colnames(groups) || !is.null(samples)) {
             samples <- operate("Samples")
             ncol <- ncol + 1
         } else {
             samples <- NULL
         }
         
-        if ("Patients" %in% colnames(groups)) {
+        if ("Patients" %in% colnames(groups) || !is.null(patients)) {
             patients <- operate("Patients")
             if (!is.null(samples) && !is.null(matches)) {
                 # Include patients if their samples were included in same group
@@ -581,7 +785,7 @@ setOperation <- function(operation, groups, selected, symbol=" ",
         
         if (!is.null(patients)) patients <- list(patients)
         if (!is.null(samples)) samples <- list(samples)
-        new <- matrix(c(mergedFields, patients, samples), ncol=ncol)
+        new <- matrix(c(setOperated, patients, samples), ncol=ncol)
     }
     
     # Add new groups to the top
@@ -603,6 +807,15 @@ setOperation <- function(operation, groups, selected, symbol=" ",
         groups[selected, ] <- renamed[ , ]
         rownames(groups)[selected] <- groups[selected, "Names"]
     }
+    
+    # Correctly fill column names if empty
+    if (is.null(colnames(groups))) {
+        names <- c("Names", "Subset", "Input")
+        if (!is.null(patients)) names <- c(names, "Patients")
+        if (!is.null(samples))  names <- c(names, "Samples")
+        colnames(groups) <- names
+    }
+    
     return(groups)
 }
 
@@ -690,24 +903,32 @@ showGroupsTable <- function(datasetName) {
 #' @inheritParams operateOnGroups
 #' 
 #' @importFrom DT renderDataTable dataTableOutput
-#' @importFrom shinyjs disabled enable disable hidden show hide
+#' @importFrom shinyjs disabled enable disable hidden show hide runjs
 #' @importFrom shiny textInput
+#' @importFrom shinyBS updateCollapse
 groupsServer <- function(input, output, session, datasetName) {
     ns <- session$ns
     
     # Create new group(s)
     createGroupOptions <- function(id) {
+        collapse <- "groupCollapse"
+        panel    <- "Data groups"
+        
         observeEvent(input[[paste0("createGroupAttribute", id)]], {
             createGroup(session, input, output, id, type="Attribute")
+            updateCollapse(session, collapse, open=panel)
         })
         
         observeEvent(input[[paste0("createGroupRows", id)]], {
             createGroup(session, input, output, id, type="Index/Identifier")
+            updateCollapse(session, collapse, open=panel)
         })
         
         observeEvent(input[[paste0("createGroupSubset", id)]], {
             createGroup(session, input, output, id, type="Subset")
+            updateCollapse(session, collapse, open=panel)
         })
+        
         # Update available attributes to suggest in the subset expression
         output[[paste0("groupExpressionSuggestions", id)]] <- renderUI({
             if (id == "Patients")
@@ -719,23 +940,66 @@ groupsServer <- function(input, output, session, datasetName) {
         
         observeEvent(input[[paste0("createGroupRegex", id)]], {
             createGroup(session, input, output, id, type="Regex")
+            updateCollapse(session, collapse, open=panel)
         })
     }
     
     observe( createGroupOptions("Patients") )
     observe( createGroupOptions("Samples") )
     
-    # Render groups list and show interface to manage groups
-    output$groupsTable <- renderDataTable(
-        showGroupsTable(datasetName), style="bootstrap", escape=FALSE, 
-        server=TRUE, rownames=FALSE,
-        options=list(pageLength=10, lengthChange=FALSE, scrollX=TRUE,
-                     ordering=FALSE,
-                     # Stack DataTable elements so they fit in the container
-                     dom=paste0(
-                         '<"row view-filter"<"col-sm-12"<"pull-left"l>',
-                         '<"pull-right"f><"clearfix">>>',
-                         'rt<"row view-pager"<"col-sm-12"<"text-center"ip>>>')))
+    # Render data table with groups
+    output$groupsTable <- renderDataTable({
+        table <- datasetName
+        if (!is.null(table)) {
+            dataTable <- showGroupsTable(table)
+            if (!is.null(dataTable)) {
+                plus <- '<i class="fa fa-plus-circle" aria-hidden="true"></i>'
+                return(cbind(' ' = plus, dataTable))
+            }
+        }
+        cols <- c("Names", "Patients", "Samples", "Subset", "Input")
+        mf <- matrix(ncol=5, dimnames=list(NA, cols))
+        return(mf[-1, ])
+    }, style="bootstrap", escape=FALSE, 
+    server=TRUE, rownames=FALSE,
+    options=list(
+        pageLength=10, lengthChange=FALSE, scrollX=TRUE, ordering=FALSE,
+        columnDefs = list(
+            list(orderable=FALSE, className='details-control', targets=0)),
+        # Stack DataTable elements so they fit in the container
+        dom=paste0(
+            '<"row view-filter"<"col-sm-12"<"pull-left"l>',
+            '<"pull-right"f><"clearfix">>>',
+            'rt<"row view-pager"<"col-sm-12"<"text-center"ip>>>')),
+    callback = JS(
+        "var plus  = '<i class=\"fa fa-plus-circle\" aria-hidden=\"true\"></i>';",
+        "var minus = '<i class=\"fa fa-minus-circle\" aria-hidden=\"true\"></i>';",
+        "var cols = table.columns()[0].slice(-2);",
+        "table.columns(cols).visible(false, false);",
+        "table.columns.adjust().draw(false);",
+        "var format = function(d) {
+            return '<table class=\"table table-details\" border=\"0\">'+
+                '<tr>'+
+                '<td>Subset:</td>'+
+                '<td>'+ d[d.length - 2] +'</td>'+
+                '</tr>'+
+                '<tr>'+
+                '<td>Input:</td>'+
+                '<td>' + d[d.length - 1] + '</td>'+
+                '</tr>'+
+                '</table>';
+        };",
+        "table.on('click', 'td.details-control', function() {
+            var td = $(this),
+                row = table.row(td.closest('tr'));
+            if (row.child.isShown()) {
+                row.child.hide();
+                td.html(plus);
+            } else {
+                row.child( format(row.data()), 'no-padding' ).show();
+                td.html(minus);
+            }
+        });"))
     
     # Remove selected groups
     removeId <- "removeGroups"
@@ -784,6 +1048,11 @@ groupsServer <- function(input, output, session, datasetName) {
                     datasetName=datasetName, buttonId=symDiffId,
                     symbol=" \u2A01 ")
     
+    saveLoadId           <- "saveLoadGroups"
+    saveSelectedGroupsId <- "saveSelectedGroups"
+    saveAllGroupsId      <- "saveAllGroups"
+    loadGroupsId         <- "loadGroups"
+    
     # Disable set operations according to the selected rows
     observe({
         getButtonId <- function(id) paste(id, "button", sep="-")
@@ -797,10 +1066,19 @@ groupsServer <- function(input, output, session, datasetName) {
         subtractButton   <- getListId(subtractId)
         subtractButton2  <- getListId(subtract2Id)
         symDiffButton    <- getListId(symDiffId)
+        selGroupsButton  <- getListId(saveSelectedGroupsId)
+        allGroupsButton  <- getListId(saveAllGroupsId)
+        
+        # Disable data group export when no groups were yet created
+        groups <- getGroupsFrom("Clinical data", complete=TRUE)
+        if (!is.null(groups) && nrow(groups) > 0)
+            enable(allGroupsButton)
+        else
+            disable(allGroupsButton)
         
         selectedRows <- length(input$groupsTable_rows_selected)
         # Number of groups selected to enable each set operation
-        # - complement: >= 1
+        # - complement: >= 0
         # - remove:     >= 1
         # - subtract:   2
         # - merge:      >= 2
@@ -808,13 +1086,11 @@ groupsServer <- function(input, output, session, datasetName) {
         # - sym diff:   >= 2
         
         if (selectedRows >= 1) {
-            enable(moreButton)
-            enable(complementButton)
             enable(removeButton)
+            enable(selGroupsButton)
         } else {
-            disable(moreButton)
-            disable(complementButton)
             disable(removeButton)
+            disable(selGroupsButton)
         }
         
         if (selectedRows == 2) {
@@ -853,100 +1129,173 @@ groupsServer <- function(input, output, session, datasetName) {
             enable(renameButton)
     })
     
-    # Render groups interface only if at least one group exists
-    output$groupsList <- renderUI({
-        groups <- getGroupsFrom(datasetName, complete=TRUE)
-        
-        operationElement <- function(operation, ..., id=NULL, icon=NULL,
-                                     FUN=actionButton, width=NULL) {
-            buttonId <- paste(id, "button", sep="-")
-            button <- FUN(buttonId, operation, icon=icon, width=width, ...)
-            
-            if (identical(FUN, actionLink)) {
-                itemId <-paste(id, "list", sep="-")
-                button <- tags$li(id=itemId, button)
-            }
-            return(button)
-        }
-        
-        operationButton <- function(...) operationElement(..., FUN=actionButton)
-        operationLink   <- function(...) operationElement(..., FUN=actionLink)
-        
-        # Don't show anything when there are no groups
-        if (!is.null(groups) && nrow(groups) > 0) {
-            operations <- div(
-                id=ns("setOperations"), class="btn-group",
-                operationButton("Merge", id=ns(mergeId),
-                                icon=setOperationIcon("union")),
-                operationButton("Intersect", id=ns(intersectId),
-                                icon=setOperationIcon("intersect")),
-                tags$div(
-                    class="btn-group", role="group",
-                    tags$button("More", id=ns(moreId), tags$span(class="caret"),
-                                class="btn btn-default dropdown-toggle",
-                                "data-toggle"="dropdown",
-                                "aria-haspopup"="true", "aria-expanded"="true"),
-                    tags$ul(
-                        class="dropdown-menu",
-                        operationLink(
-                            "Complement", id=ns(complementId),
-                            helpText("Create a group with elements outside the",
-                                     "selected group(s)"),
-                            icon=setOperationIcon("complement-AB")),
-                        operationLink(
-                            "Subtract elements from upper-selected group",
-                            helpText("Create a group with the exclusive",
-                                     "elements from the upper-selected group"),
-                            id=ns(subtractId),
-                            icon=setOperationIcon("difference-AB")),
-                        operationLink(
-                            "Subtract elements from lower-selected group",
-                            helpText("Create a group with the exclusive",
-                                     "elements from the lower-selected group"),
-                            id=ns(subtract2Id),
-                            icon=setOperationIcon("difference-BA")),
-                        operationLink(
-                            "Symmetric difference",
-                            helpText("Create a group with the non-intersecting",
-                                     "elements of selected groups"),
-                            id=ns(symDiffId),
-                            icon=setOperationIcon("symmetric-difference")))),
-                operationButton("Remove", id=ns(removeId), class="btn-danger",
-                                icon=icon("times")))
-            
-            removeAllButton <- actionButton(ns("removeAll"), class="btn-danger",
-                                            class="pull-right",
-                                            "Remove all groups",
-                                            icon=icon("trash"))
-            
-            renameButton <- operationButton("Rename", id=ns(renameId),
-                                            class="pull-right",
-                                            icon=icon("pencil"))
-            nameField <- textInput(ns("groupName"), label=NULL, 
-                                   placeholder="Rename selected group")
-            nameField$attribs$style <- "margin: 0"
-            renameInterface <- div(
-                id=ns("renameAlert"), class="alert", role="alert",
-                class="alert-info",
-                style=" margin-top: 10px; margin-bottom: 0px;",
-                div(class="input-group", nameField,
-                    div(class="input-group-btn", renameButton)))
-            
-            tagList(
-                hr(),
-                dataTableOutput(ns("groupsTable")),
-                helpText("Select groups by clicking on each one to perform the",
-                         "following actions on them."),
-                disabled(operations),
-                removeAllButton,
-                #checkboxInput(ns("removeSetsUsed"), "Remove original groups",
-                #              value=TRUE)
-                hidden(renameInterface)
-            )
-        }
-    })
+    # Remove all groups
+    observeEvent(input[["removeAll-button"]], setGroupsFrom(datasetName, NULL))
     
-    observeEvent(input$removeAll, setGroupsFrom(datasetName, NULL))
+    # Export groups to file
+    exportGroupsToFile <- function(groups, file, match) {
+        data <- NULL
+        for (g in seq(nrow(groups))) {
+            group    <- groups[g, ]
+            name     <- group$Names
+            samples  <- group$Samples
+            patients <- group$Patients
+            
+            if (!is.null(samples) && length(samples) > 0) {
+                if (!is.null(patients) && length(patients) > 0) {
+                    # Match samples to patients available in the group
+                    matchingPatients <- match[samples]
+                    matchingPatients[!match[samples] %in% patients] <- NA
+                } else {
+                    matchingPatients <- NA
+                }
+                data <- rbind(data, cbind(name, samples, matchingPatients))
+                
+                # Get remaining patients
+                patients <- patients[!patients %in% matchingPatients]
+                if (length(patients) > 0) {
+                    data <- rbind(data, cbind(name, NA, patients))
+                }
+            } else {
+                data <- rbind(data, cbind(name, NA, patients))
+            }
+        }
+        colnames(data) <- c("Group", "Sample ID", "Patient ID")
+        rownames(data) <- NULL
+        write.table(data, file, quote=FALSE, row.names=FALSE, sep="\t")
+    }
+    
+    output[["saveSelectedGroups-button"]] <- downloadHandler(
+        filename = function() {
+            paste0("psichomics groups ", getCategory(), ".txt")
+        }, content = function(file) {
+            # Get selected groups
+            selected <- sort(input$groupsTable_rows_selected)
+            groups   <- getGroupsFrom("Clinical data", complete=TRUE)
+            groups   <- groups[selected, , drop=FALSE]
+            
+            match <- getClinicalMatchFrom("Inclusion levels")
+            exportGroupsToFile(groups, file, match)
+        }
+    )
+    
+    output[["saveAllGroups-button"]] <- downloadHandler(
+        filename = function() {
+            paste0("psichomics groups ", getCategory(), ".txt")
+        }, content = function(file) {
+            groups <- getGroupsFrom("Clinical data", complete=TRUE)
+            match <- getClinicalMatchFrom("Inclusion levels")
+            exportGroupsToFile(groups, file, match)
+        }
+    )
+    
+    # Import groups from file
+    observeEvent(input[["loadGroups-button"]], {
+        importGroupsFrom <- function (file, allPatients, allSamples, match) {
+            # Check if file contains group information
+            format <- NULL
+            format$check <- c("Group", "Sample ID", "Patient ID")
+            format$colNames   <- 1
+            format$ignoreRows <- 1
+            
+            head <- fread(file, header=FALSE, nrows=6, stringsAsFactors=FALSE, 
+                          data.table=FALSE)
+            
+            isGroupFile <- checkFileFormat(format, head)
+            if (isGroupFile) {
+                groups   <- loadFile(format, file)
+                samples  <- as.character(groups$"Sample ID")
+                patients <- as.character(groups$"Patient ID")
+                groups   <- as.character(groups$Group)
+                groups[is.na(groups)] <- "NA" # Retrieve groups named NA
+                
+                if (length(patients) == 0 && length(samples) == 0) return(NULL)
+                
+                # Prepare patients per group
+                patientGroupNames <- NULL
+                if (length(patients) > 0) {
+                    matched  <- patients %in% allPatients
+                    patients <- split(patients[matched], groups[matched])
+                    patientGroupNames <- names(patients)
+                }
+                
+                # Prepare samples per group
+                sampleGroupNames <- NULL
+                if (length(samples) > 0) {
+                    matched <- samples %in% allSamples
+                    samples <- split(samples[matched], groups[matched])
+                    sampleGroupNames <- names(samples)
+                }
+                
+                # Prepare matrix with imported groups
+                groupNames <- unique(c(patientGroupNames, sampleGroupNames))
+                imported   <- matrix(nrow=length(groupNames), ncol=3)
+                colnames(imported) <- c("Names", "Subset", "Input")
+                imported[ , "Names"]   <- groupNames
+                rownames(imported)     <- groupNames
+                
+                info <- paste("Groups loaded from file", file)
+                imported[ , "Subset"] <- info
+                imported[ , "Input"]  <- info
+                
+                fillEmptyGroups <- function(g, vec) {
+                    group <- vec[[g]]
+                    if (is.null(group))
+                        return(character(0))
+                    else
+                        return(group)
+                }
+                
+                if (!is.null(allPatients)) {
+                    if (length(patients) > 0) {
+                        patients <- lapply(groupNames, fillEmptyGroups, 
+                                           patients)
+                        patients[sapply(patients, is.null)] <- character(0)
+                        names(patients) <- groupNames
+                    } else if (!is.null(match)) {
+                        # Provide patients based on available samples
+                        samples2patients <- function(i, match) {
+                            m <- match[i]
+                            return(unique(m[!is.na(m)]))
+                        }
+                        patients <- lapply(samples, samples2patients, match)
+                    } else {
+                        patients <- list(character(0))
+                    }
+                    imported <- cbind(imported, "Patients"=patients)
+                }
+                
+                if (!is.null(allSamples)) {
+                    if (length(samples) > 0) {
+                        samples <- lapply(groupNames, fillEmptyGroups, samples)
+                        names(samples) <- groupNames
+                    } else {
+                        samples <- list(character(0))
+                    }
+                    imported <- cbind(imported, "Samples"=samples)
+                }
+                
+                return(imported)
+            } else {
+                return(NULL)
+            }
+        }
+        
+        groupsFile <- fileBrowser()
+        
+        isolate({
+            allPatients <- getPatientId()
+            allSamples  <- getSampleId()
+            match       <- getClinicalMatchFrom("Inclusion levels")
+        })
+        
+        imported   <- tryCatch(
+            importGroupsFrom(groupsFile, allPatients, allSamples, match), 
+            error=return)
+        
+        if (!is.null(imported) && !is(imported, "error"))
+            appendNewGroups(imported)
+    })
 }
 
 #' Server function for data grouping (one call)
@@ -980,12 +1329,14 @@ groupsServerOnce <- function(input, output, session) {
             setGroupsFrom("Clinical data", group)
         } else if ( !is.null(samples) && !showSamples && !is.null(clinical) &&
                     !is.null(match) ) {
-            # Update groups if previously made with patients only
-            patients <- group[ , "Patients"]
-            samples <- getMatchingSamples(patients, samples, clinical,
-                                          match=match)
-            group <- cbind(group, "Samples"=samples)
-            setGroupsFrom("Clinical data", group)
+            if ("Patients" %in% colnames(group)) {
+                # Update groups if previously made with patients only
+                patients <- group[ , "Patients"]
+                samples <- getMatchingSamples(patients, samples, clinical,
+                                              match=match)
+                group <- cbind(group, "Samples"=samples)
+                setGroupsFrom("Clinical data", group)
+            }
         }
     })
 }

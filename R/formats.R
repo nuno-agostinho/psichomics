@@ -8,9 +8,9 @@
 #' @param filename Character: name of the file
 #'
 #' @return TRUE if the file is of the given format; otherwise, returns FALSE
-checkFileFormat <- function(format, head, filename) {
+checkFileFormat <- function(format, head, filename="") {
     # If file name is of importance, check if the filename matches
-    if (isTRUE(format$matchName) &&
+    if (isTRUE(format$matchName) && !identical(filename, "") &&
         !grepl(format$filename, filename, fixed = TRUE))
         return(FALSE)
     
@@ -165,8 +165,8 @@ loadFileFormats <- function() {
 #' @return Data frame with the contents of the given file if the file format is
 #' recognised; otherwise, returns NULL
 parseValidFile <- function(file, formats, ...) {
-    # The number of rows to read will be the maximum value asked by all the file
-    # formats; if no format aks for a specific number of rows, the default is 6
+    # The maximum number of rows to check a file is the maximum value asked by
+    # the selected file formats; the default is 6
     headRows <- lapply(formats, "[[", "header_rows")
     headRows <- unlist(rm.null(headRows))
     headRows <- ifelse(!is.null(headRows), max(headRows), 6)

@@ -167,3 +167,45 @@ tr.active > td > a:link {
     text-decoration: underline;
 }
 tr.active > td > a:hover { font-weight: bold; }
+
+/* Make plus and minus sign for extra DataTable details look clickable */
+.details-control { cursor: pointer; }
+
+/* Improve style of table details */
+.table-details  {
+    margin-left: 15px;
+    color: gray;
+}
+
+/* Style list item as danger for dropdown menu */
+.li-danger {
+  color: #fff !important;
+  background-color: #d9534f !important;
+  border-color: #d9534f !important;
+}
+.li-danger:hover,
+.li-danger:active, .li-danger.active,
+.show > .li-danger.dropdown-toggle {
+  color: #fff !important;
+  background-color: #c9302c !important;
+  border-color: #ac2925 !important;
+}
+.li-danger:focus, .li-danger.focus {
+  color: #fff !important;
+  background-color: #c9302c !important;
+  border-color: #761c19 !important;
+}
+.li-danger.disabled, .li-danger:disabled {
+  background-color: #d9534f !important;
+  border-color: #d9534f !important;
+}
+
+/* Disable clicking on disabled elements from a dropdown menu */
+.dropdown-menu > .disabled{
+    cursor: not-allowed; 
+}
+
+/* Disable clicking on disabled links from a dropdown menu */
+.dropdown-menu > .disabled > a{
+    pointer-events: none;
+}
