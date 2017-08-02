@@ -706,7 +706,7 @@ setFirebrowseData <- function(input, output, session, replace=TRUE) {
 }
 
 #' @rdname appServer
-firebrowseServer <- function(input, output, session, active) {
+firebrowseServer <- function(input, output, session) {
     ns <- session$ns
     
     prepareFileBrowser(session, input, "dataFolder", directory=TRUE)
