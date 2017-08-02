@@ -357,23 +357,6 @@ dataServer <- function(input, output, session) {
     # Change the active dataset
     observe( setActiveDataset(input$datasetTab) )
     
-    # Update patient identifiers when clinical data is available
-    observe({
-        clinical <- getClinicalData()
-        if ( !is.null(clinical) )
-            setPatientId(rownames(clinical))
-        else
-            setPatientId(NULL)
-    })
-    
-    observe({
-        sampleInfo <- getSampleInfo()
-        if ( !is.null(sampleInfo) )
-            setSampleId( rownames(sampleInfo) )
-        else
-            setSampleId(NULL)
-    })
-    
     # Match clinical data with sample information
     observe({
         patients <- getPatientId()

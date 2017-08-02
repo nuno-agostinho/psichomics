@@ -59,6 +59,22 @@ analysesUI <- function(id, tab) {
     do.call(tab, c(list(icon="flask", title="Analyses", menu=TRUE), ui))
 }
 
+#' Retrieve clinical data based on attributes required for survival analysis
+#' 
+#' @param ... Character: names of columns to retrieve
+#' @param formulaStr Character: right-side of the formula for survival analysis
+#' 
+#' @return Filtered clinical data
+getClinicalDataForSurvival <- function(..., formulaStr=NULL) {
+    cols <- unlist(list(...))
+    if (!is.null(formulaStr) && formulaStr != "") {
+        form <- formula(paste("1 ~", formulaStr))
+        cols <- c(cols, all.vars(form))
+    }
+    clinical <- getClinicalData(cols)
+    return(clinical)
+}
+
 #' Assign the alternative splicing quantification of a single sample to patients
 #' 
 #' Assign alternative splicing quantification to patients based on the frequency
@@ -84,7 +100,10 @@ analysesUI <- function(id, tab) {
 #' 
 #' @param psi Data frame or matrix: alternative splicing quantification per
 #' samples
-#' @param clinical Data frame or matrix: clinical dataset
+#' @param clinical Data frame or matrix: clinical dataset (only required if the
+#' \code{patients} argument is not handed)
+#' @param patients Character: patient identifiers (only required if the
+#' \code{clinical} argument is not handed)
 #' @param pattern Character: pattern to use when filtering sample types (NULL by
 #' default, i.e. no filtering occurs)
 #' @param filterOut Boolean: filter out (TRUE) or filter in (FALSE) sample types
@@ -94,8 +113,15 @@ analysesUI <- function(id, tab) {
 #' 
 #' @return Alternative splicing quantification per clinical patients
 #' @export
-getPSIperPatient <- function(psi, match, clinical, pattern=NULL, 
-                             filterOut=TRUE) {
+getPSIperPatient <- function(psi, match, clinical=NULL, patients=NULL,
+                             pattern=NULL, filterOut=TRUE) {
+    if (is.null(clinical) && is.null(patients)) {
+        stop("You cannot leave both 'clinical' and 'patients' arguments ",
+             "as NULL.")
+    } else if (is.null(patients)) {
+        patients <- rownames(clinical)
+    }
+    
     # Get sample identifiers of interest
     types <- parseSampleGroups(names(match))
     
@@ -115,8 +141,8 @@ getPSIperPatient <- function(psi, match, clinical, pattern=NULL,
     matchSingle <- matchPatientToSingleSample(matchFiltered)
     
     # Match samples with clinical patients (remove non-matching samples)
-    clinicalPSI <- data.frame(matrix(NA, nrow=nrow(psi), ncol=nrow(clinical)))
-    colnames(clinicalPSI) <- rownames(clinical)
+    clinicalPSI <- data.frame(matrix(NA, nrow=nrow(psi), ncol=length(patients)))
+    colnames(clinicalPSI) <- patients
     rownames(clinicalPSI) <- rownames(psi)
     clinicalPSI[ , matchSingle] <- psi[ , names(matchSingle)]
     return(clinicalPSI)
@@ -226,7 +252,16 @@ processSurvData <- function(event, timeStart, timeStop, followup, group,
 getAttributesTime <- function(clinical, event, timeStart, timeStop=NULL,
                               followup="days_to_last_followup") {
     cols <- c(followup=followup, start=timeStart, stop=timeStop, event=event)
+    
+    # Retrive time for given attributes
+    timePerPatient <- function(col, clinical) {
+        cols <- grep(col, colnames(clinical), value=TRUE)
+        row  <- apply(clinical[cols], 1, function(i)
+            if(!all(is.na(i))) max(as.numeric(i), na.rm = TRUE) else NA)
+        return(row)
+    }
     survTime <- lapply(cols, timePerPatient, clinical)
+    
     survTime <- as.data.frame(survTime)
     class(survTime) <- c("data.frame", "survTime")
     return(survTime)
@@ -241,31 +276,17 @@ getColumnsTime <- function(clinical, event, timeStart, timeStop=NULL,
                       timeStop=timeStop, followup=followup)
 }
 
-#' Get all columns matching a given string and return a single vector with the
-#' max time for each patient if available
-#'
-#' @param col Character: column of interest
-#' @param clinical Data.frame: clinical data
-#'
-#' @return Numeric vector with days recorded for columns of interest
-timePerPatient <- function(col, clinical) {
-    cols <- grep(col, names(clinical))
-    row <- apply(clinical[cols], 1, function(i)
-        if(!all(is.na(i))) max(as.numeric(i), na.rm = TRUE) else NA)
-    return(row)
-}
-
 #' Update available clinical attributes when the clinical data changes
 #' 
 #' @param session Shiny session
-#' @param clinical Data frame: clinical data
+#' @param attrs Character: patient attributes
 #' 
 #' @importFrom shiny observe updateSelectizeInput
 #' @return NULL (this function is used to modify the Shiny session's state)
-updateClinicalParams <- function(session, clinical) {
-    if (!is.null(clinical)) {
+updateClinicalParams <- function(session, attrs) {
+    if (!is.null(attrs)) {
         # Allow the user to select any "days_to" attribute available
-        daysTo <- grep("days_to_", names(clinical), value=TRUE, fixed=TRUE)
+        daysTo <- grep("days_to_", attrs, value=TRUE, fixed=TRUE)
         subDaysTo <- gsub(".*(days_to_.*)", "\\1", daysTo)
         choices <- unique(subDaysTo)
         names(choices) <- parseSplicingEvent(choices, char=TRUE)
@@ -274,31 +295,32 @@ updateClinicalParams <- function(session, clinical) {
         # Update choices for starting or follow up time
         updateSelectizeInput(
             session, "timeStart", choices=list(
+                "Select a clinical attribute"="",
                 "Suggested times"=choices,
-                "All clinical data columns"=names(clinical)),
+                "All clinical attributes"=attrs),
             selected="days_to_death")
         
         # Update choices for ending time
         updateSelectizeInput(
             session, "timeStop", choices=list(
+                "Select a clinical attribute"="",
                 "Suggested times"=choices,
-                "All clinical data columns"=names(clinical)))
+                "All clinical attributes"=attrs))
         
         # Update choices for events of interest
         names(choices) <- gsub("Days to ", "", names(choices), fixed=TRUE)
         names(choices) <- capitalize(names(choices))
         updateSelectizeInput(
             session, "event", choices=list(
+                "Select a clinical attribute"="",
                 "Suggested events"=choices,
-                "All clinical data columns"=names(clinical)),
+                "All clinical attributes"=attrs),
             selected="days_to_death")
     } else {
-        updateSelectizeInput(session, "timeStart", 
-                             choices=c("No clinical data loaded"=""))
-        updateSelectizeInput(session, "timeStop", 
-                             choices=c("No clinical data loaded"=""))
-        updateSelectizeInput(session, "event", 
-                             choices=c("No clinical data loaded"=""))
+        choices <- c("No clinical data loaded"="")
+        updateSelectizeInput(session, "timeStart", choices=choices)
+        updateSelectizeInput(session, "timeStop",  choices=choices)
+        updateSelectizeInput(session, "event",     choices=choices)
     }
 }
 

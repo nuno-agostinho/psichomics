@@ -4,7 +4,8 @@
 \alias{getPSIperPatient}
 \title{Assign the alternative splicing quantification of a single sample to patients}
 \usage{
-getPSIperPatient(psi, match, clinical, pattern = NULL, filterOut = TRUE)
+getPSIperPatient(psi, match, clinical = NULL, patients = NULL,
+  pattern = NULL, filterOut = TRUE)
 }
 \arguments{
 \item{psi}{Data frame or matrix: alternative splicing quantification per
@@ -12,7 +13,11 @@ samples}
 
 \item{match}{Matrix: match between samples and patients}
 
-\item{clinical}{Data frame or matrix: clinical dataset}
+\item{clinical}{Data frame or matrix: clinical dataset (only required if the
+\code{patients} argument is not handed)}
+
+\item{patients}{Character: patient identifiers (only required if the
+\code{clinical} argument is not handed)}
 
 \item{pattern}{Character: pattern to use when filtering sample types (NULL by
 default, i.e. no filtering occurs)}

@@ -314,7 +314,7 @@ getPatientFromSample <- function(sampleId, patientId=NULL, na=FALSE) {
 #' clinical <- data.frame(samples=samples)
 #' rownames(clinical) <- patients
 #' getMatchingSamples(patients[c(1, 4)], samples, clinical)
-getMatchingSamples <- function(patients, samples, clinical, rm.NA=TRUE,
+getMatchingSamples <- function(patients, samples, clinical=NULL, rm.NA=TRUE,
                                match=NULL, showMatch=FALSE) {
     if (is.null(match))
         match <- getPatientFromSample(samples, clinical)

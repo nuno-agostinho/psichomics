@@ -93,7 +93,69 @@ getActiveDataset <- reactive(sharedData$activeDataset)
 setActiveDataset <- function(dataset) setGlobal("activeDataset", value=dataset)
 
 #' @rdname getEvent
-getClinicalData <- reactive(getCategoryData()[["Clinical data"]])
+#' @param attrs Character: name of attributes to retrieve (if NULL, the whole 
+#' dataset is returned)
+getClinicalData <- function(attrs=NULL) {
+    clinical <- getCategoryData()[["Clinical data"]]
+    attrs <- attrs[attrs != ""]
+    if (!is.null(attrs)) {
+        cols <- lapply(attrs, grep, colnames(clinical), fixed=TRUE)
+        cols <- unique(unlist(cols))
+        if (length(cols) > 0) {
+            clinical <- clinical[ , cols, drop=FALSE]
+        } else {
+            clinical <- NULL
+        }
+    }
+    return(clinical)
+}
+
+#' @rdname getEvent
+getPatientId <- function() {
+    clinical <- getClinicalData()
+    if ( !is.null(clinical) ) {
+        return( rownames(clinical) )
+    } else {
+        return(NULL)
+    }
+}
+
+#' @rdname getEvent
+getPatientAttributes <- function() {
+    clinical <- getClinicalData()
+    if ( !is.null(clinical) ) {
+        patientAttrs <- colnames(clinical)
+        attr(patientAttrs, "default") <- attr(clinical, "show")
+        return(patientAttrs)
+    } else {
+        return(NULL)
+    }
+}
+
+#' @rdname getEvent
+getSampleInfo <- reactive(getCategoryData()[["Sample metadata"]])
+
+#' @rdname getEvent
+getSampleId <- function() {
+    sampleInfo <- getSampleInfo()
+    if ( !is.null(sampleInfo) ) {
+        return( rownames(sampleInfo) )
+    } else {
+        return(NULL)
+    }
+}
+
+#' @rdname getEvent
+getSampleAttributes <- function() {
+    sampleInfo <- getSampleInfo()
+    if ( !is.null(sampleInfo) ) {
+        sampleAttrs <- colnames(sampleInfo)
+        attr(sampleAttrs, "default") <- attr(sampleInfo, "show")
+        return(sampleAttrs)
+    } else {
+        return(NULL)
+    }
+}
 
 #' @rdname getEvent
 getJunctionQuantification <- function(category=getCategory()) {
@@ -120,32 +182,6 @@ getInclusionLevelsPCA <- function(category=getCategory())
 #' @param pca \code{prcomp} object (PCA) of inclusion levels
 setInclusionLevelsPCA <- function(pca, category=getCategory())
     setGlobal(category, "inclusionLevelsPCA", value=pca)
-
-#' @rdname getEvent
-getSampleInfo <- reactive(getCategoryData()[["Sample metadata"]])
-
-#' @rdname getEvent
-#' @param info Data frame or matrix: sample information
-setSampleInfo <- function(info, category=getCategory())
-    sharedData$data[[category]][["Sample metadata"]] <- info
-
-#' @rdname getEvent
-getPatientId <- function(category=getCategory())
-    getGlobal(category, "patients")
-
-#' @rdname getEvent
-#' @param patients Character: identifier of patients
-setPatientId <- function(patients, category=getCategory())
-    setGlobal(category, "patients", value=patients)
-
-#' @rdname getEvent
-getSampleId <- function(category=getCategory())
-    getGlobal(category, "samples")
-
-#' @rdname getEvent
-#' @param samples Character: identifier of samples
-setSampleId <- function(samples, category=getCategory())
-    setGlobal(category, "samples", value=samples)
 
 #' @rdname getEvent
 getSpecies <- function(category=getCategory())

@@ -116,37 +116,36 @@ groupsUI <- function(id) {
     
     groupOptions <- function(id, loaded) {
         if (id == "Patients") {
-            title <- "Group by patients"
+            title   <- "Group by patients"
             choices <- getPatientId()
-            dataset <- getClinicalData()
+            attrs   <- getPatientAttributes()
             example <- tagList(
                 "For instance, to create groups by tumour stage, type",
                 tags$b("tumor_stage"), "and select the first suggestion.")
         } else if (id == "Samples") {
             title <- "Group by samples"
             choices <- getSampleId()
-            dataset <- getSampleInfo()
+            attrs   <- getSampleAttributes()
             example <- NULL
         }
         
         modalId <- gsub("(.*)Call\\-.*", "\\1Show", ns(id))
-        missingData <- function(dataset, message, linkText)
+        missingData <- function(dataset, message, linkText) {
             div(class="alert alert-danger", role="alert",
                 icon("exclamation-circle"), message,
                 tags$a(linkText, onclick=loadRequiredData( modalId )))
+        }
         
         if (loaded) {
-            suggestedCols <- attr(dataset, "show")
+            suggestedCols <- attr(attrs, "default")
             if (!is.null(suggestedCols)) {
-                cols <- colnames(dataset)
-                suggestedIndex <- match(suggestedCols, cols)
+                suggestedIndex <- match(suggestedCols, attrs)
                 suggestedIndex <- suggestedIndex[!is.na(suggestedIndex)]
                 cols <- list("Start typing to search for attributes"="",
-                             "Suggested attributes"=cols[suggestedIndex],
-                             "Other attributes"=cols[-suggestedIndex])
+                             "Suggested attributes"=attrs[suggestedIndex],
+                             "Other attributes"=attrs[-suggestedIndex])
             } else {
-                cols <- colnames(dataset)
-                cols <- c("Start typing to search for columns"="", cols)
+                cols <- c("Start typing to search for columns"="", attrs)
             }
             
             navbarMenu(
@@ -517,8 +516,7 @@ createGroupFromInput <- function (session, input, output, dataset, id, type) {
         
         identifiers <- switch(id, "Patients"=getPatientId(),
                               "Samples"=getSampleId())
-        
-        allRows <- createGroupById(session, rows, dataset, identifiers)
+        allRows <- createGroupById(session, rows, identifiers)
         group <- cbind(input[[paste0("groupNameRows", id)]], type, strRows,
                        list(allRows))
     } else if (type == "Subset") {
@@ -574,15 +572,15 @@ createGroupFromInput <- function (session, input, output, dataset, id, type) {
         names(group) <- ns
     rownames(group) <- NULL
     
-    clinical <- getClinicalData()
-    samples <- getSampleId()
-    match <- getClinicalMatchFrom("Inclusion levels")
+    patients <- getPatientId()
+    samples  <- getSampleId()
+    match    <- getClinicalMatchFrom("Inclusion levels")
     
     # Match patients with samples (or vice-versa)
-    if (!is.null(clinical) && !is.null(samples) && !is.null(match)) {
+    if (!is.null(patients) && !is.null(samples) && !is.null(match)) {
         if (id == "Patients") {
             patients <- group[ , "Patients"]
-            samples <- getMatchingSamples(patients, samples, clinical,
+            samples <- getMatchingSamples(patients, samples, patients,
                                           match=match)
             group <- cbind(group, "Samples"=samples)
         } else if (id == "Samples") {
@@ -623,7 +621,7 @@ createGroupByAttribute <- function(col, dataset) {
     colData <- as.character(dataset[[col]])
     names(colData) <- rownames(dataset)
     
-    # Replace missing values for "NA" so they are found using the `which` function
+    # Replace missing values for "NA" so they are included by the "which" function
     colData[is.na(colData)] <- "NA"
     
     # Create groups according to the chosen column
@@ -638,12 +636,11 @@ createGroupByAttribute <- function(col, dataset) {
 #' 
 #' @param session Shiny session
 #' @param rows Character: comma-separated row indexes or identifiers
-#' @param dataset Matrix or data frame: dataset
 #' @param identifiers Character: available identifiers
 #' 
 #' @importFrom shiny tags
 #' @return Character: values based on given row indexes or identifiers
-createGroupById <- function(session, rows, dataset, identifiers) {
+createGroupById <- function(session, rows, identifiers) {
     # Check which strings match available identifiers
     matched <- rows %in% identifiers
     match <- match(rows[matched], identifiers)
@@ -664,7 +661,7 @@ createGroupById <- function(session, rows, dataset, identifiers) {
             session, "The following ", length(invalid),
             " indexes or identifiers were discarded:", tags$code(discarded))
     }
-    rows <- rownames(dataset)[unique(union(match, parsed[valid]))]
+    rows <- identifiers[unique(union(match, parsed[valid]))]
     return(rows)
 }
 
@@ -932,10 +929,10 @@ groupsServer <- function(input, output, session, datasetName) {
         # Update available attributes to suggest in the subset expression
         output[[paste0("groupExpressionSuggestions", id)]] <- renderUI({
             if (id == "Patients")
-                dataset <- getClinicalData()
+                attrs <- getPatientAttributes()
             else if (id == "Samples")
-                dataset <- getSampleInfo()
-            textSuggestions(ns(paste0("groupExpression", id)), names(dataset))
+                attrs <- getSampleAttributes()
+            textSuggestions(ns(paste0("groupExpression", id)), attrs)
         })
         
         observeEvent(input[[paste0("createGroupRegex", id)]], {
@@ -1312,9 +1309,9 @@ groupsServerOnce <- function(input, output, session) {
         # Ignore if there are no groups
         if (is.null(group)) return(NULL)
         
-        samples <- getSampleId()
-        clinical <- getClinicalData()
-        match <- getClinicalMatchFrom("Inclusion levels")
+        samples     <- getSampleId()
+        patients    <- getPatientId()
+        match       <- getClinicalMatchFrom("Inclusion levels")
         showSamples <- "Samples" %in% colnames(group)
         
         if ( is.null(samples) && showSamples ) {
@@ -1327,7 +1324,7 @@ groupsServerOnce <- function(input, output, session) {
                 group <- NULL
             }
             setGroupsFrom("Clinical data", group)
-        } else if ( !is.null(samples) && !showSamples && !is.null(clinical) &&
+        } else if ( !is.null(samples) && !showSamples && !is.null(patients) &&
                     !is.null(match) ) {
             if ("Patients" %in% colnames(group)) {
                 # Update groups if previously made with patients only
