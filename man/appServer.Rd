@@ -44,7 +44,7 @@ appServer(input, output, session)
 
 dataServer(input, output, session)
 
-firebrowseServer(input, output, session, active)
+firebrowseServer(input, output, session)
 
 gtexDataServer(input, output, session)
 

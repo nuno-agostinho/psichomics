@@ -1328,9 +1328,8 @@ groupsServerOnce <- function(input, output, session) {
                     !is.null(match) ) {
             if ("Patients" %in% colnames(group)) {
                 # Update groups if previously made with patients only
-                patients <- group[ , "Patients"]
-                samples <- getMatchingSamples(patients, samples, clinical,
-                                              match=match)
+                samples <- getMatchingSamples(group[ , "Patients"], samples, 
+                                              patients, match=match)
                 group <- cbind(group, "Samples"=samples)
                 setGroupsFrom("Clinical data", group)
             }
