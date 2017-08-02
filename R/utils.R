@@ -1141,8 +1141,9 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
             default <- ""
         }
         
-        args <- '-e "POSIX path of (choose %s %s %s %s)"'
-        args <- sprintf(args, directory, multiple, prompt, default)
+        app  <- "path to frontmost application as text"
+        args <- '-e "tell app (%s) to POSIX path of (choose %s %s %s %s)"'
+        args <- sprintf(args, app, directory, multiple, prompt, default)
         
         suppressWarnings({
             path <- system2("osascript", args=args, stderr=TRUE)

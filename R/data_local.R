@@ -10,13 +10,13 @@ localDataUI <- function(id, panel) {
         fileBrowserInput(ns("localFolder"), "Folder where data is stored",
                          placeholder="No folder selected",
                          value=getDownloadsFolder()),
-        textInput(ns("localCategory"), label="Data category name"),
+        textInput(ns("localCategory"), label="Dataset name"),
         selectizeInput(ns("localIgnore"), "Files/directories to ignore",
                        choices=getFirebrowseDataTypes(),
                        multiple=TRUE, options=list(
                            # Allow to add new items
                            create=TRUE, createOnBlur=TRUE,
-                           placeholder="Input files to exclude")),
+                           placeholder="These files will not be loaded")),
         processButton(ns("acceptFile"), "Load files"))
     
     panel(
