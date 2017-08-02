@@ -4,8 +4,8 @@
 \alias{getMatchingSamples}
 \title{Get samples matching the given patients}
 \usage{
-getMatchingSamples(patients, samples, clinical, rm.NA = TRUE, match = NULL,
-  showMatch = FALSE)
+getMatchingSamples(patients, samples, clinical = NULL, rm.NA = TRUE,
+  match = NULL, showMatch = FALSE)
 }
 \arguments{
 \item{patients}{Character or list of characters: patient identifiers}

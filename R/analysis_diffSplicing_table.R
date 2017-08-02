@@ -243,17 +243,17 @@ optimSurvDiffSet <- function(session, input, output) {
     
     # Interface of survival analyses
     observe({
-        clinical <- getClinicalData()
-        diffAn   <- getDifferentialAnalyses()
+        attrs  <- getPatientAttributes()
+        diffAn <- getDifferentialAnalyses()
         
-        if (!is.null(clinical) && !is.null(diffAn)) {
+        if (!is.null(attrs) && !is.null(diffAn)) {
             hide("survivalOptions-missingClinicalData")
             hide("survivalOptions-missingDiffAnalyses")
             show("survivalOptions")
-            updateClinicalParams(session, clinical)
+            updateClinicalParams(session, attrs)
         } else {
             hide("survivalOptions")
-            if (is.null(clinical)) {
+            if (is.null(attrs)) {
                 show("survivalOptions-missingClinicalData")
                 hide("survivalOptions-missingDiffAnalyses")
             } else if (is.null(diffAn)) {
@@ -265,11 +265,16 @@ optimSurvDiffSet <- function(session, input, output) {
     
     # Update selectize input label depending on the chosen censoring type
     observe({
-        if (!is.null(getDifferentialAnalyses()) &&
-            !is.null(getClinicalData()) && !is.null(input$censoring)) {
-            label <- "Follow up time"
-            if (grepl("interval", input$censoring, fixed=TRUE))
+        anyDiffAnalyses <- !is.null( getDifferentialAnalyses() )
+        anyPatients     <- !is.null( getPatientId() )
+        anyCensoring    <- !is.null( input$censoring )
+        
+        if (anyDiffAnalyses && anyPatients && anyCensoring) {
+            if (grepl("interval", input$censoring, fixed=TRUE)) {
                 label <- "Starting time"
+            } else {
+                label <- "Follow up time"
+            }
             updateSelectizeInput(session, "timeStart", label=label)
         }
     })
@@ -279,7 +284,7 @@ optimSurvDiffSet <- function(session, input, output) {
     observeEvent(input$survival, {
         time <- startProcess("survival")
         isolate({
-            clinical      <- getClinicalData()
+            patients      <- getPatientId()
             psi           <- getInclusionLevels()
             match         <- getClinicalMatchFrom("Inclusion levels")
             statsTable    <- getDifferentialAnalyses()
@@ -293,6 +298,10 @@ optimSurvDiffSet <- function(session, input, output) {
             display   <- input$statsTable_rows_current
             filtered  <- input$statsTable_rows_all
             selected  <- input$selected
+            # Get clinical data for the required attributes
+            followup <- "days_to_last_followup"
+            clinical <- getClinicalDataForSurvival(timeStart, timeStop, event,
+                                                   followup)
         })
         
         if ("shown" %in% selected) {
@@ -323,8 +332,8 @@ optimSurvDiffSet <- function(session, input, output) {
         startProgress("Performing survival analysis", nrow(subset))
         
         # Assign alternative splicing quantification to patients based on their
-        # samples
-        clinicalPSI <- getPSIperPatient(subset, match, clinical)
+        # respective samples
+        clinicalPSI <- getPSIperPatient(subset, match, patients=patients)
         
         opt <- apply(clinicalPSI, 1, createOptimalSurvData, clinical, 
                      censoring, event, timeStart, timeStop)
@@ -986,17 +995,6 @@ diffAnalysesTableSet <- function(session, input, output) {
             # Bind preview of survival curves based on PSI cutoff
             optimSurv <- getDifferentialAnalysesSurvival()
             if (!is.null(optimSurv)) {
-                isolate({
-                    clinical  <- getClinicalData()
-                    match     <- getClinicalMatchFrom("Inclusion levels")
-                    psi       <- getInclusionLevels()
-                    # User input
-                    censoring <- input$censoring
-                    event     <- input$event
-                    timeStart <- input$timeStart
-                    timeStop  <- input$timeStop
-                })
-                
                 stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
                 stats[["Log rank p-value"]]   <- optimSurv[[2]]
                 stats[["Survival by PSI cutoff"]] <- optimSurv[[3]]

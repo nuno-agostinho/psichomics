@@ -10,17 +10,16 @@
 \alias{getActiveDataset}
 \alias{setActiveDataset}
 \alias{getClinicalData}
+\alias{getPatientId}
+\alias{getPatientAttributes}
+\alias{getSampleInfo}
+\alias{getSampleId}
+\alias{getSampleAttributes}
 \alias{getJunctionQuantification}
 \alias{getInclusionLevels}
 \alias{setInclusionLevels}
 \alias{getInclusionLevelsPCA}
 \alias{setInclusionLevelsPCA}
-\alias{getSampleInfo}
-\alias{setSampleInfo}
-\alias{getPatientId}
-\alias{setPatientId}
-\alias{getSampleId}
-\alias{setSampleId}
 \alias{getSpecies}
 \alias{setSpecies}
 \alias{getAssemblyVersion}
@@ -47,7 +46,17 @@ getActiveDataset()
 
 setActiveDataset(dataset)
 
-getClinicalData()
+getClinicalData(attrs = NULL)
+
+getPatientId()
+
+getPatientAttributes()
+
+getSampleInfo()
+
+getSampleId()
+
+getSampleAttributes()
 
 getJunctionQuantification(category = getCategory())
 
@@ -58,18 +67,6 @@ setInclusionLevels(incLevels, category = getCategory())
 getInclusionLevelsPCA(category = getCategory())
 
 setInclusionLevelsPCA(pca, category = getCategory())
-
-getSampleInfo()
-
-setSampleInfo(info, category = getCategory())
-
-getPatientId(category = getCategory())
-
-setPatientId(patients, category = getCategory())
-
-getSampleId(category = getCategory())
-
-setSampleId(samples, category = getCategory())
 
 getSpecies(category = getCategory())
 
@@ -95,15 +92,12 @@ it uses the selected data category}
 
 \item{dataset}{Character: dataset name}
 
+\item{attrs}{Character: name of attributes to retrieve (if NULL, the whole 
+dataset is returned)}
+
 \item{incLevels}{Data frame or matrix: inclusion levels}
 
 \item{pca}{\code{prcomp} object (PCA) of inclusion levels}
-
-\item{info}{Data frame or matrix: sample information}
-
-\item{patients}{Character: identifier of patients}
-
-\item{samples}{Character: identifier of samples}
 
 \item{species}{Character: species}
 
