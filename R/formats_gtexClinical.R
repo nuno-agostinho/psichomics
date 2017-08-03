@@ -26,7 +26,7 @@ gtexClinicalInfoFormat <- function() {
         commentChar = NULL, # String to identify comments (these lines will be ignored)
         
         # Other options
-        unique = FALSE,   # Remove duplicated rows
+        unique = FALSE, # Remove duplicated rows
         
         # Default columns to show (NULL to show all)
         show = NULL,

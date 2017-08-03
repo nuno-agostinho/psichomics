@@ -59,8 +59,7 @@ inclusionLevelsInterface <- function(ns) {
                               "Filter splicing events by genes"), 
                 value="Filter by genes",
                 radioButtons(
-                    ns("filter"),
-                    "Filter splicing events",
+                    ns("filter"), NULL,
                     c("Do not filter splicing events"="noFilter",
                       "Filter by selected genes"="select",
                       "Filter by genes imported from a file"="file")),
@@ -82,7 +81,7 @@ inclusionLevelsInterface <- function(ns) {
                                  "alternative splicing annotation."))))),
                 conditionalPanel(
                     sprintf("input[id='%s'] == '%s'", ns("filter"), "file"),
-                    fileInput(ns("filterGenesFile"), NULL),
+                    fileBrowserInput(ns("filterGenesFile"), NULL),
                     helpText("Provide a file with gene symbols separated by a",
                              "space, comma, tab or new line. For instance: ",
                              tags$code("BRCA1, BRAF, ABL"))))),
@@ -93,7 +92,7 @@ inclusionLevelsInterface <- function(ns) {
     
     tagList(
         uiOutput(ns("modal")),
-        helpText("Exon inclusion levels are measured from junction",
+        helpText("Exon inclusion levels are measured from exon-exon junction",
                  "quantification using the Percent Spliced-In (PSI) metric."),
         errorDialog("No junction quantification is loaded.",
                     id=ns("missingData"), style="margin: 10px;"),
@@ -168,12 +167,10 @@ quantifySplicing <- function(annotation, junctionQuant,
         }
     }
     if (is.null(psi)) psi <- data.frame(NULL)
-    attr(psi, "rowNames") <- TRUE
-    attr(psi, "description") <- paste("Exon and intron inclusion levels",
-                                      "for any given alternative splicing",
-                                      "event.")
-    attr(psi, "dataType")  <- "Inclusion levels"
-    attr(psi, "tablename") <- "Inclusion levels"
+    attr(psi, "rowNames")    <- TRUE
+    attr(psi, "description") <- "PSI values per alternative splicing events."
+    attr(psi, "dataType")    <- "Inclusion levels"
+    attr(psi, "tablename")   <- "Inclusion levels"
     return(psi)
 }
 
@@ -200,7 +197,7 @@ loadAnnotation <- function(annotation) {
 
 #' Set of functions to load a custom alternative splicing annotation
 #' 
-#' @importFrom shiny tags
+#' @importFrom shiny tags fileInput
 #' @inherit inclusionLevelsServer
 loadCustomSplicingAnnotationSet <- function(session, input, output) {
     # Show modal for loading custom splicing annotation
@@ -255,6 +252,7 @@ loadCustomSplicingAnnotationSet <- function(session, input, output) {
 #' Set of functions to load splicing quantification
 #' 
 #' @importFrom shiny tags
+#' @importFrom shinyBS bsPopover
 #' @inherit inclusionLevelsServer
 loadSplicingQuantificationSet <- function(session, input, output) {
     ns <- session$ns
@@ -263,21 +261,15 @@ loadSplicingQuantificationSet <- function(session, input, output) {
     observeEvent(input$loadIncLevels, {
         infoModal(
             session, "Load alternative splicing quantification",
-            helpText("A table containing the sample identifiers as columns and",
-                     "the alternative splicing event identifiers as rows is",
-                     "recommended. The event identifier should be similar to:"),
-            tags$kbd(style="word-wrap: break-word;",
-                     paste0("EventType_Chromosome_Strand_Coordinate1_",
-                            "_Coordinate2_..._Gene")),
-            tags$hr(),
-            fileInput(ns("customASquant"), "Choose a file"),
-            selectizeInput(ns("customSpecies2"), "Species", choices="Human",
-                           options=list(create=TRUE)),
-            selectizeInput(ns("customAssembly2"), "Assembly", choices="hg19",
-                           options=list(create=TRUE)),
+            ASquantFileInput(ns("customASquant"), ns("customSpecies2"),
+                             ns("customAssembly2")),
             uiOutput(ns("alertIncLevels")),
             footer=processButton(ns("loadASquant"), "Load quantification"))
     })
+    
+    observeEvent(input$loadIncLevels, {
+        prepareFileBrowser(session, input, "customASquant")
+    }, once=TRUE)
     
     # Show warnings if needed before loading splicing quantification
     observeEvent(input$loadASquant, {
@@ -324,9 +316,13 @@ loadSplicingQuantificationSet <- function(session, input, output) {
         
         startProgress("Wait a moment", divisions=2)
         updateProgress("Loading alternative splicing quantification")
-        psi <- tryCatch(read.delim(input$customASquant$datapath, 
-                                   row.names=1, check.names=FALSE),
-                        error=return, warning=return)
+        
+        allFormats <- loadFileFormats()
+        formats <- allFormats[sapply(allFormats, "[[", 
+                                     "dataType") == "Inclusion levels"]
+        
+        psi <- tryCatch(parseValidFile(input$customASquant, formats),
+                        warning=return, error=return)
         if (is(psi, "error")) {
             if (psi$message == paste("'file' must be a character string or",
                                      "connection"))
@@ -340,16 +336,10 @@ loadSplicingQuantificationSet <- function(session, input, output) {
                          psi$message, alertId="alertIncLevels")
         } else {
             removeAlert(output, "alertIncLevels")
-            attr(psi, "rowNames") <- TRUE
-            attr(psi, "description") <- paste("Exon and intron inclusion",
-                                              "levels for any given",
-                                              "alternative splicing event.")
-            attr(psi, "dataType")  <- "Inclusion levels"
-            attr(psi, "tablename") <- "Inclusion levels"
             
             if ( is.null(getData()) ) {
-                name <- file_path_sans_ext( input$customASquant$name )
-                name <- gsub(" Inclusion levels$", "", name)
+                name <- file_path_sans_ext( basename(input$customASquant) )
+                name <- gsub(" Inclusion levels.*$", "", name)
                 if (name == "") name <- "Unnamed"
                 
                 data <- setNames(list(list("Inclusion levels"=psi)), name)
@@ -357,8 +347,6 @@ loadSplicingQuantificationSet <- function(session, input, output) {
                 setData(data)
                 setCategory(name)
             }
-            setInclusionLevels(psi)
-            
             setSpecies(input$customSpecies2)
             setAssemblyVersion(input$customAssembly2)
             removeModal()
@@ -462,8 +450,7 @@ quantifySplicingSet <- function(session, input) {
             if (identical(filter, "")) filter <- NULL
         } else if (input$filter == "file") {
             # Filter genes provided in a file
-            doc    <- input$filterGenesFile
-            filter <- fread(doc$datapath, header=FALSE)
+            filter <- fread(input$filterGenesFile, header=FALSE)
             if (nrow(filter) == 1) {
                 filter <- as.character(filter)
             } else if (nrow(filter) > 1) {
@@ -485,7 +472,7 @@ quantifySplicingSet <- function(session, input) {
 
 #' @rdname appServer
 #' 
-#' @importFrom shiny reactive observeEvent fileInput helpText removeModal
+#' @importFrom shiny reactive observeEvent helpText removeModal
 #' @importFrom tools file_path_sans_ext
 #' @importFrom shinyjs enable disable hide show
 #' @importFrom data.table fread
@@ -493,6 +480,8 @@ inclusionLevelsServer <- function(input, output, session) {
     ns <- session$ns
     observeEvent(input$missing, missingDataGuide("Junction quantification"))
 
+    prepareFileBrowser(session, input, "filterGenesFile")
+    
     # Update available junction quantification according to loaded files
     observe({
         junctionQuant <- getJunctionQuantification()

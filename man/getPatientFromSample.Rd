@@ -4,7 +4,8 @@
 \alias{getPatientFromSample}
 \title{Get patients from given samples}
 \usage{
-getPatientFromSample(sampleId, patientId = NULL, na = FALSE)
+getPatientFromSample(sampleId, patientId = NULL, na = FALSE,
+  sampleInfo = NULL)
 }
 \arguments{
 \item{sampleId}{Character: sample identifiers}
@@ -14,6 +15,10 @@ matrix or data frame is given, its rownames will be used to infer the patient
 identifiers)}
 
 \item{na}{Boolean: return NA for samples with no matching patients}
+
+\item{sampleInfo}{Data frame or matrix: sample information containing the
+sample identifiers as rownames and a column named "Subject ID" with the
+respective subject identifiers}
 }
 \value{
 Character: patient identifiers corresponding to the given samples

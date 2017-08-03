@@ -1,7 +1,7 @@
 #' @rdname appUI
 #' 
 #' @importFrom shinyBS bsCollapse bsCollapsePanel
-#' @importFrom shiny helpText fileInput
+#' @importFrom shiny helpText
 #' @importFrom shinyjs hidden
 gtexDataUI <- function(id, panel) {
     ns <- NS(id)
@@ -14,15 +14,15 @@ gtexDataUI <- function(id, panel) {
                      "GTEx Data Portal"), "and load them here."),
           fileBrowserInput(
               ns("sampleInfo"),
-              "Choose file with GTEx sample attributes (TXT file)",
+              "File with GTEx sample attributes (TXT file)",
               placeholder="No file selected"),
           fileBrowserInput(
               ns("subjectInfo"),
-              "Choose file with GTEx subject phenotypes (TXT file)",
+              "File with GTEx subject phenotypes (TXT file)",
               placeholder="No file selected"),
           fileBrowserInput(
               ns("junctionQuant"), 
-              "Choose file with GTEx junction read counts",
+              "File with GTEx junction read counts",
               placeholder="No file selected"),
           bsCollapse(id=ns("filterCollapse"),
               bsCollapsePanel(
@@ -31,7 +31,7 @@ gtexDataUI <- function(id, panel) {
                   div(id=ns("loadingAvailableTissues"), class="progress",
                       div(class="progress-bar progress-bar-striped active",
                           role="progressbar", style="width:100%",
-                          "Loading available tissues from sample attributes")),
+                          "Loading tissues from sample attributes")),
                   hidden(
                       errorDialog(paste("GTEx sample attributes are required",
                                         "to obtain available tissues."),
@@ -83,9 +83,15 @@ loadGtexFile <- function(path, pattern, samples=NULL) {
     
     # Retrieve correct format to load GTEx file
     formats <- loadFileFormats()
-    format <- formats[sapply(formats, function(i)
-        grepl(pattern, i$filename, fixed=TRUE) &&
-            grepl("GTEx", i$filename, fixed=TRUE))]
+    filterFormats <- function(i, pattern) {
+        if (!is.null(i$filename)) {
+            grepl(pattern, i$filename, fixed=TRUE) &&
+                grepl("GTEx", i$filename, fixed=TRUE)
+        } else {
+            return(FALSE)
+        }
+    }
+    format <- formats[sapply(formats, filterFormats, pattern)]
     
     colClasses <- NULL
     if (pattern == "junction" && !is.null(samples)) {

@@ -700,7 +700,7 @@ infoServer <- function(input, output, session) {
         # Handle errors
         if (is(info, "error")) {
             if (grepl("Species and assembly", info$message)) {
-                warning("No species or assembly information.")
+                warning("No species or genome assembly information.")
                 return(NULL)
             } else if (grepl("no associated gene", info$message)) {
                 return(noinfo(output))

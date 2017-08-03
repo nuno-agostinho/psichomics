@@ -1,7 +1,7 @@
 ---
 title: 'psichomics tutorial: command-line interface (CLI)'
 author: "Nuno Saraiva-Agostinho"
-date: "13 July 2017"
+date: "6 August 2017"
 bibliography: refs.bib
 output: 
     rmarkdown::html_vignette:
@@ -78,8 +78,8 @@ data <- loadFirebrowseData(folder=folder,
                            date="2016-01-28")
 
 # Select clinical and junction quantification dataset
-clinical <- data[[1]]$`Clinical data`
-metadata <- data[[1]]$`Sample metadata`
+clinical      <- data[[1]]$`Clinical data`
+sampleInfo    <- data[[1]]$`Sample metadata`
 junctionQuant <- data[[1]]$`Junction quantification (Illumina HiSeq)`
 ```
 
@@ -136,8 +136,8 @@ ignore <- c(".aux.", ".mage-tab.")
 data <- loadLocalFiles(folder, ignore=ignore)
 
 # Select clinical and junction quantification dataset
-clinical <- data[[1]]$`Clinical data`
-metadata <- data[[1]]$`Sample metadata`
+clinical      <- data[[1]]$`Clinical data`
+sampleInfo    <- data[[1]]$`Sample metadata`
 junctionQuant <- data[[1]]$`Junction quantification (Illumina HiSeq)`
 ```
 
@@ -329,7 +329,7 @@ scale  <- FALSE
 
 # Match patients with samples
 samples <- colnames(psi)
-match <- getPatientFromSample(samples, clinical)
+match <- getPatientFromSample(samples, clinical, sampleInfo=sampleInfo)
 
 # Filter alternative splicing quantification to colour values by positive or
 # negative ER expression

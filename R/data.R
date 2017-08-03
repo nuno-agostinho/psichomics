@@ -138,6 +138,44 @@ processDatasetNames <- function(data) {
     return(newData)
 }
 
+#' File input for alternative splicing quantification
+#' 
+#' @param ASquantFileId Character: identifier for alternative splicing 
+#' quantification input
+#' @param speciesId Character: identifier for species selection input
+#' @param assemblyId Character: identifier for genome assembly selection input
+#' 
+#' @return HTML elements
+ASquantFileInput <- function(ASquantFileId, speciesId, assemblyId){
+    tagList(
+        fileBrowserInput(
+            ASquantFileId, "File with alternative splicing quantification",
+            placeholder="No file selected",
+            info=TRUE, infoFUN=bsPopover, infoTitle=paste(
+                "File containing the PSI value of each alternative splicing",
+                "event (rows) per sample (columns)."),
+            infoContent=paste(
+                tags$ul(
+                    class="popover-list",
+                    tags$li(
+                        "The first column must contain alternative splicing",
+                        "event identifiers and should be named",
+                        tags$kbd("AS event ID")),
+                    tags$li(
+                        "An alternative splicing event must be represented by:",
+                        tags$kbd(
+                            paste0("EventType_Chromosome_Strand_Coordinate1_",
+                                   "Coordinate2_..._Gene"))),
+                    tags$li(
+                        "PSI values may be handed between 0 and 1 or between 0",
+                        "and 100. If the later, PSI values are then scaled",
+                        "betwen 0 and 1.")))),
+        selectizeInput(speciesId, "Species", choices="Human",
+                       options=list(create=TRUE)),
+        selectizeInput(assemblyId, "Assembly", choices="hg19",
+                       options=list(create=TRUE)))
+}
+
 #' @rdname appUI
 #' @importFrom shinyjs hidden
 dataUI <- function(id, tab) {
@@ -359,11 +397,13 @@ dataServer <- function(input, output, session) {
     
     # Match clinical data with sample information
     observe({
-        patients <- getPatientId()
-        samples  <- getSampleId()
+        patients   <- getPatientId()
+        samples    <- getSampleId()
+        sampleInfo <- getSampleInfo()
         if ( !is.null(patients) && !is.null(samples) ) {
             startProgress("Matching patients with samples...", 1)
-            match <- getPatientFromSample(samples, patients)
+            match <- getPatientFromSample(samples, patients,
+                                          sampleInfo=sampleInfo)
             setClinicalMatchFrom("Inclusion levels", match)
             closeProgress("Matching process concluded")
         }

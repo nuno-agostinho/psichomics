@@ -1,16 +1,154 @@
 #' @rdname appUI
 #' 
 #' @importFrom shiny textInput
-#' @importFrom shinyBS bsCollapse bsCollapsePanel
+#' @importFrom shinyBS bsCollapse bsCollapsePanel bsPopover
 localDataUI <- function(id, panel) {
     ns <- NS(id)
     
-    addLocalFile <- tagList(
-        uiOutput(ns("localDataModal")),
+    addMultipleFiles <- tagList(
+        helpText("All fields below are optional."),
+        fileBrowserInput(
+            ns("sampleInfo"),
+            "File with sample information",
+            placeholder="No file selected",
+            info=TRUE, infoFUN=bsPopover, infoTitle=paste(
+                "File containing sample identifiers as rows and their",
+                "attributes as columns."),
+            infoContent=paste(
+                tags$ul(
+                    class="popover-list",
+                    tags$li("The first column must contain sample identifiers",
+                            "and be named", tags$kbd("Sample ID")),
+                    tags$li("Optionally, indicate the subject associated to",
+                            "each sample in a column named",
+                            tags$kbd("Subject ID"))),
+                tags$hr(), helpText("Example:"), tags$table(
+                    class="table table-condensed",
+                    tags$thead(
+                        tags$tr(
+                            tags$th("Sample ID"),
+                            tags$th("Type"),
+                            tags$th("Tissue"),
+                            tags$th("Subject ID"))),
+                    tags$tbody(
+                        tags$tr(
+                            tags$td("SMP-01"),
+                            tags$td("Tumour"),
+                            tags$td("Lung"),
+                            tags$td("SUBJ-03")
+                        ), tags$tr(
+                            tags$td("SMP-02"),
+                            tags$td("Tumour"),
+                            tags$td("Blood"),
+                            tags$td("SUBJ-12")
+                        ), tags$tr(
+                            tags$td("SMP-03"),
+                            tags$td("Normal"),
+                            tags$td("Blood"),
+                            tags$td("SUBJ-25")
+                        ))))),
+        fileBrowserInput(
+            ns("subjectInfo"),
+            "File with subject information",
+            placeholder="No file selected",
+            info=TRUE, infoFUN=bsPopover, infoTitle=paste(
+                "File containing subject identifiers as rows and their",
+                "attributes as columns."),
+            infoContent=paste(
+                "The first column must contain subject identifiers and be",
+                "named", tags$kbd("Subject ID"), tags$hr(),
+                helpText("Example:"), tags$table(
+                    class="table table-condensed",
+                    tags$thead(
+                        tags$tr(
+                            tags$th("Subject ID"),
+                            tags$th("Age"),
+                            tags$th("Gender"),
+                            tags$th("Race"))),
+                    tags$tbody(
+                        tags$tr(
+                            tags$td("SUBJ-01"),
+                            tags$td("4"),
+                            tags$td("Female"),
+                            tags$td("Black")
+                        ), tags$tr(
+                            tags$td("SUBJ-02"),
+                            tags$td("12"),
+                            tags$td("Female"),
+                            tags$td("Black")
+                        ), tags$tr(
+                            tags$td("SUBJ-03"),
+                            tags$td("8"),
+                            tags$td("Female"),
+                            tags$td("Asian")
+                        ))))),
+        fileBrowserInput(
+            ns("junctionQuant"),
+            "File with exon-exon junction read counts",
+            placeholder="No file selected",
+            info=TRUE, infoFUN=bsPopover, infoTitle=paste(
+                "File containing the read counts of each exon-exon junction",
+                "(rows) per sample (columns)."),
+            infoContent=paste(
+                tags$ul(
+                    class="popover-list",
+                    tags$li(
+                        "The first column must contain junction identifiers",
+                        "and be named", tags$kbd("Junction ID")),
+                    tags$li(
+                        "Only numbers (or X and Y) are extracted from the",
+                        "junction identifier. Acceptable junction identifiers",
+                        "include: ", tags$kbd("10_18748_21822"), ", ",
+                        tags$kbd("chromosome 10 (18748 to 21822)"), " and ", 
+                        tags$kbd("chr10:18748-21822")),
+                    tags$li(
+                        "The strand is optional. If desired, it needs to come",
+                        "in the end of the string. For instance,", 
+                        tags$kbd("10:3213:9402:+"), "and",
+                        tags$kbd("chr10:3213-9402 -"))),
+                    tags$hr(), helpText("Example:"), tags$table(
+                    class="table table-condensed",
+                    tags$thead(
+                        tags$tr(
+                            tags$th("Junction ID"),
+                            tags$th("SMP-18"),
+                            tags$th("SMP-03"))),
+                    tags$tbody(
+                        tags$tr(
+                            tags$td("10:6752-7393"),
+                            tags$td("4"),
+                            tags$td("0")
+                        ), tags$tr(
+                            tags$td("10:18748-21822"),
+                            tags$td("8"),
+                            tags$td("46")
+                        ), tags$tr(
+                            tags$td("10:24257-25325"),
+                            tags$td("83"),
+                            tags$td("65")
+                        ))))),
+        
+        bsCollapse(
+            id=ns("ASquantLoadCollapse"),
+            bsCollapsePanel(
+                title=tagList(icon("plus-circle"),
+                              "Load alternative splicing quantification"), 
+                style="primary",
+                value="Load alternative splicing quantification",
+                ASquantFileInput(ns("ASquant"), ns("customSpecies"),
+                                 ns("customAssembly")))),
+        textInput(ns("userFilesCategory"), label="Dataset name", 
+                  value="User dataset", placeholder="Name to identify dataset"),
+        processButton(ns("loadMultipleFiles"), "Load files"))
+    
+    addFolder <- tagList(
+        helpText("For your convenience, move all files to a single folder and",
+                 "load them by locating that folder in the field below."),
         fileBrowserInput(ns("localFolder"), "Folder where data is stored",
                          placeholder="No folder selected",
                          value=getDownloadsFolder()),
-        textInput(ns("localCategory"), label="Dataset name"),
+        textInput(ns("localCategory"), label="Dataset name",
+                  placeholder="Name to identify dataset"),
         selectizeInput(ns("localIgnore"), "Files/directories to ignore",
                        choices=getFirebrowseDataTypes(),
                        multiple=TRUE, options=list(
@@ -19,9 +157,12 @@ localDataUI <- function(id, panel) {
                            placeholder="These files will not be loaded")),
         processButton(ns("acceptFile"), "Load files"))
     
-    panel(
-        style="info", title=list(icon("plus-circle"), "Load local files"),
-        value="Load local files", addLocalFile)
+    panel(style="info", title=list(icon("plus-circle"), "Load user files"),
+          value="Load local files",
+          uiOutput(ns("localDataModal")),
+          tabsetPanel(
+              tabPanel("Stepwise file input", addMultipleFiles),
+              tabPanel("Folder input", addFolder)))
 }
 
 #' Load local files
@@ -88,6 +229,7 @@ setLocalData <- function(input, output, session, replace=TRUE) {
     
     folder <- input$localFolder
     category <- input$localCategory
+    if (identical(category, "")) category <- "User dataset"
     ignore <- c(".aux.", ".mage-tab.", input$localIgnore)
     
     # Load valid local files
@@ -105,42 +247,133 @@ setLocalData <- function(input, output, session, replace=TRUE) {
     endProcess("acceptFile", time)
 }
 
+#' @rdname setLocalData
+setMultipleFilesData <- function(input, output, session, replace=TRUE) {
+    time <- startProcess("loadMultipleFiles")
+    category <- input$userFilesCategory
+    if (identical(category, "")) category <- "User dataset"
+    
+    # Load files
+    sampleInfo    <- c("Sample metadata"=input$sampleInfo)
+    subjectInfo   <- c("Clinical data"  =input$subjectInfo)
+    junctionQuant <- c("Junction quantification"=input$junctionQuant)
+    ASquant       <- c("Inclusion levels"=input$ASquant)
+    files <- c(sampleInfo, subjectInfo, junctionQuant, ASquant)
+    files <- files[files != ""]
+    
+    # Check if at least one input file was given
+    if (length(files) == 0) {
+        errorModal(session, "No files selected",
+                   "Please provide at least one file.",
+                   modalId="localDataModal")
+        endProcess("loadMultipleFiles", time, closeProgressBar=FALSE)
+        return(NULL)
+    }
+    
+    loaded <- list()
+    allFormats <- loadFileFormats()
+    updateProgress("Loading files...", divisions=length(files))
+    for (each in seq(files)) {
+        file     <- files[[each]]
+        if (file == "") next
+        
+        # Get appropriate format for each type
+        dataType <- names(files[each])
+        formats <- allFormats[sapply(allFormats, "[[", "dataType") == dataType]
+        
+        updateProgress("Processing file", detail=basename(file))
+        loadedFile <- tryCatch(parseValidFile(file, formats),
+                               warning=return, error=return)
+        if (!is(loadedFile, "warning") && !is(loadedFile, "error"))
+            loaded[[each]] <- loadedFile
+    }
+    
+    names(loaded) <- sapply(loaded, attr, "tablename")
+    loaded <- Filter(length, loaded)
+    loaded <- loadTCGAsampleMetadata(loaded)
+    
+    data <- setNames(list(loaded), category)
+    data <- processDatasetNames(data)
+    
+    if (!is.null(data)) {
+        if(replace) {
+            setData(data)
+        } else {
+            data <- processDatasetNames(c(getData(), data))
+            setData(data)
+        }
+        
+        if (all(ASquant != "")) {
+            # Set species and genome assembly for loaded dataset
+            setCategory(category)
+            setSpecies(input$customSpecies)
+            setAssemblyVersion(input$customAssembly)
+        }
+    }
+    endProcess("loadMultipleFiles", time)
+}
+
 #' @rdname appServer
 #' @importFrom shiny updateTextInput
 localDataServer <- function(input, output, session) {
     ns <- session$ns
     
+    ## Load data based on individual files
+    prepareFileBrowser(session, input, "sampleInfo")
+    prepareFileBrowser(session, input, "subjectInfo")
+    prepareFileBrowser(session, input, "junctionQuant")
+    prepareFileBrowser(session, input, "ASquant")
+    
+    ## Load data based on folder
+    prepareFileBrowser(session, input, "localFolder", directory=TRUE)
+    
     # # The button is only enabled if it meets the conditions that follow
     # observe(toggleState("acceptFile", input$species != ""))
-    prepareFileBrowser(session, input, "localFolder", directory=TRUE)
+    
+    # Update category name input based on given folder
+    observe({
+        folder <- input$localFolder
+        if (!is.null(folder))
+            updateTextInput(session, "localCategory", value=basename(folder))
+    })
+    
+    # If data is loaded, let user replace or append to loaded data
+    observeEvent(input$loadMultipleFiles, {
+        if (!is.null(getData())) {
+            loadedDataModal(session,
+                            "localDataModal",
+                            "multipleFilesReplace",
+                            "multipleFilesLocalAppend")
+        } else {
+            setMultipleFilesData(input, output, session)
+        }
+    })
+    
+    # Load data when the user presses to replace data
+    observeEvent(input$multipleFilesReplace,
+                 setMultipleFilesData(input, output, session, replace=TRUE))
+    
+    # Load data when the user presses to load new data (keep previously loaded)
+    observeEvent(input$multipleFilesLocalAppend,
+                 setMultipleFilesData(input, output, session, replace=FALSE))
     
     # If data is loaded, let user replace or append to loaded data
     observeEvent(input$acceptFile, {
         folder <- input$localFolder
         if (!dir.exists(folder)) {
-            if (file.exists(folder)){
-                # Asking for a folder, not a file
-                errorModal(session, "Folder not found",
-                           "The path is directing to a file, but only folders",
-                           "are accepted. Please, insert the path to a folder.",
-                           modalId="localDataModal")
-            } else {
-                # Folder not found
-                errorModal(session, "Folder not found",
-                           "Check if path is correct.",
-                           modalId="localDataModal")
-            }
+            # Folder not found
+            errorModal(session, "Folder not found", "Check if path is correct.",
+                       modalId="localDataModal")
             enable("acceptFile")
             return(NULL)
-        }
-        
-        if (!is.null(getData()))
+        } else if (!is.null(getData())) {
             loadedDataModal(session,
                             "localDataModal",
                             "localReplace",
                             "localAppend")
-        else
+        } else {
             setLocalData(input, output, session)
+        }
     })
     
     # Load data when the user presses to replace data
@@ -150,13 +383,6 @@ localDataServer <- function(input, output, session) {
     # Load data when the user presses to load new data (keep previously loaded)
     observeEvent(input$localAppend,
                  setLocalData(input, output, session, replace=FALSE))
-    
-    # Update category name input based on given folder
-    observe({
-        folder <- input$localFolder
-        if (!is.null(folder))
-            updateTextInput(session, "localCategory", value=basename(folder))
-    })
 }
 
 attr(localDataUI, "loader") <- "data"

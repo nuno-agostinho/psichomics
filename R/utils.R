@@ -247,6 +247,9 @@ endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
 #' matrix or data frame is given, its rownames will be used to infer the patient
 #' identifiers)
 #' @param na Boolean: return NA for samples with no matching patients
+#' @param sampleInfo Data frame or matrix: sample information containing the
+#' sample identifiers as rownames and a column named "Subject ID" with the
+#' respective subject identifiers
 #'
 #' @return Character: patient identifiers corresponding to the given samples
 #' 
@@ -258,7 +261,8 @@ endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
 #' # Filter returned samples based on available patients
 #' patients <- paste0("GTEX-", c("DEF", "MNO"))
 #' getPatientFromSample(samples, patients)
-getPatientFromSample <- function(sampleId, patientId=NULL, na=FALSE) {
+getPatientFromSample <- function(sampleId, patientId=NULL, na=FALSE,
+                                 sampleInfo=NULL) {
     if (!is.null(patientId) && 
         (is.matrix(patientId) || is.data.frame(patientId))) {
         patientId <- rownames(patientId)
@@ -287,6 +291,11 @@ getPatientFromSample <- function(sampleId, patientId=NULL, na=FALSE) {
     } else if ( any(grepl("^GTEX", sampleId)) ) {
         # Retrieve GTEx patient index
         extractPatientIndex("(GTEX-.*?)-.*", sampleId, patientId)
+    } else if ( "Subject ID" %in% colnames(sampleInfo) ) {
+        # Based on user-owned files
+        patients <- as.character(sampleInfo[ , "Subject ID"])
+        names(patients) <- rownames(sampleInfo)
+        return(patients)
     } else {
         return(NULL)
     }
@@ -1200,14 +1209,26 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
 #' @param value Character: initial value (paths are expanded via
 #' \code{\link{path.expand}})
 #' @param placeholder Character: placeholder when no file or folder is selected
+#' @param info Boolean: add information icon for tooltips and popovers
+#' @param infoFUN Function to use to provide information (e.g.
+#' \code{shinyBS::bsTooltip} and \code{shinyBS::bsPopover})
+#' @param infoPlacement Character: placement of the information (top, bottom,
+#' right or left)
+#' @param infoTitle Character: text to show as title of information
+#' @param infoContent Character: text to show as content of information
 #'
 #' @details
+#' To show the dialog for file input, the \code{\link{prepareFileBrowser}}
+#' function needs to be included in the server logic.
+#' 
 #' This widget relies on \code{\link{fileBrowser}} to present an interactive
 #' dialogue to users for selecting a directory on the local filesystem. 
 #' Therefore, this widget is intended for shiny apps that are run locally - i.e. 
 #' on the same system that files/directories are to be accessed - and not from 
 #' hosted applications (e.g. from \url{https://www.shinyapps.io}).
 #'
+#' @importFrom shinyBS bsPopover bsTooltip
+#' 
 #' @source Original code by wleepang:
 #' \url{https://github.com/wleepang/shiny-directory-input}
 #'
@@ -1215,8 +1236,10 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
 #' A file browser input control that can be added to a UI definition.
 #'
 #' @seealso
-#' \link{updateFileBrowserInput} and \link{prepareFileBrowser}
-fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL) {
+#' \code{\link{updateFileBrowserInput}} and \code{\link{prepareFileBrowser}}
+fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
+                             info=FALSE, infoFUN=NULL, infoPlacement="right",
+                             infoTitle="", infoContent="") {
     if (!is.null(value) && !is.na(value)) value <- path.expand(value)
     if (is.null(placeholder)) placeholder <- ""
     
@@ -1226,6 +1249,29 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL) {
             if (!is.null(y) && !is.na(y)) 
                 return(y)
         return(NULL)
+    }
+    
+    if (info) {
+        infoId   <- paste0(id, "-info")
+        infoElem <- div(class="input-group-addon", id=infoId,
+                        icon("question-circle"))
+    } else {
+        infoId   <- id
+        infoElem <- NULL
+    }
+    
+    infoTitle   <- gsub("\n", "", as.character(infoTitle),   fixed=TRUE)
+    infoContent <- gsub("\n", "", as.character(infoContent), fixed=TRUE)
+    if (identical(infoFUN, bsPopover)) {
+        showInfo <- infoFUN(
+            infoId, placement=infoPlacement, options=list(container="body"), 
+            title=infoTitle, content=infoContent)
+    } else if (identical(infoFUN, bsTooltip)) {
+        showInfo <- infoFUN(
+            infoId, placement=infoPlacement, options=list(container="body"), 
+            title=infoTitle)
+    } else {
+        showInfo <- NULL
     }
     
     tagList(
@@ -1238,7 +1284,9 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL) {
                 tags$input(
                     id=id, value=value, type='text', readonly='readonly',
                     placeholder=placeholder,
-                    class='form-control fileBrowser-input-chosen-dir'))))
+                    class='form-control fileBrowser-input-chosen-dir'),
+                infoElem)),
+        showInfo)
 }
 
 #' Change the value of a fileBrowserInput on the client
