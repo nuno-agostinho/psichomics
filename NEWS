@@ -3,6 +3,7 @@
 * Update minimum version required of shiny (1.0.3)
 * Fix inconsistent browser history navigation
 * Data loading:
+    * Improve instructions on loading user files
     * Filter GTEx junction quantification based on tissues of interest (all 
     tissues are still loaded by default)
     * Quantify splicing based on splicing events that occur within a list of one

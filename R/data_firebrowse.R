@@ -556,7 +556,6 @@ loadFirehoseData <- loadFirebrowseData
 #' Creates a UI set with options to add data from TCGA/Firebrowse
 #' @param ns Namespace function
 #' 
-#' @importFrom shinyBS bsTooltip
 #' @importFrom shiny tagList uiOutput selectizeInput actionButton textAreaInput
 #' @return A UI set that can be added to a UI definition
 addTCGAdata <- function(ns) {
@@ -588,12 +587,12 @@ addTCGAdata <- function(ns) {
                        options = list(
                            placeholder = "Select data types",
                            plugins=list("remove_button"))),
-        fileBrowserInput(ns("dataFolder"), "Folder to store the data",
-                         value=getDownloadsFolder(),
-                         placeholder="No folder selected"),
-        bsTooltip(ns("dataFolder"), placement = "right",
-                  options = list(container = "body"),
-                  "Data not available in this folder will be downloaded."),
+        fileBrowserInput(
+            ns("dataFolder"), "Folder to store the data",
+            value=getDownloadsFolder(),
+            placeholder="No folder selected",
+            info=TRUE, infoFUN=bsTooltip,
+            infoTitle="Data not available in this folder will be downloaded."),
         processButton(ns("getFirebrowseData"), "Load data"))
 }
 

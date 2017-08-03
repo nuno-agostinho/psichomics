@@ -8,7 +8,9 @@ Original code by wleepang:
 \url{https://github.com/wleepang/shiny-directory-input}
 }
 \usage{
-fileBrowserInput(id, label, value = NULL, placeholder = NULL)
+fileBrowserInput(id, label, value = NULL, placeholder = NULL,
+  info = FALSE, infoFUN = NULL, infoPlacement = "right", infoTitle = "",
+  infoContent = "")
 }
 \arguments{
 \item{id}{Character: input identifier}
@@ -19,6 +21,18 @@ fileBrowserInput(id, label, value = NULL, placeholder = NULL)
 \code{\link{path.expand}})}
 
 \item{placeholder}{Character: placeholder when no file or folder is selected}
+
+\item{info}{Boolean: add information icon for tooltips and popovers}
+
+\item{infoFUN}{Function to use to provide information (e.g.
+\code{shinyBS::bsTooltip} and \code{shinyBS::bsPopover})}
+
+\item{infoPlacement}{Character: placement of the information (top, bottom,
+right or left)}
+
+\item{infoTitle}{Character: text to show as title of information}
+
+\item{infoContent}{Character: text to show as content of information}
 }
 \value{
 A file browser input control that can be added to a UI definition.
@@ -27,6 +41,9 @@ A file browser input control that can be added to a UI definition.
 Input to interactively select a file or directory on the server
 }
 \details{
+To show the dialog for file input, the \code{\link{prepareFileBrowser}}
+function needs to be included in the server logic.
+
 This widget relies on \code{\link{fileBrowser}} to present an interactive
 dialogue to users for selecting a directory on the local filesystem. 
 Therefore, this widget is intended for shiny apps that are run locally - i.e. 
@@ -34,5 +51,5 @@ on the same system that files/directories are to be accessed - and not from
 hosted applications (e.g. from \url{https://www.shinyapps.io}).
 }
 \seealso{
-\link{updateFileBrowserInput} and \link{prepareFileBrowser}
+\code{\link{updateFileBrowserInput}} and \code{\link{prepareFileBrowser}}
 }

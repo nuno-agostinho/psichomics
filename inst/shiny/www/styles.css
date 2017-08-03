@@ -201,11 +201,12 @@ tr.active > td > a:hover { font-weight: bold; }
 }
 
 /* Disable clicking on disabled elements from a dropdown menu */
-.dropdown-menu > .disabled{
-    cursor: not-allowed; 
-}
+.dropdown-menu > .disabled{ cursor: not-allowed; }
+.dropdown-menu > .disabled > a{ pointer-events: none; }
 
-/* Disable clicking on disabled links from a dropdown menu */
-.dropdown-menu > .disabled > a{
-    pointer-events: none;
-}
+/* Avoid text overflowing its container */
+.popover { max-width: 300px; }
+.popover-content { word-wrap: break-word; }
+
+/* Improve style of lists in popovers */
+.popover-list { padding-left: 20px !important; }
