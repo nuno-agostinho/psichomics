@@ -2,8 +2,8 @@
 #' 
 #' @importFrom shinyjs disabled hidden
 #' @importFrom shiny downloadLink selectizeInput uiOutput actionButton tags
-#' checkboxGroupInput helpText tagList sidebarLayout mainPanel sidebarPanel
-#' hoverOpts plotOutput brushOpts
+#' checkboxGroupInput helpText tagList sidebarLayout mainPanel hoverOpts
+#' plotOutput brushOpts
 #' @importFrom shinyBS bsCollapse bsCollapsePanel
 #' @importFrom DT dataTableOutput
 #' @importFrom highcharter highchartOutput
@@ -25,7 +25,7 @@ diffSplicingTableUI <- function(id) {
                        noGroupsLabel="All samples as one group",
                        groupsLabel="Samples by selected groups"),
         checkboxGroupInput(
-            ns("statsChoices"),
+            ns("statsChoices"), width="100%",
             "Choose statistical analyses to perform:",
             # Basic stats is on and disabled by JavaScript
             c("Variance and median"="basicStats",
@@ -43,7 +43,7 @@ diffSplicingTableUI <- function(id) {
         tags$script('$("[value=density]").attr("disabled", true);'),
         helpText("For each alternative splicing event, groups with one or less",
                  "non-missing values are discarded."), hr(),
-        selectizeInput(ns("pvalueAdjust"), selected="BH",
+        selectizeInput(ns("pvalueAdjust"), selected="BH", width="100%",
                        "P-value adjustment", pvalueAdjust),
         processButton(ns("startAnalyses"), "Perform analyses"))
     
@@ -52,20 +52,22 @@ diffSplicingTableUI <- function(id) {
         tabsetPanel(
             tabPanel(
                 "X axis",
-                selectizeInput(ns("xAxis"), "Select X axis", choices=NULL),
-                selectizeInput(ns("xTransform"), 
+                selectizeInput(ns("xAxis"), "Select X axis", choices=NULL,
+                               width="100%"),
+                selectizeInput(ns("xTransform"),
                                "Data transformation of X values",
-                               transformOptions("x")),
-                checkboxInput(ns("xHighlight"),
+                               transformOptions("x"), width="100%"),
+                checkboxInput(ns("xHighlight"), width="100%",
                               paste("Highlight points based on X values")),
                 uiOutput(ns("xHighlightValues"))),
             tabPanel(
                 "Y axis",
-                selectizeInput(ns("yAxis"), "Select Y axis", choices=NULL),
-                selectizeInput(ns("yTransform"),
+                selectizeInput(ns("yAxis"), "Select Y axis", choices=NULL,
+                               width="100%"),
+                selectizeInput(ns("yTransform"), width="100%",
                                "Data transformation of Y values",
                                transformOptions("y")),
-                checkboxInput(ns("yHighlight"),
+                checkboxInput(ns("yHighlight"), width="100%",
                               paste("Highlight points based on Y values")),
                 uiOutput(ns("yHighlightValues"))),
             navbarMenu(
@@ -94,21 +96,23 @@ diffSplicingTableUI <- function(id) {
     survivalOptions <- tagList(
         helpText("For each splicing event, find the PSI cutoff that maximizes",
                  "differences in survival."),
-        radioButtons(ns("censoring"), "Data censoring", selected="right",
-                     inline=TRUE, choices=c(Left="left", Right="right",
-                                            Interval="interval", 
-                                            "Interval 2"="interval2")),
-        selectizeInput(ns("timeStart"), choices=character(), "Follow up time"),
+        radioButtons(ns("censoring"), "Data censoring", width="100%",
+                     selected="right", inline=TRUE, choices=c(
+                         Left="left", Right="right",
+                         Interval="interval", "Interval 2"="interval2")),
+        selectizeInput(ns("timeStart"), choices=character(), "Follow up time",
+                       width="100%"),
         # If the chosen censoring contains the word 'interval', show this input
         conditionalPanel(
             sprintf("input[id='%s'].indexOf('interval') > -1", ns("censoring")),
-            selectizeInput(ns("timeStop"), choices=character(), "Ending time")),
+            selectizeInput(ns("timeStop"), choices=character(), "Ending time",
+                           width="100%")),
         helpText("For patients for which there is no event reported, time",
                  "to last follow up is used instead."),
-        selectizeInput(ns("event"), choices=NULL, 
+        selectizeInput(ns("event"), choices=NULL, width="100%",
                        "Event of interest"),
         radioButtons(
-            ns("selected"), "Perform survival analysis based on",
+            ns("selected"), "Perform survival analysis based on", width="100%",
             choices=c(
                 "Splicing events shown in the screen"="shown",
                 "Filtered splicing events (may be a slow process)"="filtered",
@@ -116,7 +120,7 @@ diffSplicingTableUI <- function(id) {
         processButton(ns("survival"), "Plot survival curves")
     )
     
-    sidebar <- sidebarPanel(
+    sidebar <- sidebar(
         bsCollapse(
             id=ns("diffAnalysesCollapse"), open="statAnalyses",
             bsCollapsePanel(
@@ -508,7 +512,7 @@ createTooltip <- function(df, hover, x, y) {
     yRange  <- hover$range$bottom - hover$range$top
     top_px  <- hover$range$top + top_pct * yRange + 2
     
-    event  <- parseSplicingEvent(rownames(point), extendEventType=TRUE)
+    event  <- parseSplicingEvent(rownames(point), pretty=TRUE)
     trItem <- function(key, value) tags$tr(tags$td(tags$b(key)), tags$td(value))
     strand <- ifelse(event$strand == "+", "forward", "reverse")
     
@@ -676,12 +680,18 @@ eventPlotOptions <- function(session, df, xAxis, yAxis) {
 plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
                             colour="black", alpha=1.0) {
     id2 <- function(att) ns(paste0(id, att))
+    
+    colourSelector <- colourInput(id2("Colour"), "Colour", value=colour)
+    colourSelector[[2]][["style"]] <- "width: 100%;"
+    
     tagList(
         h4(description),
         if (!is.null(help)) helpText(help),
-        sliderInput(id2("Size"), "Size", min=1, max=10, step=1, value=size),
-        colourInput(id2("Colour"), "Colour", value=colour),
-        sliderInput(id2("Alpha"), "Alpha", min=0, max=1, step=0.01, value=alpha)
+        sliderInput(id2("Size"), "Size", min=1, max=10, step=1, value=size,
+                    width="100%"),
+        colourSelector,
+        sliderInput(id2("Alpha"), "Transparency", min=0, max=1, step=0.01,
+                    value=alpha, width="100%")
     )
 }
 
@@ -830,7 +840,8 @@ diffAnalysesPlotSet <- function(session, input, output) {
                     sprintf("input[id='%s']", highlightId),
                     sliderInput(sliderId, "Values to highlight", min=min,
                                 max=max, value=c(min, max), dragRange=TRUE,
-                                step=0.01, round=getPrecision(), sep=""),
+                                step=0.01, round=getPrecision(), sep="",
+                                width="100%"),
                     checkboxInput(sliderInvId, "Invert highlighted values"),
                     helpText("The data in the table is also filtered",
                              "according to highlighted events."))

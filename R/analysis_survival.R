@@ -260,6 +260,7 @@ survivalServer <- function(input, output, session) {
     observeEvent(input$survivalCurves, {
         isolate({
             splicingEvent <- getEvent()
+            assembly      <- getAssemblyVersion()
             # Get user input
             modelTerms <- input$modelTerms
             intRanges  <- input$ranges
@@ -282,8 +283,9 @@ survivalServer <- function(input, output, session) {
         pvalue <- testSurvival(survTerms)
         
         if (modelTerms == "psiCutoff") {
-            plotTitle <- parseSplicingEvent(splicingEvent, char=TRUE)
-            sub <- paste0("Splicing quantification cutoff: ", psiCutoff,
+            plotTitle <- parseSplicingEvent(splicingEvent, char=TRUE,
+                                            pretty=TRUE, extra=assembly)
+            sub <- paste0("PSI cutoff: ", psiCutoff,
                           "; Log-rank p-value: ", pvalue)
         } else {
             plotTitle <- "Survival analysis"

@@ -38,21 +38,22 @@ inclusionLevelsInterface <- function(ns) {
     
     filterGenesSelectize <- selectizeInput(
         ns("filterGenes"), label=NULL, selected=NULL, multiple=TRUE,
-        choices=c("Type to search for genes..."=""), options=list(
+        width="100%", choices=c("Type to search for genes..."=""), options=list(
             # Allow to add new items
             create=TRUE, createOnBlur=TRUE, plugins=list("remove_button")))
     
     options <- div(
         id=ns("options"),
-        selectizeInput(ns("junctionQuant"), choices=NULL,
+        selectizeInput(ns("junctionQuant"), choices=NULL, width = "100%",
                        "Alternative splicing junction quantification"),
         selectizeInput(ns("annotation"), choices=listAllAnnotations(),
-                       "Alternative splicing event annotation"),
+                       "Alternative splicing event annotation", width = "100%"),
         selectizeInput(ns("eventType"), "Event type(s)", selected = "SE",
-                       choices=eventTypes, multiple = TRUE, 
+                       choices=eventTypes, multiple = TRUE, width = "100%",
                        options=list(plugins=list("remove_button"))),
-        numericInput(ns("minReads"), div("Minimum read counts' threshold",
-                                         icon("question-circle")), value = 10),
+        numericInput(ns("minReads"), width = "100%", 
+                     div("Minimum read counts' threshold",
+                         icon("question-circle")), value = 10),
         bsCollapse(
             bsCollapsePanel(
                 title=tagList(icon("filter"),
@@ -81,7 +82,8 @@ inclusionLevelsInterface <- function(ns) {
                                  "alternative splicing annotation."))))),
                 conditionalPanel(
                     sprintf("input[id='%s'] == '%s'", ns("filter"), "file"),
-                    fileBrowserInput(ns("filterGenesFile"), NULL),
+                    fileBrowserInput(ns("filterGenesFile"), NULL,
+                                     placeholder="No file selected"),
                     helpText("Provide a file with gene symbols separated by a",
                              "space, comma, tab or new line. For instance: ",
                              tags$code("BRCA1, BRAF, ABL"))))),
@@ -105,8 +107,8 @@ inclusionLevelsInterface <- function(ns) {
 inclusionLevelsUI <- function(id, panel) {
     ns <- NS(id)
     title <- "Alternative splicing quantification"
-    panel(style="info", title=tagList(icon("calculator"), title), value=title,
-          inclusionLevelsInterface(ns))
+    panel(style="success", title=tagList(icon("calculator"), title),
+          value=title, inclusionLevelsInterface(ns))
 }
 
 #' Quantify alternative splicing events

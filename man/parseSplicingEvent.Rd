@@ -4,7 +4,7 @@
 \alias{parseSplicingEvent}
 \title{Parse an alternative splicing event based on a given identifier}
 \usage{
-parseSplicingEvent(event, char = FALSE, extendEventType = FALSE)
+parseSplicingEvent(event, char = FALSE, pretty = FALSE, extra = NULL)
 }
 \arguments{
 \item{event}{Character: event identifier}
@@ -12,8 +12,11 @@ parseSplicingEvent(event, char = FALSE, extendEventType = FALSE)
 \item{char}{Boolean: return a single character instead of list with parsed
 values? FALSE by default}
 
-\item{extendEventType}{Boolean: return extended name of event type? FALSE by
-default}
+\item{pretty}{Boolean: return a prettier name of the event identifier? FALSE
+by default}
+
+\item{extra}{Character: extra information to add (such as species and
+assembly version)}
 }
 \value{
 Parsed event

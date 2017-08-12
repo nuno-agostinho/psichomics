@@ -66,7 +66,7 @@ performPCA <- function(data, center=TRUE, scale.=FALSE, naTolerance=0) {
 #' 
 #' @importFrom highcharter highchartOutput
 #' @importFrom shinyBS bsTooltip
-#' @importFrom shiny checkboxGroupInput sidebarPanel tagList uiOutput hr
+#' @importFrom shiny checkboxGroupInput tagList uiOutput hr
 #' sliderInput actionButton selectizeInput
 #' @importFrom shinyjs hidden
 pcaUI <- function(id) {
@@ -74,17 +74,16 @@ pcaUI <- function(id) {
     
     pcaOptions <- div(
         id=ns("pcaOptions"),
-        selectizeInput(ns("dataForPCA"), "Data to perform PCA on",
+        selectizeInput(ns("dataForPCA"), "Data to perform PCA on", width="100%",
                        choices=NULL, options=list(
                            placeholder="No data available")),
         checkboxGroupInput(ns("preprocess"), "Preprocessing",
-                           c("Center values"="center",
-                             "Scale values"="scale"),
-                           selected=c("center")),
+                           c("Center values"="center", "Scale values"="scale"),
+                           selected=c("center"), width="100%"),
         sliderInput(ns("naTolerance"), div(
             "Percentage of missing values to tolerate per event",
             icon("question-circle")),
-            min=0, max=100, value=0, post="%"),
+            min=0, max=100, value=0, post="%", width="100%"),
         bsTooltip(ns("naTolerance"), placement="right", paste(
             "For events with a tolerable percentage of missing",
             "values, the median value of the event across",
@@ -99,7 +98,7 @@ pcaUI <- function(id) {
     
     tagList(
         uiOutput(ns("modal")),
-        sidebarPanel(
+        sidebar(
             bsCollapse(
                 id=ns("pcaCollapse"), open="Perform PCA",
                 bsCollapsePanel(
@@ -120,10 +119,10 @@ pcaUI <- function(id) {
                     hidden(
                         div(id=ns("pcaPlotUI"),
                             selectizeInput(
-                                ns("pcX"), choices=NULL,
+                                ns("pcX"), choices=NULL, width="100%",
                                 "Choose principal component for the X axis"),
                             selectizeInput(
-                                ns("pcY"), choices=NULL,
+                                ns("pcY"), choices=NULL, width="100%",
                                 "Choose principal component for the Y axis"),
                             selectGroupsUI(
                                 ns("colourGroups"), "Sample colouring",
@@ -427,7 +426,7 @@ pcaServer <- function(input, output, session) {
             if (!is.null(pcX) & !is.null(pcY)) {
                 plotPCA(pca, pcX, pcY, groups) %>% 
                     hc_chart(plotBackgroundColor="#FCFCFC") %>%
-                    hc_title(text="Clinical samples (PCA individuals)")
+                    hc_title(text="Clinical samples (PCA scores)")
             } else {
                 return(NULL)
             })

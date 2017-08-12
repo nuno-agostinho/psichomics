@@ -19,8 +19,7 @@ getFirebrowseDataTypes <- function() {
         paste0("RSEM_", c("isoforms", "genes")),
         paste0(c("junction", "gene", "exon"),
                "_expression"), "genes_normalized"))
-    names(choices[[1]]) <- capitalize(
-        parseSplicingEvent(choices[[1]], char=TRUE))
+    names(choices[[1]]) <- capitalize(gsub("_", " ", choices[[1]], fixed=TRUE))
     return(choices)
 }
 
@@ -170,9 +169,9 @@ ASquantFileInput <- function(ASquantFileId, speciesId, assemblyId){
                         "PSI values may be handed between 0 and 1 or between 0",
                         "and 100. If the later, PSI values are then scaled",
                         "betwen 0 and 1.")))),
-        selectizeInput(speciesId, "Species", choices="Human",
+        selectizeInput(speciesId, "Species", choices="Human", width = "100%",
                        options=list(create=TRUE)),
-        selectizeInput(assemblyId, "Assembly", choices="hg19",
+        selectizeInput(assemblyId, "Assembly", choices="hg19", width = "100%",
                        options=list(create=TRUE)))
 }
 
@@ -252,7 +251,7 @@ dataUI <- function(id, tab) {
     
     tab(title="Data", icon="table",
         sidebarLayout(
-            sidebarPanel( do.call(bsCollapse, c(id=ns("accordion"), uiList)) ),
+            sidebar( do.call(bsCollapse, c(id=ns("accordion"), uiList)) ),
             mainPanel( welcome, uiOutput(ns("tablesOrAbout")) ) ))
 }
 

@@ -311,7 +311,8 @@ appServer <- function(input, output, session) {
     
     session$onSessionEnded(function() {
         # Stop app and print message to console
-        suppressMessages(stopApp(returnValue="psichomics was closed"))
+        message("\n-- psichomics was closed --")
+        suppressMessages(stopApp())
     })
 }
 

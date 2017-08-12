@@ -132,12 +132,11 @@ localDataUI <- function(id, panel) {
             id=ns("ASquantLoadCollapse"),
             bsCollapsePanel(
                 title=tagList(icon("plus-circle"),
-                              "Load alternative splicing quantification"), 
-                style="primary",
+                              "Load alternative splicing quantification"),
                 value="Load alternative splicing quantification",
                 ASquantFileInput(ns("ASquant"), ns("customSpecies"),
                                  ns("customAssembly")))),
-        textInput(ns("userFilesCategory"), label="Dataset name", 
+        textInput(ns("userFilesCategory"), label="Dataset name", width = "100%",
                   value="User dataset", placeholder="Name to identify dataset"),
         processButton(ns("loadMultipleFiles"), "Load files"))
     
@@ -148,9 +147,9 @@ localDataUI <- function(id, panel) {
                          placeholder="No folder selected",
                          value=getDownloadsFolder()),
         textInput(ns("localCategory"), label="Dataset name",
-                  placeholder="Name to identify dataset"),
+                  placeholder="Name to identify dataset", width = "100%"),
         selectizeInput(ns("localIgnore"), "Files/directories to ignore",
-                       choices=getFirebrowseDataTypes(),
+                       choices=getFirebrowseDataTypes(), width = "100%",
                        multiple=TRUE, options=list(
                            # Allow to add new items
                            create=TRUE, createOnBlur=TRUE,

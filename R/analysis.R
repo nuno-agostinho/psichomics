@@ -289,14 +289,14 @@ updateClinicalParams <- function(session, attrs) {
         daysTo <- grep("days_to_", attrs, value=TRUE, fixed=TRUE)
         subDaysTo <- gsub(".*(days_to_.*)", "\\1", daysTo)
         choices <- unique(subDaysTo)
-        names(choices) <- parseSplicingEvent(choices, char=TRUE)
+        names(choices) <- gsub("_", " ", choices, fixed=TRUE)
         names(choices) <- capitalize(names(choices))
         
         # Update choices for starting or follow up time
         updateSelectizeInput(
             session, "timeStart", choices=list(
                 "Select a clinical attribute"="",
-                "Suggested times"=choices,
+                "Suggested attributes"=choices,
                 "All clinical attributes"=attrs),
             selected="days_to_death")
         
@@ -304,7 +304,7 @@ updateClinicalParams <- function(session, attrs) {
         updateSelectizeInput(
             session, "timeStop", choices=list(
                 "Select a clinical attribute"="",
-                "Suggested times"=choices,
+                "Suggested attributes"=choices,
                 "All clinical attributes"=attrs))
         
         # Update choices for events of interest
