@@ -575,15 +575,15 @@ addTCGAdata <- function(ns) {
         uiOutput(ns("firebrowseDataModal")),
         uiOutput(ns("iframeDownload")),
         selectizeInput(ns("firebrowseCohort"), "Tumour type", acronyms,
-                       multiple = TRUE, options = list(
+                       width = "100%", multiple = TRUE, options = list(
                            placeholder = "Select cohort(s)",
                            plugins=list("remove_button"))),
         selectizeInput(ns("firebrowseDate"), "Date", dates, multiple = TRUE,
-                       selected = dates[1], options = list(
+                       width = "100%", selected = dates[1], options = list(
                            placeholder = "Select sample date",
                            plugins=list("remove_button"))),
         selectizeInput(ns("firebrowseData"), "Data type", multiple = TRUE,
-                       dataTypes, selected=dataTypes,
+                       width = "100%", dataTypes, selected=dataTypes,
                        options = list(
                            placeholder = "Select data types",
                            plugins=list("remove_button"))),

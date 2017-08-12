@@ -4,7 +4,7 @@
 #'
 #' @importFrom highcharter highchartOutput
 #' @importFrom shiny tagList uiOutput NS sidebarLayout numericInput h3 mainPanel
-#' actionButton
+#' actionButton sidebarPanel
 diffSplicingEventUI <- function(id) {
     ns <- NS(id)
     
@@ -660,8 +660,10 @@ diffSplicingEventServer <- function(input, output, session) {
         eventPSI <- filterGroups(eventPSI, groups)
         groups <- names(eventPSI)
         
-        plot <- plotDistribution(eventPSI, groups, bw=input$bandwidth,
-                                 title=parseSplicingEvent(event, char=TRUE))
+        assembly <- getAssemblyVersion()
+        plot <- plotDistribution(
+            eventPSI, groups, bw=input$bandwidth, title=parseSplicingEvent(
+                event, char=TRUE, pretty=TRUE, extra=assembly))
         output$density <- renderHighchart(plot)
         
         output$basicStats <- renderUI(basicStats(eventPSI, groups))

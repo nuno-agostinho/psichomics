@@ -13,16 +13,13 @@ gtexDataUI <- function(id, panel) {
                    a(href="http://www.gtexportal.org", target="_blank",
                      "GTEx Data Portal"), "and load them here."),
           fileBrowserInput(
-              ns("sampleInfo"),
-              "File with GTEx sample attributes (TXT file)",
+              ns("sampleInfo"), "File with GTEx sample attributes (TXT file)",
               placeholder="No file selected"),
           fileBrowserInput(
-              ns("subjectInfo"),
-              "File with GTEx subject phenotypes (TXT file)",
+              ns("subjectInfo"), "File with GTEx subject phenotypes (TXT file)",
               placeholder="No file selected"),
           fileBrowserInput(
-              ns("junctionQuant"), 
-              "File with GTEx junction read counts",
+              ns("junctionQuant"), "File with GTEx junction read counts",
               placeholder="No file selected"),
           bsCollapse(id=ns("filterCollapse"),
               bsCollapsePanel(
@@ -42,7 +39,7 @@ gtexDataUI <- function(id, panel) {
                                 "correct file?"), id=ns("fileReadWarning"),
                           style="margin: 10px;")),
                   hidden(
-                      selectizeInput(ns("tissues"), label=NULL,
+                      selectizeInput(ns("tissues"), label=NULL, width="100%",
                                      choices=c("Select one or more tissues"=""), 
                                      multiple=TRUE)))),
           processButton(ns("load"), "Load data"))

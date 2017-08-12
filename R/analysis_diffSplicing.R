@@ -397,8 +397,7 @@ diffAnalyses <- function(psi, groups=NULL,
     
     # Add splicing event information
     progress("Including splicing event information")
-    info <- suppressWarnings(parseSplicingEvent(rownames(df), 
-                                                extendEventType=TRUE))
+    info <- suppressWarnings(parseSplicingEvent(rownames(df), pretty=TRUE))
     
     # Prepare presentation of multigenes
     multigene <- lapply(info$gene, length) > 1

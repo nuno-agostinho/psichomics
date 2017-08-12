@@ -13,6 +13,17 @@ insideFile <- function(...) {
     return(system.file(..., package="psichomics"))
 }
 
+#' Sidebar without a well
+#' 
+#' Modified version of \code{shiny::sidebarPanel} without a well
+#' 
+#' @importFrom shiny div tags
+#' 
+#' @inherit shiny::sidebarPanel
+sidebar <- function(..., width=4) {
+    div(class = paste0("col-sm-", width), tags$form(...))
+}
+
 #' Load local file
 #' @param file Character: path to the file
 #' 
@@ -54,8 +65,10 @@ getSplicingEventTypes <- function(acronymsAsNames=FALSE) {
 #' @param event Character: event identifier
 #' @param char Boolean: return a single character instead of list with parsed
 #' values? FALSE by default
-#' @param extendEventType Boolean: return extended name of event type? FALSE by
-#' default
+#' @param pretty Boolean: return a prettier name of the event identifier? FALSE
+#' by default
+#' @param extra Character: extra information to add (such as species and
+#' assembly version)
 #' 
 #' @return Parsed event
 #' @export
@@ -63,15 +76,31 @@ getSplicingEventTypes <- function(acronymsAsNames=FALSE) {
 #' events <- c("SE_1_-_123_456_789_1024_TST",
 #'             "MXE_3_+_473_578_686_736_834_937_HEY/YOU")
 #' parseSplicingEvent(events)
-parseSplicingEvent <- function(event, char=FALSE, extendEventType=FALSE) {
+parseSplicingEvent <- function(event, char=FALSE, pretty=FALSE, extra=NULL) {
     if (char) {
-        event <- gsub("_", " ", event, fixed=TRUE)
-        if (extendEventType) {
-            space    <- sapply(gregexpr(" ", event), "[[", 1)
-            acronym  <- substr(event, 1, space - 1)
-            event    <- substr(event, space + 1, sapply(event, nchar))
-            extended <- getSplicingEventTypes(acronymsAsNames=TRUE)[acronym]
-            event    <- paste(extended, event)
+        if (pretty) {
+            event     <- strsplit(event, "_", fixed=TRUE)
+            
+            eventType <- sapply(event, "[[", 1)
+            eventType <- getSplicingEventTypes(acronymsAsNames=TRUE)[eventType]
+            eventType <- tolower(eventType)
+            
+            chrom     <- sapply(event, "[[", 2)
+            strand    <- ifelse(sapply(event, "[[", 3) == "+", "positive",
+                                "negative")
+            gene      <- sapply(event, function(i) i[[length(i)]])
+            start     <- sapply(event, "[[", 4)
+            end       <- sapply(event, function(i) i[[length(i) - 1]])
+            
+            if (is.null(extra)) {
+                event <- sprintf("%s %s (chr%s: %s-%s, %s strand)", gene,
+                                 eventType, chrom, start, end, strand)
+            } else {
+                event <- sprintf("%s %s (chr%s: %s-%s, %s strand, %s)", gene,
+                                 eventType, chrom, start, end, strand, extra)
+            }
+        } else {
+            event <- gsub("_", " ", event, fixed=TRUE)
         }
         return(event)
     }
@@ -93,7 +122,7 @@ parseSplicingEvent <- function(event, char=FALSE, extendEventType=FALSE) {
     parsed$pos    <- lapply(parsed$pos, 
                             function(i) range(as.numeric(i)))
     
-    if (extendEventType)
+    if (pretty)
         parsed$type <- getSplicingEventTypes(acronymsAsNames=TRUE)[parsed$type]
     
     parsed[,1] <- NULL
