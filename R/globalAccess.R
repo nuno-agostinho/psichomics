@@ -254,6 +254,14 @@ getGroupsFrom <- function(dataset, category=getCategory(), complete=FALSE,
     # If available, return data of interest
     g <- groups[ , col, drop=TRUE]
     if (length(g) == 1) names(g) <- rownames(groups)
+    
+    # Return colour lookup table for groups
+    if ("Colour" %in% colnames(groups)) {
+        colour <- groups[ , "Colour", drop=TRUE]
+        colour <- setNames(unlist(colour), names(colour))
+        attr(g, "Colour") <- colour
+    }
+    
     return(g)
 }
 

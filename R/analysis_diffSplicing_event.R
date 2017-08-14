@@ -127,18 +127,21 @@ plotDistribution <- function(psi, groups, rug=TRUE, vLine=TRUE, ...,
         min  <- roundDigits(min(row, na.rm=TRUE))
         samples <- sum(!is.na(row))
         
-        color <- JS("Highcharts.getOptions().colors[", count, "]")
+        colour <- unname(attr(groups, "Colour")[group])
+        if (is.null(colour))
+            colour <- JS("Highcharts.getOptions().colors[", count, "]")
         
         # Calculate the density of inclusion levels for each sample group
         den <- density(row, na.rm=TRUE, ...)
         hc <- hc %>%
             hc_add_series(den, type="area", name=group, median=med, var=vari,
-                          samples=samples, max=max, color=color, min=min)
+                          samples=samples, max=max, color=colour, min=min)
         # Rug plot
         if (rug) {
             hc <- hc_scatter(
                 hc, row, rep(0, length(row)), name=group, marker=list(
-                    enabled=TRUE, symbol="circle", radius=4, fillColor=color),
+                    enabled=TRUE, symbol="circle", radius=4,
+                    fillColor=paste0(colour, "60")), # Add opacity
                 median=med, var=vari, samples=samples, max=max, min=min)
         }
         # Save plot line with information
@@ -146,11 +149,8 @@ plotDistribution <- function(psi, groups, rug=TRUE, vLine=TRUE, ...,
             plotLines[[count + 1]] <- list(
                 label = list(text = paste("Median:", med, "/ Variance:", vari)),
                 # Colour the same as the series
-                color=color,
-                dashStyle="shortdash",
-                width=2,
-                value=med,
-                zIndex = 7)
+                color=colour, dashStyle="shortdash", width=2, value=med, 
+                zIndex=7)
         }
         count <- count + 1
     }
@@ -639,6 +639,7 @@ diffSplicingEventServer <- function(input, output, session) {
         # Prepare groups of samples to analyse
         groups <- getSelectedGroups(input, "diffGroups", samples=TRUE,
                                     filter=colnames(psi))
+        colour <- attr(groups, "Colour")
         if ( !is.null(groups) ) {
             attrGroups <- groups
             psi <- psi[ , unlist(groups), drop=FALSE]
@@ -659,6 +660,7 @@ diffSplicingEventServer <- function(input, output, session) {
         eventPSI <- as.numeric(psi[event, ])
         eventPSI <- filterGroups(eventPSI, groups)
         groups <- names(eventPSI)
+        attr(groups, "Colour") <- colour
         
         assembly <- getAssemblyVersion()
         plot <- plotDistribution(

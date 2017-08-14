@@ -153,6 +153,7 @@ createSparklines <- function(hc, data, events, FUN, delim=NULL) {
 singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
                                analyses=c("wilcoxRankSum", "ttest", "kruskal",
                                           "levene", "fligner")) {
+    colour  <- attr(group, "Colour")
     series  <- split(vector, group)
     samples <- vapply(series, function(i) sum(!is.na(i)), integer(1))
     valid   <- names(series)[samples >= threshold]
@@ -209,17 +210,30 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
     # Density sparklines
     sparkline <- NULL
     if (any("density" == analyses)) {
-        data <- NULL
-        validSeries <- series[valid]
-        for (group in validSeries) {
+        data         <- NULL
+        validSeries  <- series[valid]
+        groupsColour <- NULL
+        for (each in seq(validSeries)) {
+            group <- validSeries[[each]]
             # Calculate the density of inclusion levels for each sample type 
             # with a greatly reduced number of points for faster execution
             den <- density(group, n=10, bw=0.01, na.rm=TRUE)
             data <- c(data, paste(sprintf('{"x":%s,"y":%s}', den$x, den$y),
                                   collapse=","))
+            if (!is.null(colour)) {
+                groupsColour <- c(groupsColour, 
+                                  unname(colour[names(validSeries)[[each]]]))
+            }
         }
-        sparkline <- paste(sprintf('{"name":"%s", "data":[%s]}', 
-                                   names(validSeries), data), collapse=",")
+        if (!is.null(colour)) {
+            sparkline <- paste(
+                sprintf('{"name":"%s", "data":[%s], "color":"%s"}', 
+                        names(validSeries), data, groupsColour), collapse=",")
+        } else {
+            sparkline <- paste(
+                sprintf('{"name":"%s", "data":[%s]}', 
+                        names(validSeries), data), collapse=",")
+        }
         sparkline <- paste("[", sparkline, "]")
     }
     
@@ -304,9 +318,16 @@ diffAnalyses <- function(psi, groups=NULL,
     }
     
     # Add artificial delimiters (required to identify group names later on)
+    colour           <- attr(groups, "Colour")
     parenthesisOpen  <- ".delim1."
     parenthesisClose <- ".delim2."
-    groups <- paste0(parenthesisOpen, groups, parenthesisClose)
+    groups           <- paste0(parenthesisOpen, groups, parenthesisClose)
+    groups           <- factor(groups)
+    if (!is.null(colour)) {
+        names(colour) <- paste0(parenthesisOpen, names(colour), 
+                                parenthesisClose)
+        attr(groups, "Colour") <- colour
+    }
     
     count <- 0
     stats <- apply(psi, 1, function(...) {
@@ -314,7 +335,7 @@ diffAnalyses <- function(psi, groups=NULL,
         if (count %% step == 0)
             progress("Performing statistical analysis", console=FALSE)
         return(singleDiffAnalyses(...))
-    }, factor(groups), threshold=1, step=step, analyses=analyses)
+    }, groups, threshold=1, step=step, analyses=analyses)
     print(Sys.time() - time)
     
     # Check the column names of the different columns

@@ -726,9 +726,11 @@ diffAnalysesSet <- function(session, input, output) {
         groups <- getSelectedGroups(input, "diffGroups", samples=TRUE,
                                     filter=colnames(psi))
         if ( !is.null(groups) ) {
+            colour     <- attr(groups, "Colour")
             attrGroups <- groups
-            psi <- psi[ , unlist(groups), drop=FALSE]
-            groups <- rep(names(groups), sapply(groups, length))
+            psi        <- psi[ , unlist(groups), drop=FALSE]
+            groups     <- rep(names(groups), sapply(groups, length))
+            attr(groups, "Colour") <- colour
         } else {
             attrGroups <- "All samples"
             groups <- rep(attrGroups, ncol(psi))

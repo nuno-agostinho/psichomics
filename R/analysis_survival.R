@@ -204,6 +204,7 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
         survTerms <- processSurvival(session, clinical, censoring, event, 
                                      timeStart, timeStop, groups, formulaStr, 
                                      scale=scale, coxph=coxph)
+        attr(survTerms, "Colour") <- attr(groups, "Colour")
         return(survTerms)
     }
 }
@@ -293,6 +294,7 @@ survivalServer <- function(input, output, session) {
         }
         
         # Plot survival curves
+        attr(surv, "Colour") <- attr(survTerms, "Colour")
         hc <- plotSurvivalCurves(surv, markTimes, intRanges, pvalue, plotTitle, 
                                  scale) %>% export_highcharts()
         if (!is.null(sub)) hc <- hc_subtitle(hc, text=sub)

@@ -1,4 +1,4 @@
-# 1.2.2 (23 Jun, 2017)
+# 1.2.2 (14 Aug, 2017)
 
 * Update minimum version required of shiny (1.0.3)
 * Fix inconsistent browser history navigation
@@ -11,10 +11,11 @@
     * Parse sample information from TCGA samples using `parseTcgaSampleInfo`
     * Generate TCGA sample metadata when loading TCGA junction quantification
 * Data grouping:
+    * Assign a customisable colour per data group
+    * Export or import patient and sample identifiers of data groups
     * Add new set operations when grouping (such as complement, subtraction and
     symmetric difference)
     * Suggest attributes of interest when creating groups
-    * Export or import patient and sample identifiers of data groups
     * Allow to retrieve the universe of patient and sample identifiers by
     performing the complement group without any group selected
 * Differential splicing analysis:
