@@ -348,6 +348,12 @@ loadSplicingQuantificationSet <- function(session, input, output) {
                 data <- processDatasetNames(data)
                 setData(data)
                 setCategory(name)
+                
+                samples <- colnames(psi)
+                parsed <- parseTcgaSampleInfo(samples) 
+                if ( !is.null(parsed) ) setSampleInfo(parsed)
+            } else {
+                setInclusionLevels(psi)
             }
             setSpecies(input$customSpecies2)
             setAssemblyVersion(input$customAssembly2)

@@ -136,6 +136,10 @@ getPatientAttributes <- function() {
 getSampleInfo <- reactive(getCategoryData()[["Sample metadata"]])
 
 #' @rdname getEvent
+setSampleInfo <- function(value, category = getCategory())
+    sharedData$data[[category]][["Sample metadata"]] <- value
+
+#' @rdname getEvent
 getSampleId <- function() {
     sampleInfo <- getSampleInfo()
     if ( !is.null(sampleInfo) ) {
