@@ -13,6 +13,7 @@
 \alias{getPatientId}
 \alias{getPatientAttributes}
 \alias{getSampleInfo}
+\alias{setSampleInfo}
 \alias{getSampleId}
 \alias{getSampleAttributes}
 \alias{getJunctionQuantification}
@@ -54,6 +55,8 @@ getPatientAttributes()
 
 getSampleInfo()
 
+setSampleInfo(value, category = getCategory())
+
 getSampleId()
 
 getSampleAttributes()
@@ -94,6 +97,8 @@ it uses the selected data category}
 
 \item{attrs}{Character: name of attributes to retrieve (if NULL, the whole 
 dataset is returned)}
+
+\item{value}{Value to attribute to an element}
 
 \item{incLevels}{Data frame or matrix: inclusion levels}
 
