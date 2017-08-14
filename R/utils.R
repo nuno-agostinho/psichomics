@@ -439,11 +439,20 @@ groupPerElem <- function(groups, elem=NULL, outerGroupName=NA) {
         names(finalGroups) <- elem
     }
     
+    colour <- NULL
+    assignedColours <- attr(groups, "Colour")
     for (each in unique(all)) {
         each <- as.character(each) # Force to use numeric identifiers as names
-        finalGroups[each] <- paste(names(all[all == each]), collapse=", ")
+        groupName <- names(all[all == each])
+        groupNameStr <- paste(groupName, collapse=", ")
+        if (!is.null(assignedColours) && !groupNameStr %in% names(colour)) {
+            cols   <- assignedColours[groupName]
+            colour <- c(colour, setNames(Reduce(blendColours, cols),
+                                         groupNameStr))
+        }
+        finalGroups[each] <- groupNameStr
     }
-    
+    attr(finalGroups, "Colour") <- colour
     return(finalGroups)
 }
 
@@ -838,7 +847,43 @@ textSuggestions <- function(id, words, novalue="No matching value", char=" ") {
                  }}], { noResultsMessage: "', novalue, '"});')
     js <- HTML("<script>", var, js, "</script>")
     return(js)
-    }
+}
+
+
+#' Blend two HEX colours
+#' 
+#' @param colour1 Character: HEX colour
+#' @param colour2 Character: HEX colour
+#' @param colour1Percentage Character: percentage of colour 1 mixed in blended 
+#' colour (default is 0.5)
+#'
+#' @source Code modified from \url{https://stackoverflow.com/questions/5560248}
+#'
+#' @return Character representing an HEX colour
+#' @examples 
+#' psichomics:::blendColours("#3f83a3", "#f48000")
+blendColours <- function (colour1, colour2, colour1Percentage=0.5) {
+    colour1 <- gsub("#", "", colour1)
+    colour1 <- as.hexmode(colour1)
+    R1 <- bitwShiftR(colour1, 16)
+    G1 <- bitwAnd(bitwShiftR(colour1, 8), 0x00FF)
+    B1 <- bitwAnd(colour1, 0x0000FF)
+    
+    colour2 <- gsub("#", "", colour2)
+    colour2 <- as.hexmode(colour2)
+    R2 <- bitwShiftR(colour2, 16)
+    G2 <- bitwAnd(bitwShiftR(colour2, 8), 0x00FF)
+    B2 <- bitwAnd(colour2, 0x0000FF)
+    
+    # Round to biggest integer if ending in .5
+    mround <- function(x) trunc(x + 0.5)
+    
+    red   <- 0x1000000 + (mround((R2 - R1) * colour1Percentage) + R1) * 0x10000;
+    green <- (mround((G2 - G1) * colour1Percentage) + G1) * 0x100;
+    blue  <- mround((B2 - B1) * colour1Percentage) + B1;
+    blended <- substr(as.hexmode(red + green + blue), 2, 16)
+    return(paste0("#", blended));
+}
 
 #' Plot survival curves using Highcharts
 #' 
@@ -957,25 +1002,28 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
         }
         
         # Add first value if there is no value for time at 0 in the data
-        if (!0 %in% df$x)
-            first <- list(list(x=0, y=firsty))
-        else
-            first <- NULL
+        first <- NULL
+        if (!0 %in% df$x) first <- list(list(x=0, y=firsty))
         
         # Mark events
         ls <- lapply(seq(nrow(df)), function(i) as.list(df[i, , drop=FALSE]))
-        if (markTimes)
-            ls[submark] <- lapply(ls[submark], c, marker=marker)
+        if (markTimes) ls[submark] <- lapply(ls[submark], c, marker=marker)
         
         if (is.matrix(summ))
             curveSumm <- summ[name, ]
         else
             curveSumm <- summ
         
+        # Prepare group colours
+        colour <- attr(object, "Colour")
+        if (!is.null(colour))
+            colour <- unname(colour[name])
+        else
+            colour <- JS("Highcharts.getOptions().colors[", count, "]")
+        
         hc <- do.call(hc_add_series, c(list(
             hc, data=c(first, ls), step="left", name=name, zIndex=1,
-            color=JS("Highcharts.getOptions().colors[", count, "]"), ...),
-            curveSumm))
+            color=colour, ...), curveSumm))
         
         if (ranges && !is.null(object$upper)) {
             # Add interval range
@@ -983,10 +1031,8 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
                 setNames(i[c("x", "low", "up")], NULL))
             hc <- hc %>% hc_add_series(
                 data=range, step="left", name="Ranges", type="arearange",
-                zIndex=0, linkedTo=':previous', fillOpacity=rangesOpacity, 
-                lineWidth=0,
-                color=JS("Highcharts.getOptions().colors[", count, "]"),
-                ...)
+                zIndex=0, linkedTo=':previous', fillOpacity=rangesOpacity,
+                lineWidth=0, color=colour, ...)
         }
         count <- count + 1
     }

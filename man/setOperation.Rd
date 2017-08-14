@@ -5,7 +5,8 @@
 \title{Perform set operations on selected groups}
 \usage{
 setOperation(operation, groups, selected, symbol = " ", groupName = NULL,
-  patients = NULL, samples = NULL, matches = NULL)
+  patients = NULL, samples = NULL, matches = NULL,
+  assignColoursToGroups = FALSE)
 }
 \arguments{
 \item{operation}{Character: set operation}
@@ -28,6 +29,9 @@ performed (" " by default)}
 
 \item{matches}{Character: match between samples (as names) and patients (as
 values)}
+
+\item{assignColoursToGroups}{Boolean: assign colours to new groups? FALSE by
+default}
 }
 \value{
 Matrix containing groups (new group is in the first row)

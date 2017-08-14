@@ -174,8 +174,13 @@ tr.active > td > a:hover { font-weight: bold; }
 /* Improve style of table details */
 .table-details  {
     margin-left: 15px;
+    table-layout:fixed;
     color: gray;
 }
+.table-details td:first-child { width: 45px; }
+
+/* Place groups' colour picker below input */
+.groups-colourpicker div .colourpicker-panel { top: 34px; }
 
 /* Style list item as danger for dropdown menu */
 .li-danger {

@@ -193,11 +193,13 @@ groupsUI <- function(id) {
 #' 
 #' @importFrom shiny actionButton actionLink downloadLink tags
 #' @importFrom shinyjs disabled
+#' @importFrom colourpicker colourInput
 #' 
 #' @return HTML elements
 renderGroupInterface <- function(ns) {
-    renameId <- "renameGroupName"
-    removeId <- "removeGroups"
+    renameId    <- "renameGroupName"
+    setColourId <- "setGroupColour"
+    removeId    <- "removeGroups"
     
     # Set operations
     mergeId      <- "mergeGroups"
@@ -329,17 +331,28 @@ renderGroupInterface <- function(ns) {
     
     # Rename interface
     renameButton <- operationButton("Rename", id=ns(renameId),
-                                    class="pull-right",
-                                    icon=icon("pencil"))
+                                    class="pull-right", icon=icon("pencil"))
     nameField <- textInput(ns("groupName"), label=NULL, 
                            placeholder="Rename selected group")
     nameField$attribs$style <- "margin: 0"
-    renameInterface <- div(
-        id=ns("renameAlert"), class="alert", role="alert",
-        class="alert-info",
-        style=" margin-top: 10px; margin-bottom: 0px;",
-        div(class="input-group", nameField,
-            div(class="input-group-btn", renameButton)))
+    
+    # Colour selection interface
+    colourSelector <- colourInput(ns("groupColour"), label=NULL)
+    colourSelector[[2]][["class"]] <- paste(colourSelector[[2]][["class"]],
+                                            "groups-colourpicker")
+    colourSelector[[2]][["style"]] <- "margin-bottom: 0px !important;"
+    setColourButton <- operationButton("Set colour", id=ns(setColourId),
+                                       class="pull-right", disable=FALSE,
+                                       icon=icon("paint-brush"))
+    
+    singleGroupSelectedInterface <- div(
+        id=ns("singleGroupSelected"), class="alert", role="alert",
+        class="alert-info", style="margin-top: 10px; margin-bottom: 0px;",
+        fluidRow(
+            column(7, div(class="input-group", nameField,
+                          div(class="input-group-btn", renameButton))),
+            column(5, div(class="input-group", colourSelector,
+                          div(class="input-group-btn", setColourButton)))))
     
     tagList(
         dataTableOutput(ns("groupsTable")),
@@ -360,7 +373,7 @@ renderGroupInterface <- function(ns) {
                          removeAllLink)),
         #checkboxInput(ns("removeSetsUsed"), "Remove original groups",
         #              value=TRUE)
-        hidden(renameInterface))
+        hidden(singleGroupSelectedInterface))
 }
 
 
@@ -476,6 +489,40 @@ createGroup <- function(session, input, output, id, type) {
                          selected=character())
 }
 
+#' Assign colours to groups
+#' 
+#' @param new Matrix: groups to which colours will be assigned
+#' @param groups Matrix: groups to check which colours are already assigned
+#' 
+#' @return Groups with an added column to state the colour
+assignColours <- function(new, groups=NULL) {
+    strong <- c("#08419E", "#EF9636", "#D33E6A", "#00C652", 
+                "#4C71DB", "#8F033B", "#F89CD1", "#05CFC0")
+    medium <- c("#7D87B6", "#EFB893", "#E17A90", "#8CD59A", 
+                "#8696DC", "#9E646F", "#F6C4DF", "#9CDDD5")
+    light  <- c("#BEC1D2", "#EAD2C7", "#E7AFBA", "#C6DECA", 
+                "#B6BBE0", "#D6BBC0", "#F2E1EA", "#D3E7E5")
+    colours <- c(strong, medium, light)
+    
+    # Avoid setting colours previously assigned
+    priority <- NULL
+    if (!is.null(groups) && "Colour" %in% colnames(groups))
+        priority <- colours[!colours %in% groups[ , "Colour"]]
+    
+    # Repeat default colours when there are many groups
+    reps    <- ceiling((nrow(new) - length(priority)) / length(colours))
+    colours <- rep(colours, reps)
+    colours <- c(priority, colours)[nrow(new):1]
+    
+    hasColnames <- !is.null(colnames(new))
+    new <- cbind(new, colours)
+    if (hasColnames)
+        colnames(new)[ncol(new)] <- "Colour"
+    else
+        colnames(new) <- NULL
+    return(new)
+}
+
 #' Append new groups to already existing groups
 #' 
 #' Retrieve previous groups, rename duplicated group names in the new groups
@@ -488,6 +535,7 @@ appendNewGroups <- function(new) {
     # Rename duplicated group names
     groups <- getGroupsFrom("Clinical data", complete=TRUE)
     new <- renameGroups(new, groups)
+    new <- assignColours(new, groups)
     
     # Append the new group(s) to the groups already created
     groups <- rbind(new, groups)
@@ -702,11 +750,13 @@ renameGroups <- function(new, old) {
 #' \code{complement} operation)
 #' @param matches Character: match between samples (as names) and patients (as
 #' values)
+#' @param assignColoursToGroups Boolean: assign colours to new groups? FALSE by
+#' default
 #' 
 #' @return Matrix containing groups (new group is in the first row)
 setOperation <- function(operation, groups, selected, symbol=" ", 
                          groupName=NULL, patients=NULL, samples=NULL,
-                         matches=NULL) {
+                         matches=NULL, assignColoursToGroups=FALSE) {
     # Create new set
     new <- NULL
     if (!identical(operation, "remove") && !identical(operation, "rename")) {
@@ -785,9 +835,10 @@ setOperation <- function(operation, groups, selected, symbol=" ",
         new <- matrix(c(setOperated, patients, samples), ncol=ncol)
     }
     
-    # Add new groups to the top
     if (!is.null(new)) {
-        new <- renameGroups(new, groups)
+        # Add new groups to the top
+        new    <- renameGroups(new, groups)
+        if (assignColoursToGroups) new <- assignColours(new, groups)
         groups <- rbind(new, groups)
     }
     
@@ -808,8 +859,9 @@ setOperation <- function(operation, groups, selected, symbol=" ",
     # Correctly fill column names if empty
     if (is.null(colnames(groups))) {
         names <- c("Names", "Subset", "Input")
-        if (!is.null(patients)) names <- c(names, "Patients")
-        if (!is.null(samples))  names <- c(names, "Samples")
+        if (!is.null(patients))           names <- c(names, "Patients")
+        if (!is.null(samples))            names <- c(names, "Samples")
+        if (length(names) < ncol(groups)) names <- c(names, "Colour")
         colnames(groups) <- names
     }
     
@@ -850,7 +902,8 @@ operateOnGroups <- function(input, session, operation, buttonId, symbol=" ",
         samples   <- getSampleId()
         matches   <- getClinicalMatchFrom("Inclusion levels")
         groups    <- setOperation(operation, groups, selected, symbol, 
-                                  groupName, patients, samples, matches)
+                                  groupName, patients, samples, matches,
+                                  assignColoursToGroups=TRUE)
         setGroupsFrom(datasetName, groups)
     })
 }
@@ -858,6 +911,8 @@ operateOnGroups <- function(input, session, operation, buttonId, symbol=" ",
 #' Present groups table
 #' 
 #' @param datasetName Character: name of dataset
+#' 
+#' @importFrom shiny tags
 #' 
 #' @return Matrix with groups ordered (or NULL if no groups exist)
 showGroupsTable <- function(datasetName) {
@@ -886,9 +941,22 @@ showGroupsTable <- function(datasetName) {
                 show <- 4
         }
         
+        # Show colours
+        if ("Colour" %in% colnames(groups)) {
+            colour <- match("Colour", colnames(groups))
+            groups[ , colour] <- lapply(groups[ , colour], function(col) {
+                div <- tags$div(style=paste0(
+                    "background-color: ", col, ";",
+                    "height: 20px;", "border-radius: 5px;"))
+                return(as.character(div))
+            })
+            show <- c(show, colour)
+        }
+        
         # Ordering the groups (plus safety net for cases with one row)
         ord <- c(1, show, 2, 3)
         ordered <- groups[ , ord, drop=FALSE]
+        colnames(ordered)[1] <- "Group"
         return(ordered)
     } else {
         return(NULL)
@@ -903,6 +971,7 @@ showGroupsTable <- function(datasetName) {
 #' @importFrom shinyjs disabled enable disable hidden show hide runjs
 #' @importFrom shiny textInput
 #' @importFrom shinyBS updateCollapse
+#' @importFrom colourpicker updateColourInput
 groupsServer <- function(input, output, session, datasetName) {
     ns <- session$ns
     
@@ -957,8 +1026,7 @@ groupsServer <- function(input, output, session, datasetName) {
         cols <- c("Names", "Patients", "Samples", "Subset", "Input")
         mf <- matrix(ncol=5, dimnames=list(NA, cols))
         return(mf[-1, ])
-    }, style="bootstrap", escape=FALSE, 
-    server=TRUE, rownames=FALSE,
+    }, style="bootstrap", escape=FALSE, server=TRUE, rownames=FALSE,
     options=list(
         pageLength=10, lengthChange=FALSE, scrollX=TRUE, ordering=FALSE,
         columnDefs = list(
@@ -1109,12 +1177,26 @@ groupsServer <- function(input, output, session, datasetName) {
         }
     })
     
-    # Show group rename if only one group is selected
+    # Prepare interface for when only one group ise selected
     observe({
-        if (length(input$groupsTable_rows_selected) == 1)
-            show("renameAlert", anim=TRUE, time=0.2)
-        else
-            hide("renameAlert", anim=TRUE, time=0.2)
+        selected <- input$groupsTable_rows_selected
+        if (length(selected) == 1) {
+            show("singleGroupSelected", anim=TRUE, time=0.2)
+            
+            colour <- getGroupsFrom("Clinical data", 
+                                    complete=TRUE)[[selected, "Colour"]]
+            updateColourInput(session, "groupColour", value=colour)
+        } else {
+            hide("singleGroupSelected", anim=TRUE, time=0.2)
+        }
+    })
+    
+    # Set colour of selected group
+    observeEvent(input[["setGroupColour-button"]], {
+        selected <- input$groupsTable_rows_selected
+        groups   <- getGroupsFrom("Clinical data", complete=TRUE)
+        groups[[selected, "Colour"]] <- input$groupColour
+        setGroupsFrom("Clinical data", groups)
     })
     
     # Disable rename button if no new name was given
@@ -1325,14 +1407,12 @@ groupsServerOnce <- function(input, output, session) {
             }
             setGroupsFrom("Clinical data", group)
         } else if ( !is.null(samples) && !showSamples && !is.null(patients) &&
-                    !is.null(match) ) {
-            if ("Patients" %in% colnames(group)) {
-                # Update groups if previously made with patients only
-                samples <- getMatchingSamples(group[ , "Patients"], samples, 
-                                              patients, match=match)
-                group <- cbind(group, "Samples"=samples)
-                setGroupsFrom("Clinical data", group)
-            }
+                    !is.null(match) && "Patients" %in% colnames(group)) {
+            # Update groups if previously made with patients only
+            samples <- getMatchingSamples(group[ , "Patients"], samples, 
+                                          patients, match=match)
+            group <- cbind(group, "Samples"=samples)
+            setGroupsFrom("Clinical data", group)
         }
     })
 }
@@ -1355,10 +1435,13 @@ getSelectedGroups <- function(input, id, samples=FALSE, dataset="Clinical data",
         # User selects no groups (either explicitly or not)
         groups <- NULL
     } else {
-        groups <- getGroupsFrom(dataset, samples=samples)[selected]
+        groups <- getGroupsFrom(dataset, samples=samples)
+        colour <- attr(groups, "Colour")
+        groups <- groups[selected]
         
         if (!is.null(filter))
             groups <- lapply(groups, function(i) i[i %in% filter])
+        attr(groups, "Colour") <- colour[selected]
     }
     return(groups)
 }
