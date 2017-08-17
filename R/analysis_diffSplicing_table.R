@@ -737,8 +737,7 @@ diffAnalysesSet <- function(session, input, output) {
         }
         
         stats <- diffAnalyses(psi, groups, statsChoices,
-                              pvalueAdjust=pvalueAdjust,
-                              progress=updateProgress)
+                              pvalueAdjust=pvalueAdjust)
         attr(stats, "groups") <- attrGroups
         setDifferentialAnalyses(stats)
         setDifferentialAnalysesSurvival(NULL)
