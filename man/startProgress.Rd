@@ -4,7 +4,8 @@
 \alias{startProgress}
 \title{Create a progress object}
 \usage{
-startProgress(message, divisions, global = sharedData)
+startProgress(message, divisions, global = if (isRunning()) sharedData else
+  getHidden())
 }
 \arguments{
 \item{message}{Character: progress message}
@@ -14,7 +15,8 @@ startProgress(message, divisions, global = sharedData)
 \item{global}{Shiny's global variable}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+NULL (this function is used to modify the Shiny session's state or
+internal hidden variables)
 }
 \description{
 Create a progress object

@@ -35,7 +35,7 @@ parseMisoAnnotation <- function(
     types=c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI", "TandemUTR"),
     genome="hg19") {
     
-    cat("Retrieving MISO annotation...", fill=TRUE)
+    display("Retrieving MISO annotation...")
     typesFile <- file.path(folder, paste0(types, ".", genome, ".gff3"))
     annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
                     comment.char="#", header=FALSE)
@@ -44,7 +44,7 @@ parseMisoAnnotation <- function(
     ## lines... remove them for now
     annot[[3]] <- annot[[3]][-c(49507, 49508), ]
     
-    cat("Parsing MISO annotation...", fill=TRUE)
+    display("Parsing MISO annotation...")
     events <- lapply(annot, parseMisoEvent)
     events <- rbind.fill(events)
     class(events) <- c("ASevents", class(events))

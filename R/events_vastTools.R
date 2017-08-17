@@ -14,7 +14,7 @@ parseVastToolsAnnotation <- function(
     genome="Hsa",
     complexEvents=FALSE) {
     
-    cat("Retrieving VAST-TOOLS annotation...", fill=TRUE)
+    display("Retrieving VAST-TOOLS annotation...")
     typesFile <- file.path(folder,
                            sprintf("%s.%s.Template%s.txt", genome, types,
                                    c(rep("", 6), rep(".2", 2))#, rep(".2", 2))
@@ -24,13 +24,13 @@ parseVastToolsAnnotation <- function(
     annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
                     comment.char="#", header=TRUE)
     
-    cat("Parsing VAST-TOOLS annotation...", fill=TRUE)
+    display("Parsing VAST-TOOLS annotation...")
     types <- names(annot)
     skippedExon <- c("COMBI", "MERGE3m", "MIC", "EXSK", "MULTI")
     events <- lapply(seq_along(annot),
                      function(i) {
                          type <- types[i]
-                         cat(type, fill=TRUE)
+                         display(type)
                          a <- annot[[i]]
                          if (nrow(a) > 0) {
                              parsed <- parseVastToolsEvent(a)

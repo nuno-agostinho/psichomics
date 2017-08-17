@@ -17,7 +17,7 @@ parseMatsAnnotation <- function(
     genome="fromGTF",
     novelEvents=TRUE) {
     
-    cat("Retrieving rMATS annotation...", fill=TRUE)
+    display("Retrieving rMATS annotation...")
     if (novelEvents)
         detected <- c(types, paste0("novelEvents.", types))
     else
@@ -28,7 +28,7 @@ parseMatsAnnotation <- function(
     annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
                     comment.char="#", header=TRUE)
     
-    cat("Parsing rMATS annotation...", fill=TRUE)
+    display("Parsing rMATS annotation...")
     types <- names(annot)
     events <- lapply(seq_along(annot), function(i)
         if (nrow(annot[[i]]) > 0)
