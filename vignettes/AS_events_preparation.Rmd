@@ -149,7 +149,7 @@ be sure to select the **Load annotation from file...** option, click the button
 that appears below and select the recently created RDS file. Otherwise, if you
 are using the CLI version, perform the following steps:
 
-```{r}
+```{r, eval=FALSE}
 annot <- readRDS(annotFile) # "file" is the path to the annotation file
 junctionQuant <- readFile("ex_junctionQuant.RDS") # example set
 
