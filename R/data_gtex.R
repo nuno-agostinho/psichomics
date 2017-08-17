@@ -126,26 +126,24 @@ loadGtexFile <- function(path, pattern, samples=NULL) {
 #' @param tissue Character: tissue(s) of interest when loading data (all tissues
 #' are loaded by default); if only some tissue(s) are of interest, this may
 #' speed up loading the data
-#' @param progress Function to show the progress (default is to print progress
-#' to console)
 #'
 #' @importFrom tools file_path_sans_ext
 #'
 #' @return List with loaded data
 #' @export
 loadGtexData <- function(clinical=NULL, sampleMetadata=NULL, junctionQuant=NULL,
-                         tissue=NULL, progress=echoProgress) {
+                         tissue=NULL) {
     if (is.null(clinical) && is.null(sampleMetadata) && is.null(junctionQuant))
         stop("No input data was given.")
     
     loaded <- list()
     validFiles <- !vapply(list(clinical, sampleMetadata, junctionQuant),
                           is.null, logical(1))
-    progress("Loading files...", divisions=sum(validFiles))
+    updateProgress("Loading files...", divisions=sum(validFiles))
     
     loadThisGtexFile <- function(path, pattern, samples=NULL) {
         name <- ifelse(is.character(path), basename(path), path$name)
-        progress("Processing file", detail=name)
+        updateProgress("Processing file", detail=name)
         loaded <- loadGtexFile(path, pattern, samples)
         return(loaded)
     }
@@ -223,10 +221,8 @@ loadGtexDataShiny <- function(session, input, replace=TRUE) {
     
     if (any(!is.null(c(subjectInfo, sampleInfo, junctionQuant)))) {
         time <- startProcess("load")
-        data <- loadGtexData(clinical=subjectInfo,
-                             sampleMetadata=sampleInfo,
-                             junctionQuant=junctionQuant,
-                             tissue=tissue, progress=updateProgress)
+        data <- loadGtexData(clinical=subjectInfo, sampleMetadata=sampleInfo,
+                             junctionQuant=junctionQuant, tissue=tissue)
         
         if (!is.null(data)) {
             if (!replace) data <- c(getData(), data)

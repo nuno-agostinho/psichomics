@@ -11,12 +11,12 @@ parseSuppaAnnotation <- function(
     types=c("SE", "AF", "AL", "MX", "A5", "A3", "RI"),
     genome="hg19") {
     
-    cat("Retrieving SUPPA annotation...", fill=TRUE)
+    display("Retrieving SUPPA annotation...")
     typesFile <- file.path(folder, paste0(genome, "_", types, ".ioe"))
     annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
                     comment.char="#", header=TRUE)
     
-    cat("Parsing SUPPA annotation...", fill=TRUE)
+    display("Parsing SUPPA annotation...")
     eventsID <- lapply(annot, "[[", "event_id")
     events <- lapply(eventsID, parseSuppaEvent)
     events <- rbind.fill(events)

@@ -2,6 +2,7 @@
 
 * Update minimum version required of shiny (1.0.3)
 * Fix inconsistent browser history navigation
+* Show progress bar when running in the command-line interface
 * Data loading:
     * Improve instructions on loading user files
     * Filter GTEx junction quantification based on tissues of interest (all 
