@@ -713,8 +713,8 @@ startProgress <- function(message, divisions,
 #' @importFrom utils setTxtProgressBar
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
-updateProgress <- function(message="Hang in there", value=NULL, max=NULL,
-                           detail=NULL, divisions=NULL,
+updateProgress <- function(message="Loading", value=NULL, max=NULL, detail=NULL,
+                           divisions=NULL,
                            global=if (isRunning()) sharedData else getHidden(),
                            console=TRUE) {
     if (!is.null(divisions)) {

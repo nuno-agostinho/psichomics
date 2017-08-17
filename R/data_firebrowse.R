@@ -517,7 +517,7 @@ loadFirebrowseData <- function(folder=NULL,
         updateProgress("Archives prepared")
     } else {
         # Set the progress bar to the number of folders to load
-        updateProgress(divisions = length(folders))   
+        updateProgress("Loading data", divisions = length(folders))   
     }
     
     # Get the full path of the files
