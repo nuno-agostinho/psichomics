@@ -6,12 +6,10 @@
 \title{Downloads and processes data from the Firebrowse web API and loads it into R}
 \usage{
 loadFirebrowseData(folder = NULL, data = NULL, exclude = c(".aux.",
-  ".mage-tab.", "MANIFEST.txt"), ..., progress = echoProgress,
-  download = TRUE)
+  ".mage-tab.", "MANIFEST.txt"), ..., download = TRUE)
 
 loadFirehoseData(folder = NULL, data = NULL, exclude = c(".aux.",
-  ".mage-tab.", "MANIFEST.txt"), ..., progress = echoProgress,
-  download = TRUE)
+  ".mage-tab.", "MANIFEST.txt"), ..., download = TRUE)
 }
 \arguments{
 \item{folder}{Character: directory to store the downloaded archives (by
@@ -44,9 +42,6 @@ data for all cohorts)}
   \item{sort_by}{String: column used to sort the data (by default, it sorts by
 cohort)}
 }}
-
-\item{progress}{Function to show the progress (default is to print progress
-to console)}
 
 \item{download}{Boolean: download missing files through the function
 \code{download.file} (TRUE by default)}

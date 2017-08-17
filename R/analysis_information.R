@@ -230,7 +230,7 @@ parseUniprotXML <- function(xml) {
 #' plotProtein(transcript)
 #' }
 plotProtein <- function(molecule) {
-    cat("Retrieving protein annotation from UniProt...", fill=TRUE)
+    display("Retrieving protein annotation from UniProt...")
     xml     <- queryUniprot(molecule, "xml")
     if (xml == "") return(NULL)
     parsed  <- parseUniprotXML(xml)
@@ -251,7 +251,7 @@ plotProtein <- function(molecule) {
     # The diverse types of features available
     types <- unique(feature$type)
     
-    cat("Plotting protein domains...", fill=TRUE)
+    display("Plotting protein domains...")
     featureList <- NULL
     
     if (nrow(feature) == 0)
