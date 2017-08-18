@@ -49,14 +49,32 @@ missingDataGuide <- function(dataType) {
 #' @param tab Function to process HTML elements
 #' 
 #' @importFrom shinyBS bsTooltip
-#' @importFrom shiny NS div icon fluidRow column conditionalPanel navbarMenu
+#' @importFrom shiny NS div icon fluidRow column tags
 analysesUI <- function(id, tab) { 
     ns <- NS(id)
-    uiList <- getUiFunctions(ns, "analysis")
+    uiList <- getUiFunctions(
+        ns, "analysis", 
+        priority=c("pcaUI", "diffSplicingUI", "survivalUI", "infoUI"))
     
     # Load available analyses
-    ui <- lapply(uiList, function(ui) tabPanel(attr(ui, "name"), ui) )
-    do.call(tab, c(list(icon="flask", title="Analyses", menu=TRUE), ui))
+    analyses <- tagList()
+    for (k in seq(uiList)) {
+        ui <- uiList[[k]]
+        if ( is(ui, "shiny.tag.list") ) {
+            tabName  <- attr(ui, "name")
+            analyses <- c(analyses, list(tabPanel(tabName, ui)))
+        } else {
+            headerName <- attr(ui, "name")
+            analyses   <- c(analyses, list(headerName))
+            for (each in seq(ui)) {
+                name     <- attr(ui[[each]], "name")
+                analyses <- c(analyses, list(tabPanel(name, ui[each])))
+            }
+        }
+        analyses <- c(analyses, list("----")) # Add a divider after each section
+    }
+    analyses <- analyses[-length(analyses)]
+    do.call(tab, c(list(icon="flask", title="Analyses", menu=TRUE), analyses))
 }
 
 #' Retrieve clinical data based on attributes required for survival analysis
@@ -753,7 +771,9 @@ optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart,
 #' @importFrom shinyjs hide show
 analysesServer <- function(input, output, session) {
     # Run server logic from the scripts
-    server <- getServerFunctions("analysis")
+    server <- getServerFunctions(
+        "analysis", priority=c("pcaServer", "diffSplicingServer", 
+                               "survivalServer", "infoServer"))
 }
 
 attr(analysesUI, "loader") <- "app"
