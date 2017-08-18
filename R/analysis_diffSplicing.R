@@ -59,9 +59,7 @@ diffSplicingUI <- function(id, tab) {
     uiList <- getUiFunctions(ns, "diffSplicing", 
                              priority=c("diffSplicingTableUI",
                                         "diffSplicingEventUI"))
-    
-    ui <- lapply(uiList, function(ui) tabPanel(attr(ui, "name"), ui) )
-    do.call(tabsetPanel, c(list(type="pills"), ui))
+    return(uiList)
 }
 
 #' Create density sparklines for inclusion levels
