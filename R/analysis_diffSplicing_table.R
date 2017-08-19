@@ -241,6 +241,7 @@ createOptimalSurvData <- function(eventPSI, clinical, censoring, event,
 #' @param session Shiny session
 #' @param input Shiny input
 #' @param output Shiny output
+#' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 optimSurvDiffSet <- function(session, input, output) {
     ns <- session$ns
