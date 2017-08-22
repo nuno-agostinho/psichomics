@@ -3,8 +3,8 @@
 %   R/analysis_diffSplicing_event.R, R/analysis_diffSplicing_table.R,
 %   R/analysis_information.R, R/analysis_pca.R, R/analysis_survival.R,
 %   R/analysis_template.R, R/app.R, R/data.R, R/data_firebrowse.R,
-%   R/data_gtex.R, R/data_inclusionLevels.R, R/data_local.R, R/groups.R,
-%   R/help.R
+%   R/data_geNormalisationFiltering.R, R/data_gtex.R, R/data_inclusionLevels.R,
+%   R/data_local.R, R/groups.R, R/help.R
 \name{analysesServer}
 \alias{analysesServer}
 \alias{diffSplicingServer}
@@ -17,6 +17,7 @@
 \alias{appServer}
 \alias{dataServer}
 \alias{firebrowseServer}
+\alias{geNormalisationFilteringServer}
 \alias{gtexDataServer}
 \alias{inclusionLevelsServer}
 \alias{localDataServer}
@@ -45,6 +46,8 @@ appServer(input, output, session)
 dataServer(input, output, session)
 
 firebrowseServer(input, output, session)
+
+geNormalisationFilteringServer(input, output, session)
 
 gtexDataServer(input, output, session)
 

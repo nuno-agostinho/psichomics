@@ -1,8 +1,8 @@
-firebrowseGeneExpressionFormat <- function() {
+firebrowseNormalizedGeneExpressionFormat <- function() {
     list(
-        tablename   = "Gene expression",   # Name of the created table
-        filename    = "RSEM_genes",   # Name of the file
-        description = "Gene expression from RSEM",
+        tablename   = "Gene expression (normalised)",
+        filename    = "RSEM_genes_normalized",
+        description = "Normalised gene expression from RSEM",
         dataType    = "Gene expression",
         
         # Transpose the data? This is the first step before parsing the information!
@@ -15,8 +15,7 @@ firebrowseGeneExpressionFormat <- function() {
         checkIndex  = 2,     # Index of the row or column used to check the format
         
         # File string to check
-        check = c("gene_id", "raw_count", "scaled_estimate", "transcript_id",
-                  "raw_count"),
+        check = c("gene_id", rep("normalized_count", 5)),
         
         # Parsing information
         delim       = "\t",  # Delimiter used to separate fields
@@ -30,12 +29,8 @@ firebrowseGeneExpressionFormat <- function() {
         unique = FALSE,    # Remove duplicated rows
         
         # Default columns to show (NULL to show all)
-        show = NULL,
-        
-        process = function(data) {
-            return(data[ , seq(1, ncol(data), 3)])
-        }
+        show = NULL
     )
 }
 
-attr(firebrowseGeneExpressionFormat, "loader") <- "formats"
+attr(firebrowseNormalizedGeneExpressionFormat, "loader") <- "formats"

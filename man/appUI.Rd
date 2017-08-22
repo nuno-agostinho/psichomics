@@ -3,8 +3,8 @@
 %   R/analysis_diffSplicing_event.R, R/analysis_diffSplicing_table.R,
 %   R/analysis_information.R, R/analysis_pca.R, R/analysis_survival.R,
 %   R/analysis_template.R, R/app.R, R/data.R, R/data_firebrowse.R,
-%   R/data_gtex.R, R/data_inclusionLevels.R, R/data_local.R, R/groups.R,
-%   R/help.R
+%   R/data_geNormalisationFiltering.R, R/data_gtex.R, R/data_inclusionLevels.R,
+%   R/data_local.R, R/groups.R, R/help.R
 \name{analysesUI}
 \alias{analysesUI}
 \alias{diffSplicingUI}
@@ -17,6 +17,7 @@
 \alias{appUI}
 \alias{dataUI}
 \alias{firebrowseUI}
+\alias{geNormalisationFilteringUI}
 \alias{gtexDataUI}
 \alias{inclusionLevelsUI}
 \alias{localDataUI}
@@ -45,6 +46,8 @@ appUI()
 dataUI(id, tab)
 
 firebrowseUI(id, panel)
+
+geNormalisationFilteringUI(id, panel)
 
 gtexDataUI(id, panel)
 

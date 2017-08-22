@@ -15,10 +15,9 @@
 #' getFirebrowseDataTypes()
 getFirebrowseDataTypes <- function() {
     choices <- list("RNA sequencing"=c(
-        paste0(c("junction", "exon"), "_quantification"), "Preprocess",
-        paste0("RSEM_", c("isoforms", "genes")),
-        paste0(c("junction", "gene", "exon"),
-               "_expression"), "genes_normalized"))
+        "junction_quantification", "exon_quantification", 
+        "exon_expression", "junction_expression",
+        "RSEM_genes", "RSEM_genes_normalized", "RSEM_isoforms", "Preprocess"))
     names(choices[[1]]) <- capitalize(gsub("_", " ", choices[[1]], fixed=TRUE))
     return(choices)
 }
@@ -69,11 +68,28 @@ parseTcgaSampleInfo <- function (samples, match=NULL) {
 #' @return List of list of data frames
 loadTCGAsampleMetadata <- function(data) {
     for (i in seq(data)) {
+        # Retrieve sample metadata from junction quantification
         junctionQuant <- data[[i]]$`Junction quantification`
+        junctionQuantSamples <- NULL
         if (!is.null(junctionQuant)) {
             samples <- colnames(junctionQuant)
-            if (any(grepl("^TCGA", samples)))
+            if (any(grepl("^TCGA", samples))) {
+                junctionQuantSamples <- samples
                 data[[i]]$"Sample metadata" <- parseTcgaSampleInfo(samples)
+            }
+        }
+        
+        # Retrieve sample metadata from gene expression
+        match <- sapply(data[[i]], attr, "dataType") == "Gene expression"
+        if (any(match)) {
+            geneExpr <- data[[i]][match]
+            if (!is.null(geneExpr)) {
+                samples <- unique(unlist(lapply(geneExpr, colnames)))
+                samples <- samples[!samples %in% junctionQuantSamples]
+                if (any(grepl("^TCGA", samples))) {
+                    data[[i]]$"Sample metadata" <- parseTcgaSampleInfo(samples)
+                }
+            }
         }
     }
     return(data)
@@ -179,8 +195,10 @@ ASquantFileInput <- function(ASquantFileId, speciesId, assemblyId){
 #' @importFrom shinyjs hidden
 dataUI <- function(id, tab) {
     ns <- NS(id)
-    uiList <- getUiFunctions(ns, "data", bsCollapsePanel,
-                             priority="localDataUI")
+    uiList <- getUiFunctions(
+        ns, "data", bsCollapsePanel,
+        priority=paste0(c("localData", "firebrowse", "gtexData",
+                          "inclusionLevels", "geNormalisationFiltering"), "UI"))
     
     tcga <- tags$abbr(title="The Cancer Genome Atlas", "TCGA")
     gtex <- tags$abbr(title="Genotype-Tissue Expression", "GTEx")
@@ -409,7 +427,10 @@ dataServer <- function(input, output, session) {
     })
     
     # Run server logic from the scripts
-    getServerFunctions("data", priority="localDataServer")
+    getServerFunctions(
+        "data", priority=paste0(
+            c("localData", "firebrowse", "gtexData",
+              "inclusionLevels", "geNormalisationFiltering"), "Server"))
 }
 
 attr(dataUI, "loader") <- "app"

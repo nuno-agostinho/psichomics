@@ -17,6 +17,8 @@
 \alias{getSampleId}
 \alias{getSampleAttributes}
 \alias{getJunctionQuantification}
+\alias{getGeneExpression}
+\alias{setNormalisedGeneExpression}
 \alias{getInclusionLevels}
 \alias{setInclusionLevels}
 \alias{getInclusionLevelsPCA}
@@ -63,6 +65,10 @@ getSampleAttributes()
 
 getJunctionQuantification(category = getCategory())
 
+getGeneExpression(category = getCategory())
+
+setNormalisedGeneExpression(geneExpr, category = getCategory())
+
 getInclusionLevels()
 
 setInclusionLevels(incLevels, category = getCategory())
@@ -99,6 +105,8 @@ it uses the selected data category}
 dataset is returned)}
 
 \item{value}{Value to attribute to an element}
+
+\item{geneExpr}{Data frame or matrix: normalised gene expression}
 
 \item{incLevels}{Data frame or matrix: inclusion levels}
 

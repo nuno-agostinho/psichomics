@@ -74,7 +74,7 @@ folder <- getDownloadsFolder()
 # TCGA/Firebrowse for Adrenocortical Carcinoma
 data <- loadFirebrowseData(folder=folder,
                            cohort="BRCA",
-                           data=c("Clinical", "junction_quantification"),
+                           data=c("clinical", "junction_quantification"),
                            date="2016-01-28")
 
 # Select clinical and junction quantification dataset
