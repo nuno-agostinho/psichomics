@@ -112,13 +112,13 @@ loadFile <- function(format, file, ...) {
     # Add row names (it doesn't work placed before for some reason...)
     rownames(loaded) <- rowNames
     attr(loaded, "rowNames") <- !is.null(rowNames)
-    attr(loaded, "filename") <- file
-    attr(loaded, "dataType") <- format$dataType
     
     # Further process the dataset if needed
     if (!is.null(format$process)) loaded <- format$process(loaded)
     
-    # Add table name and description
+    # Add table name, description and other attributes
+    attr(loaded, "filename") <- file
+    attr(loaded, "dataType") <- format$dataType
     attr(loaded, "tablename") <- format$tablename
     attr(loaded, "description") <- format$description
     attr(loaded, "show") <- format$show

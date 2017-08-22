@@ -441,10 +441,9 @@ loadFirehoseFolders <- loadFirebrowseFolders
 #' \dontrun{
 #' loadFirebrowseData(cohort = "ACC", data_type = "Clinical")
 #' }
-loadFirebrowseData <- function(folder=NULL, 
-                             data=NULL, 
-                             exclude=c(".aux.", ".mage-tab.", "MANIFEST.txt"),
-                             ..., progress = echoProgress, download=TRUE) {
+loadFirebrowseData <- function(folder=NULL, data=NULL, 
+                               exclude=c(".aux.", ".mage-tab.", "MANIFEST.txt"),
+                               ..., progress = echoProgress, download=TRUE) {
     args <- list(...)
     
     datasets <- unlist(getFirebrowseDataTypes())
@@ -458,7 +457,10 @@ loadFirebrowseData <- function(folder=NULL,
     stop_for_status(res)
     url <- parseUrlsFromFirebrowseResponse(res)
     
-    # Don't download specific items
+    # "RSEM_genes" would match both "RSEM_genes" and "RSEM_genes_normalized"
+    exclude[exclude=="RSEM_genes"] <- "RSEM_genes__"
+    
+    # Do not download specific items
     exclude <- paste(escape(exclude), collapse = "|")
     url <- url[!grepl(exclude, url)]
     
@@ -568,7 +570,13 @@ addTCGAdata <- function(ns) {
     names(dates)[1] <- paste(names(dates)[1], "(most recent)")
     
     dataTypes <- getFirebrowseDataTypes()
-    dataTypes[[1]] <- dataTypes[[1]][1]
+    dataList <- dataTypes[[1]]
+    names(dataList)[dataList == "RSEM_genes"] <- "Gene expression (RSEM)"
+    names(dataList)[dataList == "RSEM_genes_normalized"] <- 
+        "Gene expression (normalised by RSEM)"
+    dataList <- dataList[dataList %in% c("junction_quantification", 
+                                         "RSEM_genes", "RSEM_genes_normalized")]
+    dataTypes[[1]] <- dataList
     dataTypes <- c("Clinical data"="Clinical", dataTypes)
     
     tagList(
@@ -583,7 +591,8 @@ addTCGAdata <- function(ns) {
                            placeholder = "Select sample date",
                            plugins=list("remove_button"))),
         selectizeInput(ns("firebrowseData"), "Data type", multiple = TRUE,
-                       width = "100%", dataTypes, selected=dataTypes,
+                       width = "100%", dataTypes,
+                       selected=c("Clinical", "junction_quantification"),
                        options = list(
                            placeholder = "Select data types",
                            plugins=list("remove_button"))),

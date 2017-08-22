@@ -171,6 +171,34 @@ getJunctionQuantification <- function(category=getCategory()) {
 }
 
 #' @rdname getEvent
+getGeneExpression <- function(category=getCategory()) {
+    if (!is.null(category)) {
+        data <- getData()[[category]]
+        match <- sapply(data, attr, "dataType") == "Gene expression"
+        if (any(match)) return(data[match])
+    }
+}
+
+#' @rdname getEvent
+#' @param geneExpr Data frame or matrix: normalised gene expression
+setNormalisedGeneExpression <- function(geneExpr, category=getCategory()) {
+    ns  <- names(sharedData$data[[category]])
+    num <- gsub("Gene expression \\(normalised.*?([0-9]*).*\\)", "\\1", ns)
+    num <- suppressWarnings(as.integer(num))
+    
+    if (any(!is.na(num))) {
+        num <- max(num, na.rm=TRUE)
+        num <- paste0(" ", num + 1)
+    } else if ("Gene expression (normalised)" %in% ns) {
+        num <- " 1"
+    } else {
+        num <- ""
+    }
+    ns <- sprintf("Gene expression (normalised%s)", num)
+    sharedData$data[[category]][[ns]] <- geneExpr
+}
+
+#' @rdname getEvent
 getInclusionLevels <- reactive(getCategoryData()[["Inclusion levels"]])
 
 #' @rdname getEvent

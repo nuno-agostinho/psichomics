@@ -178,6 +178,42 @@ is.whole <- function(x, tol=.Machine$double.eps^0.5) {
     abs(x - round(x)) < tol
 }
 
+#' Calculate mean for each row of a matrix
+#' 
+#' @param mat Matrix
+#' @param na.rm Boolean: remove NAs?
+#' 
+#' @return Vector of means
+rowMeans <- function(mat, na.rm=FALSE) {
+    if ( !is.null(dim(mat)) ) {
+        nas <- 0
+        if (na.rm) nas <- rowSums(is.na(mat))
+        rowSums(mat, na.rm=na.rm) / (ncol(mat) - nas)
+    } else {
+        mean(mat, na.rm=na.rm)
+    }
+}
+
+#' Calculate variance for each row of a matrix
+#' 
+#' @inheritParams rowMeans
+#' 
+#' @return Vector of variances
+rowVars <- function(mat, na.rm=FALSE) {
+    if ( !is.null(dim(mat)) ) {
+        means      <- rowMeans(mat, na.rm=na.rm)
+        meansSqDev <- (mat - means) ** 2
+        squaresSum <- rowSums(meansSqDev, na.rm=na.rm)
+        
+        nas <- 0
+        if (na.rm) nas <- rowSums(is.na(mat))
+        dem <- ncol(mat) - nas - 1
+        squaresSum/dem
+    } else {
+        var(mat, na.rm=na.rm)
+    }
+}
+
 #' Rename vector to avoid duplicated values with another vector
 #'
 #' Renames values by adding an index to the end of duplicates. This allows to
@@ -622,22 +658,6 @@ errorDialog <- function(description, ...)
 #' @rdname inlineDialog
 warningDialog <- function(description, ...)
     inlineDialog(description, ..., type="warning")
-
-#' Sample variance by row
-#' 
-#' Calculate the sample variance of each row in the given matrix
-#' 
-#' @param x Matrix
-#' @param na.rm Boolean: should the NAs be ignored? FALSE by default
-#' 
-#' @return Variance for each row
-rowVar <- function (x, na.rm = FALSE) {
-    means <- rowMeans(x, na.rm = na.rm)
-    meansSqDev <- (x - means)^2
-    squaresSum <- rowSums(meansSqDev, na.rm = na.rm)
-    nas <- rowSums(is.na(x))
-    return(squaresSum/(ncol(x) - nas - 1))
-}
 
 #' Get the Downloads folder of the user
 #' @return Path to Downloads folder
@@ -1184,6 +1204,10 @@ setOperationIcon <- function (name, class=NULL, ...) {
         c(href="set-operations"), stylesheet = "css/set-operations.css")
     return(iconTag)
 }
+
+
+# File browser dialog -----------------------------------------------------
+
 
 #' Interactive folder selection using a native dialogue
 #'
