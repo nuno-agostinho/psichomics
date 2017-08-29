@@ -28,6 +28,10 @@ gtexJunctionReadsFormat <- function() {
         # Other options
         unique = TRUE,   # Remove duplicated rows
         
+        # Identity of rows and columns
+        rows    = "splice junctions",
+        columns = "samples",
+        
         # Default columns to show (NULL to show all)
         show = NULL,
         

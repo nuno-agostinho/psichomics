@@ -184,6 +184,7 @@ is.whole <- function(x, tol=.Machine$double.eps^0.5) {
 #' @param na.rm Boolean: remove NAs?
 #' 
 #' @return Vector of means
+#' @export
 rowMeans <- function(mat, na.rm=FALSE) {
     if ( !is.null(dim(mat)) ) {
         nas <- 0
@@ -199,6 +200,7 @@ rowMeans <- function(mat, na.rm=FALSE) {
 #' @inheritParams rowMeans
 #' 
 #' @return Vector of variances
+#' @export
 rowVars <- function(mat, na.rm=FALSE) {
     if ( !is.null(dim(mat)) ) {
         means      <- rowMeans(mat, na.rm=na.rm)

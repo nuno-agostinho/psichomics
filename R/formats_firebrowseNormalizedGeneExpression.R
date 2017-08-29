@@ -28,6 +28,10 @@ firebrowseNormalizedGeneExpressionFormat <- function() {
         # Other options
         unique = FALSE,    # Remove duplicated rows
         
+        # Identity of rows and columns
+        rows    = "genes",
+        columns = "samples",
+        
         # Default columns to show (NULL to show all)
         show = NULL
     )

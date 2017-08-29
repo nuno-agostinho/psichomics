@@ -122,6 +122,12 @@ loadFile <- function(format, file, ...) {
     attr(loaded, "tablename") <- format$tablename
     attr(loaded, "description") <- format$description
     attr(loaded, "show") <- format$show
+    
+    # Identify rows and columns
+    rows <- format$rows
+    attr(loaded, "rows")    <- ifelse(!is.null(rows), rows, "rows")
+    cols <- format$columns
+    attr(loaded, "columns") <- ifelse(!is.null(cols), cols, "columns")
     return(loaded)
 }
 

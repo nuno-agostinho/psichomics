@@ -27,6 +27,10 @@ genericInclusionLevelsFormat <- function() {
         # Other options
         unique = TRUE, # Remove duplicated rows
         
+        # Identity of rows and columns
+        rows    = "alternative splicing events",
+        columns = "samples",
+        
         process = function(data) {
             # Scale data if PSI values are between 0 and 100
             maximum <- max(data, na.rm=TRUE)

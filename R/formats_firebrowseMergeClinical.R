@@ -29,6 +29,10 @@ firebrowseMergeClinicalFormat <- function() {
         # Other options
         unique = FALSE,   # Remove duplicated rows
         
+        # Identity of rows and columns
+        rows    = "patients",
+        columns = "attributes",
+        
         # Default columns to show (NULL to show all)
         show = c(
             # breast cancer-specific information

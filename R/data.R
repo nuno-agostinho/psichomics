@@ -52,10 +52,12 @@ parseTcgaSampleInfo <- function (samples, match=NULL) {
     info <- cbind(info, "Patient ID"=match)
     
     # Metadata
-    attr(info, "rowNames") <- TRUE
+    attr(info, "rowNames")    <- TRUE
     attr(info, "description") <- "Metadata for TCGA samples"
-    attr(info, "dataType")  <- "Sample metadata"
-    attr(info, "tablename") <- "Sample metadata"
+    attr(info, "dataType")    <- "Sample metadata"
+    attr(info, "tablename")   <- "Sample metadata"
+    attr(info, "rows")        <- "samples"
+    attr(info, "columns")     <- "attributes"
     return(info)
 }
 
@@ -284,7 +286,7 @@ dataUI <- function(id, tab) {
 #' @param visCols Boolean: visible columns
 #' @param data Data frame: dataset of interest
 #'
-#' @importFrom shinyBS bsTooltip
+#' @importFrom shinyBS bsTooltip bsCollapse bsCollapsePanel
 #' @importFrom DT dataTableOutput
 #' @importFrom shiny hr br tabPanel selectizeInput column fluidRow p mainPanel
 #' downloadButton
@@ -311,15 +313,33 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
     choices <- columns
     names(choices) <- sprintf("%s (%s class)", columns, colType)
     
+    visColsId <- paste(tablename, "columns", sep="-")
     visibleColumns <- selectizeInput(
-        paste(tablename, "columns", sep="-"), label="Visible columns", 
-        choices=choices, selected=visCols, multiple=TRUE, width="auto", 
+        visColsId, label="Visible columns",  choices=choices, selected=visCols, 
+        multiple=TRUE, width="auto", 
         options=list(plugins=list('remove_button', 'drag_drop'), render=I(
             "{ item: function(item, escape) {
-                return '<div>' + escape(item.value) + '</div>'; } }")))
-    tabPanel(title, br(), download, visibleColumns, hr(),
-             dataTableOutput(tablename))
-}
+            return '<div>' + escape(item.value) + '</div>'; } }")))
+    
+    # Add a common HTML container to allow for multiple Highcharts plots
+    multiPlotId        <- paste(tablename, "multiPlot", sep="-")
+    loadingMultiPlotId <- paste(tablename, "loadingMultiPlot", sep="-")
+    multiHighchartsPlots <- fluidRow(column(12, uiOutput(multiPlotId)))
+        # div(id=loadingMultiPlotId, class="progress",
+        #     div(class="progress-bar progress-bar-striped active",
+        #         role="progressbar", style="width:100%",
+        #         "Loading summary plots")))
+    
+    tabPanel(title, br(), download, hr(),
+             bsCollapse(
+                 open="Summary",
+                 bsCollapsePanel(
+                     tagList(icon("table"), "Data table"), value="Data table",
+                     visibleColumns, hr(), dataTableOutput(tablename)),
+                 bsCollapsePanel(
+                     tagList(icon("pie-chart"), "Summary"), value="Summary",
+                     multiHighchartsPlots)))
+    }
 
 #' Render a specific data tab (including data table and related interface)
 #' 
@@ -332,9 +352,10 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
 #' @importFrom DT renderDataTable
 #' @importFrom shiny downloadHandler br
 #' @importFrom utils write.table
+#' @importFrom shinyjs show hide
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
-createDataTab <- function(index, data, name, input, output) {
+createDataTab <- function(index, data, name, session, input, output) {
     tablename <- paste("table", name, index, sep="-")
     
     table <- data[[index]]
@@ -359,6 +380,34 @@ createDataTab <- function(index, data, name, input, output) {
             names(res)[1] <- attr(table, "dataType")
             write.table(res, file, quote=FALSE, row.names=FALSE, sep="\t")
         })
+    
+    multiPlotId        <- paste(tablename, "multiPlot", sep="-")
+    loadingMultiPlotId <- paste(tablename, "loadingMultiPlot", sep="-")
+    output[[multiPlotId]] <- renderUI({
+        # gethc <- function(dfname = "cars") {
+        #     # function to return the chart in a column div
+        #     df <- get(dfname)
+        #     hc <- highchart(height=100) %>%
+        #         hc_title(text = dfname) %>%
+        #         hc_xAxis(title = list(text = names(df)[1])) %>%
+        #         hc_yAxis(title = list(text = names(df)[2])) %>%
+        #         highcharter::hc_add_series_scatter(df[ , 1], df[ , 2])
+        #     column(width=3, hc)
+        # }
+        # 
+        # data <- c("cars", "mtcars", "iris", "Puromycin", "ChickWeight")
+        # charts <- suppressWarnings(lapply(rep(data, 3), gethc))
+        # do.call(tagList, charts)
+        
+        rows <- attr(table, "rows")
+        rows <- ifelse(!is.null(rows), rows, "rows")
+        cols <- attr(table, "columns")
+        cols <- ifelse(!is.null(cols), cols, "columns")
+        
+        tags$div(
+            tags$h4(paste(ncol(table), cols)),
+            tags$h4(paste(nrow(table), rows)))
+    })
 }
 
 #' @rdname appServer
@@ -387,7 +436,7 @@ dataServer <- function(input, output, session) {
                 categoryData <- data[[category]]
                 # Create data tab for each dataset in a data category
                 lapply(seq_along(categoryData), createDataTab,
-                       data=categoryData, category, input, output)
+                       data=categoryData, category, session, input, output)
             }
         }
     })

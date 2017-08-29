@@ -28,6 +28,10 @@ genericJunctionReadsFormat <- function() {
         # Other options
         unique = TRUE, # Remove duplicated rows
         
+        # Identity of rows and columns
+        rows    = "splice junctions",
+        columns = "samples",
+        
         process = function(data) {
             strand <- all(grepl("[+-]$", head(rownames(data))))
             if (strand) {
