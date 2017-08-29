@@ -25,7 +25,11 @@ psichomicsInclusionLevelsFormat <- function() {
         commentChar = NULL, # Ignore lines starting with this string
         
         # Other options
-        unique = TRUE # Remove duplicated rows
+        unique = TRUE, # Remove duplicated rows
+        
+        # Identity of rows and columns
+        rows    = "alternative splicing events",
+        columns = "samples"
     )
 }
 

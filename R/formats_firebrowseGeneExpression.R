@@ -26,6 +26,10 @@ firebrowseGeneExpressionFormat <- function() {
         ignoreRows  = NULL,  # Rows to ignore
         commentChar = NULL,  # String to identify comments (these lines will be ignored)
         
+        # Identity of rows and columns
+        rows    = "genes",
+        columns = "samples",
+        
         # Other options
         unique = FALSE,    # Remove duplicated rows
         

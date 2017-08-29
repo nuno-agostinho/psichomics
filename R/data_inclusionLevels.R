@@ -100,7 +100,8 @@ inclusionLevelsInterface <- function(ns) {
                     id=ns("missingData"), style="margin: 10px;"),
         hidden(options),
         actionButton(ns("loadIncLevels"), "Load from file"),
-        disabled(processButton(ns("calcIncLevels"), "Quantify events")))
+        disabled(processButton(ns("calcIncLevels"),
+                               "Quantify alternative splicing")))
 }
 
 #' @rdname appUI
@@ -170,9 +171,11 @@ quantifySplicing <- function(annotation, junctionQuant,
     }
     if (is.null(psi)) psi <- data.frame(NULL)
     attr(psi, "rowNames")    <- TRUE
-    attr(psi, "description") <- "PSI values per alternative splicing events."
+    attr(psi, "description") <- "PSI values per alternative splicing events"
     attr(psi, "dataType")    <- "Inclusion levels"
     attr(psi, "tablename")   <- "Inclusion levels"
+    attr(psi, "rows")        <- "alternative splicing events"
+    attr(psi, "columns")     <- "samples"
     return(psi)
 }
 

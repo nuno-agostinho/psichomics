@@ -4,7 +4,7 @@
 \alias{createDataTab}
 \title{Render a specific data tab (including data table and related interface)}
 \usage{
-createDataTab(index, data, name, input, output)
+createDataTab(index, data, name, session, input, output)
 }
 \arguments{
 \item{index}{Integer: index of the data to load}
