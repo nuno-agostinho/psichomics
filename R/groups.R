@@ -784,7 +784,8 @@ setOperation <- function(operation, groups, selected, symbol=" ",
             return(names)
         }
         setOperated <- lapply(1:3, setOperationString)
-        if ( !is.null(groupName) && !identical(groupName, "") )
+        if ( !is.null(groupName) && !identical(groupName, "") && 
+             operation == "rename")
             setOperated[[1]] <- groupName
         ncol <- 3
         
@@ -898,6 +899,9 @@ operateOnGroups <- function(input, session, operation, buttonId, symbol=" ",
         }
         
         groupName <- input$groupName
+        if (!is.null(groupName) && groupName != "" && operation == "rename")
+            updateTextInput(session, "groupName", value="")
+        
         patients  <- getPatientId()
         samples   <- getSampleId()
         matches   <- getClinicalMatchFrom("Inclusion levels")

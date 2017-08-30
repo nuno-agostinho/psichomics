@@ -164,7 +164,7 @@ normaliseGeneExpression <- function(geneExpr, geneFilter=NULL, method="TMM",
         c(names(attributes(geneExprNorm)), "names", "row.names", "class")
     attributes(geneExprNorm) <- c(attributes(geneExprNorm),
                                   attributes(geneExpr)[notNames])
-    return(geneExpr)
+    return(geneExprNorm)
 }
 
 #' @rdname appServer
@@ -239,17 +239,17 @@ geNormalisationFilteringServer <- function(input, output, session) {
         if (is.null(geneExpr) || geneExpr == "") return(NULL)
         geneExpr     <- isolate(getGeneExpression()[[geneExpr]])
         
-        # Update mean
+        # Update mean range
         geneExprMean <- rowMeans(geneExpr)
         maxMean      <- ceiling( max(geneExprMean, na.rm=TRUE) )
         updateNumericInput(session, "minMean", max=maxMean)
-        updateNumericInput(session, "maxMean", max=maxMean, value=maxMean - 1)
+        updateNumericInput(session, "maxMean", max=maxMean, value=maxMean)
         
-        # Update variance
+        # Update variance range
         geneExprVar <- rowVars(geneExpr)
         maxVar      <- ceiling( max(geneExprVar, na.rm=TRUE) )
         updateNumericInput(session, "minVar", max=maxVar)
-        updateNumericInput(session, "maxVar", max=maxVar, value=maxVar - 1)
+        updateNumericInput(session, "maxVar", max=maxVar, value=maxVar)
         
         output$filteredGenes <- renderText({
             filter <- sum(getFilter())
