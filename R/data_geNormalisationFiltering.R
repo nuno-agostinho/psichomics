@@ -130,28 +130,32 @@ geNormalisationFilteringUI <- function(id, panel) {
 
 #' Filter and normalise gene expression
 #' 
-#' @param geneExpr Matrix or data frame: filtered gene expression
+#' @param geneExpr Matrix or data frame: gene expression
+#' @param geneFilter Boolean: filtered genes
 #' @param log2transform Boolean: add 0.5 and perform log2-transformation?
 #' @inheritParams edgeR::calcNormFactors
 #' 
 #' @importFrom edgeR DGEList calcNormFactors
 #' 
 #' @return Gene expression filtered and normalised
-filterNormaliseGeneExpression <- function(geneExpr, method, p, log2transform) {
-    startProgress("Processing gene expression", 3 + log2transform)
+#' @export
+normaliseGeneExpression <- function(geneExpr, geneFilter=NULL, method="TMM", 
+                                    p=0.75, log2transform=TRUE) {
+    #startProgress("Processing gene expression", 3 + log2transform)
     
-    updateProgress("Filtering gene expression")
-    geneExprNorm <- DGEList(geneExpr)
+    #updateProgress("Filtering gene expression")
+    if (is.null(geneFilter)) geneFilter <- TRUE
+    geneExprNorm <- DGEList(geneExpr[geneFilter, , drop=FALSE])
     
-    updateProgress("Normalising gene expression")
+    #updateProgress("Normalising gene expression")
     geneExprNorm <- calcNormFactors(geneExprNorm, method=method, p=p)
     
     if (log2transform) {
-        updateProgress("Performing log2-transformation")
+        #updateProgress("Performing log2-transformation")
         geneExprNorm$counts <- log2(geneExprNorm$counts + 0.5)
     }
     
-    updateProgress("Preparing gene expression data")
+    #updateProgress("Preparing gene expression data")
     geneExprNorm <- data.frame(geneExprNorm$counts)
     colnames(geneExprNorm) <- colnames(geneExpr)
     
@@ -310,10 +314,10 @@ geNormalisationFilteringServer <- function(input, output, session) {
         if (filter)
             geneFilter <- getFilter()
         else
-            geneFilter <- TRUE
+            geneFilter <- NULL
         
-        geneExprNorm <- filterNormaliseGeneExpression(
-            geneExpr[geneFilter, ], method, percentile, log2transform)
+        geneExprNorm <- normaliseGeneExpression(
+            geneExpr, geneFilter, method, percentile, log2transform)
         setNormalisedGeneExpression(geneExprNorm)
         endProcess("processGeneExpr", time=time)
     })

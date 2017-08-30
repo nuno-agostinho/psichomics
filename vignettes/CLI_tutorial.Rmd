@@ -1,7 +1,7 @@
 ---
 title: 'psichomics tutorial: command-line interface (CLI)'
 author: "Nuno Saraiva-Agostinho"
-date: "6 August 2017"
+date: "29 August 2017"
 bibliography: refs.bib
 output: 
     rmarkdown::html_vignette:
@@ -74,13 +74,15 @@ folder <- getDownloadsFolder()
 # TCGA/Firebrowse for Adrenocortical Carcinoma
 data <- loadFirebrowseData(folder=folder,
                            cohort="BRCA",
-                           data=c("clinical", "junction_quantification"),
+                           data=c("clinical", "junction_quantification",
+                                  "RSEM_genes"),
                            date="2016-01-28")
 
 # Select clinical and junction quantification dataset
 clinical      <- data[[1]]$`Clinical data`
 sampleInfo    <- data[[1]]$`Sample metadata`
 junctionQuant <- data[[1]]$`Junction quantification (Illumina HiSeq)`
+geneExpr      <- data[[1]]$`Gene expression`
 ```
 
 Data is only downloaded if the files are not present in the given folder. In 
@@ -139,6 +141,23 @@ data <- loadLocalFiles(folder, ignore=ignore)
 clinical      <- data[[1]]$`Clinical data`
 sampleInfo    <- data[[1]]$`Sample metadata`
 junctionQuant <- data[[1]]$`Junction quantification (Illumina HiSeq)`
+```
+
+# Filtering and normalising gene expression
+As this package is not focused on gene expression analysis, we suggest to read
+the RNA-seq section of `limma`'s user guide. Nevertheless, we present the 
+following commands to quickly filter and normalise gene expression:
+
+```{r normalise gene expression}
+# Check genes where min. counts are available in at least N samples and filter
+# out genes with mean expression and variance of 0
+checkCounts <- rowSums(geneExpr >= 10) >= 10
+filter <- rowMeans(geneExpr) > 0 & rowVars(geneExpr) > 0 & checkCounts
+geneExprFiltered <- geneExpr[filter, ]
+
+# Normalise gene expression and perform log2-transformation (after adding 0.5
+# to avoid zeroes)
+geneExprNorm <- normaliseGeneExpression(geneExprFiltered, log2transform=TRUE)
 ```
 
 # Quantifying alternative splicing
@@ -318,15 +337,7 @@ the variance in the data [@Ringner2008gb].
 To explore alternative splicing quantification groups by estrogen receptor (ER)
 expression:
 
-```{r plot PCA variance}
-# Percentage of missing values tolerated by splicing event: tolerated missing
-# values are replaced with the median value of that splicing event
-naTolerance <- 0
-
-# Center bu do not scale values (they are already scaled between 0 and 1)
-center <- TRUE
-scale  <- FALSE
-
+```{r PCA groups}
 # Match patients with samples
 samples <- colnames(psi)
 match <- getPatientFromSample(samples, clinical, sampleInfo=sampleInfo)
@@ -335,28 +346,57 @@ match <- getPatientFromSample(samples, clinical, sampleInfo=sampleInfo)
 # negative ER expression
 erGroups <- getMatchingSamples(groups[c("positive", "negative")], samples, 
                                clinical, match=match)
-filtered_psi <- psi[ , unlist(erGroups)]
+```
 
-# Perform principal component analysis (transpose alternative splicing
-# quantification to have samples as rows)
-pca <- performPCA(t(filtered_psi), center=center, scale.=scale,
-                  naTolerance=naTolerance)
+Now that the groups are ready, let's perform and plot the PCA results based on
+(normalised and log2-transformed) gene expression:
+
+```{r plot PCA GE}
+# Transpose data so samples are within rows
+pcaData <- t(geneExprNorm[ , unlist(erGroups)])
+
+# Percentage of missing values tolerated by gene: tolerated missing values 
+# are replaced with the median expression of that gene
+naTolerance <- 0
+
+# Center and scale normalised gene expression values
+# Perform principal component analysis
+pca <- performPCA(pcaData, center=TRUE, scale.=FALSE, naTolerance=naTolerance)
 
 # Plot the variance explained by each principal component
 plotVariance(pca)
-```
 
-Now plot the score plot of the PCA coloured according to the ER expression:
-
-```{r plot PCA}
+# Score plot coloured according to the ER expression
 plotPCA(pca, pcX="PC1", pcY="PC2", erGroups)
+
+# Loadings plot that displays the contribution of the variables (i.e. 
+# alternative splicing events)
+plotPCA(pca, pcX="PC1", pcY="PC2", individuals=FALSE, loadings=TRUE)
 ```
 
-Moreover, let's plot the corresponding loadings plot that displays the variables
-(in this case, alternative splicing events):
+Now the same for PSI:
 
-```{r plot loadings}
-plotPCA(pca, pcX="PC1", pcY="PC2", individuals = FALSE, loadings = TRUE)
+```{r plot PCA PSI}
+# Transpose data so samples are within rows
+pcaData <- t(psi[ , unlist(erGroups)])
+
+# Percentage of missing values tolerated by splicing event: tolerated missing
+# values are replaced with the median value of that splicing event
+naTolerance <- 0
+
+# Center but do not scale PSI values (they are already scaled between 0 and 1)
+# Perform principal component analysis
+pca <- performPCA(pcaData, center=TRUE, scale.=FALSE, naTolerance=naTolerance)
+
+# Plot the variance explained by each principal component
+plotVariance(pca)
+
+# Score plot coloured according to the ER expression
+plotPCA(pca, pcX="PC1", pcY="PC2", erGroups)
+
+# Loadings plot that displays the contribution of the variables (i.e. 
+# alternative splicing events)
+plotPCA(pca, pcX="PC1", pcY="PC2", individuals=FALSE, loadings=TRUE)
 ```
 
 The bubble size of the loadings plot represent the total contribution of each
@@ -454,7 +494,7 @@ event from before:
 event <- "SE_10_+_79797062_79799962_79799983_79800373_RPS24"
 
 # Assign alternative splicing quantification to patients based on their samples
-clinicalPSI <- getPSIperPatient(psi, match, clinical)
+clinicalPSI <- getValuePerPatient(psi, match, clinical)
 eventPSI <- as.numeric(clinicalPSI[event, ])
 
 # Statistics of the alternative splicing event's quantification
@@ -478,10 +518,36 @@ optimalPvalue
 Finally, plot survival curves separated by the optimal quantification cut-off or
 any other cut-off of interest:
 
-```{r}
+```{r plot survival curves}
 cutoff <- optimalCutoff
 group <- labelBasedOnCutoff(eventPSI, cutoff, label="PSI values")
 survTerms <- processSurvTerms(clinical, censoring="right",
+                              event="days_to_death", timeStart="days_to_death", 
+                              group=group)
+
+require("survival")
+surv <- survfit(survTerms)
+pvalue <- testSurvival(survTerms)
+plotSurvivalCurves(surv, pvalue=pvalue)
+```
+
+Let's now compare the resulting curves with Kaplan-Meier curves separated by a
+cut-off based on gene expression:
+
+```{r survival ge}
+gene <- "RPS24"
+
+# Assign gene expression to patients based on their samples
+clinicalGE <- getValuePerPatient(geneExprNorm, match, clinical)
+eventGE <- as.numeric(clinicalGE[gene, ])
+
+# Statistics of the gene expression for the selected gene
+summary(eventGE)
+
+# Plot survival curves based on the mean gene expression
+cutoff <- mean(eventGE, na.rm=TRUE)
+group  <- labelBasedOnCutoff(eventGE, cutoff, label="Gene expression")
+survTerms <- processSurvTerms(clinical, censoring="right", 
                               event="days_to_death", timeStart="days_to_death", 
                               group=group)
 
@@ -577,7 +643,7 @@ filter <- filter[!is.na(filter)]
 events <- rownames(diff[filter, ])
 
 # Assign alternative splicing quantification to patients based on their samples
-clinicalPSI <- getPSIperPatient(psi, match, clinical)
+clinicalPSI <- getValuePerPatient(psi, match, clinical)
 
 # Get time for all survival analyses of interest (as this is the same for all,
 # pre-fetching this information speeds the following loop)
