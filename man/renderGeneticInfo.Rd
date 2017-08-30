@@ -4,10 +4,12 @@
 \alias{renderGeneticInfo}
 \title{Render genetic information}
 \usage{
-renderGeneticInfo(ns, info, species = NULL, assembly = NULL,
+renderGeneticInfo(output, ns, info, species = NULL, assembly = NULL,
   grch37 = FALSE)
 }
 \arguments{
+\item{output}{Shiny output}
+
 \item{ns}{Namespace function}
 
 \item{info}{Information as retrieved from Ensembl}

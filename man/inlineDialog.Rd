@@ -7,7 +7,8 @@
 \title{Alert in the style of a dialogue box with a button}
 \usage{
 inlineDialog(description, ..., buttonLabel = NULL, buttonIcon = NULL,
-  buttonId = NULL, id = NULL, type = c("error", "warning"))
+  buttonId = NULL, id = NULL, type = c("error", "warning"),
+  bigger = FALSE)
 
 errorDialog(description, ...)
 
@@ -27,6 +28,8 @@ warningDialog(description, ...)
 \item{id}{Character: identifier (NULL by default)}
 
 \item{type}{Character: type of alert (error or warning)}
+
+\item{bigger}{Boolean: wrap the \code{description} in a \code{h4} tag?}
 }
 \value{
 HTML elements
