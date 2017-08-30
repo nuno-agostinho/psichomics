@@ -93,15 +93,15 @@ getClinicalDataForSurvival <- function(..., formulaStr=NULL) {
     return(clinical)
 }
 
-#' Assign the alternative splicing quantification of a single sample to patients
+#' Assign the value from one of the patient's samples to that patient
 #' 
-#' Assign alternative splicing quantification to patients based on the frequency
-#' of the respective type of their samples.
+#' Assign a value to patients based on the frequency of the respective type of 
+#' their samples
 #' 
 #' @details
-#' Match filtered samples with clinical patients to retrieve alternative
-#' splicing quantification per clinical patient. One single sample is matched to
-#' a patient based on the sample type frequency. For instance, imagine that:
+#' Match filtered samples with patients to retrieve values per patient. One
+#' single sample is matched to a patient based on the sample type frequency. For
+#' instance, imagine that:
 #' 
 #' \itemize{
 #'     \item{10 patients have a tumour and control sample;}
@@ -116,8 +116,7 @@ getClinicalDataForSurvival <- function(..., formulaStr=NULL) {
 #' most frequent sample type), if available. Finally, the remaining patients 
 #' will be matched to metastasis samples.
 #' 
-#' @param psi Data frame or matrix: alternative splicing quantification per
-#' samples
+#' @param data Data frame or matrix: values per sample
 #' @param clinical Data frame or matrix: clinical dataset (only required if the
 #' \code{patients} argument is not handed)
 #' @param patients Character: patient identifiers (only required if the
@@ -131,8 +130,8 @@ getClinicalDataForSurvival <- function(..., formulaStr=NULL) {
 #' 
 #' @return Alternative splicing quantification per clinical patients
 #' @export
-getPSIperPatient <- function(psi, match, clinical=NULL, patients=NULL,
-                             pattern=NULL, filterOut=TRUE) {
+getValuePerPatient <- function(data, match, clinical=NULL, patients=NULL,
+                               pattern=NULL, filterOut=TRUE) {
     if (is.null(clinical) && is.null(patients)) {
         stop("You cannot leave both 'clinical' and 'patients' arguments ",
              "as NULL.")
@@ -159,11 +158,19 @@ getPSIperPatient <- function(psi, match, clinical=NULL, patients=NULL,
     matchSingle <- matchPatientToSingleSample(matchFiltered)
     
     # Match samples with clinical patients (remove non-matching samples)
-    clinicalPSI <- data.frame(matrix(NA, nrow=nrow(psi), ncol=length(patients)))
-    colnames(clinicalPSI) <- patients
-    rownames(clinicalPSI) <- rownames(psi)
-    clinicalPSI[ , matchSingle] <- psi[ , names(matchSingle)]
-    return(clinicalPSI)
+    clinicalValues <- data.frame(matrix(NA, nrow=nrow(data), 
+                                        ncol=length(patients)))
+    colnames(clinicalValues) <- patients
+    rownames(clinicalValues) <- rownames(data)
+    clinicalValues[ , matchSingle] <- data[ , names(matchSingle)]
+    return(clinicalValues)
+}
+
+#' @rdname getValuePerPatient
+getPSIperPatient <- function(psi, match, clinical=NULL, patients=NULL,
+                             pattern=NULL, filterOut=TRUE) {
+    .Deprecated("getValuePerPatient")
+    getValuePerPatient(psi, match, clinical, patients, pattern, filterOut)
 }
 
 #' Match patients to a single sample according to sample type frequency
