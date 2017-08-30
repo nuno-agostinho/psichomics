@@ -623,12 +623,14 @@ removeAlert <- function(output, alertId="alert") {
 #' @param buttonIcon Character: button icon (NULL by default)
 #' @param ... Extra parameters when creating the alert
 #' @param type Character: type of alert (error or warning)
+#' @param bigger Boolean: wrap the \code{description} in a \code{h4} tag?
 #'
 #' @importFrom shiny icon div actionButton
 #'
 #' @return HTML elements
 inlineDialog <- function(description, ..., buttonLabel=NULL, buttonIcon=NULL, 
-                         buttonId=NULL, id=NULL, type=c("error", "warning")) {
+                         buttonId=NULL, id=NULL, type=c("error", "warning"),
+                         bigger=FALSE) {
     type <- match.arg(type)
     if (identical(type, "error")) type <- "danger"
     typeIcon <- switch(type, danger="exclamation-circle",
@@ -648,9 +650,16 @@ inlineDialog <- function(description, ..., buttonLabel=NULL, buttonIcon=NULL,
         button <- NULL
     }
     
+    if (bigger) {
+        description <- h4(style="margin-top: 5px !important;",
+                          icon(typeIcon), description)
+    } else {
+        description <- tagList(icon(typeIcon), description)
+    }
+    
     typeClass <- sprintf("alert alert-%s", type)
     div(id=id, class=typeClass, role="alert", style="margin-bottom: 0px;",
-        icon(typeIcon), description, button, ...)
+        description, button, ...)
 }
 
 #' @rdname inlineDialog

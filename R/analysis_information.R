@@ -134,8 +134,23 @@ ensemblToUniprot <- function(protein) {
 #' @importFrom shiny uiOutput
 infoUI <- function(id) {
     ns <- NS(id)
-    tagList(uiOutput(ns("geneSelection")),
-            uiOutput(ns("info")))
+    
+    placeholder <- c(
+        "Type a gene symbol to retrieve that gene's information..."="")
+    tagList(
+        fluidRow(
+            column(6, selectizeInput(
+                ns("selectedGene"), NULL, choices=placeholder, width="100%",  
+                options=list(
+                    create=TRUE, createOnBlur=TRUE,
+                    onFocus=I(paste0('function() { $("#', ns("selectedGene"), 
+                                     '")[0].selectize.clear(); }')),
+                    onChange=I(paste0('function(value) { $("#',
+                                      ns("selectedGene"), 
+                                      '")[0].selectize.blur(); }')))),
+                   uiOutput(ns("genetic"))),
+            column(6, uiOutput(ns("articles")))),
+        uiOutput(ns("info")))
     
 }
 
@@ -148,7 +163,7 @@ infoUI <- function(id) {
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 noinfo <- function(output, description=paste(
-    "No information available for the gene associated with this event."), ...) {
+    "No information available for this gene."), ...) {
     output$info <- renderUI(
         errorDialog(description, style="width: 400px;", ...))
 }
@@ -230,7 +245,7 @@ parseUniprotXML <- function(xml) {
 #' plotProtein(transcript)
 #' }
 plotProtein <- function(molecule) {
-    cat("Retrieving protein annotation from UniProt...", fill=TRUE)
+    # cat("Retrieving protein annotation from UniProt...", fill=TRUE)
     xml     <- queryUniprot(molecule, "xml")
     if (xml == "") return(NULL)
     parsed  <- parseUniprotXML(xml)
@@ -251,7 +266,7 @@ plotProtein <- function(molecule) {
     # The diverse types of features available
     types <- unique(feature$type)
     
-    cat("Plotting protein domains...", fill=TRUE)
+    # cat("Plotting protein domains...", fill=TRUE)
     featureList <- NULL
     
     if (nrow(feature) == 0)
@@ -411,6 +426,7 @@ plotTranscripts <- function(info, eventPosition=NULL, shiny=FALSE) {
 
 #' Render genetic information
 #' 
+#' @param output Shiny output
 #' @param ns Namespace function
 #' @param info Information as retrieved from Ensembl
 #' @param species Character: species name (NULL by default)
@@ -419,7 +435,7 @@ plotTranscripts <- function(info, eventPosition=NULL, shiny=FALSE) {
 #' 
 #' @importFrom shiny renderUI h2 h3 plotOutput
 #' @return HTML elements to render gene, protein and transcript annotation
-renderGeneticInfo <- function(ns, info, species=NULL, assembly=NULL, 
+renderGeneticInfo <- function(output, ns, info, species=NULL, assembly=NULL, 
                               grch37=FALSE) {
     start <- as.numeric(info$start)
     end   <- as.numeric(info$end)
@@ -464,30 +480,28 @@ renderGeneticInfo <- function(ns, info, species=NULL, assembly=NULL,
         speciesInfo <- "No species defined"
     }
     
-    genetic <- tagList(
+    output$genetic <- renderUI({ tagList(
         h2(style="margin-top: 0px;", info$display_name, tags$small(info$id)),
-        tags$dl(class="dl-horizontal", style="margin-bottom: 0px;",
-                tags$dt(style=dtWidth, "Species"),
-                tags$dd(style=ddMargin, speciesInfo),
-                tags$dt(style=dtWidth, "Location"),
-                tags$dd(style=ddMargin, 
-                        sprintf("Chromosome %s: %s-%s (%s strand)",
-                                info$seq_region_name,
-                                format(start, big.mark=",", scientific=FALSE),
-                                format(end, big.mark=",", scientific=FALSE),
-                                ifelse(info$strand == -1,
-                                       "reverse", "forward"))),
-                tags$dt(style=dtWidth, "Description"),
-                tags$dd(style=ddMargin,
-                        sprintf("%s (%s)", info$description, info$biotype)),
-                tags$dt(style=dtWidth, "Links"),
-                tags$dd(style=ddMargin,
-                        tags$ul(class="list-inline", lapply(links, tags$li)) ))
-    )
+        tags$dl(
+            class="dl-horizontal", style="margin-bottom: 0px;",
+            tags$dt(style=dtWidth, "Species"),
+            tags$dd(style=ddMargin, speciesInfo),
+            tags$dt(style=dtWidth, "Location"),
+            tags$dd(style=ddMargin,
+                    sprintf("Chromosome %s: %s-%s (%s strand)",
+                            info$seq_region_name,
+                            format(start, big.mark=",", scientific=FALSE),
+                            format(end, big.mark=",", scientific=FALSE),
+                            ifelse(info$strand == -1, "reverse", "forward"))),
+            tags$dt(style=dtWidth, "Description"),
+            tags$dd(style=ddMargin,
+                    sprintf("%s (%s)", info$description, info$biotype)),
+            tags$dt(style=dtWidth, "Links"),
+            tags$dd(style=ddMargin, 
+                    tags$ul(class="list-inline", lapply(links, tags$li)) )))
+    })
     
     tagList(
-        fluidRow(column(6, genetic),
-                 column(6, uiOutput(ns("articles")))),
         h3("Transcripts"), 
         uiOutput(ns("plotTranscripts")),
         h3("Protein domains"),
@@ -651,88 +665,59 @@ renderProteinInfo <- function(protein, transcript, species, assembly) {
 #' @importFrom highcharter highchart %>%
 #' @importFrom shiny fixedRow safeError
 #' @importFrom methods is
+#' @importFrom shinyjs hide show
 infoServer <- function(input, output, session) {
     ns <- session$ns
     
     observe({
-        event <- getEvent()
-        if (is.null(getInclusionLevels()))
-            return(noinfo(
-                output,
-                "Alternative splicing quantification is not loaded.",
-                buttonLabel="Alternative splicing quantification",
-                buttonIcon="calculator",
-                buttonId=ns("loadIncLevels")))
-        else if (is.null(event) || event == "") return(noinfo(output))
-        
-        # Select gene in case there is more than one available
-        gene <- parseEvent(event)$gene[[1]]
-        output$geneSelection <- renderUI({
-            if (length(gene) > 1) {
-                fixedRow(
-                    column(3, h5(style=" margin-top: 0;",
-                                 "Select one of the genes that may be",
-                                 "associated with the event:")),
-                    column(3, selectizeInput(ns("selectedGene"), NULL, 
-                                             choices=gene)))
-            }
-        })
-    })
-    
-    observeEvent(input$loadIncLevels, missingDataGuide("Inclusion levels"))
-    
-    observe({
-        event <- getEvent()
-        if (is.null(getInclusionLevels()) || is.null(event) || event == "")
-            return(NULL)
-        
-        parsed <- parseEvent(event)
         species  <- tolower(getSpecies())
+        if (length(species) == 0) species <- "human"
+        
         assembly <- getAssemblyVersion()
+        if (is.null(assembly)) assembly <- "hg19"
+        
         grch37   <- assembly == "hg19"
-        
-        gene <- parsed$gene[[1]]
-        if (length(gene) > 1) gene <- input$selectedGene
-        
+        gene <- input$selectedGene
+            
+        if (gene == "") return(NULL)
         info <- tryCatch(queryEnsemblByGene(gene, species=species, 
                                             assembly=assembly), error=return)
-        
-        # Handle errors
-        if (is(info, "error")) {
-            if (grepl("Species and assembly", info$message)) {
-                warning("No species or genome assembly information.")
-                return(NULL)
-            } else if (grepl("no associated gene", info$message)) {
-                return(noinfo(output))
-            }
-        }
-        
-        if (is.null(info)) {
-            output$info <- renderUI({ 
-                title <- "Ensembl API appears to give no response."
-                description <- paste("Please try selecting another event or",
-                                     "try again later.")
-                noinfo <- h3(title, br(), tags$small(description))
-                fluidRow(column(6, noinfo), 
-                         column(6, uiOutput(ns("articles"))))
+            
+        if (is(info, "error") || is.null(info)) {
+            output$info <- renderUI({
+                title <- "No response from Ensembl"
+                description <- "Please select another gene or try again later."
+                fluidRow(column(
+                    6, errorDialog(title, description, bigger=TRUE)))
             })
+            
+            hide("genetic")
+            hide("articles")
             return(NULL)
+        } else {
+            show("genetic")
+            show("articles")
         }
         
         output$info <- renderUI(
-            renderGeneticInfo(ns, info, species, assembly, grch37))
+            renderGeneticInfo(output, ns, info, species, assembly, grch37))
         
         output$plotTranscripts <- renderUI({
-            event <- getEvent()
-            if (is.null(event)) return(NULL)
-            parsed <- parseSplicingEvent(event)
-            
-            gene <- parsed$gene[[1]]
-            if (length(gene) > 1) gene <- input$selectedGene
-            if (is.null(gene)) return(NULL)
-            
-            info  <- queryEnsemblByGene(gene, species="human", assembly="hg19")
-            plotTranscripts(info, parsed$pos[[1]], shiny=TRUE)
+            info <- queryEnsemblByGene(gene, species=species, assembly=assembly)
+            plotTranscripts(info, shiny=TRUE)
+        })
+        
+        # Render relevant articles according to available gene
+        output$articles <- renderUI({
+            number <- 3
+            category <- getCategory()
+            if (!is.null(category)) {
+                category <- unlist(strsplit(getCategory(), " "))
+                articles <- pubmedUI(gene, "cancer", category, top=number)
+            } else {
+                articles <- pubmedUI(gene, "cancer", top=number)
+            }
+            return(articles)
         })
         
         # Show NULL so it doesn't show previous results when loading
@@ -783,19 +768,6 @@ infoServer <- function(input, output, session) {
                              "transcript is not available.")
             })
             output$plotProtein <- renderHighchart(hc)
-        }
-    })
-    
-    # Render relevant articles according to available gene
-    output$articles <- renderUI({
-        parsed <- parseEvent(getEvent())
-        gene <- parsed$gene[[1]]
-        if (length(gene) > 1) gene <- input$selectedGene
-        
-        if (!is.null(gene)) {
-            category <- unlist(strsplit(getCategory(), " "))
-            articles <- pubmedUI(gene, "cancer", category, top=3)
-            return(articles)
         }
     })
 }

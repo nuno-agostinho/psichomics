@@ -4,8 +4,7 @@
 \alias{noinfo}
 \title{Interface when no information could be retrieved}
 \usage{
-noinfo(output,
-  description = paste("No information available for the gene associated with this event."),
+noinfo(output, description = paste("No information available for this gene."),
   ...)
 }
 \arguments{
@@ -20,6 +19,7 @@ noinfo(output,
   \item{buttonLabel}{Character: button label (NULL by default)}
   \item{buttonIcon}{Character: button icon (NULL by default)}
   \item{type}{Character: type of alert (error or warning)}
+  \item{bigger}{Boolean: wrap the \code{description} in a \code{h4} tag?}
 }}
 }
 \value{
