@@ -207,13 +207,13 @@ setInclusionLevels <- function(incLevels, category=getCategory())
     sharedData$data[[category]][["Inclusion levels"]] <- incLevels
 
 #' @rdname getEvent
-getInclusionLevelsPCA <- function(category=getCategory())
-    getGlobal(category, "inclusionLevelsPCA")
+getPCA <- function(category=getCategory())
+    getGlobal(category, "PCA")
 
 #' @rdname getEvent
 #' @param pca \code{prcomp} object (PCA) of inclusion levels
-setInclusionLevelsPCA <- function(pca, category=getCategory())
-    setGlobal(category, "inclusionLevelsPCA", value=pca)
+setPCA <- function(pca, category=getCategory())
+    setGlobal(category, "PCA", value=pca)
 
 #' @rdname getEvent
 getSpecies <- function(category=getCategory())
@@ -302,7 +302,80 @@ getGroupsFrom <- function(dataset, category=getCategory(), complete=FALSE,
 setGroupsFrom <- function(dataset, groups, category=getCategory())
     setGlobal(category, dataset, "groups", value=groups)
 
-#' Get or set differential analyses' elements for a data category
+
+# Plot points or regions --------------------------------------------------
+
+#' Get or set points or regions for plots
+#' @inherit getGlobal
+getHighlightedPoints <- function(id, category=getCategory())
+    getGlobal(category, id, "highlighted")
+
+#' @rdname getHighlightedPoints
+#' @param events Integer: index of events
+setHighlightedPoints <- function(id, events, category=getCategory())
+    setGlobal(category, id, "highlighted", value=events)
+
+#' @rdname getHighlightedPoints
+#' @param id Character: identifier
+getZoom <- function(id, category=getCategory())
+    getGlobal(category, id, "zoom")
+
+#' @rdname getHighlightedPoints
+#' @param zoom Integer: range of X and Y coordinates for zooming
+setZoom <- function(id, zoom, category=getCategory())
+    setGlobal(category, id, "zoom", value=zoom)
+
+#' @rdname getHighlightedPoints
+getSelectedPoints <- function(id, category=getCategory())
+    getGlobal(category, id, "selected")
+
+#' @rdname getHighlightedPoints
+setSelectedPoints <- function(id, events, category=getCategory())
+    setGlobal(category, id, "selected", value=events)
+
+
+# Differential expression --------------------------------------------------
+
+#' Get or set differential expression' elements for a data category
+#' @inherit getGlobal
+getDifferentialExpression <- function(category=getCategory())
+    getGlobal(category, "differentialExpression")
+
+#' @rdname getDifferentialExpression
+#' @param differential Data frame or matrix: differential analyses table
+setDifferentialExpression <- function(differential, category=getCategory())
+    setGlobal(category, "differentialExpression", value=differential)
+
+#' @rdname getDifferentialExpression
+getDifferentialExpressionFiltered <- function(category=getCategory())
+    getGlobal(category, "differentialExpressionFiltered")
+
+#' @rdname getDifferentialExpression
+setDifferentialExpressionFiltered <- function(differential, 
+                                            category=getCategory())
+    setGlobal(category, "differentialExpressionFiltered", value=differential)
+
+#' @rdname getDifferentialExpression
+getDifferentialExpressionResetPaging <- function(category=getCategory())
+    getGlobal(category, "diffExpressionResetPaging")
+
+#' @rdname getDifferentialExpression
+#' @param reset Character: reset paging of differential analyses table?
+setDifferentialExpressionResetPaging <- function(reset, category=getCategory())
+    setGlobal(category, "diffExpressionResetPaging", value=reset)
+
+#' @rdname getDifferentialExpression
+getDifferentialExpressionColumns <- function(category=getCategory())
+    getGlobal(category, "diffExpressionCols")
+
+#' @rdname getDifferentialExpression
+#' @param columns Character: differential analyses' column names
+setDifferentialExpressionColumns <- function(columns, category=getCategory())
+    setGlobal(category, "diffExpressionCols", value=columns)
+
+# Differential splicing ---------------------------------------------------
+
+#' Get or set differential splicing' elements for a data category
 #' @inherit getGlobal
 getDifferentialAnalyses <- function(category=getCategory())
     getGlobal(category, "differentialAnalyses")
@@ -320,33 +393,6 @@ getDifferentialAnalysesFiltered <- function(category=getCategory())
 setDifferentialAnalysesFiltered <- function(differential, 
                                             category=getCategory())
     setGlobal(category, "differentialAnalysesFiltered", value=differential)
-
-#' @rdname getDifferentialAnalyses
-getDifferentialAnalysesHighlightedEvents <- function(category=getCategory())
-    getGlobal(category, "differentialAnalysesHighlighted")
-
-#' @rdname getDifferentialAnalyses
-#' @param events Integer: index of events
-setDifferentialAnalysesHighlightedEvents <- function(events, 
-                                                     category=getCategory())
-    setGlobal(category, "differentialAnalysesHighlighted", value=events)
-
-#' @rdname getDifferentialAnalyses
-getDifferentialAnalysesZoom <- function(category=getCategory())
-    getGlobal(category, "differentialAnalysesZoom")
-
-#' @rdname getDifferentialAnalyses
-#' @param zoom Integer: range of X and Y coordinates for zooming
-setDifferentialAnalysesZoom <- function(zoom, category=getCategory())
-    setGlobal(category, "differentialAnalysesZoom", value=zoom)
-
-#' @rdname getDifferentialAnalyses
-getDifferentialAnalysesSelected <- function(category=getCategory())
-    getGlobal(category, "differentialAnalysesSelected")
-
-#' @rdname getDifferentialAnalyses
-setDifferentialAnalysesSelected <- function(events, category=getCategory())
-    setGlobal(category, "differentialAnalysesSelected", value=events)
 
 #' @rdname getDifferentialAnalyses
 getDifferentialAnalysesSurvival <- function(category=getCategory())

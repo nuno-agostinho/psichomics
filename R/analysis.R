@@ -25,9 +25,8 @@ missingDataModal <- function(session, dataType, buttonId) {
     }
     
     switch(dataType,
-           "Clinical data"=template("Load"),
-           "Junction quantification"=template("Load"),
-           "Inclusion levels"=template("Load or calculate"))
+           "Inclusion levels"=template("Load or calculate"),
+           template("Load"))
 }
 
 #' @rdname missingDataModal
@@ -43,6 +42,23 @@ missingDataGuide <- function(dataType) {
     runjs(js)
 }
 
+#' Create input to select a gene
+#' 
+#' @param id Character: identifier
+#' @inheritParams shiny::selectizeInput
+#' 
+#' @return HTML elements
+selectizeGeneInput <- function(id, label="Gene", choices=NULL) {
+    selectizeInput(
+        id, label, width="100%",
+        choices=c("Type to search for a gene..."="", choices),
+        options=list(
+            onFocus=I(sprintf(
+                'function() { $("#%s")[0].selectize.clear(); }', id)),
+            onChange=I(sprintf(
+                'function(value) { $("#%s")[0].selectize.blur(); }', id))))
+}
+
 #' @rdname appUI
 #' 
 #' @param id Character: identifier
@@ -54,7 +70,8 @@ analysesUI <- function(id, tab) {
     ns <- NS(id)
     uiList <- getUiFunctions(
         ns, "analysis", 
-        priority=c("pcaUI", "diffSplicingUI", "survivalUI", "infoUI"))
+        priority=paste0(c("pca", "diffSplicing", "diffExpression", "survival", 
+                          "info"), "UI"))
     
     # Load available analyses
     analyses <- tagList()
@@ -76,6 +93,20 @@ analysesUI <- function(id, tab) {
     analyses <- analyses[-length(analyses)]
     do.call(tab, c(list(icon="flask", title="Analyses", menu=TRUE), analyses))
 }
+
+#' @rdname appServer
+#' 
+#' @importFrom shiny observe observeEvent
+#' @importFrom shinyjs hide show
+analysesServer <- function(input, output, session) {
+    # Run server logic from the scripts
+    server <- getServerFunctions(
+        "analysis", priority=paste0(c("pca", "diffSplicing", "diffExpression",
+                                      "survival", "info"), "Server"))
+}
+
+
+# Survival analyses helper functions --------------------------------------
 
 #' Retrieve clinical data based on attributes required for survival analysis
 #' 
@@ -772,15 +803,1283 @@ optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart,
     return(opt)
 }
 
-#' @rdname appServer
+# Differential analyses helper functions -----------------------------------
+
+#' Perform Wilcoxon analysis and return interface to show the results
 #' 
-#' @importFrom shiny observe observeEvent
-#' @importFrom shinyjs hide show
-analysesServer <- function(input, output, session) {
-    # Run server logic from the scripts
-    server <- getServerFunctions(
-        "analysis", priority=c("pcaServer", "diffSplicingServer", 
-                               "survivalServer", "infoServer"))
+#' @inheritParams plotDistribution
+#' @param stat Data frame or matrix: values of the analyses to be performed (if
+#' NULL, the analyses will be performed)
+#' 
+#' @importFrom shiny tagList tags h4 br
+#' @importFrom stats wilcox.test
+#' @importFrom R.utils capitalize
+#' 
+#' @return HTML elements
+wilcox <- function(data, groups, stat=NULL) {
+    warn <- NULL
+    group <- unique(groups)
+    len <- length(group)
+    
+    p.value <- NULL
+    if (!is.null(stat)) {
+        method      <- stat$`Wilcoxon method`
+        statistic   <- stat$`Wilcoxon statistic`
+        p.value     <- stat$`Wilcoxon p-value`
+        null.value  <- stat$`Wilcoxon null value`
+        alternative <- stat$`Wilcoxon alternative`
+    }
+    
+    if (len != 2) {
+        return(tagList(h4("Wilcoxon test"),
+                       "Can only perform this test on 2 groups."))
+    } else if (!is.null(p.value)) {
+        adjusted <- grep("Wilcoxon p-value \\(.* adjusted\\)", colnames(stat), 
+                         value=TRUE)
+        if (length(adjusted) != 0) {
+            adjustMethod <- gsub(".*\\((.* adjusted)\\).*", "\\1", adjusted)
+            adjusted <- stat[ , adjusted]
+            label <- paste0("p-value (", adjustMethod, "): ")
+            adjusted <- tagList(tags$b(label), signifDigits(adjusted), br())
+        } else {
+            adjusted <- NULL
+        }
+    } else {
+        dataA <- data[groups == group[1]]
+        dataB <- data[groups == group[2]]
+        stat <- tryCatch(list(stat=wilcox.test(dataA, dataB)), 
+                         warning=function(w)
+                             return(list(stat=wilcox.test(dataA, dataB),
+                                         warning=w)))
+        
+        if ("warning" %in% names(stat))
+            warn <- tags$div(class="alert alert-warning", role="alert",
+                             capitalize(stat$warning$message))
+        
+        method      <- stat$stat$method
+        statistic   <- stat$stat$statistic
+        p.value     <- stat$stat$p.value
+        adjusted    <- NULL
+        null.value  <- stat$stat$null.value
+        alternative <- stat$stat$alternative
+    }
+    
+    tagList(
+        h4(method), warn,
+        tags$b("Test value: "), roundDigits(statistic), br(),
+        tags$b("Location parameter: "), null.value, br(),
+        tags$b("Alternative hypothesis: "), alternative,
+        div(style="text-align:right",
+            tags$b("p-value: "), signifDigits(p.value), br(), adjusted))
+}
+
+#' Perform unpaired t-test analysis and return interface to show the results
+#' @inheritParams wilcox
+#' @param stat Data frame or matrix: values of the analyses to be performed (if
+#' NULL, the analyses will be performed)
+#' 
+#' @importFrom shiny tagList tags h4 br
+#' @importFrom stats t.test
+#' @importFrom R.utils capitalize
+#' 
+#' @return HTML elements
+ttest <- function(data, groups, stat=NULL) {
+    warn <- NULL
+    group <- unique(groups)
+    len <- length(group)
+    
+    p.value <- NULL
+    if (!is.null(stat)) {
+        method      <- stat$`T-test method`
+        statistic   <- stat$`T-test statistic`
+        p.value     <- stat$`T-test p-value`
+        null.value  <- stat$`T-test null value`
+        alternative <- stat$`T-test alternative`
+        parameter   <- stat$`T-test parameter`
+        int1        <- stat$`T-test conf int1`
+        int2        <- stat$`T-test conf int2`
+    }
+    
+    if (len != 2) {
+        return(tagList(h4("Unpaired t-test"),
+                       "Can only perform this test on 2 groups."))
+    } else if (!is.null(p.value)) {
+        adjusted <- grep("T-test p-value \\(.* adjusted\\)", colnames(stat), 
+                         value=TRUE)
+        if (length(adjusted) != 0) {
+            adjustMethod <- gsub(".*\\((.* adjusted)\\).*", "\\1", adjusted)
+            adjusted <- stat[ , adjusted]
+            label <- paste0("p-value (", adjustMethod, "): ")
+            adjusted <- tagList(tags$b(label), signifDigits(adjusted), br())
+        } else {
+            adjusted <- NULL
+        }
+    } else {
+        dataA <- data[groups == group[1]]
+        dataB <- data[groups == group[2]]
+        stat <- tryCatch(list(stat=t.test(dataA, dataB)), 
+                         warning=function(w)
+                             return(list(stat=t.test(dataA, dataB),
+                                         warning=w)),
+                         error=return)
+        if (is(stat, "error")) {
+            message <- stat$message
+            check <- "not enough '%s' observations"
+            checkX <- sprintf(check, "x")
+            checkY <- sprintf(check, "y")
+            
+            fewObservations <- function(name)
+                tagList("Not enough observations in group", tags$b(name),
+                        "to perform this statistical test.")
+            
+            if (message == checkX)
+                message <- fewObservations(group[1])
+            else if (message == checkY)
+                message <- fewObservations(group[2])
+            else
+                message <- capitalize(message)
+            
+            error <- tagList(h4("t-test"), tags$div(class="alert alert-danger",
+                                                    role="alert", message))
+            return(error)
+        }
+        
+        if ("warning" %in% names(stat))
+            warn <- tags$div(class="alert alert-warning", role="alert",
+                             capitalize(stat$warning$message))
+        
+        method      <- stat$stat$method
+        statistic   <- stat$stat$statistic
+        p.value     <- stat$stat$p.value
+        adjusted    <- NULL
+        null.value  <- stat$stat$null.value
+        alternative <- stat$stat$alternative
+        parameter   <- stat$stat$parameter
+        int1        <- stat$stat$conf.int[[1]]
+        int2        <- stat$stat$conf.int[[2]]
+    }
+    
+    tagList(
+        h4(method), warn,
+        tags$b("Test value: "), roundDigits(statistic), br(),
+        tags$b("Test parameter: "), parameter, br(),
+        tags$b("Difference in means: "), null.value, br(),
+        tags$b("Alternative hypothesis: "), alternative, br(),
+        tags$b("95\u0025 confidence interval: "), roundDigits(int1),
+        roundDigits(int2),
+        div(style="text-align:right",
+            tags$b("p-value: "), signifDigits(p.value), br(), adjusted))
+}
+
+
+#' Perform Levene's test and return interface to show the results
+#' @inheritParams wilcox
+#' @importFrom shiny tagList tags h4 br
+#' @return HTML elements
+levene <- function(data, groups, stat=NULL) {
+    p.value <- NULL
+    if (!is.null(stat)) {
+        statistic <- stat$`Levene statistic`
+        p.value   <- stat$`Levene p-value`
+        non.bootstrap.p.value <- stat$`Levene non bootstrap p-value`
+    }
+    
+    len <- length(unique(groups))
+    if (len < 2) {
+        return(tagList(h4("Levene's Test for Homogeneity of Variances"),
+                       "Can only perform this test on 2 or more groups."))
+    } else if (!is.null(p.value)) {
+        adjusted <- grep("Levene .*p-value \\(.* adjusted\\)", colnames(stat), 
+                         value=TRUE)
+        if (length(adjusted) == 2) {
+            adjustMethod <- gsub(".*\\((.* adjusted)\\).*", "\\1", adjusted)
+            adjusted <- stat[ , adjusted]
+            label1 <- paste0("p-value (", adjustMethod[[1]], "): ")
+            label2 <- paste0("p-value without bootstrap (", adjustMethod[[2]],
+                             "): ")
+            adjustedNonBootstrap <- tagList(br(), tags$b(label2), 
+                                            signifDigits(adjusted[[1]]), br())
+            adjusted <- tagList(tags$b(label1), signifDigits(adjusted[[2]]), 
+                                br())
+        } else if (length(adjusted) == 1) {
+            adjustMethod <- gsub(".*\\((.* adjusted)\\).*", "\\1", adjusted)
+            adjusted <- stat[ , adjusted]
+            label <- paste0("p-value (", adjustMethod, "): ")
+            adjusted <- tagList(tags$b(label), signifDigits(adjusted), br())
+        } else {
+            adjusted <- NULL
+            adjustedNonBootstrap <- NULL
+        }
+    } else {
+        nas <- is.na(data)
+        stat <- leveneTest(data[!nas], factor(groups[!nas]))
+        statistic <- stat$statistic
+        p.value   <- stat$p.value
+        adjusted  <- NULL
+        non.bootstrap.p.value <- stat$non.bootstrap.p.value
+        adjustedNonBootstrap  <- NULL
+    }
+    
+    if (!is.null(non.bootstrap.p.value)) {
+        nonBootstrap <- tagList(tags$b("p-value without bootstrap: "), 
+                                signifDigits(non.bootstrap.p.value), 
+                                adjustedNonBootstrap)
+    } else {
+        nonBootstrap <- NULL
+    }
+    
+    tagList(
+        h4("Levene's Test for Homogeneity of Variance"),
+        tags$b("Test value: "), roundDigits(statistic), br(),
+        div(style="text-align:right",
+            tags$b("p-value: "), signifDigits(p.value), br(), adjusted,
+            nonBootstrap))
+}
+
+#' Perform Fligner-Killeen test and return interface to show the results
+#' @inheritParams wilcox
+#' @importFrom shiny tagList tags h4 br
+#' @importFrom stats fligner.test
+#' @return HTML elements
+fligner <- function(data, groups, stat=NULL) {
+    len <- length(unique(groups))
+    
+    p.value <- NULL
+    if (!is.null(stat)) {
+        statistic <- stat$`Fligner-Killeen statistic`
+        p.value   <- stat$`Fligner-Killeen p-value`
+        parameter <- stat$`Fligner-Killeen parameter`
+    }
+    
+    if (len < 2) {
+        return(tagList(h4("Fligner-Killeen Test for Homogeneity of Variances"),
+                       "Can only perform this test on 2 or more groups."))
+    } else if (!is.null(p.value)) {
+        adjusted <- grep("Fligner-Killeen .*p-value \\(.* adjusted\\)", 
+                         colnames(stat), value=TRUE)
+        if (length(adjusted) != 0) {
+            adjustMethod <- gsub(".*\\((.* adjusted)\\).*", "\\1", adjusted)
+            adjusted <- stat[ , adjusted]
+            label <- paste0("p-value (", adjustMethod, "): ")
+            adjusted <- tagList(tags$b(label), signifDigits(adjusted), br())
+        } else {
+            adjusted <- NULL
+        }
+    } else {
+        nas <- is.na(data)
+        stat <- fligner.test(data[!nas], factor(groups[!nas]))
+        if (is.infinite(stat$statistic)) {
+            statistic <- NaN
+            p.value   <- NA
+            parameter <- NaN
+        } else {
+            statistic <- stat$statistic
+            p.value   <- stat$p.value
+            parameter <- stat$parameter
+        }
+        adjusted <- NULL
+    }
+    
+    tagList(
+        h4("Fligner-Killeen's Test for Homogeneity of Variance"),
+        tags$b("Test value: "), roundDigits(statistic), br(),
+        tags$b("Test parameter: "), parameter, br(),
+        div(style="text-align:right",
+            tags$b("p-value: "), signifDigits(p.value), br(), adjusted))
+}
+
+#' Perform Kruskal's test and return interface to show the results
+#' @inheritParams wilcox
+#' @importFrom shiny tagList tags h4 br
+#' @importFrom stats kruskal.test
+#' @return HTML elements
+kruskal <- function(data, groups, stat=NULL) {
+    len <- length(unique(groups))
+    
+    p.value <- NULL
+    if (!is.null(stat)) {
+        method    <- stat$`Kruskal method`
+        statistic <- stat$`Kruskal statistic`
+        p.value   <- stat$`Kruskal p-value`
+        parameter <- stat$`Kruskal parameter`
+    }
+    
+    if (len < 2) {
+        return(tagList(h4("Kruskal test"),
+                       "Can only perform this test on 2 or more groups."))
+    } else if (!is.null(p.value)) {
+        adjusted <- grep("Kruskal p-value \\(.* adjusted\\)", colnames(stat), 
+                         value=TRUE)
+        if (length(adjusted) != 0) {
+            adjustMethod <- gsub(".*\\((.* adjusted)\\).*", "\\1", adjusted)
+            adjusted <- stat[ , adjusted]
+            label <- paste0("p-value (", adjustMethod, "): ")
+            adjusted <- tagList(tags$b(label), signifDigits(adjusted), br())
+        } else {
+            adjusted <- NULL
+        }
+    } else {
+        stat      <- kruskal.test(data, factor(groups))
+        method    <- stat$method
+        statistic <- stat$statistic
+        p.value   <- stat$p.value
+        parameter <- stat$parameter
+        adjusted  <- NULL
+    }
+    
+    tagList(h4(method),
+            tags$b("Test value \u03C7\u00B2: "), roundDigits(statistic), br(),
+            tags$b("Degrees of freedom: "), parameter,
+            div(style="text-align:right",
+                tags$b("p-value: "), signifDigits(p.value), br(), adjusted))
+}
+
+#' Perform Fisher's exact test and return interface to show the results
+#' @inheritParams wilcox
+#' 
+#' @importFrom shiny tagList tags h4 br
+#' @importFrom stats fisher.test
+#' @importFrom R.utils evalWithTimeout
+#' 
+#' @return HTML elements
+fisher <- function(data, groups) {
+    stat <- try(evalWithTimeout(
+        fisher.test(data, factor(groups)),
+        timeout = 1,
+        onTimeout = "error"))
+    
+    if (class(stat) != "try-error") {
+        tagList(
+            h4(stat$method),
+            tags$b("p-value: "), stat$p.value, br(),
+            tags$b("Alternative hypothesis: "), stat$alternative
+        )
+    } else {
+        tagList(
+            h4("Fisher's Exact Test for Count Data"),
+            "This test took too much to complete!"
+        )
+    }
+}
+
+#' Perform Spearman's test and return interface to show the results
+#' @inheritParams wilcox
+#' @importFrom shiny tagList tags h4 br
+#' @importFrom stats var cor
+#' @return HTML elements
+spearman <- function(data, groups) {
+    group <- unique(groups)
+    len <- length(group)
+    
+    if (len != 2) {
+        tagList(
+            h4("Spearman's correlation"),
+            "Can only perform this test on 2 groups.")
+    } else {
+        var <- var(data[groups == group[1]], data[groups == group[2]])
+        cor <- cor(data[groups == group[1]], data[groups == group[2]])
+        
+        tagList(
+            h4("Spearman's correlation"),
+            tags$b("Variance: "), var, br(),
+            tags$b("Correlation: "), cor)
+    }
+}
+
+#' Options for event plotting
+#' 
+#' @param session Shiny session
+#' @param df Data frame
+#' @param xAxis Character: currently selected variable for the X axis
+#' @param yAxis Character: currently selected variable for the Y axis
+#' 
+#' @return HTML elements
+eventPlotOptions <- function(session, df, xAxis, yAxis) {
+    # Only allow to select numeric columns    
+    cols <- colnames(df)
+    type <- sapply(cols, function(i) class(df[[i]]))
+    numericCols <- cols[type == "numeric"]
+    
+    if (!is.null(numericCols) && length(numericCols) > 0) {
+        if (is.null(xAxis) || identical(xAxis, "") || !xAxis %in% numericCols) {
+            # Default option for X axis
+            deltaMedian <- "Delta median"     # PSI
+            logFC       <- "log2 Fold-Change" # Gene expression
+            if (logFC %in% numericCols)
+                xSelected <- logFC
+            else if (deltaMedian %in% numericCols)
+                xSelected <- deltaMedian
+            else
+                xSelected <- NULL
+            
+            updateSelectizeInput(session, "xAxis", choices=numericCols,
+                                 selected=xSelected)
+        } else {
+            updateSelectizeInput(session, "xAxis", choices=numericCols,
+                                 selected=xAxis)
+        }
+        
+        if (is.null(yAxis) || identical(yAxis, "") || !yAxis %in% numericCols) {
+            # Default option for Y axis
+            pValue <- grepl("p-value", numericCols)
+            bStat  <- "B-statistics" # Gene expression
+            if (bStat %in% numericCols)
+                ySelected <- bStat
+            else if (any(pValue))
+                ySelected <- numericCols[pValue][1]
+            else if (length(numericCols) >= 2)
+                ySelected <- numericCols[[2]]
+            else
+                ySelected <- NULL
+            
+            updateSelectizeInput(session, "yAxis", choices=numericCols,
+                                 selected=ySelected)
+        } else {
+            updateSelectizeInput(session, "yAxis", choices=numericCols,
+                                 selected=yAxis)
+        }
+    } else {
+        updateSelectizeInput(session, "xAxis", choices=character(0))
+        updateSelectizeInput(session, "yAxis", choices=character(0))
+    }
+}
+
+#' Basic statistics performed on data
+#' 
+#' Variance and median of each group. If data has 2 groups, also calculates the
+#' delta variance and delta median.
+#' 
+#' @inheritParams plotDistribution
+#' @importFrom shiny tagList br h4
+#' 
+#' @return HTML elements
+basicStats <- function(data, groups) {
+    data <- lapply(unique(groups), function(g) data[groups == g])
+    
+    len <- length(unique(groups))
+    vari <- vapply(data, var, numeric(1), na.rm = TRUE)
+    medi <- vapply(data, median, numeric(1), na.rm = TRUE)
+    
+    if (len == 2) {
+        deltaMedian <- tagList(tags$b("|\u0394 Median|: "), 
+                               roundDigits(abs(medi[2] - medi[1])), br())
+        deltaVar <- tagList(tags$b("|\u0394 Variance|: "), 
+                            roundDigits(abs(vari[2] - vari[1])), br())
+    } else {
+        deltaMedian <- NULL
+        deltaVar <- NULL
+    }
+    
+    avgMedian <- roundDigits( mean(medi) )
+    avgVar <- roundDigits( mean(vari) )
+    ui <- tagList(hr(), h4("Basic statistics"),
+                  tags$b("Average median: "), avgMedian, br(), deltaMedian,
+                  tags$b("Average variance: "), avgVar, br(), deltaVar)
+    return(ui)
+}
+
+#' Filter groups with less data points than the threshold
+#' 
+#' Groups containing a number of non-missing values less than the threshold are
+#' discarded.
+#' 
+#' @param vector Unnamed elements
+#' @param group Character: group of the elements
+#' @param threshold Integer: number of valid non-missing values by group
+#' 
+#' @return Named vector with filtered elements from valid groups. The group of 
+#' the respective element is given in the name.
+#' @export
+#' @examples 
+#' # Removes groups with less than two elements
+#' filterGroups(1:4, c("A", "B", "B", "D"), threshold=2)
+filterGroups <- function(vector, group, threshold=1) {
+    names(vector) <- group
+    vector <- lapply(unique(group), function(t) {
+        vector <- vector[group == t]
+        if ( sum(!is.na(vector)) >= threshold )
+            return(vector)
+    })
+    return(unlist(vector))
+}
+
+
+#' Create plot for events
+#' 
+#' @param df Data frame
+#' @param x Character: name of the variable used for the X axis
+#' @param y Character: name of the variable used for the Y axis
+#' @param params List of parameters to pass to \code{\link[ggplot2]{geom_point}}
+#' related to most points
+#' @param highlightX Integer: region of points in X axis to highlight
+#' @param highlightY Integer: region of points in Y axis to highlight
+#' @param highlightParams List of parameters to pass to
+#' \code{\link[ggplot2]{geom_point}} related to highlighted points
+#' @param selected Integer: index of rows/points to be coloured
+#' @param selectedParams List of parameters to pass to 
+#' \code{\link[ggplot2]{geom_point}} related to selected points
+#' @param xlim Numeric: limits of X axis
+#' @param ylim Numeric: limits of Y axis
+#' 
+#' @importFrom ggplot2 ggplot aes_string geom_point theme_light coord_cartesian
+#' 
+#' @return HTML elements
+createEventPlotting <- function(df, x, y, params, highlightX, highlightY,
+                                highlightParams, selected, selectedParams, 
+                                xlim, ylim) {
+    aes <- aes_string(paste0("`", x, "`"), paste0("`", y, "`"))
+    
+    # Get points highlighted in X and Y that were not selected
+    if (!is.null(highlightX)) {
+        highlightedX <- findInterval(df[[x]], highlightX, left.open=FALSE,
+                                     rightmost.closed=TRUE) == 1
+        if (attr(highlightX, "inverted")) highlightedX <- !highlightedX
+        highlightedX <- which(highlightedX)
+    } else {
+        highlightedX <- seq(nrow(df))
+    }
+    
+    if (!is.null(highlightY)) {
+        highlightedY <- findInterval(df[[y]], highlightY, left.open=FALSE,
+                                     rightmost.closed=TRUE) == 1
+        if (attr(highlightY, "inverted")) highlightedY <- !highlightedY
+        highlightedY <- which(highlightedY)
+    } else {
+        highlightedY <- seq(nrow(df))
+    }
+    
+    if ( is.null(highlightX) && is.null(highlightY) ) {
+        highlighted <- NULL
+    } else {
+        highlighted <- intersect(highlightedX, highlightedY)
+    }
+    setHighlightedPoints("psi-volcano", highlighted)
+    
+    # Render remaining points
+    plotted <- union(selected, highlighted)
+    if (!is.null(plotted))
+        remaining <- df[-plotted, ]
+    else
+        remaining <- df
+    plot <- ggplot() + do.call("geom_point", c(
+        list(data=remaining, aes, na.rm=TRUE), params))
+    
+    # Render highlighted points
+    plot <- plot + do.call("geom_point", c(
+        list(data=df[setdiff(highlighted, selected), ], aes, na.rm=TRUE), 
+        highlightParams))
+    
+    # Render selected points
+    plot <- plot + do.call("geom_point", c(
+        list(data=df[selected, ], aes, na.rm=TRUE), selectedParams))
+    
+    plot <- plot + coord_cartesian(xlim=xlim, ylim=ylim)
+    return(plot + theme_light(16))
+}
+
+#' Show variable transformation(s)
+#' 
+#' @param label Character: label to display
+#' @param type Character: show the variable transformation for the chosen type;
+#' NULL (by default) to show all variable transformations
+#' 
+#' @return Character labelling variable transformation(s)
+transformOptions <- function(label, type=NULL) {
+    transform <- c("No transformation"="no",
+                   "|%s|"="abs",
+                   "-%s"="inv",
+                   "log10(|%s|)"="log10abs",
+                   "-log10(|%s|)"="-log10abs")
+    names(transform) <- sprintf(names(transform), label)
+    
+    if (!is.null(type)) {
+        show <- names(transform)
+        show[[1]] <- label
+        show <- show[match(type, transform)]
+        return(show)
+    } else {
+        return(transform)
+    }
+}
+
+#' Transform values as per a given type of transformation
+#' 
+#' @param val Integer: values to transform
+#' @param type Character: type of transformation
+#' @param avoidZero Boolean: add the smallest non-zero number available to zero
+#' values; avoids returning infinity values during Log transformation (which are
+#' not plotted); useful for preserving p-values of 0, for instance; TRUE by
+#' default
+#' 
+#' @return Integer containing transformed values
+transformValues <- function(val, type, avoidZero=TRUE) {
+    # Remove NAs
+    if (avoidZero) {
+        zeroes <- val == 0 & !is.na(val)
+        val[zeroes] <- val[zeroes] + .Machine$double.xmin
+    }
+    
+    trans <- suppressWarnings(
+        switch(type,
+               "no"=val,
+               "abs"=abs(val),
+               "inv"=-val,
+               "log10abs"=log10(abs(val)),
+               "-log10abs"=-log10(abs(val))))
+    return(trans)
+}
+
+#' Transform data in data frame
+#' 
+#' @param input Shiny input
+#' @param df Data frame
+#' @param x Character: column name
+#' @param y Character: column name
+#' 
+#' @return Data frame with transformed data in new columns and respective name
+#' of created columns
+transformData <- function(input, df, x, y) {
+    xTrans <- input$xTransform
+    xLabel <- transformOptions(x, xTrans)
+    if (!x %in% colnames(df)) return(NULL)
+    df[[xLabel]] <- transformValues(df[[x]], xTrans)
+    
+    yTrans <- input$yTransform
+    yLabel <- transformOptions(y, yTrans)
+    if (!y %in% colnames(df)) return(NULL)
+    df[[yLabel]] <- transformValues(df[[y]], yTrans)
+    
+    return(list(data=df, xLabel=xLabel, yLabel=yLabel))
+}
+
+#' Interface to modify the style of the plot points
+#' 
+#' @param ns Namespace function
+#' @param id Character: identifier
+#' @param description Character: display text for user
+#' @param help Character: extra text to help the user
+#' @param colour Character: default colour ("black" by default)
+#' @param size Integer: default size (2 by default)
+#' @param alpha Numeric: default transparency value; (opaque by default)
+#' 
+#' @importFrom shiny tagList h4 helpText sliderInput
+#' @importFrom colourpicker colourInput
+#' 
+#' @return HTML elements
+plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
+                            colour="black", alpha=1.0) {
+    id2 <- function(att) ns(paste0(id, att))
+    
+    colourSelector <- colourInput(id2("Colour"), "Colour", value=colour)
+    colourSelector[[2]][["style"]] <- "width: 100%;"
+    
+    tagList(
+        h4(description),
+        if (!is.null(help)) helpText(help),
+        sliderInput(id2("Size"), "Size", min=1, max=10, step=1, value=size,
+                    width="100%"),
+        colourSelector,
+        sliderInput(id2("Alpha"), "Transparency", min=0, max=1, step=0.01,
+                    value=alpha, width="100%")
+    )
+}
+
+#' Plot distribution through a density plot
+#' 
+#' The tooltip shows the median, variance, max, min and number of non-NA samples
+#' of each data series.
+#' 
+#' @param data Numeric: data for one gene or alternative splicing event
+#' @param groups Character: group of each value in \code{data}
+#' @param rug Boolean: include rug plot to better visualise data distribution
+#' @param vLine Boolean: include vertical plot lines to indicate the mean and
+#' median of each group even when those groups are omitted
+#' @param ... Extra parameters passed to \code{density} to create the kernel
+#' density estimates
+#' @param title Character: plot title
+#' @param psi Boolean: are data composed of PSI values?
+#' 
+#' @importFrom highcharter highchart hc_chart hc_xAxis hc_plotOptions hc_tooltip
+#' JS
+#' @importFrom stats median var density
+#' 
+#' @return Highcharter object with density plot
+#' @export
+#' @examples
+#' data <- sample(20, rep=TRUE)/20
+#' groups <- c(rep("A", 10), rep("B", 10))
+#' plotDistribution(data, groups)
+plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE, 
+                             ..., title=NULL, psi=TRUE) {
+    if (psi) {
+        xMin <- 0
+        xMax <- 1
+        xLabel <- "Distribution of PSI values"
+        id <- "Inclusion level: "
+    } else {
+        xMin <- NULL
+        xMax <- NULL
+        xLabel <- "Distribution of gene expression"
+        id <- "Gene expression: "
+    }
+    
+    # Include X-axis zoom and hide markers
+    hc <- highchart() %>%
+        hc_chart(zoomType="x") %>%
+        hc_xAxis(min=xMin, max=xMax, title=list(text=xLabel)) %>%
+        hc_plotOptions(series = list(fillOpacity=0.3,
+                                     marker=list(enabled=FALSE))) %>%
+        hc_tooltip(
+            headerFormat = paste(span(style="color:{point.color}", "\u25CF "),
+                                 tags$b("{series.name}"), br()),
+            pointFormat = paste(
+                id, "{point.x:.2f}", br(),
+                "Number of samples: {series.options.samples}", br(),
+                "Median: {series.options.median}", br(),
+                "Variance: {series.options.var}", br(),
+                "Range: {series.options.min} - {series.options.max}")) %>%
+        export_highcharts()
+    
+    if (!is.null(title)) hc <- hc %>% hc_title(text=title)
+    
+    count <- 0
+    plotLines <- list()
+    for (group in sort(unique(groups))) {
+        row  <- data[groups == group]
+        med  <- roundDigits(median(row, na.rm=TRUE))
+        vari <- roundDigits(var(row, na.rm=TRUE))
+        max  <- roundDigits(max(row, na.rm=TRUE))
+        min  <- roundDigits(min(row, na.rm=TRUE))
+        samples <- sum(!is.na(row))
+        
+        colour <- unname(attr(groups, "Colour")[group])
+        if (is.null(colour))
+            colour <- JS("Highcharts.getOptions().colors[", count, "]")
+        
+        # Calculate the density of inclusion levels for each sample group
+        den <- tryCatch(density(row, na.rm=TRUE, ...), error=return,
+                        warning=return)
+        if (is(den, "error") || is(den, "warning")) {
+            hc <- hc %>% hc_add_series(NULL)
+        } else {
+            hc <- hc %>% hc_add_series(den, type="area", name=group, median=med, 
+                                       var=vari, samples=samples, max=max, 
+                                       color=colour, min=min)
+        }
+        # Rug plot
+        if (rug) {
+            hc <- hc_scatter(
+                hc, row, rep(0, length(row)), name=group, marker=list(
+                    enabled=TRUE, symbol="circle", radius=4,
+                    fillColor=paste0(colour, "60")), # Add opacity
+                median=med, var=vari, samples=samples, max=max, min=min)
+        }
+        # Save plot line with information
+        if (vLine) {
+            plotLines[[count + 1]] <- list(
+                label = list(text = paste("Median:", med, "/ Variance:", vari)),
+                # Colour the same as the series
+                color=colour, dashStyle="shortdash", width=2, value=med, 
+                zIndex=7)
+        }
+        count <- count + 1
+    }
+    
+    # Add plotLines with information
+    if (vLine) hc <- hc %>% hc_xAxis(plotLines = plotLines)
+    return(hc)
+}
+
+#' Levene's test
+#' 
+#' Performs a Levene's test to assess the equality of variances
+#' 
+#' @details The implementation of this function is based on
+#' \code{car:::leveneTest.default} with a more standard result.
+#' 
+#' @inheritParams stats::kruskal.test
+#' @param centers Function used to calculate how much values spread 
+#' (\code{median} by default; another common function used is \code{mean})
+#' 
+#' @importFrom stats complete.cases anova median lm
+#' 
+#' @return A list with class \code{"htest"} containing the following components:
+#' \item{statistic}{the value of the test statistic with a name describing it.}
+#' \item{p.value}{the p-value for the test.}
+#' \item{method}{the type of test applied.}
+#' \item{data.name}{a character string giving the names of the data.}
+#' 
+#' @examples 
+#' 
+#' vals <- sample(30, replace=TRUE)
+#' group <- lapply(list("A", "B", "C"), rep, 10)
+#' group <- unlist(group)
+#' psichomics:::leveneTest(vals, group)
+#' 
+#' ## Using Levene's test based on the mean
+#' psichomics:::leveneTest(vals, group, mean)
+leveneTest <- function(x, g, centers=median) {
+    dname <- paste(deparse(substitute(x)), "and", deparse(substitute(g)))
+    
+    # Remove missing values
+    noNAs <- complete.cases(x, g)
+    x <- x[noNAs]
+    g <- g[noNAs]
+    
+    # Convert groups to factors
+    g <- factor(g)
+    
+    res <- vapply(split(x, g, drop=TRUE), centers, numeric(1))
+    spread <- abs(x - res[g])
+    
+    # Analysis of variance (ANOVA)
+    var <- anova(lm(spread ~ g))
+    statistic <- var$`F value`[1]
+    pval <- var$`Pr(>F)`[1]
+    
+    centers <- deparse(substitute(centers))
+    rval <- list(statistic=c("W"=statistic), p.value=pval, data.name=dname,
+                 method=paste0("Levene's test (using the ", centers, ")"))
+    class(rval) <- "htest"
+    return(rval)
+}
+
+#' Create density sparklines for inclusion levels
+#' 
+#' @importFrom highcharter highchart hc_credits hc_tooltip hc_chart hc_title
+#' hc_xAxis hc_yAxis hc_exporting hc_legend hc_plotOptions
+#' @importFrom shiny tags
+#' 
+#' @inherit createSparklines
+#' @param areSplicingEvents Boolean: are these splicing events (TRUE) or gene 
+#' expression (FALSE)?
+createDensitySparklines <- function(data, events, delim=NULL, 
+                                    areSplicingEvents=TRUE, groups=NULL, 
+                                    geneExpr=NULL) {
+    if (areSplicingEvents) {
+        minX <- 0
+        maxX <- 1
+        id   <- "Inclusion levels"
+        FUN  <- "showDiffSplicing"
+    } else {
+        minX <- NULL
+        maxX <- NULL
+        id   <- "Gene expression"
+        FUN  <- "showDiffExpression"
+    }
+    
+    hc <- highchart() %>%
+        hc_tooltip(
+            hideDelay=0, shared=TRUE, valueDecimals=getPrecision(),
+            headerFormat=paste0(tags$small(paste0(id, ": {point.x:.2f}")),
+                                tags$br()),
+            pointFormat=paste(span(style="color:{point.color}", "\u25CF "),
+                              tags$b("{series.name}"), br())) %>%
+        hc_chart(width=120, height=20, backgroundColor="", type="areaspline", 
+                 margin=c(2, 0, 2, 0), style=list(overflow='visible')) %>%
+        hc_title(text="") %>%
+        hc_xAxis(visible=FALSE) %>%
+        hc_credits(enabled=FALSE) %>%
+        hc_yAxis(endOnTick=FALSE, startOnTick=FALSE, visible=FALSE) %>%
+        hc_exporting(enabled=FALSE) %>%
+        hc_legend(enabled=FALSE) %>%
+        hc_plotOptions(series=list(cursor="non", animation=FALSE, lineWidth=1,
+                                   marker=list(radius=1), fillOpacity=0.25))
+    
+    if (!is.null(minX) || !is.null(maxX))
+        hc <- hc %>% hc_xAxis(min=minX, max=maxX)
+    createSparklines(hc, data, events, FUN=FUN, delim, groups=groups,
+                     geneExpr=geneExpr)
+}
+
+#' Create sparkline charts to be used in a data table
+#' 
+#' @param hc Highcharts object
+#' @param data Character: HTML-formatted data series of interest
+#' @param events Character: event identifiers
+#' @param FUN Character: JavaScript function to execute when clicking on a chart
+#' @param delim Character: left and right delimiters in groups that should be
+#' removed (NULL by default)
+#' @param groups Character: name of the groups used for differential analyses
+#' @param geneExpr Character: name of the gene expression dataset
+#' 
+#' @importFrom jsonlite toJSON
+#' 
+#' @return HTML element with sparkline data
+createSparklines <- function(hc, data, events, FUN, delim=NULL, groups=NULL,
+                             geneExpr=NULL) {
+    hc <- as.character(toJSON(hc$x$hc_opts, auto_unbox=TRUE))
+    hc <- substr(hc, 1, nchar(hc)-1)
+    
+    # Remove artificial delimiters
+    if (!is.null(delim) && length(delim) == 2) {
+        data <- gsub(delim[[1]], "", data)
+        data <- gsub(delim[[2]], "", data)
+    }
+    
+    if (!is.null(groups) && !identical(groups, ""))
+        groups <- toJSarray(groups)
+    else
+        groups <- "null"
+    
+    if (is.null(geneExpr) || geneExpr == "")
+        geneExpr <- ")"
+    else
+        geneExpr <- sprintf(", \'%s\')", geneExpr)
+    
+    json <- paste0(hc, ',"series":', data, "}")
+    sparklines <- sprintf(
+        paste('<sparkline onclick="%s(\'%s\', %s%s"',
+              'style="cursor:pointer;" data-sparkline=\'%s\'/>'), 
+        FUN, events, groups, geneExpr, json)
+    return(sparklines)
+}
+
+#' Perform statistical analysis on a given splicing event
+#' 
+#' Perform statistical analyses on a given vector containing elements from
+#' different groups
+#' 
+#' @details 
+#' The following statistical analyses may be performed by including the 
+#' respective string in the \code{analysis} argument:
+#' \itemize{
+#'      \item{\code{ttest} - Unpaired t-test (2 groups)}
+#'      \item{\code{wilcoxRankSum} - Wilcoxon Rank Sum test (2 groups)}
+#'      \item{\code{kruskal} - Kruskal test (2 or more groups)}
+#'      \item{\code{levene} - Levene's test (2 or more groups)}
+#'      \item{\code{fligner} - Fligner-Killeen test (2 or more groups)}
+#' }
+#' 
+#' @param vector Numeric
+#' @param group Character: group of each element in the vector
+#' @param threshold Integer: minimum number of data points to perform analysis
+#' in a group (default is 1)
+#' @param analyses Character: analyses to perform (see "Details")
+#' @param step Numeric: number of events before the progress bar is updated
+#' (a bigger number allows for a faster execution)
+#' 
+#' @importFrom stats kruskal.test median wilcox.test t.test var density
+#' @importFrom methods is
+#' 
+#' @return A row from a data frame with the results
+singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
+                               analyses=c("wilcoxRankSum", "ttest", "kruskal",
+                                          "levene", "fligner")) {
+    colour  <- attr(group, "Colour")
+    series  <- split(vector, group)
+    samples <- vapply(series, function(i) sum(!is.na(i)), integer(1))
+    valid   <- names(series)[samples >= threshold]
+    inGroup <- group %in% valid
+    group   <- group[inGroup]
+    vector  <- vector[inGroup]
+    len     <- length(valid)
+    
+    # Unpaired t-test (2 groups)
+    ttest <- NULL
+    if (any("ttest" == analyses) && len == 2 && all(samples > 1)) {
+        typeOne <- group == valid[1]
+        ttest <- tryCatch(t.test(vector[typeOne], vector[!typeOne]), 
+                          error=return)
+        if (is(ttest, "error")) ttest <- NULL
+    }
+    
+    # Wilcoxon test (2 groups)
+    wilcox <- NULL
+    if (any("wilcoxRankSum" == analyses) && len == 2) {
+        # Wilcoxon rank sum test (Mann Whitney U test)
+        typeOne <- group == valid[1]
+        wilcox  <- suppressWarnings(wilcox.test(vector[typeOne],
+                                                vector[!typeOne]))
+        # } else if (any("wilcoxSignedRank" == analyses) && len == 1) {
+        #     # Wilcoxon signed rank test
+        #     wilcox <- suppressWarnings(wilcox.test(vector))
+    }
+    
+    # Kruskal-Wallis test (2 or more groups)
+    kruskal <- NULL
+    if (any("kruskal" == analyses) && len >= 2) {
+        kruskal <- tryCatch(kruskal.test(vector, group), error=return)
+        if (any("error" == class(kruskal))) kruskal <- NULL
+    }
+    
+    # Levene's test (2 or more groups)
+    levene <- NULL
+    if (any("levene" == analyses) && len >= 2) {
+        levene <- suppressWarnings(
+            tryCatch(leveneTest(vector, group), error=return))
+        if (any("error" == class(levene))) levene <- NULL
+    }
+    
+    # Fligner-Killeen test (2 or more groups)
+    fligner <- NULL
+    if (any("fligner" == analyses) && len >= 2) {
+        fligner <- suppressWarnings(
+            tryCatch(fligner.test(vector, group), error=return))
+        if (any("error" == class(fligner)) || is.infinite(fligner$statistic))
+            fligner <- NULL
+    }
+    
+    # Density sparklines
+    sparkline <- NULL
+    if (any("density" == analyses)) {
+        data         <- NULL
+        validSeries  <- series[valid]
+        groupsColour <- NULL
+        for (each in seq(validSeries)) {
+            group <- validSeries[[each]]
+            # Calculate data density for each sample group with a greatly 
+            # reduced number of points for faster execution
+            den <- tryCatch(density(group, n=10, na.rm=TRUE), error=return,
+                            warning=return)
+            if (is(den, "error") || is(den, "warning"))
+                data <- c(data, "")
+            else
+                data <- c(data, paste(sprintf('{"x":%s,"y":%s}', den$x, den$y),
+                                      collapse=","))
+            
+            if (!is.null(colour))
+                groupsColour <- c(groupsColour, 
+                                  unname(colour[names(validSeries)[[each]]]))
+        }
+        if (!is.null(colour)) {
+            sparkline <- paste(
+                sprintf('{"name":"%s", "data":[%s], "color":"%s"}', 
+                        names(validSeries), data, groupsColour), collapse=",")
+        } else {
+            sparkline <- paste(
+                sprintf('{"name":"%s", "data":[%s]}', 
+                        names(validSeries), data), collapse=",")
+        }
+        sparkline <- paste("[", sparkline, "]")
+    }
+    
+    # Variance and median
+    med <- lapply(series, median, na.rm=TRUE) # Median
+    var <- lapply(series, var, na.rm=TRUE) # Variance
+    
+    vector <- c("Distribution"=sparkline,
+                "Survival by PSI cutoff"=NA,
+                "Optimal PSI cutoff"=as.numeric(NA),
+                "Log-rank p-value"=as.numeric(NA),
+                Samples=samples, "T-test"=ttest,
+                Wilcoxon=wilcox, Kruskal=kruskal, Levene=levene, 
+                "Fligner-Killeen"=fligner, Variance=var, Median=med)
+    vector <- vector[!vapply(vector, is.null, logical(1))] # Remove NULL
+    return(vector)
+}
+
+#' Perform selected statistical analyses on multiple splicing events
+#' 
+#' @param psi Data frame or matrix: alternative splicing event quantification
+#' @param groups Character: group of each sample from the alternative splicing 
+#' event quantification (if NULL, sample types are used instead, e.g. normal, 
+#' tumour and metastasis)
+#' @param analyses Character: analyses to perform (see Details)
+#' @param pvalueAdjust Character: method used to adjust p-values (see Details)
+#' @param progress Function to track the progress
+#' @param geneExpr Character: name of the gene expression dataset (only required
+#' for density sparklines available in the interactive mode)
+#' 
+#' @importFrom plyr rbind.fill
+#' @importFrom fastmatch fmatch
+#' @importFrom stats p.adjust
+#' 
+#' @details 
+#' The following statistical analyses may be performed by including the 
+#' respective string in the \code{analysis} argument:
+#' \itemize{
+#'      \item{\code{ttest} - Unpaired t-test (2 groups)}
+#'      \item{\code{wilcoxRankSum} - Wilcoxon Rank Sum test (2 groups)}
+#'      \item{\code{kruskal} - Kruskal test (2 or more groups)}
+#'      \item{\code{levene} - Levene's test (2 or more groups)}
+#'      \item{\code{fligner} - Fligner-Killeen test (2 or more groups)}
+#'      \item{\code{density} - Sample distribution per group (only usable 
+#'      through the visual interface)}
+#' }
+#' 
+#' The following methods for p-value adjustment are supported by using the 
+#' respective string in the \code{pvalueAdjust} argument:
+#' \itemize{
+#'      \item{\code{none}: do not adjust p-values}
+#'      \item{\code{BH}: Benjamini-Hochberg's method (false discovery rate)}
+#'      \item{\code{BY}: Benjamini-Yekutieli's method (false discovery rate)}
+#'      \item{\code{bonferroni}: Bonferroni correction (family-wise error rate)}
+#'      \item{\code{holm}: Holm's method (family-wise error rate)}
+#'      \item{\code{hochberg}: Hochberg's method (family-wise error rate)}
+#'      \item{\code{hommel}: Hommel's method (family-wise error rate)}
+#' }
+#' 
+#' @return Table of statistical analyses
+#' @export
+#' @examples 
+#' # Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events
+#' eventType <- c("SE", "MXE")
+#' annot <- readFile("ex_splicing_annotation.RDS")
+#' junctionQuant <- readFile("ex_junctionQuant.RDS")
+#' 
+#' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+#' group <- c(rep("Normal", 3), rep("Tumour", 3))
+#' diffAnalyses(psi, group)
+diffAnalyses <- function(psi, groups=NULL, 
+                         analyses=c("wilcoxRankSum", "ttest", "kruskal",
+                                    "levene", "fligner"),
+                         pvalueAdjust="BH", progress=echoProgress,
+                         geneExpr=NULL) {
+    # cl <- parallel::makeCluster(getOption("cl.cores", getCores()))
+    step <- 50 # Avoid updating progress too frequently
+    progress("Performing statistical analysis", 
+             divisions=5 + round(nrow(psi)/step))
+    time <- Sys.time()
+    
+    if (is.null(groups)) {
+        ids <- names(psi)
+        groups <- parseSampleGroups(ids)
+    }
+    originalGroups <- unique(groups)
+    if (identical(originalGroups, "All samples")) originalGroups <- NULL
+    
+    # Add artificial delimiters (required to identify group names later on)
+    colour           <- attr(groups, "Colour")
+    parenthesisOpen  <- ".delim1."
+    parenthesisClose <- ".delim2."
+    groups           <- paste0(parenthesisOpen, groups, parenthesisClose)
+    groups           <- factor(groups)
+    if (!is.null(colour)) {
+        names(colour) <- paste0(parenthesisOpen, names(colour), 
+                                parenthesisClose)
+        attr(groups, "Colour") <- colour
+    }
+    
+    count <- 0
+    stats <- apply(psi, 1, function(...) {
+        count <<- count + 1
+        if (count %% step == 0)
+            progress("Performing statistical analysis", console=FALSE)
+        return(singleDiffAnalyses(...))
+    }, groups, threshold=1, step=step, analyses=analyses)
+    print(Sys.time() - time)
+    
+    # Check the column names of the different columns
+    ns <- lapply(stats, names)
+    uniq <- unique(ns)
+    match <- fmatch(ns, uniq)
+    
+    progress("Preparing data")
+    time <- Sys.time()
+    
+    # Convert list of lists to data frame
+    ll <- lapply(stats, function(i) lapply(i, unname))
+    ll <- lapply(ll, unlist)
+    ldf <- lapply(seq_along(uniq), function(k) {
+        elems <- match == k
+        df2 <- data.frame(t(as.data.frame(ll[elems])))
+        rownames(df2) <- names(stats)[elems]
+        return(df2)
+    })
+    df <- do.call(rbind.fill, ldf)
+    rownames(df) <- unlist(lapply(ldf, rownames))
+    
+    # Convert numeric columns to numeric
+    num <- suppressWarnings(apply(df, 2, as.numeric))
+    if (!is.matrix(num)) {
+        num <- t(as.matrix(num))
+        rownames(num) <- rownames(df)
+    }
+    numericCols <- colSums(is.na(num)) != nrow(num)
+    df[ , numericCols] <- num[ , numericCols]
+    
+    # Convert integer columns to integer
+    if (any(numericCols)) {
+        int <- apply(df[ , numericCols, drop=FALSE], 2, function(i) 
+            all(is.whole(i), na.rm=TRUE))
+        intCols <- numericCols
+        intCols[numericCols] <- int
+        if (any(intCols))
+            df[ , intCols] <- apply(df[ , intCols, drop=FALSE], 2, as.integer)
+    }
+    print(Sys.time() - time)
+    
+    # Calculate delta variance and delta median if there are only 2 groups
+    deltaVar <- df[, grepl("Variance", colnames(df)), drop=FALSE]
+    if (ncol(deltaVar) == 2) {
+        progress("Calculating delta variance and median")
+        time <- Sys.time()
+        deltaVar <- deltaVar[, 2] - deltaVar[, 1]
+        deltaMed <- df[, grepl("Median", colnames(df))]
+        deltaMed <- deltaMed[, 2] - deltaMed[, 1]
+        df <- cbind(df, "Delta variance"=deltaVar, "Delta median"=deltaMed)
+        print(Sys.time() - time)
+    }
+    
+    if (any(pvalueAdjust == c("BH", "BY", "bonferroni", "holm", "hochberg",
+                              "hommel"))) {
+        progress("Adjusting p-values", detail=pvalueAdjust)
+        
+        cols   <- grep("p.value", colnames(df), fixed=TRUE)[-1]
+        if (length(cols > 0)) {
+            time <- Sys.time()
+            pvalue <- df[cols]
+            adjust <- apply(pvalue, 2, p.adjust, pvalueAdjust)
+            names  <- paste0(colnames(pvalue), " ", parenthesisOpen, 
+                             pvalueAdjust, " adjusted", parenthesisClose)
+            
+            if (!is.matrix(adjust))
+                adjust <- t(as.matrix(adjust))
+            colnames(adjust) <- names
+            
+            # Place the adjusted p-values next to the respective p-values
+            len <- ncol(df)
+            order <- seq(len)
+            for (i in seq_along(cols)) 
+                order <- append(order, len+i, after=which(order == cols[i]))
+            df <- cbind(df, adjust)[order]
+            print(Sys.time() - time)
+        }
+    }
+    
+    # Check whether these are splicing events
+    areSplicingEvents <- all(sapply(head(rownames(df)), function (i) 
+        sum(charToRaw(i) == charToRaw("_")) > 3))
+    if ( areSplicingEvents ) {
+        # Add splicing event information
+        progress("Including splicing event information")
+        info <- suppressWarnings(parseSplicingEvent(rownames(df), pretty=TRUE))
+        
+        # Prepare presentation of multigenes
+        multigene <- lapply(info$gene, length) > 1
+        infoGene <- info$gene
+        infoGene[multigene] <- lapply(infoGene[multigene], paste, collapse="/")
+        
+        df <- cbind("Event type"=info$type, "Chromosome"=info$chrom,
+                    "Strand"=info$strand, "Gene"=unlist(infoGene), df)
+    }
+    
+    if (any("density" == analyses)) {
+        progress("Preparing density plots")
+        time <- Sys.time()
+        
+        df[ , "Distribution"] <- createDensitySparklines(
+            df[ , "Distribution"], rownames(df),
+            delim=c(parenthesisOpen, parenthesisClose), areSplicingEvents,
+            groups=originalGroups, geneExpr=geneExpr)
+        name <- ifelse(areSplicingEvents, "PSI.distribution", "GE.distribution")
+        colnames(df)[match("Distribution", colnames(df))] <- name
+        print(Sys.time() - time)
+    }
+    
+    # Properly set column names
+    col <- colnames(df)
+    col <- gsub(parenthesisOpen,  "(", col, fixed=TRUE)
+    col <- gsub(parenthesisClose, ")", col, fixed=TRUE)
+    col <- gsub(".", " ", col, fixed=TRUE)
+    col <- gsub("p value", "p-value", col, fixed=TRUE)
+    col <- gsub("T test", "T-test", col, fixed=TRUE)
+    col <- gsub("Fligner Killeen", "Fligner-Killeen", col, fixed=TRUE)
+    colnames(df) <- col
+    
+    # parallel::stopCluster(cl)
+    return(df)
 }
 
 attr(analysesUI, "loader") <- "app"
