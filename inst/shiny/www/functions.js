@@ -63,39 +63,67 @@ function setTranscript (transcript) {
 /**
  * Navigate user to differential splicing of a given alternative splicing event
  * @param {String} event Alternative splicing event
- * @param {Boolean} autoParams Automatically set expected parameters based on
- * the choices for the exploratory differential analyses
- * @param {String} groupSelectize Identifier of the group selection element to
- * automatically set expected parameters based on its values
+ * @param {String} groups List of groups used for differential analysis
  */
-function showDiffSplicing (event, autoParams = false, groupSelectize = null) {
+function showDiffSplicing (event, groups = null) {
+    var singleEventPage = "analyses-diffSplicing-diffSplicingEvent";
+    
     // Navigate to differential splicing analyses for a single event
-    var tabName = "Differential splicing analysis";
-    $("#nav > li > ul > li > a[data-value*='" + tabName + "']").click();
-    var diff = "Single event";
+    var diff = "Individual alternative splicing event";
     $("a[data-value*='" + diff + "']").click();
     
     // Change currently selected splicing event
     changeEvent(event);
-    
-    if (autoParams) {
-        groupSelectize = "analyses-diffSplicing-diffSplicingTable-diffGroups";
-    } else if (groupSelectize === null) {
-        $('html, body').animate({ scrollTop: 0 }, 'slow'); // Scroll to top
-        return;
+        
+    if (groups !== null) {
+        // Set selected groups
+        $("input[type='radio'][name='" + singleEventPage +
+            "-diffGroupsSelection'][value=groups]").click();
+        $("#" + singleEventPage + "-diffGroups")[0].selectize.setValue(groups);
+    } else {
+        $("input[type='radio'][name='" + singleEventPage +
+            "-diffGroupsSelection'][value=noGroups]").click();
     }
     
-    // Set whether using groups or not
-    singleEventPage = "analyses-diffSplicing-diffSplicingEvent";
-    groups = $("input[type='radio'][name='" + groupSelectize +
-        "Selection']:checked")[0].value;
-    $("input[type='radio'][name='" + singleEventPage +
-        "-diffGroupsSelection'][value=" + groups + "]").click();
-        
-    if (groups == "groups") {
-        // Set selected groups
-        items = $("#" + groupSelectize)[0].selectize.items;
-        $("#" + singleEventPage + "-diffGroups")[0].selectize.setValue(items);
+    // Perform statistical analyses for a single event
+    $("#" + singleEventPage + "-analyse")[0].click();
+    $('html, body').animate({ scrollTop: 0 }, 'slow'); // Scroll to top
+}
+
+/**
+ * Navigate user to differential expression of a given gene
+ * @param {String} gene Gene symbol
+ * @param {String} groups List of groups used for differential analysis
+ * @param {String} geneExpr Gene expression dataset name
+ */
+function showDiffExpression (gene, groups = null, geneExpr = null) {
+    var singleEventPage = "analyses-diffExpression-diffExpressionEvent";
+    
+    // Navigate to differential analyses for a single gene
+    var page = "Individual gene";
+    $("a[data-value*='" + page + "']").click();
+    
+    // Set selected gene expression
+    if (geneExpr !== null) {
+        var geneExprSel = $("#" + singleEventPage + "-geneExpr")[0].selectize;
+        geneExprSel.addOption({label: geneExpr, value: geneExpr});
+        geneExprSel.refreshOptions(false);
+        geneExprSel.addItem(geneExpr);
+    }
+    
+    // Set selected gene
+    if (gene !== null) {
+        var geneSel = $("#" + singleEventPage + "-gene")[0].selectize;
+        geneSel.addOption({label: gene, value: gene});
+        geneSel.refreshOptions(false);
+        geneSel.addItem(gene);
+    }
+    
+    // Set selected groups
+    if (groups !== null) {
+        $("input[type='radio'][name='" + singleEventPage +
+            "-diffGroupsSelection'][value=groups]").click();
+        $("#" + singleEventPage + "-diffGroups")[0].selectize.setValue(groups);
     }
     
     // Perform statistical analyses for a single event
@@ -107,8 +135,9 @@ function showDiffSplicing (event, autoParams = false, groupSelectize = null) {
  * Navigate user to survival analysis by quantification cutoff
  * @param {String} event Alternative splicing event
  * @param {Boolean} autoParams Automatically set expected parameters
+ * @param {Boolean} psiCutoff Prepare PSI (true) or GE cutoff (false)?
  */
-function showSurvCutoff(event, autoParams = false) {
+function showSurvCutoff(event, autoParams = false, psiCutoff = true) {
     // Change currently selected splicing event
     if (event !== null) changeEvent(event);
     
@@ -126,8 +155,11 @@ function showSurvCutoff(event, autoParams = false) {
         });
     }
     
-    // Set PSI cutoff
-    $("input[value='psiCutoff']").click();
+    if ( psiCutoff ) {
+        $("input[value='psiCutoff']").click();
+    } else {
+        $("input[value='geCutoff']").click();
+    }
     
     if (autoParams && event !== null) {
         var allEventsPage = "analyses-diffSplicing-diffSplicingTable";
@@ -153,26 +185,6 @@ function showSurvCutoff(event, autoParams = false) {
         }
     }
     $('html, body').animate({ scrollTop: 0 }, 'slow'); // Scroll to top
-}
-
-/**
- * Modify row of a table to include links to navigate user to the differential
- * splicing of the respective event
- * 
- * @param {Numeric} row Row to introduce links
- * @param {Object} data Table of interest
- * 
- * @return Same rows from input with links
- */
-function createDiffSplicingLinks(row, data, index) {
-    var event = data[0];
-    var eventID = event.replace(/ /g, "_");
-    
-    $('td:eq(0)', row).html("<a onclick='showDiffSplicing(\"" + eventID +
-        "\", autoParams=true)' href='javascript:void(0);' " + 
-        "title='Differential splicing analyses for " + event + "'>" + event +
-        "</a>");
-    return row;
 }
 
 /**

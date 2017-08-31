@@ -403,21 +403,20 @@ quantifySplicingSet <- function(session, input) {
             missingDataModal(session, "Junction quantification", ns("missing"))
         } else if (!is.null(getInclusionLevels())) {
             if (!is.null(getDifferentialAnalyses())) {
-                warningModal(session, "Warning",
-                             "The calculated differential splicing analyses",
-                             "will be discarded and the previously loaded",
-                             "inclusion levels will be replaced.",
-                             footer=actionButton(ns("discard"),
-                                                 "Discard and replace",
-                                                 class="btn-warning",
-                                                 "data-dismiss"="modal"))
+                warningModal(
+                    session, "Warning",
+                    "The calculated differential splicing analyses will be",
+                    "discarded and the previously loaded inclusion levels will",
+                    "be replaced.", footer=actionButton(
+                        ns("discard"), "Discard and replace",
+                        class="btn-warning", "data-dismiss"="modal"))
             } else {
-                warningModal(session, "Inclusion levels already quantified",
-                             "Do you wish to replace the inclusion levels",
-                             "loaded?",
-                             footer=actionButton(ns("replace"), "Replace",
-                                                 class="btn-warning",
-                                                 "data-dismiss"="modal"))
+                warningModal(
+                    session, "Inclusion levels already quantified",
+                    "Do you wish to replace the loaded inclusion levels?",
+                    footer=actionButton(
+                        ns("replace"), "Replace", class="btn-warning",
+                        "data-dismiss"="modal"))
             }
         } else {
             calcSplicing()

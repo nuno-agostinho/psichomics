@@ -1,7 +1,14 @@
-# 1.2.2 (14 Aug, 2017)
+# 1.2.2 (3 Sep, 2017)
 
 * Update minimum version required of shiny (1.0.3)
 * Fix inconsistent browser history navigation
+* Support for gene expression data:
+    * Load, filter, normalise and perform log2-transformation on gene expression
+    data from TCGA
+    * Perform principal component analysis based on gene expression data, 
+    survival analysis by gene expression cutoff and pairwise differential 
+    gene expression analysis
+    * Updated the CLI vignette with information on how to perform such tasks
 * Data loading:
     * Improve instructions on loading user files
     * Filter GTEx junction quantification based on tissues of interest (all 
@@ -10,6 +17,7 @@
     or more genes (all splicing events are still quantified by default)
     * Parse sample information from TCGA samples using `parseTcgaSampleInfo`
     * Generate TCGA sample metadata when loading TCGA junction quantification
+    * Present data summary after loading the data
 * Data grouping:
     * Assign a customisable colour per data group
     * Export or import patient and sample identifiers of data groups
@@ -54,6 +62,10 @@
     non-normal or non-control samples were used)
     - Add p-value plot to visually infer the significance of survival analyses
     based on multiple alternative splicing quantification cutoffs
+* Gene, transcript and protein information:
+    - Information retrieval is now only dependent on a user-defined gene,
+    instead of requiring alternative splicing quantification data to be loaded
+* Multiple other bug fixes and visual improvements
 
 # 1.2.1 (24 Apr, 2017)
 

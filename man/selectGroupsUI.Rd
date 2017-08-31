@@ -6,7 +6,7 @@
 \usage{
 selectGroupsUI(id, label,
   placeholder = "Click on 'Groups' to create or edit groups",
-  noGroupsLabel = NULL, groupsLabel = NULL)
+  noGroupsLabel = NULL, groupsLabel = NULL, maxItems = NULL)
 }
 \arguments{
 \item{id}{Character: identifier of the group selection}
@@ -20,6 +20,8 @@ selectGroupsUI(id, label,
 
 \item{groupsLabel}{Character: label to show to the option of using groups
 when no groups may be selected}
+
+\item{maxItems}{Numeric: maximum number of selected items}
 }
 \value{
 Interface for group selection

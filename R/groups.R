@@ -7,6 +7,7 @@
 #' (if NULL, the option to show no groups will not be shown)
 #' @param groupsLabel Character: label to show to the option of using groups
 #' when no groups may be selected
+#' @param maxItems Numeric: maximum number of selected items
 #' 
 #' @importFrom shiny fluidRow column uiOutput selectizeInput actionButton
 #' radioButtons actionLink downloadLink
@@ -19,14 +20,13 @@
 #' @return Interface for group selection
 selectGroupsUI <- function (
     id, label, placeholder="Click on 'Groups' to create or edit groups",
-    noGroupsLabel=NULL, groupsLabel=NULL) {
+    noGroupsLabel=NULL, groupsLabel=NULL, maxItems=NULL) {
     editId <- paste0(id, "Edit")
     modalId <- paste0(id, "Modal")
-    groupSelect <- selectizeInput(id, label, choices=NULL, multiple=TRUE, 
-                                  width="auto",
-                                  options=list(placeholder=placeholder,
-                                               plugins=list('remove_button',
-                                                            'drag_drop')))
+    groupSelect <- selectizeInput(
+        id, label, choices=NULL, multiple=TRUE, width="auto",
+        options=list(plugins=list('remove_button', 'drag_drop'),
+                     maxItems=maxItems, placeholder=placeholder))
     
     if ( !is.null(label) ) {
         if ( is.null(noGroupsLabel) ) {

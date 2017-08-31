@@ -105,10 +105,12 @@ pcaUI <- function(id) {
                     list(icon("tasks"), "Perform PCA"),
                     value="Perform PCA", style="info",
                     errorDialog(
-                        "No alternative splicing quantification is available.",
+                        paste(
+                            "No alternative splicing quantification or gene",
+                            "expression data are available."),
                         id=ns("pcaOptionsDialog"),
-                        buttonLabel="Alternative splicing quantification",
-                        buttonIcon="calculator",
+                        buttonLabel="Load data",
+                        buttonIcon="plus-circle",
                         buttonId=ns("loadIncLevels")),
                     hidden(pcaOptions)),
                 bsCollapsePanel(
@@ -132,10 +134,7 @@ pcaUI <- function(id) {
                                          "Show variance plot"),
                             actionButton(ns("plot"), "Plot PCA",
                                          class="btn-primary")))))
-        ), mainPanel(
-            highchartOutput(ns("scatterplot")),
-            highchartOutput(ns("scatterplotLoadings"))
-        )
+        ), mainPanel(uiOutput(ns("pcaPlots")))
     )
 }
 
@@ -279,7 +278,9 @@ pcaServer <- function(input, output, session) {
     selectGroupsServer(session, "colourGroups")
     
     observe({
-        if (is.null(getInclusionLevels())) {
+        incLevels <- getInclusionLevels()
+        geneExpr  <- getGeneExpression()
+        if (is.null(incLevels) && is.null(geneExpr)) {
             hide("pcaOptions")
             show("pcaOptionsDialog")
         } else {
@@ -289,7 +290,7 @@ pcaServer <- function(input, output, session) {
     })
     
     observe({
-        if (!is.null(getInclusionLevelsPCA())) {
+        if (!is.null(getPCA())) {
             hide("noPcaPlotUI", animType="fade")
             show("pcaPlotUI", animType="fade")
         } else {
@@ -300,10 +301,11 @@ pcaServer <- function(input, output, session) {
     
     # Update available data input
     observe({
-        inclusionLevels <- getInclusionLevels()
-        if (!is.null(inclusionLevels)) {
-            updateSelectizeInput(session, "dataForPCA",
-                                 choices=attr(inclusionLevels, "dataType"))
+        geneExpr  <- getGeneExpression()
+        incLevels <- getInclusionLevels()
+        if (!is.null(incLevels) || !is.null(geneExpr)) {
+            choices <- c(attr(incLevels, "dataType"), rev(names(geneExpr)))
+            updateSelectizeInput(session, "dataForPCA", choices=choices)
         }
     })
     
@@ -312,29 +314,35 @@ pcaServer <- function(input, output, session) {
     
     # Perform principal component analysis (PCA)
     observeEvent(input$calculate, {
-        if (input$dataForPCA == "Inclusion levels")
-            psi <- isolate(getInclusionLevels())
-        else {
+        selectedDataForPCA <- input$dataForPCA
+        if (selectedDataForPCA == "Inclusion levels") {
+            dataForPCA <- isolate(getInclusionLevels())
+            dataType   <- "Inclusion levels"
+        } else if (grepl("^Gene expression", selectedDataForPCA)) {
+            dataForPCA <- isolate(getGeneExpression()[[selectedDataForPCA]])
+            dataType   <- "Gene expression"
+        } else {
             missingDataModal(session, "Inclusion levels", ns("takeMeThere"))
             return(NULL)
         }
         
-        if (is.null(psi)) {
+        if (is.null(dataForPCA)) {
             missingDataModal(session, "Inclusion levels", ns("takeMeThere"))
         } else {
             time <- startProcess("calculate")
             isolate({
                 groups <- getSelectedGroups(input, "dataGroups", samples=TRUE,
-                                            filter=colnames(psi))
+                                            filter=colnames(dataForPCA))
                 preprocess <- input$preprocess
                 naTolerance <- input$naTolerance
             })
             
             # Subset data by the selected clinical groups
-            if ( !is.null(groups) ) psi <- psi[ , unlist(groups), drop=FALSE]
+            if ( !is.null(groups) ) 
+                dataForPCA <- dataForPCA[ , unlist(groups), drop=FALSE]
             
             # Raise error if data has no rows
-            if (nrow(psi) == 0) {
+            if (nrow(dataForPCA) == 0) {
                 errorModal(session, "No data!", paste(
                     "PCA returned nothing. Check if everything is as",
                     "expected and try again."))
@@ -343,10 +351,10 @@ pcaServer <- function(input, output, session) {
             }
             
             # Transpose the data to have individuals as rows
-            psi <- t(psi)
+            dataForPCA <- t(dataForPCA)
             
             # Perform principal component analysis (PCA) on the subset data
-            pca <- performPCA(psi, naTolerance=naTolerance,
+            pca <- performPCA(dataForPCA, naTolerance=naTolerance,
                               center="center" %in% preprocess,
                               scale.="scale" %in% preprocess)
             if (is.null(pca)) {
@@ -354,11 +362,13 @@ pcaServer <- function(input, output, session) {
                            "Try increasing the tolerance of NAs per event")
             } else if (inherits(pca, "error")) {
                 ## TODO(NunoA): what to do in this case?
-                errorModal(session, "PCA calculation error", 
-                           "Constant/zero columns cannot be resized to unit",
-                           "variance")
+                errorModal(
+                    session, "PCA calculation error", 
+                    "Constant/zero columns cannot be resized to unit variance")
             } else {
-                setInclusionLevelsPCA(pca)
+                attr(pca, "dataType") <- dataType
+                attr(pca, "firstPCA") <- is.null(getPCA())
+                setPCA(pca)
             }
             updateCollapse(session, "pcaCollapse", "Plot PCA")
             endProcess("calculate", closeProgressBar=FALSE)
@@ -372,7 +382,7 @@ pcaServer <- function(input, output, session) {
     
     # Update select inputs of the principal components
     observe({
-        pca <- getInclusionLevelsPCA()
+        pca <- getPCA()
         if (is.null(pca)) {
             choices <- c("PCA has not yet been performed"="")
             updateSelectizeInput(session, "pcX", choices=choices)
@@ -397,7 +407,7 @@ pcaServer <- function(input, output, session) {
     
     # Plot the explained variance plot
     output$variancePlot <- renderHighchart({
-        pca <- getInclusionLevelsPCA()
+        pca <- getPCA()
         if (is.null(pca)) {
             if (input$plot > 0) {
                 errorModal(session, "PCA has not yet been performed",
@@ -411,7 +421,7 @@ pcaServer <- function(input, output, session) {
     # Plot the principal component analysis
     observeEvent(input$plot, {
         isolate({
-            pca <- getInclusionLevelsPCA()
+            pca <- getPCA()
             pcX <- input$pcX
             pcY <- input$pcY
             
@@ -422,33 +432,74 @@ pcaServer <- function(input, output, session) {
                 groups <- NULL
         })
         
-        output$scatterplot <- renderHighchart(
+        output$pcaPlots <- renderUI({
+            if (attr(pca, "firstPCA")) {
+                tagList(
+                    highchartOutput(ns("scatterplot")),
+                    highchartOutput(ns("scatterplotLoadings")))
+            } else {
+                tagList(
+                    fluidRow(
+                        column(6, highchartOutput(ns("scatterplot"))),
+                        column(6, highchartOutput(ns("scatterplot2")))),
+                    fluidRow(
+                        column(6, highchartOutput(ns("scatterplotLoadings"))),
+                        column(6, highchartOutput(ns("scatterplotLoadings2")))))
+            }
+        })
+        
+        scatterplot <- reactive({
             if (!is.null(pcX) & !is.null(pcY)) {
                 plotPCA(pca, pcX, pcY, groups) %>% 
                     hc_chart(plotBackgroundColor="#FCFCFC") %>%
                     hc_title(text="Clinical samples (PCA scores)")
             } else {
                 return(NULL)
-            })
+            }
+        })
         
-        output$scatterplotLoadings <- renderHighchart(
+        scatterplotLoadings <- reactive({
             if (!is.null(pcX) & !is.null(pcY)) {
+                dataType <- attr(pca, "dataType")
+                if (dataType == "Inclusion levels") {
+                    title <- "Alternative splicing events (PCA loadings)"
+                    onClick <- sprintf(
+                        "function() {
+                            sample = this.options.sample;
+                            sample = sample.replace(/ /g, '_');
+                            showDiffSplicing(sample, %s); }",
+                        toJSarray(isolate(groups)))
+                } else if (dataType == "Gene expression") {
+                    title <- "Genes (PCA loadings)"
+                    
+                    onClick <- sprintf(
+                        "function() {
+                            sample = this.options.sample;
+                            showDiffExpression(sample, %s, '%s'); }",
+                        toJSarray(isolate(groups)),
+                        isolate(input$dataForPCA))
+                }
+                
                 plotPCA(pca, pcX, pcY, individuals=FALSE, loadings=TRUE) %>% 
                     hc_chart(plotBackgroundColor="#FCFCFC") %>%
-                    hc_title(
-                        text="Alternative splicing events (PCA loadings)") %>%
-                    hc_plotOptions(
-                        series=list(cursor="pointer", point=list(events=list(
-                            click=JS(
-                                paste0("function() {
-                                         sample = this.options.sample;
-                                         sample = sample.replace(/ /g, '_');
-                                         showDiffSplicing(sample, false, '",
-                                            ns("colourGroups"), "');
-                                      }"))))))
+                    hc_title(text=title) %>%
+                    hc_plotOptions(series=list(cursor="pointer", 
+                                               point=list(events=list(
+                                                   click=JS(onClick)))))
             } else {
                 return(NULL)
-            })
+            }
+        })
+        
+        if (attr(pca, "firstPCA")) {
+            output[["scatterplot"]] <- renderHighchart(scatterplot())
+            output[["scatterplotLoadings"]] <- renderHighchart(
+                scatterplotLoadings())
+        } else {
+            output[["scatterplot2"]] <- renderHighchart(scatterplot())
+            output[["scatterplotLoadings2"]] <- renderHighchart(
+                scatterplotLoadings())
+        }
     })
 }
 

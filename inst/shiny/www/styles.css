@@ -12,8 +12,8 @@ a { cursor: pointer; }
 }
 
 /* As selectize choices load quickly, avoid changes from default state */
-.selectize-control.form-control.shinyjs-resettable.multi.loading {
-    margin-top: 10px;
+.selectize-control.loading {
+    margin-top: 0;
     text-align: left;
 }
 

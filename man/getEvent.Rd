@@ -21,8 +21,8 @@
 \alias{setNormalisedGeneExpression}
 \alias{getInclusionLevels}
 \alias{setInclusionLevels}
-\alias{getInclusionLevelsPCA}
-\alias{setInclusionLevelsPCA}
+\alias{getPCA}
+\alias{setPCA}
 \alias{getSpecies}
 \alias{setSpecies}
 \alias{getAssemblyVersion}
@@ -73,9 +73,9 @@ getInclusionLevels()
 
 setInclusionLevels(incLevels, category = getCategory())
 
-getInclusionLevelsPCA(category = getCategory())
+getPCA(category = getCategory())
 
-setInclusionLevelsPCA(pca, category = getCategory())
+setPCA(pca, category = getCategory())
 
 getSpecies(category = getCategory())
 

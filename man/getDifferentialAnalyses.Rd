@@ -5,19 +5,13 @@
 \alias{setDifferentialAnalyses}
 \alias{getDifferentialAnalysesFiltered}
 \alias{setDifferentialAnalysesFiltered}
-\alias{getDifferentialAnalysesHighlightedEvents}
-\alias{setDifferentialAnalysesHighlightedEvents}
-\alias{getDifferentialAnalysesZoom}
-\alias{setDifferentialAnalysesZoom}
-\alias{getDifferentialAnalysesSelected}
-\alias{setDifferentialAnalysesSelected}
 \alias{getDifferentialAnalysesSurvival}
 \alias{setDifferentialAnalysesSurvival}
 \alias{getDifferentialAnalysesResetPaging}
 \alias{setDifferentialAnalysesResetPaging}
 \alias{getDifferentialAnalysesColumns}
 \alias{setDifferentialAnalysesColumns}
-\title{Get or set differential analyses' elements for a data category}
+\title{Get or set differential splicing' elements for a data category}
 \usage{
 getDifferentialAnalyses(category = getCategory())
 
@@ -26,18 +20,6 @@ setDifferentialAnalyses(differential, category = getCategory())
 getDifferentialAnalysesFiltered(category = getCategory())
 
 setDifferentialAnalysesFiltered(differential, category = getCategory())
-
-getDifferentialAnalysesHighlightedEvents(category = getCategory())
-
-setDifferentialAnalysesHighlightedEvents(events, category = getCategory())
-
-getDifferentialAnalysesZoom(category = getCategory())
-
-setDifferentialAnalysesZoom(zoom, category = getCategory())
-
-getDifferentialAnalysesSelected(category = getCategory())
-
-setDifferentialAnalysesSelected(events, category = getCategory())
 
 getDifferentialAnalysesSurvival(category = getCategory())
 
@@ -57,10 +39,6 @@ it uses the selected data category}
 
 \item{differential}{Data frame or matrix: differential analyses table}
 
-\item{events}{Integer: index of events}
-
-\item{zoom}{Integer: range of X and Y coordinates for zooming}
-
 \item{survival}{Data frame or matrix: differential analyses' survival data}
 
 \item{reset}{Character: reset paging of differential analyses table?}
@@ -72,7 +50,7 @@ Getters return globally accessible data, whereas setters return NULL
 as they are only used to modify the Shiny session's state
 }
 \description{
-Get or set differential analyses' elements for a data category
+Get or set differential splicing' elements for a data category
 }
 \seealso{
 \code{\link{getEvent}}, \code{\link{getClinicalMatchFrom}},

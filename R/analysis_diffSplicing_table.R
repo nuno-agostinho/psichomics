@@ -2,8 +2,7 @@
 #' 
 #' @importFrom shinyjs disabled hidden
 #' @importFrom shiny downloadLink selectizeInput uiOutput actionButton tags
-#' checkboxGroupInput helpText tagList sidebarLayout mainPanel hoverOpts
-#' plotOutput brushOpts
+#' checkboxGroupInput helpText tagList sidebarLayout mainPanel
 #' @importFrom shinyBS bsCollapse bsCollapsePanel
 #' @importFrom DT dataTableOutput
 #' @importFrom highcharter highchartOutput
@@ -170,21 +169,7 @@ diffSplicingTableUI <- function(id) {
         sidebarLayout(
             sidebar, 
             mainPanel(
-                # Mimic Highcharts button to reset zoom level
-                hidden(actionButton(
-                    ns("resetZoom"), "Reset zoom",
-                    style="font-size: 13px;",
-                    style="background-color: #f7f7f7;",
-                    style="border-color: #cccccc;",
-                    style="padding-bottom: 5px;", style="padding-top: 5px;",
-                    style="padding-left: 9px;", style="padding-right: 9px;",
-                    style="position: absolute;", style="z-index: 1;",
-                    style="top: 20px;", style="right: 35px;")),
-                plotOutput(ns("plot"),
-                           brush=brushOpts(ns("brush"), resetOnNew=TRUE),
-                           hover=hoverOpts(ns("hover"), delay=50, 
-                                           delayType="throttle")),
-                uiOutput(ns("tooltip")),
+                ggplotInterface(ns("psi-volcano")),
                 dataTableOutput(ns("statsTable")),
                 highchartOutput(ns("highchartsSparklines"), 0, 0))))
 }
@@ -335,9 +320,8 @@ optimSurvDiffSet <- function(session, input, output) {
         }
         startProgress("Performing survival analysis", nrow(subset))
         
-        # Assign alternative splicing quantification to patients based on their
-        # respective samples
-        clinicalPSI <- getPSIperPatient(subset, match, patients=patients)
+        # Assign a value to patients based on their respective samples
+        clinicalPSI <- getValuePerPatient(subset, match, patients=patients)
         
         opt <- apply(clinicalPSI, 1, createOptimalSurvData, clinical, 
                      censoring, event, timeStart, timeStop)
@@ -410,289 +394,6 @@ optimSurvDiffSet <- function(session, input, output) {
         
         endProcess("survival", time)
     })
-}
-
-#' Create plot for events
-#' 
-#' @param df Data frame
-#' @param x Character: name of the variable used for the X axis
-#' @param y Character: name of the variable used for the Y axis
-#' @param params List of parameters to pass to \code{\link[ggplot2]{geom_point}}
-#' related to most points
-#' @param highlightX Integer: region of points in X axis to highlight
-#' @param highlightY Integer: region of points in Y axis to highlight
-#' @param highlightParams List of parameters to pass to
-#' \code{\link[ggplot2]{geom_point}} related to highlighted points
-#' @param selected Integer: index of rows/points to be coloured
-#' @param selectedParams List of parameters to pass to 
-#' \code{\link[ggplot2]{geom_point}} related to selected points
-#' @param xlim Numeric: limits of X axis
-#' @param ylim Numeric: limits of Y axis
-#' 
-#' @importFrom ggplot2 ggplot aes_string geom_point theme_light coord_cartesian
-#' 
-#' @return HTML elements
-createEventPlotting <- function(df, x, y, params, highlightX, highlightY,
-                                highlightParams, selected, selectedParams, 
-                                xlim, ylim) {
-    aes <- aes_string(paste0("`", x, "`"), paste0("`", y, "`"))
-    
-    # Get points highlighted in X and Y that were not selected
-    if (!is.null(highlightX)) {
-        highlightedX <- findInterval(df[[x]], highlightX, left.open=FALSE,
-                                     rightmost.closed=TRUE) == 1
-        if (attr(highlightX, "inverted")) highlightedX <- !highlightedX
-        highlightedX <- which(highlightedX)
-    } else {
-        highlightedX <- seq(nrow(df))
-    }
-    
-    if (!is.null(highlightY)) {
-        highlightedY <- findInterval(df[[y]], highlightY, left.open=FALSE,
-                                     rightmost.closed=TRUE) == 1
-        if (attr(highlightY, "inverted")) highlightedY <- !highlightedY
-        highlightedY <- which(highlightedY)
-    } else {
-        highlightedY <- seq(nrow(df))
-    }
-    
-    if ( is.null(highlightX) && is.null(highlightY) ) {
-        highlighted <- NULL
-    } else {
-        highlighted <- intersect(highlightedX, highlightedY)
-    }
-    setDifferentialAnalysesHighlightedEvents(highlighted)
-    
-    # Render remaining points
-    plotted <- union(selected, highlighted)
-    if (!is.null(plotted))
-        remaining <- df[-plotted, ]
-    else
-        remaining <- df
-    plot <- ggplot() + do.call("geom_point", c(
-        list(data=remaining, aes, na.rm=TRUE), params))
-    
-    # Render highlighted points
-    plot <- plot + do.call("geom_point", c(
-        list(data=df[setdiff(highlighted, selected), ], aes, na.rm=TRUE), 
-        highlightParams))
-    
-    # Render selected points
-    plot <- plot + do.call("geom_point", c(
-        list(data=df[selected, ], aes, na.rm=TRUE), selectedParams))
-    
-    plot <- plot + coord_cartesian(xlim=xlim, ylim=ylim)
-    return(plot + theme_light(16))
-}
-
-#' Create the interface for the tooltip of a plot
-#' 
-#' @inheritParams createEventPlotting
-#' @param hover Mouse hover information for a given plot as retrieved from
-#' \code{\link[shiny]{hoverOpts}}
-#' 
-#' @importFrom shiny tags nearPoints wellPanel
-#' 
-#' @return HTML elements
-createTooltip <- function(df, hover, x, y) {
-    point <- nearPoints(df, hover, threshold=10, maxpoints=1, addDist=TRUE,
-                        xvar=x, yvar=y)
-    if (nrow(point) == 0) return(NULL)
-    
-    # Calculate point position inside the image as percent of total 
-    # dimensions from left (horizontal) and from top (vertical)
-    xDomain  <- hover$domain$right - hover$domain$left
-    right_pct <- (hover$domain$right - hover$x) / xDomain
-    yDomain  <- hover$domain$top - hover$domain$bottom
-    top_pct  <- (hover$domain$top - hover$y) / yDomain
-    
-    # Calculate distance from left and bottom in pixels
-    xRange   <- hover$range$right - hover$range$left
-    right_px <- right_pct * xRange + 25
-    yRange  <- hover$range$bottom - hover$range$top
-    top_px  <- hover$range$top + top_pct * yRange + 2
-    
-    event  <- parseSplicingEvent(rownames(point), pretty=TRUE)
-    trItem <- function(key, value) tags$tr(tags$td(tags$b(key)), tags$td(value))
-    strand <- ifelse(event$strand == "+", "forward", "reverse")
-    
-    # Tooltip
-    wellPanel(
-        class="well-sm",
-        style=paste0("position: absolute; z-index: 100;",
-                       "background-color: rgba(245, 245, 245, 0.85); ",
-                       "right:", right_px, "px; top:", top_px, "px;"),
-        tags$table(class="table table-condensed", style="margin-bottom: 0;",
-                   tags$thead(trItem("Gene", 
-                                     paste(event$gene[[1]], collapse=" or "))),
-                   tags$tbody(
-                       trItem("Event type", event$type),
-                       trItem("Coordinates", 
-                              sprintf("chr %s: %s to %s (%s strand)",
-                                      event$chrom,
-                                      event$pos[[1]][[1]], event$pos[[1]][[2]],
-                                      strand)),
-                       trItem(x, roundDigits(point[[x]])),
-                       trItem(y, roundDigits(point[[y]])))))
-}
-
-#' Show variable transformation(s)
-#' 
-#' @param label Character: label to display
-#' @param type Character: show the variable transformation for the chosen type;
-#' NULL (by default) to show all variable transformations
-#' 
-#' @return Character labelling variable transformation(s)
-transformOptions <- function(label, type=NULL) {
-    transform <- c("No transformation"="no",
-                   "|%s|"="abs",
-                   "-%s"="inv",
-                   "log10(|%s|)"="log10abs",
-                   "-log10(|%s|)"="-log10abs")
-    names(transform) <- sprintf(names(transform), label)
-    
-    if (!is.null(type)) {
-        show <- names(transform)
-        show[[1]] <- label
-        show <- show[match(type, transform)]
-        return(show)
-    } else {
-        return(transform)
-    }
-}
-
-#' Transform values as per a given type of transformation
-#' 
-#' @param val Integer: values to transform
-#' @param type Character: type of transformation
-#' @param avoidZero Boolean: add the smallest non-zero number available to zero
-#' values; avoids returning infinity values during Log transformation (which are
-#' not plotted); useful for preserving p-values of 0, for instance; TRUE by
-#' default
-#' 
-#' @return Integer containing transformed values
-transformValues <- function(val, type, avoidZero=TRUE) {
-    # Remove NAs
-    if (avoidZero) {
-        zeroes <- val == 0 & !is.na(val)
-        val[zeroes] <- val[zeroes] + .Machine$double.xmin
-    }
-    
-    trans <- suppressWarnings(
-        switch(type,
-               "no"=val,
-               "abs"=abs(val),
-               "inv"=-val,
-               "log10abs"=log10(abs(val)),
-               "-log10abs"=-log10(abs(val))))
-    return(trans)
-}
-
-#' Transform data in data frame
-#' 
-#' @param input Shiny input
-#' @param df Data frame
-#' @param x Character: column name
-#' @param y Character: column name
-#' 
-#' @return Data frame with transformed data in new columns and respective name
-#' of created columns
-transformData <- function(input, df, x, y) {
-    xTrans <- input$xTransform
-    xLabel <- transformOptions(x, xTrans)
-    if (!x %in% colnames(df)) return(NULL)
-    df[[xLabel]] <- transformValues(df[[x]], xTrans)
-    
-    yTrans <- input$yTransform
-    yLabel <- transformOptions(y, yTrans)
-    if (!y %in% colnames(df)) return(NULL)
-    df[[yLabel]] <- transformValues(df[[y]], yTrans)
-    
-    return(list(data=df, xLabel=xLabel, yLabel=yLabel))
-}
-
-#' Options for event plotting
-#' 
-#' @param session Shiny session
-#' @param df Data frame
-#' @param xAxis Character: currently selected variable for the X axis
-#' @param yAxis Character: currently selected variable for the Y axis
-#' 
-#' @return HTML elements
-eventPlotOptions <- function(session, df, xAxis, yAxis) {
-    # Only allow to select numeric columns    
-    cols <- colnames(df)
-    type <- sapply(cols, function(i) class(df[[i]]))
-    numericCols <- cols[type == "numeric"]
-    
-    if (!is.null(numericCols) && length(numericCols) > 0) {
-        if (is.null(xAxis) || identical(xAxis, "") || !xAxis %in% numericCols) {
-            # Default option for X axis
-            deltaMedian <- "Delta median"
-            if (deltaMedian %in% numericCols)
-                xSelected <- deltaMedian
-            else
-                xSelected <- NULL
-            
-            updateSelectizeInput(session, "xAxis", choices=numericCols,
-                                 selected=xSelected)
-        } else {
-            updateSelectizeInput(session, "xAxis", choices=numericCols,
-                                 selected=xAxis)
-        }
-        
-        if (is.null(yAxis) || identical(yAxis, "") || !yAxis %in% numericCols) {
-            # Default option for Y axis
-            pValue <- grepl("p-value", numericCols)
-            if (any(pValue))
-                ySelected <- numericCols[pValue][1]
-            else if (length(numericCols) >= 2)
-                ySelected <- numericCols[[2]]
-            else
-                ySelected <- NULL
-            
-            updateSelectizeInput(session, "yAxis", choices=numericCols,
-                                 selected=ySelected)
-        } else {
-            updateSelectizeInput(session, "yAxis", choices=numericCols,
-                                 selected=yAxis)
-        }
-    } else {
-        updateSelectizeInput(session, "xAxis", choices=character(0))
-        updateSelectizeInput(session, "yAxis", choices=character(0))
-    }
-}
-
-#' Interface to modify the style of the plot points
-#' 
-#' @param ns Namespace function
-#' @param id Character: identifier
-#' @param description Character: display text for user
-#' @param help Character: extra text to help the user
-#' @param colour Character: default colour ("black" by default)
-#' @param size Integer: default size (2 by default)
-#' @param alpha Numeric: default transparency value; (opaque by default)
-#' 
-#' @importFrom shiny tagList h4 helpText sliderInput
-#' @importFrom colourpicker colourInput
-#' 
-#' @return HTML elements
-plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
-                            colour="black", alpha=1.0) {
-    id2 <- function(att) ns(paste0(id, att))
-    
-    colourSelector <- colourInput(id2("Colour"), "Colour", value=colour)
-    colourSelector[[2]][["style"]] <- "width: 100%;"
-    
-    tagList(
-        h4(description),
-        if (!is.null(help)) helpText(help),
-        sliderInput(id2("Size"), "Size", min=1, max=10, step=1, value=size,
-                    width="100%"),
-        colourSelector,
-        sliderInput(id2("Alpha"), "Transparency", min=0, max=1, step=0.01,
-                    value=alpha, width="100%")
-    )
 }
 
 #' Set of functions to perform differential analyses
@@ -769,9 +470,9 @@ diffAnalysesSet <- function(session, input, output) {
         performDiffAnalyses()
         # Reset previous results from differential analyses
         setDifferentialAnalysesFiltered(NULL)
-        setDifferentialAnalysesZoom(NULL)
-        setDifferentialAnalysesSelected(NULL)
-        setDifferentialAnalysesHighlightedEvents(NULL)
+        setZoom("psi-volcano", NULL)
+        setSelectedPoints("psi-volcano", NULL)
+        setHighlightedPoints("psi-volcano", NULL)
         setDifferentialAnalysesSurvival(NULL)
     })
 }
@@ -809,21 +510,6 @@ diffAnalysesPlotSet <- function(session, input, output) {
         }
         eventPlotOptions(session, stats, isolate(input$xAxis),
                          isolate(input$yAxis))
-    })
-    
-    # Toggle visibility of reset zoom button
-    observe({
-        zoom <- getDifferentialAnalysesZoom()
-        if (is.null(zoom))
-            hide("resetZoom")
-        else
-            show("resetZoom")
-    })
-    
-    # Reset zoom when clicking the respective button
-    observeEvent(input$resetZoom, {
-        setDifferentialAnalysesZoom(NULL)
-        setDifferentialAnalysesSelected(NULL)
     })
     
     # Interface elements to highlight values in the plot
@@ -908,62 +594,56 @@ diffAnalysesPlotSet <- function(session, input, output) {
         xLabel <- res$xLabel
         yLabel <- res$yLabel
         
-        output$plot <- renderPlot({
-            if (input$xHighlight) {
-                highlightX <- input$xSlider
-                attr(highlightX, "inverted") <- input$xSliderInv
-            } else {
-                highlightX <- NULL
-            }
-            
-            if (input$yHighlight) {
-                highlightY <- input$ySlider
-                attr(highlightY, "inverted") <- input$ySliderInv
-            } else {
-                highlightY <- NULL
-            }
-            
-            # Check selected events
-            selected <- rownames(filtered)[getDifferentialAnalysesSelected()]
-            selected <- which(rownames(stats) %in% selected)
-            if (length(selected) < 1) selected <- NULL
-            
-            events <- getDifferentialAnalysesHighlightedEvents()
-            
-            params <- list(size=input$baseSize, col=input$baseColour,
-                           alpha=input$baseAlpha)
-            highlightParams <- list(size=input$highlightedSize,
-                                    col=input$highlightedColour,
-                                    alpha=input$highlightedAlpha)
-            selectedParams  <- list(size=input$selectedSize,
-                                    col=input$selectedColour,
-                                    alpha=input$selectedAlpha)
-            
-            zoom <- getDifferentialAnalysesZoom()
-            if (!is.null(zoom)) {
-                xlim <- c(zoom$xmin, zoom$xmax)
-                ylim <- c(zoom$ymin, zoom$ymax)
-            } else {
-                xlim <- NULL
-                ylim <- NULL
-            }
-            
-            createEventPlotting(stats, xLabel, yLabel, params, highlightX, 
-                                highlightY, highlightParams, selected, 
-                                selectedParams, xlim=xlim, ylim=ylim)
-        })
-        output$tooltip <- renderUI(
-            createTooltip(stats, input$hover, xLabel, yLabel) )
+        ggplotSet(input, output, "psi-volcano", 
+                  df=stats, x=xLabel, y=yLabel, plot={
+                      if (input$xHighlight) {
+                          highlightX <- input$xSlider
+                          attr(highlightX, "inverted") <- input$xSliderInv
+                      } else {
+                          highlightX <- NULL
+                      }
+                      
+                      if (input$yHighlight) {
+                          highlightY <- input$ySlider
+                          attr(highlightY, "inverted") <- input$ySliderInv
+                      } else {
+                          highlightY <- NULL
+                      }
+                      
+                      # Check selected events
+                      selected <- getSelectedPoints("psi-volcano")
+                      selected <- rownames(filtered)[selected]
+                      selected <- which(rownames(stats) %in% selected)
+                      if (length(selected) < 1) selected <- NULL
+                      
+                      events <- getHighlightedPoints("psi-volcano")
+                      
+                      params <- list(size=input$baseSize, col=input$baseColour,
+                                     alpha=input$baseAlpha)
+                      highlightParams <- list(size=input$highlightedSize,
+                                              col=input$highlightedColour,
+                                              alpha=input$highlightedAlpha)
+                      selectedParams  <- list(size=input$selectedSize,
+                                              col=input$selectedColour,
+                                              alpha=input$selectedAlpha)
+                      
+                      zoom <- getZoom("psi-volcano")
+                      if (!is.null(zoom)) {
+                          xlim <- c(zoom$xmin, zoom$xmax)
+                          ylim <- c(zoom$ymin, zoom$ymax)
+                      } else {
+                          xlim <- NULL
+                          ylim <- NULL
+                      }
+                      
+                      createEventPlotting(
+                          stats, xLabel, yLabel, params, highlightX, highlightY, 
+                          highlightParams, selected, selectedParams, 
+                          xlim=xlim, ylim=ylim)
+                  })
     })
     
-    # Save zoom coordinates according to brushed area of the plot
-    observe({
-        brush <- input$brush
-        if (!is.null(brush)) {
-            setDifferentialAnalysesZoom(brush)
-            setDifferentialAnalysesSelected(NULL)
-        }
-    })
+    ggplotAuxSet(input, output, "psi-volcano")
 }
 
 #' Set of functions to render data table for differential analyses
@@ -979,7 +659,7 @@ diffAnalysesTableSet <- function(session, input, output) {
     # Save selected points in the table
     observe({
         selected <- input$statsTable_rows_selected
-        setDifferentialAnalysesSelected(selected)
+        setSelectedPoints("psi-volcano", selected)
     })
     
     # Render table with sparklines
@@ -993,11 +673,9 @@ diffAnalysesTableSet <- function(session, input, output) {
             return(stats[ , cols])
         }
     }, style="bootstrap", filter="top", server=TRUE, extensions="Buttons",
-    options=list(
-        pageLength=10, rowCallback=JS("createDiffSplicingLinks"), 
-        dom="Bfrtip", buttons=I("colvis"),
-        columnDefs=list(list(targets=6:8, visible=FALSE)),
-        columnDefs=list(list(targets=5, searchable=FALSE))))
+    options=list(pageLength=10, dom="Bfrtip", buttons=I("colvis"),
+                 columnDefs=list(list(targets=6:8, visible=FALSE)),
+                 columnDefs=list(list(targets=5, searchable=FALSE))))
     
     # Update table with filtered information
     proxy <- dataTableProxy(ns("statsTable"))
@@ -1014,8 +692,8 @@ diffAnalysesTableSet <- function(session, input, output) {
             }
             
             # Filter by highlighted events and events in the zoomed area
-            events  <- getDifferentialAnalysesHighlightedEvents()
-            zoom    <- getDifferentialAnalysesZoom()
+            events  <- getHighlightedPoints("psi-volcano")
+            zoom    <- getZoom("psi-volcano")
             
             zoomed <- NULL
             if (!is.null(zoom)) {
@@ -1161,6 +839,6 @@ diffSplicingTableServer <- function(input, output, session) {
 }
 
 attr(diffSplicingTableUI, "loader") <- "diffSplicing"
-attr(diffSplicingTableUI, "name") <- "Exploratory (all events)"
+attr(diffSplicingTableUI, "name") <- "Exploratory (multiple splicing events)"
 attr(diffSplicingTableUI, "selectEvent") <- FALSE
 attr(diffSplicingTableServer, "loader") <- "diffSplicing"
