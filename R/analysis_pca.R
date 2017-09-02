@@ -1,20 +1,6 @@
 ## TODO(NunoA): add histogram in/above percentage of NAs per row to remove
-## TODO(NunoA): add brushing capabilities (brush function from Shiny? only
-## rectangle selection available?)
 ## TODO(NunoA): logarithmic values
 ## TODO(NunoA): BoxCox transformation
-
-## TODO(NunoA): create clusters and use those clusters as groups of data
-##
-##  km <- kmeans(scores, centers=7, nstart=5)
-##  ggdata <- data.frame(scores, Cluster=km$cluster, Species=df$Species)
-##  ggplot(ggdata) +
-##      geom_point(aes(x=PC1, y=PC2, color=factor(Cluster)), size=5, shape=20) +
-##      stat_ellipse(aes(x=PC1,y=PC2,fill=factor(Cluster)),
-##          geom="polygon", level=0.95, alpha=0.2) +
-##      guides(color=guide_legend("Cluster"), fill=guide_legend("Cluster"))
-## 
-## Source: http://stackoverflow.com/questions/20260434
 
 #' Perform principal component analysis after processing missing values from 
 #' data frame
@@ -96,45 +82,99 @@ pcaUI <- function(id) {
         processButton(ns("calculate"), "Calculate PCA")
     )
     
+    performPcaCollapse <- bsCollapsePanel(
+        list(icon("tasks"), "Perform PCA"), value="Perform PCA", style="info",
+        errorDialog(paste("No alternative splicing quantification or gene",
+                          "expression data are available."),
+                    id=ns("pcaOptionsDialog"), buttonLabel="Load data",
+                    buttonIcon="plus-circle", buttonId=ns("loadData")),
+        hidden(pcaOptions))
+    
+    plotPcaCollapse <- bsCollapsePanel(
+        list(icon("binoculars"), "Plot PCA"),
+        value="Plot PCA", style="info",
+        errorDialog("PCA has not yet been performed.", id=ns("noPcaPlotUI")),
+        hidden(div(
+            id=ns("pcaPlotUI"),
+            selectizeInput(ns("pcX"), choices=NULL, width="100%",
+                           "Choose principal component for the X axis"),
+            selectizeInput(ns("pcY"), choices=NULL, width="100%",
+                           "Choose principal component for the Y axis"),
+            selectGroupsUI(ns("colourGroups"), "Sample colouring",
+                           noGroupsLabel="Do not colour samples",
+                           groupsLabel="Colour using selected groups"),
+            actionButton(ns("showVariancePlot"), "Show variance plot"),
+            actionButton(ns("plot"), "Plot PCA", class="btn-primary"))))
+    
+    kmeansPanel <- conditionalPanel(
+        sprintf("input[id='%s'] == '%s'", ns("clusteringMethod"), "kmeans"),
+        sliderInput(ns("kmeansIterations"), 
+                    "Maximum number of iterations",
+                    min=10, max=100, value=20, width="100%"),
+        sliderInput(ns("kmeansNstart"), 
+                    "Number of initial random sets",
+                    min=50, max=1000, value=100, width="100%"),
+        selectizeInput(ns("kmeansMethod"), "K-means method", 
+                       width="100%", c("Hartigan-Wong",
+                                       "Lloyd-Forgy", "MacQueen")))
+    pamPanel <- conditionalPanel(
+        sprintf("input[id='%s'] == '%s'", ns("clusteringMethod"), "pam"),
+        selectizeInput(ns("pamMetric"), width="100%",
+                       "Metric to be used when calculating dissimilarities",
+                       c("Euclidean", "Manhattan")))
+    
+    claraPanel <- conditionalPanel(
+        sprintf("input[id='%s'] == '%s'", ns("clusteringMethod"), "clara"),
+        selectizeInput(ns("claraMetric"), width="100%",
+                       "Metric to be used when calculating dissimilarities",
+                       c("Euclidean", "Manhattan")),
+        sliderInput(
+            ns("claraSamples"), "Samples to be randomly drawn",
+            min=10, max=1000, value=50, step=10, width="100%"))
+    
+    clusteringCollapse <- bsCollapsePanel(
+        list(icon("th-large"), "Partitioning clustering"),
+        value="Partitioning clustering", style="info",
+        errorDialog("PCA has not yet been plotted.",
+                 id=ns("noClusteringUI")),
+        hidden(
+            div(id=ns("clusteringUI"),
+                selectizeInput(
+                    ns("clusteringMethod"),
+                    "Partitioning algorithm", width="100%", selected="clara",
+                    c("k-means"="kmeans", 
+                      "Partitioning around medoids (PAM)"="pam", 
+                      "Clustering Large Applications (CLARA)"="clara")),
+                sliderInput(ns("clusterNumber"), "Number of clusters",
+                            min=1, max=20, value=2, width="100%"),
+                bsCollapse(
+                    bsCollapsePanel(
+                        tagList(icon("plus-circle"), 
+                                "Optimal number of clusters"),
+                        value="Optimal number of clusters",
+                        selectizeInput(
+                            ns("estimatationOptimalClusters"), width="100%",
+                            "Method to estimate optimal number of clusters",
+                            c("Within cluster sums of squares"="wss",
+                              "Average silhouette"="silhouette",
+                              "Gap statistics"="gap_stat")),
+                        highchartOutput(ns("optimalClusters")))),
+                kmeansPanel, pamPanel, claraPanel,
+                actionButton(ns("saveClusters"), "Create groups from clusters"),
+                processButton(ns("plotClusters"), "Plot clusters"))))
+    
     tagList(
         uiOutput(ns("modal")),
         sidebar(
             bsCollapse(
                 id=ns("pcaCollapse"), open="Perform PCA",
-                bsCollapsePanel(
-                    list(icon("tasks"), "Perform PCA"),
-                    value="Perform PCA", style="info",
-                    errorDialog(
-                        paste(
-                            "No alternative splicing quantification or gene",
-                            "expression data are available."),
-                        id=ns("pcaOptionsDialog"),
-                        buttonLabel="Load data",
-                        buttonIcon="plus-circle",
-                        buttonId=ns("loadIncLevels")),
-                    hidden(pcaOptions)),
-                bsCollapsePanel(
-                    list(icon("binoculars"), "Plot PCA"),
-                    value="Plot PCA", style="info",
-                    errorDialog("PCA has not yet been performed.",
-                                id=ns("noPcaPlotUI")),
-                    hidden(
-                        div(id=ns("pcaPlotUI"),
-                            selectizeInput(
-                                ns("pcX"), choices=NULL, width="100%",
-                                "Choose principal component for the X axis"),
-                            selectizeInput(
-                                ns("pcY"), choices=NULL, width="100%",
-                                "Choose principal component for the Y axis"),
-                            selectGroupsUI(
-                                ns("colourGroups"), "Sample colouring",
-                                noGroupsLabel="Do not colour samples",
-                                groupsLabel="Colour using selected groups"),
-                            actionButton(ns("showVariancePlot"), 
-                                         "Show variance plot"),
-                            actionButton(ns("plot"), "Plot PCA",
-                                         class="btn-primary")))))
-        ), mainPanel(uiOutput(ns("pcaPlots")))
+                performPcaCollapse,
+                plotPcaCollapse,
+                clusteringCollapse)
+        ), mainPanel(
+            highchartOutput(ns("scatterplot")),
+            highchartOutput(ns("scatterplotLoadings"))
+        )
     )
 }
 
@@ -266,6 +306,213 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
     return(hc)
 }
 
+#' Server logic for clustering PCA data
+#' 
+#' @inheritParams appServer
+#' 
+#' @importFrom stats kmeans
+#' @importFrom cluster pam clara silhouette
+#' @importFrom shiny renderTable tableOutput
+#' 
+#' @return NULL (this function is used to modify the Shiny session's state)
+clusterSet <- function(session, input, output) {
+    clusterPCA <- reactive({
+        algorithm <- input$clusteringMethod
+        clusters  <- input$clusterNumber
+        pca <- getPCA()
+        pcX <- input$pcX
+        pcY <- input$pcY
+        
+        if ( !is.null(pca$x) )
+            groups <- getSelectedGroups(input, "colourGroups", samples=TRUE,
+                                        filter=rownames(pca$x))
+        else
+            groups <- NULL
+        
+        if (is.null(pca) || is.null(pcX) || is.null(pcY)) return(NULL)
+        pcaScores <- pca$x[ , c(pcX, pcY)]
+        
+        clustering <- NULL
+        if (algorithm == "kmeans") {
+            isolate({
+                iterations <- input$kmeansIterations
+                nstart     <- input$kmeansNstart
+                method     <- input$kmeansMethod
+            })
+            
+            if (method == "Lloyd-Forgy") method <- "Lloyd"
+            clustering <- kmeans(pcaScores, clusters, iter.max=iterations, 
+                                 nstart=nstart, algorithm=method)
+            clustering <- clustering$cluster
+        } else if (algorithm == "pam") {
+            metric     <- tolower(isolate(input$pamMetric))
+            clustering <- pam(pcaScores, clusters, metric=metric, 
+                              cluster.only=TRUE)
+        } else if (algorithm == "clara") {
+            isolate({
+                metric  <- tolower(input$claraMetric)
+                samples <- input$claraSamples
+            })
+            
+            clustering <- clara(pcaScores, clusters, metric=metric,
+                                samples=samples, medoids.x=FALSE, 
+                                keep.data=FALSE, pamLike=TRUE)
+            clustering <- clustering$clustering
+        }
+        return(clustering)
+    })
+    
+    observeEvent(input$plotClusters, {
+        isolate({
+            pca <- getPCA()
+            pcX <- input$pcX
+            pcY <- input$pcY
+            
+            if ( !is.null(pca$x) )
+                groups <- getSelectedGroups(input, "colourGroups", samples=TRUE,
+                                            filter=rownames(pca$x))
+            else
+                groups <- NULL
+        })
+        
+        if (is.null(pca) || is.null(pcX) || is.null(pcY)) return(NULL)
+        pcaScores <- pca$x[ , c(pcX, pcY)]
+        
+        startProcess("plotClusters")
+        clustering <- clusterPCA()
+        
+        hc <- plotPCA(pca, pcX, pcY, groups) %>% 
+            hc_title(text="Clinical samples (PCA scores)")
+        
+        for ( each in sort(unique(clustering)) ) {
+            df <- pcaScores[clustering == each, , drop=FALSE]
+            df <- df[chull(df), , drop=FALSE] # cluster points' convex hull
+            
+            colour <- JS(paste0(
+                "Highcharts.Color(Highcharts.getOptions().",
+                "colors[", each, "]).setOpacity(0.3).get()"))
+            
+            if (nrow(df) <= 2) {
+                hc <- hc %>% hc_add_series(
+                    df, zIndex=-1, color=colour,
+                    name=paste("Cluster", each), lineWidth=8,
+                    marker=list(radius=8, symbol="circle"))
+            } else {
+                hc <- hc %>% hc_add_series(
+                    df, type="polygon", zIndex=-1, color=colour,
+                    name=paste("Cluster", each))
+            }
+        }
+        hc <- hc %>% hc_legend(symbolHeight=8, symbolWidth=8)
+        output$scatterplot <- renderHighchart(hc)
+        endProcess("plotClusters")
+    })
+    
+    # Render optimal clusters
+    output$optimalClusters <- renderHighchart({
+        algorithm <- input$clusteringMethod
+        pca <- getPCA()
+        pcX <- input$pcX
+        pcY <- input$pcY
+        
+        if ( !is.null(pca$x) )
+            groups <- getSelectedGroups(input, "colourGroups", samples=TRUE,
+                                        filter=rownames(pca$x))
+        else
+            groups <- NULL
+        
+        if (is.null(pca) || is.null(pcX) || is.null(pcY)) return(NULL)
+        pcaScores <- pca$x[ , c(pcX, pcY)]
+        
+        clusters <- 1:20
+        estimation <- input$estimatationOptimalClusters
+        if (algorithm == "kmeans") {
+            iterations <- input$kmeansIterations
+            nstart     <- input$kmeansNstart
+            method     <- input$kmeansMethod
+            
+            if (method == "Lloyd-Forgy") method <- "Lloyd"
+
+            res <- lapply(clusters, function(n) {
+                kmeans(pcaScores, n, iter.max=iterations, nstart=nstart, 
+                       algorithm=method)
+            })
+        } else if (algorithm == "pam") {
+            metric <- tolower(input$pamMetric)
+            res <- lapply(clusters, function(n) {
+                pam(pcaScores, n, metric=metric, cluster.only=TRUE)
+            })
+        } else if (algorithm == "clara") {
+            metric  <- tolower(input$claraMetric)
+            samples <- input$claraSamples
+            
+            res <- lapply(clusters, function(n) {
+                clara(pcaScores, n, metric=metric, samples=samples, 
+                      medoids.x=FALSE, keep.data=FALSE, pamLike=TRUE)
+            })
+        }
+        
+        if (estimation == "wss") {
+            withinss <- sapply(res, "[[", "tot.withinss")
+            hc <- highchart() %>% hc_add_series(withinss) %>%
+                hc_xAxis(categories=clusters) %>% hc_legend(enabled=FALSE)
+            return(hc)
+        } else if (estimation == "silhouette") {
+            sil     <- silhouette(res)
+            cluster <- sil[ , 2]
+            width   <- sil[ , 3]
+            names(width) <- cluster
+            hc      <- highchart()
+            for (i in sort(unique(cluster))) {
+                hc <- hc %>% 
+                    hc_add_series(unname(width[names(width) == i]), 
+                                  type="bar") %>%
+                    hc_xAxis(categories=clusters) %>% 
+                    hc_legend(enabled=FALSE)
+            }
+            return(hc)
+        }
+    })
+    
+    # Create data groups from clusters
+    observeEvent(input$saveClusters, {
+        clustering <- clusterPCA()
+        if (!is.null(clustering)) {
+            new <- split(names(clustering), clustering)
+            names <- paste("Cluster", names(new))
+            groups <- cbind("Names"=names, 
+                            "Subset"="PCA clustering", "Input"="PCA clustering", 
+                            "Samples"=new)
+            rownames(groups) <- names
+            
+            # Match samples with patients (if loaded)
+            patients <- isolate(getPatientId())
+            if (!is.null(patients)) {
+                indiv  <- lapply(new, function(i)
+                    unname(getPatientFromSample(i, patientId=patients)))
+                groups <- cbind(groups[ , 1:3], "Patients"=indiv, 
+                                groups[ , 4, drop=FALSE])
+            }
+            
+            if (!is.null(groups)) appendNewGroups(groups)
+            infoModal(
+                session, "Groups successfully created",
+                "The following groups were created based on the selected",
+                "clustering options. They are available for selection and",
+                "modification from any group selection input.", hr(),
+                tableOutput(session$ns("clusteringGroupsTable")) )
+            
+            # Render as table for user
+            colnames(groups)[1] <- "Group"
+            groups[ , "Samples"]  <- sapply(groups[ , "Samples"], length)
+            if (!is.null(patients))
+                groups[ , "Patients"] <- sapply(groups[ , "Patients"], length)
+            output$clusteringGroupsTable <- renderTable(groups[ , c(1, 4:5)],
+                                                        digits=0)
+        }
+    })
+}
+
 #' @rdname appServer
 #' 
 #' @importFrom shinyjs runjs hide show
@@ -296,6 +543,9 @@ pcaServer <- function(input, output, session) {
         } else {
             show("noPcaPlotUI", animType="fade")
             hide("pcaPlotUI", animType="fade")
+            
+            show("noClusteringUI", animType="fade")
+            hide("clusteringUI", animType="fade")
         }
     })
     
@@ -309,7 +559,7 @@ pcaServer <- function(input, output, session) {
         }
     })
     
-    observeEvent(input$loadIncLevels, missingDataGuide("Inclusion levels"))
+    observeEvent(input$loadData, missingDataGuide("Inclusion levels"))
     observeEvent(input$takeMeThere, missingDataGuide("Inclusion levels"))
     
     # Perform principal component analysis (PCA)
@@ -432,34 +682,15 @@ pcaServer <- function(input, output, session) {
                 groups <- NULL
         })
         
-        output$pcaPlots <- renderUI({
-            if (attr(pca, "firstPCA")) {
-                tagList(
-                    highchartOutput(ns("scatterplot")),
-                    highchartOutput(ns("scatterplotLoadings")))
-            } else {
-                tagList(
-                    fluidRow(
-                        column(6, highchartOutput(ns("scatterplot"))),
-                        column(6, highchartOutput(ns("scatterplot2")))),
-                    fluidRow(
-                        column(6, highchartOutput(ns("scatterplotLoadings"))),
-                        column(6, highchartOutput(ns("scatterplotLoadings2")))))
-            }
-        })
-        
-        scatterplot <- reactive({
-            if (!is.null(pcX) & !is.null(pcY)) {
+        output$scatterplot <- renderHighchart({
+            if (!is.null(pcX) && !is.null(pcY)) {
                 plotPCA(pca, pcX, pcY, groups) %>% 
-                    hc_chart(plotBackgroundColor="#FCFCFC") %>%
                     hc_title(text="Clinical samples (PCA scores)")
-            } else {
-                return(NULL)
             }
         })
         
-        scatterplotLoadings <- reactive({
-            if (!is.null(pcX) & !is.null(pcY)) {
+        output$scatterplotLoadings <- renderHighchart({
+            if (!is.null(pcX) && !is.null(pcY)) {
                 dataType <- attr(pca, "dataType")
                 if (dataType == "Inclusion levels") {
                     title <- "Alternative splicing events (PCA loadings)"
@@ -468,7 +699,7 @@ pcaServer <- function(input, output, session) {
                             sample = this.options.sample;
                             sample = sample.replace(/ /g, '_');
                             showDiffSplicing(sample, %s); }",
-                        toJSarray(isolate(groups)))
+                        toJSarray(isolate(names(groups))))
                 } else if (dataType == "Gene expression") {
                     title <- "Genes (PCA loadings)"
                     
@@ -476,31 +707,26 @@ pcaServer <- function(input, output, session) {
                         "function() {
                             sample = this.options.sample;
                             showDiffExpression(sample, %s, '%s'); }",
-                        toJSarray(isolate(groups)),
+                        toJSarray(isolate(names(groups))),
                         isolate(input$dataForPCA))
                 }
                 
-                plotPCA(pca, pcX, pcY, individuals=FALSE, loadings=TRUE) %>% 
-                    hc_chart(plotBackgroundColor="#FCFCFC") %>%
+                plotPCA(pca, pcX, pcY, individuals=FALSE, loadings=TRUE) %>%
                     hc_title(text=title) %>%
-                    hc_plotOptions(series=list(cursor="pointer", 
-                                               point=list(events=list(
-                                                   click=JS(onClick)))))
-            } else {
-                return(NULL)
+                    hc_plotOptions(series=list(
+                        cursor="pointer", point=list(events=list(
+                            click=JS(onClick)))))
             }
         })
         
-        if (attr(pca, "firstPCA")) {
-            output[["scatterplot"]] <- renderHighchart(scatterplot())
-            output[["scatterplotLoadings"]] <- renderHighchart(
-                scatterplotLoadings())
-        } else {
-            output[["scatterplot2"]] <- renderHighchart(scatterplot())
-            output[["scatterplotLoadings2"]] <- renderHighchart(
-                scatterplotLoadings())
-        }
+        hide("noClusteringUI", animType="fade")
+        show("clusteringUI", animType="fade")
+        
+        updateSliderInput(session, "kmeansNstart", max=nrow(pca$x), value=100)
+        updateSliderInput(session, "claraSamples", max=nrow(pca$x), value=50)
     })
+    
+    clusterSet(session, input, output)
 }
 
 attr(pcaUI, "loader") <- "analysis"

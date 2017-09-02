@@ -311,7 +311,8 @@ startProcess <- function(id) {
 endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
     enable(id)
     hide(paste0(id, "Loading"))
-    if (closeProgressBar) closeProgress()
+    if (closeProgressBar) 
+        suppressWarnings(closeProgress())
     if (!is.null(time)) 
         message("Process finished in ", format(Sys.time() - time))
 }
