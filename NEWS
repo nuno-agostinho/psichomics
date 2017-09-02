@@ -48,6 +48,7 @@
     selected row of the table
     - Improve readibility of plot's tooltip
 * Principal component analysis:
+    - Create data groups based on the partitioning clustering of PCA scores
     - When clicking on a alternative splicing event in the loadings plot, the
     appropriate differential splicing analyses will now be automatically
     rendered with the respective options, as expected
