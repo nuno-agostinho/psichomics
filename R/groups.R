@@ -1181,14 +1181,19 @@ groupsServer <- function(input, output, session, datasetName) {
         }
     })
     
-    # Prepare interface for when only one group ise selected
+    # Prepare interface for when only one group is selected
     observe({
         selected <- input$groupsTable_rows_selected
-        if (length(selected) == 1) {
+        
+        # Check table selection only after the table is updated
+        allRows <- isolate(input$groupsTable_rows_all)
+        groups  <- isolate(getGroupsFrom("Clinical data", complete=TRUE))
+        updated <- length(allRows) == nrow(groups)
+        
+        if (length(selected) == 1 && updated) {
             show("singleGroupSelected", anim=TRUE, time=0.2)
             
-            colour <- getGroupsFrom("Clinical data", 
-                                    complete=TRUE)[[selected, "Colour"]]
+            colour <- groups[[selected, "Colour"]]
             updateColourInput(session, "groupColour", value=colour)
         } else {
             hide("singleGroupSelected", anim=TRUE, time=0.2)
