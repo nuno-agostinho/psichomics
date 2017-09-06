@@ -1464,7 +1464,7 @@ prepareFileBrowser <- function(session, input, id, ...) {
 #' @importFrom shinyjs hidden
 #' 
 #' @return HTML elements
-ggplotInterface <- function(id) {
+ggplotUI <- function(id) {
     idd <- function(str) paste(id, str, sep="-")
     plotId    <- idd("plot")
     tooltipId <- idd("tooltip")
@@ -1559,7 +1559,8 @@ ggplotTooltip <- function(df, hover, x, y) {
 #' @importFrom shiny renderPlot renderUI
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
-ggplotSet <- function(input, output, id, plot=NULL, df=NULL, x=NULL, y=NULL) {
+ggplotServer <- function(input, output, id, plot=NULL, df=NULL, x=NULL, 
+                         y=NULL) {
     idd <- function(str) paste(id, str, sep="-")
     output[[idd("plot")]] <- renderPlot(plot)
     
@@ -1571,11 +1572,11 @@ ggplotSet <- function(input, output, id, plot=NULL, df=NULL, x=NULL, y=NULL) {
     }
 }
 
-#' @rdname ggplotSet
+#' @rdname ggplotServer
 #' 
 #' @note Insert \code{ggplotAuxSet} outside any observer (so it is only run 
 #' once)
-ggplotAuxSet <- function(input, output, id) {
+ggplotAuxServer <- function(input, output, id) {
     idd <- function(str) paste(id, str, sep="-")
     
     # Save zoom coordinates according to brushed area of the plot

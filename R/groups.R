@@ -1,4 +1,6 @@
-#' Group selection interface
+#' Group selection
+#' 
+#' Group selection interface and logic
 #' 
 #' @param id Character: identifier of the group selection
 #' @param label Character: selectize label
@@ -15,9 +17,7 @@
 #' @note To allow the user to (explicitly) select no groups, pass the 
 #' \code{noGroupsLabel} and \code{groupsLabel} arguments.
 #' 
-#' @seealso \code{\link{selectGroupsServer}} and \code{\link{getSelectedGroups}}
-#' 
-#' @return Interface for group selection
+#' @return \code{selectGroupsUI}: Interface for group selection
 selectGroupsUI <- function (
     id, label, placeholder="Click on 'Groups' to create or edit groups",
     noGroupsLabel=NULL, groupsLabel=NULL, maxItems=NULL) {
@@ -61,14 +61,13 @@ selectGroupsUI <- function (
     return(select)
 }
 
-#' Group selection logic
+#' @rdname selectGroupsUI
 #' 
 #' @param session Shiny session
-#' @param id Character: identifier of the group selection
 #' 
 #' @importFrom shinyjs enable disable onclick toggleClass runjs
 #' 
-#' @return Server logic for group selection
+#' @return \code{selectGroupsServer}: Server logic for group selection
 selectGroupsServer <- function(session, id) {
     datasetName <- "Clinical data"
     ns <- session$ns
@@ -283,16 +282,14 @@ renderGroupInterface <- function(ns) {
     
     # Save and load groups
     saveSelectedGroupsLink <- downloadContent(
-        icon("user"), 
-        "Retrieve patients/samples from selected group(s)",
-        class=NULL,
+        icon("user"), class=NULL, 
+        "Save patients/samples from selected group(s)",
         helpText("Export a file containing patient and/or sample",
                  "identifiers by group"),
         id=ns(saveSelectedGroupsId))
     
     saveAllGroupsLink <- downloadContent(
-        icon("users"), class=NULL,
-        "Retrieve patients/samples from all groups",
+        icon("users"), class=NULL, "Save patients/samples from all groups",
         helpText("Export a file containing patient and/or sample",
                  "identifiers by group"),
         id=ns(saveAllGroupsId),
@@ -1426,14 +1423,14 @@ groupsServerOnce <- function(input, output, session) {
     })
 }
 
-#' Get selected groups for a given group selection element
-#' 
-#' @param input Shiny input
-#' @param id Character: identifier of the group selection element
+#' @rdname selectGroupsUI
+#'  
 #' @inheritParams getGroupsFrom
+#' @param input Shiny input
 #' @param filter Character: only get groups passed
 #' 
-#' @return List with selected groups (or NULL if no groups were selected)
+#' @return \code{getSelectedGroups}: List with selected groups (or NULL if no
+#' groups were selected)
 getSelectedGroups <- function(input, id, samples=FALSE, dataset="Clinical data",
                               filter=NULL) {
     selection <- input[[paste0(id, "Selection")]]
@@ -1454,6 +1451,3 @@ getSelectedGroups <- function(input, id, samples=FALSE, dataset="Clinical data",
     }
     return(groups)
 }
-
-# attr(groupsUI, "loader") <- "data"
-# attr(groupsServer, "loader") <- "data"

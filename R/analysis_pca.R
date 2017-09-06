@@ -76,7 +76,7 @@ pcaUI <- function(id) {
             "samples is used to replace those missing values.",
             "The remaining events are discarded."),
             options=list(container="body")),
-        selectGroupsUI(ns("dataGroups"), "Samples to use for PCA",
+        selectGroupsUI(ns("dataGroups"), "Perform PCA on...",
                        noGroupsLabel="All samples",
                        groupsLabel="Samples from selected groups"),
         processButton(ns("calculate"), "Calculate PCA")
