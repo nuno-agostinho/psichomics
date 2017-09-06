@@ -2,11 +2,18 @@
 % Please edit documentation in R/groups.R
 \name{selectGroupsUI}
 \alias{selectGroupsUI}
-\title{Group selection interface}
+\alias{selectGroupsServer}
+\alias{getSelectedGroups}
+\title{Group selection}
 \usage{
 selectGroupsUI(id, label,
   placeholder = "Click on 'Groups' to create or edit groups",
   noGroupsLabel = NULL, groupsLabel = NULL, maxItems = NULL)
+
+selectGroupsServer(session, id)
+
+getSelectedGroups(input, id, samples = FALSE, dataset = "Clinical data",
+  filter = NULL)
 }
 \arguments{
 \item{id}{Character: identifier of the group selection}
@@ -22,17 +29,30 @@ selectGroupsUI(id, label,
 when no groups may be selected}
 
 \item{maxItems}{Numeric: maximum number of selected items}
+
+\item{session}{Shiny session}
+
+\item{input}{Shiny input}
+
+\item{samples}{Boolean: show groups by samples (TRUE) or patients (FALSE)?
+FALSE by default}
+
+\item{dataset}{Character: data set name (e.g. "Clinical data")}
+
+\item{filter}{Character: only get groups passed}
 }
 \value{
-Interface for group selection
+\code{selectGroupsUI}: Interface for group selection
+
+\code{selectGroupsServer}: Server logic for group selection
+
+\code{getSelectedGroups}: List with selected groups (or NULL if no
+groups were selected)
 }
 \description{
-Group selection interface
+Group selection interface and logic
 }
 \note{
 To allow the user to (explicitly) select no groups, pass the 
 \code{noGroupsLabel} and \code{groupsLabel} arguments.
-}
-\seealso{
-\code{\link{selectGroupsServer}} and \code{\link{getSelectedGroups}}
 }

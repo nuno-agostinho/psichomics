@@ -9,6 +9,8 @@
     survival analysis by gene expression cutoff and pairwise differential 
     gene expression analysis
     * Updated the CLI vignette with information on how to perform such tasks
+    * Correlate gene expression of a given gene against PSI values of multiple
+    alternative splicing events
 * Data loading:
     * Improve instructions on loading user files
     * Filter GTEx junction quantification based on tissues of interest (all 

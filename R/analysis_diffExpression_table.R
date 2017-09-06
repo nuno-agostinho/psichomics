@@ -149,7 +149,7 @@ diffExpressionTableUI <- function(id) {
         sidebarLayout(
             sidebar, 
             mainPanel(
-                ggplotInterface(ns("ge-volcano")),
+                ggplotUI(ns("ge-volcano")),
                 dataTableOutput(ns("statsTable")),
                 highchartOutput(ns("highchartsSparklines"), 0, 0))))
 }
@@ -378,56 +378,57 @@ diffExpressionPlotSet <- function(session, input, output) {
         xLabel <- res$xLabel
         yLabel <- res$yLabel
         
-        ggplotSet(input, output, "ge-volcano", 
-                  df=stats, x=xLabel, y=yLabel, plot={
-                      if (input$xHighlight) {
-                          highlightX <- input$xSlider
-                          attr(highlightX, "inverted") <- input$xSliderInv
-                      } else {
-                          highlightX <- NULL
-                      }
-                      
-                      if (input$yHighlight) {
-                          highlightY <- input$ySlider
-                          attr(highlightY, "inverted") <- input$ySliderInv
-                      } else {
-                          highlightY <- NULL
-                      }
-                      
-                      # Check selected events
-                      selected <- getSelectedPoints("ge-volcano")
-                      selected <- rownames(filtered)[selected]
-                      selected <- which(rownames(stats) %in% selected)
-                      if (length(selected) < 1) selected <- NULL
-                      
-                      events <- getHighlightedPoints("ge-volcano")
-                      
-                      params <- list(size=input$baseSize, col=input$baseColour,
-                                     alpha=input$baseAlpha)
-                      highlightParams <- list(size=input$highlightedSize,
-                                              col=input$highlightedColour,
-                                              alpha=input$highlightedAlpha)
-                      selectedParams  <- list(size=input$selectedSize,
-                                              col=input$selectedColour,
-                                              alpha=input$selectedAlpha)
-                      
-                      zoom <- getZoom("ge-volcano")
-                      if (!is.null(zoom)) {
-                          xlim <- c(zoom$xmin, zoom$xmax)
-                          ylim <- c(zoom$ymin, zoom$ymax)
-                      } else {
-                          xlim <- NULL
-                          ylim <- NULL
-                      }
-                      
-                      createEventPlotting(
-                          stats, xLabel, yLabel, params, highlightX, highlightY, 
-                          highlightParams, selected, selectedParams, 
-                          xlim=xlim, ylim=ylim)
-                  })
+        ggplotServer(input=input, output=output, id="ge-volcano", 
+                     df=stats, x=xLabel, y=yLabel, plot={
+                         if (input$xHighlight) {
+                             highlightX <- input$xSlider
+                             attr(highlightX, "inverted") <- input$xSliderInv
+                         } else {
+                             highlightX <- NULL
+                         }
+                         
+                         if (input$yHighlight) {
+                             highlightY <- input$ySlider
+                             attr(highlightY, "inverted") <- input$ySliderInv
+                         } else {
+                             highlightY <- NULL
+                         }
+                         
+                         # Check selected events
+                         selected <- getSelectedPoints("ge-volcano")
+                         selected <- rownames(filtered)[selected]
+                         selected <- which(rownames(stats) %in% selected)
+                         if (length(selected) < 1) selected <- NULL
+                         
+                         events <- getHighlightedPoints("ge-volcano")
+                         
+                         params <- list(size=input$baseSize, 
+                                        col=input$baseColour,
+                                        alpha=input$baseAlpha)
+                         highlightParams <- list(size=input$highlightedSize,
+                                                 col=input$highlightedColour,
+                                                 alpha=input$highlightedAlpha)
+                         selectedParams  <- list(size=input$selectedSize,
+                                                 col=input$selectedColour,
+                                                 alpha=input$selectedAlpha)
+                         
+                         zoom <- getZoom("ge-volcano")
+                         if (!is.null(zoom)) {
+                             xlim <- c(zoom$xmin, zoom$xmax)
+                             ylim <- c(zoom$ymin, zoom$ymax)
+                         } else {
+                             xlim <- NULL
+                             ylim <- NULL
+                         }
+                         
+                         createEventPlotting(
+                             stats, xLabel, yLabel, params, highlightX, 
+                             highlightY, highlightParams, selected,
+                             selectedParams, xlim=xlim, ylim=ylim)
+                     })
     })
     
-    ggplotAuxSet(input, output, "ge-volcano")
+    ggplotAuxServer(input, output, "ge-volcano")
 }
 
 #' Set of functions to render data table for differential analyses
