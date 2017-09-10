@@ -145,6 +145,7 @@ normaliseGeneExpression <- function(geneExpr, geneFilter=NULL, method="TMM",
     
     #updateProgress("Filtering gene expression")
     if (is.null(geneFilter)) geneFilter <- TRUE
+    else if (!any(geneFilter)) return(NULL)
     geneExprNorm <- DGEList(geneExpr[geneFilter, , drop=FALSE])
     
     #updateProgress("Normalising gene expression")
@@ -165,6 +166,80 @@ normaliseGeneExpression <- function(geneExpr, geneFilter=NULL, method="TMM",
     attributes(geneExprNorm) <- c(attributes(geneExprNorm),
                                   attributes(geneExpr)[notNames])
     return(geneExprNorm)
+}
+
+#' Set of functions to load splicing quantification
+#' 
+#' @importFrom shiny tags
+#' @importFrom shinyBS bsPopover
+#' @inherit geNormalisationFilteringServer
+loadGeneExpressionSet <- function(session, input, output) {
+    ns <- session$ns
+    
+    # Show modal for loading gene expression data
+    observeEvent(input$loadGeneExpr, {
+        infoModal(
+            session, "Load gene expression data",
+            geneExprFileInput(ns("customGeneExpr")),
+            uiOutput(ns("alertGeneExpr")),
+            footer=processButton(ns("loadCustomGE"), "Load quantification"))
+    })
+    
+    observeEvent(input$loadGeneExpr, {
+        prepareFileBrowser(session, input, "customGeneExpr")
+    }, once=TRUE)
+    
+    observeEvent(input$loadCustomGE, loadGeneExpression())
+    
+    # Load alternative splicing quantification
+    loadGeneExpression <- reactive({
+        time <- startProcess("loadGeneExpr")
+        
+        startProgress("Wait a moment", divisions=2)
+        updateProgress("Loading gene expression")
+        
+        allFormats <- loadFileFormats()
+        formats <- allFormats[sapply(allFormats, "[[", 
+                                     "dataType") == "Gene expression"]
+        
+        geneExpr <- tryCatch(parseValidFile(input$customGeneExpr, formats),
+                             warning=return, error=return)
+        if (is(geneExpr, "error")) {
+            if (geneExpr$message == paste("'file' must be a character string",
+                                          "or connection"))
+                errorAlert(session, title="Error", "No file was provided",
+                           alertId="alertGeneExpr")
+            else
+                errorAlert(session, title="Error", 
+                           geneExpr$message, alertId="alertGeneExpr")
+        } else if (is(geneExpr, "warning")) {
+            warningAlert(session, title="Warning", 
+                         geneExpr$message, alertId="alertGeneExpr")
+        } else {
+            removeAlert(output, "alertGeneExpr")
+            
+            if ( is.null(getData()) ) {
+                name <- file_path_sans_ext( basename(input$customGeneExpr) )
+                name <- gsub(" Gene expression.*$", "", name)
+                if (name == "") name <- "Unnamed"
+                
+                data <- setNames(list(list("Gene expression"=geneExpr)), name)
+                data <- processDatasetNames(data)
+                setData(data)
+                setCategory(name)
+                
+                samples <- colnames(geneExpr)
+                parsed <- parseTcgaSampleInfo(samples) 
+                if ( !is.null(parsed) ) setSampleInfo(parsed)
+            } else {
+                name <- renameDuplicated("Gene expression",
+                                         names(getCategoryData()))
+                setDataTable(name, geneExpr)
+            }
+            removeModal()
+        }
+        endProcess("loadGeneExpr", time)
+    })
 }
 
 #' @rdname appServer
@@ -321,6 +396,7 @@ geNormalisationFilteringServer <- function(input, output, session) {
         setNormalisedGeneExpression(geneExprNorm)
         endProcess("processGeneExpr", time=time)
     })
+    loadGeneExpressionSet(session, input, output)
 }
 
 attr(geNormalisationFilteringUI, "loader") <- "data"

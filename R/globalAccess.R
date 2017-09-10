@@ -35,8 +35,13 @@ setGlobal <- function(category=getCategory(), ..., value, sep="_") {
 getData <- reactive(sharedData$data)
 
 #' @rdname getGlobal
-#' @param data Data frame or matrix to set as data
+#' @param data List of data frame or matrix to set as data
 setData <- function(data) setGlobal("data", value=data)
+
+#' @rdname getGlobal
+#' @param name Character: data table name
+setDataTable <- function(name, value, category=getCategory())
+    sharedData$data[[category]][[name]] <- value
 
 #' @rdname getGlobal
 getAutoNavigation <- reactive(sharedData$autoNavigation)
@@ -137,7 +142,7 @@ getSampleInfo <- reactive(getCategoryData()[["Sample metadata"]])
 
 #' @rdname getEvent
 setSampleInfo <- function(value, category = getCategory())
-    sharedData$data[[category]][["Sample metadata"]] <- value
+    setDataTable("Sample metadata", value, category)
 
 #' @rdname getEvent
 getSampleId <- function() {
@@ -182,7 +187,7 @@ getGeneExpression <- function(category=getCategory()) {
 #' @rdname getEvent
 #' @param geneExpr Data frame or matrix: normalised gene expression
 setNormalisedGeneExpression <- function(geneExpr, category=getCategory()) {
-    ns  <- names(sharedData$data[[category]])
+    ns  <- names(getData()[[category]])
     num <- gsub("Gene expression \\(normalised.*?([0-9]*).*\\)", "\\1", ns)
     num <- suppressWarnings(as.integer(num))
     
@@ -195,7 +200,7 @@ setNormalisedGeneExpression <- function(geneExpr, category=getCategory()) {
         num <- ""
     }
     ns <- sprintf("Gene expression (normalised%s)", num)
-    sharedData$data[[category]][[ns]] <- geneExpr
+    setDataTable(ns, geneExpr, category)
 }
 
 #' @rdname getEvent
@@ -204,7 +209,7 @@ getInclusionLevels <- reactive(getCategoryData()[["Inclusion levels"]])
 #' @rdname getEvent
 #' @param incLevels Data frame or matrix: inclusion levels
 setInclusionLevels <- function(incLevels, category=getCategory())
-    sharedData$data[[category]][["Inclusion levels"]] <- incLevels
+    setDataTable("Inclusion levels", incLevels, category)
 
 #' @rdname getEvent
 getPCA <- function(category=getCategory())

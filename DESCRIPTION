@@ -92,6 +92,7 @@ Collate:
     'formats_firebrowseMergeClinical.R'
     'formats_firebrowseNormalizedGeneExpression.R'
     'formats_genericClinical.R'
+    'formats_genericGeneExpression.R'
     'formats_genericInclusionLevels.R'
     'formats_genericJunctionReads.R'
     'formats_genericSampleInfo.R'
