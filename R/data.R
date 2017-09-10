@@ -155,6 +155,32 @@ processDatasetNames <- function(data) {
     return(newData)
 }
 
+#' File input for gene expression
+#' 
+#' @param geneExprFileId Character: identifier for gene expression input
+#' 
+#' @return HTML elements
+geneExprFileInput <- function(geneExprFileId) {
+    fileBrowserInput(
+        geneExprFileId,
+        "File with gene expression",
+        placeholder="No file selected",
+        info=TRUE, infoFUN=bsPopover, infoTitle=paste(
+            "File containing the read counts of each gene (rows) per",
+            "sample (columns)."),
+        infoContent=paste(
+            "The first column must contain gene symbols and be named", 
+            tags$kbd("Gene ID"), tags$hr(), helpText("Example:"), tags$table(
+                class="table table-condensed",
+                tags$thead(
+                    tableRow("Gene ID", "SMP-18", "SMP-03", "SMP-54", 
+                             th=TRUE)),
+                tags$tbody(
+                    tableRow("AMP1", "24", "10", "43"),
+                    tableRow("BRCA1", "38", "46", "32"),
+                    tableRow("BRCA2", "43", "65", "21")))))
+}
+
 #' File input for alternative splicing quantification
 #' 
 #' @param ASquantFileId Character: identifier for alternative splicing 

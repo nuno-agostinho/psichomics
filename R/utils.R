@@ -36,6 +36,19 @@ readFile <- function(file) {
     readRDS(insideFile("extdata", file))
 }
 
+#' Create a row for a HTML table
+#' 
+#' @param ... Elements to include in the row
+#' @param th Boolean: is this row the table head?
+#' 
+#' @return HTML elements
+tableRow <- function (..., th=FALSE) {
+    args <- list(...)
+    if (th) row <- tags$th
+    else    row <- tags$td
+    do.call(tags$tr, lapply(args, row))
+}
+
 #' Splicing event types available
 #' 
 #' @param acronymsAsNames Boolean: return acronyms as names? FALSE by default

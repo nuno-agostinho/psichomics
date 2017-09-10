@@ -1,9 +1,8 @@
-genericSampleInfoFormat <- function() {
+genericGeneExpressionFormat <- function() {
     list(
-        tablename   = "Sample metadata", # Name of the created table
-        # filename    = NULL,
-        description = "Sample metadata for user files",
-        dataType    = "Sample metadata", # General category for the data
+        tablename   = "Gene expression", # Name of the created table
+        description = "Gene expression",
+        dataType    = "Gene expression", # General category for the data
         
         # Transpose data before parsing? If so, a row in the transposed dataset
         # would be a column in the original
@@ -15,7 +14,7 @@ genericSampleInfoFormat <- function() {
         checkIndex  = 1,     # Index of row/column to check the format
         
         # File string to check
-        check = "Sample ID",
+        check = "Gene ID",
         
         # Parsing information
         delim       = "\t", # Delimiter used to separate fields
@@ -23,15 +22,15 @@ genericSampleInfoFormat <- function() {
         rowNames    = 1,    # Column to use for row names
         ignoreCols  = 1,    # Columns to ignore
         ignoreRows  = NULL, # Rows to ignore
-        commentChar = NULL, # Ignore lines starting with a given string
+        commentChar = NULL, # Ignore lines starting with this string
         
         # Other options
-        unique = FALSE, # Remove duplicated rows
+        unique = TRUE, # Remove duplicated rows
         
         # Identity of rows and columns
-        rows    = "samples",
-        columns = "attributes"
+        rows    = "genes",
+        columns = "samples"
     )
 }
 
-attr(genericSampleInfoFormat, "loader") <- "formats"
+attr(genericGeneExpressionFormat, "loader") <- "formats"

@@ -4,6 +4,7 @@
 \alias{getGlobal}
 \alias{setGlobal}
 \alias{setData}
+\alias{setDataTable}
 \alias{getAutoNavigation}
 \alias{setAutoNavigation}
 \alias{getCores}
@@ -19,6 +20,8 @@ getGlobal(category = getCategory(), ..., sep = "_")
 setGlobal(category = getCategory(), ..., value, sep = "_")
 
 setData(data)
+
+setDataTable(name, value, category = getCategory())
 
 getAutoNavigation()
 
@@ -46,7 +49,9 @@ it uses the selected data category}
 
 \item{value}{Value to attribute to an element}
 
-\item{data}{Data frame or matrix to set as data}
+\item{data}{List of data frame or matrix to set as data}
+
+\item{name}{Character: data table name}
 
 \item{auto}{Boolean: enable automatic navigation of browser history?}
 

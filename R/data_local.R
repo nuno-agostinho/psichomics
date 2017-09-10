@@ -4,7 +4,7 @@
 #' @importFrom shinyBS bsCollapse bsCollapsePanel bsPopover
 localDataUI <- function(id, panel) {
     ns <- NS(id)
-    
+
     addMultipleFiles <- tagList(
         helpText("All fields below are optional."),
         fileBrowserInput(
@@ -25,28 +25,12 @@ localDataUI <- function(id, panel) {
                 tags$hr(), helpText("Example:"), tags$table(
                     class="table table-condensed",
                     tags$thead(
-                        tags$tr(
-                            tags$th("Sample ID"),
-                            tags$th("Type"),
-                            tags$th("Tissue"),
-                            tags$th("Subject ID"))),
+                        tableRow("Sample ID", "Type", "Tissue", "Subject",
+                                 th=TRUE)),
                     tags$tbody(
-                        tags$tr(
-                            tags$td("SMP-01"),
-                            tags$td("Tumour"),
-                            tags$td("Lung"),
-                            tags$td("SUBJ-03")
-                        ), tags$tr(
-                            tags$td("SMP-02"),
-                            tags$td("Tumour"),
-                            tags$td("Blood"),
-                            tags$td("SUBJ-12")
-                        ), tags$tr(
-                            tags$td("SMP-03"),
-                            tags$td("Normal"),
-                            tags$td("Blood"),
-                            tags$td("SUBJ-25")
-                        ))))),
+                        tableRow("SMP-01", "Tumour", "Lung", "SUBJ-03"),
+                        tableRow("SMP-02", "Normal", "Blood", "SUBJ-12"),
+                        tableRow("SMP-03", "Normal", "Blood", "SUBJ-25"))))),
         fileBrowserInput(
             ns("subjectInfo"),
             "File with subject information",
@@ -60,28 +44,13 @@ localDataUI <- function(id, panel) {
                 helpText("Example:"), tags$table(
                     class="table table-condensed",
                     tags$thead(
-                        tags$tr(
-                            tags$th("Subject ID"),
-                            tags$th("Age"),
-                            tags$th("Gender"),
-                            tags$th("Race"))),
+                        tableRow("Subject ID", "Age", "Gender", "Race", 
+                                 th=TRUE)),
                     tags$tbody(
-                        tags$tr(
-                            tags$td("SUBJ-01"),
-                            tags$td("4"),
-                            tags$td("Female"),
-                            tags$td("Black")
-                        ), tags$tr(
-                            tags$td("SUBJ-02"),
-                            tags$td("12"),
-                            tags$td("Female"),
-                            tags$td("Black")
-                        ), tags$tr(
-                            tags$td("SUBJ-03"),
-                            tags$td("8"),
-                            tags$td("Female"),
-                            tags$td("Asian")
-                        ))))),
+                        tableRow("SUBJ-01", "4", "Female", "Black"),
+                        tableRow("SUBJ-02", "12", "Female", "Black"),
+                        tableRow("SUBJ-03", "8", "Female", "Asian"))))),
+        geneExprFileInput(ns("geneExpr")),
         fileBrowserInput(
             ns("junctionQuant"),
             "File with exon-exon junction read counts",
@@ -106,28 +75,14 @@ localDataUI <- function(id, panel) {
                         "in the end of the string. For instance,", 
                         tags$kbd("10:3213:9402:+"), "and",
                         tags$kbd("chr10:3213-9402 -"))),
-                    tags$hr(), helpText("Example:"), tags$table(
+                tags$hr(), helpText("Example:"), tags$table(
                     class="table table-condensed",
                     tags$thead(
-                        tags$tr(
-                            tags$th("Junction ID"),
-                            tags$th("SMP-18"),
-                            tags$th("SMP-03"))),
+                        tableRow("Junction ID", "SMP-18", "SMP-03", th=TRUE)),
                     tags$tbody(
-                        tags$tr(
-                            tags$td("10:6752-7393"),
-                            tags$td("4"),
-                            tags$td("0")
-                        ), tags$tr(
-                            tags$td("10:18748-21822"),
-                            tags$td("8"),
-                            tags$td("46")
-                        ), tags$tr(
-                            tags$td("10:24257-25325"),
-                            tags$td("83"),
-                            tags$td("65")
-                        ))))),
-        
+                        tableRow("10:6752-7393", "4", "0"),
+                        tableRow("10:18748-21822", "8", "46"),
+                        tableRow("10:24257-25325", "83", "65"))))),
         bsCollapse(
             id=ns("ASquantLoadCollapse"),
             bsCollapsePanel(
@@ -253,12 +208,13 @@ setMultipleFilesData <- function(input, output, session, replace=TRUE) {
     if (identical(category, "")) category <- "User dataset"
     
     # Load files
-    sampleInfo    <- c("Sample metadata"=input$sampleInfo)
-    subjectInfo   <- c("Clinical data"  =input$subjectInfo)
-    junctionQuant <- c("Junction quantification"=input$junctionQuant)
-    ASquant       <- c("Inclusion levels"=input$ASquant)
-    files <- c(sampleInfo, subjectInfo, junctionQuant, ASquant)
+    files <- c("Sample metadata"        =input$sampleInfo,
+               "Clinical data"          =input$subjectInfo, 
+               "Gene expression"        =input$geneExpr,
+               "Junction quantification"=input$junctionQuant,
+               "Inclusion levels"       =input$ASquant)
     files <- files[files != ""]
+    ASquant <- input$ASquant
     
     # Check if at least one input file was given
     if (length(files) == 0) {
@@ -273,7 +229,7 @@ setMultipleFilesData <- function(input, output, session, replace=TRUE) {
     allFormats <- loadFileFormats()
     updateProgress("Loading files...", divisions=length(files))
     for (each in seq(files)) {
-        file     <- files[[each]]
+        file <- files[[each]]
         if (file == "") next
         
         # Get appropriate format for each type
@@ -320,6 +276,7 @@ localDataServer <- function(input, output, session) {
     ## Load data based on individual files
     prepareFileBrowser(session, input, "sampleInfo")
     prepareFileBrowser(session, input, "subjectInfo")
+    prepareFileBrowser(session, input, "geneExpr")
     prepareFileBrowser(session, input, "junctionQuant")
     prepareFileBrowser(session, input, "ASquant")
     
