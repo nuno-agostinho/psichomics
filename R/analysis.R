@@ -1203,7 +1203,7 @@ eventPlotOptions <- function(session, df, xAxis, yAxis) {
     if (!is.null(numericCols) && length(numericCols) > 0) {
         if (is.null(xAxis) || identical(xAxis, "") || !xAxis %in% numericCols) {
             # Default option for X axis
-            deltaMedian <- "Delta median"     # PSI
+            deltaMedian <- "\u2206 Median"    # PSI
             logFC       <- "log2 Fold-Change" # Gene expression
             if (logFC %in% numericCols)
                 xSelected <- logFC
@@ -1653,9 +1653,8 @@ leveneTest <- function(x, g, centers=median) {
 #' @inherit createSparklines
 #' @param areSplicingEvents Boolean: are these splicing events (TRUE) or gene 
 #' expression (FALSE)?
-createDensitySparklines <- function(data, events, delim=NULL, 
-                                    areSplicingEvents=TRUE, groups=NULL, 
-                                    geneExpr=NULL) {
+createDensitySparklines <- function(data, events, areSplicingEvents=TRUE, 
+                                    groups=NULL, geneExpr=NULL) {
     if (areSplicingEvents) {
         minX <- 0
         maxX <- 1
@@ -1688,7 +1687,7 @@ createDensitySparklines <- function(data, events, delim=NULL,
     
     if (!is.null(minX) || !is.null(maxX))
         hc <- hc %>% hc_xAxis(min=minX, max=maxX)
-    createSparklines(hc, data, events, FUN=FUN, delim, groups=groups,
+    createSparklines(hc, data, events, FUN=FUN, groups=groups, 
                      geneExpr=geneExpr)
 }
 
@@ -1698,24 +1697,16 @@ createDensitySparklines <- function(data, events, delim=NULL,
 #' @param data Character: HTML-formatted data series of interest
 #' @param events Character: event identifiers
 #' @param FUN Character: JavaScript function to execute when clicking on a chart
-#' @param delim Character: left and right delimiters in groups that should be
-#' removed (NULL by default)
 #' @param groups Character: name of the groups used for differential analyses
 #' @param geneExpr Character: name of the gene expression dataset
 #' 
 #' @importFrom jsonlite toJSON
 #' 
 #' @return HTML element with sparkline data
-createSparklines <- function(hc, data, events, FUN, delim=NULL, groups=NULL,
+createSparklines <- function(hc, data, events, FUN, groups=NULL,
                              geneExpr=NULL) {
     hc <- as.character(toJSON(hc$x$hc_opts, auto_unbox=TRUE))
     hc <- substr(hc, 1, nchar(hc)-1)
-    
-    # Remove artificial delimiters
-    if (!is.null(delim) && length(delim) == 2) {
-        data <- gsub(delim[[1]], "", data)
-        data <- gsub(delim[[2]], "", data)
-    }
     
     if (!is.null(groups) && !identical(groups, ""))
         groups <- toJSarray(groups)
@@ -1775,6 +1766,15 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
     vector  <- vector[inGroup]
     len     <- length(valid)
     
+    # Variance and median
+    med <- lapply(series, median, na.rm=TRUE)
+    var <- lapply(series, var, na.rm=TRUE)
+    
+    # Improve display of group names
+    names(samples) <- paste0("(", names(samples), ")")
+    names(med) <- paste0("(", names(med), ")")
+    names(var) <- paste0("(", names(var), ")")
+    
     # Unpaired t-test (2 groups)
     ttest <- NULL
     if (any("ttest" == analyses) && len == 2 && all(samples > 1)) {
@@ -1789,8 +1789,10 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
     if (any("wilcoxRankSum" == analyses) && len == 2) {
         # Wilcoxon rank sum test (Mann Whitney U test)
         typeOne <- group == valid[1]
-        wilcox  <- suppressWarnings(wilcox.test(vector[typeOne],
-                                                vector[!typeOne]))
+        wilcox  <- suppressWarnings(
+            tryCatch(wilcox.test(vector[typeOne], vector[!typeOne]),
+                     error=return))
+        if (is(wilcox, "error")) wilcox <- NULL
         # } else if (any("wilcoxSignedRank" == analyses) && len == 1) {
         #     # Wilcoxon signed rank test
         #     wilcox <- suppressWarnings(wilcox.test(vector))
@@ -1800,7 +1802,7 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
     kruskal <- NULL
     if (any("kruskal" == analyses) && len >= 2) {
         kruskal <- tryCatch(kruskal.test(vector, group), error=return)
-        if (any("error" == class(kruskal))) kruskal <- NULL
+        if (is(kruskal, "error")) kruskal <- NULL
     }
     
     # Levene's test (2 or more groups)
@@ -1808,7 +1810,7 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
     if (any("levene" == analyses) && len >= 2) {
         levene <- suppressWarnings(
             tryCatch(leveneTest(vector, group), error=return))
-        if (any("error" == class(levene))) levene <- NULL
+        if (is(levene, "error")) levene <- NULL
     }
     
     # Fligner-Killeen test (2 or more groups)
@@ -1816,7 +1818,7 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
     if (any("fligner" == analyses) && len >= 2) {
         fligner <- suppressWarnings(
             tryCatch(fligner.test(vector, group), error=return))
-        if (any("error" == class(fligner)) || is.infinite(fligner$statistic))
+        if (is(fligner, "error") || is.infinite(fligner$statistic))
             fligner <- NULL
     }
     
@@ -1853,10 +1855,6 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
         }
         sparkline <- paste("[", sparkline, "]")
     }
-    
-    # Variance and median
-    med <- lapply(series, median, na.rm=TRUE) # Median
-    var <- lapply(series, var, na.rm=TRUE) # Variance
     
     vector <- c("Distribution"=sparkline,
                 "Survival by PSI cutoff"=NA,
@@ -1939,17 +1937,10 @@ diffAnalyses <- function(psi, groups=NULL,
     originalGroups <- unique(groups)
     if (identical(originalGroups, "All samples")) originalGroups <- NULL
     
-    # Add artificial delimiters (required to identify group names later on)
-    colour           <- attr(groups, "Colour")
-    parenthesisOpen  <- ".delim1."
-    parenthesisClose <- ".delim2."
-    groups           <- paste0(parenthesisOpen, groups, parenthesisClose)
-    groups           <- factor(groups)
-    if (!is.null(colour)) {
-        names(colour) <- paste0(parenthesisOpen, names(colour), 
-                                parenthesisClose)
-        attr(groups, "Colour") <- colour
-    }
+    # Prepare groups with respective colours
+    colour <- attr(groups, "Colour")
+    groups <- factor(groups)
+    if ( !is.null(colour) ) attr(groups, "Colour") <- colour
     
     count <- 0
     stats <- apply(psi, 1, function(...) {
@@ -1973,7 +1964,11 @@ diffAnalyses <- function(psi, groups=NULL,
     ll <- lapply(ll, unlist)
     ldf <- lapply(seq_along(uniq), function(k) {
         elems <- match == k
-        df2 <- data.frame(t(as.data.frame(ll[elems])))
+        df2   <- t(as.data.frame(ll[elems]))
+        cols  <- colnames(df2)
+        
+        df2           <- data.frame(df2)
+        colnames(df2) <- cols
         rownames(df2) <- names(stats)[elems]
         return(df2)
     })
@@ -2008,7 +2003,7 @@ diffAnalyses <- function(psi, groups=NULL,
         deltaVar <- deltaVar[, 2] - deltaVar[, 1]
         deltaMed <- df[, grepl("Median", colnames(df))]
         deltaMed <- deltaMed[, 2] - deltaMed[, 1]
-        df <- cbind(df, "Delta variance"=deltaVar, "Delta median"=deltaMed)
+        df <- cbind(df, "\u2206 Variance"=deltaVar, "\u2206 Median"=deltaMed)
         print(Sys.time() - time)
     }
     
@@ -2021,11 +2016,9 @@ diffAnalyses <- function(psi, groups=NULL,
             time <- Sys.time()
             pvalue <- df[cols]
             adjust <- apply(pvalue, 2, p.adjust, pvalueAdjust)
-            names  <- paste0(colnames(pvalue), " ", parenthesisOpen, 
-                             pvalueAdjust, " adjusted", parenthesisClose)
+            names  <- paste0(colnames(pvalue), " (", pvalueAdjust, " adjusted)")
             
-            if (!is.matrix(adjust))
-                adjust <- t(as.matrix(adjust))
+            if (!is.matrix(adjust)) adjust <- t(as.matrix(adjust))
             colnames(adjust) <- names
             
             # Place the adjusted p-values next to the respective p-values
@@ -2060,8 +2053,7 @@ diffAnalyses <- function(psi, groups=NULL,
         time <- Sys.time()
         
         df[ , "Distribution"] <- createDensitySparklines(
-            df[ , "Distribution"], rownames(df),
-            delim=c(parenthesisOpen, parenthesisClose), areSplicingEvents,
+            df[ , "Distribution"], rownames(df), areSplicingEvents,
             groups=originalGroups, geneExpr=geneExpr)
         name <- ifelse(areSplicingEvents, "PSI.distribution", "GE.distribution")
         colnames(df)[match("Distribution", colnames(df))] <- name
@@ -2070,12 +2062,8 @@ diffAnalyses <- function(psi, groups=NULL,
     
     # Properly set column names
     col <- colnames(df)
-    col <- gsub(parenthesisOpen,  "(", col, fixed=TRUE)
-    col <- gsub(parenthesisClose, ")", col, fixed=TRUE)
     col <- gsub(".", " ", col, fixed=TRUE)
     col <- gsub("p value", "p-value", col, fixed=TRUE)
-    col <- gsub("T test", "T-test", col, fixed=TRUE)
-    col <- gsub("Fligner Killeen", "Fligner-Killeen", col, fixed=TRUE)
     colnames(df) <- col
     
     # parallel::stopCluster(cl)

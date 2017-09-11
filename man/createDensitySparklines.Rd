@@ -4,16 +4,13 @@
 \alias{createDensitySparklines}
 \title{Create density sparklines for inclusion levels}
 \usage{
-createDensitySparklines(data, events, delim = NULL,
-  areSplicingEvents = TRUE, groups = NULL, geneExpr = NULL)
+createDensitySparklines(data, events, areSplicingEvents = TRUE,
+  groups = NULL, geneExpr = NULL)
 }
 \arguments{
 \item{data}{Character: HTML-formatted data series of interest}
 
 \item{events}{Character: event identifiers}
-
-\item{delim}{Character: left and right delimiters in groups that should be
-removed (NULL by default)}
 
 \item{areSplicingEvents}{Boolean: are these splicing events (TRUE) or gene 
 expression (FALSE)?}

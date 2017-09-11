@@ -4,8 +4,7 @@
 \alias{createSparklines}
 \title{Create sparkline charts to be used in a data table}
 \usage{
-createSparklines(hc, data, events, FUN, delim = NULL, groups = NULL,
-  geneExpr = NULL)
+createSparklines(hc, data, events, FUN, groups = NULL, geneExpr = NULL)
 }
 \arguments{
 \item{hc}{Highcharts object}
@@ -15,9 +14,6 @@ createSparklines(hc, data, events, FUN, delim = NULL, groups = NULL,
 \item{events}{Character: event identifiers}
 
 \item{FUN}{Character: JavaScript function to execute when clicking on a chart}
-
-\item{delim}{Character: left and right delimiters in groups that should be
-removed (NULL by default)}
 
 \item{groups}{Character: name of the groups used for differential analyses}
 
