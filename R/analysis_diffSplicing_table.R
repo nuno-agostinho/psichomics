@@ -56,9 +56,15 @@ diffSplicingTableUI <- function(id) {
                 selectizeInput(ns("xTransform"),
                                "Data transformation of X values",
                                transformOptions("x"), width="100%"),
-                checkboxInput(ns("xHighlight"), width="100%",
-                              paste("Highlight points based on X values")),
-                uiOutput(ns("xHighlightValues"))),
+                bsCollapse(
+                    bsCollapsePanel(
+                        list(icon("thumb-tack"),
+                             "Highlight points based on X values"),
+                        value="xAxisHighlightPanel",
+                        checkboxInput(
+                            ns("xHighlight"), width="100%",
+                            paste("Highlight points based on X values")),
+                        uiOutput(ns("xHighlightValues"))))),
             tabPanel(
                 "Y axis",
                 selectizeInput(ns("yAxis"), "Select Y axis", choices=NULL,
@@ -66,9 +72,15 @@ diffSplicingTableUI <- function(id) {
                 selectizeInput(ns("yTransform"), width="100%",
                                "Data transformation of Y values",
                                transformOptions("y")),
-                checkboxInput(ns("yHighlight"), width="100%",
-                              paste("Highlight points based on Y values")),
-                uiOutput(ns("yHighlightValues"))),
+                bsCollapse(
+                    bsCollapsePanel(
+                        list(icon("thumb-tack"),
+                             "Highlight points based on Y values"),
+                        value="xAxisHighlightPanel",
+                        checkboxInput(
+                            ns("yHighlight"), width="100%",
+                            paste("Highlight points based on Y values")),
+                        uiOutput(ns("yHighlightValues"))))),
             navbarMenu(
                 "Plot style",
                 tabPanel("Base points",
@@ -89,8 +101,7 @@ diffSplicingTableUI <- function(id) {
                              help=paste("Click in a row of the table to",
                                         "emphasise the respective point in",
                                         "the plot."),
-                             size=8, colour="blue", alpha=0.5))))
-    )
+                             size=8, colour="blue", alpha=0.5)))))
     
     survivalOptions <- tagList(
         helpText("For each splicing event, find the PSI cutoff that maximizes",

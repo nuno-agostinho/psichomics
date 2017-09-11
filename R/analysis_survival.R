@@ -348,7 +348,6 @@ geneExprSurvSet <- function(session, input, output) {
         geneExpr <- getGeneExpression()[[input$geneExpr]]
         gene     <- input$gene
         terms    <- input$modelTerms
-        browser()
         if (!is.null(geneExpr) && !is.null(gene) && terms == "geCutoff") {
             print("here")
             print(mean(ge))
