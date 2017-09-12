@@ -338,6 +338,14 @@ getSelectedPoints <- function(id, category=getCategory())
 setSelectedPoints <- function(id, events, category=getCategory())
     setGlobal(category, id, "selected", value=events)
 
+#' @rdname getHighlightedPoints
+getLabelledPoints <- function(id, category=getCategory())
+    getGlobal(category, id, "labelled")
+
+#' @rdname getHighlightedPoints
+setLabelledPoints <- function(id, events, category=getCategory())
+    setGlobal(category, id, "labelled", value=events)
+
 
 # Differential expression --------------------------------------------------
 
@@ -377,6 +385,7 @@ getDifferentialExpressionColumns <- function(category=getCategory())
 #' @param columns Character: differential analyses' column names
 setDifferentialExpressionColumns <- function(columns, category=getCategory())
     setGlobal(category, "diffExpressionCols", value=columns)
+
 
 # Differential splicing ---------------------------------------------------
 

@@ -48,9 +48,9 @@ missingDataGuide <- function(dataType) {
 #' @inheritParams shiny::selectizeInput
 #' 
 #' @return HTML elements
-selectizeGeneInput <- function(id, label="Gene", choices=NULL) {
+selectizeGeneInput <- function(id, label="Gene", choices=NULL, multiple=FALSE) {
     selectizeInput(
-        id, label, width="100%",
+        id, label, width="100%", multiple=multiple,
         choices=c("Type to search for a gene..."="", choices),
         options=list(
             onFocus=I(sprintf(
@@ -805,6 +805,69 @@ optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart,
 
 # Differential analyses helper functions -----------------------------------
 
+#' Prepare event plot options
+#' 
+#' @param id Character: identifier
+#' @param ns Namespace identifier
+#' @param labelsPanel Tab panel containing options to label points
+#' 
+#' @return HTML elements
+prepareEventPlotOptions <- function(id, ns, labelsPanel=NULL) {
+    xAxisPanel <- tabPanel(
+        "X axis",
+        selectizeInput(ns("xAxis"), "Select X axis", choices=NULL, 
+                       width="100%"),
+        selectizeInput(ns("xTransform"), "Data transformation of X values",
+                       transformOptions("x"), width="100%"),
+        bsCollapse(
+            bsCollapsePanel(
+                list(icon("thumb-tack"), "Highlight points based on X values"),
+                value="xAxisHighlightPanel",
+                checkboxInput(ns("xHighlight"), width="100%",
+                              "Highlight points based on X values"),
+                uiOutput(ns("xHighlightValues")))))
+    
+    yAxisPanel <- tabPanel(
+        "Y axis",
+        selectizeInput(ns("yAxis"), "Select Y axis", choices=NULL, 
+                       width="100%"),
+        selectizeInput(ns("yTransform"), "Data transformation of Y values",
+                       transformOptions("y"), width="100%"),
+        bsCollapse(
+            bsCollapsePanel(
+                list(icon("thumb-tack"), "Highlight points based on Y values"),
+                value="xAxisHighlightPanel",
+                checkboxInput(ns("yHighlight"), width="100%",
+                              "Highlight points based on Y values"),
+                uiOutput(ns("yHighlightValues")))))
+    
+    plotStyle <- navbarMenu(
+        "Plot style",
+        tabPanel("Base points",
+                 plotPointsStyle(
+                     ns, "base", "Base points",
+                     help="These are points not highlighted or selected.",
+                     size=2, colour="grey", alpha=0.3)),
+        tabPanel("Highlighted points",
+                 plotPointsStyle(
+                     ns, "highlighted", "Highlighted points",
+                     help="Highlight points in the X and Y axes options.",
+                     size=3, colour="orange", alpha=0.5)),
+        tabPanel("Selected in the table",
+                 plotPointsStyle(
+                     ns, "selected", "Selected in the table",
+                     help=paste("Click in a row of the table to emphasise the",
+                                "respective point in the plot."),
+                     size=8, colour="blue", alpha=0.5)),
+        tabPanel("Labels",
+                 plotPointsStyle(
+                     ns, "labelled", "Labels", 
+                     help="Modify the style of labels",
+                     size=4, colour="red", alpha=1)))
+    
+    div(id=id, tabsetPanel(xAxisPanel, yAxisPanel, labelsPanel, plotStyle))
+}
+
 #' Perform Wilcoxon analysis and return interface to show the results
 #' 
 #' @inheritParams plotDistribution
@@ -1192,9 +1255,11 @@ spearman <- function(data, groups) {
 #' @param df Data frame
 #' @param xAxis Character: currently selected variable for the X axis
 #' @param yAxis Character: currently selected variable for the Y axis
+#' @param labelSortBy Character: currently selected variable for the selectize
+#' element to sort differentially analysis
 #' 
 #' @return HTML elements
-eventPlotOptions <- function(session, df, xAxis, yAxis) {
+eventPlotOptions <- function(session, df, xAxis, yAxis, labelSortBy) {
     # Only allow to select numeric columns    
     cols <- colnames(df)
     type <- sapply(cols, function(i) class(df[[i]]))
@@ -1238,9 +1303,31 @@ eventPlotOptions <- function(session, df, xAxis, yAxis) {
             updateSelectizeInput(session, "yAxis", choices=numericCols,
                                  selected=yAxis)
         }
+        
+        if (is.null(labelSortBy) || identical(labelSortBy, "") || 
+            !labelSortBy %in% numericCols) {
+            # Default option for sorting differentially analysis
+            pValue <- grepl("p-value", numericCols)
+            bStat  <- "B-statistics" # Gene expression
+            if (bStat %in% numericCols)
+                labelSelected <- bStat
+            else if (any(pValue))
+                labelSelected <- numericCols[pValue][1]
+            else if (length(numericCols) >= 2)
+                labelSelected <- numericCols[[2]]
+            else
+                labelSelected <- NULL
+            
+            updateSelectizeInput(session, "labelSortBy", choices=numericCols,
+                                 selected=labelSelected)
+        } else {
+            updateSelectizeInput(session, "labelSortBy", choices=numericCols,
+                                 selected=labelSortBy)
+        }
     } else {
         updateSelectizeInput(session, "xAxis", choices=character(0))
         updateSelectizeInput(session, "yAxis", choices=character(0))
+        updateSelectizeInput(session, "labelSortBy", choices=character(0))
     }
 }
 
@@ -1318,15 +1405,20 @@ filterGroups <- function(vector, group, threshold=1) {
 #' @param selected Integer: index of rows/points to be coloured
 #' @param selectedParams List of parameters to pass to 
 #' \code{\link[ggplot2]{geom_point}} related to selected points
+#' @param labelled Integer: index of rows/points to be labelled
+#' @param labelledParams List of parameters to pass to 
+#' \code{\link[ggrepel]{geom_label_repel}} related to labelled points
 #' @param xlim Numeric: limits of X axis
 #' @param ylim Numeric: limits of Y axis
 #' 
-#' @importFrom ggplot2 ggplot aes_string geom_point theme_light coord_cartesian
+#' @importFrom ggplot2 ggplot aes_string geom_point theme_light coord_cartesian 
+#' unit
+#' @importFrom ggrepel geom_label_repel
 #' 
 #' @return HTML elements
 createEventPlotting <- function(df, x, y, params, highlightX, highlightY,
-                                highlightParams, selected, selectedParams, 
-                                xlim, ylim) {
+                                highlightParams, selected, selectedParams,
+                                labelled, labelledParams, xlim, ylim) {
     aes <- aes_string(paste0("`", x, "`"), paste0("`", y, "`"))
     
     # Get points highlighted in X and Y that were not selected
@@ -1372,6 +1464,18 @@ createEventPlotting <- function(df, x, y, params, highlightX, highlightY,
     # Render selected points
     plot <- plot + do.call("geom_point", c(
         list(data=df[selected, ], aes, na.rm=TRUE), selectedParams))
+    
+    # Label points
+    aesMod <- aes
+    aesMod$label <- parse(text="`Names`")[[1]]
+    
+    modNames <- rownames(df)
+    if ( isTRUE(attr(labelled, "displayOnlyGene")) )
+        modNames <- gsub(".*_(.*)$", "\\1", modNames)
+    
+    mod <- cbind(Names=modNames, df)
+    plot <- plot + do.call("geom_label_repel", c(
+        list(data=mod[labelled, ], aesMod, na.rm=TRUE), labelledParams))
     
     plot <- plot + coord_cartesian(xlim=xlim, ylim=ylim)
     return(plot + theme_light(16))

@@ -104,14 +104,14 @@ following these commands:
 ```{r load GTEx, eval=FALSE}
 # Replace with the correct path to these files
 subjects <- "~/Downloads/GTEx_Data_V6_Annotations_SubjectPhenotypesDS.txt"
-sampleAttributes <- "~/Downloads/GTEx_Data_V6_Annotations_SampleAttributesDS.txt"
+sampleAttr <- "~/Downloads/GTEx_Data_V6_Annotations_SampleAttributesDS.txt"
 junctionQuant <- "~/Downloads/GTEx_junction_reads.txt"
 
 # Check GTEx tissues available based on the sample attributes
-getGtexTissues(sampleAttributes)
+getGtexTissues(sampleAttr)
 
 tissues <- c("blood", "brain")
-gtex <- loadGtexData(subjects, sampleAttributes, junctionQuant, tissues)
+gtex <- loadGtexData(subjects, sampleAttr, junctionQuant, tissues)
 ```
 
 If you desire to load junction quantification for all tissues, you can also do
@@ -119,7 +119,7 @@ it using the following commands:
 
 ```{r load all GTEx, eval=FALSE}
 tissues <- NULL
-gtex <- loadGtexData(subjectPhenotype, sampleAttributes, junctionQuant, tissues)
+gtex <- loadGtexData(subjectPhenotype, sampleAttr, junctionQuant, tissues)
 ```
 
 ## Load unspecified local files

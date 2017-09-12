@@ -1,36 +1,57 @@
 # 1.2.2 (3 Sep, 2017)
 
-* Update minimum version required of shiny (1.0.3)
-* Fix inconsistent browser history navigation
-* Support for gene expression data:
-    * Load, filter, normalise and perform log2-transformation on gene expression
+* Support gene expression data:
+    - Load, filter, normalise and perform log2-transformation on gene expression
     data from TCGA
-    * Perform principal component analysis based on gene expression data, 
+    - Perform principal component analysis based on gene expression data, 
     survival analysis by gene expression cutoff and pairwise differential 
     gene expression analysis
-    * Updated the CLI vignette with information on how to perform such tasks
-    * Correlate gene expression of a given gene against PSI values of multiple
+    - Correlate gene expression of a given gene against PSI values of multiple
     alternative splicing events
 * Data loading:
-    * Improve instructions on loading user files
-    * Filter GTEx junction quantification based on tissues of interest (all 
-    tissues are still loaded by default)
-    * Quantify splicing based on splicing events that occur within a list of one
-    or more genes (all splicing events are still quantified by default)
-    * Parse sample information from TCGA samples using `parseTcgaSampleInfo`
-    * Generate TCGA sample metadata when loading TCGA junction quantification
-    * Present data summary after loading the data
+    - Add step-wise instructions about loading of user-owned files
+    - Filter GTEx junction quantification based on tissues of interest (all 
+    tissues are loaded by default)
+    - Quantify splicing based on a list of genes (splicing events within all 
+    genes are quantified by default)
+    - Parse sample information from TCGA samples using `parseTcgaSampleInfo`
+    - Generate TCGA sample metadata when loading TCGA junction quantification
+    - Present data summary after loading the data
 * Data grouping:
-    * Assign a customisable colour per data group
-    * Export or import patient and sample identifiers of data groups
-    * Add new set operations when grouping (such as complement, subtraction and
+    - Assign a customisable colour per data group
+    - Export or import patient and sample identifiers of data groups
+    - Add new set operations when grouping (such as complement, subtraction and
     symmetric difference)
-    * Suggest attributes of interest when creating groups
-    * Allow to retrieve the universe of patient and sample identifiers by
+    - Suggest attributes of interest when creating groups
+    - Allow to retrieve the universe of patient and sample identifiers by
     performing the complement group without any group selected
 * Differential splicing analysis:
+    - Label points based on top differentially spliced events, selected 
+    alternative splicing events and selected genes
+* Principal component analysis:
+    - Create data groups based on the partitioning clustering of PCA scores
+* Survival analysis:
+    - Add p-value plot to visually infer the significance of survival analyses
+    based on multiple alternative splicing quantification cutoffs
+* Gene, transcript and protein information:
+    - Information retrieval is now only dependent on a user-defined gene,
+    instead of requiring alternative splicing quantification data to be loaded
+    
+## Bug fixes and other improvements
+
+* Update minimum version required of shiny (1.0.3)
+* Fix inconsistent browser history navigation
+* Updated the CLI vignette with information on analysing gene expression data
+* Differential splicing analysis:
+    - Fix data not being rendered in the table when zooming in the plot after 
+    data transformation was applied
     - Return p-value of NA instead of 0 when the value of Fligner-Killeen's Test
     for Homogeneity of Variance is infinite
+    - Discard value transformations that may return invalid data for the values
+    chosen for the X and Y axes
+    - Fix point that remains highlighted in the plot after deselecting the only
+    selected row of the table
+    - Improve readibility of plot's tooltip
     - Improve survival curves based on the optimal alternative splicing
     quantification cutoff:
         - Include the survival curve previews in 3 new columns within the
@@ -42,15 +63,7 @@
         p-value in exported tables
         - Fix link to survival analyses using the previously calculated PSI
         cutoff
-    - Fix data not being rendered in the table when zooming in the plot after 
-    data transformation was applied
-    - Discard value transformations that may return invalid data for the values
-    chosen for the X and Y axes
-    - Fix point that remains highlighted in the plot after deselecting the only
-    selected row of the table
-    - Improve readibility of plot's tooltip
 * Principal component analysis:
-    - Create data groups based on the partitioning clustering of PCA scores
     - When clicking on a alternative splicing event in the loadings plot, the
     appropriate differential splicing analyses will now be automatically
     rendered with the respective options, as expected
@@ -63,11 +76,6 @@
     with more than one sample, the assigned sample is chosen based on the most
     frequent sample type across all patients (before, the first matched 
     non-normal or non-control samples were used)
-    - Add p-value plot to visually infer the significance of survival analyses
-    based on multiple alternative splicing quantification cutoffs
-* Gene, transcript and protein information:
-    - Information retrieval is now only dependent on a user-defined gene,
-    instead of requiring alternative splicing quantification data to be loaded
 * Multiple other bug fixes and visual improvements
 
 # 1.2.1 (24 Apr, 2017)
