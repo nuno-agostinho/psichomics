@@ -46,62 +46,48 @@ diffSplicingTableUI <- function(id) {
                        "P-value adjustment", pvalueAdjust),
         processButton(ns("startAnalyses"), "Perform analyses"))
     
-    eventOptions <- div(
-        id=ns("eventOptions"),
-        tabsetPanel(
-            tabPanel(
-                "X axis",
-                selectizeInput(ns("xAxis"), "Select X axis", choices=NULL,
-                               width="100%"),
-                selectizeInput(ns("xTransform"),
-                               "Data transformation of X values",
-                               transformOptions("x"), width="100%"),
-                bsCollapse(
-                    bsCollapsePanel(
-                        list(icon("thumb-tack"),
-                             "Highlight points based on X values"),
-                        value="xAxisHighlightPanel",
-                        checkboxInput(
-                            ns("xHighlight"), width="100%",
-                            paste("Highlight points based on X values")),
-                        uiOutput(ns("xHighlightValues"))))),
-            tabPanel(
-                "Y axis",
-                selectizeInput(ns("yAxis"), "Select Y axis", choices=NULL,
-                               width="100%"),
-                selectizeInput(ns("yTransform"), width="100%",
-                               "Data transformation of Y values",
-                               transformOptions("y")),
-                bsCollapse(
-                    bsCollapsePanel(
-                        list(icon("thumb-tack"),
-                             "Highlight points based on Y values"),
-                        value="xAxisHighlightPanel",
-                        checkboxInput(
-                            ns("yHighlight"), width="100%",
-                            paste("Highlight points based on Y values")),
-                        uiOutput(ns("yHighlightValues"))))),
-            navbarMenu(
-                "Plot style",
-                tabPanel("Base points",
-                         plotPointsStyle(
-                             ns, "base", "Base points",
-                             help=paste("These are points not highlighted or",
-                                        "selected."),
-                             size=2, colour="grey", alpha=0.3)),
-                tabPanel("Highlighted points",
-                         plotPointsStyle(
-                             ns, "highlighted", "Highlighted points",
-                             help=paste("Highlight points in the X and Y axes",
-                                        "options."),
-                             size=3, colour="orange", alpha=0.5)),
-                tabPanel("Selected in the table",
-                         plotPointsStyle(
-                             ns, "selected", "Selected in the table",
-                             help=paste("Click in a row of the table to",
-                                        "emphasise the respective point in",
-                                        "the plot."),
-                             size=8, colour="blue", alpha=0.5)))))
+    labelsPanel <- tabPanel(
+        "Labels",
+        bsCollapse(
+            bsCollapsePanel(
+                list(icon("tasks"), "Label top differentially spliced events"),
+                value="top", checkboxInput(
+                    ns("labelTopEnable"), width="100%",
+                    "Enable labelling of top differentially spliced events"),
+                div(id=ns("labelTopOptions"),
+                    selectizeInput(
+                        ns("labelSortBy"), choices=NULL, width="100%",
+                        "Sort top differentially spliced events by"),
+                    radioButtons(ns("labelOrder"), "Sorting order",
+                                 choices=c("Decreasing order"="decreasing",
+                                           "Increasing order"="increasing")),
+                    sliderInput(
+                        ns("labelTop"), value=10, min=1, max=1000, 
+                        width="100%", "Number of top events to label"))),
+            bsCollapsePanel(
+                list(icon("tasks"), 
+                     "Label selected alternative splicing events"),
+                value="events", checkboxInput(
+                    ns("labelEventEnable"), width="100%",
+                    "Enable labelling of selected alternative splicing events"),
+                selectizeInput(
+                    width="100%", multiple=TRUE, choices=c(
+                        "Type to search for alternative splicing events..."=""),
+                    ns("labelEvents"), "Alternative splicing events to label")),
+            bsCollapsePanel(
+                list(icon("tasks"),
+                     "Label alternative splicing events from selected genes"),
+                value="genes", checkboxInput(
+                    ns("labelGeneEnable"), width="100%",
+                    "Enable labelling of events from selected genes"),
+                selectizeInput(ns("labelGenes"), "Genes to label", width="100%",
+                               choices=c("Type to search for a gene..."=""),
+                               multiple=TRUE))),
+        checkboxInput(ns("labelOnlyGene"), value=TRUE, width="100%",
+                      "Label points using the gene symbol only"),
+        actionButton(ns("unlabelPoints"), "Remove labels"),
+        processButton(ns("labelPoints"), "Label points"))
+    eventOptions <- prepareEventPlotOptions(ns("eventOptions"), ns, labelsPanel)
     
     survivalOptions <- tagList(
         helpText("For each splicing event, find the PSI cutoff that maximizes",
@@ -486,12 +472,16 @@ diffAnalysesSet <- function(session, input, output) {
         setSelectedPoints("psi-volcano", NULL)
         setHighlightedPoints("psi-volcano", NULL)
         setDifferentialAnalysesSurvival(NULL)
+        setLabelledPoints("psi-volcano", NULL)
     })
 }
 
 #' Set of functions to plot differential analyses
 #' 
 #' @inherit diffSplicingTableServer
+#' 
+#' @importFrom stringr str_split
+#' @importFrom shinyjs toggleState
 diffAnalysesPlotSet <- function(session, input, output) {
     ns <- session$ns
     # Toggle visibility of elements regarding event options
@@ -521,7 +511,26 @@ diffAnalysesPlotSet <- function(session, input, output) {
             stats <- stats[c(names[-colsMatch], names[colsMatch])]
         }
         eventPlotOptions(session, stats, isolate(input$xAxis),
-                         isolate(input$yAxis))
+                         isolate(input$yAxis), isolate(input$labelSortBy))
+    })
+    
+    # Update alternative splicing events and genes available to label
+    observe({
+        diffSpl <- getDifferentialAnalyses()
+        if (!is.null(diffSpl)) {
+            ASevents <- rownames(diffSpl)
+            names(ASevents) <- gsub("_", " ", ASevents)
+            updateSelectizeInput(session, "labelEvents", server=TRUE,
+                                 choices=ASevents, selected=character(0))
+            allGenes <- sort(unique(unlist(str_split(diffSpl$Gene, "/"))))
+            updateSelectizeInput(session, "labelGenes", server=TRUE,
+                                 choices=allGenes, selected=character(0))
+        } else {
+            updateSelectizeInput(session, "labelEvents", server=TRUE,
+                                 choices=character(0), selected=character(0))
+            updateSelectizeInput(session, "labelGenes", server=TRUE,
+                                 choices=character(0), selected=character(0))
+        }
     })
     
     # Interface elements to highlight values in the plot
@@ -575,6 +584,56 @@ diffAnalysesPlotSet <- function(session, input, output) {
                 highlightUI(axis, minNo, maxNo) )
         })
     })
+    
+    # Disable labelling elements as appropriate
+    observe(toggleState("labelTopOptions", input$labelTopEnable))
+    observe(toggleState("labelEvents", input$labelEventEnable))
+    observe(toggleState("labelGenes", input$labelGeneEnable))
+    
+    # Prepare labelled points
+    observeEvent(input$labelPoints, {
+        isolate({
+            labelTopEnable   <- input$labelTopEnable
+            labelEventEnable <- input$labelEventEnable
+            labelGeneEnable  <- input$labelGeneEnable
+            labelSortBy      <- input$labelSortBy
+            labelTop         <- input$labelTop
+            labelOrder       <- input$labelOrder == "decreasing"
+            events           <- input$labelEvents
+            genes            <- input$labelGenes
+            displayGene      <- input$labelOnlyGene
+            diffSpl          <- getDifferentialAnalyses()
+        })
+        
+        labelled <- NULL
+        # Label top genes
+        if (labelTopEnable && !identical(labelSortBy, "")) {
+            sorted   <- order(diffSpl[[labelSortBy]], decreasing=labelOrder)
+            labelled <- head(sorted, labelTop)
+        }
+        
+        # Label selected alternative splicing events
+        if (labelEventEnable && !identical(events, "")) {
+            labelled <- c(labelled, match(events, rownames(diffSpl)))
+        }
+        
+        # Label alternative splicing events based on selected genes
+        if (labelGeneEnable && !identical(genes, "")) {
+            # Unlist all genes and save original indexes to quickly find
+            # genes across multiple alternative splicing events
+            allGenes <- str_split(diffSpl$Gene, "/")
+            len      <- sapply(allGenes, length)
+            genes    <- sprintf("^%s$", genes)
+            match    <- lapply(genes, grep, unlist(allGenes))
+            index    <- rep(seq(diffSpl$Gene), len)[unlist(match)]
+            labelled <- c(labelled, unique(index))
+        }
+        
+        attr(labelled, "displayOnlyGene") <- displayGene
+        setLabelledPoints("psi-volcano", labelled)
+    })
+    
+    observeEvent(input$unlabelPoints, setLabelledPoints("psi-volcano", NULL))
     
     # Plot events and render the plot tooltip
     observe({
@@ -639,6 +698,9 @@ diffAnalysesPlotSet <- function(session, input, output) {
                          selectedParams  <- list(size=input$selectedSize,
                                                  col=input$selectedColour,
                                                  alpha=input$selectedAlpha)
+                         labelledParams  <- list(size=input$labelledSize,
+                                                 col=input$labelledColour,
+                                                 alpha=input$labelledAlpha)
                          
                          zoom <- getZoom("psi-volcano")
                          if (!is.null(zoom)) {
@@ -649,9 +711,11 @@ diffAnalysesPlotSet <- function(session, input, output) {
                              ylim <- NULL
                          }
                          
+                         labelled <- getLabelledPoints("psi-volcano")
                          createEventPlotting(
-                             stats, xLabel, yLabel, params, highlightX, highlightY, 
-                             highlightParams, selected, selectedParams, 
+                             stats, xLabel, yLabel, params, 
+                             highlightX, highlightY, highlightParams, 
+                             selected, selectedParams, labelled, labelledParams,
                              xlim=xlim, ylim=ylim)
                      })
     })

@@ -4,7 +4,7 @@
 \alias{eventPlotOptions}
 \title{Options for event plotting}
 \usage{
-eventPlotOptions(session, df, xAxis, yAxis)
+eventPlotOptions(session, df, xAxis, yAxis, labelSortBy)
 }
 \arguments{
 \item{session}{Shiny session}
@@ -14,6 +14,9 @@ eventPlotOptions(session, df, xAxis, yAxis)
 \item{xAxis}{Character: currently selected variable for the X axis}
 
 \item{yAxis}{Character: currently selected variable for the Y axis}
+
+\item{labelSortBy}{Character: currently selected variable for the selectize
+element to sort differentially analysis}
 }
 \value{
 HTML elements

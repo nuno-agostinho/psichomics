@@ -63,62 +63,34 @@ diffExpressionTableUI <- function(id) {
                        "P-value adjustment", pvalueAdjust),
         processButton(ns("startAnalyses"), "Perform analyses"))
     
-    eventOptions <- div(
-        id=ns("eventOptions"),
-        tabsetPanel(
-            tabPanel(
-                "X axis",
-                selectizeInput(ns("xAxis"), "Select X axis", choices=NULL,
-                               width="100%"),
-                selectizeInput(ns("xTransform"),
-                               "Data transformation of X values",
-                               transformOptions("x"), width="100%"),
-                bsCollapse(
-                    bsCollapsePanel(
-                        list(icon("thumb-tack"),
-                             "Highlight points based on X values"),
-                        value="xAxisHighlightPanel",
-                        checkboxInput(
-                            ns("xHighlight"), width="100%",
-                            paste("Highlight points based on X values")),
-                        uiOutput(ns("xHighlightValues"))))),
-            tabPanel(
-                "Y axis",
-                selectizeInput(ns("yAxis"), "Select Y axis", choices=NULL,
-                               width="100%"),
-                selectizeInput(ns("yTransform"), width="100%",
-                               "Data transformation of Y values",
-                               transformOptions("y")),
-                bsCollapse(
-                    bsCollapsePanel(
-                        list(icon("thumb-tack"),
-                             "Highlight points based on Y values"),
-                        value="xAxisHighlightPanel",
-                        checkboxInput(
-                            ns("yHighlight"), width="100%",
-                            paste("Highlight points based on Y values")),
-                        uiOutput(ns("yHighlightValues"))))),
-            navbarMenu(
-                "Plot style",
-                tabPanel("Base points",
-                         plotPointsStyle(
-                             ns, "base", "Base points",
-                             help=paste("These are points not highlighted or",
-                                        "selected."),
-                             size=2, colour="grey", alpha=0.3)),
-                tabPanel("Highlighted points",
-                         plotPointsStyle(
-                             ns, "highlighted", "Highlighted points",
-                             help=paste("Highlight points in the X and Y axes",
-                                        "options."),
-                             size=3, colour="orange", alpha=0.5)),
-                tabPanel("Selected in the table",
-                         plotPointsStyle(
-                             ns, "selected", "Selected in the table",
-                             help=paste("Click in a row of the table to",
-                                        "emphasise the respective point in",
-                                        "the plot."),
-                             size=8, colour="blue", alpha=0.5)))))
+    labelsPanel <- tabPanel(
+        "Labels",
+        bsCollapse(
+            bsCollapsePanel(
+                list(icon("tasks"), "Label top differentially expressed genes"),
+                value="top", checkboxInput(
+                    ns("labelTopEnable"), width="100%",
+                    "Enable labelling of top differentially spliced events"),
+                div(id=ns("labelTopOptions"),
+                    selectizeInput(ns("labelSortBy"), choices=NULL, 
+                                   width="100%",
+                                   "Sort differentially expressed genes by"),
+                    radioButtons(ns("labelOrder"), "Sorting order", 
+                                 choices=c("Decreasing order"="decreasing",
+                                           "Increasing order"="increasing")),
+                    sliderInput(ns("labelTop"), value=10, min=1, max=1000, 
+                                width="100%", "Number of top genes to label"))),
+            bsCollapsePanel(
+                list(icon("tasks"), "Label selected genes"), value="genes",
+                checkboxInput(
+                    ns("labelGenesEnable"), width="100%",
+                    "Enable labelling of selected genes"),
+                selectizeInput(ns("labelGenes"), "Genes to label", width="100%",
+                               choices=c("Type to search for a gene..."=""),
+                               multiple=TRUE))),
+        actionButton(ns("unlabelPoints"), "Remove labels"),
+        processButton(ns("labelPoints"), "Label points"))
+    eventOptions <- prepareEventPlotOptions(ns("eventOptions"), ns, labelsPanel)
     
     sidebar <- sidebar(
         bsCollapse(
@@ -214,7 +186,7 @@ diffExpressionSet <- function(session, input, output) {
         
         # Prepare data summary
         pvalueAdjust <- input$pvalueAdjust
-        summary <- toptable(stats, number=nrow(fit), coef=2,
+        summary <- toptable(stats, number=nrow(fit), coef=2, sort.by="none",
                             adjust.method=pvalueAdjust, confint=TRUE)
         names(summary) <- c("log2 Fold-Change", "conf. int1", "conf. int2",
                             "moderated t-statistics", "p-value", 
@@ -270,12 +242,14 @@ diffExpressionSet <- function(session, input, output) {
         setSelectedPoints("ge-volcano", NULL)
         setHighlightedPoints("ge-volcano", NULL)
         # setDifferentialExpressionSurvival(NULL)
+        setLabelledPoints("ge-volcano", NULL)
     })
 }
 
 #' Set of functions to plot differential analyses
 #' 
 #' @inherit diffExpressionTableServer
+#' @importFrom shinyjs toggleState
 diffExpressionPlotSet <- function(session, input, output) {
     ns <- session$ns
     # Toggle visibility of elements regarding event options
@@ -305,7 +279,20 @@ diffExpressionPlotSet <- function(session, input, output) {
         #     stats <- stats[c(names[-colsMatch], names[colsMatch])]
         # }
         eventPlotOptions(session, stats, isolate(input$xAxis),
-                         isolate(input$yAxis))
+                         isolate(input$yAxis), isolate(input$labelSortBy))
+    })
+    
+    # Update genes available to label
+    observe({
+        diffExpr <- getDifferentialExpression()
+        if (!is.null(diffExpr)) {
+            updateSelectizeInput(session, "labelGenes", server=TRUE,
+                                 choices=rownames(diffExpr), 
+                                 selected=character(0))
+        } else {
+            updateSelectizeInput(session, "labelGenes", server=TRUE,
+                                 choices=character(0), selected=character(0))
+        }
     })
     
     # Interface elements to highlight values in the plot
@@ -359,6 +346,40 @@ diffExpressionPlotSet <- function(session, input, output) {
                 highlightUI(axis, minNo, maxNo) )
         })
     })
+    
+    # Disable labelling elements as appropriate
+    observe(toggleState("labelTopOptions", input$labelTopEnable))
+    observe(toggleState("labelGenes", input$labelGenesEnable))
+    
+    # Prepare labelled points
+    observeEvent(input$labelPoints, {
+        isolate({
+            labelTopEnable   <- input$labelTopEnable
+            labelGenesEnable <- input$labelGenesEnable
+            labelSortBy      <- input$labelSortBy
+            labelTop         <- input$labelTop
+            labelOrder       <- input$labelOrder == "decreasing"
+            genes            <- input$labelGenes
+            diffExpr         <- getDifferentialExpression()
+        })
+        
+        labelled <- NULL
+        
+        # Label top genes
+        if (labelTopEnable && !identical(labelSortBy, "")) {
+            sorted   <- order(diffExpr[[labelSortBy]], decreasing=labelOrder)
+            labelled <- head(sorted, labelTop)
+        }
+        
+        # Label selected genes
+        if (labelGenesEnable && !identical(genes, ""))
+            labelled <- c(labelled, match(genes, rownames(diffExpr)))
+        
+        setLabelledPoints("ge-volcano", labelled)
+    })
+    
+    # Unlabel points
+    observeEvent(input$unlabelPoints, setLabelledPoints("ge-volcano", NULL))
     
     # Plot events and render the plot tooltip
     observe({
@@ -423,6 +444,9 @@ diffExpressionPlotSet <- function(session, input, output) {
                          selectedParams  <- list(size=input$selectedSize,
                                                  col=input$selectedColour,
                                                  alpha=input$selectedAlpha)
+                         labelledParams  <- list(size=input$labelledSize,
+                                                 col=input$labelledColour,
+                                                 alpha=input$labelledAlpha)
                          
                          zoom <- getZoom("ge-volcano")
                          if (!is.null(zoom)) {
@@ -433,10 +457,12 @@ diffExpressionPlotSet <- function(session, input, output) {
                              ylim <- NULL
                          }
                          
+                         labelled <- getLabelledPoints("ge-volcano")
                          createEventPlotting(
-                             stats, xLabel, yLabel, params, highlightX, 
-                             highlightY, highlightParams, selected,
-                             selectedParams, xlim=xlim, ylim=ylim)
+                             stats, xLabel, yLabel, params, 
+                             highlightX, highlightY, highlightParams, 
+                             selected, selectedParams, labelled, labelledParams, 
+                             xlim=xlim, ylim=ylim)
                      })
     })
     
@@ -596,7 +622,7 @@ diffExpressionTableSet <- function(session, input, output) {
             # optimSurv <- getDifferentialExpressionSurvival()
             # stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
             # stats[["Log rank p-value"]]   <- optimSurv[[2]]
-            
+            stats <- cbind("Gene"=rownames(stats), stats)
             write.table(stats, file, quote=FALSE, sep="\t", row.names=FALSE)
         }
     )
@@ -608,6 +634,7 @@ diffExpressionTableSet <- function(session, input, output) {
             stats <- getDifferentialExpressionFiltered()
             stats <- discardPlotsFromTable(stats)
             stats <- stats[input$statsTable_rows_all, ]
+            stats <- cbind("Gene"=rownames(stats), stats)
             write.table(stats, file, quote=FALSE, sep="\t", row.names=FALSE)
         }
     )

@@ -7,6 +7,8 @@
 \alias{setZoom}
 \alias{getSelectedPoints}
 \alias{setSelectedPoints}
+\alias{getLabelledPoints}
+\alias{setLabelledPoints}
 \title{Get or set points or regions for plots}
 \usage{
 getHighlightedPoints(id, category = getCategory())
@@ -20,6 +22,10 @@ setZoom(id, zoom, category = getCategory())
 getSelectedPoints(id, category = getCategory())
 
 setSelectedPoints(id, events, category = getCategory())
+
+getLabelledPoints(id, category = getCategory())
+
+setLabelledPoints(id, events, category = getCategory())
 }
 \arguments{
 \item{id}{Character: identifier}

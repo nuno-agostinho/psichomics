@@ -4,7 +4,7 @@
 \alias{selectizeGeneInput}
 \title{Create input to select a gene}
 \usage{
-selectizeGeneInput(id, label = "Gene", choices = NULL)
+selectizeGeneInput(id, label = "Gene", choices = NULL, multiple = FALSE)
 }
 \arguments{
 \item{id}{Character: identifier}
@@ -18,6 +18,8 @@ unnamed) lists or vectors. If this is the case, the outermost names
 will be used as the "optgroup" label for the elements in the respective
 sublist. This allows you to group and label similar choices. See the
 example section for a small demo of this feature.}
+
+\item{multiple}{Is selection of multiple items allowed?}
 }
 \value{
 HTML elements
