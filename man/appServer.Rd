@@ -3,10 +3,11 @@
 %   R/analysis_diffExpression.R, R/analysis_diffExpression_event.R,
 %   R/analysis_diffExpression_table.R, R/analysis_diffSplicing.R,
 %   R/analysis_diffSplicing_event.R, R/analysis_diffSplicing_table.R,
-%   R/analysis_information.R, R/analysis_pca.R, R/analysis_survival.R,
-%   R/analysis_template.R, R/app.R, R/data.R, R/data_firebrowse.R,
-%   R/data_geNormalisationFiltering.R, R/data_gtex.R, R/data_inclusionLevels.R,
-%   R/data_local.R, R/groups.R, R/help.R
+%   R/analysis_dimReduction.R, R/analysis_dimReduction_ica.R,
+%   R/analysis_dimReduction_pca.R, R/analysis_information.R,
+%   R/analysis_survival.R, R/analysis_template.R, R/app.R, R/data.R,
+%   R/data_firebrowse.R, R/data_geNormalisationFiltering.R, R/data_gtex.R,
+%   R/data_inclusionLevels.R, R/data_local.R, R/groups.R, R/help.R
 \name{analysesServer}
 \alias{analysesServer}
 \alias{correlationServer}
@@ -16,8 +17,10 @@
 \alias{diffSplicingServer}
 \alias{diffSplicingEventServer}
 \alias{diffSplicingTableServer}
-\alias{infoServer}
+\alias{dimReductionServer}
+\alias{icaServer}
 \alias{pcaServer}
+\alias{infoServer}
 \alias{survivalServer}
 \alias{templateServer}
 \alias{appServer}
@@ -47,9 +50,13 @@ diffSplicingEventServer(input, output, session)
 
 diffSplicingTableServer(input, output, session)
 
-infoServer(input, output, session)
+dimReductionServer(input, output, session)
+
+icaServer(input, output, session)
 
 pcaServer(input, output, session)
+
+infoServer(input, output, session)
 
 survivalServer(input, output, session)
 

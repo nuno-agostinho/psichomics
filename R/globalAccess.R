@@ -216,9 +216,18 @@ getPCA <- function(category=getCategory())
     getGlobal(category, "PCA")
 
 #' @rdname getEvent
-#' @param pca \code{prcomp} object (PCA) of inclusion levels
+#' @param pca \code{prcomp} object (principal component analysis)
 setPCA <- function(pca, category=getCategory())
     setGlobal(category, "PCA", value=pca)
+
+#' @rdname getEvent
+getICA <- function(category=getCategory())
+    getGlobal(category, "ICA")
+
+#' @rdname getEvent
+#' @param ica Object containing independent component analysis
+setICA <- function(ica, category=getCategory())
+    setGlobal(category, "ICA", value=ica)
 
 #' @rdname getEvent
 getSpecies <- function(category=getCategory())

@@ -2,50 +2,23 @@
 ## TODO(NunoA): logarithmic values
 ## TODO(NunoA): BoxCox transformation
 
-#' Perform principal component analysis after processing missing values from 
-#' data frame
+#' Perform principal component analysis after processing missing values
 #' 
 #' @inheritParams stats::prcomp
-#' @param naTolerance Integer: percentage of NA tolerance
-#' @param data Data frame: data
-#' 
-#' @importFrom stats prcomp
-#' @importFrom miscTools rowMedians colMedians
+#' @inheritParams reduceDimensionality
+#' @inheritDotParams stats:::prcomp.default -x -center -scale.
 #' 
 #' @return PCA result in a \code{prcomp} object
 #' @export
 #' 
+#' @seealso \code{\link{plotPCA}}, \code{\link{performICA}} and 
+#' \code{\link{plotICA}}
+#' 
 #' @examples 
 #' performPCA(USArrests)
-performPCA <- function(data, center=TRUE, scale.=FALSE, naTolerance=0) {
-    # # Get individuals (rows) with less than a given percentage of NAs
-    # nas <- rowSums(is.na(data))
-    # # hist(nas/ncol(data)*100)
-    # data <- data[nas/ncol(data)*100 <= naTolerance, , drop=FALSE]
-    # if (nrow(data) == 0) return(NULL)
-    
-    # # Replace NAs with the medians for each individual (row)
-    # medians <- rowMedians(data, na.rm=TRUE)
-    # data[is.na(data)] <- rep(medians, sum(is.na(data)))
-    
-    # Get loadings (columns) with less than a given percentage of NAs
-    nas <- colSums(is.na(data))
-    data <- data[, nas/nrow(data) * 100 <= naTolerance, drop=FALSE]
-    if (ncol(data) == 0) return(NULL)
-    
-    # Replace NAs with the medians for each loading (column)
-    medians <- colMedians(data, na.rm=TRUE)
-    nas <- colSums(is.na(data))
-    data[is.na(data)] <- rep(medians, nas)
-    
-    # Perform principal component analysis
-    pca <- tryCatch(prcomp(data, center=center, scale.=scale.), error=return)
-    
-    # PCA is useless if done with only one point
-    if ("x" %in% names(pca) && nrow(pca$x) == 1)
-        return(NULL)
-    else
-        return(pca)
+performPCA <- function(data, center=TRUE, scale.=FALSE, naTolerance=0, ...) {
+    reduceDimensionality(data, "pca", naTolerance, center=center, scale.=scale.,
+                         ...)
 }
 
 #' @rdname appUI
@@ -97,9 +70,9 @@ pcaUI <- function(id) {
         hidden(div(
             id=ns("pcaPlotUI"),
             selectizeInput(ns("pcX"), choices=NULL, width="100%",
-                           "Choose principal component for the X axis"),
+                           "Principal component for the X axis"),
             selectizeInput(ns("pcY"), choices=NULL, width="100%",
-                           "Choose principal component for the Y axis"),
+                           "Principal component for the Y axis"),
             selectGroupsUI(ns("colourGroups"), "Sample colouring",
                            noGroupsLabel="Do not colour samples",
                            groupsLabel="Colour using selected groups"),
@@ -275,11 +248,13 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
             # Colour data by the selected clinical groups
             for (group in names(groups)) {
                 rows <- groups[[group]]
+                colour <- attr(groups, "Colour")[[group]]
                 values <- df[rows, ]
                 if (!all(is.na(values))) {
                     hc <- hc_scatter(
                         hc, values[[pcX]], values[[pcY]], name=group, 
-                        sample=rownames(values), showInLegend=TRUE)
+                        sample=rownames(values), showInLegend=TRUE,
+                        color=colour)
                 }
             }
         }
@@ -376,34 +351,14 @@ clusterSet <- function(session, input, output) {
         })
         
         if (is.null(pca) || is.null(pcX) || is.null(pcY)) return(NULL)
-        pcaScores <- pca$x[ , c(pcX, pcY)]
         
         startProcess("plotClusters")
         clustering <- clusterPCA()
         
         hc <- plotPCA(pca, pcX, pcY, groups) %>% 
-            hc_title(text="Clinical samples (PCA scores)")
-        
-        for ( each in sort(unique(clustering)) ) {
-            df <- pcaScores[clustering == each, , drop=FALSE]
-            df <- df[chull(df), , drop=FALSE] # cluster points' convex hull
-            
-            colour <- JS(paste0(
-                "Highcharts.Color(Highcharts.getOptions().",
-                "colors[", each, "]).setOpacity(0.3).get()"))
-            
-            if (nrow(df) <= 2) {
-                hc <- hc %>% hc_add_series(
-                    df, zIndex=-1, color=colour,
-                    name=paste("Cluster", each), lineWidth=8,
-                    marker=list(radius=8, symbol="circle"))
-            } else {
-                hc <- hc %>% hc_add_series(
-                    df, type="polygon", zIndex=-1, color=colour,
-                    name=paste("Cluster", each))
-            }
-        }
-        hc <- hc %>% hc_legend(symbolHeight=8, symbolWidth=8)
+            plotClusters(pca$x[ , c(pcX, pcY)], clustering) %>% 
+            hc_title(text="Clinical samples (PCA scores)") %>%
+            hc_legend(symbolHeight=8, symbolWidth=8)
         output$scatterplot <- renderHighchart(hc)
         endProcess("plotClusters")
     })
@@ -500,15 +455,17 @@ clusterSet <- function(session, input, output) {
                 "The following groups were created based on the selected",
                 "clustering options. They are available for selection and",
                 "modification from any group selection input.", hr(),
-                tableOutput(session$ns("clusteringGroupsTable")) )
+                tableOutput(session$ns("clusteringTable")) )
             
             # Render as table for user
             colnames(groups)[1] <- "Group"
             groups[ , "Samples"]  <- sapply(groups[ , "Samples"], length)
-            if (!is.null(patients))
+            cols <- c(1, 4)
+            if (!is.null(patients)) {
                 groups[ , "Patients"] <- sapply(groups[ , "Patients"], length)
-            output$clusteringGroupsTable <- renderTable(groups[ , c(1, 4:5)],
-                                                        digits=0)
+                cols <- c(cols, 5)
+            }
+            output$clusteringTable <- renderTable(groups[ , cols], digits=0)
         }
     })
 }
@@ -625,11 +582,6 @@ pcaServer <- function(input, output, session) {
         }
     })
     
-    # Show variance plot
-    observeEvent(input$showVariancePlot,
-                 infoModal(session, size="large", "Variance plot",
-                           highchartOutput(ns("variancePlot"))))
-    
     # Update select inputs of the principal components
     observe({
         pca <- getPCA()
@@ -654,6 +606,11 @@ pcaServer <- function(input, output, session) {
         updateSelectizeInput(session, "pcY", choices=choices, 
                              selected=choices[[2]])
     })
+    
+    # Show variance plot
+    observeEvent(input$showVariancePlot,
+                 infoModal(session, size="large", "Variance plot",
+                           highchartOutput(ns("variancePlot"))))
     
     # Plot the explained variance plot
     output$variancePlot <- renderHighchart({
@@ -729,6 +686,6 @@ pcaServer <- function(input, output, session) {
     clusterSet(session, input, output)
 }
 
-attr(pcaUI, "loader") <- "analysis"
+attr(pcaUI, "loader") <- "dimReduction"
 attr(pcaUI, "name") <- "Principal Component Analysis (PCA)"
-attr(pcaServer, "loader") <- "analysis"
+attr(pcaServer, "loader") <- "dimReduction"

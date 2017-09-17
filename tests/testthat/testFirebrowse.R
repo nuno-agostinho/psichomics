@@ -100,7 +100,7 @@ test_that("getFirebrowseDataTypes obtains data types available in Firebrowse", {
     skipIfFirebrowseIsUnavailable()
     types <- getFirebrowseDataTypes()
     expect_true(all(c("exon_expression",
-                      "genes_normalized",
+                      "RSEM_genes_normalized",
                       "junction_quantification") %in% types[[1]]))
 })
 
