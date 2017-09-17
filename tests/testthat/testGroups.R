@@ -322,7 +322,7 @@ test_that("Rename groups", {
     
     # Properly name a new group after a set operation
     selected <- c(2, 4)
-    name <- "female tumour samples"
+    name <- "(female tumour)"
     df2 <- setOperation("union", df, selected, matches=inverted, groupName=name)
     expect_equal(df2[[1, "Names"]], name)
     

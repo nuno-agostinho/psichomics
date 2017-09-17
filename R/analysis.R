@@ -70,8 +70,8 @@ analysesUI <- function(id, tab) {
     ns <- NS(id)
     uiList <- getUiFunctions(
         ns, "analysis", 
-        priority=paste0(c("pca", "diffSplicing", "diffExpression", "survival", 
-                          "info"), "UI"))
+        priority=paste0(c("dimReduction", "diffSplicing", "diffExpression", 
+                          "survival", "info"), "UI"))
     
     # Load available analyses
     analyses <- tagList()
@@ -101,8 +101,9 @@ analysesUI <- function(id, tab) {
 analysesServer <- function(input, output, session) {
     # Run server logic from the scripts
     server <- getServerFunctions(
-        "analysis", priority=paste0(c("pca", "diffSplicing", "diffExpression",
-                                      "survival", "info"), "Server"))
+        "analysis", priority=paste0(c("dimReduction", "diffSplicing", 
+                                      "diffExpression", "survival", "info"),
+                                    "Server"))
 }
 
 
@@ -1583,7 +1584,7 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
         sliderInput(id2("Size"), "Size", min=1, max=10, step=1, value=size,
                     width="100%"),
         colourSelector,
-        sliderInput(id2("Alpha"), "Transparency", min=0, max=1, step=0.01,
+        sliderInput(id2("Alpha"), "Opacity", min=0, max=1, step=0.01,
                     value=alpha, width="100%")
     )
 }

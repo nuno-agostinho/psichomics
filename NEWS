@@ -28,8 +28,10 @@
 * Differential splicing analysis:
     - Label points based on top differentially spliced events, selected 
     alternative splicing events and selected genes
-* Principal component analysis:
+* Dimensionality reduction techniques:
     - Create data groups based on the partitioning clustering of PCA scores
+    - Perform independent component analysis (ICA) on alternative splicing 
+    quantification and gene expression data
 * Survival analysis:
     - Add p-value plot to visually infer the significance of survival analyses
     based on multiple alternative splicing quantification cutoffs

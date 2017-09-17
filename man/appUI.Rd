@@ -3,10 +3,11 @@
 %   R/analysis_diffExpression.R, R/analysis_diffExpression_event.R,
 %   R/analysis_diffExpression_table.R, R/analysis_diffSplicing.R,
 %   R/analysis_diffSplicing_event.R, R/analysis_diffSplicing_table.R,
-%   R/analysis_information.R, R/analysis_pca.R, R/analysis_survival.R,
-%   R/analysis_template.R, R/app.R, R/data.R, R/data_firebrowse.R,
-%   R/data_geNormalisationFiltering.R, R/data_gtex.R, R/data_inclusionLevels.R,
-%   R/data_local.R, R/groups.R, R/help.R
+%   R/analysis_dimReduction.R, R/analysis_dimReduction_ica.R,
+%   R/analysis_dimReduction_pca.R, R/analysis_information.R,
+%   R/analysis_survival.R, R/analysis_template.R, R/app.R, R/data.R,
+%   R/data_firebrowse.R, R/data_geNormalisationFiltering.R, R/data_gtex.R,
+%   R/data_inclusionLevels.R, R/data_local.R, R/groups.R, R/help.R
 \name{analysesUI}
 \alias{analysesUI}
 \alias{correlationUI}
@@ -16,8 +17,10 @@
 \alias{diffSplicingUI}
 \alias{diffSplicingEventUI}
 \alias{diffSplicingTableUI}
-\alias{infoUI}
+\alias{dimReductionUI}
+\alias{icaUI}
 \alias{pcaUI}
+\alias{infoUI}
 \alias{survivalUI}
 \alias{templateUI}
 \alias{appUI}
@@ -47,9 +50,13 @@ diffSplicingEventUI(id)
 
 diffSplicingTableUI(id)
 
-infoUI(id)
+dimReductionUI(id, tab)
+
+icaUI(id)
 
 pcaUI(id)
+
+infoUI(id)
 
 survivalUI(id)
 

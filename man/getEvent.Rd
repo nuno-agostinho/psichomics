@@ -23,6 +23,8 @@
 \alias{setInclusionLevels}
 \alias{getPCA}
 \alias{setPCA}
+\alias{getICA}
+\alias{setICA}
 \alias{getSpecies}
 \alias{setSpecies}
 \alias{getAssemblyVersion}
@@ -77,6 +79,10 @@ getPCA(category = getCategory())
 
 setPCA(pca, category = getCategory())
 
+getICA(category = getCategory())
+
+setICA(ica, category = getCategory())
+
 getSpecies(category = getCategory())
 
 setSpecies(species, category = getCategory())
@@ -110,7 +116,9 @@ dataset is returned)}
 
 \item{incLevels}{Data frame or matrix: inclusion levels}
 
-\item{pca}{\code{prcomp} object (PCA) of inclusion levels}
+\item{pca}{\code{prcomp} object (principal component analysis)}
+
+\item{ica}{Object containing independent component analysis}
 
 \item{species}{Character: species}
 
