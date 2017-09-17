@@ -305,10 +305,9 @@ renderGroupInterface <- function(ns) {
     
     saveLoadGroups <- tags$div(
         class="btn-group", role="group",
-        tags$button(icon("user-circle"), id=ns(saveLoadId),
+        tags$button(icon("folder-open"), id=ns(saveLoadId),
                     tags$span(class="caret"),
                     class="btn btn-default dropdown-toggle",
-                    "data-toggle"="dropdown",
                     "aria-haspopup"="true", "aria-expanded"="true"),
         tags$ul(class="dropdown-menu",
                 saveSelectedGroupsLink,
@@ -329,15 +328,16 @@ renderGroupInterface <- function(ns) {
     # Rename interface
     renameButton <- operationButton("Rename", id=ns(renameId),
                                     class="pull-right", icon=icon("pencil"))
-    nameField <- textInput(ns("groupName"), label=NULL, 
+    nameField <- textInput(ns("groupName"), label=NULL,
                            placeholder="Rename selected group")
-    nameField$attribs$style <- "margin: 0"
+    nameField$attribs$style <- "margin: 0; width: auto;"
     
     # Colour selection interface
     colourSelector <- colourInput(ns("groupColour"), label=NULL)
     colourSelector[[2]][["class"]] <- paste(colourSelector[[2]][["class"]],
                                             "groups-colourpicker")
-    colourSelector[[2]][["style"]] <- "margin-bottom: 0px !important;"
+    colourSelector[[2]][["style"]] <- paste("margin-bottom: 0px !important;",
+                                            "width: auto;")
     setColourButton <- operationButton("Set colour", id=ns(setColourId),
                                        class="pull-right", disable=FALSE,
                                        icon=icon("paint-brush"))
@@ -1450,4 +1450,175 @@ getSelectedGroups <- function(input, id, samples=FALSE, dataset="Clinical data",
         attr(groups, "Colour") <- colour[selected]
     }
     return(groups)
+}
+
+
+# Multiple group independence testing -------------------------------------
+# Inspiration from https://rud.is/projects/facetedheatmaps.html
+
+#' Parse categorical columns in a data frame
+#' 
+#' Retrieve elements grouped by their unique group based on each categorical 
+#' column
+#' 
+#' @param df Data frame
+#' 
+#' @seealso \code{\link{testGroupIndependence}} and 
+#' \code{\link{plotGroupIndependence}}
+#' 
+#' @return List of lists containing values based on rownames of \code{df}
+#' @export
+parseCategoricalGroups <- function(df) {
+    isCategorical <- sapply(seq(ncol(df)), function(i) is.factor(df[ , i]))
+    categories <- df[ , isCategorical]
+    
+    groups <- lapply(colnames(categories), function(col) {
+        divisions <- as.character(df[ , col])
+        divisions[is.na(divisions)] <- "NA" # Do not dismiss missing values
+        split(rownames(df), divisions)
+    })
+    names(groups) <- colnames(categories)
+    return(groups)
+}
+
+#' Multiple independence tests between a reference group and list of groups
+#' 
+#' Uses Fisher's exact test.
+#' 
+#' @param ref Character: identifier of elements in reference group
+#' @param groups List of characters: list of groups where each element contains
+#' the identifiers of respective elements
+#' @param elements Character: all patient identifiers
+#' @inheritParams stats::p.adjust
+#' 
+#' @importFrom stats p.adjust fisher.test
+#' 
+#' @return Returns a \code{groupIndependenceTest} object: a list where each 
+#' element is a list containing:
+#' \item{attribute}{Name of the original groups compared against the reference
+#' groups}
+#' \item{table}{Contigency table used for testing}
+#' \item{pvalue}{Fisher's exact test's p-value}
+testSingleIndependence <- function(ref, groups, elements, pvalueAdjust="BH") {
+    # Number of intersections between reference and groups of interest
+    getIntersectionsNumber <- function(reference, attribute)
+        length(intersect(reference, attribute))
+    intersections1 <- lapply(groups, sapply, getIntersectionsNumber, ref)
+    
+    # Number of intersections between complement and groups of interest
+    getComplementOf <- function(ref, elements) setdiff(elements, ref)
+    complement <- getComplementOf(ref, elements)
+    intersections2 <- lapply(groups, sapply, getIntersectionsNumber, complement)
+    
+    # Fisher's exact method for group independence testing
+    groupIndependenceTesting <- function(i, intersections1, intersections2) {
+        mat    <- rbind(intersections1[[i]], intersections2[[i]])
+        pvalue <- tryCatch(fisher.test(mat)$p.value, error=return)
+        if (is(pvalue, "error")) pvalue <- 1
+        
+        col <- names(intersections1)[[i]]
+        return(list(attribute=col, table=mat, pvalue=pvalue))
+    }
+    res <- lapply(seq(intersections1), groupIndependenceTesting, 
+                  intersections1, intersections2)
+    names(res) <- sapply(res, "[[", "attribute")
+    
+    adjusted <- p.adjust(sapply(res, "[[", "pvalue"), pvalueAdjust)
+    for (i in seq(res)) res[[i]]$pvalueAdjusted <- adjusted[[i]]
+    class(res) <- c(class(res), "groupIndependenceTest")
+    return(res)
+}
+
+#' Multiple independence tests between reference groups and list of groups
+#' 
+#' Test multiple contigency tables comprised by two groups (one reference group
+#' and another containing remaing elements) and provided groups.
+#' 
+#' @param ref List of character: list of groups where each element contains the
+#' identifiers of respective elements
+#' @param groups List of characters: list of groups where each element contains
+#' the identifiers of respective elements
+#' @param elements Character: all available elements
+#' @inheritParams stats::p.adjust
+#' 
+#' @importFrom stats p.adjust fisher.test
+#' 
+#' @return \code{multiGroupIndependenceTest} object, a data frame containing:
+#' \item{attribute}{Name of the original groups compared against the reference
+#' groups}
+#' \item{table}{Contigency table used for testing}
+#' \item{pvalue}{Fisher's exact test's p-value}
+#' 
+#' @seealso \code{\link{parseCategoricalGroups}} and 
+#' \code{\link{plotGroupIndependence}}
+#' 
+#' @export
+testGroupIndependence <- function(ref, groups, elements, pvalueAdjust="BH") {
+    if (is.list(ref))
+        obj <- lapply(ref, testSingleIndependence, groups, elements)
+    else
+        obj <- list("Reference"=testSingleIndependence(ref, groups, elements))
+    
+    df <- NULL
+    for (g in seq(obj)) {
+        name <- names(obj)[[g]]
+        if (is.null(name) || identical(name, "")) name <- "Reference"
+        
+        pvalue   <- sapply(obj[[g]], "[[", "pvalue")
+        adjusted <- sapply(obj[[g]], "[[", "pvalueAdjusted")
+        mat <- lapply(obj[[g]], "[[", "table")
+        new <- data.frame("Reference"=paste(name, "vs others"), 
+                          "Attributes"=names(pvalue),
+                          "p-value"=pvalue,
+                          "Adjusted p-value"=adjusted,
+                          "Contigency table"=I(mat))
+        df <- rbind(df, new)
+    }
+    colnames(df) <- c("Reference", "Attributes", "p-value", "Adjusted p-value",
+                      "Contigency table")
+    class(df) <- c(class(df), "multiGroupIndependenceTest")
+    return(df)
+}
+
+#' Plot -log10(p-values) of the results obtained after multiple group 
+#' independence testing
+#' 
+#' @param groups \code{multiGroupIndependenceTest} object (obtained after 
+#' running \link{\code{testGroupIndependence}})
+#' @param top Integer: number of attributes to render
+#' 
+#' @importFrom ggplot2 ggplot aes geom_tile theme coord_equal unit element_blank
+#' element_text scale_fill_gradient2
+#' 
+#' @seealso \code{\link{parseCategoricalGroups}} and 
+#' \code{\link{testGroupIndependence}}
+#' 
+#' @return \code{ggplot} object
+#' @export
+plotGroupIndependence <- function(groups, top=50) {
+    # Sort and select attributes with the lowest p-values
+    df <- groups
+    ord <- order(df[["Adjusted p-value"]])
+    attrs <- unique(df[["Attributes"]][ord])[seq(top)]
+    df <- df[df[["Attributes"]] %in% attrs, ]
+    # Avoid log of zeroes
+    df$pvalue <- df[["Adjusted p-value"]] + .Machine$double.xmin 
+    
+    plot <- ggplot(df, aes(Attributes, Reference)) + 
+        geom_tile(aes(fill=-log10(pvalue)), color="white", size=0.1) +
+        theme(axis.title.x=element_text(size=10),
+              axis.text.x=element_blank(),
+              axis.title.y=element_blank(),
+              axis.ticks=element_blank(),
+              panel.grid.major=element_blank(),
+              panel.grid.minor=element_blank(),
+              panel.background=element_blank(),
+              legend.position="bottom",
+              legend.title=element_text(size=10),
+              legend.key.width=unit(0.5, "cm"),
+              legend.key.height=unit(0.2, "cm")) + 
+        scale_fill_gradient2(low="white", mid="grey", high="orange", 
+                             midpoint=150) +
+        coord_equal()
+    return(plot)
 }
