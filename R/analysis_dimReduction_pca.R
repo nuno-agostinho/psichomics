@@ -465,7 +465,8 @@ clusterSet <- function(session, input, output) {
                 groups[ , "Patients"] <- sapply(groups[ , "Patients"], length)
                 cols <- c(cols, 5)
             }
-            output$clusteringTable <- renderTable(groups[ , cols], digits=0)
+            output$clusteringTable <- renderTable(groups[ , cols], digits=0,
+                                                  align="c")
         }
     })
 }

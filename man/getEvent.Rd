@@ -25,6 +25,8 @@
 \alias{setPCA}
 \alias{getICA}
 \alias{setICA}
+\alias{getGroupIndependenceTesting}
+\alias{setGroupIndependenceTesting}
 \alias{getSpecies}
 \alias{setSpecies}
 \alias{getAssemblyVersion}
@@ -83,6 +85,11 @@ getICA(category = getCategory())
 
 setICA(ica, category = getCategory())
 
+getGroupIndependenceTesting(category = getCategory())
+
+setGroupIndependenceTesting(groupIndependenceTesting,
+  category = getCategory())
+
 getSpecies(category = getCategory())
 
 setSpecies(species, category = getCategory())
@@ -119,6 +126,9 @@ dataset is returned)}
 \item{pca}{\code{prcomp} object (principal component analysis)}
 
 \item{ica}{Object containing independent component analysis}
+
+\item{groupIndependenceTesting}{Object containing group independence testing
+results}
 
 \item{species}{Character: species}
 

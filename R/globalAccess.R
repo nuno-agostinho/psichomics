@@ -230,6 +230,19 @@ setICA <- function(ica, category=getCategory())
     setGlobal(category, "ICA", value=ica)
 
 #' @rdname getEvent
+getGroupIndependenceTesting <- function(category=getCategory())
+    getGlobal(category, "groupIndependenceTesting")
+
+#' @rdname getEvent
+#' @param groupIndependenceTesting Object containing group independence testing
+#' results
+setGroupIndependenceTesting <- function(groupIndependenceTesting, 
+                                        category=getCategory()) {
+    setGlobal(category, "groupIndependenceTesting", 
+              value=groupIndependenceTesting)
+}
+
+#' @rdname getEvent
 getSpecies <- function(category=getCategory())
     getGlobal(category, "species")
 

@@ -92,6 +92,7 @@ files.
 
 ```{r prepare examples, include=FALSE}
 clinical <- readRDS("BRCA_clinical.RDS")
+geneExpr <- readRDS("BRCA_geneExpr.RDS")
 ```
 
 ## Load GTEx files

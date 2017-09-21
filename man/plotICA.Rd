@@ -9,7 +9,7 @@ plotICA(ica, components = seq(10), groups = NULL, ...)
 \arguments{
 \item{ica}{Object resulting from \code{\link{performICA}}}
 
-\item{components}{Numeric: components to plot}
+\item{components}{Numeric: independent components to plot}
 
 \item{groups}{Matrix: groups to plot indicating the index of interest of the
 samples (use clinical or sample groups)}
@@ -56,5 +56,5 @@ groups <- NULL
 groups$sunny <- c("California", "Hawaii", "Florida")
 groups$ozEntrance <- c("Kansas")
 groups$novel <- c("New Mexico", "New York", "New Hampshire", "New Jersey")
-plotICA(ica, groups)
+plotICA(ica, groups=groups)
 }
