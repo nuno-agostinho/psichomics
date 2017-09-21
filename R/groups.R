@@ -211,9 +211,11 @@ renderGroupInterface <- function(ns) {
     
     # Save and load groups
     saveLoadId           <- "saveLoadGroups"
+    groupIndependenceId  <- "groupTesting"
     saveSelectedGroupsId <- "saveSelectedGroups"
     saveAllGroupsId      <- "saveAllGroups"
     loadGroupsId         <- "loadGroups"
+    testGroupsId         <- "testGroups"
     
     operationElement <- function(operation, ..., id=NULL, icon=NULL,
                                  FUN=actionButton, width=NULL, disable=TRUE) {
@@ -300,12 +302,12 @@ renderGroupInterface <- function(ns) {
         helpText("Import a file containing patient and/or sample",
                  "identifiers by group"),
         id=ns(loadGroupsId),
-        icon=icon("folder-open"),
+        icon=icon("plus-circle"),
         disable=FALSE)
     
     saveLoadGroups <- tags$div(
         class="btn-group", role="group",
-        tags$button(icon("user-circle"), id=ns(saveLoadId),
+        tags$button(icon("folder-open"), id=ns(saveLoadId),
                     tags$span(class="caret"),
                     class="btn btn-default dropdown-toggle",
                     "data-toggle"="dropdown",
@@ -315,6 +317,24 @@ renderGroupInterface <- function(ns) {
                 saveAllGroupsLink,
                 tags$li(role="separator", class="divider"),
                 loadGroupsLink))
+    
+    testGroupIndependenceLink <- operationLink(
+        "Test group independence against subject and sample categories",
+        helpText("Perform multiple independent Fisher's exact tests between",
+                 "each of the selected groups and their complementary group",
+                 "against the values from categorical variables"),
+        id=ns(testGroupsId), icon=icon("plus-circle"), 
+        style="white-space: normal;")
+    
+    groupIndependenceSet <- tags$div(
+        class="btn-group", role="group",
+        tags$button(icon("link"), id=ns(groupIndependenceId),
+                    tags$span(class="caret"),
+                    class="btn btn-default dropdown-toggle",
+                    "data-toggle"="dropdown",
+                    "aria-haspopup"="true", "aria-expanded"="true"),
+        tags$ul(class="dropdown-menu", style="width: 300px;",
+                testGroupIndependenceLink))
     
     removeButton <- operationButton("Remove", id=ns(removeId),
                                     class="btn-danger",
@@ -329,15 +349,16 @@ renderGroupInterface <- function(ns) {
     # Rename interface
     renameButton <- operationButton("Rename", id=ns(renameId),
                                     class="pull-right", icon=icon("pencil"))
-    nameField <- textInput(ns("groupName"), label=NULL, 
+    nameField <- textInput(ns("groupName"), label=NULL,
                            placeholder="Rename selected group")
-    nameField$attribs$style <- "margin: 0"
+    nameField$attribs$style <- "margin: 0; width: auto;"
     
     # Colour selection interface
     colourSelector <- colourInput(ns("groupColour"), label=NULL)
     colourSelector[[2]][["class"]] <- paste(colourSelector[[2]][["class"]],
                                             "groups-colourpicker")
-    colourSelector[[2]][["style"]] <- "margin-bottom: 0px !important;"
+    colourSelector[[2]][["style"]] <- paste("margin-bottom: 0px !important;",
+                                            "width: auto;")
     setColourButton <- operationButton("Set colour", id=ns(setColourId),
                                        class="pull-right", disable=FALSE,
                                        icon=icon("paint-brush"))
@@ -355,8 +376,7 @@ renderGroupInterface <- function(ns) {
         dataTableOutput(ns("groupsTable")),
         helpText("Select groups by clicking on each one to perform the",
                  "following actions on them."),
-        operations,
-        saveLoadGroups,
+        operations, saveLoadGroups, groupIndependenceSet,
         tags$div(class="btn-group pull-right",
                  removeButton,
                  tags$button(type="button", tags$span(class="caret"),
@@ -370,7 +390,12 @@ renderGroupInterface <- function(ns) {
                          removeAllLink)),
         #checkboxInput(ns("removeSetsUsed"), "Remove original groups",
         #              value=TRUE)
-        hidden(singleGroupSelectedInterface))
+        hidden(singleGroupSelectedInterface),
+        plotOutput(ns(groupTestId <- "groupIndependenceTestingPlot"), 
+                   height="200px", 
+                   hover=hoverOpts(ns(paste0(groupTestId, "-hover")), 
+                                   delay=50, delayType="throttle")),
+        uiOutput(ns(paste0(groupTestId, "-tooltip"))))
 }
 
 
@@ -970,9 +995,10 @@ showGroupsTable <- function(datasetName) {
 #' 
 #' @importFrom DT renderDataTable dataTableOutput
 #' @importFrom shinyjs disabled enable disable hidden show hide runjs
-#' @importFrom shiny textInput
+#' @importFrom shiny textInput HTML
 #' @importFrom shinyBS updateCollapse
 #' @importFrom colourpicker updateColourInput
+#' @importFrom xtable xtable
 groupsServer <- function(input, output, session, datasetName) {
     ns <- session$ns
     
@@ -1044,27 +1070,27 @@ groupsServer <- function(input, output, session, datasetName) {
         "table.columns(cols).visible(false, false);",
         "table.columns.adjust().draw(false);",
         "var format = function(d) {
-            return '<table class=\"table table-details\" border=\"0\">'+
-                '<tr>'+
-                '<td>Subset:</td>'+
-                '<td>'+ d[d.length - 2] +'</td>'+
-                '</tr>'+
-                '<tr>'+
-                '<td>Input:</td>'+
-                '<td>' + d[d.length - 1] + '</td>'+
-                '</tr>'+
-                '</table>';
-        };",
+        return '<table class=\"table table-details\" border=\"0\">'+
+        '<tr>'+
+        '<td>Subset:</td>'+
+        '<td>'+ d[d.length - 2] +'</td>'+
+        '</tr>'+
+        '<tr>'+
+        '<td>Input:</td>'+
+        '<td>' + d[d.length - 1] + '</td>'+
+        '</tr>'+
+        '</table>';
+};",
         "table.on('click', 'td.details-control', function() {
-            var td = $(this),
-                row = table.row(td.closest('tr'));
-            if (row.child.isShown()) {
-                row.child.hide();
-                td.html(plus);
-            } else {
-                row.child( format(row.data()), 'no-padding' ).show();
-                td.html(minus);
-            }
+        var td = $(this),
+        row = table.row(td.closest('tr'));
+        if (row.child.isShown()) {
+        row.child.hide();
+        td.html(plus);
+        } else {
+        row.child( format(row.data()), 'no-padding' ).show();
+        td.html(minus);
+        }
         });"))
     
     # Remove selected groups
@@ -1114,10 +1140,10 @@ groupsServer <- function(input, output, session, datasetName) {
                     datasetName=datasetName, buttonId=symDiffId,
                     symbol=" \u2A01 ")
     
-    saveLoadId           <- "saveLoadGroups"
     saveSelectedGroupsId <- "saveSelectedGroups"
     saveAllGroupsId      <- "saveAllGroups"
     loadGroupsId         <- "loadGroups"
+    testGroupsId         <- "testGroups"
     
     # Disable set operations according to the selected rows
     observe({
@@ -1134,6 +1160,7 @@ groupsServer <- function(input, output, session, datasetName) {
         symDiffButton    <- getListId(symDiffId)
         selGroupsButton  <- getListId(saveSelectedGroupsId)
         allGroupsButton  <- getListId(saveAllGroupsId)
+        testGroupsButton <- getListId(testGroupsId)
         
         # Disable data group export when no groups were yet created
         groups <- getGroupsFrom("Clinical data", complete=TRUE)
@@ -1150,13 +1177,16 @@ groupsServer <- function(input, output, session, datasetName) {
         # - merge:      >= 2
         # - intersect:  >= 2
         # - sym diff:   >= 2
+        # Also, group independence testing: >= 1
         
         if (selectedRows >= 1) {
             enable(removeButton)
             enable(selGroupsButton)
+            enable(testGroupsButton)
         } else {
             disable(removeButton)
             disable(selGroupsButton)
+            disable(testGroupsButton)
         }
         
         if (selectedRows == 2) {
@@ -1381,6 +1411,111 @@ groupsServer <- function(input, output, session, datasetName) {
         if (!is.null(imported) && !is(imported, "error"))
             appendNewGroups(imported)
     })
+    
+    # Test group indepedence
+    observeEvent(input[["testGroups-button"]], {
+        isolate({
+            # Get selected groups
+            selected <- sort(input$groupsTable_rows_selected)
+            groups   <- getGroupsFrom("Clinical data", complete=TRUE)
+            groups   <- groups[selected, , drop=FALSE]
+            
+            # Get subject and sample attributes
+            clinical   <- getClinicalData()
+            sampleAttr <- getSampleInfo()
+        })
+        
+        res <- NULL
+        # Test against categorical variables from clinical attributes
+        if (!is.null(clinical)) {
+            reference  <- setNames(groups[ , "Patients"], rownames(groups))
+            categories <- parseCategoricalGroups(clinical)
+            res        <- rbind(res, testGroupIndependence(
+                reference, categories, clinical, progress=updateProgress))
+        }
+        closeProgress()
+        
+        # Test against categorical variables from sample attributes
+        if (!is.null(sampleAttr)) {
+            reference  <- setNames(groups[ , "Samples"], rownames(groups))
+            categories <- parseCategoricalGroups(sampleAttr)
+            res        <- rbind(res, testGroupIndependence(
+                reference, categories, sampleAttr, progress=updateProgress))
+        }
+        closeProgress()
+        setGroupIndependenceTesting(res)
+    })
+    
+    output$groupIndependenceTestingPlot <- renderPlot({
+        tests <- getGroupIndependenceTesting()
+        if (!is.null(tests)) plotGroupIndependence(tests, top=25, textSize=15)
+    })
+    
+    output[["groupIndependenceTestingPlot-tooltip"]] <- renderUI({
+        tests <- getGroupIndependenceTesting()
+        if (!is.null(tests)) {
+            df    <- tests
+            top   <- 25
+            hover <- input[["groupIndependenceTestingPlot-hover"]]
+            x     <- "Attributes"
+            y     <- "Reference"
+            
+            # Sort and select attributes with the lowest p-values
+            ord <- order(df[["Adjusted p-value"]])
+            attrs <- unique(df[["Attributes"]][ord])[seq(top)]
+            df <- df[df[["Attributes"]] %in% attrs, ]
+            # Avoid log of zeroes
+            df$pvalue <- df[["Adjusted p-value"]] + .Machine$double.xmin
+            
+            # Modify data frame according to data representation
+            row <- match(df$Reference, unique(df$Reference))
+            df2 <- data.frame(row=row, col=seq(length(row) / max(row)))
+            rownames(df2) <- rownames(df)
+            df2 <- cbind(df2, df)
+            
+            point <- nearPoints(df2, hover, threshold=10, maxpoints=1, 
+                                addDist=TRUE, xvar="col", yvar="row")
+            if (nrow(point) == 0) return(NULL)
+            
+            # Calculate point position inside the image as percent of total 
+            # dimensions from left (horizontal) and from top (vertical)
+            xDomain    <- hover$domain$right - hover$domain$left
+            left_pct   <- (hover$x - hover$domain$left) / xDomain
+            yDomain    <- hover$domain$top - hover$domain$bottom
+            bottom_pct <- (hover$y - hover$domain$bottom) / yDomain
+            
+            # Calculate distance from left and bottom in pixels
+            xRange    <- hover$range$right - hover$range$left
+            left_px   <- hover$range$left + left_pct * xRange + 40
+            yRange    <- hover$range$bottom - hover$range$top
+            bottom_px <- hover$range$bottom + bottom_pct * yRange - 140
+            
+            trItem <- function(key, value) 
+                tags$tr(tags$td(tags$b(key)), tags$td(value))
+            
+            # Prepare contigency table
+            ref <- as.character(point[["Reference"]])
+            ref <- gsub("vs others", "", ref, fixed=TRUE)
+            contigencyTable <- point[["Contigency table"]][[1]]
+            rownames(contigencyTable) <- c(ref, "Others")
+            contigencyTable <- table2html(contigencyTable)
+            
+            wellPanel(
+                class="well-sm",
+                style=paste0("position: absolute; z-index: 100;",
+                             "background-color: rgba(245, 245, 245, 0.85); ",
+                             "left:", left_px, "px; bottom:", bottom_px, "px;"),
+                tags$table(class="table table-condensed", 
+                           style="margin-bottom: 0; width: auto;",
+                           tags$thead( trItem("Attribute", point$Attributes) ),
+                           tags$tbody(
+                               trItem("p-value", signifDigits(point$pvalue)),
+                               trItem("p-value (BH)",
+                                      signifDigits(point$`Adjusted p-value`)))),
+                tags$div(style="padding-left: 5px;",
+                         tags$b("Contigency table"), contigencyTable))
+        }
+    })
 }
 
 #' Server function for data grouping (one call)
@@ -1450,4 +1585,234 @@ getSelectedGroups <- function(input, id, samples=FALSE, dataset="Clinical data",
         attr(groups, "Colour") <- colour[selected]
     }
     return(groups)
+}
+
+
+# Multiple group independence testing -------------------------------------
+# Inspiration from https://rud.is/projects/facetedheatmaps.html
+
+#' Parse categorical columns in a data frame
+#' 
+#' Retrieve elements grouped by their unique group based on each categorical 
+#' column
+#' 
+#' @param df Data frame
+#' 
+#' @seealso \code{\link{testGroupIndependence}} and 
+#' \code{\link{plotGroupIndependence}}
+#' 
+#' @return List of lists containing values based on rownames of \code{df}
+#' @export
+#' @examples 
+#' df <- data.frame("race"=c("caucasian", "caucasian", "asian"),
+#'                  "gender"=c("male", "female", "male"))
+#' rownames(df) <- paste("patient", 1:3)
+#' parseCategoricalGroups(df)
+parseCategoricalGroups <- function(df) {
+    isCategorical <- sapply(seq(ncol(df)), function(i) is.factor(df[ , i]))
+    categories <- df[ , isCategorical, drop=FALSE]
+    
+    groups <- lapply(colnames(categories), function(col) {
+        divisions <- as.character(df[ , col])
+        divisions[is.na(divisions)] <- "NA" # Do not dismiss missing values
+        split(rownames(df), divisions)
+    })
+    names(groups) <- colnames(categories)
+    return(groups)
+}
+
+#' Multiple independence tests between a reference group and list of groups
+#' 
+#' Uses Fisher's exact test.
+#' 
+#' @param ref Character: identifier of elements in reference group
+#' @param groups List of characters: list of groups where each element contains
+#' the identifiers of respective elements
+#' @param elements Character: all patient identifiers
+#' @inheritParams stats::p.adjust
+#' 
+#' @importFrom stats p.adjust fisher.test
+#' 
+#' @return Returns a \code{groupIndependenceTest} object: a list where each 
+#' element is a list containing:
+#' \item{attribute}{Name of the original groups compared against the reference
+#' groups}
+#' \item{table}{Contigency table used for testing}
+#' \item{pvalue}{Fisher's exact test's p-value}
+testSingleIndependence <- function(ref, groups, elements, pvalueAdjust="BH",
+                                   progress=echoProgress) {
+    # Number of intersections between reference and groups of interest
+    progress("Calculating intersections", 
+             detail="Reference versus categorical groups")
+    getIntersectionsNumber <- function(reference, attribute)
+        length(intersect(reference, attribute))
+    intersections1 <- lapply(groups, sapply, getIntersectionsNumber, ref)
+    
+    # Number of intersections between complement and groups of interest
+    progress("Calculating intersections", 
+             detail="Complement versus categorical groups")
+    getComplementOf <- function(ref, elements) setdiff(elements, ref)
+    complement <- getComplementOf(ref, elements)
+    intersections2 <- lapply(groups, sapply, getIntersectionsNumber, complement)
+    
+    # Fisher's exact method for group independence testing
+    progress("Performing multiple Fisher's exact tests")
+    groupIndependenceTesting <- function(i, intersections1, intersections2) {
+        mat    <- rbind(intersections1[[i]], intersections2[[i]])
+        progress("Performing multiple Fisher's exact tests", console=FALSE)
+        if ( all(sort(unique(as.numeric(mat))) %in% 0:1) ) {
+            pvalue <- 1
+        } else {
+            pvalue <- tryCatch(fisher.test(mat)$p.value, error=return)
+            if (is(pvalue, "error")) pvalue <- 1
+        }
+        col <- names(intersections1)[[i]]
+        return(list(attribute=col, table=mat, pvalue=pvalue))
+    }
+    res <- lapply(seq(intersections1), groupIndependenceTesting, 
+                  intersections1, intersections2)
+    names(res) <- sapply(res, "[[", "attribute")
+    
+    adjusted <- p.adjust(sapply(res, "[[", "pvalue"), pvalueAdjust)
+    for (i in seq(res)) res[[i]]$pvalueAdjusted <- adjusted[[i]]
+    class(res) <- c(class(res), "groupIndependenceTest")
+    return(res)
+}
+
+#' Multiple independence tests between reference groups and list of groups
+#' 
+#' Test multiple contigency tables comprised by two groups (one reference group
+#' and another containing remaing elements) and provided groups.
+#' 
+#' @param ref List of character: list of groups where each element contains the
+#' identifiers of respective elements
+#' @param groups List of characters: list of groups where each element contains
+#' the identifiers of respective elements
+#' @param elements Character: all available elements (if a data frame is given,
+#' its rownames will be used)
+#' @inheritParams stats::p.adjust
+#' 
+#' @importFrom stats p.adjust fisher.test
+#' 
+#' @return \code{multiGroupIndependenceTest} object, a data frame containing:
+#' \item{attribute}{Name of the original groups compared against the reference
+#' groups}
+#' \item{table}{Contigency table used for testing}
+#' \item{pvalue}{Fisher's exact test's p-value}
+#' 
+#' @seealso \code{\link{parseCategoricalGroups}} and 
+#' \code{\link{plotGroupIndependence}}
+#' 
+#' @export
+#' @examples 
+#' elements <- paste("patients", 1:10)
+#' ref      <- elements[5:10]
+#' groups   <- list(race=list(asian=elements[1:3],
+#'                            white=elements[4:7],
+#'                            black=elements[8:10]),
+#'                  region=list(european=elements[c(4, 5, 9)],
+#'                              african=elements[c(6:8, 10)]))
+#' groupTesting <- testGroupIndependence(ref, groups, elements)
+#' # View(groupTesting)
+testGroupIndependence <- function(ref, groups, elements, pvalueAdjust="BH",
+                                  progress=echoProgress) {
+    if (is.data.frame(elements)) elements <- rownames(elements)
+    
+    if (is.list(ref)) {
+        progress("Group independence testing", 
+                 divisions=3 + length(ref) * length(groups))
+        obj <- lapply(seq(ref), function(i) {
+            progress("Group independence testing", detail=names(ref)[[i]])
+            testSingleIndependence(ref[[i]], groups, elements, 
+                                   progress=progress)
+        })
+    } else {
+        progress("Group independence testing", divisions=3 + length(groups))
+        obj <- list("Reference"=testSingleIndependence(ref, groups, elements,
+                                                       progress=progress))
+    }
+    names(obj) <- names(ref)
+    
+    df <- NULL
+    for (g in seq(obj)) {
+        name <- names(obj)[[g]]
+        if (is.null(name) || identical(name, "")) name <- "Reference"
+        
+        pvalue   <- sapply(obj[[g]], "[[", "pvalue")
+        adjusted <- sapply(obj[[g]], "[[", "pvalueAdjusted")
+        mat <- lapply(obj[[g]], "[[", "table")
+        new <- data.frame("Reference"=paste(name, "vs others"), 
+                          "Attributes"=names(pvalue),
+                          "p-value"=pvalue,
+                          "Adjusted p-value"=adjusted,
+                          "Contigency table"=I(mat))
+        df <- rbind(df, new)
+    }
+    colnames(df) <- c("Reference", "Attributes", "p-value", "Adjusted p-value",
+                      "Contigency table")
+    class(df) <- c(class(df), "multiGroupIndependenceTest")
+    return(df)
+}
+
+#' Plot -log10(p-values) of the results obtained after multiple group 
+#' independence testing
+#' 
+#' @param groups \code{multiGroupIndependenceTest} object (obtained after 
+#' running \code{\link{testGroupIndependence}})
+#' @param top Integer: number of attributes to render
+#' @param textSize Integer: size of the text
+#' @param colourLow Character: name or HEX code of colour for lower values
+#' @param colourMid Character: name or HEX code of colour for middle values
+#' @param colourHigh Character: name or HEX code of colour for higher values
+#' @param colourMidpoint Numeric: midpoint to identify middle values
+#' 
+#' @importFrom ggplot2 ggplot aes geom_tile theme coord_equal unit element_blank
+#' element_text scale_fill_gradient2
+#' 
+#' @seealso \code{\link{parseCategoricalGroups}} and 
+#' \code{\link{testGroupIndependence}}
+#' 
+#' @return \code{ggplot} object
+#' @export
+#' 
+#' @examples 
+#' elements <- paste("patients", 1:50)
+#' ref      <- elements[10:50]
+#' groups   <- list(race=list(asian=elements[1:3],
+#'                            white=elements[4:7],
+#'                            black=elements[8:10]),
+#'                  region=list(european=elements[c(4, 5, 9)],
+#'                              african=elements[c(6:8, 10:50)]))
+#' groupTesting <- testGroupIndependence(ref, groups, elements)
+#' plotGroupIndependence(groupTesting)
+plotGroupIndependence <- function(groups, top=50, textSize=10, 
+                                  colourLow="lightgrey", colourMid="blue", 
+                                  colourHigh="orange", colourMidpoint=150) {
+    # Sort and select attributes with the lowest p-values
+    df <- groups
+    ord <- order(df[["Adjusted p-value"]])
+    attrs <- head(unique(df[["Attributes"]][ord]), top)
+    df <- df[df[["Attributes"]] %in% attrs, ]
+    # Avoid log of zeroes
+    df$pvalue <- df[["Adjusted p-value"]] + .Machine$double.xmin 
+    
+    plot <- ggplot(df, aes(Attributes, Reference)) + 
+        geom_tile(aes(fill=-log10(pvalue)), color="white", size=0.1) +
+        coord_equal() +
+        theme(axis.title.x=element_text(size=textSize),
+              axis.text.x=element_blank(),
+              axis.title.y=element_blank(),
+              axis.text.y=element_text(size=textSize),
+              axis.ticks=element_blank(),
+              panel.grid.major=element_blank(),
+              panel.grid.minor=element_blank(),
+              panel.background=element_blank(),
+              legend.position="bottom",
+              legend.title=element_text(size=textSize),
+              legend.text=element_text(size=textSize - 4),
+              legend.key.width=unit(0.5, "cm"),
+              legend.key.height=unit(0.2, "cm")) + 
+        scale_fill_gradient2(low=colourLow, mid=colourMid, high=colourHigh, 
+                             midpoint=colourMidpoint)
+    return(plot)
 }

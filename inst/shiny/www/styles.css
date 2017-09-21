@@ -179,6 +179,9 @@ tr.active > td > a:hover { font-weight: bold; }
 }
 .table-details td:first-child { width: 45px; }
 
+/* Remove bottom margin from help blocks in dropdown menus */
+.dropdown-menu > li > a > .help-block { margin-bottom: 0; }
+
 /* Place groups' colour picker below input */
 .groups-colourpicker div .colourpicker-panel { top: 34px; }
 

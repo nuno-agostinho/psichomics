@@ -755,8 +755,8 @@ startProgress <- function(message, divisions, global = sharedData) {
 #' @param console Boolean: print message to console? (TRUE by default)
 #' @return NULL (this function is used to modify the Shiny session's state)
 updateProgress <- function(message="Hang in there", value=NULL, max=NULL,
-                           detail=NULL, divisions=NULL, 
-                           global=sharedData, console=TRUE) {
+                           detail=NULL, divisions=NULL, global=sharedData, 
+                           console=TRUE) {
     if (!is.null(divisions)) {
         startProgress(message, divisions, global)
         return(NULL)
@@ -1467,6 +1467,20 @@ prepareFileBrowser <- function(session, input, id, ...) {
 
 
 # Interactive ggplot ------------------------------------------------------
+
+#' Create HTML table from data frame or matrix
+#' 
+#' @param data Data frame or matrix
+#' 
+#' @importFrom xtable xtable print.xtable
+#' @importFrom shiny HTML
+#' 
+#' @return HTML elements
+table2html <- function(data) {
+    table <- xtable(data)
+    table <- print(table, type="html", print.results=FALSE)
+    return( HTML(table) )
+}
 
 #' Interface for interactive ggplot
 #' 
