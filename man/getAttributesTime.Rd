@@ -2,9 +2,13 @@
 % Please edit documentation in R/analysis.R
 \name{getAttributesTime}
 \alias{getAttributesTime}
+\alias{getColumnsTime}
 \title{Retrieve the time for given columns in a clinical dataset}
 \usage{
 getAttributesTime(clinical, event, timeStart, timeStop = NULL,
+  followup = "days_to_last_followup")
+
+getColumnsTime(clinical, event, timeStart, timeStop = NULL,
   followup = "days_to_last_followup")
 }
 \arguments{
@@ -26,4 +30,9 @@ Data frame containing the time for the given columns
 }
 \description{
 Retrieve the time for given columns in a clinical dataset
+}
+\examples{
+df <- data.frame(followup=c(200, 300, 400), death=c(NA, 300, NA))
+rownames(df) <- paste("patient", 1:3)
+getAttributesTime(df, event="death", timeStart="death", followup="followup")
 }

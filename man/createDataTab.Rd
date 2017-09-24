@@ -13,6 +13,8 @@ createDataTab(index, data, name, session, input, output)
 
 \item{name}{Character: name of the dataset}
 
+\item{session}{Shiny session}
+
 \item{input}{Shiny session input}
 
 \item{output}{Shiny session output}

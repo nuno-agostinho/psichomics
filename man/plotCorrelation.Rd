@@ -15,7 +15,7 @@ available data? If \code{FALSE}, the axis relative to PSI values will range
 from 0 to 1}
 
 \item{loessSmooth}{Boolean: plot a smooth curve computed by 
-\code{\link{stats::loess.smooth}}?}
+\code{stats::loess.smooth}?}
 
 \item{loessFamily}{Character: if \code{gaussian}, \code{loess} fitting is by
 least-squares, and if \code{symmetric}, a re-descending M estimator is used}
@@ -32,5 +32,14 @@ least-squares, and if \code{symmetric}, a re-descending M estimator is used}
 Renders plots for each correlation in \code{corr}
 }
 \description{
-Plot correlation results from \link{\code{correlateGEandAS}}
+Plot correlation results from \code{\link{correlateGEandAS}}
+}
+\examples{
+annot <- readFile("ex_splicing_annotation.RDS")
+junctionQuant <- readFile("ex_junctionQuant.RDS")
+psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+
+geneExpr <- readFile("ex_gene_expression.RDS")
+corr <- correlateGEandAS(geneExpr, psi, "ALDOA")
+plotCorrelation(corr)
 }

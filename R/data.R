@@ -371,6 +371,7 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
 #' @param index Integer: index of the data to load
 #' @param data Data frame: data with everything to load
 #' @param name Character: name of the dataset
+#' @param session Shiny session
 #' @param input Shiny session input
 #' @param output Shiny session output
 #' 

@@ -24,13 +24,13 @@ Create a scatterplot for ICA
 }
 \examples{
 ica <- performICA(USArrests, scale=TRUE)
-plotSingleICA(ica)
-plotSingleICA(ica, icX=2, icY=3)
+psichomics:::plotSingleICA(ica)
+psichomics:::plotSingleICA(ica, icX=2, icY=3)
 
 # Colour by groups
 groups <- NULL
 groups$sunny <- c("California", "Hawaii", "Florida")
 groups$ozEntrance <- c("Kansas")
 groups$novel <- c("New Mexico", "New York", "New Hampshire", "New Jersey")
-plotSingleICA(ica, groups=groups)
+psichomics:::plotSingleICA(ica, groups=groups)
 }

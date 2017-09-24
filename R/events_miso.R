@@ -234,7 +234,7 @@ getValidEvents <- function(event, validator, areMultipleExonsValid = FALSE) {
 #' @examples
 #' # example of alternative splicing event: skipped exon (SE)
 #' event <- read.table(text = "
-#'   chr1 SE gene 16854	18061 . - .
+#'   chr1 SE gene 16854 18061 . - .
 #'   chr1 SE mRNA 16854 18061 . - .
 #'   chr1 SE exon 16854 17055 . - .
 #'   chr1 SE exon 17233 17742 . - .

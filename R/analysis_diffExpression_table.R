@@ -461,7 +461,7 @@ diffExpressionPlotSet <- function(session, input, output) {
                          createEventPlotting(
                              stats, xLabel, yLabel, params, 
                              highlightX, highlightY, highlightParams, 
-                             selected, selectedParams, labelled, labelledParams, 
+                             selected, selectedParams, labelled, labelledParams,
                              xlim=xlim, ylim=ylim)
                      })
     })

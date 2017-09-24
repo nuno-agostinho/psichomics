@@ -69,6 +69,8 @@ correlationUI <- function(id) {
 #' retrieved from the given gene)
 #' @inheritParams stats::cor.test
 #' 
+#' @importFrom stats cor.test
+#' 
 #' @export
 #' @return List of correlations where each element is organised as such:
 #' \item{\code{eventID}}{Alternative splicing event identifier}
@@ -77,6 +79,14 @@ correlationUI <- function(id) {
 #' \item{\code{geneExpr}}{Gene expression for the selected gene}
 #' \item{\code{psi}}{Alternative splicing quantification for the alternative 
 #' splicing event}
+#' 
+#' @examples 
+#' annot <- readFile("ex_splicing_annotation.RDS")
+#' junctionQuant <- readFile("ex_junctionQuant.RDS")
+#' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+#' 
+#' geneExpr <- readFile("ex_gene_expression.RDS")
+#' correlateGEandAS(geneExpr, psi, "ALDOA")
 correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
     # Filter and order samples available in both gene expression and alternative
     # splicing quantification data
@@ -127,11 +137,11 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 
 #' Plot correlations 
 #' 
-#' Plot correlation results from \link{\code{correlateGEandAS}}
+#' Plot correlation results from \code{\link{correlateGEandAS}}
 #' 
 #' @param corr List of correlations
 #' @param loessSmooth Boolean: plot a smooth curve computed by 
-#' \code{\link{stats::loess.smooth}}?
+#' \code{stats::loess.smooth}?
 #' @param autoZoom Boolean: automatically set the range of PSI values based on 
 #' available data? If \code{FALSE}, the axis relative to PSI values will range 
 #' from 0 to 1
@@ -145,6 +155,15 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #' 
 #' @export
 #' @return Renders plots for each correlation in \code{corr}
+#' 
+#' @examples 
+#' annot <- readFile("ex_splicing_annotation.RDS")
+#' junctionQuant <- readFile("ex_junctionQuant.RDS")
+#' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+#' 
+#' geneExpr <- readFile("ex_gene_expression.RDS")
+#' corr <- correlateGEandAS(geneExpr, psi, "ALDOA")
+#' plotCorrelation(corr)
 plotCorrelation <- function(corr, autoZoom=FALSE, loessSmooth=TRUE, 
                             loessFamily=c("gaussian", "symmetric"), ...) {
     plotCorrPerASevent <- function(ASevent, gene) {

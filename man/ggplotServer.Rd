@@ -11,6 +11,10 @@ ggplotServer(input, output, id, plot = NULL, df = NULL, x = NULL,
 ggplotAuxServer(input, output, id)
 }
 \arguments{
+\item{input}{Shiny input}
+
+\item{output}{Shiny output}
+
 \item{id}{Character: identifier}
 
 \item{plot}{Character: plot expression (NULL renders no plot)}

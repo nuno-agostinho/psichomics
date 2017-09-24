@@ -27,9 +27,11 @@ default, i.e. no filtering occurs)}
 
 \item{filterOut}{Boolean: filter out (TRUE) or filter in (FALSE) sample types
 based on a given pattern; by default, sample types are filtered out}
+
+\item{psi}{Data frame or matrix: values per sample}
 }
 \value{
-Alternative splicing quantification per clinical patients
+Values per patient
 }
 \description{
 Assign a value to patients based on the frequency of the respective type of 

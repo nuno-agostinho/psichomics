@@ -32,3 +32,11 @@ splicing event}
 Test for association between paired samples' gene expression (for a gene 
 of interest) and alternative splicing quantification.
 }
+\examples{
+annot <- readFile("ex_splicing_annotation.RDS")
+junctionQuant <- readFile("ex_junctionQuant.RDS")
+psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+
+geneExpr <- readFile("ex_gene_expression.RDS")
+correlateGEandAS(geneExpr, psi, "ALDOA")
+}

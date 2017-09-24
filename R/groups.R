@@ -666,7 +666,7 @@ createGroupFromInput <- function (session, input, output, dataset, id, type) {
     return(group)
 }
 
-#' @inherit createGroupByAttribute
+#' @rdname createGroupByAttribute
 #' @export
 createGroupByColumn <- function(col, dataset) {
     .Deprecated("createGroupByAttribute")
@@ -1629,9 +1629,22 @@ parseCategoricalGroups <- function(df) {
 #' @param groups List of characters: list of groups where each element contains
 #' the identifiers of respective elements
 #' @param elements Character: all patient identifiers
-#' @inheritParams stats::p.adjust
+#' @param pvalueAdjust Character: method used to adjust p-values (see Details)
+#' @param progress Function to track the function progress
 #' 
 #' @importFrom stats p.adjust fisher.test
+#' 
+#' @details The following methods for p-value adjustment are supported by using 
+#' the respective string in the \code{pvalueAdjust} argument:
+#' \itemize{
+#'     \item{\code{none}: Do not adjust p-values}
+#'     \item{\code{BH}: Benjamini-Hochberg's method (false discovery rate)}
+#'     \item{\code{BY}: Benjamini-Yekutieli's method (false discovery rate)}
+#'     \item{\code{bonferroni}: Bonferroni correction (family-wise error rate)}
+#'     \item{\code{holm}: Holm's method (family-wise error rate)}
+#'     \item{\code{hochberg}: Hochberg's method (family-wise error rate)}
+#'     \item{\code{hommel}: Hommel's method (family-wise error rate)}
+#' }
 #' 
 #' @return Returns a \code{groupIndependenceTest} object: a list where each 
 #' element is a list containing:
@@ -1690,9 +1703,20 @@ testSingleIndependence <- function(ref, groups, elements, pvalueAdjust="BH",
 #' the identifiers of respective elements
 #' @param elements Character: all available elements (if a data frame is given,
 #' its rownames will be used)
-#' @inheritParams stats::p.adjust
+#' @param pvalueAdjust Character: method used to adjust p-values (see Details)
+#' @param progress Function to track the function progress
 #' 
-#' @importFrom stats p.adjust fisher.test
+#' @details The following methods for p-value adjustment are supported by using 
+#' the respective string in the \code{pvalueAdjust} argument:
+#' \itemize{
+#'     \item{\code{none}: Do not adjust p-values}
+#'     \item{\code{BH}: Benjamini-Hochberg's method (false discovery rate)}
+#'     \item{\code{BY}: Benjamini-Yekutieli's method (false discovery rate)}
+#'     \item{\code{bonferroni}: Bonferroni correction (family-wise error rate)}
+#'     \item{\code{holm}: Holm's method (family-wise error rate)}
+#'     \item{\code{hochberg}: Hochberg's method (family-wise error rate)}
+#'     \item{\code{hommel}: Hommel's method (family-wise error rate)}
+#' }
 #' 
 #' @return \code{multiGroupIndependenceTest} object, a data frame containing:
 #' \item{attribute}{Name of the original groups compared against the reference
@@ -1794,10 +1818,10 @@ plotGroupIndependence <- function(groups, top=50, textSize=10,
     attrs <- head(unique(df[["Attributes"]][ord]), top)
     df <- df[df[["Attributes"]] %in% attrs, ]
     # Avoid log of zeroes
-    df$pvalue <- df[["Adjusted p-value"]] + .Machine$double.xmin 
+    df$pvalue <- df[["Adjusted p-value"]] + .Machine$double.xmin
     
-    plot <- ggplot(df, aes(Attributes, Reference)) + 
-        geom_tile(aes(fill=-log10(pvalue)), color="white", size=0.1) +
+    plot <- ggplot(df, aes_string(x="Attributes", y="Reference")) + 
+        geom_tile(aes_string(fill="-log10(pvalue)"), color="white", size=0.1) +
         coord_equal() +
         theme(axis.title.x=element_text(size=textSize),
               axis.text.x=element_blank(),

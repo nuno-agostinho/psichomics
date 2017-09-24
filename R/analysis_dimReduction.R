@@ -4,6 +4,7 @@
 #' @param type Character: dimensionality reduction technique (\code{pca} or 
 #' \code{ica})
 #' @param naTolerance Integer: percentage of NA tolerance
+#' @param scale. Boolean: scale variables?
 #' @param ... Extra parameters passed to FUN
 #' @inheritParams base::scale
 #' 
@@ -69,6 +70,8 @@ reduceDimensionality <- function(data, type=c("pca", "ica"), center=TRUE,
 #' @param hc \code{highchart} object
 #' @param data Data frame
 #' @param clustering Character: group of each sample
+#' 
+#' @importFrom grDevices chull
 #' 
 #' @return \code{highcharter} object
 plotClusters <- function(hc, data, clustering) {

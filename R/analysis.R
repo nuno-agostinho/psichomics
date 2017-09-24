@@ -160,7 +160,7 @@ getClinicalDataForSurvival <- function(..., formulaStr=NULL) {
 #' 
 #' @inheritParams matchPatientToSingleSample
 #' 
-#' @return Alternative splicing quantification per clinical patients
+#' @return Values per patient
 #' @export
 getValuePerPatient <- function(data, match, clinical=NULL, patients=NULL,
                                pattern=NULL, filterOut=TRUE) {
@@ -199,6 +199,7 @@ getValuePerPatient <- function(data, match, clinical=NULL, patients=NULL,
 }
 
 #' @rdname getValuePerPatient
+#' @param psi Data frame or matrix: values per sample
 getPSIperPatient <- function(psi, match, clinical=NULL, patients=NULL,
                              pattern=NULL, filterOut=TRUE) {
     .Deprecated("getValuePerPatient")
@@ -294,18 +295,23 @@ processSurvData <- function(event, timeStart, timeStop, followup, group,
 
 #' Retrieve the time for given columns in a clinical dataset
 #' 
+#' @param clinical Data frame: clinical data
+#' @param event Character: name of column containing time of the event of
+#' interest
 #' @param timeStart Character: name of column containing starting time of the
 #' interval or follow up time
 #' @param timeStop Character: name of column containing ending time of the 
 #' interval
-#' @param event Character: name of column containing time of the event of
-#' interest
 #' @param followup Character: name of column containing follow up time
-#' @param clinical Data frame: clinical data
 #' 
 #' @return Data frame containing the time for the given columns
 #' 
 #' @export
+#' 
+#' @examples 
+#' df <- data.frame(followup=c(200, 300, 400), death=c(NA, 300, NA))
+#' rownames(df) <- paste("patient", 1:3)
+#' getAttributesTime(df, event="death", timeStart="death", followup="followup")
 getAttributesTime <- function(clinical, event, timeStart, timeStop=NULL,
                               followup="days_to_last_followup") {
     cols <- c(followup=followup, start=timeStart, stop=timeStop, event=event)
@@ -324,7 +330,7 @@ getAttributesTime <- function(clinical, event, timeStart, timeStop=NULL,
     return(survTime)
 }
 
-#' @inherit getAttributesTime
+#' @rdname getAttributesTime
 #' @export
 getColumnsTime <- function(clinical, event, timeStart, timeStop=NULL,
                            followup="days_to_last_followup") {
@@ -1667,7 +1673,7 @@ plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE,
         if (is(den, "error") || is(den, "warning")) {
             hc <- hc %>% hc_add_series(NULL)
         } else {
-            hc <- hc %>% hc_add_series(den, type="area", name=group, median=med, 
+            hc <- hc %>% hc_add_series(den, type="area", name=group, median=med,
                                        var=vari, samples=samples, max=max, 
                                        color=colour, min=min)
         }

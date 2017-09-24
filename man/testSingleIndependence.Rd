@@ -14,6 +14,10 @@ testSingleIndependence(ref, groups, elements, pvalueAdjust = "BH",
 the identifiers of respective elements}
 
 \item{elements}{Character: all patient identifiers}
+
+\item{pvalueAdjust}{Character: method used to adjust p-values (see Details)}
+
+\item{progress}{Function to track the function progress}
 }
 \value{
 Returns a \code{groupIndependenceTest} object: a list where each 
@@ -25,4 +29,17 @@ groups}
 }
 \description{
 Uses Fisher's exact test.
+}
+\details{
+The following methods for p-value adjustment are supported by using 
+the respective string in the \code{pvalueAdjust} argument:
+\itemize{
+    \item{\code{none}: Do not adjust p-values}
+    \item{\code{BH}: Benjamini-Hochberg's method (false discovery rate)}
+    \item{\code{BY}: Benjamini-Yekutieli's method (false discovery rate)}
+    \item{\code{bonferroni}: Bonferroni correction (family-wise error rate)}
+    \item{\code{holm}: Holm's method (family-wise error rate)}
+    \item{\code{hochberg}: Hochberg's method (family-wise error rate)}
+    \item{\code{hommel}: Hommel's method (family-wise error rate)}
+}
 }
