@@ -198,8 +198,7 @@ diffExpressionSet <- function(session, input, output) {
         groups <- rep(names(groups), sapply(groups, length))
         attr(groups, "Colour") <- attr(attrGroups, "Colour")
         stats  <- diffAnalyses(geneExpr, groups, c("basicStats", "density"),
-                               pvalueAdjust=NULL, progress=updateProgress,
-                               geneExpr=input$geneExpr)
+                               pvalueAdjust=NULL, geneExpr=input$geneExpr)
         final  <- cbind(stats[ , c(1, 5:6)], summary, stats[ , 7:ncol(stats)])
         
         setDifferentialExpression(final)

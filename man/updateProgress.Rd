@@ -4,8 +4,9 @@
 \alias{updateProgress}
 \title{Update a progress object}
 \usage{
-updateProgress(message = "Hang in there", value = NULL, max = NULL,
-  detail = NULL, divisions = NULL, global = sharedData, console = TRUE)
+updateProgress(message = "Loading", value = NULL, max = NULL,
+  detail = NULL, divisions = NULL, global = if (isRunning()) sharedData
+  else getHidden(), console = TRUE)
 }
 \arguments{
 \item{message}{Character: progress message}

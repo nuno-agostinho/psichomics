@@ -1986,7 +1986,6 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
 #' tumour and metastasis)
 #' @param analyses Character: analyses to perform (see Details)
 #' @param pvalueAdjust Character: method used to adjust p-values (see Details)
-#' @param progress Function to track the progress
 #' @param geneExpr Character: name of the gene expression dataset (only required
 #' for density sparklines available in the interactive mode)
 #' 
@@ -2033,12 +2032,11 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
 diffAnalyses <- function(psi, groups=NULL, 
                          analyses=c("wilcoxRankSum", "ttest", "kruskal",
                                     "levene", "fligner"),
-                         pvalueAdjust="BH", progress=echoProgress,
-                         geneExpr=NULL) {
+                         pvalueAdjust="BH", geneExpr=NULL) {
     # cl <- parallel::makeCluster(getOption("cl.cores", getCores()))
     step <- 50 # Avoid updating progress too frequently
-    progress("Performing statistical analysis", 
-             divisions=5 + round(nrow(psi)/step))
+    updateProgress("Performing statistical analysis", 
+                   divisions=5 + round(nrow(psi)/step))
     time <- Sys.time()
     
     if (is.null(groups)) {
@@ -2057,17 +2055,17 @@ diffAnalyses <- function(psi, groups=NULL,
     stats <- apply(psi, 1, function(...) {
         count <<- count + 1
         if (count %% step == 0)
-            progress("Performing statistical analysis", console=FALSE)
+            updateProgress("Performing statistical analysis", console=FALSE)
         return(singleDiffAnalyses(...))
     }, groups, threshold=1, step=step, analyses=analyses)
-    print(Sys.time() - time)
+    display(Sys.time() - time)
     
     # Check the column names of the different columns
     ns <- lapply(stats, names)
     uniq <- unique(ns)
     match <- fmatch(ns, uniq)
     
-    progress("Preparing data")
+    updateProgress("Preparing data")
     time <- Sys.time()
     
     # Convert list of lists to data frame
@@ -2104,23 +2102,23 @@ diffAnalyses <- function(psi, groups=NULL,
         if (any(intCols))
             df[ , intCols] <- apply(df[ , intCols, drop=FALSE], 2, as.integer)
     }
-    print(Sys.time() - time)
+    display(Sys.time() - time)
     
     # Calculate delta variance and delta median if there are only 2 groups
     deltaVar <- df[, grepl("Variance", colnames(df)), drop=FALSE]
     if (ncol(deltaVar) == 2) {
-        progress("Calculating delta variance and median")
+        updateProgress("Calculating delta variance and median")
         time <- Sys.time()
         deltaVar <- deltaVar[, 2] - deltaVar[, 1]
         deltaMed <- df[, grepl("Median", colnames(df))]
         deltaMed <- deltaMed[, 2] - deltaMed[, 1]
         df <- cbind(df, "\u2206 Variance"=deltaVar, "\u2206 Median"=deltaMed)
-        print(Sys.time() - time)
+        display(Sys.time() - time)
     }
     
     if (any(pvalueAdjust == c("BH", "BY", "bonferroni", "holm", "hochberg",
                               "hommel"))) {
-        progress("Adjusting p-values", detail=pvalueAdjust)
+        updateProgress("Adjusting p-values", detail=pvalueAdjust)
         
         cols   <- grep("p.value", colnames(df), fixed=TRUE)[-1]
         if (length(cols > 0)) {
@@ -2138,7 +2136,7 @@ diffAnalyses <- function(psi, groups=NULL,
             for (i in seq_along(cols)) 
                 order <- append(order, len+i, after=which(order == cols[i]))
             df <- cbind(df, adjust)[order]
-            print(Sys.time() - time)
+            display(Sys.time() - time)
         }
     }
     
@@ -2147,7 +2145,7 @@ diffAnalyses <- function(psi, groups=NULL,
         sum(charToRaw(i) == charToRaw("_")) > 3))
     if ( areSplicingEvents ) {
         # Add splicing event information
-        progress("Including splicing event information")
+        updateProgress("Including splicing event information")
         info <- suppressWarnings(parseSplicingEvent(rownames(df), pretty=TRUE))
         
         # Prepare presentation of multigenes
@@ -2160,7 +2158,7 @@ diffAnalyses <- function(psi, groups=NULL,
     }
     
     if (any("density" == analyses)) {
-        progress("Preparing density plots")
+        updateProgress("Preparing density plots")
         time <- Sys.time()
         
         df[ , "Distribution"] <- createDensitySparklines(
@@ -2168,7 +2166,7 @@ diffAnalyses <- function(psi, groups=NULL,
             groups=originalGroups, geneExpr=geneExpr)
         name <- ifelse(areSplicingEvents, "PSI.distribution", "GE.distribution")
         colnames(df)[match("Distribution", colnames(df))] <- name
-        print(Sys.time() - time)
+        display(Sys.time() - time)
     }
     
     # Properly set column names

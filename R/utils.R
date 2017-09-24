@@ -332,10 +332,8 @@ startProcess <- function(id) {
 endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
     enable(id)
     hide(paste0(id, "Loading"))
-    if (closeProgressBar) 
-        suppressWarnings(closeProgress())
-    if (!is.null(time)) 
-        message("Process finished in ", format(Sys.time() - time))
+    if (closeProgressBar) suppressWarnings(closeProgress())
+    if (!is.null(time)) display(Sys.time() - time, "Process finished in")
 }
 
 #' Get patients from given samples
@@ -551,7 +549,7 @@ styleModal <- function(session, title, ..., style=NULL,
                                 class=style)
     }
     showModal(modal, session)
-    if (echo) cat(content, fill=TRUE)
+    if (echo) display(content)
 }
 
 #' @rdname styleModal
@@ -729,13 +727,23 @@ parseSampleGroups <- function(sample,
 #' @param message Character: progress message
 #' @param divisions Integer: number of divisions in the progress bar
 #' @param global Shiny's global variable
-#' @importFrom shiny Progress
-#' @return NULL (this function is used to modify the Shiny session's state)
-startProgress <- function(message, divisions, global = sharedData) {
-    cat(message, fill=TRUE)
+#' 
+#' @importFrom shiny isRunning Progress
+#' @importFrom utils txtProgressBar
+#' 
+#' @return NULL (this function is used to modify the Shiny session's state or
+#' internal hidden variables)
+startProgress <- function(message, divisions,
+                          global=if (isRunning()) sharedData else getHidden()) {
+    display(message)
+    if (isRunning()) {
+        global$progress <- Progress$new()
+        global$progress$set(message = message, value = 0)
+    } else {
+        global$progress <- txtProgressBar(style=3)
+    }
     global$progress.divisions <- divisions
-    global$progress <- Progress$new()
-    global$progress$set(message = message, value = 0)
+    return(invisible(global))
 }
 
 #' Update a progress object
@@ -750,32 +758,53 @@ startProgress <- function(message, divisions, global = sharedData) {
 #' @param max Integer: maximum progress value
 #' @param detail Character: detailed message
 #' @param console Boolean: print message to console? (TRUE by default)
+#' 
+#' @importFrom shiny isRunning Progress
+#' @importFrom utils setTxtProgressBar
+#' 
 #' @return NULL (this function is used to modify the Shiny session's state)
-updateProgress <- function(message="Hang in there", value=NULL, max=NULL,
-                           detail=NULL, divisions=NULL, global=sharedData, 
+updateProgress <- function(message="Loading", value=NULL, max=NULL, detail=NULL,
+                           divisions=NULL, 
+                           global=if (isRunning()) sharedData else getHidden(),
                            console=TRUE) {
+    if (!interactive()) return(NULL)
     if (!is.null(divisions)) {
-        startProgress(message, divisions, global)
+        if (!isRunning()) # CLI version
+            setHidden(startProgress(message, divisions, new.env()))
+        else # GUI version
+            startProgress(message, divisions, global)
         return(NULL)
     }
+
     divisions <- global$progress.divisions
     if (is.null(value)) {
-        value <- global$progress$getValue()
-        max <- global$progress$getMax()
-        value <- value + (max - value)
+        if (!isRunning()) { # CLI version
+            currentValue <- global$progress$getVal()
+            max   <- 1
+        } else {
+            currentValue <- global$progress$getValue()
+            max          <- global$progress$getMax()
+        }
+        value <- currentValue + (max - currentValue)
     }
     amount <- ifelse(is.null(max), value/divisions, 1/max/divisions)
-    if (is.null(detail)) detail <- "" # Force detail to not clean
-    global$progress$inc(amount = amount, message = message, detail = detail)
-    
-    if (!console)
-        return(invisible(TRUE))
-    
+
     # Print message to console
-    if (!is.null(detail))
-        cat(paste(message, detail, sep=": "), fill=TRUE)
-    else
-        cat(message, fill=TRUE)
+    if (console) {
+        if (!is.null(detail) && !identical(detail, ""))
+            message <- paste(message, detail, sep=": ")
+        display(message)
+    }
+
+    # Increment progress
+    if (!isRunning()) { # CLI version
+        value <- min(global$progress$getVal() + amount, 1)
+        setTxtProgressBar(global$progress, value)
+        setHidden(global)
+    } else { # GUI version
+        if (is.null(detail)) detail <- ""
+        global$progress$inc(amount=amount, message=message, detail=detail)
+    }
     return(invisible(TRUE))
 }
 
@@ -783,11 +812,38 @@ updateProgress <- function(message="Hang in there", value=NULL, max=NULL,
 #' 
 #' @param message Character: message to show in progress bar
 #' @param global Global Shiny variable where all data is stored
+#' 
+#' @importFrom shiny isRunning Progress
+#' 
 #' @return NULL (this function is used to modify the Shiny session's state)
-closeProgress <- function(message=NULL, global = sharedData) {
+closeProgress <- function(message=NULL, 
+                          global=if (isRunning()) sharedData else getHidden()) {
     # Close the progress even if there's an error
-    if (!is.null(message)) cat(message, fill=TRUE)
-    global$progress$close()
+    if (!is.null(message)) display(message)
+    
+    if (isRunning())
+        global$progress$close()
+    else
+        close(global$progress)
+}
+
+#' Display characters in the command-line
+#' 
+#' @param char Character: message
+#' @param timeStr Character: message when a \code{difftime} object is passed to
+#' the \code{char} argument
+#' 
+#' @importFrom shiny isRunning
+#' 
+#' @return NULL (display message in command-line)
+display <- function(char, timeStr="Time difference of") {
+    if (!isRunning()) cat("", fill=TRUE)
+    if (is(char, "difftime")) {
+        message(timeStr, " ", format(unclass(char), digits=3), " ", 
+                attr(char, "units"))
+    } else {
+        cat(char, fill=TRUE)
+    }
 }
 
 #' Get number of significant digits

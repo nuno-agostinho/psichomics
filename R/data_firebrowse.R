@@ -1,12 +1,3 @@
-#' Echo progress to console using \code{cat}
-#' 
-#' @param ... Strings to print to console
-#' @param console Boolean: print to console? TRUE by default
-#' @return NULL (this function is used to modify the Shiny session's state)
-echoProgress <- function(..., console=TRUE) {
-    if (console) cat(paste(...), fill=TRUE)
-}
-
 #' Returns the date format used by the Firebrowse web API
 #'
 #' @return Named list with Firebrowse web API's date formats
@@ -214,8 +205,6 @@ getFirehoseCohorts <- getFirebrowseCohorts
 #' @param folder Character: directory to store the downloaded archives
 #' @param ... Extra parameters passed to the download function
 #' @param download Function to use to download files
-#' @param progress Function to show the progress (default is to print progress
-#' to console)
 #' 
 #' @importFrom utils download.file
 #' 
@@ -229,14 +218,14 @@ getFirehoseCohorts <- getFirebrowseCohorts
 #' # Download without printing to console
 #' downloadFiles(url, "~/Pictures", quiet = TRUE)
 #' }
-downloadFiles <- function(url, folder, progress = echoProgress,
-                          download = download.file, ...) {
+downloadFiles <- function(url, folder, download = download.file, ...) {
     destination <- file.path(folder, basename(url))
     for (i in seq_along(url)) {
-        progress("Downloading file", detail = basename(url[i]), i, length(url))
+        updateProgress("Downloading file", detail = basename(url[i]), i, 
+                       length(url))
         download(url[i], destination[i], ...)
     }
-    cat("Downloading completed", fill=TRUE)
+    display("Downloading completed")
     return(destination)
 }
 
@@ -384,11 +373,9 @@ parseUrlsFromFirehoseResponse <- parseUrlsFromFirebrowseResponse
 #'
 #' @param folder Character: folder(s) in which to look for Firebrowse files
 #' @param exclude Character: files to exclude from the loading
-#' @param progress Function to show the progress (default is to print progress
-#' to console)
 #' 
 #' @return List with loaded data.frames
-loadFirebrowseFolders <- function(folder, exclude="", progress=echoProgress) {
+loadFirebrowseFolders <- function(folder, exclude="") {
     # Retrieve full path of the files inside the given folders
     files <- dir(folder, full.names=TRUE)
     
@@ -401,8 +388,8 @@ loadFirebrowseFolders <- function(folder, exclude="", progress=echoProgress) {
     loaded <- list()
     formats <- loadFileFormats()
     for (each in seq_along(files)) {
-        progress("Processing file", detail = basename(files[each]), each, 
-                 length(files))
+        updateProgress("Processing file", detail = basename(files[each]), each, 
+                       length(files))
         loaded[[each]] <- parseValidFile(files[each], formats)
     }
     names(loaded) <- sapply(loaded, attr, "tablename")
@@ -422,8 +409,6 @@ loadFirehoseFolders <- loadFirebrowseFolders
 #' from loading into R (by default, it excludes \code{.aux.}, \code{.mage-tab.}
 #' and \code{MANIFEST.TXT} files)
 #' @inheritDotParams queryFirebrowseData
-#' @param progress Function to show the progress (default is to print progress
-#' to console)
 #' @param download Boolean: download missing files through the function
 #' \code{download.file} (TRUE by default)
 #' 
@@ -443,7 +428,7 @@ loadFirehoseFolders <- loadFirebrowseFolders
 #' }
 loadFirebrowseData <- function(folder=NULL, data=NULL, 
                                exclude=c(".aux.", ".mage-tab.", "MANIFEST.txt"),
-                               ..., progress = echoProgress, download=TRUE) {
+                               ..., download=TRUE) {
     args <- list(...)
     
     datasets <- unlist(getFirebrowseDataTypes())
@@ -492,8 +477,8 @@ loadFirebrowseData <- function(folder=NULL, data=NULL,
 
         if (download) {
             # Download missing files
-            progress(divisions = 1)
-            cat("Triggered the download of files", fill=TRUE)
+            updateProgress(divisions = 1)
+            display("Triggered the download of files")
             
             if (identical(getOption("download.file.method"), "libcurl")) {
                 dl <- download.file(missingFiles, destfile=file.path(
@@ -528,13 +513,13 @@ loadFirebrowseData <- function(folder=NULL, data=NULL,
     if (length(archives[tar]) > 0) {
         # Extract the content, check intergrity, move archives to newly-created
         # folders and remove original archives
-        progress("Extracting archives...", divisions = 1 + length(folders))
+        updateProgress("Extracting archives...", divisions=1 + length(folders))
         prepareFirebrowseArchives(fullPath(archives[tar]), 
                                   fullPath(base[md5][tar]), folder, folders)
-        progress("Archives prepared")
+        updateProgress("Archives prepared")
     } else {
         # Set the progress bar to the number of folders to load
-        progress(divisions = length(folders))   
+        updateProgress("Loading data", divisions = length(folders))   
     }
     
     # Get the full path of the files
@@ -544,7 +529,7 @@ loadFirebrowseData <- function(folder=NULL, data=NULL,
     folders <- split(folders, categories)
     
     # Load the files (but discard empty files with no rows)
-    loaded <- lapply(folders, loadFirebrowseFolders, exclude, progress)
+    loaded <- lapply(folders, loadFirebrowseFolders, exclude)
     loaded <- lapply(loaded, function(i) Filter(nrow, i))
     
     loaded <- loadTCGAsampleMetadata(loaded)
@@ -672,9 +657,7 @@ setFirebrowseData <- function(input, output, session, replace=TRUE) {
     data <- loadFirebrowseData(folder = input$dataFolder,
                                cohort = input$firebrowseCohort,
                                date = gsub("-", "_", input$firebrowseDate),
-                               data = input$firebrowseData,
-                               progress = updateProgress,
-                               download = FALSE)
+                               data = input$firebrowseData, download = FALSE)
     
     if (any(class(data) == "missing")) {
         updateProgress(divisions = 1)
@@ -763,7 +746,7 @@ firebrowseServer <- function(input, output, session) {
     observeEvent(input$acceptDownload, {
         url <- getURLtoDownload()
         if (!is.null(url)) {
-            cat("Triggered file downloads", fill=TRUE)
+            display("Triggered file downloads")
             # Download missing files through the browser
             iframe <- function(url) 
                 tags$iframe(width=1, height=1, frameborder=0, src=url)

@@ -5,8 +5,7 @@
 \title{Perform selected statistical analyses on multiple splicing events}
 \usage{
 diffAnalyses(psi, groups = NULL, analyses = c("wilcoxRankSum", "ttest",
-  "kruskal", "levene", "fligner"), pvalueAdjust = "BH",
-  progress = echoProgress, geneExpr = NULL)
+  "kruskal", "levene", "fligner"), pvalueAdjust = "BH", geneExpr = NULL)
 }
 \arguments{
 \item{psi}{Data frame or matrix: alternative splicing event quantification}
@@ -18,8 +17,6 @@ tumour and metastasis)}
 \item{analyses}{Character: analyses to perform (see Details)}
 
 \item{pvalueAdjust}{Character: method used to adjust p-values (see Details)}
-
-\item{progress}{Function to track the progress}
 
 \item{geneExpr}{Character: name of the gene expression dataset (only required
 for density sparklines available in the interactive mode)}
