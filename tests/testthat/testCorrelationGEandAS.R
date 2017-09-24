@@ -5,6 +5,7 @@ eventType <- c("SE", "MXE")
 annot <- readFile("ex_splicing_annotation.RDS")
 junctionQuant <- readFile("ex_junctionQuant.RDS")
 psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+rownames(psi) <- gsub("(?:.(?!_))+$", "_", rownames(psi), perl=TRUE)
 rownames(psi) <- paste0(rownames(psi), c("A1K", "BDK3", "BDA1KL",
                                          "A1K", "MHN/A1K/BDK3", "XHR/MHNOR"))
 geneExpr <- data.frame(c(20, 51, 32, 50, 60, 90),
