@@ -16,6 +16,8 @@ reduceDimensionality(data, type = c("pca", "ica"), center = TRUE,
 \item{center}{either a logical value or a numeric vector of length
     equal to the number of columns of \code{x}.}
 
+\item{scale.}{Boolean: scale variables?}
+
 \item{naTolerance}{Integer: percentage of NA tolerance}
 
 \item{...}{Extra parameters passed to FUN}

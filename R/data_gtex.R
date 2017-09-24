@@ -40,7 +40,7 @@ gtexDataUI <- function(id, panel) {
                           style="margin: 10px;")),
                   hidden(
                       selectizeInput(ns("tissues"), label=NULL, width="100%",
-                                     choices=c("Select one or more tissues"=""), 
+                                     choices=c("Select one or more tissues"=""),
                                      multiple=TRUE)))),
           processButton(ns("load"), "Load data"))
 }

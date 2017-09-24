@@ -40,39 +40,7 @@ performICA(data, n.comp = min(5, ncol(data)), center = TRUE,
 \item{alpha}{constant in range [1, 2] used in approximation to
     neg-entropy when \code{fun == "logcosh"}}
 
-\item{...}{arguments passed to or from other methods.  If \code{x} is
-    a formula one might specify \code{scale.} or \code{tol}.}
-
-\item{...}{Arguments passed on to \code{fastICA::fastICA}
-\describe{
-  \item{X}{a data matrix with \code{n} rows representing observations
-    and \code{p} columns representing variables.}
-  \item{n.comp}{number of components to be extracted}
-  \item{alg.typ}{if \code{alg.typ == "parallel"} the components are extracted
-    simultaneously (the default). if \code{alg.typ == "deflation"} the
-    components are extracted one at a time.}
-  \item{fun}{the functional form of the \eqn{G} function used in the
-    approximation to neg-entropy (see \sQuote{details}).}
-  \item{alpha}{constant in range [1, 2] used in approximation to
-    neg-entropy when \code{fun == "logcosh"}}
-  \item{method}{if \code{method == "R"} then computations are done
-    exclusively in \R (default). The code allows the interested \R user to
-    see exactly what the algorithm does.
-    if \code{method == "C"} then C code is used to perform most of the
-    computations, which makes the algorithm run faster.  During
-    compilation the C code is linked to an optimized BLAS library if
-    present, otherwise stand-alone BLAS routines are compiled.}
-  \item{row.norm}{a logical value indicating whether rows of the data
-  matrix \code{X} should be standardized beforehand.}
-  \item{maxit}{maximum number of iterations to perform.}
-  \item{tol}{a positive scalar giving the tolerance at which the
-    un-mixing matrix is considered to have converged.}
-  \item{verbose}{a logical value indicating the level of output as the
-    algorithm runs.}
-  \item{w.init}{Initial un-mixing matrix of dimension
-    \code{c(n.comp, n.comp)}. If \code{NULL} (default) then a matrix of
-    normal r.v.'s is used.}
-}}
+\item{...}{Arguments passed on to \code{fastICA::fastICA}}
 }
 \value{
 ICA result in a \code{prcomp} object

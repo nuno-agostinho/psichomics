@@ -89,7 +89,7 @@ geNormalisationFilteringInterface <- function(ns) {
                                     description = "";
                                     break;
                             }
-                            return "<div><span class=\'label label-default\'>" + 
+                            return "<div><span class=\'label label-default\'>" +
                                    escape(item.label) + 
                                    "</span></br>" + "<small>" + description + 
                                    "</small></div>"; } }'))),
@@ -134,29 +134,35 @@ geNormalisationFilteringUI <- function(id, panel) {
 #' @param geneFilter Boolean: filtered genes
 #' @param log2transform Boolean: add 0.5 and perform log2-transformation?
 #' @inheritParams edgeR::calcNormFactors
+#' @param progress Function to track progress
 #' 
 #' @importFrom edgeR DGEList calcNormFactors
 #' 
 #' @return Gene expression filtered and normalised
 #' @export
+#' 
+#' @examples 
+#' geneExpr <- readFile("ex_gene_expression.RDS")
+#' normaliseGeneExpression(geneExpr)
 normaliseGeneExpression <- function(geneExpr, geneFilter=NULL, method="TMM", 
-                                    p=0.75, log2transform=TRUE) {
-    #startProgress("Processing gene expression", 3 + log2transform)
+                                    p=0.75, log2transform=TRUE, 
+                                    progress=echoProgress) {
+    progress("Processing gene expression", 3 + log2transform)
     
-    #updateProgress("Filtering gene expression")
+    progress("Filtering gene expression")
     if (is.null(geneFilter)) geneFilter <- TRUE
     else if (!any(geneFilter)) return(NULL)
     geneExprNorm <- DGEList(geneExpr[geneFilter, , drop=FALSE])
     
-    #updateProgress("Normalising gene expression")
+    progress("Normalising gene expression")
     geneExprNorm <- calcNormFactors(geneExprNorm, method=method, p=p)
     
     if (log2transform) {
-        #updateProgress("Performing log2-transformation")
+        progress("Performing log2-transformation")
         geneExprNorm$counts <- log2(geneExprNorm$counts + 0.5)
     }
     
-    #updateProgress("Preparing gene expression data")
+    progress("Preparing gene expression data")
     geneExprNorm <- data.frame(geneExprNorm$counts)
     colnames(geneExprNorm) <- colnames(geneExpr)
     
@@ -245,6 +251,7 @@ loadGeneExpressionSet <- function(session, input, output) {
 #' @rdname appServer
 #' 
 #' @importFrom shiny reactive observeEvent helpText removeModal
+#' updateNumericInput
 #' @importFrom tools file_path_sans_ext
 #' @importFrom shinyjs enable disable hide show
 #' @importFrom data.table fread
@@ -392,7 +399,8 @@ geNormalisationFilteringServer <- function(input, output, session) {
             geneFilter <- NULL
         
         geneExprNorm <- normaliseGeneExpression(
-            geneExpr, geneFilter, method, percentile, log2transform)
+            geneExpr, geneFilter, method, percentile, log2transform,
+            progress=updateProgress)
         setNormalisedGeneExpression(geneExprNorm)
         endProcess("processGeneExpr", time=time)
     })

@@ -16,6 +16,10 @@ the identifiers of respective elements}
 
 \item{elements}{Character: all available elements (if a data frame is given,
 its rownames will be used)}
+
+\item{pvalueAdjust}{Character: method used to adjust p-values (see Details)}
+
+\item{progress}{Function to track the function progress}
 }
 \value{
 \code{multiGroupIndependenceTest} object, a data frame containing:
@@ -27,6 +31,19 @@ groups}
 \description{
 Test multiple contigency tables comprised by two groups (one reference group
 and another containing remaing elements) and provided groups.
+}
+\details{
+The following methods for p-value adjustment are supported by using 
+the respective string in the \code{pvalueAdjust} argument:
+\itemize{
+    \item{\code{none}: Do not adjust p-values}
+    \item{\code{BH}: Benjamini-Hochberg's method (false discovery rate)}
+    \item{\code{BY}: Benjamini-Yekutieli's method (false discovery rate)}
+    \item{\code{bonferroni}: Bonferroni correction (family-wise error rate)}
+    \item{\code{holm}: Holm's method (family-wise error rate)}
+    \item{\code{hochberg}: Hochberg's method (family-wise error rate)}
+    \item{\code{hommel}: Hommel's method (family-wise error rate)}
+}
 }
 \examples{
 elements <- paste("patients", 1:10)

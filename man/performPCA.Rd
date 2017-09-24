@@ -26,26 +26,7 @@ performPCA(data, center = TRUE, scale. = FALSE, naTolerance = 0, ...)
 
 \item{naTolerance}{Integer: percentage of NA tolerance}
 
-\item{...}{arguments passed to or from other methods.  If \code{x} is
-    a formula one might specify \code{scale.} or \code{tol}.}
-
-\item{...}{Arguments passed on to \code{stats:::prcomp.default}
-\describe{
-  \item{retx}{a logical value indicating whether the rotated variables
-    should be returned.}
-  \item{tol}{a value indicating the magnitude below which components
-    should be omitted. (Components are omitted if their
-    standard deviations are less than or equal to \code{tol} times the
-    standard deviation of the first component.)  With the default null
-    setting, no components are omitted (unless \code{rank.} is specified
-    less than \code{min(dim(x))}.).  Other settings for tol could be
-    \code{tol = 0} or \code{tol = sqrt(.Machine$double.eps)}, which
-    would omit essentially constant components.}
-  \item{rank.}{optionally, a number specifying the maximal rank, i.e.,
-    maximal number of principal components to be used.  Can be set as
-    alternative or in addition to \code{tol}, useful notably when the
-    desired rank is considerably smaller than the dimensions of the matrix.}
-}}
+\item{...}{Arguments passed on to \code{stats::prcomp}}
 }
 \value{
 PCA result in a \code{prcomp} object

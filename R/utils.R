@@ -207,6 +207,10 @@ is.whole <- function(x, tol=.Machine$double.eps^0.5) {
 #' 
 #' @return Vector of means
 #' @export
+#' 
+#' @examples
+#' df <- rbind("Gene 1"=c(3, 5, 7), "Gene 2"=c(8, 2, 4), "Gene 3"=c(9:11)) 
+#' rowMeans(df)
 rowMeans <- function(mat, na.rm=FALSE) {
     if ( !is.null(dim(mat)) ) {
         nas <- 0
@@ -223,6 +227,10 @@ rowMeans <- function(mat, na.rm=FALSE) {
 #' 
 #' @return Vector of variances
 #' @export
+#' 
+#' @examples 
+#' df <- rbind("Gene 1"=c(3, 5, 7), "Gene 2"=c(8, 2, 4), "Gene 3"=c(9:11)) 
+#' rowVars(df)
 rowVars <- function(mat, na.rm=FALSE) {
     if ( !is.null(dim(mat)) ) {
         means      <- rowMeans(mat, na.rm=na.rm)
@@ -433,15 +441,12 @@ getMatchingSamples <- function(patients, samples, clinical=NULL, rm.NA=TRUE,
     return(samples)
 }
 
-#' Assign one group to each patient
+#' @rdname groupPerElem
 #' 
-#' @param groups List of integers: clinical groups
 #' @param patients Integer: total number of patients
 #' @param includeOuterGroup Boolean: join the patients that have no groups?
 #' @param outerGroupName Character: name to give to outer group
 #' 
-#' @return Character vector where each element corresponds to the group of the
-#' respective clinical patient
 #' @export
 groupPerPatient <- function(groups, patients=NULL, includeOuterGroup=FALSE, 
                             outerGroupName="(Outer data)") {
@@ -450,15 +455,12 @@ groupPerPatient <- function(groups, patients=NULL, includeOuterGroup=FALSE,
     groupPerElem(groups, patients, outerGroupName)
 }
 
-#' Assign one group to each sample
+#' @rdname groupPerElem
 #' 
-#' @param groups List of characters: list of samples
 #' @param samples Character: all available samples
 #' @param includeOuterGroup Boolean: join the patients that have no groups?
 #' @param outerGroupName Character: name to give to outer group
 #' 
-#' @return Character vector where each element corresponds to the group of a
-#' sample
 #' @export
 groupPerSample <- function(groups, samples, includeOuterGroup=FALSE, 
                            outerGroupName="(Outer data)") {
@@ -1579,6 +1581,8 @@ ggplotTooltip <- function(df, hover, x, y) {
 
 #' Logic set to create an interactive ggplot
 #' 
+#' @param input Shiny input
+#' @param output Shiny output
 #' @param id Character: identifier
 #' @param plot Character: plot expression (NULL renders no plot)
 #' @inheritParams ggplotTooltip

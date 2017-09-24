@@ -4,9 +4,9 @@
 
 #' Perform principal component analysis after processing missing values
 #' 
+#' @param ... Arguments passed on to \code{stats::prcomp}
 #' @inheritParams stats::prcomp
 #' @inheritParams reduceDimensionality
-#' @inheritDotParams stats:::prcomp.default -x -center -scale.
 #' 
 #' @return PCA result in a \code{prcomp} object
 #' @export
@@ -436,7 +436,7 @@ clusterSet <- function(session, input, output) {
             new <- split(names(clustering), clustering)
             names <- paste("Cluster", names(new))
             groups <- cbind("Names"=names, 
-                            "Subset"="PCA clustering", "Input"="PCA clustering", 
+                            "Subset"="PCA clustering", "Input"="PCA clustering",
                             "Samples"=new)
             rownames(groups) <- names
             

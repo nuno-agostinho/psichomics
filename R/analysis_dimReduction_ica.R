@@ -1,9 +1,9 @@
 #' Perform independent component analysis after processing missing values
 #' 
+#' @param ... Arguments passed on to \code{fastICA::fastICA}
 #' @inheritParams stats::prcomp
 #' @inheritParams reduceDimensionality
 #' @inheritParams fastICA::fastICA
-#' @inheritDotParams fastICA::fastICA
 #' 
 #' @return ICA result in a \code{prcomp} object
 #' @export
@@ -71,15 +71,15 @@ plotICA <- function(ica, components=seq(10), groups=NULL, ...) {
 #' 
 #' @examples
 #' ica <- performICA(USArrests, scale=TRUE)
-#' plotSingleICA(ica)
-#' plotSingleICA(ica, icX=2, icY=3)
+#' psichomics:::plotSingleICA(ica)
+#' psichomics:::plotSingleICA(ica, icX=2, icY=3)
 #' 
 #' # Colour by groups
 #' groups <- NULL
 #' groups$sunny <- c("California", "Hawaii", "Florida")
 #' groups$ozEntrance <- c("Kansas")
 #' groups$novel <- c("New Mexico", "New York", "New Hampshire", "New Jersey")
-#' plotSingleICA(ica, groups=groups)
+#' psichomics:::plotSingleICA(ica, groups=groups)
 plotSingleICA <- function(ica, icX=1, icY=2, groups=NULL) {
     if (is.character(icX)) icX <- as.numeric(gsub("[A-Z]", "", icX))
     if (is.character(icY)) icY <- as.numeric(gsub("[A-Z]", "", icY))
@@ -334,7 +334,7 @@ clusterICAset <- function(session, input, output) {
             new <- split(names(clustering), clustering)
             names <- paste("Cluster", names(new))
             groups <- cbind("Names"=names, 
-                            "Subset"="ICA clustering", "Input"="ICA clustering", 
+                            "Subset"="ICA clustering", "Input"="ICA clustering",
                             "Samples"=new)
             rownames(groups) <- names
             
