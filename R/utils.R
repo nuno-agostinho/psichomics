@@ -718,7 +718,6 @@ updateProgress <- function(message="Loading", value=NULL, max=NULL, detail=NULL,
                            global=if (isRunning()) sharedData else getHidden(),
                            console=TRUE) {
     if (!interactive()) return(NULL)
-    
     if (!is.null(divisions)) {
         if (!isRunning()) # CLI version
             setHidden(startProgress(message, divisions, new.env()))
