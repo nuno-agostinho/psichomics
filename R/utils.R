@@ -441,34 +441,6 @@ getMatchingSamples <- function(patients, samples, clinical=NULL, rm.NA=TRUE,
     return(samples)
 }
 
-#' @rdname groupPerElem
-#' 
-#' @param patients Integer: total number of patients
-#' @param includeOuterGroup Boolean: join the patients that have no groups?
-#' @param outerGroupName Character: name to give to outer group
-#' 
-#' @export
-groupPerPatient <- function(groups, patients=NULL, includeOuterGroup=FALSE, 
-                            outerGroupName="(Outer data)") {
-    .Deprecated("groupPerElem")
-    if (!includeOuterGroup) outerGroupName <- NULL
-    groupPerElem(groups, patients, outerGroupName)
-}
-
-#' @rdname groupPerElem
-#' 
-#' @param samples Character: all available samples
-#' @param includeOuterGroup Boolean: join the patients that have no groups?
-#' @param outerGroupName Character: name to give to outer group
-#' 
-#' @export
-groupPerSample <- function(groups, samples, includeOuterGroup=FALSE, 
-                           outerGroupName="(Outer data)") {
-    .Deprecated("groupPerElem")
-    if (!includeOuterGroup) outerGroupName <- NULL
-    groupPerElem(groups, samples, outerGroupName)
-}
-
 #' Assign one group to each element
 #' 
 #' @param groups List of integers: groups of elements
@@ -517,6 +489,29 @@ groupPerElem <- function(groups, elem=NULL, outerGroupName=NA) {
     }
     attr(finalGroups, "Colour") <- colour
     return(finalGroups)
+}
+
+#' @rdname groupPerElem
+#' 
+#' @param patients Integer: total number of patients
+#' @param includeOuterGroup Boolean: join the patients that have no groups?
+#' 
+#' @export
+groupPerPatient <- function(groups, patients=NULL, includeOuterGroup=FALSE, 
+                            outerGroupName="(Outer data)") {
+    .Deprecated("groupPerElem")
+    if (!includeOuterGroup) outerGroupName <- NULL
+    groupPerElem(groups, patients, outerGroupName)
+}
+
+#' @rdname groupPerElem
+#' @param samples Character: all available samples
+#' @export
+groupPerSample <- function(groups, samples, includeOuterGroup=FALSE, 
+                           outerGroupName="(Outer data)") {
+    .Deprecated("groupPerElem")
+    if (!includeOuterGroup) outerGroupName <- NULL
+    groupPerElem(groups, samples, outerGroupName)
 }
 
 #' Style and show a modal
