@@ -1431,7 +1431,7 @@ groupsServer <- function(input, output, session, datasetName) {
             reference  <- setNames(groups[ , "Patients"], rownames(groups))
             categories <- parseCategoricalGroups(clinical)
             res        <- rbind(res, testGroupIndependence(
-                reference, categories, clinical, progress=updateProgress))
+                reference, categories, clinical))
         }
         closeProgress()
         
@@ -1440,7 +1440,7 @@ groupsServer <- function(input, output, session, datasetName) {
             reference  <- setNames(groups[ , "Samples"], rownames(groups))
             categories <- parseCategoricalGroups(sampleAttr)
             res        <- rbind(res, testGroupIndependence(
-                reference, categories, sampleAttr, progress=updateProgress))
+                reference, categories, sampleAttr))
         }
         closeProgress()
         setGroupIndependenceTesting(res)
@@ -1630,7 +1630,6 @@ parseCategoricalGroups <- function(df) {
 #' the identifiers of respective elements
 #' @param elements Character: all patient identifiers
 #' @param pvalueAdjust Character: method used to adjust p-values (see Details)
-#' @param progress Function to track the function progress
 #' 
 #' @importFrom stats p.adjust fisher.test
 #' 
@@ -1652,27 +1651,27 @@ parseCategoricalGroups <- function(df) {
 #' groups}
 #' \item{table}{Contigency table used for testing}
 #' \item{pvalue}{Fisher's exact test's p-value}
-testSingleIndependence <- function(ref, groups, elements, pvalueAdjust="BH",
-                                   progress=echoProgress) {
+testSingleIndependence <- function(ref, groups, elements, pvalueAdjust="BH") {
     # Number of intersections between reference and groups of interest
-    progress("Calculating intersections", 
-             detail="Reference versus categorical groups")
+    updateProgress("Calculating intersections", 
+                   detail="Reference versus categorical groups")
     getIntersectionsNumber <- function(reference, attribute)
         length(intersect(reference, attribute))
     intersections1 <- lapply(groups, sapply, getIntersectionsNumber, ref)
     
     # Number of intersections between complement and groups of interest
-    progress("Calculating intersections", 
-             detail="Complement versus categorical groups")
+    updateProgress("Calculating intersections", 
+                   detail="Complement versus categorical groups")
     getComplementOf <- function(ref, elements) setdiff(elements, ref)
     complement <- getComplementOf(ref, elements)
     intersections2 <- lapply(groups, sapply, getIntersectionsNumber, complement)
     
     # Fisher's exact method for group independence testing
-    progress("Performing multiple Fisher's exact tests")
+    updateProgress("Performing multiple Fisher's exact tests")
     groupIndependenceTesting <- function(i, intersections1, intersections2) {
         mat    <- rbind(intersections1[[i]], intersections2[[i]])
-        progress("Performing multiple Fisher's exact tests", console=FALSE)
+        updateProgress("Performing multiple Fisher's exact tests", 
+                       console=FALSE)
         if ( all(sort(unique(as.numeric(mat))) %in% 0:1) ) {
             pvalue <- 1
         } else {
@@ -1704,7 +1703,6 @@ testSingleIndependence <- function(ref, groups, elements, pvalueAdjust="BH",
 #' @param elements Character: all available elements (if a data frame is given,
 #' its rownames will be used)
 #' @param pvalueAdjust Character: method used to adjust p-values (see Details)
-#' @param progress Function to track the function progress
 #' 
 #' @details The following methods for p-value adjustment are supported by using 
 #' the respective string in the \code{pvalueAdjust} argument:
@@ -1738,22 +1736,20 @@ testSingleIndependence <- function(ref, groups, elements, pvalueAdjust="BH",
 #'                              african=elements[c(6:8, 10)]))
 #' groupTesting <- testGroupIndependence(ref, groups, elements)
 #' # View(groupTesting)
-testGroupIndependence <- function(ref, groups, elements, pvalueAdjust="BH",
-                                  progress=echoProgress) {
+testGroupIndependence <- function(ref, groups, elements, pvalueAdjust="BH") {
     if (is.data.frame(elements)) elements <- rownames(elements)
     
     if (is.list(ref)) {
-        progress("Group independence testing", 
-                 divisions=3 + length(ref) * length(groups))
+        updateProgress("Group independence testing", 
+                       divisions=3 + length(ref) * length(groups))
         obj <- lapply(seq(ref), function(i) {
-            progress("Group independence testing", detail=names(ref)[[i]])
-            testSingleIndependence(ref[[i]], groups, elements, 
-                                   progress=progress)
+            updateProgress("Group independence testing", detail=names(ref)[[i]])
+            testSingleIndependence(ref[[i]], groups, elements)
         })
     } else {
-        progress("Group independence testing", divisions=3 + length(groups))
-        obj <- list("Reference"=testSingleIndependence(ref, groups, elements,
-                                                       progress=progress))
+        updateProgress("Group independence testing", 
+                       divisions=3 + length(groups))
+        obj <- list("Reference"=testSingleIndependence(ref, groups, elements))
     }
     names(obj) <- names(ref)
     

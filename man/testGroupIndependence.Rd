@@ -4,8 +4,7 @@
 \alias{testGroupIndependence}
 \title{Multiple independence tests between reference groups and list of groups}
 \usage{
-testGroupIndependence(ref, groups, elements, pvalueAdjust = "BH",
-  progress = echoProgress)
+testGroupIndependence(ref, groups, elements, pvalueAdjust = "BH")
 }
 \arguments{
 \item{ref}{List of character: list of groups where each element contains the
@@ -18,8 +17,6 @@ the identifiers of respective elements}
 its rownames will be used)}
 
 \item{pvalueAdjust}{Character: method used to adjust p-values (see Details)}
-
-\item{progress}{Function to track the function progress}
 }
 \value{
 \code{multiGroupIndependenceTest} object, a data frame containing:

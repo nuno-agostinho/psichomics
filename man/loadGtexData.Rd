@@ -5,7 +5,7 @@
 \title{Load GTEx data}
 \usage{
 loadGtexData(clinical = NULL, sampleMetadata = NULL, junctionQuant = NULL,
-  tissue = NULL, progress = echoProgress)
+  tissue = NULL)
 }
 \arguments{
 \item{clinical}{Character: path to subject information (TXT file)}
@@ -17,9 +17,6 @@ loadGtexData(clinical = NULL, sampleMetadata = NULL, junctionQuant = NULL,
 \item{tissue}{Character: tissue(s) of interest when loading data (all tissues
 are loaded by default); if only some tissue(s) are of interest, this may
 speed up loading the data}
-
-\item{progress}{Function to show the progress (default is to print progress
-to console)}
 }
 \value{
 List with loaded data

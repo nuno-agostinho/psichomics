@@ -349,8 +349,6 @@ geneExprSurvSet <- function(session, input, output) {
         gene     <- input$gene
         terms    <- input$modelTerms
         if (!is.null(geneExpr) && !is.null(gene) && terms == "geCutoff") {
-            print("here")
-            print(mean(ge))
             ge <- as.numeric(geneExpr[gene, ])
             return(sprintf("Mean expression for %s: %s", gene, mean(ge)))
         } else {

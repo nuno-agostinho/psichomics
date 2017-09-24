@@ -4,8 +4,7 @@
 \alias{testSingleIndependence}
 \title{Multiple independence tests between a reference group and list of groups}
 \usage{
-testSingleIndependence(ref, groups, elements, pvalueAdjust = "BH",
-  progress = echoProgress)
+testSingleIndependence(ref, groups, elements, pvalueAdjust = "BH")
 }
 \arguments{
 \item{ref}{Character: identifier of elements in reference group}
@@ -16,8 +15,6 @@ the identifiers of respective elements}
 \item{elements}{Character: all patient identifiers}
 
 \item{pvalueAdjust}{Character: method used to adjust p-values (see Details)}
-
-\item{progress}{Function to track the function progress}
 }
 \value{
 Returns a \code{groupIndependenceTest} object: a list where each 

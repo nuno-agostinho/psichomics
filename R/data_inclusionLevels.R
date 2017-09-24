@@ -120,7 +120,6 @@ inclusionLevelsUI <- function(id, panel) {
 #' @param eventType Character: splicing event types to quantify
 #' @param minReads Integer: discard alternative splicing quantified using a
 #' number of reads below this threshold
-#' @param progress Function to track the progress
 #' @param genes Character: gene symbols for which the splicing quantification 
 #' of associated splicing events is performed (by default, all splicing events 
 #' undergo splicing quantification)
@@ -139,7 +138,7 @@ inclusionLevelsUI <- function(id, panel) {
 quantifySplicing <- function(annotation, junctionQuant, 
                              eventType=c("SE", "MXE", "ALE", "AFE", "A3SS", 
                                          "A5SS"), 
-                             minReads=10, progress=echoProgress, genes=NULL) {
+                             minReads=10, genes=NULL) {
     if (!is.null(genes)) {
         # Filter for given gene symbols
         filterByGenes <- function(df, genes) {
@@ -161,8 +160,8 @@ quantifySplicing <- function(annotation, junctionQuant,
         eventTypes <- getSplicingEventTypes()
         type <- names(eventTypes)[[match(acronym, eventTypes)]]
         thisAnnot <- annotation[[type]]
-        progress("Calculating inclusion levels", type, value=acronym, 
-                 max=length(eventType))
+        updateProgress("Calculating inclusion levels", type, value=acronym, 
+                       max=length(eventType))
         
         if (!is.null(thisAnnot) && nrow(thisAnnot) > 0) {
             psi <- rbind(psi, calculateInclusionLevels(
@@ -473,7 +472,7 @@ quantifySplicingSet <- function(session, input) {
         # Quantify splicing with splicing annotation and junction quantification
         updateProgress("Calculating inclusion levels")
         psi <- quantifySplicing(annot, junctionQuant, eventType, minReads, 
-                                progress=updateProgress, genes=filter)
+                                genes=filter)
         setInclusionLevels(psi)
         
         endProcess("calcIncLevels", time)

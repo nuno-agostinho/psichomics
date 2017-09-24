@@ -6,6 +6,19 @@ NULL
 # Global variable with all the data of a session
 sharedData <- reactiveValues()
 
+# Global variable to keep progress for CLI version
+.hidden <- new.env()
+
+#' Get or set hidden globally accessible elements
+#' 
+#' @return Getters return hidden globally accessible data, whereas setters 
+#' return NULL as they are only used to modify the state of hidden elements
+getHidden <- function() .hidden$elem
+
+#' @rdname getHidden
+#' @param val Value to attribute
+setHidden <- function(val) .hidden$elem <- val
+
 #' Get or set globally accessible elements
 #' 
 #' @param category Character: data category (e.g. "Carcinoma 2016"); by default,

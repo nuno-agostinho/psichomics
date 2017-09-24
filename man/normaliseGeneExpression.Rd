@@ -5,7 +5,7 @@
 \title{Filter and normalise gene expression}
 \usage{
 normaliseGeneExpression(geneExpr, geneFilter = NULL, method = "TMM",
-  p = 0.75, log2transform = TRUE, progress = echoProgress)
+  p = 0.75, log2transform = TRUE)
 }
 \arguments{
 \item{geneExpr}{Matrix or data frame: gene expression}
@@ -17,8 +17,6 @@ normaliseGeneExpression(geneExpr, geneFilter = NULL, method = "TMM",
 \item{p}{percentile (between 0 and 1) of the counts that is aligned when \code{method="upperquartile"}}
 
 \item{log2transform}{Boolean: add 0.5 and perform log2-transformation?}
-
-\item{progress}{Function to track progress}
 }
 \value{
 Gene expression filtered and normalised

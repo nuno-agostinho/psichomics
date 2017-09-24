@@ -124,7 +124,6 @@ localDataUI <- function(id, panel) {
 #' @param folder Character: path to folder containing files of interest
 #' @param name Character: name of the category containing all loaded datasets
 #' @param ignore Character: skip folders and filenames that match the expression
-#' @param progress Function to keep track of the progress
 #' 
 #' @importFrom stats setNames
 #' 
@@ -139,8 +138,8 @@ localDataUI <- function(id, panel) {
 #' ignore <- c(".aux.", ".mage-tab.", "junction quantification")
 #' loadLocalFiles(folder, ignore)
 #' }
-loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."), name="Data",
-                           progress=echoProgress) {
+loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."), 
+                           name="Data") {
     # Get all files in the specified directory and subdirectories
     files <- list.files(folder, recursive=TRUE, full.names=TRUE)
     
@@ -149,12 +148,12 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."), name="Data",
     ignore <- paste(ignore, collapse = "|")
     if (ignore != "") files <- files[!grepl(ignore, files)]
     
-    progress("Searching inside the folder...", divisions=length(files))
+    updateProgress("Searching inside the folder...", divisions=length(files))
     
     loaded <- list()
     formats <- loadFileFormats()
     for (each in seq_along(files)) {
-        progress("Processing file", detail = basename(files[each]))
+        updateProgress("Processing file", detail = basename(files[each]))
         loadedFile <- tryCatch(parseValidFile(files[each], formats),
                                warning=return, error=return)
         if (!is(loadedFile, "warning") && !is(loadedFile, "error"))
@@ -187,8 +186,7 @@ setLocalData <- function(input, output, session, replace=TRUE) {
     ignore <- c(".aux.", ".mage-tab.", input$localIgnore)
     
     # Load valid local files
-    progress <- updateProgress
-    data <- loadLocalFiles(folder, name=category, ignore, progress)
+    data <- loadLocalFiles(folder, name=category, ignore)
     
     if (!is.null(data)) {
         if(replace) {
