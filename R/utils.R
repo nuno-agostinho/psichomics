@@ -792,8 +792,9 @@ updateProgress <- function(message="Loading", value=NULL, max=NULL, detail=NULL,
     # Print message to console
     if (console) {
         if (!is.null(detail) && !identical(detail, ""))
-            message <- paste(message, detail, sep=": ")
-        display(message)
+            display(paste(message, detail, sep=": "))
+        else
+            display(message)
     }
 
     # Increment progress

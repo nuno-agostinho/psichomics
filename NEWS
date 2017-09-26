@@ -25,8 +25,8 @@
     - Suggest attributes of interest when creating groups
     - Allow to retrieve the universe of patient and sample identifiers by
     performing the complement group without any group selected
-    - Test statistical significance of group independence (useful to assess the 
-    overlap between a PCA cluster and groups derived from clinical and sample
+    - Statistically analyse group independence (useful to assess the overlap 
+    between a PCA cluster and groups derived from clinical and sample 
     attributes, for instance)
 * Differential splicing analysis:
     - Label points based on top differentially spliced events, selected 

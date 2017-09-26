@@ -145,7 +145,7 @@ geNormalisationFilteringUI <- function(id, panel) {
 #' normaliseGeneExpression(geneExpr)
 normaliseGeneExpression <- function(geneExpr, geneFilter=NULL, method="TMM", 
                                     p=0.75, log2transform=TRUE) {
-    updateProgress("Processing gene expression", 3 + log2transform)
+    updateProgress("Processing gene expression", divisions=3 + log2transform)
     
     updateProgress("Filtering gene expression")
     if (is.null(geneFilter)) geneFilter <- TRUE
