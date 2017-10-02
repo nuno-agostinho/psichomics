@@ -47,7 +47,9 @@
 * Show progress bar when running in the command-line interface
 * Fix inconsistent browser history navigation
 * Updated the CLI vignette with information on analysing gene expression data
+and a quick reference for functions
 * Update minimum version required of shiny (1.0.3)
+* Avoid replacing selected groups when manipulating new ones
 * Differential splicing analysis:
     - Fix data not being rendered in the table when zooming in the plot after 
     data transformation was applied

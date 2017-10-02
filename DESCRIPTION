@@ -68,6 +68,9 @@ Suggests:
     car
 VignetteBuilder: knitr
 Collate: 
+    'utils.R'
+    'globalAccess.R'
+    'app.R'
     'analysis.R'
     'analysis_correlation.R'
     'analysis_diffExpression.R'
@@ -82,9 +85,6 @@ Collate:
     'analysis_information.R'
     'analysis_survival.R'
     'analysis_template.R'
-    'utils.R'
-    'globalAccess.R'
-    'app.R'
     'data.R'
     'formats.R'
     'data_firebrowse.R'
@@ -109,6 +109,9 @@ Collate:
     'formats_gtexClinical.R'
     'formats_gtexJunctionReads.R'
     'formats_gtexSampleInfo.R'
+    'formats_gtexV7Clinical.R'
+    'formats_gtexV7JunctionReads.R'
+    'formats_psichomicsGeneExpression.R'
     'formats_psichomicsInclusionLevels.R'
     'groups.R'
     'help.R'

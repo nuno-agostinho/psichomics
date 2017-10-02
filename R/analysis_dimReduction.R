@@ -29,7 +29,10 @@ reduceDimensionality <- function(data, type=c("pca", "ica"), center=TRUE,
     # Get loadings (columns) with less than a given percentage of NAs
     nas <- colSums(is.na(data))
     data <- data[, nas/nrow(data) * 100 <= naTolerance, drop=FALSE]
-    if (ncol(data) == 0) return(NULL)
+    if (ncol(data) == 0) {
+        warning("NA tolerance may be too low. Try increasing the NA tolerance.")
+        return(NULL)
+    }
     
     # Replace NAs with the medians for each loading (column)
     medians <- colMedians(data, na.rm=TRUE)

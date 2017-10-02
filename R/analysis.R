@@ -1,3 +1,6 @@
+#' @include app.R
+NULL
+
 #' Missing information modal template
 #'  
 #' @param session Shiny session

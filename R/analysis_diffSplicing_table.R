@@ -500,7 +500,7 @@ diffAnalysesPlotSet <- function(session, input, output) {
         stats <- getDifferentialAnalyses()
         optimSurv <- getDifferentialAnalysesSurvival()
         if (!is.null(optimSurv)) {
-            optimSurvCols <- c("Optimal PSI cutoff", "Log rank p-value")
+            optimSurvCols <- c("Optimal PSI cutoff", "Log-rank p-value")
             stats[[optimSurvCols[1]]] <- optimSurv[[1]]
             stats[[optimSurvCols[2]]] <- optimSurv[[2]]
             
@@ -559,7 +559,7 @@ diffAnalysesPlotSet <- function(session, input, output) {
             optimSurv <- getDifferentialAnalysesSurvival()
             if (!is.null(optimSurv)) {
                 stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
-                stats[["Log rank p-value"]]   <- optimSurv[[2]]
+                stats[["Log-rank p-value"]]   <- optimSurv[[2]]
             }
             
             value <- input[[paste0(axis, "Axis")]]
@@ -650,7 +650,7 @@ diffAnalysesPlotSet <- function(session, input, output) {
         optimSurv <- getDifferentialAnalysesSurvival()
         if (!is.null(optimSurv)) {
             stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
-            stats[["Log rank p-value"]]   <- optimSurv[[2]]
+            stats[["Log-rank p-value"]]   <- optimSurv[[2]]
         }
         
         res <- transformData(input, stats, x, y)
@@ -763,7 +763,7 @@ diffAnalysesTableSet <- function(session, input, output) {
             optimSurv <- getDifferentialAnalysesSurvival()
             if (!is.null(optimSurv)) {
                 stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
-                stats[["Log rank p-value"]]   <- optimSurv[[2]]
+                stats[["Log-rank p-value"]]   <- optimSurv[[2]]
                 stats[["Survival by PSI cutoff"]] <- optimSurv[[3]]
             }
             
@@ -874,7 +874,7 @@ diffAnalysesTableSet <- function(session, input, output) {
             # Include updated survival analyses
             optimSurv <- getDifferentialAnalysesSurvival()
             stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
-            stats[["Log rank p-value"]]   <- optimSurv[[2]]
+            stats[["Log-rank p-value"]]   <- optimSurv[[2]]
             
             write.table(stats, file, quote=FALSE, sep="\t", row.names=FALSE)
         }

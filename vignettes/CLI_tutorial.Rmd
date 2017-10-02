@@ -39,6 +39,97 @@ After the installation, load psichomics by typing:
 library(psichomics)
 ```
 
+# Available functions: quick reference
+
+# Data retrieval
+
+## TCGA/Firebrowse
+* `getDownloadsFolder`
+* `isFirebrowseUp`
+* `getFirebrowseCohorts`
+* `getFirebrowseDataTypes`
+* `getFirebrowseDates`
+* `loadFirebrowseData`
+* `parseTcgaSampleInfo`
+* `parseSampleGroups`
+
+## GTEx
+* `getGtexTissues`
+* `loadGtexData`
+
+## Custom files
+* `loadLocalFiles`
+
+# Gene expression pre-processing
+* `parseCategoricalGroups`
+* `normaliseGeneExpression`
+
+# PSI quantification`
+* `getSplicingEventTypes`
+* `listSplicingAnnotations`
+* `loadAnnotation`
+* `quantifySplicing`
+
+## Preparing custom annotation
+* `prepareAnnotationFromEvents`
+* `parseMatsAnnotation`
+* `parseMisoAnnotation`
+* `parseSuppaAnnotation`
+* `parseVastToolsAnnotation`
+
+# Data Grouping
+* `createGroupByAttribute`
+* `filterGroups`
+* `getAttributesTime`
+* `getMatchingSamples`
+* `getPatientFromSample`
+* `groupPerElem`
+* `testGroupIndependence`
+* `plotGroupIndependence`
+
+# Dimensionality reduction
+
+## PCA
+* `performPCA`
+* `plotPCA`
+* `plotVariance`
+
+# ICA
+* `performICA`
+* `plotICA`
+
+# Survival analysis
+* `getValuePerPatient`
+* `labelBasedOnCutoff`
+* `optimalPSIcutoff`
+* `testSurvival`
+* `processSurvTerms`
+* `survfit`
+* `survdiff`
+* `plotSurvivalCurves`
+
+# Differential analyses
+* `diffAnalyses`
+* `plotDistribution`
+
+# Gene expression and alternative splicing correlation
+* `correlateGEandAS`
+* `plotCorrelation`
+
+# Annotation retrieval
+* `queryEnsemblByEvent`
+* `queryEnsemblByGene`
+* `ensemblToUniprot`
+* `plotProtein`
+* `plotTranscripts`
+
+# Misc
+* `psichomics`
+* `parseSplicingEvent`
+* `readFile`
+* `rowMeans`
+* `rowVars`
+
 # Retrieving data
 The quantification of each alternative splicing event is based on the proportion
 of junction reads that support the inclusion isoform, known as percent 

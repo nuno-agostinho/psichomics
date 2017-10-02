@@ -104,7 +104,15 @@ selectGroupsServer <- function(session, id) {
             enable(id)
             onclick(id, NULL)
         }
-        updateSelectizeInput(session, id, choices=groups, selected=groups)
+        
+        currentSelection <- isolate(input[[id]])
+        if (is.null(currentSelection)) {
+            selected <- groups
+        } else {
+            selected <- currentSelection[currentSelection %in% groups]
+            if (length(selected) == 0) selected <- groups
+        }
+        updateSelectizeInput(session, id, choices=groups, selected=selected)
     })
 }
 
@@ -397,7 +405,6 @@ renderGroupInterface <- function(ns) {
                                    delay=50, delayType="throttle")),
         uiOutput(ns(paste0(groupTestId, "-tooltip"))))
 }
-
 
 #' User interface to group by attribute
 #' 
@@ -1331,6 +1338,7 @@ groupsServer <- function(input, output, session, datasetName) {
                 if (length(patients) > 0) {
                     matched  <- patients %in% allPatients
                     patients <- split(patients[matched], groups[matched])
+                    patients <- lapply(patients, unique)
                     patientGroupNames <- names(patients)
                 }
                 
