@@ -458,10 +458,10 @@ renderGeneticInfo <- function(output, ns, info, species=NULL, assembly=NULL,
                href=paste0("http://www.genecards.org/cgi-bin/",
                            "carddisp.pl?gene=", info$id)),
         if (species == "human") { 
-            tags$a("Human Protein Atlas (Cancer Atlas)", 
-                   icon("external-link"), target="_blank",
+            tags$a("Human Protein Atlas", icon("external-link"), 
+                   target="_blank",
                    href=paste0("http://www.proteinatlas.org/", info$id, 
-                               "/cancer"))
+                               "/pathology"))
         },
         tags$a("VAST-DB", icon("external-link"), target="_blank",
                href=paste0("http://vastdb.crg.eu/wiki/Gene:", info$id, 

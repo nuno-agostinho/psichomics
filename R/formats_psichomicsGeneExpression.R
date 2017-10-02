@@ -1,8 +1,8 @@
-psichomicsInclusionLevelsFormat <- function() {
+psichomicsGeneExpressionFormat <- function() {
     list(
-        tablename   = "Inclusion levels", # Name of the created table
-        description = "PSI values per alternative splicing event",
-        dataType    = "Inclusion levels", # General category for the data
+        tablename   = "Gene expression", # Name of the created table
+        description = "Gene expression",
+        dataType    = "Gene expression", # General category for the data
         
         # Transpose data before parsing? If so, a row in the transposed dataset
         # would be a column in the original
@@ -14,7 +14,7 @@ psichomicsInclusionLevelsFormat <- function() {
         checkIndex  = 1,     # Index of row/column to check the format
         
         # File string to check
-        check = "Inclusion levels",
+        check = "Gene expression",
         
         # Parsing information
         delim       = "\t", # Delimiter used to separate fields
@@ -28,9 +28,9 @@ psichomicsInclusionLevelsFormat <- function() {
         unique = TRUE, # Remove duplicated rows
         
         # Identity of rows and columns
-        rows    = "alternative splicing events",
+        rows    = "genes",
         columns = "samples"
     )
 }
 
-attr(psichomicsInclusionLevelsFormat, "loader") <- "formats"
+attr(psichomicsGeneExpressionFormat, "loader") <- "formats"
