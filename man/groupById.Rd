@@ -4,14 +4,12 @@
 \alias{groupById}
 \title{User interface to group by row}
 \usage{
-groupById(ns, id, choices)
+groupById(ns, id)
 }
 \arguments{
 \item{ns}{Namespace function}
 
 \item{id}{Character: identifier}
-
-\item{choices}{Character: identifier suggestions}
 }
 \value{
 HTML elements

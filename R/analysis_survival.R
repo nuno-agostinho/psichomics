@@ -158,7 +158,7 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
         markTimes  <- input$markTimes
         scale      <- input$scale
         # Get chosen groups
-        chosen <- getSelectedGroups(input, "dataGroups")
+        chosen <- getSelectedGroups(input, "dataGroups", "Patients")
         # Get clinical data for the required attributes
         followup <- "days_to_last_followup"
         clinical <- getClinicalDataForSurvival(timeStart, timeStop, event,
@@ -390,7 +390,7 @@ geneExprSurvSet <- function(session, input, output) {
 survivalServer <- function(input, output, session) {
     ns <- session$ns
     
-    selectGroupsServer(session, "dataGroups")
+    selectGroupsServer(session, "dataGroups", "Samples")
     
     observe({
         if ( is.null(getPatientAttributes()) ) {

@@ -74,7 +74,7 @@ diffSplicingEventUI <- function(id) {
 diffSplicingEventServer <- function(input, output, session) {
     ns <- session$ns
     
-    selectGroupsServer(session, "diffGroups")
+    selectGroupsServer(session, "diffGroups", "Samples")
     
     observeEvent(input$analyse, {
         # Get splicing event's inclusion levels
@@ -94,7 +94,7 @@ diffSplicingEventServer <- function(input, output, session) {
         }
         
         # Prepare groups of samples to analyse
-        groups <- getSelectedGroups(input, "diffGroups", samples=TRUE,
+        groups <- getSelectedGroups(input, "diffGroups", "Samples",
                                     filter=colnames(psi))
         colour <- attr(groups, "Colour")
         if ( !is.null(groups) ) {

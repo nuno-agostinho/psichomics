@@ -76,7 +76,7 @@ inclusionLevelsUI(id, panel)
 
 localDataUI(id, panel)
 
-groupsUI(id)
+groupsUI(id, tab)
 
 helpUI(id, tab)
 }

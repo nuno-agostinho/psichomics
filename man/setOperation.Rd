@@ -5,7 +5,7 @@
 \title{Perform set operations on selected groups}
 \usage{
 setOperation(operation, groups, selected, symbol = " ", groupName = NULL,
-  patients = NULL, samples = NULL, matches = NULL,
+  first = NULL, second = NULL, matches = NULL, type = "Samples",
   assignColoursToGroups = FALSE)
 }
 \arguments{
@@ -21,14 +21,16 @@ performed (" " by default)}
 \item{groupName}{Character: group name (automatically created if NULL or
 \code{""})}
 
-\item{patients}{Character: all patients (required when performing the
-\code{complement} operation)}
+\item{first}{Character: identifiers of the first element (required when 
+performing the \code{complement} operation)}
 
-\item{samples}{Character: all samples (required when performing the 
-\code{complement} operation)}
+\item{second}{Character: identifiers of the second element (required when 
+performing the \code{complement} operation)}
 
 \item{matches}{Character: match between samples (as names) and patients (as
 values)}
+
+\item{type}{Character: type of group where set operations are to be performed}
 
 \item{assignColoursToGroups}{Boolean: assign colours to new groups? FALSE by
 default}

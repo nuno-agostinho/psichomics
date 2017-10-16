@@ -202,7 +202,7 @@ plotCorrelation <- function(corr, autoZoom=FALSE, loessSmooth=TRUE,
 #' @importFrom highcharter renderHighchart
 #' @importFrom shinyjs show hide
 correlationServer <- function(input, output, session) {
-    selectGroupsServer(session, "groups")
+    selectGroupsServer(session, "groups", "Samples")
     
     observe({
         if (is.null( getInclusionLevels() ) || is.null( getGeneExpression() )) {
@@ -327,7 +327,7 @@ correlationServer <- function(input, output, session) {
         
         # Filter samples based on groups
         groups <- isolate(getSelectedGroups(
-            input, "groups", samples=TRUE, 
+            input, "groups", "Samples", 
             filter=intersect(colnames(geneExpr), colnames(psi))))
         groups <- unname(unlist(groups))
         if (is.null(groups)) groups <- TRUE

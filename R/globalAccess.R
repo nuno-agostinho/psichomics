@@ -29,7 +29,7 @@ setHidden <- function(val) .hidden$elem <- val
 #' @note Needs to be called inside a reactive function
 #' 
 #' @seealso \code{\link{getEvent}}, \code{\link{getClinicalMatchFrom}},
-#' \code{\link{getGroupsFrom}} and \code{\link{getDifferentialAnalyses}}
+#' \code{\link{getGroups}} and \code{\link{getDifferentialAnalyses}}
 #' 
 #' @return Getters return globally accessible data, whereas setters return NULL 
 #' as they are only used to modify the Shiny session's state
@@ -82,13 +82,55 @@ getPrecision <- reactive(sharedData$precision)
 #' @rdname getGlobal
 setPrecision <- function(integer) setGlobal("precision", value=integer)
 
-#' Set or get central elements
 #' @inherit getGlobal
-getEvent <- reactive(sharedData$event)
+getASevents <- function() {
+    psi <- getInclusionLevels()
+    if (!is.null(psi)) {
+        choices <- rownames(psi)
+        names(choices) <- parseSplicingEvent(choices, char=TRUE)
+        return( sort(choices) )
+    }
+}
+
+#' @inherit getGlobal
+getASevent <- reactive(sharedData$event)
 
 #' @rdname getEvent
 #' @param event Character: alternative splicing event
-setEvent <- function(event) setGlobal("event", value=event)
+setASevent <- function(event) setGlobal("event", value=event)
+
+#' @inherit getGlobal
+getEvent <- getASevent
+
+#' @rdname getEvent
+setEvent <- setASevent
+
+#' @inherit getGlobal
+getGenes <- function() {
+    genes <- NULL
+    
+    # Retrieve genes from gene expression
+    geneExpr <- getGeneExpression()
+    if (!is.null(geneExpr)) {
+        original <- sort(unique(unlist(lapply(geneExpr, rownames))))
+        genes    <- gsub("\\|.*", "", original) # Process TCGA gene symbols
+        unknown  <- genes == "?"
+        genes[unknown] <- original[unknown]
+    }
+    
+    # Retrieve genes based on AS events
+    ASevents <- getASevents()
+    if (!is.null(ASevents))
+        genes <- c(unlist(parseSplicingEvent(ASevents)$gene), genes)
+    
+    if (!is.null(genes)) {
+        genes   <- sort(unique(genes))
+        # Show unknown genes last
+        unknown <- gsub("\\|.*", "", genes) == "?"
+        genes   <- c(genes[!unknown], genes[unknown])
+    }
+    return(genes)
+}
 
 #' @rdname getEvent
 getCategories <- reactive(names(getData()))
@@ -300,31 +342,29 @@ getClinicalMatchFrom <- function(dataset, category=getCategory())
 setClinicalMatchFrom <- function(dataset, matches, category=getCategory())
     setGlobal(category, dataset, "clinicalMatch", value=matches)
 
-#' Get or set groups from a given data type
+#' Get or set groups
 #' @inherit getGlobal
 #' 
-#' @param dataset Character: data set name (e.g. "Clinical data")
+#' @param type Character: type of groups (either "Patients", "Samples", 
+#' "ASevents" or "Genes")
 #' @param complete Boolean: return all the information on groups (TRUE) or just 
 #' the group names and respective indexes (FALSE)? FALSE by default
-#' @param samples Boolean: show groups by samples (TRUE) or patients (FALSE)?
-#' FALSE by default
-getGroupsFrom <- function(dataset, category=getCategory(), complete=FALSE,
-                          samples=FALSE) {
-    groups <- getGlobal(category, dataset, "groups")
+getGroups <- function(type=c("Patients", "Samples", "ASevents", "Genes"), 
+                      complete=FALSE, category=getCategory()) {
+    type <- match.arg(type)
+    if (type %in% c("Patients", "Samples") )
+        groups <- getGlobal(category, "sampleGroups")
+    else if (type %in% c("ASevents", "Genes"))
+        groups <- getGlobal(category, "ASeventGroups")
     
     # Return all data if requested
     if (complete) return(groups)
     
-    if (samples)
-        col <- "Samples"
-    else
-        col <- "Patients"
-    
     # Check if data of interest is available
-    if (!col %in% colnames(groups)) return(NULL)
+    if (!type %in% colnames(groups)) return(NULL)
     
     # If available, return data of interest
-    g <- groups[ , col, drop=TRUE]
+    g <- groups[ , type, drop=TRUE]
     if (length(g) == 1) names(g) <- rownames(groups)
     
     # Return colour lookup table for groups
@@ -333,14 +373,21 @@ getGroupsFrom <- function(dataset, category=getCategory(), complete=FALSE,
         colour <- setNames(unlist(colour), names(colour))
         attr(g, "Colour") <- colour
     }
-    
     return(g)
 }
 
-#' @rdname getGroupsFrom
+#' @rdname getGroups
 #' @param groups Matrix: groups of dataset
-setGroupsFrom <- function(dataset, groups, category=getCategory())
-    setGlobal(category, dataset, "groups", value=groups)
+setGroups <- function(type=c("Patients", "Samples", "ASevents", "Genes"), 
+                      groups, category=getCategory()) {
+    type <- match.arg(type)
+    if (type %in% c("Patients", "Samples") )
+        type <- "sampleGroups"
+    else if (type %in% c("ASevents", "Genes"))
+        type <- "ASeventGroups"
+    
+    setGlobal(category, type, value=groups)
+}
 
 
 # Plot points or regions --------------------------------------------------

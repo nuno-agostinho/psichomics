@@ -302,7 +302,8 @@ loadSplicingQuantificationSet <- function(session, input, output) {
     
     # Replace previous splicing quantification
     observeEvent(input$replace2, {
-        setGroupsFrom("Clinical data", NULL)
+        setGroups("Samples", NULL)
+        setGroups("AS events", NULL)
         loadSplicing()
     })
     
@@ -310,7 +311,8 @@ loadSplicingQuantificationSet <- function(session, input, output) {
     observeEvent(input$discard2, {
         setDifferentialAnalyses(NULL)
         setDifferentialAnalysesSurvival(NULL)
-        setGroupsFrom("Clinical data", NULL)
+        setGroups("Samples", NULL)
+        setGroups("AS events", NULL)
         loadSplicing()
     })
     

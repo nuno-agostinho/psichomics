@@ -1,8 +1,8 @@
 #' @rdname appUI
 #' 
-#' @importFrom shinyjs disabled hidden
-#' @importFrom shiny downloadLink selectizeInput uiOutput actionButton tags
-#' checkboxGroupInput helpText tagList sidebarLayout mainPanel
+#' @importFrom shinyjs hidden disabled
+#' @importFrom shiny actionLink downloadLink selectizeInput uiOutput tags
+#' actionButton checkboxGroupInput helpText tagList sidebarLayout mainPanel
 #' @importFrom shinyBS bsCollapse bsCollapsePanel
 #' @importFrom DT dataTableOutput
 #' @importFrom highcharter highchartOutput
@@ -146,28 +146,40 @@ diffSplicingTableUI <- function(id) {
                 errorDialog("Clinical data is not loaded.",
                             id=ns("survivalOptions-missingClinicalData"),
                             buttonLabel="Load survival data",
-                            buttonId=ns("loadClinical")))),
-        hr(),
-        disabled(div(id=ns("downloadStats"), class="btn-group",
-                     tags$button(class="btn btn-default dropdown-toggle",
-                                 type="button", "data-toggle"="dropdown",
-                                 "aria-haspopup"="true",
-                                 "aria-expanded"="false", 
-                                 icon("download"), 
-                                 "Save table", tags$span(class="caret")),
-                     tags$ul(class="dropdown-menu", 
-                             tags$li(downloadLink(ns("downloadAll"), 
-                                                  "All data")),
-                             tags$li(downloadLink(ns("downloadSubset"), 
-                                                  "Filtered data"))))))
+                            buttonId=ns("loadClinical")))))
+    
+    downloadTable <- div(
+        class="btn-group dropup",
+        tags$button(class="btn btn-default dropdown-toggle", type="button",
+                    "data-toggle"="dropdown", "aria-haspopup"="true", 
+                    "aria-expanded"="false", icon("download"), 
+                    "Save table", tags$span(class="caret")),
+        tags$ul(class="dropdown-menu", 
+                tags$li(downloadLink(ns("downloadAll"), "All data")),
+                tags$li(downloadLink(ns("downloadSubset"), "Filtered data"))))
+    
+    ASeventGroupCreation <- div(
+        class="btn-group dropup",
+        tags$button(class="btn btn-default dropdown-toggle", type="button",
+                    "data-toggle"="dropdown", "aria-haspopup"="true",
+                    "aria-expanded"="false", icon("object-group"),
+                    "Create groups based on...", tags$span(class="caret")),
+        tags$ul(class="dropdown-menu",
+                disabled(tags$li(id=ns("groupBySelectedEventsContainer"),
+                                 actionLink(ns("groupBySelectedEvents"),
+                                            "Selected splicing events"))),
+                tags$li(actionLink(ns("groupByDisplayedEvents"),
+                                   "Splicing events displayed in the table"))))
     
     tagList(
         uiOutput(ns("modal")),
         sidebarLayout(
-            sidebar, 
-            mainPanel(
+            sidebar, mainPanel(
                 ggplotUI(ns("psi-volcano")),
                 dataTableOutput(ns("statsTable")),
+                hidden(div(id=ns("tableToolbar"), class="btn-toolbar",
+                           role="toolbar", 
+                           downloadTable, ASeventGroupCreation)),
                 highchartOutput(ns("highchartsSparklines"), 0, 0))))
 }
 
@@ -422,7 +434,7 @@ diffAnalysesSet <- function(session, input, output) {
         totalTime <- startProcess("startAnalyses")
         
         # Prepare groups of samples to analyse
-        groups <- getSelectedGroups(input, "diffGroups", samples=TRUE,
+        groups <- getSelectedGroups(input, "diffGroups", "Samples",
                                     filter=colnames(psi))
         if ( !is.null(groups) ) {
             colour     <- attr(groups, "Colour")
@@ -725,7 +737,7 @@ diffAnalysesPlotSet <- function(session, input, output) {
 #' Set of functions to render data table for differential analyses
 #' 
 #' @importFrom DT reloadData dataTableProxy dataTableAjax selectRows
-#' @importFrom shinyjs enable disable
+#' @importFrom shinyjs toggleElement toggleState
 #' @importFrom utils write.table
 #' 
 #' @inherit diffSplicingTableServer
@@ -844,13 +856,9 @@ diffAnalysesTableSet <- function(session, input, output) {
         }
     })
     
-    # Disable download button if statistical table is NULL
-    observe({
-        if ( is.null(getDifferentialAnalyses()) )
-            disable("downloadStats")
-        else
-            enable("downloadStats")
-    })
+    # Hide table toolbar if statistical table is not displayed
+    observe(toggleElement(
+        "tableToolbar", condition=!is.null(getDifferentialAnalyses())))
     
     # Discard columns from data frame containing information to render plots
     discardPlotsFromTable <- function(df) {
@@ -890,13 +898,50 @@ diffAnalysesTableSet <- function(session, input, output) {
             write.table(stats, file, quote=FALSE, sep="\t", row.names=FALSE)
         }
     )
+    
+    # Create groups based on a given filter
+    groupBasedOnDifferentialAnalysis <- function(filter, description="") {
+        stats <- getDifferentialAnalysesFiltered()
+        stats <- discardPlotsFromTable(stats)
+        stats <- stats[filter, ]
+        
+        ASevents <- rownames(stats)
+        genes <- unique(names(getGenesFromSplicingEvents(ASevents)))
+        group <- cbind("Names"="DFS selection",
+                       "Subset"="Selection from differential splicing analysis",
+                       "Input"="Selection from differential splicing analysis",
+                       "ASevents"=list(ASevents), "Genes"=list(genes))
+        appendNewGroups("ASevents", group)
+        infoModal(
+            session, "New group created", 
+            "New group created", description, "and containing:",
+            div(style="font-size: 22px;", length(ASevents), "splicing events"),
+            div(style="font-size: 22px;", length(genes), "genes"))
+    }
+    
+    # Create groups based on splicing events displayed in the table
+    observeEvent(input$groupByDisplayedEvents, 
+                 groupBasedOnDifferentialAnalysis(
+                     input$statsTable_rows_all,
+                     "based on the splicing events shown in the table"))
+    
+    # Create groups based on selected splicing events
+    observeEvent(
+        input$groupBySelectedEvents,
+        groupBasedOnDifferentialAnalysis(
+            input$statsTable_rows_selected,
+            "based on selected splicing events"))
+    
+    # Disable groups based on selected AS events when no groups are selected
+    observe(toggleState("groupBySelectedEventsContainer",
+                        !is.null(input$statsTable_rows_selected)))
 }
 
 #' @rdname appServer
 diffSplicingTableServer <- function(input, output, session) {
     ns <- session$ns
     
-    selectGroupsServer(session, "diffGroups")
+    selectGroupsServer(session, "diffGroups", "Samples")
     
     observeEvent(input$loadClinical, 
                  missingDataGuide("Clinical data"))

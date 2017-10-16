@@ -1,8 +1,8 @@
 #' @rdname appUI
 #' 
 #' @importFrom shinyjs disabled hidden
-#' @importFrom shiny downloadLink selectizeInput uiOutput actionButton tags
-#' checkboxGroupInput helpText tagList sidebarLayout mainPanel
+#' @importFrom shiny actionLink downloadLink selectizeInput uiOutput tags
+#' actionButton checkboxGroupInput helpText tagList sidebarLayout mainPanel
 #' @importFrom shinyBS bsCollapse bsCollapsePanel
 #' @importFrom DT dataTableOutput
 #' @importFrom highcharter highchartOutput
@@ -48,14 +48,12 @@ diffExpressionTableUI <- function(id) {
                 helpText("Assumed limit for the standard deviation of log2",
                          "fold-changes for differentially expressed genes:"),
                 fluidRow(
-                    column(
-                        6, numericInput(ns("ebaysStdevMin"), "Lower limit",
-                                        min=0, value=0.1, step=0.1, 
-                                        width="100%")),
-                    column(
-                        6, numericInput(ns("ebaysStdevMax"), "Upper limit",
-                                        min=0, value=4, step=0.1, 
-                                        width="100%"))))),
+                    column(6, numericInput(ns("ebaysStdevMin"), "Lower limit",
+                                           min=0, value=0.1, step=0.1, 
+                                           width="100%")),
+                    column(6, numericInput(ns("ebaysStdevMax"), "Upper limit",
+                                           min=0, value=4, step=0.1, 
+                                           width="100%"))))),
         tags$b("Extra analyses to be performed:"),
         tags$ul(tags$li("Variance and median expression"),
                 tags$li("Distribution of gene expression per group")),
@@ -112,28 +110,39 @@ diffExpressionTableUI <- function(id) {
                 errorDialog(
                     "Differential expression analysis not yet performed.",
                     id=ns("missingDiffExpression")),
-                hidden(eventOptions))),
-        hr(),
-        disabled(div(id=ns("downloadStats"), class="btn-group",
-                     tags$button(class="btn btn-default dropdown-toggle",
-                                 type="button", "data-toggle"="dropdown",
-                                 "aria-haspopup"="true",
-                                 "aria-expanded"="false", 
-                                 icon("download"), 
-                                 "Save table", tags$span(class="caret")),
-                     tags$ul(class="dropdown-menu", 
-                             tags$li(downloadLink(ns("downloadAll"), 
-                                                  "All data")),
-                             tags$li(downloadLink(ns("downloadSubset"), 
-                                                  "Filtered data"))))))
+                hidden(eventOptions))))
+    
+    downloadTable <- div(
+        class="btn-group dropup",
+        tags$button(class="btn btn-default dropdown-toggle", type="button",
+                    "data-toggle"="dropdown", "aria-haspopup"="true", 
+                    "aria-expanded"="false", icon("download"), 
+                    "Save table", tags$span(class="caret")),
+        tags$ul(class="dropdown-menu", 
+                tags$li(downloadLink(ns("downloadAll"), "All data")),
+                tags$li(downloadLink(ns("downloadSubset"), "Filtered data"))))
+    
+    geneGroupCreation <- div(
+        class="btn-group dropup",
+        tags$button(class="btn btn-default dropdown-toggle", type="button",
+                    "data-toggle"="dropdown", "aria-haspopup"="true",
+                    "aria-expanded"="false", icon("object-group"),
+                    "Create groups based on...", tags$span(class="caret")),
+        tags$ul(class="dropdown-menu",
+                disabled(tags$li(id=ns("groupBySelectedGenesContainer"),
+                                 actionLink(ns("groupBySelectedGenes"),
+                                            "Selected genes"))),
+                tags$li(actionLink(ns("groupByDisplayedGenes"),
+                                   "Genes displayed in the table"))))
     
     tagList(
         uiOutput(ns("modal")),
         sidebarLayout(
-            sidebar, 
-            mainPanel(
+            sidebar, mainPanel(
                 ggplotUI(ns("ge-volcano")),
                 dataTableOutput(ns("statsTable")),
+                hidden(div(id=ns("tableToolbar"), class="btn-toolbar",
+                           role="toolbar", downloadTable, geneGroupCreation)),
                 highchartOutput(ns("highchartsSparklines"), 0, 0))))
 }
 
@@ -167,7 +176,7 @@ diffExpressionSet <- function(session, input, output) {
         
         # Prepare groups of samples to analyse and filter samples not available 
         # in the selected groups from the gene expression data
-        groups <- getSelectedGroups(input, "diffGroups", samples=TRUE,
+        groups <- getSelectedGroups(input, "diffGroups", "Samples",
                                     filter=colnames(geneExpr))
         geneExpr     <- geneExpr[ , unlist(groups), drop=FALSE]
         attrGroups   <- groups
@@ -471,7 +480,7 @@ diffExpressionPlotSet <- function(session, input, output) {
 #' Set of functions to render data table for differential analyses
 #' 
 #' @importFrom DT reloadData dataTableProxy dataTableAjax selectRows
-#' @importFrom shinyjs enable disable
+#' @importFrom shinyjs toggleElement
 #' @importFrom utils write.table
 #' 
 #' @inherit diffExpressionTableServer
@@ -590,13 +599,9 @@ diffExpressionTableSet <- function(session, input, output) {
         }
     })
     
-    # Disable download button if statistical table is NULL
-    observe({
-        if ( is.null(getDifferentialExpression()) )
-            disable("downloadStats")
-        else
-            enable("downloadStats")
-    })
+    # Hide table tooltbar if statistical table is not displayed
+    observe(toggleElement("tableToolbar",
+                          condition=!is.null(getDifferentialExpression())))
     
     # Discard columns from data frame containing information to render plots
     discardPlotsFromTable <- function(df) {
@@ -637,13 +642,54 @@ diffExpressionTableSet <- function(session, input, output) {
             write.table(stats, file, quote=FALSE, sep="\t", row.names=FALSE)
         }
     )
+    
+    # Create groups based on a given filter
+    groupsBasedoOnDifferentialExpression <- function(filter, description="") {
+        stats <- getDifferentialExpressionFiltered()
+        stats <- discardPlotsFromTable(stats)
+        stats <- stats[filter, ]
+        
+        genes <- rownames(stats)
+        
+        ASevents <- getASevents()
+        if ( !is.null(ASevents) )
+            ASevents <- getSplicingEventFromGenes(genes, ASevents)
+        else
+            ASevents <- character(0)
+        
+        origin <- "Selection from differential expression analysis"
+        group <- cbind("Names"="DFS selection", "Subset"=origin, "Input"=origin, 
+                       "ASevents"=list(ASevents), "Genes"=list(genes))
+        appendNewGroups("ASevents", group)
+        infoModal(
+            session, "New group created",
+            "New group created", description, "and containing:",
+            div(style="font-size: 22px;", length(ASevents), "splicing events"),
+            div(style="font-size: 22px;", length(genes), "genes"))
+    }
+    
+    # Create groups based on genes displayed in the table
+    observeEvent(input$groupByDisplayedGenes,
+                 groupsBasedoOnDifferentialExpression(
+                     input$statsTable_rows_all,
+                     "based on the genes shown in the table"))
+    
+    # Create groups based on selected genes
+    observeEvent(input$groupBySelectedGenes,
+                 groupsBasedoOnDifferentialExpression(
+                     input$statsTable_rows_selected,
+                     "based on selected genes"))
+    
+    # Disable groups based on selected genes when no groups are selected
+    observe(toggleState("groupBySelectedGenesContainer",
+                        !is.null(input$statsTable_rows_selected)))
 }
 
 #' @rdname appServer
 diffExpressionTableServer <- function(input, output, session) {
     ns <- session$ns
     
-    selectGroupsServer(session, "diffGroups")
+    selectGroupsServer(session, "diffGroups", "Samples")
     
     observeEvent(input$loadClinical, 
                  missingDataGuide("Clinical data"))

@@ -11,7 +11,8 @@ test_that("Perform ICA", {
 test_that("Tolerate NAs per columns", {
     # Data is exclusively composed of NAs
     all.nas <- matrix(ncol=4, nrow=50)
-    ica <- performICA(all.nas, center=FALSE, scale.=FALSE, naTolerance=30)
+    expect_warning(
+        ica <- performICA(all.nas, center=FALSE, scale.=FALSE, naTolerance=30))
     expect_null(ica)
     
     # Fill with missing values (column 1 = 100% NAs, 2 = 50%, 3 = 34%, 4 = 26%)
@@ -34,7 +35,8 @@ test_that("Tolerate NAs per columns", {
     expect_is(ica, "error")
     
     # Tolerate columns containing 25% of NAs
-    ica <- performICA(nas, center=FALSE, scale.=FALSE, naTolerance=25)
+    expect_warning(
+        ica <- performICA(nas, center=FALSE, scale.=FALSE, naTolerance=25))
     expect_null(ica)
 })
 
@@ -62,3 +64,4 @@ test_that("Plot ICA individuals and colour two groups", {
     subset <- ica$S[unlist(groups[2:3]), 1:2]
     expect_true(all(subset == hc$x$data))
 })
+

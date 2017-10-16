@@ -4,8 +4,8 @@
 \alias{operateOnGroups}
 \title{Set operations on groups}
 \usage{
-operateOnGroups(input, session, operation, buttonId, symbol = " ",
-  datasetName, sharedData = sharedData)
+operateOnGroups(input, session, operation, buttonId, symbol = " ", type,
+  sharedData = sharedData)
 }
 \arguments{
 \item{input}{Shiny input}
@@ -19,7 +19,7 @@ operateOnGroups(input, session, operation, buttonId, symbol = " ",
 \item{symbol}{Character: Unicode symbol to visually indicate the operation
 performed (" " by default)}
 
-\item{datasetName}{Character: name of dataset}
+\item{type}{Character: type of group where set operations are to be performed}
 
 \item{sharedData}{Shiny app's global variable}
 }

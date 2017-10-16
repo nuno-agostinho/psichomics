@@ -52,6 +52,10 @@ pcaUI <- function(id) {
         selectGroupsUI(ns("dataGroups"), "Perform PCA on...",
                        noGroupsLabel="All samples",
                        groupsLabel="Samples from selected groups"),
+        selectGroupsUI(
+            ns("dataGroups2"), "Perform PCA on...",
+            noGroupsLabel="All genes and splicing events",
+            groupsLabel="Genes and splicing events from selected groups"),
         processButton(ns("calculate"), "Calculate PCA")
     )
     
@@ -245,7 +249,7 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
         if (is.null(groups)) {
             hc <- hc_scatter(hc, df[[pcX]], df[[pcY]], sample=rownames(df))
         } else {
-            # Colour data by the selected clinical groups
+            # Colour data based on the selected groups
             for (group in names(groups)) {
                 rows <- groups[[group]]
                 colour <- attr(groups, "Colour")[[group]]
@@ -299,7 +303,7 @@ clusterSet <- function(session, input, output) {
         pcY <- input$pcY
         
         if ( !is.null(pca$x) )
-            groups <- getSelectedGroups(input, "colourGroups", samples=TRUE,
+            groups <- getSelectedGroups(input, "colourGroups", "Samples",
                                         filter=rownames(pca$x))
         else
             groups <- NULL
@@ -344,7 +348,7 @@ clusterSet <- function(session, input, output) {
             pcY <- input$pcY
             
             if ( !is.null(pca$x) )
-                groups <- getSelectedGroups(input, "colourGroups", samples=TRUE,
+                groups <- getSelectedGroups(input, "colourGroups", "Samples",
                                             filter=rownames(pca$x))
             else
                 groups <- NULL
@@ -371,7 +375,7 @@ clusterSet <- function(session, input, output) {
         pcY <- input$pcY
         
         if ( !is.null(pca$x) )
-            groups <- getSelectedGroups(input, "colourGroups", samples=TRUE,
+            groups <- getSelectedGroups(input, "colourGroups", "Samples",
                                         filter=rownames(pca$x))
         else
             groups <- NULL
@@ -449,7 +453,7 @@ clusterSet <- function(session, input, output) {
                                 groups[ , 4, drop=FALSE])
             }
             
-            if (!is.null(groups)) appendNewGroups(groups)
+            if (!is.null(groups)) appendNewGroups("Samples", groups)
             infoModal(
                 session, "Groups successfully created",
                 "The following groups were created based on the selected",
@@ -479,8 +483,9 @@ clusterSet <- function(session, input, output) {
 pcaServer <- function(input, output, session) {
     ns <- session$ns
     
-    selectGroupsServer(session, "dataGroups")
-    selectGroupsServer(session, "colourGroups")
+    selectGroupsServer(session, "dataGroups", "Samples")
+    selectGroupsServer(session, "dataGroups2", "ASevents")
+    selectGroupsServer(session, "colourGroups", "Samples")
     
     observe({
         incLevels <- getInclusionLevels()
@@ -524,11 +529,13 @@ pcaServer <- function(input, output, session) {
     observeEvent(input$calculate, {
         selectedDataForPCA <- input$dataForPCA
         if (selectedDataForPCA == "Inclusion levels") {
-            dataForPCA <- isolate(getInclusionLevels())
-            dataType   <- "Inclusion levels"
+            dataForPCA  <- isolate(getInclusionLevels())
+            dataType    <- "Inclusion levels"
+            groups2Type <- "ASevents"
         } else if (grepl("^Gene expression", selectedDataForPCA)) {
             dataForPCA <- isolate(getGeneExpression()[[selectedDataForPCA]])
             dataType   <- "Gene expression"
+            groups2Type <- "Genes"
         } else {
             missingDataModal(session, "Inclusion levels", ns("takeMeThere"))
             return(NULL)
@@ -539,15 +546,19 @@ pcaServer <- function(input, output, session) {
         } else {
             time <- startProcess("calculate")
             isolate({
-                groups <- getSelectedGroups(input, "dataGroups", samples=TRUE,
+                groups <- getSelectedGroups(input, "dataGroups", "Samples",
                                             filter=colnames(dataForPCA))
+                groups2 <- getSelectedGroups(input, "dataGroups2", groups2Type, 
+                                             filter=rownames(dataForPCA))
                 preprocess <- input$preprocess
                 naTolerance <- input$naTolerance
             })
             
-            # Subset data by the selected clinical groups
+            # Subset data based on the selected groups
             if ( !is.null(groups) ) 
                 dataForPCA <- dataForPCA[ , unlist(groups), drop=FALSE]
+            if ( !is.null(groups2) )
+                dataForPCA <- dataForPCA[unlist(groups2), , drop=FALSE]
             
             # Raise error if data has no rows
             if (nrow(dataForPCA) == 0) {
@@ -577,6 +588,10 @@ pcaServer <- function(input, output, session) {
                 attr(pca, "dataType") <- dataType
                 attr(pca, "firstPCA") <- is.null(getPCA())
                 setPCA(pca)
+                
+                # Clear previously plotted charts
+                output$scatterplot <- renderHighchart(NULL)
+                output$scatterplotLoadings <- renderHighchart(NULL)
             }
             updateCollapse(session, "pcaCollapse", "Plot PCA")
             endProcess("calculate", closeProgressBar=FALSE)
@@ -634,7 +649,7 @@ pcaServer <- function(input, output, session) {
             pcY <- input$pcY
             
             if ( !is.null(pca$x) )
-                groups <- getSelectedGroups(input, "colourGroups", samples=TRUE,
+                groups <- getSelectedGroups(input, "colourGroups", "Samples",
                                             filter=rownames(pca$x))
             else
                 groups <- NULL

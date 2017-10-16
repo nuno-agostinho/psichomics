@@ -98,7 +98,7 @@ plotSingleICA <- function(ica, icX=1, icY=2, groups=NULL) {
     if (is.null(groups)) {
         hc <- hc_scatter(hc, df[[icX]], df[[icY]], sample=rownames(df))
     } else {
-        # Colour data by the selected clinical groups
+        # Colour data based on the selected groups
         for (group in names(groups)) {
             rows <- groups[[group]]
             colour <- attr(groups, "Colour")[[group]]
@@ -147,6 +147,10 @@ icaUI <- function(id) {
         selectGroupsUI(ns("dataGroups"), "Perform ICA on...",
                        noGroupsLabel="All samples",
                        groupsLabel="Samples from selected groups"),
+        selectGroupsUI(
+            ns("dataGroups2"), "Perform ICA on...",
+            noGroupsLabel="All genes and splicing events",
+            groupsLabel="Genes and splicing events from selected groups"),
         processButton(ns("calculate"), "Calculate ICA")
     )
     
@@ -262,7 +266,7 @@ clusterICAset <- function(session, input, output) {
         clusteringComponents <- input$clusteringComponents
         
         if ( !is.null(ica$S) )
-            groups <- getSelectedGroups(input, "colourGroups", samples=TRUE,
+            groups <- getSelectedGroups(input, "colourGroups", "Samples",
                                         filter=rownames(ica$S))
         else
             groups <- NULL
@@ -308,7 +312,7 @@ clusterICAset <- function(session, input, output) {
             ica <- getICA()
             if ( !is.null(ica$S) )
                 selectedGroups <- getSelectedGroups(
-                    input, "colourGroups", samples=TRUE,
+                    input, "colourGroups", "Samples",
                     filter=rownames(ica$S))
             else
                 selectedGroups <- NULL
@@ -347,7 +351,7 @@ clusterICAset <- function(session, input, output) {
                                 groups[ , 4, drop=FALSE])
             }
             
-            if (!is.null(groups)) appendNewGroups(groups)
+            if (!is.null(groups)) appendNewGroups("Samples", groups)
             
             # Render as table for user
             colnames(groups)[1] <- "Group"
@@ -370,8 +374,9 @@ clusterICAset <- function(session, input, output) {
 icaServer <- function(input, output, session) {
     ns <- session$ns
     
-    selectGroupsServer(session, "dataGroups")
-    selectGroupsServer(session, "colourGroups")
+    selectGroupsServer(session, "dataGroups", "Samples")
+    selectGroupsServer(session, "dataGroups2", "ASevents")
+    selectGroupsServer(session, "colourGroups", "Samples")
     
     observe({
         incLevels <- getInclusionLevels()
@@ -428,11 +433,13 @@ icaServer <- function(input, output, session) {
     observeEvent(input$calculate, {
         selectedDataForICA <- input$dataForICA
         if (selectedDataForICA == "Inclusion levels") {
-            dataForICA <- isolate(getInclusionLevels())
-            dataType   <- "Inclusion levels"
+            dataForICA  <- isolate(getInclusionLevels())
+            dataType    <- "Inclusion levels"
+            groups2Type <- "ASevents"
         } else if (grepl("^Gene expression", selectedDataForICA)) {
-            dataForICA <- isolate(getGeneExpression()[[selectedDataForICA]])
-            dataType   <- "Gene expression"
+            dataForICA  <- isolate(getGeneExpression()[[selectedDataForICA]])
+            dataType    <- "Gene expression"
+            groups2Type <- "Genes"
         } else {
             missingDataModal(session, "Inclusion levels", ns("takeMeThere"))
             return(NULL)
@@ -443,16 +450,20 @@ icaServer <- function(input, output, session) {
         } else {
             time <- startProcess("calculate")
             isolate({
-                groups <- getSelectedGroups(input, "dataGroups", samples=TRUE,
+                groups <- getSelectedGroups(input, "dataGroups", "Samples",
                                             filter=colnames(dataForICA))
+                groups2 <- getSelectedGroups(input, "dataGroups2", groups2Type, 
+                                             filter=rownames(dataForICA))
                 preprocess      <- input$preprocess
                 componentNumber <- input$componentNumber
                 naTolerance     <- input$naTolerance
             })
             
-            # Subset data by the selected clinical groups
+            # Subset data based on the selected groups
             if ( !is.null(groups) ) 
                 dataForICA <- dataForICA[ , unlist(groups), drop=FALSE]
+            if ( !is.null(groups2) )
+                dataForICA <- dataForICA[unlist(groups2), , drop=FALSE]
             
             # Raise error if data has no rows
             if (nrow(dataForICA) == 0) {
@@ -515,7 +526,7 @@ icaServer <- function(input, output, session) {
             ica <- getICA()
             components <- input$plotComponents
             if ( !is.null(ica$S) ) {
-                groups <- getSelectedGroups(input, "colourGroups", samples=TRUE,
+                groups <- getSelectedGroups(input, "colourGroups", "Samples",
                                             filter=rownames(ica$S))
                 colour <- attr(groups, "Colour")
             } else {

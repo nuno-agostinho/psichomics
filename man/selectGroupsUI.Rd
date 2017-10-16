@@ -10,13 +10,12 @@ selectGroupsUI(id, label,
   placeholder = "Click on 'Groups' to create or edit groups",
   noGroupsLabel = NULL, groupsLabel = NULL, maxItems = NULL)
 
-selectGroupsServer(session, id)
+selectGroupsServer(session, id, type)
 
-getSelectedGroups(input, id, samples = FALSE, dataset = "Clinical data",
-  filter = NULL)
+getSelectedGroups(input, id, type, filter = NULL)
 }
 \arguments{
-\item{id}{Character: identifier of the group selection}
+\item{id}{Character: identifier}
 
 \item{label}{Character: selectize label}
 
@@ -32,14 +31,13 @@ when no groups may be selected}
 
 \item{session}{Shiny session}
 
+\item{type}{Character: type of groups (either "Patients", "Samples", 
+"ASevents" or "Genes")}
+
 \item{input}{Shiny input}
 
-\item{samples}{Boolean: show groups by samples (TRUE) or patients (FALSE)?
-FALSE by default}
-
-\item{dataset}{Character: data set name (e.g. "Clinical data")}
-
-\item{filter}{Character: only get groups passed}
+\item{filter}{Character: get groups only if they are present in this argument
+(if TCGA-styled gene symbols, they will be "converted" to gene symbols alone)}
 }
 \value{
 \code{selectGroupsUI}: Interface for group selection

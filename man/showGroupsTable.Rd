@@ -4,10 +4,11 @@
 \alias{showGroupsTable}
 \title{Present groups table}
 \usage{
-showGroupsTable(datasetName)
+showGroupsTable(type)
 }
 \arguments{
-\item{datasetName}{Character: name of dataset}
+\item{type}{Character: type of groups (either "Patients", "Samples", 
+"ASevents" or "Genes")}
 }
 \value{
 Matrix with groups ordered (or NULL if no groups exist)
