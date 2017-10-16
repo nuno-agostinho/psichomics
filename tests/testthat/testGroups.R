@@ -201,9 +201,8 @@ test_that("Set complement", {
     
     # Test with 1 group
     selected <- 3
-    df2 <- setOperation("complement", df, selected, patients=allPatients,
-                        samples=allSamples, symbol="U \u005c ",
-                        matches=inverted)
+    df2 <- setOperation("complement", df, selected, first=allPatients,
+                        second=allSamples, symbol="U \u005c ", matches=inverted)
     
     samples  <- setdiff(allSamples, df[[selected, "Samples"]])
     patients <- setdiff(allPatients, df[[selected, "Patients"]])
@@ -214,9 +213,8 @@ test_that("Set complement", {
     
     # Test with 2 groups
     selected <- c(2, 4)
-    df2 <- setOperation("complement", df, selected, patients=allPatients,
-                        samples=allSamples, symbol="U \u005c ", 
-                        matches=inverted)
+    df2 <- setOperation("complement", df, selected, first=allPatients,
+                        second=allSamples, symbol="U \u005c ", matches=inverted)
     
     samples  <- setdiff(allSamples, Reduce(union, df[selected, "Samples"]))
     patients <- setdiff(allPatients, Reduce(union, df[selected, "Patients"]))
@@ -227,9 +225,8 @@ test_that("Set complement", {
     
     # Test with 4 groups
     selected <- c(1:4)
-    df2 <- setOperation("complement", df, selected, patients=allPatients,
-                        samples=allSamples, symbol="U \u005c ", 
-                        matches=inverted)
+    df2 <- setOperation("complement", df, selected, first=allPatients,
+                        second=allSamples, symbol="U \u005c ", matches=inverted)
     
     samples  <- setdiff(allSamples, Reduce(union, df[selected, "Samples"]))
     patients <- setdiff(allPatients, Reduce(union, df[selected, "Patients"]))

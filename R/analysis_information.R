@@ -521,7 +521,7 @@ renderGeneticInfo <- function(output, ns, info, species=NULL, assembly=NULL,
 #' event <- c("SE_17_-_41251792_41249306_41249261_41246877_BRCA1")
 #' queryEnsemblByEvent(event, species="human", assembly="hg19")
 queryEnsemblByEvent <- function(event, ...) {
-    gene <- parseEvent(event)$gene
+    gene <- parseEvent(event)$gene[[1]]
     if (gene == "Hypothetical")
         stop("This event has no associated gene")
     return(queryEnsemblByGene(gene, ...))

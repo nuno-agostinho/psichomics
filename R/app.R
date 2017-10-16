@@ -268,12 +268,10 @@ appServer <- function(input, output, session) {
     
     # Update selectize event to show available events
     observe({
-        psi <- getInclusionLevels()
-        if (!is.null(psi)) {
-            choices <- rownames(psi)
-            names(choices) <- parseSplicingEvent(choices, char=TRUE)
-            choices <- sort(choices)
-            updateSelectizeInput(session, "selectizeEventElem", choices=choices)
+        ASevents <- getASevents()
+        if (!is.null(ASevents)) {
+            updateSelectizeInput(session, "selectizeEventElem", 
+                                 choices=ASevents)
             
             # Set the selected alternative splicing event
             observeEvent(input$selectizeEventElem,

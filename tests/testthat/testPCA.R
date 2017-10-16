@@ -49,9 +49,10 @@ test_that("Tolerate NAs per columns", {
     
     # Data is exclusively composed of NAs
     all.nas <- matrix(ncol=4, nrow=50)
-    pca <- performPCA(all.nas, center=FALSE, scale.=FALSE, naTolerance=30)
+    expect_warning(
+        pca <- performPCA(all.nas, center=FALSE, scale.=FALSE, naTolerance=30))
     expect_null(pca)
-    expect_error(prcomp(all.nas, center=center, scale.=scale))
+    expect_error(prcomp(all.nas, center=FALSE, scale.=FALSE))
     
     # Fill with missing values (column 1 = 100% NAs, 2 = 50%, 3 = 34%, 4 = 26%)
     nas <- data
@@ -73,7 +74,8 @@ test_that("Tolerate NAs per columns", {
     expect_equal(colnames(nas)[4], rownames(pca$rotation))
     
     # Tolerate columns containing 25% of NAs
-    pca <- performPCA(nas, center=FALSE, scale.=FALSE, naTolerance=25)
+    expect_warning(
+        pca <- performPCA(nas, center=FALSE, scale.=FALSE, naTolerance=25))
     expect_null(pca)
 })
 
@@ -136,3 +138,4 @@ test_that("Plot PCA loadings", {
     expect_equal(hc$x$hc_opts$series[[2]]$name, "Loadings")
     expect_equal(hc$x$hc_opts$series[[2]]$type, "bubble")
 })
+

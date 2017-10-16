@@ -73,7 +73,7 @@ diffExpressionEventUI <- function(id) {
 diffExpressionEventServer <- function(input, output, session) {
     ns <- session$ns
     
-    selectGroupsServer(session, "diffGroups")
+    selectGroupsServer(session, "diffGroups", "Samples")
     
     observeEvent(input$analyse, {
         geneExpr <- getGeneExpression()[[input$geneExpr]]
@@ -89,7 +89,7 @@ diffExpressionEventServer <- function(input, output, session) {
         }
         
         # Prepare groups of samples to analyse
-        groups <- getSelectedGroups(input, "diffGroups", samples=TRUE,
+        groups <- getSelectedGroups(input, "diffGroups", "Samples",
                                     filter=colnames(geneExpr))
         colour <- attr(groups, "Colour")
         if ( !is.null(groups) ) {

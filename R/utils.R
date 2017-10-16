@@ -144,6 +144,60 @@ parseSplicingEvent <- function(event, char=FALSE, pretty=FALSE, extra=NULL) {
 
 parseEvent <- parseSplicingEvent
 
+#' Match splicing events with respective genes
+#' 
+#' @param ASevents Character: alternative splicing events to be matched
+#' 
+#' @return Named character vector containing the splicing events and their
+#' respective gene as their name
+matchSplicingEventsWithGenes <- function(ASevents) {
+    ASeventParsed <- parseSplicingEvent(ASevents)$gene
+    ASeventGenes  <- rep(ASevents, sapply(ASeventParsed, length))
+    names(ASeventGenes) <- unlist(ASeventParsed)
+    return(ASeventGenes)
+}
+
+#' Retrieve alternative splicing events based on given genes
+#' 
+#' @param genes Character: gene symbols (or TCGA-styled gene symbols)
+#' @inheritParams matchSplicingEventsWithGenes
+#' 
+#' @return Character containing respective alternative splicing events
+#' @export
+#' 
+#' @examples 
+#' ASevents <- c("SE_1_+_201763003_201763300_201763374_201763594_NAV1", 
+#'               "SE_1_+_183515472_183516238_183516387_183518343_SMG7",
+#'               "SE_1_+_183441784_183471388_183471526_183481972_SMG7",
+#'               "SE_1_+_181019422_181022709_181022813_181024361_MR1",
+#'               "SE_1_+_181695298_181700311_181700367_181701520_CACNA1E")
+#' genes <- c("NAV1", "SMG7", "MR1", "HELLO")
+#' getSplicingEventFromGenes(genes, ASevents)
+getSplicingEventFromGenes <- function(genes, ASevents) {
+    if (!is(ASevents, "matched"))
+        ASeventGenes <- matchSplicingEventsWithGenes(ASevents)
+    else
+        ASeventGenes <- ASevents
+    
+    genes <- gsub("\\|.*$", "", genes) # Process TCGA-styled gene symbols
+    ASeventGenes <- ASeventGenes[names(ASeventGenes) %in% genes]
+    return(ASeventGenes)
+}
+
+#' Retrieve genes based on given alternative splicing events
+#' 
+#' @param ASevents Character: alternative splicing events
+#' 
+#' @return Named character containing alternative splicing events and their
+#' respective genes as names
+#' @export
+getGenesFromSplicingEvents <- function(ASevents) {
+    genes <- parseSplicingEvent(ASevents)$gene
+    match <- unlist(genes)
+    names(match) <- rep(ASevents, sapply(genes, length))
+    return(match)
+}
+
 #' Trims whitespace from a word
 #'
 #' @param word Character to trim
@@ -510,6 +564,13 @@ groupPerSample <- function(groups, samples, includeOuterGroup=FALSE,
     .Deprecated("groupPerElem")
     if (!includeOuterGroup) outerGroupName <- NULL
     groupPerElem(groups, samples, outerGroupName)
+}
+
+#' @rdname missingDataModal
+#' @param modal Character: modal identifier
+loadRequiredData <- function( modal=NULL ) {
+    modal <- ifelse(is.null(modal), "null", modal)
+    return(sprintf("showDataPanel('#%s');", modal))
 }
 
 #' Style and show a modal

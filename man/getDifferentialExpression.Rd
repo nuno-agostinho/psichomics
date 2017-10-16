@@ -46,5 +46,5 @@ Get or set differential expression' elements for a data category
 }
 \seealso{
 \code{\link{getEvent}}, \code{\link{getClinicalMatchFrom}},
-\code{\link{getGroupsFrom}} and \code{\link{getDifferentialAnalyses}}
+\code{\link{getGroups}} and \code{\link{getDifferentialAnalyses}}
 }

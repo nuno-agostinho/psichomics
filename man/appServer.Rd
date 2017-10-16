@@ -76,7 +76,7 @@ inclusionLevelsServer(input, output, session)
 
 localDataServer(input, output, session)
 
-groupsServer(input, output, session, datasetName)
+groupsServer(input, output, session)
 
 helpServer(input, output, session)
 }
@@ -86,8 +86,6 @@ helpServer(input, output, session)
 \item{output}{Output object}
 
 \item{session}{Session object}
-
-\item{datasetName}{Character: name of dataset}
 }
 \value{
 NULL (this function is used to modify the Shiny session's state)

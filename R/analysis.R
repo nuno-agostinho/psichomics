@@ -33,13 +33,6 @@ missingDataModal <- function(session, dataType, buttonId) {
 }
 
 #' @rdname missingDataModal
-#' @param modal Character: modal identifier
-loadRequiredData <- function( modal=NULL ) {
-    modal <- ifelse(is.null(modal), "null", modal)
-    return(sprintf("showDataPanel('#%s');", modal))
-}
-
-#' @rdname missingDataModal
 missingDataGuide <- function(dataType) {
     js <- loadRequiredData(dataType)
     runjs(js)

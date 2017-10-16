@@ -44,6 +44,22 @@ function showDataPanel(modal) {
 }
 
 /**
+ * Change active tab to the given tab of the Groups panel
+ * @param {String} tab Tab to open
+ */
+function showGroups(type) {
+    $("a[data-value='Groups']")[0].click();
+    
+    var mode;
+    if (type === "Samples") {
+        mode = 0;
+    } else if (type === "ASevents") {
+        mode = 1;
+    }
+    $("#groupsTypeTab a")[mode].click();
+}
+
+/**
  * Change selected event
  * @param {String} event Alternative splicing event
  */

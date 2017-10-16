@@ -1,5 +1,6 @@
-# 1.2.2 (3 Sep, 2017)
+# 1.4.0 (22 Oct, 2017)
 
+* Support for loading new GTEx V7 data
 * Support gene expression data:
     - Load, filter, normalise and perform log2-transformation on gene expression
     data from TCGA
@@ -18,6 +19,8 @@
     - Generate TCGA sample metadata when loading TCGA junction quantification
     - Present data summary after loading the data
 * Data grouping:
+    - Redesigned group creation and selection
+    - Create groups based on genes and alternative splicing events
     - Assign a customisable colour per data group
     - Export or import patient and sample identifiers of data groups
     - Add new set operations when grouping (such as complement, subtraction and
@@ -28,10 +31,14 @@
     - Statistically analyse group independence (useful to assess the overlap 
     between a PCA cluster and groups derived from clinical and sample 
     attributes, for instance)
-* Differential splicing analysis:
-    - Label points based on top differentially spliced events, selected 
-    alternative splicing events and selected genes
+* Differential analysis:
+    - Label points based on top differentially spliced events or genes, selected 
+    alternative splicing events and/or selected genes
+    - Create AS event and gene groups based on filtered or selected AS events 
+    and genes in the tables
 * Dimensionality reduction techniques:
+    - Subset data based on groups of AS events and genes before performing 
+    dimensionality reduction
     - Create data groups based on the partitioning clustering of PCA scores
     - Perform independent component analysis (ICA) on alternative splicing 
     quantification and gene expression data

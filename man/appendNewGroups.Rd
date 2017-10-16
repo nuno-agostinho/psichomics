@@ -4,9 +4,12 @@
 \alias{appendNewGroups}
 \title{Append new groups to already existing groups}
 \usage{
-appendNewGroups(new)
+appendNewGroups(type, new)
 }
 \arguments{
+\item{type}{Character: type of groups (either "Patients", "Samples", 
+"ASevents" or "Genes")}
+
 \item{new}{Rows of groups to be added}
 }
 \value{

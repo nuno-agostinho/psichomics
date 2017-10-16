@@ -4,10 +4,13 @@
 \alias{renderGroupInterface}
 \title{Render group interface}
 \usage{
-renderGroupInterface(ns)
+renderGroupInterface(ns, multiFisherTests = TRUE)
 }
 \arguments{
 \item{ns}{Namespace function}
+
+\item{multiFisherTests}{Boolean: allow to perform multiple Fisher exact test
+between groups}
 }
 \value{
 HTML elements
