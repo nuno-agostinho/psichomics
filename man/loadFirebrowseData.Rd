@@ -3,12 +3,16 @@
 \name{loadFirebrowseData}
 \alias{loadFirebrowseData}
 \alias{loadFirehoseData}
+\alias{loadTCGAdata}
 \title{Downloads and processes data from the Firebrowse web API and loads it into R}
 \usage{
 loadFirebrowseData(folder = NULL, data = NULL, exclude = c(".aux.",
   ".mage-tab.", "MANIFEST.txt"), ..., download = TRUE)
 
 loadFirehoseData(folder = NULL, data = NULL, exclude = c(".aux.",
+  ".mage-tab.", "MANIFEST.txt"), ..., download = TRUE)
+
+loadTCGAdata(folder = NULL, data = NULL, exclude = c(".aux.",
   ".mage-tab.", "MANIFEST.txt"), ..., download = TRUE)
 }
 \arguments{

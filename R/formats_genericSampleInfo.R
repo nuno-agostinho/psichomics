@@ -1,9 +1,9 @@
 genericSampleInfoFormat <- function() {
     list(
-        tablename   = "Sample metadata", # Name of the created table
+        tablename   = "Sample metadata",
         # filename    = NULL,
         description = "Sample metadata for user files",
-        dataType    = "Sample metadata", # General category for the data
+        dataType    = "Sample metadata",
         
         # Transpose data before parsing? If so, a row in the transposed dataset
         # would be a column in the original
@@ -25,8 +25,8 @@ genericSampleInfoFormat <- function() {
         ignoreRows  = NULL, # Rows to ignore
         commentChar = NULL, # Ignore lines starting with a given string
         
-        # Other options
-        unique = FALSE, # Remove duplicated rows
+        # Remove duplicated rows
+        unique = FALSE,
         
         # Identity of rows and columns
         rows    = "samples",

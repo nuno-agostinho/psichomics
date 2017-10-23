@@ -1,8 +1,8 @@
 genericInclusionLevelsFormat <- function() {
     list(
-        tablename   = "Inclusion levels", # Name of the created table
+        tablename   = "Inclusion levels",
         description = "PSI values per alternative splicing event.",
-        dataType    = "Inclusion levels", # General category for the data
+        dataType    = "Inclusion levels",
         
         # Transpose data before parsing? If so, a row in the transposed dataset
         # would be a column in the original
@@ -24,8 +24,8 @@ genericInclusionLevelsFormat <- function() {
         ignoreRows  = NULL, # Rows to ignore
         commentChar = NULL, # Ignore lines starting with this string
         
-        # Other options
-        unique = TRUE, # Remove duplicated rows
+        # Remove duplicated rows
+        unique = TRUE,
         
         # Identity of rows and columns
         rows    = "alternative splicing events",

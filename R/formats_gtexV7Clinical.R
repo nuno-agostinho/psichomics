@@ -1,21 +1,21 @@
-gtexClinicalInfoFormat <- function() {
+gtexV7ClinicalInfoFormat <- function() {
     list(
-        tablename   = "Clinical data",
-        filename    = "GTEx_Data_V6_Annotations_SubjectPhenotypesDS.txt",
+        tablename   = "Clinical data",    # Name of the created table
+        filename    = "GTEx_v7_Annotations_SubjectPhenotypesDS.txt",
         description = "Clinical data of GTEx patients",
-        dataType    = "Clinical data",
+        dataType    = "Clinical data",    # General category for the data
         
-        # Transpose data before parsing? If so, a row in the transposed dataset
-        # would be a column in the original
-        skip        = 1,     # Rows to skip when parsing file (include header)
+        # Transpose the data? This is the first step before parsing the information!
+        # After transposition, a row of the current data equals a column of the original
+        skip        = 1,     # Rows to skip when parsing file
         transpose   = FALSE,
         
         # Format checker information
-        rowCheck    = TRUE, # Check a row (TRUE) or a column (FALSE)
-        checkIndex  = 1,    # Index of row/column to check the format
+        rowCheck    = TRUE,  # Check format using a row (TRUE) or a column (FALSE)
+        checkIndex  = 1,     # Index of the row or column used to check the format
         
         # File string to check
-        check = c("SUBJID", "GENDER", "AGE", "DTHHRDY"),
+        check = c("SUBJID", "SEX", "AGE", "DTHHRDY"),
         
         # Parsing information
         delim       = "\t", # Delimiter used to separate fields
@@ -23,10 +23,10 @@ gtexClinicalInfoFormat <- function() {
         rowNames    = 1,    # Column to use for row names
         ignoreCols  = 1,    # Columns to ignore
         ignoreRows  = 1,    # Rows to ignore
-        commentChar = NULL, # Ignore lines starting with this string
+        commentChar = NULL, # String to identify comments (these lines will be ignored)
         
-        # Remove duplicated rows
-        unique = FALSE,
+        # Other options
+        unique = FALSE, # Remove duplicated rows
         
         # Identity of rows and columns
         rows    = "patients",
@@ -38,8 +38,8 @@ gtexClinicalInfoFormat <- function() {
         process = function(data) {
             # Replace gender values with their meaning
             gender <- c("1"="Male", "2"="Female")
-            value <- as.character(data[ , "GENDER"])
-            data[ , "GENDER"] <- as.factor(gender[value])
+            value <- as.character(data[ , "SEX"])
+            data[ , "SEX"] <- as.factor(gender[value])
             
             # Replace death circumstance (4-point hardy scale) values with their
             # meaning
@@ -50,7 +50,7 @@ gtexClinicalInfoFormat <- function() {
             data[ , "DTHHRDY"] <- as.factor(dthhrdy[value])
             
             # Correctly name columns
-            match <- c("SUBJID"="Subject ID", "GENDER"="Gender", "AGE"="Age",
+            match <- c("SUBJID"="Subject ID", "SEX"="Sex", "AGE"="Age",
                        "DTHHRDY"="Death Circumstances")
             colnames(data) <- match[colnames(data)]
             
@@ -59,4 +59,4 @@ gtexClinicalInfoFormat <- function() {
     )
 }
 
-attr(gtexClinicalInfoFormat, "loader") <- "formats"
+attr(gtexV7ClinicalInfoFormat, "loader") <- "formats"

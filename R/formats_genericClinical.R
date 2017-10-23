@@ -1,9 +1,9 @@
 genericClinicalFormat <- function() {
     list(
-        tablename   = "Clinical data", # Name of the created table
+        tablename   = "Clinical data",
         # filename    = "GTEx_Data_V6_Annotations_SubjectPhenotypesDS.txt",
         description = "Clinical data",
-        dataType    = "Clinical data", # General category for the data
+        dataType    = "Clinical data",
         
         # Transpose data before parsing? If so, a row in the transposed dataset
         # would be a column in the original
@@ -25,8 +25,8 @@ genericClinicalFormat <- function() {
         ignoreRows  = NULL, # Rows to ignore
         commentChar = NULL, # Ignore lines starting with this string
         
-        # Other options
-        unique = FALSE, # Remove duplicated rows
+        # Remove duplicated rows
+        unique = FALSE,
         
         # Identity of rows and columns
         rows    = "patients",

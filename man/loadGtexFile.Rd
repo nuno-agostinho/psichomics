@@ -2,9 +2,12 @@
 % Please edit documentation in R/data_gtex.R
 \name{loadGtexFile}
 \alias{loadGtexFile}
+\alias{loadGTExFile}
 \title{Load GTEx file}
 \usage{
 loadGtexFile(path, pattern, samples = NULL)
+
+loadGTExFile(path, pattern, samples = NULL)
 }
 \arguments{
 \item{path}{Character: path to file}

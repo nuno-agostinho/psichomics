@@ -3,11 +3,14 @@
 \name{getFirebrowseDates}
 \alias{getFirebrowseDates}
 \alias{getFirehoseDates}
+\alias{getTCGAdates}
 \title{Query the Firebrowse web API for the available data datestamps}
 \usage{
 getFirebrowseDates()
 
 getFirehoseDates()
+
+getTCGAdates()
 }
 \value{
 Parsed date with datestamps of the data available

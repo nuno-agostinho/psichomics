@@ -1,13 +1,13 @@
-gtexJunctionReadsFormat <- function() {
+gtexV7JunctionReadsFormat <- function() {
     list(
         tablename   = "Junction quantification",
-        filename    = "GTEx_Analysis_v6_RNA-seq_Flux1.6_junction_reads.txt",
+        filename    = "GTEx_Analysis_2016-01-15_v7_STARv2.4.2a_junctions.gct",
         description = "Read counts of splicing junctions",
         dataType    = "Junction quantification",
         
         # Transpose data before parsing? If so, a row in the transposed dataset
         # would be a column in the original
-        skip        = 1,     # Rows to skip when parsing file (include header)
+        skip        = 3,     # Rows to skip when parsing file (include header)
         transpose   = FALSE,
         
         # Format checker information
@@ -15,13 +15,13 @@ gtexJunctionReadsFormat <- function() {
         checkIndex  = 1,    # Index of row/column to check the format
         
         # File string to check
-        check = c("TargetID", "Gene_Symbol", "Chr", "Coord"),
+        check = c("junction_id", "Description"),
         
         # Parsing information
         delim       = "\t", # Delimiter used to separate fields
         colNames    = 1,    # Row to use for column names
         rowNames    = 1,    # Column to use for row names
-        ignoreCols  = 1:4,  # Columns to ignore
+        ignoreCols  = 1:2,  # Columns to ignore
         ignoreRows  = 1,    # Rows to ignore
         commentChar = NULL, # Ignore lines starting with this string
         
@@ -48,4 +48,4 @@ gtexJunctionReadsFormat <- function() {
     )
 }
 
-attr(gtexJunctionReadsFormat, "loader") <- "formats"
+attr(gtexV7JunctionReadsFormat, "loader") <- "formats"
