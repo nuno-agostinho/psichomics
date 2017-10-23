@@ -993,7 +993,6 @@ setOperation <- function(operation, groups, selected, symbol=" ",
 #' @return NULL (this function is used to modify the Shiny session's state)
 operateOnGroups <- function(input, session, operation, buttonId, symbol=" ",
                             type, sharedData=sharedData) {
-    ns <- session$ns
     # Operate on selected groups when pressing the corresponding button
     observeEvent(input[[paste(buttonId, "button", sep="-")]], {
         # Get groups from the dataset

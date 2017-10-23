@@ -26,8 +26,8 @@ firebrowseMergeClinicalFormat <- function() {
         ignoreRows  = 1:2,   # Rows to ignore
         commentChar = NULL,  # String to identify comments (which are ignored)
         
-        # Other options
-        unique = FALSE,   # Remove duplicated rows
+        # Remove duplicated rows
+        unique = FALSE,
         
         # Identity of rows and columns
         rows    = "patients",

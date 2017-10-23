@@ -148,6 +148,7 @@ loadFileFormats <- function() {
             FUN()
         }
     })
+    if (length(formats) == length(fun)) names(formats) <- fun
     # Remove NULL elements from list
     formats <- Filter(Negate(is.null), formats)
     return(formats)

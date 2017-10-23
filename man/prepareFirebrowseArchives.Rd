@@ -3,11 +3,14 @@
 \name{prepareFirebrowseArchives}
 \alias{prepareFirebrowseArchives}
 \alias{prepareFirehoseArchives}
+\alias{prepareTCGAarchives}
 \title{Prepares Firebrowse archives in a given directory}
 \usage{
 prepareFirebrowseArchives(archive, md5, folder, outdir)
 
 prepareFirehoseArchives(archive, md5, folder, outdir)
+
+prepareTCGAarchives(archive, md5, folder, outdir)
 }
 \arguments{
 \item{archive}{Character: path to downloaded archives}

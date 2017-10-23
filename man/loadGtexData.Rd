@@ -5,14 +5,16 @@
 \title{Load GTEx data}
 \usage{
 loadGtexData(clinical = NULL, sampleMetadata = NULL, junctionQuant = NULL,
-  tissue = NULL)
+  geneExpr = NULL, tissue = NULL)
 }
 \arguments{
-\item{clinical}{Character: path to subject information (TXT file)}
+\item{clinical}{Character: path to subject information (the TXT file)}
 
-\item{sampleMetadata}{Character: path to sample metadata (TXT file)}
+\item{sampleMetadata}{Character: path to sample metadata (the TXT file)}
 
 \item{junctionQuant}{Character: path to junction quantification}
+
+\item{geneExpr}{Character: path to gene read counts, RPKMs or TPMs}
 
 \item{tissue}{Character: tissue(s) of interest when loading data (all tissues
 are loaded by default); if only some tissue(s) are of interest, this may

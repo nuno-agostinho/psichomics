@@ -3,11 +3,14 @@
 \name{parseFirebrowseMetadata}
 \alias{parseFirebrowseMetadata}
 \alias{parseFirehoseMetadata}
+\alias{parseTCGAmetadata}
 \title{Query the Firebrowse web API for metadata}
 \usage{
 parseFirebrowseMetadata(type, ...)
 
 parseFirehoseMetadata(type, ...)
+
+parseTCGAmetadata(type, ...)
 }
 \arguments{
 \item{type}{Character: metadata to retrieve}

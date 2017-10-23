@@ -61,6 +61,9 @@ getGtexTissues <- function(sampleMetadata) {
     return(tissues[-match("", tissues)])
 }
 
+#' @rdname getGtexTissues
+getGTExTissues <- getGtexTissues
+
 #' Load GTEx file
 #'
 #' @param path Character: path to file
@@ -91,10 +94,10 @@ loadGtexFile <- function(path, pattern, samples=NULL) {
     format <- formats[sapply(formats, filterFormats, pattern)]
     
     colClasses <- NULL
-    if (pattern == "junction" && !is.null(samples)) {
+    if (pattern %in% c("junction", "gene") && !is.null(samples)) {
         # Parse all columns instead of specific ones
         customFormat <- format
-        customFormat[[1]]$ignoreCols <- NULL
+        for (i in seq(customFormat)) customFormat[[i]]$ignoreCols <- NULL
         
         # Load GTEx data exclusively for matching samples
         allSamples <- colnames(parseValidFile(path, customFormat, nrows=0))
@@ -118,10 +121,14 @@ loadGtexFile <- function(path, pattern, samples=NULL) {
     return(parsed)
 }
 
+#' @rdname loadGtexFile
+loadGTExFile <- loadGtexFile
+
 #' Load GTEx data
 #'
-#' @param clinical Character: path to subject information (TXT file)
-#' @param sampleMetadata Character: path to sample metadata (TXT file)
+#' @param clinical Character: path to subject information (the TXT file)
+#' @param sampleMetadata Character: path to sample metadata (the TXT file)
+#' @param geneExpr Character: path to gene read counts, RPKMs or TPMs
 #' @param junctionQuant Character: path to junction quantification
 #' @param tissue Character: tissue(s) of interest when loading data (all tissues
 #' are loaded by default); if only some tissue(s) are of interest, this may
@@ -132,13 +139,15 @@ loadGtexFile <- function(path, pattern, samples=NULL) {
 #' @return List with loaded data
 #' @export
 loadGtexData <- function(clinical=NULL, sampleMetadata=NULL, junctionQuant=NULL,
-                         tissue=NULL) {
-    if (is.null(clinical) && is.null(sampleMetadata) && is.null(junctionQuant))
+                         geneExpr=NULL, tissue=NULL) {
+    if (is.null(clinical) && is.null(sampleMetadata) && is.null(junctionQuant) 
+        && is.null(geneExpr))
         stop("No input data was given.")
     
     loaded <- list()
-    validFiles <- !vapply(list(clinical, sampleMetadata, junctionQuant),
-                          is.null, logical(1))
+    validFiles <- !vapply(
+        list(clinical, sampleMetadata, junctionQuant, geneExpr),
+        is.null, logical(1))
     updateProgress("Loading files...", divisions=sum(validFiles))
     
     loadThisGtexFile <- function(path, pattern, samples=NULL) {
@@ -188,6 +197,9 @@ loadGtexData <- function(clinical=NULL, sampleMetadata=NULL, junctionQuant=NULL,
     
     if (!is.null(junctionQuant))
         loaded[[3]] <- loadThisGtexFile(junctionQuant, "junction", samples)
+    
+    if (!is.null(geneExpr))
+        loaded[[4]] <- loadThisGtexFile(geneExpr, "gene", samples)
     
     names(loaded) <- sapply(loaded, attr, "tablename")
     loaded <- Filter(length, loaded)

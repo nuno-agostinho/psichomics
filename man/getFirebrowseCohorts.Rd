@@ -3,11 +3,14 @@
 \name{getFirebrowseCohorts}
 \alias{getFirebrowseCohorts}
 \alias{getFirehoseCohorts}
+\alias{getTCGAcohorts}
 \title{Query the Firebrowse web API for available cohorts}
 \usage{
 getFirebrowseCohorts(cohort = NULL)
 
 getFirehoseCohorts(cohort = NULL)
+
+getTCGAcohorts(cohort = NULL)
 }
 \arguments{
 \item{cohort}{Character: filter by given cohorts (optional)}

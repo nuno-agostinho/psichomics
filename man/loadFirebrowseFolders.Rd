@@ -3,11 +3,14 @@
 \name{loadFirebrowseFolders}
 \alias{loadFirebrowseFolders}
 \alias{loadFirehoseFolders}
+\alias{loadTCGAfolders}
 \title{Load Firebrowse folders}
 \usage{
 loadFirebrowseFolders(folder, exclude = "")
 
 loadFirehoseFolders(folder, exclude = "")
+
+loadTCGAfolders(folder, exclude = "")
 }
 \arguments{
 \item{folder}{Character: folder(s) in which to look for Firebrowse files}

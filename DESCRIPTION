@@ -107,6 +107,7 @@ Collate:
     'formats_genericJunctionReads.R'
     'formats_genericSampleInfo.R'
     'formats_gtexClinical.R'
+    'formats_gtexGeneReadsFormat.R'
     'formats_gtexJunctionReads.R'
     'formats_gtexSampleInfo.R'
     'formats_gtexV7Clinical.R'

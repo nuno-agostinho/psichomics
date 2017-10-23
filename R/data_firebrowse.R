@@ -162,6 +162,9 @@ parseFirebrowseMetadata <- function(type, ...) {
 #' @rdname parseFirebrowseMetadata
 parseFirehoseMetadata <- parseFirebrowseMetadata
 
+#' @rdname parseFirebrowseMetadata
+parseTCGAmetadata <- parseFirebrowseMetadata
+
 #' Query the Firebrowse web API for the available data datestamps
 #'
 #' @return Parsed date with datestamps of the data available
@@ -178,6 +181,9 @@ getFirebrowseDates <- function() {
 
 #' @rdname getFirebrowseDates
 getFirehoseDates <- getFirebrowseDates
+
+#' @rdname getFirebrowseDates
+getTCGAdates <- getFirebrowseDates
 
 #' Query the Firebrowse web API for available cohorts
 #'
@@ -198,6 +204,9 @@ getFirebrowseCohorts <- function(cohort = NULL) {
 
 #' @rdname getFirebrowseCohorts
 getFirehoseCohorts <- getFirebrowseCohorts
+
+#' @rdname getFirebrowseCohorts
+getTCGAcohorts <- getFirebrowseCohorts
 
 #' Download files to a given directory
 #'
@@ -327,6 +336,9 @@ prepareFirebrowseArchives <- function(archive, md5, folder, outdir) {
 #' @rdname prepareFirebrowseArchives
 prepareFirehoseArchives <- prepareFirebrowseArchives
 
+#' @rdname prepareFirebrowseArchives
+prepareTCGAarchives <- prepareFirebrowseArchives
+
 #' Retrieve URLs from a response to a Firebrowse data query
 #'
 #' @param res Response from \code{httr::GET} to a Firebrowse data query
@@ -399,6 +411,9 @@ loadFirebrowseFolders <- function(folder, exclude="") {
 
 #' @rdname loadFirebrowseFolders
 loadFirehoseFolders <- loadFirebrowseFolders
+
+#' @rdname loadFirebrowseFolders
+loadTCGAfolders <- loadFirebrowseFolders
 
 #' Downloads and processes data from the Firebrowse web API and loads it into R
 #' 
@@ -539,6 +554,9 @@ loadFirebrowseData <- function(folder=NULL, data=NULL,
 
 #' @rdname loadFirebrowseData
 loadFirehoseData <- loadFirebrowseData
+
+#' @rdname loadFirebrowseData
+loadTCGAdata <- loadFirebrowseData
 
 #' Creates a UI set with options to add data from TCGA/Firebrowse
 #' @param ns Namespace function

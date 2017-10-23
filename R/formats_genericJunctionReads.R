@@ -1,9 +1,9 @@
 genericJunctionReadsFormat <- function() {
     list(
-        tablename   = "Junction quantification", # Name of the created table
+        tablename   = "Junction quantification",
         # filename    = "",
         description = "Read counts of splicing junctions",
-        dataType    = "Junction quantification", # General category for the data
+        dataType    = "Junction quantification",
         
         # Transpose data before parsing? If so, a row in the transposed dataset
         # would be a column in the original
@@ -25,8 +25,8 @@ genericJunctionReadsFormat <- function() {
         ignoreRows  = NULL, # Rows to ignore
         commentChar = NULL, # Ignore lines starting with this string
         
-        # Other options
-        unique = TRUE, # Remove duplicated rows
+        # Remove duplicated rows
+        unique = TRUE,
         
         # Identity of rows and columns
         rows    = "splice junctions",

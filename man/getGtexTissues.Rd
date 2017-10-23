@@ -2,9 +2,12 @@
 % Please edit documentation in R/data_gtex.R
 \name{getGtexTissues}
 \alias{getGtexTissues}
+\alias{getGTExTissues}
 \title{Get GTEx tissues from given GTEx sample attributes}
 \usage{
 getGtexTissues(sampleMetadata)
+
+getGTExTissues(sampleMetadata)
 }
 \arguments{
 \item{sampleMetadata}{Character: path to sample attributes}

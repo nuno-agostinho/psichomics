@@ -24,8 +24,8 @@ psichomicsGeneExpressionFormat <- function() {
         ignoreRows  = NULL, # Rows to ignore
         commentChar = NULL, # Ignore lines starting with this string
         
-        # Other options
-        unique = TRUE, # Remove duplicated rows
+        # Remove duplicated rows
+        unique = TRUE,
         
         # Identity of rows and columns
         rows    = "genes",
