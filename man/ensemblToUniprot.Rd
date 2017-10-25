@@ -4,10 +4,10 @@
 \alias{ensemblToUniprot}
 \title{Convert an Ensembl identifier to the respective UniProt identifier}
 \usage{
-ensemblToUniprot(protein)
+ensemblToUniprot(molecule)
 }
 \arguments{
-\item{protein}{Character: Ensembl identifier}
+\item{molecule}{Character: Ensembl identifier}
 }
 \value{
 UniProt protein identifier

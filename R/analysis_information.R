@@ -31,6 +31,52 @@ queryEnsembl <- function(path, query, grch37 = TRUE) {
     return(fromJSON(r))
 }
 
+
+
+#' Query information from Ensembl by a given alternative splicing event
+#' 
+#' @param event Character: alternative splicing event identifier
+#' @inheritDotParams queryEnsemblByGene -gene
+#' 
+#' @return Information from Ensembl
+#' @export
+#' @examples 
+#' event <- c("SE_17_-_41251792_41249306_41249261_41246877_BRCA1")
+#' queryEnsemblByEvent(event, species="human", assembly="hg19")
+queryEnsemblByEvent <- function(event, ...) {
+    gene <- parseEvent(event)$gene[[1]]
+    if (gene == "Hypothetical")
+        stop("This event has no associated gene")
+    return(queryEnsemblByGene(gene, ...))
+}
+
+#' Query information from Ensembl by a given gene
+#' 
+#' @param gene Character: gene identifier
+#' @param species Character: species (can be NULL when handling an Ensembl
+#' identifier)
+#' @param assembly Character: assembly version (can be NULL when handling an
+#' Ensembl identifier)
+#' 
+#' @return Information from Ensembl
+#' @export
+#' @examples 
+#' queryEnsemblByGene("BRCA1", "human", "hg19")
+#' queryEnsemblByGene("ENSG00000139618")
+queryEnsemblByGene <- function(gene, species=NULL, assembly=NULL) {
+    if ( grepl("^ENSG", gene) ) {
+        path   <- paste0("lookup/id/", gene)
+        info <- queryEnsembl(path, list(expand=1))
+    } else {
+        if (is.null(species) || is.null(assembly))
+            stop("Species and assembly need to be non-NULL")
+        grch37 <- assembly == "hg19"
+        path <- paste0("lookup/symbol/", species, "/", gene)
+        info <- queryEnsembl(path, list(expand=1), grch37=grch37)
+    }
+    return(info)
+}
+
 #' Query the UniProt REST API
 #'
 #' @param molecule Character: protein or transcript to query
@@ -53,6 +99,54 @@ queryUniprot <- function(molecule, format="xml") {
     url <- "http://www.uniprot.org"
     path <- paste0("uniprot/?query=", molecule, "&format=", format)
     resp <- GET(url, path=path)
+    warn_for_status(resp)
+    r <- content(resp, "text", encoding = "UTF8")
+    return(r)
+}
+
+#' Query the Proteins REST API
+#'
+#' @param acession Character: UniProt accessions (up to 100 values)
+#' @param ensembl Character: Ensembl gene, transcript or translation identifier
+#' (up to 20 values)
+#' @param gene Character: UniProt gene name (up to 20 values)
+#' @param protein Character: UniProt protein name
+#' @param taxid Character: organism taxon identifier (up to 20 values; Human
+#' by default)
+#' @param chromosome Character: chromosome (up to 20 values)
+#' @param location Integer: genome location range (start and end)
+#' 
+#' @importFrom httr GET
+#' @importFrom jsonlite fromJSON
+#'
+#' @return Parsed response in XML format
+#'
+#' @examples
+#' psichomics:::queryProteinsAPI("Q7TQA5")
+#' psichomics:::queryProteinsAPI(gene="BRCA1")
+#' 
+#' ensembl <- c("ENSG00000012048", "ENSG00000139618")
+#' psichomics:::queryProteinsAPI(ensembl=ensembl)
+queryProteinsAPI <- function(accession=NULL, ensembl=NULL, gene=NULL, 
+                             protein=NULL, taxid="9606", chromosome=NULL,
+                             location=NULL) {
+    # Prepare multiple values as expected by API
+    multipleValues <- function(var, collapse=",")
+        if (!is.null(var)) paste(var, collapse=collapse)
+    
+    accession  <- multipleValues(accession)
+    ensembl    <- multipleValues(ensembl)
+    gene       <- multipleValues(gene)
+    protein    <- multipleValues(protein)
+    taxid      <- multipleValues(taxid)
+    chromosome <- multipleValues(chromosome)
+    location   <- multipleValues(location, "-")
+    
+    url <- "https://www.ebi.ac.uk"
+    path <- "proteins/api/coordinates"
+    resp <- GET(url, path=path, query=list(
+        size=-1, accession=accession, ensembl=ensembl, gene=gene, 
+        protein=protein, taxid=taxid, chromosome=chromosome, location=location))
     warn_for_status(resp)
     r <- content(resp, "text", encoding = "UTF8")
     return(r)
@@ -105,7 +199,7 @@ queryPubMed <- function(primary, ..., top=3, field="abstract",
 
 #' Convert an Ensembl identifier to the respective UniProt identifier
 #' 
-#' @param protein Character: Ensembl identifier
+#' @param molecule Character: Ensembl identifier
 #' 
 #' @return UniProt protein identifier
 #' @export
@@ -115,10 +209,10 @@ queryPubMed <- function(primary, ..., top=3, field="abstract",
 #' 
 #' protein <- "ENSP00000445929"
 #' ensemblToUniprot(protein)
-ensemblToUniprot <- function(protein) {
-    if(length(protein) != 1) stop("Only pass one Ensembl identifier")
+ensemblToUniprot <- function(molecule) {
+    if(length(molecule) != 1) stop("Only pass one Ensembl identifier")
     
-    external <- queryEnsembl(paste0("xrefs/id/", protein),
+    external <- queryEnsembl(paste0("xrefs/id/", molecule),
                              list("content-type"="application/json"),
                              grch37=TRUE)
     
@@ -166,6 +260,203 @@ noinfo <- function(output, description=paste(
     "No information available for this gene."), ...) {
     output$info <- renderUI(
         errorDialog(description, style="width: 400px;", ...))
+}
+
+#' Parse XML from Protein's RESTful service
+#'
+#' @param xml response from Proteins API
+#'
+#' @importFrom XML xmlTreeParse xmlRoot xmlAttrs xmlToList xmlName
+#' xmlValue
+#' @importFrom plyr ldply
+#' 
+#' @return List containing protein length and data frame of protein features
+parseProteinsXML <- function(xml) {
+    doc <- xmlTreeParse(xml)
+    root <- suppressWarnings( xmlRoot(doc) )
+    
+    parseSingleProteinXml <- function(index, root) {
+        root <- root[[index]]
+        # Extract protein name, length, function and features
+        gnCoordinate   <- root[names(root) == "gnCoordinate"][[1]]
+        featureNodes   <- gnCoordinate[names(gnCoordinate) == "feature"]
+        length         <- nchar(xmlValue(root[["sequence"]]))
+        proteinName    <- xmlValue(root[["name"]])
+        recommendeName <- xmlValue(
+            root[["protein"]][["recommendedName"]][["fullName"]])
+        strand <- ifelse(
+            xmlAttrs(gnCoordinate[[1]])[["reverse_strand"]] == "true",
+            "Negative", "Positive")
+        chr <- xmlAttrs(gnCoordinate[[1]])[["chromosome"]]
+        
+        # Prepare table of exons
+        exons <- gnCoordinate[names(gnCoordinate) == "genomicLocation"][[1]]
+        exonsList <- xmlToList(exons)
+        exonsList[".attrs"] <- NULL
+        exonsDF <- data.frame(t(matrix(unlist(exonsList), nrow=5)), 
+                              stringsAsFactors=FALSE)
+        colnames(exonsDF) <- c("start", "stop", "genomicStart", "genomicStop", 
+                               "id")
+        for (i in 1:4) exonsDF[ , i] <- as.numeric(exonsDF[ , i])
+        
+        # Convert list of XMLNodes to list of characters
+        l <- lapply(featureNodes, function(feat) {
+            attrs <- xmlAttrs(feat)
+            
+            location  <- feat[[match("location", names(feat))]]
+            start <- as.numeric(xmlAttrs(location[[1]]))
+            # If there's no stop position, simply sum 1 to the start position
+            stop  <- tryCatch(as.numeric(xmlAttrs(location[[2]])),
+                              error=function(e) start+1)
+            
+            genomeLocation  <- feat[[match("genomeLocation", names(feat))]]
+            genomeStart <- as.numeric(xmlAttrs(genomeLocation[[1]]))
+            # If there's no stop position, simply sum 1 to the start position
+            genomeStop  <- tryCatch(as.numeric(xmlAttrs(genomeLocation[[2]])),
+                                    error=function(e) start+1)
+            description <- xmlValue(feat[[match("description", names(feat))]])
+            
+            # Get original and variant aminoacid
+            variant <- match("variation", names(feat))
+            if (!is.na(variant) && !is.null(variant)) {
+                original  <- xmlToList(feat[[match("original", names(feat))]])
+                variation <- xmlToList(feat[[variant]])
+                variant <- sprintf("%s>%s: ", original, variation)
+            } else {
+                variant <- NULL
+            }
+            
+            evidence <- feat[["evidence"]]
+            evidenceCode <- evidenceDb <- evidenceId <- NULL
+            if (!is.null(evidence)) {
+                evidenceCode <- xmlAttrs(evidence)[["code"]]
+                if (length(evidence) > 0) {
+                    evidenceDb   <- xmlAttrs(evidence[[1]])[["type"]]
+                    evidenceId   <- xmlAttrs(evidence[[1]])[["id"]]
+                }
+            }
+            return(c(attrs, start=start, stop=stop, genomeStart=genomeStart, 
+                     genomeStop=genomeStop, description=description,
+                     variant=variant, evidenceCode=evidenceCode, 
+                     evidenceDb=evidenceDb, evidenceId=evidenceId))
+        })
+        
+        # Convert list of characters to data frame of characters
+        feature <- ldply(l, rbind)
+        if (ncol(feature) > 0) {
+            for (col in 1:ncol(feature))
+                feature[[col]]  <- as.character(feature[[col]])
+            
+            feature$start       <- as.numeric(feature$start)
+            feature$stop        <- as.numeric(feature$stop)
+            feature$genomeStart <- as.numeric(feature$genomeStart)
+            feature$genomeStop  <- as.numeric(feature$genomeStop)
+            
+            feature$description <- gsub(".", "", feature$description, 
+                                        fixed=TRUE)
+        }
+        return(list(name=proteinName, length=length, chr=chr, strand=strand, 
+                    exons=exonsDF, feature=feature))
+    }
+    
+    lapply(seq(root), parseSingleProteinXml, root)
+}
+
+#' Get genomic coordinates for protein features based on exon coordinates
+#'
+#' @param index Integer: index
+#' @param features List of features
+#' @param exons List of exons
+#'
+#' @return Parsed data frame with features repeated for each exon that spans 
+#' that same feature
+getExonsSpanningFeature <- function(index, features, exons) {
+    feature <- features[index, ]
+    # Get exons spanning the feature
+    firstExon <- feature[["genomeStart"]] <= exons$genomicStop & 
+        feature[["genomeStart"]] >= exons$genomicStart
+    firstExon <- which(firstExon)
+    lastExon <- feature[["genomeStop"]] <= exons$genomicStop & 
+        feature[["genomeStop"]] >= exons$genomicStart
+    lastExon <- which(lastExon)
+    if (length(firstExon) == 0 || length(lastExon) == 0)
+        return(NULL)
+    
+    # Create table based on exons spanning the feature
+    exons <- exons[seq(firstExon, lastExon), ]
+    table <- feature[rep(1, nrow(exons)), ]
+    table$genomeStart[-1] <- exons$genomicStart[-1]
+    table$genomeStop[1:(nrow(exons) - 1)] <- 
+        exons$genomicStop[1:(nrow(exons) - 1)]
+    return(table)
+}
+
+#' Parse protein features from an XML response from the Proteins API
+#' 
+#' @param proteinList Parsed list containing protein features and respective
+#' transcript's exons
+#' 
+#' @importFrom plyr rbind.fill
+#' 
+#' @return Data frame with parsed protein features
+parseProteinFeatures <- function(proteinList) {
+    res <- c()
+    for (protein in proteinList) {
+        features <- protein$feature
+        if (!is.null(features) && nrow(features) > 0) {
+            all <- lapply(seq(nrow(features)), getExonsSpanningFeature,
+                          features, protein$exons)
+            all <- rbind.fill(all)
+            all$name   <- protein$name
+            all$length <- protein$length
+            all$chr    <- protein$chr
+            all$strand <- protein$strand
+            elem <- setNames(list(all), protein$name)
+            res <- c(res, elem)
+        }
+    }
+    return(rbind.fill(res))
+}
+
+#' Plot protein features
+#'
+#' @param features Parsed protein features
+#' @param shiny Boolean: is the function running in a Shiny session? FALSE by
+#' default
+#'
+#' @return Plot of protein features
+plotProteinFeatures <- function(features, shiny=FALSE) {
+    hc <- highchart() %>% 
+        hc_chart(type="proteinPlot", zoomType="x") %>% 
+        hc_tooltip(followPointer=TRUE) %>% 
+        hc_title(text="Protein domains") %>%
+        hc_yAxis(visible=FALSE)
+    
+    # Decompose data frame into list of lists
+    df <- features
+    colnames(df)[match(c("type", "genomeStart", "genomeStop"),
+                       colnames(df))] <- c("name", "x", "x2")
+    df$width <- 10
+    df$y <- match(df$name, unique(df$name))
+    ll <- lapply(split(df, seq_along(df[,1])), as.list)
+    names(ll) <- NULL
+    ll <- split(ll, df$name)
+    
+    for (name in names(ll)) {
+        hc <- hc_add_series(hc, name=name, pointWidth=20, data=ll[[name]])
+    }
+    plottableXranges(hc, shiny=shiny)
+}
+
+#' Plot protein domains based on a given gene
+#' 
+#' @param gene Character: gene symbol
+#' 
+#' @return Plot of protein domains
+plotProteinDomainsFrom <- function(gene) {
+    xml <- parseProteinsXML(queryProteinsAPI(gene=gene))
+    features <- parseProteinFeatures(xml)
+    plotProteinFeatures(features)
 }
 
 #' Parse XML from UniProt's RESTful service
@@ -342,7 +633,7 @@ plottableXranges <- function(hc, shiny=FALSE) {
 #' default
 #' 
 #' @importFrom highcharter highchart hc_chart hc_title hc_legend hc_xAxis
-#' hc_yAxis hc_plotOptions hc_tooltip hc_series
+#' hc_yAxis hc_plotOptions hc_tooltip hc_series %>%
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 #' @export
@@ -398,7 +689,7 @@ plotTranscripts <- function(info, eventPosition=NULL, shiny=FALSE) {
     
     # Plot transcripts
     hc <- highchart() %>%
-        hc_chart(type="xrange", zoomType="x") %>%
+        hc_chart(type="transcriptPlot", zoomType="x") %>%
         hc_title(text="") %>%
         hc_legend(enabled=FALSE) %>%
         hc_xAxis(title=list(text="Position (nucleotides)"), showFirstLabel=TRUE,
@@ -508,50 +799,6 @@ renderGeneticInfo <- function(output, ns, info, species=NULL, assembly=NULL,
         uiOutput(ns("selectProtein")),
         uiOutput(ns("proteinError")),
         highchartOutput(ns("plotProtein"), height="200px"))
-}
-
-#' Query information from Ensembl by a given alternative splicing event
-#' 
-#' @param event Character: alternative splicing event identifier
-#' @inheritDotParams queryEnsemblByGene -gene
-#' 
-#' @return Information from Ensembl
-#' @export
-#' @examples 
-#' event <- c("SE_17_-_41251792_41249306_41249261_41246877_BRCA1")
-#' queryEnsemblByEvent(event, species="human", assembly="hg19")
-queryEnsemblByEvent <- function(event, ...) {
-    gene <- parseEvent(event)$gene[[1]]
-    if (gene == "Hypothetical")
-        stop("This event has no associated gene")
-    return(queryEnsemblByGene(gene, ...))
-}
-
-#' Query information from Ensembl by a given gene
-#' 
-#' @param gene Character: gene identifier
-#' @param species Character: species (can be NULL when handling an Ensembl
-#' identifier)
-#' @param assembly Character: assembly version (can be NULL when handling an
-#' Ensembl identifier)
-#' 
-#' @return Information from Ensembl
-#' @export
-#' @examples 
-#' queryEnsemblByGene("BRCA1", "human", "hg19")
-#' queryEnsemblByGene("ENSG00000139618")
-queryEnsemblByGene <- function(gene, species=NULL, assembly=NULL) {
-    if ( grepl("^ENSG", gene) ) {
-        path   <- paste0("lookup/id/", gene)
-        info <- queryEnsembl(path, list(expand=1))
-    } else {
-        if (is.null(species) || is.null(assembly))
-            stop("Species and assembly need to be non-NULL")
-        grch37 <- assembly == "hg19"
-        path <- paste0("lookup/symbol/", species, "/", gene)
-        info <- queryEnsembl(path, list(expand=1), grch37=grch37)
-    }
-    return(info)
 }
 
 #' Return the interface to display an article
@@ -775,3 +1022,83 @@ infoServer <- function(input, output, session) {
 attr(infoUI, "loader") <- "analysis"
 attr(infoUI, "name") <- "Gene, transcript and protein information"
 attr(infoServer, "loader") <- "analysis"
+
+#############################################################################
+#' 
+#' #' @importFrom httr GET content http_error config
+#' #' @importFrom jsonlite fromJSON
+#' #' 
+#' #' @examples 
+#' #' getLiftOverMap(from="hg38", to="hg19")
+#' getLiftOverMap <- function(from="hg38", to="hg19") {
+#'     fixCoordName <- function(var) switch(var, "hg38"="GRCh38", "hg19"="GRCh37")
+#'     from <- fixCoordName(from)
+#'     to   <- fixCoordName(to)
+#'     
+#'     map <- NULL
+#'     for (chr in c(1:22, "X", "Y")) {
+#'         base  <- "http://grch37.rest.ensembl.org"
+#'         path  <- sprintf("/map/human/%s/%s:1..9999999999/%s", from, chr, to)
+#'         query <- list("content-type"="application/json")
+#'         resp <- tryCatch(GET(base, path=path, query=query, config=timeout(10)), 
+#'                          error=return)
+#'         if (is(resp, "error") || http_error(resp) || is.null(resp)) # Time out
+#'             return(NULL) # for instance, time out
+#'         r <- content(resp, "text", encoding = "UTF8")
+#'         map$original <- rbind(map$original, fromJSON(r)[[1]]$original)
+#'         map$mapped   <- rbind(map$mapped,   fromJSON(r)[[1]]$mapped)
+#'     }
+#'     return(map)
+#' }
+#' 
+#' massLiftOver <- function(chr, start, end, map=NULL, from="hg38", to="hg19") {
+#'     if (length(chr) != length(start) || length(chr) != length(end))
+#'         stop("The arguments chr, start and end must have the same length")
+#'     
+#'     if (is.null(map)) map <- getLiftOverMap(from=from, to=to)
+#'     
+#'     # compWithOtherGroup <- function(x, FUN, y) Reduce("|", lapply(x, FUN, y))
+#'     # 
+#'     # # Get indexes based on original coordinates
+#'     # original <- map$original
+#'     # index <- original$seq_region_name %in% chr &
+#'     #     compWithOtherGroup(start, "<=", original$end) &
+#'     #     compWithOtherGroup(end, ">=", original$start)
+#'     
+#'     liftOver <- function(i, chr, start, end, map) {
+#'         original <- map$original
+#'         index <- which(original$seq_region_name %in% chr[i] &
+#'                            start[i] <= original$end & end[i] >= original$start)
+#'         mini <- min(index)
+#'         maxi <- max(index)
+#'         mapped <- map$mapped
+#'         
+#'         coord <- NULL
+#'         coord$chr   <- mapped[mini, ]$seq_region_name
+#'         coord$start <- mapped[mini, ]$start + abs(start[i] - 
+#'                                                       original[mini, ]$start)
+#'         coord$end   <-  mapped[maxi, ]$end - abs(end[i] - original[maxi, ]$end)
+#'         return(coord)
+#'     }
+#'     lapply(seq(chr), liftOver, chr, start, end, map)
+#' }
+#' 
+#' # library(httr)
+#' # library(jsonlite)
+#' # map <- getLiftOverMap(from="hg38", to="hg19")
+#' # liftOver(chr, start, end, from="hg38", to="hg19", map)
+#' 
+#' library(httr)
+#' library(jsonlite)
+#' map <- getLiftOverMap(from="hg19", to="hg38")
+#' 
+#' chr <- c(1, 19, 10, 22, 12, 17, 22, 3, 2, 12)
+#' start <- c(45270173, 35996888, 73048489, 31495882, 124857156, 35879174, 
+#'            31495882, 56600768, 216236738, 123003598)
+#' end   <- c(45270938, 35998360, 73050672, 31500302, 124862783, 35880641, 
+#'            31500302, 56600978, 216238045, 123005932)
+#' coords <- massLiftOver(chr, start, end, from="hg19", to="hg38", map)
+#' 
+#' chr   <- sapply(coords, "[[", "chr")
+#' start <- sapply(coords, "[[", "start")
+#' end   <- sapply(coords, "[[", "end")
