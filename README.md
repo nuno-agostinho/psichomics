@@ -1,41 +1,49 @@
 # psichomics [![Build Status][8]][9] [![AppVeyor Build Status][10]][11] [![codecov][12]][13]
-Interactive R package with a Shiny-based graphical interface for the
-quantification, analysis and visualisation of alternative splicing data from
-[The Cancer Genome Atlas (TCGA)][1], the 
-[Genotype-Tissue Expression (GTEx) project][13] or user-owned files. This tool 
-interactively performs survival, principal components and differential splicing 
-analyses with direct incorporation of clinical features (such as tumour stage or 
-survival) associated with TCGA and GTEx samples.
+
+Interactive R package with an intuitive Shiny-based graphical 
+interface for alternative splicing quantification and integrative analyses of
+alternative splicing and gene expression from large transcriptomic datasets, 
+including those from [The Cancer Genome Atlas (TCGA)][1] and 
+[Genotype-Tissue Expression (GTEx) project][13], as well as user-owned data.
+
+The tool interactively performs survival, dimensionality reduction and median- 
+and variance-based differential splicing and gene expression analyses that 
+benefit from the incorporation of clinical and molecular sample-associated 
+features (such as tumour stage or survival). Interactive visual access to 
+genomic mapping and functional annotation of selected alternative splicing 
+events is also included.
 
 ![Screen shot](screenshot.png)
 
 ## Table of Contents
 
-* [Install and Start Running](#install-and-start-running)
-    * [Bioconductor Release](#bioconductor-release)
-    * [Development Version](#development-version)
+* [Install and start running](#install-and-start-running)
+    * [Bioconductor release](#bioconductor-release)
+    * [Development version](#development-version)
 * [Tutorials](#tutorials)
-* [Data Input](#data-input)
+* [Data input](#data-input)
     * [Download TCGA data](#download-tcga-data)
     * [Load GTEx data](#load-gtex-data)
-    * [Load User Files](#load-user-files)
-* [Splicing Quantification](#splicing-quantification)
-* [Data Analyses](#data-analyses)
-    * [Differential Splicing Analysis](#differential-splicing-analysis)
-    * [Principal Component Analysis (PCA)](#principal-component-analysis-pca)
-    * [Survival Analysis](#survival-analysis)
-    * [Gene, Transcript and Protein Information](#gene-transcript-and-protein-information)
-* [Data Groups](#data-groups)
+    * [Load user-provided files](#load-user-provided-files)
+* [Splicing quantification](#splicing-quantification)
+* [Gene expression processing](#gene-expression-processing)
+* [Data analyses](#data-analyses)
+    * [Differential splicing and gene expression analysis](#differential-splicing-and-gene-expression-analysis)
+    * [Dimensionality reduction](#dimensionality-reduction)
+    * [Survival analysis](#survival-analysis)
+    * [Gene, transcript and protein information](#gene-transcript-and-protein-information)
+    * [Correlation between gene expression and splicing quantification](#correlation-between-gene-expression-and-splicing-quantification)
+* [Data grouping](#data-grouping)
 * [Feedback](#feedback)
 * [Contributions](#contributions)
 * [References](#references)
 
-## Install and Start Running
+## Install and start running
 
-### Bioconductor Release
+### Bioconductor release
 
-To install from [Bioconductor][2], type the following in [RStudio][4] or in a
-command-line using R:
+To install the package from [Bioconductor][2], type the following in 
+[RStudio][4] or in an R console:
 
 ```r
 ## try http:// if https:// URLs are not supported
@@ -43,7 +51,8 @@ source("https://bioconductor.org/biocLite.R")
 biocLite("psichomics")
 ```
 
-### Development Version
+### Development version
+
 To install and start using the development version, follow these steps:
 
 1. [Install R][3]
@@ -51,10 +60,10 @@ To install and start using the development version, follow these steps:
     - [Rtools](https://cran.r-project.org/bin/windows/Rtools/) (Windows)
     - [Xcode command-line tools](https://developer.apple.com/downloads) (Mac)
     - **r-devel** or **r-base-dev** (Linux)
-3. Open [RStudio][4] (or open a console, type `R` and press enter)
-4. Type the following to install [Bioconductor][2]: 
+3. Open [RStudio][4] or an R console
+4. Install [Bioconductor][2] with: 
     - `source("https://bioconductor.org/biocLite.R")`
-5. Type the following to install, load and start the visual interface:
+5. Install, load and start the visual interface with:
 ```r
 install.packages("devtools")
 devtools::install_github("nuno-agostinho/psichomics")
@@ -70,23 +79,31 @@ The following tutorials are available:
 * [Command-line interface](http://rpubs.com/nuno-agostinho/psichomics-cli-tutorial)
 
 Other tutorials coming soon:
+
 * Developers and other contributors
 
-## Data Input
+## Data input
+
 ### Download TCGA Data
-psichomics allows to download data from the [TCGA][1] inside the app. Simply
-choose the cohort of interest, date of the sample, type of interest and so on.
+
+psichomics allows to download data from the [TCGA][1] after selecting the tumour
+of interest. Subject- and sample-associated information, junction quantification
+and gene expression data from TCGA are supported.
 
 ### Load GTEx Data
-To load GTEx data, first download it from the [GTEx Portal][13]. Clinical data,
-sample information and junction quantification from GTEx are supported.
 
-### Load User Files
-To load your own files, simply choose the folder where the data is located. 
-psichomics will try to process all the data contained in the given folder and
-sub-folders to search for files that can be loaded.
+GTEx data needs to be manually downloaded from the [GTEx Portal][13]. Subject- 
+and sample-associated data, junction quantification and gene expression data 
+from GTEx are supported.
 
-## Splicing Quantification
+### Load user-provided files
+
+psichomics contains instructions to load user-owned files (including
+subject-associated data, sample-associated data, junction quantification,
+alternative splicing quantification and gene expression).
+
+## Splicing quantification
+
 The quantification of each alternative splicing event is based on the proportion
 of junction reads that support the inclusion isoform, known as percent 
 spliced-in or PSI [(Wang *et al.*, 2008)](#references).
@@ -99,30 +116,49 @@ annotation and the quantification of RNA-Seq reads aligning to splice junctions
 assembly) annotation is provided by the package, junction quantification may be
 retrieved from [TCGA][1] (automatically) or from [GTEx][14] (manually).
 
-## Data Analyses
-The program performs survival and principal component analyses, as well as
-differential splicing analysis using non-parametric statistical tests.
+## Gene expression processing
 
-### Differential Splicing Analysis
+Gene expression can be normalised, filtered and log2-transformed in-app.
+Alternatively, the user can also provide its own pre-processed gene expression 
+file.
+
+## Data Analyses
+
+The program performs survival analysis and dimensionality reduction, as well as
+differential splicing and gene expression analysis.
+
+### Dimensionality reduction
+
+Perform principal and independent component analysis (PCA and ICA, respectively)
+on alternative splicing quantification and gene expression based on molecular
+and clinical sample-associated attributes.
+
+### Differential splicing and gene expression analysis
+
 Analyse alternative splicing quantification based on variance and median 
 statistical tests. The groups available for differential analysis comprise 
-sample types (e.g. normal versus tumour) and clinical attributes of patients 
-(e.g. tumour stage).
+molecular and clinical sample-associated features.
 
-### Principal Component Analysis (PCA)
-Explore alternative splicing quantification groups using associated clinical 
-attributes.
+### Survival analysis
 
-### Survival Analysis
-Analyse survival based on clinical attributes (e.g. tumour stage, gender and
-race). Additionally, study the impact of the quantification of a single 
-alternative splicing event on patient survivability.
+Perform Kaplan-Meier curves and Cox models based on sample-associated features. 
+Additionally, study the impact of a splicing event (based on its quantification)
+or a gene (based on its gene expression) on patient survivability.
 
-### Gene, Transcript and Protein Information
-For a given splicing event, examine its gene's annotation and corresponding 
-transcripts and proteins. Related research articles are also available.
+### Gene, transcript and protein information
 
-## Data Groups
+Examine the annotation and corresponding transcripts and proteins for a gene of
+interest. Relevant research articles are also available.
+
+### Correlation between gene expression and splicing quantification
+
+Test the correlation betweem the gene expression of a specific gene with the
+alternative splicing quantification of selected alternative splicing events.
+
+## Data grouping
+
+Subject- and sample-associated data allow to establish groups that can be 
+exploited in diverse analyses throughout psichomics.
 
 - **By attribute:** automatically create groups by selecting a specific
 attribute of the dataset; for instance, to create a group for each tumour stage,
@@ -130,14 +166,16 @@ start typing `tumor_stage`, select the appropriate field from the suggestions,
 click on `Create group` and confirm that there is now one group for each stage.
 - **By index or identifiers:** input specific index or identifiers to create a
 group
-- **By subset expression:** type a subset expression
-- **By GREP expression:** apply a GREP expression over a specific column of the 
-dataset
+- **By subset expression:** filter attributes based on flexible subset 
+expressions
+- **By regular expression:** apply a regular expression over a specific 
+attribute
 
-Groups can also be selected in order to be merged, intersected, removed or
-renamed.
+Groups can also be selected in order to be manipulated (e.g. merged, 
+intersected, etc.), removed or renamed.
 
 ## Feedback
+
 All feedback on the program, documentation and associated material is welcome. 
 Please, send any suggestions and comments to the following contact:
 
@@ -146,14 +184,17 @@ Please, send any suggestions and comments to the following contact:
 > [Nuno Morais Lab, Instituto de Medicina Molecular][5]
 
 ## Contributions
+
 Please note that this project is released with a 
 [Contributor Code of Conduct][6]. By participating in this project you agree to
 abide by its terms.
 
 ## References
+
 Wang, E. T., R. Sandberg, S. Luo, I. Khrebtukova, L. Zhang, C. Mayr, S. F. 
-Kingsmore, G. P. Schroth, and C. B. Burge. 2008. [*Alternative isoform 
-regulation in human tissue transcriptomes.*][7] Nature 456 (7221): 470–76.
+Kingsmore, G. P. Schroth, and C. B. Burge. 2008. 
+[*Alternative isoform regulation in human tissue transcriptomes.*][7] Nature 456
+(7221): 470–76.
 
 [1]: https://tcga-data.nci.nih.gov
 [2]: https://www.bioconductor.org

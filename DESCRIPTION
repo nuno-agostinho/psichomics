@@ -11,13 +11,17 @@ Authors@R: c( person("Nuno", "Saraiva-Agostinho", ,
         role="ctb"), person("Teresa", "Maia", role="ctb"),
         person("Mariana", "Ferreira", role="ctb"), person("Ana Carolina", 
         "Leote", role="ctb"), person("Bernardo", "Almeida", role="ctb"))
-Description: Interactive R package with a Shiny-based graphical interface for
-    the quantification, analysis and visualisation of alternative splicing data 
-    from The Cancer Genome Atlas (TCGA) or the Genotype-Tissue Expression (GTEx)
-    project. This tool interactively performs survival, principal components and
-    differential splicing analyses with direct incorporation of clinical 
-    features (such as tumour stage or survival) associated with TCGA and GTEx
-    samples.
+Description: Interactive R package with an intuitive Shiny-based graphical 
+    interface for alternative splicing quantification and integrative analyses 
+    of alternative splicing and gene expression from large transcriptomic 
+    datasets, including those from The Cancer Genome Atlas (TCGA) and the 
+    Genotype-Tissue Expression project (GTEx), as well as user-owned data. The 
+    tool interactively performs survival, dimensionality reduction and median- 
+    and variance-based differential splicing and gene expression analyses that 
+    benefit from the incorporation of clinical and molecular sample-associated 
+    features (such as tumour stage or survival). Interactive visual access to 
+    genomic mapping and functional annotation of selected alternative splicing
+    events is also included.
 Depends:
     R (>= 3.4),
     shiny (>= 1.0.3),
