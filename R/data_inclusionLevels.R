@@ -475,6 +475,13 @@ quantifySplicingSet <- function(session, input) {
         updateProgress("Calculating inclusion levels")
         psi <- quantifySplicing(annot, junctionQuant, eventType, minReads, 
                                 genes=filter)
+        if (nrow(psi) == 0) {
+            errorModal(session, "No splicing events returned",
+                       "The total reads of the alternative splicing events are",
+                       "below the minium read counts' threshold.")
+            endProcess("calcIncLevels")
+            return(NULL)
+        }
         setInclusionLevels(psi)
         
         endProcess("calcIncLevels", time)
