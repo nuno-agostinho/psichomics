@@ -2,21 +2,50 @@
 % Please edit documentation in R/analysis.R
 \name{survfit.survTerms}
 \alias{survfit.survTerms}
-\title{Compute estime of a survival curve using processed survival terms}
+\title{Compute estimate of a survival curve using processed survival terms}
 \usage{
 \method{survfit}{survTerms}(survTerms, ...)
 }
 \arguments{
-\item{survTerms}{survTerms object: processed survival terms}
+\item{survTerms}{\code{survTerms} object: processed survival terms}
 
-\item{...}{Extra arguments passed to \code{survfit}}
+\item{...}{Arguments passed on to \code{survival::survfit.formula}
+\describe{
+  \item{weights}{
+    The weights must be nonnegative and it is strongly recommended that  
+    they be strictly positive, since zero weights are ambiguous, compared 
+    to use of the \code{subset} argument.
+  }
+  \item{subset}{
+    expression saying that only a subset of the rows of the data 
+    should be used in the fit. 
+  }
+  \item{na.action}{
+    a missing-data filter function, applied to the model frame, after any 
+    \code{subset} argument has been used. 
+    Default is \code{options()$na.action}. 
+  }
+  \item{etype}{
+    a variable giving the type of event.  This has been superseded by
+    multi-state Surv objects; see example below.
+  }
+  \item{id}{
+    identifies individual subjects, when a given person can have multiple
+    lines of data.
+  }
+  \item{istate}{for multi-state models, identifies the initial state of
+    each subject}
+  \item{timefix}{process times through the \code{aeqSurv} function to
+  eliminate potential roundoff issues.}
+}}
 }
 \value{
-an object of class "survfit". See survfit.object for details. Methods
-defined for survfit objects are print, plot, lines, and points.
+\code{survfit} object. See \code{survfit.object} for details. Methods
+defined for survfit objects are \code{print}, \code{plot}, \code{lines}, and 
+\code{points}.
 }
 \description{
-Compute estime of a survival curve using processed survival terms
+Compute estimate of a survival curve using processed survival terms
 }
 \examples{
 clinical <- read.table(text = "2549   NA ii  female

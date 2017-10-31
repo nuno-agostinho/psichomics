@@ -1,7 +1,7 @@
 Package: psichomics
 Title: Graphical Interface for Alternative Splicing Quantification, Analysis and
     Visualisation
-Version: 1.2.1
+Version: 1.3.2
 Encoding: UTF-8
 Authors@R: c( person("Nuno", "Saraiva-Agostinho", ,
         "nunodanielagostinho@gmail.com", role = c("aut", "cre")),
@@ -19,37 +19,43 @@ Description: Interactive R package with a Shiny-based graphical interface for
     features (such as tumour stage or survival) associated with TCGA and GTEx
     samples.
 Depends:
-    R (>= 3.3),
-    shiny (>= 1.0.0),
+    R (>= 3.4),
+    shiny (>= 1.0.3),
     shinyBS
 License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 6.0.1
 Imports:
     AnnotationHub,
+    cluster,
     colourpicker,
     data.table,
     digest,
     dplyr,
     DT (>= 0.2),
+    edgeR,
+    fastICA,
     fastmatch,
     ggplot2,
+    ggrepel,
     grDevices,
     highcharter (>= 0.5.0),
     htmltools,
     httr,
     jsonlite,
+    limma,
     miscTools,
+    pairsD3,
     plyr,
     R.utils,
     shinyjs,
     stringr,
     stats,
     survival,
-    Sushi,
     tools,
     utils,
     XML,
+    xtable,
     methods
 Suggests:
     testthat,
@@ -62,20 +68,27 @@ Suggests:
     car
 VignetteBuilder: knitr
 Collate: 
-    'analysis.R'
-    'analysis_diffSplicing.R'
-    'analysis_diffSplicing_event.R'
-    'analysis_diffSplicing_table.R'
-    'analysis_information.R'
-    'analysis_pca.R'
-    'analysis_survival.R'
-    'analysis_template.R'
     'utils.R'
     'globalAccess.R'
     'app.R'
+    'analysis.R'
+    'analysis_correlation.R'
+    'analysis_diffExpression.R'
+    'analysis_diffExpression_event.R'
+    'analysis_diffExpression_table.R'
+    'analysis_diffSplicing.R'
+    'analysis_diffSplicing_event.R'
+    'analysis_diffSplicing_table.R'
+    'analysis_dimReduction.R'
+    'analysis_dimReduction_ica.R'
+    'analysis_dimReduction_pca.R'
+    'analysis_information.R'
+    'analysis_survival.R'
+    'analysis_template.R'
     'data.R'
     'formats.R'
     'data_firebrowse.R'
+    'data_geNormalisationFiltering.R'
     'data_gtex.R'
     'data_inclusionLevels.R'
     'data_local.R'
@@ -87,9 +100,20 @@ Collate:
     'formats_firebrowseGeneExpression.R'
     'formats_firebrowseJunctionReads.R'
     'formats_firebrowseMergeClinical.R'
+    'formats_firebrowseNormalizedGeneExpression.R'
+    'formats_genericClinical.R'
+    'formats_genericGeneExpression.R'
+    'formats_genericInclusionLevels.R'
+    'formats_genericJunctionReads.R'
+    'formats_genericSampleInfo.R'
     'formats_gtexClinical.R'
+    'formats_gtexGeneReadsFormat.R'
     'formats_gtexJunctionReads.R'
     'formats_gtexSampleInfo.R'
+    'formats_gtexV7Clinical.R'
+    'formats_gtexV7JunctionReads.R'
+    'formats_psichomicsGeneExpression.R'
+    'formats_psichomicsInclusionLevels.R'
     'groups.R'
     'help.R'
 biocViews: Sequencing, RNASeq, AlternativeSplicing,

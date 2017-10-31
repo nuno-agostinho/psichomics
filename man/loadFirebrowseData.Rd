@@ -3,15 +3,17 @@
 \name{loadFirebrowseData}
 \alias{loadFirebrowseData}
 \alias{loadFirehoseData}
+\alias{loadTCGAdata}
 \title{Downloads and processes data from the Firebrowse web API and loads it into R}
 \usage{
 loadFirebrowseData(folder = NULL, data = NULL, exclude = c(".aux.",
-  ".mage-tab.", "MANIFEST.txt"), ..., progress = echoProgress,
-  download = TRUE)
+  ".mage-tab.", "MANIFEST.txt"), ..., download = TRUE)
 
 loadFirehoseData(folder = NULL, data = NULL, exclude = c(".aux.",
-  ".mage-tab.", "MANIFEST.txt"), ..., progress = echoProgress,
-  download = TRUE)
+  ".mage-tab.", "MANIFEST.txt"), ..., download = TRUE)
+
+loadTCGAdata(folder = NULL, data = NULL, exclude = c(".aux.",
+  ".mage-tab.", "MANIFEST.txt"), ..., download = TRUE)
 }
 \arguments{
 \item{folder}{Character: directory to store the downloaded archives (by
@@ -20,13 +22,30 @@ default, it saves in the user's "Downloads" folder)}
 \item{data}{Character: data to load}
 
 \item{exclude}{Character: files and folders to exclude from downloading and
-from loading into R (by default, it excludes ".aux.", ".mage-tab." and
-"MANIFEST.TXT" files)}
+from loading into R (by default, it excludes \code{.aux.}, \code{.mage-tab.}
+and \code{MANIFEST.TXT} files)}
 
-\item{...}{Extra parameters to be passed to \code{\link{queryFirebrowseData}}}
-
-\item{progress}{Function to show the progress (default is to print progress
-to console)}
+\item{...}{Arguments passed on to \code{queryFirebrowseData}
+\describe{
+  \item{format}{Character: response format as \code{JSON} (default), \code{CSV}
+or \code{TSV}}
+  \item{date}{Character: dates of the data retrieval by Firebrowse (by default,
+it uses the most recent data available)}
+  \item{cohort}{Character: abbreviation of the cohorts (by default, returns
+data for all cohorts)}
+  \item{data_type}{Character: data types (optional)}
+  \item{tool}{Character: data produced by the selected Firebrowse tools
+(optional)}
+  \item{platform}{Character: data generation platforms (optional)}
+  \item{center}{Character: data generation centres (optional)}
+  \item{level}{Integer: data levels (optional)}
+  \item{protocol}{Character: sample characterization protocols (optional)}
+  \item{page}{Integer: page of the results to return (optional)}
+  \item{page_size}{Integer: number of records per page of results; max is 2000
+(optional)}
+  \item{sort_by}{String: column used to sort the data (by default, it sorts by
+cohort)}
+}}
 
 \item{download}{Boolean: download missing files through the function
 \code{download.file} (TRUE by default)}

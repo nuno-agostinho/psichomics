@@ -2,20 +2,57 @@
 % Please edit documentation in R/globalAccess.R
 \name{getDifferentialAnalyses}
 \alias{getDifferentialAnalyses}
-\title{Get the table of differential analyses of a data category}
+\alias{setDifferentialAnalyses}
+\alias{getDifferentialAnalysesFiltered}
+\alias{setDifferentialAnalysesFiltered}
+\alias{getDifferentialAnalysesSurvival}
+\alias{setDifferentialAnalysesSurvival}
+\alias{getDifferentialAnalysesResetPaging}
+\alias{setDifferentialAnalysesResetPaging}
+\alias{getDifferentialAnalysesColumns}
+\alias{setDifferentialAnalysesColumns}
+\title{Get or set differential splicing' elements for a data category}
 \usage{
 getDifferentialAnalyses(category = getCategory())
+
+setDifferentialAnalyses(differential, category = getCategory())
+
+getDifferentialAnalysesFiltered(category = getCategory())
+
+setDifferentialAnalysesFiltered(differential, category = getCategory())
+
+getDifferentialAnalysesSurvival(category = getCategory())
+
+setDifferentialAnalysesSurvival(survival, category = getCategory())
+
+getDifferentialAnalysesResetPaging(category = getCategory())
+
+setDifferentialAnalysesResetPaging(reset, category = getCategory())
+
+getDifferentialAnalysesColumns(category = getCategory())
+
+setDifferentialAnalysesColumns(columns, category = getCategory())
 }
 \arguments{
 \item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
 it uses the selected data category}
+
+\item{differential}{Data frame or matrix: differential analyses table}
+
+\item{survival}{Data frame or matrix: differential analyses' survival data}
+
+\item{reset}{Character: reset paging of differential analyses table?}
+
+\item{columns}{Character: differential analyses' column names}
 }
 \value{
-Data frame of differential analyses
+Getters return globally accessible data, whereas setters return NULL 
+as they are only used to modify the Shiny session's state
 }
 \description{
-Get the table of differential analyses of a data category
+Get or set differential splicing' elements for a data category
 }
-\note{
-Needs to be called inside a reactive function
+\seealso{
+\code{\link{getEvent}}, \code{\link{getClinicalMatchFrom}},
+\code{\link{getGroups}} and \code{\link{getDifferentialAnalyses}}
 }

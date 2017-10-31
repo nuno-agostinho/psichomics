@@ -2,14 +2,20 @@
 % Please edit documentation in R/groups.R
 \name{selectGroupsUI}
 \alias{selectGroupsUI}
-\title{Group selection interface}
+\alias{selectGroupsServer}
+\alias{getSelectedGroups}
+\title{Group selection}
 \usage{
 selectGroupsUI(id, label,
   placeholder = "Click on 'Groups' to create or edit groups",
-  noGroupsLabel = NULL, groupsLabel = NULL)
+  noGroupsLabel = NULL, groupsLabel = NULL, maxItems = NULL)
+
+selectGroupsServer(session, id, type)
+
+getSelectedGroups(input, id, type, filter = NULL)
 }
 \arguments{
-\item{id}{Character: identifier of the group selection}
+\item{id}{Character: identifier}
 
 \item{label}{Character: selectize label}
 
@@ -20,17 +26,31 @@ selectGroupsUI(id, label,
 
 \item{groupsLabel}{Character: label to show to the option of using groups
 when no groups may be selected}
+
+\item{maxItems}{Numeric: maximum number of selected items}
+
+\item{session}{Shiny session}
+
+\item{type}{Character: type of groups (either "Patients", "Samples", 
+"ASevents" or "Genes")}
+
+\item{input}{Shiny input}
+
+\item{filter}{Character: get groups only if they are present in this argument
+(if TCGA-styled gene symbols, they will be "converted" to gene symbols alone)}
 }
 \value{
-Interface for group selection
+\code{selectGroupsUI}: Interface for group selection
+
+\code{selectGroupsServer}: Server logic for group selection
+
+\code{getSelectedGroups}: List with selected groups (or NULL if no
+groups were selected)
 }
 \description{
-Group selection interface
+Group selection interface and logic
 }
 \note{
 To allow the user to (explicitly) select no groups, pass the 
 \code{noGroupsLabel} and \code{groupsLabel} arguments.
-}
-\seealso{
-selectGroupsServer getSelectedGroups
 }

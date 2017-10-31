@@ -3,11 +3,14 @@
 \name{parseFirebrowseMetadata}
 \alias{parseFirebrowseMetadata}
 \alias{parseFirehoseMetadata}
-\title{Query the Firebrowse web API for metadata and parse the response}
+\alias{parseTCGAmetadata}
+\title{Query the Firebrowse web API for metadata}
 \usage{
 parseFirebrowseMetadata(type, ...)
 
 parseFirehoseMetadata(type, ...)
+
+parseTCGAmetadata(type, ...)
 }
 \arguments{
 \item{type}{Character: metadata to retrieve}
@@ -15,10 +18,10 @@ parseFirehoseMetadata(type, ...)
 \item{...}{Character: parameters to pass to query (optional)}
 }
 \value{
-List with parsed JSON response
+List with parsed response
 }
 \description{
-Query the Firebrowse web API for metadata and parse the response
+Query the Firebrowse web API for metadata
 }
 \examples{
 psichomics:::parseFirebrowseMetadata("Dates")

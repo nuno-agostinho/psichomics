@@ -23,7 +23,7 @@ interval or follow up time}
 \item{timeStop}{Character: name of column containing ending time of the 
 interval}
 
-\item{group}{Character: group of each individual}
+\item{group}{Character: group relative to each patient}
 
 \item{formulaStr}{Character: formula to use}
 
@@ -53,7 +53,7 @@ If \code{survTime} is NULL, the survival times will be fetch from the
 clinical dataset according to the names given in \code{timeStart},
 \code{timeStop}, \code{event} and \code{followup}. This can became quite slow
 when using the function in a for loop. If these variables are constant, 
-consider running the function \code{\link{getColumnsTime}} to retrieve the
+consider running the function \code{\link{getAttributesTime}} to retrieve the
 time of such columns once and hand the result to the \code{survTime} argument
 of this function.
 }

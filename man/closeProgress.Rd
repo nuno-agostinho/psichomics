@@ -4,7 +4,8 @@
 \alias{closeProgress}
 \title{Close the progress even if there's an error}
 \usage{
-closeProgress(message = NULL, global = sharedData)
+closeProgress(message = NULL, global = if (isRunning()) sharedData else
+  getHidden())
 }
 \arguments{
 \item{message}{Character: message to show in progress bar}

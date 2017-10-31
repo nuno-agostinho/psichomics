@@ -10,7 +10,24 @@ survdiff.survTerms(survTerms, ...)
 \arguments{
 \item{survTerms}{survTerms object: processed survival terms}
 
-\item{...}{Extra arguments passed to \code{survdiff}}
+\item{...}{Arguments passed on to \code{survival::survdiff}
+\describe{
+  \item{subset}{
+expression indicating which subset of the rows of data should be used in
+the fit.  This can be a logical vector (which is replicated to have
+length equal to the number of observations), a numeric vector indicating
+which observation numbers are to be included (or excluded if negative),
+or a character vector of row names to be included.  All observations are
+included by default.
+}
+  \item{na.action}{
+a missing-data filter function.  This is applied to the \code{model.frame} after any
+subset argument has been used.  Default is \code{options()$na.action}.
+}
+  \item{rho}{
+a scalar parameter that controls the type of test.
+}
+}}
 }
 \value{
 an object of class "survfit". See survfit.object for details. Methods

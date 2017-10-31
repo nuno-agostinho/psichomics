@@ -155,9 +155,6 @@ test_that("Process splicing quantification for multiple event types", {
     
     expect_equal(colnames(psi), colnames(junctionQuant))
     expect_equal(attr(psi, "dataType"), "Inclusion levels")
-    expect_equal(attr(psi, "description"), 
-                 paste("Exon and intron inclusion levels for any given",
-                       "alternative splicing event."))
     
     # The portion with just the skipped exon should be the same as a subset
     # when calculating for more event types

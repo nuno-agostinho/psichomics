@@ -19,12 +19,12 @@ interval}
 
 \item{followup}{Character: name of column containing follow up time}
 
-\item{group}{Character: group of each individual}
+\item{group}{Character: group relative to each patient}
 
 \item{clinical}{Data frame: clinical data}
 
-\item{survTime}{survTime object: Times to follow up, time start, time stop
-and event (optional)}
+\item{survTime}{\code{survTime} object: Times to follow up, time start, time 
+stop and event (optional)}
 }
 \value{
 Data frame with terms needed to calculate survival curves
@@ -40,7 +40,7 @@ If \code{survTime} is NULL, the survival times will be fetch from the
 clinical dataset according to the names given in \code{timeStart},
 \code{timeStop}, \code{event} and \code{followup}. This can became quite slow
 when using the function in a for loop. If these variables are constant, 
-consider running the function \code{\link{getColumnsTime}} to retrieve the
+consider running the function \code{\link{getAttributesTime}} to retrieve the
 time of such columns once and hand the result to the \code{survTime} argument
 of this function.
 }

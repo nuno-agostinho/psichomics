@@ -3,7 +3,7 @@
 \name{isFirebrowseUp}
 \alias{isFirebrowseUp}
 \alias{isFirehoseUp}
-\title{Check if the Firebrowse web API is running}
+\title{Check whether the Firebrowse web API is running}
 \usage{
 isFirebrowseUp()
 

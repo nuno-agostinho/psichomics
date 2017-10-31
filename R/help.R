@@ -1,11 +1,5 @@
-#' User interface of the help menu
-#' 
-#' @param id Character: identifier
-#' @param tab Function to create tabs
-#' 
+#' @rdname appUI
 #' @importFrom shiny textOutput
-#' 
-#' @return HTML elements
 helpUI <- function(id, tab) {
     ns <- NS(id)
     
@@ -142,14 +136,8 @@ helpUI <- function(id, tab) {
                     do.call(tags$ul, c(credits, list(class="list-group")))))))
 }
 
-#' Server logic of the help menu
-#' 
-#' @param session Shiny session
-#' @param input Shiny input
-#' @param output Shiny output
-#' 
+#' @rdname appServer
 #' @importFrom shiny observe renderText
-#' @return NULL (this function is used to modify the Shiny session's state)
 helpServer <- function(input, output, session) {
     # observe(setCores(input$cores))
     observe({

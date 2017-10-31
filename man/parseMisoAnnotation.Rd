@@ -26,8 +26,8 @@ parseMatsAnnotation(folder, types = c("SE", "AFE", "ALE", "MXE", "A5SS",
 \item{types}{Character: type of events to retrieve (depends on the program of
 origin; see details)}
 
-\item{genome}{Character: genome of interest (for instance, "hg19"; depends on
-the program of origin)}
+\item{genome}{Character: genome of interest (for instance, \code{hg19};
+depends on the program of origin)}
 
 \item{complexEvents}{Boolean: should complex events in A3SS and A5SS be
 parsed? FALSE by default}
@@ -43,7 +43,7 @@ annotation
 Get events from alternative splicing annotation
 }
 \details{
-Type of parseable events:
+Type of parsable events:
 \itemize{
      \item Alternative 3' splice site
      \item Alternative 5' splice site

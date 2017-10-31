@@ -2,12 +2,25 @@
 % Please edit documentation in R/utils.R
 \name{renderDataTableSparklines}
 \alias{renderDataTableSparklines}
-\title{Render a data table with Sparkline HTML elements}
+\title{Render a data table with sparkline HTML elements}
 \usage{
 renderDataTableSparklines(..., options = NULL)
 }
 \arguments{
-\item{...}{Arguments to pass to \code{\link{renderDataTable}}}
+\item{...}{Arguments passed on to \code{shiny::renderDataTable}
+\describe{
+  \item{expr}{An expression that returns a data frame or a matrix.}
+  \item{searchDelay}{The delay for searching, in milliseconds (to avoid too
+frequent search requests).}
+  \item{callback}{A JavaScript function to be applied to the DataTable object.
+This is useful for DataTables plug-ins, which often require the DataTable
+instance to be available (\url{http://datatables.net/extensions/}).}
+  \item{quoted}{Is \code{expr} a quoted expression (with \code{quote()})? This
+is useful if you want to save an expression in a variable.}
+  \item{outputArgs}{A list of arguments to be passed through to the implicit
+call to \code{\link{dataTableOutput}} when \code{renderDataTable} is used
+in an interactive R Markdown document.}
+}}
 
 \item{options}{List of options to pass to \code{\link{renderDataTable}}}
 }
@@ -15,10 +28,10 @@ renderDataTableSparklines(..., options = NULL)
 NULL (this function is used to modify the Shiny session's state)
 }
 \description{
-Render a data table with Sparkline HTML elements
+Render a data table with sparkline HTML elements
 }
 \details{
 This slightly modified version of \code{\link{renderDataTable}}
-calls a JavaScript function to convert the Sparkline HTML elements to
+calls a JavaScript function to convert the sparkline HTML elements to
 interactive Highcharts
 }

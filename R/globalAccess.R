@@ -6,58 +6,222 @@ NULL
 # Global variable with all the data of a session
 sharedData <- reactiveValues()
 
+# Global variable to keep progress for CLI version
+.hidden <- new.env()
+
+#' Get or set hidden globally accessible elements
+#' 
+#' @return Getters return hidden globally accessible data, whereas setters 
+#' return NULL as they are only used to modify the state of hidden elements
+getHidden <- function() .hidden$elem
+
+#' @rdname getHidden
+#' @param val Value to attribute
+setHidden <- function(val) .hidden$elem <- val
+
+#' Get or set globally accessible elements
+#' 
+#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
+#' it uses the selected data category
+#' @param ... Arguments to identify a variable
+#' @param sep Character to separate identifiers
+#' 
+#' @note Needs to be called inside a reactive function
+#' 
+#' @seealso \code{\link{getEvent}}, \code{\link{getClinicalMatchFrom}},
+#' \code{\link{getGroups}} and \code{\link{getDifferentialAnalyses}}
+#' 
+#' @return Getters return globally accessible data, whereas setters return NULL 
+#' as they are only used to modify the Shiny session's state
+getGlobal <- function(category=getCategory(), ..., sep="_") {
+    sharedData[[paste(category, ..., sep=sep)]]
+}
+
+#' @rdname getGlobal
+#' @param value Value to attribute to an element
+setGlobal <- function(category=getCategory(), ..., value, sep="_") {
+    sharedData[[paste(category, ..., sep=sep)]] <- value
+}
+
 #' Get global data
 #' @return Variable containing all data of interest
 getData <- reactive(sharedData$data)
 
-#' Get if history browsing is automatic
-#' @return Boolean: is navigation of browser history automatic?
+#' @rdname getGlobal
+#' @param data List of data frame or matrix to set as data
+setData <- function(data) setGlobal("data", value=data)
+
+#' @rdname getGlobal
+#' @param name Character: data table name
+setDataTable <- function(name, value, category=getCategory())
+    sharedData$data[[category]][[name]] <- value
+
+#' @rdname getGlobal
 getAutoNavigation <- reactive(sharedData$autoNavigation)
 
-#' Get number of cores to use
-#' @return Numeric value with the number of cores to use
+#' @rdname getGlobal
+#' @param auto Boolean: enable automatic navigation of browser history?
+setAutoNavigation <- function(auto) setGlobal("autoNavigation", value=auto)
+
+#' @rdname getGlobal
 getCores <- reactive(sharedData$cores)
 
-#' Get number of significant digits
-#' @return Numeric value regarding the number of significant digits
+#' @rdname getGlobal
+#' @param integer Integer: value of the setting
+setCores <- function(integer) setGlobal("cores", value=integer)
+
+#' @rdname getGlobal
 getSignificant <- reactive(sharedData$significant)
 
-#' Get number of decimal places
-#' @return Numeric value regarding the number of decimal places
+#' @rdname getGlobal
+setSignificant <- function(integer) setGlobal("significant", value=integer)
+
+#' @rdname getGlobal
 getPrecision <- reactive(sharedData$precision)
 
-#' Get selected alternative splicing event's identifer
-#' @return Alternative splicing event's identifier as a string
-getEvent <- reactive(sharedData$event)
+#' @rdname getGlobal
+setPrecision <- function(integer) setGlobal("precision", value=integer)
 
-#' Get available data categories
-#' @return Name of all data categories
+#' @inherit getGlobal
+getASevents <- function() {
+    psi <- getInclusionLevels()
+    if (!is.null(psi)) {
+        choices <- rownames(psi)
+        names(choices) <- parseSplicingEvent(choices, char=TRUE)
+        return( sort(choices) )
+    }
+}
+
+#' @inherit getGlobal
+getASevent <- reactive(sharedData$event)
+
+#' @rdname getEvent
+#' @param event Character: alternative splicing event
+setASevent <- function(event) setGlobal("event", value=event)
+
+#' @inherit getGlobal
+getEvent <- getASevent
+
+#' @rdname getEvent
+setEvent <- setASevent
+
+#' @inherit getGlobal
+getGenes <- function() {
+    genes <- NULL
+    
+    # Retrieve genes from gene expression
+    geneExpr <- getGeneExpression()
+    if (!is.null(geneExpr)) {
+        original <- sort(unique(unlist(lapply(geneExpr, rownames))))
+        genes    <- gsub("\\|.*", "", original) # Process TCGA gene symbols
+        unknown  <- genes == "?"
+        genes[unknown] <- original[unknown]
+    }
+    
+    # Retrieve genes based on AS events
+    ASevents <- getASevents()
+    if (!is.null(ASevents))
+        genes <- c(unlist(parseSplicingEvent(ASevents)$gene), genes)
+    
+    if (!is.null(genes)) {
+        genes   <- sort(unique(genes))
+        # Show unknown genes last
+        unknown <- gsub("\\|.*", "", genes) == "?"
+        genes   <- c(genes[!unknown], genes[unknown])
+    }
+    return(genes)
+}
+
+#' @rdname getEvent
 getCategories <- reactive(names(getData()))
 
-#' Get selected data category
-#' @return Name of selected data category
+#' @rdname getEvent
 getCategory <- reactive(sharedData$category)
 
-#' Get data of selected data category
-#' @return If category is selected, returns the respective data as a data frame;
-#' otherwise, returns NULL
+#' @rdname getEvent
+setCategory <- function(category) setGlobal("category", value=category)
+
+#' @rdname getEvent
 getCategoryData <- reactive(
     if(!is.null(getCategory())) getData()[[getCategory()]])
 
-#' Get selected dataset
-#' @return List of data frames
+#' @rdname getEvent
 getActiveDataset <- reactive(sharedData$activeDataset)
 
-#' Get clinical data of the data category
-#' @return Data frame with clinical data
-getClinicalData <- reactive(getCategoryData()[["Clinical data"]])
+#' @rdname getEvent
+#' @param dataset Character: dataset name
+setActiveDataset <- function(dataset) setGlobal("activeDataset", value=dataset)
 
-#' Get junction quantification data
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' @return List of data frames of junction quantification
+#' @rdname getEvent
+#' @param attrs Character: name of attributes to retrieve (if NULL, the whole 
+#' dataset is returned)
+getClinicalData <- function(attrs=NULL) {
+    clinical <- getCategoryData()[["Clinical data"]]
+    attrs <- attrs[attrs != ""]
+    if (!is.null(attrs)) {
+        cols <- lapply(attrs, grep, colnames(clinical), fixed=TRUE)
+        cols <- unique(unlist(cols))
+        if (length(cols) > 0) {
+            clinical <- clinical[ , cols, drop=FALSE]
+        } else {
+            clinical <- NULL
+        }
+    }
+    return(clinical)
+}
+
+#' @rdname getEvent
+getPatientId <- function() {
+    clinical <- getClinicalData()
+    if ( !is.null(clinical) ) {
+        return( rownames(clinical) )
+    } else {
+        return(NULL)
+    }
+}
+
+#' @rdname getEvent
+getPatientAttributes <- function() {
+    clinical <- getClinicalData()
+    if ( !is.null(clinical) ) {
+        patientAttrs <- colnames(clinical)
+        attr(patientAttrs, "default") <- attr(clinical, "show")
+        return(patientAttrs)
+    } else {
+        return(NULL)
+    }
+}
+
+#' @rdname getEvent
+getSampleInfo <- reactive(getCategoryData()[["Sample metadata"]])
+
+#' @rdname getEvent
+setSampleInfo <- function(value, category = getCategory())
+    setDataTable("Sample metadata", value, category)
+
+#' @rdname getEvent
+getSampleId <- function() {
+    sampleInfo <- getSampleInfo()
+    if ( !is.null(sampleInfo) ) {
+        return( rownames(sampleInfo) )
+    } else {
+        return(NULL)
+    }
+}
+
+#' @rdname getEvent
+getSampleAttributes <- function() {
+    sampleInfo <- getSampleInfo()
+    if ( !is.null(sampleInfo) ) {
+        sampleAttrs <- colnames(sampleInfo)
+        attr(sampleAttrs, "default") <- attr(sampleInfo, "show")
+        return(sampleAttrs)
+    } else {
+        return(NULL)
+    }
+}
+
+#' @rdname getEvent
 getJunctionQuantification <- function(category=getCategory()) {
     if (!is.null(category)) {
         data <- getData()[[category]]
@@ -66,406 +230,289 @@ getJunctionQuantification <- function(category=getCategory()) {
     }
 }
 
-#' Get alternative splicing quantification of the selected data category
-#' @return Data frame with the alternative splicing quantification
+#' @rdname getEvent
+getGeneExpression <- function(category=getCategory()) {
+    if (!is.null(category)) {
+        data <- getData()[[category]]
+        match <- sapply(data, attr, "dataType") == "Gene expression"
+        if (any(match)) return(data[match])
+    }
+}
+
+#' @rdname getEvent
+#' @param geneExpr Data frame or matrix: normalised gene expression
+setNormalisedGeneExpression <- function(geneExpr, category=getCategory()) {
+    ns  <- names(getData()[[category]])
+    num <- gsub("Gene expression \\(normalised.*?([0-9]*).*\\)", "\\1", ns)
+    num <- suppressWarnings(as.integer(num))
+    
+    if (any(!is.na(num))) {
+        num <- max(num, na.rm=TRUE)
+        num <- paste0(" ", num + 1)
+    } else if ("Gene expression (normalised)" %in% ns) {
+        num <- " 1"
+    } else {
+        num <- ""
+    }
+    ns <- sprintf("Gene expression (normalised%s)", num)
+    setDataTable(ns, geneExpr, category)
+}
+
+#' @rdname getEvent
 getInclusionLevels <- reactive(getCategoryData()[["Inclusion levels"]])
 
-#' Get sample information of the selected data category
-#' @return Data frame with sample information
-getSampleInfo <- reactive(getCategoryData()[["Sample metadata"]])
+#' @rdname getEvent
+#' @param incLevels Data frame or matrix: inclusion levels
+setInclusionLevels <- function(incLevels, category=getCategory())
+    setDataTable("Inclusion levels", incLevels, category)
 
-#' Get data from global data
-#' @param ... Arguments to identify a variable
-#' @param sep Character to separate identifiers
-#' @return Data from global data
-getGlobal <- function(..., sep="_") sharedData[[paste(..., sep=sep)]]
+#' @rdname getEvent
+getPCA <- function(category=getCategory())
+    getGlobal(category, "PCA")
 
-#' Get the identifier of patients for a given category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' 
-#' @return Character vector with identifier of patients
-getPatientId <- function(category = getCategory())
-    getGlobal(category, "patients")
+#' @rdname getEvent
+#' @param pca \code{prcomp} object (principal component analysis)
+setPCA <- function(pca, category=getCategory())
+    setGlobal(category, "PCA", value=pca)
 
-#' Get the identifier of samples for a given category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' 
-#' @return Character vector with identifier of samples
-getSampleId <- function(category = getCategory())
-    getGlobal(category, "samples")
+#' @rdname getEvent
+getICA <- function(category=getCategory())
+    getGlobal(category, "ICA")
 
-#' Get the table of differential analyses of a data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' 
-#' @return Data frame of differential analyses
-getDifferentialAnalyses <- function(category = getCategory())
-    getGlobal(category, "differentialAnalyses")
+#' @rdname getEvent
+#' @param ica Object containing independent component analysis
+setICA <- function(ica, category=getCategory())
+    setGlobal(category, "ICA", value=ica)
 
-#' Get the filtered table of differential analyses of a data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' 
-#' @return Filtered data frame of differential analyses
-getDifferentialAnalysesFiltered <- function(category = getCategory())
-    getGlobal(category, "differentialAnalysesFiltered")
+#' @rdname getEvent
+getGroupIndependenceTesting <- function(category=getCategory())
+    getGlobal(category, "groupIndependenceTesting")
 
-#' Get highlighted events from differential analyses of a data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' 
-#' @return Integer of indexes relative to a table of differential analyses
-getDifferentialAnalysesHighlightedEvents <- function(category = getCategory())
-    getGlobal(category, "differentialAnalysesHighlighted")
+#' @rdname getEvent
+#' @param groupIndependenceTesting Object containing group independence testing
+#' results
+setGroupIndependenceTesting <- function(groupIndependenceTesting, 
+                                        category=getCategory()) {
+    setGlobal(category, "groupIndependenceTesting", 
+              value=groupIndependenceTesting)
+}
 
-#' Get plot coordinates for zooming from differential analyses of a data
-#' category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' 
-#' @return Integer of X and Y axes coordinates
-getDifferentialAnalysesZoom <- function(category = getCategory())
-    getGlobal(category, "differentialAnalysesZoom")
-
-#' Get selected points in the differential analysis table of a data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' 
-#' @return Integer containing index of selected points
-getDifferentialAnalysesSelected <- function(category = getCategory())
-    getGlobal(category, "differentialAnalysesSelected")
-
-#' Get the table of differential analyses' survival data of a data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' 
-#' @return Data frame of differential analyses' survival data
-getDifferentialAnalysesSurvival <- function(category = getCategory())
-    getGlobal(category, "diffAnalysesSurv")
-
-#' Get the species of a data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' 
-#' @return Character value with the species
-getSpecies <- function(category = getCategory())
+#' @rdname getEvent
+getSpecies <- function(category=getCategory())
     getGlobal(category, "species")
 
-#' Get the assembly version of a data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' 
-#' @return Character value with the assembly version
-getAssemblyVersion <- function(category = getCategory())
+#' @rdname getEvent
+#' @param species Character: species
+setSpecies <- function(species, category=getCategory())
+    setGlobal(category, "species", value=species)
+
+#' @rdname getEvent
+getAssemblyVersion <- function(category=getCategory())
     getGlobal(category, "assemblyVersion")
 
-#' Get groups from a given data type
-#' @note Needs to be called inside a reactive function
+#' @rdname getEvent
+#' @param assembly Character: assembly version
+setAssemblyVersion <- function(assembly, category=getCategory())
+    setGlobal(category, "assemblyVersion", value=assembly)
+
+#' @rdname getEvent
+getAnnotationName <- function(category=getCategory())
+    getGlobal(category, "annotName")
+
+#' @rdname getEvent
+#' @param annotName Character: annotation name
+setAnnotationName <- function(annotName, category=getCategory())
+    setGlobal(category, "annotName", value=annotName)
+
+#' @rdname getEvent
+getURLtoDownload <- function() getGlobal("URLtoDownload")
+
+#' @rdname getEvent
+#' @param url Character: URL links to download
+setURLtoDownload <- function(url) setGlobal("URLtoDownload", value=url)
+
+#' Get or set clinical matches from a given data type
+#' @inherit getGlobal
+#' @param dataset Character: data set name (e.g. "Junction quantification")
+getClinicalMatchFrom <- function(dataset, category=getCategory())
+    getGlobal(category, dataset, "clinicalMatch")
+
+#' @rdname getClinicalMatchFrom
+#' @param matches Vector of integers: clinical matches of dataset
+setClinicalMatchFrom <- function(dataset, matches, category=getCategory())
+    setGlobal(category, dataset, "clinicalMatch", value=matches)
+
+#' Get or set groups
+#' @inherit getGlobal
 #' 
-#' @param dataset Character: data set (e.g. "Clinical data")
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
+#' @param type Character: type of groups (either "Patients", "Samples", 
+#' "ASevents" or "Genes")
 #' @param complete Boolean: return all the information on groups (TRUE) or just 
 #' the group names and respective indexes (FALSE)? FALSE by default
-#' @param samples Boolean: show groups by samples (TRUE) or patients (FALSE)?
-#' FALSE by default
-#' 
-#' @return Matrix with groups of a given dataset
-getGroupsFrom <- function(dataset, category = getCategory(), complete=FALSE,
-                          samples=FALSE) {
-    groups <- getGlobal(category, dataset, "groups")
+getGroups <- function(type=c("Patients", "Samples", "ASevents", "Genes"), 
+                      complete=FALSE, category=getCategory()) {
+    type <- match.arg(type)
+    if (type %in% c("Patients", "Samples") )
+        groups <- getGlobal(category, "sampleGroups")
+    else if (type %in% c("ASevents", "Genes"))
+        groups <- getGlobal(category, "ASeventGroups")
     
     # Return all data if requested
     if (complete) return(groups)
     
-    if (samples)
-        col <- "Samples"
-    else
-        col <- "Patients"
-    
     # Check if data of interest is available
-    if (!col %in% colnames(groups)) return(NULL)
+    if (!type %in% colnames(groups)) return(NULL)
     
     # If available, return data of interest
-    g <- groups[ , col, drop=TRUE]
+    g <- groups[ , type, drop=TRUE]
     if (length(g) == 1) names(g) <- rownames(groups)
+    
+    # Return colour lookup table for groups
+    if ("Colour" %in% colnames(groups)) {
+        colour <- groups[ , "Colour", drop=TRUE]
+        colour <- setNames(unlist(colour), names(colour))
+        attr(g, "Colour") <- colour
+    }
     return(g)
 }
 
-#' Get clinical matches from a given data type
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param dataset Character: data set (e.g. "Junction quantification")
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' 
-#' @return Integer with clinical matches to a given dataset
-getClinicalMatchFrom <- function(dataset, category = getCategory())
-    getGlobal(category, dataset, "clinicalMatch")
-
-#' Get the URL links to download
-#' @note Needs to be called inside a reactive function
-#' 
-#' @return Character vector with URLs to download
-getURLtoDownload <- function()
-    getGlobal("URLtoDownload")
-
-#' Get principal component analysis based on inclusion levels
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' 
-#' @return \code{prcomp} object (PCA) of inclusion levels
-getInclusionLevelsPCA <- function(category = getCategory())
-    getGlobal(category, "inclusionLevelsPCA")
-
-#' Set element as globally accessible
-#' @details Set element inside the global variable
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param ... Arguments to identify a variable
-#' @param value Any value to attribute to an element
-#' @param sep Character to separate identifier
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
-setGlobal <- function(..., value, sep="_") {
-    sharedData[[paste(..., sep=sep)]] <- value
+#' @rdname getGroups
+#' @param groups Matrix: groups of dataset
+setGroups <- function(type=c("Patients", "Samples", "ASevents", "Genes"), 
+                      groups, category=getCategory()) {
+    type <- match.arg(type)
+    if (type %in% c("Patients", "Samples") )
+        type <- "sampleGroups"
+    else if (type %in% c("ASevents", "Genes"))
+        type <- "ASeventGroups"
+    
+    setGlobal(category, type, value=groups)
 }
 
-#' Set data of the global data
-#' @note Needs to be called inside a reactive function
-#' @param data Data frame or matrix to set as data
-#' @return NULL (this function is used to modify the Shiny session's state)
-setData <- function(data) setGlobal("data", value=data)
 
-#' Set if history browsing is automatic
-#' @note Needs to be called inside a reactive function
-#' @param param Boolean: is navigation of browser history automatic?
-#' @return NULL (this function is used to modify the Shiny session's state)
-setAutoNavigation <- function(param) setGlobal("autoNavigation", value=param)
+# Plot points or regions --------------------------------------------------
 
-#' Set number of cores
-#' @param cores Character: number of cores
-#' @note Needs to be called inside a reactive function
-#' @return NULL (this function is used to modify the Shiny session's state)
-setCores <- function(cores) setGlobal("cores", value=cores)
+#' Get or set points or regions for plots
+#' @inherit getGlobal
+getHighlightedPoints <- function(id, category=getCategory())
+    getGlobal(category, id, "highlighted")
 
-#' Set number of significant digits
-#' @param significant Character: number of significant digits
-#' @note Needs to be called inside a reactive function
-#' @return NULL (this function is used to modify the Shiny session's state)
-setSignificant <- function(significant) setGlobal("significant", value=significant)
+#' @rdname getHighlightedPoints
+#' @param events Integer: index of events
+setHighlightedPoints <- function(id, events, category=getCategory())
+    setGlobal(category, id, "highlighted", value=events)
 
-#' Set number of decimal places
-#' @param precision Numeric: number of decimal places
-#' @return NULL (this function is used to modify the Shiny session's state)
-#' @note Needs to be called inside a reactive function
-setPrecision <- function(precision) setGlobal("precision", value=precision)
+#' @rdname getHighlightedPoints
+#' @param id Character: identifier
+getZoom <- function(id, category=getCategory())
+    getGlobal(category, id, "zoom")
 
-#' Set event
-#' @param event Character: event
-#' @note Needs to be called inside a reactive function
-#' @return NULL (this function is used to modify the Shiny session's state)
-setEvent <- function(event) setGlobal("event", value=event)
+#' @rdname getHighlightedPoints
+#' @param zoom Integer: range of X and Y coordinates for zooming
+setZoom <- function(id, zoom, category=getCategory())
+    setGlobal(category, id, "zoom", value=zoom)
 
-#' Set data category
-#' @param category Character: data category
-#' @note Needs to be called inside a reactive function
-#' @return NULL (this function is used to modify the Shiny session's state)
-setCategory <- function(category) setGlobal("category", value=category)
+#' @rdname getHighlightedPoints
+getSelectedPoints <- function(id, category=getCategory())
+    getGlobal(category, id, "selected")
 
-#' Set active dataset
-#' @param dataset Character: dataset
-#' @note Needs to be called inside a reactive function
-#' @return NULL (this function is used to modify the Shiny session's state)
-setActiveDataset <- function(dataset) setGlobal("activeDataset", value=dataset)
+#' @rdname getHighlightedPoints
+setSelectedPoints <- function(id, events, category=getCategory())
+    setGlobal(category, id, "selected", value=events)
 
-#' Set inclusion levels for a given data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param value Data frame or matrix: inclusion levels
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' @return NULL (this function is used to modify the Shiny session's state)
-setInclusionLevels <- function(value, category = getCategory())
-    sharedData$data[[category]][["Inclusion levels"]] <- value
+#' @rdname getHighlightedPoints
+getLabelledPoints <- function(id, category=getCategory())
+    getGlobal(category, id, "labelled")
 
-#' Set sample information for a given data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param value Data frame or matrix: sample information
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' @return NULL (this function is used to modify the Shiny session's state)
-setSampleInfo <- function(value, category = getCategory())
-    sharedData$data[[category]][["Sample metadata"]] <- value
+#' @rdname getHighlightedPoints
+setLabelledPoints <- function(id, events, category=getCategory())
+    setGlobal(category, id, "labelled", value=events)
 
-#' Set groups from a given data type
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param dataset Character: data set (e.g. "Clinical data")
-#' @param groups Matrix: groups of dataset
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' @return NULL (this function is used to modify the Shiny session's state)
-setGroupsFrom <- function(dataset, groups, category = getCategory())
-    setGlobal(category, dataset, "groups", value=groups)
 
-#' Set the identifier of patients for a data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param value Character: identifier of patients
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' @return NULL (this function is used to modify the Shiny session's state)
-setPatientId <- function(value, category = getCategory())
-    setGlobal(category, "patients", value=value)
+# Differential expression --------------------------------------------------
 
-#' Set the identifier of samples for a data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param value Character: identifier of samples
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' @return NULL (this function is used to modify the Shiny session's state)
-setSampleId <- function(value, category = getCategory())
-    setGlobal(category, "samples", value=value)
+#' Get or set differential expression' elements for a data category
+#' @inherit getGlobal
+getDifferentialExpression <- function(category=getCategory())
+    getGlobal(category, "differentialExpression")
 
-#' Set the table of differential analyses of a data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param table Character: differential analyses table
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' @return NULL (this function is used to modify the Shiny session's state)
-setDifferentialAnalyses <- function(table, category = getCategory())
-    setGlobal(category, "differentialAnalyses", value=table)
+#' @rdname getDifferentialExpression
+#' @param differential Data frame or matrix: differential analyses table
+setDifferentialExpression <- function(differential, category=getCategory())
+    setGlobal(category, "differentialExpression", value=differential)
 
-#' Set the filtered table of differential analyses of a data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param table Character: filtered differential analyses table
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' @return NULL (this function is used to modify the Shiny session's state)
-setDifferentialAnalysesFiltered <- function(table, category = getCategory())
-    setGlobal(category, "differentialAnalysesFiltered", value=table)
+#' @rdname getDifferentialExpression
+getDifferentialExpressionFiltered <- function(category=getCategory())
+    getGlobal(category, "differentialExpressionFiltered")
 
-#' Set highlighted events from differential analyses of a data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param events Integer: indexes relative to a table of differential analyses
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
-setDifferentialAnalysesHighlightedEvents <- function(events, 
-                                                     category = getCategory())
-    setGlobal(category, "differentialAnalysesHighlighted", value=events)
+#' @rdname getDifferentialExpression
+setDifferentialExpressionFiltered <- function(differential, 
+                                            category=getCategory())
+    setGlobal(category, "differentialExpressionFiltered", value=differential)
 
-#' Set plot coordinates for zooming from differential analyses of a data
-#' category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param zoom Integer: X and Y coordinates
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
-setDifferentialAnalysesZoom <- function(zoom, category=getCategory())
-    setGlobal(category, "differentialAnalysesZoom", value=zoom)
+#' @rdname getDifferentialExpression
+getDifferentialExpressionResetPaging <- function(category=getCategory())
+    getGlobal(category, "diffExpressionResetPaging")
 
-#' Set selected points in the differential analysis table of a data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param points Integer: index of selected points
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
-setDifferentialAnalysesSelected <- function(points, category=getCategory())
-    setGlobal(category, "differentialAnalysesSelected", value=points)
+#' @rdname getDifferentialExpression
+#' @param reset Character: reset paging of differential analyses table?
+setDifferentialExpressionResetPaging <- function(reset, category=getCategory())
+    setGlobal(category, "diffExpressionResetPaging", value=reset)
 
-#' Set the table of differential analyses' survival data of a data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param table Character: differential analyses' survival data
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' @return NULL (this function is used to modify the Shiny session's state)
-setDifferentialAnalysesSurvival <- function(table, category = getCategory())
-    setGlobal(category, "diffAnalysesSurv", value=table)
+#' @rdname getDifferentialExpression
+getDifferentialExpressionColumns <- function(category=getCategory())
+    getGlobal(category, "diffExpressionCols")
 
-#' Set the species of a data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param value Character: species
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' @return NULL (this function is used to modify the Shiny session's state)
-setSpecies <- function(value, category = getCategory())
-    setGlobal(category, "species", value=value)
+#' @rdname getDifferentialExpression
+#' @param columns Character: differential analyses' column names
+setDifferentialExpressionColumns <- function(columns, category=getCategory())
+    setGlobal(category, "diffExpressionCols", value=columns)
 
-#' Set the assembly version of a data category
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param value Character: assembly version
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' @return NULL (this function is used to modify the Shiny session's state)
-setAssemblyVersion <- function(value, category = getCategory())
-    setGlobal(category, "assemblyVersion", value=value)
 
-#' Set clinical matches from a given data type
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param dataset Character: data set (e.g. "Clinical data")
-#' @param matches Vector of integers: clinical matches of dataset
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' @return NULL (this function is used to modify the Shiny session's state)
-setClinicalMatchFrom <- function(dataset, matches, category = getCategory())
-    setGlobal(category, dataset, "clinicalMatch", value=matches)
+# Differential splicing ---------------------------------------------------
 
-#' Set URL links to download
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param url Character: URL links to download
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
-setURLtoDownload <- function(url)
-    setGlobal("URLtoDownload", value=url)
+#' Get or set differential splicing' elements for a data category
+#' @inherit getGlobal
+getDifferentialAnalyses <- function(category=getCategory())
+    getGlobal(category, "differentialAnalyses")
 
-#' Get principal component analysis based on inclusion levels
-#' @note Needs to be called inside a reactive function
-#' 
-#' @param pca \code{prcomp} object (PCA) of inclusion levels
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
-setInclusionLevelsPCA <- function(pca, category=getCategory())
-    setGlobal(category, "inclusionLevelsPCA", value=pca)
+#' @rdname getDifferentialAnalyses
+#' @param differential Data frame or matrix: differential analyses table
+setDifferentialAnalyses <- function(differential, category=getCategory())
+    setGlobal(category, "differentialAnalyses", value=differential)
+
+#' @rdname getDifferentialAnalyses
+getDifferentialAnalysesFiltered <- function(category=getCategory())
+    getGlobal(category, "differentialAnalysesFiltered")
+
+#' @rdname getDifferentialAnalyses
+setDifferentialAnalysesFiltered <- function(differential, 
+                                            category=getCategory())
+    setGlobal(category, "differentialAnalysesFiltered", value=differential)
+
+#' @rdname getDifferentialAnalyses
+getDifferentialAnalysesSurvival <- function(category=getCategory())
+    getGlobal(category, "diffAnalysesSurv")
+
+#' @rdname getDifferentialAnalyses
+#' @param survival Data frame or matrix: differential analyses' survival data
+setDifferentialAnalysesSurvival <- function(survival, category=getCategory())
+    setGlobal(category, "diffAnalysesSurv", value=survival)
+
+#' @rdname getDifferentialAnalyses
+getDifferentialAnalysesResetPaging <- function(category=getCategory())
+    getGlobal(category, "diffAnalysesResetPaging")
+
+#' @rdname getDifferentialAnalyses
+#' @param reset Character: reset paging of differential analyses table?
+setDifferentialAnalysesResetPaging <- function(reset, category=getCategory())
+    setGlobal(category, "diffAnalysesResetPaging", value=reset)
+
+#' @rdname getDifferentialAnalyses
+getDifferentialAnalysesColumns <- function(category=getCategory())
+    getGlobal(category, "diffAnalysesCols")
+
+#' @rdname getDifferentialAnalyses
+#' @param columns Character: differential analyses' column names
+setDifferentialAnalysesColumns <- function(columns, category=getCategory())
+    setGlobal(category, "diffAnalysesCols", value=columns)

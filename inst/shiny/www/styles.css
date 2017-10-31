@@ -1,14 +1,20 @@
-/* Avoids fixed-top navbar from obscuring content */
+/* Avoid fixed-top navbar from obscuring content */
 body { padding-top: 70px; }
 
-/* Adds a pointer to every link (even without href defined) */
+/* Add a pointer to every link (even without href defined) */
 a { cursor: pointer; }
 
-/* Hides shadows from well panels */
+/* Hide inset shadows from well panels */
 .well {
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
     box-shadow: none;
+}
+
+/* As selectize choices load quickly, avoid changes from default state */
+.selectize-control.loading {
+    margin-top: 0;
+    text-align: left;
 }
 
 /* Alerts appear fixed on the top right above other elements */
@@ -37,6 +43,13 @@ a { cursor: pointer; }
     font-size: 100%;
     color: gray;
     z-index: 1050;
+}
+
+/* Show shadows in the outer box of loading message */
+#loadmessage span {
+    -webkit-box-shadow: 0 0 10px 0 white;
+    -moz-box-shadow: 0 0 10px 0 white;
+    box-shadow: 0 0 10px 0 white;
 }
 
 /* Properly sets the loading message when the navbar is collapsed */
@@ -154,3 +167,54 @@ tr.active > td > a:link {
     text-decoration: underline;
 }
 tr.active > td > a:hover { font-weight: bold; }
+
+/* Make plus and minus sign for extra DataTable details look clickable */
+.details-control { cursor: pointer; }
+
+/* Improve style of table details */
+.table-details  {
+    margin-left: 15px;
+    table-layout:fixed;
+    color: gray;
+}
+.table-details td:first-child { width: 45px; }
+
+/* Remove bottom margin from help blocks in dropdown menus */
+.dropdown-menu > li > a > .help-block { margin-bottom: 0; }
+
+/* Place groups' colour picker below input */
+.groups-colourpicker div .colourpicker-panel { top: 34px; }
+
+/* Style list item as danger for dropdown menu */
+.li-danger {
+  color: #fff !important;
+  background-color: #d9534f !important;
+  border-color: #d9534f !important;
+}
+.li-danger:hover,
+.li-danger:active, .li-danger.active,
+.show > .li-danger.dropdown-toggle {
+  color: #fff !important;
+  background-color: #c9302c !important;
+  border-color: #ac2925 !important;
+}
+.li-danger:focus, .li-danger.focus {
+  color: #fff !important;
+  background-color: #c9302c !important;
+  border-color: #761c19 !important;
+}
+.li-danger.disabled, .li-danger:disabled {
+  background-color: #d9534f !important;
+  border-color: #d9534f !important;
+}
+
+/* Disable clicking on disabled elements from a dropdown menu */
+.dropdown-menu > .disabled{ cursor: not-allowed; }
+.dropdown-menu > .disabled > a{ pointer-events: none; }
+
+/* Avoid text overflowing its container */
+.popover { max-width: 300px; }
+.popover-content { word-wrap: break-word; }
+
+/* Improve style of lists in popovers */
+.popover-list { padding-left: 20px !important; }

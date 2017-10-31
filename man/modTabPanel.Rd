@@ -2,24 +2,24 @@
 % Please edit documentation in R/app.R
 \name{modTabPanel}
 \alias{modTabPanel}
-\title{Modified tabPanel function to show icon and title}
+\title{Modified \code{tabPanel} function to show icon and title}
 \usage{
 modTabPanel(title, ..., icon = NULL, menu = FALSE)
 }
 \arguments{
 \item{title}{Character: title of the tab}
 
-\item{...}{HTML elements to pass to tab}
+\item{...}{HTML elements to render}
 
 \item{icon}{Character: name of the icon}
 
 \item{menu}{Boolean: create a dropdown menu-like tab? FALSE by default}
 }
 \value{
-HTML interface for a tab panel
+HTML interface
 }
 \description{
-Modified tabPanel function to show icon and title
+Modified \code{tabPanel} function to show icon and title
 }
 \note{
 Icon is hidden at small viewports

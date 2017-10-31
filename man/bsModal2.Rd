@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{bsModal2}
 \alias{bsModal2}
-\title{Modified version of shinyBS::bsModal}
+\title{Modified version of \code{shinyBS::bsModal}}
 \usage{
 bsModal2(id, title, trigger, ..., size = NULL, footer = NULL,
   style = NULL)
@@ -16,17 +16,18 @@ bsModal2(id, title, trigger, ..., size = NULL, footer = NULL,
 
 \item{...}{UI elements to include within the modal}
 
-\item{size}{Character: Modal size ("small", "default" or "large")}
+\item{size}{Character: Modal size (\code{small}, \code{default} or 
+\code{large})}
 
 \item{footer}{UI set: List of elements to include in the footer}
 
-\item{style}{Character: message style can be "warning", "error", "info" or 
-NULL}
+\item{style}{Character: message style can be \code{warning}, \code{error}, 
+\code{info} or \code{NULL}}
 }
 \value{
-HTML element to create a modified modal
+HTML elements
 }
 \description{
-bsModal is used within the UI to create a modal window. This allows to use
-the footer.
+\code{bsModal} is used within the UI to create a modal window. This allows to
+modify the modal footer.
 }

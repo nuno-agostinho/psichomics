@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{textSuggestions}
 \alias{textSuggestions}
-\title{Create script for autocompletion of text input}
+\title{Create script for auto-completion of text input}
 \usage{
 textSuggestions(id, words, novalue = "No matching value", char = " ")
 }
@@ -19,7 +19,7 @@ textSuggestions(id, words, novalue = "No matching value", char = " ")
 HTML string with the JavaScript script prepared to run
 }
 \description{
-Uses the JavaScript library jquery.textcomplete
+Uses the JavaScript library \code{jquery.textcomplete}
 }
 \examples{
 words <- c("tumor_stage", "age", "gender")

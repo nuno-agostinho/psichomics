@@ -115,7 +115,7 @@ getNumerics <- function(table, by = NULL, toNumeric = FALSE) {
 joinEventsPerType <- function(events, types) {
     if (missing(types)) types <- names(events)
     joint <- lapply(types, function(type, events) {
-        cat(type, fill=TRUE)
+        display(type)
         # Create vector with comparable columns
         id <- c("Strand", "Chromosome", "Event.type")
         by <- c(id, getSplicingEventCoordinates(type))
@@ -206,10 +206,10 @@ prepareAnnotationFromEvents <- function(...) {
     events <- dlply(events, "Event.type")
     events <- lapply(events, dlply, "Program")
     
-    cat("Sorting coordinates...", fill=TRUE)
+    display("Sorting coordinates...")
     events <- sortCoordinates(events)
     
-    cat("Joining events per event type...", fill=TRUE)
+    display("Joining events per event type...")
     join <- joinEventsPerType(events)
     
     # If available, add 1st constitutive exon's end and 2nd constituve exon's 
@@ -250,7 +250,7 @@ prepareAnnotationFromEvents <- function(...) {
     annot$ALE["C1.end"]   <- ALE.C1.end
     events <- annot
     
-    cat("Cleaning the annotation...", fill=TRUE)
+    display("Cleaning the annotation...")
     types <- c(SE="Skipped exon", MXE="Mutually exclusive exon",
                A3SS="Alternative 3' splice site", 
                A5SS="Alternative 5' splice site",
@@ -347,7 +347,7 @@ colsAsNumbers <- function(type, annotation) {
 #' 
 #' Some programs sort the coordinates of specific event types differently. To
 #' make them all comparable across programs, the coordinates are ordered by
-#' increasing (plus strand) or descresing order (minus strand)
+#' increasing (plus strand) or decreasing order (minus strand)
 #' 
 #' @param events List of data frames with alternative splicing events for a 
 #' given program
@@ -361,7 +361,7 @@ sortCoordinates <- function(events) {
         events[[type]] <- colsAsNumbers(type, events)
         if (!is.null(coord)) {
             for (program in names(events[[type]])) {
-                print(paste(type, program))
+                display(paste(type, program))
                 table <- events[[type]][[program]]
                 plus <- table[["Strand"]] == "+"
                 plusOrd <- apply(table[plus, coord], 1, sort)

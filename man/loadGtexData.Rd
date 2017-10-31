@@ -2,18 +2,27 @@
 % Please edit documentation in R/data_gtex.R
 \name{loadGtexData}
 \alias{loadGtexData}
-\title{Load GTEx data given input}
+\title{Load GTEx data}
 \usage{
-loadGtexData(input, replace = TRUE)
+loadGtexData(clinical = NULL, sampleMetadata = NULL, junctionQuant = NULL,
+  geneExpr = NULL, tissue = NULL)
 }
 \arguments{
-\item{input}{Shiny input}
+\item{clinical}{Character: path to subject information (the TXT file)}
 
-\item{replace}{Boolean: replace loaded data? TRUE by default}
+\item{sampleMetadata}{Character: path to sample metadata (the TXT file)}
+
+\item{junctionQuant}{Character: path to junction quantification}
+
+\item{geneExpr}{Character: path to gene read counts, RPKMs or TPMs}
+
+\item{tissue}{Character: tissue(s) of interest when loading data (all tissues
+are loaded by default); if only some tissue(s) are of interest, this may
+speed up loading the data}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+List with loaded data
 }
 \description{
-Load GTEx data given input
+Load GTEx data
 }

@@ -10,7 +10,7 @@ plotProtein(molecule)
 \item{molecule}{Character: UniProt protein or Ensembl transcript identifier}
 }
 \value{
-highchart object
+\code{highcharter} object
 }
 \description{
 Plot protein features

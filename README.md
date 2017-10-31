@@ -1,11 +1,13 @@
 # psichomics [![Build Status][8]][9] [![AppVeyor Build Status][10]][11] [![codecov][12]][13]
 Interactive R package with a Shiny-based graphical interface for the
 quantification, analysis and visualisation of alternative splicing data from
-[The Cancer Genome Atlas (TCGA)][1] or the
-[Genotype-Tissue Expression (GTEx) project][13]. This tool interactively 
-performs survival, principal components and differential splicing analyses with
-direct incorporation of clinical features (such as tumour stage or survival) 
-associated with TCGA and GTEx samples.
+[The Cancer Genome Atlas (TCGA)][1], the 
+[Genotype-Tissue Expression (GTEx) project][13] or user-owned files. This tool 
+interactively performs survival, principal components and differential splicing 
+analyses with direct incorporation of clinical features (such as tumour stage or 
+survival) associated with TCGA and GTEx samples.
+
+![Screen shot](screenshot.png)
 
 ## Table of Contents
 
@@ -95,7 +97,7 @@ and exclusion of that exon. To measure this estimate, both alternative splicing
 annotation and the quantification of RNA-Seq reads aligning to splice junctions
 (junction quantification) are required. While alternative splicing Human (hg19
 assembly) annotation is provided by the package, junction quantification may be
-retrieved from [TCGA][1].
+retrieved from [TCGA][1] (automatically) or from [GTEx][14] (manually).
 
 ## Data Analyses
 The program performs survival and principal component analyses, as well as
@@ -144,8 +146,9 @@ Please, send any suggestions and comments to the following contact:
 > [Nuno Morais Lab, Instituto de Medicina Molecular][5]
 
 ## Contributions
-Please note that this project is released with a [Contributor Code of Conduct]
-[6]. By participating in this project you agree to abide by its terms.
+Please note that this project is released with a 
+[Contributor Code of Conduct][6]. By participating in this project you agree to
+abide by its terms.
 
 ## References
 Wang, E. T., R. Sandberg, S. Luo, I. Khrebtukova, L. Zhang, C. Mayr, S. F. 

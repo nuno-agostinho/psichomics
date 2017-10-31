@@ -4,13 +4,19 @@
 \alias{parseSplicingEvent}
 \title{Parse an alternative splicing event based on a given identifier}
 \usage{
-parseSplicingEvent(event, char = FALSE)
+parseSplicingEvent(event, char = FALSE, pretty = FALSE, extra = NULL)
 }
 \arguments{
 \item{event}{Character: event identifier}
 
 \item{char}{Boolean: return a single character instead of list with parsed
 values? FALSE by default}
+
+\item{pretty}{Boolean: return a prettier name of the event identifier? FALSE
+by default}
+
+\item{extra}{Character: extra information to add (such as species and
+assembly version)}
 }
 \value{
 Parsed event
@@ -20,6 +26,6 @@ Parse an alternative splicing event based on a given identifier
 }
 \examples{
 events <- c("SE_1_-_123_456_789_1024_TST",
-            "MX_3_+_473_578_686_736_834_937_HEY/YOU")
+            "MXE_3_+_473_578_686_736_834_937_HEY/YOU")
 parseSplicingEvent(events)
 }

@@ -4,12 +4,14 @@
 \alias{loadFile}
 \title{Loads a file according to its format}
 \usage{
-loadFile(format, file)
+loadFile(format, file, ...)
 }
 \arguments{
 \item{format}{Environment: format of the file}
 
 \item{file}{Character: file to load}
+
+\item{...}{Extra parameters passed to \link[data.table]{fread}}
 }
 \value{
 Data frame with the loaded file
@@ -18,6 +20,6 @@ Data frame with the loaded file
 Loads a file according to its format
 }
 \details{
-The resulting data frame includes the attribute "tablename" with the
-name of the data frame
+The resulting data frame includes the attribute \code{tablename} 
+with the name of the data frame
 }

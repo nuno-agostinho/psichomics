@@ -7,7 +7,7 @@
 getUiFunctions(ns, loader, ..., priority = NULL)
 }
 \arguments{
-\item{ns}{Shiny function to create namespaced IDs}
+\item{ns}{Shiny function to create IDs within a namespace}
 
 \item{loader}{Character: loader to run the functions}
 

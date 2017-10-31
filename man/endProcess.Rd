@@ -9,8 +9,8 @@ endProcess(id, time = NULL, closeProgressBar = TRUE)
 \arguments{
 \item{id}{Character: button identifier}
 
-\item{time}{POSIXct: start time needed to show the interval time (if NULL, 
-the time interval is not displayed)}
+\item{time}{\code{POSIXct} object: start time needed to show the interval
+time (if NULL, the time interval is not displayed)}
 
 \item{closeProgressBar}{Boolean: close progress bar? TRUE by default}
 }

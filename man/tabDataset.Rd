@@ -2,7 +2,8 @@
 % Please edit documentation in R/data.R
 \name{tabDataset}
 \alias{tabDataset}
-\title{Creates a tabPanel template for a datatable with a title and description}
+\title{Creates a \code{tabPanel} template for a \code{datatable} with a title and
+description}
 \usage{
 tabDataset(ns, title, tableId, columns, visCols, data, description = NULL)
 }
@@ -11,9 +12,9 @@ tabDataset(ns, title, tableId, columns, visCols, data, description = NULL)
 
 \item{title}{Character: tab title}
 
-\item{tableId}{Character: id of the datatable}
+\item{tableId}{Character: id of the \code{datatable}}
 
-\item{columns}{Character: column names of the datatable}
+\item{columns}{Character: column names of the \code{datatable}}
 
 \item{visCols}{Boolean: visible columns}
 
@@ -22,8 +23,9 @@ tabDataset(ns, title, tableId, columns, visCols, data, description = NULL)
 \item{description}{Character: description of the table (optional)}
 }
 \value{
-The HTML code for a tabPanel template
+HTML elements
 }
 \description{
-Creates a tabPanel template for a datatable with a title and description
+Creates a \code{tabPanel} template for a \code{datatable} with a title and
+description
 }

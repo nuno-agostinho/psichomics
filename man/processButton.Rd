@@ -11,7 +11,12 @@ processButton(id, label, ..., class = "btn-primary")
 
 \item{label}{Character: label}
 
-\item{...}{Extra parameters to pass to \code{actionButton}}
+\item{...}{Arguments passed on to \code{shiny::actionButton}
+\describe{
+  \item{icon}{An optional \code{\link{icon}} to appear on the button.}
+  \item{width}{The width of the input, e.g. \code{'400px'}, or \code{'100\%'};
+see \code{\link{validateCssUnit}}.}
+}}
 
 \item{class}{Character: class}
 }

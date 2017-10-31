@@ -10,7 +10,7 @@ parseUrlsFromFirebrowseResponse(res)
 parseUrlsFromFirehoseResponse(res)
 }
 \arguments{
-\item{res}{Response from httr::GET to a Firebrowse data query}
+\item{res}{Response from \code{httr::GET} to a Firebrowse data query}
 }
 \value{
 Named character with URLs

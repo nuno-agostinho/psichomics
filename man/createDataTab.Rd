@@ -4,7 +4,7 @@
 \alias{createDataTab}
 \title{Render a specific data tab (including data table and related interface)}
 \usage{
-createDataTab(index, data, name, input, output)
+createDataTab(index, data, name, session, input, output)
 }
 \arguments{
 \item{index}{Integer: index of the data to load}
@@ -12,6 +12,8 @@ createDataTab(index, data, name, input, output)
 \item{data}{Data frame: data with everything to load}
 
 \item{name}{Character: name of the dataset}
+
+\item{session}{Shiny session}
 
 \item{input}{Shiny session input}
 

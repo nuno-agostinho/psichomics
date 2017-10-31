@@ -7,13 +7,13 @@
 \alias{removeAlert}
 \title{Show or remove an alert}
 \usage{
-showAlert(session, ..., title = NULL, style = NULL, dismissable = TRUE,
+showAlert(session, ..., title = NULL, style = NULL, dismissible = TRUE,
   alertId = "alert")
 
-errorAlert(session, ..., title = NULL, dismissable = TRUE,
+errorAlert(session, ..., title = NULL, dismissible = TRUE,
   alertId = "alert")
 
-warningAlert(session, ..., title = NULL, dismissable = TRUE,
+warningAlert(session, ..., title = NULL, dismissible = TRUE,
   alertId = "alert")
 
 removeAlert(output, alertId = "alert")
@@ -28,7 +28,7 @@ removeAlert(output, alertId = "alert")
 \item{style}{Character: style of the alert ("alert-danger", "alert-warning" 
 or NULL)}
 
-\item{dismissable}{Boolean: is the alert dismissable? TRUE by default}
+\item{dismissible}{Boolean: is the alert dismissible? TRUE by default}
 
 \item{alertId}{Character: alert identifier}
 
@@ -42,5 +42,5 @@ You can also use \code{errorAlert} and \code{warningAlert} to use template
 alerts already stylised to show errors and warnings respectively.
 }
 \seealso{
-showModal
+\code{\link{showModal}}
 }

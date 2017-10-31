@@ -7,9 +7,9 @@
 insideFile(...)
 }
 \arguments{
-\item{...}{character vectors, specifying subdirectory and file(s) within some
-package. The default, none, returns the root of the package. Wildcards are
-not supported.}
+\item{...}{character vectors, specifying subdirectory and file(s)
+    within some package.  The default, none, returns the
+    root of the package.  Wildcards are not supported.}
 }
 \value{
 Loaded file

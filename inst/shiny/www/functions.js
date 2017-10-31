@@ -17,7 +17,7 @@ shinyjs.init = function() {
  * Inspired by code available at
  * https://github.com/daattali/advanced-shiny/blob/master/navigate-history
  */
-updateHistory = function(params) {
+function updateHistory(params) {
     var queryString = [];
     for (var key in params) {
         queryString.push(encodeURIComponent(key) + '=' + 
@@ -25,7 +25,7 @@ updateHistory = function(params) {
     }
     queryString = '?' + queryString.join('&');
     history.pushState(null, null, queryString);
-};
+}
 
 /**
  * Change active tab to the Data panel and collapse data panels
@@ -37,11 +37,26 @@ function showDataPanel(modal) {
     }
     
     // Open Data tab
-    $("ul[id='nav'] > li > a[data-value*='Data']").click();
+    $("#nav > li > a[data-value*='Data']").click();
     
     // Collapse data panels
-    $("div[id='data-accordion'] > div > div[class*='panel-collapse']")
-        .collapse('hide');
+    $("#data-accordion > div > div[class*='panel-collapse']").collapse('hide');
+}
+
+/**
+ * Change active tab to the given tab of the Groups panel
+ * @param {String} tab Tab to open
+ */
+function showGroups(type) {
+    $("a[data-value='Groups']")[0].click();
+    
+    var mode;
+    if (type === "Samples") {
+        mode = 0;
+    } else if (type === "ASevents") {
+        mode = 1;
+    }
+    $("#groupsTypeTab a")[mode].click();
 }
 
 /**
@@ -49,7 +64,7 @@ function showDataPanel(modal) {
  * @param {String} event Alternative splicing event
  */
 function changeEvent (event) {
-    $("select[id*='selectizeEvent']").selectize()[0].selectize.setValue(event);
+    $("#selectizeEventElem").selectize()[0].selectize.setValue(event);
 }
 
 /**
@@ -64,61 +79,106 @@ function setTranscript (transcript) {
 /**
  * Navigate user to differential splicing of a given alternative splicing event
  * @param {String} event Alternative splicing event
- * @param {Boolean} autoParams Automatically set expected parameters
+ * @param {String} groups List of groups used for differential analysis
  */
-function showDiffSplicing (event, autoParams = false) {
+function showDiffSplicing (event, groups = null) {
+    var singleEventPage = "analyses-diffSplicing-diffSplicingEvent";
+    
     // Navigate to differential splicing analyses for a single event
-    var tabName = "Differential splicing analysis";
-    $("ul[id='nav'] > li > ul > li > a[data-value*='" + tabName + "']").click();
-    var diff = "Single event";
+    var diff = "Individual alternative splicing event";
     $("a[data-value*='" + diff + "']").click();
     
     // Change currently selected splicing event
     changeEvent(event);
-    
-    if (!autoParams) { return; }
-    
-    // Set whether using groups or not
-    allEventsPage = "analyses-diffSplicing-diffSplicingTable";
-    singleEventPage = "analyses-diffSplicing-diffSplicingEvent";
-    groups = $("input[type='radio'][name='" + allEventsPage +
-        "-diffGroupsSelection']:checked")[0].value;
-    $("input[type='radio'][name='" + singleEventPage +
-        "-diffGroupsSelection'][value=" + groups + "]").click();
         
-    if (groups == "groups") {
+    if (groups !== null) {
         // Set selected groups
-        items = $("select[id='" + allEventsPage + "-diffGroups']")[0].selectize
-            .items;
-        $("select[id='" + singleEventPage + "-diffGroups']")[0].selectize
-            .setValue(items);
+        $("input[type='radio'][name='" + singleEventPage +
+            "-diffGroupsSelection'][value=groups]").click();
+        $("#" + singleEventPage + "-diffGroups")[0].selectize.setValue(groups);
+    } else {
+        $("input[type='radio'][name='" + singleEventPage +
+            "-diffGroupsSelection'][value=noGroups]").click();
     }
     
     // Perform statistical analyses for a single event
-    $("button[id='" + singleEventPage + "-analyse']")[0].click();
+    $("#" + singleEventPage + "-analyse")[0].click();
+    $('html, body').animate({ scrollTop: 0 }, 'slow'); // Scroll to top
 }
 
 /**
- * Navigate user to survival analysis by quantification cut-off
+ * Navigate user to differential expression of a given gene
+ * @param {String} gene Gene symbol
+ * @param {String} groups List of groups used for differential analysis
+ * @param {String} geneExpr Gene expression dataset name
+ */
+function showDiffExpression (gene, groups = null, geneExpr = null) {
+    var singleEventPage = "analyses-diffExpression-diffExpressionEvent";
+    
+    // Navigate to differential analyses for a single gene
+    var page = "Individual gene";
+    $("a[data-value*='" + page + "']").click();
+    
+    // Set selected gene expression
+    if (geneExpr !== null) {
+        var geneExprSel = $("#" + singleEventPage + "-geneExpr")[0].selectize;
+        geneExprSel.addOption({label: geneExpr, value: geneExpr});
+        geneExprSel.refreshOptions(false);
+        geneExprSel.addItem(geneExpr);
+    }
+    
+    // Set selected gene
+    if (gene !== null) {
+        var geneSel = $("#" + singleEventPage + "-gene")[0].selectize;
+        geneSel.addOption({label: gene, value: gene});
+        geneSel.refreshOptions(false);
+        geneSel.addItem(gene);
+    }
+    
+    // Set selected groups
+    if (groups !== null) {
+        $("input[type='radio'][name='" + singleEventPage +
+            "-diffGroupsSelection'][value=groups]").click();
+        $("#" + singleEventPage + "-diffGroups")[0].selectize.setValue(groups);
+    }
+    
+    // Perform statistical analyses for a single event
+    $("#" + singleEventPage + "-analyse")[0].click();
+    $('html, body').animate({ scrollTop: 0 }, 'slow'); // Scroll to top
+}
+
+/**
+ * Navigate user to survival analysis by quantification cutoff
  * @param {String} event Alternative splicing event
  * @param {Boolean} autoParams Automatically set expected parameters
+ * @param {Boolean} psiCutoff Prepare PSI (true) or GE cutoff (false)?
  */
-function showSurvCutoff(event, autoParams = false) {
+function showSurvCutoff(event, autoParams = false, psiCutoff = true) {
     // Change currently selected splicing event
     if (event !== null) changeEvent(event);
     
     // Navigate to survival analyses
     var surv = "Survival analysis";
-    $("ul[id='nav'] > li > ul > li > a[data-value*='" + surv + "']").click();
+    $("#nav > li > ul > li > a[data-value*='" + surv + "']").click();
     
-    // Set PSI cutoff
-    $("input[value='psiCutoff']").click();
+    var survivalPage = "analyses-survival";
+    if (autoParams) {
+        // Perform survival analyses once the optimal PSI is calculated
+        $("#" + survivalPage + "-psiCutoff").one('change', function(){
+            setTimeout(function() {
+                $("#" + survivalPage + "-survivalCurves")[0].click();
+            }, 500);
+        });
+    }
     
-    if (!autoParams) { return; }
+    if ( psiCutoff ) {
+        $("input[value='psiCutoff']").click();
+    } else {
+        $("input[value='geCutoff']").click();
+    }
     
-    if (event !== null) {
-        allEventsPage = "analyses-diffSplicing-diffSplicingTable";
-        survivalPage = "analyses-survival";
+    if (autoParams && event !== null) {
+        var allEventsPage = "analyses-diffSplicing-diffSplicingTable";
         
         // Set censoring interval
         censoring = $("input[type='radio'][name='" + allEventsPage +
@@ -127,55 +187,58 @@ function showSurvCutoff(event, autoParams = false) {
             censoring + "]").click();
         
         // Set follow up time or starting time
-        timeStart = $("select[id='" + allEventsPage + "-timeStart']")[0]
-            .selectize.items;
-        $("select[id='" + survivalPage + "-timeStart']")[0].selectize
-            .setValue(timeStart);
+        timeStart = $("#" + allEventsPage + "-timeStart")[0].selectize.items;
+        $("#" + survivalPage + "-timeStart")[0].selectize.setValue(timeStart);
             
         // Set event of interest
-        event = $("select[id='" + allEventsPage + "-event']")[0].selectize
-            .items;
-        $("select[id='" + survivalPage + "-event']")[0].selectize
-            .setValue(event);
+        event = $("#" + allEventsPage + "-event")[0].selectize.items;
+        $("#" + survivalPage + "-event")[0].selectize.setValue(event);
             
         if (censoring == "interval" || censoring == "interval2") {
             // Set ending time
-            timeStop = $("select[id='" + allEventsPage + "-timeStop']")[0]
-                .selectize.items;
-            $("select[id='" + survivalPage + "-timeStop']")[0].selectize
-                .setValue(event);
+            timeStop = $("#" + allEventsPage + "-timeStop")[0].selectize.items;
+            $("#" + survivalPage + "-timeStop")[0].selectize.setValue(event);
         }
     }
-    // Perform survival analyses
-    setTimeout(function() {
-        $("button[id='" + survivalPage + "-survivalCurves']")[0].click();
-    }, 2000);
+    $('html, body').animate({ scrollTop: 0 }, 'slow'); // Scroll to top
 }
 
 /**
- * Modify row of a table to include links to navigate user to the differential
- * splicing of the respective event
+ * Update slider value for PSI cutoff
  * 
- * @param {Numeric} row Row to introduce links
- * @param {Object} data Table of interest
- * 
- * @return Same rows from input with links
+ * @param {Numeric} value Slider value
  */
-function createDiffSplicingLinks(row, data, index) {
-    var event = data[0];
-    var eventID = event.replace(/ /g, "_");
+function setPSIcutoffSlider(value) {
+    $("input[id*='psiCutoff']").data("ionRangeSlider").update({from: value});
+}
+
+/**
+ * Get tooltip for p-value plot in survival analysis
+ * 
+ * @param {Object} object Tooltip object
+ * 
+ * @return HTML object that renders the appropriate tooltip
+ */
+function getPvaluePlotTooltip(object) {
+    head = 'PSI cutoff: ' + object.point.x + '<br/>';
+    minuslog10pvalue = '-log₁₀(p-value): ' + object.point.y.toFixed(3) +
+        ' <span style=\"color:' + object.point.color + '\">' +
+        '\u25CF</span><br/>';
+    pvalue = 'p-value: ' + Math.pow(10, -object.point.y).toFixed(3) + "<br/>";
     
-    $('td:eq(0)', row).html("<a onclick='showDiffSplicing(\"" + eventID +
-        "\", autoParams=true)' href='javascript:void(0);' " + 
-        "title='Differential splicing analyses for " + event + "'>" + event +
-        "</a>");
-    return row;
+    patients = '';
+    if(object.point.patients2 !== null) {
+        patients = object.point.patients1 + ' vs ' + object.point.patients2 +
+            ' patients';
+    }
+    
+    return head + minuslog10pvalue + pvalue + patients;
 }
 
 /* Change document title to reflect whether the app is busy */
 setInterval(function() {
     document.title = ($('html').hasClass('shiny-busy')) ?
-        '[R] PSΨchomics' : 'PSΨchomics';
+        '🤔 psichomics' : 'psichomics';
     }, 500);
 
 $.fn.extend({
@@ -194,3 +257,40 @@ $.fn.extend({
             });
     }
 });
+
+(function() {
+ /* Shiny Registration */
+    var fileBrowserInputBinding = new Shiny.InputBinding();
+    $.extend(fileBrowserInputBinding, {
+        find: function(scope) {
+            return( $(scope).find(".fileBrowser-input") );
+        },
+        getId: function(el) { return($(el).attr('id')); },
+        getValue: function(el) {
+ return($(el).data('val') || 0); },
+        setValue: function(el, value) { $(el).data('val', value); },
+        receiveMessage: function(el, data) {
+            // This is used for receiving messages that tell the input object to do
+            // things, such as setting values (including min, max, and others).
+            var $widget = $(el).parentsUntil('.fileBrowser-input-container')
+                .parent();
+            var $path = $widget.find('input.fileBrowser-input-chosen-dir');
+
+            if (data.path) {                $path.val(data.path);
+                $path.trigger('change');
+            }
+        },
+        subscribe: function(el, callback) {
+            $(el).on("click.fileBrowserInputBinding", function(e) {
+                var $el = $(this);
+                var val = $el.data('val') || 0;
+                $el.data('val', val + 1);
+                callback();
+            });
+        },
+        unsubscribe: function(el) { $(el).off(".fileBrowserInputBinding"); }
+    });
+    Shiny.inputBindings
+        .register(fileBrowserInputBinding,
+            "oddhypothesis.fileBrowsernputBinding");
+})();
