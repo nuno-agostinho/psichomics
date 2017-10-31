@@ -1,5 +1,5 @@
 title: psichomics
-description: Interactive R package to quantify, analyse and visualise alternative splicing data from The Cancer Genome Atlas (TCGA) or the Genotype-Tissue Expression (GTEx).
+description: Interactive R package with a Shiny-based graphical interface for the quantification, analysis and visualisation of alternative splicing data from The Cancer Genome Atlas (TCGA), the Genotype-Tissue Expression (GTEx) project or user-owned files. This tool interactively performs survival, principal components and differential splicing analyses with direct incorporation of clinical features (such as tumour stage or survival) associated with TCGA and GTEx samples.
 google_analytics: 
 show_downloads: true
 theme: jekyll-theme-minimal
