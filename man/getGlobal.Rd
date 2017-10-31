@@ -2,18 +2,72 @@
 % Please edit documentation in R/globalAccess.R
 \name{getGlobal}
 \alias{getGlobal}
-\title{Get data from global data}
+\alias{setGlobal}
+\alias{setData}
+\alias{setDataTable}
+\alias{getAutoNavigation}
+\alias{setAutoNavigation}
+\alias{getCores}
+\alias{setCores}
+\alias{getSignificant}
+\alias{setSignificant}
+\alias{getPrecision}
+\alias{setPrecision}
+\title{Get or set globally accessible elements}
 \usage{
-getGlobal(..., sep = "_")
+getGlobal(category = getCategory(), ..., sep = "_")
+
+setGlobal(category = getCategory(), ..., value, sep = "_")
+
+setData(data)
+
+setDataTable(name, value, category = getCategory())
+
+getAutoNavigation()
+
+setAutoNavigation(auto)
+
+getCores()
+
+setCores(integer)
+
+getSignificant()
+
+setSignificant(integer)
+
+getPrecision()
+
+setPrecision(integer)
 }
 \arguments{
+\item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
+it uses the selected data category}
+
 \item{...}{Arguments to identify a variable}
 
 \item{sep}{Character to separate identifiers}
+
+\item{value}{Value to attribute to an element}
+
+\item{data}{List of data frame or matrix to set as data}
+
+\item{name}{Character: data table name}
+
+\item{auto}{Boolean: enable automatic navigation of browser history?}
+
+\item{integer}{Integer: value of the setting}
 }
 \value{
-Data from global data
+Getters return globally accessible data, whereas setters return NULL 
+as they are only used to modify the Shiny session's state
 }
 \description{
-Get data from global data
+Get or set globally accessible elements
+}
+\note{
+Needs to be called inside a reactive function
+}
+\seealso{
+\code{\link{getEvent}}, \code{\link{getClinicalMatchFrom}},
+\code{\link{getGroups}} and \code{\link{getDifferentialAnalyses}}
 }

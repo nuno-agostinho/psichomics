@@ -3,19 +3,19 @@
 \name{loadFirebrowseFolders}
 \alias{loadFirebrowseFolders}
 \alias{loadFirehoseFolders}
+\alias{loadTCGAfolders}
 \title{Load Firebrowse folders}
 \usage{
-loadFirebrowseFolders(folder, exclude = "", progress = echoProgress)
+loadFirebrowseFolders(folder, exclude = "")
 
-loadFirehoseFolders(folder, exclude = "", progress = echoProgress)
+loadFirehoseFolders(folder, exclude = "")
+
+loadTCGAfolders(folder, exclude = "")
 }
 \arguments{
 \item{folder}{Character: folder(s) in which to look for Firebrowse files}
 
 \item{exclude}{Character: files to exclude from the loading}
-
-\item{progress}{Function to show the progress (default is to print progress
-to console)}
 }
 \value{
 List with loaded data.frames

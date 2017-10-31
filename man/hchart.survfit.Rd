@@ -11,7 +11,10 @@
 \arguments{
 \item{object}{A survfit object as returned from the \code{survfit} function}
 
-\item{...}{Extra parameters to pass to \code{hc_add_series} function}
+\item{...}{Arguments passed on to \code{highcharter::hc_add_series}
+\describe{
+  \item{}{}
+}}
 
 \item{fun}{Name of function or function used to transform the survival curve:
 \code{log} will put y axis on log scale, \code{event} plots cumulative events
@@ -23,15 +26,15 @@
 
 \item{symbol}{Symbol to use as marker (plus sign by default)}
 
-\item{markerColor}{Color of the marker ("black" by default); use NULL to use
-the respective color of each series}
+\item{markerColor}{Colour of the marker ("black" by default); use NULL to use
+the respective colour of each series}
 
 \item{ranges}{Plot interval ranges? FALSE by default}
 
 \item{rangesOpacity}{Opacity of the interval ranges (0.3 by default)}
 }
 \value{
-Highcharts object to plot survival curves
+\code{highcharter} object to plot survival curves
 }
 \description{
 Plot survival curves using Highcharts

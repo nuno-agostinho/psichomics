@@ -6,17 +6,18 @@ firebrowseJunctionReadsFormat <- function() {
         dataType    = "Junction quantification",
         matchName   = TRUE, # Should the file name be matched?
         
-        # Transpose the data? This is the first step before parsing the information!
-        # After transposition, a row of the current data equals a column of the original
-        skip        = 2,     # Rows to skip when parsing file
+        # Transpose data before parsing? If so, a row in the transposed dataset
+        # would be a column in the original
+        skip        = 2,     # Rows to skip when parsing file (include header)
         transpose   = FALSE,
         
         # Format checker information
-        rowCheck    = TRUE,  # Check format using a row (TRUE) or a column (FALSE)
-        checkIndex  = 2,     # Index of the row or column used to check the format
+        rowCheck    = TRUE, # Check a row (TRUE) or a column (FALSE)
+        checkIndex  = 2,    # Index of row/column to check the format
         
         # File string to check
-        check = c("junction", "raw_counts", "raw_counts", "raw_counts", "raw_counts"),
+        check = c("junction", "raw_counts", "raw_counts", "raw_counts", 
+                  "raw_counts"),
         
         # Parsing information
         delim       = "\t",  # Delimiter used to separate fields
@@ -24,10 +25,14 @@ firebrowseJunctionReadsFormat <- function() {
         rowNames    = 1,     # Column to use for row names
         ignoreCols  = 1,     # Columns to ignore
         ignoreRows  = NULL,  # Rows to ignore
-        commentChar = NULL,  # String to identify comments (these lines will be ignored)
+        commentChar = NULL,  # Ignore lines starting with this string
         
         # Other options
         unique = TRUE,    # Remove duplicated rows
+        
+        # Identity of rows and columns
+        rows    = "splice junctions",
+        columns = "samples",
         
         # Default columns to show (NULL to show all)
         show = NULL,

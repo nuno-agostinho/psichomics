@@ -4,12 +4,14 @@
 \alias{parseValidFile}
 \title{Parse file given a list of file formats}
 \usage{
-parseValidFile(file, formats)
+parseValidFile(file, formats, ...)
 }
 \arguments{
 \item{file}{Character: file to parse}
 
 \item{formats}{List of file formats to check}
+
+\item{...}{Extra parameters passed to \link[data.table]{fread}}
 }
 \value{
 Data frame with the contents of the given file if the file format is
@@ -20,6 +22,6 @@ Tries to recognise the file format and parses the content of the given file
 accordingly.
 }
 \details{
-The resulting data frame includes the attribute "tablename" with the
-name of the data frame
+The resulting data frame includes the attribute \code{tablename} 
+with the name of the data frame
 }

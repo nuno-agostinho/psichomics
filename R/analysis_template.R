@@ -1,11 +1,8 @@
-#' User interface of template
-#' @param id Character: namespace identifier
+#' @rdname appUI
 #' 
 #' @importFrom shiny NS tagList sidebarPanel mainPanel sliderInput actionButton
 #' uiOutput
 #' @importFrom highcharter highchartOutput
-#' 
-#' @return HTML elements for the interface of the template
 templateUI <- function(id) {
     ns <- NS(id) # Identifier
     tagList(
@@ -18,15 +15,10 @@ templateUI <- function(id) {
             highchartOutput(outputId=ns("plot"))))
 }
 
-#' Server logic of template
-#' 
-#' @param input Shiny input
-#' @param output Shiny output
-#' @param session Shiny session
+#' @rdname appServer
 #' 
 #' @importFrom shiny renderUI observeEvent isolate tagList tags
 #' @importFrom highcharter renderHighchart
-#' @return NULL (this function is used to modify the Shiny session's state)
 templateServer <- function(input, output, session) {
     # Wait for user to press the button
     observeEvent(input$submit, {

@@ -2,9 +2,12 @@
 % Please edit documentation in R/data_local.R
 \name{setLocalData}
 \alias{setLocalData}
+\alias{setMultipleFilesData}
 \title{Load local files}
 \usage{
 setLocalData(input, output, session, replace = TRUE)
+
+setMultipleFilesData(input, output, session, replace = TRUE)
 }
 \arguments{
 \item{input}{Shiny input}

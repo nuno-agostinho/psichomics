@@ -5,7 +5,7 @@
 \title{Quantify alternative splicing events}
 \usage{
 quantifySplicing(annotation, junctionQuant, eventType = c("SE", "MXE", "ALE",
-  "AFE", "A3SS", "A5SS"), minReads = 10, progress = echoProgress)
+  "AFE", "A3SS", "A5SS"), minReads = 10, genes = NULL)
 }
 \arguments{
 \item{annotation}{List of data frames: annotation for each alternative
@@ -15,10 +15,12 @@ splicing event type}
 
 \item{eventType}{Character: splicing event types to quantify}
 
-\item{minReads}{Integer: minimum of read counts to consider a junction read 
-in calculations}
+\item{minReads}{Integer: discard alternative splicing quantified using a
+number of reads below this threshold}
 
-\item{progress}{Function to track the progress}
+\item{genes}{Character: gene symbols for which the splicing quantification 
+of associated splicing events is performed (by default, all splicing events 
+undergo splicing quantification)}
 }
 \value{
 Data frame with the quantification of the alternative splicing events

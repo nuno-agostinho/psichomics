@@ -8,9 +8,9 @@
 #' @param filename Character: name of the file
 #'
 #' @return TRUE if the file is of the given format; otherwise, returns FALSE
-checkFileFormat <- function(format, head, filename) {
+checkFileFormat <- function(format, head, filename="") {
     # If file name is of importance, check if the filename matches
-    if (isTRUE(format$matchName) &&
+    if (isTRUE(format$matchName) && !identical(filename, "") &&
         !grepl(format$filename, filename, fixed = TRUE))
         return(FALSE)
     
@@ -39,35 +39,38 @@ checkFileFormat <- function(format, head, filename) {
 #' 
 #' @inheritParams checkFileFormat
 #' @param file Character: file to load
+#' @param ... Extra parameters passed to \link[data.table]{fread}
 #' 
-#' @details The resulting data frame includes the attribute "tablename" with the
-#' name of the data frame
+#' @details The resulting data frame includes the attribute \code{tablename} 
+#' with the name of the data frame
 #' 
 #' @importFrom data.table fread
 #' @importFrom stringr str_split_fixed
 #' 
 #' @return Data frame with the loaded file
-loadFile <- function(format, file) {
+loadFile <- function(format, file, ...) {
     ## TODO(NunoA): account for the comment character
     delim <- ifelse(!is.null(format$delim), format$delim, "\t")
     skip <- ifelse(!is.null(format$skip), format$skip, 0)
     
     transpose <- !is.null(format$transpose) && format$transpose
-    loaded <- fread(file, sep = delim, header = FALSE,
-                    stringsAsFactors = !transpose, data.table = FALSE,
-                    skip = skip)
+    loaded <- fread(file, sep=delim, header=FALSE, stringsAsFactors=!transpose,
+                    data.table=FALSE, skip=skip, ...)
     
     # Transpose data
     if (transpose) {
-        loaded <- data.frame(t(loaded), stringsAsFactors = TRUE, 
-                             row.names = NULL)
+        loaded <- data.frame(t(loaded), stringsAsFactors=TRUE, row.names=NULL)
     }
     
     # Add column names from given row
     if (!is.null(format$colNames)) {
         if (skip != 0) {
-            header <- fread(file, sep = delim, header = FALSE, nrows = skip,
-                            stringsAsFactors = FALSE, data.table = FALSE)
+            dots <- list(...)
+            dots$nrows <- NULL
+            
+            header <- do.call(fread, c(list(
+                input=file, sep=delim, header=FALSE, nrows=skip, 
+                stringsAsFactors=FALSE, data.table=FALSE), dots))
             names(loaded) <- header[format$colNames, ]
         } else {
             names(loaded) <- unname(vapply(loaded[format$colNames, ],
@@ -109,16 +112,22 @@ loadFile <- function(format, file) {
     # Add row names (it doesn't work placed before for some reason...)
     rownames(loaded) <- rowNames
     attr(loaded, "rowNames") <- !is.null(rowNames)
-    attr(loaded, "filename") <- file
-    attr(loaded, "dataType") <- format$dataType
     
     # Further process the dataset if needed
     if (!is.null(format$process)) loaded <- format$process(loaded)
     
-    # Add table name and description
+    # Add table name, description and other attributes
+    attr(loaded, "filename") <- file
+    attr(loaded, "dataType") <- format$dataType
     attr(loaded, "tablename") <- format$tablename
     attr(loaded, "description") <- format$description
     attr(loaded, "show") <- format$show
+    
+    # Identify rows and columns
+    rows <- format$rows
+    attr(loaded, "rows")    <- ifelse(!is.null(rows), rows, "rows")
+    cols <- format$columns
+    attr(loaded, "columns") <- ifelse(!is.null(cols), cols, "columns")
     return(loaded)
 }
 
@@ -139,6 +148,7 @@ loadFileFormats <- function() {
             FUN()
         }
     })
+    if (length(formats) == length(fun)) names(formats) <- fun
     # Remove NULL elements from list
     formats <- Filter(Negate(is.null), formats)
     return(formats)
@@ -151,23 +161,25 @@ loadFileFormats <- function() {
 #' 
 #' @param file Character: file to parse
 #' @param formats List of file formats to check
+#' @param ... Extra parameters passed to \link[data.table]{fread}
 #' 
-#' @details The resulting data frame includes the attribute "tablename" with the
-#' name of the data frame
+#' @details The resulting data frame includes the attribute \code{tablename} 
+#' with the name of the data frame
 #' 
 #' @importFrom utils read.delim
+#' @importFrom data.table fread
 #' 
 #' @return Data frame with the contents of the given file if the file format is
 #' recognised; otherwise, returns NULL
-parseValidFile <- function(file, formats) {
-    # The number of rows to read will be the maximum value asked by all the file
-    # formats; if no format aks for a specific number of rows, the default is 6
+parseValidFile <- function(file, formats, ...) {
+    # The maximum number of rows to check a file is the maximum value asked by
+    # the selected file formats; the default is 6
     headRows <- lapply(formats, "[[", "header_rows")
     headRows <- unlist(rm.null(headRows))
     headRows <- ifelse(!is.null(headRows), max(headRows), 6)
     
-    ## TODO(NunoA): check if fread makes this faster
-    head <- read.delim(file, header=FALSE, nrows=6, stringsAsFactors=FALSE)
+    head <- fread(file, header=FALSE, nrows=headRows, stringsAsFactors=FALSE, 
+                  data.table=FALSE)
     
     # Check if the file is recognised by at least one file format
     recognised <- lapply(formats, checkFileFormat, head, file)
@@ -181,7 +193,7 @@ parseValidFile <- function(file, formats) {
         ## format to use
     } else if (sum(recognised) == 1) {
         format <- formats[recognised][[1]]
-        loaded <- loadFile(format, file)
+        loaded <- loadFile(format, file, ...)
         return(loaded)
     } 
 }

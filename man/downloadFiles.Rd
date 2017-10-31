@@ -4,16 +4,12 @@
 \alias{downloadFiles}
 \title{Download files to a given directory}
 \usage{
-downloadFiles(url, folder, progress = echoProgress,
-  download = download.file, ...)
+downloadFiles(url, folder, download = download.file, ...)
 }
 \arguments{
 \item{url}{Character: download links}
 
 \item{folder}{Character: directory to store the downloaded archives}
-
-\item{progress}{Function to show the progress (default is to print progress
-to console)}
 
 \item{download}{Function to use to download files}
 

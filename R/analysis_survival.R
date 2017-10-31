@@ -1,13 +1,10 @@
-#' User interface of survival analysis
-#' 
-#' @param id Character: namespace identifier
+#' @rdname appUI
 #' 
 #' @importFrom shinyBS bsTooltip
 #' @importFrom shiny NS tagList uiOutput sidebarPanel radioButtons helpText hr 
 #' selectizeInput checkboxInput sliderInput actionButton mainPanel textAreaInput
 #' conditionalPanel
-#' 
-#' @return Character with HTML
+#' @importFrom shinyjs hidden
 survivalUI <- function(id) {
     ns <- NS(id)
     
@@ -18,12 +15,12 @@ survivalUI <- function(id) {
     
     modelChoices <- c(
         "No groups"="none",
-        "Clinical groups"="groups",
-        "Clinical groups (interaction)"="formula",
-        "Inclusion levels cut-off from the selected splicing event"="psiCutoff")
+        "Clinical groups (simple)"="groups",
+        "Clinical groups (including their interactions)"="formula",
+        "Gene expression cutoff from the selected gene"="geCutoff",
+        "Inclusion levels cutoff from the selected splicing event"="psiCutoff")
     
-    survival <- div(
-        id=ns("survivalOptions"),
+    survivalTimeOptions <- tagList(
         radioButtons(ns("censoring"), "Data censoring", selected="right",
                      inline=TRUE, choices=c(Left="left", Right="right",
                                             Interval="interval",
@@ -42,26 +39,29 @@ survivalUI <- function(id) {
                        choices=c("No clinical data loaded"="")),
         radioButtons(ns("scale"), "Display time in", inline=TRUE,
                      c(Days="days", Weeks="weeks", Months="months", 
-                       Years="years")),
-        hr(),
+                       Years="years")))
+    
+    survivalGroups <- tagList(
         radioButtons(ns("modelTerms"), selected="groups",
-                     div("Select groups for survival analysis",
-                         icon("question-circle")),
-                     choices=modelChoices),
-        bsTooltip(ns("modelTerms"), placement="right", 
-                  options = list(container = "body"),
-                  paste(
-                      "Perform survival analysis using:<br/>\u2022",
-                      "User-created <b>clinical groups</b><br/>\u2022",
-                      "A formula that can test clinical attributes with",
-                      "<b>interactions</b><br/>\u2022 <b>Inclusion levels",
-                      "cut-off</b> from the selected alternative splicing",
-                      "event")),
+                     div("Select groups for survival analysis", 
+                         icon("question-circle")), choices=modelChoices),
+        bsTooltip(
+            ns("modelTerms"), placement="right", 
+            options = list(container = "body"),
+            paste(
+                "Perform survival analysis using:", tags$br(), "\u2022",
+                "User-created", tags$b("clinical groups"), tags$br(), 
+                "\u2022 A formula that can test clinical attributes with",
+                tags$b("interactions"), tags$br(), 
+                "\u2022", tags$b("Gene expression cutoff"), "based on the",
+                "selected gene", tags$br(),
+                "\u2022", tags$b("Inclusion levels cutoff"), "from the",
+                "selected alternative splicing event")),
         conditionalPanel(
             sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "groups"),
             selectGroupsUI(ns("dataGroups"), label=NULL),
             checkboxInput(ns("showOutGroup"), 
-                          "Show data outside chosen groups",
+                          "Show data outside selected groups",
                           value = FALSE)),
         conditionalPanel(
             sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "formula"),
@@ -78,15 +78,40 @@ survivalUI <- function(id) {
                 "Interesting attributes include", tags$b("tumor_stage"), 
                 "to get tumour stages.")),
         conditionalPanel(
-            sprintf("input[id='%s'] == '%s'", ns("modelTerms"),
-                    "psiCutoff"),
-            uiOutput(ns("optimalPsi"))),
-        hr(),
-        bsCollapse(open="KM options",
-                   bsCollapsePanel(tagList(icon("sliders"),
-                                           "Kaplan-Meier plot options"),
-                                   value="KM options",
-                                   kaplanMeierOptions, style="info")),
+            sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "geCutoff"),
+            hidden(selectizeInput(
+                ns("geneExpr"), "Gene expression", width="100%",
+                choices=c("No gene expression available"=""))),
+            hidden(div(id=ns("loadingGenes"), class="progress",
+                       div(class="progress-bar progress-bar-striped active",
+                           role="progressbar", style="width:100%",
+                           "Loading available genes"))),
+            hidden(selectizeGeneInput(ns("gene"))),
+            hidden(sliderInput(ns("geCutoff"), value=0.5, min=0, max=1,
+                               step=0.01, round=-2, "Gene expression cutoff")),
+            hidden(helpText(uiOutput(ns("geInfo")))),
+            uiOutput(ns("gePvaluePlot"))),
+        conditionalPanel(
+            sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "psiCutoff"),
+            hidden(sliderInput(ns("psiCutoff"), value=0.5, min=0, max=1,
+                               step=0.01, "Splicing quantification cutoff")),
+            uiOutput(ns("pvaluePlot"))))
+    
+    survival <- div(
+        id=ns("survivalOptions"),
+        bsCollapse(open=c("survivalTimeOptions", "survivalGroups", "KMoptions"),
+                   multiple=TRUE,
+                   bsCollapsePanel(
+                       tagList(icon("calendar-times-o"),
+                               "Selection of time features"),
+                       value="survivalTimeOptions", style="info",
+                       survivalTimeOptions),
+                   bsCollapsePanel(
+                       tagList(icon("users"), "Groups for survival analysis"),
+                       value="survivalGroups", style="info", survivalGroups),
+                   bsCollapsePanel(
+                       tagList(icon("sliders"), "Kaplan-Meier plot options"),
+                       value="KMoptions", style="info", kaplanMeierOptions)),
         actionButton(ns("coxModel"), "Fit Cox PH model"),
         actionButton(ns("survivalCurves"), class="btn-primary",
                      "Plot survival curves"))
@@ -111,15 +136,14 @@ survivalUI <- function(id) {
 #' 
 #' @param session Shiny session
 #' @param input Shiny input
-#' @param coxph Boolean: preprare data for Cox models? FALSE by default
+#' @param coxph Boolean: prepare data for Cox models? FALSE by default
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 checkSurvivalInput <- function (session, input, coxph=FALSE) {
     ns <- session$ns
     
     isolate({
-        clinical      <- getClinicalData()
-        psi           <- getInclusionLevels()
+        patients      <- getPatientId()
         match         <- getClinicalMatchFrom("Inclusion levels")
         splicingEvent <- getEvent()
         # Get user input
@@ -132,23 +156,59 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
         formulaStr <- input$formula
         intRanges  <- input$ranges
         markTimes  <- input$markTimes
-        psiCutoff  <- input$psiCutoff
         scale      <- input$scale
         # Get chosen groups
-        chosen <- getSelectedGroups(input, "dataGroups")
+        chosen <- getSelectedGroups(input, "dataGroups", "Patients")
+        # Get clinical data for the required attributes
+        followup <- "days_to_last_followup"
+        clinical <- getClinicalDataForSurvival(timeStart, timeStop, event,
+                                               followup, formulaStr=formulaStr)
     })
     
-    if (is.null(clinical)) {
+    if (outGroup)
+        outGroupName <- "(Outer data)"
+    else
+        outGroupName <- NA
+    
+    if ( is.null(patients) ) {
         missingDataModal(session, "Clinical data", ns("missingClinical"))
         return(NULL)
     } else if (modelTerms == "none") {
-        groups <- groupPerPatient(NULL, nrow(clinical), outGroup)
+        groups <- groupPerElem(NULL, patients, outGroupName)
         formulaStr <- NULL
     } else if (modelTerms == "groups") {
         # Assign one group for each clinical patient
-        groups <- groupPerPatient(chosen, nrow(clinical), outGroup)
+        groups <- groupPerElem(chosen, patients, outGroupName)
+        formulaStr <- NULL
+    } else if (modelTerms == "geCutoff") {
+        isolate({
+            geneExpr <- getGeneExpression()[[input$geneExpr]]
+            gene     <- input$gene
+            geCutoff <- input$geCutoff
+        })
+        
+        if (is.null(geneExpr)) {
+            missingDataModal(session, "Gene Expression",
+                             ns("missingGeneExpression"))
+            return(NULL)
+        } else if (is.null(gene) || gene == "") {
+            errorModal(session, "No gene selected", "Please select a gene.")
+            return(NULL)
+        }
+        
+        # Assign values to patients based on their samples
+        clinicalGE <- getValuePerPatient(geneExpr, match, patients=patients)
+        eventGE <- as.numeric(clinicalGE[gene, ])
+        
+        # Assign a value based on the inclusion levels cutoff
+        groups <- labelBasedOnCutoff(eventGE, geCutoff, "Gene expression")
         formulaStr <- NULL
     } else if (modelTerms == "psiCutoff") {
+        isolate({
+            psi       <- getInclusionLevels()
+            psiCutoff <- input$psiCutoff
+        })
+        
         if (is.null(psi)) {
             missingDataModal(session, "Inclusion levels",
                              ns("missingInclusionLevels"))
@@ -159,19 +219,17 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
             return(NULL)
         }
         
-        # Assign alternative splicing quantification to patients based on
-        # their samples
-        clinicalPSI <- getPSIperPatient(psi, match, clinical)
+        # Assign values to patients based on their samples
+        clinicalPSI <- getValuePerPatient(psi, match, patients=patients)
         eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
         
-        # Assign a value based on the inclusion levels cut-off
-        groups <- labelBasedOnCutoff(eventPSI, psiCutoff,
-                                     "Inclusion levels")
+        # Assign a value based on the inclusion levels cutoff
+        groups <- labelBasedOnCutoff(eventPSI, psiCutoff, "Inclusion levels")
         formulaStr <- NULL
     } else if (modelTerms == "formula") {
         if (input$formula == "" || is.null(input$formula)) {
             errorModal(session, "Empty formula",
-                       "Please, fill the formula field.")
+                       "Please fill the formula field.")
             return(NULL)
         } else {
             groups <- NULL
@@ -181,31 +239,143 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
     interval <- grepl("interval", censoring)
     if (event == "") {
         errorModal(session, "Empty field for event",
-                   "Please, select the event of interest.")
+                   "Please select the event of interest.")
     } else if (timeStart == "") {
         if (!interval) {
             errorModal(session, "Empty field for follow up time",
-                       "Please, select follow up time.")
+                       "Please select follow up time.")
         } else {
             errorModal(session, "Empty field for starting time",
-                       "Please, select starting time.")
+                       "Please select starting time.")
         }
     } else if (timeStop == "" && interval) {
         errorModal(session, "Empty field for ending time",
-                   "Please, select ending time to use interval censoring.")
+                   "Please select ending time to use interval censoring.")
     } else {
         survTerms <- processSurvival(session, clinical, censoring, event, 
                                      timeStart, timeStop, groups, formulaStr, 
                                      scale=scale, coxph=coxph)
+        attr(survTerms, "Colour") <- attr(groups, "Colour")
         return(survTerms)
     }
 }
 
-#' Server logic of survival analysis
+#' Logic set to perform survival analysis based on gene expression cut-offs
 #' 
-#' @param input Shiny input
-#' @param output Shiny ouput
-#' @param session Shiny session
+#' @inheritParams survivalServer
+#' 
+#' @importFrom shinyjs show hide
+#' 
+#' @return NULL (this function is used to modify the Shiny session's state)
+geneExprSurvSet <- function(session, input, output) {
+    # Update available gene expression data choices
+    observe({
+        geneExpr <- getGeneExpression()
+        if (!is.null(geneExpr)) {
+            updateSelectizeInput(session, "geneExpr", 
+                                 choices=rev(names(geneExpr)))
+            show("geneExpr")
+        } else {
+            hide("geneExpr")
+        }
+    })
+    
+    # Update available gene choices depending on gene expression data loaded
+    # Reactive avoids updating if the input remains the same
+    updateGeneChoices <- reactive({
+        geneExpr <- getGeneExpression()[[input$geneExpr]]
+        genes <- rownames(geneExpr)
+        updateSelectizeInput(session, "gene", choices=genes, server=TRUE)
+    })
+    
+    # Update available gene choices depending on gene expression data loaded
+    observe({
+        geneExpr <- getGeneExpression()[[input$geneExpr]]
+        if (!is.null(geneExpr) && input$modelTerms == "geCutoff") {
+            show("loadingGenes")
+            hide("gene")
+            
+            updateGeneChoices()
+            
+            hide("loadingGenes")
+            show("gene")
+            show("geCutoff")
+            show("geInfo")
+        } else {
+            hide("loadingGenes")
+            hide("gene")
+            hide("geCutoff")
+            hide("geInfo")
+        }
+    })
+    
+    # # Update selected gene based on currently selected splicing event
+    # observe({
+    #     geneExpr <- getGeneExpression()[[input$geneExpr]]
+    #     event    <- getEvent()
+    #     if (input$modelTerms == "geCutoff" && !is.null(geneExpr) &&
+    #         !is.null(event)) {
+    #         gene <- parseSplicingEvent(event)$gene[[1]][[1]]
+    #         gene <- grep(gene, rownames(geneExpr), value=TRUE)[[1]]
+    #         print(gene)
+    #         updateSelectizeInput(session, "gene", selected=gene)
+    #     }
+    # })
+
+    # Update gene expression cutoff values based on selected gene
+    # Reactive avoids updating if the input remains the same
+    updateGEcutoffSlider <- reactive({
+        geneExpr <- getGeneExpression()[[input$geneExpr]]
+        ge <- as.numeric(geneExpr[input$gene, ])
+        updateSliderInput(session, "geCutoff", min=min(ge), max=max(ge),
+                          value=mean(ge))
+    })
+
+    # Update gene expression cutoff values based on selected gene
+    observeEvent(input$gene, {
+        geneExpr <- getGeneExpression()[[input$geneExpr]]
+        if (!is.null(geneExpr) && input$gene != "" &&
+            input$modelTerms == "geCutoff") {
+            updateGEcutoffSlider()
+            enable("geCutoff")
+        } else {
+            disable("geCutoff")
+        }
+    })
+    
+    # Update gene information based on selected gene
+    output$geInfo <- renderUI({
+        geneExpr <- getGeneExpression()[[input$geneExpr]]
+        gene     <- input$gene
+        terms    <- input$modelTerms
+        if (!is.null(geneExpr) && !is.null(gene) && terms == "geCutoff") {
+            ge <- as.numeric(geneExpr[gene, ])
+            return(sprintf("Mean expression for %s: %s", gene, mean(ge)))
+        } else {
+            return(NULL)
+        }
+    })
+
+    output$gePvaluePlot <- renderUI({
+        patients <- getPatientId()
+        geneExpr <- getGeneExpression()[input$geneExpr]
+        gene     <- input$gene
+
+        if (is.null(patients)) {
+            hide("geOptions")
+            return(helpText(icon("exclamation-circle"),
+                            "Please load clinical data."))
+        } else if (is.null(geneExpr)) {
+            hide("geOptions")
+            return(helpText(icon("exclamation-circle"),
+                            "Please load gene expression data."))
+        } else {
+            return(NULL)
+        }
+    })
+}
+
+#' @rdname appServer
 #' 
 #' @importFrom R.utils capitalize
 #' @importFrom shiny renderUI observe updateSelectizeInput observeEvent isolate 
@@ -216,15 +386,14 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
 #' hc_subtitle hc_tooltip renderHighchart hc_plotOptions
 #' @importFrom DT dataTableOutput renderDataTable
 #' @importFrom utils write.table
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @importFrom shinyjs show hide
 survivalServer <- function(input, output, session) {
     ns <- session$ns
     
-    selectGroupsServer(session, "dataGroups")
+    selectGroupsServer(session, "dataGroups", "Samples")
     
     observe({
-        if (is.null(getClinicalData())) {
+        if ( is.null(getPatientAttributes()) ) {
             show("survivalDialog")
             hide("survivalOptions")
         } else {
@@ -236,8 +405,7 @@ survivalServer <- function(input, output, session) {
     
     # Update available clinical data attributes to use in a formula
     output$formulaSuggestions <- renderUI({
-        attributes <- names(getClinicalData())
-        textSuggestions(ns("formula"), attributes)
+        textSuggestions(ns("formula"), getPatientAttributes())
     })
     
     # Update selectize input label depending on the chosen censoring type
@@ -249,16 +417,19 @@ survivalServer <- function(input, output, session) {
     })
     
     # Update available clinical attributes when the clinical data changes
-    observe( updateClinicalParams(session, getClinicalData()) )
+    observe( updateClinicalParams(session, getPatientAttributes()) )
     
     observeEvent(input$missingClinical, missingDataGuide("Clinical data"))
     observeEvent(input$missingInclusionLevels,
                  missingDataGuide("Inclusion levels"))
+    observeEvent(input$missingGeneExpression, 
+                 missingDataGuide("Gene expression"))
     
     # Plot survival curves
     observeEvent(input$survivalCurves, {
         isolate({
             splicingEvent <- getEvent()
+            assembly      <- getAssemblyVersion()
             # Get user input
             modelTerms <- input$modelTerms
             intRanges  <- input$ranges
@@ -281,8 +452,9 @@ survivalServer <- function(input, output, session) {
         pvalue <- testSurvival(survTerms)
         
         if (modelTerms == "psiCutoff") {
-            plotTitle <- splicingEvent
-            sub <- paste0("Splicing quantification cut-off: ", psiCutoff,
+            plotTitle <- parseSplicingEvent(splicingEvent, char=TRUE,
+                                            pretty=TRUE, extra=assembly)
+            sub <- paste0("PSI cutoff: ", psiCutoff,
                           "; Log-rank p-value: ", pvalue)
         } else {
             plotTitle <- "Survival analysis"
@@ -290,6 +462,7 @@ survivalServer <- function(input, output, session) {
         }
         
         # Plot survival curves
+        attr(surv, "Colour") <- attr(survTerms, "Colour")
         hc <- plotSurvivalCurves(surv, markTimes, intRanges, pvalue, plotTitle, 
                                  scale) %>% export_highcharts()
         if (!is.null(sub)) hc <- hc_subtitle(hc, text=sub)
@@ -301,6 +474,12 @@ survivalServer <- function(input, output, session) {
         survTerms <- checkSurvivalInput(session, input, coxph=TRUE)
         
         if (!is.null(survTerms)) {
+            # Properly set group names
+            names(survTerms$coefficients) <- 
+                gsub("&gt;", ">", names(survTerms$coefficients), fixed=TRUE)
+            names(survTerms$coefficients) <- 
+                gsub("&lt;", "<", names(survTerms$coefficients), fixed=TRUE)
+            
             summary <- summary(survTerms)
             print(summary)
             
@@ -318,6 +497,12 @@ survivalServer <- function(input, output, session) {
                 # Groups statistics
                 cox <- cbind(summary$coefficients,
                              summary$conf.int[ , 2:4, drop=FALSE])
+                
+                # Properly set colnames and order them
+                colnames(cox) <- c("Coefficient", "Hazard ratio", 
+                                   "Standard error", "Wald test", "p-value", 
+                                   "1 / Hazard ratio", "Lower 95%", "Upper 95%")
+                cox <- cox[ , c(1, 3:2, 7:8, 6, 4:5), drop=FALSE]
             }
         }
         
@@ -327,16 +512,16 @@ survivalServer <- function(input, output, session) {
             len <- length(summary$na.action)
             tagList(
                 hr(), 
-                downloadButton(ns("download"), "Download Cox model information",
-                               class="pull-right"),
+                downloadButton(ns("download"), "Save Cox model information",
+                               class="pull-right btn-info"),
                 h3("Cox", tags$abbr("PH", title="Proportional Hazards"), 
                    "model", tags$small(
-                       summary$n, " patients, ", summary$nevent, " events",
-                       if (len > 0) 
+                       summary$n, " patients with ", summary$nevent, " events",
+                       if (len > 0)
                            paste0(" (", len, " missing values removed)"))),
                 tags$b("Concordance: "), roundDigits(summary$concordance[[1]]),
-                tags$b("(SE: "), roundDigits(summary$concordance[[2]]),
-                tags$b(")"),
+                tags$b("(standard error: "), 
+                roundDigits(summary$concordance[[2]]), tags$b(")"),
                 br(), tags$b("R\u00B2: "), roundDigits(summary$rsq[[1]]), 
                 tags$b("(max possible: "), roundDigits(summary$rsq[[2]]),
                 tags$b(")"), 
@@ -380,16 +565,24 @@ survivalServer <- function(input, output, session) {
         options=list(info=FALSE, paging=FALSE, searching=FALSE, scrollX=TRUE))
         
         output$coxGroups <- renderDataTable({
-            if (is.null(survTerms))
-                return(NULL)
-            else
-                return(roundDigits(cox))
+            if (is.null(survTerms)) return(NULL)
+            
+            cox <- roundDigits(cox)
+            cox[ , "Coefficient"] <- paste(cox[ , "Coefficient"],
+                                           cox[ , "Standard error"], 
+                                           sep = " \u00B1 ")
+            cox[ , "Lower 95%"] <- sprintf("%s to %s",
+                                           cox[ , "Lower 95%"],
+                                           cox[ , "Upper 95%"])
+            colnames(cox)[4] <- "95% CI"
+            cox <- cox[ , -c(2, 5:6), drop=FALSE]
+            return(cox)
         }, style="bootstrap", selection='none', options=list(scrollX=TRUE))
     })
     
     # Calculate optimal inclusion levels
-    output$optimalPsi <- renderUI({
-        clinical      <- getClinicalData()
+    output$pvaluePlot <- renderUI({
+        patients      <- getPatientId()
         psi           <- getInclusionLevels()
         match         <- getClinicalMatchFrom("Inclusion levels")
         splicingEvent <- getEvent()
@@ -398,17 +591,24 @@ survivalServer <- function(input, output, session) {
         timeStop      <- input$timeStop
         event         <- input$event
         censoring     <- input$censoring
+        # Get clinical data for the required attributes
+        followup <- "days_to_last_followup"
+        clinical <- getClinicalDataForSurvival(timeStart, timeStop, event,
+                                               followup)
         
-        if (is.null(clinical)) {
+        if (is.null(patients)) {
+            hide("psiCutoff")
             return(helpText(icon("exclamation-circle"), 
-                            "Please, load clinical data."))
+                            "Please load clinical data."))
         } else if (is.null(getInclusionLevels())) {
+            hide("psiCutoff")
             return(helpText(icon("exclamation-circle"),
-                            "Please, load or calculate the quantification of",
+                            "Please load or calculate the quantification of",
                             "alternative splicing events."))
         } else if (is.null(getEvent()) || getEvent() == "") {
+            hide("psiCutoff")
             return(helpText(icon("exclamation-circle"), 
-                            "Please, select an alternative splicing event."))
+                            "Please select an alternative splicing event."))
         } else {
             output$survival  <- renderHighchart(NULL)
             output$coxphUI   <- renderUI(NULL)
@@ -417,10 +617,10 @@ survivalServer <- function(input, output, session) {
             
             # Assign alternative splicing quantification to patients based on
             # their samples
-            clinicalPSI <- getPSIperPatient(psi, match, clinical)
+            clinicalPSI <- getValuePerPatient(psi, match, patients=patients)
             eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
             
-            # Calculate optimal alternative splicing quantification cut-off
+            # Calculate optimal alternative splicing quantification cutoff
             opt <- optimalPSIcutoff(clinical, eventPSI, censoring=censoring, 
                                     event=event, timeStart=timeStart, 
                                     timeStop=timeStop, session=session)
@@ -431,28 +631,67 @@ survivalServer <- function(input, output, session) {
                 updateSliderInput(session, "psiCutoff", value=value)
             })
             
-            slider <- tagList(
-                sliderInput(ns("psiCutoff"), value = 0.5, min=0, max=1,
-                            step=0.01, "Splicing quantification cut-off"),
-                uiOutput(ns("thisPvalue")))
+            show("psiCutoff")
+            slider <- uiOutput(ns("cutoffPvalue"))
+            categories <- seq(0, 0.99, 0.01)
+            
+            survTime <- getAttributesTime(clinical, event, timeStart, timeStop)
+            pvalues <- lapply(
+                categories, testSurvivalCutoff, data=eventPSI,
+                clinical=clinical, censoring=censoring, timeStart=timeStart, 
+                timeStop=timeStop, event=event, survTime=survTime, 
+                session=session, survivalInfo=TRUE)
+            
+            patients     <- lapply(pvalues, function(n) attr(n, "info")$n)
+            noSeparation <- vapply(patients, length, numeric(1)) == 1
+            patients[noSeparation] <- NA
+            patients1 <- vapply(patients, "[[", 1, FUN.VALUE = numeric(1))
+            patients2 <- NA
+            patients2[!noSeparation] <- vapply(patients[!noSeparation], 
+                                               "[[", 2, FUN.VALUE = numeric(1))
+            
+            pvalues      <- -log10(unlist(pvalues))
+            significance <- -log10(0.05)
+            
+            data <- data.frame(x=categories, y=pvalues, 
+                               patients1=patients1, patients2=patients2)
+            data <- list_parse(data)
+            
+            label <- tags$label(class="control-label",
+                                "-log\u2081\u2080(p-value) plot by cutoff")
+            pvaluePlot <- highchart(height="100px") %>%
+                hc_add_series(data=data,
+                              zones=list(list(value=significance,
+                                              color="lightgray"))) %>%
+                hc_chart(zoomType="x") %>%
+                hc_xAxis(tickInterval=0.1, showLastLabel=TRUE, endOnTick=TRUE,
+                         min=0, max=1) %>%
+                hc_yAxis(crosshair=list(color="gray", width=1, 
+                                        dashStyle="shortdash"),
+                         labels=list(enabled=FALSE)) %>%
+                hc_legend(NULL) %>% 
+                hc_tooltip(formatter=JS(
+                    "function() { return getPvaluePlotTooltip(this); }")) %>%
+                hc_plotOptions(series=list(
+                    cursor="pointer",
+                    point=list(events=list(click=JS(
+                        "function () { setPSIcutoffSlider(this.x) }"))),
+                    marker=list(radius=2)))
             
             if (!is.na(opt$value) && opt$value < 1) {
-                return(tagList(
-                    slider, div(class="alert alert-success",
-                                tags$b("Optimal cut-off:"), round(opt$par, 5), 
-                                br(), tags$b("Minimal log-rank p-value:"),
-                            round(opt$value, 3))))
+                return(tagList(slider, label, pvaluePlot))
             } else {
                 return(tagList(
-                    slider, div(class="alert alert-warning", "No optimal",
-                                "cut-off was found for this splicing event.")))
+                    slider, label, pvaluePlot,
+                    div(class="alert alert-warning", "No adequate",
+                        "cutoff was found for this splicing event.")))
             }
         }
     })
     
-    # Update contextual information for selected PSI cut-off
+    # Update contextual information for selected PSI cutoff
     observeEvent(input$psiCutoff, {
-        clinical      <- getClinicalData()
+        patients      <- getPatientId()
         psi           <- getInclusionLevels()
         match         <- getClinicalMatchFrom("Inclusion levels")
         splicingEvent <- getEvent()
@@ -462,34 +701,37 @@ survivalServer <- function(input, output, session) {
         event         <- input$event
         censoring     <- input$censoring
         psiCutoff     <- input$psiCutoff
+        # Get clinical data for the required attributes
+        followup <- "days_to_last_followup"
+        clinical <- getClinicalDataForSurvival(timeStart, timeStop, event,
+                                               followup)
         
-        if (is.null(getEvent()) || getEvent() == "" || 
-            is.null(getInclusionLevels()) || is.null(clinical)) return(NULL)
+        if (is.null(splicingEvent) || splicingEvent == "" || 
+            is.null(psi) || is.null(patients)) return(NULL)
         
         # Assign alternative splicing quantification to patients based on their
         # samples
-        clinicalPSI <- getPSIperPatient(psi, match, clinical)
+        clinicalPSI <- getValuePerPatient(psi, match, patients=patients)
         eventPSI <- as.numeric(clinicalPSI[splicingEvent, ])
         
-        # Assign a value based on the inclusion levels cut-off
-        groups <- labelBasedOnCutoff(eventPSI, psiCutoff, "Inclusion levels")
-        
-        survTerms <- processSurvTerms(clinical, censoring, event, timeStart,
-                                      timeStop, groups)
-        surv <- survfit(survTerms)
-        pvalue <- testSurvival(survTerms)
+        pvalue <- testSurvivalCutoff(
+            psiCutoff, data=eventPSI, clinical=clinical, censoring=censoring, 
+            timeStart=timeStart, timeStop=timeStop, event=event, 
+            session=session, survivalInfo = TRUE)
+        surv <- attr(pvalue, "info")
         
         patients <- NULL
         if (!is.na(pvalue) && pvalue < 1)
             patients <- paste0("(", surv$n[1], " vs ", surv$n[2], " patients)")
         
-        output$thisPvalue <- renderUI(
-            tagList(
-                div(style="text-align:right; font-size:small",
-                    tags$b("p-value of selected cut-off:"), round(pvalue, 3),
-                    patients),
-                tags$br()))
+        output$cutoffPvalue <- renderUI(
+            tagList(div(style="text-align:right; font-size:small",
+                        tags$b("p-value of selected cutoff:"), round(pvalue, 3),
+                        patients),
+                    tags$br()))
     })
+    
+    geneExprSurvSet(session, input, output)
 }
 
 attr(survivalUI, "loader") <- "analysis"

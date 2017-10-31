@@ -5,7 +5,7 @@
 \title{Plot survival curves}
 \usage{
 plotSurvivalCurves(surv, mark = TRUE, interval = FALSE, pvalue = NULL,
-  title = "Survival analysis", scale = NULL)
+  title = "Survival analysis", scale = NULL, auto = TRUE)
 }
 \arguments{
 \item{surv}{Survival object}
@@ -19,6 +19,9 @@ plotSurvivalCurves(surv, mark = TRUE, interval = FALSE, pvalue = NULL,
 \item{title}{Character: plot title}
 
 \item{scale}{Character: time scale; default is "days"}
+
+\item{auto}{Boolean: return the plot automatically prepared (TRUE) or only
+the bare minimum (FALSE)? TRUE by default}
 }
 \value{
 Plot of survival curves

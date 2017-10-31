@@ -3,8 +3,8 @@ NULL
 
 # TODO(NunoA): increase allowed size and warn the user to wait for large files
 # Refuse files with size greater than the specified
-MB = 5000 # File size in MB
-options(shiny.maxRequestSize = MB * 1024^2)
+MB = 20 # File size in GB
+options(shiny.maxRequestSize = MB * 1024^5)
 
 # Sanitize errors
 options(shiny.sanitize.errors = TRUE)
@@ -47,7 +47,7 @@ getServerFunctions <- function(loader, ..., priority=NULL) {
 
 #' Matches user interface (UI) functions from a given loader
 #' 
-#' @param ns Shiny function to create namespaced IDs
+#' @param ns Shiny function to create IDs within a namespace
 #' @param loader Character: loader to run the functions
 #' @param ... Extra arguments to pass to the user interface (UI) functions
 #' @param priority Character: name of functions to prioritise by the given
@@ -105,7 +105,7 @@ globalSelectize <- function(id, placeholder) {
     return(select)
 }
 
-#' Create a special selectize input in the navigatin bar
+#' Create a special selectize input in the navigation bar
 #' @inheritParams globalSelectize
 #' @param label Character: input label
 #' @return HTML element to be included in a navigation bar
@@ -124,17 +124,17 @@ navSelectize <- function(id, label, placeholder=label) {
         tags$br(), uiOutput(value)))
 }
 
-#' Modified tabPanel function to show icon and title
+#' Modified \code{tabPanel} function to show icon and title
 #' 
 #' @note Icon is hidden at small viewports
 #' 
 #' @param title Character: title of the tab
 #' @param icon Character: name of the icon
-#' @param ... HTML elements to pass to tab
+#' @param ... HTML elements to render
 #' @param menu Boolean: create a dropdown menu-like tab? FALSE by default
 #' 
 #' @importFrom shiny navbarMenu tabPanel
-#' @return HTML interface for a tab panel
+#' @return HTML interface
 modTabPanel <- function(title, ..., icon=NULL, menu=FALSE) {
     if (is.null(icon))
         display <- title
@@ -147,11 +147,15 @@ modTabPanel <- function(title, ..., icon=NULL, menu=FALSE) {
         tabPanel(display, ..., value=title)
 }
 
-#' The user interface (ui) controls the layout and appearance of the app
-#' All the CSS modifications are in the file "shiny/www/styles.css"
+#' User interface
+#' 
+#' The user interface (UI) controls the layout and appearance of the app. All
+#' CSS modifications are in the file \code{shiny/www/styles.css}
+#' 
 #' @importFrom shinyjs useShinyjs
 #' @importFrom shiny includeCSS includeScript conditionalPanel div h4 icon
 #' shinyUI navbarPage tagAppendChild tagAppendAttributes
+#' 
 #' @return HTML elements
 appUI <- function() {
     uiList <- getUiFunctions(paste, "app", modTabPanel,
@@ -171,7 +175,7 @@ appUI <- function() {
                              icon("flask", "fa-spin"), "Working...")))))
     
     nav <- do.call(navbarPage, c(
-        list(title="PS\u03A8chomics", id="nav", collapsible=TRUE, 
+        list(title="psichomics", id="nav", collapsible=TRUE, 
              header=header, position="fixed-top", footer=useShinyjs()),
         uiList))
 
@@ -207,10 +211,12 @@ browserHistory <- function(navId, input, session) {
     # Update browser history when user changes the active tab
     observeEvent(input[[navId]], {
         autoNav <- getAutoNavigation()
-        if (isTRUE(autoNav))
+        if (isTRUE(autoNav)) {
             setAutoNavigation(FALSE)
-        else
-            runjs(paste0("updateHistory({page: '", input[[navId]], "'})"))
+        } else {
+            # Update browser history
+            runjs(paste0("updateHistory({ page: '", input[[navId]], "'})"))
+        }
     })
     
     # Navigate to a tab according to a given query string
@@ -224,20 +230,11 @@ browserHistory <- function(navId, input, session) {
     
     # Navigate tabs while browsing history
     observeEvent(input$appLocation, { restorePage(input$appLocation) })
-    
-    # When the app starts, restore previous history (if available)
-    observeEvent(session$clientData$url_search, {
-        if (nchar(session$clientData$url_search) > 1) {
-            # input[[navId]] is triggered but do not take the user anywhere
-            setAutoNavigation(TRUE)
-            restorePage(session$clientData$url_search)
-        }
-    })
 }
 
-#' Server function
-#'
-#' Instructions to build the Shiny app.
+#' Server logic
+#' 
+#' Instructions to build the Shiny app
 #'
 #' @param input Input object
 #' @param output Output object
@@ -271,12 +268,10 @@ appServer <- function(input, output, session) {
     
     # Update selectize event to show available events
     observe({
-        psi <- getInclusionLevels()
-        if (!is.null(psi)) {
-            choices <- rownames(psi)
-            names(choices) <- parseSplicingEvent(choices, char=TRUE)
-            choices <- sort(choices)
-            updateSelectizeInput(session, "selectizeEventElem", choices=choices)
+        ASevents <- getASevents()
+        if (!is.null(ASevents)) {
+            updateSelectizeInput(session, "selectizeEventElem", 
+                                 choices=ASevents)
             
             # Set the selected alternative splicing event
             observeEvent(input$selectizeEventElem,
@@ -287,7 +282,6 @@ appServer <- function(input, output, session) {
             updateSelectizeInput(session, "selectizeEventElem", choices=list(),
                                  selected=list())
             setEvent(NULL)
-            setSampleId(NULL)
         }
     })
     
@@ -315,17 +309,18 @@ appServer <- function(input, output, session) {
     
     session$onSessionEnded(function() {
         # Stop app and print message to console
-        suppressMessages(stopApp(returnValue="PSIchomics was closed"))
+        message("\n-- psichomics was closed --")
+        suppressMessages(stopApp())
     })
 }
 
-#' Start graphical interface of PSICHOMICS
+#' Start graphical interface of psichomics
 #'
-#' @param ... Parameters to pass to the function runApp
+#' @inheritDotParams shiny::runApp -appDir -launch.browser
 #' @param reset Boolean: reset Shiny session? FALSE by default; requires the 
-#' package devtools to reset data
+#' package \code{devtools} to reset data
 #'
-#' @importFrom shiny shinyApp runApp
+#' @importFrom shiny shinyApp runApp addResourcePath
 #'
 #' @export
 #' @examples 
@@ -334,6 +329,10 @@ appServer <- function(input, output, session) {
 #' }
 #' @return NULL (this function is used to modify the Shiny session's state)
 psichomics <- function(..., reset=FALSE) {
+    # Add icons related to set operations
+    addResourcePath("set-operations",
+                    insideFile("shiny", "www", "set-operations"))
+    
     if (reset) devtools::load_all()
     app <- shinyApp(appUI(), appServer)
     runApp(app, launch.browser = TRUE, ...)

@@ -2,16 +2,19 @@
 % Please edit documentation in R/utils.R
 \name{disableTab}
 \alias{disableTab}
-\title{Disable a tab from the navbar}
+\alias{enableTab}
+\title{Enable or disable a tab from the \code{navbar}}
 \usage{
 disableTab(tab)
+
+enableTab(tab)
 }
 \arguments{
-\item{tab}{Character: tab to disable}
+\item{tab}{Character: tab}
 }
 \value{
 NULL (this function is used to modify the Shiny session's state)
 }
 \description{
-Disable a tab from the navbar
+Enable or disable a tab from the \code{navbar}
 }

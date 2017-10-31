@@ -79,7 +79,7 @@ test_that("Plot survival curves", {
     expect_length(plot$x$hc_opts$series, nrow(clinical))
 })
 
-test_that("Quantify optimal PSI cut-off", {
+test_that("Quantify optimal PSI cutoff", {
     timeStart  <- "days_to_death"
     event      <- "days_to_death"
     data       <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
@@ -91,7 +91,7 @@ test_that("Quantify optimal PSI cut-off", {
     expect_equal(opt$convergence, 0)
 })
 
-test_that("Plot survival curves separated by PSI cut-off", {
+test_that("Plot survival curves separated by PSI cutoff", {
     cutoff <- 0.5
     data   <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
     group  <- labelBasedOnCutoff(data, cutoff, "Inclusion levels")
@@ -112,7 +112,7 @@ test_that("Plot survival curves separated by PSI cut-off", {
     expect_length(plot$x$hc_opts$series, 2)
 })
 
-test_that("Fit a Cox PH model for PSI cut-off separation", {
+test_that("Fit a Cox PH model for PSI cutoff separation", {
     cutoff <- 0.5
     data   <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
     group <- labelBasedOnCutoff(data, cutoff, "Inclusion levels")
