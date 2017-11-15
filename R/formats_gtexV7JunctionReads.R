@@ -41,8 +41,10 @@ gtexV7JunctionReadsFormat <- function() {
             
             # Transform junction positions for easier parsing
             cols <- str_split_fixed(rownames(data), "_", 3)
-            rownames(data) <- sprintf("chr%s:%s:%s",
-                                      cols[ , 1], cols[ , 2], cols[ , 3])
+            rownames(data) <- sprintf(
+                "chr%s:%s:%s", cols[ , 1], 
+                sprintf("%i", as.numeric(cols[ , 2]) - 1),
+                sprintf("%i", as.numeric(cols[ , 3]) + 1))
             return(data)
         }
     )
