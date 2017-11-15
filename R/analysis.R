@@ -195,6 +195,9 @@ getValuePerPatient <- function(data, match, clinical=NULL, patients=NULL,
 }
 
 #' @rdname getValuePerPatient
+getValuePerSubject <- getValuePerPatient
+
+#' @rdname getValuePerPatient
 #' @param psi Data frame or matrix: values per sample
 getPSIperPatient <- function(psi, match, clinical=NULL, patients=NULL,
                              pattern=NULL, filterOut=TRUE) {
@@ -850,7 +853,7 @@ prepareEventPlotOptions <- function(id, ns, labelsPanel=NULL) {
                  plotPointsStyle(
                      ns, "base", "Base points",
                      help="These are points not highlighted or selected.",
-                     size=2, colour="grey", alpha=0.3)),
+                     size=2, colour="gray", alpha=0.3)),
         tabPanel("Highlighted points",
                  plotPointsStyle(
                      ns, "highlighted", "Highlighted points",
@@ -2116,7 +2119,7 @@ diffAnalyses <- function(psi, groups=NULL,
                               "hommel"))) {
         updateProgress("Adjusting p-values", detail=pvalueAdjust)
         
-        cols   <- grep("p.value", colnames(df), fixed=TRUE)[-1]
+        cols   <- grep("p.value", colnames(df))[-1]
         if (length(cols > 0)) {
             time <- Sys.time()
             pvalue <- df[cols]

@@ -451,6 +451,9 @@ getPatientFromSample <- function(sampleId, patientId=NULL, na=FALSE,
     }
 }
 
+#' @rdname getPatientFromSample
+getSubjectFromSample <- getPatientFromSample
+
 #' Get samples matching the given patients
 #' 
 #' @inheritParams getPatientFromSample
@@ -492,6 +495,12 @@ getMatchingSamples <- function(patients, samples, clinical=NULL, rm.NA=TRUE,
     }
     return(samples)
 }
+
+#' @rdname getMatchingSamples
+getSampleFromPatient <- getMatchingSamples
+
+#' @rdname getMatchingSamples
+getSampleFromSubject <- getMatchingSamples
 
 #' Assign one group to each element
 #' 
