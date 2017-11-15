@@ -762,6 +762,10 @@ createGroupByColumn <- function(col, dataset) {
 #' rownames(df) <- paste0("patient-", LETTERS[1:8])
 #' createGroupByAttribute(col="stage", dataset=df)
 createGroupByAttribute <- function(col, dataset) {
+    if (!col %in% colnames(dataset))
+        stop("The given attribute was not found in the column names of the",
+             "dataset")
+    
     colData <- as.character(dataset[[col]])
     names(colData) <- rownames(dataset)
     

@@ -41,9 +41,9 @@ library(psichomics)
 
 # Available functions: quick reference
 
-# Data retrieval
+## Data retrieval
 
-## TCGA/Firebrowse
+### TCGA/Firebrowse
 * `getDownloadsFolder`
 * `isFirebrowseUp`
 * `getFirebrowseCohorts`
@@ -53,53 +53,53 @@ library(psichomics)
 * `parseTcgaSampleInfo`
 * `parseSampleGroups`
 
-## GTEx
+### GTEx
 * `getGtexTissues`
 * `loadGtexData`
 
-## Custom files
+### Custom files
 * `loadLocalFiles`
 
-# Gene expression pre-processing
+## Gene expression pre-processing
 * `parseCategoricalGroups`
 * `normaliseGeneExpression`
 
-# PSI quantification`
+## PSI quantification`
 * `getSplicingEventTypes`
 * `listSplicingAnnotations`
 * `loadAnnotation`
 * `quantifySplicing`
 
-## Preparing custom annotation
+### Preparing custom annotation
 * `prepareAnnotationFromEvents`
 * `parseMatsAnnotation`
 * `parseMisoAnnotation`
 * `parseSuppaAnnotation`
 * `parseVastToolsAnnotation`
 
-# Data Grouping
+## Data Grouping
 * `createGroupByAttribute`
 * `filterGroups`
 * `getAttributesTime`
-* `getMatchingSamples`
-* `getPatientFromSample`
+* `getSampleFromSubject`
+* `getSubjectFromSample`
 * `groupPerElem`
 * `testGroupIndependence`
 * `plotGroupIndependence`
 
-# Dimensionality reduction
+## Dimensionality reduction
 
-## PCA
+### PCA
 * `performPCA`
 * `plotPCA`
 * `plotVariance`
 
-# ICA
+### ICA
 * `performICA`
 * `plotICA`
 
-# Survival analysis
-* `getValuePerPatient`
+## Survival analysis
+* `getValuePerSubject`
 * `labelBasedOnCutoff`
 * `optimalPSIcutoff`
 * `testSurvival`
@@ -108,22 +108,22 @@ library(psichomics)
 * `survdiff`
 * `plotSurvivalCurves`
 
-# Differential analyses
+## Differential analyses
 * `diffAnalyses`
 * `plotDistribution`
 
-# Gene expression and alternative splicing correlation
+## Gene expression and alternative splicing correlation
 * `correlateGEandAS`
 * `plotCorrelation`
 
-# Annotation retrieval
+## Annotation retrieval
 * `queryEnsemblByEvent`
 * `queryEnsemblByGene`
 * `ensemblToUniprot`
 * `plotProtein`
 * `plotTranscripts`
 
-# Misc
+## Misc
 * `psichomics`
 * `parseSplicingEvent`
 * `readFile`
@@ -162,7 +162,7 @@ After deciding on the options to use, download and load data of interest using:
 folder <- getDownloadsFolder()
 
 # Download and load most recent junction quantification and clinical data from
-# TCGA/Firebrowse for Adrenocortical Carcinoma
+# TCGA/Firebrowse for Breast Cancer
 data <- loadFirebrowseData(folder=folder,
                            cohort="BRCA",
                            data=c("clinical", "junction_quantification",
