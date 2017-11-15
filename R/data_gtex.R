@@ -12,16 +12,16 @@ gtexDataUI <- function(id, panel) {
           helpText("Please, download files from the",
                    a(href="http://www.gtexportal.org", target="_blank",
                      "GTEx Data Portal"), "and load them here."),
-          fileBrowserInput(
-              ns("sampleInfo"), "File with GTEx sample attributes (TXT file)",
-              placeholder="No file selected"),
-          fileBrowserInput(
-              ns("subjectInfo"), "File with GTEx subject phenotypes (TXT file)",
-              placeholder="No file selected"),
-          fileBrowserInput(
-              ns("junctionQuant"), "File with GTEx junction read counts",
-              placeholder="No file selected"),
-          bsCollapse(id=ns("filterCollapse"),
+          fileBrowserInput(ns("sampleInfo"), "Sample attributes (TXT file)",
+                           placeholder="No file selected"),
+          fileBrowserInput(ns("subjectInfo"), "Subject phenotypes (TXT file)",
+                           placeholder="No file selected"),
+          fileBrowserInput(ns("junctionQuant"), "Junction read counts",
+                           placeholder="No file selected"),
+          fileBrowserInput(ns("geneExpr"), "Gene expression", 
+                           placeholder="No file selected"),
+          bsCollapse(
+              id=ns("filterCollapse"),
               bsCollapsePanel(
                   title=tagList(icon("filter"), "Filter tissue(s) to load"), 
                   value="Load by tissue",
@@ -58,7 +58,10 @@ getGtexTissues <- function(sampleMetadata) {
     
     tissues        <- names(freq)
     names(tissues) <- sprintf("%s (%s samples)", names(freq), as.vector(freq))
-    return(tissues[-match("", tissues)])
+    if (!is.na(match("", tissues)))
+        return(tissues[-match("", tissues)])
+    else
+        return(tissues)
 }
 
 #' @rdname getGtexTissues
@@ -231,10 +234,15 @@ loadGtexDataShiny <- function(session, input, replace=TRUE) {
     if (is.null(junctionQuant) || identical(junctionQuant, ""))
         junctionQuant <- NULL
     
-    if (any(!is.null(c(subjectInfo, sampleInfo, junctionQuant)))) {
+    geneExpr <- input$geneExpr
+    if (is.null(geneExpr) || identical(geneExpr, ""))
+        geneExpr <- NULL
+    
+    if (any(!is.null(c(subjectInfo, sampleInfo, junctionQuant, geneExpr)))) {
         time <- startProcess("load")
         data <- loadGtexData(clinical=subjectInfo, sampleMetadata=sampleInfo,
-                             junctionQuant=junctionQuant, tissue=tissue)
+                             junctionQuant=junctionQuant, geneExpr=geneExpr,
+                             tissue=tissue)
         
         if (!is.null(data)) {
             if (!replace) data <- c(getData(), data)
@@ -251,8 +259,6 @@ loadGtexDataShiny <- function(session, input, replace=TRUE) {
 #' @rdname appServer
 #' @importFrom shinyjs show hide
 gtexDataServer <- function(input, output, session) {
-    ns <- session$ns
-    
     prepareFileBrowser(session, input, "sampleInfo")
     prepareFileBrowser(session, input, "subjectInfo")
     prepareFileBrowser(session, input, "junctionQuant")
