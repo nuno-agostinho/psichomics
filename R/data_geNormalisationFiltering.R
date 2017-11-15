@@ -53,7 +53,8 @@ geNormalisationFilteringInterface <- function(ns) {
                 value="Normalisation",
                 helpText("Calculate normalisation factors to scale the raw",
                          "library sizes using the function", 
-                         tags$code("edgeR::calcNormFactors")),
+                         tags$code("edgeR::calcNormFactors"), "followed by",
+                         tags$code("edgeR::cpm")),
                 selectizeInput(
                     ns("normalisation"), "Normalisation method", width="100%",
                     c("Weighted trimmed mean of M-values (TMM)"="TMM",
@@ -105,10 +106,7 @@ geNormalisationFilteringInterface <- function(ns) {
                 value="Log-transformation",
                 checkboxInput(
                     ns("log2transformation"), value=TRUE, width="100%",
-                    paste("Add 0.5 to gene expression and perform",
-                          "log2 transformation")),
-                helpText("Adding 0.5 to gene expression avoids the",
-                         "log-transformation of zeroes."))))
+                    paste("Perform log2 transformation")))))
     
     tagList(
         uiOutput(ns("modal")),
@@ -135,7 +133,7 @@ geNormalisationFilteringUI <- function(id, panel) {
 #' @param log2transform Boolean: add 0.5 and perform log2-transformation?
 #' @inheritParams edgeR::calcNormFactors
 #' 
-#' @importFrom edgeR DGEList calcNormFactors
+#' @importFrom edgeR DGEList calcNormFactors cpm
 #' 
 #' @return Gene expression filtered and normalised
 #' @export
@@ -145,7 +143,7 @@ geNormalisationFilteringUI <- function(id, panel) {
 #' normaliseGeneExpression(geneExpr)
 normaliseGeneExpression <- function(geneExpr, geneFilter=NULL, method="TMM", 
                                     p=0.75, log2transform=TRUE) {
-    updateProgress("Processing gene expression", divisions=3 + log2transform)
+    updateProgress("Processing gene expression", divisions=3)
     
     updateProgress("Filtering gene expression")
     if (is.null(geneFilter)) geneFilter <- TRUE
@@ -154,14 +152,10 @@ normaliseGeneExpression <- function(geneExpr, geneFilter=NULL, method="TMM",
     
     updateProgress("Normalising gene expression")
     geneExprNorm <- calcNormFactors(geneExprNorm, method=method, p=p)
-    
-    if (log2transform) {
-        updateProgress("Performing log2-transformation")
-        geneExprNorm$counts <- log2(geneExprNorm$counts + 0.5)
-    }
+    geneExprNorm <- cpm(geneExprNorm, log=log2transform)
     
     updateProgress("Preparing gene expression data")
-    geneExprNorm <- data.frame(geneExprNorm$counts)
+    geneExprNorm <- data.frame(geneExprNorm)
     colnames(geneExprNorm) <- colnames(geneExpr)
     
     # Pass attributes from original gene expression table (except for names)
