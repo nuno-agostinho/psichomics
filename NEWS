@@ -10,7 +10,6 @@ million (CPM) using `edgeR::cpm` after normalisation using
 `edgeR::calcNormFactor`
 * Raise error when calculation of inclusion levels returns no AS events
 * Update file description and README
-* Add new aliases for multiple common functions
 
 # 1.4.0 (22 Oct, 2017)
 
