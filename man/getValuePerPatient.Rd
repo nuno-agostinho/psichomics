@@ -2,10 +2,14 @@
 % Please edit documentation in R/analysis.R
 \name{getValuePerPatient}
 \alias{getValuePerPatient}
+\alias{getValuePerSubject}
 \alias{getPSIperPatient}
 \title{Assign the value from one of the patient's samples to that patient}
 \usage{
 getValuePerPatient(data, match, clinical = NULL, patients = NULL,
+  pattern = NULL, filterOut = TRUE)
+
+getValuePerSubject(data, match, clinical = NULL, patients = NULL,
   pattern = NULL, filterOut = TRUE)
 
 getPSIperPatient(psi, match, clinical = NULL, patients = NULL,

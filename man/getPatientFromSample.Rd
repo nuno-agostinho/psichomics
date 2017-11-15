@@ -2,9 +2,13 @@
 % Please edit documentation in R/utils.R
 \name{getPatientFromSample}
 \alias{getPatientFromSample}
+\alias{getSubjectFromSample}
 \title{Get patients from given samples}
 \usage{
 getPatientFromSample(sampleId, patientId = NULL, na = FALSE,
+  sampleInfo = NULL)
+
+getSubjectFromSample(sampleId, patientId = NULL, na = FALSE,
   sampleInfo = NULL)
 }
 \arguments{

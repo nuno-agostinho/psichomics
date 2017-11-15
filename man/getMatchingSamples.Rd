@@ -2,9 +2,17 @@
 % Please edit documentation in R/utils.R
 \name{getMatchingSamples}
 \alias{getMatchingSamples}
+\alias{getSampleFromPatient}
+\alias{getSampleFromSubject}
 \title{Get samples matching the given patients}
 \usage{
 getMatchingSamples(patients, samples, clinical = NULL, rm.NA = TRUE,
+  match = NULL, showMatch = FALSE)
+
+getSampleFromPatient(patients, samples, clinical = NULL, rm.NA = TRUE,
+  match = NULL, showMatch = FALSE)
+
+getSampleFromSubject(patients, samples, clinical = NULL, rm.NA = TRUE,
   match = NULL, showMatch = FALSE)
 }
 \arguments{
