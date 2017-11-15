@@ -247,8 +247,7 @@ checkCounts <- rowSums(geneExpr >= 10) >= 10
 filter <- rowMeans(geneExpr) > 0 & rowVars(geneExpr) > 0 & checkCounts
 geneExprFiltered <- geneExpr[filter, ]
 
-# Normalise gene expression and perform log2-transformation (after adding 0.5
-# to avoid zeroes)
+# Normalise gene expression and perform log2-transformation
 geneExprNorm <- normaliseGeneExpression(geneExprFiltered, log2transform=TRUE)
 ```
 
