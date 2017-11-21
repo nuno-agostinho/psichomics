@@ -1,3 +1,8 @@
+# 1.4.2 (12 Jan, 2017)
+* Correlation between gene expression and alternative splicing:
+    - Perform correlation between gene expression of multiple genes and 
+    quantification of multiple alternative splicing events
+
 # 1.4.1 (15 Nov, 2017)
 * Fixes regarding GTEx data:
     - Add input elements to allow GTEx gene expression loading in the graphical

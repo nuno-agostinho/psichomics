@@ -45,14 +45,20 @@ missingDataGuide <- function(dataType) {
 #' 
 #' @return HTML elements
 selectizeGeneInput <- function(id, label="Gene", choices=NULL, multiple=FALSE) {
+    onFocus  <- NULL
+    onChange <- NULL
+    if (!multiple) {
+        onFocus  <- I(sprintf(
+            'function() { $("#%s")[0].selectize.clear(); }', id))
+        onChange <- I(sprintf(
+            'function(value) { $("#%s")[0].selectize.blur(); }', id))
+    }
+    
     selectizeInput(
         id, label, width="100%", multiple=multiple,
-        choices=c("Type to search for a gene..."="", choices),
-        options=list(
-            onFocus=I(sprintf(
-                'function() { $("#%s")[0].selectize.clear(); }', id)),
-            onChange=I(sprintf(
-                'function(value) { $("#%s")[0].selectize.blur(); }', id))))
+        choices=c("Type to search for a gene..."="", choices), 
+        options=list(onFocus=onFocus, onChange=onChange, 
+                     plugins=list('remove_button', 'drag_drop')))
 }
 
 #' @rdname appUI

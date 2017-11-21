@@ -5,20 +5,34 @@
 \title{Plot correlations}
 \usage{
 plotCorrelation(corr, autoZoom = FALSE, loessSmooth = TRUE,
-  loessFamily = c("gaussian", "symmetric"), ...)
+  loessFamily = c("gaussian", "symmetric"), colour = "black", alpha = 0.2,
+  size = 1.5, loessColour = "red", loessAlpha = 1, loessWidth = 0.5,
+  ...)
 }
 \arguments{
 \item{corr}{List of correlations}
 
-\item{autoZoom}{Boolean: automatically set the range of PSI values based on 
-available data? If \code{FALSE}, the axis relative to PSI values will range 
+\item{autoZoom}{Boolean: automatically set the range of PSI values based on
+available data? If \code{FALSE}, the axis relative to PSI values will range
 from 0 to 1}
 
-\item{loessSmooth}{Boolean: plot a smooth curve computed by 
+\item{loessSmooth}{Boolean: plot a smooth curve computed by
 \code{stats::loess.smooth}?}
 
 \item{loessFamily}{Character: if \code{gaussian}, \code{loess} fitting is by
 least-squares, and if \code{symmetric}, a re-descending M estimator is used}
+
+\item{colour}{Character: points' colour}
+
+\item{alpha}{Numeric: points' alpha}
+
+\item{size}{Numeric: points' size}
+
+\item{loessColour}{Character: loess line's colour}
+
+\item{loessAlpha}{Numeric: loess line's opacity}
+
+\item{loessWidth}{Numeric: loess line's width}
 
 \item{...}{Arguments passed on to \code{stats::loess.smooth}
 \describe{
