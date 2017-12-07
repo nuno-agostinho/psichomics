@@ -49,23 +49,23 @@ createJunctionsTemplate <- function(nrow, program = character(0),
 getSplicingEventCoordinates <- function(type, sorting=FALSE) {
     coords <- switch(type,
                      "SE"   = c("C1.end", "A1.start", "A1.end", "C2.start"),
-                     "A3SS" = c("C1.end", "C2.start", "A1.start"),
-                     "A5SS" = c("C1.end", "C2.start", "A1.end"),
-                     "AFE"  = c("C1.start", "C1.end", "A1.start", "A1.end"),
-                     "ALE"  = c("A1.start", "A1.end", "C2.start", "C2.end"),
+                     "A3SS" = c("C1.end", "A2.start", "A1.start"),
+                     "A5SS" = c("A2.end", "C2.start", "A1.end"),
+                     "AFE"  = c("A2.start", "A2.end", "A1.start", "A1.end"),
+                     "ALE"  = c("A1.start", "A1.end", "A2.start", "A2.end"),
                      "RI"   = c("C1.start", "C1.end", "C2.start", "C2.end"),
                      "MXE"  = c("C1.end", "A1.start", "A1.end",
                                 "A2.start", "A2.end", "C2.start"),
-                     "TandemUTR" = c("C1.start", "C1.end", "A1.end"))
+                     "TandemUTR" = c("A2.start", "A2.end", "A1.end"))
     
     if (sorting) {
         coords <- switch(type,
-                         "A3SS" = c("C2.start", "A1.start"),
-                         "A5SS" = c("C1.end", "A1.end"),
-                         "AFE"  = c("A1.start", "A1.end", "C1.start", "C1.end"),
-                         "ALE"  = c("A1.start", "A1.end", "C2.start", "C2.end"),
+                         "A3SS" = c("A2.start", "A1.start"),
+                         "A5SS" = c("A2.end", "A1.end"),
+                         "AFE"  = c("A1.start", "A1.end", "A2.start", "A2.end"),
+                         "ALE"  = c("A1.start", "A1.end", "A2.start", "A2.end"),
                          "MXE"  = c("A1.start", "A1.end", "A2.start", "A2.end"),
-                         "TandemUTR" = c("A1.end", "C1.end"))
+                         "TandemUTR" = c("A1.end", "A2.end"))
     }
     return(coords)
 }
@@ -512,24 +512,29 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                             annotation$`Alternative exon 2 end`,
                             annotation$`Constitutive exon 2 start`, gene)
     } else if (eventType %in% c("A5SS", "AFE")) {
+        alt1end      <- "Alternative exon 1 end"
+        alt2end      <- "Alternative exon 2 end"
+        constitutive <- "Constitutive exon 2 start"
+        
+        # Backwards compatible with previous annotations
+        if (!alt2end %in% names(annotation))
+            alt2end <- "Constitutive exon 1 end"
+        
         # Remove duplicates based on columns used to create identifiers
-        annotation <- annotation[!is.na(
-            annotation$`Constitutive exon 2 start`), ]
+        annotation <- annotation[!is.na(annotation[[constitutive]]), ]
         annotation <- uniqueBy(annotation, "Chromosome", "Strand",
-                               "Constitutive exon 1 end",
-                               "Alternative exon 1 end",
-                               "Constitutive exon 2 start", geneCol)
+                               alt2end, alt1end, constitutive, geneCol)
         chr <- annotation$Chromosome
         strand <- annotation$Strand
         
         # Create searchable strings for junctions
         incStr <- junctionString(chr, strand,
-                                 annotation$`Alternative exon 1 end`, 
-                                 annotation$`Constitutive exon 2 start`,
+                                 annotation[[alt1end]], 
+                                 annotation[[constitutive]],
                                  showStrand)
         excStr <- junctionString(chr, strand,
-                                 annotation$`Constitutive exon 1 end`,
-                                 annotation$`Constitutive exon 2 start`,
+                                 annotation[[alt2end]],
+                                 annotation[[constitutive]],
                                  showStrand)
         
         # Get specific junction quantification
@@ -546,27 +551,33 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         gene[multigene] <- lapply(gene[multigene], paste, collapse="/")
         
         eventNames <- paste(sep="_", eventType, chr, strand, 
-                            annotation$`Constitutive exon 1 end`, 
-                            annotation$`Alternative exon 1 end`, 
-                            annotation$`Constitutive exon 2 start`, gene)
+                            annotation[[alt2end]], 
+                            annotation[[alt1end]], 
+                            annotation[[constitutive]], gene)
     } else if (eventType %in% c("A3SS", "ALE")) {
+        constitutive <- "Constitutive exon 1 end"
+        alt1start    <- "Alternative exon 1 start"
+        alt2start    <- "Alternative exon 2 start"
+        
+        # Backwards compatible with previous annotations
+        if (!alt2start %in% names(annotation)) 
+            alt2start <- "Constitutive exon 2 start"
+        
         # Remove duplicates based on columns used to create identifiers
         annotation <- annotation[!is.na(annotation$`Constitutive exon 1 end`), ]
         annotation <- uniqueBy(annotation, "Chromosome", "Strand",
-                               "Constitutive exon 1 end",
-                               "Alternative exon 1 start",
-                               "Constitutive exon 2 start", geneCol)
+                               constitutive, alt1start, alt2start, geneCol)
         chr <- annotation$Chromosome
         strand <- annotation$Strand
         
         # Create searchable strings for junctions
         incStr <- junctionString(chr, strand,
-                                 annotation$`Constitutive exon 1 end`,
-                                 annotation$`Alternative exon 1 start`,
+                                 annotation[[constitutive]],
+                                 annotation[[alt1start]],
                                  showStrand)
         excStr <- junctionString(chr, strand,
-                                 annotation$`Constitutive exon 1 end`, 
-                                 annotation$`Constitutive exon 2 start`,
+                                 annotation[[constitutive]], 
+                                 annotation[[alt2start]],
                                  showStrand)
         
         # Get specific junction quantification
@@ -583,9 +594,9 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         gene[multigene] <- lapply(gene[multigene], paste, collapse="/")
         
         eventNames <- paste(sep="_", eventType, chr, strand,
-                            annotation$`Constitutive exon 1 end`,
-                            annotation$`Alternative exon 1 start`, 
-                            annotation$`Constitutive exon 2 start`, gene)
+                            annotation[[constitutive]],
+                            annotation[[alt1start]], 
+                            annotation[[alt2start]], gene)
     }
     
     # Calculate inclusion levels
