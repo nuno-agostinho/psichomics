@@ -172,7 +172,7 @@ parseSuppaRI <- function (junctions, strand) {
 parseSuppaALE <- function (junctions, strand) {
     coords <- c("C1.end",
                 "A1.start", "A1.end",
-                "C2.start", "C2.end")
+                "A2.start", "A2.end")
     plus_pos  <- c(1:3, 5:6)
     minus_pos <- c(6:4, 2:1)
     parseSuppaGeneric(junctions, strand, coords, plus_pos, minus_pos)
@@ -185,7 +185,7 @@ parseSuppaALE <- function (junctions, strand) {
 #'     text = "169763871 169764046 169767998 169764550 169765124 169767998")
 #' psichomics:::parseSuppaAFE(junctions, "+")
 parseSuppaAFE <- function (junctions, strand) {
-    coords <- c("C1.start", "C1.end",
+    coords <- c("A2.start", "A2.end",
                 "A1.start", "A1.end",
                 "C2.start")
     plus_pos  <- c(4:5, 1:3)
@@ -215,7 +215,7 @@ parseSuppaMXE <- function (junctions, strand) {
 #' junctions <- read.table(text = "169772450 169773216 169772450 169773253")
 #' psichomics:::parseSuppaA3SS(junctions, "+")
 parseSuppaA3SS <- function (junctions, strand) {
-    coords <- c("C1.end", "A1.start", "C2.start")
+    coords <- c("C1.end", "A1.start", "A2.start")
     plus_pos  <- c(1, 2, 4)
     minus_pos <- c(4, 3, 1)
     parseSuppaGeneric(junctions, strand, coords, plus_pos, minus_pos)
@@ -227,7 +227,7 @@ parseSuppaA3SS <- function (junctions, strand) {
 #' junctions <- read.table(text = "50193276 50197008 50192997 50197008")
 #' psichomics:::parseSuppaA5SS(junctions, "+")
 parseSuppaA5SS <- function (junctions, strand) {
-    coords <- c("C1.end", "A1.end", "C2.start")
+    coords <- c("A2.end", "A1.end", "C2.start")
     plus_pos  <- c(3, 1, 4)
     minus_pos <- c(2, 4, 1)
     parseSuppaGeneric(junctions, strand, coords, plus_pos, minus_pos)

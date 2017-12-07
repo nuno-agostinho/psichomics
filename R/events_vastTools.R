@@ -254,18 +254,18 @@ parseVastToolsA3SS <- function (junctions) {
     # Plus strand
     plus3 <- plus & is3Available
     bigList <- sapply(junctions[, 2], length) > 2 # filter unrecognised events
-    parsed[plus & !bigList, ][c("A1.start", "C2.start")] <-
+    parsed[plus & !bigList, ][c("A1.start", "A2.start")] <-
         ldply(junctions[plus & !bigList, 2])
-    parsed[plus & bigList, ][["C2.start"]] <- junctions[plus & bigList, 2]
-    parsed[plus3, ][["C2.end"]] <- junctions[plus3, 3]
+    parsed[plus & bigList, ][["A2.start"]] <- junctions[plus & bigList, 2]
+    parsed[plus3, ][["A2.end"]] <- junctions[plus3, 3]
     
     # Minus strand
     minus2 <- !plus & is2Available
     bigList <- sapply(junctions[, 3], length) > 2 # filter unrecognised events
-    parsed[!plus & !bigList, ][c("A1.start", "C2.start")] <-
+    parsed[!plus & !bigList, ][c("A1.start", "A2.start")] <-
         ldply(junctions[!plus & !bigList, 3])
-    parsed[!plus & bigList, ][["C2.start"]] <- junctions[!plus & bigList, 3]
-    parsed[minus2, ][["C2.end"]] <- junctions[minus2, 2]
+    parsed[!plus & bigList, ][["A2.start"]] <- junctions[!plus & bigList, 3]
+    parsed[minus2, ][["A2.end"]] <- junctions[minus2, 2]
     return(parsed)
 }
 
@@ -295,17 +295,17 @@ parseVastToolsA5SS <- function (junctions) {
     # Plus strand
     plus1 <- plus & is1Available
     bigList <- sapply(junctions[, 2], length) > 2 # filter unrecognised events
-    parsed[plus1, ][["C1.start"]] <- junctions[plus1, 1]
-    parsed[plus & !bigList, ][c("A1.end", "C1.end")] <-
+    parsed[plus1, ][["A2.start"]] <- junctions[plus1, 1]
+    parsed[plus & !bigList, ][c("A1.end", "A2.end")] <-
         ldply(junctions[plus & !bigList, 2])
-    parsed[plus & bigList, ][["C1.end"]] <- junctions[plus & bigList, 2]
+    parsed[plus & bigList, ][["A2.end"]] <- junctions[plus & bigList, 2]
     
     # Minus strand
     minus2 <- !plus & is2Available
     bigList <- sapply(junctions[, 1], length) > 2 # filter unrecognised events
-    parsed[minus2, ][["C1.start"]] <- junctions[minus2, 2]
-    parsed[!plus & !bigList, ][c("A1.end", "C1.end")] <-
+    parsed[minus2, ][["A2.start"]] <- junctions[minus2, 2]
+    parsed[!plus & !bigList, ][c("A1.end", "A2.end")] <-
         ldply(junctions[!plus & !bigList, 1])
-    parsed[!plus & bigList, ][["C1.end"]] <- junctions[!plus & bigList, 1]
+    parsed[!plus & bigList, ][["A2.end"]] <- junctions[!plus & bigList, 1]
     return(parsed)
 }

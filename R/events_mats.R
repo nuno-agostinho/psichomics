@@ -220,7 +220,7 @@ parseMatsRI <- function(junctions, strand) {
 parseMatsA3SS <- function(junctions, strand) {
     coords <- c("C1.start", "C1.end",
                 "A1.start",
-                "C2.start", "C2.end")
+                "A2.start", "A2.end")
     plus  <- c(5:6, 1, 3, 2)
     minus <- c(6:5, 2, 4, 1)
     parseMatsGeneric(junctions, strand, coords, plus, minus)
@@ -236,7 +236,7 @@ parseMatsA3SS <- function(junctions, strand) {
 parseMatsA5SS <- function(junctions, strand) {
     coords <- c("C1.start", "C1.end",
                             "A1.end",
-                "C2.start", "C2.end")
+                "A2.start", "A2.end")
     plus  <- c(1, 4, 2, 5:6)
     minus <- c(2, 3, 1, 6, 5)
     parseMatsGeneric(junctions, strand, coords, plus, minus)
@@ -252,7 +252,7 @@ parseMatsA5SS <- function(junctions, strand) {
 parseMatsAFE <- function(junctions, strand) {
     coords <- c("C1.start", "C1.end",
                 "A1.start", "A1.end",
-                "C2.start", "C2.end")
+                "A2.start", "A2.end")
     plus  <- c(3:4, 1:2, 5:6)
     minus <- c(4:3, 2:1, 6:5)
     parseMatsGeneric(junctions, strand, coords, plus, minus)
@@ -268,7 +268,7 @@ parseMatsAFE <- function(junctions, strand) {
 parseMatsALE <- function(junctions, strand) {
     coords <- c("C1.start", "C1.end",
                 "A1.start", "A1.end",
-                "C2.start", "C2.end")
+                "A2.start", "A2.end")
     plus  <- c(5:6, 3:4, 1:2)
     minus <- c(6:5, 4:3, 2:1)
     parseMatsGeneric(junctions, strand, coords, plus, minus)

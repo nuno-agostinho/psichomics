@@ -1,4 +1,4 @@
-# 1.4.1 (15 Nov, 2017)
+# 1.4.1 (14 Dec, 2017)
 * Fixes regarding GTEx data:
     - Add input elements to allow GTEx gene expression loading in the graphical
     interface
@@ -10,6 +10,8 @@ million (CPM) using `edgeR::cpm` after normalisation using
 `edgeR::calcNormFactor`
 * Raise error when calculation of inclusion levels returns no AS events
 * Update file description and README
+* Updated support to properly parse new notation of alternative splicing 
+annotation from Bioconductor (backwards compatible with older notation)
 
 # 1.4.0 (22 Oct, 2017)
 

@@ -436,7 +436,7 @@ parseMisoRI <- function(event, strand) {
 #' psichomics:::parseMisoA5SS(event)
 parseMisoA5SS <- function(event) {
     validator <- c("gene", "mRNA", rep("exon", 2), "mRNA", rep("exon", 2))
-    coord <- c("C1.start", "C1.end",
+    coord <- c("A2.start", "A2.end",
                "A1.start", "A1.end",
                "C2.start", "C2.end")
     plusIndex <- c(5, 2, 3)
@@ -463,7 +463,7 @@ parseMisoA3SS <- function(event, plusIndex, minusIndex) {
     validator <- c("gene", "mRNA", rep("exon", 2), "mRNA", rep("exon", 2))
     coord <- c("C1.start", "C1.end",
                "A1.start", "A1.end",
-               "C2.start", "C2.end")
+               "A2.start", "A2.end")
     plusIndex <- c(2, 3, 6)
     minusIndex <- c(5, 2, 3)
     parsed <- parseMisoGeneric(event, validator, eventType="A3SS", coord, 
@@ -484,7 +484,7 @@ parseMisoA3SS <- function(event, plusIndex, minusIndex) {
 #' psichomics:::parseMisoTandemUTR(event)
 parseMisoTandemUTR <- function(event, minusIndex) {
     validator <- c("gene", "mRNA", "exon", "mRNA", rep("exon", 1))
-    coord <- c("C1.start", "C1.end",
+    coord <- c("A2.start", "A2.end",
                "A1.start", "A1.end")
     plusIndex <- c(2, 4)
     minusIndex <- c(4, 2)
@@ -544,16 +544,16 @@ parseMisoAFE <- function(event) {
         if (nrow(event[plus, ]) > 0) {
             parsed[plus, ][c("A1.start", 
                              "A1.end")] <- event[mRNA2-1, 4:5][plus, ]
-            parsed[plus, ][c("C1.start",
-                             "C1.end")] <- event[nextIndex-1, 4:5][plus, ]
+            parsed[plus, ][c("A2.start",
+                             "A2.end")] <- event[nextIndex-1, 4:5][plus, ]
         }
         # Minus strand
         minus <- !plus
         if (nrow(event[minus, ]) > 0) {
             parsed[minus, ][c("A1.start",
                               "A1.end")] <- event[mRNA1+1, 5:4][minus, ]
-            parsed[minus, ][c("C1.start", 
-                              "C1.end")] <- event[mRNA2+1, 5:4][minus, ]
+            parsed[minus, ][c("A2.start", 
+                              "A2.end")] <- event[mRNA2+1, 5:4][minus, ]
         }
         return(parsed)
     }
@@ -662,16 +662,16 @@ parseMisoALE <- function(event) {
         if (nrow(event[plus, ]) > 0) {
             parsed[plus, ][c("A1.start",
                              "A1.end")] <- event[mRNA1 + 1, 4:5][plus, ]
-            parsed[plus, ][c("C2.start",
-                             "C2.end")] <- event[mRNA2 + 1, 4:5][plus, ]
+            parsed[plus, ][c("A2.start",
+                             "A2.end")] <- event[mRNA2 + 1, 4:5][plus, ]
         }
         # Minus strand
         minus <- !plus
         if (nrow(event[minus, ]) > 0) {
             parsed[minus, ][c("A1.start", 
                               "A1.end")] <- event[mRNA2 - 1, 5:4][minus, ]
-            parsed[minus, ][c("C2.start", 
-                              "C2.end")] <- event[nextIndex - 1, 5:4][minus, ]
+            parsed[minus, ][c("A2.start", 
+                              "A2.end")] <- event[nextIndex - 1, 5:4][minus, ]
         }
         return(parsed)
     }
