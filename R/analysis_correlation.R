@@ -172,12 +172,13 @@ plotCorrelation <- function(corr, autoZoom=FALSE, loessSmooth=TRUE,
         eventId <- parseSplicingEvent(ASevent$eventID, char=TRUE, pretty=TRUE)
         
         estimateMethod <- names(ASevent$cor$estimate)
+        if (estimateMethod == "cor") estimateMethod <- "r"
         estimate <- trimWhitespace(signifDigits(unname(ASevent$cor$estimate)))
         Pvalue   <- trimWhitespace(signifDigits(unname(ASevent$cor$p.value)))
         
         plot <- ggplot(mapping=aes(x=event, y=expr)) + 
             geom_point(na.rm=TRUE) + 
-            ggtitle(eventId, sprintf("%s: %s (P: %s)", 
+            ggtitle(eventId, sprintf("%s: %s (p-value: %s)", 
                                      estimateMethod, estimate, Pvalue)) +
             labs(x="PSI levels", y=paste(gene, "gene expression"))
         

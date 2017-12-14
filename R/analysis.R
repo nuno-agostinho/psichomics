@@ -96,10 +96,10 @@ analysesUI <- function(id, tab) {
 #' @importFrom shinyjs hide show
 analysesServer <- function(input, output, session) {
     # Run server logic from the scripts
-    server <- getServerFunctions(
-        "analysis", priority=paste0(c("dimReduction", "diffSplicing", 
-                                      "diffExpression", "survival", "info"),
-                                    "Server"))
+    getServerFunctions("analysis", 
+                       priority=paste0(c("dimReduction", "diffSplicing", 
+                                         "diffExpression", "survival", "info"),
+                                       "Server"))
 }
 
 
