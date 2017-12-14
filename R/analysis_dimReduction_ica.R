@@ -14,14 +14,14 @@
 #' @examples 
 #' performICA(USArrests)
 performICA <- function(data, n.comp=min(5, ncol(data)), center=TRUE, 
-                       scale.=FALSE, naTolerance=0,
+                       scale.=FALSE, missingValues=10,
                        alg.typ=c("parallel", "defaltion"),
                        fun=c("logcosh", "exp"), alpha=1.0, ...) {
     alg.typ <- match.arg(alg.typ)
     fun <- match.arg(fun)
-    reduceDimensionality(data, "ica", naTolerance=naTolerance, center=center,
-                         scale.=scale., n.comp=n.comp, alg.typ=alg.typ, fun=fun,
-                         alpha=alpha, ...)
+    reduceDimensionality(data, "ica", missingValues=missingValues, 
+                         center=center, scale.=scale., n.comp=n.comp, 
+                         alg.typ=alg.typ, fun=fun, alpha=alpha, ...)
 }
 
 #' Create multiple scatterplots from ICA
@@ -134,11 +134,10 @@ icaUI <- function(id) {
         checkboxGroupInput(ns("preprocess"), "Preprocessing",
                            c("Center values"="center", "Scale values"="scale"),
                            selected=c("center"), width="100%"),
-        sliderInput(ns("naTolerance"), div(
-            "Percentage of missing values to tolerate per event",
-            icon("question-circle")),
-            min=0, max=100, value=0, post="%", width="100%"),
-        bsTooltip(ns("naTolerance"), placement="right", paste(
+        numericInput(ns("missingValues"), div(
+            "Number of missing values to tolerate per event",
+            icon("question-circle")), min=0, max=100, value=10, width="100%"),
+        bsTooltip(ns("missingValues"), placement="right", paste(
             "For events with a tolerable percentage of missing",
             "values, the median value of the event across",
             "samples is used to replace those missing values.",
@@ -456,7 +455,7 @@ icaServer <- function(input, output, session) {
                                              filter=rownames(dataForICA))
                 preprocess      <- input$preprocess
                 componentNumber <- input$componentNumber
-                naTolerance     <- input$naTolerance
+                missingValues   <- input$missingValues
             })
             
             # Subset data based on the selected groups
@@ -479,7 +478,7 @@ icaServer <- function(input, output, session) {
             
             # Perform independent component analysis (ICA) on the subset data
             ica <- performICA(dataForICA, n.comp=componentNumber, 
-                              naTolerance=naTolerance,
+                              missingValues=missingValues,
                               center="center" %in% preprocess,
                               scale.="scale" %in% preprocess)
             if (is.null(ica)) {

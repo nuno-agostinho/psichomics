@@ -4,7 +4,7 @@
 \alias{performPCA}
 \title{Perform principal component analysis after processing missing values}
 \usage{
-performPCA(data, center = TRUE, scale. = FALSE, naTolerance = 0, ...)
+performPCA(data, center = TRUE, scale. = FALSE, missingValues = 10, ...)
 }
 \arguments{
 \item{data}{an optional data frame (or similar: see
@@ -24,7 +24,8 @@ performPCA(data, center = TRUE, scale. = FALSE, naTolerance = 0, ...)
     equal the number of columns of \code{x} can be supplied.  The
     value is passed to \code{\link{scale}}.}
 
-\item{naTolerance}{Integer: percentage of NA tolerance}
+\item{missingValues}{Integer: number of tolerated missing values per column
+to be replaced with the mean of the values of that same column}
 
 \item{...}{Arguments passed on to \code{stats::prcomp}}
 }
