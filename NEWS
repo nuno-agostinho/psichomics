@@ -4,21 +4,24 @@
     interface
     - Fix bug that did not allow to select tissues to load GTEx v7 data
     (graphical interface)
-    - Fix not calculating inclusion levels based on GTEx v7 junction reads
+    - Fix splicing events not being quantified based on GTEx v7 junction reads
 * Gene expression normalisation:
     - Fix misleading gene expression (non-)normalisation by converting reads to 
     counts per million (CPM) using `edgeR::cpm` after normalisation using
     `edgeR::calcNormFactor`
 * Alternative splicing quantification:
-    - Raise error when calculation of inclusion levels returns no AS events
     - Updated support to properly parse new notation of alternative splicing 
     annotation from Bioconductor (backwards compatible with older notation)
+    - Raise error when no splicing events after quantification
+    - Fix warning following the quantification of splicing events or its loading
+    (incorrect parsing of gene information from splicing events)
 * Dimensionality reduction:
     - Use the number (instead of the percentage) of tolerated missing values per
     sample as the argument to impute data from the remaining samples for those
     values before performing dimensionality reduction; by default, missing 
     values are tolerated for 10 samples
 * Update file description and README
+* Minor bug fixes and improvements
 
 # 1.4.0 (22 Oct, 2017)
 
