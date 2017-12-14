@@ -15,32 +15,32 @@ test_that("Perform PCA", {
 test_that("Center and scale the data", {
     center <- FALSE
     scale  <- FALSE
-    pca <- performPCA(data, center=center, scale.=scale, naTolerance=0)
+    pca <- performPCA(data, center=center, scale.=scale, missingValues=0)
     pca2 <- prcomp(data, center=center, scale.=scale)
     expect_equal(pca, pca2)
     
     center <- TRUE
     scale  <- FALSE
-    pca <- performPCA(data, center=center, scale.=scale, naTolerance=0)
+    pca <- performPCA(data, center=center, scale.=scale, missingValues=0)
     pca2 <- prcomp(data, center=center, scale.=scale)
     expect_equal(pca, pca2)
     
     center <- FALSE
     scale  <- TRUE
-    pca <- performPCA(data, center=center, scale.=scale, naTolerance=0)
+    pca <- performPCA(data, center=center, scale.=scale, missingValues=0)
     pca2 <- prcomp(data, center=center, scale.=scale)
     expect_equal(pca, pca2)
     
     center <- TRUE
     scale  <- TRUE
-    pca <- performPCA(data, center=center, scale.=scale, naTolerance=0)
+    pca <- performPCA(data, center=center, scale.=scale, missingValues=0)
     pca2 <- prcomp(data, center=center, scale.=scale)
     expect_equal(pca, pca2)
 })
 
 test_that("Tolerate NAs per columns", {
-    # Data has no NAs (therefore, naTolerance is irrelevant)
-    pca <- performPCA(data, center=FALSE, scale.=FALSE, naTolerance=50)
+    # Data has no NAs (therefore, missingValues is irrelevant)
+    pca <- performPCA(data, center=FALSE, scale.=FALSE, missingValues=50)
     expect_is(pca, "prcomp")
     expect_equal(nrow(pca$x), nrow(data))
     expect_equal(ncol(pca$x), ncol(data))
@@ -50,7 +50,7 @@ test_that("Tolerate NAs per columns", {
     # Data is exclusively composed of NAs
     all.nas <- matrix(ncol=4, nrow=50)
     expect_warning(
-        pca <- performPCA(all.nas, center=FALSE, scale.=FALSE, naTolerance=30))
+        pca <- performPCA(all.nas, center=FALSE, scale.=FALSE, missingValues=30))
     expect_null(pca)
     expect_error(prcomp(all.nas, center=FALSE, scale.=FALSE))
     
@@ -62,25 +62,25 @@ test_that("Tolerate NAs per columns", {
     nas[[4]][seq(1, length(nas[[4]]), 4)] <- NA
     
     # Tolerate columns containing 50% of NAs
-    pca <- performPCA(nas, center=FALSE, scale.=FALSE, naTolerance=50)
+    pca <- performPCA(nas, center=FALSE, scale.=FALSE, missingValues=25)
     expect_equal(colnames(nas)[2:4], rownames(pca$rotation))
     
     # Tolerate columns containing 49% of NAs
-    pca <- performPCA(nas, center=FALSE, scale.=FALSE, naTolerance=49)
+    pca <- performPCA(nas, center=FALSE, scale.=FALSE, missingValues=24)
     expect_equal(colnames(nas)[3:4], rownames(pca$rotation))
     
     # Tolerate columns containing 26% of NAs
-    pca <- performPCA(nas, center=FALSE, scale.=FALSE, naTolerance=26)
+    pca <- performPCA(nas, center=FALSE, scale.=FALSE, missingValues=13)
     expect_equal(colnames(nas)[4], rownames(pca$rotation))
     
     # Tolerate columns containing 25% of NAs
     expect_warning(
-        pca <- performPCA(nas, center=FALSE, scale.=FALSE, naTolerance=25))
+        pca <- performPCA(nas, center=FALSE, scale.=FALSE, missingValues=12))
     expect_null(pca)
 })
 
 test_that("Plot explained variance", {
-    pca <- performPCA(data, center=FALSE, scale.=FALSE, naTolerance=0)
+    pca <- performPCA(data, center=FALSE, scale.=FALSE, missingValues=0)
     hc <- plotVariance(pca)
     expect_is(hc, "highchart")
     eigenvalue <- vapply(hc$x$hc_opts$series[[1]]$data, "[[", "eigenvalue", 
