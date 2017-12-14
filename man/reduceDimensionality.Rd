@@ -5,7 +5,7 @@
 \title{Reduce dimensionality after processing missing values from data frame}
 \usage{
 reduceDimensionality(data, type = c("pca", "ica"), center = TRUE,
-  scale. = FALSE, naTolerance = 0, ...)
+  scale. = FALSE, naTolerance = NULL, missingValues = 10, ...)
 }
 \arguments{
 \item{data}{Data frame: data}
@@ -18,7 +18,11 @@ reduceDimensionality(data, type = c("pca", "ica"), center = TRUE,
 
 \item{scale.}{Boolean: scale variables?}
 
-\item{naTolerance}{Integer: percentage of NA tolerance}
+\item{naTolerance}{Integer: percentage of tolerated missing values per column
+(deprecated)}
+
+\item{missingValues}{Integer: number of tolerated missing values per column
+to be replaced with the mean of the values of that same column}
 
 \item{...}{Extra parameters passed to FUN}
 }
