@@ -132,8 +132,8 @@ parseSplicingEvent <- function(event, char=FALSE, pretty=FALSE, extra=NULL) {
                                      FUN.VALUE=character(1)), "/")
     parsed$pos    <- lapply(seq_along(event), 
                             function(i) event[[i]][4:lenMinus1[[i]]])
-    parsed$pos    <- lapply(parsed$pos, 
-                            function(i) range(as.numeric(i)))
+    parsed$pos    <- suppressWarnings( # Simply ignore non-numeric items
+        lapply(parsed$pos, function(i) range(as.numeric(i), na.rm=TRUE)))
     
     if (pretty)
         parsed$type <- getSplicingEventTypes(acronymsAsNames=TRUE)[parsed$type]
