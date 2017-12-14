@@ -42,7 +42,7 @@ reduceDimensionality <- function(data, type=c("pca", "ica"), center=TRUE,
     }
     
     if (ncol(data) == 0) {
-        warning("Empty data input.",
+        warning("Empty data input. ",
                 "Try increasing the tolerance for missing values.")
         return(NULL)
     }
