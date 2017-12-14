@@ -3,7 +3,10 @@
 #' @param data Data frame: data
 #' @param type Character: dimensionality reduction technique (\code{pca} or 
 #' \code{ica})
-#' @param naTolerance Integer: percentage of NA tolerance
+#' @param naTolerance Integer: percentage of tolerated missing values per column
+#' (deprecated)
+#' @param missingValues Integer: number of tolerated missing values per column
+#' to be replaced with the mean of the values of that same column
 #' @param scale. Boolean: scale variables?
 #' @param ... Extra parameters passed to FUN
 #' @inheritParams base::scale
@@ -15,7 +18,8 @@
 #' @return PCA result in a \code{prcomp} object or ICA result
 #' object
 reduceDimensionality <- function(data, type=c("pca", "ica"), center=TRUE, 
-                                 scale.=FALSE, naTolerance=0, ...) {
+                                 scale.=FALSE, naTolerance=NULL, 
+                                 missingValues=10, ...) {
     # # Get individuals (rows) with less than a given percentage of NAs
     # nas <- rowSums(is.na(data))
     # # hist(nas/ncol(data)*100)
@@ -28,9 +32,18 @@ reduceDimensionality <- function(data, type=c("pca", "ica"), center=TRUE,
     
     # Get loadings (columns) with less than a given percentage of NAs
     nas <- colSums(is.na(data))
-    data <- data[, nas/nrow(data) * 100 <= naTolerance, drop=FALSE]
+    
+    if (!is.null(naTolerance)) {
+        warning("The argument 'naTolerance' is deprecated:",
+                "use 'missingValues' instead.")
+        data <- data[ , nas/nrow(data) * 100 <= naTolerance, drop=FALSE]
+    } else {
+        data <- data[ , nas <= missingValues, drop=FALSE]
+    }
+    
     if (ncol(data) == 0) {
-        warning("NA tolerance may be too low. Try increasing the NA tolerance.")
+        warning("Empty data input.",
+                "Try increasing the tolerance for missing values.")
         return(NULL)
     }
     

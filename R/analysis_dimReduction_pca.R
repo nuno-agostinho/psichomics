@@ -16,9 +16,9 @@
 #' 
 #' @examples 
 #' performPCA(USArrests)
-performPCA <- function(data, center=TRUE, scale.=FALSE, naTolerance=0, ...) {
-    reduceDimensionality(data, "pca", naTolerance, center=center, scale.=scale.,
-                         ...)
+performPCA <- function(data, center=TRUE, scale.=FALSE, missingValues=10, ...) {
+    reduceDimensionality(data, "pca", missingValues=missingValues, 
+                         center=center, scale.=scale., ...)
 }
 
 #' @rdname appUI
@@ -39,15 +39,13 @@ pcaUI <- function(id) {
         checkboxGroupInput(ns("preprocess"), "Preprocessing",
                            c("Center values"="center", "Scale values"="scale"),
                            selected=c("center"), width="100%"),
-        sliderInput(ns("naTolerance"), div(
-            "Percentage of missing values to tolerate per event",
-            icon("question-circle")),
-            min=0, max=100, value=0, post="%", width="100%"),
-        bsTooltip(ns("naTolerance"), placement="right", paste(
-            "For events with a tolerable percentage of missing",
-            "values, the median value of the event across",
-            "samples is used to replace those missing values.",
-            "The remaining events are discarded."),
+        numericInput(ns("missingValues"), div(
+            "Number of missing values to tolerate per event",
+            icon("question-circle")), min=0, max=100, value=10, width="100%"),
+        bsTooltip(ns("missingValues"), placement="right", paste(
+            "For events with a tolerable number of missing values, the median",
+            "value of the event across samples is used to replace those",
+            "missing values. The remaining events are discarded."),
             options=list(container="body")),
         selectGroupsUI(ns("dataGroups"), "Perform PCA on...",
                        noGroupsLabel="All samples",
@@ -264,9 +262,10 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
         }
     }
     if (loadings) {
-        sdev <- pca$sdev[c(pcX, pcY)]
-        eigenvalue <- sdev ^ 2
         loadings <- data.frame(pca$rotation)[, c(pcX, pcY)]
+        sdev <- pca$sdev[c(pcX, pcY)]
+        # Get a proportional value to eigenvalues based on standard deviation
+        eigenvalue <- sdev ^ 2
         # Correlation between variables and principal components
         varCoor <- t(loadings) * sdev
         quality <- varCoor ^ 2
@@ -551,7 +550,7 @@ pcaServer <- function(input, output, session) {
                 groups2 <- getSelectedGroups(input, "dataGroups2", groups2Type, 
                                              filter=rownames(dataForPCA))
                 preprocess <- input$preprocess
-                naTolerance <- input$naTolerance
+                missingValues <- input$missingValues
             })
             
             # Subset data based on the selected groups
@@ -573,7 +572,7 @@ pcaServer <- function(input, output, session) {
             dataForPCA <- t(dataForPCA)
             
             # Perform principal component analysis (PCA) on the subset data
-            pca <- performPCA(dataForPCA, naTolerance=naTolerance,
+            pca <- performPCA(dataForPCA, missingValues=missingValues,
                               center="center" %in% preprocess,
                               scale.="scale" %in% preprocess)
             if (is.null(pca)) {
