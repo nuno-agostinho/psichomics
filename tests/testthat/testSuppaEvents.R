@@ -112,28 +112,28 @@ test_that("parseSuppaA3SS parses an alt. 3' splice site event junctions", {
     parsed <- parseSuppaA3SS(junctions, "+")
     expect_equal(parsed$C1.end,   169772450)
     expect_equal(parsed$A1.start, 169773216)
-    expect_equal(parsed$C2.start, 169773253)
+    expect_equal(parsed$A2.start, 169773253)
     
     # Strand minus
     junctions <- read.table(text = "1019466 1019733 1019391 1019733")
     parsed <- parseSuppaA3SS(junctions, "-")
     expect_equal(parsed$C1.end,   1019733)
     expect_equal(parsed$A1.start, 1019391)
-    expect_equal(parsed$C2.start, 1019466)
+    expect_equal(parsed$A2.start, 1019466)
 })
 
 test_that("parseSuppaA5SS parses an alt. 5' splice site event junctions", {
     # Strand plus
     junctions <- read.table(text = "50193276 50197008 50192997 50197008")
     parsed <- parseSuppaA5SS(junctions, "+")
-    expect_equal(parsed$C1.end,   50192997)
+    expect_equal(parsed$A2.end,   50192997)
     expect_equal(parsed$A1.end,   50193276)
     expect_equal(parsed$C2.start, 50197008)
     
     # Strand minus
     junctions <- read.table(text = "29543197 29547229 29543197 29547350")
     parsed <- parseSuppaA5SS(junctions, "-")
-    expect_equal(parsed$C1.end,   29547229)
+    expect_equal(parsed$A2.end,   29547229)
     expect_equal(parsed$A1.end,   29547350)
     expect_equal(parsed$C2.start, 29543197)
 })
@@ -143,8 +143,8 @@ test_that("parseSuppaAFE parses an alt. first exon event junctions", {
     junctions <- read.table(
         text = "169763871 169764046 169767998 169764550 169765124 169767998")
     parsed <- parseSuppaAFE(junctions, "+")
-    expect_equal(parsed$C1.start, 169764550)
-    expect_equal(parsed$C1.end,   169765124)
+    expect_equal(parsed$A2.start, 169764550)
+    expect_equal(parsed$A2.end,   169765124)
     expect_equal(parsed$A1.start, 169763871)
     expect_equal(parsed$A1.end,   169764046)
     expect_equal(parsed$C2.start, 169767998)
@@ -153,8 +153,8 @@ test_that("parseSuppaAFE parses an alt. first exon event junctions", {
     junctions <- read.table(
         text = "2341890 2343830 2344010 2341890 2345036 2345236")
     parsed <- parseSuppaAFE(junctions, "-")
-    expect_equal(parsed$C1.start, 2344010)
-    expect_equal(parsed$C1.end,   2343830)
+    expect_equal(parsed$A2.start, 2344010)
+    expect_equal(parsed$A2.end,   2343830)
     expect_equal(parsed$A1.start, 2345236)
     expect_equal(parsed$A1.end,   2345036)
     expect_equal(parsed$C2.start, 2341890)
@@ -168,8 +168,8 @@ test_that("parseSuppaALE parses an alt. last exon event junctions", {
     expect_equal(parsed$C1.end,   24790610)
     expect_equal(parsed$A1.start, 24792494)
     expect_equal(parsed$A1.end,   24792800)
-    expect_equal(parsed$C2.start, 24795476)
-    expect_equal(parsed$C2.end,   24795797)
+    expect_equal(parsed$A2.start, 24795476)
+    expect_equal(parsed$A2.end,   24795797)
     
     # Strand minus
     junctions <- read.table(
@@ -178,6 +178,6 @@ test_that("parseSuppaALE parses an alt. last exon event junctions", {
     expect_equal(parsed$C1.end,   31504938)
     expect_equal(parsed$A1.start, 31496997)
     expect_equal(parsed$A1.end,   31496482)
-    expect_equal(parsed$C2.start, 31479307)
-    expect_equal(parsed$C2.end,   31478894)
+    expect_equal(parsed$A2.start, 31479307)
+    expect_equal(parsed$A2.end,   31478894)
 })
