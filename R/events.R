@@ -380,8 +380,8 @@ sortCoordinates <- function(events) {
 #' junction quantification for many samples
 #' 
 #' @param eventType Character: type of the alternative event to calculate
-#' @param junctionQuant Data.frame: junction quantification with samples as
-#' columns and junctions as rows
+#' @param junctionQuant Matrix: junction quantification with samples as columns 
+#' and junctions as rows
 #' @param annotation Data.frame: alternative splicing annotation related to
 #' event type
 #' @param minReads Integer: minimum of total reads required to consider the
@@ -426,26 +426,22 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                                   annotation$`Alternative exon 1 end`,
                                   annotation$`Constitutive exon 2 start`,
                                   showStrand)
-        exclstr <- junctionString(chr, strand, 
+        excAstr <- junctionString(chr, strand, 
                                   annotation$`Constitutive exon 1 end`, 
                                   annotation$`Constitutive exon 2 start`,
                                   showStrand)
         
         # Get specific junction quantification
-        coords <- rownames(junctionQuant)
-        incA <- junctionQuant[fmatch(incAstr, coords), ]
-        incB <- junctionQuant[fmatch(incBstr, coords), ]
-        excl <- junctionQuant[fmatch(exclstr, coords), ]
-        rm(incAstr, incBstr, exclstr)
+        incA <- fmatch(incAstr, coords)
+        incB <- fmatch(incBstr, coords)
+        excA <- fmatch(excAstr, coords)
+        excB <- 0
         
-        # Calculate inclusion levels
-        inc <- (incA + incB) / 2
-        rm(incA, incB)
-        
-        tot <- excl + inc
-        rm(excl)
-        if (nrow(tot) == 0)
-            return(NULL)
+        nas  <- is.na(incA) | is.na(incB) | is.na(excA)
+        incA <- incA[!nas]
+        incB <- incB[!nas]
+        excA <- excA[!nas]
+        if (length(incA) == 0) return(NULL)
         
         # Prepare presentation of multigenes
         multigene <- lapply(annotation$Gene, length) > 1
@@ -486,18 +482,17 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                                   showStrand)
         
         # Get specific junction quantification
-        coords <- rownames(junctionQuant)
-        incA <- junctionQuant[fmatch(incAstr, coords), ]
-        incB <- junctionQuant[fmatch(incBstr, coords), ]
-        excA <- junctionQuant[fmatch(excAstr, coords), ]
-        excB <- junctionQuant[fmatch(excBstr, coords), ]
+        incA <- fmatch(incAstr, coords)
+        incB <- fmatch(incBstr, coords)
+        excA <- fmatch(excAstr, coords)
+        excB <- fmatch(excBstr, coords)
         
-        # Calculate inclusion levels
-        inc <- (incA + incB)
-        exc <- (excA + excB)
-        tot <- inc + exc
-        if (nrow(tot) == 0)
-            return(NULL)
+        nas  <- is.na(incA) | is.na(incB) | is.na(excA) | is.na(excB)
+        incA <- incA[!nas]
+        incB <- incB[!nas]
+        excA <- excA[!nas]
+        excB <- excB[!nas]
+        if (length(incA) == 0) return(NULL)
         
         # Prepare presentation of multigenes
         multigene <- lapply(annotation$Gene, length) > 1
@@ -528,22 +523,25 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         strand <- annotation$Strand
         
         # Create searchable strings for junctions
-        incStr <- junctionString(chr, strand,
-                                 annotation[[alt1end]], 
-                                 annotation[[constitutive]],
-                                 showStrand)
-        excStr <- junctionString(chr, strand,
-                                 annotation[[alt2end]],
-                                 annotation[[constitutive]],
-                                 showStrand)
+        incAstr <- junctionString(chr, strand,
+                                  annotation[[alt1end]], 
+                                  annotation[[constitutive]],
+                                  showStrand)
+        excAstr <- junctionString(chr, strand,
+                                  annotation[[alt2end]],
+                                  annotation[[constitutive]],
+                                  showStrand)
         
         # Get specific junction quantification
-        coords <- rownames(junctionQuant)
-        inc <- junctionQuant[fmatch(incStr, coords), ]
-        exc <- junctionQuant[fmatch(excStr, coords), ]
-        tot <- inc + exc
-        if (nrow(tot) == 0)
-            return(NULL)
+        incA <- fmatch(incAstr, coords)
+        incB <- 0
+        excA <- fmatch(excAstr, coords)
+        excB <- 0
+        
+        nas  <- is.na(incA) | is.na(excA)
+        incA <- incA[!nas]
+        excA <- excA[!nas]
+        if (length(incA) == 0) return(NULL)
         
         # Prepare presentation of multigenes
         multigene <- lapply(annotation$Gene, length) > 1
@@ -571,22 +569,25 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         strand <- annotation$Strand
         
         # Create searchable strings for junctions
-        incStr <- junctionString(chr, strand,
-                                 annotation[[constitutive]],
-                                 annotation[[alt1start]],
-                                 showStrand)
-        excStr <- junctionString(chr, strand,
-                                 annotation[[constitutive]], 
-                                 annotation[[alt2start]],
-                                 showStrand)
+        incAstr <- junctionString(chr, strand,
+                                  annotation[[constitutive]],
+                                  annotation[[alt1start]],
+                                  showStrand)
+        excAstr <- junctionString(chr, strand,
+                                  annotation[[constitutive]], 
+                                  annotation[[alt2start]],
+                                  showStrand)
         
         # Get specific junction quantification
-        coords <- rownames(junctionQuant)
-        inc <- junctionQuant[fmatch(incStr, coords), ]
-        exc <- junctionQuant[fmatch(excStr, coords), ]
-        tot <- inc + exc
-        if (nrow(tot) == 0)
-            return(NULL)
+        incA <- fmatch(incAstr, coords)
+        incB <- 0
+        excA <- fmatch(excAstr, coords)
+        excB <- 0
+        
+        nas  <- is.na(incA) | is.na(excA)
+        incA <- incA[!nas]
+        excA <- excA[!nas]
+        if (length(incA) == 0) return(NULL)
         
         # Prepare presentation of multigenes
         multigene <- lapply(annotation$Gene, length) > 1
@@ -599,14 +600,10 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                             annotation[[alt2start]], gene)
     }
     
-    # Calculate inclusion levels
-    psi <- inc/tot
-    
-    # Ignore PSI values when total reads are below the threshold
-    psi[tot < minReads | is.na(tot)] <- NA
-    colnames(psi) <- colnames(inc)
-    rownames(psi) <- eventNames
-    rm(inc)
+    psi <- psiFastCalc(junctionQuant, incA=incA, incB=incB, excA=excA,
+                       excB=excB, minReads=minReads)
+    if (nrow(psi) == 0) return(NULL)
+    rownames(psi) <- eventNames[!nas]
     
     # Clear rows with nothing but missing values
     naRows <- rowSums(!is.na(psi)) == 0

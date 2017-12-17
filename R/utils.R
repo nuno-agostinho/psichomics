@@ -869,9 +869,11 @@ updateProgress <- function(message="Loading", value=NULL, max=NULL, detail=NULL,
 
     # Increment progress
     if (!isRunning()) { # CLI version
-        value <- min(global$progress$getVal() + amount, 1)
-        setTxtProgressBar(global$progress, value)
-        setHidden(global)
+        if (!is.null(global)) {
+            value <- min(global$progress$getVal() + amount, 1)
+            setTxtProgressBar(global$progress, value)
+            setHidden(global)
+        }
     } else { # GUI version
         if (is.null(detail)) detail <- ""
         global$progress$inc(amount=amount, message=message, detail=detail)

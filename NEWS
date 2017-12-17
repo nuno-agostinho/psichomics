@@ -1,3 +1,7 @@
+# 1.4.2 (23 Dec, 2017)
+* Alternative splicing quantification:
+    - Improve speed and memory usage when dealing with larger datasets
+
 # 1.4.1 (14 Dec, 2017)
 * GTEx data loading:
     - Add input elements to allow GTEx gene expression loading in the graphical

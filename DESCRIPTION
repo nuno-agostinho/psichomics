@@ -51,6 +51,7 @@ Imports:
     miscTools,
     pairsD3,
     plyr,
+    Rcpp (>= 0.12.14),
     R.utils,
     shinyjs,
     stringr,
@@ -70,8 +71,10 @@ Suggests:
     gplots,
     covr,
     car
+LinkingTo: Rcpp
 VignetteBuilder: knitr
 Collate: 
+    'RcppExports.R'
     'utils.R'
     'globalAccess.R'
     'app.R'

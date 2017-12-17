@@ -155,6 +155,11 @@ quantifySplicing <- function(annotation, junctionQuant,
         annotation <- lapply(annotation, filterByGenes, genes)
     }
     
+    # Convert data frame to matrix if needed (faster)
+    mJunctionQuant <- junctionQuant
+    if (!is(mJunctionQuant, "matrix"))
+        mJunctionQuant <- as.matrix(junctionQuant)
+    
     psi <- NULL
     for (acronym in eventType) {
         eventTypes <- getSplicingEventTypes()
@@ -165,7 +170,7 @@ quantifySplicing <- function(annotation, junctionQuant,
         
         if (!is.null(thisAnnot) && nrow(thisAnnot) > 0) {
             psi <- rbind(psi, calculateInclusionLevels(
-                acronym, junctionQuant, thisAnnot, minReads))
+                acronym, mJunctionQuant, thisAnnot, minReads))
         }
     }
     if (is.null(psi)) psi <- data.frame(NULL)
