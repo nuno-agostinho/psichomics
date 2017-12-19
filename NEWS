@@ -1,3 +1,9 @@
+# 1.4.2 (18 Dec, 2017)
+* Principal component analysis:
+    - Export table with the contribution of events (for alternative splicing 
+    quantification) or genes (for gene expression) to the selected principal
+    components
+
 # 1.4.1 (14 Dec, 2017)
 * GTEx data loading:
     - Add input elements to allow GTEx gene expression loading in the graphical

@@ -25,7 +25,7 @@ performPCA <- function(data, center=TRUE, scale.=FALSE, missingValues=10, ...) {
 #' 
 #' @importFrom highcharter highchartOutput
 #' @importFrom shinyBS bsTooltip
-#' @importFrom shiny checkboxGroupInput tagList uiOutput hr
+#' @importFrom shiny checkboxGroupInput tagList uiOutput hr downloadButton
 #' sliderInput actionButton selectizeInput
 #' @importFrom shinyjs hidden
 pcaUI <- function(id) {
@@ -148,7 +148,9 @@ pcaUI <- function(id) {
                 clusteringCollapse)
         ), mainPanel(
             highchartOutput(ns("scatterplot")),
-            highchartOutput(ns("scatterplotLoadings"))
+            highchartOutput(ns("scatterplotLoadings")),
+            hidden( downloadButton(ns("saveVarContr"),
+                                   "Save contribution of variables as table") )
         )
     )
 }
@@ -167,10 +169,10 @@ pcaUI <- function(id) {
 #' pca <- prcomp(USArrests)
 #' plotVariance(pca)
 plotVariance <- function(pca) {
+    # Get a proportional value to eigenvalues based on standard deviation
     eigenvalue <- unname( pca$sdev ^ 2 )
     variance <- eigenvalue * 100 / sum(eigenvalue)
     cumvar <- cumsum(variance)
-    ns <- paste("PC", seq_along(eigenvalue))
     
     # Prepare data
     data <- lapply(seq(eigenvalue), function(i) {
@@ -199,6 +201,39 @@ plotVariance <- function(pca) {
                 "Cumulative variance: {point.cumvar:.2f}%")) %>%
         export_highcharts()
     return(hc)
+}
+
+#' Calculate the contribution of PCA loadings to the selected principal
+#' components
+#'
+#' Total contribution of a variable is calculated as per: 
+#' ((Cx \* Ex) + (Cy \* Ey))/(Ex + Ey), where Cx and Cy are the 
+#' contributions of a variable to principal components (x and y) and Ex and Ey 
+#' are the eigenvalues of principal components (x and y)
+#'
+#' @inheritParams plotPCA
+#' 
+#' @source \url{http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/}
+#'
+#' @return Data frame containing the correlation between variables and selected 
+#' principal components and the contribution of variables to the selected 
+#' principal components (both individual and total contribution)
+calculateLoadingsContribution <- function(pca, pcX, pcY) {
+    loadings <- data.frame(pca$rotation)[, c(pcX, pcY)]
+    sdev <- pca$sdev[c(pcX, pcY)]
+    # Get a proportional value to eigenvalues based on standard deviation
+    eigenvalue <- sdev ^ 2
+    # Correlation between variables and principal components
+    varCoor <- t(loadings) * sdev
+    quality <- varCoor ^ 2
+    # Total contribution of the variables for the selected PCs
+    contr <- quality * 100 / rowSums(quality)
+    totalContr <- colSums(contr * eigenvalue) / sum(eigenvalue)
+    
+    rownames(varCoor) <- sprintf("Correlation with PC%s", c(pcX, pcY))
+    rownames(contr)   <- sprintf("Contribution to PC%s (%%)", c(pcX, pcY))
+    cbind(t(varCoor), t(contr)/colSums(t(contr))*100, 
+          "Total contribution (%)"=totalContr/sum(totalContr)*100)
 }
 
 #' Create a scatterplot from a PCA object
@@ -262,21 +297,16 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
         }
     }
     if (loadings) {
-        loadings <- data.frame(pca$rotation)[, c(pcX, pcY)]
-        sdev <- pca$sdev[c(pcX, pcY)]
-        # Get a proportional value to eigenvalues based on standard deviation
-        eigenvalue <- sdev ^ 2
-        # Correlation between variables and principal components
-        varCoor <- t(loadings) * sdev
-        quality <- varCoor ^ 2
-        # Total contribution of the variables for the selected PCs
-        contr <- quality * 100 / rowSums(quality)
-        totalContr <- colSums(contr * eigenvalue)
+        contr        <- calculateLoadingsContribution(pca, pcX, pcY)
+        varCoorNames <- sprintf("Correlation with PC%s", c(pcX, pcY))
+        varCoor1     <- contr[ , varCoorNames[1]]
+        varCoor2     <- contr[ , varCoorNames[2]]
+        totalContr   <- contr[ , "Total contribution (%)"]
         
-        names <- parseSplicingEvent(rownames(loadings), char=TRUE)
+        names <- parseSplicingEvent(rownames(contr), char=TRUE)
         ## TODO(NunoA): color points with a gradient; see colorRampPalette()
         # For loadings, add series (but don't add to legend)
-        hc <- hc_scatter(hc, varCoor[1, ], varCoor[2, ], unname(totalContr), 
+        hc <- hc_scatter(hc, varCoor1, varCoor2, unname(totalContr), 
                          name="Loadings", sample=names) %>%
             hc_subtitle(text=paste("Bubble size: contribution of a variable",
                                    "to the selected principal components"))
@@ -476,6 +506,7 @@ clusterSet <- function(session, input, output) {
 
 #' @rdname appServer
 #' 
+#' @importFrom shiny downloadHandler
 #' @importFrom shinyjs runjs hide show
 #' @importFrom highcharter %>% hc_chart hc_xAxis hc_yAxis hc_tooltip
 #' @importFrom stats setNames
@@ -591,6 +622,7 @@ pcaServer <- function(input, output, session) {
                 # Clear previously plotted charts
                 output$scatterplot <- renderHighchart(NULL)
                 output$scatterplotLoadings <- renderHighchart(NULL)
+                hide("saveVarContr")
             }
             updateCollapse(session, "pcaCollapse", "Plot PCA")
             endProcess("calculate", closeProgressBar=FALSE)
@@ -690,6 +722,20 @@ pcaServer <- function(input, output, session) {
                             click=JS(onClick)))))
             }
         })
+        
+        show("saveVarContr")
+        output$saveVarContr <- downloadHandler(
+            filename=function() {
+                paste(getCategory(), "PCA variable contribution")
+            }, content=function(con) {
+                if (is.character(pcX)) pcX <- as.numeric(gsub("[A-Z]", "", pcX))
+                if (is.character(pcY)) pcY <- as.numeric(gsub("[A-Z]", "", pcY))
+                
+                data <- calculateLoadingsContribution(pca, pcX, pcY)
+                data <- cbind("Variable"=rownames(data), data)
+                write.table(data, con, quote=FALSE, sep="\t", row.names=FALSE)
+            }
+        )
         
         hide("noClusteringUI", animType="fade")
         show("clusteringUI", animType="fade")
