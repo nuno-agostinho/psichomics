@@ -1,3 +1,7 @@
+# 1.4.2 (19 Dec, 2017)
+* Fix error when trying to load alternative splicing annotation (given updated
+hg19 and hg38 annotation that is now available for use with psichomics)
+
 # 1.4.1 (14 Dec, 2017)
 * GTEx data loading:
     - Add input elements to allow GTEx gene expression loading in the graphical
