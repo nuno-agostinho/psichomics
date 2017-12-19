@@ -6,7 +6,12 @@
 #' @examples
 #' listSplicingAnnotations()
 listSplicingAnnotations <- function() {
-    c("Human (hg19/GRCh37)"="annotationHub_alternativeSplicingEvents.hg19")
+    c("Human hg19/GRCh37 (2017-10-20)"=
+          "annotationHub_alternativeSplicingEvents.hg19_V2.rda",
+      "Human hg19/GRCh37 (2016-10-11)"=
+          "annotationHub_alternativeSplicingEvents.hg19.rda",
+      "Human hg38 (2017-10-20)"=
+          "annotationHub_alternativeSplicingEvents.hg38.rda")
 }
 
 #' List alternative splicing annotation files available, as well as custom 
