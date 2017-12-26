@@ -178,6 +178,12 @@ quantifySplicing <- function(annotation, junctionQuant,
                 acronym, mJunctionQuant, thisAnnot, minReads))
         }
     }
+    
+    # Convert matrix to data frame
+    colns <- colnames(psi)
+    psi   <- data.frame(psi)
+    colnames(psi) <- colns
+    
     if (is.null(psi)) psi <- data.frame(NULL)
     attr(psi, "rowNames")    <- TRUE
     attr(psi, "description") <- "PSI values per alternative splicing events"
