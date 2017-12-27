@@ -1,6 +1,9 @@
-# 1.4.3 (23 Dec, 2017)
+# 1.4.3 (27 Dec, 2017)
 * Alternative splicing quantification:
     - Improve speed and memory usage when dealing with larger datasets
+* Differential analysis:
+    - Allow to input a list of groups for the "group" argument of the function
+    "diffAnalyses" (command-line view)
 
 # 1.4.2 (19 Dec, 2017)
 * Fix error when trying to load alternative splicing annotation (given updated

@@ -542,7 +542,7 @@ against normal samples (for instance, Log-rank p-values below 0.05):
 ```{r diff splicing 2}
 filter <- grep("Tumor|Normal", types)
 gr_event <- types[filter]
-eventPSI <- eventPSI[filter]
+eventPSI <- eventPSI[ , filter]
 
 stats <- diffAnalyses(eventPSI, groups=gr_event, pvalueAdjust=pvalueAdjust,
                       analyses = c("wilcoxRankSum", "ttest", "kruskal", 
@@ -564,8 +564,7 @@ if any of the tests show statistical significance:
 # expression; match between patient information and samples as such:
 erGroups <- getMatchingSamples(groups[c("negative", "positive")], samples, 
                                clinical, match=match)
-eventPSI <- psi[event, unlist(erGroups)]
-erGroups <- rep(names(erGroups), sapply(erGroups, length))
+eventPSI <- psi[event, ]
 
 stats <- diffAnalyses(eventPSI, groups=erGroups, pvalueAdjust=pvalueAdjust,
                       analyses = c("wilcoxRankSum", "ttest", "kruskal", 
@@ -711,10 +710,7 @@ Let's perform differential splicing analysis based on ER expression:
 # expression; match between patient information and samples as such:
 erGroups <- getMatchingSamples(groups[c("negative", "positive")], samples, 
                                clinical, match=match)
-eventsPSI <- psi[ , unlist(erGroups)]
-erGroups  <- rep(names(erGroups), sapply(erGroups, length))
-
-diff <- diffAnalyses(eventsPSI, erGroups)
+diff <- diffAnalyses(psi, erGroups)
 # View(diff)
 ```
 

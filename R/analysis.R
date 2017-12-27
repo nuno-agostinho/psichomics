@@ -1977,16 +1977,19 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
     return(vector)
 }
 
-#' Perform selected statistical analyses on multiple splicing events
+#' Perform statistical analyses
 #' 
-#' @param psi Data frame or matrix: alternative splicing event quantification
+#' @param data Data frame or matrix: gene expression or alternative splicing 
+#' quantification
 #' @param groups Character: group of each sample from the alternative splicing 
-#' event quantification (if NULL, sample types are used instead, e.g. normal, 
-#' tumour and metastasis)
-#' @param analyses Character: analyses to perform (see Details)
+#' quantification (if NULL, sample types are used instead when available, e.g. 
+#' normal, tumour and metastasis)
+#' @param analyses Character: statistical tests to perform (see Details)
 #' @param pvalueAdjust Character: method used to adjust p-values (see Details)
 #' @param geneExpr Character: name of the gene expression dataset (only required
 #' for density sparklines available in the interactive mode)
+#' @param psi Data frame or matrix: alternative splicing quantification (defunct
+#' argument, use \code{data} instead)
 #' 
 #' @importFrom plyr rbind.fill
 #' @importFrom fastmatch fmatch
@@ -2028,19 +2031,30 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
 #' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 #' group <- c(rep("Normal", 3), rep("Tumour", 3))
 #' diffAnalyses(psi, group)
-diffAnalyses <- function(psi, groups=NULL, 
+diffAnalyses <- function(data, groups=NULL, 
                          analyses=c("wilcoxRankSum", "ttest", "kruskal",
                                     "levene", "fligner"),
-                         pvalueAdjust="BH", geneExpr=NULL) {
+                         pvalueAdjust="BH", geneExpr=NULL, psi=NULL) {
+    if (!is.null(psi)) {
+        warning("The argument 'psi' is deprecated: use 'data' instead.")
+        data <- psi
+    }
+    
     # cl <- parallel::makeCluster(getOption("cl.cores", getCores()))
     step <- 50 # Avoid updating progress too frequently
     updateProgress("Performing statistical analysis", 
-                   divisions=5 + round(nrow(psi)/step))
+                   divisions=5 + round(nrow(data)/step))
     time <- Sys.time()
     
     if (is.null(groups)) {
-        ids <- names(psi)
+        ids    <- names(data)
         groups <- parseSampleGroups(ids)
+    } else if (is.list(groups)) {
+        data   <- data[ , unlist(groups)]
+        
+        colour <- attr(groups, "Colour")
+        groups <- rep(names(groups), sapply(groups, length))
+        attr(groups, "Colour") <- colour
     }
     originalGroups <- unique(groups)
     if (identical(originalGroups, "All samples")) originalGroups <- NULL
@@ -2051,7 +2065,7 @@ diffAnalyses <- function(psi, groups=NULL,
     if ( !is.null(colour) ) attr(groups, "Colour") <- colour
     
     count <- 0
-    stats <- apply(psi, 1, function(...) {
+    stats <- apply(data, 1, function(...) {
         count <<- count + 1
         if (count %% step == 0)
             updateProgress("Performing statistical analysis", console=FALSE)
@@ -2177,6 +2191,9 @@ diffAnalyses <- function(psi, groups=NULL,
     # parallel::stopCluster(cl)
     return(df)
 }
+
+#' @rdname diffAnalyses
+diffAnalysis <- diffAnalyses
 
 attr(analysesUI, "loader") <- "app"
 attr(analysesServer, "loader") <- "app"

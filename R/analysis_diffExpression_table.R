@@ -179,7 +179,6 @@ diffExpressionSet <- function(session, input, output) {
         groups <- getSelectedGroups(input, "diffGroups", "Samples",
                                     filter=colnames(geneExpr))
         geneExpr     <- geneExpr[ , unlist(groups), drop=FALSE]
-        attrGroups   <- groups
         isFromGroup1 <- colnames(geneExpr) %in% groups[[1]]
         design       <- cbind(1, ifelse(isFromGroup1, 1, 0))
         
@@ -201,11 +200,9 @@ diffExpressionSet <- function(session, input, output) {
                             "moderated t-statistics", "p-value", 
                             paste0("p-value (", pvalueAdjust, " adjusted)"),
                             "B-statistics")
-        attr(summary, "groups") <- attrGroups
+        attr(summary, "groups") <- groups
         
         # Calculate basic statistics and density plots
-        groups <- rep(names(groups), sapply(groups, length))
-        attr(groups, "Colour") <- attr(attrGroups, "Colour")
         stats  <- diffAnalyses(geneExpr, groups, c("basicStats", "density"),
                                pvalueAdjust=NULL, geneExpr=input$geneExpr)
         final  <- cbind(stats[ , c(1, 5:6)], summary, stats[ , 7:ncol(stats)])

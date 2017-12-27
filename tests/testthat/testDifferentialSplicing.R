@@ -2,10 +2,11 @@ context("Differential splicing analysis")
 
 # Calculate PSI
 eventType <- c("SE", "MXE")
-annot <- readFile("ex_splicing_annotation.RDS")
+annot     <- readFile("ex_splicing_annotation.RDS")
 junctionQuant <- readFile("ex_junctionQuant.RDS")
-psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
-group <- c(rep("Normal", 3), rep("Tumour", 3))
+psi       <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+group     <- c(rep("Normal", 3), rep("Tumour", 3))
+group_ls  <- split(colnames(junctionQuant), group)
 
 test_that("Perform all statistical analyses", {
     analyses <- c("wilcoxRankSum", "wilcoxSignedRank", "kruskal", "levene")
@@ -20,6 +21,11 @@ test_that("Perform all statistical analyses", {
     expect_true(any(grepl("Kruskal", names(stats))))
     expect_true(any(grepl("Median", names(stats))))
     expect_true(any(grepl("Variance", names(stats))))
+
+    # Perform with a list of groups
+    analyses <- c("wilcoxRankSum", "wilcoxSignedRank", "kruskal", "levene")
+    stats2 <- diffAnalyses(psi, group_ls, analyses)
+    expect_identical(stats, stats2)
 })
 
 test_that("Perform all statistical analyses for a single event", {
@@ -35,6 +41,9 @@ test_that("Perform all statistical analyses for a single event", {
     expect_true(any(grepl("Kruskal", names(stats))))
     expect_true(any(grepl("Median", names(stats))))
     expect_true(any(grepl("Variance", names(stats))))
+    
+    stats2 <- diffAnalyses(psi[1, ], group_ls, analyses)
+    expect_identical(stats, stats2)
 })
 
 test_that("Perform single statistical tests", {
