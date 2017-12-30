@@ -5,7 +5,7 @@
 \title{Create a scatterplot from a PCA object}
 \usage{
 plotPCA(pca, pcX = 1, pcY = 2, groups = NULL, individuals = TRUE,
-  loadings = FALSE)
+  loadings = FALSE, nLoadings = NULL)
 }
 \arguments{
 \item{pca}{\code{prcomp} object}
@@ -20,6 +20,11 @@ samples (use clinical or sample groups)}
 \item{individuals}{Boolean: plot PCA individuals (TRUE by default)}
 
 \item{loadings}{Boolean: plot PCA loadings/rotations (FALSE by default)}
+
+\item{nLoadings}{Integer: Number of variables to plot, ordered by those that 
+most contribute to selected principal components (this allows for faster 
+performance as only the variables that most contribute are rendered); if 
+NULL, all variables are plotted}
 }
 \value{
 Scatterplot as an \code{highcharter} object

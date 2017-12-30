@@ -73,6 +73,18 @@ getSplicingEventTypes <- function(acronymsAsNames=FALSE) {
     return(types)
 }
 
+#' Check if string identifies splicing events
+#' 
+#' @param char Character vector
+#' @param num Integer: number of elements to check
+#' 
+#' @return TRUE if first elements of the vector identify splicing events; FALSE,
+#'  otherwise
+areSplicingEvents <- function(char, num=6) {
+    all(sapply(head(char, num), function (i)
+        sum(charToRaw(i) == charToRaw("_")) > 3))
+}
+
 #' Parse an alternative splicing event based on a given identifier
 #' 
 #' @param event Character: event identifier
@@ -1672,10 +1684,8 @@ ggplotTooltip <- function(df, hover, x, y) {
     
     trItem <- function(key, value) tags$tr(tags$td(tags$b(key)), tags$td(value))
     
-    # Probably a splicing event if the identifier has more than 3 underscores
     thisPoint <- rownames(point)
-    isEvent <- sum( charToRaw( thisPoint ) == charToRaw("_") ) > 3
-    if ( isEvent ) {
+    if ( areSplicingEvents(thisPoint) ) {
         event  <- parseSplicingEvent(thisPoint, pretty=TRUE)
         strand <- ifelse(event$strand == "+", "forward", "reverse")
         gene   <- paste(event$gene[[1]], collapse=" or ")

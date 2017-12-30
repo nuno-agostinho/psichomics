@@ -2153,10 +2153,7 @@ diffAnalyses <- function(data, groups=NULL,
         }
     }
     
-    # Check whether these are splicing events
-    areSplicingEvents <- all(sapply(head(rownames(df)), function (i) 
-        sum(charToRaw(i) == charToRaw("_")) > 3))
-    if ( areSplicingEvents ) {
+    if ( areSplicingEvents(rownames(df)) ) {
         # Add splicing event information
         updateProgress("Including splicing event information")
         info <- suppressWarnings(parseSplicingEvent(rownames(df), pretty=TRUE))

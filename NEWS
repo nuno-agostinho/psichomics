@@ -1,15 +1,22 @@
 # 1.4.3 (27 Dec, 2017)
+
 * Alternative splicing quantification:
     - Improve speed and memory usage when dealing with larger datasets
+* Principal component analysis:
+    - Show/save table with the contribution of events (for alternative splicing 
+    quantification) or genes (for gene expression) to the selected principal
+    components
 * Differential analysis:
     - Allow to input a list of groups for the "group" argument of the function
-    "diffAnalyses" (command-line view)
+    "diffAnalyses" (command-line interface)
 
 # 1.4.2 (19 Dec, 2017)
+
 * Fix error when trying to load alternative splicing annotation (given updated
 hg19 and hg38 annotation that is now available for use with psichomics)
 
 # 1.4.1 (14 Dec, 2017)
+
 * GTEx data loading:
     - Add input elements to allow GTEx gene expression loading in the graphical
     interface
