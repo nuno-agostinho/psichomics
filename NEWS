@@ -6,6 +6,10 @@
     - Show/save table with the contribution of events (for alternative splicing 
     quantification) or genes (for gene expression) to the selected principal
     components
+    - Add extra information when hovering variables in loading plot
+    - Allow to plot top 100 variables that most contribute to the selected 
+    principal components (faster rendering of and interaction with loading 
+    plots)
 * Differential analysis:
     - Allow to input a list of groups for the "group" argument of the functions
     "diffAnalyses" and "plotDistribution" (command-line interface)
