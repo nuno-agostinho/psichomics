@@ -778,7 +778,7 @@ pcaServer <- function(input, output, session) {
                 else if (plotVariables == "top100") nLoadings <- 100
                 
                 plotPCA(pca, pcX, pcY, individuals=FALSE, loadings=TRUE,
-                        nLoadings=plotVariables) %>%
+                        nLoadings=nLoadings) %>%
                     hc_title(text=title) %>%
                     hc_plotOptions(series=list(cursor="pointer", 
                                                point=list(events=list(
