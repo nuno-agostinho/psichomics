@@ -1599,8 +1599,10 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' The tooltip shows the median, variance, max, min and number of non-NA samples
 #' of each data series.
 #' 
-#' @param data Numeric: data for one gene or alternative splicing event
-#' @param groups Character: group of each value in \code{data}
+#' @param data Numeric, data frame or matrix: data for one gene or alternative 
+#' splicing event
+#' @param groups List of characters (list of groups containing data identifiers)
+#' or character vector (group of each value in \code{data})
 #' @param rug Boolean: include rug plot to better visualise data distribution
 #' @param vLine Boolean: include vertical plot lines to indicate the mean and
 #' median of each group even when those groups are omitted
@@ -1652,10 +1654,24 @@ plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE,
     
     if (!is.null(title)) hc <- hc %>% hc_title(text=title)
     
+    if (is.list(groups)) 
+        ns <- names(groups)
+    else
+        ns <- groups
+    
     count <- 0
     plotLines <- list()
-    for (group in sort(unique(groups))) {
-        row  <- data[groups == group]
+    for (group in unique(ns)) {
+        if (is.list(groups))
+            filter <- groups[[group]]
+        else
+            filter <- groups == group
+        
+        if (is.vector(data))
+            row <- as.numeric(data[filter])
+        else
+            row <- as.numeric(data[ , filter])
+        
         med  <- roundDigits(median(row, na.rm=TRUE))
         vari <- roundDigits(var(row, na.rm=TRUE))
         max  <- roundDigits(max(row, na.rm=TRUE))
@@ -1981,9 +1997,10 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
 #' 
 #' @param data Data frame or matrix: gene expression or alternative splicing 
 #' quantification
-#' @param groups Character: group of each sample from the alternative splicing 
-#' quantification (if NULL, sample types are used instead when available, e.g. 
-#' normal, tumour and metastasis)
+#' @param groups Named list of characters (containing elements belonging to each
+#' group) or character vector (containing the group of each individual sample);
+#' if NULL, sample types are used instead when available, e.g. normal, tumour 
+#' and metastasis
 #' @param analyses Character: statistical tests to perform (see Details)
 #' @param pvalueAdjust Character: method used to adjust p-values (see Details)
 #' @param geneExpr Character: name of the gene expression dataset (only required

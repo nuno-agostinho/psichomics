@@ -522,7 +522,7 @@ stats <- diffAnalyses(eventPSI, pvalueAdjust=pvalueAdjust,
                       analyses = c("wilcoxRankSum", "ttest", "kruskal", 
                                    "levene", "fligner"))
 # View(stats)
-plotDistribution(as.numeric(eventPSI), groups=types)
+plotDistribution(eventPSI, groups=types)
 ```
 
 Differential splicing analysis returns a data frame with the results of the
@@ -548,7 +548,7 @@ stats <- diffAnalyses(eventPSI, groups=gr_event, pvalueAdjust=pvalueAdjust,
                       analyses = c("wilcoxRankSum", "ttest", "kruskal", 
                                    "levene", "fligner"))
 # View(stats)
-plotDistribution(as.numeric(eventPSI), groups=gr_event)
+plotDistribution(eventPSI, groups=gr_event)
 ```
 
 * Hover each group in the plot to compare the respective number of samples,
@@ -570,7 +570,7 @@ stats <- diffAnalyses(eventPSI, groups=erGroups, pvalueAdjust=pvalueAdjust,
                       analyses = c("wilcoxRankSum", "ttest", "kruskal", 
                                    "levene", "fligner"))
 # View(stats)
-plotDistribution(as.numeric(eventPSI), groups=erGroups)
+plotDistribution(eventPSI, groups=erGroups)
 ```
 
 ## Survival analysis

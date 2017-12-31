@@ -7,8 +7,10 @@
     quantification) or genes (for gene expression) to the selected principal
     components
 * Differential analysis:
-    - Allow to input a list of groups for the "group" argument of the function
-    "diffAnalyses" (command-line interface)
+    - Allow to input a list of groups for the "group" argument of the functions
+    "diffAnalyses" and "plotDistribution" (command-line interface)
+    - Allow to input a non-numeric vector or a row of a matrix/data frame in the
+    "data" argument of the function "plotDistribution" (command-line interface)
 
 # 1.4.2 (19 Dec, 2017)
 
