@@ -2189,9 +2189,11 @@ diffAnalyses <- function(data, groups=NULL,
         time <- Sys.time()
         
         df[ , "Distribution"] <- createDensitySparklines(
-            df[ , "Distribution"], rownames(df), areSplicingEvents,
-            groups=originalGroups, geneExpr=geneExpr)
-        name <- ifelse(areSplicingEvents, "PSI.distribution", "GE.distribution")
+            df[ , "Distribution"], rownames(df), 
+            areSplicingEvents(rownames(df)), groups=originalGroups, 
+            geneExpr=geneExpr)
+        name <- ifelse(areSplicingEvents(rownames(df)),
+                       "PSI.distribution", "GE.distribution")
         colnames(df)[match("Distribution", colnames(df))] <- name
         display(Sys.time() - time)
     }
