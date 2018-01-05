@@ -3,6 +3,7 @@
 * Alternative splicing quantification:
     - Improve speed and memory usage when dealing with larger datasets
 * Principal component analysis:
+    - Change tolerated missing values per event to 5% by default
     - Show/save table with the contribution of events (for alternative splicing 
     quantification) or genes (for gene expression) to the selected principal
     components

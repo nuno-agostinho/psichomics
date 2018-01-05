@@ -25,7 +25,7 @@ performPCA <- function(data, center=TRUE, scale.=FALSE, missingValues=10, ...) {
 #' 
 #' @importFrom highcharter highchartOutput
 #' @importFrom shiny checkboxGroupInput tagList uiOutput hr downloadButton
-#' sliderInput actionButton selectizeInput
+#' sliderInput actionButton selectizeInput helpText textOutput
 #' @importFrom shinyBS bsTooltip
 #' @importFrom shinyjs hidden
 #' @importFrom DT dataTableOutput
@@ -40,17 +40,18 @@ pcaUI <- function(id) {
         checkboxGroupInput(ns("preprocess"), "Preprocessing",
                            c("Center values"="center", "Scale values"="scale"),
                            selected=c("center"), width="100%"),
+        selectGroupsUI(ns("dataGroups"), "Perform PCA on...",
+                       noGroupsLabel="All samples",
+                       groupsLabel="Samples from selected groups"),
         numericInput(ns("missingValues"), div(
             "Number of missing values to tolerate per event",
             icon("question-circle")), min=0, max=100, value=10, width="100%"),
+        helpText(textOutput(ns("maxSamples"))),
         bsTooltip(ns("missingValues"), placement="right", paste(
             "For events with a tolerable number of missing values, the median",
             "value of the event across samples is used to replace those",
             "missing values. The remaining events are discarded."),
             options=list(container="body")),
-        selectGroupsUI(ns("dataGroups"), "Perform PCA on...",
-                       noGroupsLabel="All samples",
-                       groupsLabel="Samples from selected groups"),
         selectGroupsUI(
             ns("dataGroups2"), "Perform PCA on...",
             noGroupsLabel="All genes and splicing events",
@@ -573,6 +574,34 @@ pcaServer <- function(input, output, session) {
     selectGroupsServer(session, "dataGroups", "Samples")
     selectGroupsServer(session, "dataGroups2", "ASevents")
     selectGroupsServer(session, "colourGroups", "Samples")
+    
+    observe({
+        dataForPCA <- NULL
+        selectedDataForPCA <- input$dataForPCA
+        if (selectedDataForPCA == "Inclusion levels")
+            dataForPCA <- isolate(getInclusionLevels())
+        else if (grepl("^Gene expression", selectedDataForPCA))
+            dataForPCA <- isolate(getGeneExpression()[[selectedDataForPCA]])
+        if (is.null(dataForPCA)) NULL
+        
+        groups <- getSelectedGroups(input, "dataGroups", "Samples",
+                                    filter=colnames(dataForPCA))
+        if ( !is.null(groups) ) 
+            dataForPCA <- dataForPCA[ , unlist(groups), drop=FALSE]
+        
+        samples    <- ncol(dataForPCA)
+        defaultVal <- round(samples * 0.05) # default: 5% of samples
+        updateNumericInput(session, "missingValues", max=samples, 
+                           value=defaultVal)
+        
+        observe({
+            missing <- input$missingValues
+            text <- sprintf(
+                "%s available samples (the selected %s represent %s%%)",
+                samples, missing, round(missing / samples * 100))
+            output$maxSamples <- renderText(text)
+        })
+    })
     
     observe({
         incLevels <- getInclusionLevels()
