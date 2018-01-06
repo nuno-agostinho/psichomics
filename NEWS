@@ -2,6 +2,8 @@
 
 * Alternative splicing quantification:
     - Improve speed and memory usage when dealing with larger datasets
+    - Improve quantification of alternative first and last exons
+    - Print progress bar in R console
 * Principal component analysis:
     - Change tolerated missing values per event to 5% by default
     - Show/save table with the contribution of events (for alternative splicing 
@@ -16,7 +18,6 @@
     "diffAnalyses" and "plotDistribution" (command-line interface)
     - Allow to input a non-numeric vector or a row of a matrix/data frame in the
     "data" argument of the function "plotDistribution" (command-line interface)
-
 
 ## Bug fixes
 
