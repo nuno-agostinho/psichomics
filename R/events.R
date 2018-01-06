@@ -607,5 +607,5 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
     
     # Clear rows with nothing but missing values
     naRows <- rowSums(!is.na(psi)) == 0
-    return(psi[!naRows, ])
+    return(psi[!naRows, , drop=FALSE])
 }
