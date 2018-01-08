@@ -54,7 +54,7 @@ diffExpressionTableUI <- function(id) {
                     column(6, numericInput(ns("ebaysStdevMax"), "Upper limit",
                                            min=0, value=4, step=0.1, 
                                            width="100%"))))),
-        tags$b("Extra analyses to be performed:"),
+        tags$b("Extra analyses that are performed:"),
         tags$ul(tags$li("Variance and median expression"),
                 tags$li("Distribution of gene expression per group")),
         selectizeInput(ns("pvalueAdjust"), selected="BH", width="100%",

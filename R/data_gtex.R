@@ -262,6 +262,7 @@ gtexDataServer <- function(input, output, session) {
     prepareFileBrowser(session, input, "sampleInfo")
     prepareFileBrowser(session, input, "subjectInfo")
     prepareFileBrowser(session, input, "junctionQuant")
+    prepareFileBrowser(session, input, "geneExpr")
     
     observeEvent(input$load, {
         if (!is.null(getData()))
