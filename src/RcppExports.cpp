@@ -21,9 +21,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// psiFastCalc2
+NumericMatrix psiFastCalc2(const NumericMatrix& mat, const List& inc, const List& exc, const int minReads);
+RcppExport SEXP _psichomics_psiFastCalc2(SEXP matSEXP, SEXP incSEXP, SEXP excSEXP, SEXP minReadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type mat(matSEXP);
+    Rcpp::traits::input_parameter< const List& >::type inc(incSEXP);
+    Rcpp::traits::input_parameter< const List& >::type exc(excSEXP);
+    Rcpp::traits::input_parameter< const int >::type minReads(minReadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(psiFastCalc2(mat, inc, exc, minReads));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_psichomics_psiFastCalc", (DL_FUNC) &_psichomics_psiFastCalc, 6},
+    {"_psichomics_psiFastCalc2", (DL_FUNC) &_psichomics_psiFastCalc2, 4},
     {NULL, NULL, 0}
 };
 

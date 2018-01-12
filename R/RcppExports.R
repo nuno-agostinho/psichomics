@@ -5,3 +5,7 @@ psiFastCalc <- function(mat, incA = 0L, incB = 0L, excA = 0L, excB = 0L, minRead
     .Call(`_psichomics_psiFastCalc`, mat, incA, incB, excA, excB, minReads)
 }
 
+psiFastCalc2 <- function(mat, inc, exc, minReads = 10L) {
+    .Call(`_psichomics_psiFastCalc2`, mat, inc, exc, minReads)
+}
+
