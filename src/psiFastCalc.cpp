@@ -62,13 +62,11 @@ NumericMatrix psiFastCalc2(const NumericMatrix& mat,
             incReads = 0;
             for (size_t k=0; k < incIdx.length(); k++)
                 incReads = incReads + mat(incIdx[k] - 1, col);
-            incReads = incReads / incIdx.length();
             
             NumericVector excIdx = as<NumericVector>(exc[idx]);
             excReads = 0;
             for (size_t k=0; k < excIdx.length(); k++)
                 excReads = excReads + mat(excIdx[k] - 1, col);
-            excReads = excReads / excIdx.length();
             
             totalReads = incReads + excReads;
             if (totalReads < minReads)

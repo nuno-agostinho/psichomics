@@ -1,8 +1,10 @@
-# 1.4.3 (27 Dec, 2017)
+# 1.4.3 (12 Jan, 2018)
 
 * Alternative splicing quantification:
     - Improve speed and memory usage when dealing with larger datasets
-    - Improve quantification of alternative first and last exons
+    - Improve quantification of alternative first and last exons: quantify 
+    alternative first and last exons based on all exon-exon junction reads that 
+    support each of the alternative exons
     - Print progress bar in R console
 * Principal component analysis:
     - Change tolerated missing values per event to 5% by default
