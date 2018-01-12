@@ -477,7 +477,7 @@ groupById <- function(ns, id) {
             choices=NULL, multiple=TRUE, width="auto", options=list(
                 create=TRUE, createOnBlur=TRUE, # Allow to add new items
                 plugins=list('remove_button'), persist=FALSE)),
-        helpText("Type ", tags$kbd("1:6, 8, 10:19"), "to create a group with",
+        helpText("Example: ", tags$kbd("1:6, 8, 10:19"), "creates a group with",
                  "rows 1 to 6, 8 and 10 to 19. You can also input identifiers",
                  "instead of indexes."),
         textInput(ns(paste0("groupNameRows", id)), "Group name", width="auto",
@@ -498,7 +498,7 @@ groupByExpression <- function(ns, id) {
     tagList (
         textInput(ns(paste0("groupExpression", id)), "Subset expression",
                   width="auto"),
-        helpText('Type ', tags$kbd('X > 8 & Y == "alive"'), ' to select rows',
+        helpText('Example: ', tags$kbd('X > 8 & Y == "alive"'), ' selects rows',
                  'with values higher than 8 for column X and "alive" for',
                  'column Y.'),
         uiOutput(ns(paste0("groupExpressionSuggestions", id))),
