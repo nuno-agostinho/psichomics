@@ -28,14 +28,15 @@ geNormalisationFilteringInterface <- function(ns) {
                                    min=0, max=100, value=10, width="100%"))),
         helpText(textOutput(ns("filteredGenes"))))
     
-    filteringAssistant <- div(
-        id=ns("assistantInterface"),
-        hr(), h4("Filtering assistant"), 
-        selectizeInput(ns("assistantPlot"), "Plot type", width="100%",
-                       c("Boxplot of the mean expression"="mean", 
-                         "Boxplot of the variance expression"="var")),
-        highchartOutput(ns("filteringAssistant"), height="150px")
-    )
+    filteringAssistant <- NULL
+    # filteringAssistant <- div(
+    #     id=ns("assistantInterface"),
+    #     hr(), h4("Filtering assistant"), 
+    #     selectizeInput(ns("assistantPlot"), "Plot type", width="100%",
+    #                    c("Boxplot of the mean expression"="mean", 
+    #                      "Boxplot of the variance expression"="var")),
+    #     highchartOutput(ns("filteringAssistant"), height="150px")
+    # )
     
     options <- div(
         id=ns("options"),
@@ -332,33 +333,33 @@ geNormalisationFilteringServer <- function(input, output, session) {
                     filter, total, filter/total * 100)
         })
         
-        output$filteringAssistant <- renderHighchart({
-            type <- input$assistantPlot
-            if (type == "") return(NULL)
-            
-            filter <- getFilter()
-            if (type == "mean") {
-                arg <- geneExprMean[filter]
-                description <- "Mean per gene"
-            } else if (type == "var") {
-                arg <- geneExprVar[filter]
-                description <- "Variance per gene"
-            }
-            
-            hc <- tryCatch({
-                hcboxplot(arg)  %>%
-                    hc_chart(zoomType="y") %>%
-                    hc_tooltip(valueDecimals=2, followPointer=TRUE) %>%
-                    hc_xAxis(visible=FALSE) %>%
-                    hc_yAxis(title=list(text=description)) %>%
-                    hc_plotOptions(series=list(animation=FALSE))
-            }, error=return, warning=return)
-            
-            if (is(hc, "error") || is(hc, "warning"))
-                return(NULL)
-            else
-                return(hc)
-        })
+        # output$filteringAssistant <- renderHighchart({
+        #     type <- input$assistantPlot
+        #     if (type == "") return(NULL)
+        #     
+        #     filter <- getFilter()
+        #     if (type == "mean") {
+        #         arg <- geneExprMean[filter]
+        #         description <- "Mean per gene"
+        #     } else if (type == "var") {
+        #         arg <- geneExprVar[filter]
+        #         description <- "Variance per gene"
+        #     }
+        #     
+        #     hc <- tryCatch({
+        #         hcboxplot(arg)  %>%
+        #             hc_chart(zoomType="y") %>%
+        #             hc_tooltip(valueDecimals=2, followPointer=TRUE) %>%
+        #             hc_xAxis(visible=FALSE) %>%
+        #             hc_yAxis(title=list(text=description)) %>%
+        #             hc_plotOptions(series=list(animation=FALSE))
+        #     }, error=return, warning=return)
+        #     
+        #     if (is(hc, "error") || is(hc, "warning"))
+        #         return(NULL)
+        #     else
+        #         return(hc)
+        # })
     })
     
     # Disable interface for gene filtering
@@ -366,10 +367,10 @@ geNormalisationFilteringServer <- function(input, output, session) {
         filter <- input$enableFiltering
         if (filter) {
             enable("filteringInterface")
-            show("assistantInterface", anim=TRUE)
+            # show("assistantInterface", anim=TRUE)
         } else {
             disable("filteringInterface")
-            hide("assistantInterface", anim=TRUE)
+            # hide("assistantInterface", anim=TRUE)
         }
     })
     

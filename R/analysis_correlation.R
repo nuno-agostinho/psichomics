@@ -16,8 +16,8 @@ correlationUI <- function(id) {
                 value="corrParams", style="info",
                 selectizeInput(ns("geneExpr"), "Gene expression", choices=NULL),
                 selectizeGeneInput(ns("gene"), multiple=TRUE),
-                actionLink(ns("addRBPs"), 
-                           "Add RBPs from (Sebestyen et al., 2016)..."),
+                # actionLink(ns("addRBPs"), 
+                #            "Add RBPs from (Sebestyen et al., 2016)..."),
                 selectizeInput(
                     ns("ASevents"), "Alternative splicing events", choices=NULL,
                     multiple=TRUE, 
