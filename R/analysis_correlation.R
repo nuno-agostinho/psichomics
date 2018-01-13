@@ -206,7 +206,8 @@ plotCorrelation <- function(corr, autoZoom=FALSE, loessSmooth=TRUE,
         eventDetails <- gsub(".*\\((.*)\\)", "\\1", eventId)
         
         estimateMethod <- names(single$cor$estimate)
-        if (estimateMethod == "cor") estimateMethod <- "r"
+        if (!is.null(estimateMethod) && estimateMethod == "cor") 
+            estimateMethod <- "r"
         
         estimate <- trimWhitespace(signifDigits(unname(single$cor$estimate)))
         Pvalue   <- trimWhitespace(signifDigits(unname(single$cor$p.value)))
