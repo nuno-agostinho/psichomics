@@ -132,18 +132,18 @@ pcaUI <- function(id) {
                       "Clustering Large Applications (CLARA)"="clara")),
                 sliderInput(ns("clusterNumber"), "Number of clusters",
                             min=1, max=20, value=2, width="100%"),
-                bsCollapse(
-                    bsCollapsePanel(
-                        tagList(icon("plus-circle"), 
-                                "Optimal number of clusters"),
-                        value="Optimal number of clusters",
-                        selectizeInput(
-                            ns("estimatationOptimalClusters"), width="100%",
-                            "Method to estimate optimal number of clusters",
-                            c("Within cluster sums of squares"="wss",
-                              "Average silhouette"="silhouette",
-                              "Gap statistics"="gap_stat")),
-                        highchartOutput(ns("optimalClusters")))),
+                # bsCollapse(
+                #     bsCollapsePanel(
+                #         tagList(icon("plus-circle"), 
+                #                 "Optimal number of clusters"),
+                #         value="Optimal number of clusters",
+                #         selectizeInput(
+                #             ns("estimatationOptimalClusters"), width="100%",
+                #             "Method to estimate optimal number of clusters",
+                #             c("Within cluster sums of squares"="wss",
+                #               "Average silhouette"="silhouette",
+                #               "Gap statistics"="gap_stat")),
+                #         highchartOutput(ns("optimalClusters")))),
                 kmeansPanel, pamPanel, claraPanel,
                 actionButton(ns("saveClusters"), "Create groups from clusters"),
                 processButton(ns("plotClusters"), "Plot clusters"))))
@@ -453,71 +453,71 @@ clusterSet <- function(session, input, output) {
         endProcess("plotClusters")
     })
     
-    # Render optimal clusters
-    output$optimalClusters <- renderHighchart({
-        algorithm <- input$clusteringMethod
-        pca <- getPCA()
-        pcX <- input$pcX
-        pcY <- input$pcY
-        
-        if ( !is.null(pca$x) )
-            groups <- getSelectedGroups(input, "colourGroups", "Samples",
-                                        filter=rownames(pca$x))
-        else
-            groups <- NULL
-        
-        if (is.null(pca) || is.null(pcX) || is.null(pcY)) return(NULL)
-        pcaScores <- pca$x[ , c(pcX, pcY)]
-        
-        clusters <- 1:20
-        estimation <- input$estimatationOptimalClusters
-        if (algorithm == "kmeans") {
-            iterations <- input$kmeansIterations
-            nstart     <- input$kmeansNstart
-            method     <- input$kmeansMethod
-            
-            if (method == "Lloyd-Forgy") method <- "Lloyd"
-
-            res <- lapply(clusters, function(n) {
-                kmeans(pcaScores, n, iter.max=iterations, nstart=nstart, 
-                       algorithm=method)
-            })
-        } else if (algorithm == "pam") {
-            metric <- tolower(input$pamMetric)
-            res <- lapply(clusters, function(n) {
-                pam(pcaScores, n, metric=metric, cluster.only=TRUE)
-            })
-        } else if (algorithm == "clara") {
-            metric  <- tolower(input$claraMetric)
-            samples <- input$claraSamples
-            
-            res <- lapply(clusters, function(n) {
-                clara(pcaScores, n, metric=metric, samples=samples, 
-                      medoids.x=FALSE, keep.data=FALSE, pamLike=TRUE)
-            })
-        }
-        
-        if (estimation == "wss") {
-            withinss <- sapply(res, "[[", "tot.withinss")
-            hc <- highchart() %>% hc_add_series(withinss) %>%
-                hc_xAxis(categories=clusters) %>% hc_legend(enabled=FALSE)
-            return(hc)
-        } else if (estimation == "silhouette") {
-            sil     <- silhouette(res)
-            cluster <- sil[ , 2]
-            width   <- sil[ , 3]
-            names(width) <- cluster
-            hc      <- highchart()
-            for (i in sort(unique(cluster))) {
-                hc <- hc %>% 
-                    hc_add_series(unname(width[names(width) == i]), 
-                                  type="bar") %>%
-                    hc_xAxis(categories=clusters) %>% 
-                    hc_legend(enabled=FALSE)
-            }
-            return(hc)
-        }
-    })
+    # # Render optimal clusters
+    # output$optimalClusters <- renderHighchart({
+    #     algorithm <- input$clusteringMethod
+    #     pca <- getPCA()
+    #     pcX <- input$pcX
+    #     pcY <- input$pcY
+    #     
+    #     if ( !is.null(pca$x) )
+    #         groups <- getSelectedGroups(input, "colourGroups", "Samples",
+    #                                     filter=rownames(pca$x))
+    #     else
+    #         groups <- NULL
+    #     
+    #     if (is.null(pca) || is.null(pcX) || is.null(pcY)) return(NULL)
+    #     pcaScores <- pca$x[ , c(pcX, pcY)]
+    #     
+    #     clusters <- 1:20
+    #     estimation <- input$estimatationOptimalClusters
+    #     if (algorithm == "kmeans") {
+    #         iterations <- input$kmeansIterations
+    #         nstart     <- input$kmeansNstart
+    #         method     <- input$kmeansMethod
+    #         
+    #         if (method == "Lloyd-Forgy") method <- "Lloyd"
+    # 
+    #         res <- lapply(clusters, function(n) {
+    #             kmeans(pcaScores, n, iter.max=iterations, nstart=nstart, 
+    #                    algorithm=method)
+    #         })
+    #     } else if (algorithm == "pam") {
+    #         metric <- tolower(input$pamMetric)
+    #         res <- lapply(clusters, function(n) {
+    #             pam(pcaScores, n, metric=metric, cluster.only=TRUE)
+    #         })
+    #     } else if (algorithm == "clara") {
+    #         metric  <- tolower(input$claraMetric)
+    #         samples <- input$claraSamples
+    #         
+    #         res <- lapply(clusters, function(n) {
+    #             clara(pcaScores, n, metric=metric, samples=samples, 
+    #                   medoids.x=FALSE, keep.data=FALSE, pamLike=TRUE)
+    #         })
+    #     }
+    #     
+    #     if (estimation == "wss") {
+    #         withinss <- sapply(res, "[[", "tot.withinss")
+    #         hc <- highchart() %>% hc_add_series(withinss) %>%
+    #             hc_xAxis(categories=clusters) %>% hc_legend(enabled=FALSE)
+    #         return(hc)
+    #     } else if (estimation == "silhouette") {
+    #         sil     <- silhouette(res)
+    #         cluster <- sil[ , 2]
+    #         width   <- sil[ , 3]
+    #         names(width) <- cluster
+    #         hc      <- highchart()
+    #         for (i in sort(unique(cluster))) {
+    #             hc <- hc %>% 
+    #                 hc_add_series(unname(width[names(width) == i]), 
+    #                               type="bar") %>%
+    #                 hc_xAxis(categories=clusters) %>% 
+    #                 hc_legend(enabled=FALSE)
+    #         }
+    #         return(hc)
+    #     }
+    # })
     
     # Create data groups from clusters
     observeEvent(input$saveClusters, {
