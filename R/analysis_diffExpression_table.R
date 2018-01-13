@@ -688,12 +688,9 @@ diffExpressionTableServer <- function(input, output, session) {
     
     selectGroupsServer(session, "diffGroups", "Samples")
     
-    observeEvent(input$loadClinical, 
-                 missingDataGuide("Clinical data"))
-    observeEvent(input$loadGeneExpr, 
-                 missingDataGuide("Gene expression"))
-    observeEvent(input$missingGeneExpr, 
-                 missingDataGuide("Gene expression"))
+    observeEvent(input$loadClinical, missingDataGuide("Clinical data"))
+    observeEvent(input$loadGeneExpr, missingDataGuide("Gene expression"))
+    observeEvent(input$missingGeneExpr, missingDataGuide("Gene expression"))
     
     diffExpressionSet(session, input, output)
     diffExpressionPlotSet(session, input, output)

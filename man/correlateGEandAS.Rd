@@ -11,7 +11,7 @@ correlateGEandAS(geneExpr, psi, gene, ASevents = NULL, ...)
 
 \item{psi}{Matrix or data frame: alternative splicing quantification data}
 
-\item{gene}{Character: gene symbol for gene of interest}
+\item{gene}{Character: gene symbol for genes of interest}
 
 \item{ASevents}{Character: alternative splicing events to correlate with
 gene expression of a gene (if \code{NULL}, the events will be automatically
@@ -29,7 +29,7 @@ splicing quantification of one alternative splicing event}
 splicing event}
 }
 \description{
-Test for association between paired samples' gene expression (for a gene 
+Test for association between paired samples' gene expression (for any genes
 of interest) and alternative splicing quantification.
 }
 \examples{
