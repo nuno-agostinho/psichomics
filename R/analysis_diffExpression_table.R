@@ -54,7 +54,7 @@ diffExpressionTableUI <- function(id) {
                     column(6, numericInput(ns("ebaysStdevMax"), "Upper limit",
                                            min=0, value=4, step=0.1, 
                                            width="100%"))))),
-        tags$b("Extra analyses to be performed:"),
+        tags$b("Extra analyses that are performed:"),
         tags$ul(tags$li("Variance and median expression"),
                 tags$li("Distribution of gene expression per group")),
         selectizeInput(ns("pvalueAdjust"), selected="BH", width="100%",
@@ -105,7 +105,7 @@ diffExpressionTableUI <- function(id) {
                     buttonId=ns("loadGeneExpr")),
                 hidden(statAnalysesOptions)),
             bsCollapsePanel(
-                list(icon("tasks"), "Event plot options and table filtering"),
+                list(icon("tasks"), "Plot options and table filtering"),
                 style="info", value="plotEvents",
                 errorDialog(
                     "Differential expression analysis not yet performed.",
@@ -179,7 +179,6 @@ diffExpressionSet <- function(session, input, output) {
         groups <- getSelectedGroups(input, "diffGroups", "Samples",
                                     filter=colnames(geneExpr))
         geneExpr     <- geneExpr[ , unlist(groups), drop=FALSE]
-        attrGroups   <- groups
         isFromGroup1 <- colnames(geneExpr) %in% groups[[1]]
         design       <- cbind(1, ifelse(isFromGroup1, 1, 0))
         
@@ -201,11 +200,9 @@ diffExpressionSet <- function(session, input, output) {
                             "moderated t-statistics", "p-value", 
                             paste0("p-value (", pvalueAdjust, " adjusted)"),
                             "B-statistics")
-        attr(summary, "groups") <- attrGroups
+        attr(summary, "groups") <- groups
         
         # Calculate basic statistics and density plots
-        groups <- rep(names(groups), sapply(groups, length))
-        attr(groups, "Colour") <- attr(attrGroups, "Colour")
         stats  <- diffAnalyses(geneExpr, groups, c("basicStats", "density"),
                                pvalueAdjust=NULL, geneExpr=input$geneExpr)
         final  <- cbind(stats[ , c(1, 5:6)], summary, stats[ , 7:ncol(stats)])
@@ -691,12 +688,9 @@ diffExpressionTableServer <- function(input, output, session) {
     
     selectGroupsServer(session, "diffGroups", "Samples")
     
-    observeEvent(input$loadClinical, 
-                 missingDataGuide("Clinical data"))
-    observeEvent(input$loadGeneExpr, 
-                 missingDataGuide("Gene expression"))
-    observeEvent(input$missingGeneExpr, 
-                 missingDataGuide("Gene expression"))
+    observeEvent(input$loadClinical, missingDataGuide("Clinical data"))
+    observeEvent(input$loadGeneExpr, missingDataGuide("Gene expression"))
+    observeEvent(input$missingGeneExpr, missingDataGuide("Gene expression"))
     
     diffExpressionSet(session, input, output)
     diffExpressionPlotSet(session, input, output)

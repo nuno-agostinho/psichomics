@@ -110,9 +110,9 @@ diffSplicingTableUI <- function(id) {
         radioButtons(
             ns("selected"), "Perform survival analysis based on", width="100%",
             choices=c(
-                "Splicing events shown in the screen"="shown",
-                "Filtered splicing events (may be a slow process)"="filtered",
-                "All splicing events (slow process)"="all")),
+                "Splicing events in current page of the table"="shown",
+                "All splicing events in the table (slower)"="filtered",
+                "All splicing events (slowest)"="all")),
         processButton(ns("survival"), "Plot survival curves")
     )
     
@@ -131,7 +131,7 @@ diffSplicingTableUI <- function(id) {
                     buttonId=ns("loadIncLevels")),
                 hidden(statAnalysesOptions)),
             bsCollapsePanel(
-                list(icon("tasks"), "Event plot options and table filtering"),
+                list(icon("tasks"), "Plot options and table filtering"),
                 style="info", value="plotEvents",
                 errorDialog("Differential splicing analysis not yet performed.",
                             id=ns("missingDiffAnalyses")),

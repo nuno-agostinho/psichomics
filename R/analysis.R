@@ -45,14 +45,20 @@ missingDataGuide <- function(dataType) {
 #' 
 #' @return HTML elements
 selectizeGeneInput <- function(id, label="Gene", choices=NULL, multiple=FALSE) {
+    onFocus  <- NULL
+    onChange <- NULL
+    if (!multiple) {
+        onFocus  <- I(sprintf(
+            'function() { $("#%s")[0].selectize.clear(); }', id))
+        onChange <- I(sprintf(
+            'function(value) { $("#%s")[0].selectize.blur(); }', id))
+    }
+    
     selectizeInput(
         id, label, width="100%", multiple=multiple,
-        choices=c("Type to search for a gene..."="", choices),
-        options=list(
-            onFocus=I(sprintf(
-                'function() { $("#%s")[0].selectize.clear(); }', id)),
-            onChange=I(sprintf(
-                'function(value) { $("#%s")[0].selectize.blur(); }', id))))
+        choices=c("Type to search for a gene..."="", choices), 
+        options=list(onFocus=onFocus, onChange=onChange, 
+                     plugins=list('remove_button', 'drag_drop')))
 }
 
 #' @rdname appUI
@@ -1599,8 +1605,10 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' The tooltip shows the median, variance, max, min and number of non-NA samples
 #' of each data series.
 #' 
-#' @param data Numeric: data for one gene or alternative splicing event
-#' @param groups Character: group of each value in \code{data}
+#' @param data Numeric, data frame or matrix: data for one gene or alternative 
+#' splicing event
+#' @param groups List of characters (list of groups containing data identifiers)
+#' or character vector (group of each value in \code{data})
 #' @param rug Boolean: include rug plot to better visualise data distribution
 #' @param vLine Boolean: include vertical plot lines to indicate the mean and
 #' median of each group even when those groups are omitted
@@ -1652,10 +1660,24 @@ plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE,
     
     if (!is.null(title)) hc <- hc %>% hc_title(text=title)
     
+    if (is.list(groups)) 
+        ns <- names(groups)
+    else
+        ns <- groups
+    
     count <- 0
     plotLines <- list()
-    for (group in sort(unique(groups))) {
-        row  <- data[groups == group]
+    for (group in unique(ns)) {
+        if (is.list(groups))
+            filter <- groups[[group]]
+        else
+            filter <- groups == group
+        
+        if (is.vector(data))
+            row <- as.numeric(data[filter])
+        else
+            row <- as.numeric(data[ , filter])
+        
         med  <- roundDigits(median(row, na.rm=TRUE))
         vari <- roundDigits(var(row, na.rm=TRUE))
         max  <- roundDigits(max(row, na.rm=TRUE))
@@ -1977,16 +1999,20 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
     return(vector)
 }
 
-#' Perform selected statistical analyses on multiple splicing events
+#' Perform statistical analyses
 #' 
-#' @param psi Data frame or matrix: alternative splicing event quantification
-#' @param groups Character: group of each sample from the alternative splicing 
-#' event quantification (if NULL, sample types are used instead, e.g. normal, 
-#' tumour and metastasis)
-#' @param analyses Character: analyses to perform (see Details)
+#' @param data Data frame or matrix: gene expression or alternative splicing 
+#' quantification
+#' @param groups Named list of characters (containing elements belonging to each
+#' group) or character vector (containing the group of each individual sample);
+#' if NULL, sample types are used instead when available, e.g. normal, tumour 
+#' and metastasis
+#' @param analyses Character: statistical tests to perform (see Details)
 #' @param pvalueAdjust Character: method used to adjust p-values (see Details)
 #' @param geneExpr Character: name of the gene expression dataset (only required
 #' for density sparklines available in the interactive mode)
+#' @param psi Data frame or matrix: alternative splicing quantification (defunct
+#' argument, use \code{data} instead)
 #' 
 #' @importFrom plyr rbind.fill
 #' @importFrom fastmatch fmatch
@@ -2028,19 +2054,30 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
 #' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 #' group <- c(rep("Normal", 3), rep("Tumour", 3))
 #' diffAnalyses(psi, group)
-diffAnalyses <- function(psi, groups=NULL, 
+diffAnalyses <- function(data, groups=NULL, 
                          analyses=c("wilcoxRankSum", "ttest", "kruskal",
                                     "levene", "fligner"),
-                         pvalueAdjust="BH", geneExpr=NULL) {
+                         pvalueAdjust="BH", geneExpr=NULL, psi=NULL) {
+    if (!is.null(psi)) {
+        warning("The argument 'psi' is deprecated: use 'data' instead.")
+        data <- psi
+    }
+    
     # cl <- parallel::makeCluster(getOption("cl.cores", getCores()))
     step <- 50 # Avoid updating progress too frequently
     updateProgress("Performing statistical analysis", 
-                   divisions=5 + round(nrow(psi)/step))
+                   divisions=5 + round(nrow(data)/step))
     time <- Sys.time()
     
     if (is.null(groups)) {
-        ids <- names(psi)
+        ids    <- names(data)
         groups <- parseSampleGroups(ids)
+    } else if (is.list(groups)) {
+        data   <- data[ , unlist(groups)]
+        
+        colour <- attr(groups, "Colour")
+        groups <- rep(names(groups), sapply(groups, length))
+        attr(groups, "Colour") <- colour
     }
     originalGroups <- unique(groups)
     if (identical(originalGroups, "All samples")) originalGroups <- NULL
@@ -2051,7 +2088,7 @@ diffAnalyses <- function(psi, groups=NULL,
     if ( !is.null(colour) ) attr(groups, "Colour") <- colour
     
     count <- 0
-    stats <- apply(psi, 1, function(...) {
+    stats <- apply(data, 1, function(...) {
         count <<- count + 1
         if (count %% step == 0)
             updateProgress("Performing statistical analysis", console=FALSE)
@@ -2139,10 +2176,7 @@ diffAnalyses <- function(psi, groups=NULL,
         }
     }
     
-    # Check whether these are splicing events
-    areSplicingEvents <- all(sapply(head(rownames(df)), function (i) 
-        sum(charToRaw(i) == charToRaw("_")) > 3))
-    if ( areSplicingEvents ) {
+    if ( areSplicingEvents(rownames(df)) ) {
         # Add splicing event information
         updateProgress("Including splicing event information")
         info <- suppressWarnings(parseSplicingEvent(rownames(df), pretty=TRUE))
@@ -2161,9 +2195,11 @@ diffAnalyses <- function(psi, groups=NULL,
         time <- Sys.time()
         
         df[ , "Distribution"] <- createDensitySparklines(
-            df[ , "Distribution"], rownames(df), areSplicingEvents,
-            groups=originalGroups, geneExpr=geneExpr)
-        name <- ifelse(areSplicingEvents, "PSI.distribution", "GE.distribution")
+            df[ , "Distribution"], rownames(df), 
+            areSplicingEvents(rownames(df)), groups=originalGroups, 
+            geneExpr=geneExpr)
+        name <- ifelse(areSplicingEvents(rownames(df)),
+                       "PSI.distribution", "GE.distribution")
         colnames(df)[match("Distribution", colnames(df))] <- name
         display(Sys.time() - time)
     }
@@ -2177,6 +2213,9 @@ diffAnalyses <- function(psi, groups=NULL,
     # parallel::stopCluster(cl)
     return(df)
 }
+
+#' @rdname diffAnalyses
+diffAnalysis <- diffAnalyses
 
 attr(analysesUI, "loader") <- "app"
 attr(analysesServer, "loader") <- "app"

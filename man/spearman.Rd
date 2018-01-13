@@ -7,9 +7,11 @@
 spearman(data, groups)
 }
 \arguments{
-\item{data}{Numeric: data for one gene or alternative splicing event}
+\item{data}{Numeric, data frame or matrix: data for one gene or alternative 
+splicing event}
 
-\item{groups}{Character: group of each value in \code{data}}
+\item{groups}{List of characters (list of groups containing data identifiers)
+or character vector (group of each value in \code{data})}
 }
 \value{
 HTML elements

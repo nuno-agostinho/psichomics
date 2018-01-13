@@ -2,30 +2,41 @@
 % Please edit documentation in R/analysis.R
 \name{diffAnalyses}
 \alias{diffAnalyses}
-\title{Perform selected statistical analyses on multiple splicing events}
+\alias{diffAnalysis}
+\title{Perform statistical analyses}
 \usage{
-diffAnalyses(psi, groups = NULL, analyses = c("wilcoxRankSum", "ttest",
-  "kruskal", "levene", "fligner"), pvalueAdjust = "BH", geneExpr = NULL)
+diffAnalyses(data, groups = NULL, analyses = c("wilcoxRankSum", "ttest",
+  "kruskal", "levene", "fligner"), pvalueAdjust = "BH", geneExpr = NULL,
+  psi = NULL)
+
+diffAnalysis(data, groups = NULL, analyses = c("wilcoxRankSum", "ttest",
+  "kruskal", "levene", "fligner"), pvalueAdjust = "BH", geneExpr = NULL,
+  psi = NULL)
 }
 \arguments{
-\item{psi}{Data frame or matrix: alternative splicing event quantification}
+\item{data}{Data frame or matrix: gene expression or alternative splicing 
+quantification}
 
-\item{groups}{Character: group of each sample from the alternative splicing 
-event quantification (if NULL, sample types are used instead, e.g. normal, 
-tumour and metastasis)}
+\item{groups}{Named list of characters (containing elements belonging to each
+group) or character vector (containing the group of each individual sample);
+if NULL, sample types are used instead when available, e.g. normal, tumour 
+and metastasis}
 
-\item{analyses}{Character: analyses to perform (see Details)}
+\item{analyses}{Character: statistical tests to perform (see Details)}
 
 \item{pvalueAdjust}{Character: method used to adjust p-values (see Details)}
 
 \item{geneExpr}{Character: name of the gene expression dataset (only required
 for density sparklines available in the interactive mode)}
+
+\item{psi}{Data frame or matrix: alternative splicing quantification (defunct
+argument, use \code{data} instead)}
 }
 \value{
 Table of statistical analyses
 }
 \description{
-Perform selected statistical analyses on multiple splicing events
+Perform statistical analyses
 }
 \details{
 The following statistical analyses may be performed by including the 

@@ -61,6 +61,9 @@ parseTcgaSampleInfo <- function (samples, match=NULL) {
     return(info)
 }
 
+#' @rdname parseTcgaSampleInfo
+parseTCGAsampleInfo <- parseTcgaSampleInfo
+
 #' Prepare TCGA sample metadata from loaded datasets
 #' 
 #' If no TCGA datasets apply, the input is returned
@@ -203,7 +206,7 @@ ASquantFileInput <- function(ASquantFileId, speciesId, assemblyId){
                     tags$li(
                         "The first column must contain alternative splicing",
                         "event identifiers and should be named",
-                        tags$kbd("AS event ID")),
+                        tags$kbd("AS Event ID")),
                     tags$li(
                         "An alternative splicing event must be represented by:",
                         tags$kbd(
@@ -355,7 +358,7 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
         #         role="progressbar", style="width:100%",
         #         "Loading summary plots")))
     
-    tabPanel(title, br(), download, hr(),
+    tabPanel(title, br(), download, br(),
              bsCollapse(
                  open="Summary",
                  bsCollapsePanel(

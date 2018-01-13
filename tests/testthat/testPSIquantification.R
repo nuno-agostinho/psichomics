@@ -29,7 +29,7 @@ test_that("Calculate inclusion levels for exon skipping", {
     
     eventType <- "SE"
     annot <- readFile("ex_splicing_annotation.RDS")$`Skipped exon`
-    junctionQuant <- readFile("ex_junctionQuant.RDS")
+    junctionQuant <- as.matrix(readFile("ex_junctionQuant.RDS"))
     psi <- calculateInclusionLevels(eventType, junctionQuant, annot)
     
     expect_true(all(psi[1, ] == 0.5)) # Same reads for all junctions
@@ -53,6 +53,7 @@ test_that("Calculate inclusion levels for exon skipping with minimum reads", {
                                 27 20 90 24 14 35
                                 90 98 93 92 90 91
                                 30 24 92 26 13 29")
+    junctionQuant <- as.matrix(junctionQuant)
     names(junctionQuant) <- c(paste("Normal", 1:3), paste("Cancer", 1:3))
     rownames(junctionQuant) <- c("chr1:32:35:+",
                                  "chr1:32:38:+",
@@ -76,7 +77,7 @@ test_that("Calculate inclusion levels for mutually exclusive exons", {
     
     eventType <- "MXE"
     annot <- readFile("ex_splicing_annotation.RDS")$`Mutually exclusive exon`
-    junctionQuant <- readFile("ex_junctionQuant.RDS")
+    junctionQuant <- as.matrix(readFile("ex_junctionQuant.RDS"))
     psi <- calculateInclusionLevels(eventType, junctionQuant, annot)
     
     expect_true(all(psi[1, ] == 0.5)) # Same reads for all junctions
@@ -106,6 +107,7 @@ test_that("Calculate inclusion levels for alternative 5' splice site", {
                                  "chr2:35:37:+",
                                  "chr3:32:37:+",
                                  "chr3:35:37:+")
+    junctionQuant <- as.matrix(junctionQuant)
     psi <- calculateInclusionLevels(eventType, junctionQuant, annot)
     
     expect_true(all(psi[1, ] == 0.5)) # Same reads for all junctions
@@ -135,6 +137,7 @@ test_that("Calculate inclusion levels for alternative 3' splice site", {
                                  "chr2:32:37:+",
                                  "chr3:32:35:+",
                                  "chr3:32:37:+")
+    junctionQuant <- as.matrix(junctionQuant)
     psi <- calculateInclusionLevels(eventType, junctionQuant, annot)
     
     expect_true(all(psi[1, ] == 0.5)) # Same reads for all junctions
@@ -158,6 +161,7 @@ test_that("Process splicing quantification for multiple event types", {
     
     # The portion with just the skipped exon should be the same as a subset
     # when calculating for more event types
+    junctionQuant <- as.matrix(junctionQuant)
     psiSE <- quantifySplicing(annot, junctionQuant, eventType="SE")
     expect_identical(psi[1:3, ], psiSE)
 })

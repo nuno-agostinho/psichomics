@@ -71,13 +71,21 @@ getCores <- reactive(sharedData$cores)
 setCores <- function(integer) setGlobal("cores", value=integer)
 
 #' @rdname getGlobal
-getSignificant <- reactive(sharedData$significant)
+#' @importFrom shiny isRunning
+getSignificant <- function() {
+    if (isRunning()) reactive(sharedData$significant)()
+    else return(3)
+}
 
 #' @rdname getGlobal
 setSignificant <- function(integer) setGlobal("significant", value=integer)
 
 #' @rdname getGlobal
-getPrecision <- reactive(sharedData$precision)
+#' @importFrom shiny isRunning
+getPrecision <- function() {
+    if (isRunning()) reactive(sharedData$precision)()
+    else return(3)
+}
 
 #' @rdname getGlobal
 setPrecision <- function(integer) setGlobal("precision", value=integer)

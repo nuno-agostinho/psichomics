@@ -446,13 +446,14 @@ Now that the groups are ready, let's perform and plot the PCA results based on
 # Transpose data so samples are within rows
 pcaData <- t(geneExprNorm[ , unlist(erGroups)])
 
-# Percentage of missing values tolerated by gene: tolerated missing values 
-# are replaced with the median expression of that gene
-naTolerance <- 0
+# Missing values tolerated by gene: tolerated missing values are replaced with 
+# the median expression of that gene
+missingValues <- 10
 
 # Center and scale normalised gene expression values
 # Perform principal component analysis
-pca <- performPCA(pcaData, center=TRUE, scale.=FALSE, naTolerance=naTolerance)
+pca <- performPCA(pcaData, center=TRUE, scale.=FALSE, 
+                  missingValues=missingValues)
 
 # Plot the variance explained by each principal component
 plotVariance(pca)
@@ -471,13 +472,14 @@ Now the same for PSI:
 # Transpose data so samples are within rows
 pcaData <- t(psi[ , unlist(erGroups)])
 
-# Percentage of missing values tolerated by splicing event: tolerated missing
-# values are replaced with the median value of that splicing event
-naTolerance <- 0
+# Missing values tolerated by splicing event: tolerated missing values are 
+# replaced with the median value of that splicing event
+missingValues <- 10
 
 # Center but do not scale PSI values (they are already scaled between 0 and 1)
 # Perform principal component analysis
-pca <- performPCA(pcaData, center=TRUE, scale.=FALSE, naTolerance=naTolerance)
+pca <- performPCA(pcaData, center=TRUE, scale.=FALSE, 
+                  missingValues=missingValues)
 
 # Plot the variance explained by each principal component
 plotVariance(pca)
@@ -522,7 +524,7 @@ stats <- diffAnalyses(eventPSI, pvalueAdjust=pvalueAdjust,
                       analyses = c("wilcoxRankSum", "ttest", "kruskal", 
                                    "levene", "fligner"))
 # View(stats)
-plotDistribution(as.numeric(eventPSI), groups=types)
+plotDistribution(eventPSI, groups=types)
 ```
 
 Differential splicing analysis returns a data frame with the results of the
@@ -542,13 +544,13 @@ against normal samples (for instance, Log-rank p-values below 0.05):
 ```{r diff splicing 2}
 filter <- grep("Tumor|Normal", types)
 gr_event <- types[filter]
-eventPSI <- eventPSI[filter]
+eventPSI <- eventPSI[ , filter]
 
 stats <- diffAnalyses(eventPSI, groups=gr_event, pvalueAdjust=pvalueAdjust,
                       analyses = c("wilcoxRankSum", "ttest", "kruskal", 
                                    "levene", "fligner"))
 # View(stats)
-plotDistribution(as.numeric(eventPSI), groups=gr_event)
+plotDistribution(eventPSI, groups=gr_event)
 ```
 
 * Hover each group in the plot to compare the respective number of samples,
@@ -564,14 +566,13 @@ if any of the tests show statistical significance:
 # expression; match between patient information and samples as such:
 erGroups <- getMatchingSamples(groups[c("negative", "positive")], samples, 
                                clinical, match=match)
-eventPSI <- psi[event, unlist(erGroups)]
-erGroups <- rep(names(erGroups), sapply(erGroups, length))
+eventPSI <- psi[event, ]
 
 stats <- diffAnalyses(eventPSI, groups=erGroups, pvalueAdjust=pvalueAdjust,
                       analyses = c("wilcoxRankSum", "ttest", "kruskal", 
                                    "levene", "fligner"))
 # View(stats)
-plotDistribution(as.numeric(eventPSI), groups=erGroups)
+plotDistribution(eventPSI, groups=erGroups)
 ```
 
 ## Survival analysis
@@ -711,10 +712,7 @@ Let's perform differential splicing analysis based on ER expression:
 # expression; match between patient information and samples as such:
 erGroups <- getMatchingSamples(groups[c("negative", "positive")], samples, 
                                clinical, match=match)
-eventsPSI <- psi[ , unlist(erGroups)]
-erGroups  <- rep(names(erGroups), sapply(erGroups, length))
-
-diff <- diffAnalyses(eventsPSI, erGroups)
+diff <- diffAnalyses(psi, erGroups)
 # View(diff)
 ```
 

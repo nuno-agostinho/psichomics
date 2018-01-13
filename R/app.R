@@ -1,3 +1,5 @@
+#' @importFrom Rcpp sourceCpp
+#' @useDynLib psichomics, .registration=TRUE
 #' @include globalAccess.R
 NULL
 

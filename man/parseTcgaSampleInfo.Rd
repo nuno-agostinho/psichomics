@@ -2,9 +2,12 @@
 % Please edit documentation in R/data.R
 \name{parseTcgaSampleInfo}
 \alias{parseTcgaSampleInfo}
+\alias{parseTCGAsampleInfo}
 \title{Parse sample information from TCGA samples}
 \usage{
 parseTcgaSampleInfo(samples, match = NULL)
+
+parseTCGAsampleInfo(samples, match = NULL)
 }
 \arguments{
 \item{samples}{Character: sample identifiers}

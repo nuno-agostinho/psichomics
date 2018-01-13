@@ -1,8 +1,41 @@
+# 1.4.3 (12 Jan, 2018)
+
+* Alternative splicing quantification:
+    - Improve speed and memory usage when dealing with larger datasets
+    - Improve quantification of alternative first and last exons: quantify 
+    alternative first and last exons based on all exon-exon junction reads that 
+    support each of the alternative exons
+    - Print progress bar in R console
+* Principal component analysis:
+    - Change tolerated missing values per event to 5% by default
+    - Show/save table with the contribution of events (for alternative splicing 
+    quantification) or genes (for gene expression) to the selected principal
+    components
+    - Add extra information when hovering variables in loading plot
+    - Allow to plot top 100 variables that most contribute to the selected 
+    principal components (faster rendering of and interaction with loading 
+    plots)
+* Differential analysis:
+    - Allow to input a list of groups for the "group" argument of the functions
+    "diffAnalyses" and "plotDistribution" (command-line interface)
+    - Allow to input a non-numeric vector or a row of a matrix/data frame in the
+    "data" argument of the function "plotDistribution" (command-line interface)
+* Correlation between gene expression and alternative splicing:
+    - Perform correlation between gene expression of multiple genes and 
+    quantification of multiple alternative splicing events
+
+## Bug fixes
+
+* Fix unnamed events when only one event for a event type is returned
+* Minor copy-editing and overall improvements
+
 # 1.4.2 (19 Dec, 2017)
+
 * Fix error when trying to load alternative splicing annotation (given updated
 hg19 and hg38 annotation that is now available for use with psichomics)
 
 # 1.4.1 (14 Dec, 2017)
+
 * GTEx data loading:
     - Add input elements to allow GTEx gene expression loading in the graphical
     interface

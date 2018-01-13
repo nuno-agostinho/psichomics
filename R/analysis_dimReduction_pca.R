@@ -24,10 +24,11 @@ performPCA <- function(data, center=TRUE, scale.=FALSE, missingValues=10, ...) {
 #' @rdname appUI
 #' 
 #' @importFrom highcharter highchartOutput
+#' @importFrom shiny checkboxGroupInput tagList uiOutput hr downloadButton
+#' sliderInput actionButton selectizeInput helpText textOutput
 #' @importFrom shinyBS bsTooltip
-#' @importFrom shiny checkboxGroupInput tagList uiOutput hr
-#' sliderInput actionButton selectizeInput
 #' @importFrom shinyjs hidden
+#' @importFrom DT dataTableOutput
 pcaUI <- function(id) {
     ns <- NS(id)
     
@@ -39,17 +40,18 @@ pcaUI <- function(id) {
         checkboxGroupInput(ns("preprocess"), "Preprocessing",
                            c("Center values"="center", "Scale values"="scale"),
                            selected=c("center"), width="100%"),
+        selectGroupsUI(ns("dataGroups"), "Perform PCA on...",
+                       noGroupsLabel="All samples",
+                       groupsLabel="Samples from selected groups"),
         numericInput(ns("missingValues"), div(
             "Number of missing values to tolerate per event",
             icon("question-circle")), min=0, max=100, value=10, width="100%"),
+        helpText(textOutput(ns("maxSamples"))),
         bsTooltip(ns("missingValues"), placement="right", paste(
             "For events with a tolerable number of missing values, the median",
             "value of the event across samples is used to replace those",
             "missing values. The remaining events are discarded."),
             options=list(container="body")),
-        selectGroupsUI(ns("dataGroups"), "Perform PCA on...",
-                       noGroupsLabel="All samples",
-                       groupsLabel="Samples from selected groups"),
         selectGroupsUI(
             ns("dataGroups2"), "Perform PCA on...",
             noGroupsLabel="All genes and splicing events",
@@ -65,6 +67,11 @@ pcaUI <- function(id) {
                     buttonIcon="plus-circle", buttonId=ns("loadData")),
         hidden(pcaOptions))
     
+    varsToPlot <- c("all", "top100")
+    names(varsToPlot) <- c("All variables",
+                           paste("Top 100 variables that most contribute to",
+                                 "selected principal components"))
+    
     plotPcaCollapse <- bsCollapsePanel(
         list(icon("binoculars"), "Plot PCA"),
         value="Plot PCA", style="info",
@@ -78,6 +85,9 @@ pcaUI <- function(id) {
             selectGroupsUI(ns("colourGroups"), "Sample colouring",
                            noGroupsLabel="Do not colour samples",
                            groupsLabel="Colour using selected groups"),
+            radioButtons(
+                ns("plotVariables"), "Variables to plot in loading plot", 
+                varsToPlot, selected="top100", width="100%"),
             actionButton(ns("showVariancePlot"), "Show variance plot"),
             actionButton(ns("plot"), "Plot PCA", class="btn-primary"))))
     
@@ -148,7 +158,10 @@ pcaUI <- function(id) {
                 clusteringCollapse)
         ), mainPanel(
             highchartOutput(ns("scatterplot")),
-            highchartOutput(ns("scatterplotLoadings"))
+            highchartOutput(ns("scatterplotLoadings")),
+            hidden( dataTableOutput(ns("varContrTable")) ),
+            hidden( downloadButton(ns("saveVarContr"), "Save table", 
+                                   "btn-info") )
         )
     )
 }
@@ -167,10 +180,10 @@ pcaUI <- function(id) {
 #' pca <- prcomp(USArrests)
 #' plotVariance(pca)
 plotVariance <- function(pca) {
+    # Get a proportional value to eigenvalues based on standard deviation
     eigenvalue <- unname( pca$sdev ^ 2 )
     variance <- eigenvalue * 100 / sum(eigenvalue)
     cumvar <- cumsum(variance)
-    ns <- paste("PC", seq_along(eigenvalue))
     
     # Prepare data
     data <- lapply(seq(eigenvalue), function(i) {
@@ -201,6 +214,62 @@ plotVariance <- function(pca) {
     return(hc)
 }
 
+#' Calculate the contribution of PCA loadings to the selected principal
+#' components
+#'
+#' Total contribution of a variable is calculated as per: 
+#' ((Cx \* Ex) + (Cy \* Ey))/(Ex + Ey), where Cx and Cy are the 
+#' contributions of a variable to principal components (x and y) and Ex and Ey 
+#' are the eigenvalues of principal components (x and y)
+#'
+#' @inheritParams plotPCA
+#' 
+#' @source \url{http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/}
+#'
+#' @return Data frame containing the correlation between variables and selected 
+#' principal components and the contribution of variables to the selected 
+#' principal components (both individual and total contribution)
+calculateLoadingsContribution <- function(pca, pcX, pcY) {
+    loadings <- data.frame(pca$rotation)[, c(pcX, pcY)]
+    sdev <- pca$sdev[c(pcX, pcY)]
+    # Get a proportional value to eigenvalues based on standard deviation
+    eigenvalue <- sdev ^ 2
+    # Correlation between variables and principal components
+    varCorr <- t(loadings) * sdev
+    quality <- varCorr ^ 2
+    # Total contribution of the variables for the selected PCs
+    contr <- quality * 100 / rowSums(quality)
+    totalContr <- colSums(contr * eigenvalue) / sum(eigenvalue)
+    
+    table <- cbind(loadings, t(contr)/colSums(t(contr))*100, 
+                   totalContr/sum(totalContr)*100)
+    values <- sprintf("PC%s loading", c(pcX, pcY))
+    colnames(table) <- c(
+        values,
+        sprintf("Contribution to PC%s (%%)", c(pcX, pcY)),
+        sprintf("Contribution to PC%s and PC%s (%%)", pcX, pcY))
+    
+    # Parse alternative splicing events or genes
+    if ( areSplicingEvents(rownames(table)) ) {
+        extra <- parseSplicingEvent(rownames(table), pretty=TRUE)
+        extra$gene <- sapply(extra$gene, paste0, collapse=", ")
+        extra$pos  <- sapply(extra$pos,  paste0, collapse=", ")
+        colnames(extra) <- c("Event type", "Chromosome", "Strand", "Gene",
+                             "Event position")
+        extra <- extra[ , c(4, 1:3, 5)]
+        table <- cbind(extra, table)
+    } else {
+        table <- cbind("Genes"=rownames(table), table)
+    }
+    
+    # Sort by total contribution to principal components
+    table <- table[order(table[ , ncol(table)], decreasing=TRUE), ]
+    
+    attr(table, "xValues") <- values[1]
+    attr(table, "yValues") <- values[2]
+    return(table)
+}
+
 #' Create a scatterplot from a PCA object
 #' 
 #' @param pca \code{prcomp} object
@@ -210,8 +279,13 @@ plotVariance <- function(pca) {
 #' samples (use clinical or sample groups)
 #' @param individuals Boolean: plot PCA individuals (TRUE by default)
 #' @param loadings Boolean: plot PCA loadings/rotations (FALSE by default)
+#' @param nLoadings Integer: Number of variables to plot, ordered by those that 
+#' most contribute to selected principal components (this allows for faster 
+#' performance as only the variables that most contribute are rendered); if 
+#' NULL, all variables are plotted
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip %>%
+#' tooltip_table
 #' @return Scatterplot as an \code{highcharter} object
 #' 
 #' @export
@@ -223,7 +297,7 @@ plotVariance <- function(pca) {
 #' # Plot both individuals and loadings
 #' plotPCA(pca, pcX=2, pcY=3, loadings=TRUE)
 plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE, 
-                    loadings=FALSE) {
+                    loadings=FALSE, nLoadings=NULL) {
     if (is.character(pcX)) pcX <- as.numeric(gsub("[A-Z]", "", pcX))
     if (is.character(pcY)) pcY <- as.numeric(gsub("[A-Z]", "", pcY))
     
@@ -262,24 +336,37 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
         }
     }
     if (loadings) {
-        loadings <- data.frame(pca$rotation)[, c(pcX, pcY)]
-        sdev <- pca$sdev[c(pcX, pcY)]
-        # Get a proportional value to eigenvalues based on standard deviation
-        eigenvalue <- sdev ^ 2
-        # Correlation between variables and principal components
-        varCoor <- t(loadings) * sdev
-        quality <- varCoor ^ 2
-        # Total contribution of the variables for the selected PCs
-        contr <- quality * 100 / rowSums(quality)
-        totalContr <- colSums(contr * eigenvalue)
+        contr      <- calculateLoadingsContribution(pca, pcX, pcY)
+        if (!is.null(nLoadings)) contr <- head(contr, nLoadings)
+        xValues    <- contr[ , attr(contr, "xValues")]
+        yValues    <- contr[ , attr(contr, "yValues")]
+        contrPCx   <- contr[ , ncol(contr) - 2]
+        contrPCy   <- contr[ , ncol(contr) - 1]
+        contrTotal <- contr[ , ncol(contr)]
         
-        names <- parseSplicingEvent(rownames(loadings), char=TRUE)
+        names <- parseSplicingEvent(rownames(contr), char=TRUE)
+        dfX <- c(paste0("PC", pcX, " loading"),
+                 paste0("PC", pcY, " loading"),
+                 paste0("Contribution to PC", pcX),
+                 paste0("Contribution to PC", pcY),
+                 paste0("Contribution to PC", pcX, " and PC", pcY) )
+        dfY <- c(sprintf(" {point.x:.%sf}", getPrecision()),
+                 sprintf(" {point.y:.%sf}", getPrecision()),
+                 sprintf(" {point.contrPCx:.%sf}%%", getPrecision()),
+                 sprintf(" {point.contrPCy:.%sf}%%", getPrecision()),
+                 sprintf(" {point.contr:.%sf}%%", getPrecision()))
         ## TODO(NunoA): color points with a gradient; see colorRampPalette()
         # For loadings, add series (but don't add to legend)
-        hc <- hc_scatter(hc, varCoor[1, ], varCoor[2, ], unname(totalContr), 
-                         name="Loadings", sample=names) %>%
-            hc_subtitle(text=paste("Bubble size: contribution of a variable",
-                                   "to the selected principal components"))
+        hc <- hc_scatter(hc, xValues, yValues, unname(contrTotal), 
+                         name="Loadings", sample=names, contr=contrTotal,
+                         contrPCx=contrPCx, contrPCy=contrPCy) %>%
+            hc_subtitle(text=sprintf(
+                "Bubble size: contribution of a variable to PC%s and PC%s",
+                pcX, pcY)) %>%
+            hc_tooltip(useHTML=TRUE, headerFormat="", pointFormat=paste0(
+                tags$b(style="text-align: center; white-space:pre-wrap;",
+                       "{point.sample}"), tags$br(), "<small>",
+                tooltip_table(dfX, dfY), "</small>"))
     }
     return(hc)
 }
@@ -476,15 +563,45 @@ clusterSet <- function(session, input, output) {
 
 #' @rdname appServer
 #' 
+#' @importFrom shiny downloadHandler
 #' @importFrom shinyjs runjs hide show
 #' @importFrom highcharter %>% hc_chart hc_xAxis hc_yAxis hc_tooltip
 #' @importFrom stats setNames
+#' @importFrom DT renderDataTable
 pcaServer <- function(input, output, session) {
     ns <- session$ns
     
     selectGroupsServer(session, "dataGroups", "Samples")
     selectGroupsServer(session, "dataGroups2", "ASevents")
     selectGroupsServer(session, "colourGroups", "Samples")
+    
+    observe({
+        dataForPCA <- NULL
+        selectedDataForPCA <- input$dataForPCA
+        if (selectedDataForPCA == "Inclusion levels")
+            dataForPCA <- isolate(getInclusionLevels())
+        else if (grepl("^Gene expression", selectedDataForPCA))
+            dataForPCA <- isolate(getGeneExpression()[[selectedDataForPCA]])
+        if (is.null(dataForPCA)) NULL
+        
+        groups <- getSelectedGroups(input, "dataGroups", "Samples",
+                                    filter=colnames(dataForPCA))
+        if ( !is.null(groups) ) 
+            dataForPCA <- dataForPCA[ , unlist(groups), drop=FALSE]
+        
+        samples    <- ncol(dataForPCA)
+        defaultVal <- round(samples * 0.05) # default: 5% of samples
+        updateNumericInput(session, "missingValues", max=samples, 
+                           value=defaultVal)
+        
+        observe({
+            missing <- input$missingValues
+            text <- sprintf(
+                "%s available samples (the selected %s represent %s%%)",
+                samples, missing, round(missing / samples * 100))
+            output$maxSamples <- renderText(text)
+        })
+    })
     
     observe({
         incLevels <- getInclusionLevels()
@@ -591,6 +708,8 @@ pcaServer <- function(input, output, session) {
                 # Clear previously plotted charts
                 output$scatterplot <- renderHighchart(NULL)
                 output$scatterplotLoadings <- renderHighchart(NULL)
+                hide("varContrTable")
+                hide("saveVarContr")
             }
             updateCollapse(session, "pcaCollapse", "Plot PCA")
             endProcess("calculate", closeProgressBar=FALSE)
@@ -646,6 +765,7 @@ pcaServer <- function(input, output, session) {
             pca <- getPCA()
             pcX <- input$pcX
             pcY <- input$pcY
+            plotVariables <- input$plotVariables
             
             if ( !is.null(pca$x) )
                 groups <- getSelectedGroups(input, "colourGroups", "Samples",
@@ -683,13 +803,35 @@ pcaServer <- function(input, output, session) {
                         isolate(input$dataForPCA))
                 }
                 
-                plotPCA(pca, pcX, pcY, individuals=FALSE, loadings=TRUE) %>%
+                if (plotVariables == "all") nLoadings <- NULL
+                else if (plotVariables == "top100") nLoadings <- 100
+                
+                plotPCA(pca, pcX, pcY, individuals=FALSE, loadings=TRUE,
+                        nLoadings=nLoadings) %>%
                     hc_title(text=title) %>%
-                    hc_plotOptions(series=list(
-                        cursor="pointer", point=list(events=list(
-                            click=JS(onClick)))))
+                    hc_plotOptions(series=list(cursor="pointer", 
+                                               point=list(events=list(
+                                                   click=JS(onClick)))))
             }
         })
+        
+        if (is.character(pcX)) pcX <- as.numeric(gsub("[A-Z]", "", pcX))
+        if (is.character(pcY)) pcY <- as.numeric(gsub("[A-Z]", "", pcY))
+        data <- calculateLoadingsContribution(pca, pcX, pcY)
+        
+        show("varContrTable")
+        output$varContrTable <- renderDataTable(
+            data, style="bootstrap", server=TRUE, rownames=FALSE, 
+            selection="none", options=list(scrollX=TRUE))
+        
+        show("saveVarContr")
+        output$saveVarContr <- downloadHandler(
+            filename=function() {
+                paste(getCategory(), "PCA variable contribution")
+            }, content=function(con) {
+                write.table(data, con, quote=FALSE, sep="\t", row.names=FALSE)
+            }
+        )
         
         hide("noClusteringUI", animType="fade")
         show("clusteringUI", animType="fade")
