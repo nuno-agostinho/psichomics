@@ -59,12 +59,15 @@ tableRow <- function (..., th=FALSE) {
 #' @examples 
 #' getSplicingEventTypes()
 getSplicingEventTypes <- function(acronymsAsNames=FALSE) {
-    types <- c("Skipped exon" = "SE",
-               "Mutually exclusive exon" = "MXE",
-               "Alternative 5' splice site" = "A5SS",
-               "Alternative 3' splice site" = "A3SS",
-               "Alternative first exon" = "AFE",
-               "Alternative last exon" = "ALE")
+    types <- c(
+        "Skipped exon"="SE",
+        "Mutually exclusive exon"="MXE",
+        "Alternative 5' splice site"="A5SS",
+        "Alternative 3' splice site"="A3SS",
+        "Alternative first exon"="AFE",
+        "Alternative last exon"="ALE",
+        "Alternative first exon (exon-centred - less reliable)"="AFE_exon",
+        "Alternative last exon (exon-centred - less reliable)"="ALE_exon")
     if (acronymsAsNames) {
         tmp        <- names(types)
         names(tmp) <- types

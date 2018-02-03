@@ -392,9 +392,10 @@ sortCoordinates <- function(events) {
 calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                                      minReads = 10) {
     # Immediately return NULL if ALE and AFE events are missing coordinates
-    if (eventType == "AFE" && is.null(annotation$`Constitutive exon 2 start`)) {
+    if (eventType %in% c("AFE", "AFE_exon") && 
+        is.null(annotation$`Constitutive exon 2 start`)) {
         return(NULL)
-    } else if (eventType == "ALE" && 
+    } else if (eventType %in% c("ALE", "ALE_exon") && 
                is.null(annotation$`Constitutive exon 1 end`)) {
         return(NULL)
     }
@@ -506,7 +507,7 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                             annotation$`Alternative exon 2 start`, 
                             annotation$`Alternative exon 2 end`,
                             annotation$`Constitutive exon 2 start`, gene)
-    } else if (eventType == "A5SS") {
+    } else if (eventType %in% c("A5SS", "AFE")) {
         alt1end      <- "Alternative exon 1 end"
         alt2end      <- "Alternative exon 2 end"
         constitutive <- "Constitutive exon 2 start"
@@ -552,7 +553,7 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                             annotation[[alt2end]], 
                             annotation[[alt1end]], 
                             annotation[[constitutive]], gene)
-    } else if (eventType == "A3SS") {
+    } else if (eventType %in% c("A3SS", "ALE")) {
         constitutive <- "Constitutive exon 1 end"
         alt1start    <- "Alternative exon 1 start"
         alt2start    <- "Alternative exon 2 start"
@@ -598,7 +599,7 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                             annotation[[constitutive]],
                             annotation[[alt1start]], 
                             annotation[[alt2start]], gene)
-    } else if (eventType == "AFE") {
+    } else if (eventType == "AFE_exon") {
         alt1end      <- "Alternative exon 1 end"
         alt2end      <- "Alternative exon 2 end"
         
@@ -636,7 +637,7 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         eventNames <- paste(sep="_", eventType, chr, strand, 
                             annotation[[alt2end]], 
                             annotation[[alt1end]], gene)
-    } else if (eventType == "ALE") {
+    } else if (eventType == "ALE_exon") {
         alt1start    <- "Alternative exon 1 start"
         alt2start    <- "Alternative exon 2 start"
         
@@ -676,7 +677,7 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                             annotation[[alt2start]], gene)
     }
     
-    if (eventType %in% c("ALE", "AFE")) {
+    if (eventType %in% c("ALE_exon", "AFE_exon")) {
         psi <- psiFastCalc2(junctionQuant, inc=inc, exc=exc, minReads=minReads)
     } else {
         psi <- psiFastCalc(junctionQuant, incA=incA, incB=incB, excA=excA,
