@@ -4,7 +4,8 @@
 \alias{performPCA}
 \title{Perform principal component analysis after processing missing values}
 \usage{
-performPCA(data, center = TRUE, scale. = FALSE, missingValues = 10, ...)
+performPCA(data, center = TRUE, scale. = FALSE, missingValues = round(0.05
+  * nrow(data)), ...)
 }
 \arguments{
 \item{data}{an optional data frame (or similar: see
@@ -25,7 +26,8 @@ performPCA(data, center = TRUE, scale. = FALSE, missingValues = 10, ...)
     value is passed to \code{\link{scale}}.}
 
 \item{missingValues}{Integer: number of tolerated missing values per column
-to be replaced with the mean of the values of that same column}
+to be replaced with the mean of the values of that same column (5% of total
+rows by default)}
 
 \item{...}{Arguments passed on to \code{stats::prcomp}}
 }

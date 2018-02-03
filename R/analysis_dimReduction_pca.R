@@ -16,7 +16,8 @@
 #' 
 #' @examples 
 #' performPCA(USArrests)
-performPCA <- function(data, center=TRUE, scale.=FALSE, missingValues=10, ...) {
+performPCA <- function(data, center=TRUE, scale.=FALSE, 
+                       missingValues=round(0.05 * nrow(data)), ...) {
     reduceDimensionality(data, "pca", missingValues=missingValues, 
                          center=center, scale.=scale., ...)
 }
