@@ -6,7 +6,8 @@
 #' @param naTolerance Integer: percentage of tolerated missing values per column
 #' (deprecated)
 #' @param missingValues Integer: number of tolerated missing values per column
-#' to be replaced with the mean of the values of that same column
+#' to be replaced with the mean of the values of that same column (5% of total
+#' rows by default)
 #' @param scale. Boolean: scale variables?
 #' @param ... Extra parameters passed to FUN
 #' @inheritParams base::scale
@@ -19,7 +20,7 @@
 #' object
 reduceDimensionality <- function(data, type=c("pca", "ica"), center=TRUE, 
                                  scale.=FALSE, naTolerance=NULL, 
-                                 missingValues=10, ...) {
+                                 missingValues=round(0.05 * ncol(data)), ...) {
     # # Get individuals (rows) with less than a given percentage of NAs
     # nas <- rowSums(is.na(data))
     # # hist(nas/ncol(data)*100)

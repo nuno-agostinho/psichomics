@@ -1,3 +1,8 @@
+# 1.4.4 (3 Feb, 2018)
+
+* Dimensionality reduction:
+    - Change tolerated missing values per event to 5% by default for both PCA
+    and ICA (in both visual and command-line interfaces)
 # 1.4.3 (12 Jan, 2018)
 
 * Alternative splicing quantification:

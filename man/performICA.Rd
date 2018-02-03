@@ -5,8 +5,9 @@
 \title{Perform independent component analysis after processing missing values}
 \usage{
 performICA(data, n.comp = min(5, ncol(data)), center = TRUE,
-  scale. = FALSE, missingValues = 10, alg.typ = c("parallel",
-  "defaltion"), fun = c("logcosh", "exp"), alpha = 1, ...)
+  scale. = FALSE, missingValues = round(0.05 * nrow(data)),
+  alg.typ = c("parallel", "defaltion"), fun = c("logcosh", "exp"),
+  alpha = 1, ...)
 }
 \arguments{
 \item{data}{an optional data frame (or similar: see
@@ -29,7 +30,8 @@ performICA(data, n.comp = min(5, ncol(data)), center = TRUE,
     value is passed to \code{\link{scale}}.}
 
 \item{missingValues}{Integer: number of tolerated missing values per column
-to be replaced with the mean of the values of that same column}
+to be replaced with the mean of the values of that same column (5% of total
+rows by default)}
 
 \item{alg.typ}{if \code{alg.typ == "parallel"} the components are extracted
     simultaneously (the default). if \code{alg.typ == "deflation"} the
