@@ -1,5 +1,10 @@
 # 1.4.4 (3 Feb, 2018)
 
+* Alternative splicing quantification:
+    - Quantification of alternative first and last exons: following more 
+    thorough testing, the new exon-centred method was considered to be less 
+    relevant to exploratory analysis (specially when compared with other types 
+    of events); as such, both methods are now available for quantification
 * Dimensionality reduction:
     - Change tolerated missing values per event to 5% by default for both PCA
     and ICA (in both visual and command-line interfaces)
