@@ -20,7 +20,7 @@ diffExpressionTableUI <- function(id) {
     
     statAnalysesOptions <- div(
         id=ns("statAnalysesOptions"),
-        selectizeInput(ns("geneExpr"), "Gene expression", choices=NULL,
+        selectizeInput(ns("geneExpr"), "Gene expression dataset", choices=NULL,
                        width="100%"),
         bsCollapse(
             open=c("lmFit"),
@@ -28,10 +28,11 @@ diffExpressionTableUI <- function(id) {
                 tagList(icon("compress"), "Gene-wise linear model fit"),
                 value="lmFit",
                 helpText("The", tags$code("limma::lmFit"), "function is used",
-                         "to fit a linear model per gene, based on a design",
+                         "to fit a linear model per gene based on a design",
                          "matrix prepared from the two selected groups."),
-                selectGroupsUI(ns("diffGroups"), label="Groups of samples",
-                               maxItems=2)),
+                selectGroupsUI(
+                    ns("diffGroups"), maxItems=2,
+                    label="Select two groups for differential expression")),
             bsCollapsePanel(
                 tagList(icon("adjust"), "Differential expression statistics"), 
                 value="eBayes",
@@ -40,6 +41,11 @@ diffExpressionTableUI <- function(id) {
                     "compute moderated t-tests and log-odds of differential",
                     "expression by empirical Bayes moderation of the standard",
                     "errors towards a common value."),
+                radioButtons(
+                    ns("ebayesPriorVar"), "Prior gene-wise variance modelling",
+                    list("Constant pooled variance"="constant",
+                         "Mean-variance trend (limma-trend)"="trend"),
+                    selected="trend"),
                 sliderInput(
                     ns("ebayesProportion"), min=0, max=1, value=0.01, step=0.01,
                     width="100%",
@@ -48,10 +54,10 @@ diffExpressionTableUI <- function(id) {
                 helpText("Assumed limit for the standard deviation of log2",
                          "fold-changes for differentially expressed genes:"),
                 fluidRow(
-                    column(6, numericInput(ns("ebaysStdevMin"), "Lower limit",
+                    column(6, numericInput(ns("ebayesStdevMin"), "Lower limit",
                                            min=0, value=0.1, step=0.1, 
                                            width="100%")),
-                    column(6, numericInput(ns("ebaysStdevMax"), "Upper limit",
+                    column(6, numericInput(ns("ebayesStdevMax"), "Upper limit",
                                            min=0, value=4, step=0.1, 
                                            width="100%"))))),
         tags$b("Extra analyses that are performed:"),
@@ -187,10 +193,13 @@ diffExpressionSet <- function(session, input, output) {
         
         # Calculate moderated t-statistics and DE log-odds using limma::eBayes
         ebayesProportion <- input$ebayesProportion
-        ebaysStdevMin    <- input$ebaysStdevMin
-        ebaysStdevMax    <- input$ebaysStdevMax
-        stats <- eBayes(fit, proportion=ebayesProportion, 
-                        stdev.coef.lim=c(ebaysStdevMin, ebaysStdevMax))
+        ebayesStdevMin   <- input$ebayesStdevMin
+        ebayesStdevMax   <- input$ebayesStdevMax
+        ebayesPriorVar   <- input$ebayesPriorVar
+        limmaTrend       <- identical(ebayesPriorVar, "trend")
+        
+        stats <- eBayes(fit, proportion=ebayesProportion, trend=limmaTrend,
+                        stdev.coef.lim=c(ebayesStdevMin, ebayesStdevMax))
         
         # Prepare data summary
         pvalueAdjust <- input$pvalueAdjust

@@ -10,21 +10,20 @@
 geNormalisationFilteringInterface <- function(ns) {
     filters <- div(
         id=ns("filteringInterface"),
-        helpText("The following filters are applied per gene."),
         fluidRow(
-            column(6, numericInput(ns("minMean"), "Minimum mean >",
+            column(6, numericInput(ns("minMean"), "Min mean >",
                                    min=-1, max=100, value=0, width="100%")),
-            column(6, numericInput(ns("maxMean"), "Maximum mean <", 
+            column(6, numericInput(ns("maxMean"), "Max mean <", 
                                    min=-1, max=100, value=100, width="100%"))),
         fluidRow(
-            column(6, numericInput(ns("minVar"), "Minimum variance >", 
+            column(6, numericInput(ns("minVar"), "Min variance >", 
                                    min=-1, max=100, value=0, width="100%")),
-            column(6, numericInput(ns("maxVar"), "Maximum variance <", 
+            column(6, numericInput(ns("maxVar"), "Max variance <", 
                                    min=-1, max=100, value=100, width="100%"))),
         fluidRow(
             column(6, numericInput(ns("minCounts"), "At least X counts...", 
                                    min=0, max=100, value=10, width="100%")),
-            column(6, numericInput(ns("minSamples"), "...in N or more samples", 
+            column(6, numericInput(ns("minSamples"), "...in ≥ N samples", 
                                    min=0, max=100, value=10, width="100%"))),
         helpText(textOutput(ns("filteredGenes"))))
     
@@ -40,22 +39,20 @@ geNormalisationFilteringInterface <- function(ns) {
     
     options <- div(
         id=ns("options"),
-        selectizeInput(ns("geneExpr"),
-                       "Gene expression data to filter and normalise",
-                       width="100%", choices=NULL),
+        selectizeInput(ns("geneExpr"), "Gene expression dataset", width="100%",
+                       choices=NULL),
         bsCollapse(
             bsCollapsePanel(
                 tagList(icon("filter"), "Gene filtering"), value="Filtering",
-                checkboxInput(ns("enableFiltering"), "Enable gene filtering", 
-                              value=TRUE, width="100%"), hr(),
+                checkboxInput(ns("enableFiltering"), value=TRUE, width="100%",
+                              "Enable gene-wise filtering"),
                 filters, filteringAssistant),
             bsCollapsePanel(
                 tagList(icon("balance-scale"), "Normalisation"), 
                 value="Normalisation",
                 helpText("Calculate normalisation factors to scale the raw",
                          "library sizes using the function", 
-                         tags$code("edgeR::calcNormFactors"), "followed by",
-                         tags$code("edgeR::cpm")),
+                         tags$code("edgeR::calcNormFactors")),
                 selectizeInput(
                     ns("normalisation"), "Normalisation method", width="100%",
                     c("Weighted trimmed mean of M-values (TMM)"="TMM",
@@ -78,14 +75,14 @@ geNormalisationFilteringInterface <- function(ns) {
                                         "calculated from the geometric mean " +
                                         "of all columns and the median ratio " +
                                         "of each sample to the median library" +
-                                        " is taken as the scale factor";
+                                        " is taken as the scale factor.";
                                     break;
                                 case "upperquartile":
                                     description = "The scale factors are " +
                                         "calculated from a given quantile of " +
                                         "the counts for each library, after " +
                                         "removing genes with zero counts in " +
-                                        "all libraries";
+                                        "all libraries.";
                                     break;
                                 case "none":
                                     description = "";
@@ -103,11 +100,17 @@ geNormalisationFilteringInterface <- function(ns) {
                                       "calculate scale factors"),
                                 min=0, max=1, value=0.75, step=0.01))),
             bsCollapsePanel(
-                tagList(icon("retweet"), "Log transformation"), 
+                tagList(icon("retweet"), "Compute CPM and log-transform"), 
                 value="Log-transformation",
+                helpText("Compute counts per million (CPM) and log2-transform",
+                         "values using", tags$code("edgeR::cpm")),
                 checkboxInput(
                     ns("log2transformation"), value=TRUE, width="100%",
-                    paste("Perform log2 transformation")))))
+                    paste("Perform log2 transformation")),
+                numericInput(
+                    ns("priorCount"), value=0.25, width="100%",
+                    paste("Average count to add to each observation to avoid",
+                          "zeroes after log-transformation")))))
     
     tagList(
         uiOutput(ns("modal")),
@@ -131,8 +134,10 @@ geNormalisationFilteringUI <- function(id, panel) {
 #' 
 #' @param geneExpr Matrix or data frame: gene expression
 #' @param geneFilter Boolean: filtered genes
-#' @param log2transform Boolean: add 0.5 and perform log2-transformation?
 #' @inheritParams edgeR::calcNormFactors
+#' @param log2transform Boolean: perform log2-transformation?
+#' @param priorCount Average count to add to each observation to avoid zeroes 
+#' after log-transformation
 #' 
 #' @importFrom edgeR DGEList calcNormFactors cpm
 #' 
@@ -143,7 +148,8 @@ geNormalisationFilteringUI <- function(id, panel) {
 #' geneExpr <- readFile("ex_gene_expression.RDS")
 #' normaliseGeneExpression(geneExpr)
 normaliseGeneExpression <- function(geneExpr, geneFilter=NULL, method="TMM", 
-                                    p=0.75, log2transform=TRUE) {
+                                    p=0.75, log2transform=TRUE, 
+                                    priorCount=0.25) {
     updateProgress("Processing gene expression", divisions=3)
     
     updateProgress("Filtering gene expression")
@@ -153,7 +159,8 @@ normaliseGeneExpression <- function(geneExpr, geneFilter=NULL, method="TMM",
     
     updateProgress("Normalising gene expression")
     geneExprNorm <- calcNormFactors(geneExprNorm, method=method, p=p)
-    geneExprNorm <- cpm(geneExprNorm, log=log2transform)
+    geneExprNorm <- cpm(geneExprNorm, log=log2transform, 
+                        prior.count=priorCount)
     
     updateProgress("Preparing gene expression data")
     geneExprNorm <- data.frame(geneExprNorm)
@@ -280,6 +287,17 @@ geNormalisationFilteringServer <- function(input, output, session) {
         }
     })
     
+    # Update label of numeric input according to input itself (more intuitive)
+    observeEvent(input$minCounts, {
+        label <- sprintf("At least %s counts...", input$minCounts)
+        updateNumericInput(session, "minCounts", label=label)
+    })
+    
+    observeEvent(input$minSamples, {
+        label <- sprintf("...in ≥ %s samples", input$minSamples)
+        updateNumericInput(session, "minSamples", label=label)
+    })
+    
     getFilter <- reactive({
         geneExpr <- isolate(input$geneExpr)
         if (is.null(geneExpr) || geneExpr == "") return(NULL)
@@ -374,6 +392,18 @@ geNormalisationFilteringServer <- function(input, output, session) {
         }
     })
     
+    # Disable option to add counts to observations if not log2-transforming
+    observe({
+        filter <- input$log2transformation
+        if (filter) {
+            enable("priorCount")
+            # show("assistantInterface", anim=TRUE)
+        } else {
+            disable("priorCount")
+            # hide("assistantInterface", anim=TRUE)
+        }
+    })
+    
     # Filter and normalise gene expression
     observeEvent(input$processGeneExpr, {
         time <- startProcess("processGeneExpr")
@@ -384,6 +414,7 @@ geNormalisationFilteringServer <- function(input, output, session) {
             percentile    <- input$upperquartilePercentile
             filter        <- input$enableFiltering
             log2transform <- input$log2transformation
+            priorCount    <- input$priorCount
         })
         
         if (filter)
@@ -392,7 +423,7 @@ geNormalisationFilteringServer <- function(input, output, session) {
             geneFilter <- NULL
         
         geneExprNorm <- normaliseGeneExpression(
-            geneExpr, geneFilter, method, percentile, log2transform)
+            geneExpr, geneFilter, method, percentile, log2transform, priorCount)
         setNormalisedGeneExpression(geneExprNorm)
         endProcess("processGeneExpr", time=time)
     })
