@@ -22,7 +22,7 @@ interest}
 interval or follow up time}
 
 \item{timeStop}{Character: name of column containing ending time of the 
-interval}
+interval (only relevant for interval censoring)}
 }
 \value{
 Survival data including optimal PSI cutoff, minimal survival p-value

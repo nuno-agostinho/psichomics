@@ -21,7 +21,7 @@ interest}
 interval or follow up time}
 
 \item{timeStop}{Character: name of column containing ending time of the 
-interval}
+interval (only relevant for interval censoring)}
 
 \item{group}{Character: group relative to each patient}
 
@@ -46,9 +46,6 @@ needed to calculate survival curves
 Process survival curves terms to calculate survival curves
 }
 \details{
-\code{timeStop} is only considered if \code{censoring} is either
-\code{interval} or \code{interval2}
-
 If \code{survTime} is NULL, the survival times will be fetch from the
 clinical dataset according to the names given in \code{timeStart},
 \code{timeStop}, \code{event} and \code{followup}. This can became quite slow

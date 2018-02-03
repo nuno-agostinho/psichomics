@@ -8,6 +8,8 @@
 * Dimensionality reduction:
     - Change tolerated missing values per event to 5% by default for both PCA
     and ICA (in both visual and command-line interfaces)
+* Survival analysis:
+    - Allow to stratify patients based on optimal gene expression cutoff
 # 1.4.3 (12 Jan, 2018)
 
 * Alternative splicing quantification:

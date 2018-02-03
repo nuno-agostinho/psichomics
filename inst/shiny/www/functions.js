@@ -204,6 +204,15 @@ function showSurvCutoff(event, autoParams = false, psiCutoff = true) {
 }
 
 /**
+ * Update slider value for GE cutoff
+ * 
+ * @param {Numeric} value Slider value
+ */
+function setGEcutoffSlider(value) {
+    $("input[id*='geCutoff']").data("ionRangeSlider").update({from: value});
+}
+
+/**
  * Update slider value for PSI cutoff
  * 
  * @param {Numeric} value Slider value
