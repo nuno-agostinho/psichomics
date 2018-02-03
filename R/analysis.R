@@ -306,7 +306,7 @@ processSurvData <- function(event, timeStart, timeStop, followup, group,
 #' @param timeStart Character: name of column containing starting time of the
 #' interval or follow up time
 #' @param timeStop Character: name of column containing ending time of the 
-#' interval
+#' interval (only relevant for interval censoring)
 #' @param followup Character: name of column containing follow up time
 #' 
 #' @return Data frame containing the time for the given columns
@@ -408,9 +408,7 @@ updateClinicalParams <- function(session, attrs) {
 #' @importFrom stats formula
 #' @importFrom survival coxph Surv
 #'
-#' @details \code{timeStop} is only considered if \code{censoring} is either
-#' \code{interval} or \code{interval2}
-#'
+#' @details 
 #' If \code{survTime} is NULL, the survival times will be fetch from the
 #' clinical dataset according to the names given in \code{timeStart},
 #' \code{timeStop}, \code{event} and \code{followup}. This can became quite slow
@@ -766,18 +764,15 @@ testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
     return(pvalue)
 }
 
-#' Calculate optimal alternative splicing quantification cutoff to separate
-#' survival curves
-#'
-#' @details \code{timeStop} is only considered if \code{censoring} is either
-#' \code{interval} or \code{interval2}
+#' Calculate optimal data cutoff that best separates survival curves
 #'
 #' @inheritParams processSurvTerms
 #' @inheritParams testSurvivalCutoff
-#' @param psi Numeric: PSI values to test against the cutoff
+#' @param data Numeric: data values
 #' @param session Shiny session (only used for the visual interface)
 #' 
-#' @return Optimal alternative splicing quantification cutoff
+#' @return List containg the optimal cutoff (\code{par}) and the corresponding 
+#' p-value (\code{value})
 #' @export
 #' 
 #' @examples 
@@ -795,24 +790,39 @@ testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
 #' event      <- "days_to_death"
 #' 
 #' psi <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
-#' opt <- optimalPSIcutoff(clinical, psi, "right", event, timeStart)
-optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart, 
-                             timeStop=NULL, followup="days_to_last_followup",
-                             session=NULL, filter=TRUE, survTime=NULL) {
-    if ( is.null(survTime) ) {
+#' opt <- optimalCutoff(clinical, psi, "right", event, timeStart)
+optimalSurvivalCutoff <- function(clinical, data, censoring, event, timeStart, 
+                                  timeStop=NULL, 
+                                  followup="days_to_last_followup",
+                                  session=NULL, filter=TRUE, survTime=NULL, 
+                                  lower=min(data, na.rm=TRUE), 
+                                  upper=max(data, na.rm=TRUE)) {
+    if ( is.null(survTime) )
         survTime <- getAttributesTime(clinical, event, timeStart, timeStop,
                                       followup)
-    }
     
     # Supress warnings from failed calculations while optimising
     opt <- suppressWarnings(
-        optim(0, testSurvivalCutoff, data=psi, filter=filter, clinical=clinical,
-              censoring=censoring, timeStart=timeStart, timeStop=timeStop, 
-              event=event, followup=followup, survTime=survTime,
-              session=session,
+        optim(0, testSurvivalCutoff, data=data, filter=filter, 
+              clinical=clinical, censoring=censoring, timeStart=timeStart,
+              timeStop=timeStop, event=event, followup=followup, 
+              survTime=survTime, session=session,
               # Method and parameters interval
-              method="Brent", lower=0, upper=1))
+              method="Brent", lower=lower, upper=upper))
     return(opt)
+}
+
+#' @rdname optimalSurvivalCutoff
+#' @param psi Numeric: PSI values to test against the cutoff
+optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart, 
+                             timeStop=NULL, followup="days_to_last_followup",
+                             session=NULL, filter=TRUE, survTime=NULL) {
+    .Deprecated("optimalSurvivalCutoff")
+    
+    optimalSurvivalCutoff(clinical=clinical, data=psi, censoring=censoring, 
+                          event=event, timeStart=timeStart, timeStop=timeStop, 
+                          followup=followup, session=session, filter=filter, 
+                          survTime=survTime, lower=0, upper=1)
 }
 
 # Differential analyses helper functions -----------------------------------

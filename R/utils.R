@@ -6,6 +6,16 @@
                           "psichomics()")
 }
 
+#' Round down/up the minimum/maximum value
+#' @param x Numeric: values
+#' @param digits Numeric: number of maximum digits
+#' 
+#' @return Rounded numeric value
+roundMinDown <- function(x, digits=0) floor  (min(x) * 10^digits) / 10^digits
+
+#' @rdname roundMinDown
+roundMaxUp   <- function(x, digits=0) ceiling(max(x) * 10^digits) / 10^digits
+
 #' Get psichomics file inside a given directory
 #' @inheritParams base::system.file
 #' @return Loaded file
@@ -34,6 +44,16 @@ sidebar <- function(..., width=4) {
 #' junctionQuant <- readFile("ex_junctionQuant.RDS")
 readFile <- function(file) {
     readRDS(insideFile("extdata", file))
+}
+
+#' Link to run arbitrary JavaScript code
+#' 
+#' @param text Character: text label
+#' @param code Character: JavaScript code
+#' 
+#' @return HTML elements
+linkToRunJS <- function(text, code) {
+    HTML(sprintf('<a href="#" onclick="%s; return false;">%s</a>', code, text))
 }
 
 #' Create a row for a HTML table
@@ -1612,15 +1632,25 @@ prepareFileBrowser <- function(session, input, id, ...) {
 #' Create HTML table from data frame or matrix
 #' 
 #' @param data Data frame or matrix
+#' @param rownames Boolean: print row names?
+#' @param colnames Boolean: print column names?
 #' 
 #' @importFrom xtable xtable print.xtable
 #' @importFrom shiny HTML
 #' 
 #' @return HTML elements
-table2html <- function(data) {
+table2html <- function(data, rownames=TRUE, colnames=TRUE, class=NULL) {
     table <- xtable(data)
-    table <- print(table, type="html", print.results=FALSE)
-    return( HTML(table) )
+    table <- print(table, type="html", print.results=FALSE,
+                   include.rownames=rownames, include.colnames=colnames)
+    html <- HTML(table)
+    
+    if (!is.null(class))
+        html <- gsub("border=1",
+                     sprintf('class="%s"', paste(class, collapse=" ")),
+                     html, fixed=TRUE)
+    
+    return(html)
 }
 
 #' Interface for interactive ggplot

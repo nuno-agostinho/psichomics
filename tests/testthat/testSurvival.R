@@ -84,7 +84,8 @@ test_that("Quantify optimal PSI cutoff", {
     event      <- "days_to_death"
     data       <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
     
-    opt <- optimalPSIcutoff(clinical, data, censoring="right", event, timeStart)
+    opt <- optimalSurvivalCutoff(clinical, data, censoring="right", event, 
+                                 timeStart)
     expect_is(opt, "list")
     expect_equal(cutoff <- opt$par, 0.618034, tol=1e-6)
     expect_equal(pvalue <- opt$value, 0.0269, tol=1e-4)

@@ -101,7 +101,7 @@ library(psichomics)
 ## Survival analysis
 * `getValuePerSubject`
 * `labelBasedOnCutoff`
-* `optimalPSIcutoff`
+* `optimalSurvivalCutoff`
 * `testSurvival`
 * `processSurvTerms`
 * `survfit`
@@ -599,8 +599,8 @@ in survival between individuals with PSI below and above that threshold) can be
 calculated as per:
 
 ```{r optimal cut-off}
-opt <- optimalPSIcutoff(clinical, eventPSI, censoring="right", 
-                        event="days_to_death", timeStart="days_to_death")
+opt <- optimalSurvivalCutoff(clinical, eventPSI, censoring="right", 
+                             event="days_to_death", timeStart="days_to_death")
 optimalCutoff <- opt$par # Optimal exon inclusion level
 optimalCutoff
 optimalPvalue <- opt$value # Respective p-value
@@ -751,9 +751,9 @@ optimalPvalue <- rep(NA, max)
 # Retrieve the optimal PSI cut-off and respective p-value for multiple events
 for (row in min:max) {
     singlePSI <- as.numeric(clinicalPSI[row, ])
-    opt <- optimalPSIcutoff(clinical, singlePSI, censoring="right", 
-                            event=daysToDeath, timeStart=daysToDeath,
-                            survTime=survTime)
+    opt <- optimalSurvivalCutoff(clinical, singlePSI, censoring="right", 
+                                 event=daysToDeath, timeStart=daysToDeath,
+                                 survTime=survTime)
     optimalCutoff[row] <- opt$par # Optimal exon inclusion level
     optimalPvalue[row] <- opt$value # Respective p-value
     setTxtProgressBar(pb, row)

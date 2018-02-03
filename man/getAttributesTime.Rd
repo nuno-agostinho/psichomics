@@ -21,7 +21,7 @@ interest}
 interval or follow up time}
 
 \item{timeStop}{Character: name of column containing ending time of the 
-interval}
+interval (only relevant for interval censoring)}
 
 \item{followup}{Character: name of column containing follow up time}
 }

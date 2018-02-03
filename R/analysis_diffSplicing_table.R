@@ -187,7 +187,7 @@ diffSplicingTableUI <- function(id) {
 #' 
 #' Data is presented in the table for statistical analyses
 #' 
-#' @inheritParams optimalPSIcutoff
+#' @inheritParams optimalSurvivalCutoff
 #' @param eventPSI Numeric: alternative splicing quantification for multiple
 #' samples relative to a single splicing event
 #' 
@@ -200,8 +200,8 @@ diffSplicingTableUI <- function(id) {
 #' and HTML element required to plot survival curves
 createOptimalSurvData <- function(eventPSI, clinical, censoring, event, 
                                   timeStart, timeStop) {
-    opt <- optimalPSIcutoff(clinical, eventPSI, censoring, event, 
-                            timeStart, timeStop)
+    opt <- optimalSurvivalCutoff(clinical, eventPSI, censoring, event, 
+                                 timeStart, timeStop)
     
     # Assign splicing quantification to patients based on their samples
     eventPSI <- as.numeric(eventPSI)
