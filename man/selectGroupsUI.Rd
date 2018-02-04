@@ -10,7 +10,7 @@ selectGroupsUI(id, label,
   placeholder = "Click on 'Groups' to create or edit groups",
   noGroupsLabel = NULL, groupsLabel = NULL, maxItems = NULL)
 
-selectGroupsServer(session, id, type)
+selectGroupsServer(session, id, type, preference = NULL)
 
 getSelectedGroups(input, id, type, filter = NULL)
 }
@@ -33,6 +33,9 @@ when no groups may be selected}
 
 \item{type}{Character: type of groups (either "Patients", "Samples", 
 "ASevents" or "Genes")}
+
+\item{preference}{Character: name of groups to pre-select, when available
+(if NULL, all groups will be pre-selected)}
 
 \item{input}{Shiny input}
 

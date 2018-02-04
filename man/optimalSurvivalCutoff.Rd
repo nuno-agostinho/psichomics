@@ -40,6 +40,8 @@ interval (only relevant for interval censoring)}
 \item{survTime}{survTime object: times to follow up, time start, time stop
 and event (optional)}
 
+\item{lower, upper}{Bounds in which to search}
+
 \item{psi}{Numeric: PSI values to test against the cutoff}
 }
 \value{
@@ -47,7 +49,8 @@ List containg the optimal cutoff (\code{par}) and the corresponding
 p-value (\code{value})
 }
 \description{
-Calculate optimal data cutoff that best separates survival curves
+Uses \code{stats::optim} with the Brent method to test multiple cutoffs and
+to find the minimum log-rank p-value.
 }
 \examples{
 clinical <- read.table(text = "2549   NA ii  female

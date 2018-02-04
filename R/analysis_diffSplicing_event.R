@@ -18,11 +18,11 @@ diffSplicingEventUI <- function(id) {
     survival <- div(
         id=ns("survivalButton"), hr(),
         actionButton(
-            ns("optimalSurv1"), onclick="showSurvCutoff(null, false)",
+            ns("optimalSurv1"), onclick="showSurvCutoff(null, null, false)",
             icon=icon("heartbeat"), "Survival analysis by PSI cutoff", 
             class="btn-info btn-md btn-block", class="visible-lg visible-md"),
         actionButton(
-            ns("optimalSurv2"), onclick="showSurvCutoff(null, false)",
+            ns("optimalSurv2"), onclick="showSurvCutoff(null, null, false)",
             "Survival analysis by PSI cutoff", 
             class="btn-info btn-xs btn-block", class="visible-sm visible-xs"))
     
@@ -115,7 +115,7 @@ diffSplicingEventServer <- function(input, output, session) {
         
         # Separate samples by their groups
         eventPSI <- as.numeric(psi[event, ])
-        eventPSI <- filterGroups(eventPSI, groups)
+        eventPSI <- filterGroups(eventPSI, groups, 2)
         groups <- names(eventPSI)
         attr(groups, "Colour") <- colour
         

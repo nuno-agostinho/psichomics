@@ -99,7 +99,7 @@ library(psichomics)
 * `plotICA`
 
 ## Survival analysis
-* `getValuePerSubject`
+* `assignValuePerSubject`
 * `labelBasedOnCutoff`
 * `optimalSurvivalCutoff`
 * `testSurvival`
@@ -586,8 +586,10 @@ event from before:
 event <- "SE_10_+_79797062_79799962_79799983_79800373_RPS24"
 
 # Assign alternative splicing quantification to patients based on their samples
-clinicalPSI <- getValuePerPatient(psi, match, clinical)
-eventPSI <- as.numeric(clinicalPSI[event, ])
+types    <- createGroupByAttribute("Sample types", sampleInfo)
+tumour   <- types["Primary solid Tumor"]
+eventPSI <- assignValuePerPatient(psi[event, ], match, clinical,
+                                  samples=unlist(tumour))
 
 # Statistics of the alternative splicing event's quantification
 summary(eventPSI)
@@ -630,8 +632,8 @@ cut-off based on gene expression:
 gene <- "RPS24"
 
 # Assign gene expression to patients based on their samples
-clinicalGE <- getValuePerPatient(geneExprNorm, match, clinical)
-eventGE <- as.numeric(clinicalGE[gene, ])
+eventGE <- assignValuePerPatient(geneExprNorm[gene, ], match, clinical,
+                                  samples=unlist(tumour))
 
 # Statistics of the gene expression for the selected gene
 summary(eventGE)
@@ -731,17 +733,15 @@ filter <- diff$`Wilcoxon p-value (BH adjusted)` <= 0.05
 filter <- filter[!is.na(filter)]
 events <- rownames(diff[filter, ])
 
-# Assign alternative splicing quantification to patients based on their samples
-clinicalPSI <- getValuePerPatient(psi, match, clinical)
-
 # Get time for all survival analyses of interest (as this is the same for all,
 # pre-fetching this information speeds the following loop)
 daysToDeath <- "days_to_death"
-survTime <- getAttributesTime(clinical, event=daysToDeath, timeStart=daysToDeath)
+survTime <- getAttributesTime(clinical, event=daysToDeath, 
+                              timeStart=daysToDeath)
 
 # Prepare progress bar
 min <- 1
-max <- nrow(clinicalPSI)
+max <- nrow(psi)
 pb <- txtProgressBar(min, max, "Calculating optimal PSI cut-off", style=3)
 
 # Prepare empty vectors where information will be stored (faster)
@@ -750,11 +750,13 @@ optimalPvalue <- rep(NA, max)
 
 # Retrieve the optimal PSI cut-off and respective p-value for multiple events
 for (row in min:max) {
-    singlePSI <- as.numeric(clinicalPSI[row, ])
+    # Assign alternative splicing quantification to patients based on their samples
+    singlePSI <- assignValuePerPatient(psi[row, ], match, clinical,
+                                  samples=unlist(tumour))
     opt <- optimalSurvivalCutoff(clinical, singlePSI, censoring="right", 
                                  event=daysToDeath, timeStart=daysToDeath,
                                  survTime=survTime)
-    optimalCutoff[row] <- opt$par # Optimal exon inclusion level
+    optimalCutoff[row] <- opt$par   # Optimal exon inclusion level
     optimalPvalue[row] <- opt$value # Respective p-value
     setTxtProgressBar(pb, row)
 }

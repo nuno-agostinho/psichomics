@@ -69,11 +69,13 @@ selectGroupsUI <- function (
 #' 
 #' @inheritParams getGroups
 #' @param session Shiny session
+#' @param preference Character: name of groups to pre-select, when available
+#' (if NULL, all groups will be pre-selected)
 #' 
 #' @importFrom shinyjs enable disable onclick toggleClass runjs
 #' 
 #' @return \code{selectGroupsServer}: Server logic for group selection
-selectGroupsServer <- function(session, id, type) {
+selectGroupsServer <- function(session, id, type, preference=NULL) {
     ns     <- session$ns
     input  <- session$input
     output <- session$output
@@ -127,7 +129,10 @@ selectGroupsServer <- function(session, id, type) {
         
         currentSelection <- isolate(input[[id]])
         if (is.null(currentSelection)) {
-            selected <- groups
+            if (is.null(preference))
+                selected <- groups
+            else
+                selected <- groups[groups %in% preference]
         } else {
             selected <- currentSelection[currentSelection %in% groups]
             if (length(selected) == 0) selected <- groups
