@@ -346,8 +346,8 @@ clusterICAset <- function(session, input, output) {
             if (!is.null(patients)) {
                 indiv  <- lapply(new, function(i)
                     unname(getPatientFromSample(i, patientId=patients)))
-                groups <- cbind(groups[ , 1:3], "Patients"=indiv, 
-                                groups[ , 4, drop=FALSE])
+                groups <- cbind(groups[ , 1:3, drop=FALSE], "Patients"=indiv, 
+                                groups[ ,   4, drop=FALSE])
             }
             
             if (!is.null(groups)) appendNewGroups("Samples", groups)
