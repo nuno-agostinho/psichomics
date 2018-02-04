@@ -594,16 +594,25 @@ assignColours <- function(new, groups=NULL) {
 #' 
 #' @inheritParams getGroups
 #' @param new Rows of groups to be added
+#' @param clearOld Boolean: clear old groups?
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
-appendNewGroups <- function(type, new) {
+appendNewGroups <- function(type, new, clearOld=FALSE) {
     # Rename duplicated group names
-    groups <- getGroups(type, complete=TRUE)
+    if (clearOld) 
+        groups <- NULL
+    else
+        groups <- getGroups(type, complete=TRUE)
+    
     new <- renameGroups(new, groups)
     new <- assignColours(new, groups)
     
-    # Append the new group(s) to the groups already created
-    groups <- rbind(new, groups)
+    if (clearOld) {
+        groups <- new
+    } else {
+        # Append the new group(s) to the groups already created
+        groups <- rbind(new, groups)
+    }
     setGroups(type, groups)
 }
 
@@ -1759,6 +1768,28 @@ groupsServerOnce <- function(input, output, session) {
                                           patients, match=match)
             group <- cbind(group, "Samples"=samples)
             setGroups("Samples", group)
+        }
+    })
+    
+    # Create groups by sample types when loading TCGA data
+    observe({
+        sampleInfo <- getSampleInfo()
+        if (!is.null(sampleInfo) && any(grepl("^TCGA", rownames(sampleInfo)))) {
+            new    <- createGroupByAttribute("Sample types", sampleInfo)
+            groups <- cbind("Names"=names(new), "Subset"="Attribute",
+                            "Input"="Sample types", "Samples"=new)
+
+            # Match samples with patients (if loaded)
+            patients <- isolate(getPatientId())
+            if (!is.null(patients)) {
+                indiv <- lapply(new, function(i)
+                    unname(getPatientFromSample(i, patientId=patients)))
+                groups <- cbind(groups[ , 1:3, drop=FALSE], "Patients"=indiv,
+                                groups[ ,   4, drop=FALSE])
+            }
+            
+            if (!is.null(groups)) 
+                isolate( appendNewGroups("Samples", groups, clearOld=TRUE) )
         }
     })
 }

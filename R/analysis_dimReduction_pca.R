@@ -534,19 +534,20 @@ clusterSet <- function(session, input, output) {
             # Match samples with patients (if loaded)
             patients <- isolate(getPatientId())
             if (!is.null(patients)) {
-                indiv  <- lapply(new, function(i)
+                indiv <- lapply(new, function(i)
                     unname(getPatientFromSample(i, patientId=patients)))
-                groups <- cbind(groups[ , 1:3], "Patients"=indiv, 
-                                groups[ , 4, drop=FALSE])
+                groups <- cbind(groups[ , 1:3, drop=FALSE], "Patients"=indiv, 
+                                groups[ ,   4, drop=FALSE])
             }
             
             if (!is.null(groups)) appendNewGroups("Samples", groups)
             infoModal(
                 session, "Groups successfully created",
                 "The following groups were created based on the selected",
-                "clustering options. They are available for selection and",
-                "modification from any group selection input.", hr(),
-                tableOutput(session$ns("clusteringTable")) )
+                "clustering options.", hr(),
+                tableOutput(session$ns("clusteringTable")),
+                footer=actionButton(session$ns("goToGroups"), "Show groups",
+                                    class="btn-info", "data-dismiss"="modal"))
             
             # Render as table for user
             colnames(groups)[1] <- "Group"
@@ -560,6 +561,8 @@ clusterSet <- function(session, input, output) {
                                                   align="c")
         }
     })
+    
+    observeEvent(input$goToGroups, runjs("showGroups('Samples');"))
 }
 
 #' @rdname appServer

@@ -4,13 +4,15 @@
 \alias{appendNewGroups}
 \title{Append new groups to already existing groups}
 \usage{
-appendNewGroups(type, new)
+appendNewGroups(type, new, clearOld = FALSE)
 }
 \arguments{
 \item{type}{Character: type of groups (either "Patients", "Samples", 
 "ASevents" or "Genes")}
 
 \item{new}{Rows of groups to be added}
+
+\item{clearOld}{Boolean: clear old groups?}
 }
 \value{
 NULL (this function is used to modify the Shiny session's state)
