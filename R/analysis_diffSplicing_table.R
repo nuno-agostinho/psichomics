@@ -107,6 +107,12 @@ diffSplicingTableUI <- function(id) {
                  "to last follow up is used instead."),
         selectizeInput(ns("event"), choices=NULL, width="100%",
                        "Event of interest"),
+        selectGroupsUI(
+            ns("sampleFiltering"),
+            label=div(id=ns("helpFiltering"), "Sample filtering", 
+                      icon("question-circle"))),
+        bsTooltip(ns("helpFiltering"), options=list(container="body"),
+                  placement="right", patientMultiMatchWarning()),
         radioButtons(
             ns("selected"), "Perform survival analysis based on", width="100%",
             choices=c(
@@ -190,6 +196,7 @@ diffSplicingTableUI <- function(id) {
 #' @inheritParams optimalSurvivalCutoff
 #' @param eventPSI Numeric: alternative splicing quantification for multiple
 #' samples relative to a single splicing event
+#' @inheritParams assignValuePerPatient
 #' 
 #' @importFrom shiny tags
 #' @importFrom jsonlite toJSON
@@ -199,12 +206,13 @@ diffSplicingTableUI <- function(id) {
 #' @return Survival data including optimal PSI cutoff, minimal survival p-value
 #' and HTML element required to plot survival curves
 createOptimalSurvData <- function(eventPSI, clinical, censoring, event, 
-                                  timeStart, timeStop) {
+                                  timeStart, timeStop, match, patients,
+                                  samples) {
+    # Assign a value to patients based on their respective samples
+    eventPSI <- assignValuePerPatient(eventPSI, match, patients=patients,
+                                      samples=samples)
     opt <- optimalSurvivalCutoff(clinical, eventPSI, censoring, event, 
                                  timeStart, timeStop)
-    
-    # Assign splicing quantification to patients based on their samples
-    eventPSI <- as.numeric(eventPSI)
     
     # Assign a value based on the inclusion levels cutoff
     cutoff <- opt$par
@@ -297,6 +305,7 @@ optimSurvDiffSet <- function(session, input, output) {
             display   <- input$statsTable_rows_current
             filtered  <- input$statsTable_rows_all
             selected  <- input$selected
+            samples   <- getSelectedGroups(input, "sampleFiltering", "Samples")
             # Get clinical data for the required attributes
             followup <- "days_to_last_followup"
             clinical <- getClinicalDataForSurvival(timeStart, timeStop, event,
@@ -330,11 +339,8 @@ optimSurvDiffSet <- function(session, input, output) {
         }
         startProgress("Performing survival analysis", nrow(subset))
         
-        # Assign a value to patients based on their respective samples
-        clinicalPSI <- getValuePerPatient(subset, match, patients=patients)
-        
-        opt <- apply(clinicalPSI, 1, createOptimalSurvData, clinical, 
-                     censoring, event, timeStart, timeStop)
+        opt <- apply(psi, 1, createOptimalSurvData, clinical, censoring, event, 
+                     timeStart, timeStop, match, patients, unlist(samples))
         
         if (length(opt) == 0) {
             errorModal(session, "No survival analyses",
@@ -380,9 +386,8 @@ optimSurvDiffSet <- function(session, input, output) {
                                            animation=FALSE, fillOpacity=0.25,
                                            marker=list(radius=1)))
             data <- as.character(df[ , 3])
-            optimSurv[rownames(df), 3] <- createSparklines(hc, data, 
-                                                           rownames(df),
-                                                           "showSurvCutoff")
+            optimSurv[rownames(df), 3] <- createSparklines(
+                hc, data, rownames(df), groups=names(samples), "showSurvCutoff")
             setDifferentialAnalysesResetPaging(FALSE)
             setDifferentialAnalysesSurvival(optimSurv)
         }
@@ -942,6 +947,9 @@ diffSplicingTableServer <- function(input, output, session) {
     ns <- session$ns
     
     selectGroupsServer(session, "diffGroups", "Samples")
+    selectGroupsServer(session, "sampleFiltering", "Samples",
+                       # Prefer TCGA tumour samples
+                       preference="Primary solid Tumor")
     
     observeEvent(input$loadClinical, 
                  missingDataGuide("Clinical data"))

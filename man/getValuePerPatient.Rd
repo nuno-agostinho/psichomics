@@ -3,20 +3,29 @@
 \name{getValuePerPatient}
 \alias{getValuePerPatient}
 \alias{getValuePerSubject}
+\alias{assignValuePerPatient}
+\alias{assignValuePerSubject}
 \alias{getPSIperPatient}
-\title{Assign the value from one of the patient's samples to that patient}
+\title{Assign average sample values to their corresponding patients}
 \usage{
 getValuePerPatient(data, match, clinical = NULL, patients = NULL,
-  pattern = NULL, filterOut = TRUE)
+  samples = NULL)
 
 getValuePerSubject(data, match, clinical = NULL, patients = NULL,
-  pattern = NULL, filterOut = TRUE)
+  samples = NULL)
+
+assignValuePerPatient(data, match, clinical = NULL, patients = NULL,
+  samples = NULL)
+
+assignValuePerSubject(data, match, clinical = NULL, patients = NULL,
+  samples = NULL)
 
 getPSIperPatient(psi, match, clinical = NULL, patients = NULL,
   pattern = NULL, filterOut = TRUE)
 }
 \arguments{
-\item{data}{Data frame or matrix: values per sample}
+\item{data}{One-row data frame/matrix or vector: values per sample for a 
+single gene}
 
 \item{match}{Matrix: match between samples and patients}
 
@@ -26,11 +35,8 @@ getPSIperPatient(psi, match, clinical = NULL, patients = NULL,
 \item{patients}{Character: patient identifiers (only required if the
 \code{clinical} argument is not handed)}
 
-\item{pattern}{Character: pattern to use when filtering sample types (NULL by
-default, i.e. no filtering occurs)}
-
-\item{filterOut}{Boolean: filter out (TRUE) or filter in (FALSE) sample types
-based on a given pattern; by default, sample types are filtered out}
+\item{samples}{Character: samples to use when assigning values per patient 
+(if NULL, all samples will be used)}
 
 \item{psi}{Data frame or matrix: values per sample}
 }
@@ -38,24 +44,5 @@ based on a given pattern; by default, sample types are filtered out}
 Values per patient
 }
 \description{
-Assign a value to patients based on the frequency of the respective type of 
-their samples
-}
-\details{
-Match filtered samples with patients to retrieve values per patient. One
-single sample is matched to a patient based on the sample type frequency. For
-instance, imagine that:
-
-\itemize{
-    \item{10 patients have a tumour and control sample;}
-    \item{5 patients have a tumour sample;}
-    \item{2 patients have only a control sample;}
-    \item{2 patients have only a metastasis sample.}
-}
- 
-In total, there are 15 tumour, 12 control and 2 metastasis samples. As tumour
-samples are the majority, tumour samples will be matched to patients. 
-Patients without tumour samples will then be matched to control samples (2nd
-most frequent sample type), if available. Finally, the remaining patients 
-will be matched to metastasis samples.
+For each gene, assign
 }

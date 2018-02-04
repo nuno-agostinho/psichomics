@@ -4,7 +4,8 @@
 \alias{createOptimalSurvData}
 \title{Create survival data based on a PSI cutoff}
 \usage{
-createOptimalSurvData(eventPSI, clinical, censoring, event, timeStart, timeStop)
+createOptimalSurvData(eventPSI, clinical, censoring, event, timeStart, timeStop,
+  match, patients, samples)
 }
 \arguments{
 \item{eventPSI}{Numeric: alternative splicing quantification for multiple
@@ -23,6 +24,14 @@ interval or follow up time}
 
 \item{timeStop}{Character: name of column containing ending time of the 
 interval (only relevant for interval censoring)}
+
+\item{match}{Matrix: match between samples and patients}
+
+\item{patients}{Character: patient identifiers (only required if the
+\code{clinical} argument is not handed)}
+
+\item{samples}{Character: samples to use when assigning values per patient 
+(if NULL, all samples will be used)}
 }
 \value{
 Survival data including optimal PSI cutoff, minimal survival p-value

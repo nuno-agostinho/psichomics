@@ -148,12 +148,15 @@ function showDiffExpression (gene, groups = null, geneExpr = null) {
 }
 
 /**
- * Navigate user to survival analysis by quantification cutoff
+ * Navigate user to survival analysis by a value cutoff
  * @param {String} event Alternative splicing event
+ * @param {String} groups List of groups used for survival analysis
  * @param {Boolean} autoParams Automatically set expected parameters
- * @param {Boolean} psiCutoff Prepare PSI (true) or GE cutoff (false)?
+ * @param {Boolean} psiCutoff Prepare splicing quantification (true) or gene
+ * expression cutoff (false)?
  */
-function showSurvCutoff(event, autoParams = false, psiCutoff = true) {
+function showSurvCutoff(event, groups = null, autoParams = true, 
+                        psiCutoff = true) {
     // Change currently selected splicing event
     if (event !== null) changeEvent(event);
     
@@ -199,6 +202,10 @@ function showSurvCutoff(event, autoParams = false, psiCutoff = true) {
             timeStop = $("#" + allEventsPage + "-timeStop")[0].selectize.items;
             $("#" + survivalPage + "-timeStop")[0].selectize.setValue(event);
         }
+        
+        // Set selected groups
+        $("#" + survivalPage + "-sampleFiltering")[0].selectize.setValue(
+            groups);
     }
     $('html, body').animate({ scrollTop: 0 }, 'slow'); // Scroll to top
 }

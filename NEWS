@@ -12,6 +12,7 @@
     and ICA (in both visual and command-line interfaces)
 * Survival analysis:
     - Allow to stratify patients based on optimal gene expression cutoff
+    - Select samples to be used for survival analysis
 * Groups:
     - Automatically set sample type groups (i.e. normal, primary solid tumour,
     metastatic, etc.) for TCGA samples (visual interface only)
