@@ -7,8 +7,7 @@
 \usage{
 optimalSurvivalCutoff(clinical, data, censoring, event, timeStart,
   timeStop = NULL, followup = "days_to_last_followup", session = NULL,
-  filter = TRUE, survTime = NULL, lower = min(data, na.rm = TRUE),
-  upper = max(data, na.rm = TRUE))
+  filter = TRUE, survTime = NULL, lower = NULL, upper = NULL)
 
 optimalPSIcutoff(clinical, psi, censoring, event, timeStart, timeStop = NULL,
   followup = "days_to_last_followup", session = NULL, filter = TRUE,
@@ -40,7 +39,9 @@ interval (only relevant for interval censoring)}
 \item{survTime}{survTime object: times to follow up, time start, time stop
 and event (optional)}
 
-\item{lower, upper}{Bounds in which to search}
+\item{lower, upper}{Bounds in which to search (if NULL, they will be 
+automatically set to 0 and 1 if all data values are within that interval;
+otherwise, they will be set to the minimum and maximum values of data)}
 
 \item{psi}{Numeric: PSI values to test against the cutoff}
 }
