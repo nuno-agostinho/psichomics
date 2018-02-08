@@ -141,8 +141,6 @@ getClinicalDataForSurvival <- function(..., formulaStr=NULL) {
 
 #' Assign average sample values to their corresponding patients
 #' 
-#' For each gene, assign 
-#' 
 #' @param data One-row data frame/matrix or vector: values per sample for a 
 #' single gene
 #' @param match Matrix: match between samples and patients
@@ -185,16 +183,20 @@ getValuePerPatient <- function(data, match, clinical=NULL, patients=NULL,
 }
 
 #' @rdname getValuePerPatient
+#' @export
 getValuePerSubject <- getValuePerPatient
 
 #' @rdname getValuePerPatient
+#' @export
 assignValuePerPatient <- getValuePerPatient
 
 #' @rdname getValuePerPatient
+#' @export
 assignValuePerSubject <- getValuePerPatient
 
 #' @rdname getValuePerPatient
 #' @param psi Data frame or matrix: values per sample
+#' @export
 getPSIperPatient <- function(psi, match, clinical=NULL, patients=NULL,
                              pattern=NULL, filterOut=TRUE) {
     .Deprecated("getValuePerPatient")
@@ -440,7 +442,7 @@ processSurvTerms <- function(clinical, censoring, event, timeStart,
     return(res)
 }
 
-#' Compute estimate of a survival curve using processed survival terms
+#' Compute estimates of survival curves
 #' 
 #' @param survTerms \code{survTerms} object: processed survival terms
 #' @inheritDotParams survival::survfit.formula -formula -data
@@ -484,8 +486,7 @@ survfit.survTerms <- function(survTerms, ...) {
     return(res)
 }
 
-#' Test difference between two or more survival curves using processed survival 
-#' terms
+#' Test differences between survival curves
 #' 
 #' @param survTerms survTerms object: processed survival terms
 #' @inheritDotParams survival::survdiff -formula -data
@@ -600,7 +601,7 @@ processSurvival <- function(session, ...) {
     return(survTerms)
 }
 
-#' Test the survival difference between survival groups
+#' Test the survival difference between groups of patients
 #' 
 #' @inheritParams survdiff.survTerms
 #' @inheritDotParams survival::survdiff -formula -data
@@ -786,6 +787,7 @@ optimalSurvivalCutoff <- function(clinical, data, censoring, event, timeStart,
 
 #' @rdname optimalSurvivalCutoff
 #' @param psi Numeric: PSI values to test against the cutoff
+#' @export
 optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart, 
                              timeStop=NULL, followup="days_to_last_followup",
                              session=NULL, filter=TRUE, survTime=NULL) {
@@ -1409,7 +1411,7 @@ filterGroups <- function(vector, group, threshold=1) {
 #' unit
 #' @importFrom ggrepel geom_label_repel
 #' 
-#' @return HTML elements
+#' @return List containing HTML elements and highlighted points
 createEventPlotting <- function(df, x, y, params, highlightX, highlightY,
                                 highlightParams, selected, selectedParams,
                                 labelled, labelledParams, xlim, ylim) {
@@ -1703,6 +1705,9 @@ plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE,
     if (vLine) hc <- hc %>% hc_xAxis(plotLines = plotLines)
     return(hc)
 }
+
+#' @rdname plotDistribution
+plotDensity <- plotDistribution
 
 #' Levene's test
 #' 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis.R
 \name{survfit.survTerms}
 \alias{survfit.survTerms}
-\title{Compute estimate of a survival curve using processed survival terms}
+\title{Compute estimates of survival curves}
 \usage{
 \method{survfit}{survTerms}(survTerms, ...)
 }
@@ -45,7 +45,7 @@ defined for survfit objects are \code{print}, \code{plot}, \code{lines}, and
 \code{points}.
 }
 \description{
-Compute estimate of a survival curve using processed survival terms
+Compute estimates of survival curves
 }
 \examples{
 clinical <- read.table(text = "2549   NA ii  female

@@ -3,7 +3,7 @@
 \name{createGroupByColumn}
 \alias{createGroupByColumn}
 \alias{createGroupByAttribute}
-\title{Create groups based on the unique values of a given column}
+\title{Split elements into groups based on a given column of a dataset}
 \usage{
 createGroupByColumn(col, dataset)
 
@@ -19,7 +19,7 @@ Named list with each unique value from a given column and respective
 elements
 }
 \description{
-Create groups based on the unique values of a given column
+Elements are identified by their respective row name.
 }
 \examples{
 df <- data.frame(gender=c("male", "female"),

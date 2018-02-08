@@ -31,7 +31,8 @@ selectGroupsUI <- function (
                        return "<div><b>" + escape(item.value) + "</b><small> " + 
                            escape(item.label) + "</small></div>"; },
                    item: function(item, escape) {
-                        return "<div>" + escape(item.value) + "</div>";
+                       return "<div><b>" + escape(item.value) + "</b><small> " + 
+                           escape(item.label) + "</small></div>";
                    } }')))
     
     if ( !is.null(label) ) {
@@ -485,7 +486,7 @@ groupById <- function(ns, id) {
         helpText("Example: ", tags$kbd("1:6, 8, 10:19"), "creates a group with",
                  "rows 1 to 6, 8 and 10 to 19. You can also input identifiers",
                  "instead of indexes."),
-        textInput(ns(paste0("groupNameRows", id)), "Group name", width="auto",
+        textInput(ns(paste0("groupNameRows", id)), "Group label", width="auto",
                   placeholder="Unnamed"),
         actionButton(ns(paste0("createGroupRows", id)), "Create group", 
                      class="btn-primary")
@@ -507,8 +508,8 @@ groupByExpression <- function(ns, id) {
                  'with values higher than 8 for column X and "alive" for',
                  'column Y.'),
         uiOutput(ns(paste0("groupExpressionSuggestions", id))),
-        textInput(ns(paste0("groupNameSubset", id)), "Group name", width="auto",
-                  placeholder="Unnamed"),
+        textInput(ns(paste0("groupNameSubset", id)), "Group label", 
+                  width="auto", placeholder="Unnamed"),
         actionButton(ns(paste0("createGroupSubset", id)), "Create group",
                      class="btn-primary")
     )
@@ -527,7 +528,7 @@ groupByGrep <- function(ns, cols, id) {
                   width="auto"),
         selectizeInput(ns(paste0("grepColumn", id)), "Select column to GREP",
                        choices=cols, width="auto"),
-        textInput(ns(paste0("groupNameRegex", id)), "Group name", width="auto",
+        textInput(ns(paste0("groupNameRegex", id)), "Group label", width="auto",
                   placeholder="Unnamed"),
         actionButton(ns(paste0("createGroupRegex", id)), "Create group", 
                      class="btn-primary")
@@ -761,7 +762,9 @@ createGroupByColumn <- function(col, dataset) {
     createGroupByAttribute(col, dataset)
 }
 
-#' Create groups based on the unique values of a given column
+#' Split elements into groups based on a given column of a dataset
+#' 
+#' Elements are identified by their respective row name.
 #' 
 #' @param col Character: column name
 #' @param dataset Matrix or data frame: dataset

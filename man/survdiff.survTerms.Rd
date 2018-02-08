@@ -2,8 +2,7 @@
 % Please edit documentation in R/analysis.R
 \name{survdiff.survTerms}
 \alias{survdiff.survTerms}
-\title{Test difference between two or more survival curves using processed survival 
-terms}
+\title{Test differences between survival curves}
 \usage{
 survdiff.survTerms(survTerms, ...)
 }
@@ -34,8 +33,7 @@ an object of class "survfit". See survfit.object for details. Methods
 defined for survfit objects are print, plot, lines, and points.
 }
 \description{
-Test difference between two or more survival curves using processed survival 
-terms
+Test differences between survival curves
 }
 \examples{
 clinical <- read.table(text = "2549   NA ii  female

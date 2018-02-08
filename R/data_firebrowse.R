@@ -600,7 +600,7 @@ addTCGAdata <- function(ns) {
                            placeholder = "Select data types",
                            plugins=list("remove_button"))),
         fileBrowserInput(
-            ns("dataFolder"), "Folder to store the data",
+            ns("dataFolder"), "Folder where data is stored",
             value=getDownloadsFolder(),
             placeholder="No folder selected",
             info=TRUE, infoFUN=bsTooltip,

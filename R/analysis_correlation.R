@@ -80,7 +80,7 @@ correlationUI <- function(id) {
 #' @param ASevents Character: alternative splicing events to correlate with
 #' gene expression of a gene (if \code{NULL}, the events will be automatically
 #' retrieved from the given gene)
-#' @inheritParams stats::cor.test
+#' @inheritDotParams stats:::cor.test.default alternative:continuity
 #' 
 #' @importFrom stats cor.test
 #' 

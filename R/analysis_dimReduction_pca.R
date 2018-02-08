@@ -227,10 +227,11 @@ plotVariance <- function(pca) {
 #' 
 #' @source \url{http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/}
 #'
+#' @export
 #' @return Data frame containing the correlation between variables and selected 
 #' principal components and the contribution of variables to the selected 
 #' principal components (both individual and total contribution)
-calculateLoadingsContribution <- function(pca, pcX, pcY) {
+calculateLoadingsContribution <- function(pca, pcX=1, pcY=2) {
     loadings <- data.frame(pca$rotation)[, c(pcX, pcY)]
     sdev <- pca$sdev[c(pcX, pcY)]
     # Get a proportional value to eigenvalues based on standard deviation
@@ -265,6 +266,7 @@ calculateLoadingsContribution <- function(pca, pcX, pcY) {
     
     # Sort by total contribution to principal components
     table <- table[order(table[ , ncol(table)], decreasing=TRUE), ]
+    table <- cbind("Rank"=seq(nrow(table)), table)
     
     attr(table, "xValues") <- values[1]
     attr(table, "yValues") <- values[2]

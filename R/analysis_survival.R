@@ -60,7 +60,7 @@ survivalUI <- function(id) {
         conditionalPanel(
             sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "groups"),
             selectGroupsUI(ns("dataGroups"), label=NULL),
-            checkboxInput(ns("showOutGroup"), 
+            checkboxInput(ns("showOutGroup"),
                           "Show data outside selected groups",
                           value = FALSE)),
         conditionalPanel(

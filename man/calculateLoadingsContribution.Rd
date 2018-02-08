@@ -8,7 +8,7 @@ components}
 \url{http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/}
 }
 \usage{
-calculateLoadingsContribution(pca, pcX, pcY)
+calculateLoadingsContribution(pca, pcX = 1, pcY = 2)
 }
 \arguments{
 \item{pca}{\code{prcomp} object}
