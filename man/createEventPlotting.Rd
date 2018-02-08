@@ -39,7 +39,7 @@ related to most points}
 \item{ylim}{Numeric: limits of Y axis}
 }
 \value{
-HTML elements
+List containing HTML elements and highlighted points
 }
 \description{
 Create plot for events

@@ -1,5 +1,8 @@
 # 1.4.4 (3 Feb, 2018)
 
+* Update CITATION file to show citation to article in bioRxiv:
+https://www.biorxiv.org/content/early/2018/02/07/261180
+* Update vignettes to include a case study based on the aforementioned article
 * Gene expression pipeline:
     - Perform limma-trend by default
 * Alternative splicing quantification:
@@ -147,7 +150,7 @@ and a quick reference for functions
     chosen for the X and Y axes
     - Fix point that remains highlighted in the plot after deselecting the only
     selected row of the table
-    - Improve readibility of plot's tooltip
+    - Improve readability of plot's tooltip
     - Improve survival curves based on the optimal alternative splicing
     quantification cutoff:
         - Include the survival curve previews in 3 new columns within the
@@ -199,11 +202,11 @@ and a quick reference for functions
     automatically rendered with the respective options, as expected
 * Settings (renamed to "Help"):
     - Add links to tutorials and user feedback
-    - Add app information and acknowledgments
+    - Add app information and acknowledgements
     - Remove unused option for choosing cores (all performed operations are 
     still single-core, given the difficulty of working with multiprocesses in
     Shiny)
-* Improve dialogs regarding missing data and other minor interface elements
+* Improve dialogues regarding missing data and other minor interface elements
 * Update documentation with volcano plot
 
 # 1.0.9 (10 Apr, 2017)

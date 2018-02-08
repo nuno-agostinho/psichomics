@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis.R
 \name{testSurvival}
 \alias{testSurvival}
-\title{Test the survival difference between survival groups}
+\title{Test the survival difference between groups of patients}
 \usage{
 testSurvival(survTerms, ...)
 }
@@ -32,7 +32,7 @@ a scalar parameter that controls the type of test.
 p-value of the survival difference or \code{NA}
 }
 \description{
-Test the survival difference between survival groups
+Test the survival difference between groups of patients
 }
 \note{
 Instead of raising errors, an \code{NA} is returned

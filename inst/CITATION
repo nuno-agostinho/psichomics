@@ -1,0 +1,10 @@
+cat(sprintf("Citing psichomics (version %s):\n", meta$Version))
+
+bibentry(bibtype = "Article",
+         title = "psichomics: graphical application for alternative splicing quantification and analysis",
+         author = c(person("Nuno", "Saraiva-Agostinho"),
+                    person(c("Nuno", "Luís"), "Barbosa-Morais")),
+         year = 2018,
+         month = "feb",
+         journal = "bioRxiv",
+         url = "https://bioconductor.org/packages/psichomics")

@@ -2,10 +2,14 @@
 % Please edit documentation in R/analysis.R
 \name{plotDistribution}
 \alias{plotDistribution}
+\alias{plotDensity}
 \title{Plot distribution through a density plot}
 \usage{
 plotDistribution(data, groups = "All samples", rug = TRUE, vLine = TRUE,
   ..., title = NULL, psi = TRUE)
+
+plotDensity(data, groups = "All samples", rug = TRUE, vLine = TRUE, ...,
+  title = NULL, psi = TRUE)
 }
 \arguments{
 \item{data}{Numeric, data frame or matrix: data for one gene or alternative 

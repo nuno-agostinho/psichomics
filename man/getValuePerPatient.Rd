@@ -44,5 +44,5 @@ single gene}
 Values per patient
 }
 \description{
-For each gene, assign
+Assign average sample values to their corresponding patients
 }

@@ -8,3 +8,4 @@ vignettes/rsconnect/*
 src/*.o
 src/*.so
 src/*.dll
+.RDataTmp*

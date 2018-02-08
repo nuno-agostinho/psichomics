@@ -487,6 +487,7 @@ getPatientFromSample <- function(sampleId, patientId=NULL, na=FALSE,
 }
 
 #' @rdname getPatientFromSample
+#' @export
 getSubjectFromSample <- getPatientFromSample
 
 #' Get samples matching the given patients
@@ -532,9 +533,11 @@ getMatchingSamples <- function(patients, samples, clinical=NULL, rm.NA=TRUE,
 }
 
 #' @rdname getMatchingSamples
+#' @export
 getSampleFromPatient <- getMatchingSamples
 
 #' @rdname getMatchingSamples
+#' @export
 getSampleFromSubject <- getMatchingSamples
 
 #' Assign one group to each element
