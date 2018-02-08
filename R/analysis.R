@@ -726,7 +726,9 @@ testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
 #' @inheritParams testSurvivalCutoff
 #' @param data Numeric: data values
 #' @param session Shiny session (only used for the visual interface)
-#' @param lower,upper Bounds in which to search
+#' @param lower,upper Bounds in which to search (if NULL, they will be 
+#' automatically set to 0 and 1 if all data values are within that interval;
+#' otherwise, they will be set to the minimum and maximum values of data)
 #' 
 #' @return List containg the optimal cutoff (\code{par}) and the corresponding 
 #' p-value (\code{value})
@@ -752,9 +754,20 @@ optimalSurvivalCutoff <- function(clinical, data, censoring, event, timeStart,
                                   timeStop=NULL, 
                                   followup="days_to_last_followup",
                                   session=NULL, filter=TRUE, survTime=NULL, 
-                                  lower=min(data, na.rm=TRUE), 
-                                  upper=max(data, na.rm=TRUE)) {
-    if (lower >= upper) upper <- lower + 1
+                                  lower=NULL, upper=NULL) {
+    if (is.null(lower) && is.null(upper)) {
+        # Search between min and max of data
+        lower <- min(data, na.rm=TRUE)
+        upper <- max(data, na.rm=TRUE)
+        
+        if (lower >= 0 && upper <= 1) {
+            # Search between 0 and 1 (if data values are within that interval)
+            lower <- 0
+            upper <- 1
+        } else if (lower >= upper) {
+            upper <- lower + 1
+        }
+    }
     
     if ( is.null(survTime) )
         survTime <- getAttributesTime(clinical, event, timeStart, timeStop,
