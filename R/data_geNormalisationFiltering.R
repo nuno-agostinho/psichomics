@@ -23,7 +23,7 @@ geNormalisationFilteringInterface <- function(ns) {
         fluidRow(
             column(6, numericInput(ns("minCounts"), "At least X counts...", 
                                    min=0, max=100, value=10, width="100%")),
-            column(6, numericInput(ns("minSamples"), "...in ≥ N samples", 
+            column(6, numericInput(ns("minSamples"), "...in \u2265 N samples", 
                                    min=0, max=100, value=10, width="100%"))),
         helpText(textOutput(ns("filteredGenes"))))
     
@@ -294,7 +294,7 @@ geNormalisationFilteringServer <- function(input, output, session) {
     })
     
     observeEvent(input$minSamples, {
-        label <- sprintf("...in ≥ %s samples", input$minSamples)
+        label <- sprintf("...in \u2265 %s samples", input$minSamples)
         updateNumericInput(session, "minSamples", label=label)
     })
     

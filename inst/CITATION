@@ -1,5 +1,3 @@
-cat(sprintf("Citing psichomics (version %s):\n", meta$Version))
-
 bibentry(bibtype = "Article",
          title = "psichomics: graphical application for alternative splicing quantification and analysis",
          author = c(person("Nuno", "Saraiva-Agostinho"),
