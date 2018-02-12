@@ -1103,7 +1103,13 @@ showGroupsTable <- function(type) {
         ordered <- groups[ , ord, drop=FALSE]
         colnames(ordered)[1] <- "Group"
         colnames(ordered) <- gsub("ASevents", "AS events", colnames(ordered))
-        return(ordered)
+        
+        # Unlist items as required for newer versions of DT
+        if (nrow(ordered) == 1)
+            ordered <- t(apply(ordered, 1, unlist))
+        else
+            ordered <- apply(ordered, 2, unlist)
+        return(data.frame(ordered, stringsAsFactors=FALSE))
     } else {
         return(NULL)
     }

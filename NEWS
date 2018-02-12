@@ -13,12 +13,23 @@ https://www.biorxiv.org/content/early/2018/02/07/261180
 * Dimensionality reduction:
     - Change tolerated missing values per event to 5% by default for both PCA
     and ICA (in both visual and command-line interfaces)
-* Survival analysis:
-    - Allow to stratify patients based on optimal gene expression cutoff
-    - Select samples to be used for survival analysis
+    - PCA: In the table that shows the events that most contribute to the 
+    selected principal components, show the rank
 * Groups:
     - Automatically set sample type groups (i.e. normal, primary solid tumour,
     metastatic, etc.) for TCGA samples (visual interface only)
+* Differential analysis:
+    - Use numeric fields instead of sliders to precisely filter data
+* Survival analysis:
+    - Allow to stratify patients based on optimal gene expression cutoff
+    - Select samples to be used for survival analysis
+
+## Bug fixes
+
+* Fix problems related with DT versions >= 0.3:
+    - Groups displayed as having the same attributes as last created group
+    - Table not being updated in differential analyses according to event
+    filtering based on the volcano plot
 
 # 1.4.3 (12 Jan, 2018)
 
