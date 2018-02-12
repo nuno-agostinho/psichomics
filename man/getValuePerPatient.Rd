@@ -20,8 +20,7 @@ assignValuePerPatient(data, match, clinical = NULL, patients = NULL,
 assignValuePerSubject(data, match, clinical = NULL, patients = NULL,
   samples = NULL)
 
-getPSIperPatient(psi, match, clinical = NULL, patients = NULL,
-  pattern = NULL, filterOut = TRUE)
+getPSIperPatient(psi, match, clinical = NULL, patients = NULL, ...)
 }
 \arguments{
 \item{data}{One-row data frame/matrix or vector: values per sample for a 
@@ -39,6 +38,8 @@ single gene}
 (if NULL, all samples will be used)}
 
 \item{psi}{Data frame or matrix: values per sample}
+
+\item{...}{Deprecated arguments}
 }
 \value{
 Values per patient

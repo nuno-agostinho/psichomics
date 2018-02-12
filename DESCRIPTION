@@ -127,6 +127,6 @@ Collate:
 biocViews: Sequencing, RNASeq, AlternativeSplicing,
     DifferentialSplicing, Transcription, GUI, PrincipalComponent,
     Survival, BiomedicalInformatics, Transcriptomics,
-    Visualization, MultipleComparison
+    Visualization, MultipleComparison, GeneExpression, DifferentialExpression
 URL: https://github.com/nuno-agostinho/psichomics
 BugReports: https://github.com/nuno-agostinho/psichomics/issues

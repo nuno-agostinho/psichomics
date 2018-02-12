@@ -196,11 +196,11 @@ assignValuePerSubject <- getValuePerPatient
 
 #' @rdname getValuePerPatient
 #' @param psi Data frame or matrix: values per sample
+#' @param ... Deprecated arguments
 #' @export
-getPSIperPatient <- function(psi, match, clinical=NULL, patients=NULL,
-                             pattern=NULL, filterOut=TRUE) {
+getPSIperPatient <- function(psi, match, clinical=NULL, patients=NULL, ...) {
     .Deprecated("getValuePerPatient")
-    getValuePerPatient(psi, match, clinical, patients, pattern, filterOut)
+    getValuePerPatient(psi, match, clinical, patients)
 }
 
 #' Process survival data to calculate survival curves
@@ -750,7 +750,7 @@ testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
 #' event      <- "days_to_death"
 #' 
 #' psi <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
-#' opt <- optimalCutoff(clinical, psi, "right", event, timeStart)
+#' opt <- optimalSurvivalCutoff(clinical, psi, "right", event, timeStart)
 optimalSurvivalCutoff <- function(clinical, data, censoring, event, timeStart, 
                                   timeStop=NULL, 
                                   followup="days_to_last_followup",

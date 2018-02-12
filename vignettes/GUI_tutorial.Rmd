@@ -314,7 +314,7 @@ median and variance.
 * To hide or show groups, click on their name in the legend.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='400pt', fig.cap="Differential splicing of *NUMB* exon 12 between tumour and normal samples."}
-knitr::include_graphics("img/NUMB exon 12 inclusion.png")
+knitr::include_graphics("img/NUMB_exon_12_inclusion.png")
 ```
 
 ### Correlation between *NUMB* exon 12 inclusion and QKI expression
@@ -337,7 +337,7 @@ According to the obtained results and also consistent with the previous article,
 the inclusion of the exon is negatively correlated with QKI expression.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='400pt', fig.cap="Correlation between *NUMB* exon 12 inclusion and QKI expression in all TCGA breast samples."}
-knitr::include_graphics("img/Correlation NUMB exon 12 and QKI GE.png")
+knitr::include_graphics("img/Correlation_NUMB_exon_12_and_QKI_GE.png")
 ```
 
 ## Differential splicing analysis
@@ -350,10 +350,11 @@ navigation menu at the top and select
 already).
 2. In **Groups of samples to analyse**, click on **Samples by selected groups**.
 3. Select the *Tumour Stage I* and *Solid Tissue Normal* groups.
-4. Confirm that all statistical analyses are checked.
-5. Confirm p-values will be adjusted according to the
+4. In **Splicing events to analyse**, select **All splicing events**.
+5. Confirm that all statistical analyses are checked.
+6. Confirm p-values will be adjusted according to the
 **Benjamini-Hochberg's method**.
-6. Click **Perform analyses**.
+7. Click **Perform analyses**.
 
 When the analyses complete, the results are shown in a plot and in a filterable
 and sortable table.
@@ -479,7 +480,7 @@ between tumour stage I and normal samples. To do so, go to **Analyses** >
 Higher inclusion of *UHRF2* exon 10 is associated with normal samples.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='400pt', fig.cap="Differential splicing of *UHRF2* exon 10 between tumour stage I and normal samples."}
-knitr::include_graphics("img/UHRF2 exon 10 inclusion differential splicing.png")
+knitr::include_graphics("img/UHRF2_exon_10_inclusion_differential_splicing.png")
 ``` 
 
 #### Survival analysis 
@@ -513,7 +514,7 @@ As per the results, higher inclusion of *UHRF2* exon 10 (PSI ≥ 0.09) is
 associated with better prognosis.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='400pt', fig.cap="Prognostic value of *UHRF2* exon 10 inclusion (patients separated by the optimal PSI cutoff of 0.09)."}
-knitr::include_graphics("img/UHRF2 exon 10 inclusion prognosis.png")
+knitr::include_graphics("img/UHRF2_exon_10_inclusion_prognosis.png")
 ``` 
 
 #### Differential expression
@@ -528,7 +529,7 @@ alterations, let us perform differential expression analysis on UHRF2. Go to
 5. Click **Perform analyses**.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='400pt', fig.cap="Differential expression of *UHRF2* between tumour stage I and normal samples."}
-knitr::include_graphics("img/UHRF2 differential expression.png")
+knitr::include_graphics("img/UHRF2_differential_expression.png")
 ``` 
 
 It seems UHRF2 is differentially expressed between *Tumour Stage I* and 
@@ -559,7 +560,7 @@ stratified by UHRF2's optimal gene expression cutoff in tumour samples (log-rank
 p-value = 0.279).
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='400pt', fig.cap="Prognostic value of *UHRF2* expression (patients separated by the optimal gene expression cutoff of 5.43)."}
-knitr::include_graphics("img/UHRF2 expression prognosis.png")
+knitr::include_graphics("img/UHRF2_expression_prognosis.png")
 ``` 
 
 #### Literature support and external database information
