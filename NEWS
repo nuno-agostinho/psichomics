@@ -20,6 +20,10 @@ https://www.biorxiv.org/content/early/2018/02/07/261180
     metastatic, etc.) for TCGA samples (visual interface only)
 * Differential analysis:
     - Use numeric fields instead of sliders to precisely filter data
+    - Fix table for differential expression not being filtered based on
+    highlighted genes
+    - Filter splicing events or genes to use when performing exploratory
+    differential analyses
 * Survival analysis:
     - Allow to stratify patients based on optimal gene expression cutoff
     - Select samples to be used for survival analysis

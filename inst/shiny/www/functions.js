@@ -158,13 +158,14 @@ function showDiffExpression (gene, groups = null, geneExpr = null) {
 function showSurvCutoff(event, groups = null, autoParams = true, 
                         psiCutoff = true) {
     // Change currently selected splicing event
-    if (event !== null) changeEvent(event);
+    if (event !== null && psiCutoff) changeEvent(event);
     
     // Navigate to survival analyses
     var surv = "Survival analysis";
     $("#nav > li > ul > li > a[data-value*='" + surv + "']").click();
     
     var survivalPage = "analyses-survival";
+    
     if (autoParams) {
         // Perform survival analyses once the optimal PSI is calculated
         $("#" + survivalPage + "-psiCutoff").one('change', function(){
@@ -178,6 +179,14 @@ function showSurvCutoff(event, groups = null, autoParams = true,
         $("input[value='psiCutoff']").click();
     } else {
         $("input[value='geCutoff']").click();
+        
+        // Set selected gene
+        var singleEventPage = "analyses-diffExpression-diffExpressionEvent";
+        var gene = $("#" + singleEventPage + "-gene")[0].selectize.items[0];
+        var geneSel = $("#" + survivalPage + "-gene")[0].selectize;
+        geneSel.addOption({label: gene, value: gene});
+        geneSel.refreshOptions(false);
+        geneSel.addItem(gene);
     }
     
     if (autoParams && event !== null) {
