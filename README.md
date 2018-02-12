@@ -1,17 +1,23 @@
 # psichomics [![Build Status][8]][9] [![AppVeyor Build Status][10]][11] [![codecov][12]][13]
 
+> **Original article:**
+>
+> Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais. 2018. 
+[*psichomics: graphical application for alternative splicing quantification and analysis*][15].
+bioRxiv.
+
 Interactive R package with an intuitive Shiny-based graphical 
 interface for alternative splicing quantification and integrative analyses of
 alternative splicing and gene expression from large transcriptomic datasets, 
 including those from [The Cancer Genome Atlas (TCGA)][1] and 
 [Genotype-Tissue Expression (GTEx) project][13], as well as user-owned data.
 
-The tool interactively performs survival, dimensionality reduction and median- 
-and variance-based differential splicing and gene expression analyses that 
-benefit from the incorporation of clinical and molecular sample-associated 
-features (such as tumour stage or survival). Interactive visual access to 
-genomic mapping and functional annotation of selected alternative splicing 
-events is also included.
+*psichomics* interactively performs survival, dimensionality reduction and 
+median- and variance-based differential splicing and gene expression 
+analyses that benefit from the incorporation of clinical and molecular 
+sample-associated features (such as tumour stage or survival). Interactive
+visual access to genomic mapping and functional annotation of selected 
+alternative splicing events is also included.
 
 ![Screen shot](screenshot.png)
 
@@ -73,7 +79,7 @@ psichomics()
 
 ## Tutorials
 
-The following tutorials are available:
+The following case studies are available based on our [original article][15] (currently in preprint):
 
 * [Visual interface](http://rpubs.com/nuno-agostinho/psichomics-tutorial-visual)
 * [Command-line interface](http://rpubs.com/nuno-agostinho/psichomics-cli-tutorial)
@@ -86,7 +92,7 @@ Other tutorials coming soon:
 
 ### Download TCGA Data
 
-psichomics allows to download data from the [TCGA][1] after selecting the tumour
+*psichomics* allows to download data from the [TCGA][1] after selecting the tumour
 of interest. Subject- and sample-associated information, junction quantification
 and gene expression data from TCGA are supported.
 
@@ -98,7 +104,7 @@ from GTEx are supported.
 
 ### Load user-provided files
 
-psichomics contains instructions to load user-owned files (including
+*psichomics* contains instructions on how to load user-owned files (including
 subject-associated data, sample-associated data, junction quantification,
 alternative splicing quantification and gene expression).
 
@@ -158,7 +164,7 @@ alternative splicing quantification of selected alternative splicing events.
 ## Data grouping
 
 Subject- and sample-associated data allow to establish groups that can be 
-exploited in diverse analyses throughout psichomics.
+exploited in diverse analyses throughout *psichomics*.
 
 - **By attribute:** automatically create groups by selecting a specific
 attribute of the dataset; for instance, to create a group for each tumour stage,
@@ -210,3 +216,4 @@ Kingsmore, G. P. Schroth, and C. B. Burge. 2008.
 [12]: https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg
 [13]: https://codecov.io/gh/nuno-agostinho/psichomics
 [14]: http://www.gtexportal.org
+[15]: https://www.biorxiv.org/content/early/2018/02/07/261180
