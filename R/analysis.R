@@ -1441,7 +1441,6 @@ createEventPlotting <- function(df, x, y, params, highlightX, highlightY,
     } else {
         highlighted <- intersect(highlightedX, highlightedY)
     }
-    setHighlightedPoints("psi-volcano", highlighted)
     
     # Render remaining points
     plotted <- union(selected, highlighted)
@@ -1473,8 +1472,8 @@ createEventPlotting <- function(df, x, y, params, highlightX, highlightY,
     plot <- plot + do.call("geom_label_repel", c(
         list(data=mod[labelled, ], aesMod, na.rm=TRUE), labelledParams))
     
-    plot <- plot + coord_cartesian(xlim=xlim, ylim=ylim)
-    return(plot + theme_light(16))
+    plot <- plot + coord_cartesian(xlim=xlim, ylim=ylim) + theme_light(16)
+    return(list(plot=list(plot), highlighted=highlighted))
 }
 
 #' Show variable transformation(s)

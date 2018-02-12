@@ -137,21 +137,23 @@ infoUI <- function(id) {
     
     placeholder <- c(
         "Type a gene symbol to retrieve that gene's information..."="")
-    tagList(
-        fluidRow(
-            column(6, selectizeInput(
-                ns("selectedGene"), NULL, choices=placeholder, width="100%",  
-                options=list(
-                    create=TRUE, createOnBlur=TRUE,
-                    onFocus=I(paste0('function() { $("#', ns("selectedGene"), 
-                                     '")[0].selectize.clear(); }')),
-                    onChange=I(paste0('function(value) { $("#',
-                                      ns("selectedGene"), 
-                                      '")[0].selectize.blur(); }')))),
-                   uiOutput(ns("genetic"))),
-            column(6, uiOutput(ns("articles")))),
+    tagList(fluidRow(
+        column(6, selectizeInput(
+            ns("selectedGene"), NULL, choices=placeholder, width="100%",  
+            options=list(
+                create=TRUE, createOnBlur=TRUE,
+                onFocus=I(paste0('function() { $("#', ns("selectedGene"), 
+                                 '")[0].selectize.clear(); }')),
+                onChange=I(paste0('function(value) { $("#',
+                                  ns("selectedGene"), 
+                                  '")[0].selectize.blur(); }')),
+                render=I(
+                    "{ option_create: function (data, escape) {
+                        return '<div class=\"create\">Search for <strong>' +
+                        escape(data.input) + '</strong>&hellip;</div>';}}"))),
+            uiOutput(ns("genetic"))),
+        column(6, uiOutput(ns("articles")))),
         uiOutput(ns("info")))
-    
 }
 
 #' Interface when no information could be retrieved
@@ -665,9 +667,19 @@ renderProteinInfo <- function(protein, transcript, species, assembly) {
 #' @importFrom highcharter highchart %>%
 #' @importFrom shiny fixedRow safeError
 #' @importFrom methods is
-#' @importFrom shinyjs hide show
+#' @importFrom shinyjs hide show runjs
 infoServer <- function(input, output, session) {
     ns <- session$ns
+    
+    # Update selected gene according to selected splicing event
+    observe({
+        ASevent <- getASevent()
+        if (!is.null(ASevent)) {
+            gene <- parseSplicingEvent(ASevent)$gene[[1]]
+            runjs(sprintf('$("#analyses-info-selectedGene")[0]
+                          .selectize.createItem("%s");', gene))
+        }
+    })
     
     observe({
         species  <- tolower(getSpecies())
