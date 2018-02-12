@@ -10,7 +10,7 @@ Interactive R package with an intuitive Shiny-based graphical
 interface for alternative splicing quantification and integrative analyses of
 alternative splicing and gene expression from large transcriptomic datasets, 
 including those from [The Cancer Genome Atlas (TCGA)][1] and 
-[Genotype-Tissue Expression (GTEx) project][13], as well as user-owned data.
+[Genotype-Tissue Expression (GTEx) project][14], as well as user-owned data.
 
 *psichomics* interactively performs survival, dimensionality reduction and 
 median- and variance-based differential splicing and gene expression 
@@ -98,7 +98,7 @@ and gene expression data from TCGA are supported.
 
 ### Load GTEx Data
 
-GTEx data needs to be manually downloaded from the [GTEx Portal][13]. Subject- 
+GTEx data needs to be manually downloaded from the [GTEx Portal][14]. Subject- 
 and sample-associated data, junction quantification and gene expression data 
 from GTEx are supported.
 
@@ -120,7 +120,8 @@ and exclusion of that exon. To measure this estimate, both alternative splicing
 annotation and the quantification of RNA-Seq reads aligning to splice junctions
 (junction quantification) are required. While alternative splicing Human (hg19
 assembly) annotation is provided by the package, junction quantification may be
-retrieved from [TCGA][1] (automatically) or from [GTEx][14] (manually).
+retrieved from [TCGA][1] (automatically) or from [GTEx][14] (manually) or handed
+by the user (e.g. user-owned files).
 
 ## Gene expression processing
 
@@ -141,9 +142,10 @@ and clinical sample-associated attributes.
 
 ### Differential splicing and gene expression analysis
 
-Analyse alternative splicing quantification based on variance and median 
-statistical tests. The groups available for differential analysis comprise 
-molecular and clinical sample-associated features.
+Analyse alternative splicing quantification (based on variance and median 
+statistical tests) and gene expression data. The groups available for 
+differential analyses comprise sample types (e.g. normal versus tumour)
+and clinical attributes of patients (e.g. tumour stage).
 
 ### Survival analysis
 
@@ -178,16 +180,16 @@ expressions
 attribute
 
 Groups can also be selected in order to be manipulated (e.g. merged, 
-intersected, etc.), removed or renamed.
+intersected, etc.), re-coloured, removed or renamed.
 
 ## Feedback
 
 All feedback on the program, documentation and associated material is welcome. 
-Please, send any suggestions and comments to the following contact:
+Please send any suggestions and comments to:
 
-> Nuno Saraiva-Agostinho (nunodanielagostinho@gmail.com)
+> Nuno Saraiva-Agostinho (nunoagostinho@medicina.ulisboa.pt)
 
-> [Nuno Morais Lab, Instituto de Medicina Molecular][5]
+> [Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)][5]
 
 ## Contributions
 
@@ -206,7 +208,7 @@ Kingsmore, G. P. Schroth, and C. B. Burge. 2008.
 [2]: https://www.bioconductor.org
 [3]: https://www.r-project.org
 [4]: https://www.rstudio.com/products/rstudio
-[5]: http://imm.medicina.ulisboa.pt/group/compbio
+[5]: http://imm.medicina.ulisboa.pt/group/distrans/
 [6]: CONDUCT.md
 [7]: http://www.nature.com/nature/journal/v456/n7221/full/nature07509.html
 [8]: https://travis-ci.org/nuno-agostinho/psichomics.svg?branch=master
