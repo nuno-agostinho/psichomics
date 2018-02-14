@@ -1,0 +1,6 @@
+vignettes/rsconnect/*
+.RData*
+.Rhistory*
+.Rproj.user/*
+src/*.o
+src/*.so
