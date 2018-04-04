@@ -121,9 +121,10 @@ After loading the clinical and alternative splicing junction quantification data
 from TCGA, quantify alternative splicing by clicking the green panel 
 **Alternative splicing quantification**.
 
-1. Select the junction quantification dataset to use from the loaded data. For 
-many tumour types, only one dataset is provided.
-2. Designate the alternative splicing event annotation 
+1. From the loaded data, select the junction quantification dataset to use in 
+**Alternative splicing junction quantification**. For many tumour types, only 
+one dataset is provided.
+2. Select the alternative splicing event annotation 
 **Human hg19/GRCh37 (2017-10-20)**. Note that there are other annotation files
 available and you can also load custom annotation files.
 
@@ -147,7 +148,7 @@ knitr::include_graphics("img/3_quantify_splicing.png")
 
 ## Data grouping
 In order to group data for downstream analyses, look for the navigation bar on 
-the top and click **Groups**. In the displayed table, verify that three groups
+the top and click **Groups**. In the displayed table, confirm that three groups
 are automatically present based on the available sample types: *Metastatic*,
 *Primary solid Tumor* and *Solid Tissue Normal*.
 
@@ -218,24 +219,24 @@ To perform PCA on alternative splicing data using all samples:
 
 > As PCA cannot be performed on data with missing values, missing values need to
 be either removed (thus discarding data from whole splicing events or genes) or 
-impute them (i.e. attributing to missing values the median of the non-missing 
-ones). This input allows to select the number of missing values that are 
-tolerable per event (i.e. if a splicing event or gene has less than N missing 
-values, those missing values will be imputed; otherwise, the event is discarded 
-from PCA).
+imputed (i.e. attributing to missing values the median of the non-missing ones).
+This input allows to select the number of missing values that are tolerable per 
+event (i.e. if a splicing event or gene has less than N missing values, those 
+missing values will be imputed; otherwise, the event is discarded from PCA).
 
 5. Perform PCA on *All genes and splicing events*.
 6. Click **Calculate PCA**.
 
 ### PCA plotting
 After PCA is performed, the *Plot PCA* panel will automatically open. Note that
-the explained variance of each principal component is shown next to the 
-respective component. The **variance plot** is also available to compare the
-explained variance across principal components (by clicking 
+the explained variance of each principal component (PC) is shown next to the 
+respective component and that PC1 explains most of the data variance, followed 
+by PC2, then PC3, then PC4, etc. The **variance plot** is also available to 
+compare the explained variance across principal components (by clicking 
 **Show variance plot**). Now:
 
-1. Select the principal component (PC) 1 for the X axis.
-2. Select the PC2 for the Y axis.
+1. Select PC1 as the X axis.
+2. Select PC2 as the Y axis.
 3. In **Sample colouring**, select **Colour using selected groups** and in the
 group selection input insert *Tumour Stage I*, *Tumour Stage II*, 
 *Tumour Stage III*, *Tumour Stage IV* and *Solid Tissue Normal*.
@@ -253,7 +254,7 @@ knitr::include_graphics("img/5_pca.png")
 Two PCA plots are then rendered. The plot above is a **score plot** that shows
 the clinical samples, while the **loadings plot** below displays the variables 
 (in this case, alternative splicing events). The table below the loadings plot
-depict the contribution of each variable to each PC.
+depicts the contribution of each variable to each PC.
 
 > **Hint:** As most plots in *psichomics*, PCA plots can be zoomed-in by
 clicking-and-dragging within the plot (click *Reset zoom* to zoom-out). To 
@@ -270,11 +271,10 @@ samples, click on the blue **Perform PCA** panel and select to
 select *Tumour Stage 1* and *Solid Tissue Normal*. Afterwards, click 
 **Perform PCA** and follow the same steps as before to plot it.
 
-By clicking on one alternative splicing event in the loadings plot, differential
-splicing analysis for that splicing event across selected groups will be shown. 
-Click on one of the events that most contribute to the separation between tumour
-stage I and normal samples (one of the events with extreme values for the X 
-axis).
+Now, click on one of the events that most contribute to the separation between 
+tumour stage I and normal samples (one of the events with extreme values for the
+PC1; i.e. the X axis). Differential splicing analysis for that splicing event 
+across selected groups are shown.
 
 To perform PCA using gene expression (both using all samples and only Tumour
 Stage I and Normal samples), go back to principal component analysis, click in 
@@ -296,7 +296,7 @@ the selected alternative splicing event can be altered by clicking
 **Change...**. Click **Change...** and input the given identifier.
 
 ### Differential inclusion of *NUMB* exon 12
-Let's check whether a significant difference in *NUMB* exon 12 inclusion
+In order to check whether a significant difference in *NUMB* exon 12 inclusion
 between tumour and normal TCGA breast samples. To do so, go to **Analyses** > 
 **Individual alternative splicing event** and click 
 **Samples by selected groups**. In the group input element, insert the groups 
@@ -318,7 +318,7 @@ knitr::include_graphics("img/NUMB_exon_12_inclusion.png")
 ```
 
 ### Correlation between *NUMB* exon 12 inclusion and QKI expression
-To verify if *NUMB* exon 12 inclusion is correlated with QKI expression, go to
+To check if *NUMB* exon 12 inclusion is correlated with QKI expression, go to
 **Analyses** > **Correlation of gene expression and alternative splicing** and
 perform the following:
 
@@ -331,7 +331,7 @@ the first hit.
 4. Perform correlation analysis on **All samples**.
 5. Correlation method should be set to **Spearman's rank correlation rho**.
 6. Set the alternative hypothesis to **Two-sided**.
-7. Finally, ignore the rest of the options and click **Correlate**.
+7. Finally, leave remaining options as default and click **Correlate**.
 
 According to the obtained results and also consistent with the previous article,
 the inclusion of the exon is negatively correlated with QKI expression.
@@ -346,8 +346,7 @@ To analyse differential splicing, click on the **Analyses** tab located in the
 navigation menu at the top and select 
 **Exploratory (multiple splicing events)**. Next:
 
-1. Click on the blue panel **Perform statistical analyses** (if not open
-already).
+1. Click on the blue panel **Perform statistical analyses** to open it.
 2. In **Groups of samples to analyse**, click on **Samples by selected groups**.
 3. Select the *Tumour Stage I* and *Solid Tissue Normal* groups.
 4. In **Splicing events to analyse**, select **All splicing events**.
@@ -363,8 +362,7 @@ and sortable table.
 Filter events in both the plot and the table by a considerable difference in
 median between the selected groups (|Δ Median PSI| > 0.1):
 
-1. Click on the blue panel **Plot options and table filtering** (if not 
-open already).
+1. Click on the blue panel **Plot options and table filtering** to open it.
 2. Click on the **X axis** tab.
 3. Check if *Δ Median* is selected for the X axis.
 4. Click on **Highlight points based on Y values** and select values lower than
@@ -376,7 +374,7 @@ Next, filter statistically significant splicing events
 
 1. Click on the **Y axis** tab.
 2. Select *Wilcoxon p-value (BH adjusted)* for the Y axis.
-3. In **Data transformation of Y values**, select *-log10(y)*.
+3. In **Data transformation of Y values**, select *-log10(|y|)*.
 4. Click on **Highlight points based on Y values** and change the minimum value
 to filter significant events. For instance, to consider a p-value of 0.01 or
 lower, the minimum should be 2, i.e. -log10(0.01).
@@ -405,10 +403,10 @@ will show up.
 
 To study the impact of alternative splicing events on prognosis, Kaplan-Meier
 curves may be plotted for groups of patients separated by the optimal PSI 
-cutoff for a given alternative splicing event that that maximises the 
-significance of group differences in survival analysis (i.e. minimises the 
-p-value of the log-rank tests of difference in survival between individuals 
-whose samples have their PSI below and above that threshold).
+cutoff for a given alternative splicing event that maximises the significance of
+group differences in survival analysis (i.e. minimises the p-value of the 
+log-rank tests of difference in survival between individuals whose samples have
+their PSI below and above that threshold).
 
 Given the slow process of calculating the optimal splicing quantification 
 cutoff for multiple events, it is recommended to perform this after filtering 
@@ -439,8 +437,8 @@ should also be performed. To do so, click on the **Analyses** tab located in the
 navigation menu at the top and select 
 **Exploratory (multiple genes)**. Next:
 
-1. Click on the blue panel **Perform differential expression analyses** (if not 
-open already).
+1. Click on the blue panel **Perform differential expression analyses** to open 
+it.
 2. In **Gene expression dataset**, select **Gene expression (normalised)**.
 3. Within the **Gene-wise linear model fit** panel, select the groups 
 *Tumour Stage I* and *Solid Tissue Normal* for differential expression.
@@ -470,8 +468,8 @@ Click *Change...* and input the given identifier.
 
 #### Differential splicing analysis
 
-Let's check whether a significant difference in *UHRF2* exon 10 inclusion
-between tumour stage I and normal samples. To do so, go to **Analyses** > 
+In order to test for a significant difference in *UHRF2* exon 10 inclusion
+between tumour stage I and normal samples, go to **Analyses** > 
 **Individual alternative splicing event** and click 
 **Samples by selected groups**. In the group input element, insert the groups
 *Solid Tissue Normal* and *Primary solid Tumor*. Finally, click 
@@ -499,10 +497,10 @@ To perform survival analysis on a specific event, go to **Analyses** >
 2. Use *days to death* for the **follow up time**.
 3. Use *death* as the **event of interest**.
 4. Display time in **years**.
-5. For groups in survival analysis, check 
-**Inclusion levels cutoff from the selected splicing event**.
-6. In the group selection field, select *Primary solid Tumor* to use values from
-all available tumour samples in survival analysis.
+5. To create groups of patients based on an inclusion levels cutoff, select
+**Inclusion levels cutoff from the selected splicing event**. 
+6. In **Sample filtering**, select *Primary solid Tumor* to perform survival 
+analysis using values solely from tumour samples.
 7. In the **Splicing quantification cutoff**, check the value is automatically
 set to 0.09 (the optimal cutoff).
 8. In the **Kaplan-Meier plot options**, de-select 
@@ -535,10 +533,9 @@ knitr::include_graphics("img/UHRF2_differential_expression.png")
 It seems UHRF2 is differentially expressed between *Tumour Stage I* and 
 *Solid Tissue Normal*. However, going back to exploratory differential gene 
 expression (**Analyses** > **Exploratory (multiple genes)**) and looking for 
-*UHRF2* by using the *Search* field in the table, *UHRF2* has a 
-log2(fold-change) of 0.18, low enough not to be biologically relevant (i.e. 
-log2(|fold-change|) ≤ 1). Following this criterium, the gene can thus be
-considered not to be differentially expressed between these conditions.
+*UHRF2* (use the *Search* field above the table), *UHRF2* has a 
+log2(|fold-change|) ≤ 1. Following this criterium, the difference in gene 
+expression between these conditions may not be considered biologically relevant.
 
 #### Survival analysis
 To confirm if gene expression has an overall prognostic value, go to 
