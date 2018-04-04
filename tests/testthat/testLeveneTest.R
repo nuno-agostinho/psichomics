@@ -1,8 +1,8 @@
 context("Perform Levene's test")
 
-data <- car::Moore
-values <- data$conformity
-groups <- data$fcategory
+data <- mtcars
+values <- data$mpg
+groups <- data$carb
 
 test_that("Calculate spread using the median values per group", {
     lev <- leveneTest(values, groups)
