@@ -232,7 +232,7 @@ dataUI <- function(id, tab) {
                           "inclusionLevels", "geNormalisationFiltering"), "UI"))
     
     tcga <- tags$abbr(title="The Cancer Genome Atlas", "TCGA")
-    gtex <- tags$abbr(title="Genotype-Tissue Expression", "GTEx")
+    gtex <- tags$abbr(title="Genotype-Tissue Expression project", "GTEx")
     
     analysesDescription <- tagList(
         fluidRow(
@@ -263,14 +263,17 @@ dataUI <- function(id, tab) {
     
     welcome <- div(
         id=ns("welcome"),
+        linkToArticle(),
         h1("Welcome"), HTML(paste0(
-            "Analyse alternative splicing based on transcriptomic and ",
-            "clinical data from The Cancer Genome Atlas (", tcga, ") or the ",
-            "Genotype-Tissue Expression (", gtex, ") project.")),
+            "Perform integrative analyses of alternative splicing and gene ",
+            "expression based on transcriptomic and sample-associated data ",
+            "from The Cancer Genome Atlas (", tcga, "), the Genotype-Tissue ",
+            "Expression (", gtex, ") project or user-owned data.")),
         tags$br(), tags$br(), tags$ol(
             id="list",
-            tags$li("Load clinical data and alternative splicing",
-                    "junction quantification from", tcga, "or", gtex, ".", 
+            tags$li("Load gene expression values, alternative splicing",
+                    "junction quantification and/or sample-associated data",
+                    "from", tcga, ", ", gtex, " or user-owned data.",
                     tags$br(), tags$small(
                         style="color: gray;",
                         "More data types will soon be supported.")),
@@ -291,11 +294,11 @@ dataUI <- function(id, tab) {
                     "following analyses:")), 
         analysesDescription, br(), br(),
         p(style="text-align:right",
-          tags$a(href="http://imm.medicina.ulisboa.pt/group/compbio/",
-                 target="_blank", "Nuno Morais Lab, iMM"), 
+          tags$a(href="http://imm.medicina.ulisboa.pt/group/distrans/",
+                 target="_blank", "Disease Transcriptomics Lab, iMM"), 
           "(", tags$a(href="mailto:nunodanielagostinho@gmail.com", 
                       "Nuno Saraiva-Agostinho", icon("envelope-o")),
-          ", 2015-2017)", 
+          ", 2015-2018)", 
           br(), "Special thanks to my lab colleagues for their work-related",
           br(), "support and supporting chatter."))
     

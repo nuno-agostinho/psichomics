@@ -11,6 +11,26 @@ options(shiny.maxRequestSize = MB * 1024^5)
 # Sanitize errors
 options(shiny.sanitize.errors = TRUE)
 
+#' Interface that directs users to original article
+#'
+#' @importFrom shiny tags icon
+#' @return HTML elements
+linkToArticle <- function() {
+    authors <- c("Nuno Saraiva-Agostinho", "Nuno L. Barbosa-Morais")
+    title   <- paste("psichomics: graphical application for alternative",
+                     "splicing quantification and analysis.")
+    year    <- 2018
+    journal <- "bioRxiv"
+    
+    tags$a(
+        target="_blank", href="https://doi.org/10.1101/261180",
+        tags$div(
+            class="alert alert-info", role="alert",
+            icon("paper-plane-o"), 
+            sprintf("%s. %s.", paste(authors, collapse=" and "), year),
+            tags$i(tags$b(title)), paste0(journal, ".")))
+}
+
 #' Check if a given function should be loaded by the calling module
 #' @param loader Character: name of the file responsible to load such function 
 #' @param FUN Function

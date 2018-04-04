@@ -1,3 +1,9 @@
+# 1.4.5 (4 Apr, 2018)
+
+* Mention psichomics manuscript throughout psichomics
+* Copy-edit graphical user interface and respective tutorial
+* Fix warnings and errors in Bioconductor
+
 # 1.4.4 (12 Feb, 2018)
 
 * Update CITATION file to show citation to article in bioRxiv:

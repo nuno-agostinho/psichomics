@@ -1,7 +1,7 @@
 Package: psichomics
 Title: Graphical Interface for Alternative Splicing Quantification, Analysis and
     Visualisation
-Version: 1.4.4
+Version: 1.4.5
 Encoding: UTF-8
 Authors@R: c( person("Nuno", "Saraiva-Agostinho", ,
         "nunodanielagostinho@gmail.com", role = c("aut", "cre")),

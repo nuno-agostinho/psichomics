@@ -17,16 +17,18 @@ helpUI <- function(id, tab) {
     
     credits <- c("Lina Gallego", "Marie Bordone", "Mariana Ferreira",
                  "Teresa Maia", "Carolina Leote", "Juan Carlos Verjan",
-                 "Bernardo Almeida")
+                 "Bernardo de Almeida")
     credits <- lapply(credits, tags$li, class="list-group-item")
     
-    immLink <- "http://imm.medicina.ulisboa.pt/group/compbio/team.html"
+    groupLink <- "http://imm.medicina.ulisboa.pt/group/distrans/"
+    immLink <- "http://imm.medicina.ulisboa.pt"
     guiLink <- "http://rpubs.com/nuno-agostinho/psichomics-tutorial-visual"
     cliLink <- "http://rpubs.com/nuno-agostinho/psichomics-cli-tutorial"
     bioconductorSupportLink <- "https://support.bioconductor.org/t/psichomics/"
     githubIssues <- "https://github.com/nuno-agostinho/psichomics/issues/new"
     
     tab(title="Help", icon="question",
+        linkToArticle(),
         h2("Settings", style="margin-top: 0;"),
         fluidRow(
             # column(4, coresInput),
@@ -85,18 +87,19 @@ helpUI <- function(id, tab) {
                     class="panel", class="panel-default",
                     div(class="panel-heading",
                         icon("info-circle"), tags$b("About")),
-                    div(class="panel-body",
+                    div(class="panel-body", 
                         "psichomics is an interactive R package for",
-                        "integrative alternative splicing analyses using",
-                        "data from",
+                        "integrative analyses of alternative splicing and",
+                        "gene expression from large transcriptomic datasets,",
+                        "including those from",
                         tags$a(href="https://cancergenome.nih.gov",
                                target="_blank",
-                               "The Cancer Genome Atlas"),
+                               "The Cancer Genome Atlas (TCGA)"),
                         "and from the",
                         tags$a(href="https://www.gtexportal.org/home/",
                                target="_blank",
-                               "Genotype-Tissue Expression"),
-                        "project."),
+                               "Genotype-Tissue Expression (GTEx)"),
+                        "project, as well as user-owned data."),
                     tags$ul(
                         class="list-group",
                         tags$li(class="list-group-item",
@@ -109,21 +112,17 @@ helpUI <- function(id, tab) {
                                 tags$b("Supervisor:"), "Nuno Barbosa-Morais"),
                         tags$li(class="list-group-item",
                                 tags$b("Host lab:"),
-                                tags$a(
-                                    href=immLink,
-                                    target="_blank",
-                                    "Computational Biology lab")),
+                                tags$a(href=groupLink, target="_blank",
+                                       "Disease Transcriptomics lab")),
                         tags$li(class="list-group-item",
                                 tags$b("Institution:"),
-                                tags$a(
-                                    href="http://imm.medicina.ulisboa.pt",
-                                    target="_blank",
-                                    "Instituto de Medicina Molecular")),
+                                tags$a(href=immLink, target="_blank",
+                                       "Instituto de Medicina Molecular")),
                         tags$li(class="list-group-item",
                                 tags$small(class="help-block",
                                            style="text-align: right;",
                                            style="margin: 0;",
-                                           "2015-2017"))))),
+                                           "2015-2018"))))),
             column(
                 4, div(
                     class="panel", class="panel-default",

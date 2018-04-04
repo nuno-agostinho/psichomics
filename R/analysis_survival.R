@@ -37,9 +37,9 @@ survivalUI <- function(id) {
                  "to last follow up is used instead."),
         selectizeInput(ns("event"), "Event of interest",
                        choices=c("No clinical data loaded"="")),
-        radioButtons(ns("scale"), "Display time in", inline=TRUE,
-                     c(Days="days", Weeks="weeks", Months="months", 
-                       Years="years")))
+        radioButtons(
+            ns("scale"), "Display time in", inline=TRUE,
+            c(Days="days", Weeks="weeks", Months="months", Years="years")))
     
     survivalGroups <- tagList(
         radioButtons(ns("modelTerms"), selected="groups",
