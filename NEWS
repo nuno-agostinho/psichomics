@@ -1,3 +1,8 @@
+# 1.4.6 (12 Apr, 2018)
+
+* Fix TCGA sample metadata not being shown when loading TCGA files from local
+folder
+
 # 1.4.5 (4 Apr, 2018)
 
 * Mention psichomics manuscript throughout psichomics

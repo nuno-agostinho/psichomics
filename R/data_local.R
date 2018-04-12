@@ -160,10 +160,10 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."),
             loaded[[each]] <- loadedFile
     }
     names(loaded) <- sapply(loaded, attr, "tablename")
-    loaded <- Filter(length, loaded)
+    loaded <- list(Filter(length, loaded))
     loaded <- loadTCGAsampleMetadata(loaded)
     
-    data <- setNames(list(loaded), name)
+    data <- setNames(loaded, name)
     data <- processDatasetNames(data)
     return(data)
 }
@@ -242,10 +242,10 @@ setMultipleFilesData <- function(input, output, session, replace=TRUE) {
     }
     
     names(loaded) <- sapply(loaded, attr, "tablename")
-    loaded <- Filter(length, loaded)
+    loaded <- list(Filter(length, loaded))
     loaded <- loadTCGAsampleMetadata(loaded)
     
-    data <- setNames(list(loaded), category)
+    data <- setNames(loaded, category)
     data <- processDatasetNames(data)
     
     if (!is.null(data)) {
