@@ -2,6 +2,8 @@
 
 * Fix TCGA sample metadata not being shown when loading TCGA files from local
 folder
+* Fix TCGA sample metadata not showing samples from all junction quantification 
+files
 
 # 1.4.5 (4 Apr, 2018)
 

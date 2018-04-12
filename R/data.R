@@ -74,13 +74,17 @@ parseTCGAsampleInfo <- parseTcgaSampleInfo
 loadTCGAsampleMetadata <- function(data) {
     for (i in seq(data)) {
         # Retrieve sample metadata from junction quantification
-        junctionQuant <- data[[i]]$`Junction quantification`
+        match <- sapply(data[[i]], attr, "dataType") ==
+            "Junction quantification"
         junctionQuantSamples <- NULL
-        if (!is.null(junctionQuant)) {
-            samples <- colnames(junctionQuant)
-            if (any(grepl("^TCGA", samples))) {
-                junctionQuantSamples <- samples
-                data[[i]]$"Sample metadata" <- parseTcgaSampleInfo(samples)
+        if (any(match)) {
+            junctionQuant <- data[[i]][match]
+            if (!is.null(junctionQuant)) {
+                samples <- unique(unlist(lapply(junctionQuant, colnames)))
+                if (any(grepl("^TCGA", samples))) {
+                    junctionQuantSamples <- samples
+                    data[[i]]$"Sample metadata" <- parseTcgaSampleInfo(samples)
+                }
             }
         }
         
