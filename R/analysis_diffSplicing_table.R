@@ -699,19 +699,27 @@ diffAnalysesPlotSet <- function(session, input, output) {
             input=input, output=output, id="psi-volcano", df=stats, x=xLabel, 
             y=yLabel, plot={
                 diffType <- "psi-volcano"
-                if (input$xHighlight) {
-                    highlightX <- c(input$xSliderMin, input$xSliderMax)
-                    attr(highlightX, "inverted") <- input$xSliderInv
-                } else {
-                    highlightX <- NULL
+                
+                parseHighlight <- function(input, arg) {
+                    argStr <- function(...) paste0(arg, ...)
+                    
+                    if (!input[[argStr("Highlight")]]) return(NULL)
+                    
+                    highlightMin <- input[[argStr("SliderMin")]]
+                    highlightMax <- input[[argStr("SliderMax")]]
+                    
+                    noMin <- is.null(highlightMin) || is.na(highlightMin)
+                    noMax <- is.null(highlightMax) || is.na(highlightMax)
+                    if (noMin || noMax || highlightMin >= highlightMax)
+                        return(NULL)
+                    
+                    highlight <- c(highlightMin, highlightMax)
+                    attr(highlight, "inverted") <- input[[argStr("SliderInv")]]
+                    return(highlight)
                 }
                 
-                if (input$yHighlight) {
-                    highlightY <- c(input$ySliderMin, input$ySliderMax)
-                    attr(highlightY, "inverted") <- input$ySliderInv
-                } else {
-                    highlightY <- NULL
-                }
+                highlightX <- parseHighlight(input, "x")
+                highlightY <- parseHighlight(input, "y")
                 
                 # Check selected events
                 selected <- getSelectedPoints(diffType)

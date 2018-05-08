@@ -1,3 +1,8 @@
+# 1.6.1 (8 May, 2018)
+
+* Fix crash when inputting non-numeric values or minimum larger than the maximum
+limit as the axes for the splicing scatter plot
+
 # 1.4.6 (12 Apr, 2018)
 
 * Fix TCGA sample metadata not being shown when loading TCGA files from local
