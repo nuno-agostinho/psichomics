@@ -93,8 +93,8 @@ diffSplicingTableUI <- function(id) {
     eventOptions <- prepareEventPlotOptions(ns("eventOptions"), ns, labelsPanel)
     
     survivalOptions <- tagList(
-        helpText("For each splicing event, find the PSI cutoff that maximizes",
-                 "differences in survival."),
+        helpText("For each splicing event, fit a Cox model based on its PSI",
+                 "values."),
         radioButtons(ns("censoring"), "Data censoring", width="100%",
                      selected="right", inline=TRUE, choices=c(
                          Left="left", Right="right",
@@ -192,9 +192,7 @@ diffSplicingTableUI <- function(id) {
                 highchartOutput(ns("highchartsSparklines"), 0, 0))))
 }
 
-#' Create survival data based on a PSI cutoff
-#' 
-#' Data is presented in the table for statistical analyses
+#' Fit a Cox PH model to the data based on PSI values for a splicing event
 #' 
 #' @inheritParams optimalSurvivalCutoff
 #' @param eventPSI Numeric: alternative splicing quantification for multiple
@@ -203,39 +201,24 @@ diffSplicingTableUI <- function(id) {
 #' 
 #' @importFrom shiny tags
 #' @importFrom jsonlite toJSON
-#' @importFrom highcharter hc_title hc_legend hc_xAxis hc_yAxis hc_tooltip 
-#' hc_chart hc_plotOptions
 #' 
-#' @return Survival data including optimal PSI cutoff, minimal survival p-value
-#' and HTML element required to plot survival curves
-createOptimalSurvData <- function(eventPSI, clinical, censoring, event, 
-                                  timeStart, timeStop, match, patients,
-                                  samples) {
+#' @return Cox regression results (hazard ratio and p-value)
+fitCoxModelToPSI <- function(eventPSI, clinical, censoring, event, timeStart, 
+                             timeStop, match, patients, samples) {
     # Assign a value to patients based on their respective samples
     eventPSI <- assignValuePerPatient(eventPSI, match, patients=patients,
                                       samples=samples)
-    opt <- optimalSurvivalCutoff(clinical, eventPSI, censoring, event, 
-                                 timeStart, timeStop)
     
-    # Assign a value based on the inclusion levels cutoff
-    cutoff <- opt$par
-    group  <- labelBasedOnCutoff(eventPSI, cutoff, label="")
-    
+    # Fit a Cox model based on the PSI values
     survTerms <- processSurvTerms(clinical, censoring, event, timeStart, 
-                                  timeStop, group)
-    surv <- survfit(survTerms)
-    hc <- plotSurvivalCurves(surv, mark=FALSE, auto=FALSE)
-    
-    # Remove JavaScript used for colouring each series
-    for (i in seq(hc$x$hc_opts$series))
-        hc$x$hc_opts$series[[i]]$color <- NULL
-    
-    hc <- as.character(toJSON(hc$x$hc_opts$series, auto_unbox=TRUE))
+                                  timeStop, eventPSI, coxph=TRUE)
+    surv   <- summary(survTerms)
+    coef   <- surv$coefficients[[1, "coef"]]
+    hr     <- surv$coefficients[[1, "exp(coef)"]]
+    pvalue <- surv$logtest[["pvalue"]]
     
     updateProgress("Survival analysis", console=FALSE)
-    return(c("Optimal survival PSI cutoff"=cutoff,
-             "Minimal survival p-value"=opt$value,
-             "Survival curves"=hc))
+    return(c(coef, hr, pvalue))
 }
 
 #' Optimal survival difference given an inclusion level cutoff for a specific
@@ -341,57 +324,28 @@ optimSurvDiffSet <- function(session, input, output) {
             subset <- psi
         }
         startProgress("Performing survival analysis", nrow(subset))
-        
-        opt <- apply(subset, 1, createOptimalSurvData, clinical, censoring, 
-                     event, timeStart, timeStop, match, patients, 
-                     unlist(samples))
+        opt <- apply(subset, 1, fitCoxModelToPSI, clinical, censoring, event, 
+                     timeStart, timeStop, match, patients, unlist(samples))
         
         if (length(opt) == 0) {
             errorModal(session, "No survival analyses",
-                       "Optimal PSI cutoff for the selected alternative",
-                       "splicing events returned no survival analyses.")
+                       "Cox models could not be fitted using the values of the",
+                       "selected splicing events.")
         } else {
             df <- data.frame(t(opt), stringsAsFactors=FALSE)
             if (is.null(optimSurv)) {
                 # Prepare survival table
                 nas <- rep(NA, nrow(statsTable))
-                optimSurv <- data.frame(as.numeric(nas), as.numeric(nas),
-                                        as.character(nas),
-                                        stringsAsFactors=FALSE)
+                optimSurv <- data.frame(
+                    as.numeric(nas), as.numeric(nas), as.numeric(nas))
                 rownames(optimSurv) <- rownames(statsTable)
                 colnames(optimSurv) <- colnames(df)
             }
             
             optimSurv[rownames(df), 1] <- as.numeric(df[ , 1])
             optimSurv[rownames(df), 2] <- as.numeric(df[ , 2])
+            optimSurv[rownames(df), 3] <- as.numeric(df[ , 3])
             
-            # Prepare survival charts
-            hc <- highchart() %>%
-                hc_title(text=NULL) %>%
-                hc_legend(enabled=FALSE) %>%
-                hc_xAxis(title=list(text=""), showLastLabel=TRUE, visible=FALSE,
-                         crosshair=FALSE) %>%
-                hc_yAxis(title=list(text=""), endOnTick=FALSE, crosshair=FALSE,
-                         startOnTick=FALSE, visible=FALSE)  %>%
-                hc_tooltip(
-                    headerFormat=paste(
-                        tags$small("{point.x}", scale <- "days"), br(),
-                        span(style="color:{point.color}", "\u25CF "),
-                        tags$b("{series.name}"), br()),
-                    pointFormat=paste(
-                        "Survival proportion: {point.y:.3f}", br(),
-                        "Records: {series.options.records}", br(),
-                        "Events: {series.options.events}", br(),
-                        "Median: {series.options.median}")) %>%
-                hc_chart(zoomType=NULL, width=120, height=20, 
-                         backgroundColor="", margin=c(2, 0, 2, 0), 
-                         style=list(overflow='visible')) %>%
-                hc_plotOptions(series=list(stickyTracking=FALSE, cursor="non",
-                                           animation=FALSE, fillOpacity=0.25,
-                                           marker=list(radius=1)))
-            data <- as.character(df[ , 3])
-            optimSurv[rownames(df), 3] <- createSparklines(
-                hc, data, rownames(df), groups=names(samples), "showSurvCutoff")
             setDifferentialAnalysesResetPaging(FALSE)
             setDifferentialAnalysesSurvival(optimSurv)
         }
@@ -403,8 +357,8 @@ optimSurvDiffSet <- function(session, input, output) {
             ns("statsTable"))
         runjs(visibleCols)
         
-        # Scroll to survival column
-        scroll <- sprintf("var col=$(\"#%s th[aria-label*='Survival']\")
+        # Scroll to Cox regression results
+        scroll <- sprintf("var col=$(\"#%s th[aria-label*='Cox']\")
                           $('body').animate({
                           scrollTop: col.offset().top - 50,
                           scrollLeft: col.offset().left - 300
@@ -527,9 +481,11 @@ diffAnalysesPlotSet <- function(session, input, output) {
         stats <- getDifferentialAnalyses()
         optimSurv <- getDifferentialAnalysesSurvival()
         if (!is.null(optimSurv)) {
-            optimSurvCols <- c("Optimal PSI cutoff", "Log-rank p-value")
+            optimSurvCols <- c("Cox coefficient", "Hazard ratio",
+                               "Log-rank p-value")
             stats[[optimSurvCols[1]]] <- optimSurv[[1]]
             stats[[optimSurvCols[2]]] <- optimSurv[[2]]
+            stats[[optimSurvCols[3]]] <- optimSurv[[3]]
             
             # Show these columns at the end
             names <- colnames(stats)
@@ -589,8 +545,9 @@ diffAnalysesPlotSet <- function(session, input, output) {
             stats <- getDifferentialAnalyses()
             optimSurv <- getDifferentialAnalysesSurvival()
             if (!is.null(optimSurv)) {
-                stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
-                stats[["Log-rank p-value"]]   <- optimSurv[[2]]
+                stats[["Cox coefficient"]]  <- optimSurv[[1]]
+                stats[["Hazard ratio"]]     <- optimSurv[[2]]
+                stats[["Log-rank p-value"]] <- optimSurv[[3]]
             }
             
             value <- input[[paste0(axis, "Axis")]]
@@ -680,8 +637,9 @@ diffAnalysesPlotSet <- function(session, input, output) {
         # Include survival data
         optimSurv <- getDifferentialAnalysesSurvival()
         if (!is.null(optimSurv)) {
-            stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
-            stats[["Log-rank p-value"]]   <- optimSurv[[2]]
+            stats[["Cox coefficient"]]  <- optimSurv[[1]]
+            stats[["Hazard ratio"]]     <- optimSurv[[2]]
+            stats[["Log-rank p-value"]] <- optimSurv[[3]]
         }
         
         res <- transformData(input, stats, x, y)
@@ -801,9 +759,9 @@ diffAnalysesTableSet <- function(session, input, output) {
             # Bind preview of survival curves based on PSI cutoff
             optimSurv <- getDifferentialAnalysesSurvival()
             if (!is.null(optimSurv)) {
-                stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
-                stats[["Log-rank p-value"]]   <- optimSurv[[2]]
-                stats[["Survival by PSI cutoff"]] <- optimSurv[[3]]
+                stats[["Cox coefficient"]]  <- optimSurv[[1]]
+                stats[["Hazard ratio"]]     <- optimSurv[[2]]
+                stats[["Log-rank p-value"]] <- optimSurv[[3]]
             }
             
             # Filter by highlighted events and events in the zoomed area
@@ -889,8 +847,7 @@ diffAnalysesTableSet <- function(session, input, output) {
     discardPlotsFromTable <- function(df) {
         plotCols <- TRUE
         if (!is.null(df)) {
-            plotCols <- -match(c("PSI distribution", "Survival by PSI cutoff"),
-                               colnames(df))
+            plotCols <- -match("PSI distribution", colnames(df))
             plotCols <- plotCols[!is.na(plotCols)]
             if (length(plotCols) == 0) plotCols <- TRUE
         }
@@ -906,8 +863,9 @@ diffAnalysesTableSet <- function(session, input, output) {
             
             # Include updated survival analyses
             optimSurv <- getDifferentialAnalysesSurvival()
-            stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
-            stats[["Log-rank p-value"]]   <- optimSurv[[2]]
+            stats[["Cox coefficient"]]  <- optimSurv[[1]]
+            stats[["Hazard ratio"]]     <- optimSurv[[2]]
+            stats[["Log-rank p-value"]] <- optimSurv[[3]]
             
             write.table(stats, file, quote=FALSE, sep="\t", row.names=FALSE)
         }

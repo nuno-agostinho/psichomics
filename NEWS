@@ -1,7 +1,11 @@
 # 1.6.1 (8 May, 2018)
 
-* Fix crash when inputting non-numeric values or minimum larger than the maximum
-limit as the axes for the splicing scatter plot
+* Differential splicing analysis (exploratory):
+    - Perform event-wise Cox models using (numeric) PSI values; faster and whose
+    p-values allows for improved sorting of prognostic splicing events compared 
+    to modelling the survival differences based on the optimal PSI cutoff
+    - Fix crash when inputting non-numeric values or minimum larger than the
+    maximum limit as the axes for the splicing scatter plot
 
 # 1.4.6 (12 Apr, 2018)
 

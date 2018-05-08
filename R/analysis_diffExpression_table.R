@@ -337,11 +337,6 @@ diffExpressionPlotSet <- function(session, input, output) {
             }
             
             stats <- getDifferentialExpression()
-            # optimSurv <- getDifferentialExpressionSurvival()
-            # if (!is.null(optimSurv)) {
-            #     stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
-            #     stats[["Log rank p-value"]]   <- optimSurv[[2]]
-            # }
             
             value <- input[[paste0(axis, "Axis")]]
             if (is.null(stats) || is.null(value)) {
@@ -410,13 +405,6 @@ diffExpressionPlotSet <- function(session, input, output) {
             output$tooltip <- renderUI(NULL)
             return(NULL)
         }
-        
-        # # Include survival data
-        # optimSurv <- getDifferentialExpressionSurvival()
-        # if (!is.null(optimSurv)) {
-        #     stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
-        #     stats[["Log rank p-value"]]   <- optimSurv[[2]]
-        # }
         
         res <- transformData(input, stats, x, y)
         if (is.null(res)) {
@@ -531,14 +519,6 @@ diffExpressionTableSet <- function(session, input, output) {
         stats <- getDifferentialExpression()
         
         if (!is.null(stats)) {
-            # # Bind preview of survival curves based on PSI cutoff
-            # optimSurv <- getDifferentialExpressionSurvival()
-            # if (!is.null(optimSurv)) {
-            #     stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
-            #     stats[["Log rank p-value"]]   <- optimSurv[[2]]
-            #     stats[["Survival by PSI cutoff"]] <- optimSurv[[3]]
-            # }
-            
             # Filter by highlighted events and events in the zoomed area
             events  <- getHighlightedPoints("ge-volcano")
             zoom    <- getZoom("ge-volcano")
@@ -636,11 +616,6 @@ diffExpressionTableSet <- function(session, input, output) {
         content=function(file) {
             stats <- getDifferentialExpression()
             stats <- discardPlotsFromTable(stats)
-            
-            # # Include updated survival analyses
-            # optimSurv <- getDifferentialExpressionSurvival()
-            # stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
-            # stats[["Log rank p-value"]]   <- optimSurv[[2]]
             stats <- cbind("Gene"=rownames(stats), stats)
             write.table(stats, file, quote=FALSE, sep="\t", row.names=FALSE)
         }
