@@ -377,7 +377,7 @@ Next, filter statistically significant splicing events
 3. In **Data transformation of Y values**, select *-log10(|y|)*.
 4. Click on **Highlight points based on Y values** and change the minimum value
 to filter significant events. For instance, to consider a p-value of 0.01 or
-lower, the minimum should be 2, i.e. -log10(0.01).
+lower, the lower limit should be -log10(0.01), i.e. 2.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='800pt', fig.cap="Differentially spliced events (|Δ Median PSI| > 0.1 and Wilcoxon q-value ≤ 0.01). Labelled splicing events have putative prognostic value (more on that in the following section)."}
 knitr::include_graphics("img/diff_analyses.png")

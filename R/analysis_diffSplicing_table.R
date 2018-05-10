@@ -746,9 +746,10 @@ diffAnalysesTableSet <- function(session, input, output) {
             return(stats[ , cols])
         }
     }, style="bootstrap", filter="top", server=TRUE, extensions="Buttons",
-    options=list(pageLength=10, dom="Bfrtip", buttons=I("colvis"),
-                 columnDefs=list(list(targets=6:8, visible=FALSE)),
-                 columnDefs=list(list(targets=5, searchable=FALSE))))
+    options=list(
+        pageLength=10, dom="Bfrtip", buttons=I("colvis"), columnDefs=list(
+            list(targets=5,   searchable=FALSE),
+            list(targets=6:8, visible=FALSE, render=JS("linkToShowSurv")))))
     
     # Update table with filtered information
     proxy <- dataTableProxy("statsTable")
