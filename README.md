@@ -9,8 +9,9 @@ bioRxiv.
 Interactive R package with an intuitive Shiny-based graphical 
 interface for alternative splicing quantification and integrative analyses of
 alternative splicing and gene expression from large transcriptomic datasets, 
-including those from [The Cancer Genome Atlas (TCGA)][TCGA] and 
-[Genotype-Tissue Expression (GTEx) project][GTEx], as well as user-owned data.
+including those from [The Cancer Genome Atlas (TCGA)][TCGA], the 
+[Genotype-Tissue Expression (GTEx) project][GTEx] and the 
+[Sequence Read Archive(SRA)][SRA], as well as user-owned data.
 
 *psichomics* interactively performs survival, dimensionality reduction and 
 median- and variance-based differential splicing and gene expression 
@@ -30,6 +31,7 @@ alternative splicing events is also included.
 * [Data input](#data-input)
     * [Download TCGA data](#download-tcga-data)
     * [Load GTEx data](#load-gtex-data)
+    * [Load SRA data](#load-sra-data)
     * [Load user-provided files](#load-user-provided-files)
 * [Splicing quantification](#splicing-quantification)
 * [Gene expression processing](#gene-expression-processing)
@@ -103,6 +105,12 @@ GTEx data needs to be manually downloaded from the [GTEx Portal][GTEx]. Subject-
 and sample-associated data, junction quantification and gene expression data 
 from GTEx are supported.
 
+### Load SRA Data
+
+Although only select [SRA][SRA] projects are available to be automatically
+downloaded, other SRA projects can be manually downloaded, aligned and loaded
+by the user. Sample-associated files from SRA are supported.
+
 ### Load user-provided files
 
 *psichomics* contains instructions on how to load user-owned files (including
@@ -120,8 +128,8 @@ supporting the inclusion of an exon over the reads supporting both the inclusion
 and exclusion of that exon. To measure this estimate, both alternative splicing 
 annotation and the quantification of RNA-Seq reads aligning to splice junctions
 (junction quantification) are required. While alternative splicing Human (hg19
-assembly) annotation is provided by the package, junction quantification may be
-retrieved from [TCGA][TCGA] (automatically) or from [GTEx][GTEx] (manually) or 
+and hg38 assemblies) annotation is provided within the package, junction 
+quantification may be retrieved from [TCGA][TCGA], [GTEx][GTEx], [SRA][SRA] or 
 handed by the user (e.g. user-owned files).
 
 ## Gene expression processing
@@ -220,3 +228,4 @@ Nature 456 (7221): 470–76.
 [codecov]: https://codecov.io/gh/nuno-agostinho/psichomics
 [GTEx]: http://www.gtexportal.org
 [article]: https://doi.org/10.1101/261180
+[SRA]: https://www.ncbi.nlm.nih.gov/sra
