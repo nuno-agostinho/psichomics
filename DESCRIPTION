@@ -53,10 +53,12 @@ Imports:
     pairsD3,
     plyr,
     Rcpp (>= 0.12.14),
+    recount,
     R.utils,
     shinyjs,
     stringr,
     stats,
+    SummarizedExperiment,
     survival,
     tools,
     utils,
@@ -100,6 +102,7 @@ Collate:
     'data_gtex.R'
     'data_inclusionLevels.R'
     'data_local.R'
+    'data_recount.R'
     'events_suppa.R'
     'events_vastTools.R'
     'events_miso.R'
@@ -122,6 +125,7 @@ Collate:
     'formats_gtexV7JunctionReads.R'
     'formats_psichomicsGeneExpression.R'
     'formats_psichomicsInclusionLevels.R'
+    'formats_recountSampleInfo.R'
     'groups.R'
     'help.R'
 biocViews: Sequencing, RNASeq, AlternativeSplicing,

@@ -1,5 +1,6 @@
-# 1.6.1 (8 May, 2018)
+# 1.6.1 (16 May, 2018)
 
+* Download and load SRA data using the recount R package
 * Differential splicing analysis (exploratory):
     - Perform event-wise Cox models using (numeric) PSI values; faster and whose
     p-values allows for improved sorting of prognostic splicing events compared 
