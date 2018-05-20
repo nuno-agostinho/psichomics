@@ -34,7 +34,7 @@ getFirehoseDataTypes <- getFirebrowseDataTypes
 #' 
 #' @examples 
 #' ll <- list(a="hey", b="there")
-#' addObjectAttrs(ll, "words"=2, "language"="English")
+#' psichomics:::addObjectAttrs(ll, "words"=2, "language"="English")
 addObjectAttrs <- function (object, ...) {
     args <- as.list(match.call())[-c(1:2)]
     for (k in seq(args)) attr(object, names(args[k])) <- args[[k]]

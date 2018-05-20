@@ -19,5 +19,5 @@ Set attributes to an object
 }
 \examples{
 ll <- list(a="hey", b="there")
-addObjectAttrs(ll, "words"=2, "language"="English")
+psichomics:::addObjectAttrs(ll, "words"=2, "language"="English")
 }
