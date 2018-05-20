@@ -25,6 +25,22 @@ getFirebrowseDataTypes <- function() {
 #' @rdname getFirebrowseDataTypes
 getFirehoseDataTypes <- getFirebrowseDataTypes
 
+#' Set attributes to an object
+#' 
+#' @param object Object
+#' @param ... Named parameters to convert to attributes
+#' 
+#' @return Object with attributes set
+#' 
+#' @examples 
+#' ll <- list(a="hey", b="there")
+#' psichomics:::addObjectAttrs(ll, "words"=2, "language"="English")
+addObjectAttrs <- function (object, ...) {
+    args <- as.list(match.call())[-c(1:2)]
+    for (k in seq(args)) attr(object, names(args[k])) <- args[[k]]
+    return(object)
+}
+
 #' Parse sample information from TCGA samples
 #' 
 #' @param samples Character: sample identifiers
@@ -146,6 +162,8 @@ processDatasetNames <- function(data) {
         for (k in seq_along(nse)) {
             if (index[[k]]) {
                 file <- attr(newData[[each]][[k]], "filename")
+                if (is.null(file)) next
+                
                 if (grepl("illuminahiseq", file, fixed=TRUE))
                     names(newData[[each]])[[k]] <- paste(
                         names(newData[[each]])[[k]], "(Illumina HiSeq)")
@@ -232,11 +250,12 @@ dataUI <- function(id, tab) {
     ns <- NS(id)
     uiList <- getUiFunctions(
         ns, "data", bsCollapsePanel,
-        priority=paste0(c("localData", "firebrowse", "gtexData",
+        priority=paste0(c("localData", "firebrowse", "gtexData", "recountData",
                           "inclusionLevels", "geNormalisationFiltering"), "UI"))
     
     tcga <- tags$abbr(title="The Cancer Genome Atlas", "TCGA")
     gtex <- tags$abbr(title="Genotype-Tissue Expression project", "GTEx")
+    sra  <- tags$abbr(title="Sequence Read Archive", "SRA")
     
     analysesDescription <- tagList(
         fluidRow(
@@ -272,15 +291,17 @@ dataUI <- function(id, tab) {
             "Perform integrative analyses of alternative splicing and gene ",
             "expression based on transcriptomic and sample-associated data ",
             "from The Cancer Genome Atlas (", tcga, "), the Genotype-Tissue ",
-            "Expression (", gtex, ") project or user-owned data.")),
+            "Expression (", gtex, ") project, Sequence Read Archive (", sra, 
+            ") or user-owned data.")),
         tags$br(), tags$br(), tags$ol(
             id="list",
-            tags$li("Load gene expression values, alternative splicing",
-                    "junction quantification and/or sample-associated data",
-                    "from", tcga, ", ", gtex, " or user-owned data.",
-                    tags$br(), tags$small(
-                        style="color: gray;",
-                        "More data types will soon be supported.")),
+            tags$li(HTML(paste0(
+                "Load gene expression values, alternative splicing ",
+                "junction quantification and/or sample-associated data ",
+                "from ", tcga, ", ", gtex, ", ", sra, " or user-owned data.",
+                tags$br(), tags$small(
+                    style="color: gray;",
+                    "More data types will soon be supported.")))),
             tags$li("Quantify alternative splicing events based on the",
                     "values from the percent spliced-in (PSI) metric.",
                     # "The following event types are available:",

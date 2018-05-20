@@ -339,8 +339,9 @@ appServer <- function(input, output, session) {
 #' Start graphical interface of psichomics
 #'
 #' @inheritDotParams shiny::runApp -appDir -launch.browser
-#' @param reset Boolean: reset Shiny session? FALSE by default; requires the 
-#' package \code{devtools} to reset data
+#' @param reset Boolean: reset Shiny session? requires the package 
+#' \code{devtools} to reset data
+#' @param testData Boolean: auto-start with test data
 #'
 #' @importFrom shiny shinyApp runApp addResourcePath
 #'
@@ -350,12 +351,27 @@ appServer <- function(input, output, session) {
 #' psichomics()
 #' }
 #' @return NULL (this function is used to modify the Shiny session's state)
-psichomics <- function(..., reset=FALSE) {
+psichomics <- function(..., reset=FALSE, testData=FALSE) {
     # Add icons related to set operations
     addResourcePath("set-operations",
                     insideFile("shiny", "www", "set-operations"))
     
     if (reset) devtools::load_all()
+    
+    if (testData) {
+        clinical   <- readRDS("vignettes/BRCA_clinical.RDS")
+        geneExpr   <- readRDS("vignettes/BRCA_geneExpr.RDS")
+        psi        <- readRDS("vignettes/BRCA_psi.RDS")
+        sampleInfo <- parseTcgaSampleInfo(colnames(psi))
+        
+        data <- NULL
+        data[["Clinical data"]]    <- clinical
+        data[["Gene expression"]]  <- geneExpr
+        data[["Inclusion levels"]] <- psi
+        data[["Sample metadata"]]  <- sampleInfo
+        setData(list("Test data"=data))
+    }
+    
     app <- shinyApp(appUI(), appServer)
     runApp(app, launch.browser = TRUE, ...)
 }

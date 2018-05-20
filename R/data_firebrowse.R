@@ -604,7 +604,8 @@ addTCGAdata <- function(ns) {
             value=getDownloadsFolder(),
             placeholder="No folder selected",
             info=TRUE, infoFUN=bsTooltip,
-            infoTitle="Data not available in this folder will be downloaded."),
+            infoTitle=paste("Data will be downloaded if not available in this",
+                            "folder.")),
         processButton(ns("getFirebrowseData"), "Load data"))
 }
 
@@ -616,7 +617,7 @@ firebrowseUI <- function(id, panel) {
     ns <- NS(id)
     
     panel(style="info",
-          title=list(icon("plus-circle"), "Download and load TCGA data"),
+          title=list(icon("plus-circle"), "Automatically load TCGA data"),
           value="Load TCGA/Firebrowse data",
           helpText("TCGA data is downloaded using the",
                    a(href="http://firebrowse.org", target="_blank",

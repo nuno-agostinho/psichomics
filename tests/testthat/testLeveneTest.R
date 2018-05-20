@@ -6,7 +6,7 @@ groups <- data$carb
 
 test_that("Calculate spread using the median values per group", {
     lev <- leveneTest(values, groups)
-    car <- car::leveneTest(values, groups)
+    car <- car::leveneTest(values, factor(groups))
     
     expect_is(lev, "htest")
     expect_equal(lev$statistic[[1]], car$`F value`[[1]])
@@ -16,7 +16,7 @@ test_that("Calculate spread using the median values per group", {
 
 test_that("Calculate spread using the mean values per group", {
     lev <- leveneTest(values, groups, "mean")
-    car <- car::leveneTest(values, groups, "mean")
+    car <- car::leveneTest(values, factor(groups), "mean")
     
     expect_is(lev, "htest")
     expect_equal(lev$statistic[[1]], car$`F value`[[1]])
@@ -24,13 +24,12 @@ test_that("Calculate spread using the mean values per group", {
     expect_true(grepl("mean", lev$method))
 })
 
-
 test_that("Remove missing values", {
     random <- round(runif(5, 1, length(values)))
     values[random] <- NA
     
     lev <- leveneTest(values, groups)
-    car <- car::leveneTest(values, groups)
+    car <- car::leveneTest(values, factor(groups))
     
     expect_is(lev, "htest")
     expect_equal(lev$statistic[[1]], car$`F value`[[1]])
@@ -61,7 +60,7 @@ test_that("Re-factor groups (useful to redo levels)", {
     values <- values[notLow]
     
     lev <- leveneTest(values, groups)
-    car <- car::leveneTest(values, groups)
+    car <- car::leveneTest(values, factor(groups))
     
     expect_is(lev, "htest")
     expect_equal(lev$statistic[[1]], car$`F value`[[1]])
@@ -73,7 +72,7 @@ test_that("Named values are calculated just as unnamed values", {
     names(values) <- paste0("name", 1:length(values))
     
     lev <- leveneTest(values, groups)
-    car <- car::leveneTest(values, groups)
+    car <- car::leveneTest(values, factor(groups))
     
     expect_is(lev, "htest")
     expect_equal(lev$statistic[[1]], car$`F value`[[1]])

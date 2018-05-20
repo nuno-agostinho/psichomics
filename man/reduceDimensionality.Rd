@@ -14,8 +14,10 @@ reduceDimensionality(data, type = c("pca", "ica"), center = TRUE,
 \item{type}{Character: dimensionality reduction technique (\code{pca} or 
 \code{ica})}
 
-\item{center}{either a logical value or a numeric vector of length
-    equal to the number of columns of \code{x}.}
+\item{center}{either a logical value or numeric-alike vector of length
+    equal to the number of columns of \code{x}, where
+    \sQuote{numeric-alike} means that \code{\link{as.numeric}(.)} will
+    be applied successfully if \code{\link{is.numeric}(.)} is not true.}
 
 \item{scale.}{Boolean: scale variables?}
 

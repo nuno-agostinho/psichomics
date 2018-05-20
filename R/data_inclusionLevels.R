@@ -10,8 +10,8 @@ listSplicingAnnotations <- function() {
           "annotationHub_alternativeSplicingEvents.hg19_V2.rda",
       "Human hg19/GRCh37 (2016-10-11)"=
           "annotationHub_alternativeSplicingEvents.hg19.rda",
-      "Human hg38 (2017-10-20)"=
-          "annotationHub_alternativeSplicingEvents.hg38.rda")
+      "Human hg38 (2018-04-30)"=
+          "annotationHub_alternativeSplicingEvents.hg38_V2.rda")
 }
 
 #' List alternative splicing annotation files available, as well as custom 
@@ -185,12 +185,11 @@ quantifySplicing <- function(annotation, junctionQuant,
     colnames(psi) <- colns
     
     if (is.null(psi)) psi <- data.frame(NULL)
-    attr(psi, "rowNames")    <- TRUE
-    attr(psi, "description") <- "PSI values per alternative splicing events"
-    attr(psi, "dataType")    <- "Inclusion levels"
-    attr(psi, "tablename")   <- "Inclusion levels"
-    attr(psi, "rows")        <- "alternative splicing events"
-    attr(psi, "columns")     <- "samples"
+    psi <- addObjectAttrs(
+        psi, "rowNames"=TRUE, 
+        "description"="PSI values per alternative splicing events",
+        "dataType"="Inclusion levels", "tablename"="Inclusion levels",
+        "rows"="alternative splicing events", "columns"="samples")
     return(psi)
 }
 
@@ -240,7 +239,8 @@ loadCustomSplicingAnnotationSet <- function(session, input, output) {
                                      choices="Human", 
                                      options=list(create=TRUE)),
                       selectizeInput(ns("customAssembly"), "Assembly",
-                                     choices="hg19", options=list(create=TRUE)),
+                                     choices=c("hg19", "hg38"),
+                                     options=list(create=TRUE)),
                       uiOutput(ns("alert")),
                       footer=actionButton(ns("loadCustom"), "Load annotation",
                                           class="btn-primary"))
@@ -258,7 +258,8 @@ loadCustomSplicingAnnotationSet <- function(session, input, output) {
                        "Please select a RDS file.")
         } else {
             custom <- customAnnot$datapath
-            names(custom) <- customAnnot$name
+            names(custom) <- sprintf("%s (%s, %s)", customAnnot$name,
+                                     input$customSpecies, input$customAssembly)
             updateSelectizeInput(session, "annotation", selected=custom,
                                  choices=listAllAnnotations(custom))
             setSpecies(input$customSpecies)
