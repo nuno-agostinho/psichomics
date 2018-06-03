@@ -156,7 +156,7 @@ diffExpressionTableUI <- function(id) {
 #' Set of functions to perform differential analyses
 #' 
 #' @importFrom shinyBS updateCollapse
-#' @importFrom limma eBayes lmFit toptable
+#' @importFrom limma eBayes lmFit topTable
 #' 
 #' @inherit diffExpressionTableServer
 diffExpressionSet <- function(session, input, output) {
@@ -203,12 +203,12 @@ diffExpressionSet <- function(session, input, output) {
         
         # Prepare data summary
         pvalueAdjust <- input$pvalueAdjust
-        summary <- toptable(stats, number=nrow(fit), coef=2, sort.by="none",
+        summary <- topTable(stats, number=nrow(fit), coef=2, sort.by="none",
                             adjust.method=pvalueAdjust, confint=TRUE)
-        names(summary) <- c("log2 Fold-Change", "conf. int1", "conf. int2",
-                            "moderated t-statistics", "p-value", 
-                            paste0("p-value (", pvalueAdjust, " adjusted)"),
-                            "B-statistics")
+        names(summary) <- c(
+            "log2 Fold-Change", "CI (low)", "CI (high)", "Average expression",
+            "moderated t-statistics", "p-value", 
+            paste0("p-value (", pvalueAdjust, " adjusted)"), "B-statistics")
         attr(summary, "groups") <- groups
         
         # Calculate basic statistics and density plots
