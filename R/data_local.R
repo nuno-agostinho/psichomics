@@ -119,6 +119,184 @@ localDataUI <- function(id, panel) {
               tabPanel("Folder input", addFolder)))
 }
 
+#' Prepare files to be loaded into psichomics
+#' 
+#' @param file Character: path to file
+#' @param output Character: path of output file (if NULL, only returns the data
+#' without saving it to a file)
+#' @importFrom data.table fread fwrite
+#' 
+#' @return Prepared file
+#' @export
+prepareSRAmetadata <- function(file, output="psichomics_metadata.txt") {
+    data <- fread(file)
+    data <- cbind("Sample ID"=data$Run, data)
+    if (!is.null(output)) fwrite(data, output, sep="\t")
+    return(data)
+}
+
+#' @rdname prepareSRAmetadata
+#' 
+#' @param ... Character: path to file(s) to read
+#' @param samples Character: sample names
+#' @param startOffset Numeric: value to offset start position
+#' @param endOffset Numeric: value to offset end position
+#' 
+#' @importFrom data.table fwrite
+#' @export
+#' 
+#' @examples
+#' \dontrun{
+#' prepareJunctionQuant("Control rep1"=junctionFile1,
+#'                      "Control rep2"=junctionFile2,
+#'                      "KD rep1"=junctionFile3, 
+#'                      "KD rep2"=junctionFile4)
+#' }
+prepareJunctionQuant <- function(..., output="psichomics_junctions.txt",
+                                 startOffset=NULL, endOffset=NULL) {
+    # Detect splice-aware aligner used
+    # TODO(NunoA): support TopHat
+    files <- list(...)
+    
+    # Prepare junction quantification accordingly
+    data <- prepareJunctionQuantSTAR(..., startOffset=startOffset, 
+                                     endOffset=endOffset)
+    
+    # Add sample names
+    if (is.null(names(files))) {
+        # Remove STAR filename end
+        samples <- gsub("SJ\\.out\\.tab$", "", unlist(files))
+    }
+    colnames(data) <- as.character(samples)
+    
+    # Save data to given path
+    if (!is.null(output)) {
+        junctionQuant <- cbind(rownames(data), data)
+        setnames(junctionQuant, "V1", "Junction ID")
+        fwrite(junctionQuant, output, sep="\t", na=0, quote=FALSE)
+    }
+    return(junctionQuant)
+}
+
+#' @rdname prepareSRAmetadata
+#' @importFrom data.table fread setnames setkeyv setorderv
+prepareJunctionQuantSTAR <- function(..., startOffset=-1, endOffset=+1) {
+    if (is.null(startOffset)) startOffset <- -1
+    if (is.null(endOffset))   endOffset   <- +1
+    
+    files <- list(...)
+    joint <- NULL
+    for (file in files) {
+        cat(sprintf("Processing %s...", file), fill=TRUE)
+        table    <- fread(file)[, c(1:4, 7)]
+        table$V2 <- table$V2 + startOffset
+        table$V3 <- table$V3 + endOffset
+        joint    <- c(joint, list(table))
+    }
+    
+    index <<- 0
+    lapply(joint, function(table) {
+        index <<- index + 1
+        setnames(table, "V7", paste0("col", index))
+        setkeyv(table, c("V1", "V2", "V3", "V4"))
+    })
+    
+    # Merge together junction quantification from different samples
+    cat("Merging junction quantification files...", fill=TRUE)
+    junctionQuant <- Reduce(function(...) merge(..., all=TRUE), joint)
+    # setorderv(junctionQuant, cols=c("V1", "V2", "V3"))
+    
+    # Use splice junction location as row names
+    # TODO (NunoA): what to do in case the strand is 0 (i.e. undefined)? Maybe
+    # duplicate entry and append both a positive and a negative sign
+    strand <- ifelse(junctionQuant$V4 == "1", "+", "-")
+    cat("Preparing event identifiers...", fill=TRUE)
+    ns     <- with(junctionQuant, paste(V1, V2, V3, strand, sep=":"))
+    junctionQuant <- junctionQuant[ , -c(1:4)]
+    rownames(junctionQuant) <- ns
+    return(junctionQuant)
+}
+
+#' @rdname prepareSRAmetadata
+#' 
+#' @param strandedness Character: strandedness of RNA-seq protocol; may be one
+#' of the following: \code{unstraded}, \code{stranded} or 
+#' \code{stranded (reverse)}
+#' 
+#' @importFrom data.table fwrite
+#' @export
+#' 
+#' @examples
+#' \dontrun{
+#' prepareGeneQuant("Control rep1"=geneCountFile1,
+#'                  "Control rep2"=geneCountFile2,
+#'                  "KD rep1"=geneCountFile3, 
+#'                  "KD rep2"=geneCountFile4)
+#' }
+prepareGeneQuant <- function(..., output="psichomics_gene_counts.txt",
+                             strandedness=c("unstranded", "stranded",
+                                            "stranded (reverse)")) {
+    strandedness <- match.arg(strandedness)
+    
+    # Detect splice-aware aligner used
+    # TODO(NunoA): support TopHat
+    files <- list(...)
+    
+    # Prepare file accordingly
+    data <- prepareGeneQuantSTAR(..., strandedness=strandedness)
+    
+    # Add sample names
+    if (is.null(names(files))) {
+        # Remove STAR filename end
+        samples <- gsub("ReadsPerGene\\.out\\.tab$", "", unlist(files))
+    }
+    colnames(data) <- as.character(samples)
+    
+    # Save data to given path
+    if (!is.null(output)) {
+        geneQuant <- cbind(rownames(data), data)
+        setnames(geneQuant, "V1", "Gene ID")
+        fwrite(geneQuant, output, sep="\t", na=0, quote=FALSE)
+    }
+    return(geneQuant)
+}
+
+#' @rdname prepareSRAmetadata
+#' @importFrom data.table fread setnames setkeyv setorderv
+prepareGeneQuantSTAR <- function(..., strandedness=c("unstranded", "stranded",
+                                                     "stranded (reverse)")) {
+    strandedness <- match.arg(strandedness)
+    strandedness <- switch(strandedness, 
+                           "unstranded"=2, "stranded"=3, "stranded (reverse)"=4)
+    
+    files <- list(...)
+    joint <- NULL
+    for (file in files) {
+        cat(sprintf("Processing %s...", file), fill=TRUE)
+        table    <- fread(file, skip=4)[, c(1, ..strandedness)]
+        joint    <- c(joint, list(table))
+    }
+    
+    index <<- 0
+    lapply(joint, function(table) {
+        index <<- index + 1
+        setnames(table, "V2", paste0("col", index))
+        setkeyv(table, "V1")
+    })
+    
+    # Merge together files from different samples
+    cat("Merging gene read count files...", fill=TRUE)
+    geneQuant <- Reduce(function(...) merge(..., all=TRUE), joint)
+    # setorderv(geneQuant, cols=c("V1", "V2", "V3"))
+    
+    # Use gene names as row names
+    cat("Preparing event identifiers...", fill=TRUE)
+    ns <- geneQuant$V1
+    geneQuant <- geneQuant[ , -1]
+    rownames(geneQuant) <- ns
+    return(geneQuant)
+}
+
 #' Load local files
 #' 
 #' @param folder Character: path to folder containing files of interest
@@ -154,10 +332,9 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."),
     formats <- loadFileFormats()
     for (each in seq_along(files)) {
         updateProgress("Processing file", detail = basename(files[each]))
-        loadedFile <- tryCatch(parseValidFile(files[each], formats),
-                               warning=return, error=return)
-        if (!is(loadedFile, "warning") && !is(loadedFile, "error"))
-            loaded[[each]] <- loadedFile
+        loadedFile <- suppressWarnings(
+            tryCatch(parseValidFile(files[each], formats), error=return))
+        if (!is(loadedFile, "error")) loaded[[each]] <- loadedFile
     }
     names(loaded) <- sapply(loaded, attr, "tablename")
     loaded <- list(Filter(length, loaded))

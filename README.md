@@ -81,15 +81,13 @@ psichomics()
 
 ## Tutorials
 
-The following case studies are available based on our 
+The following case studies and tutorials are available based on our 
 [original article][article] (currently in preprint):
 
-* [Visual interface](http://rpubs.com/nuno-agostinho/psichomics-tutorial-visual)
-* [Command-line interface](http://rpubs.com/nuno-agostinho/psichomics-cli-tutorial)
-
-Other tutorials coming soon:
-
-* Developers and other contributors
+* [Visual interface][tutorial-gui]
+* [Command-line interface][tutorial-cli]
+* [Loading SRA or user-owned RNA-seq data][tutorial-custom-data]
+* [Preparing alternative splicing annotations][tutorial-prep-AS-annotation]
 
 ## Data input
 
@@ -108,8 +106,9 @@ from GTEx are supported.
 ### Load SRA Data
 
 Although only select [SRA][SRA] projects are available to be automatically
-downloaded, other SRA projects can be manually downloaded, aligned and loaded
-by the user. Sample-associated files from SRA are supported.
+downloaded, other SRA projects can be manually downloaded, aligned using a 
+splice-aware aligner and loaded by the user. Sample-associated files from SRA 
+are supported.
 
 ### Load user-provided files
 
@@ -229,3 +228,7 @@ Nature 456 (7221): 470–76.
 [GTEx]: http://www.gtexportal.org
 [article]: https://doi.org/10.1101/261180
 [SRA]: https://www.ncbi.nlm.nih.gov/sra
+[tutorial-gui]: http://rpubs.com/nuno-agostinho/psichomics-tutorial-visual
+[tutorial-cli]: http://rpubs.com/nuno-agostinho/psichomics-cli-tutorial
+[tutorial-custom-data]: http://rpubs.com/nuno-agostinho/psichomics-custom-data
+[tutorial-prep-AS-annotation]: http://rpubs.com/nuno-agostinho/preparing-AS-annotation

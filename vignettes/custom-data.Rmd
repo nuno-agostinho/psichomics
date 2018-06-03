@@ -1,0 +1,235 @@
+---
+title: 'Alternative Splicing Analysis on SRA or User-Owned Data'
+author: "Nuno Saraiva-Agostinho"
+date: "`r Sys.Date()`"
+bibliography: refs.bib
+csl: bioinformatics.csl
+output: 
+    rmarkdown::html_vignette:
+        toc: true
+vignette: >
+  %\VignetteIndexEntry{SRA or user-owned RNA-seq data analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+---
+
+*psichomics* is an interactive R package for integrative analyses of alternative
+splicing using data from [The Cancer Genome Atlas (TCGA)][tcga] (containing 
+molecular data associated with 34 tumour types), the
+[Genotype-Tissue Expression (GTEx)][gtex] project (containing data for multiple
+normal human tissues), the [Sequence Read Archive][SRA] or owned by the user. 
+
+The following tutorial goes through the steps required to load custom RNA-seq 
+data:
+
+1. Retrieve FASTQ files and sample-associated information from the 
+[Sequence Read Archive (SRA)][sra] (optional if you already have your own FASTQ 
+samples);
+2. Map RNA-seq reads from the FASTQ files against a genome of reference using
+[STAR][star], a splice-aware aligner;
+3. Merge and prepare the output of such aligners to be correctly interpreted
+by psichomics;
+4. Load data into psichomics.
+
+# Download data from SRA (optional)
+
+[SRA][sra] is a repository of biological sequence data that stores data from 
+many published articles. [SRA][sra] data may be useful to answer pressing 
+biological questions using publicly available data.
+
+> The latest versions of psichomics support 
+**automatic downloading of SRA data** from [recount2][recount], a resource of
+pre-processed data for thousands of SRA projects (including gene read counts, 
+splice junction quantification and sample metadata). Check first if the project 
+of your interest is not available through this resource, thus making it easier 
+to analyse gene expression and alternative splicing for your samples of 
+interest.
+
+Data from SRA can be downloaded using the [fastq-dump][fastq-dump] command from
+[sra-tools][sra-tools]. For instance, to retrieve samples from the 
+[SRP126561][SRP126561] project, we could do the following:
+
+```
+fastq-dump --gzip --split-3 SRR6368612
+fastq-dump --gzip --split-3 SRR6368613
+fastq-dump --gzip --split-3 SRR6368614
+fastq-dump --gzip --split-3 SRR6368615
+fastq-dump --gzip --split-3 SRR6368616
+fastq-dump --gzip --split-3 SRR6368617
+```
+
+Arguments used in the previous command:
+
+- **`--gzip`**: compress FASTQ files in the GZIP format
+- **`--split-3`**: allows to output one or two FASTQ files for single-end or
+paired-end sequencing, respectively (a third FASTQ file may also be returned 
+containing orphaned single-end reads obtained from paired-end sequencing data)
+
+Sample-associated data is also available from the [Run Selector][SRP126561]
+page. Click **RunInfo Table** to download the whole metadata table for all
+samples.
+
+# Align RNA-seq data to quantify splice junctions
+
+The quantification of each alternative splicing event is based on the proportion
+of junction reads that support the inclusion isoform, known as percent 
+spliced-in or PSI [@wang2008].
+
+To estimate this value for each splicing event, both alternative splicing
+annotation and quantification of RNA-Seq reads aligning to splice junctions 
+(junction quantification) are required. While alternative splicing annotation is
+provided by the package, junction quantification will need to be prepared from
+user-owned data by aligning the RNA-seq reads from FASTQ files to a genome of
+reference. As junction reads are required to quantify alternative splicing, a
+splice-aware aligner will be used. psichomics currently supports STAR output.
+
+## STAR
+
+Before aligning FASTQ samples against a genome of reference, a genome index 
+needs to be prepared. 
+
+Start by downloading a FASTA file of the whole genome and a GTF file with
+annotated transcript. To run the following example, download the 
+[human FASTA and GTF files (hg19 assembly)][hg19-data].
+
+```
+mkdir hg19_STAR
+STAR --runThreadN 4 \
+     --runMode genomeGenerate \
+     --genomeDir hg19_STAR \
+     --genomeFastaFiles /path/to/hg19.fa \
+     --sjdbGTFfile /path/to/hg19.gtf
+```
+
+Arguments used in the previous command:
+
+- **`--runThreadN 4`**: run STAR in parallel using 4 threads
+- **`--runMode genomeGenerate`**: generate the genome index
+- **`--genomeDir`**: directory of the genome index directory (output)
+- **`--genomeFastaFiles`**: path to genome file (FASTA format)
+- **`--sjdbGTFfile`**: path to transcript annotation (GTF format)
+
+---
+
+After the genome index is generated, align the FASTQ files using the following
+commands to align read counts to both genes and splice junctions. These commands
+will allow STAR to output.
+
+```
+STAR --runThreadN 4 \
+     --genomeDir hg19_STAR \
+     --quantMode GeneCounts \
+     --readFilesCommand zcat \
+     --outFileNamePrefix SRR6368612 \
+     --readFilesIn SRR6368612_1.fastq.gz SRR6368612_2.fastq.gz
+     
+STAR --runThreadN 4 \
+     --genomeDir hg19_STAR \
+     --quantMode GeneCounts \
+     --readFilesCommand zcat \
+     --outFileNamePrefix SRR6368613 \
+     --readFilesIn SRR6368613_1.fastq.gz SRR6368613_2.fastq.gz
+     
+STAR --runThreadN 4 \
+     --genomeDir hg19_STAR \
+     --quantMode GeneCounts \
+     --readFilesCommand zcat \
+     --outFileNamePrefix SRR6368614 \
+     --readFilesIn SRR6368614_1.fastq.gz SRR6368614_2.fastq.gz
+     
+STAR --runThreadN 4 \
+     --genomeDir hg19_STAR \
+     --quantMode GeneCounts \
+     --readFilesCommand zcat \
+     --outFileNamePrefix SRR6368615 \
+     --readFilesIn SRR6368615_1.fastq.gz SRR6368615_2.fastq.gz
+     
+STAR --runThreadN 4 \
+     --genomeDir hg19_STAR \
+     --quantMode GeneCounts \
+     --readFilesCommand zcat \
+     --outFileNamePrefix SRR6368616 \
+     --readFilesIn SRR6368616_1.fastq.gz SRR6368616_2.fastq.gz
+     
+STAR --runThreadN 4 \
+     --genomeDir hg19_STAR \
+     --quantMode GeneCounts \
+     --readFilesCommand zcat \
+     --outFileNamePrefix SRR6368617 \
+     --readFilesIn SRR6368617_1.fastq.gz SRR6368617_2.fastq.gz
+```
+
+Arguments used in the previous command:
+
+- **`--runThreadN 4`**: run STAR in parallel using 4 threads
+- **`--genomeDir`**: directory of the genome index directory (input)
+- **`--quantMode GeneCounts`**: count reads aligning per gene
+- **`--readFilesCommand`**: command to extract compressed FASTQ files
+- **`--outFileNamePrefix`**: output prefix
+- **`--readFilesIn`**: FASTQ files to align
+
+# Prepare output for psichomics
+
+To process the resulting data files, open an R console or RStudio and type:
+
+```{r, eval=FALSE}
+# Change working directory to where the STAR output is
+setwd("/path/to/aligned/output/")
+
+library(psichomics)
+prepareGeneQuant(
+    "SRR6368612ReadsPerGene.out.tab", "SRR6368613ReadsPerGene.out.tab",
+    "SRR6368614ReadsPerGene.out.tab", "SRR6368615ReadsPerGene.out.tab",
+    "SRR6368616ReadsPerGene.out.tab", "SRR6368617ReadsPerGene.out.tab")
+prepareJunctionQuant("SRR6368612SJ.out.tab", "SRR6368613SJ.out.tab", 
+                     "SRR6368614SJ.out.tab", "SRR6368615SJ.out.tab",
+                     "SRR6368616SJ.out.tab", "SRR6368617SJ.out.tab")
+prepareSRAmetadata("SraRunTable.txt")
+```
+
+## Load data in visual interface
+
+Start psichomics with the following commands in an R console or RStudio:
+
+```{r, eval=FALSE}
+library(psichomics)
+psichomics()
+```
+
+Then, click **Load user files**. Click the **Folder input** tab and select the
+appropriate folder where the psichomics-prepared data is stored. Finally, click
+**Load files** to scan the folder for data that may be loaded by psichomics.
+
+## Load data in command-line interface (CLI)
+
+```{r, eval=FALSE}
+library(psichomics)
+data          <- loadLocalFiles("/path/to/aligned/output/")
+geneExpr      <- data[[1]]$`Gene expression`
+junctionQuant <- data[[1]]$`Junction quantification`
+sampleInfo    <- data[[1]]$`Sample metadata`
+```
+
+# Feedback
+
+All feedback on the program, documentation and associated material (including
+this tutorial) is welcome. Please send any comments and questions to:
+
+> Nuno Saraiva-Agostinho (nunoagostinho@medicina.ulisboa.pt)
+>
+> [Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)][distrans]
+
+# References
+
+[tcga]: https://tcga-data.nci.nih.gov/docs/publications/tcga
+[gtex]: https://www.gtexportal.org
+[sra]: https://www.ncbi.nlm.nih.gov/sra
+[star]: https://github.com/alexdobin/STAR
+[distrans]: http://imm.medicina.ulisboa.pt/group/distrans/
+[fastq-dump]: https://ncbi.github.io/sra-tools/fastq-dump.html
+[sra-tools]: https://ncbi.github.io/sra-tools/
+[hg19-data]: https://grch37.ensembl.org/info/data/ftp/
+[SRP126561]: https://trace.ncbi.nlm.nih.gov/Traces/study/?acc=SRP126561
+[recount]: https://jhubiostatistics.shinyapps.io/recount/

@@ -1,7 +1,7 @@
 ---
 title: 'psichomics case study: visual interface'
 author: "Nuno Saraiva-Agostinho"
-date: "20 May 2018"
+date: "`r Sys.Date()`"
 bibliography: refs.bib
 csl: bioinformatics.csl
 output:
@@ -606,7 +606,7 @@ All feedback on the program, documentation and associated material (including
 this tutorial) is welcome. Please send any suggestions and comments to:
 
 > Nuno Saraiva-Agostinho (nunoagostinho@medicina.ulisboa.pt)
-
+>
 > [Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)][iMM]
 
 # References
@@ -620,5 +620,5 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 [iMM]: http://imm.medicina.ulisboa.pt/group/distrans/
 [GTEx]: http://gtexportal.org
 [maxpath]: https://msdn.microsoft.com/library/windows/desktop/aa365247.aspx#maxpath
-[article]: https://www.biorxiv.org/content/early/2018/02/07/261180
+[article]: https://doi.org/10.1101/261180
 [SRA]: https://www.ncbi.nlm.nih.gov/sra

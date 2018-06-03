@@ -1,7 +1,7 @@
 ---
 title: 'psichomics case study: command-line interface (CLI)'
 author: "Nuno Saraiva-Agostinho"
-date: "20 May 2018"
+date: "`r Sys.Date()`"
 bibliography: refs.bib
 csl: bioinformatics.csl
 output: 
@@ -65,13 +65,20 @@ metadata
 
 **SRA**
 
-* `loadSRAproject`: Download and load SRA projects through the *recount* R 
-package
-* `recount::recount_abstract`: Check available SRA projects from *recount*
+* `recount::recount_abstract`: Check available SRA projects from 
+[*recount*][recount]
+* `loadSRAproject`: Download and load SRA projects through the 
+[*recount*][recount] R package
 
 **Custom files**
 
 * `loadLocalFiles`: Load local files from a given folder
+* `prepareSRAmetadata`: Prepare metadata from SRA (as obtained from Run Selector 
+page)
+* `prepareJunctionQuant`: Prepare junction quantification files from 
+splice-aware aligners (currently, psichomics supports STAR output)
+* `prepareGeneQuant`: Prepare gene quantification files from splice-aware 
+aligners (currently, psichomics supports STAR output)
 
 ### Gene expression pre-processing
 * `rowMeans`: Calculate mean per row (useful for filtering gene expression)
@@ -777,13 +784,18 @@ gtex <- loadGtexData(subjectPhenotype, sampleAttr, junctionQuant, tissues)
 
 ## Load SRA project data using recount
 
+[recount2][recount] is a resource of pre-processed data for thousands of SRA 
+projects (including gene read counts, splice junction quantification and sample
+metadata). psichomics supports automatic downloading and loading of SRA data
+from recount, as exemplified below:
+
 ```{r load recount, eval=FALSE}
 library(recount)
 View(recount_abstract)
 sra <- loadSRAproject("SRP053101")
 ```
 
-## Load unspecified local files
+## Load other SRA or user-owned local files
 
 To load local files instead, indicate the folder of interest. Any files located
 in this folder and sub-folders will be loaded. To mitigate any errors during 
@@ -810,7 +822,7 @@ All feedback on the program, documentation and associated material (including
 this tutorial) is welcome. Please send any suggestions and comments to:
 
 > Nuno Saraiva-Agostinho (nunoagostinho@medicina.ulisboa.pt)
-
+>
 > [Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)][iMM]
 
 # References
@@ -824,8 +836,9 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 [iMM]: http://imm.medicina.ulisboa.pt/group/distrans/
 [GTEx]: http://gtexportal.org
 [maxpath]: https://msdn.microsoft.com/library/windows/desktop/aa365247.aspx#maxpath
-[article]: https://www.biorxiv.org/content/early/2018/02/07/261180
+[article]: https://doi.org/10.1101/261180
 [Firebrowse]: http://firebrowse.org
 [Ensembl]: http://www.ensembl.org
 [UniProt]: http://www.uniprot.org
 [SRA]: https://www.ncbi.nlm.nih.gov/sra
+[recount]: https://jhubiostatistics.shinyapps.io/recount/

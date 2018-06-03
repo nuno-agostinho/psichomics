@@ -16,7 +16,10 @@ recountDataUI <- function(id, panel) {
                      target="_blank", "recount"), "R package."),
           div(class="alert", class="alert-info", role="alert", 
               "Data from SRA projects not listed below may be manually loaded",
-              "following splice-aware alignment."),
+              "after splice-aware alignment.",
+              tags$a(
+                  href="http://rpubs.com/nuno-agostinho/psichomics-custom-data",
+                  class="alert-link", target="_blank", "Learn more...")),
           div(id=ns("loading"), class="progress",
               div(class="progress-bar progress-bar-striped active",
                   role="progressbar", style="width: 100%", "Loading")),
