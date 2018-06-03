@@ -42,8 +42,11 @@ NumericMatrix psiFastCalc(const NumericMatrix& mat,
                 psi = inc / total;
             out(idx, col) = psi;
         }
-        progress = col / (mat.ncol() - 1);
-        progressBar(progress);
+        
+        if (mat.ncol() > 1) {
+            progress = col / (mat.ncol() - 1);
+            progressBar(progress);
+        }
     }
     colnames(out) = colnames(mat);
     return out;
@@ -75,8 +78,11 @@ NumericMatrix psiFastCalc2(const NumericMatrix& mat,
                 psi = incReads / totalReads;
             out(idx, col) = psi;
         }
-        progress = col / (mat.ncol() - 1);
-        progressBar(progress);
+        
+        if (mat.ncol() > 1) {
+            progress = col / (mat.ncol() - 1);
+            progressBar(progress);
+        }
     }
     colnames(out) = colnames(mat);
     return out;

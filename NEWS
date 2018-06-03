@@ -1,4 +1,4 @@
-# 1.6.1 (16 May, 2018)
+# 1.6.1 (3 June, 2018)
 
 * Download and load SRA data using the recount R package
 * Support new version of Human (hg38 assembly) alternative splicing annotation 
@@ -9,6 +9,8 @@
     to modelling the survival differences based on the optimal PSI cutoff
     - Fix crash when inputting non-numeric values or minimum larger than the
     maximum limit as the axes for the splicing scatter plot
+* Alternative splicing quantification:
+    - Fix crash when quantifying splicing for a single sample
 
 # 1.4.6 (12 Apr, 2018)
 
