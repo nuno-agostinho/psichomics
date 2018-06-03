@@ -326,6 +326,24 @@ geNormalisationFilteringServer <- function(input, output, session) {
         return(filter)
     })
     
+    output$filteredGenes <- renderText({
+        geneExpr <- input$geneExpr
+        if (is.null(geneExpr) || geneExpr == "") return(NULL)
+        geneExpr <- isolate(getGeneExpression()[[geneExpr]])
+        
+        filter <- sum(getFilter())
+        total  <- nrow(geneExpr)
+        ratio  <- filter/total * 100
+        
+        if (input$enableFiltering) {
+            msg <- sprintf("Selecting %s genes (%s%%) out of %s.", 
+                           filter, round(ratio), total)
+        } else {
+            msg <- sprintf("Selecting all %s genes.", total)
+        }
+        return(msg)
+    })
+    
     # Update filtering options based on selected gene expression data
     observeEvent(input$geneExpr, {
         geneExpr <- isolate(input$geneExpr)
@@ -344,12 +362,9 @@ geNormalisationFilteringServer <- function(input, output, session) {
         updateNumericInput(session, "minVar", max=maxVar)
         updateNumericInput(session, "maxVar", max=maxVar, value=maxVar)
         
-        output$filteredGenes <- renderText({
-            filter <- sum(getFilter())
-            total  <- nrow(geneExpr)
-            sprintf("Selecting %s genes out of %s.", 
-                    filter, total, filter/total * 100)
-        })
+        # Update minimum samples based on available samples
+        updateNumericInput(session, "minSamples", 
+                           value=min(ncol(geneExpr)/2, 10))
         
         # output$filteringAssistant <- renderHighchart({
         #     type <- input$assistantPlot
