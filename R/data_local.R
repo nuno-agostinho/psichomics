@@ -163,7 +163,8 @@ prepareJunctionQuant <- function(..., output="psichomics_junctions.txt",
                                      endOffset=endOffset)
     
     # Add sample names
-    if (is.null(names(files))) {
+    samples <- names(files)
+    if (is.null(samples)) {
         # Remove STAR filename end
         samples <- gsub("SJ\\.out\\.tab$", "", unlist(files))
     }
@@ -246,7 +247,8 @@ prepareGeneQuant <- function(..., output="psichomics_gene_counts.txt",
     data <- prepareGeneQuantSTAR(..., strandedness=strandedness)
     
     # Add sample names
-    if (is.null(names(files))) {
+    samples <- names(files)
+    if (is.null(samples)) {
         # Remove STAR filename end
         samples <- gsub("ReadsPerGene\\.out\\.tab$", "", unlist(files))
     }
