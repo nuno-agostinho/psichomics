@@ -54,9 +54,8 @@ To install the package from [Bioconductor][bioconductor], type the following in
 [RStudio][rstudio] or in an R console:
 
 ```r
-## try http:// if https:// URLs are not supported
-source("https://bioconductor.org/biocLite.R")
-biocLite("psichomics")
+install.packages("BiocManager")
+BiocManager::install("psichomics")
 ```
 
 ### Development version
@@ -70,7 +69,7 @@ To install and start using the development version, follow these steps:
     - **r-devel** or **r-base-dev** (Linux)
 3. Open [RStudio][rstudio] or an R console
 4. Install [Bioconductor][bioconductor] with: 
-    - `source("https://bioconductor.org/biocLite.R")`
+    - `install.packages("BiocManager")`
 5. Install, load and start the visual interface with:
 ```r
 install.packages("devtools")

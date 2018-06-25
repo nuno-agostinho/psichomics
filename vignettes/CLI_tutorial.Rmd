@@ -29,9 +29,8 @@ Install *psichomics* by typing the following in an R console (the
 [R environment](https://www.r-project.org/) is required):
 
 ```{r install, eval=FALSE}
-## try http:// if https:// URLs are not supported
-source("https://bioconductor.org/biocLite.R")
-biocLite("psichomics")
+install.packages("BiocManager")
+BiocManager::install("psichomics")
 ```
 
 After the installation, load psichomics by typing:
