@@ -1643,16 +1643,22 @@ prepareFileBrowser <- function(session, input, id, ...) {
 #' @importFrom shiny HTML
 #' 
 #' @return HTML elements
-table2html <- function(data, rownames=TRUE, colnames=TRUE, class=NULL) {
+table2html <- function(data, rownames=TRUE, colnames=TRUE, class=NULL, 
+                       style=NULL) {
     table <- xtable(data)
     table <- print(table, type="html", print.results=FALSE,
                    include.rownames=rownames, include.colnames=colnames)
     html <- HTML(table)
     
     if (!is.null(class))
-        html <- gsub("border=1",
-                     sprintf('class="%s"', paste(class, collapse=" ")),
-                     html, fixed=TRUE)
+        class <- sprintf('class="%s"', paste(class, collapse=" "))
+    
+    if (!is.null(style))
+        style <- sprintf('style="%s"', paste(style, collapse=" "))
+    
+    rep <- paste(class, style)
+    if (length(rep) > 0) 
+        html <- gsub("border=1", rep, html, fixed=TRUE)
     
     return(html)
 }

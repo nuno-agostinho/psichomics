@@ -1975,7 +1975,7 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
     }
     
     vector <- c("Distribution"=sparkline,
-                "Survival by PSI cutoff"=NA,
+                "Survival by PSI cutoff"=as.numeric(NA),
                 "Optimal PSI cutoff"=as.numeric(NA),
                 "Log-rank p-value"=as.numeric(NA),
                 Samples=samples, "T-test"=ttest,

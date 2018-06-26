@@ -1,7 +1,7 @@
 ---
 title: 'psichomics case study: visual interface'
 author: "Nuno Saraiva-Agostinho"
-date: "11 Feb 2018"
+date: "`r Sys.Date()`"
 bibliography: refs.bib
 csl: bioinformatics.csl
 output:
@@ -16,22 +16,21 @@ vignette: >
 ---
 
 *psichomics* is an interactive R package for integrative analyses of alternative
-splicing using data from [The Cancer Genome Atlas (TCGA)][5] (containing 
-molecular data associated with 34 tumour types) and from the
-[Genotype-Tissue Expression (GTEx)][8] project (containing data for multiple
-normal human tissues). The data leveraged from these projects includes clinical 
-information and transcriptomic data, such as the quantification of RNA-Seq reads
-aligning to splice junctions (henceforth called junction quantification) and
-exons.
+splicing using data from [The Cancer Genome Atlas (TCGA)][TCGA] (containing 
+molecular data associated with 34 tumour types), from the
+[Genotype-Tissue Expression (GTEx)][GTEx] project (containing data for multiple
+normal human tissues) and from the [Sequence Read Archive][SRA]. The data
+leveraged from these projects includes clinical/sample-associated information 
+and transcriptomic data, such as the quantification of RNA-Seq reads aligning to
+splice junctions (henceforth called junction quantification) and exons.
 
 # Installing and starting the program
 Install *psichomics* by typing the following in an R console (the 
 [R environment](https://www.r-project.org/) is required):
 
 ```{r, eval=FALSE}
-## try http:// if https:// URLs are not supported
-source("https://bioconductor.org/biocLite.R")
-biocLite("psichomics")
+install.packages("BiocManager")
+BiocManager::install("psichomics")
 ```
 
 After the installation, start the visual interface of the program in your 
@@ -45,7 +44,7 @@ psichomics()
 # Exploration of clinically-relevant, differentially spliced events in breast cancer
 
 > The following case study can be read in *psichomics*' original article:
-[**Saraiva-Agostinho N and Barbosa-Morais NL (2018) "psichomics: graphical application for alternative splicing quantification and analysis". *bioRxiv*.**][10]
+[**Saraiva-Agostinho N and Barbosa-Morais NL (2018) "psichomics: graphical application for alternative splicing quantification and analysis". *bioRxiv*.**][article]
 
 Breast cancer is the cancer type with the highest incidence and mortality in 
 women [@Torre2015] and multiple studies have suggested that transcriptome-wide
@@ -90,8 +89,8 @@ confirmation before allowing such behaviour. In order to proceed, please allow
 multiple downloads.
 
 > **Windows limitations**: If you are using *Windows*, note that the downloaded 
-files have huge names that may be over [*Windows* Maximum Path Length][9]. A 
-workaround would be to manually rename the downloaded files to have shorter 
+files have huge names that may be over [*Windows* Maximum Path Length][maxpath].
+A workaround would be to manually rename the downloaded files to have shorter 
 names, move all downloaded files to a single folder and load such folder by
 going to **Load user files** > **Folder input** and selecting the newly-created 
 folder in **Folder where data is stored**.
@@ -130,9 +129,10 @@ available and you can also load custom annotation files.
 
 > **Custom splicing annotation:** Additional alternative splicing annotations 
 can be prepared for *psichomics* by parsing the annotation from programs like 
-[VAST-TOOLS][4], [MISO][3], [SUPPA][1] and [rMATS][2]. Note that SUPPA and rMATS
-are able to create their splicing annotation based on transcript annotation. For
-more information, [read this tutorial][6].
+[VAST-TOOLS][VAST-TOOLS], [MISO][MISO], [SUPPA][SUPPA] and [rMATS][rMATS]. Note 
+that SUPPA and rMATS are able to create their splicing annotation based on
+transcript annotation. For more information, 
+[read this tutorial][annotation-tutorial].
 
 3. Choose the event type(s) of interest. For the purposes of following the case
 study, select **Skipped exon (SE)**, **Mutually exclusive exon (MXE)**,
@@ -377,7 +377,7 @@ Next, filter statistically significant splicing events
 3. In **Data transformation of Y values**, select *-log10(|y|)*.
 4. Click on **Highlight points based on Y values** and change the minimum value
 to filter significant events. For instance, to consider a p-value of 0.01 or
-lower, the minimum should be 2, i.e. -log10(0.01).
+lower, the lower limit should be -log10(0.01), i.e. 2.
 
 ```{r, echo=FALSE, fig.retina=NULL, out.width='800pt', fig.cap="Differentially spliced events (|Δ Median PSI| > 0.1 and Wilcoxon q-value ≤ 0.01). Labelled splicing events have putative prognostic value (more on that in the following section)."}
 knitr::include_graphics("img/diff_analyses.png")
@@ -605,18 +605,19 @@ All feedback on the program, documentation and associated material (including
 this tutorial) is welcome. Please send any suggestions and comments to:
 
 > Nuno Saraiva-Agostinho (nunoagostinho@medicina.ulisboa.pt)
-
-> [Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)][7]
+>
+> [Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)][iMM]
 
 # References
 
-[1]: https://bitbucket.org/regulatorygenomicsupf/suppa
-[2]: http://rnaseq-mats.sourceforge.net
-[3]: http://genes.mit.edu/burgelab/miso/
-[4]: https://github.com/vastgroup/vast-tools
-[5]: https://tcga-data.nci.nih.gov/docs/publications/tcga
-[6]: http://rpubs.com/nuno-agostinho/alt-splicing-annotation
-[7]: http://imm.medicina.ulisboa.pt/group/distrans/
-[8]: http://gtexportal.org
-[9]: https://msdn.microsoft.com/library/windows/desktop/aa365247.aspx#maxpath
-[10]: https://www.biorxiv.org/content/early/2018/02/07/261180
+[SUPPA]: https://bitbucket.org/regulatorygenomicsupf/suppa
+[rMATS]: http://rnaseq-mats.sourceforge.net
+[MISO]: http://genes.mit.edu/burgelab/miso/
+[VAST-TOOLS]: https://github.com/vastgroup/vast-tools
+[TCGA]: https://tcga-data.nci.nih.gov/docs/publications/tcga
+[annotation-tutorial]: http://rpubs.com/nuno-agostinho/alt-splicing-annotation
+[iMM]: http://imm.medicina.ulisboa.pt/group/distrans/
+[GTEx]: http://gtexportal.org
+[maxpath]: https://msdn.microsoft.com/library/windows/desktop/aa365247.aspx#maxpath
+[article]: https://doi.org/10.1101/261180
+[SRA]: https://www.ncbi.nlm.nih.gov/sra

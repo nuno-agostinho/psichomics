@@ -28,6 +28,7 @@ a { cursor: pointer; }
 
 /* Style progress bar */
 .progress-text { width: auto; }
+.shiny-notification-close { display: none; }
 #shiny-notification-panel { 
     top: 50px; 
     width: auto; 

@@ -135,12 +135,10 @@ ensemblToUniprot <- function(protein) {
 infoUI <- function(id) {
     ns <- NS(id)
     
-    placeholder <- c(
-        "Type a gene symbol to retrieve that gene's information..."="")
     tagList(fluidRow(
         column(6, selectizeInput(
-            ns("selectedGene"), NULL, choices=placeholder, width="100%",  
-            options=list(
+            ns("selectedGene"), NULL, choices=c("Type a gene symbol..."=""), 
+            width="100%", options=list(
                 create=TRUE, createOnBlur=TRUE,
                 onFocus=I(paste0('function() { $("#', ns("selectedGene"), 
                                  '")[0].selectize.clear(); }')),
@@ -716,7 +714,12 @@ infoServer <- function(input, output, session) {
         
         output$plotTranscripts <- renderUI({
             info <- queryEnsemblByGene(gene, species=species, assembly=assembly)
-            plotTranscripts(info, shiny=TRUE)
+            
+            event <- getASevent()
+            coords <- NULL
+            if (!is.null(event)) coords <- parseEvent(event)$pos[[1]]
+            
+            plotTranscripts(info, eventPosition=coords, shiny=TRUE)
         })
         
         # Render relevant articles according to available gene

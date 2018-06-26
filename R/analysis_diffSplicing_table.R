@@ -203,13 +203,13 @@ diffSplicingTableUI <- function(id) {
 #' 
 #' @importFrom shiny tags
 #' @importFrom jsonlite toJSON
-#' @importFrom highcharter hc_title hc_legend hc_xAxis hc_yAxis hc_tooltip 
+#' @importFrom highcharter hc_title hc_legend hc_xAxis hc_yAxis hc_tooltip
 #' hc_chart hc_plotOptions
 #' 
 #' @return Survival data including optimal PSI cutoff, minimal survival p-value
 #' and HTML element required to plot survival curves
 createOptimalSurvData <- function(eventPSI, clinical, censoring, event, 
-                                  timeStart, timeStop, match, patients,
+                                  timeStart, timeStop, match, patients, 
                                   samples) {
     # Assign a value to patients based on their respective samples
     eventPSI <- assignValuePerPatient(eventPSI, match, patients=patients,
@@ -341,7 +341,6 @@ optimSurvDiffSet <- function(session, input, output) {
             subset <- psi
         }
         startProgress("Performing survival analysis", nrow(subset))
-        
         opt <- apply(subset, 1, createOptimalSurvData, clinical, censoring, 
                      event, timeStart, timeStop, match, patients, 
                      unlist(samples))
@@ -699,19 +698,27 @@ diffAnalysesPlotSet <- function(session, input, output) {
             input=input, output=output, id="psi-volcano", df=stats, x=xLabel, 
             y=yLabel, plot={
                 diffType <- "psi-volcano"
-                if (input$xHighlight) {
-                    highlightX <- c(input$xSliderMin, input$xSliderMax)
-                    attr(highlightX, "inverted") <- input$xSliderInv
-                } else {
-                    highlightX <- NULL
+                
+                parseHighlight <- function(input, arg) {
+                    argStr <- function(...) paste0(arg, ...)
+                    
+                    if (!input[[argStr("Highlight")]]) return(NULL)
+                    
+                    highlightMin <- input[[argStr("SliderMin")]]
+                    highlightMax <- input[[argStr("SliderMax")]]
+                    
+                    noMin <- is.null(highlightMin) || is.na(highlightMin)
+                    noMax <- is.null(highlightMax) || is.na(highlightMax)
+                    if (noMin || noMax || highlightMin >= highlightMax)
+                        return(NULL)
+                    
+                    highlight <- c(highlightMin, highlightMax)
+                    attr(highlight, "inverted") <- input[[argStr("SliderInv")]]
+                    return(highlight)
                 }
                 
-                if (input$yHighlight) {
-                    highlightY <- c(input$ySliderMin, input$ySliderMax)
-                    attr(highlightY, "inverted") <- input$ySliderInv
-                } else {
-                    highlightY <- NULL
-                }
+                highlightX <- parseHighlight(input, "x")
+                highlightY <- parseHighlight(input, "y")
                 
                 # Check selected events
                 selected <- getSelectedPoints(diffType)
@@ -780,9 +787,10 @@ diffAnalysesTableSet <- function(session, input, output) {
             return(stats[ , cols])
         }
     }, style="bootstrap", filter="top", server=TRUE, extensions="Buttons",
-    options=list(pageLength=10, dom="Bfrtip", buttons=I("colvis"),
-                 columnDefs=list(list(targets=6:8, visible=FALSE)),
-                 columnDefs=list(list(targets=5, searchable=FALSE))))
+    options=list(
+        pageLength=10, dom="Bfrtip", buttons=I("colvis"), columnDefs=list(
+            list(targets=5,   searchable=FALSE),
+            list(targets=6:8, visible=FALSE, render=JS("linkToShowSurv")))))
     
     # Update table with filtered information
     proxy <- dataTableProxy("statsTable")

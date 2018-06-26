@@ -7,7 +7,7 @@
 %   R/analysis_dimReduction_pca.R, R/analysis_information.R,
 %   R/analysis_survival.R, R/analysis_template.R, R/data.R, R/data_firebrowse.R,
 %   R/data_geNormalisationFiltering.R, R/data_gtex.R, R/data_inclusionLevels.R,
-%   R/data_local.R, R/groups.R, R/help.R
+%   R/data_local.R, R/data_recount.R, R/groups.R, R/help.R
 \name{appServer}
 \alias{appServer}
 \alias{analysesServer}
@@ -30,6 +30,7 @@
 \alias{gtexDataServer}
 \alias{inclusionLevelsServer}
 \alias{localDataServer}
+\alias{recountDataServer}
 \alias{groupsServer}
 \alias{helpServer}
 \title{Server logic}
@@ -75,6 +76,8 @@ gtexDataServer(input, output, session)
 inclusionLevelsServer(input, output, session)
 
 localDataServer(input, output, session)
+
+recountDataServer(input, output, session)
 
 groupsServer(input, output, session)
 

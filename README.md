@@ -9,8 +9,9 @@ bioRxiv.
 Interactive R package with an intuitive Shiny-based graphical 
 interface for alternative splicing quantification and integrative analyses of
 alternative splicing and gene expression from large transcriptomic datasets, 
-including those from [The Cancer Genome Atlas (TCGA)][TCGA] and 
-[Genotype-Tissue Expression (GTEx) project][GTEx], as well as user-owned data.
+including those from [The Cancer Genome Atlas (TCGA)][TCGA], the 
+[Genotype-Tissue Expression (GTEx) project][GTEx] and the 
+[Sequence Read Archive(SRA)][SRA], as well as user-owned data.
 
 *psichomics* interactively performs survival, dimensionality reduction and 
 median- and variance-based differential splicing and gene expression 
@@ -30,6 +31,7 @@ alternative splicing events is also included.
 * [Data input](#data-input)
     * [Download TCGA data](#download-tcga-data)
     * [Load GTEx data](#load-gtex-data)
+    * [Load SRA data](#load-sra-data)
     * [Load user-provided files](#load-user-provided-files)
 * [Splicing quantification](#splicing-quantification)
 * [Gene expression processing](#gene-expression-processing)
@@ -52,9 +54,8 @@ To install the package from [Bioconductor][bioconductor], type the following in
 [RStudio][rstudio] or in an R console:
 
 ```r
-## try http:// if https:// URLs are not supported
-source("https://bioconductor.org/biocLite.R")
-biocLite("psichomics")
+install.packages("BiocManager")
+BiocManager::install("psichomics")
 ```
 
 ### Development version
@@ -68,7 +69,7 @@ To install and start using the development version, follow these steps:
     - **r-devel** or **r-base-dev** (Linux)
 3. Open [RStudio][rstudio] or an R console
 4. Install [Bioconductor][bioconductor] with: 
-    - `source("https://bioconductor.org/biocLite.R")`
+    - `install.packages("BiocManager")`
 5. Install, load and start the visual interface with:
 ```r
 install.packages("devtools")
@@ -79,15 +80,13 @@ psichomics()
 
 ## Tutorials
 
-The following case studies are available based on our 
+The following case studies and tutorials are available based on our 
 [original article][article] (currently in preprint):
 
-* [Visual interface](http://rpubs.com/nuno-agostinho/psichomics-tutorial-visual)
-* [Command-line interface](http://rpubs.com/nuno-agostinho/psichomics-cli-tutorial)
-
-Other tutorials coming soon:
-
-* Developers and other contributors
+* [Visual interface][tutorial-gui]
+* [Command-line interface][tutorial-cli]
+* [Loading SRA or user-owned RNA-seq data][tutorial-custom-data]
+* [Preparing alternative splicing annotations][tutorial-prep-AS-annotation]
 
 ## Data input
 
@@ -102,6 +101,13 @@ quantification and gene expression data from TCGA are supported.
 GTEx data needs to be manually downloaded from the [GTEx Portal][GTEx]. Subject- 
 and sample-associated data, junction quantification and gene expression data 
 from GTEx are supported.
+
+### Load SRA Data
+
+Although only select [SRA][SRA] projects are available to be automatically
+downloaded, other SRA projects can be manually downloaded, aligned using a 
+splice-aware aligner and loaded by the user. Sample-associated files from SRA 
+are supported.
 
 ### Load user-provided files
 
@@ -120,8 +126,8 @@ supporting the inclusion of an exon over the reads supporting both the inclusion
 and exclusion of that exon. To measure this estimate, both alternative splicing 
 annotation and the quantification of RNA-Seq reads aligning to splice junctions
 (junction quantification) are required. While alternative splicing Human (hg19
-assembly) annotation is provided by the package, junction quantification may be
-retrieved from [TCGA][TCGA] (automatically) or from [GTEx][GTEx] (manually) or 
+and hg38 assemblies) annotation is provided within the package, junction 
+quantification may be retrieved from [TCGA][TCGA], [GTEx][GTEx], [SRA][SRA] or 
 handed by the user (e.g. user-owned files).
 
 ## Gene expression processing
@@ -220,3 +226,8 @@ Nature 456 (7221): 470–76.
 [codecov]: https://codecov.io/gh/nuno-agostinho/psichomics
 [GTEx]: http://www.gtexportal.org
 [article]: https://doi.org/10.1101/261180
+[SRA]: https://www.ncbi.nlm.nih.gov/sra
+[tutorial-gui]: http://rpubs.com/nuno-agostinho/psichomics-tutorial-visual
+[tutorial-cli]: http://rpubs.com/nuno-agostinho/psichomics-cli-tutorial
+[tutorial-custom-data]: http://rpubs.com/nuno-agostinho/psichomics-custom-data
+[tutorial-prep-AS-annotation]: http://rpubs.com/nuno-agostinho/preparing-AS-annotation

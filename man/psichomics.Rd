@@ -4,7 +4,7 @@
 \alias{psichomics}
 \title{Start graphical interface of psichomics}
 \usage{
-psichomics(..., reset = FALSE)
+psichomics(..., reset = FALSE, testData = FALSE)
 }
 \arguments{
 \item{...}{Arguments passed on to \code{shiny::runApp}
@@ -30,8 +30,10 @@ only used for recording or running automated tests. Defaults to the
 \code{shiny.testmode} option, or FALSE if the option is not set.}
 }}
 
-\item{reset}{Boolean: reset Shiny session? FALSE by default; requires the 
-package \code{devtools} to reset data}
+\item{reset}{Boolean: reset Shiny session? requires the package 
+\code{devtools} to reset data}
+
+\item{testData}{Boolean: auto-start with test data}
 }
 \value{
 NULL (this function is used to modify the Shiny session's state)

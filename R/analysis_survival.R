@@ -67,7 +67,7 @@ survivalUI <- function(id) {
             sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "formula"),
             textAreaInput(
                 ns("formula"), "Formula with clinical attributes", 
-                placeholder="Start typing to suggest clinical attributes"),
+                placeholder="Start typing for suggested clinical attributes"),
             uiOutput(ns("formulaSuggestions")),
             helpText(
                 "To analyse a series of attributes, separate each",
@@ -701,18 +701,6 @@ survivalServer <- function(input, output, session) {
                                               patients=patients,
                                               samples=unlist(samples))
             
-            # Calculate optimal alternative splicing quantification cutoff
-            opt <- optimalSurvivalCutoff(clinical, eventPSI, 
-                                         censoring=censoring, event=event, 
-                                         timeStart=timeStart, timeStop=timeStop, 
-                                         session=session)
-            
-            observe({
-                value <- 0.5
-                if (!is.na(opt$value) && opt$value < 1) value <- opt$par
-                updateSliderInput(session, "psiCutoff", value=value)
-            })
-            
             show("psiCutoff")
             slider <- uiOutput(ns("cutoffPvalue"))
             categories <- seq(0, 0.99, 0.01)
@@ -723,6 +711,13 @@ survivalServer <- function(input, output, session) {
                 clinical=clinical, censoring=censoring, timeStart=timeStart, 
                 timeStop=timeStop, event=event, survTime=survTime, 
                 session=session, survivalInfo=TRUE)
+            
+            # Automatically set minimal p-value
+            value <- categories[which.min(unlist(pvalues))]
+            observe({
+                if (is.na(value)) value <- 0.5
+                updateSliderInput(session, "psiCutoff", value=value)
+            })
             
             patients     <- lapply(pvalues, function(n) attr(n, "info")$n)
             noSeparation <- vapply(patients, length, numeric(1)) == 1
@@ -739,18 +734,33 @@ survivalServer <- function(input, output, session) {
                                patients1=patients1, patients2=patients2)
             data <- list_parse(data)
             
+            firstSeriesColour <- JS("Highcharts.getOptions().colors[0]")
             label <- tags$label(class="control-label",
                                 "-log\u2081\u2080(p-value) plot by cutoff")
+            
+            # Put the label of p-value plot to the right when there are many
+            # significant points to the left
+            signif <- pvalues >= -log10(0.05)
+            labelAlign <- "left"
+            if (sum(signif[1:50]) > sum(signif[51:100])) labelAlign <- "right"
+            
             pvaluePlot <- highchart(height="100px") %>%
                 hc_add_series(data=data,
                               zones=list(list(value=significance,
                                               color="lightgray"))) %>%
                 hc_chart(zoomType="x") %>%
                 hc_xAxis(tickInterval=0.1, showLastLabel=TRUE, endOnTick=TRUE,
-                         min=0, max=1) %>%
-                hc_yAxis(crosshair=list(color="gray", width=1, 
+                         min=0, max=1, minorGridLineWidth=0, 
+                         gridLineWidth=0) %>%
+                hc_yAxis(crosshair=list(color="gray", width=1,
                                         dashStyle="shortdash"),
-                         labels=list(enabled=FALSE)) %>%
+                         labels=list(enabled=FALSE), gridLineWidth=0,
+                         plotLines=list(list(
+                             value=-log10(0.05), color=firstSeriesColour,
+                             dashStyle="shortdash", width=1,
+                             label=list(
+                                 align=labelAlign, text="p < 0.05",
+                                 style=list(color=firstSeriesColour))))) %>%
                 hc_legend(NULL) %>% 
                 hc_tooltip(formatter=JS(
                     "function() { return getPvaluePlotTooltip(this); }")) %>%
@@ -760,7 +770,7 @@ survivalServer <- function(input, output, session) {
                         "function () { setPSIcutoffSlider(this.x) }"))),
                     marker=list(radius=2)))
             
-            if (!is.na(opt$value) && opt$value < 1) {
+            if (!is.na(value) && value < 1) {
                 return(tagList(slider, label, pvaluePlot))
             } else {
                 return(tagList(

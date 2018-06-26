@@ -148,17 +148,34 @@ function showDiffExpression (gene, groups = null, geneExpr = null) {
 }
 
 /**
+ * Prepare a cell from DataTable with a link to survival
+ * 
+ * @param data Cell data from DataTable
+ * @param type Type of data from DataTable
+ * @param row Row from DataTable
+ */
+function linkToShowSurv(data, type, row) {
+    if (type === 'display') {
+        console.log(row[0]);
+        var event = row[0].replace(new RegExp(" ", 'g'), "_");
+        event = '\'' + event + '\'';
+        data  = '<a href="javascript:void(0)" onclick="showSurvCutoff(' +
+            event + ')">' + data + '</a>';
+    }
+    return data;
+}
+
+/**
  * Navigate user to survival analysis by a value cutoff
  * @param {String} event Alternative splicing event
  * @param {String} groups List of groups used for survival analysis
  * @param {Boolean} autoParams Automatically set expected parameters
- * @param {Boolean} psiCutoff Prepare splicing quantification (true) or gene
+ * @param {Boolean} psi Prepare splicing quantification (true) or gene 
  * expression cutoff (false)?
  */
-function showSurvCutoff(event, groups = null, autoParams = true, 
-                        psiCutoff = true) {
+function showSurvCutoff(event, groups = null, autoParams = true, psi = true) {
     // Change currently selected splicing event
-    if (event !== null && psiCutoff) changeEvent(event);
+    if (event !== null && psi) changeEvent(event);
     
     // Navigate to survival analyses
     var surv = "Survival analysis";
@@ -175,7 +192,7 @@ function showSurvCutoff(event, groups = null, autoParams = true,
         });
     }
     
-    if ( psiCutoff ) {
+    if ( psi ) {
         $("input[value='psiCutoff']").click();
     } else {
         $("input[value='geCutoff']").click();
@@ -246,18 +263,18 @@ function setPSIcutoffSlider(value) {
  */
 function getPvaluePlotTooltip(object) {
     head = 'PSI cutoff: ' + object.point.x + '<br/>';
-    minuslog10pvalue = '-log₁₀(p-value): ' + object.point.y.toFixed(3) +
+    pvalue = 'p-value: ' + Math.pow(10, -object.point.y).toFixed(3) + 
         ' <span style=\"color:' + object.point.color + '\">' +
         '\u25CF</span><br/>';
-    pvalue = 'p-value: ' + Math.pow(10, -object.point.y).toFixed(3) + "<br/>";
-    
+    minuslog10pvalue = '-log₁₀(p-value): ' + object.point.y.toFixed(3) + 
+        "<br/>";
     patients = '';
     if(object.point.patients2 !== null) {
         patients = object.point.patients1 + ' vs ' + object.point.patients2 +
             ' patients';
     }
     
-    return head + minuslog10pvalue + pvalue + patients;
+    return head + pvalue + minuslog10pvalue + patients;
 }
 
 /* Change document title to reflect whether the app is busy */

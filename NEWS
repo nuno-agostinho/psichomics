@@ -1,3 +1,34 @@
+# 1.6.1 (25 June, 2018)
+
+* Improve support for analysing SRA and user-owned data:
+	- New tutorial on performing alternative splicing analysis from SRA and 
+	user-owned data from FASTQ files (other tutorials were also updated)
+	- Prepare gene and splice junction counts from STAR output to be loaded into
+	psichomics
+	- Automatically download and load data from select SRA projects using the
+	recount R package
+* Data grouping:
+    - Preview groups based on selected attribute before creation
+    
+## Bug fixes
+
+* Support new version of Human (hg38 assembly) alternative splicing annotation 
+(fixes wrong coordinates for many minus-strand splicing events)
+* Fix issues with TCGA sample metadata:
+    - No sample metadata loaded when loading TCGA files from local folder
+    - Not retrieving sample metadata for all TCGA samples when multiple junction
+    quantification files are loaded
+* Data grouping:
+    - Correctly suggest how to select variables in subset expression and give 
+    more examples on how to use this feature
+    - Fix subject/sample attributes not being updated for selection for the GREP
+    interface
+* Alternative splicing quantification:
+    - Fix crash when quantifying splicing for a single sample
+* Differential splicing analysis (exploratory):
+    - Fix crash when inputting non-numeric values or minimum larger than the
+    maximum limit as the axes for the splicing scatter plot
+
 # 1.4.5 (4 Apr, 2018)
 
 * Mention psichomics manuscript throughout psichomics

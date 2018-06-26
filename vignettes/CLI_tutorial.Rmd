@@ -1,7 +1,7 @@
 ---
 title: 'psichomics case study: command-line interface (CLI)'
 author: "Nuno Saraiva-Agostinho"
-date: "11 Feb 2018"
+date: "`r Sys.Date()`"
 bibliography: refs.bib
 csl: bioinformatics.csl
 output: 
@@ -16,22 +16,21 @@ vignette: >
 ---
 
 *psichomics* is an interactive R package for integrative analyses of alternative
-splicing using data from [The Cancer Genome Atlas (TCGA)][5] (containing 
-molecular data associated with 34 tumour types) and from the
-[Genotype-Tissue Expression (GTEx)][8] project (containing data for multiple
-normal human tissues). The data leveraged from these projects includes clinical 
-information and transcriptomic data, such as the quantification of RNA-Seq reads
-aligning to splice junctions (henceforth called junction quantification) and
-exons.
+splicing using data from [The Cancer Genome Atlas (TCGA)][TCGA] (containing 
+molecular data associated with 34 tumour types), from the
+[Genotype-Tissue Expression (GTEx)][GTEx] project (containing data for multiple
+normal human tissues) and from the [Sequence Read Archive][SRA]. The data 
+leveraged from these projects includes subject/sample-associated information and
+transcriptomic data, such as the quantification of RNA-Seq reads aligning to 
+splice junctions (henceforth called junction quantification) and exons.
 
 # Installing and starting the program
 Install *psichomics* by typing the following in an R console (the 
 [R environment](https://www.r-project.org/) is required):
 
 ```{r install, eval=FALSE}
-## try http:// if https:// URLs are not supported
-source("https://bioconductor.org/biocLite.R")
-biocLite("psichomics")
+install.packages("BiocManager")
+BiocManager::install("psichomics")
 ```
 
 After the installation, load psichomics by typing:
@@ -63,9 +62,22 @@ API
 metadata
 * `loadGtexData`: Load GTEx data
 
+**SRA**
+
+* `recount::recount_abstract`: Check available SRA projects from 
+[*recount*][recount]
+* `loadSRAproject`: Download and load SRA projects through the 
+[*recount*][recount] R package
+
 **Custom files**
 
 * `loadLocalFiles`: Load local files from a given folder
+* `prepareSRAmetadata`: Prepare metadata from SRA (as obtained from Run Selector 
+page)
+* `prepareJunctionQuant`: Prepare junction quantification files from 
+splice-aware aligners (currently, psichomics supports STAR output)
+* `prepareGeneQuant`: Prepare gene quantification files from splice-aware 
+aligners (currently, psichomics supports STAR output)
 
 ### Gene expression pre-processing
 * `rowMeans`: Calculate mean per row (useful for filtering gene expression)
@@ -82,10 +94,11 @@ files
 **Custom alternative splicing annotation preparation**
 
 * `prepareAnnotationFromEvents`
-* `parseMatsAnnotation`: Parse splicing annotation from [rMATS][2]
-* `parseMisoAnnotation`: Parse splicing annotation from [MISO][3]
-* `parseSuppaAnnotation`: Parse splicing annotation from [SUPPA][1]
-* `parseVastToolsAnnotation`: Parse splicing annotation from [VAST-TOOLS][4]
+* `parseMatsAnnotation`: Parse splicing annotation from [rMATS][rMATS]
+* `parseMisoAnnotation`: Parse splicing annotation from [MISO][MISO]
+* `parseSuppaAnnotation`: Parse splicing annotation from [SUPPA][SUPPA]
+* `parseVastToolsAnnotation`: Parse splicing annotation from 
+[VAST-TOOLS][VAST-TOOLS]
 
 ### Data Grouping
 * `createGroupByAttribute`: Split elements into groups based on a given 
@@ -148,7 +161,7 @@ identifier
 # Exploration of clinically-relevant, differentially spliced events in breast cancer
 
 > The following case study can be read in *psichomics*' original article:
-[**Saraiva-Agostinho N and Barbosa-Morais NL (2018) "psichomics: graphical application for alternative splicing quantification and analysis". *bioRxiv*.**][10]
+[**Saraiva-Agostinho N and Barbosa-Morais NL (2018) "psichomics: graphical application for alternative splicing quantification and analysis". *bioRxiv*.**][article]
 
 Breast cancer is the cancer type with the highest incidence and mortality in 
 women [@Torre2015] and multiple studies have suggested that transcriptome-wide
@@ -166,11 +179,11 @@ spliced-in or PSI [@wang2008].
 To estimate this value for each splicing event, both alternative splicing
 annotation and junction quantification are required. While alternative splicing
 annotation is provided by the package, junction quantification may be retrieved
-from [TCGA][1], [GTEx][2] or user-owned files.
+from [TCGA][TCGA], [GTEx][GTEx], [SRA][SRA] or user-owned files.
 
-Data is downloaded from [Firebrowse][11], a service that hosts proccessed data
-from [TCGA][1], as required to run the downstream analyses. Before downloading 
-data, check the following options:
+Data is downloaded from [Firebrowse][Firebrowse], a service that hosts 
+proccessed data from [TCGA][TCGA], as required to run the downstream analyses. 
+Before downloading data, check the following options:
 
 ```{r TCGA options}
 # Available tumour types
@@ -214,8 +227,8 @@ the files, so it is possible to reuse the code above just to load the requested
 files.
 
 > **Windows limitations**: If you are using *Windows*, note that the downloaded 
-files have huge names that may be over [*Windows* Maximum Path Length][9]. A 
-workaround would be to manually rename the downloaded files to have shorter 
+files have huge names that may be over [*Windows* Maximum Path Length][maxpath].
+A workaround would be to manually rename the downloaded files to have shorter 
 names, move all downloaded files to a single folder and load such folder. Read
 how in section **Load unspecified local files** at the end of this document.
 
@@ -259,9 +272,10 @@ annotList
 
 > **Custom splicing annotation:** Additional alternative splicing annotations 
 can be prepared for *psichomics* by parsing the annotation from programs like 
-[VAST-TOOLS][4], [MISO][3], [SUPPA][1] and [rMATS][2]. Note that SUPPA and rMATS
-are able to create their splicing annotation based on transcript annotation. For
-more information, [read this tutorial][6].
+[VAST-TOOLS][VAST-TOOLS], [MISO][MISO], [SUPPA][SUPPA] and [rMATS][rMATS]. Note
+that SUPPA and rMATS are able to create their splicing annotation based on
+transcript annotation. For more information, 
+[read this tutorial][annotation-tutorial].
 
 To quantify alternative splicing, first select the junction quantification,
 alternative splicing annotation and alternative splicing event type(s) of 
@@ -572,10 +586,10 @@ ebayesFit <- eBayes(fit, trend=TRUE)
 
 # Prepare data summary
 pvalueAdjust <- "BH" # Benjamini-Hochberg p-value adjustment (FDR)
-summary <- toptable(ebayesFit, number=nrow(fit), coef=2, sort.by="none",
+summary <- topTable(ebayesFit, number=nrow(fit), coef=2, sort.by="none",
                     adjust.method=pvalueAdjust, confint=TRUE)
-names(summary) <- c("log2 Fold-Change", "conf. int1", "conf. int2",
-                    "moderated t-statistics", "p-value", 
+names(summary) <- c("log2 Fold-Change", "CI (low)", "CI (high)", 
+                    "Average expression", "moderated t-statistics", "p-value", 
                     paste0("p-value (", pvalueAdjust, " adjusted)"),
                     "B-statistics")
 attr(summary, "groups") <- normalVSstage1Tumour
@@ -737,7 +751,7 @@ differentially expressed between tumour stage I and normal samples
 between patient groups stratified by its expression in tumour samples (log-rank 
 p-value > 0.05).
 
-# Loading data from GTEx or user-owned files
+# Loading data from other sources
 
 ## Load GTEx files
 
@@ -767,7 +781,20 @@ tissues <- NULL
 gtex <- loadGtexData(subjectPhenotype, sampleAttr, junctionQuant, tissues)
 ```
 
-## Load unspecified local files
+## Load SRA project data using recount
+
+[recount2][recount] is a resource of pre-processed data for thousands of SRA 
+projects (including gene read counts, splice junction quantification and sample
+metadata). psichomics supports automatic downloading and loading of SRA data
+from recount, as exemplified below:
+
+```{r load recount, eval=FALSE}
+library(recount)
+View(recount_abstract)
+sra <- loadSRAproject("SRP053101")
+```
+
+## Load other SRA or user-owned local files
 
 To load local files instead, indicate the folder of interest. Any files located
 in this folder and sub-folders will be loaded. To mitigate any errors during 
@@ -794,21 +821,23 @@ All feedback on the program, documentation and associated material (including
 this tutorial) is welcome. Please send any suggestions and comments to:
 
 > Nuno Saraiva-Agostinho (nunoagostinho@medicina.ulisboa.pt)
-
-> [Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)][7]
+>
+> [Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)][iMM]
 
 # References
 
-[1]: https://bitbucket.org/regulatorygenomicsupf/suppa
-[2]: http://rnaseq-mats.sourceforge.net
-[3]: http://genes.mit.edu/burgelab/miso/
-[4]: https://github.com/vastgroup/vast-tools
-[5]: https://tcga-data.nci.nih.gov/docs/publications/tcga
-[6]: http://rpubs.com/nuno-agostinho/alt-splicing-annotation
-[7]: http://imm.medicina.ulisboa.pt/group/distrans/
-[8]: http://gtexportal.org
-[9]: https://msdn.microsoft.com/library/windows/desktop/aa365247.aspx#maxpath
-[10]: https://www.biorxiv.org/content/early/2018/02/07/261180
-[11]: http://firebrowse.org
-[12]: http://www.ensembl.org
-[13]: http://www.uniprot.org
+[SUPPA]: https://bitbucket.org/regulatorygenomicsupf/suppa
+[rMATS]: http://rnaseq-mats.sourceforge.net
+[MISO]: http://genes.mit.edu/burgelab/miso/
+[VAST-TOOLS]: https://github.com/vastgroup/vast-tools
+[TCGA]: https://tcga-data.nci.nih.gov/docs/publications/tcga
+[annotation-tutorial]: http://rpubs.com/nuno-agostinho/alt-splicing-annotation
+[iMM]: http://imm.medicina.ulisboa.pt/group/distrans/
+[GTEx]: http://gtexportal.org
+[maxpath]: https://msdn.microsoft.com/library/windows/desktop/aa365247.aspx#maxpath
+[article]: https://doi.org/10.1101/261180
+[Firebrowse]: http://firebrowse.org
+[Ensembl]: http://www.ensembl.org
+[UniProt]: http://www.uniprot.org
+[SRA]: https://www.ncbi.nlm.nih.gov/sra
+[recount]: https://jhubiostatistics.shinyapps.io/recount/
