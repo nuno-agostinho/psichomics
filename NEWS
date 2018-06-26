@@ -1,7 +1,5 @@
-# 1.6.1 (3 June, 2018)
+# 1.6.1 (25 June, 2018)
 
-* Support new version of Human (hg38 assembly) alternative splicing annotation 
-(fixes wrong coordinates for many minus-strand splicing events)
 * Improve support for analysing SRA and user-owned data:
 	- New tutorial on performing alternative splicing analysis from SRA and 
 	user-owned data from FASTQ files (other tutorials were also updated)
@@ -13,17 +11,20 @@
     - Perform event-wise Cox models using (numeric) PSI values; faster and whose
     p-values allow for improved sorting of prognostic splicing events compared 
     to modelling the survival differences based on the optimal PSI cutoff
-    - Fix crash when inputting non-numeric values or minimum larger than the
-    maximum limit as the axes for the splicing scatter plot
+    
+## Bug fixes
+
+* Support new version of Human (hg38 assembly) alternative splicing annotation 
+(fixes wrong coordinates for many minus-strand splicing events)
+* Fix issues with TCGA sample metadata:
+    - No sample metadata loaded when loading TCGA files from local folder
+    - Not retrieving sample metadata for all TCGA samples when multiple junction
+    quantification files are loaded
 * Alternative splicing quantification:
     - Fix crash when quantifying splicing for a single sample
-
-# 1.4.6 (12 Apr, 2018)
-
-* Fix TCGA sample metadata not being shown when loading TCGA files from local
-folder
-* Fix TCGA sample metadata not showing samples from all junction quantification 
-files
+* Differential splicing analysis (exploratory):
+    - Fix crash when inputting non-numeric values or minimum larger than the
+    maximum limit as the axes for the splicing scatter plot
 
 # 1.4.5 (4 Apr, 2018)
 
