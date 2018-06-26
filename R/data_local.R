@@ -124,6 +124,7 @@ localDataUI <- function(id, panel) {
 #' @param file Character: path to file
 #' @param output Character: path of output file (if NULL, only returns the data
 #' without saving it to a file)
+#' 
 #' @importFrom data.table fread fwrite
 #' 
 #' @return Prepared file
@@ -138,7 +139,6 @@ prepareSRAmetadata <- function(file, output="psichomics_metadata.txt") {
 #' @rdname prepareSRAmetadata
 #' 
 #' @param ... Character: path to file(s) to read
-#' @param samples Character: sample names
 #' @param startOffset Numeric: value to offset start position
 #' @param endOffset Numeric: value to offset end position
 #' 

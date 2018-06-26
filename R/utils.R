@@ -1638,6 +1638,7 @@ prepareFileBrowser <- function(session, input, id, ...) {
 #' @param rownames Boolean: print row names?
 #' @param colnames Boolean: print column names?
 #' @param class Character: table class
+#' @param style Character: table style
 #' 
 #' @importFrom xtable xtable print.xtable
 #' @importFrom shiny HTML

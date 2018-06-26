@@ -36,8 +36,6 @@ without saving it to a file)}
 \item{strandedness}{Character: strandedness of RNA-seq protocol; may be one
 of the following: \code{unstraded}, \code{stranded} or 
 \code{stranded (reverse)}}
-
-\item{samples}{Character: sample names}
 }
 \value{
 Prepared file

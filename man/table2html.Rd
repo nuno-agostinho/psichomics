@@ -15,6 +15,8 @@ table2html(data, rownames = TRUE, colnames = TRUE, class = NULL,
 \item{colnames}{Boolean: print column names?}
 
 \item{class}{Character: table class}
+
+\item{style}{Character: table style}
 }
 \value{
 HTML elements

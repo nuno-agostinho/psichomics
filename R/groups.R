@@ -666,7 +666,7 @@ matchGroupPatientsAndSamples <- function(id, group) {
             patients <- lapply(group[ , "Samples"], samples2patients, match)
             group <- cbind(group, "Patients"=patients)
             
-            lastCol <- ncol(df)
+            lastCol <- ncol(group)
             group   <- group[ , c(seq(lastCol - 2), lastCol, lastCol - 1),
                               drop=FALSE]
         }
