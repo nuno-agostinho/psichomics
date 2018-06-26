@@ -526,8 +526,8 @@ dataServer <- function(input, output, session) {
         samples    <- getSampleId()
         sampleInfo <- getSampleInfo()
         if ( !is.null(patients) && !is.null(samples) ) {
-            startProgress("Matching patients with samples...", 1)
-            match <- getPatientFromSample(samples, patients,
+            startProgress("Matching subjects to their samples...", 1)
+            match <- getSubjectFromSample(samples, patients, 
                                           sampleInfo=sampleInfo)
             setClinicalMatchFrom("Inclusion levels", match)
             closeProgress("Matching process concluded")
@@ -535,10 +535,9 @@ dataServer <- function(input, output, session) {
     })
     
     # Run server logic from the scripts
-    getServerFunctions(
-        "data", priority=paste0(
-            c("localData", "firebrowse", "gtexData",
-              "inclusionLevels", "geNormalisationFiltering"), "Server"))
+    getServerFunctions("data", priority=paste0(
+        c("localData", "firebrowse", "gtexData",
+          "inclusionLevels", "geNormalisationFiltering"), "Server"))
 }
 
 attr(dataUI, "loader") <- "app"

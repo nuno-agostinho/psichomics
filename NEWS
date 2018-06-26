@@ -7,6 +7,8 @@
 	psichomics
 	- Automatically download and load data from select SRA projects using the
 	recount R package
+* Data grouping:
+    - Preview groups based on selected attribute before creation
 * Differential splicing analysis (exploratory):
     - Perform event-wise Cox models using (numeric) PSI values; faster and whose
     p-values allow for improved sorting of prognostic splicing events compared 
@@ -20,6 +22,11 @@
     - No sample metadata loaded when loading TCGA files from local folder
     - Not retrieving sample metadata for all TCGA samples when multiple junction
     quantification files are loaded
+* Data grouping:
+    - Correctly suggest how to select variables in subset expression and give 
+    more examples on how to use this feature
+    - Fix subject/sample attributes not being updated for selection for the GREP
+    interface
 * Alternative splicing quantification:
     - Fix crash when quantifying splicing for a single sample
 * Differential splicing analysis (exploratory):

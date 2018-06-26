@@ -4,7 +4,8 @@
 \alias{table2html}
 \title{Create HTML table from data frame or matrix}
 \usage{
-table2html(data, rownames = TRUE, colnames = TRUE, class = NULL)
+table2html(data, rownames = TRUE, colnames = TRUE, class = NULL,
+  style = NULL)
 }
 \arguments{
 \item{data}{Data frame or matrix}

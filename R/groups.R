@@ -461,7 +461,8 @@ groupByAttribute <- function(ns, cols, id, example) {
         selectizeInput(ns(paste0("groupAttribute", id)), "Select attribute",
                        width="auto", choices=cols,
                        options=list(lockOptgroupOrder=TRUE)),
-        actionButton(ns(paste0("createGroupAttribute", id)), "Create group",
+        uiOutput(ns(paste0("previewGroups", id))),
+        actionButton(ns(paste0("createGroupAttribute", id)), "Create groups",
                      class ="btn-primary")
     )
 }
@@ -484,7 +485,7 @@ groupById <- function(ns, id) {
                 create=TRUE, createOnBlur=TRUE, # Allow to add new items
                 plugins=list('remove_button'), persist=FALSE)),
         helpText("Example: ", tags$kbd("1:6, 8, 10:19"), "creates a group with",
-                 "rows 1 to 6, 8 and 10 to 19. You can also input identifiers",
+                 "items 1 to 6, 8 and 10 to 19. You can also input identifiers",
                  "instead of indexes."),
         textInput(ns(paste0("groupNameRows", id)), "Group label", width="auto",
                   placeholder="Unnamed"),
@@ -504,9 +505,25 @@ groupByExpression <- function(ns, id) {
     tagList (
         textInput(ns(paste0("groupExpression", id)), "Subset expression",
                   width="auto"),
-        helpText('Example: ', tags$kbd('X > 8 & Y == "alive"'), ' selects rows',
-                 'with values higher than 8 for column X and "alive" for',
-                 'column Y.'),
+        helpText(
+            'Examples: ', tags$ul(
+                tags$li(
+                    tags$kbd('`X` > 8 & `Y` == "alive"'), 
+                    ' selects items whose values are higher than 8 for X',
+                    ' and equal to ', tags$code("alive"), ' for Y.'),
+                tags$li(
+                    tags$kbd('grepl("Tumour", `Z`)'), 
+                    ' selects items whose values contain the word ',
+                    tags$code("Tumour"), ' (case sensitive) in Z.'),
+                tags$li(
+                    tags$kbd('grepl("Tumour", `Z`, ignore.case=TRUE)'), 
+                    ' selects items whose values contain the word ',
+                    tags$code("Tumour"), ' (ignores case) in Z.'),
+                tags$li(
+                    tags$kbd('!grepl("Tumour", `Z`, ignore.case=TRUE)'), 
+                    ' selects items whose values ', tags$b('do not'), 
+                    ' contain the word ', tags$code("Tumour"), 
+                    ' (ignores case) in Z.'))),
         uiOutput(ns(paste0("groupExpressionSuggestions", id))),
         textInput(ns(paste0("groupNameSubset", id)), "Group label", 
                   width="auto", placeholder="Unnamed"),
@@ -526,13 +543,13 @@ groupByGrep <- function(ns, cols, id) {
     tagList (
         textInput(ns(paste0("grepExpression", id)), "Regular expression",
                   width="auto"),
-        selectizeInput(ns(paste0("grepColumn", id)), "Select column to GREP",
+        selectizeInput(ns(paste0("grepColumn", id)), "Select attribute to GREP",
                        choices=cols, width="auto"),
         textInput(ns(paste0("groupNameRegex", id)), "Group label", width="auto",
                   placeholder="Unnamed"),
         actionButton(ns(paste0("createGroupRegex", id)), "Create group", 
-                     class="btn-primary")
-    )}
+                     class="btn-primary"))
+}
 
 #' Prepare to create group according to specific details
 #' @param session Shiny session
@@ -574,7 +591,7 @@ assignColours <- function(new, groups=NULL) {
                 "#B6BBE0", "#D6BBC0", "#F2E1EA", "#D3E7E5")
     colours <- c(strong, medium, light)
     
-    # Avoid setting colours previously assigned
+    # Avoid setting colours that were previously assigned
     priority <- NULL
     if (!is.null(groups) && "Colour" %in% colnames(groups))
         priority <- colours[!colours %in% groups[ , "Colour"]]
@@ -620,6 +637,41 @@ appendNewGroups <- function(type, new, clearOld=FALSE) {
         groups <- rbind(new, groups)
     }
     setGroups(type, groups)
+}
+
+#' Match patients and samples in a group
+#' 
+#' @param id Character: identifier (\code{Patients} or \code{Samples})
+#' @param group Data frame: group containing either \code{Patients} or 
+#' \code{Samples}
+#' 
+#' @return Data frame with groups containing matching patients and samples
+matchGroupPatientsAndSamples <- function(id, group) {
+    patients <- getPatientId()
+    samples  <- getSampleId()
+    match    <- getClinicalMatchFrom("Inclusion levels")
+    
+    # Match patients with samples (or vice-versa)
+    if (!is.null(patients) && !is.null(samples) && !is.null(match)) {
+        if (id == "Patients") {
+            patients <- group[ , "Patients"]
+            samples <- getMatchingSamples(patients, samples, patients,
+                                          match=match)
+            group <- cbind(group, "Samples"=samples)
+        } else if (id == "Samples") {
+            samples2patients <- function(i, match) {
+                m <- match[i]
+                return(unique(m[!is.na(m)]))
+            }
+            patients <- lapply(group[ , "Samples"], samples2patients, match)
+            group <- cbind(group, "Patients"=patients)
+            
+            lastCol <- ncol(df)
+            group   <- group[ , c(seq(lastCol - 2), lastCol, lastCol - 1),
+                              drop=FALSE]
+        }
+    }
+    return(group)
 }
 
 #' Set new groups according to the user input
@@ -703,27 +755,7 @@ createGroupFromInput <- function (session, input, output, dataset, id, type) {
     rownames(group) <- NULL
     
     if (id %in% c("Patients", "Samples")) {
-        patients <- getPatientId()
-        samples  <- getSampleId()
-        match    <- getClinicalMatchFrom("Inclusion levels")
-        
-        # Match patients with samples (or vice-versa)
-        if (!is.null(patients) && !is.null(samples) && !is.null(match)) {
-            if (id == "Patients") {
-                patients <- group[ , "Patients"]
-                samples <- getMatchingSamples(patients, samples, patients,
-                                              match=match)
-                group <- cbind(group, "Samples"=samples)
-            } else if (id == "Samples") {
-                samples2patients <- function(i, match) {
-                    m <- match[i]
-                    return(unique(m[!is.na(m)]))
-                }
-                patients <- lapply(group[ , "Samples"], samples2patients, match)
-                group <- cbind(group, "Patients"=patients)
-                group <- group[ , c(1:3, 5, 4), drop=FALSE]
-            }
-        }
+        group <- matchGroupPatientsAndSamples(id, group)
     } else if (id %in% c("ASevents", "Genes")) {
         # Match AS events with genes (or vice-versa)
         ASevents <- getASevents()
@@ -786,7 +818,7 @@ createGroupByAttribute <- function(col, dataset) {
     colData <- as.character(dataset[[col]])
     names(colData) <- rownames(dataset)
     
-    # Replace missing values for "NA" so they are included by the "which" function
+    # Replace missing values for NA so they are included by which()
     colData[is.na(colData)] <- "NA"
     
     # Create groups according to the chosen column
@@ -1130,7 +1162,7 @@ showGroupsTable <- function(type) {
 groupManipulation <- function(input, output, session, type) {
     ns <- session$ns
     
-    # Update attributes to select in "group by attributes" panel
+    # Update attributes available for data grouping
     if (type == "Samples") {
         updateAttributes <- function(id) {
             if (id == "Patients") {
@@ -1151,6 +1183,8 @@ groupManipulation <- function(input, output, session, type) {
             }
             
             updateSelectizeInput(session, paste0("groupAttribute", id),
+                                 choices=cols)
+            updateSelectizeInput(session, paste0("grepColumn", id),
                                  choices=cols)
         }
         
@@ -1201,12 +1235,54 @@ groupManipulation <- function(input, output, session, type) {
                 attrs <- getPatientAttributes()
             else if (id == "Samples")
                 attrs <- getSampleAttributes()
+            attrs <- sprintf("`%s`", attrs)
             textSuggestions(ns(paste0("groupExpression", id)), attrs)
         })
         
         observeEvent(input[[paste0("createGroupRegex", id)]], {
             createGroup(session, input, output, id, type="Regex")
             updateCollapse(session, collapse, open=panel)
+        })
+        
+        # Preview group creation
+        output[[paste0("previewGroups", id)]] <- renderUI({
+            col <- input[[paste0("groupAttribute", id)]]
+            if (is.null(col) || col == "") return(NULL)
+            
+            if (id == "Patients")
+                dataset <- getClinicalData()
+            else if (id == "Samples")
+                dataset <- getSampleInfo()
+            
+            group <- createGroupByAttribute(col, dataset)
+            
+            # Only preview up to a given number of groups
+            groupsToPreview <- 6
+            sub             <- head(group, groupsToPreview)
+            sub             <- cbind(names(sub), sub)
+            colnames(sub)   <- c("Group", id)
+            sub             <- matchGroupPatientsAndSamples(id, sub)
+            
+            table <- cbind("Group"=sub[ , "Group"],
+                           "Patients"=as.character(
+                               sapply(sub[ , "Patients"], length)),
+                           "Samples"=as.character(
+                               sapply(sub[ , "Samples"], length)))
+            
+            extra <- NULL
+            totalGroups <- length(group)
+            if (totalGroups > groupsToPreview) {
+                table <- rbind(table, rep("(...)", 3))
+                extra <- helpText(
+                    style="text-align: right;",
+                    sprintf("Previewing %s out of %s groups",
+                            groupsToPreview, totalGroups))
+            }
+            
+            tagList(tags$label("Group preview"),
+                    table2html(table, rownames=FALSE, style="margin-bottom: 0;",
+                               class="table table-condensed"),
+                    extra)
         })
     }
     
