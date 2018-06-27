@@ -2,10 +2,37 @@
 
 language: R
 r: bioc-devel
-sudo: false
+sudo: required
 cache: packages
 bioc_packages:
   - GenomeInfoDbData
   - DelayedArray
+r_binary_packages:
+  - cluster
+  - colourpicker
+  - data.table
+  - digest
+  - dplyr
+  - fastICA
+  - fastmatch
+  - ggplot2
+  - ggrepel
+  - grDevices
+  - htmltools
+  - httr
+  - jsonlite
+  - limma
+  - miscTools
+  - pairsD3
+  - plyr
+  - R.utils
+  - shinyjs
+  - stringr
+  - stats
+  - survival
+  - tools
+  - utils
+  - XML
+  - xtable
 after_success:
   - Rscript -e 'covr::codecov()'
