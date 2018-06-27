@@ -6,5 +6,6 @@ sudo: false
 cache: packages
 bioc_packages:
   - GenomeInfoDbData
+  - DelayedArray
 after_success:
   - Rscript -e 'covr::codecov()'
