@@ -44,6 +44,29 @@ test_that("Convert Ensembl protein ID to UniProt ID", {
     }
 })
 
+test_that("Plot transcripts", {
+    events <- c(
+        "A3SS_15_+_63353138_63353912_63353397_TPM1",
+        "A3SS_11_-_61118463_61117115_61117894_CYB561A3",
+        "A5SS_21_+_48055675_48056459_48056808_PRMT2", 
+        "A5SS_1_-_1274742_1274667_1274033_DVL1",
+        "AFE_9_+_131902430_131901928_131904724_PPP2R4",
+        "AFE_5_-_134686513_134688636_134681747_H2AFY",
+        "ALE_12_+_56554104_56554410_56555171_MYL6",
+        "ALE_8_-_38314874_38287466_38285953_FGFR1",
+        "SE_9_+_6486925_6492303_6492401_6493826_UHRF2",
+        "SE_19_-_5218431_5216778_5216731_5215606_PTPRS",
+        "MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1",
+        "MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7")
+    
+    for (event in events) {
+        info <- queryEnsemblByEvent(event, species="human", assembly="hg19")
+        hc   <- plotTranscripts(info, event=event)
+        print(hc)
+        expect_is(hc, "shiny.tag.list")
+    }
+})
+
 test_that("Plot UniProt protein", {
     plot <- tryCatch(plotProtein("B7ZAC3"), error=return)
     if ("error" %in% class(plot))

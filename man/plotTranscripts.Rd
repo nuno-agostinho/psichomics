@@ -4,13 +4,15 @@
 \alias{plotTranscripts}
 \title{Plot transcripts}
 \usage{
-plotTranscripts(info, eventPosition = NULL, shiny = FALSE)
+plotTranscripts(info, eventPosition = NULL, event = NULL, shiny = FALSE)
 }
 \arguments{
 \item{info}{Information retrieved from Ensembl}
 
-\item{eventPosition}{Numeric: coordinates of the alternative splicing event;
-NULL by default}
+\item{eventPosition}{Numeric: coordinates of the alternative splicing event
+(ignored if \code{event} is set)}
+
+\item{event}{Character: identifier of the alternative splicing event to plot}
 
 \item{shiny}{Boolean: is the function running in a Shiny session? FALSE by
 default}
@@ -24,8 +26,7 @@ Plot transcripts
 \examples{
 event <- "SE_12_-_7985318_7984360_7984200_7982602_SLC2A14"
 info  <- queryEnsemblByEvent(event, species="human", assembly="hg19")
-pos   <- parseSplicingEvent(event)$pos[[1]]
 \dontrun{
-plotTranscripts(info, pos)
+plotTranscripts(info, event=event)
 }
 }

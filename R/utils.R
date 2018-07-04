@@ -112,11 +112,13 @@ areSplicingEvents <- function(char, num=6) {
 #' 
 #' @param event Character: event identifier
 #' @param char Boolean: return a single character instead of list with parsed
-#' values? FALSE by default
-#' @param pretty Boolean: return a prettier name of the event identifier? FALSE
-#' by default
+#' values?
+#' @param pretty Boolean: return a prettier name of the event identifier?
 #' @param extra Character: extra information to add (such as species and
-#' assembly version)
+#' assembly version); only used if \code{pretty} and \code{char} are \code{TRUE}
+#' @param coords Boolean: extra coordinates regarding the alternative and 
+#' constitutive regions of alternative splicing events; only used if \code{char}
+#' is \code{FALSE}
 #' 
 #' @return Parsed event
 #' @export
@@ -124,7 +126,12 @@ areSplicingEvents <- function(char, num=6) {
 #' events <- c("SE_1_-_123_456_789_1024_TST",
 #'             "MXE_3_+_473_578_686_736_834_937_HEY/YOU")
 #' parseSplicingEvent(events)
-parseSplicingEvent <- function(event, char=FALSE, pretty=FALSE, extra=NULL) {
+parseSplicingEvent <- function(event, char=FALSE, pretty=FALSE, extra=NULL, 
+                               coords=FALSE) {
+    # Pre-treat special case of exon-centred AFE and ALE
+    event <- gsub("AFE_exon", "AFE", event, fixed=TRUE)
+    event <- gsub("ALE_exon", "ALE", event, fixed=TRUE)
+    
     if (char) {
         if (pretty) {
             event     <- strsplit(event, "_", fixed=TRUE)
@@ -165,9 +172,58 @@ parseSplicingEvent <- function(event, char=FALSE, pretty=FALSE, extra=NULL) {
     parsed$gene   <- strsplit(vapply(seq_along(event), 
                                      function(i) event[[i]][[len[[i]]]],
                                      FUN.VALUE=character(1)), "/")
-    parsed$pos    <- lapply(seq_along(event), 
-                            function(i) event[[i]][4:lenMinus1[[i]]])
-    parsed$pos    <- suppressWarnings( # Simply ignore non-numeric items
+    
+    # Parse position according to type of alternative splicing event
+    parsed$pos <- lapply(seq_along(event), 
+                         function(i) event[[i]][4:lenMinus1[[i]]])
+    if (coords) {
+        parsed$constitutive1 <- NA
+        parsed$alternative1  <- NA
+        parsed$alternative2  <- NA
+        parsed$constitutive2 <- NA
+        for (row in seq(nrow(parsed))) {
+            type <- parsed[row, "type"]
+            
+            con1 <- NULL
+            alt1 <- NULL
+            alt2 <- NULL
+            con2 <- NULL
+            if (type == "SE") {
+                con1 <- 1
+                alt1 <- c(2, 3)
+                con2 <- 4
+            } else if (type == "MXE") {
+                con1 <- 1
+                alt1 <- c(2, 3)
+                alt2 <- c(4, 5)
+                con2 <- 6
+            } else if (type %in% c("A3SS", "ALE")) {
+                con1 <- 1
+                alt1 <- 2
+                alt2 <- 3
+            } else if (type %in% c("A5SS", "AFE")) {
+                alt1 <- 2
+                alt2 <- 1
+                con2 <- 3
+            }
+            
+            if (!is.null(con1))
+                parsed$constitutive1[[row]] <- list(parsed[[row, "pos"]][con1])
+            if (!is.null(alt1))
+                parsed$alternative1[[row]]  <- list(parsed[[row, "pos"]][alt1])
+            if (!is.null(alt2))
+                parsed$alternative2[[row]]  <- list(parsed[[row, "pos"]][alt2])
+            if (!is.null(con2))
+                parsed$constitutive2[[row]] <- list(parsed[[row, "pos"]][con2])
+        }
+        
+        parsed$alternative1  <- unlist(parsed$alternative1,  recursive=FALSE)
+        parsed$constitutive1 <- unlist(parsed$constitutive1, recursive=FALSE)
+        parsed$constitutive2 <- unlist(parsed$constitutive2, recursive=FALSE)
+        parsed$alternative2  <- unlist(parsed$alternative2,  recursive=FALSE)
+    }
+    
+    parsed$pos <- suppressWarnings( # Simply ignore non-numeric items
         lapply(parsed$pos, function(i) range(as.numeric(i), na.rm=TRUE)))
     
     if (pretty)

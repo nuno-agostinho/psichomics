@@ -9,6 +9,8 @@
 	recount R package
 * Data grouping:
     - Preview groups based on selected attribute before creation
+* Gene, transcript and protein information:
+    - Display alternative splicing events in transcript plot
     
 ## Bug fixes
 
