@@ -3,8 +3,8 @@
 * Improve support for analysing SRA and user-owned data:
 	- New tutorial on performing alternative splicing analysis from SRA and 
 	user-owned data from FASTQ files (other tutorials were also updated)
-	- Prepare gene and splice junction counts from STAR output to be loaded into
-	psichomics
+	- Process gene and splice junction counts from STAR output for subsequent
+	loading into psichomics
 	- Automatically download and load data from select SRA projects using the
 	recount R package
 * Data grouping:
