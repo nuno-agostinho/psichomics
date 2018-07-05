@@ -297,7 +297,10 @@ correlationServer <- function(input, output, session) {
     observe({
         psi  <- getInclusionLevels()
         if (!is.null(psi)) {
-            updateSelectizeInput(session, "ASevents", choices=rownames(psi))
+            updateSelectizeInput(
+                session, "ASevents", 
+                choices=c("Type to search for a splicing event..."="",
+                          rownames(psi)))
         }
     })
     
