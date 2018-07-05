@@ -11,7 +11,9 @@
     - Preview groups based on selected attribute before creation
 * Gene, transcript and protein information:
     - Display alternative splicing events in transcript plot
-    
+* Correlation between gene expression and alternative splicing:
+    - Allow to change plot height and font size
+
 ## Bug fixes and minor changes
 
 * Support new version of Human (hg38 assembly) alternative splicing annotation 
