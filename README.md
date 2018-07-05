@@ -11,7 +11,7 @@ interface for alternative splicing quantification and integrative analyses of
 alternative splicing and gene expression from large transcriptomic datasets, 
 including those from [The Cancer Genome Atlas (TCGA)][TCGA], the 
 [Genotype-Tissue Expression (GTEx) project][GTEx] and the 
-[Sequence Read Archive(SRA)][SRA], as well as user-owned data.
+[Sequence Read Archive (SRA)][SRA], as well as user-owned data.
 
 *psichomics* interactively performs survival, dimensionality reduction and 
 median- and variance-based differential splicing and gene expression 
