@@ -1,5 +1,12 @@
 [![Build Status][travisIcon]][travis] [![AppVeyor Build Status][appVeyorIcon]][appVeyor] [![codecov][codecovIcon]][codecov]
 
+*psichomics* interactively performs survival, dimensionality reduction and 
+median- and variance-based differential splicing and gene expression 
+analyses that benefit from the incorporation of clinical and molecular 
+sample-associated features (such as tumour stage or survival). Interactive
+visual access to genomic mapping and functional annotation of selected 
+alternative splicing events is also included.
+
 > **Original article:**
 >
 > Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais. 2018. 
