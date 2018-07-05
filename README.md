@@ -42,7 +42,7 @@ alternative splicing events is also included.
     * [Gene, transcript and protein information](#gene-transcript-and-protein-information)
     * [Correlation between gene expression and splicing quantification](#correlation-between-gene-expression-and-splicing-quantification)
 * [Data grouping](#data-grouping)
-* [Feedback](#feedback)
+* [Feedback and support](#feedback-and-support)
 * [Contributions](#contributions)
 * [References](#references)
 
@@ -189,7 +189,7 @@ attribute
 Groups can also be selected in order to be manipulated (e.g. merged, 
 intersected, etc.), re-coloured, removed or renamed.
 
-## Feedback
+## Feedback and support
 
 All feedback on the program, documentation and associated material is welcome. 
 Please send any suggestions and comments to:
