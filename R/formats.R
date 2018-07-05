@@ -20,19 +20,19 @@ checkFileFormat <- function(format, head, filename="") {
     if (!is.null(format$transpose) && format$transpose)
         head <- t(head)
     
-    lenCheck <- length(format$check)
-    # Check if using row or column when checking format
-    if (is.null(format$rowCheck) || !format$rowCheck) {
+    lenCheck   <- length(format$check)
+    checkByCol <- is.null(format$rowCheck) || !format$rowCheck
+    if (checkByCol) {
+        # Check for a match in desired column
         if (nrow(head) < lenCheck) return(FALSE)
-        # Select wanted row and check for a match
-        desired <- trimws(head[1:lenCheck, format$checkIndex])
-        return(all(desired == format$check))
+        desired <- head[1:lenCheck, format$checkIndex]
     } else {
+        # Check for a match in desired row
         if (ncol(head) < lenCheck) return(FALSE)
-        # Select wanted column and check for a match
-        desired <- trimws(head[format$checkIndex, 1:lenCheck])
-        return(all(desired == format$check))
+        desired <- head[format$checkIndex, 1:lenCheck]
     }
+    allMatch <- all(trimws(desired) == format$check)
+    return(allMatch)
 }
 
 #' Loads a file according to its format
