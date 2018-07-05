@@ -134,10 +134,13 @@ test_that("Parse alternative splicing event from identifiers", {
     
     parsed <- parseSplicingEvent(events, coords=TRUE)
     expect_is(parsed, "data.frame")
-    expect_equal(parsed$type, c("A3SS", "A5SS", "AFE", "ALE", "SE", "MXE"))
-    expect_equal(parsed$chrom, c("11", "1", "11", "12", "9", "15"))
+    expect_equal(unique(parsed$type),
+                 c("A3SS", "A5SS", "AFE", "ALE", "SE", "MXE"))
+    expect_equal(as.numeric(parsed$chrom), 
+                 c(15, 11, 21, 1, 9, 5, 12, 8, 9, 19, 15, 17))
     expect_equal(unlist(parsed$gene),
-                 c("CYB561A3", "DVL1", "LSP1", "MYL6", "UHRF2", "TPM1"))
+                 c("TPM1", "CYB561A3", "PRMT2", "DVL1", "PPP2R4", "H2AFY",
+                   "MYL6", "FGFR1", "UHRF2", "PTPRS", "TPM1", "EXOC7"))
     expect_equal(tail(colnames(parsed), 4), 
                  c("constitutive1", "alternative1", "alternative2",
                    "constitutive2"))
