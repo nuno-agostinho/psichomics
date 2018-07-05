@@ -215,9 +215,12 @@ groupManipulationInput <- function(id, type) {
     }
     
     sidebarLayout(
-        sidebarPanel( 
+        sidebarPanel(
+            uiOutput(ns("alert-side")),
             tabsetPanel(id=ns("groupBy"), type="pills", first, second) ),
-        mainPanel( renderGroupInterface(ns, multiFisherTests) ))
+        mainPanel( 
+            uiOutput(ns("alert-main")),
+            renderGroupInterface(ns, multiFisherTests) ))
 }
 
 #' @rdname appUI
@@ -226,7 +229,6 @@ groupsUI <- function(id, tab) {
     ns <- NS(id)
     
     tab(icon="object-group", title="Groups",
-        uiOutput(ns("alert")),
         tabsetPanel(
             id="groupsTypeTab",
             tabPanel("Patient and sample groups",
@@ -560,7 +562,7 @@ groupByGrep <- function(ns, cols, id) {
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 createGroup <- function(session, input, output, id, type) {
-    removeAlert(output)
+    removeAlert(output, alertId="alert-side")
     
     if (id == "Patients")
         dataset <- getClinicalData()
@@ -709,10 +711,10 @@ createGroupFromInput <- function (session, input, output, dataset, id, type) {
         
         # Show error to the user
         if ("simpleError" %in% class(set)) {
-            errorAlert(session, "Error in the subset expression.",
+            errorAlert(session, title="Error in the subset expression.",
                        "Check if column names are correct.", br(),
                        "The following error was raised:",
-                       tags$code(set$message))
+                       tags$code(set$message), alertId="alert-side")
             return(NULL)
         }
         
@@ -731,9 +733,9 @@ createGroupFromInput <- function (session, input, output, dataset, id, type) {
         
         # Show error to the user
         if ("simpleError" %in% class(set)) {
-            errorAlert(session, "GREP expression error",
+            errorAlert(session, title="GREP expression error",
                        "The following error was raised:", br(),
-                       tags$code(set$message))
+                       tags$code(set$message), alertId="alert-side")
             return(NULL)
         }
         
@@ -1281,7 +1283,8 @@ groupManipulation <- function(input, output, session, type) {
             
             tagList(tags$label("Group preview"),
                     table2html(table, rownames=FALSE, style="margin-bottom: 0;",
-                               class="table table-condensed"),
+                               class="table table-condensed table-striped",
+                               thead=TRUE),
                     extra)
         })
     }
@@ -1580,8 +1583,10 @@ groupManipulation <- function(input, output, session, type) {
             format$check <- c("Group", strs)
             format$colNames   <- 1
             format$ignoreRows <- 1
+            format$checkIndex <- 1
+            format$rowCheck   <- TRUE
             
-            head <- fread(file, header=FALSE, nrows=6, stringsAsFactors=FALSE, 
+            head <- fread(file, header=FALSE, nrows=1, stringsAsFactors=FALSE, 
                           data.table=FALSE)
             
             isGroupFile <- checkFileFormat(format, head)
@@ -1677,7 +1682,8 @@ groupManipulation <- function(input, output, session, type) {
                 
                 return(imported)
             } else {
-                return(NULL)
+                stop(paste("The provided file does not seem to have group",
+                           "information."))
             }
         }
         
@@ -1695,12 +1701,16 @@ groupManipulation <- function(input, output, session, type) {
             }
         })
         
+        removeAlert(output, alertId="alert-main")
         imported <- tryCatch(
             importGroupsFrom(groupsFile, first, second, type, match), 
             error=return)
         
         if (!is.null(imported) && !is(imported, "error"))
             appendNewGroups(type, imported)
+        else
+            errorAlert(session, title="Error loading the file.",
+                       imported$message, alertId="alert-main")
     })
     
     if (type == "Samples") {

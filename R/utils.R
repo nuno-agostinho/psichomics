@@ -1695,17 +1695,22 @@ prepareFileBrowser <- function(session, input, id, ...) {
 #' @param colnames Boolean: print column names?
 #' @param class Character: table class
 #' @param style Character: table style
+#' @param thead Boolean: add a \code{thead} tag to the first row?
 #' 
 #' @importFrom xtable xtable print.xtable
 #' @importFrom shiny HTML
 #' 
 #' @return HTML elements
 table2html <- function(data, rownames=TRUE, colnames=TRUE, class=NULL, 
-                       style=NULL) {
+                       style=NULL, thead=FALSE) {
     table <- xtable(data)
     table <- print(table, type="html", print.results=FALSE,
                    include.rownames=rownames, include.colnames=colnames)
     html <- HTML(table)
+    
+    if (thead)
+        html <- gsub("(<tr>[[:space:]]*<th>.*</th>[[:space:]]*</tr>)",
+                     "<thead>\\1</thead>", html)
     
     if (!is.null(class))
         class <- sprintf('class="%s"', paste(class, collapse=" "))

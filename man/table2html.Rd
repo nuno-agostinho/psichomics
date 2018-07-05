@@ -5,7 +5,7 @@
 \title{Create HTML table from data frame or matrix}
 \usage{
 table2html(data, rownames = TRUE, colnames = TRUE, class = NULL,
-  style = NULL)
+  style = NULL, thead = FALSE)
 }
 \arguments{
 \item{data}{Data frame or matrix}
@@ -17,6 +17,8 @@ table2html(data, rownames = TRUE, colnames = TRUE, class = NULL,
 \item{class}{Character: table class}
 
 \item{style}{Character: table style}
+
+\item{thead}{Boolean: add a \code{thead} tag to the first row?}
 }
 \value{
 HTML elements

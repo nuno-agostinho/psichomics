@@ -1,7 +1,7 @@
-# 1.6.1 (25 June, 2018)
+# 1.6.1 (5 July, 2018)
 
 * Improve support for analysing SRA and user-owned data:
-	- New tutorial on performing alternative splicing analysis from SRA and 
+	- New tutorial on performing alternative splicing analysis using SRA and 
 	user-owned data from FASTQ files (other tutorials were also updated)
 	- Process gene and splice junction counts from STAR output for subsequent
 	loading into psichomics
@@ -12,7 +12,7 @@
 * Gene, transcript and protein information:
     - Display alternative splicing events in transcript plot
     
-## Bug fixes
+## Bug fixes and minor changes
 
 * Support new version of Human (hg38 assembly) alternative splicing annotation 
 (fixes wrong coordinates for many minus-strand splicing events)
@@ -25,6 +25,10 @@
     more examples on how to use this feature
     - Fix subject/sample attributes not being updated for selection for the GREP
     interface
+    - Fix error alerts not appearing when trying to create groups based on 
+    invalid parameters
+    - Add an error alert when trying to extract group data from an user-provided
+    file without such information
 * Alternative splicing quantification:
     - Fix crash when quantifying splicing for a single sample
 * Differential splicing analysis (exploratory):
