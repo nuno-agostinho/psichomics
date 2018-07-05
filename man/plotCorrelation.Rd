@@ -7,7 +7,7 @@
 plotCorrelation(corr, autoZoom = FALSE, loessSmooth = TRUE,
   loessFamily = c("gaussian", "symmetric"), colour = "black", alpha = 0.2,
   size = 1.5, loessColour = "red", loessAlpha = 1, loessWidth = 0.5,
-  ...)
+  fontSize = 12, ...)
 }
 \arguments{
 \item{corr}{List of correlations}
@@ -33,6 +33,8 @@ least-squares, and if \code{symmetric}, a re-descending M estimator is used}
 \item{loessAlpha}{Numeric: loess line's opacity}
 
 \item{loessWidth}{Numeric: loess line's width}
+
+\item{fontSize}{Numeric: plot font size}
 
 \item{...}{Arguments passed on to \code{stats::loess.smooth}
 \describe{

@@ -333,11 +333,107 @@ plottableXranges <- function(hc, shiny=FALSE) {
         tags$script(sprintf("Highcharts.chart('container', %s)", hc))))
 }
 
+plotSplicingEvent <- function(hc, event) {
+    parsed <- parseSplicingEvent(event[[1]], coords=TRUE)
+    con1   <- sort(parsed$constitutive1[[1]])
+    alt1   <- sort(parsed$alternative1[[1]])
+    alt2   <- sort(parsed$alternative2[[1]])
+    con2   <- sort(parsed$constitutive2[[1]])
+    type   <- parsed$type
+    
+    if (type %in% c("AFE exon", "ALE exon")) type <- gsub(" exon", "", type)
+    pretty <- names(getSplicingEventTypes()[getSplicingEventTypes() == type])
+    
+    if (type %in% c("MXE", "A3SS", "A5SS", "AFE", "ALE")) {
+        text <- paste(pretty, "(alternative regions in orange and blue)")
+    } else if (type %in% c("SE")) {
+        text <- paste(pretty, "(alternative region in orange)")
+    }
+    
+    orange <- "rgba(250, 165,  47, 0.5)"
+    blue   <- "rgba(124, 181, 236, 0.5)"
+    grey   <- "#D3D3D388"
+    plotBand <- function(colour, from, to, gradient=NULL, text=NULL) {
+        coords <- sort(c(from, to))
+        from   <- coords[[1]]
+        to     <- coords[[2]]
+        
+        if (!is.null(text))
+            label <- list(text=text, y=10, style=list(fontWeight="bold"))
+        else
+            label <- list(y=10)
+        
+        if (is.null(gradient)) {
+            list(color=colour, from=from, to=to, label=label)
+        } else {
+            noColour <- "rgba(255, 255, 255, 0)"
+            if (gradient == "invert") {
+                firstColour <- colour
+                lastColour  <- noColour
+            } else {
+                firstColour <- noColour
+                lastColour  <- colour
+            }
+            
+            list(
+                color=list(
+                    linearGradient=list(x1=1, x2=0, y1=1, y2=1),
+                    stops=list(c(0, firstColour), c(1, lastColour))),
+                from=from, to=to, label=label)
+        }
+    }
+    
+    orangeBand <- NULL
+    blueBand   <- NULL
+    greyBand   <- NULL
+    
+    if (type == "SE") {
+        orangeBand <- plotBand(orange, alt1[[1]], alt1[[2]])
+        greyBand   <- plotBand(grey,   con1,      con2, text=text)
+    } else if (type == "MXE") {
+        orangeBand <- plotBand(orange, alt1[[1]], alt1[[2]])
+        blueBand   <- plotBand(blue,   alt2[[1]], alt2[[2]])
+        greyBand   <- plotBand(grey,   con1,      con2, text=text)
+    } else if (type %in% c("A3SS", "A5SS", "AFE", "ALE")) {
+        # Shift a given position
+        shift <- function(pos, FUN, by=200) { FUN(as.numeric(pos), by) }
+        
+        if (type == "A3SS")      greyPos <- c(con1, alt1)
+        else if (type == "A5SS") greyPos <- c(alt2, con2)
+        else if (type == "AFE")  greyPos <- c(alt1, con2)
+        else if (type == "ALE")  greyPos <- c(con1, alt2)
+        
+        plusStrand <- parsed$strand == "+"
+        downstreamMinus <- type %in% c("A3SS", "ALE") && !plusStrand
+        downstreamPlus  <- type %in% c("A3SS", "ALE") && plusStrand
+        upstreamPlus    <- type %in% c("A5SS", "AFE") && plusStrand
+        upstreamMinus   <- type %in% c("A5SS", "AFE") && !plusStrand
+        
+        if (downstreamPlus || upstreamMinus) {
+            gradient   <- "normal"
+            orangePos <- c(alt1, shift(alt1, `+`))
+            bluePos   <- c(alt2, shift(alt2, `+`))
+        } else if (upstreamPlus || downstreamMinus) {
+            gradient   <- "invert"
+            orangePos <- c(shift(alt1, `-`), alt1)
+            bluePos   <- c(shift(alt2, `-`), alt2)
+        }
+        
+        greyBand   <- plotBand(grey, greyPos[[1]], greyPos[[2]], text=text)
+        orangeBand <- plotBand(orange, orangePos[[1]], orangePos[[2]], gradient)
+        blueBand   <- plotBand(blue, bluePos[[1]], bluePos[[2]], gradient)
+    }
+    
+    hc <- hc_xAxis(hc, plotBands=list(greyBand, orangeBand, blueBand))
+    return(hc)
+}
+
 #' Plot transcripts
 #' 
 #' @param info Information retrieved from Ensembl
-#' @param eventPosition Numeric: coordinates of the alternative splicing event;
-#' NULL by default
+#' @param eventPosition Numeric: coordinates of the alternative splicing event
+#' (ignored if \code{event} is set)
+#' @param event Character: identifier of the alternative splicing event to plot
 #' @param shiny Boolean: is the function running in a Shiny session? FALSE by
 #' default
 #' 
@@ -350,11 +446,10 @@ plottableXranges <- function(hc, shiny=FALSE) {
 #' @examples
 #' event <- "SE_12_-_7985318_7984360_7984200_7982602_SLC2A14"
 #' info  <- queryEnsemblByEvent(event, species="human", assembly="hg19")
-#' pos   <- parseSplicingEvent(event)$pos[[1]]
 #' \dontrun{
-#' plotTranscripts(info, pos)
+#' plotTranscripts(info, event=event)
 #' }
-plotTranscripts <- function(info, eventPosition=NULL, shiny=FALSE) {
+plotTranscripts <- function(info, eventPosition=NULL, event=NULL, shiny=FALSE) {
     data <- list()
     for (i in 1:nrow(info$Transcript)) {
         transcript <- info$Transcript[i, ]
@@ -408,14 +503,18 @@ plotTranscripts <- function(info, eventPosition=NULL, shiny=FALSE) {
         hc_tooltip(followPointer=TRUE)
     hc <- do.call("hc_series", c(list(hc), data))
     
-    if (!is.null(eventPosition)) {
-        # Draw splicing event if event information is provided
+    if (!is.null(event)) {
+        hc <- hc %>% plotSplicingEvent(event)
+    } else if (!is.null(eventPosition)) {
+        # Draw region if only splicing event position is provided
         eventStart <- eventPosition[1]
         eventEnd   <- eventPosition[2]
-        hc <- hc_xAxis(hc, plotBands=list(color="#7cb5ec50", from=eventStart, 
-                                          to=eventEnd, label=list(
-                                              text="Splicing Event", y=10,
-                                              style=list(fontWeight="bold"))))
+        hc <- hc_xAxis(hc, 
+                       plotBands=list(
+                           color="#7cb5ec50", from=eventStart, 
+                           to=eventEnd, label=list(
+                               text="Splicing Event", y=10,
+                               style=list(fontWeight="bold"))))
     }
     
     if (shiny)
@@ -714,12 +813,7 @@ infoServer <- function(input, output, session) {
         
         output$plotTranscripts <- renderUI({
             info <- queryEnsemblByGene(gene, species=species, assembly=assembly)
-            
-            event <- getASevent()
-            coords <- NULL
-            if (!is.null(event)) coords <- parseEvent(event)$pos[[1]]
-            
-            plotTranscripts(info, eventPosition=coords, shiny=TRUE)
+            plotTranscripts(info, event=getASevent(), shiny=TRUE)
         })
         
         # Render relevant articles according to available gene

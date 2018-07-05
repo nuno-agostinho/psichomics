@@ -73,7 +73,7 @@ analysesUI <- function(id, tab) {
     uiList <- getUiFunctions(
         ns, "analysis", 
         priority=paste0(c("dimReduction", "diffSplicing", "diffExpression", 
-                          "survival", "info"), "UI"))
+                          "correlation", "survival", "info"), "UI"))
     
     # Load available analyses
     analyses <- tagList()
@@ -104,7 +104,8 @@ analysesServer <- function(input, output, session) {
     # Run server logic from the scripts
     getServerFunctions("analysis", 
                        priority=paste0(c("dimReduction", "diffSplicing", 
-                                         "diffExpression", "survival", "info"),
+                                         "diffExpression", "correlation", 
+                                         "survival", "info"),
                                        "Server"))
 }
 

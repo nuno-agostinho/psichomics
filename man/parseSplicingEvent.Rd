@@ -4,19 +4,23 @@
 \alias{parseSplicingEvent}
 \title{Parse an alternative splicing event based on a given identifier}
 \usage{
-parseSplicingEvent(event, char = FALSE, pretty = FALSE, extra = NULL)
+parseSplicingEvent(event, char = FALSE, pretty = FALSE, extra = NULL,
+  coords = FALSE)
 }
 \arguments{
 \item{event}{Character: event identifier}
 
 \item{char}{Boolean: return a single character instead of list with parsed
-values? FALSE by default}
+values?}
 
-\item{pretty}{Boolean: return a prettier name of the event identifier? FALSE
-by default}
+\item{pretty}{Boolean: return a prettier name of the event identifier?}
 
 \item{extra}{Character: extra information to add (such as species and
-assembly version)}
+assembly version); only used if \code{pretty} and \code{char} are \code{TRUE}}
+
+\item{coords}{Boolean: extra coordinates regarding the alternative and 
+constitutive regions of alternative splicing events; only used if \code{char}
+is \code{FALSE}}
 }
 \value{
 Parsed event

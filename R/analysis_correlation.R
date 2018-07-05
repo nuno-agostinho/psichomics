@@ -9,7 +9,7 @@ correlationUI <- function(id) {
     options <- div(
         id=ns("options"),
         bsCollapse(
-            open=c("corrParams", "corrOptions", "scatterplotOptions"),
+            open=c("corrParams", "corrOptions"),
             multiple=TRUE,
             bsCollapsePanel(
                 tagList(icon("filter"), "Correlation parameters"), 
@@ -45,18 +45,23 @@ correlationUI <- function(id) {
                 radioButtons(
                     ns("zoom"), "Range of axis for PSI values",
                     list("Fixed between 0 and 1"="fixed",
-                         "Automatic zoom based on available data"="auto")),
-                selectizeInput(ns("cols"), "Number of plots per row",
-                               choices=c(1:4, 6, 12), selected=3), hr(),
+                         "Automatic based on available values"="auto")),
+                numericInput(ns("height"), "Height of each plot (pixels)", 
+                             200, min=50, max=1000, step=50, width="100%"),
+                selectizeInput(ns("cols"), "Plots per row",
+                               choices=c(1:4, 6, 12), selected=3), 
+                numericInput(ns("fontSize"), "Font size", 12, min=1, max=50,
+                             step=1, width="100%"), hr(),
                 sliderInput(ns("size"), "Size of points", 0, 4, 1.5, 0.5),
                 colourInput(ns("colour"), "Colour for points", "#00000044",
                             allowTransparent=TRUE), hr(),
                 checkboxInput(ns("loessSmooth"), "Plot Loess curve", 
                               value=TRUE),
-                sliderInput(ns("loessWidth"), "Width of Loess curve", 
-                            0, 2, 0.5, 0.25),
-                colourInput(ns("loessColour"), "Colour for Loess curve", "red",
-                            allowTransparent=TRUE))),
+                div(id=ns("loessOptions"),
+                    sliderInput(ns("loessWidth"), "Width of Loess curve", 
+                                0, 2, 0.5, 0.25),
+                    colourInput(ns("loessColour"), "Colour for Loess curve", 
+                                "red", allowTransparent=TRUE)))),
         processButton(ns("correlate"), label="Correlate"))
     
     tagList(
@@ -177,6 +182,7 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #' @param loessColour Character: loess line's colour
 #' @param loessAlpha Numeric: loess line's opacity
 #' @param loessWidth Numeric: loess line's width
+#' @param fontSize Numeric: plot font size
 #'
 #' @importFrom ggplot2 ggplot geom_point geom_line labs coord_cartesian ggtitle
 #'   aes theme_light
@@ -193,11 +199,11 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #' geneExpr <- readFile("ex_gene_expression.RDS")
 #' corr <- correlateGEandAS(geneExpr, psi, "ALDOA")
 #' plotCorrelation(corr)
-plotCorrelation <- function(corr, autoZoom=FALSE, loessSmooth=TRUE, 
-                            loessFamily=c("gaussian", "symmetric"), 
+plotCorrelation <- function(corr, autoZoom=FALSE, loessSmooth=TRUE,
+                            loessFamily=c("gaussian", "symmetric"),
                             colour="black", alpha=0.2, size=1.5,
-                            loessColour="red", loessAlpha=1, loessWidth=0.5, 
-                            ...) {
+                            loessColour="red", loessAlpha=1, loessWidth=0.5,
+                            fontSize=12, ...) {
     plotCorrPerASevent <- function(single) {
         expr    <- single$geneExpr
         event   <- single$psi
@@ -230,7 +236,7 @@ plotCorrelation <- function(corr, autoZoom=FALSE, loessSmooth=TRUE,
                     aes(x=loess$x, y=loess$y),
                     colour=loessColour, alpha=loessAlpha, size=loessWidth)
         }
-        return(plot + theme_light(12))
+        return(plot + theme_light(fontSize))
     }
     
     lapply(corr, lapply, plotCorrPerASevent)
@@ -240,7 +246,7 @@ plotCorrelation <- function(corr, autoZoom=FALSE, loessSmooth=TRUE,
 #' 
 #' @importFrom shiny renderUI observeEvent isolate tagList tags
 #' @importFrom highcharter renderHighchart
-#' @importFrom shinyjs show hide
+#' @importFrom shinyjs show hide toggle
 correlationServer <- function(input, output, session) {
     selectGroupsServer(session, "groups", "Samples")
     
@@ -252,6 +258,11 @@ correlationServer <- function(input, output, session) {
             hide("noData")
             show("options")
         }
+    })
+    
+    # Disable options for Loess curve if not plotted
+    observe({
+        toggle("loessOptions", condition=input$loessSmooth, anim=TRUE)
     })
     
     # Update available gene choices depending on gene expression data loaded
@@ -286,7 +297,10 @@ correlationServer <- function(input, output, session) {
     observe({
         psi  <- getInclusionLevels()
         if (!is.null(psi)) {
-            updateSelectizeInput(session, "ASevents", choices=rownames(psi))
+            updateSelectizeInput(
+                session, "ASevents", 
+                choices=c("Type to search for a splicing event..."="",
+                          rownames(psi)))
         }
     })
     
@@ -355,6 +369,7 @@ correlationServer <- function(input, output, session) {
             
             colour      <- input$colour
             size        <- input$size
+            fontSize    <- input$fontSize
             loessColour <- input$loessColour
             loessWidth  <- input$loessWidth
         })
@@ -389,14 +404,15 @@ correlationServer <- function(input, output, session) {
         corr <- suppressWarnings(
             correlateGEandAS(geneExpr, psi, gene, ASevents, method=method, 
                              alternative=alternative))
-        plots <- plotCorrelation(corr, autoZoom, loessSmooth, colour=colour,
-                                 size=size, loessColour=loessColour, 
-                                 loessWidth=loessWidth)
+        plots <- plotCorrelation(corr, colour=colour, size=size, 
+                                 fontSize=fontSize, autoZoom=autoZoom, 
+                                 loessSmooth=loessSmooth, 
+                                 loessColour=loessColour, loessWidth=loessWidth)
         plots <- unlist(plots, recursive=FALSE)
         
         # Plot all groups
         output$correlations <- renderUI({
-            distributeByCol <- function(id, len, cols) {
+            distributeByCol <- function(id, len, cols, height) {
                 ncols <- len
                 nrows <- ceiling(len/cols)
                 eachRow <- list()
@@ -406,7 +422,7 @@ correlationServer <- function(input, output, session) {
                     # Create columns
                     for (k in seq( min(cols, ncols) )) {
                         content <- plotOutput(paste0(id, k + cols * (i - 1)),
-                                              height="200px")
+                                              height=height)
                         eachCol <- c(eachCol, list(column(12 / cols, content)))
                     }
                     eachRow <- c(eachRow, list(do.call(fluidRow, eachCol)))
@@ -415,9 +431,12 @@ correlationServer <- function(input, output, session) {
                 do.call(tagList, eachRow)
             }
             
-            cols <- as.numeric( isolate(input$cols) )
-            if ( length(cols) > 0 )
-                distributeByCol(ns("plot"), length(plots), cols)
+            cols   <- as.numeric( isolate(input$cols) )
+            height <- isolate(input$height)
+            if ( length(cols) > 0 && height > 0 ) {
+                height <- paste0(height, "px")
+                distributeByCol(ns("plot"), length(plots), cols, height)
+            }
         })
         
         lapply(seq(plots), function(i)

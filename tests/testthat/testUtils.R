@@ -116,3 +116,32 @@ test_that("Retrieve samples from patient identifiers", {
     expect_is(match, "character")
     expect_equivalent(match[], as.character(clinical$samples[ref]))
 })
+
+test_that("Parse alternative splicing event from identifiers", {
+    events <- c(
+        "A3SS_15_+_63353138_63353912_63353397_TPM1",
+        "A3SS_11_-_61118463_61117115_61117894_CYB561A3",
+        "A5SS_21_+_48055675_48056459_48056808_PRMT2", 
+        "A5SS_1_-_1274742_1274667_1274033_DVL1",
+        "AFE_9_+_131902430_131901928_131904724_PPP2R4",
+        "AFE_5_-_134686513_134688636_134681747_H2AFY",
+        "ALE_12_+_56554104_56554410_56555171_MYL6",
+        "ALE_8_-_38314874_38287466_38285953_FGFR1",
+        "SE_9_+_6486925_6492303_6492401_6493826_UHRF2",
+        "SE_19_-_5218431_5216778_5216731_5215606_PTPRS",
+        "MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1",
+        "MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7")
+    
+    parsed <- parseSplicingEvent(events, coords=TRUE)
+    expect_is(parsed, "data.frame")
+    expect_equal(unique(parsed$type),
+                 c("A3SS", "A5SS", "AFE", "ALE", "SE", "MXE"))
+    expect_equal(as.numeric(parsed$chrom), 
+                 c(15, 11, 21, 1, 9, 5, 12, 8, 9, 19, 15, 17))
+    expect_equal(unlist(parsed$gene),
+                 c("TPM1", "CYB561A3", "PRMT2", "DVL1", "PPP2R4", "H2AFY",
+                   "MYL6", "FGFR1", "UHRF2", "PTPRS", "TPM1", "EXOC7"))
+    expect_equal(tail(colnames(parsed), 4), 
+                 c("constitutive1", "alternative1", "alternative2",
+                   "constitutive2"))
+})
