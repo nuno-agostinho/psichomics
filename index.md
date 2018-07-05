@@ -180,7 +180,7 @@ intersected, etc.), re-coloured, removed or renamed.
 All feedback on the program, documentation and associated material is welcome. 
 Please send any suggestions and comments to:
 
-> Nuno Saraiva-Agostinho (nunoagostinho@medicina.ulisboa.pt)
+> Nuno Saraiva-Agostinho ([nunoagostinho@medicina.ulisboa.pt](mailto:nunoagostinho@medicina.ulisboa.pt))
 > 
 > [Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)][NMorais]
 
