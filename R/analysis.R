@@ -1419,23 +1419,21 @@ createEventPlotting <- function(df, x, y, params, highlightX, highlightY,
     aes <- aes_string(paste0("`", x, "`"), paste0("`", y, "`"))
     
     # Get points highlighted in X and Y that were not selected
-    if (!is.null(highlightX)) {
-        highlightedX <- findInterval(df[[x]], highlightX, left.open=FALSE,
-                                     rightmost.closed=TRUE) == 1
-        if (attr(highlightX, "inverted")) highlightedX <- !highlightedX
-        highlightedX <- which(highlightedX)
-    } else {
-        highlightedX <- seq(nrow(df))
+    getNonSelectedPoints <- function(highlight, df, axis) {
+        if (!is.null(highlight)) {
+            onlyUpLimit <- identical(names(highlight), "upper")
+            highlighted <- findInterval(df[[axis]], highlight, left.open=FALSE,
+                                         rightmost.closed=TRUE) == !onlyUpLimit
+            if (attr(highlight, "inverted")) highlighted <- !highlighted
+            highlighted <- which(highlighted)
+        } else {
+            highlighted <- seq(nrow(df))
+        }
+        return(highlighted)
     }
     
-    if (!is.null(highlightY)) {
-        highlightedY <- findInterval(df[[y]], highlightY, left.open=FALSE,
-                                     rightmost.closed=TRUE) == 1
-        if (attr(highlightY, "inverted")) highlightedY <- !highlightedY
-        highlightedY <- which(highlightedY)
-    } else {
-        highlightedY <- seq(nrow(df))
-    }
+    highlightedX <- getNonSelectedPoints(highlightX, df, x)
+    highlightedY <- getNonSelectedPoints(highlightY, df, y)
     
     if ( is.null(highlightX) && is.null(highlightY) ) {
         highlighted <- NULL
@@ -1445,10 +1443,11 @@ createEventPlotting <- function(df, x, y, params, highlightX, highlightY,
     
     # Render remaining points
     plotted <- union(selected, highlighted)
-    if (!is.null(plotted))
+    if (!is.null(plotted)) {
         remaining <- df[-plotted, ]
-    else
+    } else {
         remaining <- df
+    }
     plot <- ggplot() + do.call("geom_point", c(
         list(data=remaining, aes, na.rm=TRUE), params))
     

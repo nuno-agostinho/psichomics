@@ -71,10 +71,10 @@ diffExpressionTableUI <- function(id) {
         "Labels",
         bsCollapse(
             bsCollapsePanel(
-                list(icon("tasks"), "Label top differentially expressed genes"),
-                value="top", checkboxInput(
+                "Label top differentially expressed genes", value="top",
+                checkboxInput(
                     ns("labelTopEnable"), width="100%",
-                    "Enable labelling of top differentially spliced events"),
+                    "Enable labelling of top differentially expressed genes"),
                 div(id=ns("labelTopOptions"),
                     selectizeInput(ns("labelSortBy"), choices=NULL, 
                                    width="100%",
@@ -85,8 +85,7 @@ diffExpressionTableUI <- function(id) {
                     sliderInput(ns("labelTop"), value=10, min=1, max=1000, 
                                 width="100%", "Number of top genes to label"))),
             bsCollapsePanel(
-                list(icon("tasks"), "Label selected genes"), value="genes",
-                checkboxInput(
+                "Label selected genes", value="genes", checkboxInput(
                     ns("labelGenesEnable"), width="100%",
                     "Enable labelling of selected genes"),
                 selectizeInput(ns("labelGenes"), "Genes to label", width="100%",
@@ -325,12 +324,10 @@ diffExpressionPlotSet <- function(session, input, output) {
                 conditionalPanel(
                     sprintf("input[id='%s']", highlightId),
                     fluidRow(
-                        column(6, numericInput(sliderMinId, "Lower limit",
-                                               min=min, value=min, step=0.1,
-                                               width="100%")),
-                        column(6, numericInput(sliderMaxId, "Upper limit",
-                                               max=max, value=max, step=0.1,
-                                               width="100%"))),
+                        column(6, textInput(sliderMinId, "Lower limit \u2265",
+                                            placeholder=min, width="100%")),
+                        column(6, textInput(sliderMaxId, "Upper limit \u2264",
+                                            placeholder=max, width="100%"))),
                     checkboxInput(sliderInvId, "Invert highlighted values"),
                     helpText("The data in the table is also filtered",
                              "according to highlighted events."))
@@ -429,12 +426,27 @@ diffExpressionPlotSet <- function(session, input, output) {
                     highlightMin <- input[[argStr("SliderMin")]]
                     highlightMax <- input[[argStr("SliderMax")]]
                     
-                    noMin <- is.null(highlightMin) || is.na(highlightMin)
-                    noMax <- is.null(highlightMax) || is.na(highlightMax)
-                    if (noMin || noMax || highlightMin >= highlightMax)
-                        return(NULL)
+                    # Parse string and expect a numeric value
+                    evalString <- function(arg) {
+                        value <- tryCatch(
+                            suppressWarnings(eval(parse(text=arg), 
+                                                  envir=baseenv())),
+                            error=return)
+                        if (!is.numeric(value) || is(value, "error"))
+                            value <- NULL
+                        return(value)
+                    }
                     
-                    highlight <- c(highlightMin, highlightMax)
+                    highlightMax <- evalString(highlightMax)
+                    highlightMin <- evalString(highlightMin)
+                    
+                    noMin <- is.null(highlightMin)
+                    noMax <- is.null(highlightMax)
+                    minLTmax <- !noMin && !noMax && 
+                        isTRUE(highlightMin >= highlightMax)
+                    if ((noMin && noMax) || minLTmax) return(NULL)
+                    
+                    highlight <- c(lower=highlightMin, upper=highlightMax)
                     attr(highlight, "inverted") <- input[[argStr("SliderInv")]]
                     return(highlight)
                 }
@@ -612,7 +624,7 @@ diffExpressionTableSet <- function(session, input, output) {
     
     # Download whole table
     output$downloadAll <- downloadHandler(
-        filename=paste(getCategory(), "Differential splicing analyses"),
+        filename=paste(getCategory(), "Differential expression analyses"),
         content=function(file) {
             stats <- getDifferentialExpression()
             stats <- discardPlotsFromTable(stats)
@@ -623,7 +635,7 @@ diffExpressionTableSet <- function(session, input, output) {
     
     # Download filtered table
     output$downloadSubset <- downloadHandler(
-        filename=paste(getCategory(), "Differential splicing analyses"),
+        filename=paste(getCategory(), "Differential expression analyses"),
         content=function(file) {
             stats <- getDifferentialExpressionFiltered()
             stats <- discardPlotsFromTable(stats)
