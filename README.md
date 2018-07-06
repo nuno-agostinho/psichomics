@@ -20,13 +20,13 @@ sample-associated features (such as tumour stage or survival). Interactive
 visual access to genomic mapping and functional annotation of selected 
 alternative splicing events is also included.
 
-![Screen shot](screenshot.png)
+![Differential splicing analysis in *psichomics*](screenshot.png)
 
 ## Table of Contents
 
 * [Install and start running](#install-and-start-running)
     * [Bioconductor release](#bioconductor-release)
-    * [Development version](#development-version)
+    * [GitHub version](#github-version)
 * [Tutorials](#tutorials)
 * [Data input](#data-input)
     * [Download TCGA data](#download-tcga-data)
@@ -58,9 +58,10 @@ install.packages("BiocManager")
 BiocManager::install("psichomics")
 ```
 
-### Development version
+### GitHub version
 
-To install and start using the development version, follow these steps:
+To install and start using the GitHub version (that may be updated faster than
+its Bioconductor counterpart), follow the following steps:
 
 1. [Install R][r]
 2. Depending on your operative system, install:
@@ -78,9 +79,21 @@ library(psichomics)
 psichomics()
 ```
 
+#### Running the latest versions of *psichomics* in R 3.2 or newer
+
+If you prefer to run *psichomics* in an older R version (3.2 or newer), run the
+following commands (note that the newest versions of *psichomics* were not 
+tested in older R versions and some features may not be supported):
+```r
+install.packages("devtools")
+devtools::install_github("nuno-agostinho/psichomics", ref="R3.2")
+library(psichomics)
+psichomics()
+```
+
 ## Tutorials
 
-The following case studies and tutorials are available based on our 
+The following case studies and tutorials are available and were based on our 
 [original article][article] (currently in preprint):
 
 * [Visual interface][tutorial-gui]
@@ -92,8 +105,8 @@ The following case studies and tutorials are available based on our
 
 ### Download TCGA Data
 
-*psichomics* allows to download data from the [TCGA][TCGA] after selecting the 
-tumour of interest. Subject- and sample-associated information, junction 
+Pre-processed data of given tumours of interest can be automatically downloaded 
+from [TCGA][TCGA]. Subject- and sample-associated information, junction 
 quantification and gene expression data from TCGA are supported.
 
 ### Load GTEx Data
@@ -105,15 +118,18 @@ from GTEx are supported.
 ### Load SRA Data
 
 Although only select [SRA][SRA] projects are available to be automatically
-downloaded, other SRA projects can be manually downloaded, aligned using a 
-splice-aware aligner and loaded by the user. Sample-associated files from SRA 
-are supported.
+downloaded (based on pre-processed data from the [recount2][recount2] project), 
+other SRA projects can be manually downloaded, aligned using a splice-aware 
+aligner and loaded by the user, as per the instructions in
+[Loading SRA or user-owned RNA-seq data][tutorial-custom-data]. 
+Sample-associated files from SRA are supported.
 
 ### Load user-provided files
 
-*psichomics* contains instructions on how to load user-owned files (including
-subject-associated data, sample-associated data, junction quantification,
-alternative splicing quantification and gene expression).
+User-owned files (including subject-associated data, sample-associated data, 
+junction quantification, alternative splicing quantification and gene 
+expression) can be loaded as per the instructions in
+[Loading SRA or user-owned RNA-seq data][tutorial-custom-data].
 
 ## Splicing quantification
 
@@ -127,8 +143,8 @@ and exclusion of that exon. To measure this estimate, both alternative splicing
 annotation and the quantification of RNA-Seq reads aligning to splice junctions
 (junction quantification) are required. While alternative splicing Human (hg19
 and hg38 assemblies) annotation is provided within the package, junction 
-quantification may be retrieved from [TCGA][TCGA], [GTEx][GTEx], [SRA][SRA] or 
-handed by the user (e.g. user-owned files).
+quantification may be handed by the user or retrieved from [TCGA][TCGA], 
+[GTEx][GTEx] and [SRA][SRA].
 
 ## Gene expression processing
 
@@ -136,23 +152,32 @@ Gene expression can be normalised, filtered and log2-transformed in-app.
 Alternatively, the user can also provide its own pre-processed gene expression 
 file.
 
-## Data Analyses
+## Data grouping
 
-The program performs survival analysis and dimensionality reduction, as well as
-differential splicing and gene expression analysis.
+Molecular and clinical sample-associated attributes allow to establish groups 
+that can be explored in data analyses. For instance, [TCGA][TCGA] data can be 
+analysed based on smoking history, gender and race, among other attributes. 
+Groups can also be manipulated (e.g. merged, intersected, etc.), allowing for 
+complex attribute combinations, as well as saved and loaded between sessions.
+
+## Data Analyses
 
 ### Dimensionality reduction
 
 Perform principal and independent component analysis (PCA and ICA, respectively)
-on alternative splicing quantification and gene expression based on molecular
-and clinical sample-associated attributes.
+on alternative splicing quantification and gene expression based on the 
+previously created groups.
 
 ### Differential splicing and gene expression analysis
 
 Analyse alternative splicing quantification (based on variance and median 
-statistical tests) and gene expression data. The groups available for 
-differential analyses comprise sample types (e.g. normal versus tumour)
-and clinical attributes of patients (e.g. tumour stage).
+statistical tests) and gene expression data based on the previously created
+groups.
+
+### Correlation between gene expression and splicing quantification
+
+Test the correlation betweem the gene expression of a specific gene with the
+alternative splicing quantification of selected alternative splicing events.
 
 ### Survival analysis
 
@@ -163,31 +188,7 @@ or a gene (based on its gene expression) on patient survivability.
 ### Gene, transcript and protein information
 
 Examine the annotation and corresponding transcripts and proteins for a gene of
-interest. Relevant research articles are also available.
-
-### Correlation between gene expression and splicing quantification
-
-Test the correlation betweem the gene expression of a specific gene with the
-alternative splicing quantification of selected alternative splicing events.
-
-## Data grouping
-
-Subject- and sample-associated data allow to establish groups that can be 
-exploited in diverse analyses throughout *psichomics*.
-
-- **By attribute:** automatically create groups by selecting a specific
-attribute of the dataset; for instance, to create a group for each tumour stage,
-start typing `tumor_stage`, select the appropriate field from the suggestions,
-click on `Create group` and confirm that there is now one group for each stage.
-- **By index or identifiers:** input specific index or identifiers to create a
-group
-- **By subset expression:** filter attributes based on flexible subset 
-expressions
-- **By regular expression:** apply a regular expression over a specific 
-attribute
-
-Groups can also be selected in order to be manipulated (e.g. merged, 
-intersected, etc.), re-coloured, removed or renamed.
+interest. Relevant research articles are also presented here.
 
 ## Feedback and support
 
@@ -231,3 +232,4 @@ Nature 456 (7221): 470–76.
 [tutorial-cli]: http://rpubs.com/nuno-agostinho/psichomics-cli-tutorial
 [tutorial-custom-data]: http://rpubs.com/nuno-agostinho/psichomics-custom-data
 [tutorial-prep-AS-annotation]: http://rpubs.com/nuno-agostinho/preparing-AS-annotation
+[recount2]: https://jhubiostatistics.shinyapps.io/recount/
