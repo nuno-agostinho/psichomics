@@ -53,7 +53,7 @@ diffSplicingTableUI <- function(id) {
         "Labels",
         bsCollapse(
             bsCollapsePanel(
-                list(icon("tasks"), "Label top differentially spliced events"),
+                "Label top differentially spliced events",
                 value="top", checkboxInput(
                     ns("labelTopEnable"), width="100%",
                     "Enable labelling of top differentially spliced events"),
@@ -68,9 +68,8 @@ diffSplicingTableUI <- function(id) {
                         ns("labelTop"), value=10, min=1, max=1000, 
                         width="100%", "Number of top events to label"))),
             bsCollapsePanel(
-                list(icon("tasks"), 
-                     "Label selected alternative splicing events"),
-                value="events", checkboxInput(
+                "Label selected alternative splicing events", value="events",
+                checkboxInput(
                     ns("labelEventEnable"), width="100%",
                     "Enable labelling of selected alternative splicing events"),
                 selectizeInput(
@@ -78,8 +77,7 @@ diffSplicingTableUI <- function(id) {
                         "Type to search for alternative splicing events..."=""),
                     ns("labelEvents"), "Alternative splicing events to label")),
             bsCollapsePanel(
-                list(icon("tasks"),
-                     "Label alternative splicing events from selected genes"),
+                "Label alternative splicing events from selected genes",
                 value="genes", checkboxInput(
                     ns("labelGeneEnable"), width="100%",
                     "Enable labelling of events from selected genes"),
@@ -574,12 +572,10 @@ diffAnalysesPlotSet <- function(session, input, output) {
                 conditionalPanel(
                     sprintf("input[id='%s']", highlightId),
                     fluidRow(
-                        column(6, numericInput(sliderMinId, "Lower limit",
-                                               min=min, value=min, step=0.1,
-                                               width="100%")),
-                        column(6, numericInput(sliderMaxId, "Upper limit",
-                                               max=max, value=max, step=0.1,
-                                               width="100%"))),
+                        column(6, textInput(sliderMinId, "Lower limit \u2265",
+                                            placeholder=min, width="100%")),
+                        column(6, textInput(sliderMaxId, "Upper limit \u2264",
+                                            placeholder=max, width="100%"))),
                     checkboxInput(sliderInvId, "Invert highlighted values"),
                     helpText("The data in the table is also filtered",
                              "according to highlighted events."))
@@ -707,12 +703,27 @@ diffAnalysesPlotSet <- function(session, input, output) {
                     highlightMin <- input[[argStr("SliderMin")]]
                     highlightMax <- input[[argStr("SliderMax")]]
                     
-                    noMin <- is.null(highlightMin) || is.na(highlightMin)
-                    noMax <- is.null(highlightMax) || is.na(highlightMax)
-                    if (noMin || noMax || highlightMin >= highlightMax)
-                        return(NULL)
+                    # Parse string and expect a numeric value
+                    evalString <- function(arg) {
+                        value <- tryCatch(
+                            suppressWarnings(eval(parse(text=arg), 
+                                                  envir=baseenv())),
+                            error=return)
+                        if (!is.numeric(value) || is(value, "error"))
+                            value <- NULL
+                        return(value)
+                    }
                     
-                    highlight <- c(highlightMin, highlightMax)
+                    highlightMax <- evalString(highlightMax)
+                    highlightMin <- evalString(highlightMin)
+                    
+                    noMin <- is.null(highlightMin)
+                    noMax <- is.null(highlightMax)
+                    minLTmax <- !noMin && !noMax && 
+                        isTRUE(highlightMin >= highlightMax)
+                    if ((noMin && noMax) || minLTmax) return(NULL)
+                    
+                    highlight <- c(lower=highlightMin, upper=highlightMax)
                     attr(highlight, "inverted") <- input[[argStr("SliderInv")]]
                     return(highlight)
                 }
