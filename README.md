@@ -8,10 +8,10 @@ bioRxiv.
 
 Interactive R package with an intuitive Shiny-based graphical 
 interface for alternative splicing quantification and integrative analyses of
-alternative splicing and gene expression from large transcriptomic datasets, 
-including those from [The Cancer Genome Atlas (TCGA)][TCGA], the 
-[Genotype-Tissue Expression (GTEx) project][GTEx] and the 
-[Sequence Read Archive (SRA)][SRA], as well as user-owned data.
+alternative splicing and gene expression based on 
+[The Cancer Genome Atlas (TCGA)][TCGA], the 
+[Genotype-Tissue Expression (GTEx) project][GTEx], 
+[Sequence Read Archive (SRA)][SRA] and user-provided data.
 
 *psichomics* interactively performs survival, dimensionality reduction and 
 median- and variance-based differential splicing and gene expression 
@@ -98,7 +98,7 @@ The following case studies and tutorials are available and were based on our
 
 * [Visual interface][tutorial-gui]
 * [Command-line interface][tutorial-cli]
-* [Loading SRA or user-owned RNA-seq data][tutorial-custom-data]
+* [Loading SRA and user-provided RNA-seq data][tutorial-custom-data]
 * [Preparing alternative splicing annotations][tutorial-prep-AS-annotation]
 
 ## Data input
@@ -121,15 +121,15 @@ Although only select [SRA][SRA] projects are available to be automatically
 downloaded (based on pre-processed data from the [recount2][recount2] project), 
 other SRA projects can be manually downloaded, aligned using a splice-aware 
 aligner and loaded by the user, as per the instructions in
-[Loading SRA or user-owned RNA-seq data][tutorial-custom-data]. 
-Sample-associated files from SRA are supported.
+[Loading SRA and user-provided RNA-seq data][tutorial-custom-data]. 
+Sample-associated files from SRA are also supported.
 
 ### Load user-provided files
 
-User-owned files (including subject-associated data, sample-associated data, 
+User-provided files (including subject-associated data, sample-associated data, 
 junction quantification, alternative splicing quantification and gene 
 expression) can be loaded as per the instructions in
-[Loading SRA or user-owned RNA-seq data][tutorial-custom-data].
+[Loading SRA and user-provided RNA-seq data][tutorial-custom-data].
 
 ## Splicing quantification
 

@@ -1,5 +1,5 @@
 ---
-title: 'Alternative Splicing Analysis on SRA or User-Owned Data'
+title: 'Alternative Splicing Analysis on SRA and User-Provided Data'
 author: "Nuno Saraiva-Agostinho"
 date: "`r Sys.Date()`"
 bibliography: refs.bib
@@ -8,7 +8,7 @@ output:
     rmarkdown::html_vignette:
         toc: true
 vignette: >
-  %\VignetteIndexEntry{SRA or user-owned RNA-seq data analysis}
+  %\VignetteIndexEntry{SRA and user-provided RNA-seq data analysis}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -16,10 +16,10 @@ vignette: >
 ---
 
 *psichomics* is an interactive R package for integrative analyses of alternative
-splicing using data from [The Cancer Genome Atlas (TCGA)][tcga] (containing 
-molecular data associated with 34 tumour types), the
+splicing and gene expression based on [The Cancer Genome Atlas (TCGA)][tcga]
+(containing molecular data associated with 34 tumour types), the
 [Genotype-Tissue Expression (GTEx)][gtex] project (containing data for multiple
-normal human tissues), the [Sequence Read Archive][SRA] or owned by the user. 
+normal human tissues), [Sequence Read Archive][sra] and user-provided data.
 
 The following tutorial goes through the steps required to load custom RNA-seq 
 data:
@@ -81,7 +81,7 @@ To estimate this value for each splicing event, both alternative splicing
 annotation and quantification of RNA-Seq reads aligning to splice junctions 
 (junction quantification) are required. While alternative splicing annotation is
 provided by the package, junction quantification will need to be prepared from
-user-owned data by aligning the RNA-seq reads from FASTQ files to a genome of
+user-provided data by aligning the RNA-seq reads from FASTQ files to a genome of
 reference. As junction reads are required to quantify alternative splicing, a
 splice-aware aligner will be used. psichomics currently supports STAR output.
 

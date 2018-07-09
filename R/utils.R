@@ -533,7 +533,7 @@ getPatientFromSample <- function(sampleId, patientId=NULL, na=FALSE,
         # Retrieve GTEx patient index
         extractPatientIndex("(GTEX-.*?)-.*", sampleId, patientId)
     } else if ( "Subject ID" %in% colnames(sampleInfo) ) {
-        # Based on user-owned files
+        # Based on user-provided files
         patients <- as.character(sampleInfo[ , "Subject ID"])
         names(patients) <- rownames(sampleInfo)
         return(patients)

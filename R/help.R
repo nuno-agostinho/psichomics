@@ -99,7 +99,7 @@ helpUI <- function(id, tab) {
                         tags$a(href="https://www.gtexportal.org/home/",
                                target="_blank",
                                "Genotype-Tissue Expression (GTEx)"),
-                        "project, as well as user-owned data."),
+                        "project, as well as user-provided data."),
                     tags$ul(
                         class="list-group",
                         tags$li(class="list-group-item",
