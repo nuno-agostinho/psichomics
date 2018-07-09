@@ -53,8 +53,8 @@ diffSplicingTableUI <- function(id) {
         "Labels",
         bsCollapse(
             bsCollapsePanel(
-                "Label top differentially spliced events",
-                value="top", checkboxInput(
+                "Label top differentially spliced events", value="top", 
+                checkboxInput(
                     ns("labelTopEnable"), width="100%",
                     "Enable labelling of top differentially spliced events"),
                 div(id=ns("labelTopOptions"),
@@ -125,7 +125,7 @@ diffSplicingTableUI <- function(id) {
     
     sidebar <- sidebar(
         bsCollapse(
-            id=ns("diffAnalysesCollapse"), open="statAnalyses",
+            id=ns("diffSplicingCollapse"), open="statAnalyses",
             bsCollapsePanel(
                 list(icon("tasks"), "Perform statistical analyses"),
                 value="statAnalyses", style="info",
@@ -149,7 +149,7 @@ diffSplicingTableUI <- function(id) {
                 style="info", value="survivalOptionsPanel",
                 hidden(div(id=ns("survivalOptions"), survivalOptions)),
                 errorDialog("Differential splicing analysis not yet performed.",
-                            id=ns("survivalOptions-missingDiffAnalyses")),
+                            id=ns("survivalOptions-missingDiffSplicing")),
                 errorDialog("Clinical data is not loaded.",
                             id=ns("survivalOptions-missingClinicalData"),
                             buttonLabel="Load survival data",
@@ -165,17 +165,17 @@ diffSplicingTableUI <- function(id) {
                 tags$li(downloadLink(ns("downloadAll"), "All data")),
                 tags$li(downloadLink(ns("downloadSubset"), "Filtered data"))))
     
-    ASeventGroupCreation <- div(
+    groupCreation <- div(
         class="btn-group dropup",
         tags$button(class="btn btn-default dropdown-toggle", type="button",
                     "data-toggle"="dropdown", "aria-haspopup"="true",
                     "aria-expanded"="false", icon("object-group"),
                     "Create groups based on...", tags$span(class="caret")),
         tags$ul(class="dropdown-menu",
-                disabled(tags$li(id=ns("groupBySelectedEventsContainer"),
-                                 actionLink(ns("groupBySelectedEvents"),
+                disabled(tags$li(id=ns("groupBySelectedContainer"),
+                                 actionLink(ns("groupBySelected"),
                                             "Selected splicing events"))),
-                tags$li(actionLink(ns("groupByDisplayedEvents"),
+                tags$li(actionLink(ns("groupByDisplayed"),
                                    "Splicing events displayed in the table"))))
     
     tagList(
@@ -185,8 +185,7 @@ diffSplicingTableUI <- function(id) {
                 ggplotUI(ns("psi-volcano")),
                 dataTableOutput(ns("statsTable")),
                 hidden(div(id=ns("tableToolbar"), class="btn-toolbar",
-                           role="toolbar", 
-                           downloadTable, ASeventGroupCreation)),
+                           role="toolbar", downloadTable, groupCreation)),
                 highchartOutput(ns("highchartsSparklines"), 0, 0))))
 }
 
@@ -252,32 +251,32 @@ optimSurvDiffSet <- function(session, input, output) {
     # Interface of survival analyses
     observe({
         attrs  <- getPatientAttributes()
-        diffAn <- getDifferentialAnalyses()
+        diffAn <- getDifferentialSplicing()
         
         if (!is.null(attrs) && !is.null(diffAn)) {
             hide("survivalOptions-missingClinicalData")
-            hide("survivalOptions-missingDiffAnalyses")
+            hide("survivalOptions-missingDiffSplicing")
             show("survivalOptions")
             updateClinicalParams(session, attrs)
         } else {
             hide("survivalOptions")
             if (is.null(attrs)) {
                 show("survivalOptions-missingClinicalData")
-                hide("survivalOptions-missingDiffAnalyses")
+                hide("survivalOptions-missingDiffSplicing")
             } else if (is.null(diffAn)) {
                 hide("survivalOptions-missingClinicalData")
-                show("survivalOptions-missingDiffAnalyses")
+                show("survivalOptions-missingDiffSplicing")
             }
         }
     })
     
     # Update selectize input label depending on the chosen censoring type
     observe({
-        anyDiffAnalyses <- !is.null( getDifferentialAnalyses() )
+        anyDiffSplicing <- !is.null( getDifferentialSplicing() )
         anyPatients     <- !is.null( getPatientId() )
         anyCensoring    <- !is.null( input$censoring )
         
-        if (anyDiffAnalyses && anyPatients && anyCensoring) {
+        if (anyDiffSplicing && anyPatients && anyCensoring) {
             if (grepl("interval", input$censoring, fixed=TRUE)) {
                 label <- "Starting time"
             } else {
@@ -295,9 +294,9 @@ optimSurvDiffSet <- function(session, input, output) {
             patients      <- getPatientId()
             psi           <- getInclusionLevels()
             match         <- getClinicalMatchFrom("Inclusion levels")
-            statsTable    <- getDifferentialAnalyses()
-            statsFiltered <- getDifferentialAnalysesFiltered()
-            optimSurv     <- getDifferentialAnalysesSurvival()
+            statsTable    <- getDifferentialSplicing()
+            statsFiltered <- getDifferentialSplicingFiltered()
+            optimSurv     <- getDifferentialSplicingSurvival()
             # User input
             censoring <- input$censoring
             timeStart <- input$timeStart
@@ -389,8 +388,8 @@ optimSurvDiffSet <- function(session, input, output) {
             data <- as.character(df[ , 3])
             optimSurv[rownames(df), 3] <- createSparklines(
                 hc, data, rownames(df), groups=names(samples), "showSurvCutoff")
-            setDifferentialAnalysesResetPaging(FALSE)
-            setDifferentialAnalysesSurvival(optimSurv)
+            setDifferentialSplicingResetPaging(FALSE)
+            setDifferentialSplicingSurvival(optimSurv)
         }
         
         # Make survival columns visible
@@ -417,7 +416,7 @@ optimSurvDiffSet <- function(session, input, output) {
 #' @importFrom shinyBS updateCollapse
 #' 
 #' @inherit diffSplicingTableServer
-diffAnalysesSet <- function(session, input, output) {
+diffSplicingSet <- function(session, input, output) {
     ns <- session$ns
     
     observe({
@@ -431,7 +430,7 @@ diffAnalysesSet <- function(session, input, output) {
         }
     })
     
-    performDiffAnalyses <- reactive({
+    performDiffSplicing <- reactive({
         # Get event's inclusion levels
         psi <- getInclusionLevels()
         statsChoices <- input$statsChoices
@@ -462,521 +461,45 @@ diffAnalysesSet <- function(session, input, output) {
         stats <- diffAnalyses(psi, groups, statsChoices,
                               pvalueAdjust=pvalueAdjust)
         attr(stats, "groups") <- attrGroups
-        setDifferentialAnalyses(stats)
-        setDifferentialAnalysesSurvival(NULL)
-        updateCollapse(session, "diffAnalysesCollapse", "plotEvents")
+        setDifferentialSplicing(stats)
+        setDifferentialSplicingSurvival(NULL)
+        updateCollapse(session, "diffSplicingCollapse", "plotEvents")
         endProcess("startAnalyses", totalTime)
     })
     
     # Perform statistical analyses
     observeEvent(input$startAnalyses, {
         psi <- isolate(getInclusionLevels())
-        diffAnalyses <- isolate(getDifferentialAnalyses())
+        diffSplicing <- isolate(getDifferentialSplicing())
         if ( is.null(psi) ) {
             missingDataModal(session, "Inclusion levels",
                              ns("missingInclusionLevels"))
-        } else if ( !is.null(diffAnalyses) ) {
+        } else if ( !is.null(diffSplicing) ) {
             warningModal(session, "Differential analyses already performed",
                          "Do you wish to replace the loaded analyses?",
                          footer=actionButton(ns("replace"), "Replace",
                                              class="btn-warning",
                                              "data-dismiss"="modal"))
         } else {
-            performDiffAnalyses()
+            performDiffSplicing()
         }
     })
     
     # Replace previously performed differential analyses
     observeEvent(input$replace, {
-        performDiffAnalyses()
+        performDiffSplicing()
         # Reset previous results from differential analyses
-        setDifferentialAnalysesFiltered(NULL)
+        setDifferentialSplicingFiltered(NULL)
         setZoom("psi-volcano", NULL)
         setSelectedPoints("psi-volcano", NULL)
         setHighlightedPoints("psi-volcano", NULL)
-        setDifferentialAnalysesSurvival(NULL)
+        setDifferentialSplicingSurvival(NULL)
         setLabelledPoints("psi-volcano", NULL)
     })
 }
 
-#' Set of functions to plot differential analyses
-#' 
-#' @inherit diffSplicingTableServer
-#' 
-#' @importFrom stringr str_split
-#' @importFrom shinyjs toggleState
-diffAnalysesPlotSet <- function(session, input, output) {
-    ns <- session$ns
-    # Toggle visibility of elements regarding event options
-    observe({
-        stats <- getDifferentialAnalyses()
-        if (is.null(stats)) {
-            show("missingDiffAnalyses")
-            hide("eventOptions")
-        } else {
-            hide("missingDiffAnalyses")
-            show("eventOptions")
-        }
-    })
-    
-    # Update columns available to plot
-    observe({
-        stats <- getDifferentialAnalyses()
-        optimSurv <- getDifferentialAnalysesSurvival()
-        if (!is.null(optimSurv)) {
-            optimSurvCols <- c("Optimal PSI cutoff", "Log-rank p-value")
-            stats[[optimSurvCols[1]]] <- optimSurv[[1]]
-            stats[[optimSurvCols[2]]] <- optimSurv[[2]]
-            
-            # Show these columns at the end
-            names <- colnames(stats)
-            colsMatch <- match(optimSurvCols, names)
-            stats <- stats[c(names[-colsMatch], names[colsMatch])]
-        }
-        eventPlotOptions(session, stats, isolate(input$xAxis),
-                         isolate(input$yAxis), isolate(input$labelSortBy))
-    })
-    
-    # Update alternative splicing events and genes available to label
-    observe({
-        diffSpl <- getDifferentialAnalyses()
-        if (!is.null(diffSpl)) {
-            ASevents <- rownames(diffSpl)
-            names(ASevents) <- gsub("_", " ", ASevents)
-            updateSelectizeInput(session, "labelEvents", server=TRUE,
-                                 choices=ASevents, selected=character(0))
-            allGenes <- sort(unique(unlist(str_split(diffSpl$Gene, "/"))))
-            updateSelectizeInput(session, "labelGenes", server=TRUE,
-                                 choices=allGenes, selected=character(0))
-        } else {
-            updateSelectizeInput(session, "labelEvents", server=TRUE,
-                                 choices=character(0), selected=character(0))
-            updateSelectizeInput(session, "labelGenes", server=TRUE,
-                                 choices=character(0), selected=character(0))
-        }
-    })
-    
-    # Interface elements to highlight values in the plot
-    lapply(c("x", "y"), function(axis) {
-        observe({
-            highlightUI <- function(label, min, max) {
-                highlightId <- ns(paste0(label, "Highlight"))
-                sliderMinId <- ns(paste0(label, "SliderMin"))
-                sliderMaxId <- ns(paste0(label, "SliderMax"))
-                sliderInvId <- ns(paste0(label, "SliderInv"))
-                
-                # Round max and min numbers with two decimal points
-                max <- ceiling(max*100)/100
-                min <- floor(min*100)/100
-                
-                conditionalPanel(
-                    sprintf("input[id='%s']", highlightId),
-                    fluidRow(
-                        column(6, textInput(sliderMinId, "Lower limit \u2265",
-                                            placeholder=min, width="100%")),
-                        column(6, textInput(sliderMaxId, "Upper limit \u2264",
-                                            placeholder=max, width="100%"))),
-                    checkboxInput(sliderInvId, "Invert highlighted values"),
-                    helpText("The data in the table is also filtered",
-                             "according to highlighted events."))
-            }
-            
-            stats <- getDifferentialAnalyses()
-            optimSurv <- getDifferentialAnalysesSurvival()
-            if (!is.null(optimSurv)) {
-                stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
-                stats[["Log-rank p-value"]]   <- optimSurv[[2]]
-            }
-            
-            value <- input[[paste0(axis, "Axis")]]
-            if (is.null(stats) || is.null(value)) {
-                output[[paste0(axis, "HighlightValues")]] <- renderUI(NULL)
-                return(NULL)
-            }
-            
-            trans <- input[[paste0(axis, "Transform")]]
-            label <- transformOptions(value, trans)
-            if (!value %in% colnames(stats)) {
-                output[[paste0(axis, "HighlightValues")]] <- renderUI(NULL)
-                return(NULL)
-            }
-            vals  <- transformValues(stats[[value]], trans)
-            rangeNos <- range(vals, na.rm=TRUE)
-            minNo    <- min(rangeNos)
-            maxNo    <- max(rangeNos)
-            
-            output[[paste0(axis, "HighlightValues")]] <- renderUI( 
-                highlightUI(axis, minNo, maxNo) )
-        })
-    })
-    
-    # Disable labelling elements as appropriate
-    observe(toggleState("labelTopOptions", input$labelTopEnable))
-    observe(toggleState("labelEvents", input$labelEventEnable))
-    observe(toggleState("labelGenes", input$labelGeneEnable))
-    
-    # Prepare labelled points
-    observeEvent(input$labelPoints, {
-        isolate({
-            labelTopEnable   <- input$labelTopEnable
-            labelEventEnable <- input$labelEventEnable
-            labelGeneEnable  <- input$labelGeneEnable
-            labelSortBy      <- input$labelSortBy
-            labelTop         <- input$labelTop
-            labelOrder       <- input$labelOrder == "decreasing"
-            events           <- input$labelEvents
-            genes            <- input$labelGenes
-            displayGene      <- input$labelOnlyGene
-            diffSpl          <- getDifferentialAnalyses()
-        })
-        
-        labelled <- NULL
-        # Label top genes
-        if (labelTopEnable && !identical(labelSortBy, "")) {
-            sorted   <- order(diffSpl[[labelSortBy]], decreasing=labelOrder)
-            labelled <- head(sorted, labelTop)
-        }
-        
-        # Label selected alternative splicing events
-        if (labelEventEnable && !identical(events, "")) {
-            labelled <- c(labelled, match(events, rownames(diffSpl)))
-        }
-        
-        # Label alternative splicing events based on selected genes
-        if (labelGeneEnable && !identical(genes, "")) {
-            # Unlist all genes and save original indexes to quickly find
-            # genes across multiple alternative splicing events
-            allGenes <- str_split(diffSpl$Gene, "/")
-            len      <- sapply(allGenes, length)
-            genes    <- sprintf("^%s$", genes)
-            match    <- lapply(genes, grep, unlist(allGenes))
-            index    <- rep(seq(diffSpl$Gene), len)[unlist(match)]
-            labelled <- c(labelled, unique(index))
-        }
-        
-        attr(labelled, "displayOnlyGene") <- displayGene
-        setLabelledPoints("psi-volcano", labelled)
-    })
-    
-    observeEvent(input$unlabelPoints, setLabelledPoints("psi-volcano", NULL))
-    
-    # Plot events and render the plot tooltip
-    observe({
-        stats    <- getDifferentialAnalyses()
-        filtered <- getDifferentialAnalysesFiltered()
-        x <- input$xAxis
-        y <- input$yAxis
-        if (is.null(stats) || is.null(x) || is.null(y)) {
-            output$plot <- renderPlot(NULL)
-            output$tooltip <- renderUI(NULL)
-            return(NULL)
-        }
-        
-        # Include survival data
-        optimSurv <- getDifferentialAnalysesSurvival()
-        if (!is.null(optimSurv)) {
-            stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
-            stats[["Log-rank p-value"]]   <- optimSurv[[2]]
-        }
-        
-        res <- transformData(input, stats, x, y)
-        if (is.null(res)) {
-            output$plot <- renderPlot(NULL)
-            output$tooltip <- renderUI(NULL)
-            return(NULL)
-        }
-        
-        stats  <- res$data
-        xLabel <- res$xLabel
-        yLabel <- res$yLabel
-        
-        ggplotServer(
-            input=input, output=output, id="psi-volcano", df=stats, x=xLabel, 
-            y=yLabel, plot={
-                diffType <- "psi-volcano"
-                
-                parseHighlight <- function(input, arg) {
-                    argStr <- function(...) paste0(arg, ...)
-                    
-                    if (!input[[argStr("Highlight")]]) return(NULL)
-                    
-                    highlightMin <- input[[argStr("SliderMin")]]
-                    highlightMax <- input[[argStr("SliderMax")]]
-                    
-                    # Parse string and expect a numeric value
-                    evalString <- function(arg) {
-                        value <- tryCatch(
-                            suppressWarnings(eval(parse(text=arg), 
-                                                  envir=baseenv())),
-                            error=return)
-                        if (!is.numeric(value) || is(value, "error"))
-                            value <- NULL
-                        return(value)
-                    }
-                    
-                    highlightMax <- evalString(highlightMax)
-                    highlightMin <- evalString(highlightMin)
-                    
-                    noMin <- is.null(highlightMin)
-                    noMax <- is.null(highlightMax)
-                    minLTmax <- !noMin && !noMax && 
-                        isTRUE(highlightMin >= highlightMax)
-                    if ((noMin && noMax) || minLTmax) return(NULL)
-                    
-                    highlight <- c(lower=highlightMin, upper=highlightMax)
-                    attr(highlight, "inverted") <- input[[argStr("SliderInv")]]
-                    return(highlight)
-                }
-                
-                highlightX <- parseHighlight(input, "x")
-                highlightY <- parseHighlight(input, "y")
-                
-                # Check selected events
-                selected <- getSelectedPoints(diffType)
-                selected <- rownames(filtered)[selected]
-                selected <- which(rownames(stats) %in% selected)
-                if (length(selected) < 1) selected <- NULL
-                
-                params <- list(size=input$baseSize, col=input$baseColour,
-                               alpha=input$baseAlpha)
-                highlightParams <- list(size=input$highlightedSize,
-                                        col=input$highlightedColour,
-                                        alpha=input$highlightedAlpha)
-                selectedParams  <- list(size=input$selectedSize,
-                                        col=input$selectedColour,
-                                        alpha=input$selectedAlpha)
-                labelledParams  <- list(size=input$labelledSize,
-                                        col=input$labelledColour,
-                                        alpha=input$labelledAlpha)
-                
-                zoom <- getZoom(diffType)
-                if (!is.null(zoom)) {
-                    xlim <- c(zoom$xmin, zoom$xmax)
-                    ylim <- c(zoom$ymin, zoom$ymax)
-                } else {
-                    xlim <- NULL
-                    ylim <- NULL
-                }
-                
-                labelled <- getLabelledPoints(diffType)
-                eventPlot <- createEventPlotting(
-                    stats, xLabel, yLabel, params, highlightX, highlightY, 
-                    highlightParams, selected, selectedParams, labelled, 
-                    labelledParams, xlim=xlim, ylim=ylim)
-                setHighlightedPoints(diffType, eventPlot$highlighted)
-                eventPlot$plot[[1]]
-            })
-    })
-    
-    ggplotAuxServer(input, output, "psi-volcano")
-}
-
-#' Set of functions to render data table for differential analyses
-#' 
-#' @importFrom DT dataTableProxy selectRows replaceData
-#' @importFrom shinyjs toggleElement toggleState
-#' @importFrom utils write.table
-#' 
-#' @inherit diffSplicingTableServer
-diffAnalysesTableSet <- function(session, input, output) {
-    ns <- session$ns
-    
-    # Save selected points in the table
-    observe({
-        selected <- input$statsTable_rows_selected
-        setSelectedPoints("psi-volcano", selected)
-    })
-    
-    # Render table with sparklines
-    output$statsTable <- renderDataTableSparklines({
-        stats <- getDifferentialAnalyses()
-        if (!is.null(stats)) {
-            # Discard columns of no interest
-            cols <- colnames(stats)
-            cols <- cols[!grepl("method|data.name", cols)]
-            setDifferentialAnalysesColumns(cols)
-            return(stats[ , cols])
-        }
-    }, style="bootstrap", filter="top", server=TRUE, extensions="Buttons",
-    options=list(
-        pageLength=10, dom="Bfrtip", buttons=I("colvis"), columnDefs=list(
-            list(targets=5,   searchable=FALSE),
-            list(targets=6:8, visible=FALSE, render=JS("linkToShowSurv")))))
-    
-    # Update table with filtered information
-    proxy <- dataTableProxy("statsTable")
-    observe({
-        stats <- getDifferentialAnalyses()
-        
-        if (!is.null(stats)) {
-            # Bind preview of survival curves based on PSI cutoff
-            optimSurv <- getDifferentialAnalysesSurvival()
-            if (!is.null(optimSurv)) {
-                stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
-                stats[["Log-rank p-value"]]   <- optimSurv[[2]]
-                stats[["Survival by PSI cutoff"]] <- optimSurv[[3]]
-            }
-            
-            # Filter by highlighted events and events in the zoomed area
-            events  <- getHighlightedPoints("psi-volcano")
-            zoom    <- getZoom("psi-volcano")
-            
-            zoomed <- NULL
-            if (!is.null(zoom)) {
-                x <- input$xAxis
-                y <- input$yAxis
-                if (!is.null(x) && !is.null(y)) {
-                    res <- transformData(input, stats, x, y)
-                    if (!is.null(res)) {
-                        stats  <- res$data
-                        xLabel <- res$xLabel
-                        yLabel <- res$yLabel
-                        
-                        xStats <- stats[[xLabel]]
-                        xZoom  <- zoom$xmin <= xStats & xStats <= zoom$xmax
-                        yStats <- stats[[yLabel]]
-                        yZoom  <- zoom$ymin <= yStats & yStats <= zoom$ymax
-                        zoomed <- intersect(which(xZoom), which(yZoom))
-                    }
-                }
-            }
-            
-            # Filter rows based on highlighted and/or zoomed in events
-            if (!is.null(events) && !is.null(zoomed)) {
-                rowFilter <- intersect(events, zoomed)  
-            } else if (!is.null(events)) {
-                rowFilter <- events
-            } else if (!is.null(zoomed)) {
-                rowFilter <- zoomed
-            } else {
-                rowFilter <- TRUE
-            }
-            stats <- stats[rowFilter, ]
-            
-            # Keep previously selected rows if possible
-            before <- isolate(getDifferentialAnalysesFiltered())
-            selected <- isolate(input$statsTable_rows_selected)
-            selected <- rownames(before)[isolate(selected)]
-            selected <- which(rownames(stats) %in% selected)
-            if (length(selected) < 1) selected <- NULL
-            
-            # Set new data
-            setDifferentialAnalysesFiltered(stats)
-            
-            # Properly display event identifiers
-            rownames(stats) <- parseSplicingEvent(rownames(stats), char=TRUE)
-            
-            # Keep columns from data table (else, no data will be rendered)
-            cols  <- getDifferentialAnalysesColumns()
-            stats <- stats[ , cols]
-            
-            # Check if paging should be reset
-            resetPaging <- isolate(getDifferentialAnalysesResetPaging())
-            if (is.null(resetPaging)) resetPaging <- TRUE
-            setDifferentialAnalysesResetPaging(TRUE)
-            
-            # Round numbers based on significant digits
-            cols <- colnames(stats)
-            type <- sapply(cols, function(i) class(stats[[i]]))
-            numericCols <- cols[type == "numeric"]
-            
-            # Round numbers based on significant digits
-            if (nrow(stats) > 0) {
-                for (col in numericCols) {
-                    stats[ , col] <- suppressWarnings(
-                        as.numeric(signifDigits(stats[ , col])))
-                }
-            }
-            replaceData(proxy, stats, resetPaging=resetPaging, 
-                        clearSelection="none")
-        }
-    })
-    
-    # Hide table toolbar if statistical table is not displayed
-    observe(toggleElement(
-        "tableToolbar", condition=!is.null(getDifferentialAnalyses())))
-    
-    # Discard columns from data frame containing information to render plots
-    discardPlotsFromTable <- function(df) {
-        plotCols <- TRUE
-        if (!is.null(df)) {
-            plotCols <- -match(c("PSI distribution", "Survival by PSI cutoff"),
-                               colnames(df))
-            plotCols <- plotCols[!is.na(plotCols)]
-            if (length(plotCols) == 0) plotCols <- TRUE
-        }
-        return(df[ , plotCols])
-    }
-    
-    # Download whole table
-    output$downloadAll <- downloadHandler(
-        filename=paste(getCategory(), "Differential splicing analyses"),
-        content=function(file) {
-            stats <- getDifferentialAnalyses()
-            stats <- discardPlotsFromTable(stats)
-            
-            # Include updated survival analyses
-            optimSurv <- getDifferentialAnalysesSurvival()
-            stats[["Optimal PSI cutoff"]] <- optimSurv[[1]]
-            stats[["Log-rank p-value"]]   <- optimSurv[[2]]
-            
-            write.table(stats, file, quote=FALSE, sep="\t", row.names=FALSE)
-        }
-    )
-    
-    # Download filtered table
-    output$downloadSubset <- downloadHandler(
-        filename=paste(getCategory(), "Differential splicing analyses"),
-        content=function(file) {
-            stats <- getDifferentialAnalysesFiltered()
-            stats <- discardPlotsFromTable(stats)
-            stats <- stats[input$statsTable_rows_all, ]
-            write.table(stats, file, quote=FALSE, sep="\t", row.names=FALSE)
-        }
-    )
-    
-    # Create groups based on a given filter
-    groupBasedOnDifferentialAnalysis <- function(filter, description="") {
-        stats <- getDifferentialAnalysesFiltered()
-        stats <- discardPlotsFromTable(stats)
-        stats <- stats[filter, ]
-        
-        ASevents <- rownames(stats)
-        genes <- unique(names(getGenesFromSplicingEvents(ASevents)))
-        group <- cbind("Names"="DFS selection",
-                       "Subset"="Selection from differential splicing analysis",
-                       "Input"="Selection from differential splicing analysis",
-                       "ASevents"=list(ASevents), "Genes"=list(genes))
-        appendNewGroups("ASevents", group)
-        infoModal(
-            session, "New group created", 
-            "New group created", description, "and containing:",
-            div(style="font-size: 22px;", length(ASevents), "splicing events"),
-            div(style="font-size: 22px;", length(genes), "genes"))
-    }
-    
-    # Create groups based on splicing events displayed in the table
-    observeEvent(input$groupByDisplayedEvents, 
-                 groupBasedOnDifferentialAnalysis(
-                     input$statsTable_rows_all,
-                     "based on the splicing events shown in the table"))
-    
-    # Create groups based on selected splicing events
-    observeEvent(
-        input$groupBySelectedEvents,
-        groupBasedOnDifferentialAnalysis(
-            input$statsTable_rows_selected,
-            "based on selected splicing events"))
-    
-    # Disable groups based on selected AS events when no groups are selected
-    observe(toggleState("groupBySelectedEventsContainer",
-                        !is.null(input$statsTable_rows_selected)))
-}
-
 #' @rdname appServer
 diffSplicingTableServer <- function(input, output, session) {
-    ns <- session$ns
-    
     selectGroupsServer(session, "diffGroups", "Samples")
     selectGroupsServer(session, "diffASevents", "ASevents")
     selectGroupsServer(session, "sampleFiltering", "Samples",
@@ -990,9 +513,16 @@ diffSplicingTableServer <- function(input, output, session) {
     observeEvent(input$missingInclusionLevels, 
                  missingDataGuide("Inclusion levels"))
     
-    diffAnalysesSet(session, input, output)
-    diffAnalysesPlotSet(session, input, output)
-    diffAnalysesTableSet(session, input, output)
+    diffSplicingSet(session, input, output)
+    analysesPlotSet(
+        session, input, output, "PSI", "psi-volcano", getDifferentialSplicing,
+        getDifferentialSplicingFiltered, getDifferentialSplicingSurvival)
+    analysesTableSet(
+        session, input, output, "PSI", "psi-volcano", getDifferentialSplicing, 
+        getDifferentialSplicingFiltered, setDifferentialSplicingFiltered,
+        getDifferentialSplicingSurvival, getDifferentialSplicingColumns, 
+        setDifferentialSplicingColumns, getDifferentialSplicingResetPaging, 
+        setDifferentialSplicingResetPaging)
     
     # Optimal survival difference given an inclusion level cutoff for a 
     # specific alternative splicing event
