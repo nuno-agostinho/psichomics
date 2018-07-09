@@ -1,6 +1,7 @@
 # 1.6.2 (6 July, 2018)
 
-* Copy-edit README and update screen shot
+* Copy-edit README, tutorials, DESCRIPTION, NEWS and code
+* Update screen shot
 * Differential splicing and expression analysis:
     - Allow to input formulas when highlighting points; this is an improvement
     when plotting -log10(q-values), for instance, where it is now possible to
@@ -14,9 +15,9 @@
 
 # 1.6.1 (5 July, 2018)
 
-* Improve support for analysing SRA and user-owned data:
+* Improve support for analysing SRA and user-provided data:
 	- New tutorial on performing alternative splicing analysis using SRA and 
-	user-owned data from FASTQ files (other tutorials were also updated)
+	user-provided data from FASTQ files (other tutorials were also updated)
 	- Process gene and splice junction counts from STAR output for subsequent
 	loading into psichomics
 	- Automatically download and load data from select SRA projects using the
@@ -168,7 +169,7 @@ hg19 and hg38 annotation that is now available for use with psichomics)
     - Correlate gene expression of a given gene against PSI values of multiple
     alternative splicing events
 * Data loading:
-    - Add step-wise instructions about loading of user-owned files
+    - Add step-wise instructions about loading of user-provided files
     - Filter GTEx junction quantification based on tissues of interest (all 
     tissues are loaded by default)
     - Quantify splicing based on a list of genes (splicing events within all 

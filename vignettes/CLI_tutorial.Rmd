@@ -8,21 +8,22 @@ output:
     rmarkdown::html_vignette:
         toc: true
 vignette: >
-  %\VignetteIndexEntry{Case study: command-line interface (CLI)}
-  %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+    %\VignetteIndexEntry{Case study: command-line interface (CLI)}
+    %\VignetteEngine{knitr::rmarkdown}
+    \usepackage[utf8]{inputenc}
 ---
 
 ---
 
 *psichomics* is an interactive R package for integrative analyses of alternative
-splicing using data from [The Cancer Genome Atlas (TCGA)][TCGA] (containing 
-molecular data associated with 34 tumour types), from the
+splicing and gene expression based on [The Cancer Genome Atlas (TCGA)][TCGA]
+(containing molecular data associated with 34 tumour types), the
 [Genotype-Tissue Expression (GTEx)][GTEx] project (containing data for multiple
-normal human tissues) and from the [Sequence Read Archive][SRA]. The data 
-leveraged from these projects includes subject/sample-associated information and
-transcriptomic data, such as the quantification of RNA-Seq reads aligning to 
-splice junctions (henceforth called junction quantification) and exons.
+normal human tissues), [Sequence Read Archive][SRA] and user-provided data. The 
+data from GTEx, TCGA and select SRA projects include subject/sample-associated
+information and transcriptomic data, such as the quantification of RNA-Seq reads
+aligning to splice junctions (henceforth called junction quantification) and 
+exons.
 
 # Installing and starting the program
 Install *psichomics* by typing the following in an R console (the 
@@ -64,20 +65,22 @@ metadata
 
 **SRA**
 
-* `recount::recount_abstract`: Check available SRA projects from 
+* `recount::recount_abstract`: Check available [SRA][SRA] projects from 
 [*recount*][recount]
-* `loadSRAproject`: Download and load SRA projects through the 
+* `loadSRAproject`: Download and load [SRA][SRA] projects through the 
 [*recount*][recount] R package
 
 **Custom files**
 
 * `loadLocalFiles`: Load local files from a given folder
-* `prepareSRAmetadata`: Prepare metadata from SRA (as obtained from Run Selector 
-page)
+* `prepareSRAmetadata`: Prepare metadata from [SRA][SRA] (as obtained from Run
+Selector page)
 * `prepareJunctionQuant`: Prepare junction quantification files from 
-splice-aware aligners (currently, psichomics supports STAR output)
+splice-aware aligners (currently, psichomics supports the output of the 
+splice-aware aligner [STAR][STAR])
 * `prepareGeneQuant`: Prepare gene quantification files from splice-aware 
-aligners (currently, psichomics supports STAR output)
+aligners (currently, psichomics supports the output of the splice-aware aligner
+[STAR][STAR])
 
 ### Gene expression pre-processing
 * `rowMeans`: Calculate mean per row (useful for filtering gene expression)
@@ -179,7 +182,7 @@ spliced-in or PSI [@wang2008].
 To estimate this value for each splicing event, both alternative splicing
 annotation and junction quantification are required. While alternative splicing
 annotation is provided by the package, junction quantification may be retrieved
-from [TCGA][TCGA], [GTEx][GTEx], [SRA][SRA] or user-owned files.
+from [TCGA][TCGA], [GTEx][GTEx], [SRA][SRA] or user-provided files.
 
 Data is downloaded from [Firebrowse][Firebrowse], a service that hosts 
 proccessed data from [TCGA][TCGA], as required to run the downstream analyses. 
@@ -507,7 +510,7 @@ ggplot(diffSplicing, aes(`∆ Median`,
     geom_point(data=diffSplicing[!deltaPSIthreshold | !pvalueThreshold, ],
                colour="gray", alpha=0.5, size=3) + 
     theme_light(16) +
-    ylab("-log10(|q-value|)")
+    ylab("-log10(q-value)")
 ```
 
 ### Performing multiple survival analysis
@@ -616,7 +619,7 @@ ggplot(final, aes(`log2 Fold-Change`,
     geom_text_repel(data=final[cognateGenes, ], aes(label=genes),
                     box.padding=0.4, size=5) +
     theme_light(16) +
-    ylab("-log10(|p-value (BH adjusted)|)")
+    ylab("-log10(q-value)")
 ```
 
 ### *UHRF2* exon 10 inclusion
@@ -783,10 +786,10 @@ gtex <- loadGtexData(subjectPhenotype, sampleAttr, junctionQuant, tissues)
 
 ## Load SRA project data using recount
 
-[recount2][recount] is a resource of pre-processed data for thousands of SRA 
-projects (including gene read counts, splice junction quantification and sample
-metadata). psichomics supports automatic downloading and loading of SRA data
-from recount, as exemplified below:
+[recount2][recount] is a resource of pre-processed data for thousands of 
+[SRA][SRA] projects (including gene read counts, splice junction quantification 
+and sample metadata). psichomics supports automatic downloading and loading of 
+[SRA][SRA] data from recount2, as exemplified below:
 
 ```{r load recount, eval=FALSE}
 library(recount)
@@ -794,13 +797,20 @@ View(recount_abstract)
 sra <- loadSRAproject("SRP053101")
 ```
 
-## Load other SRA or user-owned local files
+## Load other SRA and user-provided local files
+
+> Although only select [SRA][SRA] projects are available to be automatically
+downloaded (based on pre-processed data from the [recount2][recount] project), 
+other SRA projects can be manually downloaded, aligned using a splice-aware 
+aligner and loaded by the user, as per the instructions in
+[Loading SRA and user-provided RNA-seq data][tutorial-custom-data]. 
+Sample-associated files from SRA are also supported.
 
 To load local files instead, indicate the folder of interest. Any files located
 in this folder and sub-folders will be loaded. To mitigate any errors during 
 this process, files of interest should be put in a dedicated folder.
 
-For instance, to load GTEx files in this way, create a directory called
+For instance, to load [GTEx][GTEx] files in this way, create a directory called
 **GTEx**, put all files of interest inside that folder and follow these 
 commands:
 
@@ -841,3 +851,5 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 [UniProt]: http://www.uniprot.org
 [SRA]: https://www.ncbi.nlm.nih.gov/sra
 [recount]: https://jhubiostatistics.shinyapps.io/recount/
+[STAR]: https://github.com/alexdobin/STAR
+[tutorial-custom-data]: http://rpubs.com/nuno-agostinho/psichomics-custom-data

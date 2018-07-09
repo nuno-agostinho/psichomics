@@ -292,13 +292,13 @@ dataUI <- function(id, tab) {
             "expression based on transcriptomic and sample-associated data ",
             "from The Cancer Genome Atlas (", tcga, "), the Genotype-Tissue ",
             "Expression (", gtex, ") project, Sequence Read Archive (", sra, 
-            ") or user-owned data.")),
+            ") or user-provided data.")),
         tags$br(), tags$br(), tags$ol(
             id="list",
             tags$li(HTML(paste0(
                 "Load gene expression values, alternative splicing ",
                 "junction quantification and/or sample-associated data ",
-                "from ", tcga, ", ", gtex, ", ", sra, " or user-owned data.",
+                "from ", tcga, ", ", gtex, ", ", sra, " or user-provided data.",
                 tags$br(), tags$small(
                     style="color: gray;",
                     "More data types will soon be supported.")))),

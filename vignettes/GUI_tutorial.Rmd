@@ -16,19 +16,20 @@ vignette: >
 ---
 
 *psichomics* is an interactive R package for integrative analyses of alternative
-splicing using data from [The Cancer Genome Atlas (TCGA)][TCGA] (containing 
-molecular data associated with 34 tumour types), from the
+splicing and gene expression based on [The Cancer Genome Atlas (TCGA)][TCGA]
+(containing molecular data associated with 34 tumour types), the
 [Genotype-Tissue Expression (GTEx)][GTEx] project (containing data for multiple
-normal human tissues) and from the [Sequence Read Archive][SRA]. The data
-leveraged from these projects includes clinical/sample-associated information 
-and transcriptomic data, such as the quantification of RNA-Seq reads aligning to
-splice junctions (henceforth called junction quantification) and exons.
+normal human tissues), [Sequence Read Archive][SRA] and user-provided data. The 
+data from GTEx, TCGA and select SRA projects include subject/sample-associated
+information and transcriptomic data, such as the quantification of RNA-Seq reads
+aligning to splice junctions (henceforth called junction quantification) and 
+exons.
 
 # Installing and starting the program
 Install *psichomics* by typing the following in an R console (the 
 [R environment](https://www.r-project.org/) is required):
 
-```{r, eval=FALSE}
+```{r install, eval=FALSE}
 install.packages("BiocManager")
 BiocManager::install("psichomics")
 ```
@@ -599,6 +600,15 @@ differentially expressed between tumour stage I and normal samples
 between patient groups stratified by its expression in tumour samples (log-rank 
 p-value = 0.279).
 
+# Load SRA and user-provided local files
+
+Although only select [SRA][SRA] projects are available to be automatically
+downloaded (based on pre-processed data from the [recount2][recount2] project), 
+other SRA projects can be manually downloaded, aligned using a splice-aware 
+aligner and loaded by the user, as per the instructions in
+[Loading SRA and user-provided RNA-seq data][tutorial-custom-data]. 
+Sample-associated files from SRA are also supported.
+
 # Feedback
 
 All feedback on the program, documentation and associated material (including
@@ -621,3 +631,4 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 [maxpath]: https://msdn.microsoft.com/library/windows/desktop/aa365247.aspx#maxpath
 [article]: https://doi.org/10.1101/261180
 [SRA]: https://www.ncbi.nlm.nih.gov/sra
+[tutorial-custom-data]: http://rpubs.com/nuno-agostinho/psichomics-custom-data
