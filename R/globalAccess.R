@@ -29,7 +29,7 @@ setHidden <- function(val) .hidden$elem <- val
 #' @note Needs to be called inside a reactive function
 #' 
 #' @seealso \code{\link{getEvent}}, \code{\link{getClinicalMatchFrom}},
-#' \code{\link{getGroups}} and \code{\link{getDifferentialAnalyses}}
+#' \code{\link{getGroups}} and \code{\link{getDifferentialSplicing}}
 #' 
 #' @return Getters return globally accessible data, whereas setters return NULL 
 #' as they are only used to modify the Shiny session's state
@@ -459,6 +459,15 @@ setDifferentialExpressionFiltered <- function(differential,
     setGlobal(category, "differentialExpressionFiltered", value=differential)
 
 #' @rdname getDifferentialExpression
+getDifferentialExpressionSurvival <- function(category=getCategory())
+    getGlobal(category, "differentialExpressionSurvival")
+
+#' @rdname getDifferentialExpression
+#' @param survival Data frame or matrix: differential analyses' survival data
+setDifferentialExpressionSurvival <- function(survival, category=getCategory())
+    setGlobal(category, "differentialExpressionSurvival", value=survival)
+
+#' @rdname getDifferentialExpression
 getDifferentialExpressionResetPaging <- function(category=getCategory())
     getGlobal(category, "diffExpressionResetPaging")
 
@@ -481,46 +490,46 @@ setDifferentialExpressionColumns <- function(columns, category=getCategory())
 
 #' Get or set differential splicing' elements for a data category
 #' @inherit getGlobal
-getDifferentialAnalyses <- function(category=getCategory())
-    getGlobal(category, "differentialAnalyses")
+getDifferentialSplicing <- function(category=getCategory())
+    getGlobal(category, "differentialSplicing")
 
-#' @rdname getDifferentialAnalyses
+#' @rdname getDifferentialSplicing
 #' @param differential Data frame or matrix: differential analyses table
-setDifferentialAnalyses <- function(differential, category=getCategory())
-    setGlobal(category, "differentialAnalyses", value=differential)
+setDifferentialSplicing <- function(differential, category=getCategory())
+    setGlobal(category, "differentialSplicing", value=differential)
 
-#' @rdname getDifferentialAnalyses
-getDifferentialAnalysesFiltered <- function(category=getCategory())
-    getGlobal(category, "differentialAnalysesFiltered")
+#' @rdname getDifferentialSplicing
+getDifferentialSplicingFiltered <- function(category=getCategory())
+    getGlobal(category, "differentialSplicingFiltered")
 
-#' @rdname getDifferentialAnalyses
-setDifferentialAnalysesFiltered <- function(differential, 
+#' @rdname getDifferentialSplicing
+setDifferentialSplicingFiltered <- function(differential, 
                                             category=getCategory())
-    setGlobal(category, "differentialAnalysesFiltered", value=differential)
+    setGlobal(category, "differentialSplicingFiltered", value=differential)
 
-#' @rdname getDifferentialAnalyses
-getDifferentialAnalysesSurvival <- function(category=getCategory())
-    getGlobal(category, "diffAnalysesSurv")
+#' @rdname getDifferentialSplicing
+getDifferentialSplicingSurvival <- function(category=getCategory())
+    getGlobal(category, "diffSplicingSurv")
 
-#' @rdname getDifferentialAnalyses
+#' @rdname getDifferentialSplicing
 #' @param survival Data frame or matrix: differential analyses' survival data
-setDifferentialAnalysesSurvival <- function(survival, category=getCategory())
-    setGlobal(category, "diffAnalysesSurv", value=survival)
+setDifferentialSplicingSurvival <- function(survival, category=getCategory())
+    setGlobal(category, "diffSplicingSurv", value=survival)
 
-#' @rdname getDifferentialAnalyses
-getDifferentialAnalysesResetPaging <- function(category=getCategory())
-    getGlobal(category, "diffAnalysesResetPaging")
+#' @rdname getDifferentialSplicing
+getDifferentialSplicingResetPaging <- function(category=getCategory())
+    getGlobal(category, "diffSplicingResetPaging")
 
-#' @rdname getDifferentialAnalyses
+#' @rdname getDifferentialSplicing
 #' @param reset Character: reset paging of differential analyses table?
-setDifferentialAnalysesResetPaging <- function(reset, category=getCategory())
-    setGlobal(category, "diffAnalysesResetPaging", value=reset)
+setDifferentialSplicingResetPaging <- function(reset, category=getCategory())
+    setGlobal(category, "diffSplicingResetPaging", value=reset)
 
-#' @rdname getDifferentialAnalyses
-getDifferentialAnalysesColumns <- function(category=getCategory())
-    getGlobal(category, "diffAnalysesCols")
+#' @rdname getDifferentialSplicing
+getDifferentialSplicingColumns <- function(category=getCategory())
+    getGlobal(category, "diffSplicingCols")
 
-#' @rdname getDifferentialAnalyses
+#' @rdname getDifferentialSplicing
 #' @param columns Character: differential analyses' column names
-setDifferentialAnalysesColumns <- function(columns, category=getCategory())
-    setGlobal(category, "diffAnalysesCols", value=columns)
+setDifferentialSplicingColumns <- function(columns, category=getCategory())
+    setGlobal(category, "diffSplicingCols", value=columns)
