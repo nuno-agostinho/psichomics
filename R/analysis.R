@@ -810,33 +810,29 @@ optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart,
 #' 
 #' @return HTML elements
 prepareEventPlotOptions <- function(id, ns, labelsPanel=NULL) {
-    xAxisPanel <- tabPanel(
-        "X axis",
-        selectizeInput(ns("xAxis"), "Select X axis", choices=NULL, 
-                       width="100%"),
-        selectizeInput(ns("xTransform"), "Data transformation of X values",
-                       transformOptions("x"), width="100%"),
-        bsCollapse(
-            bsCollapsePanel(
-                list(icon("thumb-tack"), "Highlight points based on X values"),
-                value="xAxisHighlightPanel",
-                checkboxInput(ns("xHighlight"), width="100%",
-                              "Highlight points based on X values"),
-                uiOutput(ns("xHighlightValues")))))
+    createAxisPanel <- function(ns, axis) {
+        upper  <- toupper(axis)
+        idAxis <- function(label) ns(paste0(axis, label))
+        highlightLabel <- sprintf("Highlight points based on %s values"), upper)
+        
+        tab <- tabPanel(
+            paste(upper, "axis"),
+            selectizeInput(idAxis("Axis"), choices=NULL, width="100%",
+                           sprintf("Select %s axis", upper)),
+            selectizeInput(idAxis("Transform"),
+                           sprintf("Data transformation of %s values", upper),
+                           transformOptions(axis), width="100%"),
+            bsCollapse(bsCollapsePanel(
+                list(icon("thumb-tack"), highlightLabel),
+                value=paste0(axis, "AxisHighlightPanel"),
+                checkboxInput(
+                    idAxis("Highlight"), width="100%", 
+                    highlightLabel, uiOutput(idAxis("HighlightValues")))))
+        return(tab)
+    }
     
-    yAxisPanel <- tabPanel(
-        "Y axis",
-        selectizeInput(ns("yAxis"), "Select Y axis", choices=NULL, 
-                       width="100%"),
-        selectizeInput(ns("yTransform"), "Data transformation of Y values",
-                       transformOptions("y"), width="100%"),
-        bsCollapse(
-            bsCollapsePanel(
-                list(icon("thumb-tack"), "Highlight points based on Y values"),
-                value="xAxisHighlightPanel",
-                checkboxInput(ns("yHighlight"), width="100%",
-                              "Highlight points based on Y values"),
-                uiOutput(ns("yHighlightValues")))))
+    xAxisPanel <- createAxisPanel(ns, "x")
+    yAxisPanel <- createAxisPanel(ns, "y")
     
     plotStyle <- navbarMenu(
         "Plot style",
