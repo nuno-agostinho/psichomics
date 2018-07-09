@@ -46,5 +46,5 @@ Get or set points or regions for plots
 }
 \seealso{
 \code{\link{getEvent}}, \code{\link{getClinicalMatchFrom}},
-\code{\link{getGroups}} and \code{\link{getDifferentialAnalyses}}
+\code{\link{getGroups}} and \code{\link{getDifferentialSplicing}}
 }

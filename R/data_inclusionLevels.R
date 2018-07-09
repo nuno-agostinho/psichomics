@@ -295,7 +295,7 @@ loadSplicingQuantificationSet <- function(session, input, output) {
     # Show warnings if needed before loading splicing quantification
     observeEvent(input$loadASquant, {
         if (!is.null(getInclusionLevels())) {
-            if (!is.null(getDifferentialAnalyses())) {
+            if (!is.null(getDifferentialSplicing())) {
                 warningModal(session, "Warning",
                              "The calculated differential splicing analyses",
                              "will be discarded and the previously loaded",
@@ -326,8 +326,8 @@ loadSplicingQuantificationSet <- function(session, input, output) {
     
     # Discard differential analyses and replace previous splicing quantification
     observeEvent(input$discard2, {
-        setDifferentialAnalyses(NULL)
-        setDifferentialAnalysesSurvival(NULL)
+        setDifferentialSplicing(NULL)
+        setDifferentialSplicingSurvival(NULL)
         setGroups("Samples", NULL)
         setGroups("AS events", NULL)
         loadSplicing()
@@ -420,7 +420,7 @@ quantifySplicingSet <- function(session, input) {
         if (is.null(getData()) || is.null(getJunctionQuantification())) {
             missingDataModal(session, "Junction quantification", ns("missing"))
         } else if (!is.null(getInclusionLevels())) {
-            if (!is.null(getDifferentialAnalyses())) {
+            if (!is.null(getDifferentialSplicing())) {
                 warningModal(
                     session, "Warning",
                     "The calculated differential splicing analyses will be",
@@ -443,8 +443,8 @@ quantifySplicingSet <- function(session, input) {
     
     observeEvent(input$replace, calcSplicing())
     observeEvent(input$discard, {
-        setDifferentialAnalyses(NULL)
-        setDifferentialAnalysesSurvival(NULL)
+        setDifferentialSplicing(NULL)
+        setDifferentialSplicingSurvival(NULL)
         calcSplicing()
     })
     

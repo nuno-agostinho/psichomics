@@ -150,5 +150,5 @@ Get or set globally accessible elements
 }
 \seealso{
 \code{\link{getEvent}}, \code{\link{getClinicalMatchFrom}},
-\code{\link{getGroups}} and \code{\link{getDifferentialAnalyses}}
+\code{\link{getGroups}} and \code{\link{getDifferentialSplicing}}
 }
