@@ -810,33 +810,29 @@ optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart,
 #' 
 #' @return HTML elements
 prepareEventPlotOptions <- function(id, ns, labelsPanel=NULL) {
-    xAxisPanel <- tabPanel(
-        "X axis",
-        selectizeInput(ns("xAxis"), "Select X axis", choices=NULL, 
-                       width="100%"),
-        selectizeInput(ns("xTransform"), "Data transformation of X values",
-                       transformOptions("x"), width="100%"),
-        bsCollapse(
-            bsCollapsePanel(
-                list(icon("thumb-tack"), "Highlight points based on X values"),
-                value="xAxisHighlightPanel",
-                checkboxInput(ns("xHighlight"), width="100%",
-                              "Highlight points based on X values"),
-                uiOutput(ns("xHighlightValues")))))
+    createAxisPanel <- function(ns, axis) {
+        upper  <- toupper(axis)
+        idAxis <- function(label) ns(paste0(axis, label))
+        highlightLabel <- sprintf("Highlight points based on %s values"), upper)
+        
+        tab <- tabPanel(
+            paste(upper, "axis"),
+            selectizeInput(idAxis("Axis"), choices=NULL, width="100%",
+                           sprintf("Select %s axis", upper)),
+            selectizeInput(idAxis("Transform"),
+                           sprintf("Data transformation of %s values", upper),
+                           transformOptions(axis), width="100%"),
+            bsCollapse(bsCollapsePanel(
+                list(icon("thumb-tack"), highlightLabel),
+                value=paste0(axis, "AxisHighlightPanel"),
+                checkboxInput(
+                    idAxis("Highlight"), width="100%", 
+                    highlightLabel, uiOutput(idAxis("HighlightValues")))))
+        return(tab)
+    }
     
-    yAxisPanel <- tabPanel(
-        "Y axis",
-        selectizeInput(ns("yAxis"), "Select Y axis", choices=NULL, 
-                       width="100%"),
-        selectizeInput(ns("yTransform"), "Data transformation of Y values",
-                       transformOptions("y"), width="100%"),
-        bsCollapse(
-            bsCollapsePanel(
-                list(icon("thumb-tack"), "Highlight points based on Y values"),
-                value="xAxisHighlightPanel",
-                checkboxInput(ns("yHighlight"), width="100%",
-                              "Highlight points based on Y values"),
-                uiOutput(ns("yHighlightValues")))))
+    xAxisPanel <- createAxisPanel(ns, "x")
+    yAxisPanel <- createAxisPanel(ns, "y")
     
     plotStyle <- navbarMenu(
         "Plot style",
@@ -2202,6 +2198,562 @@ diffAnalyses <- function(data, groups=NULL,
 
 #' @rdname diffAnalyses
 diffAnalysis <- diffAnalyses
+
+#' Set of functions to plot differential analyses
+#' 
+#' @inherit diffSplicingTableServer
+#' @inheritParams analysesTableSet
+#' 
+#' @importFrom stringr str_split
+#' @importFrom shinyjs toggleState
+analysesPlotSet <- function(session, input, output, analysesType, analysesID,
+                            getAnalysesData, getAnalysesFiltered, 
+                            getAnalysesSurvival) {
+    ns <- session$ns
+    
+    # Toggle visibility of elements regarding event options
+    observe({
+        stats <- getAnalysesData()
+        if (is.null(stats)) {
+            show("missingDiffAnalyses")
+            hide("eventOptions")
+        } else {
+            hide("missingDiffAnalyses")
+            show("eventOptions")
+        }
+    })
+    
+    # Update columns available to plot
+    observe({
+        stats <- getAnalysesData()
+        optimSurv <- getAnalysesSurvival()
+        if (!is.null(optimSurv)) {
+            optimSurvCols <- sprintf(
+                c("Optimal %s cutoff", "Log rank p-value"), analysesType)
+            stats[[optimSurvCols[1]]] <- optimSurv[[1]]
+            stats[[optimSurvCols[2]]] <- optimSurv[[2]]
+
+            # Show these columns at the end
+            names <- colnames(stats)
+            colsMatch <- match(optimSurvCols, names)
+            stats <- stats[c(names[-colsMatch], names[colsMatch])]
+        }
+        eventPlotOptions(session, stats, isolate(input$xAxis),
+                         isolate(input$yAxis), isolate(input$labelSortBy))
+    })
+    
+    # Update alternative splicing events and genes available to label
+    observe({
+        diffAnalyses <- getAnalysesData()
+        if (!is.null(diffAnalyses)) {
+            if (analysesType == "PSI") {
+                ASevents <- rownames(diffAnalyses)
+                names(ASevents) <- gsub("_", " ", ASevents)
+                updateSelectizeInput(session, "labelEvents", server=TRUE,
+                                     choices=ASevents, selected=character(0))
+                allGenes <- sort(unique(unlist(
+                    str_split(diffAnalyses$Gene, "/"))))
+                updateSelectizeInput(session, "labelGenes", server=TRUE,
+                                     choices=allGenes, selected=character(0))
+            } else if (analysesType == "GE") {
+                updateSelectizeInput(session, "labelGenes", server=TRUE,
+                                     choices=rownames(diffAnalyses), 
+                                     selected=character(0))
+            }
+        } else {
+            if (analysesType == "PSI") {
+                updateSelectizeInput(session, "labelEvents", server=TRUE,
+                                     choices=character(0), 
+                                     selected=character(0))
+            }
+            
+            updateSelectizeInput(session, "labelGenes", server=TRUE,
+                                 choices=character(0), selected=character(0))
+        }
+    })
+    
+    # Interface elements to highlight values in the plot
+    lapply(c("x", "y"), function(axis) {
+        observe({
+            highlightUI <- function(label, min, max) {
+                highlightId <- ns(paste0(label, "Highlight"))
+                sliderMinId <- ns(paste0(label, "SliderMin"))
+                sliderMaxId <- ns(paste0(label, "SliderMax"))
+                sliderInvId <- ns(paste0(label, "SliderInv"))
+                
+                # Round max and min numbers with two decimal points
+                max <- ceiling(max*100)/100
+                min <- floor(min*100)/100
+                
+                conditionalPanel(
+                    sprintf("input[id='%s']", highlightId),
+                    fluidRow(
+                        column(6, textInput(sliderMinId, "Lower limit \u2265",
+                                            placeholder=min, width="100%")),
+                        column(6, textInput(sliderMaxId, "Upper limit \u2264",
+                                            placeholder=max, width="100%"))),
+                    checkboxInput(sliderInvId, "Invert highlighted values"),
+                    helpText("The data in the table is also filtered",
+                             "according to highlighted events."))
+            }
+            
+            stats <- getAnalysesData()
+            optimSurv <- getAnalysesSurvival()
+            if (!is.null(optimSurv)) {
+                cols <- sprintf(c("Optimal %s cutoff", "Log-rank p-value"),
+                                analysesType)
+                stats[[cols[[1]]]] <- optimSurv[[1]]
+                stats[[cols[[2]]]] <- optimSurv[[2]]
+            }
+            
+            value <- input[[paste0(axis, "Axis")]]
+            if (is.null(stats) || is.null(value)) {
+                output[[paste0(axis, "HighlightValues")]] <- renderUI(NULL)
+                return(NULL)
+            }
+            
+            trans <- input[[paste0(axis, "Transform")]]
+            label <- transformOptions(value, trans)
+            if (!value %in% colnames(stats)) {
+                output[[paste0(axis, "HighlightValues")]] <- renderUI(NULL)
+                return(NULL)
+            }
+            vals  <- transformValues(stats[[value]], trans)
+            rangeNos <- range(vals, na.rm=TRUE)
+            minNo    <- min(rangeNos)
+            maxNo    <- max(rangeNos)
+            
+            output[[paste0(axis, "HighlightValues")]] <- renderUI( 
+                highlightUI(axis, minNo, maxNo) )
+        })
+    })
+    
+    # Disable labelling elements as appropriate
+    observe(toggleState("labelTopOptions", input$labelTopEnable))
+    observe(toggleState("labelGenes", input$labelGeneEnable))
+    if (analysesType == "PSI")
+        observe(toggleState("labelEvents", input$labelEventEnable))
+    
+    # Prepare labelled points
+    observeEvent(input$labelPoints, {
+        isolate({
+            labelTopEnable   <- input$labelTopEnable
+            labelEventEnable <- input$labelEventEnable # Only for PSIs
+            labelGeneEnable  <- input$labelGeneEnable
+            labelSortBy      <- input$labelSortBy
+            labelTop         <- input$labelTop
+            labelOrder       <- input$labelOrder == "decreasing"
+            events           <- input$labelEvents # Only for PSIs
+            genes            <- input$labelGenes
+            displayGene      <- input$labelOnlyGene # Only for PSIs
+            diffAnalyses     <- getAnalysesData()
+        })
+        
+        labelled <- NULL
+        # Label top events
+        if (labelTopEnable && !identical(labelSortBy, "")) {
+            sorted   <- order(diffAnalyses[[labelSortBy]], 
+                              decreasing=labelOrder)
+            labelled <- head(sorted, labelTop)
+        }
+        
+        if (analysesType == "PSI") {
+            # Label selected alternative splicing events
+            if (labelEventEnable && !identical(events, ""))
+                labelled <- c(labelled, match(events, rownames(diffAnalyses)))
+            
+            # Label alternative splicing events based on selected genes
+            if (labelGeneEnable && !identical(genes, "")) {
+                # Unlist all genes and save original indexes to quickly find
+                # genes across multiple alternative splicing events
+                allGenes <- str_split(diffAnalyses$Gene, "/")
+                len      <- sapply(allGenes, length)
+                genes    <- sprintf("^%s$", genes)
+                match    <- lapply(genes, grep, unlist(allGenes))
+                index    <- rep(seq(diffAnalyses$Gene), len)[unlist(match)]
+                labelled <- c(labelled, unique(index))
+            }
+        } else if (analysesType == "GE") {
+            # Label selected genes
+            if (labelGeneEnable && !identical(genes, ""))
+                labelled <- c(labelled, match(genes, rownames(diffAnalyses)))
+        }
+        
+        attr(labelled, "displayOnlyGene") <- displayGene
+        setLabelledPoints(analysesID, labelled)
+    })
+    
+    # Unlabel points
+    observeEvent(input$unlabelPoints, setLabelledPoints(analysesID, NULL))
+    
+    # Plot events and render the plot tooltip
+    observe({
+        stats    <- getAnalysesData()
+        filtered <- getAnalysesFiltered()
+        x <- input$xAxis
+        y <- input$yAxis
+        if (is.null(stats) || is.null(x) || is.null(y)) {
+            output$plot <- renderPlot(NULL)
+            output$tooltip <- renderUI(NULL)
+            return(NULL)
+        }
+        
+        # Include survival data
+        optimSurv <- getAnalysesSurvival()
+        if (!is.null(optimSurv)) {
+            cols <- sprintf(c("Optimal %s cutoff", "Log-rank p-value"),
+                            analysesType)
+            stats[[cols[[1]]]] <- optimSurv[[1]]
+            stats[[cols[[2]]]] <- optimSurv[[2]]
+        }
+        
+        res <- transformData(input, stats, x, y)
+        if (is.null(res)) {
+            output$plot <- renderPlot(NULL)
+            output$tooltip <- renderUI(NULL)
+            return(NULL)
+        }
+        
+        stats  <- res$data
+        xLabel <- res$xLabel
+        yLabel <- res$yLabel
+        
+        ggplotServer(
+            input=input, output=output, id=analysesID, df=stats, x=xLabel, 
+            y=yLabel, plot={
+                parseHighlight <- function(input, arg) {
+                    argStr <- function(...) paste0(arg, ...)
+                    
+                    if (!input[[argStr("Highlight")]]) return(NULL)
+                    
+                    highlightMin <- input[[argStr("SliderMin")]]
+                    highlightMax <- input[[argStr("SliderMax")]]
+                    
+                    # Parse string and expect a numeric value
+                    evalString <- function(arg) {
+                        value <- tryCatch(
+                            suppressWarnings(eval(parse(text=arg), 
+                                                  envir=baseenv())),
+                            error=return)
+                        if (!is.numeric(value) || is(value, "error"))
+                            value <- NULL
+                        return(value)
+                    }
+                    
+                    highlightMax <- evalString(highlightMax)
+                    highlightMin <- evalString(highlightMin)
+                    
+                    noMin <- is.null(highlightMin)
+                    noMax <- is.null(highlightMax)
+                    minLTmax <- !noMin && !noMax && 
+                        isTRUE(highlightMin >= highlightMax)
+                    if ((noMin && noMax) || minLTmax) return(NULL)
+                    
+                    highlight <- c(lower=highlightMin, upper=highlightMax)
+                    attr(highlight, "inverted") <- input[[argStr("SliderInv")]]
+                    return(highlight)
+                }
+                
+                highlightX <- parseHighlight(input, "x")
+                highlightY <- parseHighlight(input, "y")
+                
+                # Check selected events
+                selected <- getSelectedPoints(analysesID)
+                selected <- rownames(filtered)[selected]
+                selected <- which(rownames(stats) %in% selected)
+                if (length(selected) < 1) selected <- NULL
+                
+                params <- list(size=input$baseSize, col=input$baseColour,
+                               alpha=input$baseAlpha)
+                highlightParams <- list(size=input$highlightedSize,
+                                        col=input$highlightedColour,
+                                        alpha=input$highlightedAlpha)
+                selectedParams  <- list(size=input$selectedSize,
+                                        col=input$selectedColour,
+                                        alpha=input$selectedAlpha)
+                labelledParams  <- list(size=input$labelledSize,
+                                        col=input$labelledColour,
+                                        alpha=input$labelledAlpha)
+                
+                zoom <- getZoom(analysesID)
+                if (!is.null(zoom)) {
+                    xlim <- c(zoom$xmin, zoom$xmax)
+                    ylim <- c(zoom$ymin, zoom$ymax)
+                } else {
+                    xlim <- NULL
+                    ylim <- NULL
+                }
+                
+                labelled <- getLabelledPoints(analysesID)
+                eventPlot <- createEventPlotting(
+                    stats, xLabel, yLabel, params, highlightX, highlightY, 
+                    highlightParams, selected, selectedParams, labelled, 
+                    labelledParams, xlim=xlim, ylim=ylim)
+                setHighlightedPoints(analysesID, eventPlot$highlighted)
+                eventPlot$plot[[1]]
+            })
+    })
+    
+    ggplotAuxServer(input, output, analysesID)
+}
+
+#' Set of functions to render data table for differential analyses
+#' 
+#' @inherit diffSplicingTableServer
+#' 
+#' @param analysesType Character: type of analyses (\code{GE} or \code{PSI})
+#' @param analysesID Character: identifier of analyses
+#' @param getAnalysesData Function: used to get analyses data
+#' @param getAnalysesFiltered Function: used to get filtered analyses data
+#' @param setAnalysesFiltered Function: used to set filtered analyses data
+#' @param getAnalysesSurvival Function: used to get survival data
+#' @param getAnalysesColumns Function: used to get columns
+#' @param setAnalysesColumns Function: used to set columns
+#' @param getResetPaging Function: used to get reset paging toggle
+#' @param setResetPaging Function: used to set reset paging toggle
+#'
+#' @importFrom DT dataTableProxy selectRows replaceData
+#' @importFrom shinyjs toggleElement toggleState
+#' @importFrom utils write.table
+analysesTableSet <- function(session, input, output, analysesType, analysesID,
+                             getAnalysesData, getAnalysesFiltered, 
+                             setAnalysesFiltered, getAnalysesSurvival, 
+                             getAnalysesColumns, setAnalysesColumns, 
+                             getResetPaging, setResetPaging) {
+    # Save selected points in the table
+    observe({
+        selected <- input$statsTable_rows_selected
+        setSelectedPoints(analysesID, selected)
+    })
+    
+    if (analysesType == "PSI") {
+        searchableCols <- 5
+        visibleCols    <- 6:8
+        extraRender    <- JS("linkToShowSurv")
+    } else if (analysesType == "GE") {
+        searchableCols <- 1
+        visibleCols    <- 5:6
+        extraRender    <- NULL
+    }
+    
+    # Render table with sparklines
+    output$statsTable <- renderDataTableSparklines({
+        stats <- getAnalysesData()
+        if (!is.null(stats)) {
+            # Discard columns of no interest
+            cols <- colnames(stats)
+            cols <- cols[!grepl("method|data.name", cols)]
+            setAnalysesColumns(cols)
+            return(stats[ , cols])
+        }
+    }, style="bootstrap", filter="top", server=TRUE, extensions="Buttons",
+    options=list(pageLength=10, dom="Bfrtip", buttons=I("colvis"), 
+                 columnDefs=list(
+                     list(targets=searchableCols, searchable=FALSE),
+                     list(targets=visibleCols, visible=FALSE, 
+                          render=extraRender))))
+    
+    # Update table with filtered information
+    proxy <- dataTableProxy("statsTable")
+    observe({
+        stats <- getAnalysesData()
+        
+        if (!is.null(stats)) {
+            # Bind preview of survival curves based on PSI cutoff
+            optimSurv <- getAnalysesSurvival()
+            if (!is.null(optimSurv)) {
+                cols <- sprintf(c("Optimal %s cutoff", "Log-rank p-value",
+                                  "Survival by %s cutoff"), analysesType)
+                stats[[cols[[1]]]] <- optimSurv[[1]]
+                stats[[cols[[2]]]] <- optimSurv[[2]]
+                stats[[cols[[3]]]] <- optimSurv[[3]]
+            }
+            
+            # Filter by highlighted events and events in the zoomed area
+            events  <- getHighlightedPoints(analysesID)
+            zoom    <- getZoom(analysesID)
+            
+            zoomed <- NULL
+            if (!is.null(zoom)) {
+                x <- input$xAxis
+                y <- input$yAxis
+                if (!is.null(x) && !is.null(y)) {
+                    res <- transformData(input, stats, x, y)
+                    if (!is.null(res)) {
+                        stats  <- res$data
+                        xLabel <- res$xLabel
+                        yLabel <- res$yLabel
+                        
+                        xStats <- stats[[xLabel]]
+                        xZoom  <- zoom$xmin <= xStats & xStats <= zoom$xmax
+                        yStats <- stats[[yLabel]]
+                        yZoom  <- zoom$ymin <= yStats & yStats <= zoom$ymax
+                        zoomed <- intersect(which(xZoom), which(yZoom))
+                    }
+                }
+            }
+            
+            # Filter rows based on highlighted and/or zoomed in events
+            if (!is.null(events) && !is.null(zoomed)) {
+                rowFilter <- intersect(events, zoomed)  
+            } else if (!is.null(events)) {
+                rowFilter <- events
+            } else if (!is.null(zoomed)) {
+                rowFilter <- zoomed
+            } else {
+                rowFilter <- TRUE
+            }
+            stats <- stats[rowFilter, ]
+            
+            # Keep previously selected rows if possible
+            before   <- isolate(getAnalysesFiltered())
+            selected <- isolate(input$statsTable_rows_selected)
+            selected <- rownames(before)[isolate(selected)]
+            selected <- which(rownames(stats) %in% selected)
+            if (length(selected) < 1) selected <- NULL
+            
+            # Set new data
+            setAnalysesFiltered(stats)
+            
+            # Properly display event identifiers
+            rownames(stats) <- parseSplicingEvent(rownames(stats), char=TRUE)
+            
+            # Keep columns from data table (else, no data will be rendered)
+            cols  <- getAnalysesColumns()
+            stats <- stats[ , cols]
+            
+            # Check if paging should be reset
+            resetPaging <- isolate(getResetPaging())
+            if (is.null(resetPaging)) resetPaging <- TRUE
+            setResetPaging(TRUE)
+            
+            # Round numbers based on significant digits
+            cols <- colnames(stats)
+            type <- sapply(cols, function(i) class(stats[[i]]))
+            numericCols <- cols[type == "numeric"]
+            
+            # Round numbers based on significant digits
+            if (nrow(stats) > 0) {
+                for (col in numericCols) {
+                    stats[ , col] <- suppressWarnings(
+                        as.numeric(signifDigits(stats[ , col])))
+                }
+            }
+            replaceData(proxy, stats, resetPaging=resetPaging, 
+                        clearSelection="none")
+        }
+    })
+    
+    # Hide table toolbar if statistical table is not displayed
+    observe(toggleElement(
+        "tableToolbar", condition=!is.null(getAnalysesData())))
+    
+    # Discard columns from data frame containing information to render plots
+    discardPlotsFromTable <- function(df) {
+        plotCols <- TRUE
+        if (!is.null(df)) {
+            ns <- sprintf(c("%s distribution", "Survival by %s cutoff"),
+                          analysesType)
+            plotCols <- -match(ns, colnames(df))
+            plotCols <- plotCols[!is.na(plotCols)]
+            if (length(plotCols) == 0) plotCols <- TRUE
+        }
+        return(df[ , plotCols])
+    }
+    
+    if (analysesType == "PSI") {
+        filenameText <- "Differential splicing analyses"
+        rownamesCol  <- "AS event"
+    } else if (analysesType == "GE") {
+        filenameText <- "Differential expression analyses"
+        rownamesCol  <- "Gene"
+    }
+    
+    # Download whole table
+    output$downloadAll <- downloadHandler(
+        filename=paste(getCategory(), filenameText),
+        content=function(file) {
+            stats <- getAnalysesData()
+            stats <- discardPlotsFromTable(stats)
+            
+            # Include updated survival analyses
+            optimSurv <- getAnalysesSurvival()
+            if (!is.null(optimSurv)) {
+                cols <- sprintf(c("Optimal %s cutoff", "Log-rank p-value"),
+                                analysesType)
+                stats[[cols[[1]]]] <- optimSurv[[1]]
+                stats[[cols[[2]]]] <- optimSurv[[2]]
+            }
+            
+            stats <- cbind(rownames(stats), stats)
+            colnames(stats)[[1]] <- rownamesCol
+            write.table(stats, file, quote=FALSE, sep="\t", row.names=FALSE)
+        }
+    )
+    
+    # Download filtered table
+    output$downloadSubset <- downloadHandler(
+        filename=paste(getCategory(), filenameText),
+        content=function(file) {
+            stats <- getAnalysesFiltered()
+            stats <- discardPlotsFromTable(stats)
+            stats <- stats[input$statsTable_rows_all, ]
+            
+            stats <- cbind(rownames(stats), stats)
+            colnames(stats)[[1]] <- rownamesCol
+            write.table(stats, file, quote=FALSE, sep="\t", row.names=FALSE)
+        }
+    )
+    
+    # Create groups based on a given filter
+    groupBasedOnAnalysis <- function(filter, description="") {
+        stats <- getAnalysesFiltered()
+        stats <- discardPlotsFromTable(stats)
+        stats <- stats[filter, ]
+        
+        if (analysesType == "PSI") {
+            ASevents <- rownames(stats)
+            genes <- unique(names(getGenesFromSplicingEvents(ASevents)))
+            origin <- "Selection from differential splicing analysis"
+        } else if (analysesType == "GE") {
+            genes <- rownames(stats)
+            
+            ASevents <- getASevents()
+            if ( !is.null(ASevents) )
+                ASevents <- getSplicingEventFromGenes(genes, ASevents)
+            else
+                ASevents <- character(0)
+            
+            origin <- "Selection from differential expression analysis"
+        }
+        
+        group <- cbind("Names"="DFS selection", "Subset"=origin, "Input"=origin,
+                       "ASevents"=list(ASevents), "Genes"=list(genes))
+        appendNewGroups("ASevents", group)
+        infoModal(
+            session, title="New group created", 
+            "New group created", description, "and containing:",
+            div(style="font-size: 22px;", length(ASevents), "splicing events"),
+            div(style="font-size: 22px;", length(genes), "genes"))
+    }
+    
+    if (analysesType == "PSI")     groupedElements <- "splicing events"
+    else if (analysesType == "GE") groupedElements <- "genes"
+    groupsText <- sprintf(c("based on the %s shown in the table", 
+                            "based on selected %s"), groupedElements)
+    
+    # Create groups based on splicing events displayed in the table
+    observeEvent(input$groupByDisplayed, groupBasedOnAnalysis(
+        input$statsTable_rows_all, groupsText[[1]]))
+    
+    # Create groups based on selected splicing events
+    observeEvent(input$groupBySelected, groupBasedOnAnalysis(
+        input$statsTable_rows_selected, groupsText[[2]]))
+    
+    # Disable groups based on selected AS events when no groups are selected
+    observe(toggleState("groupBySelectedContainer",
+                        !is.null(input$statsTable_rows_selected)))
+}
 
 attr(analysesUI, "loader") <- "app"
 attr(analysesServer, "loader") <- "app"

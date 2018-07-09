@@ -107,7 +107,7 @@ diffSplicingEventServer <- function(input, output, session) {
         }
         
         # Check if analyses were already performed
-        stats <- getDifferentialAnalyses()
+        stats <- getDifferentialSplicing()
         if (!is.null(stats) && identical(attrGroups, attr(stats, "groups")))
             stat <- stats[event, ]
         else

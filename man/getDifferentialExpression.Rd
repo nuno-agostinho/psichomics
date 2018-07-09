@@ -5,6 +5,8 @@
 \alias{setDifferentialExpression}
 \alias{getDifferentialExpressionFiltered}
 \alias{setDifferentialExpressionFiltered}
+\alias{getDifferentialExpressionSurvival}
+\alias{setDifferentialExpressionSurvival}
 \alias{getDifferentialExpressionResetPaging}
 \alias{setDifferentialExpressionResetPaging}
 \alias{getDifferentialExpressionColumns}
@@ -18,6 +20,10 @@ setDifferentialExpression(differential, category = getCategory())
 getDifferentialExpressionFiltered(category = getCategory())
 
 setDifferentialExpressionFiltered(differential, category = getCategory())
+
+getDifferentialExpressionSurvival(category = getCategory())
+
+setDifferentialExpressionSurvival(survival, category = getCategory())
 
 getDifferentialExpressionResetPaging(category = getCategory())
 
@@ -33,6 +39,8 @@ it uses the selected data category}
 
 \item{differential}{Data frame or matrix: differential analyses table}
 
+\item{survival}{Data frame or matrix: differential analyses' survival data}
+
 \item{reset}{Character: reset paging of differential analyses table?}
 
 \item{columns}{Character: differential analyses' column names}
@@ -46,5 +54,5 @@ Get or set differential expression' elements for a data category
 }
 \seealso{
 \code{\link{getEvent}}, \code{\link{getClinicalMatchFrom}},
-\code{\link{getGroups}} and \code{\link{getDifferentialAnalyses}}
+\code{\link{getGroups}} and \code{\link{getDifferentialSplicing}}
 }
