@@ -101,7 +101,7 @@ diffExpressionTableUI <- function(id) {
         bsCollapse(
             id=ns("diffExpressionCollapse"), open="statAnalyses",
             bsCollapsePanel(
-                list(icon("tasks"), "Perform differential expression analysis"),
+                list(icon("cogs"), "Perform differential expression analysis"),
                 value="statAnalyses", style="info",
                 errorDialog(
                     paste("Gene expression data is required for",
@@ -112,7 +112,7 @@ diffExpressionTableUI <- function(id) {
                     buttonId=ns("loadGeneExpr")),
                 hidden(statAnalysesOptions)),
             bsCollapsePanel(
-                list(icon("tasks"), "Plot options and table filtering"),
+                list(icon("sliders"), "Plot options and table filtering"),
                 style="info", value="plotEvents",
                 errorDialog(
                     "Differential expression analysis not yet performed.",

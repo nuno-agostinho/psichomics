@@ -29,15 +29,18 @@ gtexDataUI <- function(id, panel) {
                       div(class="progress-bar progress-bar-striped active",
                           role="progressbar", style="width:100%",
                           "Loading tissues from sample attributes")),
-                  hidden(
-                      errorDialog(paste("GTEx sample attributes are required",
-                                        "to obtain available tissues."),
-                                  id=ns("missingData"), style="margin: 10px;")),
-                  hidden(
-                      warningDialog(
-                          paste("Issue reading sample attributes. Is this the",
-                                "correct file?"), id=ns("fileReadWarning"),
-                          style="margin: 10px;")),
+                  hidden(errorDialog(
+                      paste(
+                          "Please select a file containing GTEx sample",
+                          "attributes. This file is required to obtain",
+                          "available tissues in GTEx."), 
+                      id=ns("missingData"), style="margin: 10px;")),
+                  hidden(warningDialog(
+                      paste(
+                          "An issue occurred while reading the file",
+                          "containing sample attributes. Please confirm",
+                          "if the input file is the correct one."), 
+                      id=ns("fileReadWarning"), style="margin: 10px;")),
                   hidden(
                       selectizeInput(ns("tissues"), label=NULL, width="100%",
                                      choices=c("Select one or more tissues"=""),

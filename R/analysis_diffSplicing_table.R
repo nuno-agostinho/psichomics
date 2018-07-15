@@ -127,7 +127,7 @@ diffSplicingTableUI <- function(id) {
         bsCollapse(
             id=ns("diffSplicingCollapse"), open="statAnalyses",
             bsCollapsePanel(
-                list(icon("tasks"), "Perform statistical analyses"),
+                list(icon("cogs"), "Perform statistical analyses"),
                 value="statAnalyses", style="info",
                 errorDialog(
                     paste("Alternative splicing quantification is required for",
@@ -138,13 +138,13 @@ diffSplicingTableUI <- function(id) {
                     buttonId=ns("loadIncLevels")),
                 hidden(statAnalysesOptions)),
             bsCollapsePanel(
-                list(icon("tasks"), "Plot options and table filtering"),
+                list(icon("sliders"), "Plot options and table filtering"),
                 style="info", value="plotEvents",
                 errorDialog("Differential splicing analysis not yet performed.",
                             id=ns("missingDiffAnalyses")),
                 hidden(eventOptions)),
             bsCollapsePanel(
-                list(icon("tasks"),
+                list(icon("heartbeat"),
                      "Survival analyses by splicing quantification cutoff"),
                 style="info", value="survivalOptionsPanel",
                 hidden(div(id=ns("survivalOptions"), survivalOptions)),
@@ -409,7 +409,7 @@ optimSurvDiffSet <- function(session, input, output) {
         
         endProcess("survival", time)
     })
-}
+    }
 
 #' Set of functions to perform differential analyses
 #' 
@@ -451,7 +451,7 @@ diffSplicingSet <- function(session, input, output) {
             attrGroups <- "All samples"
             groups <- rep(attrGroups, ncol(psi))
         }
-
+        
         # Prepare splicing events to analyse
         ASevents <- getSelectedGroups(input, "diffASevents", "ASevents",
                                       filter=rownames(psi))
