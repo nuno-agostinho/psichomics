@@ -240,8 +240,8 @@ ASquantFileInput <- function(ASquantFileId, speciesId, assemblyId){
                         "betwen 0 and 1.")))),
         selectizeInput(speciesId, "Species", choices="Human", width = "100%",
                        options=list(create=TRUE)),
-        selectizeInput(assemblyId, "Assembly", choices="hg19", width = "100%",
-                       options=list(create=TRUE)))
+        selectizeInput(assemblyId, "Assembly", choices=c("hg19", "hg38"),
+                       width = "100%", options=list(create=TRUE)))
 }
 
 #' @rdname appUI
