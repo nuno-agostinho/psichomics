@@ -9,7 +9,7 @@ correlationUI <- function(id) {
     options <- div(
         id=ns("options"),
         bsCollapse(
-            open=c("corrParams", "corrOptions"),
+            open=c("corrParams"),
             multiple=TRUE,
             bsCollapsePanel(
                 tagList(icon("filter"), "Correlation parameters"), 
@@ -22,13 +22,7 @@ correlationUI <- function(id) {
                     ns("ASevents"), "Alternative splicing events", choices=NULL,
                     multiple=TRUE, 
                     options=list(plugins=list('remove_button', 'drag_drop'))), 
-                selectGroupsUI(ns("groups"),
-                               label="Perform correlation analysis on...",
-                               noGroupsLabel="All samples",
-                               groupsLabel="Samples from selected groups")),
-            bsCollapsePanel(
-                tagList(icon("wrench"), "Correlation options"), 
-                value="corrOptions", style="info",
+                hr(),
                 selectizeInput(
                     ns("method"), "Correlation method", 
                     c("Pearson's product-moment correlation"="pearson", 
@@ -38,7 +32,11 @@ correlationUI <- function(id) {
                 selectizeInput(ns("alternative"), "Alternative hypothesis",
                                c("Two-sided"="two.sided",
                                  "Greater than zero"="greater", 
-                                 "Less than zero"="less"))),
+                                 "Less than zero"="less")),
+                selectGroupsUI(ns("groups"),
+                               label="Perform correlation analysis on...",
+                               noGroupsLabel="All samples",
+                               groupsLabel="Samples from selected groups")),
             bsCollapsePanel(
                 tagList(icon("sliders"), "Scatterplot options"), 
                 value="scatterplotOptions", style="info",

@@ -813,7 +813,7 @@ prepareEventPlotOptions <- function(id, ns, labelsPanel=NULL) {
     createAxisPanel <- function(ns, axis) {
         upper  <- toupper(axis)
         idAxis <- function(label) ns(paste0(axis, label))
-        highlightLabel <- sprintf("Highlight points based on %s values"), upper)
+        highlightLabel <- sprintf("Highlight points based on %s values", upper)
         
         tab <- tabPanel(
             paste(upper, "axis"),
@@ -825,9 +825,9 @@ prepareEventPlotOptions <- function(id, ns, labelsPanel=NULL) {
             bsCollapse(bsCollapsePanel(
                 list(icon("thumb-tack"), highlightLabel),
                 value=paste0(axis, "AxisHighlightPanel"),
-                checkboxInput(
-                    idAxis("Highlight"), width="100%", 
-                    highlightLabel, uiOutput(idAxis("HighlightValues")))))
+                checkboxInput(idAxis("Highlight"), width="100%", 
+                              label=highlightLabel),
+                uiOutput(idAxis("HighlightValues")))))
         return(tab)
     }
     
@@ -1419,7 +1419,7 @@ createEventPlotting <- function(df, x, y, params, highlightX, highlightY,
         if (!is.null(highlight)) {
             onlyUpLimit <- identical(names(highlight), "upper")
             highlighted <- findInterval(df[[axis]], highlight, left.open=FALSE,
-                                         rightmost.closed=TRUE) == !onlyUpLimit
+                                        rightmost.closed=TRUE) == !onlyUpLimit
             if (attr(highlight, "inverted")) highlighted <- !highlighted
             highlighted <- which(highlighted)
         } else {
@@ -2232,7 +2232,7 @@ analysesPlotSet <- function(session, input, output, analysesType, analysesID,
                 c("Optimal %s cutoff", "Log rank p-value"), analysesType)
             stats[[optimSurvCols[1]]] <- optimSurv[[1]]
             stats[[optimSurvCols[2]]] <- optimSurv[[2]]
-
+            
             # Show these columns at the end
             names <- colnames(stats)
             colsMatch <- match(optimSurvCols, names)
