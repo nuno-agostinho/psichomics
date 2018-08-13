@@ -15,5 +15,5 @@ quantifySplicingSet(session, input)
 NULL (this function is used to modify the Shiny session's state)
 }
 \description{
-Set of functions to quantify alternative splicing
+Instructions to build the Shiny app
 }

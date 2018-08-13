@@ -5,13 +5,13 @@
 \alias{diffAnalysis}
 \title{Perform statistical analyses}
 \usage{
-diffAnalyses(data, groups = NULL, analyses = c("wilcoxRankSum", "ttest",
-  "kruskal", "levene", "fligner"), pvalueAdjust = "BH", geneExpr = NULL,
-  psi = NULL)
+diffAnalyses(data, groups = NULL, analyses = c("wilcoxRankSum",
+  "ttest", "kruskal", "levene", "fligner"), pvalueAdjust = "BH",
+  geneExpr = NULL, psi = NULL)
 
-diffAnalysis(data, groups = NULL, analyses = c("wilcoxRankSum", "ttest",
-  "kruskal", "levene", "fligner"), pvalueAdjust = "BH", geneExpr = NULL,
-  psi = NULL)
+diffAnalysis(data, groups = NULL, analyses = c("wilcoxRankSum",
+  "ttest", "kruskal", "levene", "fligner"), pvalueAdjust = "BH",
+  geneExpr = NULL, psi = NULL)
 }
 \arguments{
 \item{data}{Data frame or matrix: gene expression or alternative splicing 

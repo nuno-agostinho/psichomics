@@ -4,8 +4,8 @@
 \alias{performPCA}
 \title{Perform principal component analysis after processing missing values}
 \usage{
-performPCA(data, center = TRUE, scale. = FALSE, missingValues = round(0.05
-  * nrow(data)), ...)
+performPCA(data, center = TRUE, scale. = FALSE,
+  missingValues = round(0.05 * nrow(data)), ...)
 }
 \arguments{
 \item{data}{an optional data frame (or similar: see

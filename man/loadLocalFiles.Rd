@@ -4,7 +4,8 @@
 \alias{loadLocalFiles}
 \title{Load local files}
 \usage{
-loadLocalFiles(folder, ignore = c(".aux.", ".mage-tab."), name = "Data")
+loadLocalFiles(folder, ignore = c(".aux.", ".mage-tab."),
+  name = "Data")
 }
 \arguments{
 \item{folder}{Character: path to folder containing files of interest}

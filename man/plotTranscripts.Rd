@@ -4,7 +4,8 @@
 \alias{plotTranscripts}
 \title{Plot transcripts}
 \usage{
-plotTranscripts(info, eventPosition = NULL, event = NULL, shiny = FALSE)
+plotTranscripts(info, eventPosition = NULL, event = NULL,
+  shiny = FALSE)
 }
 \arguments{
 \item{info}{Information retrieved from Ensembl}

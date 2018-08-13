@@ -4,8 +4,9 @@
 \alias{plotSurvivalCurves}
 \title{Plot survival curves}
 \usage{
-plotSurvivalCurves(surv, mark = TRUE, interval = FALSE, pvalue = NULL,
-  title = "Survival analysis", scale = NULL, auto = TRUE)
+plotSurvivalCurves(surv, mark = TRUE, interval = FALSE,
+  pvalue = NULL, title = "Survival analysis", scale = NULL,
+  auto = TRUE)
 }
 \arguments{
 \item{surv}{Survival object}

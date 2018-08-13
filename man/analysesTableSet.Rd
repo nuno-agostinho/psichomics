@@ -6,8 +6,8 @@
 \usage{
 analysesTableSet(session, input, output, analysesType, analysesID,
   getAnalysesData, getAnalysesFiltered, setAnalysesFiltered,
-  getAnalysesSurvival, getAnalysesColumns, setAnalysesColumns, getResetPaging,
-  setResetPaging)
+  getAnalysesSurvival, getAnalysesColumns, setAnalysesColumns,
+  getResetPaging, setResetPaging)
 }
 \arguments{
 \item{session}{Session object}
@@ -40,5 +40,5 @@ analysesTableSet(session, input, output, analysesType, analysesID,
 NULL (this function is used to modify the Shiny session's state)
 }
 \description{
-Set of functions to render data table for differential analyses
+Instructions to build the Shiny app
 }

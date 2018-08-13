@@ -4,8 +4,8 @@
 \alias{noinfo}
 \title{Interface when no information could be retrieved}
 \usage{
-noinfo(output, description = paste("No information available for this gene."),
-  ...)
+noinfo(output,
+  description = paste("No information available for this gene."), ...)
 }
 \arguments{
 \item{output}{Shiny output}

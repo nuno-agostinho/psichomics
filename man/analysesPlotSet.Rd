@@ -28,5 +28,5 @@ analysesPlotSet(session, input, output, analysesType, analysesID,
 NULL (this function is used to modify the Shiny session's state)
 }
 \description{
-Set of functions to plot differential analyses
+Instructions to build the Shiny app
 }

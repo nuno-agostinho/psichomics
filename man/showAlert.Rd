@@ -7,8 +7,8 @@
 \alias{removeAlert}
 \title{Show or remove an alert}
 \usage{
-showAlert(session, ..., title = NULL, style = NULL, dismissible = TRUE,
-  alertId = "alert")
+showAlert(session, ..., title = NULL, style = NULL,
+  dismissible = TRUE, alertId = "alert")
 
 errorAlert(session, ..., title = NULL, dismissible = TRUE,
   alertId = "alert")
