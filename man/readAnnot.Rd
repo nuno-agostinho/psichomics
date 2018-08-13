@@ -17,5 +17,5 @@ readAnnot(session, annotation, showProgress = FALSE)
 NULL (this function is used to modify the Shiny session's state)
 }
 \description{
-Read custom or remote annotation
+Instructions to build the Shiny app
 }

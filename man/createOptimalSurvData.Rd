@@ -4,8 +4,8 @@
 \alias{createOptimalSurvData}
 \title{Create survival data based on a PSI cutoff}
 \usage{
-createOptimalSurvData(eventPSI, clinical, censoring, event, timeStart, timeStop,
-  match, patients, samples)
+createOptimalSurvData(eventPSI, clinical, censoring, event, timeStart,
+  timeStop, match, patients, samples)
 }
 \arguments{
 \item{eventPSI}{Numeric: alternative splicing quantification for multiple

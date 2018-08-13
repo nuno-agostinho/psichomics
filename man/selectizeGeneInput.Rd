@@ -4,7 +4,8 @@
 \alias{selectizeGeneInput}
 \title{Create input to select a gene}
 \usage{
-selectizeGeneInput(id, label = "Gene", choices = NULL, multiple = FALSE)
+selectizeGeneInput(id, label = "Gene", choices = NULL,
+  multiple = FALSE)
 }
 \arguments{
 \item{id}{Character: identifier}

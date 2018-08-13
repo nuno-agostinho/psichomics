@@ -4,8 +4,8 @@
 \alias{loadGtexData}
 \title{Load GTEx data}
 \usage{
-loadGtexData(clinical = NULL, sampleMetadata = NULL, junctionQuant = NULL,
-  geneExpr = NULL, tissue = NULL)
+loadGtexData(clinical = NULL, sampleMetadata = NULL,
+  junctionQuant = NULL, geneExpr = NULL, tissue = NULL)
 }
 \arguments{
 \item{clinical}{Character: path to subject information (the TXT file)}

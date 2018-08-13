@@ -19,3 +19,13 @@ A sidebar that can be passed to \code{\link{sidebarLayout}}
 \description{
 Modified version of \code{shiny::sidebarPanel} without a well
 }
+\examples{
+# Sidebar with controls to select a dataset and specify
+# the number of observations to view
+sidebarPanel(
+  selectInput("dataset", "Choose a dataset:",
+              choices = c("rock", "pressure", "cars")),
+
+  numericInput("obs", "Observations:", 10)
+)
+}

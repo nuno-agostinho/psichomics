@@ -17,5 +17,5 @@ loadGeneExpressionSet(session, input, output)
 NULL (this function is used to modify the Shiny session's state)
 }
 \description{
-Set of functions to load splicing quantification
+Instructions to build the Shiny app
 }

@@ -4,8 +4,9 @@
 \alias{createEventPlotting}
 \title{Create plot for events}
 \usage{
-createEventPlotting(df, x, y, params, highlightX, highlightY, highlightParams,
-  selected, selectedParams, labelled, labelledParams, xlim, ylim)
+createEventPlotting(df, x, y, params, highlightX, highlightY,
+  highlightParams, selected, selectedParams, labelled, labelledParams,
+  xlim, ylim)
 }
 \arguments{
 \item{df}{Data frame}

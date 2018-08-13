@@ -4,7 +4,8 @@
 \alias{hc_scatter}
 \title{Create scatter plot}
 \usage{
-hc_scatter(hc, x, y, z = NULL, label = NULL, showInLegend = FALSE, ...)
+hc_scatter(hc, x, y, z = NULL, label = NULL, showInLegend = FALSE,
+  ...)
 }
 \arguments{
 \item{hc}{\code{Highchart} object}

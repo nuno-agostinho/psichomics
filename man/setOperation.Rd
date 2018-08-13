@@ -4,9 +4,9 @@
 \alias{setOperation}
 \title{Perform set operations on selected groups}
 \usage{
-setOperation(operation, groups, selected, symbol = " ", groupName = NULL,
-  first = NULL, second = NULL, matches = NULL, type = "Samples",
-  assignColoursToGroups = FALSE)
+setOperation(operation, groups, selected, symbol = " ",
+  groupName = NULL, first = NULL, second = NULL, matches = NULL,
+  type = "Samples", assignColoursToGroups = FALSE)
 }
 \arguments{
 \item{operation}{Character: set operation}

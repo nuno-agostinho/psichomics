@@ -8,11 +8,12 @@
 \alias{parseMatsAnnotation}
 \title{Get events from alternative splicing annotation}
 \usage{
-parseSuppaAnnotation(folder, types = c("SE", "AF", "AL", "MX", "A5", "A3",
-  "RI"), genome = "hg19")
+parseSuppaAnnotation(folder, types = c("SE", "AF", "AL", "MX", "A5",
+  "A3", "RI"), genome = "hg19")
 
 parseVastToolsAnnotation(folder, types = c("ALT3", "ALT5", "COMBI", "IR",
-  "MERGE3m", "MIC", "EXSK", "MULTI"), genome = "Hsa", complexEvents = FALSE)
+  "MERGE3m", "MIC", "EXSK", "MULTI"), genome = "Hsa",
+  complexEvents = FALSE)
 
 parseMisoAnnotation(folder, types = c("SE", "AFE", "ALE", "MXE", "A5SS",
   "A3SS", "RI", "TandemUTR"), genome = "hg19")

@@ -4,8 +4,8 @@
 \alias{startProgress}
 \title{Create a progress object}
 \usage{
-startProgress(message, divisions, global = if (isRunning()) sharedData else
-  getHidden())
+startProgress(message, divisions, global = if (isRunning()) sharedData
+  else getHidden())
 }
 \arguments{
 \item{message}{Character: progress message}

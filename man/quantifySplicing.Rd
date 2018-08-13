@@ -4,8 +4,8 @@
 \alias{quantifySplicing}
 \title{Quantify alternative splicing events}
 \usage{
-quantifySplicing(annotation, junctionQuant, eventType = c("SE", "MXE", "ALE",
-  "AFE", "A3SS", "A5SS"), minReads = 10, genes = NULL)
+quantifySplicing(annotation, junctionQuant, eventType = c("SE", "MXE",
+  "ALE", "AFE", "A3SS", "A5SS"), minReads = 10, genes = NULL)
 }
 \arguments{
 \item{annotation}{List of data frames: annotation for each alternative

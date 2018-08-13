@@ -9,8 +9,8 @@ Original code by wleepang:
 }
 \usage{
 fileBrowserInput(id, label, value = NULL, placeholder = NULL,
-  info = FALSE, infoFUN = NULL, infoPlacement = "right", infoTitle = "",
-  infoContent = "")
+  info = FALSE, infoFUN = NULL, infoPlacement = "right",
+  infoTitle = "", infoContent = "")
 }
 \arguments{
 \item{id}{Character: input identifier}

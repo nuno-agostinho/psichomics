@@ -6,12 +6,13 @@
 \title{Calculate optimal data cutoff that best separates survival curves}
 \usage{
 optimalSurvivalCutoff(clinical, data, censoring, event, timeStart,
-  timeStop = NULL, followup = "days_to_last_followup", session = NULL,
-  filter = TRUE, survTime = NULL, lower = NULL, upper = NULL)
+  timeStop = NULL, followup = "days_to_last_followup",
+  session = NULL, filter = TRUE, survTime = NULL, lower = NULL,
+  upper = NULL)
 
-optimalPSIcutoff(clinical, psi, censoring, event, timeStart, timeStop = NULL,
-  followup = "days_to_last_followup", session = NULL, filter = TRUE,
-  survTime = NULL)
+optimalPSIcutoff(clinical, psi, censoring, event, timeStart,
+  timeStop = NULL, followup = "days_to_last_followup",
+  session = NULL, filter = TRUE, survTime = NULL)
 }
 \arguments{
 \item{clinical}{Data frame: clinical data}

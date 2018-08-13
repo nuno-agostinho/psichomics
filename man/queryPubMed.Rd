@@ -4,7 +4,8 @@
 \alias{queryPubMed}
 \title{Query the PubMed REST API}
 \usage{
-queryPubMed(primary, ..., top = 3, field = "abstract", sort = "relevance")
+queryPubMed(primary, ..., top = 3, field = "abstract",
+  sort = "relevance")
 }
 \arguments{
 \item{primary}{Character: primary search term}
