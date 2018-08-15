@@ -84,7 +84,7 @@ queryPubMed <- function(primary, ..., top=3, field="abstract",
     terms <- paste(primary, terms, sep=" OR ")
     
     url <- "https://eutils.ncbi.nlm.nih.gov"
-    query <- list(db="pmc", term=terms, retmax=top, tool="psichomics", 
+    query <- list(db="pubmed", term=terms, retmax=top, tool="psichomics", 
                   field=field, sort=sort,
                   email="nunodanielagostinho@gmail.com", retmode="json")
     resp <- GET(url, path="entrez/eutils/esearch.fcgi", query=query)
@@ -94,7 +94,7 @@ queryPubMed <- function(primary, ..., top=3, field="abstract",
     
     # Get summary information on the articles
     ids <- paste(search$idlist, collapse="+")
-    query <- list(db="pmc", tool="psichomics", id=ids,
+    query <- list(db="pubmed", tool="psichomics", id=ids,
                   email="nunodanielagostinho@gmail.com", retmode="json")
     resp <- GET(url, path="entrez/eutils/esummary.fcgi", query=query)
     warn_for_status(resp)
