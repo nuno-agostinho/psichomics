@@ -104,7 +104,7 @@ inclusionLevelsInterface <- function(ns) {
         errorDialog("No junction quantification is loaded.",
                     id=ns("missingData"), style="margin: 10px;"),
         hidden(options),
-        actionButton(ns("loadIncLevels"), "Load from file"),
+        actionButton(ns("loadIncLevels"), "Load from file..."),
         disabled(processButton(ns("calcIncLevels"),
                                "Quantify alternative splicing")))
 }

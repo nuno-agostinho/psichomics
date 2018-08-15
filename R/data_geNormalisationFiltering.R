@@ -117,7 +117,7 @@ geNormalisationFilteringInterface <- function(ns) {
         errorDialog("No gene expression data is loaded.",
                     id=ns("missingData"), style="margin: 10px;"),
         hidden(options),
-        actionButton(ns("loadGeneExpr"), "Load from file"),
+        actionButton(ns("loadGeneExpr"), "Load from file..."),
         disabled(processButton(ns("processGeneExpr"), 
                                "Filter and normalise gene expression")))
 }
