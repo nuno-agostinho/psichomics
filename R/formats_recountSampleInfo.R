@@ -38,8 +38,11 @@ recountSampleFormat <- function() {
         process = function(data) {
             # Unfold data characteristics if available
             if (any(!is.na(data$characteristics))) {
-                extra <- gsub(": ", "\"=\"", data$characteristics)
-                extra <- paste0("rbind(", paste0(extra, collapse=", "), ")")
+                extra <- gsub(": ", "\"=\"", data$characteristics, fixed=TRUE)
+                extra <- gsub("c(\"", "data.frame(\"", extra, fixed=TRUE)
+                extra <- gsub("\")", "\", check.names=FALSE)", extra, fixed=TRUE)
+                extra <- paste0("plyr::rbind.fill(", 
+                                paste0(extra, collapse=", "), ")")
                 extra <- eval(parse(text=extra))
                 data  <- cbind(data, extra)
                 data$characteristics <- NULL

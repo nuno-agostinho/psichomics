@@ -99,7 +99,7 @@ loadGtexFile <- function(path, pattern, samples=NULL) {
     }
     format <- formats[sapply(formats, filterFormats, pattern)]
     
-    colClasses <- NULL
+    select <- NULL
     if (pattern %in% c("junction", "gene") && !is.null(samples)) {
         # Parse all columns instead of specific ones
         customFormat <- format
@@ -107,10 +107,10 @@ loadGtexFile <- function(path, pattern, samples=NULL) {
         
         # Load GTEx data exclusively for matching samples
         allSamples <- colnames(parseValidFile(path, customFormat, nrows=0))
-        colClasses <- ifelse(allSamples %in% samples, "integer", "NULL")
-        colClasses[1] <- "character" # Retrieve junction identifier
+        select <- c(1, # Retrieve junction identifier 
+                    which(allSamples %in% samples))
     }
-    parsed <- parseValidFile(path, format, colClasses=colClasses)
+    parsed <- parseValidFile(path, format, select=select)
     
     if (!is.null(samples)) {
         if (pattern == "Sample") {
@@ -150,10 +150,12 @@ loadGtexData <- function(clinical=NULL, sampleMetadata=NULL, junctionQuant=NULL,
         && is.null(geneExpr))
         stop("No input data was given.")
     
+    # Check if inputs are not NULL and if respective files exist
     loaded <- list()
-    validFiles <- !vapply(
-        list(clinical, sampleMetadata, junctionQuant, geneExpr),
-        is.null, logical(1))
+    input  <- c(clinical, sampleMetadata, junctionQuant, geneExpr)
+    validInput <- !vapply(input, is.null, logical(1))
+    filesExist <- file.exists(input)
+    validFiles <- validInput & filesExist
     updateProgress("Loading files...", divisions=sum(validFiles))
     
     loadThisGtexFile <- function(path, pattern, samples=NULL) {
