@@ -422,8 +422,8 @@ renderGroupInterface <- function(ns, multiFisherTests=TRUE) {
     
     tagList(
         dataTableOutput(ns("groupsTable")),
-        helpText("Select groups by clicking on each one to perform the",
-                 "following actions on them."),
+        helpText("Click on groups in the table above to select them and",
+                 "perform the following actions."),
         operations, saveLoadGroups, 
         if (multiFisherTests) groupIndependenceSet,
         tags$div(class="btn-group pull-right",
@@ -1265,20 +1265,20 @@ groupManipulation <- function(input, output, session, type) {
             colnames(sub)   <- c("Group", id)
             sub             <- matchGroupPatientsAndSamples(id, sub)
             
-            table <- cbind("Group"=sub[ , "Group"],
-                           "Patients"=as.character(
-                               sapply(sub[ , "Patients"], length)),
-                           "Samples"=as.character(
-                               sapply(sub[ , "Samples"], length)))
+            table <- cbind(sub[ , "Group"],
+                           if ("Patients" %in% colnames(sub))
+                               as.character(sapply(sub[ , "Patients"], length)),
+                           if ("Samples" %in% colnames(sub))
+                               as.character(sapply(sub[ , "Samples"], length)))
+            colnames(table) <- colnames(sub)
             
             extra <- NULL
             totalGroups <- length(group)
             if (totalGroups > groupsToPreview) {
                 table <- rbind(table, rep("(...)", 3))
-                extra <- helpText(
-                    style="text-align: right;",
-                    sprintf("Previewing %s out of %s groups",
-                            groupsToPreview, totalGroups))
+                extra <- helpText(style="text-align: right;",
+                                  sprintf("Previewing %s out of %s groups",
+                                          groupsToPreview, totalGroups))
             }
             
             tagList(tags$label("Group preview"),
