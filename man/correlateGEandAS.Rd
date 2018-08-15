@@ -40,7 +40,7 @@ retrieved from the given gene)}
 }}
 }
 \value{
-List of correlations where each element is organised as such:
+List of correlations where each element contains:
 \item{\code{eventID}}{Alternative splicing event identifier}
 \item{\code{cor}}{Correlation between gene expression and alternative 
 splicing quantification of one alternative splicing event}

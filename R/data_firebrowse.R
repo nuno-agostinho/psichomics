@@ -641,9 +641,9 @@ firebrowseUI <- function(id, panel) {
 #' 
 #' @return HTML elements
 checkFirebrowse <- function(ns) {
-    startProgress("Checking Firebrowse API", 1)
+    startProgress("Checking Firebrowse API to retrieve TCGA data...", 1)
     if (isFirebrowseUp()) {
-        updateProgress("Loading interface")
+        updateProgress("Loading Firebrowse interface...")
         ui <- addTCGAdata(ns)
     } else {
         ui <- errorDialog("Firebrowse API appears to be offline at the moment.",
