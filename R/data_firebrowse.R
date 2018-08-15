@@ -493,7 +493,7 @@ loadFirebrowseData <- function(folder=NULL, data=NULL,
         if (download) {
             # Download missing files
             updateProgress(divisions = 1)
-            display("Triggered the download of files")
+            display("Downloading files...")
             
             if (identical(getOption("download.file.method"), "libcurl")) {
                 dl <- download.file(missingFiles, destfile=file.path(
@@ -534,7 +534,7 @@ loadFirebrowseData <- function(folder=NULL, data=NULL,
         updateProgress("Archives prepared")
     } else {
         # Set the progress bar to the number of folders to load
-        updateProgress("Loading data", divisions = length(folders))   
+        updateProgress("Loading data...", divisions = length(folders))   
     }
     
     # Get the full path of the files
