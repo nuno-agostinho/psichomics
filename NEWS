@@ -10,8 +10,11 @@
 
 ## Bug fixes
 
-* Differential expression analysis:
-    - Fix filenames of exported tables mentioning differential splicing analysis
+* Differential analysis:
+    - Avoid limitting X axis of density plot when values outside 0 and 1 are
+    provided, as in the case of gene expression ("plotDistribution" function)
+    - Fix filenames of exported tables from differential expression analysis
+    incorrectly mentioning differential splicing analysis instead
 
 # 1.6.1 (5 July, 2018)
 
