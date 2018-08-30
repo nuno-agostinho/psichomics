@@ -6,10 +6,10 @@
 \title{Plot distribution through a density plot}
 \usage{
 plotDistribution(data, groups = "All samples", rug = TRUE,
-  vLine = TRUE, ..., title = NULL, psi = TRUE)
+  vLine = TRUE, ..., title = NULL, psi = NULL)
 
 plotDensity(data, groups = "All samples", rug = TRUE, vLine = TRUE,
-  ..., title = NULL, psi = TRUE)
+  ..., title = NULL, psi = NULL)
 }
 \arguments{
 \item{data}{Numeric, data frame or matrix: data for one gene or alternative 
@@ -20,15 +20,16 @@ or character vector (group of each value in \code{data})}
 
 \item{rug}{Boolean: include rug plot to better visualise data distribution}
 
-\item{vLine}{Boolean: include vertical plot lines to indicate the mean and
-median of each group even when those groups are omitted}
+\item{vLine}{Boolean: include vertical plot lines to display descriptive 
+statistics for each group}
 
 \item{...}{Extra parameters passed to \code{density} to create the kernel
 density estimates}
 
 \item{title}{Character: plot title}
 
-\item{psi}{Boolean: are data composed of PSI values?}
+\item{psi}{Boolean: are data composed of PSI values? Automatically set to
+\code{TRUE} if all \code{data} values are between 0 and 1}
 }
 \value{
 Highcharter object with density plot

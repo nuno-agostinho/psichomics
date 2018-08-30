@@ -1589,12 +1589,13 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' @param groups List of characters (list of groups containing data identifiers)
 #' or character vector (group of each value in \code{data})
 #' @param rug Boolean: include rug plot to better visualise data distribution
-#' @param vLine Boolean: include vertical plot lines to indicate the mean and
-#' median of each group even when those groups are omitted
+#' @param vLine Boolean: include vertical plot lines to display descriptive 
+#' statistics for each group
 #' @param ... Extra parameters passed to \code{density} to create the kernel
 #' density estimates
 #' @param title Character: plot title
-#' @param psi Boolean: are data composed of PSI values?
+#' @param psi Boolean: are data composed of PSI values? Automatically set to
+#' \code{TRUE} if all \code{data} values are between 0 and 1
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_plotOptions hc_tooltip
 #' JS
@@ -1607,7 +1608,10 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' groups <- c(rep("A", 10), rep("B", 10))
 #' plotDistribution(data, groups)
 plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE, 
-                             ..., title=NULL, psi=TRUE) {
+                             ..., title=NULL, psi=NULL) {
+    if (is.null(psi)) 
+        psi <- min(data, na.rm=TRUE) >= 0 && max(data, na.rm=TRUE) <= 1
+    
     if (psi) {
         xMin <- 0
         xMax <- 1
