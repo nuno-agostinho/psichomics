@@ -7,6 +7,12 @@
     when plotting -log10(q-values), for instance, where it is now possible to
     highlight values >= -log10(0.05), i.e. q-values <= 0.5, instead of inputting
     an approximate value
+* Correlation analyses:
+    - Colour samples by group
+    - Render contour based on a density estimate
+    - Display exportable table with correlation analyses
+* Groups:
+    - Show group colour in group selection element
 
 ## Bug fixes
 
@@ -15,6 +21,9 @@
     provided, as in the case of gene expression ("plotDistribution" function)
     - Fix filenames of exported tables from differential expression analysis
     incorrectly mentioning differential splicing analysis instead
+* Correlation analysis:
+    - When plotting correlation analysis, loess curve was performed based on
+    gaussian fitting, independent of the "family" argument of "plotCorrelation"
 
 # 1.6.1 (5 July, 2018)
 

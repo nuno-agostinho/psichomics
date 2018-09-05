@@ -5,11 +5,17 @@
 #' @param id Character: identifier
 #' @param label Character: selectize label
 #' @param placeholder Character: selectize placeholder
-#' @param noGroupsLabel Character: label to show when no groups may be selected
-#' (if NULL, the option to show no groups will not be shown)
-#' @param groupsLabel Character: label to show to the option of using groups
-#' when no groups may be selected
-#' @param maxItems Numeric: maximum number of selected items
+#' @param noGroupsLabel Character: label to explicitly allow to select no groups
+#' (if \code{NULL}, this option is not displayed to the user)
+#' @param groupsLabel Character: label to explicetly allow to select groups
+#' (only required if the \code{noGroupsLabel} argument is not \code{NULL})
+#' @param maxItems Numeric: maximum number of groups to select
+#' @param returnAllDataLabel Character: label to allow to return data outside
+#' selected groups as belonging to an outside group (if \code{NULL}, this option
+#' is not displayed to the user)
+#' @param returnAllDataValue Boolean: default value to whether return all data
+#' or not (only required if the \code{returnAllDataLabel} argument is not 
+#' \code{NULL})
 #' 
 #' @importFrom shiny fluidRow column uiOutput selectizeInput actionButton
 #' radioButtons actionLink downloadLink
@@ -19,21 +25,18 @@
 #' 
 #' @return \code{selectGroupsUI}: Interface for group selection
 selectGroupsUI <- function (
-    id, label, placeholder="Click on 'Groups' to create or edit groups",
-    noGroupsLabel=NULL, groupsLabel=NULL, maxItems=NULL) {
+    id, label, placeholder="Click 'Groups' to create or edit groups",
+    noGroupsLabel=NULL, groupsLabel=NULL, maxItems=NULL, 
+    returnAllDataLabel=NULL, returnAllDataValue=FALSE) {
+    
     editId <- paste0(id, "Edit")
     groupSelect <- selectizeInput(
         id, label, choices=NULL, multiple=TRUE, width="auto", options=list(
             plugins=list('remove_button', 'drag_drop'), maxItems=maxItems, 
             searchField=list("value", "label"),
             placeholder=placeholder, render = I(
-                '{ option: function(item, escape) {
-                       return "<div><b>" + escape(item.value) + "</b><small> " + 
-                           escape(item.label) + "</small></div>"; },
-                   item: function(item, escape) {
-                       return "<div><b>" + escape(item.value) + "</b><small> " + 
-                           escape(item.label) + "</small></div>";
-                   } }')))
+                '{ option: renderGroupSelection, 
+                item: renderGroupSelection }')))
     
     if ( !is.null(label) ) {
         if ( is.null(noGroupsLabel) ) {
@@ -50,6 +53,12 @@ selectGroupsUI <- function (
         label, column(10, groupSelect), column(2, actionButton(
             editId, "Groups", class="pull-right", class="btn-info",
             style="z-index: 1; position: relative;")))
+    
+    if ( !is.null(returnAllDataLabel) ) {
+        noGroupsId <- paste0(id, "ShowAllData")
+        select <- tagList(select, checkboxInput(
+            noGroupsId, returnAllDataLabel, value=returnAllDataValue))
+    }
     
     if ( !is.null(noGroupsLabel) ) {
         noGroupsId <- paste0(id, "Selection")
@@ -125,7 +134,7 @@ selectGroupsServer <- function(session, id, type, preference=NULL) {
                 ns <- sprintf("%s %s", elem1Number, elem1)
             else if (!is.null(elem2Number))
                 ns <- sprintf("%s %s", elem2Number, elem2)
-            names(groups) <- ns
+            names(groups) <- paste(ns, unlist(groupTable[ , "Colour"]))
         }
         
         currentSelection <- isolate(input[[id]])
@@ -463,9 +472,9 @@ groupByAttribute <- function(ns, cols, id, example) {
         selectizeInput(ns(paste0("groupAttribute", id)), "Select attribute",
                        width="auto", choices=cols,
                        options=list(lockOptgroupOrder=TRUE)),
-        uiOutput(ns(paste0("previewGroups", id))),
         actionButton(ns(paste0("createGroupAttribute", id)), "Create groups",
-                     class ="btn-primary")
+                     class ="btn-primary"),
+        uiOutput(ns(paste0("previewGroups", id)))
     )
 }
 
@@ -1281,7 +1290,7 @@ groupManipulation <- function(input, output, session, type) {
                                           groupsToPreview, totalGroups))
             }
             
-            tagList(tags$label("Group preview"),
+            tagList(tags$hr(), tags$label("Group preview"),
                     table2html(table, rownames=FALSE, style="margin-bottom: 0;",
                                class="table table-condensed table-striped",
                                thead=TRUE),

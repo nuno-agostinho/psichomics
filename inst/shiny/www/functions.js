@@ -28,6 +28,17 @@ function updateHistory(params) {
 }
 
 /**
+ * Prepare interface for group selection
+ */
+function renderGroupSelection (item, escape) {
+    var description =  item.label.split(" #")[0];
+    var colour = "#" + item.label.split(" #")[1];
+    return "<div><b><font color='" + colour + "'>\u25CF</font> " + 
+        escape(item.value) + "</b><small> " + escape(description) + 
+        "</small></div>";
+}
+
+/**
  * Change active tab to the Data panel and collapse data panels
  * @param {String} modal Identifier of the modal to close (optional)
  */
