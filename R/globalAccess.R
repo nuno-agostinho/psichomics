@@ -293,6 +293,15 @@ setICA <- function(ica, category=getCategory())
     setGlobal(category, "ICA", value=ica)
 
 #' @rdname getEvent
+getCorrelation <- function(category=getCategory())
+    getGlobal(category, "correlation")
+
+#' @rdname getEvent
+#' @param correlation \code{prcomp} object (correlation analyses)
+setCorrelation <- function(correlation, category=getCategory())
+    setGlobal(category, "correlation", value=correlation)
+
+#' @rdname getEvent
 getGroupIndependenceTesting <- function(category=getCategory())
     getGlobal(category, "groupIndependenceTesting")
 

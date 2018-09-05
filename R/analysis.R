@@ -1558,22 +1558,18 @@ transformData <- function(input, df, x, y) {
 #' @param alpha Numeric: default transparency value; (opaque by default)
 #' 
 #' @importFrom shiny tagList h4 helpText sliderInput
-#' @importFrom colourpicker colourInput
 #' 
 #' @return HTML elements
 plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
                             colour="black", alpha=1.0) {
     id2 <- function(att) ns(paste0(id, att))
     
-    colourSelector <- colourInput(id2("Colour"), "Colour", value=colour)
-    colourSelector[[2]][["style"]] <- "width: 100%;"
-    
     tagList(
         h4(description),
         if (!is.null(help)) helpText(help),
         sliderInput(id2("Size"), "Size", min=1, max=10, step=1, value=size,
                     width="100%"),
-        colourSelector,
+        colourInputMod(id2("Colour"), "Colour", value=colour),
         sliderInput(id2("Alpha"), "Opacity", min=0, max=1, step=0.01,
                     value=alpha, width="100%")
     )

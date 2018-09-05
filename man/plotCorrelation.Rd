@@ -2,12 +2,22 @@
 % Please edit documentation in R/analysis_correlation.R
 \name{plotCorrelation}
 \alias{plotCorrelation}
+\alias{plot.GEandAScorrelation}
 \title{Plot correlations}
 \usage{
 plotCorrelation(corr, autoZoom = FALSE, loessSmooth = TRUE,
   loessFamily = c("gaussian", "symmetric"), colour = "black",
   alpha = 0.2, size = 1.5, loessColour = "red", loessAlpha = 1,
-  loessWidth = 0.5, fontSize = 12, ...)
+  loessWidth = 0.5, fontSize = 12, ..., colourGroups = NULL,
+  legend = FALSE, showAllData = TRUE, density = FALSE,
+  densityColour = "blue", densityWidth = 0.5)
+
+\method{plot}{GEandAScorrelation}(corr, autoZoom = FALSE,
+  loessSmooth = TRUE, loessFamily = c("gaussian", "symmetric"),
+  colour = "black", alpha = 0.2, size = 1.5, loessColour = "red",
+  loessAlpha = 1, loessWidth = 0.5, fontSize = 12, ...,
+  colourGroups = NULL, legend = FALSE, showAllData = TRUE,
+  density = FALSE, densityColour = "blue", densityWidth = 0.5)
 }
 \arguments{
 \item{corr}{List of correlations}
@@ -43,6 +53,19 @@ least-squares, and if \code{symmetric}, a re-descending M estimator is used}
   \item{evaluation}{number of points at which to evaluate the smooth
     curve.}
 }}
+
+\item{colourGroups}{List of characters: sample colouring by group}
+
+\item{legend}{Boolean: show legend for sample colouring?}
+
+\item{showAllData}{Boolean: show data outside selected groups as a single
+group (coloured based on the \code{colour} argument)}
+
+\item{density}{Boolean: contour plot of a density estimate}
+
+\item{densityColour}{Character: line colour of contours}
+
+\item{densityWidth}{Numeric: line width of contours}
 }
 \value{
 Renders plots for each correlation in \code{corr}
@@ -57,5 +80,9 @@ psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 
 geneExpr <- readFile("ex_gene_expression.RDS")
 corr <- correlateGEandAS(geneExpr, psi, "ALDOA")
-plotCorrelation(corr)
+
+colourGroups <- list(Normal=paste("Normal", 1:3), 
+                     Tumour=paste("Cancer", 1:3))
+attr(colourGroups, "Colour") <- c(Normal="#00C65A", Tumour="#EEE273")
+plotCorrelation(corr, colourGroups=colourGroups, alpha=1)
 }

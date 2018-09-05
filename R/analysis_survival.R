@@ -59,10 +59,9 @@ survivalUI <- function(id) {
                 "selected alternative splicing event")),
         conditionalPanel(
             sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "groups"),
-            selectGroupsUI(ns("dataGroups"), label=NULL),
-            checkboxInput(ns("showOutGroup"),
-                          "Show data outside selected groups",
-                          value = FALSE)),
+            selectGroupsUI(
+                ns("dataGroups"), label=NULL, returnAllDataValue=FALSE,
+                returnAllDataLabel="Display data outside selected groups")),
         conditionalPanel(
             sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "formula"),
             textAreaInput(
@@ -160,7 +159,7 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
         timeStop   <- input$timeStop
         event      <- input$event
         censoring  <- input$censoring
-        outGroup   <- input$showOutGroup
+        outGroup   <- input$dataGroupsShowAllData
         modelTerms <- input$modelTerms
         formulaStr <- input$formula
         intRanges  <- input$ranges

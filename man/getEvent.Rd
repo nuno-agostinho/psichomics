@@ -26,6 +26,8 @@
 \alias{setPCA}
 \alias{getICA}
 \alias{setICA}
+\alias{getCorrelation}
+\alias{setCorrelation}
 \alias{getGroupIndependenceTesting}
 \alias{setGroupIndependenceTesting}
 \alias{getSpecies}
@@ -88,6 +90,10 @@ getICA(category = getCategory())
 
 setICA(ica, category = getCategory())
 
+getCorrelation(category = getCategory())
+
+setCorrelation(correlation, category = getCategory())
+
 getGroupIndependenceTesting(category = getCategory())
 
 setGroupIndependenceTesting(groupIndependenceTesting,
@@ -129,6 +135,8 @@ dataset is returned)}
 \item{pca}{\code{prcomp} object (principal component analysis)}
 
 \item{ica}{Object containing independent component analysis}
+
+\item{correlation}{\code{prcomp} object (correlation analyses)}
 
 \item{groupIndependenceTesting}{Object containing group independence testing
 results}

@@ -69,6 +69,19 @@ tableRow <- function (..., th=FALSE) {
     do.call(tags$tr, lapply(args, row))
 }
 
+#' Modified colour input with 100% width
+#' 
+#' @param ... Parameters to \code{colorInput}
+#' 
+#' @importFrom colourpicker colourInput
+#' 
+#' @return HTML elements
+colourInputMod <- function(...) {
+    colourSelector <- colourInput(...)
+    colourSelector[[2]][["style"]] <- "width: 100%;"
+    return(colourSelector)
+}
+
 #' Splicing event types available
 #' 
 #' @param acronymsAsNames Boolean: return acronyms as names? FALSE by default

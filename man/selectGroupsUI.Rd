@@ -7,8 +7,9 @@
 \title{Group selection}
 \usage{
 selectGroupsUI(id, label,
-  placeholder = "Click on 'Groups' to create or edit groups",
-  noGroupsLabel = NULL, groupsLabel = NULL, maxItems = NULL)
+  placeholder = "Click 'Groups' to create or edit groups",
+  noGroupsLabel = NULL, groupsLabel = NULL, maxItems = NULL,
+  returnAllDataLabel = NULL, returnAllDataValue = FALSE)
 
 selectGroupsServer(session, id, type, preference = NULL)
 
@@ -21,13 +22,21 @@ getSelectedGroups(input, id, type, filter = NULL)
 
 \item{placeholder}{Character: selectize placeholder}
 
-\item{noGroupsLabel}{Character: label to show when no groups may be selected
-(if NULL, the option to show no groups will not be shown)}
+\item{noGroupsLabel}{Character: label to explicitly allow to select no groups
+(if \code{NULL}, this option is not displayed to the user)}
 
-\item{groupsLabel}{Character: label to show to the option of using groups
-when no groups may be selected}
+\item{groupsLabel}{Character: label to explicetly allow to select groups
+(only required if the \code{noGroupsLabel} argument is not \code{NULL})}
 
-\item{maxItems}{Numeric: maximum number of selected items}
+\item{maxItems}{Numeric: maximum number of groups to select}
+
+\item{returnAllDataLabel}{Character: label to allow to return data outside
+selected groups as belonging to an outside group (if \code{NULL}, this option
+is not displayed to the user)}
+
+\item{returnAllDataValue}{Boolean: default value to whether return all data
+or not (only required if the \code{returnAllDataLabel} argument is not 
+\code{NULL})}
 
 \item{session}{Shiny session}
 
