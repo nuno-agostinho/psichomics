@@ -170,7 +170,7 @@ diffSplicingTableUI <- function(id) {
         tags$button(class="btn btn-default dropdown-toggle", type="button",
                     "data-toggle"="dropdown", "aria-haspopup"="true",
                     "aria-expanded"="false", icon("object-group"),
-                    "Create groups based on...", tags$span(class="caret")),
+                    "Create group based on...", tags$span(class="caret")),
         tags$ul(class="dropdown-menu",
                 disabled(tags$li(id=ns("groupBySelectedContainer"),
                                  actionLink(ns("groupBySelected"),
@@ -318,8 +318,9 @@ optimSurvDiffSet <- function(session, input, output) {
                 subset <- psi[events, ]
             } else {
                 errorModal(session, "Error with selected events",
-                           "Unfortunately, it's not possible to get events",
-                           "shown in the table.")
+                           "Unfortunately, it was not possible to get the", 
+                           "events shown in the table.",
+                           caller="Differential splicing analysis")
                 endProcess("survival")
                 return(NULL)
             }
@@ -328,9 +329,10 @@ optimSurvDiffSet <- function(session, input, output) {
                 events <- rownames(statsFiltered)[filtered]
                 subset <- psi[events, ]
             } else {
-                errorModal(session, "Error with selected events",
-                           "Unfortunately, it's not possible to get the events",
-                           "from the table.")
+                errorModal(
+                    session, "Error with selected events",
+                    "Unfortunately, it was not possible to get the events from",
+                    "the table.", caller="Differential splicing analysis")
                 endProcess("survival")
                 return(NULL)
             }
@@ -345,7 +347,8 @@ optimSurvDiffSet <- function(session, input, output) {
         if (length(opt) == 0) {
             errorModal(session, "No survival analyses",
                        "Optimal PSI cutoff for the selected alternative",
-                       "splicing events returned no survival analyses.")
+                       "splicing events returned no survival analyses.",
+                       caller="Differential splicing analysis")
         } else {
             df <- data.frame(t(opt), stringsAsFactors=FALSE)
             if (is.null(optimSurv)) {
@@ -475,11 +478,12 @@ diffSplicingSet <- function(session, input, output) {
             missingDataModal(session, "Inclusion levels",
                              ns("missingInclusionLevels"))
         } else if ( !is.null(diffSplicing) ) {
-            warningModal(session, "Differential analyses already performed",
-                         "Do you wish to replace the loaded analyses?",
-                         footer=actionButton(ns("replace"), "Replace",
+            warningModal(session, "Differential splicing already performed",
+                         "Do you wish to discard the current results?",
+                         footer=actionButton(ns("replace"), "Discard",
                                              class="btn-warning",
-                                             "data-dismiss"="modal"))
+                                             "data-dismiss"="modal"),
+                         caller="Differential splicing analysis")
         } else {
             performDiffSplicing()
         }

@@ -14,7 +14,7 @@
 * Groups:
     - Show group colour in group selection element
 
-## Bug fixes
+## Bug fixes and minor changes
 
 * Differential analysis:
     - Avoid limitting X axis of density plot when values outside 0 and 1 are
@@ -24,6 +24,7 @@
 * Correlation analysis:
     - When plotting correlation analysis, loess curve was performed based on
     gaussian fitting, independent of the "family" argument of "plotCorrelation"
+* Improve console logging of error and warning messages
 
 # 1.6.1 (5 July, 2018)
 

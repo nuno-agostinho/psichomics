@@ -320,6 +320,22 @@ trimWhitespace <- function(word) {
     return(word)
 }
 
+#' Create word break opportunities (for HTML) using given characters
+#' 
+#' @param str Character: text
+#' @param pattern Character: pattern(s) of interest to be used as word break
+#' opportunities
+#' 
+#' @importFrom shiny HTML
+#' 
+#' @return String containing HTML elements
+prepareWordBreak <- function(str, pattern=c(".", "-", "\\", "/", "_")) {
+    res <- str
+    # wbr: word break opportunity
+    for (p in pattern) res <- gsub(p, paste0(p, "<wbr>"), res, fixed=TRUE)
+    return(HTML(res))
+}
+
 #' Filter NULL elements from vector or list
 #' 
 #' @param v Vector or list
@@ -708,11 +724,13 @@ loadRequiredData <- function( modal=NULL ) {
 #' 
 #' @importFrom shiny renderUI div icon showModal modalButton modalDialog
 #' @importFrom shinyBS toggleModal
+#' @importFrom R.utils capitalize
+#' 
 #' @seealso \code{\link{showAlert}}
 #' @return NULL (this function is used to modify the Shiny session's state)
 styleModal <- function(session, title, ..., style=NULL,
                        iconName="exclamation-circle", footer=NULL, echo=FALSE, 
-                       size="medium", dismissButton=TRUE) {
+                       size="medium", dismissButton=TRUE, caller=NULL) {
     
     size <- switch(size, "small"="s", "large"="l", "medium"="m")
     if (dismissButton) footer <- tagList(modalButton("Dismiss"), footer)
@@ -726,25 +744,33 @@ styleModal <- function(session, title, ..., style=NULL,
                                 class=style)
     }
     showModal(modal, session)
-    if (echo) display(content)
+    if (echo) {
+        msg <- sprintf("%s: %s", capitalize(style), title)
+        if (!is.null(caller)) msg <- sprintf('%s (in "%s")', msg, caller)
+        message(msg)
+    }
+    return(invisible(TRUE))
 }
 
 #' @rdname styleModal
-errorModal <- function(session, title, ..., size="small", footer=NULL) {
+errorModal <- function(session, title, ..., size="small", footer=NULL, 
+                       caller=NULL) {
     styleModal(session, title, ..., footer=footer, style="error", size=size,
-               echo=FALSE, iconName="times-circle")
+               echo=TRUE, iconName="times-circle", caller=caller)
 }
 
 #' @rdname styleModal
-warningModal <- function(session, title, ..., size="small", footer=NULL) {
+warningModal <- function(session, title, ..., size="small", footer=NULL,
+                         caller=NULL) {
     styleModal(session, title, ..., footer=footer, style="warning", size=size,
-               echo=FALSE, iconName="exclamation-circle")
+               echo=TRUE, iconName="exclamation-circle", caller=caller)
 }
 
 #' @rdname styleModal
-infoModal <- function(session, title, ..., size="small", footer=NULL) {
+infoModal <- function(session, title, ..., size="small", footer=NULL,
+                      caller=NULL) {
     styleModal(session, title, ..., footer=footer, style="info", size=size,
-               echo=FALSE, iconName="info-circle")
+               echo=TRUE, iconName="info-circle", caller=caller)
 }
 
 #' Show or remove an alert

@@ -134,7 +134,7 @@ diffExpressionTableUI <- function(id) {
         tags$button(class="btn btn-default dropdown-toggle", type="button",
                     "data-toggle"="dropdown", "aria-haspopup"="true",
                     "aria-expanded"="false", icon("object-group"),
-                    "Create groups based on...", tags$span(class="caret")),
+                    "Create group based on...", tags$span(class="caret")),
         tags$ul(class="dropdown-menu",
                 disabled(tags$li(id=ns("groupBySelectedContainer"),
                                  actionLink(ns("groupBySelected"),
@@ -235,14 +235,15 @@ diffExpressionSet <- function(session, input, output) {
         } else if ( is.null(groups) || length(input$diffGroups) != 2 ) {
             errorModal(session, "Select two groups",
                        "Currently, two groups are required for differential",
-                       "expression analysis. Please select two groups.")
+                       "expression analysis. Please select two groups.",
+                       caller="Differential expression analysis")
         } else if ( !is.null(diffExpr) ) {
-            warningModal(session,
-                         "Differential expression analyses already performed",
-                         "Do you wish to replace the loaded analyses?",
-                         footer=actionButton(ns("replace"), "Replace",
-                                             class="btn-warning",
-                                             "data-dismiss"="modal"))
+            warningModal(session, "Differential expression already performed",
+                         "Do you wish to discard the current results?",
+                         footer=actionButton(
+                             ns("replace"), "Discard", class="btn-warning",
+                             "data-dismiss"="modal"),
+                         caller="Differential expression analysis")
         } else {
             performDiffExpression()
         }

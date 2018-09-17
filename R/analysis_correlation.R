@@ -644,14 +644,17 @@ correlationServer <- function(input, output, session) {
             return(NULL)
         } else if (is.null(geneExpr)) {
             errorModal(session, "No gene expression selected", 
-                       "Please selected gene expression data")
+                       "Please selected gene expression data",
+                       caller="Correlation analysis")
             return(NULL)
         } else if (is.null(gene) || identical(gene, "")) {
-            errorModal(session, "No gene selected", "Please select a gene")
+            errorModal(session, "No gene selected", "Please select a gene",
+                       caller="Correlation analysis")
             return(NULL)
         } else if (is.null(ASevents) || identical(ASevents, "")) {
             errorModal(session, "No alternative splicing event selected",
-                       "Please select one or more alternative splicing events")
+                       "Please select one or more alternative splicing events",
+                       caller="Correlation analysis")
             return(NULL)
         }
         

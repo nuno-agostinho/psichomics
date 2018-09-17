@@ -9,13 +9,16 @@
 \usage{
 styleModal(session, title, ..., style = NULL,
   iconName = "exclamation-circle", footer = NULL, echo = FALSE,
-  size = "medium", dismissButton = TRUE)
+  size = "medium", dismissButton = TRUE, caller = NULL)
 
-errorModal(session, title, ..., size = "small", footer = NULL)
+errorModal(session, title, ..., size = "small", footer = NULL,
+  caller = NULL)
 
-warningModal(session, title, ..., size = "small", footer = NULL)
+warningModal(session, title, ..., size = "small", footer = NULL,
+  caller = NULL)
 
-infoModal(session, title, ..., size = "small", footer = NULL)
+infoModal(session, title, ..., size = "small", footer = NULL,
+  caller = NULL)
 }
 \arguments{
 \item{session}{Current Shiny session}

@@ -24,7 +24,8 @@ missingDataModal <- function(session, dataType, buttonId) {
             session, paste("Load", tolower(dataType)),
             "This analysis requires", tolower(dataType), "to proceed.",
             footer=actionButton(buttonId, buttonLabel, "data-dismiss"="modal",
-                                class="btn-danger"))
+                                class="btn-danger"),
+            caller="Data analysis")
     }
     
     switch(dataType,
@@ -589,13 +590,15 @@ processSurvival <- function(session, ...) {
         if (survTerms[[1]] == paste("contrasts can be applied only to",
                                     "factors with 2 or more levels")) {
             errorModal(session, "Formula error",
-                       "Cox models can only be applied to 2 or more groups.")
+                       "Cox models can only be applied to 2 or more groups.",
+                       caller="Data analysis")
         } else {
             errorModal(session, "Formula error",
                        "Maybe you misplaced a ", tags$kbd("+"), ", ",
                        tags$kbd(":"), " or ", tags$kbd("*"), "?", br(),
                        br(), "The following error was raised:", br(), 
-                       tags$code(survTerms$message))
+                       tags$code(survTerms$message),
+                       caller="Data analysis")
         }
         return(NULL)
     }

@@ -160,9 +160,8 @@ pcaUI <- function(id) {
         ), mainPanel(
             highchartOutput(ns("scatterplot")),
             highchartOutput(ns("scatterplotLoadings")),
-            hidden( dataTableOutput(ns("varContrTable")) ),
-            hidden( downloadButton(ns("saveVarContr"), "Save table", 
-                                   "btn-info") )
+            hidden(dataTableOutput(ns("varContrTable"))),
+            hidden(downloadButton(ns("saveVarContr"), "Save table", "btn-info"))
         )
     )
 }
@@ -684,9 +683,10 @@ pcaServer <- function(input, output, session) {
             
             # Raise error if data has no rows
             if (nrow(dataForPCA) == 0) {
-                errorModal(session, "No data!", paste(
-                    "PCA returned nothing. Check if everything is as",
-                    "expected and try again."))
+                errorModal(session, "No data returned by PCA",
+                           "PCA returned nothing. Check if everything is as",
+                           "expected and try again.",
+                           caller="Principal component analysis")
                 endProcess("calculate", closeProgressBar=FALSE)
                 return(NULL)
             }
@@ -700,12 +700,14 @@ pcaServer <- function(input, output, session) {
                               scale.="scale" %in% preprocess)
             if (is.null(pca)) {
                 errorModal(session, "No individuals to plot PCA", 
-                           "Try increasing the tolerance of NAs per event")
+                           "Try increasing the tolerance of missing values",
+                           "per event.", caller="Principal component analysis")
             } else if (inherits(pca, "error")) {
                 ## TODO(NunoA): what to do in this case?
                 errorModal(
                     session, "PCA calculation error", 
-                    "Constant/zero columns cannot be resized to unit variance")
+                    "Constant/zero columns cannot be resized to unit variance",
+                    caller="Principal component analysis")
             } else {
                 attr(pca, "dataType") <- dataType
                 attr(pca, "firstPCA") <- is.null(getPCA())
@@ -758,7 +760,8 @@ pcaServer <- function(input, output, session) {
         if (is.null(pca)) {
             if (input$plot > 0) {
                 errorModal(session, "PCA has not yet been performed",
-                           "Perform a PCA and plot it afterwards.")
+                           "Perform a PCA and plot it afterwards.",
+                           caller="Principal component analysis")
             }
             return(NULL)
         }

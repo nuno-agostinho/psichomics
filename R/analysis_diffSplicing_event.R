@@ -85,7 +85,8 @@ diffSplicingEventServer <- function(input, output, session) {
         event <- getEvent()
         if (is.null(event) || event == "") {
             errorModal(session, "No event selected",
-                       "Please, select an alternative splicing event.")
+                       "Please, select an alternative splicing event.",
+                       caller="Differential splicing analysis")
             return(NULL)
         }
         

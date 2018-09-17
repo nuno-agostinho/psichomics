@@ -182,40 +182,52 @@ recountDataServer <- function(input, output, session) {
     observeEvent(input$loadRecountData, {
         isolate({
             outdir  <- input$dataFolder
-            project <- isolate(input$project)
+            project <- input$project
         })
         
-        startProcess("loadRecountData")
-        
-        if (!is.null(getData())) {
+        if (is.null(project)) {
+            errorModal(session, "No project selected",
+                       "Select at least one project to load.",
+                       caller="Load recount data", modalId="recountDataModal")
+        } else if (!dir.exists(outdir)) {
+            errorModal(session, "Folder not found",
+                       "The selected folder", 
+                       tags$kbd(prepareWordBreak(outdir)), "was not found.",
+                       caller="Load recount data", modalId="recountDataModal")
+        } else if (!is.null(getData())) {
             loadedDataModal(session, "recountDataModal", 
                             "recountDataReplace", "recountDataAppend")
         } else {
+            startProcess("loadRecountData")
             data <- loadSRAproject(project, outdir)
             setData(data)
+            endProcess("loadRecountData")
         }
-        endProcess("loadRecountData")
     })
     
     observeEvent(input$recountDataReplace, {
         isolate({
             outdir  <- input$dataFolder
-            project <- isolate(input$project)
+            project <- input$project
         })
         
+        startProcess("loadRecountData")
         data <- loadSRAproject(project, outdir)
         setData(data)
+        endProcess("loadRecountData")
     })
     
     observeEvent(input$recountDataAppend, {
         isolate({
             outdir  <- input$dataFolder
-            project <- isolate(input$project)
+            project <- input$project
         })
         
+        startProcess("loadRecountData")
         data <- loadSRAproject(project, outdir)
         data <- processDatasetNames(c(getData(), data))
         setData(data)
+        endProcess("loadRecountData")
     })
 }
 
