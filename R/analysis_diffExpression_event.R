@@ -84,7 +84,8 @@ diffExpressionEventServer <- function(input, output, session) {
         
         gene <- input$gene
         if (is.null(gene) || gene == "") {
-            errorModal(session, "No gene selected", "Please select a gene.")
+            errorModal(session, "No gene selected", "Please select a gene.",
+                       caller="Differential expression analysis")
             return(NULL)
         }
         

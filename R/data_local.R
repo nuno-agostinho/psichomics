@@ -380,7 +380,6 @@ setLocalData <- function(input, output, session, replace=TRUE) {
 
 #' @rdname setLocalData
 setMultipleFilesData <- function(input, output, session, replace=TRUE) {
-    time <- startProcess("loadMultipleFiles")
     category <- input$userFilesCategory
     if (identical(category, "")) category <- "User dataset"
     
@@ -397,10 +396,27 @@ setMultipleFilesData <- function(input, output, session, replace=TRUE) {
     if (length(files) == 0) {
         errorModal(session, "No files selected",
                    "Please provide at least one file.",
-                   modalId="localDataModal")
-        endProcess("loadMultipleFiles", time, closeProgressBar=FALSE)
+                   modalId="localDataModal", caller="Load local data")
+        return(NULL)
+    } else if (any(!file.exists(files))) {
+        formatFileInfo <- function(item, files) {
+            filepath <- prepareWordBreak(files[[item]])
+            tagList(tags$b(names(files[item])), tags$br(),
+                    tags$kbd(filepath), tags$br(), tags$br())
+        }
+        
+        nonExisting   <- files[!file.exists(files)]
+        filesNotFound <- do.call(
+            tagList, lapply(names(nonExisting), formatFileInfo, nonExisting))
+        
+        errorModal(session, "Files not found",
+                   "The following files were not found:", tags$br(), tags$br(),
+                   filesNotFound, modalId="localDataModal", 
+                   caller="Load local data")
         return(NULL)
     }
+    
+    time <- startProcess("loadMultipleFiles")
     
     loaded <- list()
     allFormats <- loadFileFormats()
@@ -495,8 +511,9 @@ localDataServer <- function(input, output, session) {
         folder <- input$localFolder
         if (!dir.exists(folder)) {
             # Folder not found
-            errorModal(session, "Folder not found", "Check if path is correct.",
-                       modalId="localDataModal")
+            errorModal(session, "Folder not found",
+                       "Check if folder path is correct.",
+                       modalId="localDataModal", caller="Load local data")
             enable("acceptFile")
             return(NULL)
         } else if (!is.null(getData())) {

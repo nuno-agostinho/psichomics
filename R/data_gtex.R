@@ -9,7 +9,7 @@ gtexDataUI <- function(id, panel) {
     panel(style="info", title=list(icon("plus-circle"), "Load GTEx files"),
           value="Load GTEx files",
           uiOutput(ns("modal")),
-          helpText("Please, download files from the",
+          helpText("Please download files from the",
                    a(href="http://www.gtexportal.org", target="_blank",
                      "GTEx Data Portal"), "and load them here."),
           fileBrowserInput(ns("sampleInfo"), "Sample attributes (TXT file)",
@@ -150,12 +150,10 @@ loadGtexData <- function(clinical=NULL, sampleMetadata=NULL, junctionQuant=NULL,
         && is.null(geneExpr))
         stop("No input data was given.")
     
-    # Check if inputs are not NULL and if respective files exist
     loaded <- list()
-    input  <- c(clinical, sampleMetadata, junctionQuant, geneExpr)
-    validInput <- !vapply(input, is.null, logical(1))
-    filesExist <- file.exists(input)
-    validFiles <- validInput & filesExist
+    validFiles <- !vapply(
+        list(clinical, sampleMetadata, junctionQuant, geneExpr),
+        is.null, logical(1))
     updateProgress("Loading files...", divisions=sum(validFiles))
     
     loadThisGtexFile <- function(path, pattern, samples=NULL) {
@@ -167,7 +165,7 @@ loadGtexData <- function(clinical=NULL, sampleMetadata=NULL, junctionQuant=NULL,
     
     if (!is.null(tissue) && is.null(sampleMetadata))
         stop("Filtering by tissue requires sample metadata as input.")
-        
+    
     samples <- NULL
     if (!is.null(sampleMetadata)) {
         sampleAttrs <- loadThisGtexFile(sampleMetadata, "Sample")
@@ -243,7 +241,28 @@ loadGtexDataShiny <- function(session, input, replace=TRUE) {
     if (is.null(geneExpr) || identical(geneExpr, ""))
         geneExpr <- NULL
     
-    if (any(!is.null(c(subjectInfo, sampleInfo, junctionQuant, geneExpr)))) {
+    files <- c("Sample attributes"=sampleInfo, "Subject phenotypes"=subjectInfo,
+               "Junction read counts"=junctionQuant, "Gene expression"=geneExpr)
+    
+    if (all(is.null(files))) {
+        errorModal(session, "No file provided",
+                   "Please input at least one GTEx file.", modalId="modal",
+                   caller="Load GTEx data")
+    } else if (any(!file.exists(files))) {
+        formatFileInfo <- function(item, files) {
+            filepath <- prepareWordBreak(files[[item]])
+            tagList(tags$b(names(files[item])), tags$br(),
+                    tags$kbd(filepath), tags$br(), tags$br())
+        }
+        
+        nonExisting   <- files[!file.exists(files)]
+        filesNotFound <- do.call(
+            tagList, lapply(names(nonExisting), formatFileInfo, nonExisting))
+        
+        errorModal(session, "Files not found",
+                   "The following files were not found:", tags$br(), tags$br(),
+                   filesNotFound, modalId="modal", caller="Load GTEx data")
+    } else {
         time <- startProcess("load")
         data <- loadGtexData(clinical=subjectInfo, sampleMetadata=sampleInfo,
                              junctionQuant=junctionQuant, geneExpr=geneExpr,
@@ -255,9 +274,6 @@ loadGtexDataShiny <- function(session, input, replace=TRUE) {
             setData(data)
         }
         endProcess("load", time)
-    } else {
-        errorModal(session, "No file provided",
-                   "Please input at least one GTEx file.", modalId="modal")
     }
 }
 

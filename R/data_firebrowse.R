@@ -732,17 +732,17 @@ firebrowseServer <- function(input, output, session) {
     # Check if data is already loaded and ask the user if it should be replaced
     observeEvent(input$getFirebrowseData, {
         if (length(isolate(input$firebrowseCohort)) == 0) {
-            errorModal(session, "No tumour type",
-                       "Please, input a tumour type.", 
-                       modalId="firebrowseDataModal")
+            errorModal(session, "No tumour type selected",
+                       "Please, input a tumour type.",
+                       caller="Load TCGA data", modalId="firebrowseDataModal")
         } else if (length(isolate(input$firebrowseDate)) == 0) {
-            errorModal(session, "No date",
+            errorModal(session, "No date selected",
                        "Please, input date of samples of interest.",
-                       modalId="firebrowseDataModal")
+                       caller="Load TCGA data", modalId="firebrowseDataModal")
         } else if (length(isolate(input$firebrowseData)) == 0) {
-            errorModal(session, "No data types",
+            errorModal(session, "No data types select",
                        "Please, input data types of interest.",
-                       modalId="firebrowseDataModal")
+                       caller="Load TCGA data", modalId="firebrowseDataModal")
         } else if (!is.null(getData())) {
             loadedDataModal(session,
                             "firebrowseDataModal",

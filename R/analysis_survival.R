@@ -201,7 +201,8 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
                              ns("missingGeneExpression"))
             return(NULL)
         } else if (is.null(gene) || gene == "") {
-            errorModal(session, "No gene selected", "Please select a gene.")
+            errorModal(session, "No gene selected", "Please select a gene.",
+                       caller="Survival analysis")
             return(NULL)
         }
         
@@ -225,7 +226,8 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
             return(NULL)
         } else if (is.null(splicingEvent) || splicingEvent == "") {
             errorModal(session, "No event selected",
-                       "Select an alternative splicing event.")
+                       "Select an alternative splicing event.",
+                       caller="Survival analysis")
             return(NULL)
         }
         
@@ -239,8 +241,9 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
         formulaStr <- NULL
     } else if (modelTerms == "formula") {
         if (input$formula == "" || is.null(input$formula)) {
-            errorModal(session, "Empty formula",
-                       "Please fill the formula field.")
+            errorModal(session, "Empty formula", 
+                       "Please fill the formula field.", 
+                       caller="Survival analysis")
             return(NULL)
         } else {
             groups <- NULL
@@ -249,19 +252,23 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
     
     interval <- grepl("interval", censoring)
     if (event == "") {
-        errorModal(session, "Empty field for event",
-                   "Please select the event of interest.")
+        errorModal(session, "No event selected", 
+                   "Please select the event of interest.",
+                   caller="Survival analysis")
     } else if (timeStart == "") {
         if (!interval) {
-            errorModal(session, "Empty field for follow up time",
-                       "Please select follow up time.")
+            errorModal(session, "No follow up time selected",
+                       "Please select follow up time.",
+                       caller="Survival analysis")
         } else {
-            errorModal(session, "Empty field for starting time",
-                       "Please select starting time.")
+            errorModal(session, "No starting time selected",
+                       "Please select starting time.", 
+                       caller="Survival analysis")
         }
     } else if (timeStop == "" && interval) {
-        errorModal(session, "Empty field for ending time",
-                   "Please select ending time to use interval censoring.")
+        errorModal(session, "No ending time selected",
+                   "Please select ending time to use interval censoring.",
+                   caller="Survival analysis")
     } else {
         survTerms <- processSurvival(session, clinical, censoring, event, 
                                      timeStart, timeStop, groups, formulaStr, 
@@ -522,9 +529,10 @@ survivalServer <- function(input, output, session) {
         
         surv <- tryCatch(survfit(survTerms), error=return)
         if ("simpleError" %in% class(surv)) {
-            errorModal(session, "Formula error",
+            errorModal(session, "Formula error", 
                        "The following error was raised:", br(),
-                       tags$code(surv$message))
+                       tags$code(surv$message),
+                       caller="Survival analysis")
             return(NULL)
         }
         
@@ -564,7 +572,8 @@ survivalServer <- function(input, output, session) {
             
             if (is.null(survTerms$coef)) {
                 warningModal(session, "Null Cox model",
-                             "Obtained a null Cox model.")
+                             "Obtained a null Cox model.",
+                             caller="Survival analysis")
                 survTerms <- NULL
             } else {
                 # General statistical tests

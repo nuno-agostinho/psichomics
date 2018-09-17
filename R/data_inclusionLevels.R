@@ -292,47 +292,6 @@ loadSplicingQuantificationSet <- function(session, input, output) {
         prepareFileBrowser(session, input, "customASquant")
     }, once=TRUE)
     
-    # Show warnings if needed before loading splicing quantification
-    observeEvent(input$loadASquant, {
-        if (!is.null(getInclusionLevels())) {
-            if (!is.null(getDifferentialSplicing())) {
-                warningModal(session, "Warning",
-                             "The calculated differential splicing analyses",
-                             "will be discarded and the previously loaded",
-                             "inclusion levels will be replaced.",
-                             footer=actionButton(ns("discard2"),
-                                                 "Discard and replace",
-                                                 class="btn-warning",
-                                                 "data-dismiss"="modal"))
-            } else {
-                warningModal(session, "Inclusion levels already quantified",
-                             "Do you wish to replace the inclusion levels",
-                             "loaded?",
-                             footer=actionButton(ns("replace2"), "Replace",
-                                                 class="btn-warning",
-                                                 "data-dismiss"="modal"))
-            }
-        } else {
-            loadSplicing()
-        }
-    })
-    
-    # Replace previous splicing quantification
-    observeEvent(input$replace2, {
-        setGroups("Samples", NULL)
-        setGroups("AS events", NULL)
-        loadSplicing()
-    })
-    
-    # Discard differential analyses and replace previous splicing quantification
-    observeEvent(input$discard2, {
-        setDifferentialSplicing(NULL)
-        setDifferentialSplicingSurvival(NULL)
-        setGroups("Samples", NULL)
-        setGroups("AS events", NULL)
-        loadSplicing()
-    })
-    
     # Load alternative splicing quantification
     loadSplicing <- reactive({
         time <- startProcess("loadIncLevels")
@@ -382,6 +341,48 @@ loadSplicingQuantificationSet <- function(session, input, output) {
         }
         endProcess("loadIncLevels", time)
     })
+    
+    # Show warnings if needed before loading splicing quantification
+    observeEvent(input$loadASquant, {
+        if (!is.null(getInclusionLevels())) {
+            if (!is.null(getDifferentialSplicing())) {
+                warningModal(
+                    session, "Differential splicing already performed",
+                    "Do you wish to replace the loaded alternative splicing",
+                    "quantification data and discard the differential splicing",
+                    "results?", footer=actionButton(
+                        ns("discard2"), "Replace and discard",
+                        class="btn-warning", "data-dismiss"="modal"),
+                    caller="Alternative splicing quantification")
+            } else {
+                warningModal(
+                    session, "Alternative splicing already quantified",
+                    "Do you wish to replace the loaded splicing quantification",
+                    "data?", footer=actionButton(ns("replace2"), "Replace",
+                                                 class="btn-warning",
+                                                 "data-dismiss"="modal"),
+                    caller="Alternative splicing quantification")
+            }
+        } else {
+            loadSplicing()
+        }
+    })
+    
+    # Replace previous splicing quantification
+    observeEvent(input$replace2, {
+        setGroups("Samples", NULL)
+        setGroups("AS events", NULL)
+        loadSplicing()
+    })
+    
+    # Discard differential analyses and replace previous splicing quantification
+    observeEvent(input$discard2, {
+        setDifferentialSplicing(NULL)
+        setDifferentialSplicingSurvival(NULL)
+        setGroups("Samples", NULL)
+        setGroups("AS events", NULL)
+        loadSplicing()
+    })
 }
 
 #' Read custom or remote annotation
@@ -415,38 +416,6 @@ readAnnot <- function(session, annotation, showProgress=FALSE) {
 quantifySplicingSet <- function(session, input) {
     ns <- session$ns
     
-    # Show warnings if needed before calculating inclusion levels
-    observeEvent(input$calcIncLevels, {
-        if (is.null(getData()) || is.null(getJunctionQuantification())) {
-            missingDataModal(session, "Junction quantification", ns("missing"))
-        } else if (!is.null(getInclusionLevels())) {
-            if (!is.null(getDifferentialSplicing())) {
-                warningModal(
-                    session, "Warning",
-                    "The calculated differential splicing analyses will be",
-                    "discarded and the previously loaded inclusion levels will",
-                    "be replaced.", footer=actionButton(
-                        ns("discard"), "Discard and replace",
-                        class="btn-warning", "data-dismiss"="modal"))
-            } else {
-                warningModal(
-                    session, "Inclusion levels already quantified",
-                    "Do you wish to replace the loaded inclusion levels?",
-                    footer=actionButton(
-                        ns("replace"), "Replace", class="btn-warning",
-                        "data-dismiss"="modal"))
-            }
-        } else {
-            calcSplicing()
-        }
-    })
-    
-    observeEvent(input$replace, calcSplicing())
-    observeEvent(input$discard, {
-        setDifferentialSplicing(NULL)
-        setDifferentialSplicingSurvival(NULL)
-        calcSplicing()
-    })
     
     # Calculate inclusion levels
     calcSplicing <- reactive({
@@ -459,7 +428,8 @@ quantifySplicingSet <- function(session, input) {
         } else {
             if (input$junctionQuant == "") {
                 errorModal(session, "Select junction quantification",
-                           "Select a junction quantification dataset")
+                           "Select a junction quantification dataset",
+                           caller="Alternative splicing quantification")
                 endProcess("calcIncLevels")
                 return(NULL)
             }
@@ -495,13 +465,49 @@ quantifySplicingSet <- function(session, input) {
         if (nrow(psi) == 0) {
             errorModal(session, "No splicing events returned",
                        "The total reads of the alternative splicing events are",
-                       "below the minium read counts' threshold.")
+                       "below the minium read counts' threshold.",
+                       caller="Alternative splicing quantification")
             endProcess("calcIncLevels")
             return(NULL)
         }
         setInclusionLevels(psi)
         
         endProcess("calcIncLevels", time)
+    })
+    
+    # Show warnings if needed before quantifying alternative splicing
+    observeEvent(input$calcIncLevels, {
+        if (is.null(getData()) || is.null(getJunctionQuantification())) {
+            missingDataModal(session, "Junction quantification", ns("missing"))
+        } else if (!is.null(getInclusionLevels())) {
+            if (!is.null(getDifferentialSplicing())) {
+                warningModal(
+                    session, "Differential splicing already performed",
+                    "Do you wish to replace the loaded alternative splicing",
+                    "quantification data and discard the differential splicing",
+                    "results?", footer=actionButton(
+                        ns("discard2"), "Replace and discard",
+                        class="btn-warning", "data-dismiss"="modal"),
+                    caller="Alternative splicing quantification")
+            } else {
+                warningModal(
+                    session, "Alternative splicing already quantified",
+                    "Do you wish to replace the loaded splicing quantification",
+                    "data?", footer=actionButton(ns("replace"), "Replace",
+                                                 class="btn-warning",
+                                                 "data-dismiss"="modal"),
+                    caller="Alternative splicing quantification")
+            }
+        } else {
+            calcSplicing()
+        }
+    })
+    
+    observeEvent(input$replace, calcSplicing())
+    observeEvent(input$discard, {
+        setDifferentialSplicing(NULL)
+        setDifferentialSplicingSurvival(NULL)
+        calcSplicing()
     })
 }
 

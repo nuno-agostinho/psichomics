@@ -466,9 +466,10 @@ icaServer <- function(input, output, session) {
             
             # Raise error if data has no rows
             if (nrow(dataForICA) == 0) {
-                errorModal(session, "No data!", paste(
-                    "ICA returned nothing. Check if everything is as",
-                    "expected and try again."))
+                errorModal(session, "No data from ICA", 
+                           "ICA returned nothing. Check if everything is as",
+                           "expected and try again.",
+                           caller="Independent component analysis")
                 endProcess("calculate", closeProgressBar=FALSE)
                 return(NULL)
             }
@@ -483,12 +484,14 @@ icaServer <- function(input, output, session) {
                               scale.="scale" %in% preprocess)
             if (is.null(ica)) {
                 errorModal(session, "No individuals to plot ICA", 
-                           "Try increasing the tolerance of NAs per event")
+                           "Try increasing the tolerance of missing values per",
+                           "event", caller="Independent component analysis")
             } else if (inherits(ica, "error")) {
                 ## TODO(NunoA): what to do in this case?
                 errorModal(
                     session, "ICA calculation error", 
-                    "Constant/zero columns cannot be resized to unit variance")
+                    "Constant/zero columns cannot be resized to unit variance",
+                    caller="Independent component analysis")
             } else {
                 attr(ica, "dataType") <- dataType
                 attr(ica, "firstICA") <- is.null(getICA())
