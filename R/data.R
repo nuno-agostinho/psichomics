@@ -157,8 +157,8 @@ processDatasetNames <- function(data) {
     for (each in names(ns)) {
         nse <- names(newData[[each]])
         
-        # For junction quantification, add the respective sequencing technology
-        index <- nse == "Junction quantification"
+        # For read quantification, add the respective sequencing technology
+        index <- nse %in% c("Junction quantification", "Gene expression")
         for (k in seq_along(nse)) {
             if (index[[k]]) {
                 file <- attr(newData[[each]][[k]], "filename")

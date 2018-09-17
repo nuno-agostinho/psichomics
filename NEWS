@@ -16,6 +16,8 @@
 
 ## Bug fixes and minor changes
 
+* TCGA data:
+    - Inform of sequencing technology used to obtain gene expression data
 * Differential analysis:
     - Avoid limitting X axis of density plot when values outside 0 and 1 are
     provided, as in the case of gene expression ("plotDistribution" function)

@@ -683,24 +683,17 @@ setFirebrowseData <- function(input, output, session, replace=TRUE) {
         setURLtoDownload(data)
         
         infoModal(
-            session, "Download requested data",
-            "The requested data will be downloaded. When the downloads",
-            "finish, click the button", tags$b("Load data"), 
-            "again to process and load the downloaded data.", br(), br(), 
-            tags$div(
+            session, "TCGA data download",
+            "TCGA data will now be downloaded. When the downloads finish,",
+            "click", tags$b("Load data"), "with the same options to load the",
+            "downloaded data.", br(), br(), tags$div(
                 class="alert", class="alert-warning", role="alert",
-                fluidRow(style="display: flex; align-items: center;", column(
-                    10, "Confirm that files will be downloaded to the folder",
-                    tags$b(input$dataFolder)),
-                    column(2, tags$i(class="fa fa-question-circle", 
-                                     id=ns("helpDownloadFolder"))))),
-            bsTooltip(ns("helpDownloadFolder"), placement="right",
-                      paste("This program checks for files in the given",
-                            "folder. You can either:<br/>\u2022 Change the",
-                            "folder where the downloaded items are located",
-                            "<br/>\u2022 Move the downloaded items to the",
-                            "given folder"),
-                      options=list(container="body")),
+                tags$i("psichomics"), "will check for files in",
+                tags$b(input$dataFolder), tags$br(), tags$br(),
+                icon("exclamation-circle"),
+                "Running", tags$i("psichomics"), "in a remote server? Please",
+                "make sure to move the files from your computer to that",
+                "server's folder."),
             modalId="firebrowseDataModal",
             footer=actionButton(ns("acceptDownload"), "Download data",
                                 class="btn-primary", "data-dismiss"="modal"))
