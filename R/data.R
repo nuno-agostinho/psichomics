@@ -383,10 +383,10 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
     multiPlotId        <- paste(tablename, "multiPlot", sep="-")
     loadingMultiPlotId <- paste(tablename, "loadingMultiPlot", sep="-")
     multiHighchartsPlots <- fluidRow(column(12, uiOutput(multiPlotId)))
-        # div(id=loadingMultiPlotId, class="progress",
-        #     div(class="progress-bar progress-bar-striped active",
-        #         role="progressbar", style="width:100%",
-        #         "Loading summary plots")))
+    # div(id=loadingMultiPlotId, class="progress",
+    #     div(class="progress-bar progress-bar-striped active",
+    #         role="progressbar", style="width:100%",
+    #         "Loading summary plots")))
     
     tabPanel(title, br(), download, br(),
              bsCollapse(

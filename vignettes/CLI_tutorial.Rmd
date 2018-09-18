@@ -611,7 +611,7 @@ pvalueThreshold <- final$`p-value (BH adjusted)` < 0.01
 
 final$genes <- gsub("\\|.*$", "\\1", rownames(final))
 ggplot(final, aes(`log2 Fold-Change`, 
-                           -log10(`p-value (BH adjusted)`))) +
+                  -log10(`p-value (BH adjusted)`))) +
     geom_point(data=final[logFCthreshold & pvalueThreshold, ],
                colour="orange", alpha=0.5, size=3) + 
     geom_point(data=final[!logFCthreshold | !pvalueThreshold, ],

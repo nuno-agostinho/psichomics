@@ -2,16 +2,35 @@
 % Please edit documentation in R/utils.R
 \name{colourInputMod}
 \alias{colourInputMod}
-\title{Modified colour input with 100% width}
+\title{Modified colour input with 100\% width}
 \usage{
 colourInputMod(...)
 }
 \arguments{
-\item{...}{Parameters to \code{colorInput}}
+\item{...}{Arguments passed on to \code{colourpicker::colourInput}
+\describe{
+  \item{inputId}{The \code{input} slot that will be used to access the value.}
+  \item{label}{Display label for the control, or `\code{NULL} for no label.}
+  \item{value}{Initial value (can be a colour name or HEX code)}
+  \item{showColour}{Whether to show the chosen colour as text inside the input,
+as the background colour of the input, or both (default).}
+  \item{palette}{The type of colour palette to allow the user to select colours
+from. \code{square} (default) shows a square colour palette that allows the
+user to choose any colour, while \code{limited} only gives the user a
+predefined list of colours to choose from.}
+  \item{allowedCols}{A list of colours that the user can choose from. Only
+applicable when \code{palette == "limited"}. The \code{limited} palette
+uses a default list of 40 colours if \code{allowedCols} is not defined.}
+  \item{allowTransparent}{If \code{TRUE}, enables a slider to choose an alpha
+(transparency) value for the colour. When a colour with opacity is
+chosen, the return value is an 8-digit HEX code.}
+  \item{returnName}{If \code{TRUE}, then return the name of an R colour instead
+of a HEX value when possible.}
+}}
 }
 \value{
 HTML elements
 }
 \description{
-Modified colour input with 100% width
+Modified colour input with 100\% width
 }
