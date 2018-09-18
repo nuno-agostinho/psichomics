@@ -35,7 +35,7 @@ right or left)}
 \item{infoContent}{Character: text to show as content of information}
 }
 \value{
-A file browser input control that can be added to a UI definition.
+HTML elements for a file browser input
 }
 \description{
 Input to interactively select a file or directory on the server

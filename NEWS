@@ -16,6 +16,10 @@
 
 ## Bug fixes and minor changes
 
+* Improve file browser input in remote servers:
+    - Allow to directly input a path without using the file browser dialog
+    - Display warning when calling the file browser dialog in RStudio Server or
+    in an unsupported system
 * TCGA data:
     - Inform of sequencing technology used to obtain gene expression data
 * GTEx data:
