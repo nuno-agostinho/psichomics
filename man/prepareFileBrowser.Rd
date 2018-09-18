@@ -5,7 +5,7 @@
 \title{Prepare file browser dialogue and update the input's value accordingly to
 selected file or directory}
 \usage{
-prepareFileBrowser(session, input, id, ...)
+prepareFileBrowser(session, input, id, modalId = "modal", ...)
 }
 \arguments{
 \item{session}{Shiny session}
@@ -20,7 +20,6 @@ prepareFileBrowser(session, input, id, ...)
   \item{caption}{Character: caption on the selection dialogue}
   \item{multiple}{Boolean: allow to select multiple files?}
   \item{directory}{Boolean: allow to select directories instead of files?}
-  \item{system}{Character: system name}
 }}
 }
 \value{

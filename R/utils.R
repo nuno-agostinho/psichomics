@@ -978,7 +978,7 @@ updateProgress <- function(message="Loading", value=NULL, max=NULL, detail=NULL,
             startProgress(message, divisions, global)
         return(NULL)
     }
-
+    
     divisions <- global$progress.divisions
     if (is.null(value)) {
         if (!isRunning()) { # CLI version
@@ -991,7 +991,7 @@ updateProgress <- function(message="Loading", value=NULL, max=NULL, detail=NULL,
         value <- currentValue + (max - currentValue)
     }
     amount <- ifelse(is.null(max), value/divisions, 1/max/divisions)
-
+    
     # Print message to console
     if (console) {
         if (!is.null(detail) && !identical(detail, ""))
@@ -999,7 +999,7 @@ updateProgress <- function(message="Loading", value=NULL, max=NULL, detail=NULL,
         else
             display(message)
     }
-
+    
     # Increment progress
     if (!isRunning()) { # CLI version
         if (!is.null(global)) {
@@ -1498,9 +1498,16 @@ setOperationIcon <- function (name, class=NULL, ...) {
     return(iconTag)
 }
 
+#' Check if running in RStudio Server
+#' 
+#' @return Boolean stating whether running in RStudio Server
+isRStudioServer <- function() {
+    tryCatch(
+        rstudioapi::isAvailable() && rstudioapi::versionInfo()$mode == "server",
+        error=function(i) FALSE)
+}
 
 # File browser dialog -----------------------------------------------------
-
 
 #' Interactive folder selection using a native dialogue
 #'
@@ -1511,28 +1518,38 @@ setOperationIcon <- function (name, class=NULL, ...) {
 #' @param system Character: system name
 #'
 #' @details
-#' For macOS, it uses an Apple Script to display a folder selection dialogue. 
-#' With \code{default = NA}, the initial folder selection is determined by 
-#' default behaviour of the "choose folder" Apple Script command.  Otherwise, 
-#' paths are expanded with \link{path.expand}.
-#'
-#' In Windows, it uses either `utils::choose.files` or `utils::choose.dir`.
+#' Pltaform-dependent implementation:
+#' \itemize{
+#'  \item{\strong{Windows}: calls the \code{utils::choose.files} R function.}
+#'  \item{\strong{macOS}: uses AppleScript to display a folder selection 
+#'  dialogue. If \code{default} is \code{NA}, folder selection fallbacks to the
+#'  default behaviour of the \code{choose folder} AppleScript command.
+#'  Otherwise, paths are expanded with \code{\link{path.expand}}.}
+#'  \item{\strong{Linux}: calls the \code{zenity} system command.}
+#' }
+#' 
+#' If for some reason an error occurs (e.g. when using a remote server), the
+#' dialog fallbacks to an alternative, non-native file browser.
 #'
 #' @source Original code by wleepang:
 #' \url{https://github.com/wleepang/shiny-directory-input}
-#'
+#' 
 #' @return A length one character vector, character NA if 'Cancel' was selected.
 fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
-                        directory=FALSE, system=Sys.info()['sysname']) {
-    if (system == 'Darwin') {
+                        directory=FALSE) {
+    system <- Sys.info()['sysname']
+    if (is.null(system)) {
+        stop("File browser is unsupported in this system")
+    } else if (isRStudioServer()) {
+        stop("File browser is currently unsupported for RStudio Server")
+    } else if (system == 'Darwin') {
         directory <- ifelse(directory, "folder", "file")
         multiple  <- ifelse(multiple, "with multiple selections allowed", "")
         
-        if (!is.null(caption) && nzchar(caption)) {
+        if (!is.null(caption) && nzchar(caption))
             prompt <- sprintf("with prompt \\\"%s\\\"", caption)
-        } else {
+        else
             prompt <- ""
-        }
         
         # Default location
         if (!is.null(default) && nzchar(default)) {
@@ -1546,46 +1563,31 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
         args <- '-e "tell app (%s) to POSIX path of (choose %s %s %s %s)"'
         args <- sprintf(args, app, directory, multiple, prompt, default)
         
-        suppressWarnings({
-            path <- system2("osascript", args=args, stderr=TRUE)
-        })
+        path <- suppressWarnings(system2("osascript", args=args, stderr=TRUE))
         
-        # Return NA if user cancels the action
-        if (!is.null(attr(path, "status")) && attr(path, "status")) {
-            # user canceled
-            return(NA)
-        }
+        # Return NA if the user cancels the action
+        if (!is.null(attr(path, "status")) && attr(path, "status")) return(NA)
     } else if (system == 'Linux') {
         directory <- ifelse(directory, "--directory", "")
-        multiple  <- ifelse(multiple, "--multiple", "")
+        multiple  <- ifelse(multiple,  "--multiple", "")
         
-        if (!is.null(caption) && nzchar(caption)) {
+        prompt <- ""
+        if (!is.null(caption) && nzchar(caption))
             prompt <- sprintf("--title='%s'", caption)
-        } else {
-            prompt <- ""
-        }
         
         args <- " --file-selection %s %s %s"
         args <- sprintf(args, directory, multiple, prompt)
-        
-        suppressWarnings({
-            path <- system2("zenity", args=args, stderr=TRUE)
-        })
+        path <- suppressWarnings(system2("zenity", args=args, stderr=TRUE))
         
         # Return NA if user cancels the action
-        if (!is.null(attr(path, "status")) && attr(path, "status")) {
-            return(NA) # Cancelled by user
-        }
+        if (!is.null(attr(path, "status")) && attr(path, "status")) return(NA) 
+        
         # Error: Gtk-Message: GtkDialog mapped without a transient parent
         if(length(path) == 2) path <- path[2]
     } else if (system == "Windows") {
         if (is.null(default)) default <- ""
         if (is.null(caption)) caption <- ""
-        
-        if (directory)
-            path <- utils::choose.dir(default, caption)
-        else
-            path <- utils::choose.files(default, caption, multiple)
+        path <- utils::choose.files(default, caption, !directory && multiple)
     }
     
     if (identical(path, "")) path <- NULL
@@ -1624,8 +1626,7 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
 #' @source Original code by wleepang:
 #' \url{https://github.com/wleepang/shiny-directory-input}
 #'
-#' @return
-#' A file browser input control that can be added to a UI definition.
+#' @return HTML elements for a file browser input
 #'
 #' @seealso
 #' \code{\link{updateFileBrowserInput}} and \code{\link{prepareFileBrowser}}
@@ -1655,29 +1656,30 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
     infoTitle   <- gsub("\n", "", as.character(infoTitle),   fixed=TRUE)
     infoContent <- gsub("\n", "", as.character(infoContent), fixed=TRUE)
     if (identical(infoFUN, bsPopover)) {
-        showInfo <- infoFUN(
-            infoId, placement=infoPlacement, options=list(container="body"), 
-            title=infoTitle, content=infoContent)
+        showInfo <- infoFUN(infoId, placement=infoPlacement, 
+                            options=list(container="body"), 
+                            title=infoTitle, content=infoContent)
     } else if (identical(infoFUN, bsTooltip)) {
-        showInfo <- infoFUN(
-            infoId, placement=infoPlacement, options=list(container="body"), 
-            title=infoTitle)
+        showInfo <- infoFUN(infoId, placement=infoPlacement, 
+                            options=list(container="body"), title=infoTitle)
     } else {
         showInfo <- NULL
     }
+    
+    fileBrowserButton <- div(class="btn btn-default fileBrowser-input",
+                             id=sprintf("%sButton", id), 'Browse...')
+    if (isRStudioServer()) fileBrowserButton <- disabled(fileBrowserButton)
+    fileBrowserButton <- div(class="input-group-btn", fileBrowserButton)
+    filepathInput <- tags$input(
+        id=id, value=value, type='text', placeholder=placeholder,
+        readonly = if (!isRStudioServer()) 'readonly' else NULL,
+        class='form-control fileBrowser-input-chosen-dir')
     
     tagList(
         div(class='form-group fileBrowser-input-container',
             check(label, tags$label(label)),
             div(class='input-group shiny-input-container', style='width:100%;',
-                div(class="input-group-btn",
-                    div(class="btn btn-default fileBrowser-input",
-                        id=sprintf("%sButton", id), 'Browse...')),
-                tags$input(
-                    id=id, value=value, type='text', readonly='readonly',
-                    placeholder=placeholder,
-                    class='form-control fileBrowser-input-chosen-dir'),
-                infoElem)),
+                fileBrowserButton, filepathInput, infoElem)),
         showInfo)
 }
 
@@ -1715,15 +1717,26 @@ updateFileBrowserInput <- function(session, id, ..., value=NULL) {
 #' @inheritDotParams fileBrowser
 #'
 #' @return NULL (this function is used to modify the Shiny session's state)
-prepareFileBrowser <- function(session, input, id, ...) {
+prepareFileBrowser <- function(session, input, id, modalId="modal", ...) {
     buttonId <- sprintf("%sButton", id)
     observeEvent(input[[buttonId]], {
         if (input[[buttonId]] > 0) { # Prevent execution on initial launch
-            updateFileBrowserInput(session, id, ...)
+            errorTitle <- NULL
+            if (is.null(Sys.info()))
+                errorTitle <- "File browser unsupported for this system"
+            else if (isRStudioServer())
+                errorTitle <- "File browser unsupported in RStudio Server"
+            else
+                updateFileBrowserInput(session, id, ...)
+            
+            if (!is.null(errorTitle)) {
+                errorModal(session, errorTitle, 
+                           "Please use the text input to type the full path to",
+                           "the file/directory of interest", modalId=modalId)
+            }
         }
     })
 }
-
 
 # Interactive ggplot ------------------------------------------------------
 
