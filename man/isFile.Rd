@@ -6,6 +6,9 @@
 \usage{
 isFile(files)
 }
+\arguments{
+\item{files}{Character: vector of filepaths to check}
+}
 \value{
 Boolean vector stating whether each file exists or not
 }

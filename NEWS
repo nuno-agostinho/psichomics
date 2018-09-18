@@ -13,6 +13,7 @@
     - Display exportable table with correlation analyses
 * Groups:
     - Show group colour in group selection element
+* Retrieve articles from PubMed instead of PMC
 
 ## Bug fixes and minor changes
 

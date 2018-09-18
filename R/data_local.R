@@ -195,7 +195,7 @@ prepareJunctionQuantSTAR <- function(..., startOffset=-1, endOffset=+1) {
         joint    <- c(joint, list(table))
     }
     
-    index <<- 0
+    index <- 0
     lapply(joint, function(table) {
         index <<- index + 1
         setnames(table, "V7", paste0("col", index))
@@ -275,11 +275,13 @@ prepareGeneQuantSTAR <- function(..., strandedness=c("unstranded", "stranded",
     joint <- NULL
     for (file in files) {
         cat(sprintf("Processing %s...", file), fill=TRUE)
-        table    <- fread(file, skip=4)[, c(1, ..strandedness)]
-        joint    <- c(joint, list(table))
+        table  <- fread(file, skip=4)
+        strand <- match("strandedness", colnames(table))
+        table  <- table[ , c(1, strand, with=FALSE)]
+        joint  <- c(joint, list(table))
     }
     
-    index <<- 0
+    index <- 0
     lapply(joint, function(table) {
         index <<- index + 1
         setnames(table, "V2", paste0("col", index))

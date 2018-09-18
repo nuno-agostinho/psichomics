@@ -40,6 +40,9 @@ infoModal(session, title, ..., size = "small", footer = NULL,
 "large"}
 
 \item{dismissButton}{Boolean: show dismiss button in footer? TRUE by default}
+
+\item{caller}{Character: label to identify the module calling for the modal 
+(relevant for error and warning modals)}
 }
 \value{
 NULL (this function is used to modify the Shiny session's state)

@@ -14,6 +14,8 @@ prepareFileBrowser(session, input, id, modalId = "modal", ...)
 
 \item{id}{Character: input identifier}
 
+\item{modalId}{Character: modal window identifier}
+
 \item{...}{Arguments passed on to \code{fileBrowser}
 \describe{
   \item{default}{Character: path to initial folder}
