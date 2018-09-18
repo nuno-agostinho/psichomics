@@ -248,14 +248,14 @@ loadGtexDataShiny <- function(session, input, replace=TRUE) {
         errorModal(session, "No file provided",
                    "Please input at least one GTEx file.", modalId="modal",
                    caller="Load GTEx data")
-    } else if (any(!file.exists(files))) {
+    } else if (any(!isFile(files))) {
         formatFileInfo <- function(item, files) {
             filepath <- prepareWordBreak(files[[item]])
             tagList(tags$b(names(files[item])), tags$br(),
                     tags$kbd(filepath), tags$br(), tags$br())
         }
         
-        nonExisting   <- files[!file.exists(files)]
+        nonExisting   <- files[!isFile(files)]
         filesNotFound <- do.call(
             tagList, lapply(names(nonExisting), formatFileInfo, nonExisting))
         
