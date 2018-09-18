@@ -25,6 +25,8 @@ insideFile <- function(...) {
 
 #' Check if files exist 
 #'
+#' @param files Character: vector of filepaths to check
+#'
 #' @return Boolean vector stating whether each file exists or not
 isFile <- function(files) {
     fileExists <- file.exists(files) & !dir.exists(files)
@@ -729,6 +731,8 @@ loadRequiredData <- function( modal=NULL ) {
 #' @param size Character: size of the modal - "medium" (default), "small" or 
 #' "large"
 #' @param dismissButton Boolean: show dismiss button in footer? TRUE by default
+#' @param caller Character: label to identify the module calling for the modal 
+#' (relevant for error and warning modals)
 #' 
 #' @importFrom shiny renderUI div icon showModal modalButton modalDialog
 #' @importFrom shinyBS toggleModal
@@ -1521,7 +1525,6 @@ isRStudioServer <- function() {
 #' @param caption Character: caption on the selection dialogue
 #' @param multiple Boolean: allow to select multiple files?
 #' @param directory Boolean: allow to select directories instead of files?
-#' @param system Character: system name
 #'
 #' @details
 #' Pltaform-dependent implementation:
@@ -1721,6 +1724,7 @@ updateFileBrowserInput <- function(session, id, ..., value=NULL) {
 #' @param input Shiny input
 #' @param id Character: input identifier
 #' @inheritDotParams fileBrowser
+#' @param modalId Character: modal window identifier
 #'
 #' @return NULL (this function is used to modify the Shiny session's state)
 prepareFileBrowser <- function(session, input, id, modalId="modal", ...) {

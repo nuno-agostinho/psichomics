@@ -19,8 +19,6 @@ fileBrowser(default = NULL, caption = NULL, multiple = FALSE,
 \item{multiple}{Boolean: allow to select multiple files?}
 
 \item{directory}{Boolean: allow to select directories instead of files?}
-
-\item{system}{Character: system name}
 }
 \value{
 A length one character vector, character NA if 'Cancel' was selected.
