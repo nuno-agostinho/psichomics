@@ -115,7 +115,7 @@ Arguments used in the previous command:
 
 After the genome index is generated, align the FASTQ files using the following
 commands to align read counts to both genes and splice junctions. These commands
-will allow STAR to output.
+will allow STAR to output both gene and junction read counts.
 
 ```
 STAR --runThreadN 4 \

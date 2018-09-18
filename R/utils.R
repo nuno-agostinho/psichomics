@@ -69,10 +69,9 @@ tableRow <- function (..., th=FALSE) {
     do.call(tags$tr, lapply(args, row))
 }
 
-#' Modified colour input with 100% width
+#' Modified colour input with 100\% width
 #' 
-#' @param ... Parameters to \code{colorInput}
-#' 
+#' @inheritDotParams colourpicker::colourInput
 #' @importFrom colourpicker colourInput
 #' 
 #' @return HTML elements
@@ -1143,21 +1142,21 @@ textSuggestions <- function(id, words, novalue="No matching value", char=" ") {
     var <- paste0(varId, ' = ["', paste(words, collapse = '", "'), '"];')
     
     js <- paste0('$("#', escape(id), '").textcomplete([{
-                 match: /([a-zA-Z0-9_\\.]{1,})$/,
-                 search: function(term, callback) {
-                 var words = ', varId, ', sorted = [];
-                 for (i = 0; i < words.length; i++) {
-                 sorted[i] = fuzzy(words[i], term);
-                 }
-                 sorted.sort(fuzzy.matchComparator);
-                 sorted = sorted.map(function(i) { return i.term; });
-                 callback(sorted);
-                 },
-                 index: 1,
-                 cache: true,
-                 replace: function(word) {
-                 return word + "', char ,'";
-                 }}], { noResultsMessage: "', novalue, '"});')
+            match: /([a-zA-Z0-9_\\.]{1,})$/,
+            search: function(term, callback) {
+                var words = ', varId, ', sorted = [];
+                for (i = 0; i < words.length; i++) { 
+                    sorted[i] = fuzzy(words[i], term);
+                }
+                sorted.sort(fuzzy.matchComparator);
+                sorted = sorted.map(function(i) { return i.term; });
+                callback(sorted);
+            }, 
+            index: 1,
+            cache: true,
+            replace: function(word) {
+            return word + "', char ,'";
+        }}], { noResultsMessage: "', novalue, '"});')
     js <- HTML("<script>", var, js, "</script>")
     return(js)
 }
@@ -1395,28 +1394,26 @@ export_highcharts <- function(hc, fill="transparent", text="Export") {
     export <- list(
         list(text="PNG image",
              onclick=JS("function () { 
-                            this.exportChart({ type: 'image/png' }); }")),
+                        this.exportChart({ type: 'image/png' }); }")),
         list(text="JPEG image",
              onclick=JS("function () { 
-                            this.exportChart({ type: 'image/jpeg' }); }")),
+                        this.exportChart({ type: 'image/jpeg' }); }")),
         list(text="SVG vector image",
              onclick=JS("function () { 
-                            this.exportChart({ type: 'image/svg+xml' }); }")),
+                        this.exportChart({ type: 'image/svg+xml' }); }")),
         list(text="PDF document",
              onclick=JS("function () { 
-                            this.exportChart({ type: 'application/pdf' }); }")),
+                        this.exportChart({ type: 'application/pdf' }); }")),
         list(separator=TRUE),
         list(text="CSV document",
              onclick=JS("function () { this.downloadCSV(); }")),
         list(text="XLS document",
-             onclick=JS("function () { this.downloadXLS(); }"))
-    )
+             onclick=JS("function () { this.downloadXLS(); }")))
     
-    hc_exporting(hc, enabled=TRUE,
-                 formAttributes=list(target="_blank"),
-                 buttons=list(contextButton=list(
-                     text=text, theme=list(fill=fill),
-                     menuItems=export)))
+    hc_exporting(hc, enabled=TRUE, formAttributes=list(target="_blank"),
+                 buttons=list(contextButton=list(text=text, 
+                                                 theme=list(fill=fill),
+                                                 menuItems=export)))
 }
 
 #' Create scatter plot
