@@ -736,10 +736,13 @@ firebrowseServer <- function(input, output, session) {
             errorModal(session, "No data types select",
                        "Please, input data types of interest.",
                        caller="Load TCGA data", modalId="firebrowseDataModal")
+        } else if (!dir.exists(input$dataFolder)) {
+            errorModal(
+                session, "Folder not found", "The selected folder", 
+                tags$kbd(prepareWordBreak(input$dataFolder)), "was not found.",
+                caller="Load TCGA data", modalId="firebrowseDataModal")
         } else if (!is.null(getData())) {
-            loadedDataModal(session,
-                            "firebrowseDataModal",
-                            "firebrowseReplace",
+            loadedDataModal(session, "firebrowseDataModal", "firebrowseReplace",
                             "firebrowseAppend")
         } else {
             setFirebrowseData(input, output, session)

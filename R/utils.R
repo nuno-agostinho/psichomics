@@ -23,6 +23,15 @@ insideFile <- function(...) {
     return(system.file(..., package="psichomics"))
 }
 
+#' Check if files exist 
+#'
+#' @return Boolean vector stating whether each file exists or not
+isFile <- function(files) {
+    fileExists <- file.exists(files) & !dir.exists(files)
+    names(fileExists) <- files
+    return(fileExists)
+}
+
 #' Sidebar without a well
 #' 
 #' Modified version of \code{shiny::sidebarPanel} without a well
@@ -1729,7 +1738,8 @@ prepareFileBrowser <- function(session, input, id, modalId="modal", ...) {
             if (!is.null(errorTitle)) {
                 errorModal(session, errorTitle, 
                            "Please use the text input to type the full path to",
-                           "the file/directory of interest", modalId=modalId)
+                           "the file or folder of interest.", modalId=modalId,
+                           caller="File browser")
             }
         }
     })
