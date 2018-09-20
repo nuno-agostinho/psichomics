@@ -408,6 +408,7 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
 #' @param input Shiny session input
 #' @param output Shiny session output
 #' 
+#' @importFrom shiny tags HTML
 #' @importFrom DT renderDataTable
 #' @importFrom shiny downloadHandler br
 #' @importFrom utils write.table
@@ -463,9 +464,41 @@ createDataTab <- function(index, data, name, session, input, output) {
         cols <- attr(table, "columns")
         cols <- ifelse(!is.null(cols), cols, "columns")
         
-        tags$div(
-            tags$h4(paste(ncol(table), cols)),
-            tags$h4(paste(nrow(table), rows)))
+        filename <- attr(table, "filename")
+        if (!is.null(filename)) {
+            filename <- prepareWordBreak(filename)
+            filename <- tags$small(tags$b("Loaded based on file:"),
+                                   tags$var(filename))
+        }
+        
+        settings <- attr(table, "settings")
+        if (!is.null(settings)) {
+            settingsDf <- data.frame(names(settings), sapply(
+                settings, function(item) 
+                    prepareWordBreak(paste(item, collapse=", "))))
+            colnames(settingsDf) <- c("Attribute", "Item")
+            settings <- table2html(
+                settingsDf, rownames=FALSE, thead=TRUE, 
+                class="table table-condensed table-striped")
+            settings <- tags$small(tagList(tags$b("Dataset settings"), 
+                                           settings))
+            settings <- gsub("&lt;", "<", settings, fixed=TRUE)
+            settings <- gsub("&gt;", ">", settings, fixed=TRUE)
+            settings <- HTML(settings)
+        }
+        
+        extra <- NULL
+        if ( !is.null(filename) || !is.null(settings) ) {
+            extra <- tagList(
+                tags$hr(), filename, 
+                if (!is.null(filename) && !is.null(settings)) 
+                    tagList(tags$br(), tags$br()), 
+                settings)
+        }
+        
+        tags$div(tags$h4(paste(ncol(table), cols)), 
+                 tags$h4(paste(nrow(table), rows)),
+                 extra)
     })
 }
 
