@@ -186,10 +186,10 @@ quantifySplicing <- function(annotation, junctionQuant,
     
     if (is.null(psi)) psi <- data.frame(NULL)
     psi <- addObjectAttrs(
-        psi, "rowNames"=TRUE, 
-        "description"="PSI values per alternative splicing events",
-        "dataType"="Inclusion levels", "tablename"="Inclusion levels",
-        "rows"="alternative splicing events", "columns"="samples")
+        psi, rowNames=TRUE, 
+        description="PSI values per alternative splicing events",
+        dataType="Inclusion levels", tablename="Inclusion levels",
+        rows="alternative splicing events", columns="samples")
     return(psi)
 }
 
@@ -462,6 +462,7 @@ quantifySplicingSet <- function(session, input) {
         updateProgress("Calculating inclusion levels")
         psi <- quantifySplicing(annot, junctionQuant, eventType, minReads, 
                                 genes=filter)
+        
         if (nrow(psi) == 0) {
             errorModal(session, "No splicing events returned",
                        "The total reads of the alternative splicing events are",
@@ -470,8 +471,22 @@ quantifySplicingSet <- function(session, input) {
             endProcess("calcIncLevels")
             return(NULL)
         }
-        setInclusionLevels(psi)
         
+        # Include settings used for alternative splicing quantification
+        allEventTypes <- getSplicingEventTypes()
+        eventTypeName <- names(allEventTypes[allEventTypes %in% eventType])
+        settings <- list(
+            "Alternative splicing annotation"=annotation,
+            "Exon-exon junction quantification (label)"=input$junctionQuant,
+            "Exon-exon junction quantification (file)"=attr(
+                junctionQuant, "filename"),
+            "Splicing event types"=eventTypeName,
+            "Minimum read counts' threshold"=minReads,
+            "Selected genes for splicing event quantification"=if (is.null(
+                filter)) "All available genes" else filter)
+        attr(psi, "settings") <- settings
+        
+        setInclusionLevels(psi)
         endProcess("calcIncLevels", time)
     })
     

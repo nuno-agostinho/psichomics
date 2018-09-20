@@ -430,6 +430,13 @@ geNormalisationFilteringServer <- function(input, output, session) {
             filter        <- input$enableFiltering
             log2transform <- input$log2transformation
             priorCount    <- input$priorCount
+            
+            minMean    <- input$minMean
+            maxMean    <- input$maxMean
+            minVar     <- input$minVar
+            maxVar     <- input$maxVar
+            minCounts  <- input$minCounts
+            minSamples <- input$minSamples
         })
         
         if (filter)
@@ -439,6 +446,28 @@ geNormalisationFilteringServer <- function(input, output, session) {
         
         geneExprNorm <- normaliseGeneExpression(
             geneExpr, geneFilter, method, percentile, log2transform, priorCount)
+        
+        attr(geneExprNorm, "filename") <- NULL
+        if (filter) {
+            geneFilterSettings <- c(
+                "Gene filtering"="Enabled",
+                "Minimum mean >"=minMean, "Maximum mean <"=maxMean,
+                "Minimum variance >"=minVar, "Maximum variance <"=maxVar,
+                "At least X counts..."=paste("X =", minCounts),
+                "...in >= Y samples"=paste("Y = ", minSamples))
+        } else {
+            geneFilterSettings <- c("Gene filtering"="Disabled")
+        }
+        
+        settings <- c(list(
+            "Original gene expression (file)"=attr(geneExpr, "filename"),
+            "Original gene expression (label)"=isolate(input$geneExpr)
+        ), geneFilterSettings, list(
+            "Normalisation method"=method,
+            "Perform log2 transformation"=if (log2transform) "Yes" else "No",
+            "Average count to add per observation"=priorCount))
+        attr(geneExprNorm, "settings") <- settings
+        
         setNormalisedGeneExpression(geneExprNorm)
         endProcess("processGeneExpr", time=time)
     })

@@ -2,6 +2,8 @@
 
 * Copy-edit README, tutorials, DESCRIPTION, NEWS and code
 * Update screen shot
+* Add metadata regarding loaded datasets (for instance, path and name of files 
+used for dataset loading, options set upon dataset creation, etc.)
 * Differential splicing and expression analysis:
     - Allow to input formulas when highlighting points; this is an improvement
     when plotting -log10(q-values), for instance, where it is now possible to
