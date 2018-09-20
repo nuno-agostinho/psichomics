@@ -757,6 +757,7 @@ styleModal <- function(session, title, ..., style=NULL,
     }
     showModal(modal, session)
     if (echo) {
+        if (style == "info") style <- "Information"
         msg <- sprintf("%s: %s", capitalize(style), title)
         if (!is.null(caller)) msg <- sprintf('%s (in "%s")', msg, caller)
         message(msg)
@@ -978,8 +979,8 @@ startProgress <- function(message, divisions,
 #' @importFrom utils setTxtProgressBar
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
-updateProgress <- function(message="Loading", value=NULL, max=NULL, detail=NULL,
-                           divisions=NULL, 
+updateProgress <- function(message="Loading...", value=NULL, max=NULL, 
+                           detail=NULL, divisions=NULL, 
                            global=if (isRunning()) sharedData else getHidden(),
                            console=TRUE) {
     if (!interactive()) return(NULL)

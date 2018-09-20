@@ -520,9 +520,9 @@ loadFirebrowseData <- function(folder=NULL, data=NULL,
     folders <- base[!md5]
     folders <- split(folders, categories)
     
-    # Check if there are folders to unarchive
-    archives <- unlist(lapply(possibleExtensions, function (i)
-        i[i %in% basename(downloadedFiles[!downloadedMD5])]))
+    # Check for folders to unarchive
+    archives <- unlist(lapply(possibleExtensions, function (item)
+        item[item %in% basename(downloadedFiles[!downloadedMD5])]))
     tar <- grepl(".tar", archives, fixed = TRUE)
     
     if (length(archives[tar]) > 0) {
@@ -624,7 +624,7 @@ firebrowseUI <- function(id, panel) {
                      "Firebrowse"), "API."),
           div(id=ns("firebrowseLoading"), class="progress",
               div(class="progress-bar progress-bar-striped active",
-                  role="progressbar", style="width: 100%", "Loading")),
+                  role="progressbar", style="width: 100%", "Loading...")),
           uiOutput(ns("checkFirebrowse")))
 }
 
@@ -664,7 +664,7 @@ checkFirebrowse <- function(ns) {
 #' @param replace Boolean: replace loaded data? TRUE by default
 #' 
 #' @importFrom shinyjs disable enable
-#' @importFrom shiny div fluidRow column icon
+#' @importFrom shiny div fluidRow column icon tags
 #' @importFrom shinyBS bsTooltip
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
@@ -678,23 +678,27 @@ setFirebrowseData <- function(input, output, session, replace=TRUE) {
                                date = gsub("-", "_", input$firebrowseDate),
                                data = input$firebrowseData, download = FALSE)
     
-    if (any(class(data) == "missing")) {
+    areDataMissing <- any(class(data) == "missing")
+    if (areDataMissing) {
         updateProgress(divisions = 1)
         setURLtoDownload(data)
         
         infoModal(
-            session, "TCGA data download",
-            "TCGA data will now be downloaded. When the downloads finish,",
-            "click", tags$b("Load data"), "with the same options to load the",
-            "downloaded data.", br(), br(), tags$div(
+            session, "Confirm data download",
+            "Do you wish to download the selected TCGA data? When the",
+            "downloads finish, click", tags$b("Load data"), "with the exact",
+            "same options to automatically load the data into", 
+            tags$i("psichomics."), tags$br(), tags$br(), tags$div(
                 class="alert", class="alert-warning", role="alert",
-                tags$i("psichomics"), "will check for files in",
-                tags$b(input$dataFolder), tags$br(), tags$br(),
-                icon("exclamation-circle"),
-                "Running", tags$i("psichomics"), "in a remote server? Please",
-                "make sure to move the files from your computer to that",
-                "server's folder."),
-            modalId="firebrowseDataModal",
+                tags$i("psichomics"), "will check for downloaded files in",
+                tags$br(), tags$kbd(prepareWordBreak(input$dataFolder)),
+                if (isRStudioServer())
+                    tagList(
+                        tags$br(), tags$br(), icon("exclamation-circle"),
+                        "Running", tags$i("psichomics"), "in a remote server?",
+                        "Please make sure to move the files from your computer",
+                        "to the aforementioned server's folder.")),
+            modalId="firebrowseDataModal", caller="Load TCGA data",
             footer=actionButton(ns("acceptDownload"), "Download data",
                                 class="btn-primary", "data-dismiss"="modal"))
     } else if (!is.null(data)) {
@@ -705,7 +709,7 @@ setFirebrowseData <- function(input, output, session, replace=TRUE) {
             setData(data)
         }
     }
-    endProcess("getFirebrowseData", time)
+    endProcess("getFirebrowseData", if (!areDataMissing) time)
 }
 
 #' @rdname appServer
