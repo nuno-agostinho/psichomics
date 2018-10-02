@@ -44,8 +44,10 @@ psichomics()
 
 # Exploration of clinically-relevant, differentially spliced events in breast cancer
 
-> The following case study can be read in *psichomics*' original article:
-[**Saraiva-Agostinho N and Barbosa-Morais NL (2018) "psichomics: graphical application for alternative splicing quantification and analysis". *bioRxiv*.**][article]
+> The following case study was adapted from *psichomics*' original article:
+>
+> Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2018). 
+**[psichomics: graphical application for alternative splicing quantification and analysis][article]**. *Nucleic Acids Research*.
 
 Breast cancer is the cancer type with the highest incidence and mortality in 
 women [@Torre2015] and multiple studies have suggested that transcriptome-wide
@@ -629,6 +631,6 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 [iMM]: http://imm.medicina.ulisboa.pt/group/distrans/
 [GTEx]: http://gtexportal.org
 [maxpath]: https://msdn.microsoft.com/library/windows/desktop/aa365247.aspx#maxpath
-[article]: https://doi.org/10.1101/261180
+[article]: https://doi.org/10.1093/nar/gky888
 [SRA]: https://www.ncbi.nlm.nih.gov/sra
 [tutorial-custom-data]: http://rpubs.com/nuno-agostinho/psichomics-custom-data

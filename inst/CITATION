@@ -1,8 +1,8 @@
 bibentry(bibtype = "Article",
          title = "psichomics: graphical application for alternative splicing quantification and analysis",
          author = c(person("Nuno", "Saraiva-Agostinho"),
-                    person(c("Nuno", "Luís"), "Barbosa-Morais")),
+                    person(c("Nuno", "L"), "Barbosa-Morais")),
          year = 2018,
-         month = "feb",
-         journal = "bioRxiv",
-         url = "https://bioconductor.org/packages/psichomics")
+         month = "oct",
+         journal = "Nucleic Acids Research",
+         url = "https://doi.org/10.1093/nar/gky888")
