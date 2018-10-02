@@ -2,9 +2,9 @@
 
 > **Original article:**
 >
-> Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais. 2018. 
-[*psichomics: graphical application for alternative splicing quantification and analysis*][article].
-bioRxiv.
+> Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2018). 
+[psichomics: graphical application for alternative splicing quantification and analysis][article].
+*Nucleic Acids Research*.
 
 Interactive R package with an intuitive Shiny-based graphical 
 interface for alternative splicing quantification and integrative analyses of
@@ -226,7 +226,7 @@ Nature 456 (7221): 470–76.
 [codecovIcon]: https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg
 [codecov]: https://codecov.io/gh/nuno-agostinho/psichomics
 [GTEx]: http://www.gtexportal.org
-[article]: https://doi.org/10.1101/261180
+[article]: https://doi.org/10.1093/nar/gky888
 [SRA]: https://www.ncbi.nlm.nih.gov/sra
 [tutorial-gui]: http://rpubs.com/nuno-agostinho/psichomics-tutorial-visual
 [tutorial-cli]: http://rpubs.com/nuno-agostinho/psichomics-cli-tutorial

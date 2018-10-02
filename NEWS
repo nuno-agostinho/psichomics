@@ -1,5 +1,7 @@
 # 1.6.2 (2 October, 2018)
 
+* Update citations to link to article in Nucleic Acids Research:
+https://doi.org/10.1093/nar/gky888
 * Copy-edit README, tutorials, DESCRIPTION, NEWS and code
 * Update screen shot
 * Add metadata regarding loaded datasets (for instance, path and name of files 
