@@ -223,15 +223,14 @@ loadCustomSplicingAnnotationSet <- function(session, input, output) {
     observe({
         ns <- session$ns
         if (input$annotation == "loadAnnotation") {
-            url <- "http://rpubs.com/nuno-agostinho/alt-splicing-annotation"
+            url <- "http://rpubs.com/nuno-agostinho/preparing-AS-annotation"
             
             updateSelectizeInput(session, "annotation", 
                                  selected=listSplicingAnnotations())
             infoModal(session, "Load alternative splicing annotation",
-                      helpText("Load alternative splicing annotation from a",
-                               "RDS file. To learn more on how to create a",
-                               "custom splicing annotation,", 
-                               tags$a(href=url, target="_blank",
+                      helpText("To learn how to create and load custom",
+                               "alternative splicing annotations,", 
+                               tags$a(href=url, target="_blank", 
                                       "click here.")),
                       fileInput(ns("customAnnot"), "Choose RDS file",
                                 accept=".rds"),
