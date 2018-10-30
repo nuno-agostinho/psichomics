@@ -339,7 +339,8 @@ trimWhitespace <- function(word) {
 #' @importFrom shiny HTML
 #' 
 #' @return String containing HTML elements
-prepareWordBreak <- function(str, pattern=c(".", "-", "\\", "/", "_")) {
+prepareWordBreak <- function(str, pattern=c(".", "-", "\\", "/", "_", ",", 
+                                            " ")) {
     res <- str
     # wbr: word break opportunity
     for (p in pattern) res <- gsub(p, paste0(p, "<wbr>"), res, fixed=TRUE)

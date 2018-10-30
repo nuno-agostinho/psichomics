@@ -474,8 +474,7 @@ createDataTab <- function(index, data, name, session, input, output) {
         settings <- attr(table, "settings")
         if (!is.null(settings)) {
             settingsDf <- data.frame(names(settings), sapply(
-                settings, function(item) 
-                    prepareWordBreak(paste(item, collapse=", "))))
+                sapply(settings, paste, collapse=", "), prepareWordBreak))
             colnames(settingsDf) <- c("Attribute", "Item")
             settings <- table2html(
                 settingsDf, rownames=FALSE, thead=TRUE, 
