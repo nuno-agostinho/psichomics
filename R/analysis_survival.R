@@ -66,7 +66,7 @@ survivalUI <- function(id) {
             sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "formula"),
             textAreaInput(
                 ns("formula"), "Formula with clinical attributes", 
-                placeholder="Start typing for suggested clinical attributes"),
+                placeholder="Type to show attribute suggestions"),
             uiOutput(ns("formulaSuggestions")),
             helpText(
                 "To analyse a series of attributes, separate each",

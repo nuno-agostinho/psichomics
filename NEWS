@@ -1,3 +1,25 @@
+# 1.6.3 (30 October, 2018)
+
+* Correlation analyses:
+    - Allow to use groups of genes and alternative splicing events for 
+    correlation analyses
+    - Display progress for correlation analyses
+    - Allow to sort results based on correlation estimate (or their absolute 
+    value), p-value or q-value (visual interface)
+    - Allow to display correlation results as a table (using the `as.table`
+    function)
+* Groups:
+    - By default, load pre-made lists of genes when loading gene expression or
+    loading/performing alternative splicing quantification
+    - Added pre-made list of genes that encode for RNA-binding proteins 
+    (Sebestyen et al. 2016), useful to postulate about splicing regulators based
+    on gene expression and PSI correlation analyses
+    
+## Bug fixes and minor changes
+
+* Groups:
+    - Minor improvements to the group creation interface
+
 # 1.6.2 (2 October, 2018)
 
 * Update citations to link to article in Nucleic Acids Research:

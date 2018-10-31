@@ -6,8 +6,7 @@
 \alias{getSelectedGroups}
 \title{Group selection}
 \usage{
-selectGroupsUI(id, label,
-  placeholder = "Click 'Groups' to create or edit groups",
+selectGroupsUI(id, label, placeholder = "Type to search for groups",
   noGroupsLabel = NULL, groupsLabel = NULL, maxItems = NULL,
   returnAllDataLabel = NULL, returnAllDataValue = FALSE)
 

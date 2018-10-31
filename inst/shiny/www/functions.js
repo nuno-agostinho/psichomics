@@ -28,17 +28,6 @@ function updateHistory(params) {
 }
 
 /**
- * Prepare interface for group selection
- */
-function renderGroupSelection (item, escape) {
-    var description =  item.label.split(" #")[0];
-    var colour = "#" + item.label.split(" #")[1];
-    return "<div><b><font color='" + colour + "'>\u25CF</font> " + 
-        escape(item.value) + "</b><small> " + escape(description) + 
-        "</small></div>";
-}
-
-/**
  * Change active tab to the Data panel and collapse data panels
  * @param {String} modal Identifier of the modal to close (optional)
  */
@@ -62,12 +51,60 @@ function showGroups(type) {
     $("a[data-value='Groups']")[0].click();
     
     var mode;
-    if (type === "Samples") {
+    if (type === "Samples" | type === "Patients") {
         mode = 0;
-    } else if (type === "ASevents") {
+    } else if (type === "ASevents" || type === "Genes") {
         mode = 1;
     }
     $("#groupsTypeTab a")[mode].click();
+}
+
+/**
+ * Render group DataTable
+ * 
+ * @param table DataTable
+ */
+function renderGroupTable(table) {
+    var getIcon = function(symbol) {
+        return '<i class="fa fa-' + symbol + '" aria-hidden="true"></i>';
+    };
+    var plusIcon  = getIcon("plus-circle");
+    var minusIcon = getIcon("minus-circle");
+    
+    var cols  = table.columns()[0].slice(-2);
+    table.columns(cols).visible(false, false);
+    table.columns.adjust().draw(false);
+    
+    var format = function(data) {
+        return '<table class="table table-details" border="0">' + '<tr>' + 
+        '<td>Subset:</td>' + '<td>'+ data[data.length - 2] + '</td>' + '</tr>' + 
+        '<tr>' + '<td>Input:</td>' + '<td>' + data[data.length - 1] + '</td>' + 
+        '</tr>' + '</table>';
+    };
+    
+    table.on('click', 'td.details-control', function() {
+        var td = $(this), row = table.row(td.closest('tr'));
+        if (row.child.isShown()) {
+            // Hide extra information
+            row.child.hide();
+            td.html(plusIcon);
+        } else {
+            // Show extra information
+            row.child( format(row.data()), 'no-padding' ).show();
+            td.html(minusIcon);
+        }
+    });
+}
+
+/**
+ * Prepare interface for group selection
+ */
+function renderGroupSelection (item, escape) {
+    var description =  item.label.split(" #")[0];
+    var colour = "#" + item.label.split(" #")[1];
+    return "<div><b><font color='" + colour + "'>\u25CF</font> " + 
+        escape(item.value) + "</b><small> " + escape(description) + 
+        "</small></div>";
 }
 
 /**

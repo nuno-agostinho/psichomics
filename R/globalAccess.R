@@ -140,6 +140,69 @@ getGenes <- function() {
     return(genes)
 }
 
+#' Get pre-created gene list
+#'
+#' @return List of genes
+#' @export
+#'
+#' @examples 
+#' getGeneList()
+getGeneList <- function() {
+    prepareCitation <- function(attr) {
+        if (length(attr$Author) == 1)
+            authors <- attr$Author[[1]]
+        else
+            authors <- paste(attr$Author[[1]], "et al.")
+        
+        title   <- attr$`Article Title`
+        journal <- attr$Journal
+        year    <- attr$Date
+        volume  <- attr$Volume
+        issue   <- attr$Issue
+        pages   <- attr$Pages
+        
+        sprintf("%s (%s). %s. %s, %s(%s), %s", 
+                authors, year, title, journal, volume, issue, pages)
+    }
+
+    # Sebestyen et al. 2016
+    rbps     <- readFile("Sebestyen_et_al_2016.RDS")
+    rbpSF    <- rbps$`RNA-binding proteins that are splicing factors`
+    rbpNonSF <- rbps$`RNA-binding proteins that are not splicing factors`    
+    sebestyen2016 <- list(
+        "RNA-binding protein splicing factors"=rbpSF,
+        "RNA-binding proteins"=sort(c(rbpSF, rbpNonSF)))
+    attr(sebestyen2016, "citation") <- prepareCitation(attributes(rbps))
+    
+    res <- list("Sebestyen et al. 2016"=sebestyen2016)
+    class(res) <- c("geneList", class(res))
+    return(res)
+}
+
+#' Print gene list
+#' 
+#' @param object \code{geneList}
+#' 
+#' @return Print available gene lists
+print.geneList <- function(object) {
+    for (set in names(object)) {
+        cat(sprintf(set), fill=TRUE)
+        for (item in names(object[[set]])) {
+            ll <- object[[set]][[item]]
+            sample <- 4
+            genes <- paste(head(ll, n=sample), collapse=", ")
+            if (length(ll) > sample) genes <- paste0(genes, ", ...")
+            cat(sprintf("  -> %s [%s genes]: %s", 
+                        item, length(ll), genes), fill=TRUE)
+        }
+        cat(fill=TRUE)
+        cat("Source:", attr(object[[set]], "citation"), fill=TRUE)
+        
+        consoleWidth <- options("width")
+        cat(paste(rep("=", consoleWidth), collapse=""), fill=TRUE)
+    }
+}
+
 #' @rdname getEvent
 getCategories <- reactive(names(getData()))
 

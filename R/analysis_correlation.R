@@ -11,15 +11,11 @@ correlationUI <- function(id) {
         value="corrParams", style="info",
         selectizeInput(ns("geneExpr"), "Gene expression", choices=NULL,
                        width="100%"),
-        selectizeGeneInput(ns("gene"), multiple=TRUE),
-        # actionLink(ns("addRBPs"), 
-        #            "Add RBPs from (Sebestyen et al., 2016)..."),
-        selectizeInput(
-            ns("ASevents"), "Alternative splicing events", choices=NULL,
-            multiple=TRUE, width="100%",
-            options=list(plugins=list('remove_button', 'drag_drop'))), 
-        hr(),
-        selectizeInput(
+        selectGroupsUI(ns("genes"), label="Genes from selected groups"),
+        selectGroupsUI(
+            ns("ASevents"), 
+            label="Alternative splicing events from selected groups"),
+        hr(), selectizeInput(
             ns("method"), "Correlation method", width="100%",
             c("Pearson's product-moment correlation"="pearson", 
               "Kendall's rank correlation tau"="kendall",
@@ -87,7 +83,7 @@ correlationUI <- function(id) {
         sliderInput(ns("alpha"), "Point opacity", min=0, max=100, value=20, 
                     step=1, post="%", width="100%"),
         bsCollapse(generalPlotOptions, loessOptions, densityOptions),
-        processButton(ns("applyPlotStyle"), label="Apply"))
+        processButton(ns("applyPlotStyle"), label="Plot"))
     
     options <- div(id=ns("options"), bsCollapse(open=c("corrParams"), 
                                                 corrParams, scatterParams))
@@ -100,9 +96,9 @@ correlationUI <- function(id) {
                         buttonIcon="plus-circle", buttonId=ns("loadData")),
             hidden(options)),
         mainPanel(
-            uiOutput(ns("correlations")),
             hidden(dataTableOutput(ns("corTable"))),
-            hidden(downloadButton(ns("saveTable"), "Save table", "btn-info"))))
+            hidden(downloadButton(ns("saveTable"), "Save table", "btn-info")),
+            uiOutput(ns("correlations"))))
 }
 
 #' Subset gene expression based on (full or partial) matching genes
@@ -211,6 +207,8 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
     
     # Calculate correlation betwenn GE and AS event(s)
     corrPerGene <- function(gene, ASevent, geneExpr, psi, ...) {
+        updateProgress("Performing correlation analysis", console=FALSE)
+        
         expr           <- geneExpr[gene, ]
         exprNum        <- as.numeric(expr)
         names(exprNum) <- colnames(expr)
@@ -239,6 +237,9 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
         return(res)
     }
     
+    updateProgress("Performing correlation analyses", 
+                   divisions=length(gene) * length(ASevents))
+    
     res <- lapply(ASevents, function(ASevent) {
         gene <- rownames(geneExprSubset)
         corr <- lapply(gene, corrPerGene, ASevent, geneExprSubset, psi, ...)
@@ -250,11 +251,10 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
     return(res)
 }
 
-#' Plot correlations
+#' Display results of correlation analyses
 #'
-#' Plot correlation results from \code{\link{correlateGEandAS}}
-#'
-#' @param corr List of correlations
+#' @param corr \code{GEandAScorrelation} object (obtained after running
+#'   \code{\link{correlateGEandAS}})
 #' @param loessSmooth Boolean: plot a smooth curve computed by
 #'   \code{stats::loess.smooth}?
 #' @param autoZoom Boolean: automatically set the range of PSI values based on
@@ -283,7 +283,7 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #' @importFrom stats loess.smooth
 #'
 #' @export
-#' @return Renders plots for each correlation in \code{corr}
+#' @return Plots, summary tables or results of correlation analyses
 #'
 #' @examples
 #' annot <- readFile("ex_splicing_annotation.RDS")
@@ -293,10 +293,17 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #' geneExpr <- readFile("ex_gene_expression.RDS")
 #' corr <- correlateGEandAS(geneExpr, psi, "ALDOA")
 #' 
+#' # Quick display of the correlation results per splicing event and gene
+#' print(corr)
+#' 
+#' # Table summarising the correlation analysis results
+#' as.table(corr)
+#' 
+#' # Correlation analysis plots
 #' colourGroups <- list(Normal=paste("Normal", 1:3), 
 #'                      Tumour=paste("Cancer", 1:3))
 #' attr(colourGroups, "Colour") <- c(Normal="#00C65A", Tumour="#EEE273")
-#' plotCorrelation(corr, colourGroups=colourGroups, alpha=1)
+#' plot(corr, colourGroups=colourGroups, alpha=1)
 plotCorrelation <- function(corr, autoZoom=FALSE, loessSmooth=TRUE,
                             loessFamily=c("gaussian", "symmetric"),
                             colour="black", alpha=0.2, size=1.5,
@@ -382,10 +389,13 @@ plotCorrelation <- function(corr, autoZoom=FALSE, loessSmooth=TRUE,
 }
 
 #' @rdname plotCorrelation
+#' @export
 plot.GEandAScorrelation <- plotCorrelation
 
-print.GEandAScorrelation <- function(object) {
-    for (item in object) {
+#' @rdname plotCorrelation
+#' @export
+print.GEandAScorrelation <- function(corr) {
+    for (item in corr) {
         for (elem in item) {
             consoleWidth <- options("width")
             cat(paste(rep("=", consoleWidth), collapse=""), fill=TRUE)
@@ -399,12 +409,57 @@ print.GEandAScorrelation <- function(object) {
     }
 }
 
+#' @rdname plotCorrelation
+#' @param pvalueAdjust Character: method used to adjust p-values (see Details)
+#' 
+#' @details 
+#' The following methods for p-value adjustment are supported by using the 
+#' respective string in the \code{pvalueAdjust} argument:
+#' \itemize{
+#'      \item{\code{none}: do not adjust p-values}
+#'      \item{\code{BH}: Benjamini-Hochberg's method (false discovery rate)}
+#'      \item{\code{BY}: Benjamini-Yekutieli's method (false discovery rate)}
+#'      \item{\code{bonferroni}: Bonferroni correction (family-wise error rate)}
+#'      \item{\code{holm}: Holm's method (family-wise error rate)}
+#'      \item{\code{hochberg}: Hochberg's method (family-wise error rate)}
+#'      \item{\code{hommel}: Hommel's method (family-wise error rate)}
+#' }
+#' @export
+as.table.GEandAScorrelation <- function (corr, pvalueAdjust="BH") {
+    prepareCol <- function(object, FUN) unlist(lapply(object, lapply, FUN))
+    
+    gene     <- prepareCol(corr, function(i) i[["gene"]])
+    gene     <- prepareCol(corr, function(i) i[["gene"]])
+    eventID  <- prepareCol(corr, function(i) i[["eventID"]])
+    eventID  <- gsub("_", " ", eventID, fixed=TRUE)
+    
+    estimate <- prepareCol(corr, function(i) i[["cor"]][["estimate"]][[1]])
+    pvalue   <- prepareCol(corr, function(i) i[["cor"]][["p.value"]])
+    method   <- prepareCol(corr, function(i) i[["cor"]][["method"]])
+    qvalue   <- p.adjust(pvalue, method=pvalueAdjust)
+    qvalueLabel <- sprintf("p-value (%s adjusted)", pvalueAdjust)
+    
+    data <- data.frame(eventID, gene, method, estimate, pvalue, qvalue)
+    if (length(unique(method)) > 1) {
+        statCols <- c("Method", "Statistical value")
+    } else {
+        data$method <- NULL
+        statCols    <- unique(method)
+    }
+    colnames(data) <- c("Alternative splicing event", "Gene", statCols,
+                        "p-value", qvalueLabel)
+    rownames(data) <- NULL
+    return(data)
+}
+
 #' @rdname appServer
 #' 
 #' @importFrom shiny renderUI observeEvent isolate tagList tags
 #' @importFrom highcharter renderHighchart
 #' @importFrom shinyjs show hide toggle
 correlationServer <- function(input, output, session) {
+    selectGroupsServer(session, "ASevents", "ASevents")
+    selectGroupsServer(session, "genes", "Genes")
     selectGroupsServer(session, "groupFilter", "Samples")
     selectGroupsServer(session, "groupColour", "Samples")
     
@@ -430,14 +485,6 @@ correlationServer <- function(input, output, session) {
             hide("colour", anim=TRUE)
         }
     })
-        
-    # Update available gene choices depending on gene expression data loaded
-    # Reactive avoids updating if the input remains the same
-    updateGeneChoices <- reactive({
-        geneExpr <- getGeneExpression()[[input$geneExpr]]
-        genes <- rownames(geneExpr)
-        updateSelectizeInput(session, "gene", choices=genes, server=TRUE)
-    })
     
     # Update gene expression data
     observe({
@@ -445,76 +492,6 @@ correlationServer <- function(input, output, session) {
         if ( !is.null(geneExpr) ) {
             updateSelectizeInput(session, "geneExpr",
                                  choices=rev(names(geneExpr)))
-        }
-    })
-    
-    # Update gene choices
-    observe({
-        geneExpr <- getGeneExpression()
-        if ( !is.null(geneExpr) ) {
-            updateGeneChoices()
-            show("gene")
-        } else {
-            hide("gene")
-        }
-    })
-    
-    # Update alternative splicing events
-    observe({
-        psi  <- getInclusionLevels()
-        if (!is.null(psi)) {
-            updateSelectizeInput(
-                session, "ASevents", 
-                choices=c("Type to search for a splicing event..."="",
-                          rownames(psi)))
-        }
-    })
-    
-    # Update selected alternative splicing events based on selected gene
-    observeEvent(input$gene, {
-        geneExpr <- getGeneExpression()[[input$geneExpr]]
-        gene <- input$gene
-        ASevents <- isolate(input$ASevents)
-        psi  <- getInclusionLevels()
-        
-        if (is.null(psi)) return(NULL)
-        
-        allEvents <- rownames(psi)
-        names(allEvents) <- parseSplicingEvent(allEvents, char=TRUE)
-        
-        if (!is.null(ASevents)) return(NULL)
-        
-        # Automatically change AS events to those of selected genes if no AS
-        # event has yet been selected
-        if (!is.null(geneExpr) && !is.null(gene) && !identical(gene, "")) {
-            
-            isTcgaStyle <- all(grepl("|", head(rownames(geneExpr)), fixed=TRUE))
-            
-            query <- gene
-            if (isTcgaStyle) query <- strsplit(gene, "|", fixed=TRUE)[[1]][[1]]
-            
-            if ( !identical(query, "?") ) {
-                query <- sprintf("_%s|%s$|/%s/", query, query, query)
-                ASevents <- grep(query, allEvents, value=TRUE)
-            } else {
-                ASevents <- character(0)
-            }
-            
-            if (length(ASevents) == 0) {
-                choices  <- c("No events found for the selected gene"="")
-                selected <- NULL
-            } else {
-                choices  <- c("Select an alternative splicing event"="")
-                selected <- ASevents
-            }
-            
-            choices <- c(choices, allEvents)
-            updateSelectizeInput(session, "ASevents", choices=choices, 
-                                 selected=selected, server=TRUE)
-        } else {
-            choices <- c("Select an alternative splicing event"="", allEvents)
-            updateSelectizeInput(session, "ASevents", choices=choices, 
-                                 server=TRUE)
         }
     })
     
@@ -581,8 +558,8 @@ correlationServer <- function(input, output, session) {
             if ( length(cols) > 0 && height > 0 ) {
                 height <- paste0(height, "px")
                 tagList(
-                    distributeByCol(ns("plot"), length(plots), cols, height), 
-                    hr())
+                    hr(),
+                    distributeByCol(ns("plot"), length(plots), cols, height))
             }
         })
         
@@ -593,26 +570,7 @@ correlationServer <- function(input, output, session) {
     displayCorrTable <- reactive({
         corr <- getCorrelation()
         if (is.null(corr)) return(NULL)
-        
-        # Prepare table with correlation analyses
-        eventID  <- unlist(lapply(corr, lapply, "[[", "eventID"))
-        gene     <- unlist(lapply(corr, lapply, "[[", "gene"))
-        estimate <- unlist(lapply(corr, lapply, 
-                                  function(i) i[["cor"]][["estimate"]][[1]]))
-        pvalue   <- unlist(lapply(corr, lapply, 
-                                  function(i) i[["cor"]][["p.value"]]))
-        method   <- unlist(lapply(corr, lapply, 
-                                  function(i) i[["cor"]][["method"]]))
-        qvalue   <- p.adjust(pvalue)
-        
-        method <- unique(method)
-        if (length(method) != 1) 
-            stop("Only one correlation method is currently supported.")
-        
-        data           <- data.frame(gsub("_", " ", eventID, fixed=TRUE), 
-                                     gene, estimate, pvalue, qvalue)
-        colnames(data) <- c("Alternative splicing event", "Protein",
-                            method, "p-value", "p-value (BH adjusted)")
+        data <- as.table(corr)
         
         show("corTable")
         output$corTable <- renderDataTable(
@@ -628,12 +586,16 @@ correlationServer <- function(input, output, session) {
     
     observeEvent(input$correlate, {
         ns <- session$ns
-        
         isolate({
             geneExpr    <- getGeneExpression()[[input$geneExpr]]
             psi         <- getInclusionLevels()
             gene        <- input$gene
-            ASevents    <- input$ASevents
+            ASevents    <- getSelectedGroups(input, "ASevents", "ASevents",
+                                             filter=rownames(psi))
+            ASevents    <- unlist(ASevents)
+            gene        <- getSelectedGroups(input, "genes", "Genes",
+                                             filter=rownames(geneExpr))
+            gene        <- unlist(gene)
             method      <- input$method
             alternative <- input$alternative
         })
@@ -673,7 +635,6 @@ correlationServer <- function(input, output, session) {
             correlateGEandAS(geneExpr, psi, gene, ASevents, method=method, 
                              alternative=alternative))
         setCorrelation(corr)
-        plotShinyCorr()
         displayCorrTable()
         endProcess("correlate")
     })

@@ -359,16 +359,12 @@ psichomics <- function(..., reset=FALSE, testData=FALSE) {
     if (reset) devtools::load_all()
     
     if (testData) {
-        clinical   <- readRDS("vignettes/BRCA_clinical.RDS")
-        geneExpr   <- readRDS("vignettes/BRCA_geneExpr.RDS")
-        psi        <- readRDS("vignettes/BRCA_psi.RDS")
-        sampleInfo <- parseTcgaSampleInfo(colnames(psi))
-        
         data <- NULL
-        data[["Clinical data"]]    <- clinical
-        data[["Gene expression"]]  <- geneExpr
-        data[["Inclusion levels"]] <- psi
-        data[["Sample metadata"]]  <- sampleInfo
+        data[["Clinical data"]]    <- readRDS("vignettes/BRCA_clinical.RDS")
+        data[["Gene expression"]]  <- readRDS("vignettes/BRCA_geneExpr.RDS")
+        data[["Inclusion levels"]] <- readRDS("vignettes/BRCA_psi.RDS")
+        data[["Sample metadata"]]  <- parseTcgaSampleInfo(colnames(
+            data[["Inclusion levels"]]))
         setData(list("Test data"=data))
     }
     
