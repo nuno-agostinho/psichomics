@@ -8,6 +8,10 @@
     value), p-value or q-value (visual interface)
     - Allow to display correlation results as a table (using the `as.table`
     function)
+* Alternative splicing quantification:
+    - By default, quantify skipped exons, mutually exclusive exons, alternative 
+    3' and 5' splice sites, and alternative first and last exons; this default
+    option is now consistent across the visual and command-line interfaces)
 * Groups:
     - By default, load pre-made lists of genes when loading gene expression or
     loading/performing alternative splicing quantification
