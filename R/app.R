@@ -110,20 +110,16 @@ getUiFunctions <- function(ns, loader, ..., priority=NULL) {
 #' @return HTML element for a global selectize input
 globalSelectize <- function(id, placeholder) {
     elem <- paste0(id, "Elem")
-    hideElem <- paste0("$('#", id, "')[0].style.display = 'none';")
+    hideElem <- sprintf("$('#%s')[0].style.display = 'none';", id)
     
-    select <- selectizeInput(
-        elem, "", choices=NULL,
-        options=list(
-            onItemAdd=I(paste0("function(value, $item) {", hideElem, "}")),
-            onBlur=I(paste0("function() {", hideElem, "}")),
-            placeholder=placeholder),
-        width="auto")
+    select <- selectizeInput(elem, "", choices=NULL, width="auto", options=list(
+        onItemAdd=I(paste0("function(value, $item) {", hideElem, "}")),
+        onBlur=I(paste0("function() {", hideElem, "}")),
+        placeholder=placeholder))
     select[[3]][[1]] <- NULL
-    select <- tagAppendAttributes(
-        select, id=id,
-        style=paste("width: 95%;", "position: absolute;", 
-                    "margin-top: 5px !important;", "display: none;"))
+    select <- tagAppendAttributes(select, id=id, style=paste(
+        "display: none;",
+        "width: 95%;", "position: absolute;",  "margin-top: 5px !important;"))
     return(select)
 }
 
@@ -138,8 +134,7 @@ navSelectize <- function(id, label, placeholder=label) {
         style="margin-top: 5px !important; margin-bottom: 0px !important;", 
         globalSelectize(id, placeholder),
         tags$small(tags$b(label), tags$a(
-            "Change...",
-            onclick=paste0(
+            "Change...", onclick=paste0(
                 '$("#', id, '")[0].style.display = "block";',
                 '$("#', id, ' > div > select")[0].selectize.clear();',
                 '$("#', id, ' > div > select")[0].selectize.focus();'))), 
@@ -271,43 +266,38 @@ appServer <- function(input, output, session) {
     getServerFunctions("app", priority=c("dataServer", "analysesServer"))
     browserHistory("nav", input, session)
     
-    # Update selectize input to show available categories
-    observe({
-        data <- getData()
-        if (!is.null(data)) {
-            updateSelectizeInput(session, "selectizeCategoryElem",
-                                 choices=names(data))
-            
-            # Set the category of the data
-            observeEvent(input$selectizeCategoryElem, 
-                         if (input$selectizeCategoryElem != "")
-                             setCategory(input$selectizeCategoryElem))
+    updateSelectizeChoices <- function(session, id, choices, server=FALSE) {
+        if (!is.null(choices)) {
+            selected <- choices[[1]]
         } else {
-            updateSelectizeInput(session, "selectizeCategoryElem",
-                                 choices=list(), selected=list())
+            choices  <- list()
+            selected <- list()
         }
+        updateSelectizeInput(session, id, choices=choices, selected=selected,
+                             server=server)
+    }
+    
+    # Update available categories
+    observe(updateSelectizeChoices(session, "selectizeCategoryElem", 
+                                   names(getData()), server=FALSE))
+    
+    # Set data category
+    observeEvent(input$selectizeCategoryElem, {
+        selected <- input$selectizeCategoryElem
+        if (!is.null(selected) && selected != "") setCategory(selected)
     })
     
-    # Update selectize event to show available events
-    observe({
-        ASevents <- getASevents()
-        if (!is.null(ASevents)) {
-            updateSelectizeInput(session, "selectizeEventElem", 
-                                 choices=ASevents)
-            
-            # Set the selected alternative splicing event
-            observeEvent(input$selectizeEventElem,
-                         if (input$selectizeEventElem != "")
-                             setEvent(input$selectizeEventElem))
-        } else {
-            # Replace with empty list since NULLs are dropped
-            updateSelectizeInput(session, "selectizeEventElem", choices=list(),
-                                 selected=list())
-            setEvent(NULL)
-        }
+    # Update available events
+    observe(updateSelectizeChoices(session, "selectizeEventElem", 
+                                   getASevents(), server=TRUE))
+    
+    # Set alternative splicing event
+    observeEvent(input[["selectizeEventElem"]], {
+        selected <- input[["selectizeEventElem"]]
+        if (!is.null(selected) && selected != "") setEvent(selected)
     })
     
-    # Show the selected category
+    # Display selected category
     output$selectizeCategoryValue <- renderUI({
         category <- getCategory()
         if (is.null(category))
@@ -318,15 +308,19 @@ appServer <- function(input, output, session) {
             return(category)
     })
     
-    # Show the selected event
+    # Display selected event
     output$selectizeEventValue <- renderUI({
-        event <- getEvent()
-        if (is.null(event))
+        areEventsLoaded  <- !is.null(getASevents())
+        
+        selected <- getASevent()
+        isSelectionValid <- !is.null(selected) && selected != ""
+        
+        if (!areEventsLoaded)
             return("No events quantified")
-        else if (event == "")
-            return("No event selected")
+        else if (!isSelectionValid)
+            return("No event is selected")
         else
-            return(parseSplicingEvent(event, char=TRUE))
+            return(parseSplicingEvent(selected, char=TRUE))
     })
     
     session$onSessionEnded(function() {

@@ -1,4 +1,4 @@
-# 1.6.3 (30 October, 2018)
+# 1.6.3 (6 November, 2018)
 
 * Correlation analyses:
     - Allow to use groups of genes and alternative splicing events for 
@@ -8,6 +8,8 @@
     value), p-value or q-value (visual interface)
     - Allow to display correlation results as a table (using the `as.table`
     function)
+* Data:
+    - Decrease loading time after quantifying alternative splicing
 * Alternative splicing quantification:
     - By default, quantify skipped exons, mutually exclusive exons, alternative 
     3' and 5' splice sites, and alternative first and last exons; this default
