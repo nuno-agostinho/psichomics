@@ -35,8 +35,8 @@ pcaUI <- function(id) {
     
     pcaOptions <- div(
         id=ns("pcaOptions"),
-        selectizeInput(ns("dataForPCA"), "Data to perform PCA on", width="100%",
-                       choices=NULL, options=list(
+        selectizeInput(ns("dataForPCA"), "Dataset to perform PCA on", 
+                       width="100%", choices=NULL, options=list(
                            placeholder="No data available")),
         checkboxGroupInput(ns("preprocess"), "Preprocessing",
                            c("Center values"="center", "Scale values"="scale"),

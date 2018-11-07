@@ -1,13 +1,10 @@
-# 1.6.3 (6 November, 2018)
+# 1.8.1 (7 November, 2018)
 
 * Correlation analyses:
-    - Allow to use groups of genes and alternative splicing events for 
-    correlation analyses
-    - Display progress for correlation analyses
-    - Allow to sort results based on correlation estimate (or their absolute 
-    value), p-value or q-value (visual interface)
-    - Allow to display correlation results as a table (using the `as.table`
-    function)
+    - Allow to use groups of genes and alternative splicing events
+    - Display progress
+    - Display correlation results in a table (in the command-line interface, use
+    the `as.table` function)
 * Data:
     - Decrease loading time after quantifying alternative splicing
 * Alternative splicing quantification:

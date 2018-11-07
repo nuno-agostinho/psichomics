@@ -26,6 +26,8 @@ subset argument has been used.  Default is \code{options()$na.action}.
   \item{rho}{
 a scalar parameter that controls the type of test.
 }
+  \item{timefix}{process times through the \code{aeqSurv} function to
+  eliminate potential roundoff issues.}
 }}
 }
 \value{

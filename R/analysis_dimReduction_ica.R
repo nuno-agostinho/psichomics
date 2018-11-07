@@ -126,8 +126,8 @@ icaUI <- function(id) {
     
     icaOptions <- div(
         id=ns("icaOptions"),
-        selectizeInput(ns("dataForICA"), "Data to perform ICA on", width="100%",
-                       choices=NULL, options=list(
+        selectizeInput(ns("dataForICA"), "Dataset to perform ICA on",
+                       width="100%", choices=NULL, options=list(
                            placeholder="No data available")),
         sliderInput(ns("componentNumber"), "Number of components",
                     width="100%", value=5, min=2, max=10),

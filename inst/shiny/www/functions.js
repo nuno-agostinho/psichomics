@@ -125,6 +125,41 @@ function setTranscript (transcript) {
 }
 
 /**
+ * Render gene expression normalisation options
+ */
+function renderGEnormOptions (item, escape) {
+    var description;
+    switch(item.value) {
+        case "TMM":
+            description = "This method is recommended" +
+                          " for most RNAseq data where more " +
+                          "than half of the genes are believed " +
+                          "not differentially expressed " + 
+                          "between any pair of the samples.";
+            break;
+        case "RLE":
+            description = "The median library is " +
+                          "calculated from the geometric mean " +
+                          "of all columns and the median ratio " +
+                          "of each sample to the median library" +
+                          " is taken as the scale factor.";
+            break;
+        case "upperquartile":
+            description = "The scale factors are " +
+                          "calculated from a given quantile of " +
+                          "the counts for each library, after " +
+                          "removing genes with zero counts in " +
+                          "all libraries.";
+            break;
+        case "none":
+            description = "";
+            break;
+    }
+    return "<div><span class='label label-default'>" + escape(item.label) +
+        "</span></br>" + "<small>" + description + "</small></div>"; 
+}
+
+/**
  * Navigate user to differential splicing of a given alternative splicing event
  * @param {String} event Alternative splicing event
  * @param {String} groups List of groups used for differential analysis

@@ -1413,19 +1413,15 @@ uniqueBy <- function(data, ...) {
 #' 
 #' @return A \code{highcharts} object with an export button
 export_highcharts <- function(hc, fill="transparent", text="Export") {
+    createJSExport <- function(type) {
+        JS(paste0("function () { this.exportChart({ type: '", type, "' }); }"))
+    }
+    
     export <- list(
-        list(text="PNG image",
-             onclick=JS("function () { 
-                        this.exportChart({ type: 'image/png' }); }")),
-        list(text="JPEG image",
-             onclick=JS("function () { 
-                        this.exportChart({ type: 'image/jpeg' }); }")),
-        list(text="SVG vector image",
-             onclick=JS("function () { 
-                        this.exportChart({ type: 'image/svg+xml' }); }")),
-        list(text="PDF document",
-             onclick=JS("function () { 
-                        this.exportChart({ type: 'application/pdf' }); }")),
+        list(text="PNG image",  onclick=createJSExport("image/png")),
+        list(text="JPEG image", onclick=createJSExport("image/jpeg")),
+        list(text="SVG vector image", onclick=createJSExport("image/svg+xml")),
+        list(text="PDF document", onclick=createJSExport("application/pdf")),
         list(separator=TRUE),
         list(text="CSV document",
              onclick=JS("function () { this.downloadCSV(); }")),
@@ -1433,9 +1429,8 @@ export_highcharts <- function(hc, fill="transparent", text="Export") {
              onclick=JS("function () { this.downloadXLS(); }")))
     
     hc_exporting(hc, enabled=TRUE, formAttributes=list(target="_blank"),
-                 buttons=list(contextButton=list(text=text, 
-                                                 theme=list(fill=fill),
-                                                 menuItems=export)))
+                 buttons=list(contextButton=list(text=text, menuItems=export,
+                                                 theme=list(fill=fill))))
 }
 
 #' Create scatter plot

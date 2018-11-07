@@ -6,7 +6,7 @@
 description}
 \usage{
 tabDataset(ns, title, tableId, columns, visCols, data,
-  description = NULL)
+  description = NULL, icon = NULL)
 }
 \arguments{
 \item{ns}{Namespace function}

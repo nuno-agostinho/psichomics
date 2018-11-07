@@ -59,39 +59,7 @@ geNormalisationFilteringInterface <- function(ns) {
                       "Relative log expression (RLE)"="RLE",
                       "Upper-quartile normalisation"="upperquartile",
                       "No normalisation"="none"),
-                    options = list(render = I(
-                        '{ option: function(item, escape) {
-                            var description;
-                            switch(item.value) {
-                                case "TMM":
-                                    description = "This method is recommended" +
-                                        " for most RNAseq data where more " +
-                                        "than half of the genes are believed " +
-                                        "not differentially expressed " + 
-                                        "between any pair of the samples.";
-                                    break;
-                                case "RLE":
-                                    description = "The median library is " +
-                                        "calculated from the geometric mean " +
-                                        "of all columns and the median ratio " +
-                                        "of each sample to the median library" +
-                                        " is taken as the scale factor.";
-                                    break;
-                                case "upperquartile":
-                                    description = "The scale factors are " +
-                                        "calculated from a given quantile of " +
-                                        "the counts for each library, after " +
-                                        "removing genes with zero counts in " +
-                                        "all libraries.";
-                                    break;
-                                case "none":
-                                    description = "";
-                                    break;
-                            }
-                            return "<div><span class=\'label label-default\'>" +
-                                   escape(item.label) + 
-                                   "</span></br>" + "<small>" + description + 
-                                   "</small></div>"; } }'))),
+                    options=list(render=I('{ option: renderGEnormOptions }'))),
                 conditionalPanel(
                     sprintf("input[id='%s'] == '%s'", ns("normalisation"),
                             "upperquartile"),
@@ -471,6 +439,7 @@ geNormalisationFilteringServer <- function(input, output, session) {
             "Perform log2 transformation"=if (log2transform) "Yes" else "No",
             "Average count to add per observation"=priorCount))
         attr(geneExprNorm, "settings") <- settings
+        attr(geneExprNorm, "icon") <- list(symbol="cogs", colour="green")
         
         setNormalisedGeneExpression(geneExprNorm)
         endProcess("processGeneExpr", time=time)

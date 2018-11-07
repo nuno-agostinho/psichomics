@@ -351,7 +351,7 @@ dataUI <- function(id, tab) {
 #'
 #' @return HTML elements
 tabDataset <- function(ns, title, tableId, columns, visCols, data,
-                       description=NULL) {
+                       description=NULL, icon=NULL) {
     tablename <- ns(paste("table", tableId, sep="-"))
     
     downloadId <- paste(tablename, "download", sep="-")
@@ -388,15 +388,25 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
     #         role="progressbar", style="width:100%",
     #         "Loading summary plots")))
     
-    tabPanel(title, br(), download, br(),
-             bsCollapse(
-                 open="Summary",
-                 bsCollapsePanel(
-                     tagList(icon("table"), "Data table"), value="Data table",
-                     visibleColumns, hr(), dataTableOutput(tablename)),
-                 bsCollapsePanel(
-                     tagList(icon("pie-chart"), "Summary"), value="Summary",
-                     multiHighchartsPlots)))
+    if (is.null(icon)) {
+        name <- title
+    } else {
+        colour <- switch(icon$colour, 
+                         "green"="progress-bar-success",
+                         "blue"="progress-bar-info",
+                         "orange"="progress-bar-warning",
+                         "red"="progress-bar-danger")
+        name <- tags$div(
+            tags$span(class=paste("badge", colour), icon(icon$symbol)), title)
+    }
+    
+    tabPanel(title=name, value=title, br(), download, br(), bsCollapse(
+        open="Summary",
+        bsCollapsePanel(tagList(icon("table"), "Data table"), 
+                        value="Data table", visibleColumns, hr(),
+                        dataTableOutput(tablename)),
+        bsCollapsePanel(tagList(icon("pie-chart"), "Summary"), value="Summary",
+                        multiHighchartsPlots)))
     }
 
 #' Render a specific data tab (including data table and related interface)
@@ -538,10 +548,9 @@ dataServer <- function(input, output, session) {
         category <- getCategory()
         
         dataTablesUI <- lapply(
-            seq_along(categoryData),
-            function(i) {
+            seq_along(categoryData), function(i) {
                 data <- categoryData[[i]]
-                tabDataset(ns, names(categoryData)[i], 
+                tabDataset(ns, names(categoryData)[i], icon=attr(data, "icon"),
                            paste(category, i, sep="-"), names(data),
                            attr(data, "show"), data,
                            description=attr(data, "description"))
@@ -551,16 +560,15 @@ dataServer <- function(input, output, session) {
     
     # Change the active dataset
     observe( setActiveDataset(input$datasetTab) )
-    
+
     # Match clinical data with sample information
     observe({
         patients   <- getPatientId()
         samples    <- getSampleId()
-        sampleInfo <- getSampleInfo()
         if ( !is.null(patients) && !is.null(samples) ) {
             startProgress("Matching subjects to their samples...", 1)
             match <- getSubjectFromSample(samples, patients, 
-                                          sampleInfo=sampleInfo)
+                                          sampleInfo=getSampleInfo())
             setClinicalMatchFrom("Inclusion levels", match)
             closeProgress("Matching process concluded")
         }

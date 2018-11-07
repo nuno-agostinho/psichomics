@@ -246,15 +246,14 @@ groupManipulationInput <- function(id, type) {
 groupsUI <- function(id, tab) {
     ns <- NS(id)
     
-    tab(icon="object-group", title="Groups",
-        tabsetPanel(
-            id="groupsTypeTab",
-            tabPanel("Patient and sample groups",
-                     groupManipulationInput(ns("sampleGroupModule"), 
-                                            "Samples")),
-            tabPanel("Splicing event and gene groups",
-                     groupManipulationInput(ns("ASeventGroupModule"),
-                                            "ASevents"))))
+    tab(icon="object-group", title="Groups", tabsetPanel(
+        id="groupsTypeTab",
+        tabPanel(
+            "Patient and sample groups",
+            groupManipulationInput(ns("sampleGroupModule"), "Samples")),
+        tabPanel(
+            "Splicing event and gene groups",
+            groupManipulationInput(ns("ASeventGroupModule"), "ASevents"))))
 }
 
 #' Render group interface
@@ -311,31 +310,22 @@ renderGroupInterface <- function(ns, multiFisherTests=TRUE) {
     # Set operations
     complementLink <- operationLink(
         "Complement", id=ns(complementId),
-        helpText("Create a group with the elements outside the",
-                 "selected group(s)"),
-        icon=setOperationIcon("complement-AB"),
-        disable=FALSE)
+        icon=setOperationIcon("complement-AB"), disable=FALSE)
     
     subtractLink <- operationLink(
         "Subtract elements from upper-selected group",
-        helpText("Create a group with the exclusive",
-                 "elements from the upper-selected group"),
-        id=ns(subtractId),
-        icon=setOperationIcon("difference-AB"))
+        helpText("Select two groups for subtraction operations"),
+        id=ns(subtractId), icon=setOperationIcon("difference-AB"))
     
     subtract2Link <- operationLink(
         "Subtract elements from lower-selected group",
-        helpText("Create a group with the exclusive",
-                 "elements from the lower-selected group"),
-        id=ns(subtract2Id),
-        icon=setOperationIcon("difference-BA"))
+        helpText("Select two groups for subtraction operations"),
+        id=ns(subtract2Id), icon=setOperationIcon("difference-BA"))
     
     symDiffLink <- operationLink(
         "Symmetric difference",
-        helpText("Create a group with the non-intersecting",
-                 "elements of selected groups"),
-        id=ns(symDiffId),
-        icon=setOperationIcon("symmetric-difference"))
+        helpText("Select two or more groups for symmetric difference"),
+        id=ns(symDiffId), icon=setOperationIcon("symmetric-difference"))
     
     operations <- div(
         id=ns("setOperations"), class="btn-group",
@@ -354,29 +344,24 @@ renderGroupInterface <- function(ns, multiFisherTests=TRUE) {
     
     # Save and load groups
     saveSelectedGroupsLink <- downloadContent(
-        icon("user"), class=NULL, 
-        "Save elements from selected group(s)",
-        helpText("Export a file containing identifiers by select groups"),
+        icon("user"), class=NULL, "Save selected groups",
         id=ns(saveSelectedGroupsId))
     
     saveAllGroupsLink <- downloadContent(
-        icon("users"), class=NULL, "Save elements from all groups",
-        helpText("Export a file containing identifiers by every group"),
-        id=ns(saveAllGroupsId),
+        icon("users"), class=NULL, "Save all groups", id=ns(saveAllGroupsId),
         disable=FALSE)
     
     loadGroupsLink <- operationLink(
-        "Load groups", 
-        helpText("Import a file containing identifiers by group"),
-        id=ns(loadGroupsId), icon=icon("plus-circle"), disable=FALSE)
+        "Load groups", id=ns(loadGroupsId), icon=icon("plus-circle"), 
+        disable=FALSE)
     
     saveLoadGroups <- tags$div(
         class="btn-group", role="group",
-        tags$button(icon("folder-open"), id=ns(saveLoadId),
+        tags$button("Save and load", icon("folder-open"), id=ns(saveLoadId),
                     tags$span(class="caret"),
                     class="btn btn-default dropdown-toggle",
-                    "data-toggle"="dropdown",
-                    "aria-haspopup"="true", "aria-expanded"="true"),
+                    "data-toggle"="dropdown", "aria-haspopup"="true",
+                    "aria-expanded"="true"),
         tags$ul(class="dropdown-menu dropdown-menu-right",
                 saveSelectedGroupsLink, saveAllGroupsLink,
                 tags$li(role="separator", class="divider"), loadGroupsLink))
@@ -1777,12 +1762,12 @@ groupManipulation <- function(input, output, session, type) {
                 
                 return(imported)
             } else {
-                stop(paste("The provided file does not seem to have group",
-                           "information."))
+                stop("File does not contain group data.")
             }
         }
         
         groupsFile <- fileBrowser()
+        if (is.na(groupsFile)) return(NULL) # Action cancelled by the user
         
         isolate({
             if (type == "Samples") {
@@ -1975,7 +1960,8 @@ groupsServerOnce <- function(input, output, session) {
         
         if (!is.null(geneExp) || !is.null(psi)) {
             groups     <- unlist(getGeneList(), recursive=F)
-            groupNames <- unlist(lapply(getGeneList(), names))
+            groupNames <- unlist(lapply(names(getGeneList()), function(i)
+                sprintf("%s (%s)", names(getGeneList()[[i]]), i)))
             selected   <- unlist(lapply(names(getGeneList()), function(i)
                 paste(i, names(getGeneList()[[i]]), sep=" ~ ")))
             groups     <- cbind(groupNames, "PreMadeList", selected, groups)
