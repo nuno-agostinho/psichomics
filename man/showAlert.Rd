@@ -7,14 +7,14 @@
 \alias{removeAlert}
 \title{Show or remove an alert}
 \usage{
-showAlert(session, ..., title = NULL, style = NULL,
-  dismissible = TRUE, alertId = "alert")
+showAlert(session, ..., title, style = NULL, dismissible = TRUE,
+  alertId = "alert", iconName = NULL, caller = NULL)
 
 errorAlert(session, ..., title = NULL, dismissible = TRUE,
-  alertId = "alert")
+  alertId = "alert", caller = NULL)
 
 warningAlert(session, ..., title = NULL, dismissible = TRUE,
-  alertId = "alert")
+  alertId = "alert", caller = NULL)
 
 removeAlert(output, alertId = "alert")
 }
@@ -25,12 +25,16 @@ removeAlert(output, alertId = "alert")
 
 \item{title}{Character: title of the alert (optional)}
 
-\item{style}{Character: style of the alert ("alert-danger", "alert-warning" 
-or NULL)}
+\item{style}{Character: style of the alert ("error", "warning" or NULL)}
 
 \item{dismissible}{Boolean: is the alert dismissible? TRUE by default}
 
 \item{alertId}{Character: alert identifier}
+
+\item{iconName}{Character: FontAwesome icon name to appear with the title}
+
+\item{caller}{Character: label to identify the module calling for the alert
+(relevant for error and warning alerts)}
 
 \item{output}{Shiny output}
 }

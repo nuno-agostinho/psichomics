@@ -816,10 +816,11 @@ createGroupFromInput <- function (session, input, dataset, id, type,
         
         # Display error
         if ("simpleError" %in% class(set)) {
-            errorAlert(session, title="Error in the subset expression.",
+            errorAlert(session, title="Issue with subset expression",
                        "Check if column names are correct.", br(),
                        "The following error was raised:",
-                       tags$code(set$message), alertId="alert-side")
+                       tags$code(set$message), alertId="alert-side",
+                       caller="Data grouping")
             return(NULL)
         }
         
@@ -835,9 +836,10 @@ createGroupFromInput <- function (session, input, dataset, id, type,
         
         # Show error to the user
         if ("simpleError" %in% class(set)) {
-            errorAlert(session, title="GREP expression error",
+            errorAlert(session, title="Issue with GREP expression",
                        "The following error was raised:", br(),
-                       tags$code(set$message), alertId="alert-side")
+                       tags$code(set$message), alertId="alert-side",
+                       caller="Data grouping")
             return(NULL)
         }
         
@@ -942,9 +944,10 @@ createGroupById <- function(session, rows, identifiers) {
     invalid <- union(rows[!matched][!parsable], parsed[!valid])
     if (length(invalid) > 0) {
         discarded <- paste(invalid, collapse=", ")
-        warningAlert(
-            session, "The following ", length(invalid),
-            " indexes or identifiers were discarded:", tags$code(discarded))
+        warningAlert(session, title="Discarded values", sprintf(
+            "The following %s indexes or identifiers were discarded:",
+            length(invalid)), tags$code(discarded),
+            caller="Data grouping", alertId="alert-main")
     }
     rows <- identifiers[unique(union(match, parsed[valid]))]
     return(rows)
@@ -1801,8 +1804,9 @@ groupManipulation <- function(input, output, session, type) {
         if (!is.null(imported) && !is(imported, "error"))
             appendNewGroups(type, imported)
         else
-            errorAlert(session, title="Error loading the file.",
-                       imported$message, alertId="alert-main")
+            errorAlert(session, title="Groups file could not be loaded",
+                       imported$message, alertId="alert-main", 
+                       caller="Data grouping")
     })
     
     if (type == "Samples") {

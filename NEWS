@@ -25,6 +25,7 @@
 
 * Groups:
     - Minor improvements to the group creation interface
+* Improve console logging of error and warning alerts
 
 # 1.6.2 (2 October, 2018)
 

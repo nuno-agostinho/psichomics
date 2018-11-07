@@ -795,18 +795,18 @@ infoModal <- function(session, title, ..., size="small", footer=NULL,
 #' @param session Shiny session
 #' @param ... Arguments to render as elements of alert
 #' @param title Character: title of the alert (optional)
-#' @param style Character: style of the alert ("alert-danger", "alert-warning" 
-#' or NULL)
+#' @param style Character: style of the alert ("error", "warning" or NULL)
 #' @param dismissible Boolean: is the alert dismissible? TRUE by default
 #' @param alertId Character: alert identifier
+#' @param iconName Character: FontAwesome icon name to appear with the title
+#' @param caller Character: label to identify the module calling for the alert
+#' (relevant for error and warning alerts)
 #' 
 #' @seealso \code{\link{showModal}}
 #' @importFrom shiny span h3 renderUI div tagList
 #' @return NULL (this function is used to modify the Shiny session's state)
-showAlert <- function(session, ..., title=NULL, style=NULL, dismissible=TRUE, 
-                      alertId="alert") {
-    ns <- session$ns
-    
+showAlert <- function(session, ..., title, style=NULL, dismissible=TRUE, 
+                      alertId="alert", iconName=NULL, caller=NULL) {
     if (dismissible) {
         dismissible <- "alert-dismissible"
         dismiss <- tags$button(type="button", class="close",
@@ -817,29 +817,36 @@ showAlert <- function(session, ..., title=NULL, style=NULL, dismissible=TRUE,
         dismiss <- NULL
     }
     
-    if (!is.null(title)) title <- h4(title)
+    # Log information
+    if (style == "info") style <- "Information"
+    msg <- sprintf("%s: %s", capitalize(style), title)
+    if (!is.null(caller)) msg <- sprintf('%s (in "%s")', msg, caller)
+    message(msg, "\n  ", paste(lapply(args, format), collapse=" "))
+    
+    style <- switch(style, "error"="alert-danger", "warning"="alert-warning")
     
     output <- session$output
     output[[alertId]] <- renderUI({
-        tagList(
-            div(title, id="myAlert", class="alert", class=style, role="alert",
-                class="animated bounceInUp", class=dismissible, dismiss, ...)
-        )
+        tagList(div(h4(icon(iconName), title), id="myAlert", class="alert",
+                    class=style, role="alert", class="animated bounceInUp", 
+                    class=dismissible, dismiss, ...))
     })
 }
 
 #' @rdname showAlert
 errorAlert <- function(session, ..., title=NULL, dismissible=TRUE,
-                       alertId="alert") {
-    showAlert(session, ..., style="alert-danger", title=title, 
-              dismissible=dismissible, alertId=alertId)
+                       alertId="alert", caller=NULL) {
+    showAlert(session, ..., style="error", title=title, 
+              iconName="times-circle", dismissible=dismissible, 
+              alertId=alertId, caller=caller)
 }
 
 #' @rdname showAlert
 warningAlert <- function(session, ..., title=NULL, dismissible=TRUE,
-                         alertId="alert") {
-    showAlert(session, ..., style="alert-warning", title=title,
-              dismissible=dismissible, alertId=alertId)
+                         alertId="alert", caller=NULL) {
+    showAlert(session, ..., style="warning", title=title, 
+              iconName="exclamation-circle", dismissible=dismissible, 
+              alertId=alertId, caller=caller)
 }
 
 #' @rdname showAlert

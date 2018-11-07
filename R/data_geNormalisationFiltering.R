@@ -213,14 +213,18 @@ loadGeneExpressionSet <- function(session, input, output) {
         if (is(geneExpr, "error")) {
             if (geneExpr$message == paste("'file' must be a character string",
                                           "or connection"))
-                errorAlert(session, title="Error", "No file was provided",
-                           alertId="alertGeneExpr")
+                errorAlert(session, title="No file provided", 
+                           "Please provide a file", alertId="alertGeneExpr",
+                           caller="Gene expression normalisation and filtering")
             else
-                errorAlert(session, title="Error", 
-                           geneExpr$message, alertId="alertGeneExpr")
+                errorAlert(session, title="An error was raised", 
+                           geneExpr$message, alertId="alertGeneExpr",
+                           caller="Gene expression normalisation and filtering",
+                           caller="Gene expression normalisation and filtering")
         } else if (is(geneExpr, "warning")) {
-            warningAlert(session, title="Warning", 
-                         geneExpr$message, alertId="alertGeneExpr")
+            warningAlert(session, title="A warning was raised", 
+                         geneExpr$message, alertId="alertGeneExpr",
+                         caller="Gene expression normalisation and filtering")
         } else {
             removeAlert(output, "alertGeneExpr")
             

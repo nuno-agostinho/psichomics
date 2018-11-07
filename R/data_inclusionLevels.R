@@ -251,11 +251,13 @@ loadCustomSplicingAnnotationSet <- function(session, input, output) {
     observeEvent(input$loadCustom, {
         customAnnot <- input$customAnnot
         if (is.null(customAnnot)) {
-            errorAlert(session, title="No file provided.",
-                       "Please select a RDS file.")
+            errorAlert(session, title="No file provided",
+                       "Please select a RDS file.",
+                       caller="Custom alternative splicing annotation")
         } else if (!grepl("\\.rds$", customAnnot$name, ignore.case=TRUE)) {
-            errorAlert(session, title="File format not allowed.",
-                       "Please select a RDS file.")
+            errorAlert(session, title="File format not supported",
+                       "Please select a RDS file.",
+                       caller="Custom alternative splicing annotation")
         } else {
             custom <- customAnnot$datapath
             names(custom) <- sprintf("%s (%s, %s)", customAnnot$name,
@@ -308,14 +310,17 @@ loadSplicingQuantificationSet <- function(session, input, output) {
         if (is(psi, "error")) {
             if (psi$message == paste("'file' must be a character string or",
                                      "connection"))
-                errorAlert(session, title="Error", "No file was provided",
-                           alertId="alertIncLevels")
+                errorAlert(session, title="No file provided", 
+                           "Please provide a file.", alertId="alertIncLevels",
+                           caller="Alternative splicing quantification")
             else
-                errorAlert(session, title="Error", 
-                           psi$message, alertId="alertIncLevels")
+                errorAlert(session, title="An error was raised", 
+                           psi$message, alertId="alertIncLevels",
+                           caller="Alternative splicing quantification")
         } else if (is(psi, "warning")) {
-            warningAlert(session, title="Warning", 
-                         psi$message, alertId="alertIncLevels")
+            warningAlert(session, title="A warning was raised", 
+                         psi$message, alertId="alertIncLevels",
+                         caller="Alternative splicing quantification")
         } else {
             removeAlert(output, "alertIncLevels")
             
