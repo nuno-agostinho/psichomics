@@ -19,3 +19,4 @@ NULL (this function is used to modify the Shiny session's state)
 \description{
 Prepare survival terms in case of valid input
 }
+\keyword{internal}

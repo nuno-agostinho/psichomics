@@ -2,22 +2,23 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{getFirebrowseDates}
 \alias{getFirebrowseDates}
-\alias{getFirehoseDates}
-\alias{getTCGAdates}
-\title{Query the Firebrowse web API for the available data datestamps}
+\alias{getFirebrowseCohorts}
+\title{Query the Firebrowse web API}
 \usage{
 getFirebrowseDates()
 
-getFirehoseDates()
-
-getTCGAdates()
+getFirebrowseCohorts(cohort = NULL)
+}
+\arguments{
+\item{cohort}{Character: filter results by given cohorts (optional)}
 }
 \value{
-Parsed date with datestamps of the data available
+Parsed response
 }
 \description{
-Query the Firebrowse web API for the available data datestamps
+Query the Firebrowse web API
 }
 \examples{
 if (isFirebrowseUp()) getFirebrowseDates()
+if (isFirebrowseUp()) getFirebrowseCohorts()
 }

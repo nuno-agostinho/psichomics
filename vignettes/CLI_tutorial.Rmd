@@ -44,6 +44,8 @@ library(psichomics)
 
 * `psichomics`: Start the visual interface of *psichomics*
 * `parseSplicingEvent`: Parse splicing events
+* `getSplicingEventFromGenes`: Get alternative splicing events from genes
+* `getGenesFromSplicingEvents`: Get genes from alternative splicing events
 
 ### Data retrieval
 
@@ -56,6 +58,7 @@ library(psichomics)
 * `getFirebrowseDates`: Query the Firebrowse web API for processing dates
 * `loadFirebrowseData`: Download and load TCGA data through the Firebrowse web 
 API
+* `parseTcgaSampleInfo`: Parse sample information from TCGA samples
 
 **GTEx**
 
@@ -70,7 +73,7 @@ metadata
 * `loadSRAproject`: Download and load [SRA][SRA] projects through the 
 [*recount*][recount] R package
 
-**Custom files**
+**Custom and/or local files**
 
 * `loadLocalFiles`: Load local files from a given folder
 * `prepareSRAmetadata`: Prepare metadata from [SRA][SRA] (as obtained from Run
@@ -83,8 +86,8 @@ aligners (currently, psichomics supports the output of the splice-aware aligner
 [STAR][STAR])
 
 ### Gene expression pre-processing
-* `rowMeans`: Calculate mean per row (useful for filtering gene expression)
-* `rowVars`: Calculate variance per row (useful for filtering gene expression)
+* `rowMeans`: Calculate mean per row (useful to filter gene expression)
+* `rowVars`: Calculate variance per row (useful to filter gene expression)
 * `normaliseGeneExpression`: Normalise gene expression data
 
 ### PSI quantification
@@ -104,6 +107,7 @@ files
 [VAST-TOOLS][VAST-TOOLS]
 
 ### Data Grouping
+* `getGeneList`: Get pre-created, literature-based lists of genes
 * `createGroupByAttribute`: Split elements into groups based on a given 
 attribute
 * `getSampleFromSubject`: Get samples matching the given patients
@@ -152,6 +156,7 @@ and gene expression)
 * `correlateGEandAS`: Test for association between paired samples' gene 
 expression (for any genes of interest) and alternative splicing quantification
 * `plotCorrelation`: Scatter plots of the correlation results
+* `as.table`: Table of the correlation results
 
 ### Annotation retrieval
 * `queryEnsemblByEvent`: Query Ensembl based on an alternative splicing event
@@ -543,7 +548,7 @@ library(survival)
 
 # Assign alternative splicing quantification to patients based on their samples
 samples <- colnames(psi)
-match <- getPatientFromSample(samples, clinical, sampleInfo=sampleInfo)
+match <- getSubjectFromSample(samples, clinical, sampleInfo=sampleInfo)
 
 survPlots <- list()
 for (event in events) {

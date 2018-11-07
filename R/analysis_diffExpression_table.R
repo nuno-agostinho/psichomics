@@ -160,6 +160,7 @@ diffExpressionTableUI <- function(id) {
 #' @importFrom limma eBayes lmFit topTable
 #' 
 #' @inherit diffExpressionTableServer
+#' @keywords internal
 diffExpressionSet <- function(session, input, output) {
     ns <- session$ns
     

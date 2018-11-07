@@ -20,3 +20,4 @@ Rounded numeric value
 \description{
 Round down/up the minimum/maximum value
 }
+\keyword{internal}

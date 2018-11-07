@@ -37,3 +37,4 @@ HTML elements
 \description{
 Alert in the style of a dialogue box with a button
 }
+\keyword{internal}

@@ -31,3 +31,4 @@ NULL (this function is used to modify the Shiny session's state)
 Prepare file browser dialogue and update the input's value accordingly to
 selected file or directory
 }
+\keyword{internal}

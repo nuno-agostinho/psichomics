@@ -45,3 +45,4 @@ List containing HTML elements and highlighted points
 \description{
 Create plot for events
 }
+\keyword{internal}

@@ -111,3 +111,4 @@ psichomics:::parseMatsAFE(junctions, strand = "+")
 \seealso{
 \code{\link{parseMatsEvent}}
 }
+\keyword{internal}

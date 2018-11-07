@@ -25,3 +25,4 @@ HTML element with sparkline data
 \description{
 Create sparkline charts to be used in a data table
 }
+\keyword{internal}

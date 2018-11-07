@@ -2,10 +2,19 @@
 % Please edit documentation in R/utils.R
 \name{startProgress}
 \alias{startProgress}
-\title{Create a progress object}
+\alias{updateProgress}
+\alias{closeProgress}
+\title{Create, set and terminate a progress object}
 \usage{
 startProgress(message, divisions, global = if (isRunning()) sharedData
   else getHidden())
+
+updateProgress(message = "Loading...", value = NULL, max = NULL,
+  detail = NULL, divisions = NULL, global = if (isRunning())
+  sharedData else getHidden(), console = TRUE)
+
+closeProgress(message = NULL, global = if (isRunning()) sharedData else
+  getHidden())
 }
 \arguments{
 \item{message}{Character: progress message}
@@ -13,11 +22,25 @@ startProgress(message, divisions, global = if (isRunning()) sharedData
 \item{divisions}{Integer: number of divisions in the progress bar}
 
 \item{global}{Shiny's global variable}
+
+\item{value}{Integer: current progress value}
+
+\item{max}{Integer: maximum progress value}
+
+\item{detail}{Character: detailed message}
+
+\item{console}{Boolean: print message to console?}
 }
 \value{
 NULL (this function is used to modify the Shiny session's state or
 internal hidden variables)
 }
 \description{
-Create a progress object
+Create, set and terminate a progress object
 }
+\details{
+If \code{divisions} is not \code{NULL}, a progress bar starts with 
+the given divisions. If \code{value} is \code{NULL}, the progress bar 
+increments one unit; otherwise, the progress bar increments \code{value}.
+}
+\keyword{internal}

@@ -24,6 +24,7 @@
 #' @return Retrieve data frame with events based on a given alternative splicing
 #' annotation
 #' @export
+#' 
 #' @examples 
 #' # Load sample files
 #' folder <- "extdata/eventsAnnotSample/miso_annotation"
@@ -67,6 +68,7 @@ parseMisoAnnotation <- function(
 #' 
 #' @return Data frame subset from two row indexes (returns NA if the first row 
 #' index is NA)
+#' @keywords internal
 getDataRows <- function(i, data, firstRow, lastRow) {
     first <- firstRow[i]
     last  <- lastRow[i]
@@ -100,7 +102,8 @@ getDataRows <- function(i, data, firstRow, lastRow) {
 #'
 #' @importFrom fastmatch fmatch
 #'
-#' @return Data frame of the matching events (or NA when nothing is matched)
+#' @return Data frame of the matching events (or \code{NA} when nothing matches)
+#' @keywords internal
 #'
 #' @examples
 #' eventID <- c("114785@uc001sok.1@uc001soj.1", "114784@uc001bxm.1@uc001bxn.1")
@@ -143,6 +146,7 @@ parseMisoEventID <- function(eventID, annotation, IDcolumn) {
 #' elements \code{c("gene", "mRNA", "exon", "exon", "exon")}.
 #'
 #' @return Data.frame with valid events
+#' @keywords internal
 #'
 #' @examples
 #' event <- read.table(text = "
@@ -230,6 +234,7 @@ getValidEvents <- function(event, validator, areMultipleExonsValid = FALSE) {
 #'
 #' @return List with event attributes and junction positions for the exons
 #' (depends on the events)
+#' @keywords internal
 #'
 #' @examples
 #' # example of alternative splicing event: skipped exon (SE)
@@ -281,6 +286,7 @@ parseMisoEvent <- function(event) {
 #' @seealso \code{\link{parseMisoEvent}}
 #'
 #' @return List of parsed junctions
+#' @keywords internal
 parseMisoGeneric <- function(event, validator, eventType, coord, plusIndex, 
                              minusIndex) {
     # Filter out events that aren't valid
@@ -330,6 +336,8 @@ parseMisoGeneric <- function(event, validator, eventType, coord, plusIndex,
 #' @param id Character: MISO alternative splicing event identifier
 #'
 #' @return Character with the parsed ID
+#' @keywords internal
+#' 
 #' @examples 
 #' id <- paste0(
 #'     "ID=ENSMUSG00000026150.chr1:82723803:82723911:+@chr1:82724642:82724813:",

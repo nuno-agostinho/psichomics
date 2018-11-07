@@ -7,9 +7,9 @@
 selectPreMadeGroup(groups, selected)
 }
 \arguments{
-\item{selected}{Character: selected item}
+\item{groups}{List of list of characters}
 
-\item{group}{List of list of characters}
+\item{selected}{Character: selected item}
 }
 \value{
 Elements of selected item
@@ -17,3 +17,4 @@ Elements of selected item
 \description{
 Select pre-made groups from a selected item
 }
+\keyword{internal}

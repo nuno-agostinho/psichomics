@@ -2,26 +2,33 @@
 % Please edit documentation in R/analysis_information.R
 \name{queryEnsemblByGene}
 \alias{queryEnsemblByGene}
-\title{Query information from Ensembl by a given gene}
+\alias{queryEnsemblByEvent}
+\title{Query information from Ensembl}
 \usage{
 queryEnsemblByGene(gene, species = NULL, assembly = NULL)
+
+queryEnsemblByEvent(event, species, assembly)
 }
 \arguments{
-\item{gene}{Character: gene identifier}
+\item{gene}{Character: gene}
 
-\item{species}{Character: species (can be NULL when handling an Ensembl
+\item{species}{Character: species (may be \code{NULL} for an Ensembl 
 identifier)}
 
-\item{assembly}{Character: assembly version (can be NULL when handling an
-Ensembl identifier)}
+\item{assembly}{Character: assembly version (may be NULL for an Ensembl 
+identifier)}
+
+\item{event}{Character: alternative splicing event}
 }
 \value{
 Information from Ensembl
 }
 \description{
-Query information from Ensembl by a given gene
+Query information from Ensembl
 }
 \examples{
 queryEnsemblByGene("BRCA1", "human", "hg19")
 queryEnsemblByGene("ENSG00000139618")
+event <- "SE_17_-_41251792_41249306_41249261_41246877_BRCA1"
+queryEnsemblByEvent(event, species="human", assembly="hg19")
 }

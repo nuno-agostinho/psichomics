@@ -25,3 +25,4 @@ HTML element with sparkline data
 \description{
 Create density sparklines for inclusion levels
 }
+\keyword{internal}

@@ -97,3 +97,4 @@ HTML elements
 The user interface (UI) controls the layout and appearance of the app. All
 CSS modifications are in the file \code{shiny/www/styles.css}
 }
+\keyword{internal}

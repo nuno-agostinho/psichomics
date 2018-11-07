@@ -14,6 +14,7 @@ NULL
 #' @param id Character: events' ID
 #' 
 #' @return A data frame with the junctions coordinate names pre-filled with NAs
+#' @keywords internal
 #' 
 #' @examples
 #' psichomics:::createJunctionsTemplate(nrow = 8)
@@ -46,6 +47,7 @@ createJunctionsTemplate <- function(nrow, program = character(0),
 #' 
 #' @return Coordinates of interest according to the alternative splicing event
 #' type
+#' @keywords internal
 getSplicingEventCoordinates <- function(type, sorting=FALSE) {
     coords <- switch(type,
                      "SE"   = c("C1.end", "A1.start", "A1.end", "C2.start"),
@@ -79,6 +81,8 @@ getSplicingEventCoordinates <- function(type, sorting=FALSE) {
 #' default)
 #'
 #' @return Processed data matrix
+#' @keywords internal
+#' 
 #' @examples
 #' event <- read.table(text = "ABC123 + 250 300 350
 #'                             DEF456 - 900 800 700")
@@ -112,6 +116,7 @@ getNumerics <- function(table, by = NULL, toNumeric = FALSE) {
 #' @param types Character: alternative splicing types
 #' 
 #' @return List of events joined by alternative splicing event type
+#' @keywords internal
 joinEventsPerType <- function(events, types) {
     if (missing(types)) types <- names(events)
     joint <- lapply(types, function(type, events) {
@@ -174,6 +179,7 @@ joinEventsPerType <- function(events, types) {
 #' @return List of data frames with the annotation from different data frames
 #' joined by event type
 #' @export
+#' 
 #' @examples 
 #' # Load sample files (SUPPA annotation)
 #' folder <- "extdata/eventsAnnotSample/suppa_output/suppaEvents"
@@ -301,6 +307,7 @@ prepareAnnotationFromEvents <- function(...) {
 #' @param eventType Character: type of event
 #' 
 #' @return Venn diagrams for a given event type
+#' @keywords internal
 vennEvents <- function(join, eventType) {
     join <- join[[eventType]]
     
@@ -321,6 +328,7 @@ vennEvents <- function(join, eventType) {
 #' @param showStrand Boolean: include strand?
 #' 
 #' @return Formatted character string
+#' @keywords internal
 junctionString <- function(chr, strand, junc5, junc3, showStrand) {
     plus <- strand == "+"
     first <- ifelse(plus, junc5, junc3)
@@ -354,6 +362,7 @@ colsAsNumbers <- function(type, annotation) {
 #' 
 #' @return List of data frames with alternative splicing events for a given
 #' program
+#' @keywords internal
 sortCoordinates <- function(events) {
     types <- names(events)
     for (type in types) {
@@ -388,7 +397,9 @@ sortCoordinates <- function(events) {
 #' quantification as valid (10 by default)
 #' 
 #' @importFrom fastmatch fmatch
+#' 
 #' @return Matrix with inclusion levels
+#' @keywords internal
 calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                                      minReads = 10) {
     # Immediately return NULL if ALE and AFE events are missing coordinates

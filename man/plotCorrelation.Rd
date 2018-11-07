@@ -7,26 +7,26 @@
 \alias{as.table.GEandAScorrelation}
 \title{Display results of correlation analyses}
 \usage{
-plotCorrelation(corr, autoZoom = FALSE, loessSmooth = TRUE,
+plotCorrelation(x, autoZoom = FALSE, loessSmooth = TRUE,
   loessFamily = c("gaussian", "symmetric"), colour = "black",
   alpha = 0.2, size = 1.5, loessColour = "red", loessAlpha = 1,
   loessWidth = 0.5, fontSize = 12, ..., colourGroups = NULL,
   legend = FALSE, showAllData = TRUE, density = FALSE,
   densityColour = "blue", densityWidth = 0.5)
 
-\method{plot}{GEandAScorrelation}(corr, autoZoom = FALSE,
+\method{plot}{GEandAScorrelation}(x, autoZoom = FALSE,
   loessSmooth = TRUE, loessFamily = c("gaussian", "symmetric"),
   colour = "black", alpha = 0.2, size = 1.5, loessColour = "red",
   loessAlpha = 1, loessWidth = 0.5, fontSize = 12, ...,
   colourGroups = NULL, legend = FALSE, showAllData = TRUE,
   density = FALSE, densityColour = "blue", densityWidth = 0.5)
 
-\method{print}{GEandAScorrelation}(corr)
+\method{print}{GEandAScorrelation}(x, ...)
 
-\method{as.table}{GEandAScorrelation}(corr, pvalueAdjust = "BH")
+\method{as.table}{GEandAScorrelation}(x, pvalueAdjust = "BH", ...)
 }
 \arguments{
-\item{corr}{\code{GEandAScorrelation} object (obtained after running
+\item{x}{\code{GEandAScorrelation} object (obtained after running
 \code{\link{correlateGEandAS}})}
 
 \item{autoZoom}{Boolean: automatically set the range of PSI values based on

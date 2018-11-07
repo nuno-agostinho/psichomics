@@ -38,3 +38,4 @@ Missing information modal template
  observeEvent(input[[buttonInput]], missingDataGuide(dataType))
 }
 }
+\keyword{internal}

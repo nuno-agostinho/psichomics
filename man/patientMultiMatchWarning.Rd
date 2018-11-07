@@ -14,3 +14,4 @@ Character
 Helper text to explain what happens when a patient matches multiple samples
 when performing survival analysis
 }
+\keyword{internal}

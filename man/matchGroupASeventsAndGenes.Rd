@@ -17,3 +17,4 @@ Data frame with groups containing matching elements
 \description{
 Match AS events and genes in a group
 }
+\keyword{internal}

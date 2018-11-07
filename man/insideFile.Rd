@@ -17,3 +17,4 @@ Loaded file
 \description{
 Get psichomics file inside a given directory
 }
+\keyword{internal}

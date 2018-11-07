@@ -18,3 +18,4 @@ HTML elements
 \description{
 Render group interface
 }
+\keyword{internal}

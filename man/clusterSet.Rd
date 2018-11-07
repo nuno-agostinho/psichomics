@@ -19,3 +19,4 @@ NULL (this function is used to modify the Shiny session's state)
 \description{
 Server logic for clustering PCA data
 }
+\keyword{internal}

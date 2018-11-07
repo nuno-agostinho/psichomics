@@ -17,3 +17,4 @@ Groups with an added column to state the colour
 \description{
 Assign colours to groups
 }
+\keyword{internal}

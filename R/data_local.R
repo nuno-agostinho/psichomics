@@ -179,7 +179,7 @@ prepareJunctionQuant <- function(..., output="psichomics_junctions.txt",
     return(junctionQuant)
 }
 
-#' @rdname prepareSRAmetadata
+#' @inherit prepareSRAmetadata
 #' @importFrom data.table fread setnames setkeyv setorderv
 prepareJunctionQuantSTAR <- function(..., startOffset=-1, endOffset=+1) {
     if (is.null(startOffset)) startOffset <- -1
@@ -263,7 +263,7 @@ prepareGeneQuant <- function(..., output="psichomics_gene_counts.txt",
     return(geneQuant)
 }
 
-#' @rdname prepareSRAmetadata
+#' @rdname prepareJunctionQuantSTAR
 #' @importFrom data.table fread setnames setkeyv setorderv
 prepareGeneQuantSTAR <- function(..., strandedness=c("unstranded", "stranded",
                                                      "stranded (reverse)")) {
@@ -358,6 +358,7 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."),
 #' @importFrom shinyjs disable enable
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 setLocalData <- function(input, output, session, replace=TRUE) {
     time <- startProcess("acceptFile")
     

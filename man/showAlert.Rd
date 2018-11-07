@@ -23,18 +23,17 @@ removeAlert(output, alertId = "alert")
 
 \item{...}{Arguments to render as elements of alert}
 
-\item{title}{Character: title of the alert (optional)}
+\item{title}{Character: title}
 
-\item{style}{Character: style of the alert ("error", "warning" or NULL)}
+\item{style}{Character: style (\code{error}, \code{warning} or \code{NULL})}
 
-\item{dismissible}{Boolean: is the alert dismissible? TRUE by default}
+\item{dismissible}{Boolean: is the alert dismissible?}
 
-\item{alertId}{Character: alert identifier}
+\item{alertId}{Character: identifier}
 
-\item{iconName}{Character: FontAwesome icon name to appear with the title}
+\item{iconName}{Character: icon name}
 
-\item{caller}{Character: label to identify the module calling for the alert
-(relevant for error and warning alerts)}
+\item{caller}{Character: caller module identifier}
 
 \item{output}{Shiny output}
 }
@@ -42,9 +41,9 @@ removeAlert(output, alertId = "alert")
 NULL (this function is used to modify the Shiny session's state)
 }
 \description{
-You can also use \code{errorAlert} and \code{warningAlert} to use template 
-alerts already stylised to show errors and warnings respectively.
+Show or remove an alert
 }
 \seealso{
 \code{\link{showModal}}
 }
+\keyword{internal}

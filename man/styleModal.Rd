@@ -5,7 +5,7 @@
 \alias{errorModal}
 \alias{warningModal}
 \alias{infoModal}
-\title{Style and show a modal}
+\title{Create a modal window}
 \usage{
 styleModal(session, title, ..., style = NULL,
   iconName = "exclamation-circle", footer = NULL, echo = FALSE,
@@ -21,36 +21,44 @@ infoModal(session, title, ..., size = "small", footer = NULL,
   caller = NULL)
 }
 \arguments{
-\item{session}{Current Shiny session}
+\item{session}{Shiny session}
 
-\item{title}{Character: modal title}
+\item{title}{Character: title}
 
-\item{...}{Extra arguments to pass to \code{shiny::modalDialog}}
+\item{...}{Arguments passed on to \code{shiny::modalDialog}
+\describe{
+  \item{easyClose}{If \code{TRUE}, the modal dialog can be dismissed by
+clicking outside the dialog box, or be pressing the Escape key. If
+\code{FALSE} (the default), the modal dialog can't be dismissed in those
+ways; instead it must be dismissed by clicking on the dismiss button, or
+from a call to \code{\link{removeModal}} on the server.}
+  \item{fade}{If \code{FALSE}, the modal dialog will have no fade-in animation
+(it will simply appear rather than fade in to view).}
+}}
 
-\item{style}{Character: style of the modal (NULL, "warning", "error" or 
-"info"; NULL by default)}
+\item{style}{Character: style (\code{NULL}, \code{warning}, \code{error} or
+\code{info})}
 
-\item{iconName}{Character: FontAwesome icon name to appear with the title}
+\item{iconName}{Character: icon name}
 
 \item{footer}{HTML elements to use in footer}
 
-\item{echo}{Boolean: print to console? FALSE by default}
+\item{echo}{Boolean: print to console?}
 
-\item{size}{Character: size of the modal - "medium" (default), "small" or 
-"large"}
+\item{size}{Character: size of the modal (\code{small}, \code{medium} or
+\code{large})}
 
-\item{dismissButton}{Boolean: show dismiss button in footer? TRUE by default}
+\item{dismissButton}{Boolean: show dismiss button in footer?}
 
-\item{caller}{Character: label to identify the module calling for the modal 
-(relevant for error and warning modals)}
+\item{caller}{Character: caller module identifier}
 }
 \value{
 NULL (this function is used to modify the Shiny session's state)
 }
 \description{
-You can also use \code{errorModal} and \code{warningModal} to use a template 
-modal already stylised to show errors and warnings, respectively.
+Create a modal window
 }
 \seealso{
 \code{\link{showAlert}}
 }
+\keyword{internal}

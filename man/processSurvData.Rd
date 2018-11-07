@@ -44,3 +44,4 @@ consider running the function \code{\link{getAttributesTime}} to retrieve the
 time of such columns once and hand the result to the \code{survTime} argument
 of this function.
 }
+\keyword{internal}

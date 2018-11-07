@@ -34,3 +34,4 @@ groups$ozEntrance <- c("Kansas")
 groups$novel <- c("New Mexico", "New York", "New Hampshire", "New Jersey")
 psichomics:::plotSingleICA(ica, groups=groups)
 }
+\keyword{internal}

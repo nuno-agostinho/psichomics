@@ -2,12 +2,9 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{parseUrlsFromFirebrowseResponse}
 \alias{parseUrlsFromFirebrowseResponse}
-\alias{parseUrlsFromFirehoseResponse}
 \title{Retrieve URLs from a response to a Firebrowse data query}
 \usage{
 parseUrlsFromFirebrowseResponse(res)
-
-parseUrlsFromFirehoseResponse(res)
 }
 \arguments{
 \item{res}{Response from \code{httr::GET} to a Firebrowse data query}
@@ -22,3 +19,4 @@ Retrieve URLs from a response to a Firebrowse data query
 res <- psichomics:::queryFirebrowseData(cohort = "ACC")
 url <- psichomics:::parseUrlsFromFirebrowseResponse(res)
 }
+\keyword{internal}

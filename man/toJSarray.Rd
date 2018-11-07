@@ -15,3 +15,4 @@ Character with valid JavaScript array
 \description{
 Convert vector of values to JavaScript array
 }
+\keyword{internal}

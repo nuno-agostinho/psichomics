@@ -17,3 +17,4 @@ Filtered clinical data
 \description{
 Retrieve clinical data based on attributes required for survival analysis
 }
+\keyword{internal}

@@ -65,3 +65,4 @@ Group selection interface and logic
 To allow the user to (explicitly) select no groups, pass the 
 \code{noGroupsLabel} and \code{groupsLabel} arguments.
 }
+\keyword{internal}

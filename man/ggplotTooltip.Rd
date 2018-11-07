@@ -22,3 +22,4 @@ HTML elements
 \description{
 Create the interface for the tooltip of a plot
 }
+\keyword{internal}

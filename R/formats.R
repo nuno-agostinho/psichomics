@@ -8,6 +8,7 @@
 #' @param filename Character: name of the file
 #'
 #' @return TRUE if the file is of the given format; otherwise, returns FALSE
+#' @keywords internal
 checkFileFormat <- function(format, head, filename="") {
     # If file name is of importance, check if the filename matches
     if (isTRUE(format$matchName) && !identical(filename, "") &&
@@ -48,6 +49,7 @@ checkFileFormat <- function(format, head, filename="") {
 #' @importFrom stringr str_split_fixed
 #' 
 #' @return Data frame with the loaded file
+#' @keywords internal
 loadFile <- function(format, file, ...) {
     ## TODO(NunoA): account for the comment character
     delim <- ifelse(!is.null(format$delim), format$delim, "\t")
@@ -132,8 +134,10 @@ loadFile <- function(format, file, ...) {
     return(loaded)
 }
 
-#' Loads file formats
-#' @return Loaded file formats available
+#' Load supported file formats
+#' 
+#' @return Supported file formats
+#' @keywords internal
 loadFileFormats <- function() {
     # Get all functions ending with "UI"
     fun <- ls(getNamespace("psichomics"), all.names=TRUE, pattern="Format$")
@@ -172,6 +176,7 @@ loadFileFormats <- function() {
 #' 
 #' @return Data frame with the contents of the given file if the file format is
 #' recognised; otherwise, returns NULL
+#' @keywords internal
 parseValidFile <- function(file, formats, ...) {
     if (!is.list(formats[[1]])) formats <- list(formats)
     

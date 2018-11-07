@@ -19,3 +19,4 @@ type
 \description{
 Returns the coordinates of interest for a given event type
 }
+\keyword{internal}

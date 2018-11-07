@@ -40,3 +40,4 @@ and HTML element required to plot survival curves
 \description{
 Data is presented in the table for statistical analyses
 }
+\keyword{internal}

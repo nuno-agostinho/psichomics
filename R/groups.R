@@ -24,6 +24,7 @@
 #' \code{noGroupsLabel} and \code{groupsLabel} arguments.
 #' 
 #' @return \code{selectGroupsUI}: Interface for group selection
+#' @keywords internal
 selectGroupsUI <- function (
     id, label, placeholder="Type to search for groups",
     noGroupsLabel=NULL, groupsLabel=NULL, maxItems=NULL, 
@@ -160,6 +161,7 @@ selectGroupsServer <- function(session, id, type, preference=NULL) {
 #' @param type Character: type of data for each the interface is intended
 #' 
 #' @return HTML elements
+#' @keywords internal
 groupManipulationInput <- function(id, type) {
     ns <- NS(id)
     
@@ -267,6 +269,7 @@ groupsUI <- function(id, tab) {
 #' @importFrom colourpicker colourInput
 #' 
 #' @return HTML elements
+#' @keywords internal
 renderGroupInterface <- function(ns, multiFisherTests=TRUE) {
     renameId    <- "renameGroupName"
     setColourId <- "setGroupColour"
@@ -449,7 +452,7 @@ renderGroupInterface <- function(ns, multiFisherTests=TRUE) {
         uiOutput(ns(paste0(groupTestId, "-tooltip"))))
 }
 
-#' User interface to group by attribute
+#' Data grouping interface
 #' 
 #' @param ns Namespace function
 #' @param cols Character or list: name of columns to show
@@ -473,15 +476,11 @@ groupByAttribute <- function(ns, cols, id, example) {
     )
 }
 
-#' User interface to use pre-made groups
+#' @rdname groupByAttribute
 #' 
-#' @param ns Namespace function
 #' @param data List: list of groups with elements
-#' @param id Character: identifier
 #' 
 #' @importFrom shiny helpText tags
-#' 
-#' @return HTML elements
 groupByPreMadeList <- function(ns, data, id) {
     cols <- preparePreMadeGroupForSelection(data)
     
@@ -502,6 +501,7 @@ groupByPreMadeList <- function(ns, data, id) {
 #' @param groups List of list of characters
 #' 
 #' @return List
+#' @keywords internal
 preparePreMadeGroupForSelection <- function(groups) {
     res <- lapply(groups, names)
     for (ns in names(res)) {
@@ -514,10 +514,11 @@ preparePreMadeGroupForSelection <- function(groups) {
 
 #' Select pre-made groups from a selected item
 #' 
-#' @param group List of list of characters
+#' @param groups List of list of characters
 #' @param selected Character: selected item
 #' 
 #' @return Elements of selected item
+#' @keywords internal
 selectPreMadeGroup <- function(groups, selected) {
     selected <- strsplit(selected, "|||", fixed=TRUE)[[1]]
     first  <- selected[[1]]
@@ -529,13 +530,8 @@ selectPreMadeGroup <- function(groups, selected) {
     return(res)
 }
 
-#' User interface to group by row
-#' 
-#' @inheritParams groupByAttribute
-#' 
+#' @rdname groupByAttribute
 #' @importFrom shiny textInput
-#' 
-#' @return HTML elements
 groupById <- function(ns, id) {
     sid <- gsub("s$", "", id)
     sid <- gsub("ASevent", "Splicing event", sid)
@@ -557,13 +553,8 @@ groupById <- function(ns, id) {
     )
 }
 
-#' User interface to group by subset expression
-#' 
-#' @inheritParams groupByAttribute
-#' 
+#' @rdname groupByAttribute
 #' @importFrom shiny textInput
-#' 
-#' @return HTML elements
 groupByExpression <- function(ns, id) {
     tagList (
         textInput(ns(paste0("groupExpression", id)), "Subset expression",
@@ -595,13 +586,8 @@ groupByExpression <- function(ns, id) {
     )
 }
 
-#' User interface to group by grep expression
-#' 
-#' @inheritParams groupByAttribute
-#' 
+#' @rdname groupByAttribute
 #' @importFrom shiny textInput
-#' 
-#' @return HTML elements
 groupByGrep <- function(ns, cols, id) {
     tagList (
         textInput(ns(paste0("grepExpression", id)), "Regular expression",
@@ -617,10 +603,11 @@ groupByGrep <- function(ns, cols, id) {
 
 #' Prepare to create group according to specific details
 #' 
-#' @param output Shiny output
 #' @inheritParams createGroupFromInput
+#' @param output Shiny output
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 createGroup <- function(session, input, output, id, type, selected=NULL, 
                         expr=NULL, groupNames=NULL) {
     removeAlert(output, alertId="alert-side")
@@ -644,6 +631,7 @@ createGroup <- function(session, input, output, id, type, selected=NULL,
 #' @param groups Matrix: groups to check which colours are already assigned
 #' 
 #' @return Groups with an added column to state the colour
+#' @keywords internal
 assignColours <- function(new, groups=NULL) {
     strong <- c("#08419E", "#EF9636", "#D33E6A", "#00C652", 
                 "#4C71DB", "#8F033B", "#F89CD1", "#05CFC0")
@@ -682,6 +670,7 @@ assignColours <- function(new, groups=NULL) {
 #' @param clearOld Boolean: clear old groups?
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 appendNewGroups <- function(type, new, clearOld=FALSE) {
     # Rename duplicated group names
     if (clearOld) 
@@ -707,6 +696,7 @@ appendNewGroups <- function(type, new, clearOld=FALSE) {
 #' @param group Data frame: group
 #' 
 #' @return Data frame with groups containing matching elements
+#' @keywords internal
 matchGroupPatientsAndSamples <- function(id, group) {
     patients <- getPatientId()
     samples  <- getSampleId()
@@ -740,6 +730,7 @@ matchGroupPatientsAndSamples <- function(id, group) {
 #' @inheritParams matchGroupPatientsAndSamples
 #' 
 #' @return Data frame with groups containing matching elements
+#' @keywords internal
 matchGroupASeventsAndGenes <- function(id, group, ASevents) {
     # Match AS events with genes (or vice-versa)
     if (!is.null(ASevents)) {
@@ -781,6 +772,7 @@ matchGroupASeventsAndGenes <- function(id, group, ASevents) {
 #' @param groupNames Character: group names
 #' 
 #' @return Matrix with the group names and respective elements
+#' @keywords internal
 createGroupFromInput <- function (session, input, dataset, id, type, 
                                   selected=NULL, expr=NULL, groupNames=NULL) {
     if (type == "Attribute") {
@@ -907,7 +899,9 @@ createGroupByAttribute <- function(col, dataset) {
 #' @param identifiers Character: available identifiers
 #' 
 #' @importFrom shiny tags
+#' 
 #' @return Character: values based on given row indexes or identifiers
+#' @keywords internal
 createGroupById <- function(session, rows, identifiers) {
     # Check which strings match available identifiers
     matched <- rows %in% identifiers
@@ -946,6 +940,7 @@ createGroupById <- function(session, rows, identifiers) {
 #' @param old Matrix: pre-existing groups
 #' 
 #' @return Character with no duplicated group names
+#' @keywords internal
 renameGroups <- function(new, old) {
     groupNames <- 1
     
@@ -980,6 +975,7 @@ renameGroups <- function(new, old) {
 #' default
 #' 
 #' @return Matrix containing groups (new group is in the first row)
+#' @keywords internal
 setOperation <- function(operation, groups, selected, symbol=" ", 
                          groupName=NULL, first=NULL, second=NULL, matches=NULL,
                          type="Samples",  assignColoursToGroups=FALSE) {
@@ -1116,6 +1112,7 @@ setOperation <- function(operation, groups, selected, symbol=" ",
 #' @inheritParams setOperation
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 operateOnGroups <- function(input, session, operation, buttonId, symbol=" ",
                             type, sharedData=sharedData) {
     # Operate on selected groups when pressing the corresponding button
@@ -1157,6 +1154,7 @@ operateOnGroups <- function(input, session, operation, buttonId, symbol=" ",
 #' @importFrom shiny tags
 #' 
 #' @return Matrix with groups ordered (or NULL if no groups exist)
+#' @keywords internal
 showGroupsTable <- function(type) {
     groups <- getGroups(type, complete=TRUE)
     
@@ -1231,6 +1229,7 @@ showGroupsTable <- function(type) {
 #' @importFrom colourpicker updateColourInput
 #' 
 #' @return HTML elements
+#' @keywords internal
 groupManipulation <- function(input, output, session, type) {
     ns <- session$ns
     
@@ -1920,6 +1919,7 @@ groupsServer <- function(input, output, session) {
 #' @inheritParams groupsServer
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 groupsServerOnce <- function(input, output, session) {
     # Update groups according to the availability of sample identifiers
     observe({
@@ -2102,6 +2102,8 @@ parseCategoricalGroups <- function(df) {
 #' groups}
 #' \item{table}{Contigency table used for testing}
 #' \item{pvalue}{Fisher's exact test's p-value}
+#' 
+#' @keywords internal
 testSingleIndependence <- function(ref, groups, elements, pvalueAdjust="BH") {
     # Number of intersections between reference and groups of interest
     updateProgress("Calculating intersections", 

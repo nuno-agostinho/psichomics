@@ -15,3 +15,4 @@ List
 \description{
 Prepare list of pre-made groups for a selectize element
 }
+\keyword{internal}

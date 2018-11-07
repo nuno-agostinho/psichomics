@@ -37,3 +37,4 @@ event <- psichomics:::getNumerics(event, by = c("Strand", "C1.end", "A1.end",
 # Let's check if the same column is now integer
 is.numeric(event[ , "C1.end"])
 }
+\keyword{internal}

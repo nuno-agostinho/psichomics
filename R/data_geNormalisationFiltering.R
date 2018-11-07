@@ -7,6 +7,7 @@
 #' @importFrom shinyjs hidden
 #' 
 #' @return HTML elements
+#' @keywords internal
 geNormalisationFilteringInterface <- function(ns) {
     filters <- div(
         id=ns("filteringInterface"),
@@ -144,9 +145,12 @@ normaliseGeneExpression <- function(geneExpr, geneFilter=NULL, method="TMM",
 
 #' Set of functions to load splicing quantification
 #' 
+#' @inherit geNormalisationFilteringServer
+#' 
 #' @importFrom shiny tags
 #' @importFrom shinyBS bsPopover
-#' @inherit geNormalisationFilteringServer
+#'
+#' @keywords internal
 loadGeneExpressionSet <- function(session, input, output) {
     ns <- session$ns
     
@@ -187,7 +191,6 @@ loadGeneExpressionSet <- function(session, input, output) {
             else
                 errorAlert(session, title="An error was raised", 
                            geneExpr$message, alertId="alertGeneExpr",
-                           caller="Gene expression normalisation and filtering",
                            caller="Gene expression normalisation and filtering")
         } else if (is(geneExpr, "warning")) {
             warningAlert(session, title="A warning was raised", 
@@ -228,6 +231,8 @@ loadGeneExpressionSet <- function(session, input, output) {
 #' @importFrom shinyjs enable disable hide show
 #' @importFrom data.table fread
 #' @importFrom highcharter hcboxplot hc_plotOptions hc_xAxis hc_chart
+#' 
+#' @keywords internal
 geNormalisationFilteringServer <- function(input, output, session) {
     ns <- session$ns
     observeEvent(input$missing, missingDataGuide("Gene expression"))

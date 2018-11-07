@@ -2,15 +2,9 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{prepareFirebrowseArchives}
 \alias{prepareFirebrowseArchives}
-\alias{prepareFirehoseArchives}
-\alias{prepareTCGAarchives}
 \title{Prepares Firebrowse archives in a given directory}
 \usage{
 prepareFirebrowseArchives(archive, md5, folder, outdir)
-
-prepareFirehoseArchives(archive, md5, folder, outdir)
-
-prepareTCGAarchives(archive, md5, folder, outdir)
 }
 \arguments{
 \item{archive}{Character: path to downloaded archives}
@@ -40,3 +34,4 @@ md5 <- paste0(file, ".md5")
 prepareFirebrowseArchives(archive = file, md5 = paste0(file, ".md5"))
 }
 }
+\keyword{internal}

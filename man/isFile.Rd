@@ -15,3 +15,4 @@ Boolean vector stating whether each file exists or not
 \description{
 Check if files exist
 }
+\keyword{internal}

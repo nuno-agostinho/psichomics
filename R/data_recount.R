@@ -36,6 +36,7 @@ recountDataUI <- function(id, panel) {
 #' @importFrom SummarizedExperiment assay seqnames start end strand
 #' 
 #' @return List containing downloaded projects
+#' @export
 loadSRAproject <- function(project, outdir=getDownloadsFolder()) {
     data <- list()
     

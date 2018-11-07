@@ -16,7 +16,7 @@ parseMisoEventID(eventID, annotation, IDcolumn)
 alternative event annotation file}
 }
 \value{
-Data frame of the matching events (or NA when nothing is matched)
+Data frame of the matching events (or \code{NA} when nothing matches)
 }
 \description{
 Match MISO's splicing event IDs with the IDs present in the alternative
@@ -42,3 +42,4 @@ annotation <- read.delim(gff3, header=FALSE, comment.char="#")
 IDcolumn <- 9
 psichomics:::parseMisoEventID(eventID, annotation, IDcolumn)
 }
+\keyword{internal}

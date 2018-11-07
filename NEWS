@@ -25,6 +25,9 @@
 * Groups:
     - Minor improvements to the group creation interface
 * Improve console logging of error and warning alerts
+* Documentation:
+    - Export functions mentioned in the documentation
+    - Hide documentation of internal functions from the PDF reference manual
 
 # 1.6.2 (2 October, 2018)
 

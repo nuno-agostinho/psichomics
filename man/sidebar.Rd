@@ -29,3 +29,4 @@ sidebarPanel(
   numericInput("obs", "Observations:", 10)
 )
 }
+\keyword{internal}

@@ -2,15 +2,9 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{parseFirebrowseMetadata}
 \alias{parseFirebrowseMetadata}
-\alias{parseFirehoseMetadata}
-\alias{parseTCGAmetadata}
 \title{Query the Firebrowse web API for metadata}
 \usage{
 parseFirebrowseMetadata(type, ...)
-
-parseFirehoseMetadata(type, ...)
-
-parseTCGAmetadata(type, ...)
 }
 \arguments{
 \item{type}{Character: metadata to retrieve}
@@ -33,3 +27,4 @@ psichomics:::parseFirebrowseMetadata("Cohorts")
 # Get the abbreviation and description of the selected cohorts
 psichomics:::parseFirebrowseMetadata("Cohorts", cohort = c("ACC", "BRCA"))
 }
+\keyword{internal}

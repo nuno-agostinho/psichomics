@@ -32,3 +32,4 @@ default}
 \description{
 Create a scatter plot using \code{highcharter}
 }
+\keyword{internal}

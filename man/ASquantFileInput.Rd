@@ -20,3 +20,4 @@ HTML elements
 \description{
 File input for alternative splicing quantification
 }
+\keyword{internal}

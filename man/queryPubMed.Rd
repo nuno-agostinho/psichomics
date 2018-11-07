@@ -28,3 +28,4 @@ Query the PubMed REST API
 \examples{
 psichomics:::queryPubMed("BRCA1", "cancer", "adrenocortical carcinoma")
 }
+\keyword{internal}

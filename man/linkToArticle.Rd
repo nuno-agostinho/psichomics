@@ -2,7 +2,7 @@
 % Please edit documentation in R/app.R
 \name{linkToArticle}
 \alias{linkToArticle}
-\title{Interface that directs users to original article}
+\title{psichomics article's link interface}
 \usage{
 linkToArticle()
 }
@@ -10,5 +10,6 @@ linkToArticle()
 HTML elements
 }
 \description{
-Interface that directs users to original article
+psichomics article's link interface
 }
+\keyword{internal}

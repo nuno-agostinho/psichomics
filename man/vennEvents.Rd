@@ -17,3 +17,4 @@ Venn diagrams for a given event type
 \description{
 Compare the number of events from the different programs in a Venn diagram
 }
+\keyword{internal}

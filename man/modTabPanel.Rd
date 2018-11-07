@@ -24,3 +24,4 @@ Modified \code{tabPanel} function to show icon and title
 \note{
 Icon is hidden at small viewports
 }
+\keyword{internal}

@@ -42,5 +42,5 @@ performPCA(USArrests)
 }
 \seealso{
 \code{\link{plotPCA}}, \code{\link{performICA}} and 
-\code{\link{plotICA}}
+  \code{\link{plotICA}}
 }

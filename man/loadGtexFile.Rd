@@ -22,3 +22,4 @@ Loaded file as a data frame
 \description{
 Load GTEx file
 }
+\keyword{internal}

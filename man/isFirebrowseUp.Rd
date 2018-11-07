@@ -2,12 +2,9 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{isFirebrowseUp}
 \alias{isFirebrowseUp}
-\alias{isFirehoseUp}
 \title{Check whether the Firebrowse web API is running}
 \usage{
 isFirebrowseUp()
-
-isFirehoseUp()
 }
 \value{
 Invisible TRUE if the Firebrowse web API is working; otherwise, 

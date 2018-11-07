@@ -19,3 +19,4 @@ NULL (this function is used to modify the Shiny session's state)
 \description{
 Logic set to perform survival analysis based on gene expression cut-offs
 }
+\keyword{internal}

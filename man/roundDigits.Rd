@@ -15,3 +15,4 @@ Formatted number with a given numeric precision
 \description{
 Round by the given number of digits
 }
+\keyword{internal}

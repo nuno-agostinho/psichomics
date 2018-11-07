@@ -147,6 +147,7 @@ survivalUI <- function(id) {
 #' @param coxph Boolean: prepare data for Cox models? FALSE by default
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 checkSurvivalInput <- function (session, input, coxph=FALSE) {
     ns <- session$ns
     
@@ -285,6 +286,7 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
 #' @importFrom shinyjs show hide
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 geneExprSurvSet <- function(session, input, output) {
     # Update available gene expression data choices
     observe({

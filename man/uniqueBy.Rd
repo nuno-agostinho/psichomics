@@ -17,3 +17,4 @@ Data frame with unique values based on set of columns
 \description{
 Check unique rows of a data frame based on a set of its columns
 }
+\keyword{internal}

@@ -12,3 +12,4 @@ Boolean stating whether running in RStudio Server
 \description{
 Check if running in RStudio Server
 }
+\keyword{internal}

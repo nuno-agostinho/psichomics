@@ -40,3 +40,4 @@ the respective string in the \code{pvalueAdjust} argument:
     \item{\code{hommel}: Hommel's method (family-wise error rate)}
 }
 }
+\keyword{internal}

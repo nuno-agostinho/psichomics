@@ -26,3 +26,4 @@ transcript <- "ENST00000488540"
 format <- "xml"
 psichomics:::queryUniprot(transcript, format)
 }
+\keyword{internal}

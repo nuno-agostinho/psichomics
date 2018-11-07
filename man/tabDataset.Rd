@@ -30,3 +30,4 @@ HTML elements
 Creates a \code{tabPanel} template for a \code{datatable} with a title and
 description
 }
+\keyword{internal}

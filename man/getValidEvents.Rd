@@ -54,3 +54,4 @@ event <- read.table(text = "
 validator <- c("gene", "mRNA", rep("exon", 3), "mRNA", rep("exon", 2))
 psichomics:::getValidEvents(event, validator)
 }
+\keyword{internal}

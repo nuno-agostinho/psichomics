@@ -20,6 +20,8 @@ listSplicingAnnotations <- function() {
 #' @param ... Custom annotation loaded
 #' 
 #' @return Named character vector with splicing annotation files available#' 
+#' @keywords internal
+#' 
 #' @examples
 #' psichomics:::listAllAnnotations()
 listAllAnnotations <- function(...) {
@@ -37,6 +39,7 @@ listAllAnnotations <- function(...) {
 #' @importFrom shinyjs hidden disabled
 #' 
 #' @return HTML elements
+#' @keywords internal
 inclusionLevelsInterface <- function(ns) {
     eventTypes <- getSplicingEventTypes()
     names(eventTypes) <- sprintf("%s (%s)", names(eventTypes), eventTypes)
@@ -130,10 +133,10 @@ inclusionLevelsUI <- function(id, panel) {
 #' of associated splicing events is performed (by default, all splicing events 
 #' undergo splicing quantification)
 #' 
+#' @importFrom fastmatch %fin%
+#' 
 #' @return Data frame with the quantification of the alternative splicing events
 #' @export
-#' 
-#' @importFrom fastmatch %fin%
 #' 
 #' @examples 
 #' # Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events
@@ -203,6 +206,7 @@ quantifySplicing <- function(annotation, junctionQuant,
 #' @return List of data frames containing the alternative splicing annotation
 #' per event type
 #' @export
+#' 
 #' @examples 
 #' human <- listSplicingAnnotations()[[1]]
 #' \dontrun{
@@ -219,6 +223,8 @@ loadAnnotation <- function(annotation) {
 #' 
 #' @importFrom shiny tags fileInput
 #' @inherit inclusionLevelsServer
+#' 
+#' @keywords internal
 loadCustomSplicingAnnotationSet <- function(session, input, output) {
     # Show modal for loading custom splicing annotation
     observe({
@@ -274,9 +280,12 @@ loadCustomSplicingAnnotationSet <- function(session, input, output) {
 
 #' Set of functions to load splicing quantification
 #' 
+#' @inherit inclusionLevelsServer
+#' 
 #' @importFrom shiny tags
 #' @importFrom shinyBS bsPopover
-#' @inherit inclusionLevelsServer
+#' 
+#' @keywords internal
 loadSplicingQuantificationSet <- function(session, input, output) {
     ns <- session$ns
     
@@ -391,9 +400,12 @@ loadSplicingQuantificationSet <- function(session, input, output) {
 }
 
 #' Read custom or remote annotation
+#' 
 #' @inherit inclusionLevelsServer
 #' @param annotation Character: chosen annotation
 #' @param showProgress Boolean: show progress? FALSE by default
+#' 
+#' @keywords internal
 readAnnot <- function(session, annotation, showProgress=FALSE) {
     annot <- NULL
     if (grepl("^/var/folders/", annotation)) { # if custom annotation
@@ -418,6 +430,7 @@ readAnnot <- function(session, annotation, showProgress=FALSE) {
 #' 
 #' @importFrom shiny tags
 #' @inherit inclusionLevelsServer
+#' @keywords internal
 quantifySplicingSet <- function(session, input) {
     ns <- session$ns
     

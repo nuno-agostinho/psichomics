@@ -2,9 +2,27 @@
 % Please edit documentation in R/analysis.R
 \name{wilcox}
 \alias{wilcox}
-\title{Perform Wilcoxon analysis and return interface to show the results}
+\alias{ttest}
+\alias{levene}
+\alias{fligner}
+\alias{kruskal}
+\alias{fisher}
+\alias{spearman}
+\title{Perform and display statistical analysis}
 \usage{
 wilcox(data, groups, stat = NULL)
+
+ttest(data, groups, stat = NULL)
+
+levene(data, groups, stat = NULL)
+
+fligner(data, groups, stat = NULL)
+
+kruskal(data, groups, stat = NULL)
+
+fisher(data, groups)
+
+spearman(data, groups)
 }
 \arguments{
 \item{data}{Numeric, data frame or matrix: data for one gene or alternative 
@@ -20,5 +38,17 @@ NULL, the analyses will be performed)}
 HTML elements
 }
 \description{
-Perform Wilcoxon analysis and return interface to show the results
+Includes interface containing the results
 }
+\details{
+\itemize{
+  \item{\code{ttest}: unpaired t-test}
+  \item{\code{wilcox}: Wilcoxon test}
+  \item{\code{levene}: Levene's test}
+  \item{\code{fligner}: Fligner-Killeen test}
+  \item{\code{kruskal}: Kruskal test}
+  \item{\code{fisher}: Fisher's exact test}
+  \item{\code{spearman}: Spearman's test}
+}
+}
+\keyword{internal}

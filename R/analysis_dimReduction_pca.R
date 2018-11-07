@@ -12,7 +12,7 @@
 #' @export
 #' 
 #' @seealso \code{\link{plotPCA}}, \code{\link{performICA}} and 
-#' \code{\link{plotICA}}
+#'   \code{\link{plotICA}}
 #' 
 #' @examples 
 #' performPCA(USArrests)
@@ -166,15 +166,15 @@ pcaUI <- function(id) {
     )
 }
 
-#' Create the explained variance plot
+#' Create the explained variance plot from a PCA
 #' 
-#' @param pca PCA values
+#' @param pca \code{prcomp} object
 #' 
 #' @importFrom highcharter highchart hc_chart hc_title hc_add_series 
 #' hc_plotOptions hc_xAxis hc_yAxis hc_legend hc_tooltip hc_exporting
 #' @importFrom shiny tags
 #' 
-#' @return Plot variance as an Highcharter object
+#' @return Plot variance as an \code{highchart} object
 #' @export
 #' @examples 
 #' pca <- prcomp(USArrests)
@@ -279,16 +279,16 @@ calculateLoadingsContribution <- function(pca, pcX=1, pcY=2) {
 #' @param pcY Character: name of the Y axis of interest from the PCA
 #' @param groups Matrix: groups to plot indicating the index of interest of the
 #' samples (use clinical or sample groups)
-#' @param individuals Boolean: plot PCA individuals (TRUE by default)
-#' @param loadings Boolean: plot PCA loadings/rotations (FALSE by default)
+#' @param individuals Boolean: plot PCA individuals
+#' @param loadings Boolean: plot PCA loadings/rotations
 #' @param nLoadings Integer: Number of variables to plot, ordered by those that 
 #' most contribute to selected principal components (this allows for faster 
-#' performance as only the variables that most contribute are rendered); if 
-#' NULL, all variables are plotted
+#' performance as only the most contributing variables are rendered); if 
+#' \code{NULL}, all variables are plotted
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip %>%
 #' tooltip_table
-#' @return Scatterplot as an \code{highcharter} object
+#' @return Scatterplot as an \code{highchart} object
 #' 
 #' @export
 #' @examples
@@ -382,6 +382,7 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
 #' @importFrom shiny renderTable tableOutput
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 clusterSet <- function(session, input, output) {
     clusterPCA <- reactive({
         algorithm <- input$clusteringMethod

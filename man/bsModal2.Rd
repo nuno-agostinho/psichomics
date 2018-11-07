@@ -31,3 +31,4 @@ HTML elements
 \code{bsModal} is used within the UI to create a modal window. This allows to
 modify the modal footer.
 }
+\keyword{internal}

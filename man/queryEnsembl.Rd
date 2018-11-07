@@ -29,3 +29,4 @@ path  <- "lookup/symbol/human/BRCA2"
 query <- list(expand=1)
 psichomics:::queryEnsembl(path, query, grch37 = TRUE)
 }
+\keyword{internal}

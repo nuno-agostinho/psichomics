@@ -30,3 +30,4 @@ downloadFiles(url, "~/Pictures")
 downloadFiles(url, "~/Pictures", quiet = TRUE)
 }
 }
+\keyword{internal}

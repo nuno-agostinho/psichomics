@@ -17,3 +17,4 @@ Gene expression subset for the input genes
 \description{
 Subset gene expression based on (full or partial) matching genes
 }
+\keyword{internal}

@@ -26,3 +26,4 @@ HTML for a button
 \description{
 Style button used to initiate a process
 }
+\keyword{internal}

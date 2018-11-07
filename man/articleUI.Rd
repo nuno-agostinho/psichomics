@@ -15,3 +15,4 @@ HTML to render an article's interface
 \description{
 Return the interface to display an article
 }
+\keyword{internal}

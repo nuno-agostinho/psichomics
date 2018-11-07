@@ -67,9 +67,6 @@ getGtexTissues <- function(sampleMetadata) {
         return(tissues)
 }
 
-#' @rdname getGtexTissues
-getGTExTissues <- getGtexTissues
-
 #' Load GTEx file
 #'
 #' @param path Character: path to file
@@ -77,6 +74,7 @@ getGTExTissues <- getGtexTissues
 #' @param samples Character: samples to filter datasets
 #'
 #' @return Loaded file as a data frame
+#' @keywords internal
 loadGtexFile <- function(path, pattern, samples=NULL) {
     if (!is.null(path)) {
         if (!is.character(path) && !is.null(path$datapath))
@@ -222,6 +220,7 @@ loadGtexData <- function(clinical=NULL, sampleMetadata=NULL, junctionQuant=NULL,
 #' @param replace Boolean: replace loaded data? TRUE by default
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 loadGtexDataShiny <- function(session, input, replace=TRUE) {
     tissue <- input$tissues
     

@@ -19,3 +19,4 @@ plotClusters(hc, data, clustering)
 \description{
 Clusters are added as coloured polygons.
 }
+\keyword{internal}

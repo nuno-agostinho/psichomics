@@ -15,3 +15,4 @@ HTML elements
 \description{
 Interface for interactive ggplot
 }
+\keyword{internal}

@@ -2,13 +2,14 @@
 % Please edit documentation in R/formats.R
 \name{loadFileFormats}
 \alias{loadFileFormats}
-\title{Loads file formats}
+\title{Load supported file formats}
 \usage{
 loadFileFormats()
 }
 \value{
-Loaded file formats available
+Supported file formats
 }
 \description{
-Loads file formats
+Load supported file formats
 }
+\keyword{internal}

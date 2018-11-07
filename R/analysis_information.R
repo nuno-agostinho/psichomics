@@ -11,6 +11,7 @@
 #' @importFrom jsonlite fromJSON
 #'
 #' @return Parsed response or NULL if there's no response
+#' @keywords internal
 #'
 #' @examples
 #' path  <- "overlap/region/human/7:140424943-140624564"
@@ -31,6 +32,48 @@ queryEnsembl <- function(path, query, grch37 = TRUE) {
     return(fromJSON(r))
 }
 
+#' Query information from Ensembl
+#' 
+#' @param gene Character: gene
+#' @param species Character: species (may be \code{NULL} for an Ensembl 
+#' identifier)
+#' @param assembly Character: assembly version (may be NULL for an Ensembl 
+#' identifier)
+#' 
+#' @return Information from Ensembl
+#' @export
+#' 
+#' @examples 
+#' queryEnsemblByGene("BRCA1", "human", "hg19")
+#' queryEnsemblByGene("ENSG00000139618")
+queryEnsemblByGene <- function(gene, species=NULL, assembly=NULL) {
+    if ( grepl("^ENSG", gene) ) {
+        path   <- paste0("lookup/id/", gene)
+        info <- queryEnsembl(path, list(expand=1))
+    } else {
+        if (is.null(species) || is.null(assembly))
+            stop("Species and assembly need to be non-NULL")
+        grch37 <- assembly == "hg19"
+        path <- paste0("lookup/symbol/", species, "/", gene)
+        info <- queryEnsembl(path, list(expand=1), grch37=grch37)
+    }
+    return(info)
+}
+
+#' @rdname queryEnsemblByGene
+#' 
+#' @param event Character: alternative splicing event
+#' 
+#' @export
+#' @examples 
+#' event <- "SE_17_-_41251792_41249306_41249261_41246877_BRCA1"
+#' queryEnsemblByEvent(event, species="human", assembly="hg19")
+queryEnsemblByEvent <- function(event, species, assembly) {
+    gene <- parseSplicingEvent(event)$gene[[1]]
+    if (gene == "Hypothetical") stop("This event has no associated gene")
+    return(queryEnsemblByGene(gene, species, assembly))
+}
+
 #' Query the UniProt REST API
 #'
 #' @param molecule Character: protein or transcript to query
@@ -40,7 +83,8 @@ queryEnsembl <- function(path, query, grch37 = TRUE) {
 #' @importFrom jsonlite fromJSON
 #'
 #' @return Parsed response
-#'
+#' @keywords internal
+#' 
 #' @examples
 #' protein <- "P51587"
 #' format <- "xml"
@@ -71,6 +115,7 @@ queryUniprot <- function(molecule, format="xml") {
 #' @importFrom jsonlite fromJSON
 #'
 #' @return Parsed response
+#' @keywords internal
 #'
 #' @examples
 #' psichomics:::queryPubMed("BRCA1", "cancer", "adrenocortical carcinoma")
@@ -109,6 +154,7 @@ queryPubMed <- function(primary, ..., top=3, field="abstract",
 #' 
 #' @return UniProt protein identifier
 #' @export
+#' 
 #' @examples 
 #' gene <- "ENSG00000173262"
 #' ensemblToUniprot(gene)
@@ -162,6 +208,7 @@ infoUI <- function(id) {
 #' @importFrom shiny renderUI h3 br tags
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 noinfo <- function(output, description=paste(
     "No information available for this gene."), ...) {
     output$info <- renderUI(
@@ -175,6 +222,7 @@ noinfo <- function(output, description=paste(
 #' @importFrom XML xmlTreeParse xmlRoot xmlAttrs xmlToList xmlName xmlChildren
 #' @importFrom plyr ldply
 #' @return List containing protein length and data frame of protein features
+#' @keywords internal
 parseUniprotXML <- function(xml) {
     doc <- xmlTreeParse(xml)
     root <- xmlRoot(doc)[[1]]
@@ -311,6 +359,7 @@ plotProtein <- function(molecule) {
 #' @importFrom jsonlite toJSON
 #' 
 #' @return HTML elements
+#' @keywords internal
 plottableXranges <- function(hc, shiny=FALSE) {
     hc <- toJSON(hc$x$hc_opts, auto_unbox=TRUE)
     hc <- gsub('"---|---"', "", hc)
@@ -533,7 +582,9 @@ plotTranscripts <- function(info, eventPosition=NULL, event=NULL, shiny=FALSE) {
 #' @param grch37 Boolean: use version GRCh37 of the genome? FALSE by default
 #' 
 #' @importFrom shiny renderUI h2 h3 plotOutput
+#' 
 #' @return HTML elements to render gene, protein and transcript annotation
+#' @keywords internal
 renderGeneticInfo <- function(output, ns, info, species=NULL, assembly=NULL, 
                               grch37=FALSE) {
     start <- as.numeric(info$start)
@@ -609,50 +660,6 @@ renderGeneticInfo <- function(output, ns, info, species=NULL, assembly=NULL,
         highchartOutput(ns("plotProtein"), height="200px"))
 }
 
-#' Query information from Ensembl by a given alternative splicing event
-#' 
-#' @param event Character: alternative splicing event identifier
-#' @inheritDotParams queryEnsemblByGene -gene
-#' 
-#' @return Information from Ensembl
-#' @export
-#' @examples 
-#' event <- c("SE_17_-_41251792_41249306_41249261_41246877_BRCA1")
-#' queryEnsemblByEvent(event, species="human", assembly="hg19")
-queryEnsemblByEvent <- function(event, ...) {
-    gene <- parseEvent(event)$gene[[1]]
-    if (gene == "Hypothetical")
-        stop("This event has no associated gene")
-    return(queryEnsemblByGene(gene, ...))
-}
-
-#' Query information from Ensembl by a given gene
-#' 
-#' @param gene Character: gene identifier
-#' @param species Character: species (can be NULL when handling an Ensembl
-#' identifier)
-#' @param assembly Character: assembly version (can be NULL when handling an
-#' Ensembl identifier)
-#' 
-#' @return Information from Ensembl
-#' @export
-#' @examples 
-#' queryEnsemblByGene("BRCA1", "human", "hg19")
-#' queryEnsemblByGene("ENSG00000139618")
-queryEnsemblByGene <- function(gene, species=NULL, assembly=NULL) {
-    if ( grepl("^ENSG", gene) ) {
-        path   <- paste0("lookup/id/", gene)
-        info <- queryEnsembl(path, list(expand=1))
-    } else {
-        if (is.null(species) || is.null(assembly))
-            stop("Species and assembly need to be non-NULL")
-        grch37 <- assembly == "hg19"
-        path <- paste0("lookup/symbol/", species, "/", gene)
-        info <- queryEnsembl(path, list(expand=1), grch37=grch37)
-    }
-    return(info)
-}
-
 #' Return the interface to display an article
 #' 
 #' @param article PubMed article
@@ -660,6 +667,7 @@ queryEnsemblByGene <- function(gene, species=NULL, assembly=NULL) {
 #' @importFrom shiny tags h5
 #' 
 #' @return HTML to render an article's interface
+#' @keywords internal
 articleUI <- function(article) {
     authors <- article$authors$name
     if (length(authors) > 2) {
@@ -693,6 +701,7 @@ articleUI <- function(article) {
 #' @inheritDotParams queryPubMed -primary
 #' 
 #' @return HTML interface of relevant PubMed articles
+#' @keywords internal
 pubmedUI <- function(gene, ...) {
     pubmed <- queryPubMed(gene, ...)
     articles <- pubmed[-1]
@@ -721,6 +730,7 @@ pubmedUI <- function(gene, ...) {
 #' @param assembly Character: assembly
 #'
 #' @return HTML elements
+#' @keywords internal
 renderProteinInfo <- function(protein, transcript, species, assembly) {
     if (!is.null(protein)) {
         # Prepare protein name and length

@@ -108,6 +108,7 @@ correlationUI <- function(id) {
 #' @param gene Character: genes to look for
 #' 
 #' @return Gene expression subset for the input genes
+#' @keywords internal
 subsetGeneExpressionFromMatchingGenes <- function(geneExpr, gene) {
     # Start by matching input genes with genes in gene expression
     exactMatch <- match(gene, rownames(geneExpr))
@@ -145,6 +146,7 @@ subsetGeneExpressionFromMatchingGenes <- function(geneExpr, gene) {
 #' @param gene Character: gene
 #'
 #' @return Character vector containing alternative splicing events
+#' @keywords internal
 findASeventsFromGene <- function(psi, gene) {
     # If no AS events are discriminated, find AS events for the given genes
     ASevents <- rownames(psi)
@@ -254,7 +256,7 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 
 #' Display results of correlation analyses
 #'
-#' @param corr \code{GEandAScorrelation} object (obtained after running
+#' @param x \code{GEandAScorrelation} object (obtained after running
 #'   \code{\link{correlateGEandAS}})
 #' @param loessSmooth Boolean: plot a smooth curve computed by
 #'   \code{stats::loess.smooth}?
@@ -305,7 +307,7 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #'                      Tumour=paste("Cancer", 1:3))
 #' attr(colourGroups, "Colour") <- c(Normal="#00C65A", Tumour="#EEE273")
 #' plot(corr, colourGroups=colourGroups, alpha=1)
-plotCorrelation <- function(corr, autoZoom=FALSE, loessSmooth=TRUE,
+plotCorrelation <- function(x, autoZoom=FALSE, loessSmooth=TRUE,
                             loessFamily=c("gaussian", "symmetric"),
                             colour="black", alpha=0.2, size=1.5,
                             loessColour="red", loessAlpha=1, loessWidth=0.5,
@@ -386,7 +388,7 @@ plotCorrelation <- function(corr, autoZoom=FALSE, loessSmooth=TRUE,
         return(plot + theme_light(fontSize))
     }
     
-    lapply(corr, lapply, plotCorrPerASevent)
+    lapply(x, lapply, plotCorrPerASevent)
 }
 
 #' @rdname plotCorrelation
@@ -395,8 +397,8 @@ plot.GEandAScorrelation <- plotCorrelation
 
 #' @rdname plotCorrelation
 #' @export
-print.GEandAScorrelation <- function(corr) {
-    for (item in corr) {
+print.GEandAScorrelation <- function(x, ...) {
+    for (item in x) {
         for (elem in item) {
             consoleWidth <- options("width")
             cat(paste(rep("=", consoleWidth), collapse=""), fill=TRUE)
@@ -426,17 +428,17 @@ print.GEandAScorrelation <- function(corr) {
 #'      \item{\code{hommel}: Hommel's method (family-wise error rate)}
 #' }
 #' @export
-as.table.GEandAScorrelation <- function (corr, pvalueAdjust="BH") {
+as.table.GEandAScorrelation <- function (x, pvalueAdjust="BH", ...) {
     prepareCol <- function(object, FUN) unlist(lapply(object, lapply, FUN))
     
-    gene     <- prepareCol(corr, function(i) i[["gene"]])
-    gene     <- prepareCol(corr, function(i) i[["gene"]])
-    eventID  <- prepareCol(corr, function(i) i[["eventID"]])
+    gene     <- prepareCol(x, function(i) i[["gene"]])
+    gene     <- prepareCol(x, function(i) i[["gene"]])
+    eventID  <- prepareCol(x, function(i) i[["eventID"]])
     eventID  <- gsub("_", " ", eventID, fixed=TRUE)
     
-    estimate <- prepareCol(corr, function(i) i[["cor"]][["estimate"]][[1]])
-    pvalue   <- prepareCol(corr, function(i) i[["cor"]][["p.value"]])
-    method   <- prepareCol(corr, function(i) i[["cor"]][["method"]])
+    estimate <- prepareCol(x, function(i) i[["cor"]][["estimate"]][[1]])
+    pvalue   <- prepareCol(x, function(i) i[["cor"]][["p.value"]])
+    method   <- prepareCol(x, function(i) i[["cor"]][["method"]])
     qvalue   <- p.adjust(pvalue, method=pvalueAdjust)
     qvalueLabel <- sprintf("p-value (%s adjusted)", pvalueAdjust)
     

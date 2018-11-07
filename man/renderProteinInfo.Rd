@@ -22,3 +22,4 @@ HTML elements
 \description{
 Render protein information
 }
+\keyword{internal}

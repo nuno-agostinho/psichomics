@@ -35,3 +35,4 @@ This slightly modified version of \code{\link{renderDataTable}}
 calls a JavaScript function to convert the sparkline HTML elements to
 interactive Highcharts
 }
+\keyword{internal}

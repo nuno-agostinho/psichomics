@@ -33,9 +33,10 @@ performICA <- function(data, n.comp=min(5, ncol(data)), center=TRUE,
 #' @inheritDotParams pairsD3::pairsD3 -x
 #' 
 #' @importFrom pairsD3 pairsD3
-#' @return Multiple scatterplots as a \code{pairsD3} object
 #' 
+#' @return Multiple scatterplots as a \code{pairsD3} object
 #' @export
+#' 
 #' @examples
 #' data <- scale(USArrests)
 #' ica  <- fastICA::fastICA(data, n.comp=4)
@@ -67,7 +68,9 @@ plotICA <- function(ica, components=seq(10), groups=NULL, ...) {
 #' samples (use clinical or sample groups)
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip %>%
+#' 
 #' @return Scatterplot as an \code{highcharter} object
+#' @keywords internal
 #' 
 #' @examples
 #' ica <- performICA(USArrests, scale=TRUE)
@@ -257,6 +260,7 @@ icaUI <- function(id) {
 #' @importFrom pairsD3 renderPairsD3
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 clusterICAset <- function(session, input, output) {
     clusterICA <- reactive({
         algorithm <- input$clusteringMethod

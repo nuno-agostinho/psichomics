@@ -17,3 +17,4 @@ Data frame with groups containing matching elements
 \description{
 Match patients and samples in a group
 }
+\keyword{internal}

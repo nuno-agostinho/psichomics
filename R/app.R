@@ -11,10 +11,12 @@ options(shiny.maxRequestSize = MB * 1024^5)
 # Sanitize errors
 options(shiny.sanitize.errors = TRUE)
 
-#' Interface that directs users to original article
+#' psichomics article's link interface
 #'
 #' @importFrom shiny tags icon
+#' 
 #' @return HTML elements
+#' @keywords internal
 linkToArticle <- function() {
     authors <- c("Nuno Saraiva-Agostinho", "Nuno L Barbosa-Morais")
     title   <- paste("psichomics: graphical application for alternative",
@@ -35,6 +37,7 @@ linkToArticle <- function() {
 #' @param loader Character: name of the file responsible to load such function 
 #' @param FUN Function
 #' @return Boolean vector
+#' @keywords internal
 loadBy <- function(loader, FUN) {
     attribute <- attr(FUN, "loader")
     if (is.null(attribute))
@@ -49,6 +52,7 @@ loadBy <- function(loader, FUN) {
 #' 
 #' @importFrom shiny callModule
 #' @return Invisible TRUE
+#' @keywords internal
 getServerFunctions <- function(loader, ..., priority=NULL) {
     # Get all functions ending with "Server"
     server <- ls(getNamespace("psichomics"), all.names=TRUE, pattern="Server$")
@@ -77,6 +81,7 @@ getServerFunctions <- function(loader, ..., priority=NULL) {
 #' then remaining functions
 #' 
 #' @return List of functions related to the given loader
+#' @keywords internal
 getUiFunctions <- function(ns, loader, ..., priority=NULL) {
     # Get all functions ending with "UI"
     ui <- ls(getNamespace("psichomics"), all.names=TRUE, pattern="UI$")
@@ -108,6 +113,7 @@ getUiFunctions <- function(ns, loader, ..., priority=NULL) {
 #' @importFrom shiny selectizeInput tagAppendAttributes
 #' 
 #' @return HTML element for a global selectize input
+#' @keywords internal
 globalSelectize <- function(id, placeholder) {
     elem <- paste0(id, "Elem")
     hideElem <- sprintf("$('#%s')[0].style.display = 'none';", id)
@@ -124,9 +130,12 @@ globalSelectize <- function(id, placeholder) {
 }
 
 #' Create a special selectize input in the navigation bar
+#' 
 #' @inheritParams globalSelectize
 #' @param label Character: input label
+#' 
 #' @return HTML element to be included in a navigation bar
+#' @keywords internal
 navSelectize <- function(id, label, placeholder=label) {
     value <- paste0(id, "Value")
     tags$li( tags$div(
@@ -151,7 +160,9 @@ navSelectize <- function(id, label, placeholder=label) {
 #' @param menu Boolean: create a dropdown menu-like tab? FALSE by default
 #' 
 #' @importFrom shiny navbarMenu tabPanel
+#' 
 #' @return HTML interface
+#' @keywords internal
 modTabPanel <- function(title, ..., icon=NULL, menu=FALSE) {
     if (is.null(icon))
         display <- title
@@ -224,6 +235,7 @@ appUI <- function() {
 #' @importFrom shiny observe parseQueryString updateTabsetPanel
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 browserHistory <- function(navId, input, session) {
     # Update browser history when user changes the active tab
     observeEvent(input[[navId]], {
@@ -333,18 +345,18 @@ appServer <- function(input, output, session) {
 #' Start graphical interface of psichomics
 #'
 #' @inheritDotParams shiny::runApp -appDir -launch.browser
-#' @param reset Boolean: reset Shiny session? requires the package 
-#' \code{devtools} to reset data
+#' @param reset Boolean: reset Shiny session? Requires package \code{devtools}
 #' @param testData Boolean: auto-start with test data
 #'
 #' @importFrom shiny shinyApp runApp addResourcePath
 #'
+#' @return NULL (this function is used to modify the Shiny session's state)
 #' @export
-#' @examples 
+#'
+#' @examples
 #' \dontrun{
 #' psichomics()
 #' }
-#' @return NULL (this function is used to modify the Shiny session's state)
 psichomics <- function(..., reset=FALSE, testData=FALSE) {
     # Add icons related to set operations
     addResourcePath("set-operations",

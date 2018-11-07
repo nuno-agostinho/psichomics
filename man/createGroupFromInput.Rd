@@ -30,3 +30,4 @@ Matrix with the group names and respective elements
 \description{
 Set new groups according to the user input
 }
+\keyword{internal}

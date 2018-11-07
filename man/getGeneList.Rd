@@ -2,7 +2,7 @@
 % Please edit documentation in R/globalAccess.R
 \name{getGeneList}
 \alias{getGeneList}
-\title{Get pre-created gene list}
+\title{Get pre-created, literature-based gene list}
 \usage{
 getGeneList()
 }
@@ -10,7 +10,11 @@ getGeneList()
 List of genes
 }
 \description{
-Get pre-created gene list
+Available gene lists:
+\itemize{
+  \item{\strong{Sebestyen et al., 2016}: 1350 genes encoding RNA-binding 
+  proteins, 167 of which are splicing factors}
+}
 }
 \examples{
 getGeneList()

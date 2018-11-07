@@ -23,3 +23,4 @@ prepare unique values in two vectors before a merge, for instance.
 psichomics:::renameDuplicated(check = c("blue", "red"), comp = c("green",
                                                                  "blue"))
 }
+\keyword{internal}

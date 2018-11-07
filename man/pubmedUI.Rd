@@ -23,3 +23,4 @@ HTML interface of relevant PubMed articles
 \description{
 Return the interface of relevant PubMed articles for a given gene
 }
+\keyword{internal}

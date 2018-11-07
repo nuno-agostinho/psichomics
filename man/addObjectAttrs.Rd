@@ -21,3 +21,4 @@ Set attributes to an object
 ll <- list(a="hey", b="there")
 psichomics:::addObjectAttrs(ll, "words"=2, "language"="English")
 }
+\keyword{internal}

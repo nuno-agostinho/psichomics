@@ -18,3 +18,4 @@ String containing HTML elements
 \description{
 Create word break opportunities (for HTML) using given characters
 }
+\keyword{internal}

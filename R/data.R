@@ -31,6 +31,7 @@ getFirehoseDataTypes <- getFirebrowseDataTypes
 #' @param ... Named parameters to convert to attributes
 #' 
 #' @return Object with attributes set
+#' @keywords internal
 #' 
 #' @examples 
 #' ll <- list(a="hey", b="there")
@@ -87,6 +88,7 @@ parseTCGAsampleInfo <- parseTcgaSampleInfo
 #' @param data List of list of data frames
 #' 
 #' @return List of list of data frames
+#' @keywords internal
 loadTCGAsampleMetadata <- function(data) {
     for (i in seq(data)) {
         # Retrieve sample metadata from junction quantification
@@ -120,12 +122,15 @@ loadTCGAsampleMetadata <- function(data) {
     return(data)
 }
 
-#' Create a modal warning the user of already loaded data
+#' Warn user about loaded data
+#' 
 #' @param modalId Character: identifier of the modal
 #' @param replaceButtonId Character: identifier of the button to replace data
 #' @param keepButtonId Character: identifier of the button to append data
 #' @param session Shiny session
+#' 
 #' @return HTML elements for a warning modal reminding data is loaded
+#' @keywords internal
 loadedDataModal <- function(session, modalId, replaceButtonId, keepButtonId) {
     ns <- session$ns
     warningModal(session, "Data already loaded",
@@ -147,6 +152,7 @@ loadedDataModal <- function(session, modalId, replaceButtonId, keepButtonId) {
 #' @param data List of lists of data frames
 #' 
 #' @return Processed list of lists of data frames
+#' @keywords internal
 processDatasetNames <- function(data) {
     newData <- data
     # Avoid duplicate names in categories
@@ -185,6 +191,7 @@ processDatasetNames <- function(data) {
 #' @param geneExprFileId Character: identifier for gene expression input
 #' 
 #' @return HTML elements
+#' @keywords internal
 geneExprFileInput <- function(geneExprFileId) {
     fileBrowserInput(
         geneExprFileId,
@@ -214,6 +221,7 @@ geneExprFileInput <- function(geneExprFileId) {
 #' @param assemblyId Character: identifier for genome assembly selection input
 #' 
 #' @return HTML elements
+#' @keywords internal
 ASquantFileInput <- function(ASquantFileId, speciesId, assemblyId){
     tagList(
         fileBrowserInput(
@@ -350,6 +358,7 @@ dataUI <- function(id, tab) {
 #' downloadButton
 #'
 #' @return HTML elements
+#' @keywords internal
 tabDataset <- function(ns, title, tableId, columns, visCols, data,
                        description=NULL, icon=NULL) {
     tablename <- ns(paste("table", tableId, sep="-"))
@@ -425,6 +434,7 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
 #' @importFrom shinyjs show hide
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 createDataTab <- function(index, data, name, session, input, output) {
     tablename <- paste("table", name, index, sep="-")
     

@@ -26,3 +26,4 @@ HTML elements to render gene, protein and transcript annotation
 \description{
 Render genetic information
 }
+\keyword{internal}

@@ -91,3 +91,4 @@ psichomics:::parseSuppaA5SS(junctions, "+")
 \seealso{
 \code{\link{parseSuppaEvent}}
 }
+\keyword{internal}

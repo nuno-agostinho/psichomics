@@ -23,3 +23,4 @@ Loads a file according to its format
 The resulting data frame includes the attribute \code{tablename} 
 with the name of the data frame
 }
+\keyword{internal}

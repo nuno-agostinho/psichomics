@@ -21,7 +21,7 @@ fileBrowser(default = NULL, caption = NULL, multiple = FALSE,
 \item{directory}{Boolean: allow to select directories instead of files?}
 }
 \value{
-A length one character vector, character NA if 'Cancel' was selected.
+A length one character vector, character NA if 'Cancel' was selected
 }
 \description{
 Interactive folder selection using a native dialogue
@@ -40,3 +40,4 @@ Pltaform-dependent implementation:
 If for some reason an error occurs (e.g. when using a remote server), the
 dialog fallbacks to an alternative, non-native file browser.
 }
+\keyword{internal}
