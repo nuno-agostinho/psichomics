@@ -89,6 +89,7 @@ correlationUI <- function(id) {
                                                 corrParams, scatterParams))
     
     tagList(
+        uiOutput(ns("modal")),
         sidebar(
             errorDialog(paste("No alternative splicing quantification or gene",
                               "expression data are available."),
@@ -495,6 +496,102 @@ correlationServer <- function(input, output, session) {
         }
     })
     
+    displayCorrTable <- reactive({
+        corr <- getCorrelation()
+        if (is.null(corr)) return(NULL)
+        data <- as.table(corr)
+        
+        show("corTable")
+        output$corTable <- renderDataTable(
+            data, style="bootstrap", server=TRUE, rownames=FALSE, 
+            selection="none", options=list(scrollX=TRUE))
+        
+        show("saveTable")
+        output$saveTable <- downloadHandler(
+            filename=function() paste(getCategory(), "Correlations"),
+            content=function(con)
+                write.table(data, con, quote=FALSE, sep="\t", row.names=FALSE))
+    })
+    
+    performCorrelationAnalyses <- reactive({
+        isolate({
+            psi         <- getInclusionLevels()
+            ASevents    <- getSelectedGroups(input, "ASevents", "ASevents",
+                                             filter=rownames(psi))
+            ASevents    <- unlist(ASevents)
+            
+            geneExpr    <- getGeneExpression()[[input$geneExpr]]
+            gene        <- getSelectedGroups(input, "genes", "Genes",
+                                             filter=rownames(geneExpr))
+            gene        <- unlist(gene)
+            
+            method      <- input$method
+            alternative <- input$alternative
+        })
+        # Filter samples based on groups
+        groupFilter <- isolate(getSelectedGroups(
+            input, "groupFilter", "Samples", 
+            filter=intersect(colnames(geneExpr), colnames(psi))))
+        groupFilter <- unname(unlist(groupFilter))
+        if (is.null(groupFilter)) groupFilter <- TRUE
+        geneExpr <- geneExpr[ , groupFilter, drop=FALSE]
+        psi      <- psi[ , groupFilter, drop=FALSE]
+        
+        # Perform correlation analyses
+        startProcess("correlate")
+        corr <- suppressWarnings(
+            correlateGEandAS(geneExpr, psi, gene, ASevents, method=method, 
+                             alternative=alternative))
+        setCorrelation(corr)
+        displayCorrTable()
+        endProcess("correlate")
+    })
+    
+    observeEvent(input$correlate, {
+        ns <- session$ns
+        isolate({
+            psi         <- getInclusionLevels()
+            ASevents    <- getSelectedGroups(input, "ASevents", "ASevents",
+                                             filter=rownames(psi))
+            ASevents    <- unlist(ASevents)
+            
+            geneExpr    <- getGeneExpression()[[input$geneExpr]]
+            gene        <- getSelectedGroups(input, "genes", "Genes",
+                                             filter=rownames(geneExpr))
+            gene        <- unlist(gene)
+            
+            cor <- getCorrelation()
+        })
+        
+        if (is.null(psi)) {
+            missingDataModal(session, "Inclusion levels",
+                             ns("missingInclusionLevels"))
+        } else if (is.null(geneExpr)) {
+            errorModal(session, "No gene expression selected", 
+                       "Please selected gene expression data",
+                       caller="Correlation analysis")
+        } else if (is.null(gene) || identical(gene, "")) {
+            errorModal(session, "No gene selected", "Please select a gene",
+                       caller="Correlation analysis")
+        } else if (is.null(ASevents) || identical(ASevents, "")) {
+            errorModal(session, "No alternative splicing event selected",
+                       "Please select one or more alternative splicing events",
+                       caller="Correlation analysis")
+        } else if (!is.null(cor)) {
+            warningModal(session, "Correlation analyses already performed",
+                         "Do you wish to discard the current results?",
+                         footer=actionButton(ns("replace"), "Discard",
+                                             class="btn-warning",
+                                             "data-dismiss"="modal"),
+                         caller="Correlation analyses")
+        } else {
+            performCorrelationAnalyses()
+        }
+    })
+    
+    # Replace previously performed differential analyses
+    observeEvent(input$replace, performCorrelationAnalyses())
+    
     # Plot correlation analyses
     plotShinyCorr <- reactive({
         ns <- session$ns
@@ -565,78 +662,6 @@ correlationServer <- function(input, output, session) {
         
         lapply(seq(plots), function(i)
             output[[paste0("plot", i)]] <- renderPlot(plots[[i]]))
-    })
-    
-    displayCorrTable <- reactive({
-        corr <- getCorrelation()
-        if (is.null(corr)) return(NULL)
-        data <- as.table(corr)
-        
-        show("corTable")
-        output$corTable <- renderDataTable(
-            data, style="bootstrap", server=TRUE, rownames=FALSE, 
-            selection="none", options=list(scrollX=TRUE))
-        
-        show("saveTable")
-        output$saveTable <- downloadHandler(
-            filename=function() paste(getCategory(), "Correlations"),
-            content=function(con)
-                write.table(data, con, quote=FALSE, sep="\t", row.names=FALSE))
-    })
-    
-    observeEvent(input$correlate, {
-        ns <- session$ns
-        isolate({
-            geneExpr    <- getGeneExpression()[[input$geneExpr]]
-            psi         <- getInclusionLevels()
-            gene        <- input$gene
-            ASevents    <- getSelectedGroups(input, "ASevents", "ASevents",
-                                             filter=rownames(psi))
-            ASevents    <- unlist(ASevents)
-            gene        <- getSelectedGroups(input, "genes", "Genes",
-                                             filter=rownames(geneExpr))
-            gene        <- unlist(gene)
-            method      <- input$method
-            alternative <- input$alternative
-        })
-        
-        if (is.null(psi)) {
-            missingDataModal(session, "Inclusion levels",
-                             ns("missingInclusionLevels"))
-            return(NULL)
-        } else if (is.null(geneExpr)) {
-            errorModal(session, "No gene expression selected", 
-                       "Please selected gene expression data",
-                       caller="Correlation analysis")
-            return(NULL)
-        } else if (is.null(gene) || identical(gene, "")) {
-            errorModal(session, "No gene selected", "Please select a gene",
-                       caller="Correlation analysis")
-            return(NULL)
-        } else if (is.null(ASevents) || identical(ASevents, "")) {
-            errorModal(session, "No alternative splicing event selected",
-                       "Please select one or more alternative splicing events",
-                       caller="Correlation analysis")
-            return(NULL)
-        }
-        
-        # Filter samples based on groups
-        groupFilter <- isolate(getSelectedGroups(
-            input, "groupFilter", "Samples", 
-            filter=intersect(colnames(geneExpr), colnames(psi))))
-        groupFilter <- unname(unlist(groupFilter))
-        if (is.null(groupFilter)) groupFilter <- TRUE
-        geneExpr <- geneExpr[ , groupFilter, drop=FALSE]
-        psi      <- psi[ , groupFilter, drop=FALSE]
-        
-        # Perform correlation analyses
-        startProcess("correlate")
-        corr <- suppressWarnings(
-            correlateGEandAS(geneExpr, psi, gene, ASevents, method=method, 
-                             alternative=alternative))
-        setCorrelation(corr)
-        displayCorrTable()
-        endProcess("correlate")
     })
     
     observeEvent(input$applyPlotStyle, {
