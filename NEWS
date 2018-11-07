@@ -20,6 +20,8 @@
     - Added pre-made list of genes that encode for RNA-binding proteins 
     (Sebestyen et al. 2016), useful to postulate about splicing regulators based
     on gene expression and PSI correlation analyses
+* Tutorials:
+    - Copy-edit tutorial on custom alternative splicing annotation preparation
     
 ## Bug fixes and minor changes
 
