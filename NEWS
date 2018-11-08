@@ -28,6 +28,8 @@
 * Documentation:
     - Export functions mentioned in the documentation
     - Hide documentation of internal functions from the PDF reference manual
+* Alternative splicing quantification:
+    - Fix progress bar
 
 # 1.6.2 (2 October, 2018)
 

@@ -6,15 +6,15 @@ void progressBar(double progress) {
     
     // Create progress bar
     int barWidth=40;
-    printf("  |");
+    Rprintf("  |");
     
     // Print completed progress
     int complete = round(progress * barWidth);
-    for (int i=0; i < complete; i++) printf("=");
+    for (int i=0; i < complete; i++) Rprintf("=");
     // Print remaining progress
-    for (int i=complete; i < barWidth; i++) printf(" ");
-    printf("| %3.0f%% \r", progress * 100);
-    fflush(stdout); // Avoids output buffering problems
+    for (int i=complete; i < barWidth; i++) Rprintf(" ");
+    Rprintf("| %3.0f%% \r", progress * 100);
+    if (progress == 1) Rprintf("\n");
 }
 
 // [[Rcpp::export]]
@@ -44,7 +44,7 @@ NumericMatrix psiFastCalc(const NumericMatrix& mat,
         }
         
         if (mat.ncol() > 1) {
-            progress = col / (mat.ncol() - 1);
+            progress = double(col) / double(mat.ncol() - 1);
             progressBar(progress);
         }
     }
@@ -80,7 +80,7 @@ NumericMatrix psiFastCalc2(const NumericMatrix& mat,
         }
         
         if (mat.ncol() > 1) {
-            progress = col / (mat.ncol() - 1);
+            progress = double(col) / double(mat.ncol() - 1);
             progressBar(progress);
         }
     }
