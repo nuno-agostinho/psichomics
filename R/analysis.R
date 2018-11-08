@@ -1222,7 +1222,7 @@ fisher <- function(data, groups) {
         timeout = 1,
         onTimeout = "error"))
     
-    if (class(stat) != "try-error") {
+    if (!is(stat, "try-error")) {
         tagList(
             h4(stat$method),
             tags$b("p-value: "), stat$p.value, br(),

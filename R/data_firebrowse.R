@@ -642,7 +642,7 @@ setFirebrowseData <- function(input, output, session, replace=TRUE) {
                                date = gsub("-", "_", input$firebrowseDate),
                                data = input$firebrowseData, download = FALSE)
     
-    areDataMissing <- any(class(data) == "missing")
+    areDataMissing <- any(is(data, "missing"))
     if (areDataMissing) {
         updateProgress(divisions = 1)
         setURLtoDownload(data)

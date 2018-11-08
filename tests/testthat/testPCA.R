@@ -138,4 +138,3 @@ test_that("Plot PCA loadings", {
     expect_equal(hc$x$hc_opts$series[[2]]$name, "Loadings")
     expect_equal(hc$x$hc_opts$series[[2]]$type, "bubble")
 })
-

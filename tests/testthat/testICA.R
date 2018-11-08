@@ -65,4 +65,3 @@ test_that("Plot ICA individuals and colour two groups", {
     subset <- ica$S[unlist(groups[2:3]), 1:2]
     expect_true(all(subset == hc$x$data))
 })
-

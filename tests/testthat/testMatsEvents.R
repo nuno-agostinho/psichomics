@@ -122,7 +122,7 @@ test_that("parseMatsEvent parses exon skipping events", {
         4626 ENSG00000151422 FER chr5 + 108168470 108168644 108133824 108134090 108171408 108171508 4626 16 0 0 4 112 56 0.000164083368228 0.0164083368228 1 0 1
         16170 ENSG00000151914 DST chr6 - 56463273 56463507 56462537 56462804 56464866 56465019 16170 53 7 64 2 112 56 0.062949258326 0.796580100354 0.791 0.941 -0.15
     ")
-    event <- as.data.frame(rbind(event, deparse.level = F))
+    event <- as.data.frame(rbind(event, deparse.level=FALSE))
     parsed <- parseMatsEvent(event, "SE")
     expect_is(parsed, "data.frame")
     

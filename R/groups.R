@@ -1959,7 +1959,7 @@ groupsServerOnce <- function(input, output, session) {
         psi     <- getInclusionLevels()
         
         if (!is.null(geneExp) || !is.null(psi)) {
-            groups     <- unlist(getGeneList(), recursive=F)
+            groups     <- unlist(getGeneList(), recursive=FALSE)
             groupNames <- unlist(lapply(names(getGeneList()), function(i)
                 sprintf("%s (%s)", names(getGeneList()[[i]]), i)))
             selected   <- unlist(lapply(names(getGeneList()), function(i)
