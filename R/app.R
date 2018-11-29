@@ -365,10 +365,21 @@ psichomics <- function(..., reset=FALSE, testData=FALSE) {
     if (reset) devtools::load_all()
     
     if (testData) {
+        loadFile <- function(file) {
+            if (!file.exists(file)) {
+                # Fetch file online if not locally available
+                link <- paste0("https://github.com/",
+                               "nuno-agostinho/psichomics/raw/master/",
+                               file)
+                file <- url(link)
+            }
+            readRDS(file)
+        }
+        
         data <- NULL
-        data[["Clinical data"]]    <- readRDS("vignettes/BRCA_clinical.RDS")
-        data[["Gene expression"]]  <- readRDS("vignettes/BRCA_geneExpr.RDS")
-        data[["Inclusion levels"]] <- readRDS("vignettes/BRCA_psi.RDS")
+        data[["Clinical data"]]    <- loadFile("vignettes/BRCA_clinical.RDS")
+        data[["Gene expression"]]  <- loadFile("vignettes/BRCA_geneExpr.RDS")
+        data[["Inclusion levels"]] <- loadFile("vignettes/BRCA_psi.RDS")
         data[["Sample metadata"]]  <- parseTcgaSampleInfo(colnames(
             data[["Inclusion levels"]]))
         setData(list("Test data"=data))

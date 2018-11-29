@@ -30,6 +30,8 @@
     - Hide documentation of internal functions from the PDF reference manual
 * Alternative splicing quantification:
     - Fix progress bar
+* Fix crash by downloading test data if not locally available when loading 
+psichomics with said data
 
 # 1.6.2 (2 October, 2018)
 
