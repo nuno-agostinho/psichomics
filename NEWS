@@ -30,8 +30,12 @@
     - Hide documentation of internal functions from the PDF reference manual
 * Alternative splicing quantification:
     - Fix progress bar
-* Fix crash by downloading test data if not locally available when loading 
-psichomics with said data
+* Fix crash when loading psichomics with test data that is not locally available
+(by automatically downloading said data if not found)
+* Differential analyses:
+    - Fix wrong information in the table of differential splicing results (only
+    occurs when the first splicing event is one for which there is not enough
+    information to calculate statistical tests)
 
 # 1.6.2 (2 October, 2018)
 

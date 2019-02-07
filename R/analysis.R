@@ -2119,15 +2119,15 @@ diffAnalyses <- function(data, groups=NULL,
     ll <- lapply(ll, unlist)
     ldf <- lapply(seq_along(uniq), function(k) {
         elems <- match == k
-        df2   <- t(as.data.frame(ll[elems]))
+        df2   <- t(data.frame(ll[elems], stringsAsFactors=FALSE))
         cols  <- colnames(df2)
         
-        df2           <- data.frame(df2)
+        df2           <- data.frame(df2, stringsAsFactors=FALSE)
         colnames(df2) <- cols
         rownames(df2) <- names(stats)[elems]
         return(df2)
     })
-    df <- do.call(rbind.fill, ldf)
+    df <- rbind.fill(ldf)
     rownames(df) <- unlist(lapply(ldf, rownames))
     
     # Convert numeric columns to numeric
