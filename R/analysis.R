@@ -1690,7 +1690,7 @@ plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE,
         
         colour <- unname(attr(groups, "Colour")[group])
         if (is.null(colour))
-            colour <- JS("Highcharts.getOptions().colors[", count, "]")
+            colour <- JS(paste0("Highcharts.getOptions().colors[", count, "]"))
         
         # Calculate the density of inclusion levels for each sample group
         den <- tryCatch(density(row, na.rm=TRUE, ...), error=return,
@@ -1704,10 +1704,23 @@ plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE,
         }
         # Rug plot
         if (rug) {
+            isHexColour <- function(string) {
+                # Explicitely ignores HEX colour codes with opacity
+                grepl("^#{0,1}([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", string)
+            }
+            
+            opacity <- 60
+            if (is(colour, "JS_EVAL")) {
+                fill <- JS(sprintf("%s + \"%s\"", colour, opacity))
+            } else if (isHexColour(colour)) {
+                fill <- sprintf("%s%s", colour, opacity)
+            } else {
+                fill <- colour
+            }
+            
             hc <- hc_scatter(
                 hc, row, rep(0, length(row)), name=group, marker=list(
-                    enabled=TRUE, symbol="circle", radius=4,
-                    fillColor=paste0(colour, "60")), # Add opacity
+                    enabled=TRUE, symbol="circle", radius=4, fillColor=fill),
                 median=med, var=vari, samples=samples, max=max, min=min)
         }
         # Save plot line with information

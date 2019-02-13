@@ -33,6 +33,9 @@
 * Fix crash when loading psichomics with test data that is not locally available
 (by automatically downloading said data if not found)
 * Differential analyses:
+    - Fix group colours and opacity for rug plot points within the distribution 
+    plot (occured in the command-line version and when exporting plots in the
+    visual interface)
     - Fix wrong information in the table of differential splicing results (only
     occurs when the first splicing event is one for which there is not enough
     information to calculate statistical tests)
