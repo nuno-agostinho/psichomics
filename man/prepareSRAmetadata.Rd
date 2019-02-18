@@ -17,8 +17,8 @@ prepareGeneQuant(..., output = "psichomics_gene_counts.txt",
 \arguments{
 \item{file}{Character: path to file}
 
-\item{output}{Character: path of output file (if NULL, only returns the data
-without saving it to a file)}
+\item{output}{Character: path of output file (if \code{NULL}, only returns 
+the data without saving it to a file)}
 
 \item{...}{Character: path to file(s) to read}
 

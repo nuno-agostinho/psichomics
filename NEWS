@@ -22,6 +22,10 @@
     
 ## Bug fixes and minor changes
 
+* Loading SRA data:
+    - Accept a vector of files as the first argument (easier to use with 
+    `list.files()`)
+    - Ask to overwrite file if one exists with the same name as the output file
 * Groups:
     - Minor improvements to the group creation interface
 * Improve console logging of error and warning alerts
