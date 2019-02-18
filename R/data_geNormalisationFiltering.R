@@ -441,8 +441,8 @@ geNormalisationFilteringServer <- function(input, output, session) {
             "Original gene expression (label)"=isolate(input$geneExpr)
         ), geneFilterSettings, list(
             "Normalisation method"=method,
-            "Perform log2 transformation"=if (log2transform) "Yes" else "No",
-            "Average count to add per observation"=priorCount))
+            "Log2-transformed"=if (log2transform) "Yes" else "No",
+            "Average count added per observation"=priorCount))
         attr(geneExprNorm, "settings") <- settings
         attr(geneExprNorm, "icon") <- list(symbol="cogs", colour="green")
         
