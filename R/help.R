@@ -122,7 +122,7 @@ helpUI <- function(id, tab) {
                                 tags$small(class="help-block",
                                            style="text-align: right;",
                                            style="margin: 0;",
-                                           "2015-2018"))))),
+                                           "2015-2019"))))),
             column(
                 4, div(
                     class="panel", class="panel-default",

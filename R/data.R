@@ -331,7 +331,7 @@ dataUI <- function(id, tab) {
                  target="_blank", "Disease Transcriptomics Lab, iMM"), 
           "(", tags$a(href="mailto:nunodanielagostinho@gmail.com", 
                       "Nuno Saraiva-Agostinho", icon("envelope-o")),
-          ", 2015-2018)", 
+          ", 2015-2019)", 
           br(), "Special thanks to my lab colleagues for their work-related",
           br(), "support and supporting chatter."))
     
