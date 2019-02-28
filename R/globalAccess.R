@@ -315,11 +315,30 @@ getJunctionQuantification <- function(category=getCategory()) {
 }
 
 #' @rdname getGlobal
-getGeneExpression <- function(category=getCategory()) {
+#' @param item Character: name of specific item to retrieve (if \code{NULL}, the
+#' whole list is returned)
+#' @param EList Boolean: return gene expression datasets as \code{EList} if
+#' possible or as data frames?
+getGeneExpression <- function(item=NULL, category=getCategory(), EList=FALSE) {
     if (!is.null(category)) {
         data <- getData()[[category]]
         match <- sapply(data, attr, "dataType") == "Gene expression"
-        if (any(match)) return(data[match])
+        if (any(match)) {
+            df <- data[match]
+            if (!is.null(item)) {
+                res <- df[[item]]
+                if (!EList && is(res, "EList")) {
+                    # Convert EList object to data frame
+                    res <- data.frame(res)
+                }
+            } else if (!EList) {
+                # Convert EList objects to data frames
+                res <- lapply(data[match], function(i) {
+                    if (is(i, "EList")) data.frame(i) else i
+                })
+            }
+            return(res)
+        }
     }
 }
 

@@ -522,7 +522,7 @@ correlationServer <- function(input, output, session) {
                                              filter=rownames(psi))
             ASevents    <- unlist(ASevents)
             
-            geneExpr    <- getGeneExpression()[[input$geneExpr]]
+            geneExpr    <- getGeneExpression(input$geneExpr)
             gene        <- getSelectedGroups(input, "genes", "Genes",
                                              filter=rownames(geneExpr))
             gene        <- unlist(gene)
@@ -557,7 +557,7 @@ correlationServer <- function(input, output, session) {
                                              filter=rownames(psi))
             ASevents    <- unlist(ASevents)
             
-            geneExpr    <- getGeneExpression()[[input$geneExpr]]
+            geneExpr    <- getGeneExpression(input$geneExpr)
             gene        <- getSelectedGroups(input, "genes", "Genes",
                                              filter=rownames(geneExpr))
             gene        <- unlist(gene)

@@ -154,9 +154,13 @@ function renderGEnormOptions (item, escape) {
         case "none":
             description = "";
             break;
+        case "quantile":
+            description = "Forces the entire empirical distribution of each " +
+                          "column to be identical (only performed if " +
+                          "<i>voom</i> is selected).";
     }
-    return "<div><span class='label label-default'>" + escape(item.label) +
-        "</span></br>" + "<small>" + description + "</small></div>"; 
+    return "<div><b>" + escape(item.label) + "</b></br>" +
+        "<small>" + description + "</small></div>"; 
 }
 
 /**

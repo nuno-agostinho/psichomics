@@ -1607,7 +1607,9 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' @param data Numeric, data frame or matrix: data for one gene or alternative 
 #' splicing event
 #' @param groups List of characters (list of groups containing data identifiers)
-#' or character vector (group of each value in \code{data})
+#' or character vector (group of each value in \code{data}); if \code{NULL} or a
+#' character vector of length 1, all data points will be considered of the same 
+#' group
 #' @param rug Boolean: include rug plot to better visualise data distribution
 #' @param vLine Boolean: include vertical plot lines to display descriptive 
 #' statistics for each group
@@ -1616,6 +1618,7 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' @param title Character: plot title
 #' @param psi Boolean: are data composed of PSI values? Automatically set to
 #' \code{TRUE} if all \code{data} values are between 0 and 1
+#' @param rugLabels Boolean: plot names or colnames of \code{data} in the rug?
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_plotOptions hc_tooltip
 #' JS
@@ -1625,11 +1628,12 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' @export
 #' 
 #' @examples
-#' data <- sample(20, rep=TRUE)/20
-#' groups <- c(rep("A", 10), rep("B", 10))
-#' plotDistribution(data, groups)
-plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE, 
-                             ..., title=NULL, psi=NULL) {
+#' data   <- sample(20, rep=TRUE)/20
+#' groups <- paste("Group", c(rep("A", 10), rep("B", 10)))
+#' label  <- paste("Sample", 1:20)
+#' plotDistribution(data, groups, label=label)
+plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, 
+                             ..., title=NULL, psi=NULL, rugLabels=FALSE) {
     if (is.null(psi)) 
         psi <- min(data, na.rm=TRUE) >= 0 && max(data, na.rm=TRUE) <= 1
     
@@ -1652,9 +1656,11 @@ plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE,
         hc_plotOptions(series = list(fillOpacity=0.3,
                                      marker=list(enabled=FALSE))) %>%
         hc_tooltip(
-            headerFormat = paste(span(style="color:{point.color}", "\u25CF "),
-                                 tags$b("{series.name}"), br()),
+            headerFormat=NULL,
             pointFormat = paste(
+                "{point.label}", br(), 
+                span(style="color:{point.color}", "\u25CF "),
+                tags$b("{series.name}"), br(),
                 id, "{point.x:.2f}", br(),
                 "Number of samples: {series.options.samples}", br(),
                 "Median: {series.options.median}", br(),
@@ -1664,7 +1670,8 @@ plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE,
     
     if (!is.null(title)) hc <- hc %>% hc_title(text=title)
     
-    if (is.list(groups)) 
+    if (is.null(groups)) groups <- "All samples"
+    if (is.list(groups))
         ns <- names(groups)
     else
         ns <- groups
@@ -1677,10 +1684,20 @@ plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE,
         else
             filter <- groups == group
         
-        if (is.vector(data))
-            row <- as.numeric(data[filter])
-        else
-            row <- as.numeric(data[ , filter])
+        if (is.vector(data)) {
+            row      <- data[filter]
+        } else if (isTRUE(filter)) {
+            row      <- data
+        } else {
+            filter   <- filter[filter %in% colnames(data)]
+            row      <- data[ , filter]
+        }
+        
+        label <- names(row)
+        if (is.null(label)) label <- colnames(row)
+        
+        row <- as.numeric(row)
+        if (length(row) == 0) next
         
         med  <- roundDigits(median(row, na.rm=TRUE))
         vari <- roundDigits(var(row, na.rm=TRUE))
@@ -1709,7 +1726,11 @@ plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE,
                 grepl("^#{0,1}([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", string)
             }
             
-            opacity <- 60
+            convertOpacityToHex <- function(opacity) {
+                sprintf("%02x", round(opacity/100 * 255))
+            }
+            opacity <- convertOpacityToHex(60) # Opacity in percentage
+            
             if (is(colour, "JS_EVAL")) {
                 fill <- JS(sprintf("%s + \"%s\"", colour, opacity))
             } else if (isHexColour(colour)) {
@@ -1718,16 +1739,16 @@ plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE,
                 fill <- colour
             }
             
-            hc <- hc_scatter(
-                hc, row, rep(0, length(row)), name=group, marker=list(
-                    enabled=TRUE, symbol="circle", radius=4, fillColor=fill),
-                median=med, var=vari, samples=samples, max=max, min=min)
+            hc <- hc %>%
+                hc_scatter(
+                    row, rep(0, length(row)), name=group, label=label, 
+                    marker=list(enabled=TRUE, radius=4, fillColor=fill),
+                    median=med, var=vari, samples=samples, max=max, min=min)
         }
-        # Save plot line with information
+        # Plot line with basic statistics
         if (vLine) {
             plotLines[[count + 1]] <- list(
-                label = list(text = paste("Median:", med, "/ Variance:", vari)),
-                # Colour the same as the series
+                label=list(text=paste("Median:", med, "/ Variance:", vari)),
                 color=colour, dashStyle="shortdash", width=2, value=med, 
                 zIndex=7)
         }
@@ -1736,6 +1757,53 @@ plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE,
     
     # Add plotLines with information
     if (vLine) hc <- hc %>% hc_xAxis(plotLines = plotLines)
+    
+    # Show or hide rug labels
+    rugSeries <- which(sapply(hc$x$hc_opts$series, "[[", "type") == "scatter")
+    for (k in rugSeries)
+        hc$x$hc_opts$series[[k]]$dataLabels$enabled <- rugLabels
+    return(hc)
+}
+
+#' Render boxplot
+#'
+#' @param data Data frame or matrix
+#' @param outliers Boolean: draw outliers?
+#' @param sortByMedian Boolean: sort box plots based on ascending median?
+#' @param showXlabels Boolean: show labels in X axis?
+#'
+#' @importFrom reshape2 melt
+#' @importFrom miscTools colMedians
+#'
+#' @return Box plot
+#' @keywords internal
+#' 
+#' @examples
+#' renderBoxplot(data.frame(a=1:10, b=10:19, c=45:54))
+renderBoxplot <- function(data, outliers=FALSE, sortByMedian=TRUE,
+                          showXlabels=TRUE, title=NULL, 
+                          seriesName="Gene expression") {
+    if (sortByMedian) {
+        medians <- colMedians(data)
+        data <- data[ , order(medians)]
+    }
+    
+    # Remove matrix rownames from melted data
+    melted <- suppressMessages(melt(data))
+    if (ncol(melted) == 3) {
+        melted[[1]] <- NULL
+        colnames(melted)[[1]] <- "variable"
+    }
+    
+    hc <- hcboxplot(melted$value, melted$variable, outliers=outliers) %>% 
+        hc_chart(zoomType="x", type="column") %>%
+        hc_plotOptions(boxplot=list(color="black", fillColor="orange")) %>%
+        hc_xAxis(labels=list(enabled=showXlabels)) %>%
+        hc_title(text=title)
+    if (min(melted$value) >= 0) hc <- hc %>% hc_yAxis(min=0)
+    
+    hc <- hc %>% export_highcharts()
+    hc$x$hc_opts$series[[1]]$name <- seriesName
     return(hc)
 }
 
@@ -2096,6 +2164,7 @@ diffAnalyses <- function(data, groups=NULL,
         ids    <- names(data)
         groups <- parseSampleGroups(ids)
     } else if (is.list(groups)) {
+        groups <- discardOutsideSamplesFromGroups(groups, colnames(data))
         data   <- data[ , unlist(groups)]
         
         colour <- attr(groups, "Colour")
@@ -2168,9 +2237,9 @@ diffAnalyses <- function(data, groups=NULL,
     if (ncol(deltaVar) == 2) {
         updateProgress("Calculating delta variance and median")
         time <- Sys.time()
-        deltaVar <- deltaVar[, 2] - deltaVar[, 1]
+        deltaVar <- deltaVar[ , 1] - deltaVar[ , 2]
         deltaMed <- df[, grepl("Median", colnames(df))]
-        deltaMed <- deltaMed[, 2] - deltaMed[, 1]
+        deltaMed <- deltaMed[ , 1] - deltaMed[ , 2]
         df <- cbind(df, "\u2206 Variance"=deltaVar, "\u2206 Median"=deltaMed)
         display(Sys.time() - time)
     }

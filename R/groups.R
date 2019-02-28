@@ -2227,6 +2227,22 @@ testGroupIndependence <- function(ref, groups, elements, pvalueAdjust="BH") {
     return(df)
 }
 
+#' Discard grouped samples if not within a sample vector
+#' 
+#' @param groups Named list of samples
+#' @param samples Character: vector with all available samples
+#' @param clean Boolean: clean results?
+#' 
+#' @return Groups without samples not found in \code{samples}
+#' @keywords internal
+discardOutsideSamplesFromGroups <- function(groups, samples, clean=FALSE) {
+    getMatchingSamples <- function(i) ifelse(i %in% samples, i, NA)
+    g <- lapply(groups, getMatchingSamples)
+    g <- lapply(g, na.omit)
+    if (clean) g <- lapply(g, as.character)
+    return(g)
+}
+
 #' Plot -log10(p-values) of the results obtained after multiple group 
 #' independence testing
 #' 

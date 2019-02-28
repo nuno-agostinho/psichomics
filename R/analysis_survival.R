@@ -192,7 +192,7 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
         formulaStr <- NULL
     } else if (modelTerms == "geCutoff") {
         isolate({
-            geneExpr <- getGeneExpression()[[input$geneExpr]]
+            geneExpr <- getGeneExpression(input$geneExpr)
             gene     <- input$gene
             geCutoff <- input$geCutoff
         })
@@ -303,14 +303,14 @@ geneExprSurvSet <- function(session, input, output) {
     # Update available gene choices depending on gene expression data loaded
     # Reactive avoids updating if the input remains the same
     updateGeneChoices <- reactive({
-        geneExpr <- getGeneExpression()[[input$geneExpr]]
+        geneExpr <- getGeneExpression(input$geneExpr)
         genes <- rownames(geneExpr)
         updateSelectizeInput(session, "gene", choices=genes, server=TRUE)
     })
     
     # Update available gene choices depending on gene expression data loaded
     observe({
-        geneExpr <- getGeneExpression()[[input$geneExpr]]
+        geneExpr <- getGeneExpression(input$geneExpr)
         if (!is.null(geneExpr) && input$modelTerms == "geCutoff") {
             show("loadingGenes")
             hide("gene")
@@ -331,7 +331,7 @@ geneExprSurvSet <- function(session, input, output) {
     
     # # Update selected gene based on currently selected splicing event
     # observe({
-    #     geneExpr <- getGeneExpression()[[input$geneExpr]]
+    #     geneExpr <- getGeneExpression(input$geneExpr)
     #     event    <- getEvent()
     #     if (isolate(input$modelTerms) == "geCutoff" && !is.null(geneExpr) &&
     #         !is.null(event)) {
@@ -345,7 +345,7 @@ geneExprSurvSet <- function(session, input, output) {
     # Update gene expression cutoff values based on selected gene
     # Reactive avoids updating if the input remains the same
     updateGEcutoffSlider <- reactive({
-        geneExpr <- getGeneExpression()[[input$geneExpr]]
+        geneExpr <- getGeneExpression(input$geneExpr)
         ge <- as.numeric(geneExpr[input$gene, ])
         updateSliderInput(session, "geCutoff", min=roundMinDown(ge, 2), 
                           max=roundMaxUp(ge, 2), value=round(mean(ge), 2))
@@ -353,7 +353,7 @@ geneExprSurvSet <- function(session, input, output) {
 
     # Update gene expression cutoff values based on selected gene
     observeEvent(input$gene, {
-        geneExpr <- getGeneExpression()[[input$geneExpr]]
+        geneExpr <- getGeneExpression(input$geneExpr)
         if (!is.null(geneExpr) && input$gene != "" &&
             input$modelTerms == "geCutoff") {
             updateGEcutoffSlider()
@@ -365,7 +365,7 @@ geneExprSurvSet <- function(session, input, output) {
     
     # Update gene information based on selected gene
     observe({
-        geneExpr <- getGeneExpression()[[input$geneExpr]]
+        geneExpr <- getGeneExpression(input$geneExpr)
         gene     <- input$gene
         terms    <- input$modelTerms
         
@@ -441,7 +441,7 @@ geneExprSurvSet <- function(session, input, output) {
 
     observe({
         patients <- getPatientId()
-        geneExpr <- getGeneExpression()[input$geneExpr]
+        geneExpr <- getGeneExpression(input$geneExpr)
         gene     <- input$gene
 
         if (is.null(patients)) {

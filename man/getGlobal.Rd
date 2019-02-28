@@ -113,7 +113,8 @@ getSampleAttributes()
 
 getJunctionQuantification(category = getCategory())
 
-getGeneExpression(category = getCategory())
+getGeneExpression(item = NULL, category = getCategory(),
+  EList = FALSE)
 
 setNormalisedGeneExpression(geneExpr, category = getCategory())
 
@@ -178,6 +179,12 @@ it uses the selected data category}
 
 \item{attrs}{Character: name of attributes to retrieve (if NULL, the whole 
 dataset is returned)}
+
+\item{item}{Character: name of specific item to retrieve (if \code{NULL}, the
+whole list is returned)}
+
+\item{EList}{Boolean: return gene expression datasets as \code{EList} if
+possible or as data frames?}
 
 \item{geneExpr}{Data frame or matrix: normalised gene expression}
 

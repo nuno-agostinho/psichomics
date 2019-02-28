@@ -76,7 +76,7 @@ diffExpressionEventServer <- function(input, output, session) {
     selectGroupsServer(session, "diffGroups", "Samples")
     
     observeEvent(input$analyse, {
-        geneExpr <- getGeneExpression()[[input$geneExpr]]
+        geneExpr <- getGeneExpression(input$geneExpr)
         if (is.null(geneExpr)) {
             missingDataModal(session, "Gene expression", ns("missingGeneExpr"))
             return(NULL)
@@ -163,7 +163,7 @@ diffExpressionEventServer <- function(input, output, session) {
     # Update available gene choices depending on gene expression data loaded
     # Reactive avoids updating if the input remains the same
     updateGeneChoices <- reactive({
-        geneExpr <- getGeneExpression()[[input$geneExpr]]
+        geneExpr <- getGeneExpression(input$geneExpr)
         genes <- rownames(geneExpr)
         updateSelectizeInput(session, "gene", choices=genes, server=TRUE)
     })
@@ -182,7 +182,7 @@ diffExpressionEventServer <- function(input, output, session) {
     # Show options if gene expression data is available, update available gene
     # expression data choices and update available genes for selection
     observe({
-        geneExpr <- getGeneExpression()[[input$geneExpr]]
+        geneExpr <- getGeneExpression(input$geneExpr)
         if (is.null(geneExpr)) {
             hide("singleGeneOptions")
             hide("survivalButton")

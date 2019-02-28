@@ -76,7 +76,8 @@ Suggests:
     gplots,
     covr,
     car,
-    rstudioapi
+    rstudioapi,
+    org.Hs.eg.db
 LinkingTo: Rcpp
 VignetteBuilder: knitr
 Collate: 

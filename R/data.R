@@ -347,10 +347,13 @@ dataUI <- function(id, tab) {
 #' @param ns Namespace function
 #' @param title Character: tab title
 #' @param tableId Character: id of the \code{datatable}
-#' @param description Character: description of the table (optional)
 #' @param columns Character: column names of the \code{datatable}
 #' @param visCols Boolean: visible columns
 #' @param data Data frame: dataset of interest
+#' @param description Character: description of the table (optional)
+#' @param icon Character: list containing an item named \code{symbol} 
+#' (FontAwesome icon name) and another one named \code{colour} (background 
+#' colour)
 #'
 #' @importFrom shinyBS bsTooltip bsCollapse bsCollapsePanel
 #' @importFrom DT dataTableOutput
@@ -432,10 +435,12 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
 #' @importFrom shiny downloadHandler br
 #' @importFrom utils write.table
 #' @importFrom shinyjs show hide
+#' @importFrom ggplot2 ylab
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 #' @keywords internal
 createDataTab <- function(index, data, name, session, input, output) {
+    ns <- session$ns
     tablename <- paste("table", name, index, sep="-")
     
     table <- data[[index]]
@@ -463,22 +468,8 @@ createDataTab <- function(index, data, name, session, input, output) {
     
     multiPlotId        <- paste(tablename, "multiPlot", sep="-")
     loadingMultiPlotId <- paste(tablename, "loadingMultiPlot", sep="-")
-    output[[multiPlotId]] <- renderUI({
-        # gethc <- function(dfname = "cars") {
-        #     # function to return the chart in a column div
-        #     df <- get(dfname)
-        #     hc <- highchart(height=100) %>%
-        #         hc_title(text = dfname) %>%
-        #         hc_xAxis(title = list(text = names(df)[1])) %>%
-        #         hc_yAxis(title = list(text = names(df)[2])) %>%
-        #         highcharter::hc_add_series_scatter(df[ , 1], df[ , 2])
-        #     column(width=3, hc)
-        # }
-        # 
-        # data <- c("cars", "mtcars", "iris", "Puromycin", "ChickWeight")
-        # charts <- suppressWarnings(lapply(rep(data, 3), gethc))
-        # do.call(tagList, charts)
-        
+    
+    createInfoInterface <- function(output, table) {
         rows <- attr(table, "rows")
         rows <- ifelse(!is.null(rows), rows, "rows")
         cols <- attr(table, "columns")
@@ -515,10 +506,68 @@ createDataTab <- function(index, data, name, session, input, output) {
                 settings)
         }
         
-        tags$div(tags$h4(paste(ncol(table), cols)), 
+        plots <- NULL
+        if (is.null(attr(table, "plots"))) {
+            isGeneExpr <- !is.null(attr(table, "dataType")) &&
+                attr(table, "dataType") == "Gene expression"
+            isPSI <- !is.null(attr(table, "dataType")) &&
+                attr(table, "dataType") == "Inclusion levels"
+            if (isGeneExpr) {
+                if (is(table, "EList")) table <- table$E
+                geneExprPerSamplePlot <- plotGeneExprPerSample(
+                    table, sortByMedian=TRUE)
+                
+                librarySizePlot <- suppressWarnings(
+                    plotDistribution(log10(colSums(table)),
+                                     rugLabels=TRUE, vLine=FALSE) %>%
+                        hc_xAxis(title=list(text="log10(Library sizes)")) %>%
+                        hc_yAxis(title=list(text="Density")) %>%
+                        hc_legend(enabled=FALSE))
+                librarySizePlot$x$hc_opts$series[[1]]$color <- NULL
+                librarySizePlot$x$hc_opts$series[[2]]$marker$fillColor <- NULL
+                
+                plots <- list(plot=plotMeanVariance(table),
+                              highchart=geneExprPerSamplePlot,
+                              highchart=librarySizePlot)
+            } else if (isPSI) {
+                medianVar <- plotPSI(table, x="median", y="var")
+                rangeVar  <- plotPSI(table, x="range", y="log10(var)")
+                plots <- list(plot=medianVar, plot=rangeVar)
+            }
+            attr(table, "plots") <- plots
+        }    
+        # lapply(seq(plots), function(i, tablename) {
+        #     FUN <- switch(names(plots)[[i]],
+        #                   highchart=renderHighchart, plot=renderPlot)
+        #     id <- paste(tablename, "plot", i, sep="-")
+        #     output[[id]] <- FUN(plots[[i]])
+        # }, tablename=attr(table, "tablenameID"))
+        # 
+        # plotOutputs <- lapply(seq(plots), function(i, tablename) {
+        #     FUN <- switch(names(plots)[[i]],
+        #                   highchart=highchartOutput, plot=plotOutput)
+        #     id <- paste(tablename, "plot", i, sep="-")
+        #     FUN(ns(id), height="200px")
+        # }, tablename=attr(table, "tablenameID"))
+        
+        tablename <- attr(table, "tablenameID")
+        plots     <- attr(table, "plots")
+        
+        renderedPlots <- lapply(seq(plots), function(i) {
+            FUN <- switch(names(plots)[[i]],
+                          highchart=renderHighchart, plot=renderPlot)
+            FUN(plots[[i]])
+        })
+        
+        tags$div(tags$h4(paste(ncol(table), cols)),
                  tags$h4(paste(nrow(table), rows)),
+                 # do.call(tagList, plotOutputs),
+                 renderedPlots,
                  extra)
-    })
+    }
+    
+    attr(table, "tablenameID") <- tablename
+    output[[multiPlotId]] <- renderUI(createInfoInterface(output, table))
 }
 
 #' @rdname appServer

@@ -421,7 +421,7 @@ icaServer <- function(input, output, session) {
         if (selectedDataForICA == "Inclusion levels")
             dataForICA <- isolate(getInclusionLevels())
         else if (grepl("^Gene expression", selectedDataForICA))
-            dataForICA <- isolate(getGeneExpression()[[selectedDataForICA]])
+            dataForICA <- isolate(getGeneExpression(selectedDataForICA))
         else return(NULL)
         
         val <- ncol(dataForICA)
@@ -440,7 +440,7 @@ icaServer <- function(input, output, session) {
             dataType    <- "Inclusion levels"
             groups2Type <- "ASevents"
         } else if (grepl("^Gene expression", selectedDataForICA)) {
-            dataForICA  <- isolate(getGeneExpression()[[selectedDataForICA]])
+            dataForICA  <- isolate(getGeneExpression(selectedDataForICA))
             dataType    <- "Gene expression"
             groups2Type <- "Genes"
         } else {

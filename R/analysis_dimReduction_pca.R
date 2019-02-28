@@ -587,7 +587,7 @@ pcaServer <- function(input, output, session) {
         if (selectedDataForPCA == "Inclusion levels")
             dataForPCA <- isolate(getInclusionLevels())
         else if (grepl("^Gene expression", selectedDataForPCA))
-            dataForPCA <- isolate(getGeneExpression()[[selectedDataForPCA]])
+            dataForPCA <- isolate(getGeneExpression(selectedDataForPCA))
         if (is.null(dataForPCA)) NULL
         
         groups <- getSelectedGroups(input, "dataGroups", "Samples",
@@ -655,7 +655,7 @@ pcaServer <- function(input, output, session) {
             dataType    <- "Inclusion levels"
             groups2Type <- "ASevents"
         } else if (grepl("^Gene expression", selectedDataForPCA)) {
-            dataForPCA <- isolate(getGeneExpression()[[selectedDataForPCA]])
+            dataForPCA <- isolate(getGeneExpression(selectedDataForPCA))
             dataType   <- "Gene expression"
             groups2Type <- "Genes"
         } else {
