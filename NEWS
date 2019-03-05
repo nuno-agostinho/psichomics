@@ -7,6 +7,10 @@
     the `as.table` function)
 * Data:
     - Decrease loading time after quantifying alternative splicing
+* Data loading:
+    - GTEx data can now be automatically downloaded and loaded on-demand
+    - By default, data table now only displays at most the first 100 columns 
+    for performance reasons
 * Alternative splicing quantification:
     - By default, quantify skipped exons, mutually exclusive exons, alternative 
     3' and 5' splice sites, and alternative first and last exons; this default

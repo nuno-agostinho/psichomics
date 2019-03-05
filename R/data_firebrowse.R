@@ -579,9 +579,9 @@ firebrowseUI <- function(id, panel) {
     ns <- NS(id)
     
     panel(style="info",
-          title=list(icon("plus-circle"), "Automatically load TCGA data"),
+          title=list(icon("plus-circle"), "TCGA data loading"),
           value="Load TCGA/Firebrowse data",
-          helpText("TCGA data is downloaded using the",
+          helpText("TCGA data are downloaded using the",
                    a(href="http://firebrowse.org", target="_blank",
                      "Firebrowse"), "API."),
           div(id=ns("firebrowseLoading"), class="progress",

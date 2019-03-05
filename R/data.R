@@ -609,17 +609,22 @@ dataServer <- function(input, output, session) {
         dataTablesUI <- lapply(
             seq_along(categoryData), function(i) {
                 data <- categoryData[[i]]
+                
+                # Display at most 100 columns if no visible columns are set
+                visCols <- attr(data, "show")
+                if (is.null(visCols) && ncol(data) > 100)
+                    visCols <- colnames(data)[seq(100)]
+                
                 tabDataset(ns, names(categoryData)[i], icon=attr(data, "icon"),
                            paste(category, i, sep="-"), names(data),
-                           attr(data, "show"), data,
-                           description=attr(data, "description"))
-            })
-        do.call(tabsetPanel, c(id=ns("datasetTab"), dataTablesUI))
+                           visCols, data, description=attr(data, "description"))
+            }
+        )
     })
     
     # Change the active dataset
     observe( setActiveDataset(input$datasetTab) )
-
+    
     # Match clinical data with sample information
     observe({
         patients   <- getPatientId()

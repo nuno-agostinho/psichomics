@@ -111,7 +111,8 @@ localDataUI <- function(id, panel) {
                            placeholder="These files will not be loaded")),
         processButton(ns("acceptFile"), "Load files"))
     
-    panel(style="info", title=list(icon("plus-circle"), "Load user files"),
+    panel(style="info", title=list(icon("plus-circle"), 
+                                   "User-provided data loading"),
           value="Load local files",
           uiOutput(ns("localDataModal")),
           tabsetPanel(
