@@ -4,10 +4,10 @@
 \alias{getGtexTissues}
 \title{Get GTEx tissues from given GTEx sample attributes}
 \usage{
-getGtexTissues(sampleMetadata)
+getGtexTissues(dataFolder = getDownloadsFolder())
 }
 \arguments{
-\item{sampleMetadata}{Character: path to sample attributes}
+\item{dataFolder}{Character: folder containing data}
 }
 \value{
 Character: available tissues

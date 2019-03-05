@@ -557,7 +557,8 @@ addTCGAdata <- function(ns) {
                            plugins=list("remove_button"))),
         selectizeInput(ns("firebrowseData"), "Data type", multiple = TRUE,
                        width = "100%", dataTypes,
-                       selected=c("Clinical", "junction_quantification"),
+                       selected=c("Clinical", "junction_quantification", 
+                                  "RSEM_genes"),
                        options = list(
                            placeholder = "Select data types",
                            plugins=list("remove_button"))),
@@ -579,9 +580,9 @@ firebrowseUI <- function(id, panel) {
     ns <- NS(id)
     
     panel(style="info",
-          title=list(icon("plus-circle"), "Automatically load TCGA data"),
+          title=list(icon("plus-circle"), "TCGA data loading"),
           value="Load TCGA/Firebrowse data",
-          helpText("TCGA data is downloaded using the",
+          helpText("TCGA data are downloaded using the",
                    a(href="http://firebrowse.org", target="_blank",
                      "Firebrowse"), "API."),
           div(id=ns("firebrowseLoading"), class="progress",

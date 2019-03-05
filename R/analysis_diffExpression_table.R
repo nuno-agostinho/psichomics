@@ -173,7 +173,7 @@ diffExpressionSet <- function(session, input, output) {
     })
     
     performDiffExpression <- reactive({
-        geneExpr <- getGeneExpression(input$geneExpr)
+        geneExpr <- getGeneExpression(input$geneExpr, EList=TRUE)
         totalTime <- startProcess("startAnalyses")
         
         # Prepare groups of samples to analyse and filter samples not available 
@@ -181,7 +181,7 @@ diffExpressionSet <- function(session, input, output) {
         groups <- getSelectedGroups(input, "diffGroups", "Samples",
                                     filter=colnames(geneExpr))
         groups <- discardOutsideSamplesFromGroups(groups, colnames(geneExpr))
-        if (is(geneExpr, "EList"))
+        if (!is(geneExpr, "EList"))
             geneExpr     <- geneExpr[ , unlist(groups), drop=FALSE]
         else
             geneExpr     <- geneExpr[ , unlist(groups)]

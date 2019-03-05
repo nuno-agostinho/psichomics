@@ -12,15 +12,15 @@ geNormalisationFilteringInterface <- function(ns) {
     filters <- div(
         id=ns("filteringInterface"),
         fluidRow(
-            column(6, numericInput(ns("minMean"), "Min mean >",
+            column(6, numericInput(ns("minMean"), "Min mean",
                                    min=-1, max=100, value=0, width="100%")),
-            column(6, numericInput(ns("maxMean"), "Max mean <",
-                                   min=-1, max=100, value=100, width="100%"))),
-        fluidRow(
-            column(6, numericInput(ns("minVar"), "Min variance >",
-                                   min=-1, max=100, value=0, width="100%")),
-            column(6, numericInput(ns("maxVar"), "Max variance <",
-                                   min=-1, max=100, value=100, width="100%"))),
+            column(6, numericInput(ns("minVar"), "Min variance",
+                                   min=-1, max=100, value=0, width="100%"))),
+        # fluidRow(
+        #     column(6, numericInput(ns("maxMean"), "Max mean",
+        #                           min=-1, max=100, value=100, width="100%"))),
+        #     column(6, numericInput(ns("maxVar"), "Max variance",
+        #                           min=-1, max=100, value=100, width="100%"))),
         fluidRow(
             column(6, numericInput(ns("minCounts"), "Min counts",
                                    min=0, max=100, value=10, width="100%")),
@@ -150,6 +150,7 @@ normaliseGeneExpression <- function(geneExpr, geneFilter=NULL, method="TMM",
     if (is.null(geneFilter)) geneFilter <- TRUE
     else if (!any(geneFilter)) return(NULL)
 
+    originalGeneExpr <- geneExpr
     geneExpr <- DGEList(geneExpr)
     geneExprNorm <- geneExpr[geneFilter, , keep.lib.sizes=TRUE]
 
@@ -169,12 +170,10 @@ normaliseGeneExpression <- function(geneExpr, geneFilter=NULL, method="TMM",
     updateProgress("Preparing gene expression data")
     if (!is(geneExprNorm, "EList")) geneExprNorm <- data.frame(geneExprNorm)
     colnames(geneExprNorm) <- colnames(geneExpr)
-
-    # Pass attributes from original gene expression table (except for names)
-    notNames <- !names(attributes(geneExpr)) %in%
-        c(names(attributes(geneExprNorm)), "names", "row.names", "class")
-    attributes(geneExprNorm) <- c(attributes(geneExprNorm),
-                                  attributes(geneExpr)[notNames])
+    
+    geneExprNorm <- inheritAttrs(geneExprNorm, originalGeneExpr)
+    if (is(geneExprNorm, "EList"))
+        geneExprNorm$E <- inheritAttrs(geneExprNorm$E, originalGeneExpr)
     return(geneExprNorm)
 }
 
@@ -351,8 +350,8 @@ filterGeneExpr <- function(geneExpr, minMean=0, maxMean=Inf, minVar=0,
     geneExprMean <- rowMeans(geneExpr)
     geneExprVar  <- rowVars(geneExpr)
 
-    varMeanFilter <- geneExprMean > minMean & geneExprMean < maxMean &
-        geneExprVar > minVar & geneExprVar < maxVar
+    varMeanFilter <- geneExprMean >= minMean & geneExprMean <= maxMean &
+        geneExprVar >= minVar & geneExprVar <= maxVar
 
     lowCountFilter <- filterByExpr(geneExpr[varMeanFilter, ],
                                    min.count=minCounts,
@@ -450,9 +449,9 @@ geNormalisationFilteringServer <- function(input, output, session) {
         geneExpr <- isolate(getGeneExpression(geneExpr))
 
         minMean        <- input$minMean
-        maxMean        <- input$maxMean
+        maxMean        <- Inf
         minVar         <- input$minVar
-        maxVar         <- input$maxVar
+        maxVar         <- Inf
         minCounts      <- input$minCounts
         minTotalCounts <- input$minTotalCounts
 
@@ -467,7 +466,8 @@ geNormalisationFilteringServer <- function(input, output, session) {
                 samplesToKeep <- !colnames(geneExpr) %in% sampleFilter
                 geneExpr <- geneExpr[ , samplesToKeep]
             }
-
+            browser()
+            
             filtered <- filterGeneExpr(geneExpr, minMean, maxMean, minVar,
                                        maxVar, minCounts, minTotalCounts)
             return(filtered)
@@ -519,15 +519,15 @@ geNormalisationFilteringServer <- function(input, output, session) {
 
         # Update mean range
         geneExprMean <- rowMeans(geneExpr)
-        maxMean      <- ceiling( max(geneExprMean, na.rm=TRUE) )
+        maxMean      <- max(geneExprMean, na.rm=TRUE)
         updateNumericInput(session, "minMean", max=maxMean)
-        updateNumericInput(session, "maxMean", max=maxMean, value=maxMean)
+        # updateNumericInput(session, "maxMean", max=maxMean, value=maxMean)
 
         # Update variance range
         geneExprVar <- rowVars(geneExpr)
-        maxVar      <- ceiling( max(geneExprVar, na.rm=TRUE) )
+        maxVar      <- max(geneExprVar, na.rm=TRUE)
         updateNumericInput(session, "minVar", max=maxVar)
-        updateNumericInput(session, "maxVar", max=maxVar, value=maxVar)
+        # updateNumericInput(session, "maxVar", max=maxVar, value=maxVar)
 
         # output$filteringAssistant <- renderHighchart({
         #     type <- input$assistantPlot
@@ -595,9 +595,9 @@ geNormalisationFilteringServer <- function(input, output, session) {
             priorCount    <- input$priorCount
 
             minMean        <- input$minMean
-            maxMean        <- input$maxMean
+            maxMean        <- Inf # input$maxMean
             minVar         <- input$minVar
-            maxVar         <- input$maxVar
+            maxVar         <- Inf # input$maxVar
             minCounts      <- input$minCounts
             minTotalCounts <- input$minTotalCounts
 
@@ -616,7 +616,7 @@ geNormalisationFilteringServer <- function(input, output, session) {
         } else {
             geneFilter <- NULL
         }
-
+        
         geneExprNorm <- normaliseGeneExpression(
             geneExpr, geneFilter, method, percentile, log2transform=TRUE,
             priorCount, performVoom=voom)
@@ -643,8 +643,8 @@ geNormalisationFilteringServer <- function(input, output, session) {
         if (filter) {
             geneFilterSettings <- c(
                 "Gene filtering"="Enabled",
-                "Minimum mean >"=minMean, "Maximum mean <"=maxMean,
-                "Minimum variance >"=minVar, "Maximum variance <"=maxVar,
+                "Minimum mean >="=minMean, # "Maximum mean <="=maxMean,
+                "Minimum variance >="=minVar, # "Maximum variance <="=maxVar,
                 "Minimum counts for at least some samples"=minCounts,
                 "Minimum total counts across samples"=minTotalCounts)
         } else {
@@ -677,7 +677,9 @@ geNormalisationFilteringServer <- function(input, output, session) {
         attr(geneExprNorm, "icon") <- list(symbol="cogs", colour="green")
         attr(geneExprNorm, "description") <- "Gene expression (normalised)"
         attr(geneExprNorm, "dataType") <- "Gene expression"
-        
+
+        if (is(geneExprNorm, "EList"))
+            geneExprNorm$E <- inheritAttrs(geneExprNorm$E, geneExprNorm)
         setNormalisedGeneExpression(geneExprNorm)
         endProcess("processGeneExpr", time=time)
     })

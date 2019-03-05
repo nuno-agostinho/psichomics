@@ -4,21 +4,16 @@
 \alias{loadGtexData}
 \title{Load GTEx data}
 \usage{
-loadGtexData(clinical = NULL, sampleMetadata = NULL,
-  junctionQuant = NULL, geneExpr = NULL, tissue = NULL)
+loadGtexData(dataTypes = getGtexDataTypes(),
+  dataFolder = getDownloadsFolder(), tissue = NULL)
 }
 \arguments{
-\item{clinical}{Character: path to subject information (the TXT file)}
+\item{dataTypes}{Character: data types to load (see \code{getGtexDataTypes})}
 
-\item{sampleMetadata}{Character: path to sample metadata (the TXT file)}
+\item{dataFolder}{Character: folder containing data}
 
-\item{junctionQuant}{Character: path to junction quantification}
-
-\item{geneExpr}{Character: path to gene read counts, RPKMs or TPMs}
-
-\item{tissue}{Character: tissue(s) of interest when loading data (all tissues
-are loaded by default); if only some tissue(s) are of interest, this may
-speed up loading the data}
+\item{tissue}{Character: tissues to load (if \code{NULL}, load all); tissue
+selection may speed up data loading}
 }
 \value{
 List with loaded data

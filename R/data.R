@@ -445,6 +445,7 @@ createDataTab <- function(index, data, name, session, input, output) {
     
     table <- data[[index]]
     # Only show default columns if they are defined (don't cause problems)
+    if (is(table, "EList")) table <- table$E
     subsetToShow <- table
     
     visCols <- input[[paste(tablename, "columns", sep="-")]]
@@ -530,8 +531,12 @@ createDataTab <- function(index, data, name, session, input, output) {
                               highchart=geneExprPerSamplePlot,
                               highchart=librarySizePlot)
             } else if (isPSI) {
-                medianVar <- plotPSI(table, x="median", y="var")
-                rangeVar  <- plotPSI(table, x="range", y="log10(var)")
+                medianVar <- plotPSI(table, x="median", y="var") %>%
+                    hc_xAxis(title=list(text="Median PSI")) %>%
+                    hc_yAxis(title=list(text="PSI Variance"))
+                rangeVar  <- plotPSI(table, x="range", y="log10(var)") %>%
+                    hc_xAxis(title=list(text="PSI Range")) %>%
+                    hc_yAxis(title=list(text="log10(PSI Variance)"))
                 plots <- list(plot=medianVar, plot=rangeVar)
             }
             attr(table, "plots") <- plots
@@ -609,17 +614,25 @@ dataServer <- function(input, output, session) {
         dataTablesUI <- lapply(
             seq_along(categoryData), function(i) {
                 data <- categoryData[[i]]
-                tabDataset(ns, names(categoryData)[i], icon=attr(data, "icon"),
-                           paste(category, i, sep="-"), names(data),
-                           attr(data, "show"), data,
-                           description=attr(data, "description"))
-            })
+                if (is(data, "EList")) data <- data$E
+                
+                # Display at most 100 columns if no visible columns are set
+                visCols <- attr(data, "show")
+                if (is.null(visCols) && ncol(data) > 100)
+                    visCols <- colnames(data)[seq(100)]
+                
+                tabDataset(
+                    ns, names(categoryData)[i], icon=attr(data, "icon"),
+                    paste(category, i, sep="-"), colnames(data), visCols, data,
+                    description=attr(data, "description"))
+            }
+        )
         do.call(tabsetPanel, c(id=ns("datasetTab"), dataTablesUI))
     })
     
     # Change the active dataset
     observe( setActiveDataset(input$datasetTab) )
-
+    
     # Match clinical data with sample information
     observe({
         patients   <- getPatientId()
