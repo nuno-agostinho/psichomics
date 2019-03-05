@@ -690,35 +690,46 @@ articleUI <- function(article) {
     
     description <- sprintf("%s.", description)
     pmid <- article$articleids$value[1]
+    
+    decodeHTMLentities <- function(char) {
+        char <- gsub("&lt;", "<", char, fixed=TRUE)
+        char <- gsub("&gt;", ">", char, fixed=TRUE)
+        return(HTML(char))
+    }
+    
     tags$a(href=paste0("http://pubmed.gov/", pmid), target="_blank",
            class="list-group-item", h5(class="list-group-item-heading", 
-                                       article$title, tags$small(description)))
+                                       decodeHTMLentities(article$title),
+                                       tags$small(description)))
 }
 
 #' Return the interface of relevant PubMed articles for a given gene
 #' 
+#' @param ns Namespace function
 #' @param gene Character: gene
 #' @inheritDotParams queryPubMed -primary
 #' 
 #' @return HTML interface of relevant PubMed articles
 #' @keywords internal
-pubmedUI <- function(gene, ...) {
-    pubmed <- queryPubMed(gene, ...)
-    articles <- pubmed[-1]
-    articleList <- lapply(articles, articleUI)
+pubmedUI <- function(ns, gene, ...) {
+    terms <- c(gene, as.list(...))
     
-    search <- pubmed$search$querytranslation
-    search <- gsub("[Abstract]", "[Title/Abstract]", search, fixed = TRUE)
-    search <- paste0("http://www.ncbi.nlm.nih.gov/pubmed/?term=", search)
+    selectTerms <- selectizeInput(
+        ns("articleTerms"), label=NULL, choices=terms, selected=terms, 
+        multiple=TRUE, width="auto", options=list(
+            create=TRUE, createOnBlur=TRUE, persist=FALSE,
+            plugins=list('remove_button', 'drag_drop'),
+            placeholder="Add keywords..."))
+    selectTerms[[2]]$style <- paste(selectTerms[[2]]$style, "margin-bottom: 0;")
     
-    articlesUI <- div(class="panel panel-default", 
-                      div(class="panel-heading",
-                          tags$b("Relevant PubMed articles", tags$a(
-                              href=search, target="_blank", 
-                              class="pull-right", "Show more articles",
-                              icon("external-link")))),
-                      div(class="list-group", articleList))
-    return(articlesUI)
+    articleList <- uiOutput(ns("articleList"))
+    
+    div(class="panel panel-default", 
+        div(class="panel-heading", 
+            tags$b("Relevant PubMed articles", 
+                   uiOutput(ns("articleSearch"), inline=TRUE))),
+        div(class="list-group", tags$li(class="list-group-item", selectTerms),
+            articleList))
 }
 
 #' Render protein information
@@ -828,15 +839,26 @@ infoServer <- function(input, output, session) {
         
         # Render relevant articles according to available gene
         output$articles <- renderUI({
-            number <- 3
             category <- getCategory()
-            if (!is.null(category)) {
-                category <- unlist(strsplit(getCategory(), " "))
-                articles <- pubmedUI(gene, "cancer", category, top=number)
-            } else {
-                articles <- pubmedUI(gene, "cancer", top=number)
-            }
+            if (!is.null(category)) category <- unlist(strsplit(category, " "))
+            articles <- pubmedUI(session$ns, gene, "cancer", category)
             return(articles)
+        })
+        
+        observeEvent(input$articleTerms, {
+            terms <- input$articleTerms
+            pubmed <- queryPubMed(terms[1], terms[-1])
+            articles <- pubmed[-1]
+            articleList <- lapply(articles, articleUI)
+            output$articleList <- renderUI(articleList)
+            
+            search <- pubmed$search$querytranslation
+            search <- gsub("[Abstract]", "[Title/Abstract]", search, fixed=TRUE)
+            search <- paste0("http://www.ncbi.nlm.nih.gov/pubmed/?term=", 
+                             search)
+            link <- tags$a(href=search, target="_blank", class="pull-right",
+                           "Show more articles", icon("external-link"))
+            output$articleSearch <- renderUI(link)
         })
         
         # Show NULL so it doesn't show previous results when loading

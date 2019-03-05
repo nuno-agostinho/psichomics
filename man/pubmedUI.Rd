@@ -4,9 +4,11 @@
 \alias{pubmedUI}
 \title{Return the interface of relevant PubMed articles for a given gene}
 \usage{
-pubmedUI(gene, ...)
+pubmedUI(ns, gene, ...)
 }
 \arguments{
+\item{ns}{Namespace function}
+
 \item{gene}{Character: gene}
 
 \item{...}{Arguments passed on to \code{queryPubMed}

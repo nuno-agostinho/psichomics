@@ -68,6 +68,8 @@
     - Fix inconsistency when presenting median and variance differences between
     gene expression and alternative splicing quantification
     - Fix error when groups contain samples outside the data being analysed
+* Gene, transcript and protein information:
+    - Fix article title formatting (e.g. bold and italics)
 
 # 1.6.2 (2 October, 2018)
 
