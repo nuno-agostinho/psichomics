@@ -132,7 +132,7 @@ geNormalisationFilteringUI <- function(id, panel) {
 #' used for normalisation if \code{performVoom = TRUE} and the selected method
 #' is \code{quantile}.
 #'
-#' @importFrom edgeR DGEList calcNormFactors cpm
+#' @importFrom edgeR DGEList [.DGEList calcNormFactors cpm
 #' @importFrom limma voom
 #'
 #' @return Filtered and normalised gene expression
