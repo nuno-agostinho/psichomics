@@ -182,9 +182,9 @@ diffExpressionSet <- function(session, input, output) {
                                     filter=colnames(geneExpr))
         groups <- discardOutsideSamplesFromGroups(groups, colnames(geneExpr))
         if (!is(geneExpr, "EList"))
-            geneExpr     <- geneExpr[ , unlist(groups), drop=FALSE]
+            geneExpr <- geneExpr[ , unlist(groups), drop=FALSE]
         else
-            geneExpr     <- geneExpr[ , unlist(groups)]
+            geneExpr <- geneExpr[ , unlist(groups)]
         isFromGroup1 <- colnames(geneExpr) %in% groups[[1]]
         design       <- cbind(1, ifelse(isFromGroup1, 1, 0))
         

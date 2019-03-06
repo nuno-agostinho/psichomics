@@ -29,7 +29,9 @@ spearman(data, groups)
 splicing event}
 
 \item{groups}{List of characters (list of groups containing data identifiers)
-or character vector (group of each value in \code{data})}
+or character vector (group of each value in \code{data}); if \code{NULL} or a
+character vector of length 1, all data points will be considered of the same 
+group}
 
 \item{stat}{Data frame or matrix: values of the analyses to be performed (if
 NULL, the analyses will be performed)}

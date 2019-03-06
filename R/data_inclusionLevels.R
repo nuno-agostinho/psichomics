@@ -111,24 +111,24 @@ inclusionLevelsInterface <- function(ns) {
                 fluidRow(
                     column(6, numericInput(
                         ns("minMedian"), "Min median >=",
-                        min=0, max=1, value=0, width="100%")),
+                        min=0, max=1, value=0, step=0.1, width="100%")),
                     column(6, numericInput(
                         ns("maxMedian"), "Max median <=",
-                        min=0, max=1, value=1, width="100%"))),
+                        min=0, max=1, value=1, step=0.1, width="100%"))),
                 fluidRow(
                     column(6, numericInput(
                         ns("minLogVar"), "Min log10(variance) >=",
-                        min=-10, max=0, value=-10, width="100%")),
+                        min=-10, max=0, value=-10, step=0.5, width="100%")),
                     column(6, numericInput(
                         ns("maxLogVar"), "Max log10(variance) <=",
-                        min=-10, max=0, value=0, width="100%"))),
+                        min=-10, max=0, value=0, step=0.5, width="100%"))),
                 fluidRow(
                     column(6, numericInput(
                         ns("minRange"), "Min range >=",
-                        min=0, max=1, value=0, width="100%")),
+                        min=0, max=1, value=0, step=0.1, width="100%")),
                     column(6, numericInput(
                         ns("maxRange"), "Max range <=",
-                        min=0, max=1, value=1, width="100%")))
+                        min=0, max=1, value=1, step=0.1, width="100%")))
                 )),
         bsTooltip(ns("minReads"), placement = "right",
                   options = list(container = "body"),

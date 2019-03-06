@@ -192,7 +192,7 @@ plotVariance <- function(pca) {
     
     hc <- highchart() %>%
         hc_chart(zoomType="xy", backgroundColor=NULL) %>%
-        hc_title(text=paste("Explained variance by each",
+        hc_title(text=paste("Variance explained by each",
                             "Principal Component (PC)")) %>%
         hc_add_series(data=data, type="waterfall", cumvar=cumvar) %>%
         hc_plotOptions(series=list(dataLabels=list(
@@ -201,7 +201,7 @@ plotVariance <- function(pca) {
             align="center", verticalAlign="top", enabled=TRUE))) %>%
         hc_xAxis(title=list(text="Principal Components"), 
                  categories=seq(length(data)), crosshair=TRUE) %>%
-        hc_yAxis(title=list(text="Percentage of variances"), min=0, max=100) %>%
+        hc_yAxis(title=list(text="Percentage of variance"), min=0, max=100) %>%
         hc_legend(enabled=FALSE) %>%
         hc_tooltip(
             headerFormat=paste(tags$b("Principal component {point.x}"),
@@ -363,7 +363,7 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
                          name="Loadings", sample=names, contr=contrTotal,
                          contrPCx=contrPCx, contrPCy=contrPCy) %>%
             hc_subtitle(text=sprintf(
-                "Bubble size: contribution of a variable to PC%s and PC%s",
+                "Bubble size ~ relative contribution to PC%s and PC%s",
                 pcX, pcY)) %>%
             hc_tooltip(useHTML=TRUE, headerFormat="", pointFormat=paste0(
                 tags$b(style="text-align: center; white-space:pre-wrap;",

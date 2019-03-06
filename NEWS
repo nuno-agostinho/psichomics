@@ -1,20 +1,10 @@
 # 1.8.1 (4 March, 2019)
 
-* Correlation analyses:
-    - Allow to use groups of genes and alternative splicing events
-    - Display progress
-    - Display correlation results in a table (in the command-line interface, use
-    the `as.table` function)
-* Data:
-    - Decrease loading time after quantifying alternative splicing
 * Data loading:
     - GTEx data can now be automatically downloaded and loaded on-demand
     - By default, data table now only displays at most the first 100 columns 
     for performance reasons
 * Alternative splicing quantification:
-    - By default, quantify skipped exons, mutually exclusive exons, alternative 
-    3' and 5' splice sites, and alternative first and last exons; this default
-    option is now consistent across the visual and command-line interfaces)
     - Allow to discard samples before alternative splicing quantification
     - In alternative splicing quantification dataset summary, plot
     quantification based on median, variance and range per splicing event across
@@ -37,31 +27,40 @@
     - By default, load pre-made lists of genes when loading gene expression or
     loading/performing alternative splicing quantification
     - Added pre-made list of genes that encode for RNA-binding proteins 
-    (Sebestyen et al. 2016), useful to postulate about splicing regulators based
-    on gene expression and PSI correlation analyses
-* Tutorials:
-    - Copy-edit tutorial on custom alternative splicing annotation preparation
-    
+    (Sebestyen et al. 2016), useful to postulate about the regulatory role of
+    those proteins based on gene expression and PSI correlation analyses
+* Correlation analyses:
+    - Allow to use groups of genes and alternative splicing events in 
+    correlation analyses
+    - Display progress when performing correlation analyses
+    - Display correlation results in a table (`as.table()`)
+* Gene, transcript and protein information:
+    - Modify keywords used to search for PubMed articles
+
 ## Bug fixes and minor changes
 
+* Improve console logging of error and warning alerts
+* Fix crash when loading psichomics with test data that is not locally available
+(by automatically downloading said data if not found)
+* Documentation:
+    - Export functions mentioned in the documentation
+    - Hide documentation of internal functions from the PDF reference manual
 * Loading SRA data:
     - Accept a vector of files as the first argument (easier to use with 
     `list.files()`)
     - Ask to overwrite file if one exists with the same name as the output file
 * Groups:
     - Minor improvements to the group creation interface
-* Improve console logging of error and warning alerts
-* Documentation:
-    - Export functions mentioned in the documentation
-    - Hide documentation of internal functions from the PDF reference manual
     - Fix error when creating groups containing only samples and no matching 
     subjects
 * Alternative splicing quantification:
     - Automatically set the human genome version after loading data from TCGA
     (hg19), GTEx (hg19) or recount2 (hg38)
     - Fix progress bar
-* Fix crash when loading psichomics with test data that is not locally available
-(by automatically downloading said data if not found)
+    - Decrease loading time after quantifying alternative splicing
+    - By default, quantify skipped exons, mutually exclusive exons, alternative 
+    3' and 5' splice sites, and alternative first and last exons; the default
+    option is now consistent across both the visual and command-line interfaces)
 * Differential analyses:
     - Allow distribution plots to show the name of the samples when hovering or
     when a rug plot is rendered if `rugLabels = TRUE` (function
@@ -248,8 +247,8 @@ hg19 and hg38 annotation that is now available for use with psichomics)
     - Fix splicing events not being quantified based on GTEx v7 junction reads
 * Gene expression normalisation:
     - Fix misleading gene expression (non-)normalisation by converting reads to 
-    counts per million (CPM) using `edgeR::cpm` after normalisation using
-    `edgeR::calcNormFactor`
+    counts per million (CPM) using `edgeR::cpm()` after normalisation using
+    `edgeR::calcNormFactor()`
 * Alternative splicing quantification:
     - Updated support to properly parse new notation of alternative splicing 
     annotation from Bioconductor (backwards compatible with older notation)
@@ -281,7 +280,7 @@ hg19 and hg38 annotation that is now available for use with psichomics)
     tissues are loaded by default)
     - Quantify splicing based on a list of genes (splicing events within all 
     genes are quantified by default)
-    - Parse sample information from TCGA samples using `parseTcgaSampleInfo`
+    - Parse sample information from TCGA samples using `parseTcgaSampleInfo()`
     - Generate TCGA sample metadata when loading TCGA junction quantification
     - Present data summary after loading the data
 * Data grouping:

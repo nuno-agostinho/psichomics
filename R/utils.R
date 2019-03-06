@@ -1787,17 +1787,19 @@ prepareFileBrowser <- function(session, input, id, modalId="modal", ...) {
         if (input[[buttonId]] > 0) { # Prevent execution on initial launch
             errorTitle <- NULL
             if (is.null(Sys.info()))
-                errorTitle <- "File browser unsupported for this system"
+                errorTitle <- c(
+                    "The file browser is not supported for this system")
             else if (isRStudioServer())
-                errorTitle <- "File browser unsupported in RStudio Server"
+                errorTitle <- c(
+                    "The file browser is not supported in RStudio Server")
             else
                 updateFileBrowserInput(session, id, ...)
             
             if (!is.null(errorTitle)) {
                 errorModal(session, errorTitle, 
-                           "Please use the text input to type the full path to",
-                           "the file or folder of interest.", modalId=modalId,
-                           caller="File browser")
+                           "Please use instead the text input field to type",
+                           "the full path to the file or folder of interest.", 
+                           modalId=modalId, caller="File browser")
             }
         }
     })
