@@ -1994,3 +1994,13 @@ ggplotAuxServer <- function(input, output, id) {
         setSelectedPoints(id, NULL)
     })
 }
+
+inheritAttrs <- function(original, objectToCopyFrom,
+                         avoid=c("names", "row.names", "class")) {
+    notNames <- !names(attributes(objectToCopyFrom)) %in% c(
+        names(attributes(original)), avoid)
+    attributes(original) <- c(attributes(original),
+                              attributes(objectToCopyFrom)[notNames])
+    colnames(original) <- colnames(objectToCopyFrom)
+    return(original)
+}

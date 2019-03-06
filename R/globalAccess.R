@@ -329,7 +329,7 @@ getGeneExpression <- function(item=NULL, category=getCategory(), EList=FALSE) {
                 res <- df[[item]]
                 if (!EList && is(res, "EList")) {
                     # Convert EList object to data frame
-                    res <- data.frame(res)
+                    res <- inheritAttrs(data.frame(res), res)
                 }
             } else if (!EList) {
                 # Convert EList objects to data frames

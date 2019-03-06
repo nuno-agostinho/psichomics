@@ -466,7 +466,6 @@ geNormalisationFilteringServer <- function(input, output, session) {
                 samplesToKeep <- !colnames(geneExpr) %in% sampleFilter
                 geneExpr <- geneExpr[ , samplesToKeep]
             }
-            browser()
             
             filtered <- filterGeneExpr(geneExpr, minMean, maxMean, minVar,
                                        maxVar, minCounts, minTotalCounts)
