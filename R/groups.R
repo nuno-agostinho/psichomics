@@ -1595,16 +1595,16 @@ groupManipulation <- function(input, output, session, type) {
                     # Match first and second elements available in the group
                     matchingElems <- match[names(match) %in% secondGroup]
                     matchingElems[!matchingElems %in% firstGroup] <- NA
+                    data <- rbind(data, cbind(name, names(matchingElems),
+                                              matchingElems))
+                    
+                    # Get remaining first elements
+                    firstGroup <- firstGroup[!firstGroup %in% matchingElems]
+                    if (length(firstGroup) > 0)
+                        data <- rbind(data, cbind(name, NA, firstGroup))
                 } else {
-                    matchingElems <- NA
+                    data <- rbind(data, cbind(name, secondGroup, NA))
                 }
-                data <- rbind(data, 
-                              cbind(name, names(matchingElems), matchingElems))
-                
-                # Get remaining first elements
-                firstGroup <- firstGroup[!firstGroup %in% matchingElems]
-                if (length(firstGroup) > 0)
-                    data <- rbind(data, cbind(name, NA, firstGroup))
             } else {
                 data <- rbind(data, cbind(name, NA, firstGroup))
             }

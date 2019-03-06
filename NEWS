@@ -54,6 +54,8 @@
 * Documentation:
     - Export functions mentioned in the documentation
     - Hide documentation of internal functions from the PDF reference manual
+    - Fix error when creating groups containing only samples and no matching 
+    subjects
 * Alternative splicing quantification:
     - Automatically set the human genome version after loading data from TCGA
     (hg19), GTEx (hg19) or recount2 (hg38)
