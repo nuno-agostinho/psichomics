@@ -213,11 +213,11 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
     corrPerGene <- function(gene, ASevent, geneExpr, psi, ...) {
         updateProgress("Performing correlation analysis", console=FALSE)
         
-        expr           <- geneExpr[gene, ]
+        expr           <- geneExpr[gene, , drop=FALSE]
         exprNum        <- as.numeric(expr)
         names(exprNum) <- colnames(expr)
         
-        eventPSI           <- psi[ASevent, ]
+        eventPSI           <- psi[ASevent, , drop=FALSE]
         eventPSInum        <- as.numeric(eventPSI)
         names(eventPSInum) <- colnames(eventPSI)
         
@@ -286,6 +286,7 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #' aes theme_light scale_colour_manual geom_density_2d
 #' @importFrom stats loess.smooth
 #'
+#' @method plot GEandAScorrelation
 #' @export
 #' @return Plots, summary tables or results of correlation analyses
 #'
@@ -308,13 +309,13 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #'                      Tumour=paste("Cancer", 1:3))
 #' attr(colourGroups, "Colour") <- c(Normal="#00C65A", Tumour="#EEE273")
 #' plot(corr, colourGroups=colourGroups, alpha=1)
-plotCorrelation <- function(x, autoZoom=FALSE, loessSmooth=TRUE,
-                            loessFamily=c("gaussian", "symmetric"),
-                            colour="black", alpha=0.2, size=1.5,
-                            loessColour="red", loessAlpha=1, loessWidth=0.5,
-                            fontSize=12, ..., colourGroups=NULL, legend=FALSE,
-                            showAllData=TRUE, density=FALSE, 
-                            densityColour="blue", densityWidth=0.5) {
+plot.GEandAScorrelation <- function(x, autoZoom=FALSE, loessSmooth=TRUE,
+                                    loessFamily=c("gaussian", "symmetric"),
+                                    colour="black", alpha=0.2, size=1.5,
+                                    loessColour="red", loessAlpha=1, loessWidth=0.5,
+                                    fontSize=12, ..., colourGroups=NULL, legend=FALSE,
+                                    showAllData=TRUE, density=FALSE, 
+                                    densityColour="blue", densityWidth=0.5) {
     loessFamily <- match.arg(loessFamily)
     
     plotCorrPerASevent <- function(single) {
@@ -338,24 +339,31 @@ plotCorrelation <- function(x, autoZoom=FALSE, loessSmooth=TRUE,
             groupNames   <- sampleColour[match(names(expr),
                                                unlist(colourGroups))]
             lookupColour <- attr(colourGroups, "Colour")
-            sampleColour <- lookupColour[groupNames]
             
-            if (showAllData) {
-                names(sampleColour)[is.na(names(sampleColour))] <- "NA"
-                legendColours <- c(lookupColour, "NA"=colour)
+            if (!is.null(lookupColour)) {
+                sampleColour <- lookupColour[groupNames]
+                
+                if (showAllData) {
+                    names(sampleColour)[is.na(names(sampleColour))] <- "NA"
+                    legendColours <- c(lookupColour, "NA"=colour)
+                } else {
+                    nonNAs        <- !is.na(sampleColour)
+                    event         <- event[nonNAs]
+                    expr          <- expr[nonNAs]
+                    sampleColour  <- sampleColour[nonNAs]
+                    legendColours <- lookupColour
+                }
+                
+                plot <- plot +
+                    geom_point(aes(colour=names(sampleColour)), na.rm=TRUE, 
+                               alpha=alpha, size=size) +
+                    scale_colour_manual(name="", values=legendColours,
+                                        guide=if(legend) "legend" else FALSE)
             } else {
-                nonNAs        <- !is.na(sampleColour)
-                event         <- event[nonNAs]
-                expr          <- expr[nonNAs]
-                sampleColour  <- sampleColour[nonNAs]
-                legendColours <- lookupColour
+                plot <- plot +
+                    geom_point(aes(colour=sampleColour), na.rm=TRUE, 
+                               alpha=alpha, size=size)
             }
-            
-            plot <- plot +
-                geom_point(aes(colour=names(sampleColour)), na.rm=TRUE, 
-                           alpha=alpha, size=size) +
-                scale_colour_manual(name="", values=legendColours,
-                                    guide=if(legend) "legend" else FALSE)
         } else {
             plot <- plot + 
                 geom_point(na.rm=TRUE, colour=colour, alpha=alpha, size=size)
@@ -392,11 +400,12 @@ plotCorrelation <- function(x, autoZoom=FALSE, loessSmooth=TRUE,
     lapply(x, lapply, plotCorrPerASevent)
 }
 
-#' @rdname plotCorrelation
+#' @rdname plot.GEandAScorrelation
 #' @export
-plot.GEandAScorrelation <- plotCorrelation
+plotCorrelation <- plot.GEandAScorrelation
 
-#' @rdname plotCorrelation
+#' @rdname plot.GEandAScorrelation
+#' @method print GEandAScorrelation
 #' @export
 print.GEandAScorrelation <- function(x, ...) {
     for (item in x) {
@@ -413,7 +422,7 @@ print.GEandAScorrelation <- function(x, ...) {
     }
 }
 
-#' @rdname plotCorrelation
+#' @rdname plot.GEandAScorrelation
 #' @param pvalueAdjust Character: method used to adjust p-values (see Details)
 #' 
 #' @details 
@@ -428,6 +437,7 @@ print.GEandAScorrelation <- function(x, ...) {
 #'      \item{\code{hochberg}: Hochberg's method (family-wise error rate)}
 #'      \item{\code{hommel}: Hommel's method (family-wise error rate)}
 #' }
+#' @method as.table GEandAScorrelation
 #' @export
 as.table.GEandAScorrelation <- function (x, pvalueAdjust="BH", ...) {
     prepareCol <- function(object, FUN) unlist(lapply(object, lapply, FUN))
