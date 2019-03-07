@@ -12,9 +12,14 @@ correlationUI <- function(id) {
         selectizeInput(ns("geneExpr"), "Gene expression", choices=NULL,
                        width="100%"),
         selectGroupsUI(ns("genes"), label="Genes from selected groups"),
-        selectGroupsUI(
-            ns("ASevents"), 
-            label="Alternative splicing events from selected groups"),
+        radioButtons(
+            ns("ASeventsSelection"), "Alternative splicing event(s)",
+            c("Selected event"="selectedEvent",
+              "From selected groups"="byGroup")),
+        conditionalPanel(
+            sprintf("input[id='%s'] == '%s'",
+                    ns("ASeventsSelection"), "byGroup"),
+            selectGroupsUI(ns("ASevents"), label=NULL)),
         hr(), selectizeInput(
             ns("method"), "Correlation method", width="100%",
             c("Pearson's product-moment correlation"="pearson", 
@@ -529,10 +534,14 @@ correlationServer <- function(input, output, session) {
     performCorrelationAnalyses <- reactive({
         isolate({
             psi         <- getInclusionLevels()
-            ASevents    <- getSelectedGroups(input, "ASevents", "ASevents",
-                                             filter=rownames(psi))
-            ASevents    <- unlist(ASevents)
             
+            if (input$ASeventsSelection == "selectedEvent") {
+                ASevents <- getASevent()
+            } else if (input$ASeventsSelection == "byGroup") {
+                ASevents <- getSelectedGroups(input, "ASevents", "ASevents",
+                                              filter=rownames(psi))
+                ASevents <- unlist(ASevents)
+            }            
             geneExpr    <- getGeneExpression(input$geneExpr)
             gene        <- getSelectedGroups(input, "genes", "Genes",
                                              filter=rownames(geneExpr))
@@ -564,9 +573,14 @@ correlationServer <- function(input, output, session) {
         ns <- session$ns
         isolate({
             psi         <- getInclusionLevels()
-            ASevents    <- getSelectedGroups(input, "ASevents", "ASevents",
-                                             filter=rownames(psi))
-            ASevents    <- unlist(ASevents)
+            
+            if (input$ASeventsSelection == "selectedEvent") {
+                ASevents <- getASevent()
+            } else if (input$ASeventsSelection == "byGroup") {
+                ASevents <- getSelectedGroups(input, "ASevents", "ASevents",
+                                              filter=rownames(psi))
+                ASevents <- unlist(ASevents)
+            }   
             
             geneExpr    <- getGeneExpression(input$geneExpr)
             gene        <- getSelectedGroups(input, "genes", "Genes",
