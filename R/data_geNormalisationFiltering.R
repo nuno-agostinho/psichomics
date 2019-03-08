@@ -12,9 +12,9 @@ geNormalisationFilteringInterface <- function(ns) {
     filters <- div(
         id=ns("filteringInterface"),
         fluidRow(
-            column(6, numericInput(ns("minMean"), "Min mean",
+            column(6, numericInput(ns("minMean"), "Mean >=",
                                    min=-1, max=100, value=0, width="100%")),
-            column(6, numericInput(ns("minVar"), "Min variance",
+            column(6, numericInput(ns("minVar"), "Variance >=",
                                    min=-1, max=100, value=0, width="100%"))),
         # fluidRow(
         #     column(6, numericInput(ns("maxMean"), "Max mean",
@@ -22,9 +22,9 @@ geNormalisationFilteringInterface <- function(ns) {
         #     column(6, numericInput(ns("maxVar"), "Max variance",
         #                           min=-1, max=100, value=100, width="100%"))),
         fluidRow(
-            column(6, numericInput(ns("minCounts"), "Min counts",
+            column(6, numericInput(ns("minCounts"), "Counts >=",
                                    min=0, max=100, value=10, width="100%")),
-            column(6, numericInput(ns("minTotalCounts"), "Min total counts",
+            column(6, numericInput(ns("minTotalCounts"), "Total counts >=",
                                    min=0, max=100, value=15, width="100%"))),
         helpText(textOutput(ns("filteredGenes"))))
 
@@ -397,6 +397,7 @@ plotMeanVariance <- function(data) {
         ylab("Square Root of the Standard Deviation")
 }
 
+#' Sum columns using an \code{\link{EList-class}} object
 #' @export
 setMethod("colSums", signature="EList", function(x, na.rm=FALSE, dims=1) {
     colSums(x$E, na.rm=na.rm, dims=dims)
@@ -642,10 +643,10 @@ geNormalisationFilteringServer <- function(input, output, session) {
         if (filter) {
             geneFilterSettings <- c(
                 "Gene filtering"="Enabled",
-                "Minimum mean >="=minMean, # "Maximum mean <="=maxMean,
-                "Minimum variance >="=minVar, # "Maximum variance <="=maxVar,
-                "Minimum counts for at least some samples"=minCounts,
-                "Minimum total counts across samples"=minTotalCounts)
+                "Mean >="=minMean, # "Mean <="=maxMean,
+                "Variance >="=minVar, # "Variance <="=maxVar,
+                "Counts for at least some samples >="=minCounts,
+                "Total counts across samples >="=minTotalCounts)
         } else {
             geneFilterSettings <- c("Gene filtering"="Disabled")
         }

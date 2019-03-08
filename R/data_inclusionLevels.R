@@ -43,13 +43,13 @@ listAllAnnotations <- function(...) {
 inclusionLevelsInterface <- function(ns) {
     eventTypes <- getSplicingEventTypes()
     names(eventTypes) <- sprintf("%s (%s)", names(eventTypes), eventTypes)
-
+    
     filterGenesSelectize <- selectizeInput(
         ns("filterGenes"), label=NULL, selected=NULL, multiple=TRUE,
         width="100%", choices=c("Type to search for genes..."=""), options=list(
             # Allow to add new items
             create=TRUE, createOnBlur=TRUE, plugins=list("remove_button")))
-
+    
     options <- div(
         id=ns("options"),
         selectizeInput(ns("junctionQuant"), choices=NULL, width = "100%",
@@ -71,6 +71,32 @@ inclusionLevelsInterface <- function(ns) {
                                multiple=TRUE, width="100%",
                                choices=character(0))),
             bsCollapsePanel(
+                tagList(icon("filter"), "PSI filtering"), value="PSI filtering",
+                checkboxInput(
+                    ns("enablePSIfiltering"), value=FALSE, width="100%",
+                    "Filter splicing events based on their PSI values"),
+                fluidRow(
+                    column(6, numericInput(
+                        ns("minMedian"), "Median >=",
+                        min=0, max=1, value=0, step=0.1, width="100%")),
+                    column(6, numericInput(
+                        ns("maxMedian"), "Median <=",
+                        min=0, max=1, value=1, step=0.1, width="100%"))),
+                fluidRow(
+                    column(6, numericInput(
+                        ns("minLogVar"), "log10(variance) >=",
+                        min=-10, max=0, value=-10, step=0.5, width="100%")),
+                    column(6, numericInput(
+                        ns("maxLogVar"), "log10(variance) <=",
+                        min=-10, max=0, value=0, step=0.5, width="100%"))),
+                fluidRow(
+                    column(6, numericInput(
+                        ns("minRange"), "Range >=",
+                        min=0, max=1, value=0, step=0.1, width="100%")),
+                    column(6, numericInput(
+                        ns("maxRange"), "Range <=",
+                        min=0, max=1, value=1, step=0.1, width="100%")))),
+            bsCollapsePanel(
                 title=tagList(icon("filter"),
                               "Filter splicing events by genes"),
                 value="Filter by genes",
@@ -85,56 +111,29 @@ inclusionLevelsInterface <- function(ns) {
                         div(class="progress-bar progress-bar-striped active",
                             role="progressbar", style="width:100%",
                             "Loading genes from annotation")),
-                    hidden(div(id=ns("geneOptions"),
-                        filterGenesSelectize,
+                    hidden(div(
+                        id=ns("geneOptions"), filterGenesSelectize,
                         div(id=ns("geneLoadingIcon"),
                             style="position: relative;",
                             # div(class="fa fa-spinner fa-spin",
                             #     style="position:absolute;",
                             #     style="right:6px;",
                             #     style="bottom: 24px;", style="z-index: 2;")),
-                        helpText("Presented genes are based on the selected",
-                                 "alternative splicing annotation."))))),
+                            helpText(
+                                "Presented genes are based on the selected",
+                                "alternative splicing annotation."))))),
                 conditionalPanel(
                     sprintf("input[id='%s'] == '%s'", ns("filter"), "file"),
                     fileBrowserInput(ns("filterGenesFile"), NULL,
                                      placeholder="No file selected"),
                     helpText("Provide a file with gene symbols separated by a",
                              "space, comma, tab or new line. For instance: ",
-                             tags$code("BRCA1, BRAF, ABL")))),
-            bsCollapsePanel(
-                tagList(icon("filter"), "PSI filtering"), value="PSI filtering",
-                checkboxInput(
-                    ns("enablePSIfiltering"), 
-                    "Filter splicing events based on their PSI values",
-                    value=FALSE),
-                fluidRow(
-                    column(6, numericInput(
-                        ns("minMedian"), "Min median >=",
-                        min=0, max=1, value=0, step=0.1, width="100%")),
-                    column(6, numericInput(
-                        ns("maxMedian"), "Max median <=",
-                        min=0, max=1, value=1, step=0.1, width="100%"))),
-                fluidRow(
-                    column(6, numericInput(
-                        ns("minLogVar"), "Min log10(variance) >=",
-                        min=-10, max=0, value=-10, step=0.5, width="100%")),
-                    column(6, numericInput(
-                        ns("maxLogVar"), "Max log10(variance) <=",
-                        min=-10, max=0, value=0, step=0.5, width="100%"))),
-                fluidRow(
-                    column(6, numericInput(
-                        ns("minRange"), "Min range >=",
-                        min=0, max=1, value=0, step=0.1, width="100%")),
-                    column(6, numericInput(
-                        ns("maxRange"), "Max range <=",
-                        min=0, max=1, value=1, step=0.1, width="100%")))
-                )),
+                             tags$code("BRCA1, BRAF, ABL"))))),
         bsTooltip(ns("minReads"), placement = "right",
                   options = list(container = "body"),
                   paste("Discard alternative splicing quantified using a",
                         "number of reads below this threshold.")))
-
+    
     tagList(
         uiOutput(ns("modal")),
         helpText("Exon inclusion levels are measured from exon-exon junction",
@@ -193,16 +192,16 @@ quantifySplicing <- function(annotation, junctionQuant,
             eventIndex <- rep(seq(allGenes), eventGenes)
             return(df[unique(eventIndex[valid]), ])
         }
-
+        
         genes <- unique(genes)
         annotation <- lapply(annotation, filterByGenes, genes)
     }
-
+    
     # Convert data frame to matrix if needed (faster)
     mJunctionQuant <- junctionQuant
     if (!is(mJunctionQuant, "matrix"))
         mJunctionQuant <- as.matrix(junctionQuant)
-
+    
     psi <- NULL
     for (acronym in eventType) {
         eventTypes <- getSplicingEventTypes()
@@ -210,18 +209,18 @@ quantifySplicing <- function(annotation, junctionQuant,
         thisAnnot <- annotation[[type]]
         updateProgress("Calculating inclusion levels", type, value=acronym,
                        max=length(eventType))
-
+        
         if (!is.null(thisAnnot) && nrow(thisAnnot) > 0) {
             psi <- rbind(psi, calculateInclusionLevels(
                 acronym, mJunctionQuant, thisAnnot, minReads))
         }
     }
-
+    
     # Convert matrix to data frame
     colns <- colnames(psi)
     psi   <- data.frame(psi)
     colnames(psi) <- colns
-
+    
     if (is.null(psi)) psi <- data.frame(NULL)
     psi <- addObjectAttrs(
         psi, rowNames=TRUE,
@@ -265,7 +264,7 @@ loadCustomSplicingAnnotationSet <- function(session, input, output) {
         ns <- session$ns
         if (input$annotation == "loadAnnotation") {
             url <- "http://rpubs.com/nuno-agostinho/preparing-AS-annotation"
-
+            
             updateSelectizeInput(session, "annotation",
                                  selected=listSplicingAnnotations())
             infoModal(session, "Load alternative splicing annotation",
@@ -286,7 +285,7 @@ loadCustomSplicingAnnotationSet <- function(session, input, output) {
                                           class="btn-primary"))
         }
     })
-
+    
     # Load custom splicing annotation
     observeEvent(input$loadCustom, {
         customAnnot <- input$customAnnot
@@ -311,7 +310,7 @@ loadCustomSplicingAnnotationSet <- function(session, input, output) {
         }
     })
 }
- 
+
 #' Set of functions to load splicing quantification
 #'
 #' @inherit inclusionLevelsServer
@@ -322,7 +321,7 @@ loadCustomSplicingAnnotationSet <- function(session, input, output) {
 #' @keywords internal
 loadSplicingQuantificationSet <- function(session, input, output) {
     ns <- session$ns
-
+    
     # Show modal for loading alternative splicing quantification
     observeEvent(input$loadIncLevels, {
         infoModal(
@@ -332,22 +331,22 @@ loadSplicingQuantificationSet <- function(session, input, output) {
             uiOutput(ns("alertIncLevels")),
             footer=processButton(ns("loadASquant"), "Load quantification"))
     })
-
+    
     observeEvent(input$loadIncLevels, {
         prepareFileBrowser(session, input, "customASquant")
     }, once=TRUE)
-
+    
     # Load alternative splicing quantification
     loadSplicing <- reactive({
         time <- startProcess("loadIncLevels")
-
+        
         startProgress("Wait a moment", divisions=2)
         updateProgress("Loading alternative splicing quantification")
-
+        
         allFormats <- loadFileFormats()
         formats <- allFormats[sapply(allFormats, "[[",
                                      "dataType") == "Inclusion levels"]
-
+        
         psi <- tryCatch(parseValidFile(input$customASquant, formats),
                         warning=return, error=return)
         if (is(psi, "error")) {
@@ -366,17 +365,17 @@ loadSplicingQuantificationSet <- function(session, input, output) {
                          caller="Alternative splicing quantification")
         } else {
             removeAlert(output, "alertIncLevels")
-
+            
             if ( is.null(getData()) ) {
                 name <- file_path_sans_ext( basename(input$customASquant) )
                 name <- gsub(" Inclusion levels.*$", "", name)
                 if (name == "") name <- "Unnamed"
-
+                
                 data <- setNames(list(list("Inclusion levels"=psi)), name)
                 data <- processDatasetNames(data)
                 setData(data)
                 setCategory(name)
-
+                
                 samples <- colnames(psi)
                 parsed <- parseTcgaSampleInfo(samples)
                 if ( !is.null(parsed) ) setSampleInfo(parsed)
@@ -389,7 +388,7 @@ loadSplicingQuantificationSet <- function(session, input, output) {
         }
         endProcess("loadIncLevels", time)
     })
-
+    
     # Show warnings if needed before loading splicing quantification
     observeEvent(input$loadASquant, {
         if (!is.null(getInclusionLevels())) {
@@ -415,14 +414,14 @@ loadSplicingQuantificationSet <- function(session, input, output) {
             loadSplicing()
         }
     })
-
+    
     # Replace previous splicing quantification
     observeEvent(input$replace2, {
         setGroups("Samples", NULL)
         setGroups("AS events", NULL)
         loadSplicing()
     })
-
+    
     # Discard differential analyses and replace previous splicing quantification
     observeEvent(input$discard2, {
         setDifferentialSplicing(NULL)
@@ -450,7 +449,7 @@ readAnnot <- function(session, annotation, showProgress=FALSE) {
         if (showProgress)
             updateProgress("Downloading alternative splicing annotation")
         annot <- loadAnnotation(annotation)
-
+        
         # Set species and assembly version
         allAnnot <- listSplicingAnnotations()
         annotID <- names(allAnnot)[match(annotation, allAnnot)]
@@ -467,8 +466,8 @@ readAnnot <- function(session, annotation, showProgress=FALSE) {
 #' @keywords internal
 quantifySplicingSet <- function(session, input) {
     ns <- session$ns
-
-
+    
+    
     # Calculate inclusion levels
     calcSplicing <- reactive({
         eventType  <- input$eventType
@@ -489,7 +488,7 @@ quantifySplicingSet <- function(session, input) {
         if (is.na(minRange)) minRange <- -Inf
         maxRange  <- input$maxRange
         if (is.na(maxRange)) maxRange <- Inf
-
+        
         if (is.null(eventType) || is.null(minReads) || is.null(annotation)) {
             return(NULL)
         } else if (input$junctionQuant == "") {
@@ -505,7 +504,7 @@ quantifySplicingSet <- function(session, input) {
         # Read annotation
         annot <- readAnnot(session, annotation, showProgress=TRUE)
         junctionQuant <- getJunctionQuantification()[[input$junctionQuant]]
-
+        
         # Filter alternative splicing events based on their genes
         filter <- NULL
         if (input$filter == "select") {
@@ -523,19 +522,23 @@ quantifySplicingSet <- function(session, input) {
                 filter <- NULL
             }
         }
-
+        
         # Discard samples
         sampleFilter <- input$sampleFilter
         if (!is.null(sampleFilter) && sampleFilter != "") {
             samplesToKeep <- !colnames(junctionQuant) %in% sampleFilter
             junctionQuant <- junctionQuant[ , samplesToKeep]
+            sampleFilterText <- paste(sampleFilter, collapse=", ")
+        } else {
+            sampleFilterText <- "None"
         }
-
+        sampleFilterSettings <- c("Discarded samples"=sampleFilterText)
+        
         # Quantify splicing with splicing annotation and junction quantification
         updateProgress("Calculating inclusion levels")
         psi <- quantifySplicing(annot, junctionQuant, eventType, minReads,
                                 genes=filter)
-
+        
         if (nrow(psi) == 0) {
             errorModal(session, "No splicing events returned",
                        "The total reads of the alternative splicing events are",
@@ -544,43 +547,47 @@ quantifySplicingSet <- function(session, input) {
             endProcess("calcIncLevels")
             return(NULL)
         }
-
+        
+        # Filter PSI values
+        if (enablePSIfiltering) {
+            filtered <- filterPSI(
+                psi, minMedian=minMedian, maxMedian=maxMedian,
+                minLogVar=minLogVar, maxLogVar=maxLogVar,
+                minRange=minRange, maxRange=maxRange)
+            filteredPSI <- psi[filtered, ]
+            filterSettings <- c("Filter enabled"="Yes",
+                                "Median >="=minMedian,
+                                "Median <="=maxMedian,
+                                "log10(variance) >="=minLogVar,
+                                "log10(variance) <="=maxLogVar,
+                                "Range >="=minRange,
+                                "Range <="=maxRange)
+        } else {
+            filteredPSI <- psi
+            filterSettings <- c("Filter enabled"="No")
+        }
+        
         # Include settings used for alternative splicing quantification
         allEventTypes <- getSplicingEventTypes()
         eventTypeName <- names(allEventTypes[allEventTypes %in% eventType])
-        settings <- list(
-            "Alternative splicing annotation"=annotation,
-            "Exon-exon junction quantification (label)"=input$junctionQuant,
-            "Exon-exon junction quantification (file)"=attr(
-                junctionQuant, "filename"),
-            "Splicing event types"=eventTypeName,
-            "Minimum read counts' threshold"=minReads,
-            "Selected genes for splicing event quantification"=if (is.null(
-                filter)) "All available genes" else filter)
+        settings <- c(
+            list(
+                "Alternative splicing annotation"=annotation,
+                "Exon-exon junction quantification (label)"=input$junctionQuant,
+                "Exon-exon junction quantification (file)"=attr(
+                    junctionQuant, "filename"),
+                "Splicing event types"=eventTypeName,
+                "Minimum read counts' threshold"=minReads,
+                "Selected genes for splicing event quantification"=if (is.null(
+                    filter)) "All available genes" else filter),
+            sampleFilterSettings, filterSettings)
         attr(psi, "settings") <- settings
         attr(psi, "icon") <- list(symbol="calculator", colour="green")
-
-        # Filter PSI
-        if (enablePSIfiltering) {
-            medians <- rowMedians(psi, na.rm=TRUE)
-            medianThres <- medians >= minMedian & medians <= maxMedian
-            
-            vars  <- log10(rowVars(psi, na.rm=TRUE))
-            varThres <- vars >= minLogVar & vars <= maxLogVar
-            
-            ranges <- apply(psi, 1, max, na.rm=TRUE) - apply(psi, 1, min,
-                                                             na.rm=TRUE)
-            rangeThres <- ranges >= minRange & ranges <= maxRange
-            
-            thres <- which(medianThres & varThres & rangeThres)
-            filteredPSI <- psi[thres, ]
-        } else {
-            filteredPSI <- psi
-        }
+        
         setInclusionLevels(filteredPSI)
         endProcess("calcIncLevels", time)
     })
-
+    
     # Show warnings if needed before quantifying alternative splicing
     observeEvent(input$calcIncLevels, {
         if (is.null(getData()) || is.null(getJunctionQuantification())) {
@@ -608,13 +615,47 @@ quantifySplicingSet <- function(session, input) {
             calcSplicing()
         }
     })
-
+    
     observeEvent(input$replace, calcSplicing())
     observeEvent(input$discard, {
         setDifferentialSplicing(NULL)
         setDifferentialSplicingSurvival(NULL)
         calcSplicing()
     })
+}
+
+#' Filter alternative splicing quantification
+#' 
+#' @param psi Data frame or matrix: alternative splicing quantification
+#' @param minMedian Numeric: minimum of read count median per splicing event
+#' @param maxMedian Numeric: maximum of read count median per splicing event
+#' @param minLogVar Numeric: minimum log10(read count variance) per splicing
+#' event
+#' @param maxLogVar Numeric: maximum log10(read count variance) per splicing
+#' event
+#' @param minRange Numeric: minimum range of read counts across samples per 
+#' splicing event
+#' @param maxRange Numeric: maximum range of read counts across samples per 
+#' splicing event
+#'
+#' @importFrom miscTools rowMedians
+#' 
+#' @return Boolean vector indicating which splicing events pass the thresholds
+#' @export
+filterPSI <- function(psi, minMedian=-Inf, maxMedian=Inf,
+                      minLogVar=-Inf, maxLogVar=Inf,
+                      minRange=-Inf, maxRange=Inf) {
+    medians <- rowMedians(psi, na.rm=TRUE)
+    medianThres <- medians >= minMedian & medians <= maxMedian
+    
+    vars  <- log10(rowVars(psi, na.rm=TRUE))
+    varThres <- vars >= minLogVar & vars <= maxLogVar
+    
+    ranges <- apply(psi, 1, max, na.rm=TRUE) - apply(psi, 1, min, na.rm=TRUE)
+    rangeThres <- ranges >= minRange & ranges <= maxRange
+    
+    thres <- which(medianThres & varThres & rangeThres)
+    return(thres)
 }
 
 #' Plot alternative splicing quantification
@@ -645,31 +686,31 @@ plotPSI <- function(psi, x, y, minX=NULL, maxX=NULL, minY=NULL,
         stop("x and y require to contain one of the strings:",
              "median, var, range")
     }
-
+    
     if (any(grepl("var", c(x, y)))) {
         message("Calculating variance per splicing event...")
         var <- rowVars(psi, na.rm=TRUE)
     }
-
+    
     if (any(grepl("median", c(x, y)))) {
         message("Calculating median per splicing event...")
         median <- rowMedians(psi, na.rm=TRUE)
     }
-
+    
     if (any(grepl("range", c(x, y)))) {
         message("Calculating range per splicing event...")
         range <- apply(psi, 1, max, na.rm=TRUE) - apply(psi, 1, min, na.rm=TRUE)
     }
-
+    
     message("Plotting...")
     plot <- ggplot(mapping=aes_string(x=x, y=y)) +
         # geom_hex(na.rm=TRUE) +
         geom_point(size=1, na.rm=TRUE, alpha=0.5) +
         geom_density_2d(colour="orange", na.rm=TRUE)
-
+    
     if (!is.null(xlim)) plot <- plot + ylim(xlim)
     if (!is.null(ylim)) plot <- plot + ylim(ylim)
-
+    
     xThreshold1 <- xThreshold2 <- yThreshold1 <- yThreshold2 <- TRUE
     if (!is.null(minX)) {
         plot <- plot + geom_vline(xintercept=minX, colour="red")
@@ -702,9 +743,9 @@ plotPSI <- function(psi, x, y, minX=NULL, maxX=NULL, minY=NULL,
 inclusionLevelsServer <- function(input, output, session) {
     ns <- session$ns
     observeEvent(input$missing, missingDataGuide("Junction quantification"))
-
+    
     prepareFileBrowser(session, input, "filterGenesFile")
-
+    
     # Update available junction quantification according to loaded files
     observe({
         junctionQuant <- getJunctionQuantification()
@@ -718,7 +759,7 @@ inclusionLevelsServer <- function(input, output, session) {
                 choices=c("No junction quantification loaded"=""))
         }
     })
-
+    
     # Warn user if junction quantification is not loaded
     observe({
         if (is.null(getData()) || is.null(getJunctionQuantification())) {
@@ -731,12 +772,12 @@ inclusionLevelsServer <- function(input, output, session) {
             hide("missingData")
         }
     })
-
+    
     # Update gene symbols for filtering based on selected annotation
     observe({
         annotation <- input$annotation
         filter <- input$filter
-
+        
         # Avoid loading if already loaded
         if (filter == "select" && !is.null(annotation) &&
             !annotation %in% c("", "loadAnnotation") &&
@@ -744,7 +785,7 @@ inclusionLevelsServer <- function(input, output, session) {
             # Show loading bar
             show("geneOptionsLoading")
             hide("geneOptions")
-
+            
             annotation <- input$annotation
             startProgress("Loading alternative splicing annotation",
                           divisions=2)
@@ -754,14 +795,14 @@ inclusionLevelsServer <- function(input, output, session) {
             updateSelectizeInput(session, "filterGenes", choices=genes,
                                  selected=character(0), server=TRUE)
             closeProgress("Gene list prepared")
-
+            
             setAnnotationName(annotation)
             # Show gene options set
             hide("geneOptionsLoading")
             show("geneOptions")
         }
     })
-
+    
     # Toggle visibility of loading icon
     observe({
         toggle("geneLoadingIcon",
@@ -769,7 +810,7 @@ inclusionLevelsServer <- function(input, output, session) {
                    '$("#data-inclusionLevels-filterGenes").parent()',
                    '.children("div.selectize-control").hasClass("loading")'))
     })
-
+    
     # Update default AS event annotation based on selected dataset
     observe({
         data <- getCategoryData()
@@ -782,7 +823,7 @@ inclusionLevelsServer <- function(input, output, session) {
         }
         updateSelectizeInput(session, "annotation", selected=selected)
     })
-
+    
     # Update sample filtering options
     observeEvent(input$junctionQuant, {
         junctionQuant <- getJunctionQuantification()[[input$junctionQuant]]
