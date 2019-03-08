@@ -46,7 +46,7 @@ psichomics()
 
 > The following case study was adapted from *psichomics*' original article:
 >
-> Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2018). 
+> Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2019). 
 **[psichomics: graphical application for alternative splicing quantification and analysis][article]**. *Nucleic Acids Research*.
 
 Breast cancer is the cancer type with the highest incidence and mortality in 

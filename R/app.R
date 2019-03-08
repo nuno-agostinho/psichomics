@@ -21,8 +21,11 @@ linkToArticle <- function() {
     authors <- c("Nuno Saraiva-Agostinho", "Nuno L Barbosa-Morais")
     title   <- paste("psichomics: graphical application for alternative",
                      "splicing quantification and analysis.")
-    year    <- 2018
+    year    <- 2019
     journal <- "Nucleic Acids Research"
+    volume  <- 47
+    number  <- 2
+    pages   <- "e7"
     
     tags$a(
         target="_blank", href="https://doi.org/10.1093/nar/gky888",
@@ -30,7 +33,8 @@ linkToArticle <- function() {
             class="alert alert-info", role="alert",
             icon("paper-plane-o"), 
             sprintf("%s (%s).", paste(authors, collapse=" and "), year),
-            tags$b(title), tags$i(paste0(journal, "."))))
+            tags$b(title), tags$i(paste0(journal, ".")),
+            sprintf("%s(%s), %s", volume, number, pages)))
 }
 
 #' Check if a given function should be loaded by the calling module

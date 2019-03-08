@@ -77,6 +77,7 @@
     - Fix error when groups contain samples outside the data being analysed
 * Gene, transcript and protein information:
     - Fix article title formatting (e.g. bold and italics)
+* Update citation with journal publication date
 
 # 1.6.2 (2 October, 2018)
 
