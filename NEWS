@@ -32,6 +32,8 @@
 * Correlation analyses:
     - Allow to use groups of genes and alternative splicing events in 
     correlation analyses
+    - Plot specific combinations of gene and alternative splicing events 
+    (`[.GEandAScorrelation`())
     - Display progress when performing correlation analyses
     - Display correlation results in a table (`as.table()`)
 * Gene, transcript and protein information:
