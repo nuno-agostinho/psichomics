@@ -383,20 +383,6 @@ plotGeneExprPerSample <- function(geneExpr, ...) {
         hc_yAxis(title=list(text="Gene expression"))
 }
 
-#' Render mean-variance plot
-#'
-#' @param data Data frame or matrix: gene expression or junction quantification
-#'
-#' @return Mean-variance plot
-#' @export
-plotMeanVariance <- function(data) {
-    df <- data.frame(Mean=rowMeans(data), Variance=rowVars(data))
-    ggplot(df, aes_string("Mean", "Variance^(1/4)")) +
-        geom_point() +
-        ggtitle("Mean-variance plot") +
-        ylab("Square Root of the Standard Deviation")
-}
-
 #' Sum columns using an \code{\link{EList-class}} object
 #' @export
 setMethod("colSums", signature="EList", function(x, na.rm=FALSE, dims=1) {

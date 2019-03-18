@@ -122,6 +122,92 @@ loadTCGAsampleMetadata <- function(data) {
     return(data)
 }
 
+#' Plot sample statistics per row
+#'
+#' @param data Data frame or matrix
+#' @param x,y Character: statistic to calculate and display in the plot per row;
+#' choose between \code{mean}, \code{median}, \code{var} or \code{range}
+#' (or transformations of those variables, e.g. \code{log10(var)})
+#' @param minX,maxX,minY,maxY Numeric: minimum and maximum X and Y values to 
+#' draw in the plot
+#' @param xLim,yLim Numeric: X and Y axis range
+#'
+#' @importFrom ggplot2 geom_vline geom_hline xlim ylim
+#'
+#' @return Plot of \code{data}
+#' @export
+#' 
+#' @examples 
+#' # Plotting gene expression data
+#' geneExpr <- readFile("ex_gene_expression.RDS")
+#' plotRowStats(geneExpr, "mean", "var^(1/4)") +
+#'     ggtitle("Mean-variance plot") +
+#'     ylab("Square Root of the Standard Deviation")
+#' 
+#' # Plotting alternative splicing quantification
+#' annot <- readFile("ex_splicing_annotation.RDS")
+#' junctionQuant <- readFile("ex_junctionQuant.RDS")
+#' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+#' 
+#' medianVar <- plotRowStats(table, x="median", y="var", xLim=c(0, 1)) +
+#'     labs(x="Median PSI", y="PSI variance")
+#' rangeVar  <- plotRowStats(table, x="range", y="log10(var)", xLim=c(0, 1)) +
+#'     labs(x="PSI range", y="log10(PSI variance)")
+plotRowStats <- function(data, x, y, minX=NULL, maxX=NULL, minY=NULL,
+                         maxY=NULL, xLim=NULL, yLim=NULL) {
+    stats <- c("range", "var", "median", "mean")
+    if (!any(sapply(stats, grepl, x)) || !any(sapply(stats, grepl, y))) {
+        stop("x and y require to contain one of the strings:",
+             "median, var, range")
+    }
+    
+    calculateXandYvalues <- function(psi, stats) {
+        names(stats) <- stats
+        input <- lapply(stats, grepl, c(x, y))
+        
+        rowRanges <- function(mat, ...) {
+            apply(mat, 1, max, ...) - apply(mat, 1, min, ...)
+            # apply(mat, 1, function(k) max(k, ...) - min(k, ...))
+        }
+        
+        x <- y <- NULL
+        vars <- list()
+        for (stat in stats) {
+            message(sprintf("Calculating %s per splicing event...", stat))
+            
+            if (any(input[[stat]])) {
+                FUN <- switch(stat,
+                              "var"=rowVars,
+                              "mean"=rowMeans,
+                              "median"=rowMedians,
+                              "range"=rowRanges)
+                res <- FUN(psi, na.rm=TRUE)
+                vars[[stat]] <- res
+            }
+        }
+        vars <- data.frame(vars, stringsAsFactors=FALSE)
+        return(vars)
+    }
+    vars <- calculateXandYvalues(data, stats)
+    
+    message("Plotting...")
+    plot <- ggplot(vars, aes_string(x, y)) +
+        # geom_hex(na.rm=TRUE) +
+        geom_point(size=1, na.rm=TRUE, alpha=0.5) +
+        geom_density_2d(colour="orange", na.rm=TRUE) +
+        labs(x=x, y=y)
+    
+    if (!is.null(xLim)) plot <- plot + xlim(xLim)
+    if (!is.null(yLim)) plot <- plot + ylim(yLim)
+    
+    # Intercept lines
+    if (!is.null(minX)) plot <- plot + geom_vline(xintercept=minX, colour="red")
+    if (!is.null(maxX)) plot <- plot + geom_vline(xintercept=maxX, colour="red")
+    if (!is.null(minY)) plot <- plot + geom_hline(yintercept=minY, colour="red")
+    if (!is.null(maxY)) plot <- plot + geom_hline(yintercept=maxY, colour="red")
+    return(plot)
+}
+
 #' Warn user about loaded data
 #' 
 #' @param modalId Character: identifier of the modal
@@ -516,27 +602,38 @@ createDataTab <- function(index, data, name, session, input, output) {
             if (isGeneExpr) {
                 if (is(table, "EList")) table <- table$E
                 geneExprPerSamplePlot <- plotGeneExprPerSample(
-                    table, sortByMedian=TRUE)
+                    table, sortByMedian=TRUE, 
+                    title="Gene expression distribution per sample")
                 
                 librarySizePlot <- suppressWarnings(
                     plotDistribution(log10(colSums(table)),
                                      rugLabels=TRUE, vLine=FALSE) %>%
                         hc_xAxis(title=list(text="log10(Library sizes)")) %>%
                         hc_yAxis(title=list(text="Density")) %>%
-                        hc_legend(enabled=FALSE))
+                        hc_legend(enabled=FALSE) %>%
+                        hc_title(
+                            text="Library size distribution across samples") %>%
+                        hc_subtitle(text=paste("Library size: number total",
+                                               "mapped reads")))
                 librarySizePlot$x$hc_opts$series[[1]]$color <- NULL
                 librarySizePlot$x$hc_opts$series[[2]]$marker$fillColor <- NULL
                 
-                plots <- list(plot=plotMeanVariance(table),
-                              highchart=geneExprPerSamplePlot,
-                              highchart=librarySizePlot)
+                plots <- list(
+                    highchart=geneExprPerSamplePlot,
+                    highchart=librarySizePlot)
             } else if (isPSI) {
-                medianVar <- plotPSI(table, x="median", y="var") %>%
-                    hc_xAxis(title=list(text="Median PSI")) %>%
-                    hc_yAxis(title=list(text="PSI Variance"))
-                rangeVar  <- plotPSI(table, x="range", y="log10(var)") %>%
-                    hc_xAxis(title=list(text="PSI Range")) %>%
-                    hc_yAxis(title=list(text="log10(PSI Variance)"))
+                medianVar <- plotRowStats(table, x="median", y="var", 
+                                          xLim=c(0,1 )) +
+                    labs(x="PSI median", y="PSI variance") +
+                    ggtitle(paste("Scatterplot of alternative splicing",
+                                  "quantification per event")) +
+                    theme_light(14)
+                rangeVar  <- plotRowStats(table, x="range", y="log10(var)", 
+                                          xLim=c(0, 1)) +
+                    labs(x="PSI range", y="log10(PSI variance)") +
+                    ggtitle(paste("Scatterplot of alternative splicing",
+                                  "quantification per event")) +
+                    theme_light(14)
                 plots <- list(plot=medianVar, plot=rangeVar)
             }
             attr(table, "plots") <- plots

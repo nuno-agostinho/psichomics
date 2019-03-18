@@ -1798,7 +1798,7 @@ renderBoxplot <- function(data, outliers=FALSE, sortByMedian=TRUE,
     hc <- hcboxplot(melted$value, melted$variable, outliers=outliers) %>% 
         hc_chart(zoomType="x", type="column") %>%
         hc_plotOptions(boxplot=list(color="black", fillColor="orange")) %>%
-        hc_xAxis(labels=list(enabled=showXlabels)) %>%
+        hc_xAxis(labels=list(enabled=showXlabels), visible=showXlabels) %>%
         hc_title(text=title)
     if (min(melted$value) >= 0) hc <- hc %>% hc_yAxis(min=0)
     

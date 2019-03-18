@@ -8,7 +8,7 @@
     - Allow to discard samples before alternative splicing quantification
     - In alternative splicing quantification dataset summary, plot
     quantification based on median, variance and range per splicing event across
-    samples to provide tools to filter quantification (`plotPSI()`)
+    samples to provide tools to filter quantification (`plotRowStats()`)
 * Gene expression filtering and normalisation:
     - Allow to discard samples before filtering and normalisation
     - Filter low read counts using `edgeR::filterByExpr()`
@@ -18,7 +18,7 @@
     per sample, distribution of library sizes and gene-wise mean and variance of
     gene expression across samples to provide the user tools to assess gene 
     expression normalisation (`plotGeneExprPerSample()`, `plotDistribution` and 
-    `plotMeanVariance()`, respectively)
+    `plotRowStats()`, respectively)
     - Convert between different gene identifiers (the original identifier is 
     kept in some conditions, read `convertGeneIdentifiers`); in the visual
     interface, when filtering and normalising gene expression, ENSEMBL 
