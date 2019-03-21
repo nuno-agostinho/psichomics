@@ -2349,7 +2349,7 @@ analysesTableSet <- function(session, input, output, analysesType, analysesID,
     
     # Render table with sparklines
     output$statsTable <- renderDataTableSparklines({
-        stats <- getAnalysesData()
+        stats <- getAnalysesFiltered()
         if (!is.null(stats)) {
             # Discard columns of no interest
             cols <- colnames(stats)
