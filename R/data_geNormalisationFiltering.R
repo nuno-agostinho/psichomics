@@ -125,6 +125,7 @@ geNormalisationFilteringUI <- function(id, panel) {
 #' @param log2transform Boolean: perform log2-transformation?
 #' @param priorCount Average count to add to each observation to avoid zeroes
 #' after log-transformation
+#' @param performVoom Boolean: perform mean-variance modelling (voom)?
 #'
 #' @details \code{edgeR::calcNormFactors} will be used to normalise gene
 #' expression if one of the followin methods is set: \code{TMM}, \code{RLE},
@@ -271,6 +272,7 @@ loadGeneExpressionSet <- function(session, input, output) {
 #'
 #' @importFrom AnnotationDbi select
 #' @importFrom data.table data.table
+#' @importFrom org.Hs.eg.db org.Hs.eg.db
 #'
 #' @return Character vector of the respective targets of gene identifiers. The
 #' previous identifiers remain other identifiers have the same target (in case
@@ -384,6 +386,7 @@ plotGeneExprPerSample <- function(geneExpr, ...) {
 }
 
 #' Sum columns using an \code{\link{EList-class}} object
+#' @inheritParams base::colSums
 #' @export
 setMethod("colSums", signature="EList", function(x, na.rm=FALSE, dims=1) {
     colSums(x$E, na.rm=na.rm, dims=dims)
@@ -608,14 +611,8 @@ geNormalisationFilteringServer <- function(input, output, session) {
             priorCount, performVoom=voom)
 
         if (convertToGeneSymbol) {
-            if (require(org.Hs.eg.db)) {
-                rownames(geneExprNorm) <- convertGeneIdentifiers(
-                    org.Hs.eg.db, rownames(geneExprNorm))
-            } else {
-                warning(paste(
-                    "Gene identifiers not converted:",
-                    "Install 'org.Hs.eg.db' to convert human genes"))
-            }
+            rownames(geneExprNorm) <- convertGeneIdentifiers(
+                org.Hs.eg.db, rownames(geneExprNorm))
         }
 
         attr(geneExprNorm, "filename") <- NULL

@@ -287,6 +287,8 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #' 
 #' @method [ GEandAScorrelation
 #' 
+#' @importFrom stats na.omit
+#' 
 #' @return \code{GEandAScorrelation} object subset
 #' @export
 `[.GEandAScorrelation` <- function(x, genes=NULL, ASevents=NULL) {
@@ -548,6 +550,7 @@ as.table.GEandAScorrelation <- function (x, pvalueAdjust="BH", ...) {
 #' @importFrom shiny renderUI observeEvent isolate tagList tags
 #' @importFrom highcharter renderHighchart
 #' @importFrom shinyjs show hide toggle
+#' @importFrom graphics plot
 correlationServer <- function(input, output, session) {
     selectGroupsServer(session, "ASevents", "ASevents")
     selectGroupsServer(session, "genes", "Genes")

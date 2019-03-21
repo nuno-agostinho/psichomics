@@ -8,7 +8,7 @@ convertGeneIdentifiers(annotation, genes, key = "ENSEMBL",
   target = "SYMBOL", ignoreDuplicatedTargets = TRUE)
 }
 \arguments{
-\item{annotation}{OrgDb: genome wide annotation for an organism, e.g. 
+\item{annotation}{OrgDb: genome wide annotation for an organism, e.g.
 \code{org.Hs.eg.db}}
 
 \item{genes}{Character: genes to be converted}
@@ -19,7 +19,7 @@ convertGeneIdentifiers(annotation, genes, key = "ENSEMBL",
 \item{target}{Character: type of identifier to convert to; read
 \code{?AnnotationDbi::columns}}
 
-\item{ignoreDuplicatedTargets}{Boolean: if \code{TRUE}, identifiers that 
+\item{ignoreDuplicatedTargets}{Boolean: if \code{TRUE}, identifiers that
 share targets with other identifiers will not be converted}
 }
 \value{
@@ -33,10 +33,10 @@ Convert gene identifiers
 \examples{
 if ( require("org.Hs.eg.db") ) {
     columns(org.Hs.eg.db)
-    
-    genes <- c("ENSG00000012048", "ENSG00000083093", "ENSG00000141510", 
+
+    genes <- c("ENSG00000012048", "ENSG00000083093", "ENSG00000141510",
                "ENSG00000051180")
-    convertGeneIdentifiers(org.Hs.eg.db, genes, 
+    convertGeneIdentifiers(org.Hs.eg.db, genes,
                            key="ENSEMBL", target="SYMBOL")
 }
 }

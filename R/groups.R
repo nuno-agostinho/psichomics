@@ -2233,6 +2233,8 @@ testGroupIndependence <- function(ref, groups, elements, pvalueAdjust="BH") {
 #' @param samples Character: vector with all available samples
 #' @param clean Boolean: clean results?
 #' 
+#' @importFrom stats na.omit
+#' 
 #' @return Groups without samples not found in \code{samples}
 #' @keywords internal
 discardOutsideSamplesFromGroups <- function(groups, samples, clean=FALSE) {

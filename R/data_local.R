@@ -144,6 +144,8 @@ prepareSRAmetadata <- function(file, output="psichomics_metadata.txt") {
 #' @param output Character: output filename (if \code{NULL}, no file is saved)
 #' @param IDcolname Character: name of the column containing the identifiers
 #' 
+#' @importFrom utils askYesNo
+#' 
 #' @return Process file and save its output
 #' @keywords internal
 processAndSaveSRAdata <- function(files, data, output, IDcolname) {

@@ -30,15 +30,15 @@ Plot sample statistics per row
 geneExpr <- readFile("ex_gene_expression.RDS")
 plotRowStats(geneExpr, "mean", "var^(1/4)") +
     ggtitle("Mean-variance plot") +
-    ylab("Square Root of the Standard Deviation")
+    labs(y="Square Root of the Standard Deviation")
 
 # Plotting alternative splicing quantification
 annot <- readFile("ex_splicing_annotation.RDS")
 junctionQuant <- readFile("ex_junctionQuant.RDS")
 psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 
-medianVar <- plotRowStats(table, x="median", y="var", xLim=0:1) +
+medianVar <- plotRowStats(table, x="median", y="var", xLim=c(0, 1)) +
     labs(x="Median PSI", y="PSI variance")
-rangeVar  <- plotRowStats(table, x="range", y="log10(var)") +
+rangeVar  <- plotRowStats(table, x="range", y="log10(var)", xLim=c(0, 1)) +
     labs(x="PSI range", y="log10(PSI variance)")
 }

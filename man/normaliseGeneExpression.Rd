@@ -23,6 +23,8 @@ Details)}
 
 \item{priorCount}{Average count to add to each observation to avoid zeroes
 after log-transformation}
+
+\item{performVoom}{Boolean: perform mean-variance modelling (voom)?}
 }
 \value{
 Filtered and normalised gene expression

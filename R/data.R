@@ -132,7 +132,7 @@ loadTCGAsampleMetadata <- function(data) {
 #' draw in the plot
 #' @param xLim,yLim Numeric: X and Y axis range
 #'
-#' @importFrom ggplot2 geom_vline geom_hline xlim ylim
+#' @importFrom ggplot2 geom_vline geom_hline xlim ylim ggtitle
 #'
 #' @return Plot of \code{data}
 #' @export
@@ -142,7 +142,7 @@ loadTCGAsampleMetadata <- function(data) {
 #' geneExpr <- readFile("ex_gene_expression.RDS")
 #' plotRowStats(geneExpr, "mean", "var^(1/4)") +
 #'     ggtitle("Mean-variance plot") +
-#'     ylab("Square Root of the Standard Deviation")
+#'     labs(y="Square Root of the Standard Deviation")
 #' 
 #' # Plotting alternative splicing quantification
 #' annot <- readFile("ex_splicing_annotation.RDS")
@@ -521,7 +521,7 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
 #' @importFrom shiny downloadHandler br
 #' @importFrom utils write.table
 #' @importFrom shinyjs show hide
-#' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 labs ggtitle theme_light
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
 #' @keywords internal
