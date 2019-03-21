@@ -33,6 +33,7 @@ License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 6.1.1
 Imports:
+    AnnotationDbi,
     AnnotationHub,
     cluster,
     colourpicker,
@@ -66,7 +67,8 @@ Imports:
     utils,
     XML,
     xtable,
-    methods
+    methods,
+    org.Hs.eg.db
 Suggests:
     testthat,
     knitr,
@@ -76,8 +78,7 @@ Suggests:
     gplots,
     covr,
     car,
-    rstudioapi,
-    org.Hs.eg.db
+    rstudioapi
 LinkingTo: Rcpp
 VignetteBuilder: knitr
 Collate: 
