@@ -206,7 +206,7 @@ groupManipulationInput <- function(id, type) {
     }
     
     if (type == "Samples") {
-        title  <- "By patients"
+        title  <- "By subjects"
         first  <- groupOptions("Patients", title)
         # firstAlert  <- tabPanel(title, value="NoPatients", missingData(
         #     "Clinical data", "No clinical data loaded to group by patients.",
@@ -251,7 +251,7 @@ groupsUI <- function(id, tab) {
     tab(icon="object-group", title="Groups", tabsetPanel(
         id="groupsTypeTab",
         tabPanel(
-            "Patient and sample groups",
+            "Subject and sample groups",
             groupManipulationInput(ns("sampleGroupModule"), "Samples")),
         tabPanel(
             "Splicing event and gene groups",
@@ -1383,7 +1383,7 @@ groupManipulation <- function(input, output, session, type) {
             extra <- NULL
             totalGroups <- length(group)
             if (totalGroups > groupsToPreview) {
-                table <- rbind(table, rep("(...)", 3))
+                table <- rbind(table, rep("(...)", ncol(table)))
                 extra <- helpText(style="text-align: right;",
                                   sprintf("Previewing %s out of %s groups",
                                           groupsToPreview, totalGroups))

@@ -44,6 +44,7 @@
 * Improve console logging of error and warning alerts
 * Fix crash when loading psichomics with test data that is not locally available
 (by automatically downloading said data if not found)
+* Allow to edit file path in file/directory browser elemnts
 * Documentation:
     - Export functions mentioned in the documentation
     - Hide documentation of internal functions from the PDF reference manual
@@ -52,9 +53,12 @@
     `list.files()`)
     - Ask to overwrite file if one exists with the same name as the output file
 * Groups:
+    - Automatically set dropdown width for group attribute selection
     - Minor improvements to the group creation interface
     - Fix error when creating groups containing only samples and no matching 
     subjects
+    - Fix warning when displaying group preview only based on subjects or 
+    samples
 * Alternative splicing quantification:
     - Automatically set the human genome version after loading data from TCGA
     (hg19), GTEx (hg19) or recount2 (hg38)

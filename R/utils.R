@@ -1733,7 +1733,7 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
     fileBrowserButton <- div(class="input-group-btn", fileBrowserButton)
     filepathInput <- tags$input(
         id=id, value=value, type='text', placeholder=placeholder,
-        readonly = if (!isRStudioServer()) 'readonly' else NULL,
+        # readonly = if (!isRStudioServer()) 'readonly' else NULL,
         class='form-control fileBrowser-input-chosen-dir')
     
     tagList(

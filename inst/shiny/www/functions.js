@@ -1,3 +1,6 @@
+/* Ensure code escaping */
+window.escape = window.escape || window.encodeURI;
+
 /**
  * Update location according to browser navigation
  * 
