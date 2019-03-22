@@ -36,6 +36,9 @@
     (`[.GEandAScorrelation`())
     - Display progress when performing correlation analyses
     - Display correlation results in a table (`as.table()`)
+* Survival:
+    - Render p-value plot by cutoff in command-line interface 
+    (`plotPvaluesByCutoff()`)
 * Gene, transcript and protein information:
     - Modify keywords used to search for PubMed articles
 

@@ -460,6 +460,78 @@ geneExprSurvSet <- function(session, input, output) {
     })
 }
 
+#' Plot p-values by multiple cutoffs
+#' 
+#' @inheritParams processSurvTerms
+#' @inheritParams testSurvivalCutoff
+#' @param significance Numeric: significance threshold
+#' @param cutoffs Numeric: cutoffs to test
+#' 
+#' @return p-value plot
+#' @export
+plotPvaluesByCutoff <- function(clinical, data, censoring, event, timeStart, 
+                                timeStop=NULL, followup="days_to_last_followup", 
+                                significance=0.05,
+                                cutoffs=seq(0, 0.99, 0.01)) {
+    survTime <- getAttributesTime(clinical, event, timeStart, timeStop)
+    
+    pvalues <- lapply(
+        cutoffs, testSurvivalCutoff, data=data,
+        clinical=clinical, censoring=censoring, timeStart=timeStart, 
+        timeStop=timeStop, event=event, survTime=survTime, survivalInfo=TRUE)
+    
+    patients     <- lapply(pvalues, function(n) attr(n, "info")$n)
+    noSeparation <- vapply(patients, length, numeric(1)) == 1
+    patients[noSeparation] <- NA
+    patients1 <- vapply(patients, "[[", 1, FUN.VALUE = numeric(1))
+    patients2 <- NA
+    patients2[!noSeparation] <- vapply(patients[!noSeparation], 
+                                       "[[", 2, FUN.VALUE = numeric(1))
+    
+    pvalues      <- -log10(unlist(pvalues))
+    significance <- -log10(significance)
+    
+    data <- data.frame(x=cutoffs, y=pvalues, 
+                       patients1=patients1, patients2=patients2)
+    data <- list_parse(data)
+    
+    firstSeriesColour <- JS("Highcharts.getOptions().colors[0]")
+    
+    # Put the label of p-value plot to the right when there are many
+    # significant points to the left
+    signif <- pvalues >= significance
+    labelAlign <- "left"
+    if (sum(signif[1:50]) > sum(signif[51:100])) labelAlign <- "right"
+    
+    pvaluePlot <- highchart(height="100px") %>%
+        hc_add_series(data=data,
+                      zones=list(list(value=significance,
+                                      color="lightgray"))) %>%
+        hc_chart(zoomType="x") %>%
+        hc_xAxis(tickInterval=0.1, showLastLabel=TRUE, endOnTick=TRUE,
+                 min=0, max=1, minorGridLineWidth=0, 
+                 gridLineWidth=0) %>%
+        hc_yAxis(crosshair=list(color="gray", width=1,
+                                dashStyle="shortdash"),
+                 labels=list(enabled=FALSE), gridLineWidth=0,
+                 plotLines=list(list(
+                     value=significance, color=firstSeriesColour,
+                     dashStyle="shortdash", width=1,
+                     label=list(
+                         align=labelAlign, text="p < 0.05",
+                         style=list(color=firstSeriesColour))))) %>%
+        hc_legend(NULL) %>% 
+        hc_tooltip(formatter=JS(
+            "function() { return getPvaluePlotTooltip(this); }")) %>%
+        hc_plotOptions(series=list(
+            cursor="pointer",
+            point=list(events=list(click=JS(
+                "function () { setPSIcutoffSlider(this.x) }"))),
+            marker=list(radius=2)))
+    attr(pvaluePlot, "pvalues") <- pvalues
+    return(pvaluePlot)
+}
+
 #' @rdname appServer
 #' 
 #' @importFrom R.utils capitalize
@@ -713,72 +785,21 @@ survivalServer <- function(input, output, session) {
             
             show("psiCutoff")
             slider <- uiOutput(ns("cutoffPvalue"))
-            categories <- seq(0, 0.99, 0.01)
+            label <- tags$label(class="control-label",
+                                "-log\u2081\u2080(p-value) plot by cutoff")
             
-            survTime <- getAttributesTime(clinical, event, timeStart, timeStop)
-            pvalues <- lapply(
-                categories, testSurvivalCutoff, data=eventPSI,
-                clinical=clinical, censoring=censoring, timeStart=timeStart, 
-                timeStop=timeStop, event=event, survTime=survTime, 
-                session=session, survivalInfo=TRUE)
+            cutoffs <- seq(0, 0.99, 0.01)
+            pvaluePlot <- plotPvaluesByCutoff(
+                clinical=clinical, data=eventPSI, censoring=censoring,
+                event=event, timeStart=timeStart, timeStop=timeStop, 
+                followup=followup, cutoffs=cutoffs)
             
             # Automatically set minimal p-value
-            value <- categories[which.min(unlist(pvalues))]
+            value <- cutoffs[which.min(unlist(attr(pvaluePlot, "pvalues")))]
             observe({
                 if (is.na(value)) value <- 0.5
                 updateSliderInput(session, "psiCutoff", value=value)
             })
-            
-            patients     <- lapply(pvalues, function(n) attr(n, "info")$n)
-            noSeparation <- vapply(patients, length, numeric(1)) == 1
-            patients[noSeparation] <- NA
-            patients1 <- vapply(patients, "[[", 1, FUN.VALUE = numeric(1))
-            patients2 <- NA
-            patients2[!noSeparation] <- vapply(patients[!noSeparation], 
-                                               "[[", 2, FUN.VALUE = numeric(1))
-            
-            pvalues      <- -log10(unlist(pvalues))
-            significance <- -log10(0.05)
-            
-            data <- data.frame(x=categories, y=pvalues, 
-                               patients1=patients1, patients2=patients2)
-            data <- list_parse(data)
-            
-            firstSeriesColour <- JS("Highcharts.getOptions().colors[0]")
-            label <- tags$label(class="control-label",
-                                "-log\u2081\u2080(p-value) plot by cutoff")
-            
-            # Put the label of p-value plot to the right when there are many
-            # significant points to the left
-            signif <- pvalues >= -log10(0.05)
-            labelAlign <- "left"
-            if (sum(signif[1:50]) > sum(signif[51:100])) labelAlign <- "right"
-            
-            pvaluePlot <- highchart(height="100px") %>%
-                hc_add_series(data=data,
-                              zones=list(list(value=significance,
-                                              color="lightgray"))) %>%
-                hc_chart(zoomType="x") %>%
-                hc_xAxis(tickInterval=0.1, showLastLabel=TRUE, endOnTick=TRUE,
-                         min=0, max=1, minorGridLineWidth=0, 
-                         gridLineWidth=0) %>%
-                hc_yAxis(crosshair=list(color="gray", width=1,
-                                        dashStyle="shortdash"),
-                         labels=list(enabled=FALSE), gridLineWidth=0,
-                         plotLines=list(list(
-                             value=-log10(0.05), color=firstSeriesColour,
-                             dashStyle="shortdash", width=1,
-                             label=list(
-                                 align=labelAlign, text="p < 0.05",
-                                 style=list(color=firstSeriesColour))))) %>%
-                hc_legend(NULL) %>% 
-                hc_tooltip(formatter=JS(
-                    "function() { return getPvaluePlotTooltip(this); }")) %>%
-                hc_plotOptions(series=list(
-                    cursor="pointer",
-                    point=list(events=list(click=JS(
-                        "function () { setPSIcutoffSlider(this.x) }"))),
-                    marker=list(radius=2)))
             
             if (!is.na(value) && value < 1) {
                 return(tagList(slider, label, pvaluePlot))
