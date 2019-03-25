@@ -169,7 +169,7 @@ getValuePerPatient <- function(data, match, clinical=NULL, patients=NULL,
     hasOneRow     <- !is.null(nrow(data)) && nrow(data) == 1
     isNamedVector <- is.vector(data) && !is.null(names(data))
     if (!hasOneRow && !isNamedVector)
-        stop("Data needs to either have only one row or be a vector with",
+        stop("Data needs to either have only one row or be a vector with ",
              "sample identifiers as names.")
     
     if (is.null(clinical) && is.null(patients))

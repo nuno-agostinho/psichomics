@@ -130,7 +130,7 @@ loadTCGAsampleMetadata <- function(data) {
 #' (or transformations of those variables, e.g. \code{log10(var)})
 #' @param minX,maxX,minY,maxY Numeric: minimum and maximum X and Y values to 
 #' draw in the plot
-#' @param xLim,yLim Numeric: X and Y axis range
+#' @param xlim,ylim Numeric: X and Y axis range
 #'
 #' @importFrom ggplot2 geom_vline geom_hline xlim ylim ggtitle
 #'
@@ -149,12 +149,12 @@ loadTCGAsampleMetadata <- function(data) {
 #' junctionQuant <- readFile("ex_junctionQuant.RDS")
 #' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 #' 
-#' medianVar <- plotRowStats(table, x="median", y="var", xLim=c(0, 1)) +
+#' medianVar <- plotRowStats(table, x="median", y="var", xlim=c(0, 1)) +
 #'     labs(x="Median PSI", y="PSI variance")
-#' rangeVar  <- plotRowStats(table, x="range", y="log10(var)", xLim=c(0, 1)) +
+#' rangeVar  <- plotRowStats(table, x="range", y="log10(var)", xlim=c(0, 1)) +
 #'     labs(x="PSI range", y="log10(PSI variance)")
 plotRowStats <- function(data, x, y, minX=NULL, maxX=NULL, minY=NULL,
-                         maxY=NULL, xLim=NULL, yLim=NULL) {
+                         maxY=NULL, xlim=NULL, ylim=NULL) {
     stats <- c("range", "var", "median", "mean")
     if (!any(sapply(stats, grepl, x)) || !any(sapply(stats, grepl, y))) {
         stop("x and y require to contain one of the strings:",
@@ -190,15 +190,15 @@ plotRowStats <- function(data, x, y, minX=NULL, maxX=NULL, minY=NULL,
     }
     vars <- calculateXandYvalues(data, stats)
     
-    message("Plotting...")
+    message("Preparing plot...")
     plot <- ggplot(vars, aes_string(x, y)) +
         # geom_hex(na.rm=TRUE) +
         geom_point(size=1, na.rm=TRUE, alpha=0.5) +
         geom_density_2d(colour="orange", na.rm=TRUE) +
         labs(x=x, y=y)
     
-    if (!is.null(xLim)) plot <- plot + xlim(xLim)
-    if (!is.null(yLim)) plot <- plot + ylim(yLim)
+    if (!is.null(xlim)) plot <- plot + xlim(xlim)
+    if (!is.null(ylim)) plot <- plot + ylim(ylim)
     
     # Intercept lines
     if (!is.null(minX)) plot <- plot + geom_vline(xintercept=minX, colour="red")
@@ -623,13 +623,13 @@ createDataTab <- function(index, data, name, session, input, output) {
                     highchart=librarySizePlot)
             } else if (isPSI) {
                 medianVar <- plotRowStats(table, x="median", y="var", 
-                                          xLim=c(0,1 )) +
+                                          xlim=c(0,1 )) +
                     labs(x="PSI median", y="PSI variance") +
                     ggtitle(paste("Scatterplot of alternative splicing",
                                   "quantification per event")) +
                     theme_light(14)
                 rangeVar  <- plotRowStats(table, x="range", y="log10(var)", 
-                                          xLim=c(0, 1)) +
+                                          xlim=c(0, 1)) +
                     labs(x="PSI range", y="log10(PSI variance)") +
                     ggtitle(paste("Scatterplot of alternative splicing",
                                   "quantification per event")) +

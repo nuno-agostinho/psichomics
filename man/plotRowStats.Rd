@@ -5,7 +5,7 @@
 \title{Plot sample statistics per row}
 \usage{
 plotRowStats(data, x, y, minX = NULL, maxX = NULL, minY = NULL,
-  maxY = NULL, xLim = NULL, yLim = NULL)
+  maxY = NULL, xlim = NULL, ylim = NULL)
 }
 \arguments{
 \item{data}{Data frame or matrix}
@@ -17,7 +17,7 @@ choose between \code{mean}, \code{median}, \code{var} or \code{range}
 \item{minX, maxX, minY, maxY}{Numeric: minimum and maximum X and Y values to 
 draw in the plot}
 
-\item{xLim, yLim}{Numeric: X and Y axis range}
+\item{xlim, ylim}{Numeric: X and Y axis range}
 }
 \value{
 Plot of \code{data}
@@ -37,8 +37,8 @@ annot <- readFile("ex_splicing_annotation.RDS")
 junctionQuant <- readFile("ex_junctionQuant.RDS")
 psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 
-medianVar <- plotRowStats(table, x="median", y="var", xLim=c(0, 1)) +
+medianVar <- plotRowStats(table, x="median", y="var", xlim=c(0, 1)) +
     labs(x="Median PSI", y="PSI variance")
-rangeVar  <- plotRowStats(table, x="range", y="log10(var)", xLim=c(0, 1)) +
+rangeVar  <- plotRowStats(table, x="range", y="log10(var)", xlim=c(0, 1)) +
     labs(x="PSI range", y="log10(PSI variance)")
 }
