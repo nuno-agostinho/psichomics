@@ -407,7 +407,7 @@ loadFirebrowseFolders <- function(folder, exclude="") {
 #' \dontrun{
 #' loadFirebrowseData(cohort = "ACC", data_type = "Clinical")
 #' }
-loadFirebrowseData <- function(folder=NULL, data=NULL, 
+loadFirebrowseData <- function(folder=getDownloadsFolder(), data=NULL, 
                                exclude=c(".aux.", ".mage-tab.", "MANIFEST.txt"),
                                ..., download=TRUE) {
     args <- list(...)
@@ -436,7 +436,6 @@ loadFirebrowseData <- function(folder=NULL, data=NULL,
     base[!md5] <- file_path_sans_ext(base[!md5], compression = TRUE)
     
     # Check which files are missing from the given directory
-    if (is.null(folder)) folder <- getDownloadsFolder()
     downloadedFiles <- list.files(folder, recursive=TRUE, full.names=TRUE, 
                                   include.dirs=TRUE)
     downloadedMD5   <- file_ext(downloadedFiles) == "md5"
