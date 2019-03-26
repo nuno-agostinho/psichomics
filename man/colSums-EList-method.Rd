@@ -21,6 +21,9 @@
     over dimensions \code{dims+1, \dots}; for \code{col*} it is over
     dimensions \code{1:dims}.}
 }
+\value{
+Numeric vector with the sum of the columns
+}
 \description{
 Sum columns using an \code{\link{EList-class}} object
 }
