@@ -26,6 +26,8 @@ Plot of \code{data}
 Plot sample statistics per row
 }
 \examples{
+library(ggplot2)
+
 # Plotting gene expression data
 geneExpr <- readFile("ex_gene_expression.RDS")
 plotRowStats(geneExpr, "mean", "var^(1/4)") +
