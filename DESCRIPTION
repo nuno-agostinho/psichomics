@@ -1,7 +1,7 @@
 Package: psichomics
 Title: Graphical Interface for Alternative Splicing Quantification, Analysis and
     Visualisation
-Version: 1.8.1
+Version: 1.8.2
 Encoding: UTF-8
 Authors@R: c(
         person("Nuno", "Saraiva-Agostinho",
@@ -137,7 +137,7 @@ Collate:
     'help.R'
 biocViews: Sequencing, RNASeq, AlternativeSplicing,
     DifferentialSplicing, Transcription, GUI, PrincipalComponent,
-    Survival, BiomedicalInformatics, Transcriptomics,
+    Survival, BiomedicalInformatics, Transcriptomics, ImmunoOncology,
     Visualization, MultipleComparison, GeneExpression, DifferentialExpression
 URL: https://github.com/nuno-agostinho/psichomics
 BugReports: https://github.com/nuno-agostinho/psichomics/issues
