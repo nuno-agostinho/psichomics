@@ -86,9 +86,11 @@ aligners (currently, psichomics supports the output of the splice-aware aligner
 [STAR][STAR])
 
 ### Gene expression pre-processing
-* `rowMeans`: Calculate mean per row (useful to filter gene expression)
-* `rowVars`: Calculate variance per row (useful to filter gene expression)
+* `plotRowStats`: Plot statistics (median, variance, etc.) per gene
+* `plotGeneExprPerSample`: Plot distribution of gene expression per sample
+* `filterGeneExpr`: Filter genes based on their expression
 * `normaliseGeneExpression`: Normalise gene expression data
+* `convertGeneIdentifiers`: Convert between different gene identifiers
 
 ### PSI quantification
 * `getSplicingEventTypes`: Get quantifiable splicing event types
@@ -96,6 +98,9 @@ aligners (currently, psichomics supports the output of the splice-aware aligner
 files
 * `loadAnnotation`: Load an alternative splicing annotation file
 * `quantifySplicing`: Quantify alternative splicing
+* `plotRowStats`: Plot statistics (median, variance, etc.) per alternative 
+splicing event
+* `filterPSI`: Filter alternative splicing quantification
 
 **Custom alternative splicing annotation preparation**
 
@@ -146,6 +151,8 @@ survival curves
 * `survfit`: Compute estimates of survival curves
 * `survdiff`: Test differences between survival curves
 * `plotSurvivalCurves`: Plot survival curves
+* `plotSurvivalPvaluesByCutoff`: Plot p-values of survival difference between
+groups based on multiple cutoffs
 
 ### Differential analyses
 * `diffAnalyses`: Perform statistical analyses (including differential splicing

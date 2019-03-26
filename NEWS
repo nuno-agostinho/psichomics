@@ -17,10 +17,10 @@
     - In gene expression dataset summary, plot distribution of gene expression 
     per sample, distribution of library sizes and gene-wise mean and variance of
     gene expression across samples to provide the user tools to assess gene 
-    expression normalisation (`plotGeneExprPerSample()`, `plotDistribution` and 
-    `plotRowStats()`, respectively)
+    expression normalisation (`plotGeneExprPerSample()`, `plotDistribution()` 
+    and  `plotRowStats()`, respectively)
     - Convert between different gene identifiers (the original identifier is 
-    kept in some conditions, read `convertGeneIdentifiers`); in the visual
+    kept in some conditions, read `convertGeneIdentifiers()`); in the visual
     interface, when filtering and normalising gene expression, ENSEMBL 
     identifiers are converted to gene symbols, by default
 * Groups:
@@ -38,7 +38,7 @@
     - Display correlation results in a table (`as.table()`)
 * Survival:
     - Render p-value plot by cutoff in command-line interface 
-    (`plotPvaluesByCutoff()`)
+    (`plotSurvivalPvaluesByCutoff()`)
 * Gene, transcript and protein information:
     - Modify keywords used to search for PubMed articles
 
@@ -86,7 +86,7 @@
     - Fix error when groups contain samples outside the data being analysed
 * Gene, transcript and protein information:
     - Fix article title formatting (e.g. bold and italics)
-* Update citation with journal publication date
+* Update psichomics citation with journal publication date
 
 # 1.6.2 (2 October, 2018)
 
