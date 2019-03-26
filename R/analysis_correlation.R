@@ -160,7 +160,7 @@ subsetGeneExpressionFromMatchingGenes <- function(geneExpr, gene) {
     matched[unmatched] <- bestMatch
     matched <- matched[!is.na(matched)]
     if (length(matched) == 0) stop("Gene expression not found for input genes.")
-    if (is(geneExpr, "EList")) geneExpr <- data.frame(geneExpr)
+    if (is(geneExpr, "EList")) geneExpr <- geneExpr$E
     return(geneExpr[matched, , drop=FALSE])
 }
 
