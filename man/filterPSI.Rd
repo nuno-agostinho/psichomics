@@ -32,3 +32,11 @@ Boolean vector indicating which splicing events pass the thresholds
 \description{
 Filter alternative splicing quantification
 }
+\examples{
+# Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events
+annot <- readFile("ex_splicing_annotation.RDS")
+junctionQuant <- readFile("ex_junctionQuant.RDS")
+
+psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+psi[filterPSI(psi, minMedian=0.05, maxMedian=0.95, minRange=0.15), ]
+}

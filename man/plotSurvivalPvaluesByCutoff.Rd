@@ -37,24 +37,3 @@ p-value plot
 \description{
 Plot p-values of survival difference between groups based on multiple cutoffs
 }
-\examples{
-clinical <- read.table(text = "2549   NA ii  female
-                                840   NA i   female
-                                 NA 1204 iv    male
-                                 NA  383 iv  female
-                               1293   NA iii   male
-                                 NA 1355 ii    male")
-names(clinical) <- c("patient.days_to_last_followup", 
-                     "patient.days_to_death",
-                     "patient.stage_event.pathologic_stage",
-                     "patient.gender")
-timeStart  <- "days_to_death"
-event      <- "days_to_death"
-eventPSI <- c(0.1, 1, 0.9, 1, 0.2, 0.6)
-
-match <- getSubjectFromSample(samples, clinical, sampleInfo=sampleInfo)
-eventPSI <- assignValuePerPatient(eventPSI, match, clinical)
-
-plotSurvivalPvaluesByCutoff(clinical, psi, censoring="right", event, 
-                            timeStart)
-}

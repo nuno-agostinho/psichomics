@@ -29,3 +29,16 @@ Boolean vector indicating which genes have sufficiently large counts
 \description{
 Filter genes based on their expression
 }
+\examples{
+geneExpr <- readFile("ex_gene_expression.RDS")
+
+# Add some genes with low expression
+geneExpr <- rbind(geneExpr, 
+                  lowReadGene1=c(rep(4:5, 10)),
+                  lowReadGene2=c(rep(5:1, 10)),
+                  lowReadGene3=c(rep(10:1, 10)),
+                  lowReadGene4=c(rep(7:8, 10)))
+
+# Filter out genes with low reads across samples
+geneExpr[filterGeneExpr(geneExpr), ]
+}

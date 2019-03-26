@@ -285,13 +285,11 @@ parseUniprotXML <- function(xml) {
 #' @return \code{highcharter} object
 #' @export
 #' @examples
-#' \dontrun{
 #' protein <- "P38398"
 #' plotProtein(protein)
 #' 
 #' transcript <- "ENST00000488540"
 #' plotProtein(transcript)
-#' }
 plotProtein <- function(molecule) {
     display("Retrieving protein annotation from UniProt...")
     xml     <- queryUniprot(molecule, "xml")

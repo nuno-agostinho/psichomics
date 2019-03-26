@@ -13,12 +13,14 @@ NULL
 #' 
 #' @examples
 #' \dontrun{
-#'  session <- session$ns
-#'  buttonInput <- "takeMeThere"
-#'  buttonId <- ns(buttonInput)
-#'  dataType <- "Inclusion levels"
-#'  missingDataModal(session, buttonId, dataType)
-#'  observeEvent(input[[buttonInput]], missingDataGuide(dataType))
+#' if (shiny::isRunning()) {
+#'     session <- session$ns
+#'     buttonInput <- "takeMeThere"
+#'     buttonId <- ns(buttonInput)
+#'     dataType <- "Inclusion levels"
+#'     missingDataModal(session, buttonId, dataType)
+#'     observeEvent(input[[buttonInput]], missingDataGuide(dataType))
+#' }
 #' }
 missingDataModal <- function(session, dataType, buttonId) {
     template <- function(buttonLabel) {
@@ -160,10 +162,23 @@ getClinicalDataForSurvival <- function(..., formulaStr=NULL) {
 #' @param patients Character: patient identifiers (only required if the
 #' \code{clinical} argument is not handed)
 #' @param samples Character: samples to use when assigning values per patient 
-#' (if NULL, all samples will be used)
+#' (if \code{NULL}, all samples will be used)
 #' 
 #' @return Values per patient
 #' @export
+#' 
+#' @examples 
+#' # Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events
+#' annot <- readFile("ex_splicing_annotation.RDS")
+#' junctionQuant <- readFile("ex_junctionQuant.RDS")
+#'
+#' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+#' 
+#' # Match between subjects and samples
+#' match <- rep(paste("Patient", 1:3), 2)
+#' names(match) <- colnames(psi)
+#' 
+#' assignValuePerSubject(psi[3, ], match)
 getValuePerPatient <- function(data, match, clinical=NULL, patients=NULL,
                                samples=NULL) {
     hasOneRow     <- !is.null(nrow(data)) && nrow(data) == 1
@@ -172,11 +187,8 @@ getValuePerPatient <- function(data, match, clinical=NULL, patients=NULL,
         stop("Data needs to either have only one row or be a vector with ",
              "sample identifiers as names.")
     
-    if (is.null(clinical) && is.null(patients))
-        stop("You cannot leave both 'clinical' and 'patients' arguments ",
-             "as NULL.")
-    else if (is.null(patients))
-        patients <- rownames(clinical)
+    # TO DO: filter by subjects (allow to input no subjects, i.e. no filtering)
+    if (is.null(patients)) patients <- rownames(clinical)
     
     if (!is.numeric(data)) {
         ns   <- names(data)
@@ -1779,7 +1791,7 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE,
 #' @keywords internal
 #' 
 #' @examples
-#' renderBoxplot(data.frame(a=1:10, b=10:19, c=45:54))
+#' psichomics:::renderBoxplot(data.frame(a=1:10, b=10:19, c=45:54))
 renderBoxplot <- function(data, outliers=FALSE, sortByMedian=TRUE,
                           showXlabels=TRUE, title=NULL, 
                           seriesName="Gene expression") {

@@ -28,3 +28,7 @@ Total contribution of a variable is calculated as per:
 contributions of a variable to principal components (x and y) and Ex and Ey 
 are the eigenvalues of principal components (x and y)
 }
+\examples{
+pca <- performPCA(USArrests)
+calculateLoadingsContribution(pca)
+}

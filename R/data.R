@@ -151,10 +151,13 @@ loadTCGAsampleMetadata <- function(data) {
 #' junctionQuant <- readFile("ex_junctionQuant.RDS")
 #' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 #' 
-#' medianVar <- plotRowStats(table, x="median", y="var", xlim=c(0, 1)) +
+#' medianVar <- plotRowStats(psi, x="median", y="var", xlim=c(0, 1)) +
 #'     labs(x="Median PSI", y="PSI variance")
-#' rangeVar  <- plotRowStats(table, x="range", y="log10(var)", xlim=c(0, 1)) +
+#' medianVar
+#' 
+#' rangeVar  <- plotRowStats(psi, x="range", y="log10(var)", xlim=c(0, 1)) +
 #'     labs(x="PSI range", y="log10(PSI variance)")
+#' rangeVar
 plotRowStats <- function(data, x, y, xmin=NULL, xmax=NULL, ymin=NULL, ymax=NULL,
                          xlim=NULL, ylim=NULL) {
     stats <- c("range", "var", "median", "mean")

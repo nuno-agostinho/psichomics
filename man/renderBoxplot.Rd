@@ -23,6 +23,6 @@ Box plot
 Render boxplot
 }
 \examples{
-renderBoxplot(data.frame(a=1:10, b=10:19, c=45:54))
+psichomics:::renderBoxplot(data.frame(a=1:10, b=10:19, c=45:54))
 }
 \keyword{internal}

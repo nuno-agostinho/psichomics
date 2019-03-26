@@ -230,6 +230,10 @@ plotVariance <- function(pca) {
 #' @return Data frame containing the correlation between variables and selected 
 #' principal components and the contribution of variables to the selected 
 #' principal components (both individual and total contribution)
+#' 
+#' @examples 
+#' pca <- performPCA(USArrests)
+#' calculateLoadingsContribution(pca)
 calculateLoadingsContribution <- function(pca, pcX=1, pcY=2) {
     loadings <- data.frame(pca$rotation)[, c(pcX, pcY)]
     sdev <- pca$sdev[c(pcX, pcY)]
