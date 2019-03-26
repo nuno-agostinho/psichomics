@@ -4,8 +4,8 @@
 \alias{plotRowStats}
 \title{Plot sample statistics per row}
 \usage{
-plotRowStats(data, x, y, minX = NULL, maxX = NULL, minY = NULL,
-  maxY = NULL, xlim = NULL, ylim = NULL)
+plotRowStats(data, x, y, xmin = NULL, xmax = NULL, ymin = NULL,
+  ymax = NULL, xlim = NULL, ylim = NULL)
 }
 \arguments{
 \item{data}{Data frame or matrix}
@@ -14,7 +14,7 @@ plotRowStats(data, x, y, minX = NULL, maxX = NULL, minY = NULL,
 choose between \code{mean}, \code{median}, \code{var} or \code{range}
 (or transformations of those variables, e.g. \code{log10(var)})}
 
-\item{minX, maxX, minY, maxY}{Numeric: minimum and maximum X and Y values to 
+\item{xmin, xmax, ymin, ymax}{Numeric: minimum and maximum X and Y values to 
 draw in the plot}
 
 \item{xlim, ylim}{Numeric: X and Y axis range}

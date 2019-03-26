@@ -128,7 +128,7 @@ loadTCGAsampleMetadata <- function(data) {
 #' @param x,y Character: statistic to calculate and display in the plot per row;
 #' choose between \code{mean}, \code{median}, \code{var} or \code{range}
 #' (or transformations of those variables, e.g. \code{log10(var)})
-#' @param minX,maxX,minY,maxY Numeric: minimum and maximum X and Y values to 
+#' @param xmin,xmax,ymin,ymax Numeric: minimum and maximum X and Y values to 
 #' draw in the plot
 #' @param xlim,ylim Numeric: X and Y axis range
 #'
@@ -153,8 +153,8 @@ loadTCGAsampleMetadata <- function(data) {
 #'     labs(x="Median PSI", y="PSI variance")
 #' rangeVar  <- plotRowStats(table, x="range", y="log10(var)", xlim=c(0, 1)) +
 #'     labs(x="PSI range", y="log10(PSI variance)")
-plotRowStats <- function(data, x, y, minX=NULL, maxX=NULL, minY=NULL,
-                         maxY=NULL, xlim=NULL, ylim=NULL) {
+plotRowStats <- function(data, x, y, xmin=NULL, xmax=NULL, ymin=NULL, ymax=NULL,
+                         xlim=NULL, ylim=NULL) {
     stats <- c("range", "var", "median", "mean")
     if (!any(sapply(stats, grepl, x)) || !any(sapply(stats, grepl, y))) {
         stop("x and y require to contain one of the strings:",
@@ -173,9 +173,8 @@ plotRowStats <- function(data, x, y, minX=NULL, maxX=NULL, minY=NULL,
         x <- y <- NULL
         vars <- list()
         for (stat in stats) {
-            message(sprintf("Calculating %s per splicing event...", stat))
-            
             if (any(input[[stat]])) {
+                message(sprintf("Calculating %s per splicing event...", stat))
                 FUN <- switch(stat,
                               "var"=rowVars,
                               "mean"=rowMeans,
@@ -201,10 +200,10 @@ plotRowStats <- function(data, x, y, minX=NULL, maxX=NULL, minY=NULL,
     if (!is.null(ylim)) plot <- plot + ylim(ylim)
     
     # Intercept lines
-    if (!is.null(minX)) plot <- plot + geom_vline(xintercept=minX, colour="red")
-    if (!is.null(maxX)) plot <- plot + geom_vline(xintercept=maxX, colour="red")
-    if (!is.null(minY)) plot <- plot + geom_hline(yintercept=minY, colour="red")
-    if (!is.null(maxY)) plot <- plot + geom_hline(yintercept=maxY, colour="red")
+    if (!is.null(xmin)) plot <- plot + geom_vline(xintercept=xmin, colour="red")
+    if (!is.null(xmax)) plot <- plot + geom_vline(xintercept=xmax, colour="red")
+    if (!is.null(ymin)) plot <- plot + geom_hline(yintercept=ymin, colour="red")
+    if (!is.null(ymax)) plot <- plot + geom_hline(yintercept=ymax, colour="red")
     return(plot)
 }
 

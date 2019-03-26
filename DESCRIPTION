@@ -58,6 +58,7 @@ Imports:
     Rcpp (>= 0.12.14),
     recount,
     R.utils,
+    reshape2,
     shinyjs,
     stringr,
     stats,
