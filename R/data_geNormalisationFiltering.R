@@ -400,6 +400,8 @@ plotGeneExprPerSample <- function(geneExpr, ...) {
 
 #' Sum columns using an \code{\link{EList-class}} object
 #' @inheritParams base::colSums
+#' 
+#' @return Numeric vector with the sum of the columns
 #' @export
 setMethod("colSums", signature="EList", function(x, na.rm=FALSE, dims=1) {
     colSums(x$E, na.rm=na.rm, dims=dims)

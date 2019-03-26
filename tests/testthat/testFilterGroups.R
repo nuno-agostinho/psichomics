@@ -38,3 +38,4 @@ test_that("Groups are ignored with less non-missing values than the threshold", 
     ordered <- vector[3:12][order(names(vector[3:12]), decreasing = TRUE)]
     expect_identical(filtered, ordered)
 })
+

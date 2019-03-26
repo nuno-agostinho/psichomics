@@ -79,3 +79,4 @@ test_that("Plot UniProt protein", {
     expect_equal(plot$x$hc_opts$chart$zoomType, "x")
     expect_length(plot$x$hc_opts$series, 9)
 })
+
