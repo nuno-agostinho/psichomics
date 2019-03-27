@@ -1,13 +1,20 @@
+# Based on https://github.com/Bioconductor/BiocManager/blob/master/.travis.yml
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
-language: R
-r: bioc-devel
+language: r
 sudo: required
 cache: packages
-bioc_packages:
-  - GenomeInfoDbData
-  - DelayedArray
+
+r:
+  - bioc-devel
+  - bioc-release
+
+# Strict checks in place
+warnings_are_errors: false
+
+# Run binary install of testthat
 r_binary_packages:
+  - testthat
   - cluster
   - colourpicker
   - data.table
@@ -28,5 +35,21 @@ r_binary_packages:
   - survival
   - XML
   - xtable
+
+r_packages:
+  - knitr
+  - rmarkdown
+  - remotes
+  - utils
+
+bioc_packages:
+  - BiocVersion
+  - BiocStyle
+  
+# Test code coverage
+r_github_packages:
+  - jimhester/covr
+
 after_success:
-  - Rscript -e 'covr::codecov()'
+  - Rscript -e 'library(covr);codecov()'
+  
