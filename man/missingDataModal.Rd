@@ -30,11 +30,14 @@ Missing information modal template
 }
 \examples{
 \dontrun{
- session <- session$ns
- buttonInput <- "takeMeThere"
- buttonId <- ns(buttonInput)
- dataType <- "Inclusion levels"
- missingDataModal(session, buttonId, dataType)
- observeEvent(input[[buttonInput]], missingDataGuide(dataType))
+if (shiny::isRunning()) {
+    session <- session$ns
+    buttonInput <- "takeMeThere"
+    buttonId <- ns(buttonInput)
+    dataType <- "Inclusion levels"
+    missingDataModal(session, buttonId, dataType)
+    observeEvent(input[[buttonInput]], missingDataGuide(dataType))
 }
 }
+}
+\keyword{internal}

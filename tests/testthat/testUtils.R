@@ -145,3 +145,4 @@ test_that("Parse alternative splicing event from identifiers", {
                  c("constitutive1", "alternative1", "alternative2",
                    "constitutive2"))
 })
+

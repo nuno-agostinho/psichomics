@@ -26,3 +26,4 @@ Blend two HEX colours
 \examples{
 psichomics:::blendColours("#3f83a3", "#f48000")
 }
+\keyword{internal}

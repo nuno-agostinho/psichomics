@@ -1,17 +1,20 @@
 Package: psichomics
 Title: Graphical Interface for Alternative Splicing Quantification, Analysis and
     Visualisation
-Version: 1.8.1
+Version: 1.8.2
 Encoding: UTF-8
-Authors@R: c( person("Nuno", "Saraiva-Agostinho", ,
-        "nunodanielagostinho@gmail.com", role = c("aut", "cre")),
-        person(c("Nuno", "Luís"), "Barbosa-Morais",
-        role=c("aut", "led", "ths")),
-        person("André", "Falcão", role="ths"), person("Lina",
-        "Gallego Paez", role="ctb"), person("Marie", "Bordone",
-        role="ctb"), person("Teresa", "Maia", role="ctb"),
-        person("Mariana", "Ferreira", role="ctb"), person("Ana Carolina", 
-        "Leote", role="ctb"), person("Bernardo", "de Almeida", role="ctb"))
+Authors@R: c(
+        person("Nuno", "Saraiva-Agostinho",
+            email="nunodanielagostinho@gmail.com", role = c("aut", "cre")),
+        person(c("Nuno", "Luís"), "Barbosa-Morais", 
+            role=c("aut", "led", "ths")),
+        person("André", "Falcão", role="ths"), 
+        person("Lina", "Gallego Paez", role="ctb"), 
+        person("Marie", "Bordone", role="ctb"), 
+        person("Teresa", "Maia", role="ctb"),
+        person("Mariana", "Ferreira", role="ctb"),
+        person("Ana Carolina", "Leote", role="ctb"), 
+        person("Bernardo", "de Almeida", role="ctb"))
 Description: Interactive R package with an intuitive Shiny-based graphical 
     interface for alternative splicing quantification and integrative analyses 
     of alternative splicing and gene expression based on The Cancer Genome Atlas
@@ -28,8 +31,9 @@ Depends:
     shinyBS
 License: MIT + file LICENSE
 LazyData: true
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Imports:
+    AnnotationDbi,
     AnnotationHub,
     cluster,
     colourpicker,
@@ -42,6 +46,7 @@ Imports:
     fastmatch,
     ggplot2,
     ggrepel,
+    graphics,
     grDevices,
     highcharter (>= 0.5.0),
     htmltools,
@@ -54,6 +59,7 @@ Imports:
     Rcpp (>= 0.12.14),
     recount,
     R.utils,
+    reshape2,
     shinyjs,
     stringr,
     stats,
@@ -63,7 +69,8 @@ Imports:
     utils,
     XML,
     xtable,
-    methods
+    methods,
+    org.Hs.eg.db
 Suggests:
     testthat,
     knitr,

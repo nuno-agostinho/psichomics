@@ -11,15 +11,16 @@ correlationUI <- function(id) {
         value="corrParams", style="info",
         selectizeInput(ns("geneExpr"), "Gene expression", choices=NULL,
                        width="100%"),
-        selectizeGeneInput(ns("gene"), multiple=TRUE),
-        # actionLink(ns("addRBPs"), 
-        #            "Add RBPs from (Sebestyen et al., 2016)..."),
-        selectizeInput(
-            ns("ASevents"), "Alternative splicing events", choices=NULL,
-            multiple=TRUE, width="100%",
-            options=list(plugins=list('remove_button', 'drag_drop'))), 
-        hr(),
-        selectizeInput(
+        selectGroupsUI(ns("genes"), label="Genes from selected groups"),
+        radioButtons(
+            ns("ASeventsSelection"), "Alternative splicing event(s)",
+            c("Selected event"="selectedEvent",
+              "From selected groups"="byGroup")),
+        conditionalPanel(
+            sprintf("input[id='%s'] == '%s'",
+                    ns("ASeventsSelection"), "byGroup"),
+            selectGroupsUI(ns("ASevents"), label=NULL)),
+        hr(), selectizeInput(
             ns("method"), "Correlation method", width="100%",
             c("Pearson's product-moment correlation"="pearson", 
               "Kendall's rank correlation tau"="kendall",
@@ -77,6 +78,24 @@ correlationUI <- function(id) {
     scatterParams <- bsCollapsePanel(
         tagList(icon("sliders"), "Scatterplot options"), 
         value="scatterplotOptions", style="info",
+        radioButtons(
+            ns("genesToPlot"), "Genes to plot", width="100%",
+            c("All genes"="all", "Selected genes"="selected")),
+        conditionalPanel(
+            sprintf("input[id='%s'] == '%s'", ns("genesToPlot"), "selected"),
+            selectizeInput(ns("selectedGenesToPlot"), label="Genes to plot", 
+                           choices=NULL, width="100%", multiple=TRUE, 
+                           options=list(placeholder="Select genes to plot"))),
+        radioButtons(
+            ns("ASeventsToPlot"), "Alternative splicing events to plot",
+            c("All events"="all", "Selected events"="selected")),
+        conditionalPanel(
+            sprintf("input[id='%s'] == '%s'", ns("ASeventsToPlot"), "selected"),
+            selectizeInput(
+                ns("selectedASeventsToPlot"), 
+                label="Splicing events to plot",
+                choices=NULL, width="100%", multiple=TRUE,
+                options=list(placeholder="Select splicing events to plot"))),
         selectGroupsUI(
             ns("groupColour"), label="Sample colouring",
             noGroupsLabel="Same colour for all samples",
@@ -87,12 +106,13 @@ correlationUI <- function(id) {
         sliderInput(ns("alpha"), "Point opacity", min=0, max=100, value=20, 
                     step=1, post="%", width="100%"),
         bsCollapse(generalPlotOptions, loessOptions, densityOptions),
-        processButton(ns("applyPlotStyle"), label="Apply"))
+        processButton(ns("applyPlotStyle"), label="Plot"))
     
     options <- div(id=ns("options"), bsCollapse(open=c("corrParams"), 
                                                 corrParams, scatterParams))
     
     tagList(
+        uiOutput(ns("modal")),
         sidebar(
             errorDialog(paste("No alternative splicing quantification or gene",
                               "expression data are available."),
@@ -100,9 +120,9 @@ correlationUI <- function(id) {
                         buttonIcon="plus-circle", buttonId=ns("loadData")),
             hidden(options)),
         mainPanel(
-            uiOutput(ns("correlations")),
             hidden(dataTableOutput(ns("corTable"))),
-            hidden(downloadButton(ns("saveTable"), "Save table", "btn-info"))))
+            hidden(downloadButton(ns("saveTable"), "Save table", "btn-info")),
+            uiOutput(ns("correlations"))))
 }
 
 #' Subset gene expression based on (full or partial) matching genes
@@ -111,6 +131,7 @@ correlationUI <- function(id) {
 #' @param gene Character: genes to look for
 #' 
 #' @return Gene expression subset for the input genes
+#' @keywords internal
 subsetGeneExpressionFromMatchingGenes <- function(geneExpr, gene) {
     # Start by matching input genes with genes in gene expression
     exactMatch <- match(gene, rownames(geneExpr))
@@ -139,7 +160,8 @@ subsetGeneExpressionFromMatchingGenes <- function(geneExpr, gene) {
     matched[unmatched] <- bestMatch
     matched <- matched[!is.na(matched)]
     if (length(matched) == 0) stop("Gene expression not found for input genes.")
-    return(geneExpr[matched, ])
+    if (is(geneExpr, "EList")) geneExpr <- geneExpr$E
+    return(geneExpr[matched, , drop=FALSE])
 }
 
 #' Find splicing events based on given genes
@@ -148,6 +170,7 @@ subsetGeneExpressionFromMatchingGenes <- function(geneExpr, gene) {
 #' @param gene Character: gene
 #'
 #' @return Character vector containing alternative splicing events
+#' @keywords internal
 findASeventsFromGene <- function(psi, gene) {
     # If no AS events are discriminated, find AS events for the given genes
     ASevents <- rownames(psi)
@@ -211,11 +234,13 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
     
     # Calculate correlation betwenn GE and AS event(s)
     corrPerGene <- function(gene, ASevent, geneExpr, psi, ...) {
-        expr           <- geneExpr[gene, ]
+        updateProgress("Performing correlation analysis", console=FALSE)
+        
+        expr           <- geneExpr[gene, , drop=FALSE]
         exprNum        <- as.numeric(expr)
         names(exprNum) <- colnames(expr)
         
-        eventPSI           <- psi[ASevent, ]
+        eventPSI           <- psi[ASevent, , drop=FALSE]
         eventPSInum        <- as.numeric(eventPSI)
         names(eventPSInum) <- colnames(eventPSI)
         
@@ -239,6 +264,9 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
         return(res)
     }
     
+    updateProgress("Performing correlation analyses", 
+                   divisions=length(gene) * length(ASevents))
+    
     res <- lapply(ASevents, function(ASevent) {
         gene <- rownames(geneExprSubset)
         corr <- lapply(gene, corrPerGene, ASevent, geneExprSubset, psi, ...)
@@ -250,11 +278,68 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
     return(res)
 }
 
-#' Plot correlations
+#' Subset correlation results between gene expression and splicing 
+#' quantification
+#' 
+#' @param x \code{GEandAScorrelation} object to subset
+#' @param genes Character: genes
+#' @param ASevents Character: ASevents
+#' 
+#' @method [ GEandAScorrelation
+#' 
+#' @importFrom stats na.omit
+#' 
+#' @return \code{GEandAScorrelation} object subset
+#' @export
+`[.GEandAScorrelation` <- function(x, genes=NULL, ASevents=NULL) {
+    x <- unclass(x)
+    
+    if (!is.null(ASevents)) {
+        if (is.numeric(ASevents)) {
+            x <- x[ASevents]
+        } else if (any(ASevents %in% names(x))) {
+            ASevents <- ASevents[ASevents %in% names(x)]
+            x <- x[ASevents]
+        } else {
+            x <- NULL
+        }
+    }
+    # TODO: What if AS events do not match anything here?
+    if (is.null(x)) return(NULL)
+    
+    if (!is.null(genes)) {
+        for (eachASevent in seq(x)) {
+            if (is.numeric(genes)) {
+                x[[eachASevent]] <- x[[eachASevent]][genes]
+            } else {
+                ns <- names(x[[eachASevent]])
+                matched <- c(match(genes, ns),
+                             match(genes, gsub("\\|.*", "", ns)))
+                matched <- na.omit(matched)
+                geneNames <- ns[matched]
+                if (any(geneNames %in% ns)) {
+                    x[[eachASevent]] <- x[[eachASevent]][geneNames]
+                } else {
+                    x[[eachASevent]] <- NULL
+                }
+            }
+        }
+    }
+    
+    x <- lapply(x, function(item) Filter(Negate(is.null), item))
+    x <- Filter(length, x)
+    if (length(x) > 0 && !is.null(x)) {
+        class(x) <- c("GEandAScorrelation", class(x))
+    } else {
+        x <- NULL
+    }
+    return(x)
+}
+
+#' Display results of correlation analyses
 #'
-#' Plot correlation results from \code{\link{correlateGEandAS}}
-#'
-#' @param corr List of correlations
+#' @param x \code{GEandAScorrelation} object (obtained after running
+#'   \code{\link{correlateGEandAS}})
 #' @param loessSmooth Boolean: plot a smooth curve computed by
 #'   \code{stats::loess.smooth}?
 #' @param autoZoom Boolean: automatically set the range of PSI values based on
@@ -282,8 +367,9 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #' aes theme_light scale_colour_manual geom_density_2d
 #' @importFrom stats loess.smooth
 #'
+#' @method plot GEandAScorrelation
 #' @export
-#' @return Renders plots for each correlation in \code{corr}
+#' @return Plots, summary tables or results of correlation analyses
 #'
 #' @examples
 #' annot <- readFile("ex_splicing_annotation.RDS")
@@ -293,17 +379,22 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #' geneExpr <- readFile("ex_gene_expression.RDS")
 #' corr <- correlateGEandAS(geneExpr, psi, "ALDOA")
 #' 
+#' # Quick display of the correlation results per splicing event and gene
+#' print(corr)
+#' 
+#' # Table summarising the correlation analysis results
+#' as.table(corr)
+#' 
+#' # Correlation analysis plots
 #' colourGroups <- list(Normal=paste("Normal", 1:3), 
 #'                      Tumour=paste("Cancer", 1:3))
 #' attr(colourGroups, "Colour") <- c(Normal="#00C65A", Tumour="#EEE273")
-#' plotCorrelation(corr, colourGroups=colourGroups, alpha=1)
-plotCorrelation <- function(corr, autoZoom=FALSE, loessSmooth=TRUE,
-                            loessFamily=c("gaussian", "symmetric"),
-                            colour="black", alpha=0.2, size=1.5,
-                            loessColour="red", loessAlpha=1, loessWidth=0.5,
-                            fontSize=12, ..., colourGroups=NULL, legend=FALSE,
-                            showAllData=TRUE, density=FALSE, 
-                            densityColour="blue", densityWidth=0.5) {
+#' plot(corr, colourGroups=colourGroups, alpha=1)
+plot.GEandAScorrelation <- function(
+    x, autoZoom=FALSE, loessSmooth=TRUE, loessFamily=c("gaussian", "symmetric"),
+    colour="black", alpha=0.2, size=1.5, loessColour="red", loessAlpha=1, 
+    loessWidth=0.5, fontSize=12, ..., colourGroups=NULL, legend=FALSE,
+    showAllData=TRUE, density=FALSE, densityColour="blue", densityWidth=0.5) {
     loessFamily <- match.arg(loessFamily)
     
     plotCorrPerASevent <- function(single) {
@@ -327,24 +418,31 @@ plotCorrelation <- function(corr, autoZoom=FALSE, loessSmooth=TRUE,
             groupNames   <- sampleColour[match(names(expr),
                                                unlist(colourGroups))]
             lookupColour <- attr(colourGroups, "Colour")
-            sampleColour <- lookupColour[groupNames]
             
-            if (showAllData) {
-                names(sampleColour)[is.na(names(sampleColour))] <- "NA"
-                legendColours <- c(lookupColour, "NA"=colour)
+            if (!is.null(lookupColour)) {
+                sampleColour <- lookupColour[groupNames]
+                
+                if (showAllData) {
+                    names(sampleColour)[is.na(names(sampleColour))] <- "NA"
+                    legendColours <- c(lookupColour, "NA"=colour)
+                } else {
+                    nonNAs        <- !is.na(sampleColour)
+                    event         <- event[nonNAs]
+                    expr          <- expr[nonNAs]
+                    sampleColour  <- sampleColour[nonNAs]
+                    legendColours <- lookupColour
+                }
+                
+                plot <- plot +
+                    geom_point(aes(colour=names(sampleColour)), na.rm=TRUE, 
+                               alpha=alpha, size=size) +
+                    scale_colour_manual(name="", values=legendColours,
+                                        guide=if(legend) "legend" else FALSE)
             } else {
-                nonNAs        <- !is.na(sampleColour)
-                event         <- event[nonNAs]
-                expr          <- expr[nonNAs]
-                sampleColour  <- sampleColour[nonNAs]
-                legendColours <- lookupColour
+                plot <- plot +
+                    geom_point(aes(colour=sampleColour), na.rm=TRUE, 
+                               alpha=alpha, size=size)
             }
-            
-            plot <- plot +
-                geom_point(aes(colour=names(sampleColour)), na.rm=TRUE, 
-                           alpha=alpha, size=size) +
-                scale_colour_manual(name="", values=legendColours,
-                                    guide=if(legend) "legend" else FALSE)
         } else {
             plot <- plot + 
                 geom_point(na.rm=TRUE, colour=colour, alpha=alpha, size=size)
@@ -378,14 +476,18 @@ plotCorrelation <- function(corr, autoZoom=FALSE, loessSmooth=TRUE,
         return(plot + theme_light(fontSize))
     }
     
-    lapply(corr, lapply, plotCorrPerASevent)
+    lapply(x, lapply, plotCorrPerASevent)
 }
 
-#' @rdname plotCorrelation
-plot.GEandAScorrelation <- plotCorrelation
+#' @rdname plot.GEandAScorrelation
+#' @export
+plotCorrelation <- plot.GEandAScorrelation
 
-print.GEandAScorrelation <- function(object) {
-    for (item in object) {
+#' @rdname plot.GEandAScorrelation
+#' @method print GEandAScorrelation
+#' @export
+print.GEandAScorrelation <- function(x, ...) {
+    for (item in x) {
         for (elem in item) {
             consoleWidth <- options("width")
             cat(paste(rep("=", consoleWidth), collapse=""), fill=TRUE)
@@ -399,12 +501,59 @@ print.GEandAScorrelation <- function(object) {
     }
 }
 
+#' @rdname plot.GEandAScorrelation
+#' @param pvalueAdjust Character: method used to adjust p-values (see Details)
+#' 
+#' @details 
+#' The following methods for p-value adjustment are supported by using the 
+#' respective string in the \code{pvalueAdjust} argument:
+#' \itemize{
+#'      \item{\code{none}: do not adjust p-values}
+#'      \item{\code{BH}: Benjamini-Hochberg's method (false discovery rate)}
+#'      \item{\code{BY}: Benjamini-Yekutieli's method (false discovery rate)}
+#'      \item{\code{bonferroni}: Bonferroni correction (family-wise error rate)}
+#'      \item{\code{holm}: Holm's method (family-wise error rate)}
+#'      \item{\code{hochberg}: Hochberg's method (family-wise error rate)}
+#'      \item{\code{hommel}: Hommel's method (family-wise error rate)}
+#' }
+#' @method as.table GEandAScorrelation
+#' @export
+as.table.GEandAScorrelation <- function (x, pvalueAdjust="BH", ...) {
+    prepareCol <- function(object, FUN) unlist(lapply(object, lapply, FUN))
+    
+    gene     <- prepareCol(x, function(i) i[["gene"]])
+    gene     <- prepareCol(x, function(i) i[["gene"]])
+    eventID  <- prepareCol(x, function(i) i[["eventID"]])
+    eventID  <- gsub("_", " ", eventID, fixed=TRUE)
+    
+    estimate <- prepareCol(x, function(i) i[["cor"]][["estimate"]][[1]])
+    pvalue   <- prepareCol(x, function(i) i[["cor"]][["p.value"]])
+    method   <- prepareCol(x, function(i) i[["cor"]][["method"]])
+    qvalue   <- p.adjust(pvalue, method=pvalueAdjust)
+    qvalueLabel <- sprintf("p-value (%s adjusted)", pvalueAdjust)
+    
+    data <- data.frame(eventID, gene, method, estimate, pvalue, qvalue)
+    if (length(unique(method)) > 1) {
+        statCols <- c("Method", "Statistical value")
+    } else {
+        data$method <- NULL
+        statCols    <- unique(method)
+    }
+    colnames(data) <- c("Alternative splicing event", "Gene", statCols,
+                        "p-value", qvalueLabel)
+    rownames(data) <- NULL
+    return(data)
+}
+
 #' @rdname appServer
 #' 
 #' @importFrom shiny renderUI observeEvent isolate tagList tags
 #' @importFrom highcharter renderHighchart
 #' @importFrom shinyjs show hide toggle
+#' @importFrom graphics plot
 correlationServer <- function(input, output, session) {
+    selectGroupsServer(session, "ASevents", "ASevents")
+    selectGroupsServer(session, "genes", "Genes")
     selectGroupsServer(session, "groupFilter", "Samples")
     selectGroupsServer(session, "groupColour", "Samples")
     
@@ -430,14 +579,6 @@ correlationServer <- function(input, output, session) {
             hide("colour", anim=TRUE)
         }
     })
-        
-    # Update available gene choices depending on gene expression data loaded
-    # Reactive avoids updating if the input remains the same
-    updateGeneChoices <- reactive({
-        geneExpr <- getGeneExpression()[[input$geneExpr]]
-        genes <- rownames(geneExpr)
-        updateSelectizeInput(session, "gene", choices=genes, server=TRUE)
-    })
     
     # Update gene expression data
     observe({
@@ -448,80 +589,124 @@ correlationServer <- function(input, output, session) {
         }
     })
     
-    # Update gene choices
-    observe({
-        geneExpr <- getGeneExpression()
-        if ( !is.null(geneExpr) ) {
-            updateGeneChoices()
-            show("gene")
+    displayCorrTable <- reactive({
+        corr <- getCorrelation()
+        if (is.null(corr)) return(NULL)
+        data <- as.table(corr)
+        
+        show("corTable")
+        output$corTable <- renderDataTable(
+            data, style="bootstrap", server=TRUE, rownames=FALSE, 
+            selection="none", options=list(scrollX=TRUE))
+        
+        show("saveTable")
+        output$saveTable <- downloadHandler(
+            filename=function() paste(getCategory(), "Correlations"),
+            content=function(con)
+                write.table(data, con, quote=FALSE, sep="\t", row.names=FALSE))
+    })
+    
+    performCorrelationAnalyses <- reactive({
+        isolate({
+            psi         <- getInclusionLevels()
+            
+            if (input$ASeventsSelection == "selectedEvent") {
+                ASevents <- getASevent()
+            } else if (input$ASeventsSelection == "byGroup") {
+                ASevents <- getSelectedGroups(input, "ASevents", "ASevents",
+                                              filter=rownames(psi))
+                ASevents <- unlist(ASevents)
+            }            
+            geneExpr    <- getGeneExpression(input$geneExpr)
+            gene        <- getSelectedGroups(input, "genes", "Genes",
+                                             filter=rownames(geneExpr))
+            gene        <- unlist(gene)
+            
+            method      <- input$method
+            alternative <- input$alternative
+        })
+        # Filter samples based on groups
+        groupFilter <- isolate(getSelectedGroups(
+            input, "groupFilter", "Samples", 
+            filter=intersect(colnames(geneExpr), colnames(psi))))
+        groupFilter <- unname(unlist(groupFilter))
+        if (is.null(groupFilter)) groupFilter <- TRUE
+        geneExpr <- geneExpr[ , groupFilter, drop=FALSE]
+        psi      <- psi[ , groupFilter, drop=FALSE]
+        
+        # Perform correlation analyses
+        startProcess("correlate")
+        corr <- suppressWarnings(
+            correlateGEandAS(geneExpr, psi, gene, ASevents, method=method, 
+                             alternative=alternative))
+        setCorrelation(corr)
+        displayCorrTable()
+        endProcess("correlate")
+    })
+    
+    observeEvent(input$correlate, {
+        ns <- session$ns
+        isolate({
+            psi         <- getInclusionLevels()
+            
+            if (input$ASeventsSelection == "selectedEvent") {
+                ASevents <- getASevent()
+            } else if (input$ASeventsSelection == "byGroup") {
+                ASevents <- getSelectedGroups(input, "ASevents", "ASevents",
+                                              filter=rownames(psi))
+                ASevents <- unlist(ASevents)
+            }   
+            
+            geneExpr    <- getGeneExpression(input$geneExpr)
+            gene        <- getSelectedGroups(input, "genes", "Genes",
+                                             filter=rownames(geneExpr))
+            gene        <- unlist(gene)
+            
+            cor <- getCorrelation()
+        })
+        
+        if (is.null(psi)) {
+            missingDataModal(session, "Inclusion levels",
+                             ns("missingInclusionLevels"))
+        } else if (is.null(geneExpr)) {
+            errorModal(session, "No gene expression selected", 
+                       "Please selected gene expression data",
+                       caller="Correlation analysis")
+        } else if (is.null(gene) || identical(gene, "")) {
+            errorModal(session, "No gene selected", "Please select genes",
+                       caller="Correlation analysis")
+        } else if (is.null(ASevents) || identical(ASevents, "")) {
+            errorModal(session, "No alternative splicing event selected",
+                       "Please select alternative splicing events",
+                       caller="Correlation analysis")
+        } else if (!is.null(cor)) {
+            warningModal(session, "Correlation analyses already performed",
+                         "Do you wish to discard the current results?",
+                         footer=actionButton(ns("replace"), "Discard",
+                                             class="btn-warning",
+                                             "data-dismiss"="modal"),
+                         caller="Correlation analyses")
         } else {
-            hide("gene")
+            performCorrelationAnalyses()
         }
     })
     
-    # Update alternative splicing events
-    observe({
-        psi  <- getInclusionLevels()
-        if (!is.null(psi)) {
-            updateSelectizeInput(
-                session, "ASevents", 
-                choices=c("Type to search for a splicing event..."="",
-                          rownames(psi)))
-        }
-    })
-    
-    # Update selected alternative splicing events based on selected gene
-    observeEvent(input$gene, {
-        geneExpr <- getGeneExpression()[[input$geneExpr]]
-        gene <- input$gene
-        ASevents <- isolate(input$ASevents)
-        psi  <- getInclusionLevels()
-        
-        if (is.null(psi)) return(NULL)
-        
-        allEvents <- rownames(psi)
-        names(allEvents) <- parseSplicingEvent(allEvents, char=TRUE)
-        
-        if (!is.null(ASevents)) return(NULL)
-        
-        # Automatically change AS events to those of selected genes if no AS
-        # event has yet been selected
-        if (!is.null(geneExpr) && !is.null(gene) && !identical(gene, "")) {
-            
-            isTcgaStyle <- all(grepl("|", head(rownames(geneExpr)), fixed=TRUE))
-            
-            query <- gene
-            if (isTcgaStyle) query <- strsplit(gene, "|", fixed=TRUE)[[1]][[1]]
-            
-            if ( !identical(query, "?") ) {
-                query <- sprintf("_%s|%s$|/%s/", query, query, query)
-                ASevents <- grep(query, allEvents, value=TRUE)
-            } else {
-                ASevents <- character(0)
-            }
-            
-            if (length(ASevents) == 0) {
-                choices  <- c("No events found for the selected gene"="")
-                selected <- NULL
-            } else {
-                choices  <- c("Select an alternative splicing event"="")
-                selected <- ASevents
-            }
-            
-            choices <- c(choices, allEvents)
-            updateSelectizeInput(session, "ASevents", choices=choices, 
-                                 selected=selected, server=TRUE)
-        } else {
-            choices <- c("Select an alternative splicing event"="", allEvents)
-            updateSelectizeInput(session, "ASevents", choices=choices, 
-                                 server=TRUE)
-        }
-    })
+    # Replace previously performed differential analyses
+    observeEvent(input$replace, performCorrelationAnalyses())
     
     # Plot correlation analyses
     plotShinyCorr <- reactive({
         ns <- session$ns
         corr <- getCorrelation()
+        if (is.null(corr) || !is(corr, "GEandAScorrelation")) return(NULL)
+        
+        genes <- input$selectedGenesToPlot
+        if (input$genesToPlot == "selected" && !is.null(genes)) 
+            corr <- corr[genes=genes]
+        
+        ASevents <- input$selectedASeventsToPlot
+        if (input$ASeventsToPlot == "selected" && !is.null(ASevents))
+            corr <- corr[ASevents=ASevents]
         if (is.null(corr)) return(NULL)
         
         autoZoom    <- input$zoom
@@ -546,7 +731,7 @@ correlationServer <- function(input, output, session) {
         groupColour <- getSelectedGroups(
             input, "groupColour", "Samples", filter=names(corr[[1]][[1]]$psi))
         
-        plots <- plotCorrelation(
+        plots <- plot(
             corr, colour=colour, alpha=alpha, size=size, fontSize=fontSize,
             autoZoom=autoZoom, loessFamily=loessFamily, loessSmooth=loessSmooth,
             loessColour=loessColour, loessWidth=loessWidth, 
@@ -581,8 +766,8 @@ correlationServer <- function(input, output, session) {
             if ( length(cols) > 0 && height > 0 ) {
                 height <- paste0(height, "px")
                 tagList(
-                    distributeByCol(ns("plot"), length(plots), cols, height), 
-                    hr())
+                    hr(),
+                    distributeByCol(ns("plot"), length(plots), cols, height))
             }
         })
         
@@ -590,98 +775,27 @@ correlationServer <- function(input, output, session) {
             output[[paste0("plot", i)]] <- renderPlot(plots[[i]]))
     })
     
-    displayCorrTable <- reactive({
-        corr <- getCorrelation()
-        if (is.null(corr)) return(NULL)
-        
-        # Prepare table with correlation analyses
-        eventID  <- unlist(lapply(corr, lapply, "[[", "eventID"))
-        gene     <- unlist(lapply(corr, lapply, "[[", "gene"))
-        estimate <- unlist(lapply(corr, lapply, 
-                                  function(i) i[["cor"]][["estimate"]][[1]]))
-        pvalue   <- unlist(lapply(corr, lapply, 
-                                  function(i) i[["cor"]][["p.value"]]))
-        method   <- unlist(lapply(corr, lapply, 
-                                  function(i) i[["cor"]][["method"]]))
-        qvalue   <- p.adjust(pvalue)
-        
-        method <- unique(method)
-        if (length(method) != 1) 
-            stop("Only one correlation method is currently supported.")
-        
-        data           <- data.frame(gsub("_", " ", eventID, fixed=TRUE), 
-                                     gene, estimate, pvalue, qvalue)
-        colnames(data) <- c("Alternative splicing event", "Protein",
-                            method, "p-value", "p-value (BH adjusted)")
-        
-        show("corTable")
-        output$corTable <- renderDataTable(
-            data, style="bootstrap", server=TRUE, rownames=FALSE, 
-            selection="none", options=list(scrollX=TRUE))
-        
-        show("saveTable")
-        output$saveTable <- downloadHandler(
-            filename=function() paste(getCategory(), "Correlations"),
-            content=function(con)
-                write.table(data, con, quote=FALSE, sep="\t", row.names=FALSE))
-    })
-    
-    observeEvent(input$correlate, {
-        ns <- session$ns
-        
-        isolate({
-            geneExpr    <- getGeneExpression()[[input$geneExpr]]
-            psi         <- getInclusionLevels()
-            gene        <- input$gene
-            ASevents    <- input$ASevents
-            method      <- input$method
-            alternative <- input$alternative
-        })
-        
-        if (is.null(psi)) {
-            missingDataModal(session, "Inclusion levels",
-                             ns("missingInclusionLevels"))
-            return(NULL)
-        } else if (is.null(geneExpr)) {
-            errorModal(session, "No gene expression selected", 
-                       "Please selected gene expression data",
-                       caller="Correlation analysis")
-            return(NULL)
-        } else if (is.null(gene) || identical(gene, "")) {
-            errorModal(session, "No gene selected", "Please select a gene",
-                       caller="Correlation analysis")
-            return(NULL)
-        } else if (is.null(ASevents) || identical(ASevents, "")) {
-            errorModal(session, "No alternative splicing event selected",
-                       "Please select one or more alternative splicing events",
-                       caller="Correlation analysis")
-            return(NULL)
-        }
-        
-        # Filter samples based on groups
-        groupFilter <- isolate(getSelectedGroups(
-            input, "groupFilter", "Samples", 
-            filter=intersect(colnames(geneExpr), colnames(psi))))
-        groupFilter <- unname(unlist(groupFilter))
-        if (is.null(groupFilter)) groupFilter <- TRUE
-        geneExpr <- geneExpr[ , groupFilter, drop=FALSE]
-        psi      <- psi[ , groupFilter, drop=FALSE]
-        
-        # Perform correlation analyses
-        startProcess("correlate")
-        corr <- suppressWarnings(
-            correlateGEandAS(geneExpr, psi, gene, ASevents, method=method, 
-                             alternative=alternative))
-        setCorrelation(corr)
-        plotShinyCorr()
-        displayCorrTable()
-        endProcess("correlate")
-    })
-    
     observeEvent(input$applyPlotStyle, {
         startProcess("applyPlotStyle")
         plotShinyCorr()
         endProcess("applyPlotStyle")
+    })
+    
+    # Update choices to select genes and alternative splicing events to plot
+    observe({
+        corr <- getCorrelation()
+        if (!is.null(corr)) {
+            geneChoices    <- unique(unlist(sapply(corr, names)))
+            ASeventChoices <- names(corr)
+            names(ASeventChoices) <- parseSplicingEvent(names(corr), char=TRUE)
+        } else {
+            geneChoices    <- character(0)
+            ASeventChoices <- character(0)
+        }
+        updateSelectizeInput(session, "selectedGenesToPlot", 
+                             choices=geneChoices)
+        updateSelectizeInput(session, "selectedASeventsToPlot", 
+                             choices=ASeventChoices)
     })
     
     observeEvent(input$missingInclusionLevels, 

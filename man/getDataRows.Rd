@@ -30,3 +30,4 @@ Get rows of a data frame between two row indexes
 For a given iteration i, returns data from \code{firstRow[i]} to
 \code{lastRow[i]}
 }
+\keyword{internal}

@@ -19,3 +19,4 @@ HTML element to be included in a navigation bar
 \description{
 Create a special selectize input in the navigation bar
 }
+\keyword{internal}

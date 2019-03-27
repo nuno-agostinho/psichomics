@@ -35,7 +35,7 @@ single gene}
 \code{clinical} argument is not handed)}
 
 \item{samples}{Character: samples to use when assigning values per patient 
-(if NULL, all samples will be used)}
+(if \code{NULL}, all samples will be used)}
 
 \item{psi}{Data frame or matrix: values per sample}
 
@@ -46,4 +46,17 @@ Values per patient
 }
 \description{
 Assign average sample values to their corresponding patients
+}
+\examples{
+# Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events
+annot <- readFile("ex_splicing_annotation.RDS")
+junctionQuant <- readFile("ex_junctionQuant.RDS")
+
+psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+
+# Match between subjects and samples
+match <- rep(paste("Patient", 1:3), 2)
+names(match) <- colnames(psi)
+
+assignValuePerSubject(psi[3, ], match)
 }

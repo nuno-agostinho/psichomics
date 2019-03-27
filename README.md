@@ -2,9 +2,9 @@
 
 > **Original article:**
 >
-> Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2018). 
+> Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2019). 
 [psichomics: graphical application for alternative splicing quantification and analysis][article].
-*Nucleic Acids Research*.
+*Nucleic Acids Research*. 47(2), e7.
 
 Interactive R package with an intuitive Shiny-based graphical 
 interface for alternative splicing quantification and integrative analyses of

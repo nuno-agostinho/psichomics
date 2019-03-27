@@ -20,3 +20,4 @@ and \code{FALSE} for files with non-matching \code{md5sums}
 Compute the 32-byte \code{MD5} hashes of one or more files and check with
 given \code{md5} file
 }
+\keyword{internal}

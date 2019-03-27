@@ -17,3 +17,4 @@ returns an empty list if the input is a list with only NULL elements)
 \description{
 Filter NULL elements from vector or list
 }
+\keyword{internal}

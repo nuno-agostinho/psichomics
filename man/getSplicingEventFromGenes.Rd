@@ -2,20 +2,29 @@
 % Please edit documentation in R/utils.R
 \name{getSplicingEventFromGenes}
 \alias{getSplicingEventFromGenes}
-\title{Retrieve alternative splicing events based on given genes}
+\alias{getGenesFromSplicingEvents}
+\title{Get alternative splicing events from genes or vice-versa}
 \usage{
 getSplicingEventFromGenes(genes, ASevents)
+
+getGenesFromSplicingEvents(ASevents)
 }
 \arguments{
 \item{genes}{Character: gene symbols (or TCGA-styled gene symbols)}
 
-\item{ASevents}{Character: alternative splicing events to be matched}
+\item{ASevents}{Character: alternative splicing events}
 }
 \value{
-Character containing respective alternative splicing events
+Named character containing alternative splicing events or genes and 
+their respective genes or alternative splicing events as names (depending on
+the function in use)
 }
 \description{
-Retrieve alternative splicing events based on given genes
+Get alternative splicing events from genes or vice-versa
+}
+\details{
+A list of alternative splicing events is required to run 
+\code{getSplicingEventFromGenes}
 }
 \examples{
 ASevents <- c("SE_1_+_201763003_201763300_201763374_201763594_NAV1", 
@@ -24,5 +33,18 @@ ASevents <- c("SE_1_+_201763003_201763300_201763374_201763594_NAV1",
               "SE_1_+_181019422_181022709_181022813_181024361_MR1",
               "SE_1_+_181695298_181700311_181700367_181701520_CACNA1E")
 genes <- c("NAV1", "SMG7", "MR1", "HELLO")
-getSplicingEventFromGenes(genes, ASevents)
+
+# Get splicing events from genes
+matchedASevents <- getSplicingEventFromGenes(genes, ASevents)
+
+# Names of matched events are the matching input genes
+names(matchedASevents)
+matchedASevents
+
+# Get genes from splicing events
+matchedGenes <- getGenesFromSplicingEvents (ASevents)
+
+# Names of matched genes are the matching input alternative splicing events
+names(matchedGenes)
+matchedGenes
 }

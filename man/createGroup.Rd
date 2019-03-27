@@ -4,7 +4,8 @@
 \alias{createGroup}
 \title{Prepare to create group according to specific details}
 \usage{
-createGroup(session, input, output, id, type)
+createGroup(session, input, output, id, type, selected = NULL,
+  expr = NULL, groupNames = NULL)
 }
 \arguments{
 \item{session}{Shiny session}
@@ -16,6 +17,12 @@ createGroup(session, input, output, id, type)
 \item{id}{Character: identifier of the group selection}
 
 \item{type}{Character: type of group to create}
+
+\item{selected}{Character: selected item}
+
+\item{expr}{Character: expression}
+
+\item{groupNames}{Character: group names}
 }
 \value{
 NULL (this function is used to modify the Shiny session's state)
@@ -23,3 +30,4 @@ NULL (this function is used to modify the Shiny session's state)
 \description{
 Prepare to create group according to specific details
 }
+\keyword{internal}

@@ -30,3 +30,4 @@ Creates a template of alternative splicing junctions
 \examples{
 psichomics:::createJunctionsTemplate(nrow = 8)
 }
+\keyword{internal}

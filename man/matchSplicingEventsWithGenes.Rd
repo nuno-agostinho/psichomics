@@ -16,3 +16,4 @@ respective gene as their name
 \description{
 Match splicing events with respective genes
 }
+\keyword{internal}

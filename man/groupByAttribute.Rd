@@ -2,9 +2,21 @@
 % Please edit documentation in R/groups.R
 \name{groupByAttribute}
 \alias{groupByAttribute}
-\title{User interface to group by attribute}
+\alias{groupByPreMadeList}
+\alias{groupById}
+\alias{groupByExpression}
+\alias{groupByGrep}
+\title{Data grouping interface}
 \usage{
 groupByAttribute(ns, cols, id, example)
+
+groupByPreMadeList(ns, data, id)
+
+groupById(ns, id)
+
+groupByExpression(ns, id)
+
+groupByGrep(ns, cols, id)
 }
 \arguments{
 \item{ns}{Namespace function}
@@ -14,10 +26,12 @@ groupByAttribute(ns, cols, id, example)
 \item{id}{Character: identifier}
 
 \item{example}{Character: text to show as an example}
+
+\item{data}{List: list of groups with elements}
 }
 \value{
 HTML elements
 }
 \description{
-User interface to group by attribute
+Data grouping interface
 }

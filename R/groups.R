@@ -24,8 +24,9 @@
 #' \code{noGroupsLabel} and \code{groupsLabel} arguments.
 #' 
 #' @return \code{selectGroupsUI}: Interface for group selection
+#' @keywords internal
 selectGroupsUI <- function (
-    id, label, placeholder="Click 'Groups' to create or edit groups",
+    id, label, placeholder="Type to search for groups",
     noGroupsLabel=NULL, groupsLabel=NULL, maxItems=NULL, 
     returnAllDataLabel=NULL, returnAllDataValue=FALSE) {
     
@@ -33,10 +34,9 @@ selectGroupsUI <- function (
     groupSelect <- selectizeInput(
         id, label, choices=NULL, multiple=TRUE, width="auto", options=list(
             plugins=list('remove_button', 'drag_drop'), maxItems=maxItems, 
-            searchField=list("value", "label"),
-            placeholder=placeholder, render = I(
-                '{ option: renderGroupSelection, 
-                item: renderGroupSelection }')))
+            searchField=list("value", "label"), placeholder=placeholder, 
+            render=I(
+                '{option: renderGroupSelection, item: renderGroupSelection}')))
     
     if ( !is.null(label) ) {
         if ( is.null(noGroupsLabel) ) {
@@ -104,8 +104,8 @@ selectGroupsServer <- function(session, id, type, preference=NULL) {
             # Disable selection and animate button when clicking disabled input
             groups <- list()
             disable(id)
-            onclick(id, runjs(paste0("$('#", ns(editId), 
-                                     "').animateCss('rubberBand');")))
+            onclick(id, runjs(
+                paste0("$('#", ns(editId), "').animateCss('rubberBand');")))
         } else {
             enable(id)
             onclick(id, NULL)
@@ -126,27 +126,31 @@ selectGroupsServer <- function(session, id, type, preference=NULL) {
             if (elem2 %in% colnames(groupTable))
                 elem2Number <- sapply(groupTable[ , elem2], length)
             
-            elem1 <- gsub("ASevents", "AS events", elem1)
-            if (!is.null(elem1Number) && !is.null(elem2Number))
-                ns <- sprintf("%s %s, %s %s", elem1Number, elem1, elem2Number,
-                              elem2)
-            else if (!is.null(elem1Number))
-                ns <- sprintf("%s %s", elem1Number, elem1)
-            else if (!is.null(elem2Number))
-                ns <- sprintf("%s %s", elem2Number, elem2)
+            ns1 <- ns2 <- NULL
+            if (!is.null(elem1Number)) {
+                elem1 <- gsub("ASevents", "AS events", elem1)
+                elem1 <- ifelse(elem1Number == 1, gsub(".$", "", elem1), elem1)
+                ns1 <- sprintf("%s %s", elem1Number, elem1)
+            }
+            if (!is.null(elem2Number)) {
+                elem2 <- ifelse(elem2Number == 1, gsub(".$", "", elem2), elem2)
+                ns2 <- sprintf("%s %s", elem2Number, elem2)
+            }
+            
+            if (!is.null(ns1) && !is.null(ns2)) {
+                ns <- paste(ns1, ns2, sep=", ")
+            } else if (!is.null(ns1)) {
+                ns <- ns1
+            } else if (!is.null(ns2)) {
+                ns <- ns2
+            }
+            
             names(groups) <- paste(ns, unlist(groupTable[ , "Colour"]))
         }
         
-        currentSelection <- isolate(input[[id]])
-        if (is.null(currentSelection)) {
-            if (is.null(preference))
-                selected <- groups
-            else
-                selected <- groups[groups %in% preference]
-        } else {
-            selected <- currentSelection[currentSelection %in% groups]
-            if (length(selected) == 0) selected <- groups
-        }
+        selected <- isolate(input[[id]])
+        selected <- selected[selected %in% groups]
+        if ( is.null(selected) ) selected <- character()
         updateSelectizeInput(session, id, choices=groups, selected=selected)
     })
 }
@@ -157,6 +161,7 @@ selectGroupsServer <- function(session, id, type, preference=NULL) {
 #' @param type Character: type of data for each the interface is intended
 #' 
 #' @return HTML elements
+#' @keywords internal
 groupManipulationInput <- function(id, type) {
     ns <- NS(id)
     
@@ -180,22 +185,28 @@ groupManipulationInput <- function(id, type) {
         }
         
         cols <- c("No attributes available"="")
-        indexIdentifiersUI <- groupById(ns, id)
+        identifierUI <- groupById(ns, id)
         if (id %in% c("Patients", "Samples")) {
             navbarMenu(
                 title,
                 tabPanel("Attribute", groupByAttribute(ns, cols, id, example)),
-                tabPanel("Index/Identifier", indexIdentifiersUI),
+                tabPanel("Index/Identifier", identifierUI),
                 "----", "Advanced options",
                 tabPanel("Subset expression", groupByExpression(ns, id)),
                 tabPanel("Regular expression", groupByGrep(ns, cols, id)))
+        } else if (id == "Genes") {
+            navbarMenu(
+                title, 
+                tabPanel("Gene names", identifierUI),
+                tabPanel("Pre-made gene lists", 
+                         groupByPreMadeList(ns, getGeneList(), id)))
         } else {
-            tabPanel(title, indexIdentifiersUI)
+            tabPanel(title, identifierUI)
         }
     }
     
     if (type == "Samples") {
-        title  <- "By patients"
+        title  <- "By subjects"
         first  <- groupOptions("Patients", title)
         # firstAlert  <- tabPanel(title, value="NoPatients", missingData(
         #     "Clinical data", "No clinical data loaded to group by patients.",
@@ -237,15 +248,14 @@ groupManipulationInput <- function(id, type) {
 groupsUI <- function(id, tab) {
     ns <- NS(id)
     
-    tab(icon="object-group", title="Groups",
-        tabsetPanel(
-            id="groupsTypeTab",
-            tabPanel("Patient and sample groups",
-                     groupManipulationInput(ns("sampleGroupModule"), 
-                                            "Samples")),
-            tabPanel("Splicing event and gene groups",
-                     groupManipulationInput(ns("ASeventGroupModule"),
-                                            "ASevents"))))
+    tab(icon="object-group", title="Groups", tabsetPanel(
+        id="groupsTypeTab",
+        tabPanel(
+            "Subject and sample groups",
+            groupManipulationInput(ns("sampleGroupModule"), "Samples")),
+        tabPanel(
+            "Splicing event and gene groups",
+            groupManipulationInput(ns("ASeventGroupModule"), "ASevents"))))
 }
 
 #' Render group interface
@@ -259,6 +269,7 @@ groupsUI <- function(id, tab) {
 #' @importFrom colourpicker colourInput
 #' 
 #' @return HTML elements
+#' @keywords internal
 renderGroupInterface <- function(ns, multiFisherTests=TRUE) {
     renameId    <- "renameGroupName"
     setColourId <- "setGroupColour"
@@ -302,31 +313,22 @@ renderGroupInterface <- function(ns, multiFisherTests=TRUE) {
     # Set operations
     complementLink <- operationLink(
         "Complement", id=ns(complementId),
-        helpText("Create a group with the elements outside the",
-                 "selected group(s)"),
-        icon=setOperationIcon("complement-AB"),
-        disable=FALSE)
+        icon=setOperationIcon("complement-AB"), disable=FALSE)
     
     subtractLink <- operationLink(
         "Subtract elements from upper-selected group",
-        helpText("Create a group with the exclusive",
-                 "elements from the upper-selected group"),
-        id=ns(subtractId),
-        icon=setOperationIcon("difference-AB"))
+        helpText("Select two groups for subtraction operations"),
+        id=ns(subtractId), icon=setOperationIcon("difference-AB"))
     
     subtract2Link <- operationLink(
         "Subtract elements from lower-selected group",
-        helpText("Create a group with the exclusive",
-                 "elements from the lower-selected group"),
-        id=ns(subtract2Id),
-        icon=setOperationIcon("difference-BA"))
+        helpText("Select two groups for subtraction operations"),
+        id=ns(subtract2Id), icon=setOperationIcon("difference-BA"))
     
     symDiffLink <- operationLink(
         "Symmetric difference",
-        helpText("Create a group with the non-intersecting",
-                 "elements of selected groups"),
-        id=ns(symDiffId),
-        icon=setOperationIcon("symmetric-difference"))
+        helpText("Select two or more groups for symmetric difference"),
+        id=ns(symDiffId), icon=setOperationIcon("symmetric-difference"))
     
     operations <- div(
         id=ns("setOperations"), class="btn-group",
@@ -345,29 +347,24 @@ renderGroupInterface <- function(ns, multiFisherTests=TRUE) {
     
     # Save and load groups
     saveSelectedGroupsLink <- downloadContent(
-        icon("user"), class=NULL, 
-        "Save elements from selected group(s)",
-        helpText("Export a file containing identifiers by select groups"),
+        icon("user"), class=NULL, "Save selected groups",
         id=ns(saveSelectedGroupsId))
     
     saveAllGroupsLink <- downloadContent(
-        icon("users"), class=NULL, "Save elements from all groups",
-        helpText("Export a file containing identifiers by every group"),
-        id=ns(saveAllGroupsId),
+        icon("users"), class=NULL, "Save all groups", id=ns(saveAllGroupsId),
         disable=FALSE)
     
     loadGroupsLink <- operationLink(
-        "Load groups", 
-        helpText("Import a file containing identifiers by group"),
-        id=ns(loadGroupsId), icon=icon("plus-circle"), disable=FALSE)
+        "Load groups", id=ns(loadGroupsId), icon=icon("plus-circle"), 
+        disable=FALSE)
     
     saveLoadGroups <- tags$div(
         class="btn-group", role="group",
-        tags$button(icon("folder-open"), id=ns(saveLoadId),
+        tags$button("Save and load", icon("folder-open"), id=ns(saveLoadId),
                     tags$span(class="caret"),
                     class="btn btn-default dropdown-toggle",
-                    "data-toggle"="dropdown",
-                    "aria-haspopup"="true", "aria-expanded"="true"),
+                    "data-toggle"="dropdown", "aria-haspopup"="true",
+                    "aria-expanded"="true"),
         tags$ul(class="dropdown-menu dropdown-menu-right",
                 saveSelectedGroupsLink, saveAllGroupsLink,
                 tags$li(role="separator", class="divider"), loadGroupsLink))
@@ -455,7 +452,7 @@ renderGroupInterface <- function(ns, multiFisherTests=TRUE) {
         uiOutput(ns(paste0(groupTestId, "-tooltip"))))
 }
 
-#' User interface to group by attribute
+#' Data grouping interface
 #' 
 #' @param ns Namespace function
 #' @param cols Character or list: name of columns to show
@@ -470,21 +467,71 @@ groupByAttribute <- function(ns, cols, id, example) {
         helpText("Automatically create groups according to the unique values",
                  "for the selected attribute.", example),
         selectizeInput(ns(paste0("groupAttribute", id)), "Select attribute",
-                       width="auto", choices=cols,
-                       options=list(lockOptgroupOrder=TRUE)),
+                       width="auto", choices=cols, options=list(
+                           lockOptgroupOrder=TRUE,
+                           placeholder="Type to search attributes")),
         actionButton(ns(paste0("createGroupAttribute", id)), "Create groups",
                      class ="btn-primary"),
         uiOutput(ns(paste0("previewGroups", id)))
     )
 }
 
-#' User interface to group by row
+#' @rdname groupByAttribute
 #' 
-#' @inheritParams groupByAttribute
+#' @param data List: list of groups with elements
 #' 
+#' @importFrom shiny helpText tags
+groupByPreMadeList <- function(ns, data, id) {
+    cols <- preparePreMadeGroupForSelection(data)
+    
+    tagList(
+        helpText("Load pre-made, literature-based lists of genes."),
+        selectizeInput(ns(paste0("groupAttribute", id)), "Select gene list",
+                       width="auto", choices=cols, options=list(
+                           lockOptgroupOrder=TRUE, placeholder="Gene list")),
+        tags$small(tags$b("Source:"),
+                   helpText(textOutput(ns(paste0("geneListSource", id))))),
+        actionButton(ns(paste0("loadPreMadeGroup", id)), "Load as group",
+                     class="btn-primary")
+    )
+}
+
+#' Prepare list of pre-made groups for a selectize element
+#' 
+#' @param groups List of list of characters
+#' 
+#' @return List
+#' @keywords internal
+preparePreMadeGroupForSelection <- function(groups) {
+    res <- lapply(groups, names)
+    for (ns in names(res)) {
+        tmp <- res[[ns]]
+        res[[ns]] <- paste(ns, res[[ns]], sep="|||")
+        names(res[[ns]]) <- tmp
+    }
+    return(res)
+}
+
+#' Select pre-made groups from a selected item
+#' 
+#' @param groups List of list of characters
+#' @param selected Character: selected item
+#' 
+#' @return Elements of selected item
+#' @keywords internal
+selectPreMadeGroup <- function(groups, selected) {
+    selected <- strsplit(selected, "|||", fixed=TRUE)[[1]]
+    first  <- selected[[1]]
+    second <- selected[[2]]
+    
+    res <- groups[[first]][[second]]
+    attr(res, "title") <- sprintf("%s (%s)", second, first)
+    attr(res, "citation") <- attr(groups[[first]], "citation")
+    return(res)
+}
+
+#' @rdname groupByAttribute
 #' @importFrom shiny textInput
-#' 
-#' @return HTML elements
 groupById <- function(ns, id) {
     sid <- gsub("s$", "", id)
     sid <- gsub("ASevent", "Splicing event", sid)
@@ -494,28 +541,24 @@ groupById <- function(ns, id) {
             ns(paste0("groupRows", id)), paste(sid, "indexes or identifiers"),
             choices=NULL, multiple=TRUE, width="auto", options=list(
                 create=TRUE, createOnBlur=TRUE, # Allow to add new items
-                plugins=list('remove_button'), persist=FALSE)),
+                plugins=list('remove_button'), persist=FALSE,
+                placeholder="Type to search identifiers")),
         helpText("Example: ", tags$kbd("1:6, 8, 10:19"), "creates a group with",
                  "items 1 to 6, 8 and 10 to 19. You can also input identifiers",
                  "instead of indexes."),
         textInput(ns(paste0("groupNameRows", id)), "Group label", width="auto",
-                  placeholder="Unnamed"),
+                  placeholder="Unlabelled group"),
         actionButton(ns(paste0("createGroupRows", id)), "Create group", 
                      class="btn-primary")
     )
 }
 
-#' User interface to group by subset expression
-#' 
-#' @inheritParams groupByAttribute
-#' 
+#' @rdname groupByAttribute
 #' @importFrom shiny textInput
-#' 
-#' @return HTML elements
 groupByExpression <- function(ns, id) {
     tagList (
         textInput(ns(paste0("groupExpression", id)), "Subset expression",
-                  width="auto"),
+                  width="auto", placeholder="Insert subset expression"),
         helpText(
             'Examples: ', tags$ul(
                 tags$li(
@@ -537,54 +580,49 @@ groupByExpression <- function(ns, id) {
                     ' (ignores case) in Z.'))),
         uiOutput(ns(paste0("groupExpressionSuggestions", id))),
         textInput(ns(paste0("groupNameSubset", id)), "Group label", 
-                  width="auto", placeholder="Unnamed"),
+                  width="auto", placeholder="Unlabelled group"),
         actionButton(ns(paste0("createGroupSubset", id)), "Create group",
                      class="btn-primary")
     )
 }
 
-#' User interface to group by grep expression
-#' 
-#' @inheritParams groupByAttribute
-#' 
+#' @rdname groupByAttribute
 #' @importFrom shiny textInput
-#' 
-#' @return HTML elements
 groupByGrep <- function(ns, cols, id) {
     tagList (
         textInput(ns(paste0("grepExpression", id)), "Regular expression",
-                  width="auto"),
+                  width="auto", placeholder="Insert regular expression"),
         selectizeInput(ns(paste0("grepColumn", id)), "Select attribute to GREP",
-                       choices=cols, width="auto"),
+                       choices=cols, width="auto", options=list(
+                           placeholder="Type to search attributes")),
         textInput(ns(paste0("groupNameRegex", id)), "Group label", width="auto",
-                  placeholder="Unnamed"),
+                  placeholder="Unlabelled group"),
         actionButton(ns(paste0("createGroupRegex", id)), "Create group", 
                      class="btn-primary"))
 }
 
 #' Prepare to create group according to specific details
-#' @param session Shiny session
-#' @param input Shiny input
+#' 
+#' @inheritParams createGroupFromInput
 #' @param output Shiny output
-#' @param id Character: identifier of the group selection
-#' @param type Character: type of group to create
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
-createGroup <- function(session, input, output, id, type) {
+#' @keywords internal
+createGroup <- function(session, input, output, id, type, selected=NULL, 
+                        expr=NULL, groupNames=NULL) {
     removeAlert(output, alertId="alert-side")
     
-    if (id == "Patients")
+    if (id == "Patients") {
         dataset <- getClinicalData()
-    else if (id == "Samples")
+    } else if (id == "Samples") {
         dataset <- getSampleInfo()
-    else
+    } else {
         dataset <- NULL
+    }
     
-    new <- createGroupFromInput(session, input, output, dataset, id, type)
+    new <- createGroupFromInput(session, input, dataset, id, type, selected,
+                                expr, groupNames)
     if (!is.null(new)) appendNewGroups(id, new)
-    
-    updateSelectizeInput(session, paste0("groupAttribute", id),
-                         selected=character())
 }
 
 #' Assign colours to groups
@@ -593,6 +631,7 @@ createGroup <- function(session, input, output, id, type) {
 #' @param groups Matrix: groups to check which colours are already assigned
 #' 
 #' @return Groups with an added column to state the colour
+#' @keywords internal
 assignColours <- function(new, groups=NULL) {
     strong <- c("#08419E", "#EF9636", "#D33E6A", "#00C652", 
                 "#4C71DB", "#8F033B", "#F89CD1", "#05CFC0")
@@ -631,6 +670,7 @@ assignColours <- function(new, groups=NULL) {
 #' @param clearOld Boolean: clear old groups?
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 appendNewGroups <- function(type, new, clearOld=FALSE) {
     # Rename duplicated group names
     if (clearOld) 
@@ -652,11 +692,11 @@ appendNewGroups <- function(type, new, clearOld=FALSE) {
 
 #' Match patients and samples in a group
 #' 
-#' @param id Character: identifier (\code{Patients} or \code{Samples})
-#' @param group Data frame: group containing either \code{Patients} or 
-#' \code{Samples}
+#' @param id Character: identifier
+#' @param group Data frame: group
 #' 
-#' @return Data frame with groups containing matching patients and samples
+#' @return Data frame with groups containing matching elements
+#' @keywords internal
 matchGroupPatientsAndSamples <- function(id, group) {
     patients <- getPatientId()
     samples  <- getSampleId()
@@ -685,115 +725,127 @@ matchGroupPatientsAndSamples <- function(id, group) {
     return(group)
 }
 
+#' Match AS events and genes in a group
+#' 
+#' @inheritParams matchGroupPatientsAndSamples
+#' 
+#' @return Data frame with groups containing matching elements
+#' @keywords internal
+matchGroupASeventsAndGenes <- function(id, group, ASevents) {
+    # Match AS events with genes (or vice-versa)
+    if (!is.null(ASevents)) {
+        if (id == "ASevents") {
+            ASevents <- group[ , "ASevents"]
+            genes <- lapply(group[ , "ASevents"], parseSplicingEvent)
+            genes <- lapply(genes, "[[", "gene")
+            group <- cbind(group, "Genes"=lapply(
+                genes, function(i) unique(unlist(i))))
+        } else if (id == "Genes") {
+            genes <- group[ , "Genes"]
+            ASeventGenes <- matchSplicingEventsWithGenes(ASevents)
+            filterBasedOnGenes <- function(gene, ASeventGenes)
+                ASeventGenes[names(ASeventGenes) %in% gene]
+            
+            # Process TCGA gene ID
+            genes <- lapply(genes, function(gene) gsub("\\|.*$", "", gene))
+            ASevents <- lapply(genes, filterBasedOnGenes, ASeventGenes)
+            group <- cbind(group, ASevents)
+            group <- group[ , c(1:3, 5, 4), drop=FALSE]
+        }
+    } else if (id == "Genes") {
+        ASevents <- lapply(seq(nrow(group)), function(i) character(0))
+        group <- cbind(group, ASevents)
+        group <- group[ , c(1:3, 5, 4), drop=FALSE]
+    }
+    return(group)
+}
+
 #' Set new groups according to the user input
 #' 
 #' @param session Shiny session
 #' @param input Shiny input
-#' @param output Shiny output
 #' @param dataset Data frame or matrix: dataset of interest
 #' @param id Character: identifier of the group selection
 #' @param type Character: type of group to create
+#' @param selected Character: selected item
+#' @param expr Character: expression
+#' @param groupNames Character: group names
 #' 
 #' @return Matrix with the group names and respective elements
-createGroupFromInput <- function (session, input, output, dataset, id, type) {
+#' @keywords internal
+createGroupFromInput <- function (session, input, dataset, id, type, 
+                                  selected=NULL, expr=NULL, groupNames=NULL) {
     if (type == "Attribute") {
-        col <- input[[paste0("groupAttribute", id)]]
-        if (col == "") return(NULL)
-        group <- createGroupByAttribute(col, dataset)
-        group <- cbind(names(group), type, col, group)
+        if (selected == "") return(NULL)
+        group <- createGroupByAttribute(selected, dataset)
+        group <- cbind(names(group), type, selected, group)
     } else if (type == "Index/Identifier") {
-        rows <- input[[paste0("groupRows", id)]]
-        strRows <- paste(rows, collapse=", ")
-        
+        strRows <- paste(selected, collapse=", ")
         identifiers <- switch(id, "Patients"=getPatientId(),
                               "Samples"=getSampleId(),
                               "ASevents"=getASevents(),
                               "Genes"=getGenes())
-        allRows <- createGroupById(session, rows, identifiers)
-        group <- cbind(input[[paste0("groupNameRows", id)]], type, strRows,
-                       list(allRows))
+        allRows <- createGroupById(session, selected, identifiers)
+        group <- cbind(groupNames, type, strRows, list(allRows))
     } else if (type == "Subset") {
-        # Subset dataset using the given expression
-        expr <- input[[paste0("groupExpression", id)]]
         # Test expression before running
         set <- tryCatch(subset(dataset, eval(parse(text=expr))), error=return)
         
-        # Show error to the user
+        # Display error
         if ("simpleError" %in% class(set)) {
-            errorAlert(session, title="Error in the subset expression.",
+            errorAlert(session, title="Issue with subset expression",
                        "Check if column names are correct.", br(),
                        "The following error was raised:",
-                       tags$code(set$message), alertId="alert-side")
+                       tags$code(set$message), alertId="alert-side",
+                       caller="Data grouping")
             return(NULL)
         }
         
         rows <- match(rownames(set), rownames(dataset))
         rows <- rownames(dataset)[rows]
-        group <- cbind(input[[paste0("groupNameSubset", id)]], type, expr,
-                       list(rows))
+        group <- cbind(groupNames, type, expr, list(rows))
     } else if (type == "Regex") {
         # Subset dataset column using given regular expression
-        col <- input[[paste0("grepColumn", id)]]
-        colData <- as.character(dataset[[col]])
-        expr <- input[[paste0("grepExpression", id)]]
+        colData    <- as.character(dataset[[selected]])
         
         # Test expression before running
         set <- tryCatch(grep(expr, colData), error=return)
         
         # Show error to the user
         if ("simpleError" %in% class(set)) {
-            errorAlert(session, title="GREP expression error",
+            errorAlert(session, title="Issue with GREP expression",
                        "The following error was raised:", br(),
-                       tags$code(set$message), alertId="alert-side")
+                       tags$code(set$message), alertId="alert-side",
+                       caller="Data grouping")
             return(NULL)
         }
         
         set <- rownames(dataset)[set]
-        strRows <- sprintf('"%s" in %s', expr, col)
-        group <- cbind(input[[paste0("groupNameRegex", id)]], "GREP", strRows, 
-                       list(set))
+        strRows <- sprintf('"%s" in %s', expr, selected)
+        group <- cbind(groupNames, "GREP", strRows, list(set))
+    } else if (type == "PreMadeList") {
+        group      <- selectPreMadeGroup(getGeneList(), selected)
+        groupNames <- attr(group, "title")
+        selected   <- gsub("|||", " ~ ", selected, fixed=TRUE)
+        group      <- cbind(groupNames, type, selected, list(group))
     }
     
     # Name group if empty
-    if (group[[1]] == "") group[[1]] <- "Unnamed"
+    if (group[[1]] == "") group[[1]] <- "Unlabelled group"
     
     # Standardise rows
     ns <- c("Names", "Subset", "Input", id)
-    if (is.matrix(group))
+    if (is.matrix(group)) {
         colnames(group) <- ns
-    else
+    } else {
         names(group) <- ns
+    }
     rownames(group) <- NULL
     
     if (id %in% c("Patients", "Samples")) {
         group <- matchGroupPatientsAndSamples(id, group)
     } else if (id %in% c("ASevents", "Genes")) {
-        # Match AS events with genes (or vice-versa)
-        ASevents <- getASevents()
-        if (!is.null(ASevents)) {
-            if (id == "ASevents") {
-                ASevents <- group[ , "ASevents"]
-                genes <- lapply(group[ , "ASevents"], parseSplicingEvent)
-                genes <- lapply(genes, "[[", "gene")
-                uniqueUnlist <- function(i) unique(unlist(i))
-                group <- cbind(group, "Genes"=lapply(genes, uniqueUnlist))
-            } else if (id == "Genes") {
-                genes <- group[ , "Genes"]
-                ASeventGenes <- matchSplicingEventsWithGenes(ASevents)
-                filterBasedOnGenes <- function(gene, ASeventGenes)
-                    ASeventGenes[names(ASeventGenes) %in% gene]
-                
-                # Process TCGA gene ID
-                genes <- lapply(genes, function(gene) gsub("\\|.*$", "", gene))
-                ASevents <- lapply(genes, filterBasedOnGenes, ASeventGenes)
-                group <- cbind(group, ASevents)
-                group <- group[ , c(1:3, 5, 4), drop=FALSE]
-            }
-        } else if (id == "Genes") {
-            ASevents <- lapply(seq(nrow(group)), function(i) character(0))
-            group <- cbind(group, ASevents)
-            group <- group[ , c(1:3, 5, 4), drop=FALSE]
-        }
+        group <- matchGroupASeventsAndGenes(id, group, getASevents())
     }
     return(group)
 }
@@ -847,7 +899,9 @@ createGroupByAttribute <- function(col, dataset) {
 #' @param identifiers Character: available identifiers
 #' 
 #' @importFrom shiny tags
+#' 
 #' @return Character: values based on given row indexes or identifiers
+#' @keywords internal
 createGroupById <- function(session, rows, identifiers) {
     # Check which strings match available identifiers
     matched <- rows %in% identifiers
@@ -869,9 +923,10 @@ createGroupById <- function(session, rows, identifiers) {
     invalid <- union(rows[!matched][!parsable], parsed[!valid])
     if (length(invalid) > 0) {
         discarded <- paste(invalid, collapse=", ")
-        warningAlert(
-            session, "The following ", length(invalid),
-            " indexes or identifiers were discarded:", tags$code(discarded))
+        warningAlert(session, title="Discarded values", sprintf(
+            "The following %s indexes or identifiers were discarded:",
+            length(invalid)), tags$code(discarded),
+            caller="Data grouping", alertId="alert-main")
     }
     rows <- identifiers[unique(union(match, parsed[valid]))]
     return(rows)
@@ -885,6 +940,7 @@ createGroupById <- function(session, rows, identifiers) {
 #' @param old Matrix: pre-existing groups
 #' 
 #' @return Character with no duplicated group names
+#' @keywords internal
 renameGroups <- function(new, old) {
     groupNames <- 1
     
@@ -919,6 +975,7 @@ renameGroups <- function(new, old) {
 #' default
 #' 
 #' @return Matrix containing groups (new group is in the first row)
+#' @keywords internal
 setOperation <- function(operation, groups, selected, symbol=" ", 
                          groupName=NULL, first=NULL, second=NULL, matches=NULL,
                          type="Samples",  assignColoursToGroups=FALSE) {
@@ -1055,6 +1112,7 @@ setOperation <- function(operation, groups, selected, symbol=" ",
 #' @inheritParams setOperation
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 operateOnGroups <- function(input, session, operation, buttonId, symbol=" ",
                             type, sharedData=sharedData) {
     # Operate on selected groups when pressing the corresponding button
@@ -1096,6 +1154,7 @@ operateOnGroups <- function(input, session, operation, buttonId, symbol=" ",
 #' @importFrom shiny tags
 #' 
 #' @return Matrix with groups ordered (or NULL if no groups exist)
+#' @keywords internal
 showGroupsTable <- function(type) {
     groups <- getGroups(type, complete=TRUE)
     
@@ -1170,6 +1229,7 @@ showGroupsTable <- function(type) {
 #' @importFrom colourpicker updateColourInput
 #' 
 #' @return HTML elements
+#' @keywords internal
 groupManipulation <- function(input, output, session, type) {
     ns <- session$ns
     
@@ -1186,17 +1246,16 @@ groupManipulation <- function(input, output, session, type) {
             if (!is.null(suggestedCols)) {
                 suggestedIndex <- match(suggestedCols, attrs)
                 suggestedIndex <- suggestedIndex[!is.na(suggestedIndex)]
-                cols <- list("Start typing to search for attributes"="",
-                             "Suggested attributes"=attrs[suggestedIndex],
+                cols <- list("Suggested attributes"=attrs[suggestedIndex],
                              "Other attributes"=attrs[-suggestedIndex])
             } else {
-                cols <- c("Start typing to search for attributes"="", attrs)
+                cols <- attrs
             }
             
             updateSelectizeInput(session, paste0("groupAttribute", id),
-                                 choices=cols)
+                                 choices=cols, selected=character())
             updateSelectizeInput(session, paste0("grepColumn", id),
-                                 choices=cols)
+                                 choices=cols, selected=character())
         }
         
         observe(updateAttributes("Samples"))
@@ -1218,26 +1277,57 @@ groupManipulation <- function(input, output, session, type) {
         }
     })
     
-    # Create new group(s)
     createGroupOptions <- function(id, hasAttributes=TRUE) {
-        collapse <- "groupCollapse"
-        panel    <- "Data groups"
+        clearSelection <- function(session, element) {
+            updateSelectizeInput(session, element, selected=character())
+        }
         
+        # Group based on index or identifiers ----------------------------------
         observeEvent(input[[paste0("createGroupRows", id)]], {
-            createGroup(session, input, output, id, type="Index/Identifier")
-            updateCollapse(session, collapse, open=panel)
+            isolate({
+                selected   <- input[[paste0("groupRows", id)]]
+                groupNames <- input[[paste0("groupNameRows", id)]]
+            })
+            createGroup(session, input, output, id, type="Index/Identifier",
+                        selected=selected, groupNames=groupNames)
+            clearSelection(session, paste0("groupRows", id))
+            clearSelection(session, paste0("groupNameRows", id))
         })
         
+        # Remaining code is unneeded unless attributes are available
         if (!hasAttributes) return(NULL)
         
+        # Group by attribute ---------------------------------------------------
         observeEvent(input[[paste0("createGroupAttribute", id)]], {
-            createGroup(session, input, output, id, type="Attribute")
-            updateCollapse(session, collapse, open=panel)
+            selected <- isolate(input[[paste0("groupAttribute", id)]])
+            createGroup(session, input, output, id, type="Attribute",
+                        selected=selected)
+            clearSelection(session, paste0("groupAttribute", id))
         })
         
+        # Pre-made list of genes -----------------------------------------------
+        observeEvent(input[[paste0("loadPreMadeGroup", id)]], {
+            selected <- isolate(input$groupAttributeGenes)
+            createGroup(session, input, output, id, type="PreMadeList",
+                        selected=selected)
+        })
+        
+        output[[paste0("geneListSource", id)]] <- renderText({
+            selected <- input$groupAttributeGenes
+            group <- selectPreMadeGroup(getGeneList(), selected)
+            return(attr(group, "citation"))
+        })
+        
+        # Group subset ---------------------------------------------------------
         observeEvent(input[[paste0("createGroupSubset", id)]], {
-            createGroup(session, input, output, id, type="Subset")
-            updateCollapse(session, collapse, open=panel)
+            isolate({
+                expr       <- input[[paste0("groupExpression", id)]]
+                groupNames <- input[[paste0("groupNameSubset", id)]]
+            })
+            createGroup(session, input, output, id, type="Subset", 
+                        expr=expr, groupNames=groupNames)
+            clearSelection(session, paste0("groupExpression", id))
+            clearSelection(session, paste0("groupNameSubset", id))
         })
         
         # Update available attributes to suggest in the subset expression
@@ -1250,12 +1340,21 @@ groupManipulation <- function(input, output, session, type) {
             textSuggestions(ns(paste0("groupExpression", id)), attrs)
         })
         
+        # Group based on regular expression ------------------------------------
         observeEvent(input[[paste0("createGroupRegex", id)]], {
-            createGroup(session, input, output, id, type="Regex")
-            updateCollapse(session, collapse, open=panel)
+            isolate({
+                selected   <- input[[paste0("grepColumn", id)]]
+                expr       <- input[[paste0("groupExpression", id)]]
+                groupNames <- input[[paste0("groupNameSubset", id)]]
+            })
+            createGroup(session, input, output, id, type="Regex",
+                        selected=selected, expr=expr, groupNames=groupNames)
+            clearSelection(session, paste0("groupNameRegex", id))
+            clearSelection(session, paste0("groupNameRegex", id))
+            clearSelection(session, paste0("groupNameRegex", id))
         })
         
-        # Preview group creation
+        # Preview groups to be created
         output[[paste0("previewGroups", id)]] <- renderUI({
             col <- input[[paste0("groupAttribute", id)]]
             if (is.null(col) || col == "") return(NULL)
@@ -1284,13 +1383,13 @@ groupManipulation <- function(input, output, session, type) {
             extra <- NULL
             totalGroups <- length(group)
             if (totalGroups > groupsToPreview) {
-                table <- rbind(table, rep("(...)", 3))
+                table <- rbind(table, rep("(...)", ncol(table)))
                 extra <- helpText(style="text-align: right;",
                                   sprintf("Previewing %s out of %s groups",
                                           groupsToPreview, totalGroups))
             }
             
-            tagList(tags$hr(), tags$label("Group preview"),
+            tagList(tags$hr(), tags$label("Groups to be created"),
                     table2html(table, rownames=FALSE, style="margin-bottom: 0;",
                                class="table table-condensed table-striped",
                                thead=TRUE),
@@ -1324,40 +1423,11 @@ groupManipulation <- function(input, output, session, type) {
         mf <- matrix(ncol=5, dimnames=list(NA, cols))
         return(mf[-1, ])
     }, style="bootstrap", escape=FALSE, server=TRUE, rownames=FALSE,
-    options=list(
-        pageLength=10, lengthChange=FALSE, scrollX=TRUE, ordering=FALSE,
-        columnDefs = list(
-            list(orderable=FALSE, className='details-control', targets=0)),
-        language=list(zeroRecords="No groups available to display")),
-    callback = JS(
-        "var plus  = '<i class=\"fa fa-plus-circle\" aria-hidden=\"true\"></i>';",
-        "var minus = '<i class=\"fa fa-minus-circle\" aria-hidden=\"true\"></i>';",
-        "var cols = table.columns()[0].slice(-2);",
-        "table.columns(cols).visible(false, false);",
-        "table.columns.adjust().draw(false);",
-        "var format = function(d) {
-        return '<table class=\"table table-details\" border=\"0\">'+
-        '<tr>'+
-        '<td>Subset:</td>'+
-        '<td>'+ d[d.length - 2] +'</td>'+
-        '</tr>'+
-        '<tr>'+
-        '<td>Input:</td>'+
-        '<td>' + d[d.length - 1] + '</td>'+
-        '</tr>'+
-        '</table>';
-};",
-        "table.on('click', 'td.details-control', function() {
-        var td = $(this),
-        row = table.row(td.closest('tr'));
-        if (row.child.isShown()) {
-        row.child.hide();
-        td.html(plus);
-        } else {
-        row.child( format(row.data()), 'no-padding' ).show();
-        td.html(minus);
-        }
-        });"))
+    callback=JS("renderGroupTable(table);"),
+    options=list(pageLength=10, lengthChange=FALSE, scrollX=TRUE,
+                 ordering=FALSE, columnDefs = list(list(
+                     orderable=FALSE, className='details-control', targets=0)),
+                 language=list(zeroRecords="No groups available to display")))
     
     # Remove selected groups
     removeId <- "removeGroups"
@@ -1525,16 +1595,16 @@ groupManipulation <- function(input, output, session, type) {
                     # Match first and second elements available in the group
                     matchingElems <- match[names(match) %in% secondGroup]
                     matchingElems[!matchingElems %in% firstGroup] <- NA
+                    data <- rbind(data, cbind(name, names(matchingElems),
+                                              matchingElems))
+                    
+                    # Get remaining first elements
+                    firstGroup <- firstGroup[!firstGroup %in% matchingElems]
+                    if (length(firstGroup) > 0)
+                        data <- rbind(data, cbind(name, NA, firstGroup))
                 } else {
-                    matchingElems <- NA
+                    data <- rbind(data, cbind(name, secondGroup, NA))
                 }
-                data <- rbind(data, 
-                              cbind(name, names(matchingElems), matchingElems))
-                
-                # Get remaining first elements
-                firstGroup <- firstGroup[!firstGroup %in% matchingElems]
-                if (length(firstGroup) > 0)
-                    data <- rbind(data, cbind(name, NA, firstGroup))
             } else {
                 data <- rbind(data, cbind(name, NA, firstGroup))
             }
@@ -1691,12 +1761,12 @@ groupManipulation <- function(input, output, session, type) {
                 
                 return(imported)
             } else {
-                stop(paste("The provided file does not seem to have group",
-                           "information."))
+                stop("File does not contain group data.")
             }
         }
         
         groupsFile <- fileBrowser()
+        if (is.na(groupsFile)) return(NULL) # Action cancelled by the user
         
         isolate({
             if (type == "Samples") {
@@ -1718,8 +1788,9 @@ groupManipulation <- function(input, output, session, type) {
         if (!is.null(imported) && !is(imported, "error"))
             appendNewGroups(type, imported)
         else
-            errorAlert(session, title="Error loading the file.",
-                       imported$message, alertId="alert-main")
+            errorAlert(session, title="Groups file could not be loaded",
+                       imported$message, alertId="alert-main", 
+                       caller="Data grouping")
     })
     
     if (type == "Samples") {
@@ -1848,6 +1919,7 @@ groupsServer <- function(input, output, session) {
 #' @inheritParams groupsServer
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 groupsServerOnce <- function(input, output, session) {
     # Update groups according to the availability of sample identifiers
     observe({
@@ -1877,6 +1949,31 @@ groupsServerOnce <- function(input, output, session) {
                                           patients, match=match)
             group <- cbind(group, "Samples"=samples)
             setGroups("Samples", group)
+        }
+    })
+    
+    # Create groups based on pre-made list of genes when loading gene or 
+    # splicing data
+    observe({
+        geneExp <- getGeneExpression()
+        psi     <- getInclusionLevels()
+        
+        if (!is.null(geneExp) || !is.null(psi)) {
+            groups     <- unlist(getGeneList(), recursive=FALSE)
+            groupNames <- unlist(lapply(names(getGeneList()), function(i)
+                sprintf("%s (%s)", names(getGeneList()[[i]]), i)))
+            selected   <- unlist(lapply(names(getGeneList()), function(i)
+                paste(i, names(getGeneList()[[i]]), sep=" ~ ")))
+            groups     <- cbind(groupNames, "PreMadeList", selected, groups)
+            
+            # Standardise rows
+            ns <- c("Names", "Subset", "Input", "Genes")
+            colnames(groups) <- ns
+            rownames(groups) <- NULL
+            groups <- matchGroupASeventsAndGenes("Genes", groups, getASevents())
+            
+            if (!is.null(groups)) 
+                isolate( appendNewGroups("Genes", groups, clearOld=TRUE) )
         }
     })
     
@@ -2005,6 +2102,8 @@ parseCategoricalGroups <- function(df) {
 #' groups}
 #' \item{table}{Contigency table used for testing}
 #' \item{pvalue}{Fisher's exact test's p-value}
+#' 
+#' @keywords internal
 testSingleIndependence <- function(ref, groups, elements, pvalueAdjust="BH") {
     # Number of intersections between reference and groups of interest
     updateProgress("Calculating intersections", 
@@ -2126,6 +2225,24 @@ testGroupIndependence <- function(ref, groups, elements, pvalueAdjust="BH") {
                       "Contigency table")
     class(df) <- c(class(df), "multiGroupIndependenceTest")
     return(df)
+}
+
+#' Discard grouped samples if not within a sample vector
+#' 
+#' @param groups Named list of samples
+#' @param samples Character: vector with all available samples
+#' @param clean Boolean: clean results?
+#' 
+#' @importFrom stats na.omit
+#' 
+#' @return Groups without samples not found in \code{samples}
+#' @keywords internal
+discardOutsideSamplesFromGroups <- function(groups, samples, clean=FALSE) {
+    getMatchingSamples <- function(i) ifelse(i %in% samples, i, NA)
+    g <- lapply(groups, getMatchingSamples)
+    g <- lapply(g, na.omit)
+    if (clean) g <- lapply(g, as.character)
+    return(g)
 }
 
 #' Plot -log10(p-values) of the results obtained after multiple group 

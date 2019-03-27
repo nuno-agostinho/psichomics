@@ -7,14 +7,14 @@
 matchGroupPatientsAndSamples(id, group)
 }
 \arguments{
-\item{id}{Character: identifier (\code{Patients} or \code{Samples})}
+\item{id}{Character: identifier}
 
-\item{group}{Data frame: group containing either \code{Patients} or 
-\code{Samples}}
+\item{group}{Data frame: group}
 }
 \value{
-Data frame with groups containing matching patients and samples
+Data frame with groups containing matching elements
 }
 \description{
 Match patients and samples in a group
 }
+\keyword{internal}

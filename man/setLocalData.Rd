@@ -24,3 +24,4 @@ NULL (this function is used to modify the Shiny session's state)
 \description{
 Load local files
 }
+\keyword{internal}

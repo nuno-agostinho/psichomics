@@ -41,3 +41,4 @@ Matrix containing groups (new group is in the first row)
 \description{
 Perform set operations on selected groups
 }
+\keyword{internal}

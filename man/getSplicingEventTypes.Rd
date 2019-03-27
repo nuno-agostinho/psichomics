@@ -7,7 +7,7 @@
 getSplicingEventTypes(acronymsAsNames = FALSE)
 }
 \arguments{
-\item{acronymsAsNames}{Boolean: return acronyms as names? FALSE by default}
+\item{acronymsAsNames}{Boolean: return acronyms as names?}
 }
 \value{
 Named character vector with splicing event types

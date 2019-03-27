@@ -6,7 +6,7 @@
 recountDataUI <- function(id, panel) {
     ns <- NS(id)
     
-    title <- "Automatically load SRA data"
+    title <- "SRA data loading"
     panel(style="info", title=list(icon("plus-circle"), title), value=title, 
           uiOutput(ns("recountDataModal")),
           helpText(
@@ -15,8 +15,7 @@ recountDataUI <- function(id, panel) {
               a(href="https://jhubiostatistics.shinyapps.io/recount/",
                 target="_blank", "recount"), "R package."),
           div(class="alert", class="alert-info", role="alert", 
-              "Data from SRA projects not listed below may be manually loaded",
-              "after splice-aware alignment.",
+              "SRA data unlisted below may be manually aligned and loaded.",
               tags$a(
                   href="http://rpubs.com/nuno-agostinho/psichomics-custom-data",
                   class="alert-link", target="_blank", "Learn more...")),
@@ -36,6 +35,7 @@ recountDataUI <- function(id, panel) {
 #' @importFrom SummarizedExperiment assay seqnames start end strand
 #' 
 #' @return List containing downloaded projects
+#' @export
 loadSRAproject <- function(project, outdir=getDownloadsFolder()) {
     data <- list()
     
@@ -141,6 +141,7 @@ loadSRAproject <- function(project, outdir=getDownloadsFolder()) {
         format <- loadFileFormats()$recountSampleFormat
         data[[sra]][["Sample metadata"]] <- parseValidFile(sampleInfo, format)
         
+        attr(data[[sra]], "source") <- "recount"
         closeProgress()
     }
     return(data)

@@ -21,3 +21,4 @@ Navigate app according to the location given by the navigation bar. Code
 and logic adapted from
 \url{https://github.com/daattali/advanced-shiny/blob/master/navigate-history}
 }
+\keyword{internal}

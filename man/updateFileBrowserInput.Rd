@@ -32,3 +32,4 @@ object. For \code{fileBrowserInput} objects, this changes the value displayed
 in the text-field and triggers a client-side change event. A directory
 selection dialogue is not displayed.
 }
+\keyword{internal}

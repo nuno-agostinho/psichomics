@@ -53,6 +53,7 @@ as they are only used to modify the Shiny session's state
 Get or set differential splicing' elements for a data category
 }
 \seealso{
-\code{\link{getEvent}}, \code{\link{getClinicalMatchFrom}},
+\code{\link{getGlobal}}, \code{\link{getClinicalMatchFrom}},
 \code{\link{getGroups}} and \code{\link{getDifferentialSplicing}}
 }
+\keyword{internal}

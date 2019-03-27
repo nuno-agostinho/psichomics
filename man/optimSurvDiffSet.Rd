@@ -16,10 +16,9 @@ optimSurvDiffSet(session, input, output)
 }
 \value{
 NULL (this function is used to modify the Shiny session's state)
-Calculate optimal survival cutoff for the inclusion levels of a given
-alternative splicing event
 }
 \description{
 Optimal survival difference given an inclusion level cutoff for a specific
 alternative splicing event
 }
+\keyword{internal}

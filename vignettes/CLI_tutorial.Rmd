@@ -44,6 +44,8 @@ library(psichomics)
 
 * `psichomics`: Start the visual interface of *psichomics*
 * `parseSplicingEvent`: Parse splicing events
+* `getSplicingEventFromGenes`: Get alternative splicing events from genes
+* `getGenesFromSplicingEvents`: Get genes from alternative splicing events
 
 ### Data retrieval
 
@@ -56,6 +58,7 @@ library(psichomics)
 * `getFirebrowseDates`: Query the Firebrowse web API for processing dates
 * `loadFirebrowseData`: Download and load TCGA data through the Firebrowse web 
 API
+* `parseTcgaSampleInfo`: Parse sample information from TCGA samples
 
 **GTEx**
 
@@ -70,7 +73,7 @@ metadata
 * `loadSRAproject`: Download and load [SRA][SRA] projects through the 
 [*recount*][recount] R package
 
-**Custom files**
+**Custom and/or local files**
 
 * `loadLocalFiles`: Load local files from a given folder
 * `prepareSRAmetadata`: Prepare metadata from [SRA][SRA] (as obtained from Run
@@ -83,9 +86,11 @@ aligners (currently, psichomics supports the output of the splice-aware aligner
 [STAR][STAR])
 
 ### Gene expression pre-processing
-* `rowMeans`: Calculate mean per row (useful for filtering gene expression)
-* `rowVars`: Calculate variance per row (useful for filtering gene expression)
+* `plotRowStats`: Plot statistics (median, variance, etc.) per gene
+* `plotGeneExprPerSample`: Plot distribution of gene expression per sample
+* `filterGeneExpr`: Filter genes based on their expression
 * `normaliseGeneExpression`: Normalise gene expression data
+* `convertGeneIdentifiers`: Convert between different gene identifiers
 
 ### PSI quantification
 * `getSplicingEventTypes`: Get quantifiable splicing event types
@@ -93,6 +98,9 @@ aligners (currently, psichomics supports the output of the splice-aware aligner
 files
 * `loadAnnotation`: Load an alternative splicing annotation file
 * `quantifySplicing`: Quantify alternative splicing
+* `plotRowStats`: Plot statistics (median, variance, etc.) per alternative 
+splicing event
+* `filterPSI`: Filter alternative splicing quantification
 
 **Custom alternative splicing annotation preparation**
 
@@ -104,6 +112,7 @@ files
 [VAST-TOOLS][VAST-TOOLS]
 
 ### Data Grouping
+* `getGeneList`: Get pre-created, literature-based lists of genes
 * `createGroupByAttribute`: Split elements into groups based on a given 
 attribute
 * `getSampleFromSubject`: Get samples matching the given patients
@@ -142,6 +151,8 @@ survival curves
 * `survfit`: Compute estimates of survival curves
 * `survdiff`: Test differences between survival curves
 * `plotSurvivalCurves`: Plot survival curves
+* `plotSurvivalPvaluesByCutoff`: Plot p-values of survival difference between
+groups based on multiple cutoffs
 
 ### Differential analyses
 * `diffAnalyses`: Perform statistical analyses (including differential splicing
@@ -152,6 +163,7 @@ and gene expression)
 * `correlateGEandAS`: Test for association between paired samples' gene 
 expression (for any genes of interest) and alternative splicing quantification
 * `plotCorrelation`: Scatter plots of the correlation results
+* `as.table`: Table of the correlation results
 
 ### Annotation retrieval
 * `queryEnsemblByEvent`: Query Ensembl based on an alternative splicing event
@@ -165,7 +177,7 @@ identifier
 
 > The following case study was adapted from *psichomics*' original article:
 >
-> Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2018). 
+> Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2019). 
 **[psichomics: graphical application for alternative splicing quantification and analysis][article]**. *Nucleic Acids Research*.
 
 Breast cancer is the cancer type with the highest incidence and mortality in 
@@ -543,7 +555,7 @@ library(survival)
 
 # Assign alternative splicing quantification to patients based on their samples
 samples <- colnames(psi)
-match <- getPatientFromSample(samples, clinical, sampleInfo=sampleInfo)
+match <- getSubjectFromSample(samples, clinical, sampleInfo=sampleInfo)
 
 survPlots <- list()
 for (event in events) {

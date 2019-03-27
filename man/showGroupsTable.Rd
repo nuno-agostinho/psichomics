@@ -16,3 +16,4 @@ Matrix with groups ordered (or NULL if no groups exist)
 \description{
 Present groups table
 }
+\keyword{internal}

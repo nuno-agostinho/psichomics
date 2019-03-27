@@ -15,3 +15,4 @@ List containing protein length and data frame of protein features
 \description{
 Parse XML from UniProt's RESTful service
 }
+\keyword{internal}

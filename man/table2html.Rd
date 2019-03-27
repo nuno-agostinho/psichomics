@@ -26,3 +26,4 @@ HTML elements
 \description{
 Create HTML table from data frame or matrix
 }
+\keyword{internal}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_inclusionLevels.R
 \name{listAllAnnotations}
 \alias{listAllAnnotations}
-\title{List alternative splicing annotation files available, as well as custom 
+\title{List alternative splicing annotation files available, as well as custom
 annotation}
 \usage{
 listAllAnnotations(...)
@@ -14,9 +14,10 @@ listAllAnnotations(...)
 Named character vector with splicing annotation files available#'
 }
 \description{
-List alternative splicing annotation files available, as well as custom 
+List alternative splicing annotation files available, as well as custom
 annotation
 }
 \examples{
 psichomics:::listAllAnnotations()
 }
+\keyword{internal}

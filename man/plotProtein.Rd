@@ -16,11 +16,9 @@ plotProtein(molecule)
 Plot protein features
 }
 \examples{
-\dontrun{
 protein <- "P38398"
 plotProtein(protein)
 
 transcript <- "ENST00000488540"
 plotProtein(transcript)
-}
 }

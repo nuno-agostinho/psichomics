@@ -19,3 +19,4 @@ return NULL as they are only used to modify the state of hidden elements
 \description{
 Get or set hidden globally accessible elements
 }
+\keyword{internal}

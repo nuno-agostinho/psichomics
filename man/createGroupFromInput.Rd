@@ -4,20 +4,25 @@
 \alias{createGroupFromInput}
 \title{Set new groups according to the user input}
 \usage{
-createGroupFromInput(session, input, output, dataset, id, type)
+createGroupFromInput(session, input, dataset, id, type, selected = NULL,
+  expr = NULL, groupNames = NULL)
 }
 \arguments{
 \item{session}{Shiny session}
 
 \item{input}{Shiny input}
 
-\item{output}{Shiny output}
-
 \item{dataset}{Data frame or matrix: dataset of interest}
 
 \item{id}{Character: identifier of the group selection}
 
 \item{type}{Character: type of group to create}
+
+\item{selected}{Character: selected item}
+
+\item{expr}{Character: expression}
+
+\item{groupNames}{Character: group names}
 }
 \value{
 Matrix with the group names and respective elements
@@ -25,3 +30,4 @@ Matrix with the group names and respective elements
 \description{
 Set new groups according to the user input
 }
+\keyword{internal}

@@ -20,3 +20,4 @@ Rename duplicated names from a new group
 \note{
 The names of pre-existing groups are not modified.
 }
+\keyword{internal}

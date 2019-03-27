@@ -38,3 +38,4 @@ respective string in the \code{analysis} argument:
      \item{\code{fligner} - Fligner-Killeen test (2 or more groups)}
 }
 }
+\keyword{internal}

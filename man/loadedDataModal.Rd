@@ -2,7 +2,7 @@
 % Please edit documentation in R/data.R
 \name{loadedDataModal}
 \alias{loadedDataModal}
-\title{Create a modal warning the user of already loaded data}
+\title{Warn user about loaded data}
 \usage{
 loadedDataModal(session, modalId, replaceButtonId, keepButtonId)
 }
@@ -19,5 +19,6 @@ loadedDataModal(session, modalId, replaceButtonId, keepButtonId)
 HTML elements for a warning modal reminding data is loaded
 }
 \description{
-Create a modal warning the user of already loaded data
+Warn user about loaded data
 }
+\keyword{internal}

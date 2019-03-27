@@ -156,3 +156,4 @@ psichomics:::parseMisoALE(event)
 \seealso{
 \code{\link{parseMisoEvent}}
 }
+\keyword{internal}

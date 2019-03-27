@@ -31,6 +31,7 @@ getFirehoseDataTypes <- getFirebrowseDataTypes
 #' @param ... Named parameters to convert to attributes
 #' 
 #' @return Object with attributes set
+#' @keywords internal
 #' 
 #' @examples 
 #' ll <- list(a="hey", b="there")
@@ -87,6 +88,7 @@ parseTCGAsampleInfo <- parseTcgaSampleInfo
 #' @param data List of list of data frames
 #' 
 #' @return List of list of data frames
+#' @keywords internal
 loadTCGAsampleMetadata <- function(data) {
     for (i in seq(data)) {
         # Retrieve sample metadata from junction quantification
@@ -120,12 +122,105 @@ loadTCGAsampleMetadata <- function(data) {
     return(data)
 }
 
-#' Create a modal warning the user of already loaded data
+#' Plot sample statistics per row
+#'
+#' @param data Data frame or matrix
+#' @param x,y Character: statistic to calculate and display in the plot per row;
+#' choose between \code{mean}, \code{median}, \code{var} or \code{range}
+#' (or transformations of those variables, e.g. \code{log10(var)})
+#' @param xmin,xmax,ymin,ymax Numeric: minimum and maximum X and Y values to 
+#' draw in the plot
+#' @param xlim,ylim Numeric: X and Y axis range
+#'
+#' @importFrom ggplot2 geom_vline geom_hline xlim ylim ggtitle
+#'
+#' @return Plot of \code{data}
+#' @export
+#' 
+#' @examples 
+#' library(ggplot2)
+#' 
+#' # Plotting gene expression data
+#' geneExpr <- readFile("ex_gene_expression.RDS")
+#' plotRowStats(geneExpr, "mean", "var^(1/4)") +
+#'     ggtitle("Mean-variance plot") +
+#'     labs(y="Square Root of the Standard Deviation")
+#' 
+#' # Plotting alternative splicing quantification
+#' annot <- readFile("ex_splicing_annotation.RDS")
+#' junctionQuant <- readFile("ex_junctionQuant.RDS")
+#' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+#' 
+#' medianVar <- plotRowStats(psi, x="median", y="var", xlim=c(0, 1)) +
+#'     labs(x="Median PSI", y="PSI variance")
+#' medianVar
+#' 
+#' rangeVar  <- plotRowStats(psi, x="range", y="log10(var)", xlim=c(0, 1)) +
+#'     labs(x="PSI range", y="log10(PSI variance)")
+#' rangeVar
+plotRowStats <- function(data, x, y, xmin=NULL, xmax=NULL, ymin=NULL, ymax=NULL,
+                         xlim=NULL, ylim=NULL) {
+    stats <- c("range", "var", "median", "mean")
+    if (!any(sapply(stats, grepl, x)) || !any(sapply(stats, grepl, y))) {
+        stop("x and y require to contain one of the strings:",
+             "median, var, range")
+    }
+    
+    calculateXandYvalues <- function(psi, stats) {
+        names(stats) <- stats
+        input <- lapply(stats, grepl, c(x, y))
+        
+        rowRanges <- function(mat, ...) {
+            apply(mat, 1, max, ...) - apply(mat, 1, min, ...)
+            # apply(mat, 1, function(k) max(k, ...) - min(k, ...))
+        }
+        
+        x <- y <- NULL
+        vars <- list()
+        for (stat in stats) {
+            if (any(input[[stat]])) {
+                message(sprintf("Calculating %s per splicing event...", stat))
+                FUN <- switch(stat,
+                              "var"=rowVars,
+                              "mean"=rowMeans,
+                              "median"=rowMedians,
+                              "range"=rowRanges)
+                res <- FUN(psi, na.rm=TRUE)
+                vars[[stat]] <- res
+            }
+        }
+        vars <- data.frame(vars, stringsAsFactors=FALSE)
+        return(vars)
+    }
+    vars <- calculateXandYvalues(data, stats)
+    
+    message("Preparing plot...")
+    plot <- ggplot(vars, aes_string(x, y)) +
+        # geom_hex(na.rm=TRUE) +
+        geom_point(size=1, na.rm=TRUE, alpha=0.5) +
+        geom_density_2d(colour="orange", na.rm=TRUE) +
+        labs(x=x, y=y)
+    
+    if (!is.null(xlim)) plot <- plot + xlim(xlim)
+    if (!is.null(ylim)) plot <- plot + ylim(ylim)
+    
+    # Intercept lines
+    if (!is.null(xmin)) plot <- plot + geom_vline(xintercept=xmin, colour="red")
+    if (!is.null(xmax)) plot <- plot + geom_vline(xintercept=xmax, colour="red")
+    if (!is.null(ymin)) plot <- plot + geom_hline(yintercept=ymin, colour="red")
+    if (!is.null(ymax)) plot <- plot + geom_hline(yintercept=ymax, colour="red")
+    return(plot)
+}
+
+#' Warn user about loaded data
+#' 
 #' @param modalId Character: identifier of the modal
 #' @param replaceButtonId Character: identifier of the button to replace data
 #' @param keepButtonId Character: identifier of the button to append data
 #' @param session Shiny session
+#' 
 #' @return HTML elements for a warning modal reminding data is loaded
+#' @keywords internal
 loadedDataModal <- function(session, modalId, replaceButtonId, keepButtonId) {
     ns <- session$ns
     warningModal(session, "Data already loaded",
@@ -147,6 +242,7 @@ loadedDataModal <- function(session, modalId, replaceButtonId, keepButtonId) {
 #' @param data List of lists of data frames
 #' 
 #' @return Processed list of lists of data frames
+#' @keywords internal
 processDatasetNames <- function(data) {
     newData <- data
     # Avoid duplicate names in categories
@@ -185,6 +281,7 @@ processDatasetNames <- function(data) {
 #' @param geneExprFileId Character: identifier for gene expression input
 #' 
 #' @return HTML elements
+#' @keywords internal
 geneExprFileInput <- function(geneExprFileId) {
     fileBrowserInput(
         geneExprFileId,
@@ -214,6 +311,7 @@ geneExprFileInput <- function(geneExprFileId) {
 #' @param assemblyId Character: identifier for genome assembly selection input
 #' 
 #' @return HTML elements
+#' @keywords internal
 ASquantFileInput <- function(ASquantFileId, speciesId, assemblyId){
     tagList(
         fileBrowserInput(
@@ -323,7 +421,7 @@ dataUI <- function(id, tab) {
                  target="_blank", "Disease Transcriptomics Lab, iMM"), 
           "(", tags$a(href="mailto:nunodanielagostinho@gmail.com", 
                       "Nuno Saraiva-Agostinho", icon("envelope-o")),
-          ", 2015-2018)", 
+          ", 2015-2019)", 
           br(), "Special thanks to my lab colleagues for their work-related",
           br(), "support and supporting chatter."))
     
@@ -339,10 +437,13 @@ dataUI <- function(id, tab) {
 #' @param ns Namespace function
 #' @param title Character: tab title
 #' @param tableId Character: id of the \code{datatable}
-#' @param description Character: description of the table (optional)
 #' @param columns Character: column names of the \code{datatable}
 #' @param visCols Boolean: visible columns
 #' @param data Data frame: dataset of interest
+#' @param description Character: description of the table (optional)
+#' @param icon Character: list containing an item named \code{symbol} 
+#' (FontAwesome icon name) and another one named \code{colour} (background 
+#' colour)
 #'
 #' @importFrom shinyBS bsTooltip bsCollapse bsCollapsePanel
 #' @importFrom DT dataTableOutput
@@ -350,8 +451,9 @@ dataUI <- function(id, tab) {
 #' downloadButton
 #'
 #' @return HTML elements
+#' @keywords internal
 tabDataset <- function(ns, title, tableId, columns, visCols, data,
-                       description=NULL) {
+                       description=NULL, icon=NULL) {
     tablename <- ns(paste("table", tableId, sep="-"))
     
     downloadId <- paste(tablename, "download", sep="-")
@@ -388,15 +490,25 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
     #         role="progressbar", style="width:100%",
     #         "Loading summary plots")))
     
-    tabPanel(title, br(), download, br(),
-             bsCollapse(
-                 open="Summary",
-                 bsCollapsePanel(
-                     tagList(icon("table"), "Data table"), value="Data table",
-                     visibleColumns, hr(), dataTableOutput(tablename)),
-                 bsCollapsePanel(
-                     tagList(icon("pie-chart"), "Summary"), value="Summary",
-                     multiHighchartsPlots)))
+    if (is.null(icon)) {
+        name <- title
+    } else {
+        colour <- switch(icon$colour, 
+                         "green"="progress-bar-success",
+                         "blue"="progress-bar-info",
+                         "orange"="progress-bar-warning",
+                         "red"="progress-bar-danger")
+        name <- tags$div(
+            tags$span(class=paste("badge", colour), icon(icon$symbol)), title)
+    }
+    
+    tabPanel(title=name, value=title, br(), download, br(), bsCollapse(
+        open="Summary",
+        bsCollapsePanel(tagList(icon("table"), "Data table"), 
+                        value="Data table", visibleColumns, hr(),
+                        dataTableOutput(tablename)),
+        bsCollapsePanel(tagList(icon("pie-chart"), "Summary"), value="Summary",
+                        multiHighchartsPlots)))
     }
 
 #' Render a specific data tab (including data table and related interface)
@@ -413,13 +525,17 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
 #' @importFrom shiny downloadHandler br
 #' @importFrom utils write.table
 #' @importFrom shinyjs show hide
+#' @importFrom ggplot2 labs ggtitle theme_light
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 createDataTab <- function(index, data, name, session, input, output) {
+    ns <- session$ns
     tablename <- paste("table", name, index, sep="-")
     
     table <- data[[index]]
     # Only show default columns if they are defined (don't cause problems)
+    if (is(table, "EList")) table <- table$E
     subsetToShow <- table
     
     visCols <- input[[paste(tablename, "columns", sep="-")]]
@@ -443,22 +559,8 @@ createDataTab <- function(index, data, name, session, input, output) {
     
     multiPlotId        <- paste(tablename, "multiPlot", sep="-")
     loadingMultiPlotId <- paste(tablename, "loadingMultiPlot", sep="-")
-    output[[multiPlotId]] <- renderUI({
-        # gethc <- function(dfname = "cars") {
-        #     # function to return the chart in a column div
-        #     df <- get(dfname)
-        #     hc <- highchart(height=100) %>%
-        #         hc_title(text = dfname) %>%
-        #         hc_xAxis(title = list(text = names(df)[1])) %>%
-        #         hc_yAxis(title = list(text = names(df)[2])) %>%
-        #         highcharter::hc_add_series_scatter(df[ , 1], df[ , 2])
-        #     column(width=3, hc)
-        # }
-        # 
-        # data <- c("cars", "mtcars", "iris", "Puromycin", "ChickWeight")
-        # charts <- suppressWarnings(lapply(rep(data, 3), gethc))
-        # do.call(tagList, charts)
-        
+    
+    createInfoInterface <- function(output, table) {
         rows <- attr(table, "rows")
         rows <- ifelse(!is.null(rows), rows, "rows")
         cols <- attr(table, "columns")
@@ -474,8 +576,7 @@ createDataTab <- function(index, data, name, session, input, output) {
         settings <- attr(table, "settings")
         if (!is.null(settings)) {
             settingsDf <- data.frame(names(settings), sapply(
-                settings, function(item) 
-                    prepareWordBreak(paste(item, collapse=", "))))
+                sapply(settings, paste, collapse=", "), prepareWordBreak))
             colnames(settingsDf) <- c("Attribute", "Item")
             settings <- table2html(
                 settingsDf, rownames=FALSE, thead=TRUE, 
@@ -496,10 +597,83 @@ createDataTab <- function(index, data, name, session, input, output) {
                 settings)
         }
         
-        tags$div(tags$h4(paste(ncol(table), cols)), 
+        plots <- NULL
+        if (is.null(attr(table, "plots"))) {
+            isGeneExpr <- !is.null(attr(table, "dataType")) &&
+                attr(table, "dataType") == "Gene expression"
+            isPSI <- !is.null(attr(table, "dataType")) &&
+                attr(table, "dataType") == "Inclusion levels"
+            if (isGeneExpr) {
+                if (is(table, "EList")) table <- table$E
+                geneExprPerSamplePlot <- plotGeneExprPerSample(
+                    table, sortByMedian=TRUE, 
+                    title="Gene expression distribution per sample")
+                
+                librarySizePlot <- suppressWarnings(
+                    plotDistribution(log10(colSums(table)),
+                                     rugLabels=TRUE, vLine=FALSE) %>%
+                        hc_xAxis(title=list(text="log10(Library sizes)")) %>%
+                        hc_yAxis(title=list(text="Density")) %>%
+                        hc_legend(enabled=FALSE) %>%
+                        hc_title(
+                            text="Library size distribution across samples") %>%
+                        hc_subtitle(text=paste("Library size: number total",
+                                               "mapped reads")))
+                librarySizePlot$x$hc_opts$series[[1]]$color <- NULL
+                librarySizePlot$x$hc_opts$series[[2]]$marker$fillColor <- NULL
+                
+                plots <- list(
+                    highchart=geneExprPerSamplePlot,
+                    highchart=librarySizePlot)
+            } else if (isPSI) {
+                medianVar <- plotRowStats(table, x="median", y="var", 
+                                          xlim=c(0,1 )) +
+                    labs(x="PSI median", y="PSI variance") +
+                    ggtitle(paste("Scatterplot of alternative splicing",
+                                  "quantification per event")) +
+                    theme_light(14)
+                rangeVar  <- plotRowStats(table, x="range", y="log10(var)", 
+                                          xlim=c(0, 1)) +
+                    labs(x="PSI range", y="log10(PSI variance)") +
+                    ggtitle(paste("Scatterplot of alternative splicing",
+                                  "quantification per event")) +
+                    theme_light(14)
+                plots <- list(plot=medianVar, plot=rangeVar)
+            }
+            attr(table, "plots") <- plots
+        }    
+        # lapply(seq(plots), function(i, tablename) {
+        #     FUN <- switch(names(plots)[[i]],
+        #                   highchart=renderHighchart, plot=renderPlot)
+        #     id <- paste(tablename, "plot", i, sep="-")
+        #     output[[id]] <- FUN(plots[[i]])
+        # }, tablename=attr(table, "tablenameID"))
+        # 
+        # plotOutputs <- lapply(seq(plots), function(i, tablename) {
+        #     FUN <- switch(names(plots)[[i]],
+        #                   highchart=highchartOutput, plot=plotOutput)
+        #     id <- paste(tablename, "plot", i, sep="-")
+        #     FUN(ns(id), height="200px")
+        # }, tablename=attr(table, "tablenameID"))
+        
+        tablename <- attr(table, "tablenameID")
+        plots     <- attr(table, "plots")
+        
+        renderedPlots <- lapply(seq(plots), function(i) {
+            FUN <- switch(names(plots)[[i]],
+                          highchart=renderHighchart, plot=renderPlot)
+            FUN(plots[[i]])
+        })
+        
+        tags$div(tags$h4(paste(ncol(table), cols)),
                  tags$h4(paste(nrow(table), rows)),
+                 # do.call(tagList, plotOutputs),
+                 renderedPlots,
                  extra)
-    })
+    }
+    
+    attr(table, "tablenameID") <- tablename
+    output[[multiPlotId]] <- renderUI(createInfoInterface(output, table))
 }
 
 #' @rdname appServer
@@ -539,14 +713,21 @@ dataServer <- function(input, output, session) {
         category <- getCategory()
         
         dataTablesUI <- lapply(
-            seq_along(categoryData),
-            function(i) {
+            seq_along(categoryData), function(i) {
                 data <- categoryData[[i]]
-                tabDataset(ns, names(categoryData)[i], 
-                           paste(category, i, sep="-"), names(data),
-                           attr(data, "show"), data,
-                           description=attr(data, "description"))
-            })
+                if (is(data, "EList")) data <- data$E
+                
+                # Display at most 100 columns if no visible columns are set
+                visCols <- attr(data, "show")
+                if (is.null(visCols) && ncol(data) > 100)
+                    visCols <- colnames(data)[seq(100)]
+                
+                tabDataset(
+                    ns, names(categoryData)[i], icon=attr(data, "icon"),
+                    paste(category, i, sep="-"), colnames(data), visCols, data,
+                    description=attr(data, "description"))
+            }
+        )
         do.call(tabsetPanel, c(id=ns("datasetTab"), dataTablesUI))
     })
     
@@ -557,11 +738,10 @@ dataServer <- function(input, output, session) {
     observe({
         patients   <- getPatientId()
         samples    <- getSampleId()
-        sampleInfo <- getSampleInfo()
         if ( !is.null(patients) && !is.null(samples) ) {
             startProgress("Matching subjects to their samples...", 1)
             match <- getSubjectFromSample(samples, patients, 
-                                          sampleInfo=sampleInfo)
+                                          sampleInfo=getSampleInfo())
             setClinicalMatchFrom("Inclusion levels", match)
             closeProgress("Matching process concluded")
         }

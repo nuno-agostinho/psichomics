@@ -12,3 +12,4 @@ Variable containing all data of interest
 \description{
 Get global data
 }
+\keyword{internal}

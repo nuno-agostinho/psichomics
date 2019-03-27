@@ -53,3 +53,4 @@ hosted applications (e.g. from \url{https://www.shinyapps.io}).
 \seealso{
 \code{\link{updateFileBrowserInput}} and \code{\link{prepareFileBrowser}}
 }
+\keyword{internal}

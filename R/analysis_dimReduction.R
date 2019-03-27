@@ -18,6 +18,7 @@
 #' 
 #' @return PCA result in a \code{prcomp} object or ICA result
 #' object
+#' @keywords internal
 reduceDimensionality <- function(data, type=c("pca", "ica"), center=TRUE, 
                                  scale.=FALSE, naTolerance=NULL, 
                                  missingValues=round(0.05 * ncol(data)), ...) {
@@ -91,6 +92,7 @@ reduceDimensionality <- function(data, type=c("pca", "ica"), center=TRUE,
 #' @importFrom grDevices chull
 #' 
 #' @return \code{highcharter} object
+#' @keywords internal
 plotClusters <- function(hc, data, clustering) {
     for ( each in sort(unique(clustering)) ) {
         df <- data[clustering == each, , drop=FALSE]

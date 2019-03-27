@@ -35,3 +35,4 @@ Logic set to create an interactive ggplot
 Insert \code{ggplotAuxSet} outside any observer (so it is only run 
 once)
 }
+\keyword{internal}

@@ -18,3 +18,4 @@ NULL (this function is used to modify the Shiny session's state)
 \description{
 Enable or disable a tab from the \code{navbar}
 }
+\keyword{internal}

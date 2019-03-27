@@ -15,3 +15,4 @@ HTML elements
 \description{
 Interface to normalise and filter gene expression
 }
+\keyword{internal}

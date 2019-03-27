@@ -29,3 +29,4 @@ NULL (this function is used to modify the Shiny session's state)
 \description{
 This function can be used on groups to merge, intersect, subtract, etc.
 }
+\keyword{internal}

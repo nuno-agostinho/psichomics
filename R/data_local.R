@@ -111,7 +111,8 @@ localDataUI <- function(id, panel) {
                            placeholder="These files will not be loaded")),
         processButton(ns("acceptFile"), "Load files"))
     
-    panel(style="info", title=list(icon("plus-circle"), "Load user files"),
+    panel(style="info", title=list(icon("plus-circle"), 
+                                   "User-provided data loading"),
           value="Load local files",
           uiOutput(ns("localDataModal")),
           tabsetPanel(
@@ -122,8 +123,8 @@ localDataUI <- function(id, panel) {
 #' Prepare files to be loaded into psichomics
 #' 
 #' @param file Character: path to file
-#' @param output Character: path of output file (if NULL, only returns the data
-#' without saving it to a file)
+#' @param output Character: path of output file (if \code{NULL}, only returns 
+#' the data without saving it to a file)
 #' 
 #' @importFrom data.table fread fwrite
 #' 
@@ -134,6 +135,55 @@ prepareSRAmetadata <- function(file, output="psichomics_metadata.txt") {
     data <- cbind("Sample ID"=data$Run, data)
     if (!is.null(output)) fwrite(data, output, sep="\t")
     return(data)
+}
+
+#' Process and save SRA quantification data
+#' 
+#' @param files Character: path to SRA quantification files
+#' @param data Data frame: processed quantification data
+#' @param output Character: output filename (if \code{NULL}, no file is saved)
+#' @param IDcolname Character: name of the column containing the identifiers
+#' 
+#' @importFrom utils askYesNo
+#' 
+#' @return Process file and save its output
+#' @keywords internal
+processAndSaveSRAdata <- function(files, data, output, IDcolname) {
+    # Add sample names
+    samples <- names(files)
+    if (is.null(samples)) {
+        # Remove STAR filename end
+        if (IDcolname == "Gene ID")
+            filenameSuffix <- "ReadsPerGene"
+        else if (IDcolname == "Junction ID")
+            filenameSuffix <- "SJ"
+        filenameSuffix <- paste0(filenameSuffix, "\\.out\\.tab$")
+        
+        samples <- gsub(filenameSuffix, "", unlist(files))
+        samples <- basename(samples)
+    }
+    colnames(data) <- as.character(samples)
+    
+    quant <- cbind(rownames(data), data)
+    setnames(quant, "V1", IDcolname)
+    
+    # Save data to given path
+    if (!is.null(output)) {
+        if (file.exists(output)) {
+            msg <- sprintf(
+                "File %s already exists. Do you want to overwrite it?", output)
+            allowOverwrite <- askYesNo(msg, default=FALSE, 
+                                       prompts=c("Overwrite", "No", "Cancel"))
+            if (!allowOverwrite || is.na(allowOverwrite))
+                return(invisible(NULL))
+        } else {
+            allowOverwrite <- FALSE
+        }
+        fwrite(quant, output, sep="\t", na=0, quote=FALSE)
+        message(sprintf("File %s was %s", output, 
+                        ifelse(allowOverwrite, "overwritten", "created")))
+    }
+    return(quant)
 }
 
 #' @rdname prepareSRAmetadata
@@ -159,33 +209,20 @@ prepareJunctionQuant <- function(..., output="psichomics_junctions.txt",
     files <- list(...)
     
     # Prepare junction quantification accordingly
-    data <- prepareJunctionQuantSTAR(..., startOffset=startOffset, 
-                                     endOffset=endOffset)
-    
-    # Add sample names
-    samples <- names(files)
-    if (is.null(samples)) {
-        # Remove STAR filename end
-        samples <- gsub("SJ\\.out\\.tab$", "", unlist(files))
-    }
-    colnames(data) <- as.character(samples)
-    
-    # Save data to given path
-    if (!is.null(output)) {
-        junctionQuant <- cbind(rownames(data), data)
-        setnames(junctionQuant, "V1", "Junction ID")
-        fwrite(junctionQuant, output, sep="\t", na=0, quote=FALSE)
-    }
-    return(junctionQuant)
+    data  <- prepareJunctionQuantSTAR(..., startOffset=startOffset, 
+                                      endOffset=endOffset)
+    quant <- processAndSaveSRAdata(files, data, output, "Junction ID")
+    return(quant)
 }
 
-#' @rdname prepareSRAmetadata
+#' @inherit prepareSRAmetadata
 #' @importFrom data.table fread setnames setkeyv setorderv
 prepareJunctionQuantSTAR <- function(..., startOffset=-1, endOffset=+1) {
     if (is.null(startOffset)) startOffset <- -1
     if (is.null(endOffset))   endOffset   <- +1
     
     files <- list(...)
+    if (length(files) == 1) files <- unlist(files)
     joint <- NULL
     for (file in files) {
         cat(sprintf("Processing %s...", file), fill=TRUE)
@@ -244,26 +281,12 @@ prepareGeneQuant <- function(..., output="psichomics_gene_counts.txt",
     files <- list(...)
     
     # Prepare file accordingly
-    data <- prepareGeneQuantSTAR(..., strandedness=strandedness)
-    
-    # Add sample names
-    samples <- names(files)
-    if (is.null(samples)) {
-        # Remove STAR filename end
-        samples <- gsub("ReadsPerGene\\.out\\.tab$", "", unlist(files))
-    }
-    colnames(data) <- as.character(samples)
-    
-    # Save data to given path
-    if (!is.null(output)) {
-        geneQuant <- cbind(rownames(data), data)
-        setnames(geneQuant, "V1", "Gene ID")
-        fwrite(geneQuant, output, sep="\t", na=0, quote=FALSE)
-    }
-    return(geneQuant)
+    data  <- prepareGeneQuantSTAR(..., strandedness=strandedness)
+    quant <- processAndSaveSRAdata(files, data, output, "Gene ID")
+    return(quant)
 }
 
-#' @rdname prepareSRAmetadata
+#' @rdname prepareJunctionQuantSTAR
 #' @importFrom data.table fread setnames setkeyv setorderv
 prepareGeneQuantSTAR <- function(..., strandedness=c("unstranded", "stranded",
                                                      "stranded (reverse)")) {
@@ -272,12 +295,12 @@ prepareGeneQuantSTAR <- function(..., strandedness=c("unstranded", "stranded",
                            "unstranded"=2, "stranded"=3, "stranded (reverse)"=4)
     
     files <- list(...)
+    if (length(files) == 1) files <- unlist(files)
     joint <- NULL
     for (file in files) {
         cat(sprintf("Processing %s...", file), fill=TRUE)
         table  <- fread(file, skip=4)
-        strand <- match("strandedness", colnames(table))
-        table  <- table[ , c(1, strand, with=FALSE)]
+        table  <- table[ , c(1, strandedness), with=FALSE]
         joint  <- c(joint, list(table))
     }
     
@@ -358,6 +381,7 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."),
 #' @importFrom shinyjs disable enable
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 setLocalData <- function(input, output, session, replace=TRUE) {
     time <- startProcess("acceptFile")
     

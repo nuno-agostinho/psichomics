@@ -23,3 +23,4 @@ Checks the format of a file
 The name of the file may also be required to be considered of a 
 certain format.
 }
+\keyword{internal}

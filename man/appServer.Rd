@@ -96,3 +96,4 @@ NULL (this function is used to modify the Shiny session's state)
 \description{
 Instructions to build the Shiny app
 }
+\keyword{internal}

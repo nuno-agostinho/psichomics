@@ -55,4 +55,3 @@ test_that("Calculate variance for a multi-row matrix", {
     res2 <- apply(mat, 1, var, na.rm = FALSE) # R way
     expect_equal(signif(res1, 16), signif(res2, 16))
 })
-

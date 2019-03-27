@@ -2,21 +2,19 @@
 % Please edit documentation in R/analysis.R
 \name{plotDistribution}
 \alias{plotDistribution}
-\alias{plotDensity}
 \title{Plot distribution through a density plot}
 \usage{
-plotDistribution(data, groups = "All samples", rug = TRUE,
-  vLine = TRUE, ..., title = NULL, psi = NULL)
-
-plotDensity(data, groups = "All samples", rug = TRUE, vLine = TRUE,
-  ..., title = NULL, psi = NULL)
+plotDistribution(data, groups = NULL, rug = TRUE, vLine = TRUE, ...,
+  title = NULL, psi = NULL, rugLabels = FALSE)
 }
 \arguments{
 \item{data}{Numeric, data frame or matrix: data for one gene or alternative 
 splicing event}
 
 \item{groups}{List of characters (list of groups containing data identifiers)
-or character vector (group of each value in \code{data})}
+or character vector (group of each value in \code{data}); if \code{NULL} or a
+character vector of length 1, all data points will be considered of the same 
+group}
 
 \item{rug}{Boolean: include rug plot to better visualise data distribution}
 
@@ -30,6 +28,8 @@ density estimates}
 
 \item{psi}{Boolean: are data composed of PSI values? Automatically set to
 \code{TRUE} if all \code{data} values are between 0 and 1}
+
+\item{rugLabels}{Boolean: plot names or colnames of \code{data} in the rug?}
 }
 \value{
 Highcharter object with density plot
@@ -39,7 +39,8 @@ The tooltip shows the median, variance, max, min and number of non-NA samples
 of each data series.
 }
 \examples{
-data <- sample(20, rep=TRUE)/20
-groups <- c(rep("A", 10), rep("B", 10))
-plotDistribution(data, groups)
+data   <- sample(20, rep=TRUE)/20
+groups <- paste("Group", c(rep("A", 10), rep("B", 10)))
+label  <- paste("Sample", 1:20)
+plotDistribution(data, groups, label=label)
 }

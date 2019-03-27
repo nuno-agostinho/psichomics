@@ -22,3 +22,4 @@ Integer containing transformed values
 \description{
 Transform values as per a given type of transformation
 }
+\keyword{internal}

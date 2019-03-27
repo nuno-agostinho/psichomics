@@ -2,15 +2,9 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{queryFirebrowseData}
 \alias{queryFirebrowseData}
-\alias{queryFirehoseData}
 \title{Query the Firebrowse web API for TCGA data}
 \usage{
 queryFirebrowseData(format = "json", date = NULL, cohort = NULL,
-  data_type = NULL, tool = NULL, platform = NULL, center = NULL,
-  level = NULL, protocol = NULL, page = NULL, page_size = NULL,
-  sort_by = NULL)
-
-queryFirehoseData(format = "json", date = NULL, cohort = NULL,
   data_type = NULL, tool = NULL, platform = NULL, center = NULL,
   level = NULL, protocol = NULL, page = NULL, page_size = NULL,
   sort_by = NULL)
@@ -62,3 +56,4 @@ dates <- format(dates, psichomics:::getFirebrowseDateFormat()$query)
 
 psichomics:::queryFirebrowseData(date = dates[2], cohort = cohort)
 }
+\keyword{internal}

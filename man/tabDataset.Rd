@@ -6,7 +6,7 @@
 description}
 \usage{
 tabDataset(ns, title, tableId, columns, visCols, data,
-  description = NULL)
+  description = NULL, icon = NULL)
 }
 \arguments{
 \item{ns}{Namespace function}
@@ -22,6 +22,10 @@ tabDataset(ns, title, tableId, columns, visCols, data,
 \item{data}{Data frame: dataset of interest}
 
 \item{description}{Character: description of the table (optional)}
+
+\item{icon}{Character: list containing an item named \code{symbol} 
+(FontAwesome icon name) and another one named \code{colour} (background 
+colour)}
 }
 \value{
 HTML elements
@@ -30,3 +34,4 @@ HTML elements
 Creates a \code{tabPanel} template for a \code{datatable} with a title and
 description
 }
+\keyword{internal}

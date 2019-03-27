@@ -17,3 +17,4 @@ HTML elements
 \description{
 Interface to manipulate data grouping
 }
+\keyword{internal}

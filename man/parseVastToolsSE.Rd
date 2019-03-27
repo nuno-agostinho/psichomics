@@ -63,3 +63,4 @@ psichomics:::parseVastToolsA5SS(junctions)
 \seealso{
 \code{\link{parseVastToolsEvent}}
 }
+\keyword{internal}

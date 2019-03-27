@@ -17,3 +17,4 @@ HTML elements
 \description{
 Create a row for a HTML table
 }
+\keyword{internal}

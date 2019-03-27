@@ -2,14 +2,9 @@
 % Please edit documentation in R/analysis.R
 \name{diffAnalyses}
 \alias{diffAnalyses}
-\alias{diffAnalysis}
 \title{Perform statistical analyses}
 \usage{
 diffAnalyses(data, groups = NULL, analyses = c("wilcoxRankSum",
-  "ttest", "kruskal", "levene", "fligner"), pvalueAdjust = "BH",
-  geneExpr = NULL, psi = NULL)
-
-diffAnalysis(data, groups = NULL, analyses = c("wilcoxRankSum",
   "ttest", "kruskal", "levene", "fligner"), pvalueAdjust = "BH",
   geneExpr = NULL, psi = NULL)
 }

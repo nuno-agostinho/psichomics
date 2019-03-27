@@ -2,7 +2,7 @@ context("Gene, transcript and protein annotation")
 
 test_that("Query Ensembl API by event", {
     event <- "SE_12_-_7985318_7984360_7984200_7982602_SLC2A14"
-    parsed <- parseEvent(event)
+    parsed <- parseSplicingEvent(event)
     expect_is(parsed, "data.frame")
     expect_equal(parsed$type, "SE")
     expect_equal(parsed$chrom, "12")
@@ -79,3 +79,4 @@ test_that("Plot UniProt protein", {
     expect_equal(plot$x$hc_opts$chart$zoomType, "x")
     expect_length(plot$x$hc_opts$series, 9)
 })
+

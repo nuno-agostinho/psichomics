@@ -15,3 +15,4 @@ Escaped string
 \description{
 Escape symbols for use in regular expressions
 }
+\keyword{internal}

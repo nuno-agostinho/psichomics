@@ -17,17 +17,17 @@ plotPCA(pca, pcX = 1, pcY = 2, groups = NULL, individuals = TRUE,
 \item{groups}{Matrix: groups to plot indicating the index of interest of the
 samples (use clinical or sample groups)}
 
-\item{individuals}{Boolean: plot PCA individuals (TRUE by default)}
+\item{individuals}{Boolean: plot PCA individuals}
 
-\item{loadings}{Boolean: plot PCA loadings/rotations (FALSE by default)}
+\item{loadings}{Boolean: plot PCA loadings/rotations}
 
 \item{nLoadings}{Integer: Number of variables to plot, ordered by those that 
 most contribute to selected principal components (this allows for faster 
-performance as only the variables that most contribute are rendered); if 
-NULL, all variables are plotted}
+performance as only the most contributing variables are rendered); if 
+\code{NULL}, all variables are plotted}
 }
 \value{
-Scatterplot as an \code{highcharter} object
+Scatterplot as an \code{highchart} object
 }
 \description{
 Create a scatterplot from a PCA object

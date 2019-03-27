@@ -17,3 +17,4 @@ Character vector containing alternative splicing events
 \description{
 Find splicing events based on given genes
 }
+\keyword{internal}

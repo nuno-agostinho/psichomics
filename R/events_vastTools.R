@@ -1,6 +1,8 @@
 #' @rdname parseMisoAnnotation
+#' 
 #' @param complexEvents Boolean: should complex events in A3SS and A5SS be
 #' parsed? FALSE by default
+#' 
 #' @export
 #' @examples 
 #' # Load sample files
@@ -90,6 +92,7 @@ parseVastToolsAnnotation <- function(
 #'
 #' @return List with the event attributes (chromosome, strand, event type and
 #' the position of the exon boundaries)
+#' @keywords internal
 #'
 #' @examples
 #' event <- read.table(text = 
@@ -173,6 +176,7 @@ parseVastToolsEvent <- function(event) {
 #' @seealso \code{\link{parseVastToolsEvent}}
 #'
 #' @return List of parsed junctions
+#' @keywords internal
 #'
 #' @examples
 #' junctions <- read.table(text = "41040823 41046768 41046903 41051785")

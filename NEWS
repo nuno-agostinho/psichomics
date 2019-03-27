@@ -1,3 +1,93 @@
+# 1.8.2 (26 March, 2019)
+
+* Data loading:
+    - GTEx data can now be automatically downloaded and loaded on-demand
+    - By default, data table now only displays at most the first 100 columns 
+    for performance reasons
+* Alternative splicing quantification:
+    - Allow to discard samples before alternative splicing quantification
+    - In alternative splicing quantification dataset summary, plot
+    quantification based on median, variance and range per splicing event across
+    samples to provide tools to filter quantification (`plotRowStats()`)
+* Gene expression filtering and normalisation:
+    - Allow to discard samples before filtering and normalisation
+    - Filter low read counts using `edgeR::filterByExpr()`
+    - Allow to perform `limma::voom()` on gene expression data (without design
+    matrix) and to apply its normalisation methods
+    - In gene expression dataset summary, plot distribution of gene expression 
+    per sample, distribution of library sizes and gene-wise mean and variance of
+    gene expression across samples to provide the user tools to assess gene 
+    expression normalisation (`plotGeneExprPerSample()`, `plotDistribution()` 
+    and  `plotRowStats()`, respectively)
+    - Convert between different gene identifiers (the original identifier is 
+    kept in some conditions, read `convertGeneIdentifiers()`); in the visual
+    interface, when filtering and normalising gene expression, ENSEMBL 
+    identifiers are converted to gene symbols, by default
+* Groups:
+    - By default, load pre-made lists of genes when loading gene expression or
+    loading/performing alternative splicing quantification
+    - Added pre-made list of genes that encode for RNA-binding proteins 
+    (Sebestyen et al. 2016), useful to postulate about the regulatory role of
+    those proteins based on gene expression and PSI correlation analyses
+* Correlation analyses:
+    - Allow to use groups of genes and alternative splicing events in 
+    correlation analyses
+    - Plot specific combinations of gene and alternative splicing events 
+    (`[.GEandAScorrelation`())
+    - Display progress when performing correlation analyses
+    - Display correlation results in a table (`as.table()`)
+* Survival:
+    - Render p-value plot by cutoff in command-line interface 
+    (`plotSurvivalPvaluesByCutoff()`)
+* Gene, transcript and protein information:
+    - Modify keywords used to search for PubMed articles
+
+## Bug fixes and minor changes
+
+* Improve console logging of error and warning alerts
+* Fix crash when loading psichomics with test data that is not locally available
+(by automatically downloading said data if not found)
+* Allow to edit file path in file/directory browser elemnts
+* Documentation:
+    - Export functions mentioned in the documentation
+    - Hide documentation of internal functions from the PDF reference manual
+* Loading SRA data:
+    - Accept a vector of files as the first argument (easier to use with 
+    `list.files()`)
+    - Ask to overwrite file if one exists with the same name as the output file
+* Groups:
+    - Automatically set dropdown width for group attribute selection
+    - Minor improvements to the group creation interface
+    - Fix error when creating groups containing only samples and no matching 
+    subjects
+    - Fix warning when displaying group preview only based on subjects or 
+    samples
+* Alternative splicing quantification:
+    - Automatically set the human genome version after loading data from TCGA
+    (hg19), GTEx (hg19) or recount2 (hg38)
+    - Fix progress bar
+    - Decrease loading time after quantifying alternative splicing
+    - By default, quantify skipped exons, mutually exclusive exons, alternative 
+    3' and 5' splice sites, and alternative first and last exons; the default
+    option is now consistent across both the visual and command-line interfaces)
+* Differential analyses:
+    - Allow distribution plots to show the name of the samples when hovering or
+    when a rug plot is rendered if `rugLabels = TRUE` (function
+    `plotDistribution()`)
+    - Fix distribution plots requiring all samples in a group when using 
+    function `plotDistribution()`
+    - Fix group colours and opacity for rug plot points within the distribution 
+    plot (occured in the command-line version; function `plotDistribution()`)
+    - Fix wrong information in the table of differential splicing results (only
+    occurs when the first splicing event is one for which there is not enough
+    information to calculate statistical tests)
+    - Fix inconsistency when presenting median and variance differences between
+    gene expression and alternative splicing quantification
+    - Fix error when groups contain samples outside the data being analysed
+* Gene, transcript and protein information:
+    - Fix article title formatting (e.g. bold and italics)
+* Update psichomics citation with journal publication date
+
 # 1.8.1 (3 December, 2018)
 
 * Add tag ImmunoOncology to BiocViews
@@ -171,8 +261,8 @@ hg19 and hg38 annotation that is now available for use with psichomics)
     - Fix splicing events not being quantified based on GTEx v7 junction reads
 * Gene expression normalisation:
     - Fix misleading gene expression (non-)normalisation by converting reads to 
-    counts per million (CPM) using `edgeR::cpm` after normalisation using
-    `edgeR::calcNormFactor`
+    counts per million (CPM) using `edgeR::cpm()` after normalisation using
+    `edgeR::calcNormFactor()`
 * Alternative splicing quantification:
     - Updated support to properly parse new notation of alternative splicing 
     annotation from Bioconductor (backwards compatible with older notation)
@@ -204,7 +294,7 @@ hg19 and hg38 annotation that is now available for use with psichomics)
     tissues are loaded by default)
     - Quantify splicing based on a list of genes (splicing events within all 
     genes are quantified by default)
-    - Parse sample information from TCGA samples using `parseTcgaSampleInfo`
+    - Parse sample information from TCGA samples using `parseTcgaSampleInfo()`
     - Generate TCGA sample metadata when loading TCGA junction quantification
     - Present data summary after loading the data
 * Data grouping:

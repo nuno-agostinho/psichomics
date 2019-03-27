@@ -19,3 +19,4 @@ Icon element
 \description{
 Based on the \code{\link[shiny]{icon}} function
 }
+\keyword{internal}

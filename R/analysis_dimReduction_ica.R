@@ -33,9 +33,10 @@ performICA <- function(data, n.comp=min(5, ncol(data)), center=TRUE,
 #' @inheritDotParams pairsD3::pairsD3 -x
 #' 
 #' @importFrom pairsD3 pairsD3
-#' @return Multiple scatterplots as a \code{pairsD3} object
 #' 
+#' @return Multiple scatterplots as a \code{pairsD3} object
 #' @export
+#' 
 #' @examples
 #' data <- scale(USArrests)
 #' ica  <- fastICA::fastICA(data, n.comp=4)
@@ -67,7 +68,9 @@ plotICA <- function(ica, components=seq(10), groups=NULL, ...) {
 #' samples (use clinical or sample groups)
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip %>%
+#' 
 #' @return Scatterplot as an \code{highcharter} object
+#' @keywords internal
 #' 
 #' @examples
 #' ica <- performICA(USArrests, scale=TRUE)
@@ -126,8 +129,8 @@ icaUI <- function(id) {
     
     icaOptions <- div(
         id=ns("icaOptions"),
-        selectizeInput(ns("dataForICA"), "Data to perform ICA on", width="100%",
-                       choices=NULL, options=list(
+        selectizeInput(ns("dataForICA"), "Dataset to perform ICA on",
+                       width="100%", choices=NULL, options=list(
                            placeholder="No data available")),
         sliderInput(ns("componentNumber"), "Number of components",
                     width="100%", value=5, min=2, max=10),
@@ -257,6 +260,7 @@ icaUI <- function(id) {
 #' @importFrom pairsD3 renderPairsD3
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 clusterICAset <- function(session, input, output) {
     clusterICA <- reactive({
         algorithm <- input$clusteringMethod
@@ -417,7 +421,7 @@ icaServer <- function(input, output, session) {
         if (selectedDataForICA == "Inclusion levels")
             dataForICA <- isolate(getInclusionLevels())
         else if (grepl("^Gene expression", selectedDataForICA))
-            dataForICA <- isolate(getGeneExpression()[[selectedDataForICA]])
+            dataForICA <- isolate(getGeneExpression(selectedDataForICA))
         else return(NULL)
         
         val <- ncol(dataForICA)
@@ -436,7 +440,7 @@ icaServer <- function(input, output, session) {
             dataType    <- "Inclusion levels"
             groups2Type <- "ASevents"
         } else if (grepl("^Gene expression", selectedDataForICA)) {
-            dataForICA  <- isolate(getGeneExpression()[[selectedDataForICA]])
+            dataForICA  <- isolate(getGeneExpression(selectedDataForICA))
             dataType    <- "Gene expression"
             groups2Type <- "Genes"
         } else {

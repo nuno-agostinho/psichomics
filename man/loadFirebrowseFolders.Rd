@@ -2,15 +2,9 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{loadFirebrowseFolders}
 \alias{loadFirebrowseFolders}
-\alias{loadFirehoseFolders}
-\alias{loadTCGAfolders}
 \title{Load Firebrowse folders}
 \usage{
 loadFirebrowseFolders(folder, exclude = "")
-
-loadFirehoseFolders(folder, exclude = "")
-
-loadTCGAfolders(folder, exclude = "")
 }
 \arguments{
 \item{folder}{Character: folder(s) in which to look for Firebrowse files}
@@ -28,3 +22,4 @@ For faster execution, this function uses the \code{readr} library. This
 function ignores subfolders of the given folder (which means that files 
 inside subfolders are NOT loaded).
 }
+\keyword{internal}

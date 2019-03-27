@@ -21,3 +21,4 @@ NULL (this function is used to modify the Shiny session's state)
 Retrieve previous groups, rename duplicated group names in the new groups
 and append new groups to the previous ones
 }
+\keyword{internal}

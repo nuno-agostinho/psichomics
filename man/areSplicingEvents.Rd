@@ -13,8 +13,9 @@ areSplicingEvents(char, num = 6)
 }
 \value{
 TRUE if first elements of the vector identify splicing events; FALSE,
- otherwise
+  otherwise
 }
 \description{
 Check if string identifies splicing events
 }
+\keyword{internal}

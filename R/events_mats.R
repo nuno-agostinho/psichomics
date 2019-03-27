@@ -1,7 +1,9 @@
 #' @rdname parseMisoAnnotation
+#' 
 #' @param novelEvents Boolean: parse events dedected due to novel splice sites 
 #' (TRUE by default)
 #' @export
+#' 
 #' @examples 
 #' # Load sample files
 #' folder <- "extdata/eventsAnnotSample/mats_output/ASEvents"
@@ -64,6 +66,7 @@ parseMatsAnnotation <- function(
 #' }
 #'
 #' @return List containing the event attributes and junctions
+#' @keywords internal
 #'
 #' @examples
 #' # MATS event (alternative 3' splice site)
@@ -141,6 +144,7 @@ parseMatsEvent <- function(event, event_type) {
 #' @seealso \code{\link{parseMatsEvent}}
 #' 
 #' @return Data frame with parsed junctions
+#' @keywords internal
 #' 
 #' @examples 
 #' # Parse generic event (in this case, an exon skipping event)

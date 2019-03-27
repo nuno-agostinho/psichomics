@@ -15,3 +15,4 @@ HTML elements
 \description{
 Interface to quantify alternative splicing
 }
+\keyword{internal}

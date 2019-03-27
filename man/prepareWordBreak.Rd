@@ -4,7 +4,7 @@
 \alias{prepareWordBreak}
 \title{Create word break opportunities (for HTML) using given characters}
 \usage{
-prepareWordBreak(str, pattern = c(".", "-", "\\\\", "/", "_"))
+prepareWordBreak(str, pattern = c(".", "-", "\\\\", "/", "_", ",", " "))
 }
 \arguments{
 \item{str}{Character: text}
@@ -18,3 +18,4 @@ String containing HTML elements
 \description{
 Create word break opportunities (for HTML) using given characters
 }
+\keyword{internal}

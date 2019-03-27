@@ -1,5 +1,6 @@
 #' @rdname parseMisoAnnotation
 #' @export
+#' 
 #' @examples 
 #' # Load sample files
 #' folder <- "extdata/eventsAnnotSample/suppa_output/suppaEvents"
@@ -47,6 +48,7 @@ parseSuppaAnnotation <- function(
 #'
 #' @return List with the event attributes (chromosome, strand, event type and
 #' the position of the exon boundaries)
+#' @keywords internal
 #'
 #' @examples
 #' event <- "ENSG00000000419;A3:20:49557492-49557642:49557470-49557642:-"
@@ -116,6 +118,7 @@ parseSuppaEvent <- function(event) {
 #' @seealso \code{\link{parseSuppaEvent}}
 #'
 #' @return Data frame of parsed junctions
+#' @keywords internal
 #' 
 #' @examples
 #' # Parse generic event (in this case, an exon skipping event)

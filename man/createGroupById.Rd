@@ -19,3 +19,4 @@ Character: values based on given row indexes or identifiers
 \description{
 Create groups based on given row indexes or identifiers
 }
+\keyword{internal}

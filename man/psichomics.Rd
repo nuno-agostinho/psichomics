@@ -30,8 +30,7 @@ only used for recording or running automated tests. Defaults to the
 \code{shiny.testmode} option, or FALSE if the option is not set.}
 }}
 
-\item{reset}{Boolean: reset Shiny session? requires the package 
-\code{devtools} to reset data}
+\item{reset}{Boolean: reset Shiny session? Requires package \code{devtools}}
 
 \item{testData}{Boolean: auto-start with test data}
 }

@@ -28,3 +28,4 @@ NULL (this function is used to modify the Shiny session's state)
 \description{
 Interface when no information could be retrieved
 }
+\keyword{internal}

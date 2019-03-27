@@ -2,18 +2,18 @@
 % Please edit documentation in R/analysis_dimReduction_pca.R
 \name{plotVariance}
 \alias{plotVariance}
-\title{Create the explained variance plot}
+\title{Create the explained variance plot from a PCA}
 \usage{
 plotVariance(pca)
 }
 \arguments{
-\item{pca}{PCA values}
+\item{pca}{\code{prcomp} object}
 }
 \value{
-Plot variance as an Highcharter object
+Plot variance as an \code{highchart} object
 }
 \description{
-Create the explained variance plot
+Create the explained variance plot from a PCA
 }
 \examples{
 pca <- prcomp(USArrests)

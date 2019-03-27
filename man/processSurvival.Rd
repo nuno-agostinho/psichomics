@@ -37,3 +37,4 @@ List with survival analysis results
 \description{
 Check if survival analyses successfully completed or returned errors
 }
+\keyword{internal}

@@ -3,9 +3,7 @@
 \name{prepareSRAmetadata}
 \alias{prepareSRAmetadata}
 \alias{prepareJunctionQuant}
-\alias{prepareJunctionQuantSTAR}
 \alias{prepareGeneQuant}
-\alias{prepareGeneQuantSTAR}
 \title{Prepare files to be loaded into psichomics}
 \usage{
 prepareSRAmetadata(file, output = "psichomics_metadata.txt")
@@ -13,19 +11,14 @@ prepareSRAmetadata(file, output = "psichomics_metadata.txt")
 prepareJunctionQuant(..., output = "psichomics_junctions.txt",
   startOffset = NULL, endOffset = NULL)
 
-prepareJunctionQuantSTAR(..., startOffset = -1, endOffset = +1)
-
 prepareGeneQuant(..., output = "psichomics_gene_counts.txt",
   strandedness = c("unstranded", "stranded", "stranded (reverse)"))
-
-prepareGeneQuantSTAR(..., strandedness = c("unstranded", "stranded",
-  "stranded (reverse)"))
 }
 \arguments{
 \item{file}{Character: path to file}
 
-\item{output}{Character: path of output file (if NULL, only returns the data
-without saving it to a file)}
+\item{output}{Character: path of output file (if \code{NULL}, only returns 
+the data without saving it to a file)}
 
 \item{...}{Character: path to file(s) to read}
 

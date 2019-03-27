@@ -34,3 +34,4 @@ HTML elements
 \description{
 Modified colour input with 100\% width
 }
+\keyword{internal}

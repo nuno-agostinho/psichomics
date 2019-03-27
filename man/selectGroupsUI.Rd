@@ -6,8 +6,7 @@
 \alias{getSelectedGroups}
 \title{Group selection}
 \usage{
-selectGroupsUI(id, label,
-  placeholder = "Click 'Groups' to create or edit groups",
+selectGroupsUI(id, label, placeholder = "Type to search for groups",
   noGroupsLabel = NULL, groupsLabel = NULL, maxItems = NULL,
   returnAllDataLabel = NULL, returnAllDataValue = FALSE)
 
@@ -66,3 +65,4 @@ Group selection interface and logic
 To allow the user to (explicitly) select no groups, pass the 
 \code{noGroupsLabel} and \code{groupsLabel} arguments.
 }
+\keyword{internal}

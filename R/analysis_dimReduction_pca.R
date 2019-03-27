@@ -12,7 +12,7 @@
 #' @export
 #' 
 #' @seealso \code{\link{plotPCA}}, \code{\link{performICA}} and 
-#' \code{\link{plotICA}}
+#'   \code{\link{plotICA}}
 #' 
 #' @examples 
 #' performPCA(USArrests)
@@ -35,8 +35,8 @@ pcaUI <- function(id) {
     
     pcaOptions <- div(
         id=ns("pcaOptions"),
-        selectizeInput(ns("dataForPCA"), "Data to perform PCA on", width="100%",
-                       choices=NULL, options=list(
+        selectizeInput(ns("dataForPCA"), "Dataset to perform PCA on", 
+                       width="100%", choices=NULL, options=list(
                            placeholder="No data available")),
         checkboxGroupInput(ns("preprocess"), "Preprocessing",
                            c("Center values"="center", "Scale values"="scale"),
@@ -166,15 +166,15 @@ pcaUI <- function(id) {
     )
 }
 
-#' Create the explained variance plot
+#' Create the explained variance plot from a PCA
 #' 
-#' @param pca PCA values
+#' @param pca \code{prcomp} object
 #' 
 #' @importFrom highcharter highchart hc_chart hc_title hc_add_series 
 #' hc_plotOptions hc_xAxis hc_yAxis hc_legend hc_tooltip hc_exporting
 #' @importFrom shiny tags
 #' 
-#' @return Plot variance as an Highcharter object
+#' @return Plot variance as an \code{highchart} object
 #' @export
 #' @examples 
 #' pca <- prcomp(USArrests)
@@ -192,7 +192,7 @@ plotVariance <- function(pca) {
     
     hc <- highchart() %>%
         hc_chart(zoomType="xy", backgroundColor=NULL) %>%
-        hc_title(text=paste("Explained variance by each",
+        hc_title(text=paste("Variance explained by each",
                             "Principal Component (PC)")) %>%
         hc_add_series(data=data, type="waterfall", cumvar=cumvar) %>%
         hc_plotOptions(series=list(dataLabels=list(
@@ -201,7 +201,7 @@ plotVariance <- function(pca) {
             align="center", verticalAlign="top", enabled=TRUE))) %>%
         hc_xAxis(title=list(text="Principal Components"), 
                  categories=seq(length(data)), crosshair=TRUE) %>%
-        hc_yAxis(title=list(text="Percentage of variances"), min=0, max=100) %>%
+        hc_yAxis(title=list(text="Percentage of variance"), min=0, max=100) %>%
         hc_legend(enabled=FALSE) %>%
         hc_tooltip(
             headerFormat=paste(tags$b("Principal component {point.x}"),
@@ -230,6 +230,10 @@ plotVariance <- function(pca) {
 #' @return Data frame containing the correlation between variables and selected 
 #' principal components and the contribution of variables to the selected 
 #' principal components (both individual and total contribution)
+#' 
+#' @examples 
+#' pca <- performPCA(USArrests)
+#' calculateLoadingsContribution(pca)
 calculateLoadingsContribution <- function(pca, pcX=1, pcY=2) {
     loadings <- data.frame(pca$rotation)[, c(pcX, pcY)]
     sdev <- pca$sdev[c(pcX, pcY)]
@@ -279,16 +283,16 @@ calculateLoadingsContribution <- function(pca, pcX=1, pcY=2) {
 #' @param pcY Character: name of the Y axis of interest from the PCA
 #' @param groups Matrix: groups to plot indicating the index of interest of the
 #' samples (use clinical or sample groups)
-#' @param individuals Boolean: plot PCA individuals (TRUE by default)
-#' @param loadings Boolean: plot PCA loadings/rotations (FALSE by default)
+#' @param individuals Boolean: plot PCA individuals
+#' @param loadings Boolean: plot PCA loadings/rotations
 #' @param nLoadings Integer: Number of variables to plot, ordered by those that 
 #' most contribute to selected principal components (this allows for faster 
-#' performance as only the variables that most contribute are rendered); if 
-#' NULL, all variables are plotted
+#' performance as only the most contributing variables are rendered); if 
+#' \code{NULL}, all variables are plotted
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip %>%
 #' tooltip_table
-#' @return Scatterplot as an \code{highcharter} object
+#' @return Scatterplot as an \code{highchart} object
 #' 
 #' @export
 #' @examples
@@ -363,7 +367,7 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
                          name="Loadings", sample=names, contr=contrTotal,
                          contrPCx=contrPCx, contrPCy=contrPCy) %>%
             hc_subtitle(text=sprintf(
-                "Bubble size: contribution of a variable to PC%s and PC%s",
+                "Bubble size ~ relative contribution to PC%s and PC%s",
                 pcX, pcY)) %>%
             hc_tooltip(useHTML=TRUE, headerFormat="", pointFormat=paste0(
                 tags$b(style="text-align: center; white-space:pre-wrap;",
@@ -382,6 +386,7 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
 #' @importFrom shiny renderTable tableOutput
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 clusterSet <- function(session, input, output) {
     clusterPCA <- reactive({
         algorithm <- input$clusteringMethod
@@ -586,7 +591,7 @@ pcaServer <- function(input, output, session) {
         if (selectedDataForPCA == "Inclusion levels")
             dataForPCA <- isolate(getInclusionLevels())
         else if (grepl("^Gene expression", selectedDataForPCA))
-            dataForPCA <- isolate(getGeneExpression()[[selectedDataForPCA]])
+            dataForPCA <- isolate(getGeneExpression(selectedDataForPCA))
         if (is.null(dataForPCA)) NULL
         
         groups <- getSelectedGroups(input, "dataGroups", "Samples",
@@ -654,7 +659,7 @@ pcaServer <- function(input, output, session) {
             dataType    <- "Inclusion levels"
             groups2Type <- "ASevents"
         } else if (grepl("^Gene expression", selectedDataForPCA)) {
-            dataForPCA <- isolate(getGeneExpression()[[selectedDataForPCA]])
+            dataForPCA <- isolate(getGeneExpression(selectedDataForPCA))
             dataType   <- "Gene expression"
             groups2Type <- "Genes"
         } else {

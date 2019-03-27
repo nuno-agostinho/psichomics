@@ -41,11 +41,6 @@ diffExpressionTableUI <- function(id) {
                     "compute moderated t-tests and log-odds of differential",
                     "expression by empirical Bayes moderation of the standard",
                     "errors towards a common value."),
-                radioButtons(
-                    ns("ebayesPriorVar"), "Prior gene-wise variance modelling",
-                    list("Constant pooled variance"="constant",
-                         "Mean-variance trend (limma-trend)"="trend"),
-                    selected="trend"),
                 sliderInput(
                     ns("ebayesProportion"), min=0, max=1, value=0.01, step=0.01,
                     width="100%",
@@ -160,6 +155,7 @@ diffExpressionTableUI <- function(id) {
 #' @importFrom limma eBayes lmFit topTable
 #' 
 #' @inherit diffExpressionTableServer
+#' @keywords internal
 diffExpressionSet <- function(session, input, output) {
     ns <- session$ns
     
@@ -177,15 +173,18 @@ diffExpressionSet <- function(session, input, output) {
     })
     
     performDiffExpression <- reactive({
-        geneExpr <- getGeneExpression()[[input$geneExpr]]
-        
+        geneExpr <- getGeneExpression(input$geneExpr, EList=TRUE)
         totalTime <- startProcess("startAnalyses")
         
         # Prepare groups of samples to analyse and filter samples not available 
         # in the selected groups from the gene expression data
         groups <- getSelectedGroups(input, "diffGroups", "Samples",
                                     filter=colnames(geneExpr))
-        geneExpr     <- geneExpr[ , unlist(groups), drop=FALSE]
+        groups <- discardOutsideSamplesFromGroups(groups, colnames(geneExpr))
+        if (!is(geneExpr, "EList"))
+            geneExpr <- geneExpr[ , unlist(groups), drop=FALSE]
+        else
+            geneExpr <- geneExpr[ , unlist(groups)]
         isFromGroup1 <- colnames(geneExpr) %in% groups[[1]]
         design       <- cbind(1, ifelse(isFromGroup1, 1, 0))
         
@@ -196,16 +195,16 @@ diffExpressionSet <- function(session, input, output) {
         ebayesProportion <- input$ebayesProportion
         ebayesStdevMin   <- input$ebayesStdevMin
         ebayesStdevMax   <- input$ebayesStdevMax
-        ebayesPriorVar   <- input$ebayesPriorVar
-        limmaTrend       <- identical(ebayesPriorVar, "trend")
         
-        stats <- eBayes(fit, proportion=ebayesProportion, trend=limmaTrend,
+        stats <- eBayes(fit, proportion=ebayesProportion,
+                        trend=!is(geneExpr, "EList"),
                         stdev.coef.lim=c(ebayesStdevMin, ebayesStdevMax))
         
         # Prepare data summary
         pvalueAdjust <- input$pvalueAdjust
         summary <- topTable(stats, number=nrow(fit), coef=2, sort.by="none",
                             adjust.method=pvalueAdjust, confint=TRUE)
+        summary$ID <- NULL
         names(summary) <- c(
             "log2 Fold-Change", "CI (low)", "CI (high)", "Average expression",
             "moderated t-statistics", "p-value", 

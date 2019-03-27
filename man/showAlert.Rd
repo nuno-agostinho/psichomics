@@ -7,14 +7,14 @@
 \alias{removeAlert}
 \title{Show or remove an alert}
 \usage{
-showAlert(session, ..., title = NULL, style = NULL,
-  dismissible = TRUE, alertId = "alert")
+showAlert(session, ..., title, style = NULL, dismissible = TRUE,
+  alertId = "alert", iconName = NULL, caller = NULL)
 
 errorAlert(session, ..., title = NULL, dismissible = TRUE,
-  alertId = "alert")
+  alertId = "alert", caller = NULL)
 
 warningAlert(session, ..., title = NULL, dismissible = TRUE,
-  alertId = "alert")
+  alertId = "alert", caller = NULL)
 
 removeAlert(output, alertId = "alert")
 }
@@ -23,14 +23,17 @@ removeAlert(output, alertId = "alert")
 
 \item{...}{Arguments to render as elements of alert}
 
-\item{title}{Character: title of the alert (optional)}
+\item{title}{Character: title}
 
-\item{style}{Character: style of the alert ("alert-danger", "alert-warning" 
-or NULL)}
+\item{style}{Character: style (\code{error}, \code{warning} or \code{NULL})}
 
-\item{dismissible}{Boolean: is the alert dismissible? TRUE by default}
+\item{dismissible}{Boolean: is the alert dismissible?}
 
-\item{alertId}{Character: alert identifier}
+\item{alertId}{Character: identifier}
+
+\item{iconName}{Character: icon name}
+
+\item{caller}{Character: caller module identifier}
 
 \item{output}{Shiny output}
 }
@@ -38,9 +41,9 @@ or NULL)}
 NULL (this function is used to modify the Shiny session's state)
 }
 \description{
-You can also use \code{errorAlert} and \code{warningAlert} to use template 
-alerts already stylised to show errors and warnings respectively.
+Show or remove an alert
 }
 \seealso{
 \code{\link{showModal}}
 }
+\keyword{internal}

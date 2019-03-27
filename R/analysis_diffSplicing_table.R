@@ -205,6 +205,7 @@ diffSplicingTableUI <- function(id) {
 #' 
 #' @return Survival data including optimal PSI cutoff, minimal survival p-value
 #' and HTML element required to plot survival curves
+#' @keywords internal
 createOptimalSurvData <- function(eventPSI, clinical, censoring, event, 
                                   timeStart, timeStop, match, patients, 
                                   samples) {
@@ -245,6 +246,7 @@ createOptimalSurvData <- function(eventPSI, clinical, censoring, event,
 #' @param output Shiny output
 #' 
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 optimSurvDiffSet <- function(session, input, output) {
     ns <- session$ns
     
@@ -286,8 +288,8 @@ optimSurvDiffSet <- function(session, input, output) {
         }
     })
     
-    #' Calculate optimal survival cutoff for the inclusion levels of a given
-    #' alternative splicing event
+    # Calculate optimal survival cutoff for the inclusion levels of a given
+    # alternative splicing event
     observeEvent(input$survival, {
         time <- startProcess("survival")
         isolate({
@@ -419,6 +421,7 @@ optimSurvDiffSet <- function(session, input, output) {
 #' @importFrom shinyBS updateCollapse
 #' 
 #' @inherit diffSplicingTableServer
+#' @keywords internal
 diffSplicingSet <- function(session, input, output) {
     ns <- session$ns
     

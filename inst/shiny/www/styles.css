@@ -62,6 +62,11 @@ a { cursor: pointer; }
 /* Align element with selectize input */
 .inline_selectize { margin-top: 25px; }
 
+/* Increase dropdown width of a specific selectize input */
+#groups-sampleGroupModule-groupAttributePatients + div > .selectize-dropdown {
+    width: auto !important;
+}
+
 /* Add error style to modal headers 
 Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
 .modal-content .error {

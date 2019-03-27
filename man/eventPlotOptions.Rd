@@ -24,3 +24,4 @@ HTML elements
 \description{
 Options for event plotting
 }
+\keyword{internal}

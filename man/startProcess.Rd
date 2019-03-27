@@ -2,16 +2,33 @@
 % Please edit documentation in R/utils.R
 \name{startProcess}
 \alias{startProcess}
-\title{Signal the program that a process is starting}
+\alias{endProcess}
+\title{Set the status of a process to style a given button}
 \usage{
 startProcess(id)
+
+endProcess(id, time = NULL, closeProgressBar = TRUE)
 }
 \arguments{
 \item{id}{Character: button identifier}
+
+\item{time}{\code{POSIXct} object: start time needed to show the interval
+time (if NULL, the time interval is not displayed)}
+
+\item{closeProgressBar}{Boolean: close progress bar? TRUE by default}
 }
 \value{
-Start time of the process
+\code{startProcess} returns the start time of the process (may be 
+used as the \code{time} argument to \code{endProcess}), whereas
+\code{endProcess} returns the difference between current time and \code{time}
+(or \code{NULL} if \code{time} is not specified)
 }
 \description{
-Style button to show processing is in progress
+\itemize{
+  \item{\code{startProcess}: Style button to show a process is in progress}
+  \item{\code{endProcess}: Style button to show a process finished; also, 
+  closes the progress bar (if \code{closeProgressbar} is \code{TRUE}) and 
+  prints the difference between the current time and \code{time}}
 }
+}
+\keyword{internal}

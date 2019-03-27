@@ -18,3 +18,4 @@ HTML elements
 \description{
 HTML code to plot a X-ranges series
 }
+\keyword{internal}

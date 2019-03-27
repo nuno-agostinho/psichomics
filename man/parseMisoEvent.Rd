@@ -35,3 +35,4 @@ event <- read.table(text = "
   chr1 SE exon 17915 18061 . - .")
 psichomics:::parseMisoEvent(event)
 }
+\keyword{internal}

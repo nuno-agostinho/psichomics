@@ -151,3 +151,4 @@ test_that("Plot survival curves with no separation", {
     expect_equal(plot$x$hc_opts$chart$zoomType, "xy")
     expect_length(plot$x$hc_opts$series, 1)
 })
+

@@ -21,3 +21,4 @@ format$query
 # date format to parse a date in a response from Firebrowse web API
 format$response
 }
+\keyword{internal}

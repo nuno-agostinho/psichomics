@@ -2,12 +2,16 @@
 % Please edit documentation in R/analysis.R
 \name{analysesTableSet}
 \alias{analysesTableSet}
-\title{Set of functions to render data table for differential analyses}
+\alias{analysesPlotSet}
+\title{Set of functions to render differential analyses (plot and table)}
 \usage{
 analysesTableSet(session, input, output, analysesType, analysesID,
   getAnalysesData, getAnalysesFiltered, setAnalysesFiltered,
   getAnalysesSurvival, getAnalysesColumns, setAnalysesColumns,
   getResetPaging, setResetPaging)
+
+analysesPlotSet(session, input, output, analysesType, analysesID,
+  getAnalysesData, getAnalysesFiltered, getAnalysesSurvival)
 }
 \arguments{
 \item{session}{Session object}
@@ -18,23 +22,23 @@ analysesTableSet(session, input, output, analysesType, analysesID,
 
 \item{analysesType}{Character: type of analyses (\code{GE} or \code{PSI})}
 
-\item{analysesID}{Character: identifier of analyses}
+\item{analysesID}{Character: identifier}
 
-\item{getAnalysesData}{Function: used to get analyses data}
+\item{getAnalysesData}{Function: get analyses data}
 
-\item{getAnalysesFiltered}{Function: used to get filtered analyses data}
+\item{getAnalysesFiltered}{Function: get filtered analyses data}
 
-\item{setAnalysesFiltered}{Function: used to set filtered analyses data}
+\item{setAnalysesFiltered}{Function: set filtered analyses data}
 
-\item{getAnalysesSurvival}{Function: used to get survival data}
+\item{getAnalysesSurvival}{Function: get survival data}
 
-\item{getAnalysesColumns}{Function: used to get columns}
+\item{getAnalysesColumns}{Function: get columns}
 
-\item{setAnalysesColumns}{Function: used to set columns}
+\item{setAnalysesColumns}{Function: set columns}
 
-\item{getResetPaging}{Function: used to get reset paging toggle}
+\item{getResetPaging}{Function: get toggle of reset paging}
 
-\item{setResetPaging}{Function: used to set reset paging toggle}
+\item{setResetPaging}{Function: set toggle of reset paging}
 }
 \value{
 NULL (this function is used to modify the Shiny session's state)
@@ -42,3 +46,4 @@ NULL (this function is used to modify the Shiny session's state)
 \description{
 Instructions to build the Shiny app
 }
+\keyword{internal}

@@ -31,7 +31,7 @@ interval (only relevant for interval censoring)}
 \code{clinical} argument is not handed)}
 
 \item{samples}{Character: samples to use when assigning values per patient 
-(if NULL, all samples will be used)}
+(if \code{NULL}, all samples will be used)}
 }
 \value{
 Survival data including optimal PSI cutoff, minimal survival p-value
@@ -40,3 +40,4 @@ and HTML element required to plot survival curves
 \description{
 Data is presented in the table for statistical analyses
 }
+\keyword{internal}

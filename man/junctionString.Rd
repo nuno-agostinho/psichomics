@@ -23,3 +23,4 @@ Formatted character string
 \description{
 String used to search for matches in a junction quantification file
 }
+\keyword{internal}

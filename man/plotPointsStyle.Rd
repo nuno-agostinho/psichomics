@@ -28,3 +28,4 @@ HTML elements
 \description{
 Interface to modify the style of the plot points
 }
+\keyword{internal}

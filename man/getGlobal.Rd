@@ -13,6 +13,44 @@
 \alias{setSignificant}
 \alias{getPrecision}
 \alias{setPrecision}
+\alias{setASevent}
+\alias{getEvent}
+\alias{setEvent}
+\alias{getGenes}
+\alias{getCategories}
+\alias{getCategory}
+\alias{setCategory}
+\alias{getCategoryData}
+\alias{getActiveDataset}
+\alias{setActiveDataset}
+\alias{getClinicalData}
+\alias{getPatientId}
+\alias{getPatientAttributes}
+\alias{getSampleInfo}
+\alias{setSampleInfo}
+\alias{getSampleId}
+\alias{getSampleAttributes}
+\alias{getJunctionQuantification}
+\alias{getGeneExpression}
+\alias{setNormalisedGeneExpression}
+\alias{getInclusionLevels}
+\alias{setInclusionLevels}
+\alias{getPCA}
+\alias{setPCA}
+\alias{getICA}
+\alias{setICA}
+\alias{getCorrelation}
+\alias{setCorrelation}
+\alias{getGroupIndependenceTesting}
+\alias{setGroupIndependenceTesting}
+\alias{getSpecies}
+\alias{setSpecies}
+\alias{getAssemblyVersion}
+\alias{setAssemblyVersion}
+\alias{getAnnotationName}
+\alias{setAnnotationName}
+\alias{getURLtoDownload}
+\alias{setURLtoDownload}
 \title{Get or set globally accessible elements}
 \usage{
 getGlobal(category = getCategory(), ..., sep = "_")
@@ -38,6 +76,84 @@ setSignificant(integer)
 getPrecision()
 
 setPrecision(integer)
+
+setASevent(event)
+
+getEvent()
+
+setEvent(event)
+
+getGenes()
+
+getCategories()
+
+getCategory()
+
+setCategory(category)
+
+getCategoryData()
+
+getActiveDataset()
+
+setActiveDataset(dataset)
+
+getClinicalData(attrs = NULL)
+
+getPatientId()
+
+getPatientAttributes()
+
+getSampleInfo()
+
+setSampleInfo(value, category = getCategory())
+
+getSampleId()
+
+getSampleAttributes()
+
+getJunctionQuantification(category = getCategory())
+
+getGeneExpression(item = NULL, category = getCategory(),
+  EList = FALSE)
+
+setNormalisedGeneExpression(geneExpr, category = getCategory())
+
+getInclusionLevels()
+
+setInclusionLevels(incLevels, category = getCategory())
+
+getPCA(category = getCategory())
+
+setPCA(pca, category = getCategory())
+
+getICA(category = getCategory())
+
+setICA(ica, category = getCategory())
+
+getCorrelation(category = getCategory())
+
+setCorrelation(correlation, category = getCategory())
+
+getGroupIndependenceTesting(category = getCategory())
+
+setGroupIndependenceTesting(groupIndependenceTesting,
+  category = getCategory())
+
+getSpecies(category = getCategory())
+
+setSpecies(species, category = getCategory())
+
+getAssemblyVersion(category = getCategory())
+
+setAssemblyVersion(assembly, category = getCategory())
+
+getAnnotationName(category = getCategory())
+
+setAnnotationName(annotName, category = getCategory())
+
+getURLtoDownload()
+
+setURLtoDownload(url)
 }
 \arguments{
 \item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
@@ -56,6 +172,40 @@ it uses the selected data category}
 \item{auto}{Boolean: enable automatic navigation of browser history?}
 
 \item{integer}{Integer: value of the setting}
+
+\item{event}{Character: alternative splicing event}
+
+\item{dataset}{Character: dataset name}
+
+\item{attrs}{Character: name of attributes to retrieve (if NULL, the whole 
+dataset is returned)}
+
+\item{item}{Character: name of specific item to retrieve (if \code{NULL}, the
+whole list is returned)}
+
+\item{EList}{Boolean: return gene expression datasets as \code{EList} if
+possible or as data frames?}
+
+\item{geneExpr}{Data frame or matrix: normalised gene expression}
+
+\item{incLevels}{Data frame or matrix: inclusion levels}
+
+\item{pca}{\code{prcomp} object (principal component analysis)}
+
+\item{ica}{Object containing independent component analysis}
+
+\item{correlation}{\code{prcomp} object (correlation analyses)}
+
+\item{groupIndependenceTesting}{Object containing group independence testing
+results}
+
+\item{species}{Character: species}
+
+\item{assembly}{Character: assembly version}
+
+\item{annotName}{Character: annotation name}
+
+\item{url}{Character: URL links to download}
 }
 \value{
 Getters return globally accessible data, whereas setters return NULL 
@@ -68,6 +218,7 @@ Get or set globally accessible elements
 Needs to be called inside a reactive function
 }
 \seealso{
-\code{\link{getEvent}}, \code{\link{getClinicalMatchFrom}},
+\code{\link{getGlobal}}, \code{\link{getClinicalMatchFrom}},
 \code{\link{getGroups}} and \code{\link{getDifferentialSplicing}}
 }
+\keyword{internal}

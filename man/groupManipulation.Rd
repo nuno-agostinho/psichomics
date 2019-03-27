@@ -21,3 +21,4 @@ HTML elements
 \description{
 Logic server to manipulate data grouping
 }
+\keyword{internal}

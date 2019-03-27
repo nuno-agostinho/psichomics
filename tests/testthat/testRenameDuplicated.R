@@ -52,6 +52,4 @@ test_that("Return renamed vector with no duplicates", {
     comp  <- c("cat")
     res <- renameDuplicated(check, comp)
     expect_equal(res, c("cat (1)", "mouse", "cat (2)"))
-    
-    
 })

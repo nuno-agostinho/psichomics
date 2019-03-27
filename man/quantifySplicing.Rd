@@ -18,8 +18,8 @@ splicing event type}
 \item{minReads}{Integer: discard alternative splicing quantified using a
 number of reads below this threshold}
 
-\item{genes}{Character: gene symbols for which the splicing quantification 
-of associated splicing events is performed (by default, all splicing events 
+\item{genes}{Character: gene symbols for which the splicing quantification
+of associated splicing events is performed (by default, all splicing events
 undergo splicing quantification)}
 }
 \value{

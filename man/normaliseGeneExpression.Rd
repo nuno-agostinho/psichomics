@@ -5,27 +5,39 @@
 \title{Filter and normalise gene expression}
 \usage{
 normaliseGeneExpression(geneExpr, geneFilter = NULL, method = "TMM",
-  p = 0.75, log2transform = TRUE, priorCount = 0.25)
+  p = 0.75, log2transform = TRUE, priorCount = 0.25,
+  performVoom = FALSE)
 }
 \arguments{
 \item{geneExpr}{Matrix or data frame: gene expression}
 
 \item{geneFilter}{Boolean: filtered genes}
 
-\item{method}{normalization method to be used}
+\item{method}{Character: normalisation method, including \code{TMM},
+\code{RLE}, \code{upperquartile}, \code{none} or \code{quantile} (see
+Details)}
 
 \item{p}{percentile (between 0 and 1) of the counts that is aligned when \code{method="upperquartile"}}
 
 \item{log2transform}{Boolean: perform log2-transformation?}
 
-\item{priorCount}{Average count to add to each observation to avoid zeroes 
+\item{priorCount}{Average count to add to each observation to avoid zeroes
 after log-transformation}
+
+\item{performVoom}{Boolean: perform mean-variance modelling (voom)?}
 }
 \value{
-Gene expression filtered and normalised
+Filtered and normalised gene expression
 }
 \description{
 Filter and normalise gene expression
+}
+\details{
+\code{edgeR::calcNormFactors} will be used to normalise gene
+expression if one of the followin methods is set: \code{TMM}, \code{RLE},
+\code{upperquartile} or \code{none}. However, \code{limma::voom} will be
+used for normalisation if \code{performVoom = TRUE} and the selected method
+is \code{quantile}.
 }
 \examples{
 geneExpr <- readFile("ex_gene_expression.RDS")

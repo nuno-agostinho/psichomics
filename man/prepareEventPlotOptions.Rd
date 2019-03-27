@@ -19,3 +19,4 @@ HTML elements
 \description{
 Prepare event plot options
 }
+\keyword{internal}

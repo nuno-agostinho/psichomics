@@ -18,3 +18,4 @@ NULL (display message in command-line)
 \description{
 Display characters in the command-line
 }
+\keyword{internal}

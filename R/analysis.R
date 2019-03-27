@@ -8,16 +8,20 @@ NULL
 #' @param buttonId Character: identifier of button to take user to load missing 
 #' data
 #' 
+#' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
+#' 
 #' @examples
 #' \dontrun{
-#'  session <- session$ns
-#'  buttonInput <- "takeMeThere"
-#'  buttonId <- ns(buttonInput)
-#'  dataType <- "Inclusion levels"
-#'  missingDataModal(session, buttonId, dataType)
-#'  observeEvent(input[[buttonInput]], missingDataGuide(dataType))
+#' if (shiny::isRunning()) {
+#'     session <- session$ns
+#'     buttonInput <- "takeMeThere"
+#'     buttonId <- ns(buttonInput)
+#'     dataType <- "Inclusion levels"
+#'     missingDataModal(session, buttonId, dataType)
+#'     observeEvent(input[[buttonInput]], missingDataGuide(dataType))
 #' }
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' }
 missingDataModal <- function(session, dataType, buttonId) {
     template <- function(buttonLabel) {
         errorModal(
@@ -45,6 +49,7 @@ missingDataGuide <- function(dataType) {
 #' @inheritParams shiny::selectizeInput
 #' 
 #' @return HTML elements
+#' @keywords internal
 selectizeGeneInput <- function(id, label="Gene", choices=NULL, multiple=FALSE) {
     onFocus  <- NULL
     onChange <- NULL
@@ -69,6 +74,8 @@ selectizeGeneInput <- function(id, label="Gene", choices=NULL, multiple=FALSE) {
 #' 
 #' @importFrom shinyBS bsTooltip
 #' @importFrom shiny NS div icon fluidRow column tags
+#' 
+#' @keywords internal
 analysesUI <- function(id, tab) { 
     ns <- NS(id)
     uiList <- getUiFunctions(
@@ -101,6 +108,8 @@ analysesUI <- function(id, tab) {
 #' 
 #' @importFrom shiny observe observeEvent
 #' @importFrom shinyjs hide show
+#' 
+#' @keywords internal
 analysesServer <- function(input, output, session) {
     # Run server logic from the scripts
     getServerFunctions("analysis", 
@@ -117,6 +126,7 @@ analysesServer <- function(input, output, session) {
 #' when performing survival analysis
 #' 
 #' @return Character
+#' @keywords internal
 patientMultiMatchWarning <- function() {
     paste("While stratifying patients for survival analysis, patients",
           "with multipe samples are assigned the average value of their",
@@ -131,6 +141,7 @@ patientMultiMatchWarning <- function() {
 #' @param formulaStr Character: right-side of the formula for survival analysis
 #' 
 #' @return Filtered clinical data
+#' @keywords internal
 getClinicalDataForSurvival <- function(..., formulaStr=NULL) {
     cols <- unlist(list(...))
     if (!is.null(formulaStr) && formulaStr != "") {
@@ -151,23 +162,33 @@ getClinicalDataForSurvival <- function(..., formulaStr=NULL) {
 #' @param patients Character: patient identifiers (only required if the
 #' \code{clinical} argument is not handed)
 #' @param samples Character: samples to use when assigning values per patient 
-#' (if NULL, all samples will be used)
+#' (if \code{NULL}, all samples will be used)
 #' 
 #' @return Values per patient
 #' @export
+#' 
+#' @examples 
+#' # Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events
+#' annot <- readFile("ex_splicing_annotation.RDS")
+#' junctionQuant <- readFile("ex_junctionQuant.RDS")
+#'
+#' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+#' 
+#' # Match between subjects and samples
+#' match <- rep(paste("Patient", 1:3), 2)
+#' names(match) <- colnames(psi)
+#' 
+#' assignValuePerSubject(psi[3, ], match)
 getValuePerPatient <- function(data, match, clinical=NULL, patients=NULL,
                                samples=NULL) {
     hasOneRow     <- !is.null(nrow(data)) && nrow(data) == 1
     isNamedVector <- is.vector(data) && !is.null(names(data))
     if (!hasOneRow && !isNamedVector)
-        stop("Data needs to either have only one row or be a vector with",
+        stop("Data needs to either have only one row or be a vector with ",
              "sample identifiers as names.")
     
-    if (is.null(clinical) && is.null(patients))
-        stop("You cannot leave both 'clinical' and 'patients' arguments ",
-             "as NULL.")
-    else if (is.null(patients))
-        patients <- rownames(clinical)
+    # TO DO: filter by subjects (allow to input no subjects, i.e. no filtering)
+    if (is.null(patients)) patients <- rownames(clinical)
     
     if (!is.numeric(data)) {
         ns   <- names(data)
@@ -225,6 +246,7 @@ getPSIperPatient <- function(psi, match, clinical=NULL, patients=NULL, ...) {
 #' of this function.
 #' 
 #' @return Data frame with terms needed to calculate survival curves
+#' @keywords internal
 processSurvData <- function(event, timeStart, timeStop, followup, group, 
                             clinical, survTime=NULL) {
     if ( is.null(survTime) ) {
@@ -267,7 +289,6 @@ processSurvData <- function(event, timeStart, timeStop, followup, group,
 #' @param followup Character: name of column containing follow up time
 #' 
 #' @return Data frame containing the time for the given columns
-#' 
 #' @export
 #' 
 #' @examples 
@@ -308,6 +329,7 @@ getColumnsTime <- function(clinical, event, timeStart, timeStop=NULL,
 #' 
 #' @importFrom shiny observe updateSelectizeInput
 #' @return NULL (this function is used to modify the Shiny session's state)
+#' @keywords internal
 updateClinicalParams <- function(session, attrs) {
     if (!is.null(attrs)) {
         # Allow the user to select any "days_to" attribute available
@@ -535,6 +557,7 @@ survdiff.survTerms <- function(survTerms, ...) {
 #' 
 #' @return Plot of survival curves
 #' @export
+#' 
 #' @examples 
 #' require("survival")
 #' fit <- survfit(Surv(time, status) ~ x, data = aml)
@@ -582,7 +605,9 @@ plotSurvivalCurves <- function(surv, mark=TRUE, interval=FALSE, pvalue=NULL,
 #' @inheritDotParams processSurvTerms
 #' 
 #' @importFrom shiny tags
+#' 
 #' @return List with survival analysis results
+#' @keywords internal
 processSurvival <- function(session, ...) {
     # Calculate survival curves
     survTerms <- tryCatch(processSurvTerms(...), error=return)
@@ -700,6 +725,7 @@ labelBasedOnCutoff <- function (data, cutoff, label=NULL, gte=TRUE) {
 #' 
 #' @importFrom survival survdiff
 #' @return p-value of the survival difference
+#' @keywords internal
 testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
                                session=NULL, survivalInfo=FALSE) {
     group <- labelBasedOnCutoff(data, cutoff, label="Inclusion levels")
@@ -812,6 +838,7 @@ optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart,
 #' @param labelsPanel Tab panel containing options to label points
 #' 
 #' @return HTML elements
+#' @keywords internal
 prepareEventPlotOptions <- function(id, ns, labelsPanel=NULL) {
     createAxisPanel <- function(ns, axis) {
         upper  <- toupper(axis)
@@ -864,17 +891,31 @@ prepareEventPlotOptions <- function(id, ns, labelsPanel=NULL) {
     div(id=id, tabsetPanel(xAxisPanel, yAxisPanel, labelsPanel, plotStyle))
 }
 
-#' Perform Wilcoxon analysis and return interface to show the results
+#' Perform and display statistical analysis
+#' 
+#' Includes interface containing the results
 #' 
 #' @inheritParams plotDistribution
 #' @param stat Data frame or matrix: values of the analyses to be performed (if
 #' NULL, the analyses will be performed)
+#' 
+#' @details
+#' \itemize{
+#'   \item{\code{ttest}: unpaired t-test}
+#'   \item{\code{wilcox}: Wilcoxon test}
+#'   \item{\code{levene}: Levene's test}
+#'   \item{\code{fligner}: Fligner-Killeen test}
+#'   \item{\code{kruskal}: Kruskal test}
+#'   \item{\code{fisher}: Fisher's exact test}
+#'   \item{\code{spearman}: Spearman's test}
+#' }
 #' 
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats wilcox.test
 #' @importFrom R.utils capitalize
 #' 
 #' @return HTML elements
+#' @keywords internal
 wilcox <- function(data, groups, stat=NULL) {
     warn <- NULL
     group <- unique(groups)
@@ -932,16 +973,11 @@ wilcox <- function(data, groups, stat=NULL) {
             tags$b("p-value: "), signifDigits(p.value), br(), adjusted))
 }
 
-#' Perform unpaired t-test analysis and return interface to show the results
-#' @inheritParams wilcox
-#' @param stat Data frame or matrix: values of the analyses to be performed (if
-#' NULL, the analyses will be performed)
+#' @rdname wilcox
 #' 
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats t.test
 #' @importFrom R.utils capitalize
-#' 
-#' @return HTML elements
 ttest <- function(data, groups, stat=NULL) {
     warn <- NULL
     group <- unique(groups)
@@ -1030,11 +1066,8 @@ ttest <- function(data, groups, stat=NULL) {
             tags$b("p-value: "), signifDigits(p.value), br(), adjusted))
 }
 
-
-#' Perform Levene's test and return interface to show the results
-#' @inheritParams wilcox
+#' @rdname wilcox
 #' @importFrom shiny tagList tags h4 br
-#' @return HTML elements
 levene <- function(data, groups, stat=NULL) {
     p.value <- NULL
     if (!is.null(stat)) {
@@ -1095,11 +1128,9 @@ levene <- function(data, groups, stat=NULL) {
             nonBootstrap))
 }
 
-#' Perform Fligner-Killeen test and return interface to show the results
-#' @inheritParams wilcox
+#' @rdname wilcox
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats fligner.test
-#' @return HTML elements
 fligner <- function(data, groups, stat=NULL) {
     len <- length(unique(groups))
     
@@ -1147,11 +1178,10 @@ fligner <- function(data, groups, stat=NULL) {
             tags$b("p-value: "), signifDigits(p.value), br(), adjusted))
 }
 
-#' Perform Kruskal's test and return interface to show the results
-#' @inheritParams wilcox
+#' @rdname wilcox
+#' 
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats kruskal.test
-#' @return HTML elements
 kruskal <- function(data, groups, stat=NULL) {
     len <- length(unique(groups))
     
@@ -1193,21 +1223,18 @@ kruskal <- function(data, groups, stat=NULL) {
                 tags$b("p-value: "), signifDigits(p.value), br(), adjusted))
 }
 
-#' Perform Fisher's exact test and return interface to show the results
-#' @inheritParams wilcox
+#' @rdname wilcox
 #' 
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats fisher.test
 #' @importFrom R.utils evalWithTimeout
-#' 
-#' @return HTML elements
 fisher <- function(data, groups) {
     stat <- try(evalWithTimeout(
         fisher.test(data, factor(groups)),
         timeout = 1,
         onTimeout = "error"))
     
-    if (class(stat) != "try-error") {
+    if (!is(stat, "try-error")) {
         tagList(
             h4(stat$method),
             tags$b("p-value: "), stat$p.value, br(),
@@ -1221,11 +1248,10 @@ fisher <- function(data, groups) {
     }
 }
 
-#' Perform Spearman's test and return interface to show the results
-#' @inheritParams wilcox
+#' @rdname wilcox
+#' 
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats var cor
-#' @return HTML elements
 spearman <- function(data, groups) {
     group <- unique(groups)
     len <- length(group)
@@ -1255,6 +1281,7 @@ spearman <- function(data, groups) {
 #' element to sort differentially analysis
 #' 
 #' @return HTML elements
+#' @keywords internal
 eventPlotOptions <- function(session, df, xAxis, yAxis, labelSortBy) {
     # Only allow to select numeric columns    
     cols <- colnames(df)
@@ -1336,6 +1363,7 @@ eventPlotOptions <- function(session, df, xAxis, yAxis, labelSortBy) {
 #' @importFrom shiny tagList br h4
 #' 
 #' @return HTML elements
+#' @keywords internal
 basicStats <- function(data, groups) {
     data <- lapply(unique(groups), function(g) data[groups == g])
     
@@ -1373,6 +1401,7 @@ basicStats <- function(data, groups) {
 #' @return Named vector with filtered elements from valid groups. The group of 
 #' the respective element is given in the name.
 #' @export
+#' 
 #' @examples 
 #' # Removes groups with less than two elements
 #' filterGroups(1:4, c("A", "B", "B", "D"), threshold=2)
@@ -1385,7 +1414,6 @@ filterGroups <- function(vector, group, threshold=1) {
     })
     return(unlist(vector))
 }
-
 
 #' Create plot for events
 #' 
@@ -1412,6 +1440,7 @@ filterGroups <- function(vector, group, threshold=1) {
 #' @importFrom ggrepel geom_label_repel
 #' 
 #' @return List containing HTML elements and highlighted points
+#' @keywords internal
 createEventPlotting <- function(df, x, y, params, highlightX, highlightY,
                                 highlightParams, selected, selectedParams,
                                 labelled, labelledParams, xlim, ylim) {
@@ -1482,6 +1511,7 @@ createEventPlotting <- function(df, x, y, params, highlightX, highlightY,
 #' NULL (by default) to show all variable transformations
 #' 
 #' @return Character labelling variable transformation(s)
+#' @keywords internal
 transformOptions <- function(label, type=NULL) {
     transform <- c("No transformation"="no",
                    "|%s|"="abs",
@@ -1510,6 +1540,7 @@ transformOptions <- function(label, type=NULL) {
 #' default
 #' 
 #' @return Integer containing transformed values
+#' @keywords internal
 transformValues <- function(val, type, avoidZero=TRUE) {
     # Remove NAs
     if (avoidZero) {
@@ -1536,6 +1567,7 @@ transformValues <- function(val, type, avoidZero=TRUE) {
 #' 
 #' @return Data frame with transformed data in new columns and respective name
 #' of created columns
+#' @keywords internal
 transformData <- function(input, df, x, y) {
     xTrans <- input$xTransform
     xLabel <- transformOptions(x, xTrans)
@@ -1563,6 +1595,7 @@ transformData <- function(input, df, x, y) {
 #' @importFrom shiny tagList h4 helpText sliderInput
 #' 
 #' @return HTML elements
+#' @keywords internal
 plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
                             colour="black", alpha=1.0) {
     id2 <- function(att) ns(paste0(id, att))
@@ -1586,7 +1619,9 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' @param data Numeric, data frame or matrix: data for one gene or alternative 
 #' splicing event
 #' @param groups List of characters (list of groups containing data identifiers)
-#' or character vector (group of each value in \code{data})
+#' or character vector (group of each value in \code{data}); if \code{NULL} or a
+#' character vector of length 1, all data points will be considered of the same 
+#' group
 #' @param rug Boolean: include rug plot to better visualise data distribution
 #' @param vLine Boolean: include vertical plot lines to display descriptive 
 #' statistics for each group
@@ -1595,6 +1630,7 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' @param title Character: plot title
 #' @param psi Boolean: are data composed of PSI values? Automatically set to
 #' \code{TRUE} if all \code{data} values are between 0 and 1
+#' @param rugLabels Boolean: plot names or colnames of \code{data} in the rug?
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_plotOptions hc_tooltip
 #' JS
@@ -1602,12 +1638,14 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' 
 #' @return Highcharter object with density plot
 #' @export
+#' 
 #' @examples
-#' data <- sample(20, rep=TRUE)/20
-#' groups <- c(rep("A", 10), rep("B", 10))
-#' plotDistribution(data, groups)
-plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE, 
-                             ..., title=NULL, psi=NULL) {
+#' data   <- sample(20, rep=TRUE)/20
+#' groups <- paste("Group", c(rep("A", 10), rep("B", 10)))
+#' label  <- paste("Sample", 1:20)
+#' plotDistribution(data, groups, label=label)
+plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, 
+                             ..., title=NULL, psi=NULL, rugLabels=FALSE) {
     if (is.null(psi)) 
         psi <- min(data, na.rm=TRUE) >= 0 && max(data, na.rm=TRUE) <= 1
     
@@ -1630,9 +1668,11 @@ plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE,
         hc_plotOptions(series = list(fillOpacity=0.3,
                                      marker=list(enabled=FALSE))) %>%
         hc_tooltip(
-            headerFormat = paste(span(style="color:{point.color}", "\u25CF "),
-                                 tags$b("{series.name}"), br()),
+            headerFormat=NULL,
             pointFormat = paste(
+                "{point.label}", br(), 
+                span(style="color:{point.color}", "\u25CF "),
+                tags$b("{series.name}"), br(),
                 id, "{point.x:.2f}", br(),
                 "Number of samples: {series.options.samples}", br(),
                 "Median: {series.options.median}", br(),
@@ -1642,7 +1682,8 @@ plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE,
     
     if (!is.null(title)) hc <- hc %>% hc_title(text=title)
     
-    if (is.list(groups)) 
+    if (is.null(groups)) groups <- "All samples"
+    if (is.list(groups))
         ns <- names(groups)
     else
         ns <- groups
@@ -1655,10 +1696,20 @@ plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE,
         else
             filter <- groups == group
         
-        if (is.vector(data))
-            row <- as.numeric(data[filter])
-        else
-            row <- as.numeric(data[ , filter])
+        if (is.vector(data)) {
+            row      <- data[filter]
+        } else if (isTRUE(filter)) {
+            row      <- data
+        } else {
+            filter   <- filter[filter %in% colnames(data)]
+            row      <- data[ , filter]
+        }
+        
+        label <- names(row)
+        if (is.null(label)) label <- colnames(row)
+        
+        row <- as.numeric(row)
+        if (length(row) == 0) next
         
         med  <- roundDigits(median(row, na.rm=TRUE))
         vari <- roundDigits(var(row, na.rm=TRUE))
@@ -1668,7 +1719,7 @@ plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE,
         
         colour <- unname(attr(groups, "Colour")[group])
         if (is.null(colour))
-            colour <- JS("Highcharts.getOptions().colors[", count, "]")
+            colour <- JS(paste0("Highcharts.getOptions().colors[", count, "]"))
         
         # Calculate the density of inclusion levels for each sample group
         den <- tryCatch(density(row, na.rm=TRUE, ...), error=return,
@@ -1682,17 +1733,34 @@ plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE,
         }
         # Rug plot
         if (rug) {
-            hc <- hc_scatter(
-                hc, row, rep(0, length(row)), name=group, marker=list(
-                    enabled=TRUE, symbol="circle", radius=4,
-                    fillColor=paste0(colour, "60")), # Add opacity
-                median=med, var=vari, samples=samples, max=max, min=min)
+            isHexColour <- function(string) {
+                # Explicitely ignores HEX colour codes with opacity
+                grepl("^#{0,1}([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", string)
+            }
+            
+            convertOpacityToHex <- function(opacity) {
+                sprintf("%02x", round(opacity/100 * 255))
+            }
+            opacity <- convertOpacityToHex(60) # Opacity in percentage
+            
+            if (is(colour, "JS_EVAL")) {
+                fill <- JS(sprintf("%s + \"%s\"", colour, opacity))
+            } else if (isHexColour(colour)) {
+                fill <- sprintf("%s%s", colour, opacity)
+            } else {
+                fill <- colour
+            }
+            
+            hc <- hc %>%
+                hc_scatter(
+                    row, rep(0, length(row)), name=group, label=label, 
+                    marker=list(enabled=TRUE, radius=4, fillColor=fill),
+                    median=med, var=vari, samples=samples, max=max, min=min)
         }
-        # Save plot line with information
+        # Plot line with basic statistics
         if (vLine) {
             plotLines[[count + 1]] <- list(
-                label = list(text = paste("Median:", med, "/ Variance:", vari)),
-                # Colour the same as the series
+                label=list(text=paste("Median:", med, "/ Variance:", vari)),
                 color=colour, dashStyle="shortdash", width=2, value=med, 
                 zIndex=7)
         }
@@ -1701,11 +1769,55 @@ plotDistribution <- function(data, groups="All samples", rug=TRUE, vLine=TRUE,
     
     # Add plotLines with information
     if (vLine) hc <- hc %>% hc_xAxis(plotLines = plotLines)
+    
+    # Show or hide rug labels
+    rugSeries <- which(sapply(hc$x$hc_opts$series, "[[", "type") == "scatter")
+    for (k in rugSeries)
+        hc$x$hc_opts$series[[k]]$dataLabels$enabled <- rugLabels
     return(hc)
 }
 
-#' @rdname plotDistribution
-plotDensity <- plotDistribution
+#' Render boxplot
+#'
+#' @param data Data frame or matrix
+#' @param outliers Boolean: draw outliers?
+#' @param sortByMedian Boolean: sort box plots based on ascending median?
+#' @param showXlabels Boolean: show labels in X axis?
+#'
+#' @importFrom reshape2 melt
+#' @importFrom miscTools colMedians
+#'
+#' @return Box plot
+#' @keywords internal
+#' 
+#' @examples
+#' psichomics:::renderBoxplot(data.frame(a=1:10, b=10:19, c=45:54))
+renderBoxplot <- function(data, outliers=FALSE, sortByMedian=TRUE,
+                          showXlabels=TRUE, title=NULL, 
+                          seriesName="Gene expression") {
+    if (sortByMedian) {
+        medians <- colMedians(data)
+        data <- data[ , order(medians)]
+    }
+    
+    # Remove matrix rownames from melted data
+    melted <- suppressMessages(melt(data))
+    if (ncol(melted) == 3) {
+        melted[[1]] <- NULL
+        colnames(melted)[[1]] <- "variable"
+    }
+    
+    hc <- hcboxplot(melted$value, melted$variable, outliers=outliers) %>% 
+        hc_chart(zoomType="x", type="column") %>%
+        hc_plotOptions(boxplot=list(color="black", fillColor="orange")) %>%
+        hc_xAxis(labels=list(enabled=showXlabels), visible=showXlabels) %>%
+        hc_title(text=title)
+    if (min(melted$value) >= 0) hc <- hc %>% hc_yAxis(min=0)
+    
+    hc <- hc %>% export_highcharts()
+    hc$x$hc_opts$series[[1]]$name <- seriesName
+    return(hc)
+}
 
 #' Levene's test
 #' 
@@ -1725,6 +1837,8 @@ plotDensity <- plotDistribution
 #' \item{p.value}{the p-value for the test.}
 #' \item{method}{the type of test applied.}
 #' \item{data.name}{a character string giving the names of the data.}
+#' 
+#' @keywords internal
 #' 
 #' @examples 
 #' 
@@ -1770,6 +1884,8 @@ leveneTest <- function(x, g, centers=median) {
 #' @inherit createSparklines
 #' @param areSplicingEvents Boolean: are these splicing events (TRUE) or gene 
 #' expression (FALSE)?
+#' 
+#' @keywords internal
 createDensitySparklines <- function(data, events, areSplicingEvents=TRUE, 
                                     groups=NULL, geneExpr=NULL) {
     if (areSplicingEvents) {
@@ -1820,6 +1936,7 @@ createDensitySparklines <- function(data, events, areSplicingEvents=TRUE,
 #' @importFrom jsonlite toJSON
 #' 
 #' @return HTML element with sparkline data
+#' @keywords internal
 createSparklines <- function(hc, data, events, FUN, groups=NULL,
                              geneExpr=NULL) {
     hc <- as.character(toJSON(hc$x$hc_opts, auto_unbox=TRUE))
@@ -1871,6 +1988,7 @@ createSparklines <- function(hc, data, events, FUN, groups=NULL,
 #' @importFrom methods is
 #' 
 #' @return A row from a data frame with the results
+#' @keywords internal
 singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
                                analyses=c("wilcoxRankSum", "ttest", "kruskal",
                                           "levene", "fligner")) {
@@ -2058,6 +2176,7 @@ diffAnalyses <- function(data, groups=NULL,
         ids    <- names(data)
         groups <- parseSampleGroups(ids)
     } else if (is.list(groups)) {
+        groups <- discardOutsideSamplesFromGroups(groups, colnames(data))
         data   <- data[ , unlist(groups)]
         
         colour <- attr(groups, "Colour")
@@ -2094,15 +2213,15 @@ diffAnalyses <- function(data, groups=NULL,
     ll <- lapply(ll, unlist)
     ldf <- lapply(seq_along(uniq), function(k) {
         elems <- match == k
-        df2   <- t(as.data.frame(ll[elems]))
+        df2   <- t(data.frame(ll[elems], stringsAsFactors=FALSE))
         cols  <- colnames(df2)
         
-        df2           <- data.frame(df2)
+        df2           <- data.frame(df2, stringsAsFactors=FALSE)
         colnames(df2) <- cols
         rownames(df2) <- names(stats)[elems]
         return(df2)
     })
-    df <- do.call(rbind.fill, ldf)
+    df <- rbind.fill(ldf)
     rownames(df) <- unlist(lapply(ldf, rownames))
     
     # Convert numeric columns to numeric
@@ -2130,9 +2249,9 @@ diffAnalyses <- function(data, groups=NULL,
     if (ncol(deltaVar) == 2) {
         updateProgress("Calculating delta variance and median")
         time <- Sys.time()
-        deltaVar <- deltaVar[, 2] - deltaVar[, 1]
+        deltaVar <- deltaVar[ , 1] - deltaVar[ , 2]
         deltaMed <- df[, grepl("Median", colnames(df))]
-        deltaMed <- deltaMed[, 2] - deltaMed[, 1]
+        deltaMed <- deltaMed[ , 1] - deltaMed[ , 2]
         df <- cbind(df, "\u2206 Variance"=deltaVar, "\u2206 Median"=deltaMed)
         display(Sys.time() - time)
     }
@@ -2199,13 +2318,267 @@ diffAnalyses <- function(data, groups=NULL,
     return(df)
 }
 
-#' @rdname diffAnalyses
-diffAnalysis <- diffAnalyses
-
-#' Set of functions to plot differential analyses
+#' Set of functions to render differential analyses (plot and table)
 #' 
 #' @inherit diffSplicingTableServer
-#' @inheritParams analysesTableSet
+#' 
+#' @param analysesType Character: type of analyses (\code{GE} or \code{PSI})
+#' @param analysesID Character: identifier
+#' @param getAnalysesData Function: get analyses data
+#' @param getAnalysesFiltered Function: get filtered analyses data
+#' @param setAnalysesFiltered Function: set filtered analyses data
+#' @param getAnalysesSurvival Function: get survival data
+#' @param getAnalysesColumns Function: get columns
+#' @param setAnalysesColumns Function: set columns
+#' @param getResetPaging Function: get toggle of reset paging
+#' @param setResetPaging Function: set toggle of reset paging
+#'
+#' @importFrom DT dataTableProxy selectRows replaceData
+#' @importFrom shinyjs toggleElement toggleState
+#' @importFrom utils write.table
+#' 
+#' @keywords internal
+analysesTableSet <- function(session, input, output, analysesType, analysesID,
+                             getAnalysesData, getAnalysesFiltered, 
+                             setAnalysesFiltered, getAnalysesSurvival, 
+                             getAnalysesColumns, setAnalysesColumns, 
+                             getResetPaging, setResetPaging) {
+    # Save selected points in the table
+    observe({
+        selected <- input$statsTable_rows_selected
+        setSelectedPoints(analysesID, selected)
+    })
+    
+    if (analysesType == "PSI") {
+        searchableCols <- 5
+        visibleCols    <- 6:8
+        extraRender    <- JS("linkToShowSurv")
+    } else if (analysesType == "GE") {
+        searchableCols <- 1
+        visibleCols    <- 5:6
+        extraRender    <- NULL
+    }
+    
+    # Render table with sparklines
+    output$statsTable <- renderDataTableSparklines({
+        stats <- getAnalysesFiltered()
+        if (!is.null(stats)) {
+            # Discard columns of no interest
+            cols <- colnames(stats)
+            cols <- cols[!grepl("method|data.name", cols)]
+            setAnalysesColumns(cols)
+            return(stats[ , cols])
+        }
+    }, style="bootstrap", filter="top", server=TRUE, extensions="Buttons",
+    options=list(pageLength=10, dom="Bfrtip", buttons=I("colvis"), 
+                 columnDefs=list(
+                     list(targets=searchableCols, searchable=FALSE),
+                     list(targets=visibleCols, visible=FALSE, 
+                          render=extraRender))))
+    
+    # Update table with filtered information
+    proxy <- dataTableProxy("statsTable")
+    observe({
+        stats <- getAnalysesData()
+        
+        if (!is.null(stats)) {
+            # Bind preview of survival curves based on PSI cutoff
+            optimSurv <- getAnalysesSurvival()
+            if (!is.null(optimSurv)) {
+                cols <- sprintf(c("Optimal %s cutoff", "Log-rank p-value",
+                                  "Survival by %s cutoff"), analysesType)
+                stats[[cols[[1]]]] <- optimSurv[[1]]
+                stats[[cols[[2]]]] <- optimSurv[[2]]
+                stats[[cols[[3]]]] <- optimSurv[[3]]
+            }
+            
+            # Filter by highlighted events and events in the zoomed area
+            events  <- getHighlightedPoints(analysesID)
+            zoom    <- getZoom(analysesID)
+            
+            zoomed <- NULL
+            if (!is.null(zoom)) {
+                x <- input$xAxis
+                y <- input$yAxis
+                if (!is.null(x) && !is.null(y)) {
+                    res <- transformData(input, stats, x, y)
+                    if (!is.null(res)) {
+                        stats  <- res$data
+                        xLabel <- res$xLabel
+                        yLabel <- res$yLabel
+                        
+                        xStats <- stats[[xLabel]]
+                        xZoom  <- zoom$xmin <= xStats & xStats <= zoom$xmax
+                        yStats <- stats[[yLabel]]
+                        yZoom  <- zoom$ymin <= yStats & yStats <= zoom$ymax
+                        zoomed <- intersect(which(xZoom), which(yZoom))
+                    }
+                }
+            }
+            
+            # Filter rows based on highlighted and/or zoomed in events
+            if (!is.null(events) && !is.null(zoomed)) {
+                rowFilter <- intersect(events, zoomed)  
+            } else if (!is.null(events)) {
+                rowFilter <- events
+            } else if (!is.null(zoomed)) {
+                rowFilter <- zoomed
+            } else {
+                rowFilter <- TRUE
+            }
+            stats <- stats[rowFilter, ]
+            
+            # Keep previously selected rows if possible
+            before   <- isolate(getAnalysesFiltered())
+            selected <- isolate(input$statsTable_rows_selected)
+            selected <- rownames(before)[isolate(selected)]
+            selected <- which(rownames(stats) %in% selected)
+            if (length(selected) < 1) selected <- NULL
+            
+            # Set new data
+            setAnalysesFiltered(stats)
+            
+            # Properly display event identifiers
+            rownames(stats) <- parseSplicingEvent(rownames(stats), char=TRUE)
+            
+            # Keep columns from data table (else, no data will be rendered)
+            cols  <- getAnalysesColumns()
+            stats <- stats[ , cols]
+            
+            # Check if paging should be reset
+            resetPaging <- isolate(getResetPaging())
+            if (is.null(resetPaging)) resetPaging <- TRUE
+            setResetPaging(TRUE)
+            
+            # Round numbers based on significant digits
+            cols <- colnames(stats)
+            type <- sapply(cols, function(i) class(stats[[i]]))
+            numericCols <- cols[type == "numeric"]
+            
+            # Round numbers based on significant digits
+            if (nrow(stats) > 0) {
+                for (col in numericCols) {
+                    stats[ , col] <- suppressWarnings(
+                        as.numeric(signifDigits(stats[ , col])))
+                }
+            }
+            replaceData(proxy, stats, resetPaging=resetPaging, 
+                        clearSelection="none")
+        }
+    })
+    
+    # Hide table toolbar if statistical table is not displayed
+    observe(toggleElement(
+        "tableToolbar", condition=!is.null(getAnalysesData())))
+    
+    # Discard columns from data frame containing information to render plots
+    discardPlotsFromTable <- function(df) {
+        plotCols <- TRUE
+        if (!is.null(df)) {
+            ns <- sprintf(c("%s distribution", "Survival by %s cutoff"),
+                          analysesType)
+            plotCols <- -match(ns, colnames(df))
+            plotCols <- plotCols[!is.na(plotCols)]
+            if (length(plotCols) == 0) plotCols <- TRUE
+        }
+        return(df[ , plotCols])
+    }
+    
+    if (analysesType == "PSI") {
+        filenameText <- "Differential splicing analyses"
+        rownamesCol  <- "AS event"
+    } else if (analysesType == "GE") {
+        filenameText <- "Differential expression analyses"
+        rownamesCol  <- "Gene"
+    }
+    
+    # Download whole table
+    output$downloadAll <- downloadHandler(
+        filename=paste(getCategory(), filenameText),
+        content=function(file) {
+            stats <- getAnalysesData()
+            stats <- discardPlotsFromTable(stats)
+            
+            # Include updated survival analyses
+            optimSurv <- getAnalysesSurvival()
+            if (!is.null(optimSurv)) {
+                cols <- sprintf(c("Optimal %s cutoff", "Log-rank p-value"),
+                                analysesType)
+                stats[[cols[[1]]]] <- optimSurv[[1]]
+                stats[[cols[[2]]]] <- optimSurv[[2]]
+            }
+            
+            stats <- cbind(rownames(stats), stats)
+            colnames(stats)[[1]] <- rownamesCol
+            write.table(stats, file, quote=FALSE, sep="\t", row.names=FALSE)
+        }
+    )
+    
+    # Download filtered table
+    output$downloadSubset <- downloadHandler(
+        filename=paste(getCategory(), filenameText),
+        content=function(file) {
+            stats <- getAnalysesFiltered()
+            stats <- discardPlotsFromTable(stats)
+            stats <- stats[input$statsTable_rows_all, ]
+            
+            stats <- cbind(rownames(stats), stats)
+            colnames(stats)[[1]] <- rownamesCol
+            write.table(stats, file, quote=FALSE, sep="\t", row.names=FALSE)
+        }
+    )
+    
+    # Create groups based on a given filter
+    groupBasedOnAnalysis <- function(filter, description="") {
+        stats <- getAnalysesFiltered()
+        stats <- discardPlotsFromTable(stats)
+        stats <- stats[filter, ]
+        
+        if (analysesType == "PSI") {
+            ASevents <- rownames(stats)
+            genes <- unique(names(getGenesFromSplicingEvents(ASevents)))
+            origin <- "Selection from differential splicing analysis"
+        } else if (analysesType == "GE") {
+            genes <- rownames(stats)
+            
+            ASevents <- getASevents()
+            if ( !is.null(ASevents) )
+                ASevents <- getSplicingEventFromGenes(genes, ASevents)
+            else
+                ASevents <- character(0)
+            
+            origin <- "Selection from differential expression analysis"
+        }
+        
+        group <- cbind("Names"="DFS selection", "Subset"=origin, "Input"=origin,
+                       "ASevents"=list(ASevents), "Genes"=list(genes))
+        appendNewGroups("ASevents", group)
+        infoModal(
+            session, title="New group created", 
+            "New group created", description, "and containing:",
+            div(style="font-size: 22px;", length(ASevents), "splicing events"),
+            div(style="font-size: 22px;", length(genes), "genes"))
+    }
+    
+    if (analysesType == "PSI")     groupedElements <- "splicing events"
+    else if (analysesType == "GE") groupedElements <- "genes"
+    groupsText <- sprintf(c("based on the %s shown in the table", 
+                            "based on selected %s"), groupedElements)
+    
+    # Create groups based on splicing events displayed in the table
+    observeEvent(input$groupByDisplayed, groupBasedOnAnalysis(
+        input$statsTable_rows_all, groupsText[[1]]))
+    
+    # Create groups based on selected splicing events
+    observeEvent(input$groupBySelected, groupBasedOnAnalysis(
+        input$statsTable_rows_selected, groupsText[[2]]))
+    
+    # Disable groups based on selected AS events when no groups are selected
+    observe(toggleState("groupBySelectedContainer",
+                        !is.null(input$statsTable_rows_selected)))
+}
+
+#' @rdname analysesTableSet
 #' 
 #' @importFrom stringr str_split
 #' @importFrom shinyjs toggleState
@@ -2498,264 +2871,6 @@ analysesPlotSet <- function(session, input, output, analysesType, analysesID,
     })
     
     ggplotAuxServer(input, output, analysesID)
-}
-
-#' Set of functions to render data table for differential analyses
-#' 
-#' @inherit diffSplicingTableServer
-#' 
-#' @param analysesType Character: type of analyses (\code{GE} or \code{PSI})
-#' @param analysesID Character: identifier of analyses
-#' @param getAnalysesData Function: used to get analyses data
-#' @param getAnalysesFiltered Function: used to get filtered analyses data
-#' @param setAnalysesFiltered Function: used to set filtered analyses data
-#' @param getAnalysesSurvival Function: used to get survival data
-#' @param getAnalysesColumns Function: used to get columns
-#' @param setAnalysesColumns Function: used to set columns
-#' @param getResetPaging Function: used to get reset paging toggle
-#' @param setResetPaging Function: used to set reset paging toggle
-#'
-#' @importFrom DT dataTableProxy selectRows replaceData
-#' @importFrom shinyjs toggleElement toggleState
-#' @importFrom utils write.table
-analysesTableSet <- function(session, input, output, analysesType, analysesID,
-                             getAnalysesData, getAnalysesFiltered, 
-                             setAnalysesFiltered, getAnalysesSurvival, 
-                             getAnalysesColumns, setAnalysesColumns, 
-                             getResetPaging, setResetPaging) {
-    # Save selected points in the table
-    observe({
-        selected <- input$statsTable_rows_selected
-        setSelectedPoints(analysesID, selected)
-    })
-    
-    if (analysesType == "PSI") {
-        searchableCols <- 5
-        visibleCols    <- 6:8
-        extraRender    <- JS("linkToShowSurv")
-    } else if (analysesType == "GE") {
-        searchableCols <- 1
-        visibleCols    <- 5:6
-        extraRender    <- NULL
-    }
-    
-    # Render table with sparklines
-    output$statsTable <- renderDataTableSparklines({
-        stats <- getAnalysesData()
-        if (!is.null(stats)) {
-            # Discard columns of no interest
-            cols <- colnames(stats)
-            cols <- cols[!grepl("method|data.name", cols)]
-            setAnalysesColumns(cols)
-            return(stats[ , cols])
-        }
-    }, style="bootstrap", filter="top", server=TRUE, extensions="Buttons",
-    options=list(pageLength=10, dom="Bfrtip", buttons=I("colvis"), 
-                 columnDefs=list(
-                     list(targets=searchableCols, searchable=FALSE),
-                     list(targets=visibleCols, visible=FALSE, 
-                          render=extraRender))))
-    
-    # Update table with filtered information
-    proxy <- dataTableProxy("statsTable")
-    observe({
-        stats <- getAnalysesData()
-        
-        if (!is.null(stats)) {
-            # Bind preview of survival curves based on PSI cutoff
-            optimSurv <- getAnalysesSurvival()
-            if (!is.null(optimSurv)) {
-                cols <- sprintf(c("Optimal %s cutoff", "Log-rank p-value",
-                                  "Survival by %s cutoff"), analysesType)
-                stats[[cols[[1]]]] <- optimSurv[[1]]
-                stats[[cols[[2]]]] <- optimSurv[[2]]
-                stats[[cols[[3]]]] <- optimSurv[[3]]
-            }
-            
-            # Filter by highlighted events and events in the zoomed area
-            events  <- getHighlightedPoints(analysesID)
-            zoom    <- getZoom(analysesID)
-            
-            zoomed <- NULL
-            if (!is.null(zoom)) {
-                x <- input$xAxis
-                y <- input$yAxis
-                if (!is.null(x) && !is.null(y)) {
-                    res <- transformData(input, stats, x, y)
-                    if (!is.null(res)) {
-                        stats  <- res$data
-                        xLabel <- res$xLabel
-                        yLabel <- res$yLabel
-                        
-                        xStats <- stats[[xLabel]]
-                        xZoom  <- zoom$xmin <= xStats & xStats <= zoom$xmax
-                        yStats <- stats[[yLabel]]
-                        yZoom  <- zoom$ymin <= yStats & yStats <= zoom$ymax
-                        zoomed <- intersect(which(xZoom), which(yZoom))
-                    }
-                }
-            }
-            
-            # Filter rows based on highlighted and/or zoomed in events
-            if (!is.null(events) && !is.null(zoomed)) {
-                rowFilter <- intersect(events, zoomed)  
-            } else if (!is.null(events)) {
-                rowFilter <- events
-            } else if (!is.null(zoomed)) {
-                rowFilter <- zoomed
-            } else {
-                rowFilter <- TRUE
-            }
-            stats <- stats[rowFilter, ]
-            
-            # Keep previously selected rows if possible
-            before   <- isolate(getAnalysesFiltered())
-            selected <- isolate(input$statsTable_rows_selected)
-            selected <- rownames(before)[isolate(selected)]
-            selected <- which(rownames(stats) %in% selected)
-            if (length(selected) < 1) selected <- NULL
-            
-            # Set new data
-            setAnalysesFiltered(stats)
-            
-            # Properly display event identifiers
-            rownames(stats) <- parseSplicingEvent(rownames(stats), char=TRUE)
-            
-            # Keep columns from data table (else, no data will be rendered)
-            cols  <- getAnalysesColumns()
-            stats <- stats[ , cols]
-            
-            # Check if paging should be reset
-            resetPaging <- isolate(getResetPaging())
-            if (is.null(resetPaging)) resetPaging <- TRUE
-            setResetPaging(TRUE)
-            
-            # Round numbers based on significant digits
-            cols <- colnames(stats)
-            type <- sapply(cols, function(i) class(stats[[i]]))
-            numericCols <- cols[type == "numeric"]
-            
-            # Round numbers based on significant digits
-            if (nrow(stats) > 0) {
-                for (col in numericCols) {
-                    stats[ , col] <- suppressWarnings(
-                        as.numeric(signifDigits(stats[ , col])))
-                }
-            }
-            replaceData(proxy, stats, resetPaging=resetPaging, 
-                        clearSelection="none")
-        }
-    })
-    
-    # Hide table toolbar if statistical table is not displayed
-    observe(toggleElement(
-        "tableToolbar", condition=!is.null(getAnalysesData())))
-    
-    # Discard columns from data frame containing information to render plots
-    discardPlotsFromTable <- function(df) {
-        plotCols <- TRUE
-        if (!is.null(df)) {
-            ns <- sprintf(c("%s distribution", "Survival by %s cutoff"),
-                          analysesType)
-            plotCols <- -match(ns, colnames(df))
-            plotCols <- plotCols[!is.na(plotCols)]
-            if (length(plotCols) == 0) plotCols <- TRUE
-        }
-        return(df[ , plotCols])
-    }
-    
-    if (analysesType == "PSI") {
-        filenameText <- "Differential splicing analyses"
-        rownamesCol  <- "AS event"
-    } else if (analysesType == "GE") {
-        filenameText <- "Differential expression analyses"
-        rownamesCol  <- "Gene"
-    }
-    
-    # Download whole table
-    output$downloadAll <- downloadHandler(
-        filename=paste(getCategory(), filenameText),
-        content=function(file) {
-            stats <- getAnalysesData()
-            stats <- discardPlotsFromTable(stats)
-            
-            # Include updated survival analyses
-            optimSurv <- getAnalysesSurvival()
-            if (!is.null(optimSurv)) {
-                cols <- sprintf(c("Optimal %s cutoff", "Log-rank p-value"),
-                                analysesType)
-                stats[[cols[[1]]]] <- optimSurv[[1]]
-                stats[[cols[[2]]]] <- optimSurv[[2]]
-            }
-            
-            stats <- cbind(rownames(stats), stats)
-            colnames(stats)[[1]] <- rownamesCol
-            write.table(stats, file, quote=FALSE, sep="\t", row.names=FALSE)
-        }
-    )
-    
-    # Download filtered table
-    output$downloadSubset <- downloadHandler(
-        filename=paste(getCategory(), filenameText),
-        content=function(file) {
-            stats <- getAnalysesFiltered()
-            stats <- discardPlotsFromTable(stats)
-            stats <- stats[input$statsTable_rows_all, ]
-            
-            stats <- cbind(rownames(stats), stats)
-            colnames(stats)[[1]] <- rownamesCol
-            write.table(stats, file, quote=FALSE, sep="\t", row.names=FALSE)
-        }
-    )
-    
-    # Create groups based on a given filter
-    groupBasedOnAnalysis <- function(filter, description="") {
-        stats <- getAnalysesFiltered()
-        stats <- discardPlotsFromTable(stats)
-        stats <- stats[filter, ]
-        
-        if (analysesType == "PSI") {
-            ASevents <- rownames(stats)
-            genes <- unique(names(getGenesFromSplicingEvents(ASevents)))
-            origin <- "Selection from differential splicing analysis"
-        } else if (analysesType == "GE") {
-            genes <- rownames(stats)
-            
-            ASevents <- getASevents()
-            if ( !is.null(ASevents) )
-                ASevents <- getSplicingEventFromGenes(genes, ASevents)
-            else
-                ASevents <- character(0)
-            
-            origin <- "Selection from differential expression analysis"
-        }
-        
-        group <- cbind("Names"="DFS selection", "Subset"=origin, "Input"=origin,
-                       "ASevents"=list(ASevents), "Genes"=list(genes))
-        appendNewGroups("ASevents", group)
-        infoModal(
-            session, title="New group created", 
-            "New group created", description, "and containing:",
-            div(style="font-size: 22px;", length(ASevents), "splicing events"),
-            div(style="font-size: 22px;", length(genes), "genes"))
-    }
-    
-    if (analysesType == "PSI")     groupedElements <- "splicing events"
-    else if (analysesType == "GE") groupedElements <- "genes"
-    groupsText <- sprintf(c("based on the %s shown in the table", 
-                            "based on selected %s"), groupedElements)
-    
-    # Create groups based on splicing events displayed in the table
-    observeEvent(input$groupByDisplayed, groupBasedOnAnalysis(
-        input$statsTable_rows_all, groupsText[[1]]))
-    
-    # Create groups based on selected splicing events
-    observeEvent(input$groupBySelected, groupBasedOnAnalysis(
-        input$statsTable_rows_selected, groupsText[[2]]))
-    
-    # Disable groups based on selected AS events when no groups are selected
-    observe(toggleState("groupBySelectedContainer",
-                        !is.null(input$statsTable_rows_selected)))
 }
 
 attr(analysesUI, "loader") <- "app"
