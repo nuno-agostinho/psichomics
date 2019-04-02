@@ -489,10 +489,10 @@ plotSurvivalPvaluesByCutoff <- function(
     patients2[!noSeparation] <- vapply(patients[!noSeparation], 
                                        "[[", 2, FUN.VALUE = numeric(1))
     
-    pvalues      <- -log10(unlist(pvalues))
-    significance <- -log10(significance)
+    minusLog10pvalues <- -log10(unlist(pvalues))
+    minusLog10signif  <- -log10(significance)
     
-    data <- data.frame(x=cutoffs, y=pvalues, 
+    data <- data.frame(x=cutoffs, y=minusLog10pvalues, 
                        patients1=patients1, patients2=patients2)
     data <- list_parse(data)
     
@@ -500,13 +500,13 @@ plotSurvivalPvaluesByCutoff <- function(
     
     # Put the label of p-value plot to the right when there are many
     # significant points to the left
-    signif <- pvalues >= significance
+    signif <- minusLog10pvalues >= minusLog10signif
     labelAlign <- "left"
     if (sum(signif[1:50]) > sum(signif[51:100])) labelAlign <- "right"
     
     pvaluePlot <- highchart(height="100px") %>%
         hc_add_series(data=data,
-                      zones=list(list(value=significance,
+                      zones=list(list(value=minusLog10signif,
                                       color="lightgray"))) %>%
         hc_chart(zoomType="x") %>%
         hc_xAxis(tickInterval=0.1, showLastLabel=TRUE, endOnTick=TRUE,
@@ -519,7 +519,7 @@ plotSurvivalPvaluesByCutoff <- function(
                      value=significance, color=firstSeriesColour,
                      dashStyle="shortdash", width=1,
                      label=list(
-                         align=labelAlign, text="p < 0.05",
+                         align=labelAlign, text=paste("p <", significance),
                          style=list(color=firstSeriesColour))))) %>%
         hc_legend(NULL) %>% 
         hc_tooltip(formatter=JS(

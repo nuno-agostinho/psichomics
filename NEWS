@@ -1,3 +1,13 @@
+# 1.8.3 (2 April, 2019)
+
+## Bug fixes and minor changes
+
+* Survival analysis (p-value plot):
+    - Fix alternative splicing quantification cutoff being selected based on the
+    one whose difference has the highest (instead of the lowest) p-value
+    - Fix plot line label presenting "p < 0.05" independently of the threshold 
+    used for significance
+
 # 1.8.2 (26 March, 2019)
 
 * Data loading:
