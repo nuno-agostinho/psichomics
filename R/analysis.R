@@ -1227,9 +1227,9 @@ kruskal <- function(data, groups, stat=NULL) {
 #' 
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats fisher.test
-#' @importFrom R.utils evalWithTimeout
+#' @importFrom R.utils withTimeout
 fisher <- function(data, groups) {
-    stat <- try(evalWithTimeout(
+    stat <- try(withTimeout(
         fisher.test(data, factor(groups)),
         timeout = 1,
         onTimeout = "error"))

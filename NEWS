@@ -1,3 +1,7 @@
+# 1.8.3 (21 April, 2019)
+
+Replace deprecated `R.utils::evalWithTimeout()` with `R.utils::withTimeout()`
+
 # 1.8.2 (26 March, 2019)
 
 * Data loading:
