@@ -1,7 +1,9 @@
-# 1.8.3 (2 April, 2019)
+# 1.8.3 (3 May, 2019)
 
 ## Bug fixes and minor changes
 
+* Fix `loadFirebrowseData()` not returning expected data when asking for many
+datasets (such as in the case of performing a pan-cancer analysis)
 * Survival analysis (p-value plot):
     - Fix alternative splicing quantification cutoff being selected based on the
     one whose difference has the highest (instead of the lowest) p-value

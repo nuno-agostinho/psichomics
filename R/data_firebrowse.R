@@ -75,8 +75,6 @@ isFirebrowseUp <- function() {
 #' @param level Integer: data levels (optional)
 #' @param protocol Character: sample characterization protocols (optional)
 #' @param page Integer: page of the results to return (optional)
-#' @param page_size Integer: number of records per page of results; max is 2000
-#' (optional)
 #' @param sort_by String: column used to sort the data (by default, it sorts by
 #' cohort)
 #'
@@ -417,6 +415,9 @@ loadFirebrowseData <- function(folder=getDownloadsFolder(), data=NULL,
     args$data_type <- c(data[!data %in% datasets], "mRNASeq")
     # Datasets to ignore
     exclude <- c(exclude, datasets[!datasets %in% data])
+    
+    # Ask for maximum number of records
+    args$page_size <- 2000
     
     # Query Firebrowse and get URLs for archives
     res <- do.call(queryFirebrowseData, args)
