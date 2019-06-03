@@ -307,7 +307,7 @@ prepareGeneQuantSTAR <- function(..., strandedness=c("unstranded", "stranded",
     index <- 0
     lapply(joint, function(table) {
         index <<- index + 1
-        setnames(table, "V2", paste0("col", index))
+        setnames(table, colnames(table)[[2]], paste0("col", index))
         setkeyv(table, "V1")
     })
     

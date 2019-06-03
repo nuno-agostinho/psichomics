@@ -1,4 +1,4 @@
-# 1.8.3 (3 May, 2019)
+# 1.8.3 (3 June, 2019)
 
 ## Bug fixes and minor changes
 
@@ -9,6 +9,8 @@ datasets (such as in the case of performing a pan-cancer analysis)
     one whose difference has the highest (instead of the lowest) p-value
     - Fix plot line label presenting "p < 0.05" independently of the threshold 
     used for significance
+* Fix `prepareGeneQuant()` not working if its argument `strandedness` is either
+`stranded` or `stranded (reverse)`
 
 # 1.8.2 (26 March, 2019)
 
