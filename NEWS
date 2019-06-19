@@ -16,6 +16,7 @@ datasets (such as in the case of performing a pan-cancer analysis)
     used for significance
 * Fix `prepareGeneQuant()` not working if its argument `strandedness` is either
 `stranded` or `stranded (reverse)`
+* Fix warning/error alerts crashing the visual interface
 
 # 1.8.2 (26 March, 2019)
 

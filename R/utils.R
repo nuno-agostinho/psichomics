@@ -847,6 +847,7 @@ showAlert <- function(session, ..., title, style=NULL, dismissible=TRUE,
     }
     
     # Log information
+    args <- list(...)
     if (style == "info") style <- "Information"
     msg <- sprintf("%s: %s", capitalize(style), title)
     if (!is.null(caller)) msg <- sprintf('%s (in "%s")', msg, caller)
