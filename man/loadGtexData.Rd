@@ -21,3 +21,17 @@ List with loaded data
 \description{
 Load GTEx data
 }
+\examples{
+\dontrun{
+# Load all available GTEx data
+data <- loadGtexData()
+
+# Load only junction quantification and sample info from GTEx
+getGtexDataTypes()
+data <- loadGtexData(dataTypes=c("sampleInfo", "junctionQuant"))
+
+# Load only data for specific tissues
+getGtexTissues()
+data <- loadGtexData(tissue=c("Stomach", "Small Intestine"))
+}
+}

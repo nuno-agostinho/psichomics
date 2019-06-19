@@ -12,4 +12,6 @@ GTEx data types
 \description{
 Get GTEx data types
 }
-\keyword{internal}
+\examples{
+getGtexDataTypes()
+}

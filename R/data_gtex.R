@@ -1,7 +1,10 @@
 #' Get GTEx data types
 #' 
 #' @return GTEx data types
-#' @keywords internal
+#' @export
+#' 
+#' @examples 
+#' getGtexDataTypes()
 getGtexDataTypes <- function() {
     c("Sample attributes"="sampleInfo",
       "Subject phenotypes"="subjectInfo",
@@ -57,6 +60,11 @@ gtexDataUI <- function(id, panel) {
 #'
 #' @return Character: available tissues
 #' @export
+#' 
+#' @examples 
+#' \dontrun{
+#' getGtexTissues()
+#' }
 getGtexTissues <- function(dataFolder=getDownloadsFolder()) {
     sampleFile <- "GTEx_v7_Annotations_SampleAttributesDS.txt"
     filepath <- file.path(dataFolder, sampleFile)
@@ -170,6 +178,20 @@ downloadGtexFiles <- function(filepath, dataTypes) {
 #'
 #' @return List with loaded data
 #' @export
+#' 
+#' @examples 
+#' \dontrun{
+#' # Load all available GTEx data
+#' data <- loadGtexData()
+#' 
+#' # Load only junction quantification and sample info from GTEx
+#' getGtexDataTypes()
+#' data <- loadGtexData(dataTypes=c("sampleInfo", "junctionQuant"))
+#' 
+#' # Load only data for specific tissues
+#' getGtexTissues()
+#' data <- loadGtexData(tissue=c("Stomach", "Small Intestine"))
+#' }
 loadGtexData <- function(dataTypes=getGtexDataTypes(), 
                          dataFolder=getDownloadsFolder(), tissue=NULL) {
     if (is.null(dataTypes))  stop("Argument 'dataTypes' cannot be NULL.")

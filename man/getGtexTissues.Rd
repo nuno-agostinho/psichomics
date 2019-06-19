@@ -15,3 +15,8 @@ Character: available tissues
 \description{
 Get GTEx tissues from given GTEx sample attributes
 }
+\examples{
+\dontrun{
+getGtexTissues()
+}
+}
