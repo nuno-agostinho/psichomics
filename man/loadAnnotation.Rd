@@ -4,10 +4,14 @@
 \alias{loadAnnotation}
 \title{Load alternative splicing annotation from \code{AnnotationHub}}
 \usage{
-loadAnnotation(annotation)
+loadAnnotation(annotation, cache = NULL)
 }
 \arguments{
 \item{annotation}{Character: annotation to load}
+
+\item{cache}{Character: directory path of cache (if \code{NULL}, default 
+location is the one provided by
+\code{AnnotationHub::getAnnotationHubOption("CACHE")})}
 }
 \value{
 List of data frames containing the alternative splicing annotation

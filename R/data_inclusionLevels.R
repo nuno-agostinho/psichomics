@@ -233,8 +233,12 @@ quantifySplicing <- function(annotation, junctionQuant,
 #' Load alternative splicing annotation from \code{AnnotationHub}
 #'
 #' @param annotation Character: annotation to load
+#' @param cache Character: directory path of cache (if \code{NULL}, default 
+#' location is the one provided by
+#' \code{AnnotationHub::getAnnotationHubOption("CACHE")})
 #'
-#' @importFrom AnnotationHub AnnotationHub query
+#' @importFrom BiocFileCache BiocFileCache
+#' @importFrom AnnotationHub AnnotationHub query getAnnotationHubOption
 #'
 #' @return List of data frames containing the alternative splicing annotation
 #' per event type
@@ -245,8 +249,16 @@ quantifySplicing <- function(annotation, junctionQuant,
 #' \dontrun{
 #' annot <- loadAnnotation(human)
 #' }
-loadAnnotation <- function(annotation) {
-    ah <- AnnotationHub()
+loadAnnotation <- function(annotation, cache=NULL) {
+    if (is.null(cache)) cache <- getAnnotationHubOption("CACHE")
+
+    if (!dir.exists(cache)) {
+        BiocFileCache(cache=cache, ask=FALSE)
+        message(sprintf(
+            "The directory %s was created to store annotation", cache))
+    }
+
+    ah <- AnnotationHub(cache=cache)
     annot <- gsub("^annotationHub_", "", annotation)
     annot <- ah[[names(query(ah, annot))]]
     return(annot)

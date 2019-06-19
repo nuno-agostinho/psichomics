@@ -1,7 +1,12 @@
-# 1.8.3 (3 June, 2019)
+# 1.10.1 (19 June, 2019)
 
 ## Bug fixes and minor changes
 
+* Alternative splicing annotation:
+    - Fix confirmation dialog for folder creation in the console (even when 
+    running the visual interface)
+    - Allow to select cache directory where AnnotationHub was installed 
+    (command-line interface)
 * Fix `loadFirebrowseData()` not returning expected data when asking for many
 datasets (such as in the case of performing a pan-cancer analysis)
 * Survival analysis (p-value plot):
