@@ -8,9 +8,8 @@ localDataUI <- function(id, panel) {
     addMultipleFiles <- tagList(
         helpText("All fields below are optional."),
         fileBrowserInput(
-            ns("sampleInfo"),
-            "File with sample information",
-            placeholder="No file selected",
+            ns("sampleInfo"), "File with sample information",
+            placeholder="No file selected", clearable=TRUE,
             info=TRUE, infoFUN=bsPopover, infoTitle=paste(
                 "File containing sample identifiers as rows and their",
                 "attributes as columns."),
@@ -364,11 +363,27 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."),
         if (!is(loadedFile, "error")) loaded[[each]] <- loadedFile
     }
     names(loaded) <- sapply(loaded, attr, "tablename")
-    loaded <- list(Filter(length, loaded))
-    loaded <- loadTCGAsampleMetadata(loaded)
+    loaded <- Filter(length, loaded)
     
-    data <- setNames(loaded, name)
-    data <- processDatasetNames(data)
+    if (length(loaded) == 0) {
+        compressed <- grep("tar.gz$|tar$|zip$", files, value=TRUE,
+                           ignore.case=TRUE)
+        anyCompressed <- length(compressed) > 0
+        msg <- "No supported files were found in the given folder."
+        if (anyCompressed) {
+            msg <- paste(msg, 
+                         "\n\nIf applicable, ensure to extract the contents",
+                         "from compressed folders (e.g. ZIP and TAR folders).")
+        }
+        warning(msg)
+        data <- NULL
+    } else {
+        loaded <- list(loaded)
+        loaded <- loadTCGAsampleMetadata(loaded)
+        
+        data <- setNames(loaded, name)
+        data <- processDatasetNames(data)
+    }
     return(data)
 }
 
@@ -391,15 +406,17 @@ setLocalData <- function(input, output, session, replace=TRUE) {
     ignore <- c(".aux.", ".mage-tab.", input$localIgnore)
     
     # Load valid local files
-    data <- loadLocalFiles(folder, name=category, ignore)
-    
-    if (!is.null(data)) {
-        if(replace) {
-            setData(data)
-        } else {
-            data <- processDatasetNames(c(getData(), data))
-            setData(data)
-        }
+    data <- tryCatch(loadLocalFiles(folder, name=category, ignore), 
+                     warning=return, error=return)
+    if (is(data, "warning") || is(data, "error")) {
+        warningModal(session, "No files available to load", data$message,
+                     modalId="localDataModal", caller="Load local data")
+    } else if (!is.null(data)) {
+        if (!replace) data <- processDatasetNames(c(getData(), data))
+        setData(data)
+    } else {
+        errorModal(session, "No data loaded", "Something went wrong...",
+                   modalId="localDataModal", caller="Load local data")
     }
     endProcess("acceptFile", time)
 }
@@ -538,7 +555,7 @@ localDataServer <- function(input, output, session) {
         if (!dir.exists(folder)) {
             # Folder not found
             errorModal(session, "Folder not found",
-                       "Check if folder path is correct.",
+                       "Check if the folder path is correct.",
                        modalId="localDataModal", caller="Load local data")
             enable("acceptFile")
             return(NULL)

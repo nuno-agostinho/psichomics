@@ -8,6 +8,8 @@
     many datasets (such as in the case of performing a pan-cancer analysis)
     - `parseSplicingEvent()` now returns the coordinates as numeric if 
     `coords = TRUE` and `char = FALSE`
+    - Improve dialog when trying to load a local folder without any supported 
+    files available
 * Alternative splicing annotation:
     - Fix confirmation dialog for folder creation in the console (even when 
     running the visual interface)
