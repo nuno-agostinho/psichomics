@@ -9,6 +9,10 @@ r:
   - bioc-devel
   - bioc-release
 
+os:
+  - linux
+  - osx
+
 # Strict checks in place
 warnings_are_errors: false
 
