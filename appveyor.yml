@@ -15,6 +15,7 @@ install:
 environment:
   global:
     _R_CHECK_FORCE_SUGGESTS_: false
+    R_COMPILE_AND_INSTALL_PACKAGES: always
 
   matrix:
     - R_VERSION: devel
@@ -24,11 +25,11 @@ environment:
     - R_VERSION: devel
       GCC_PATH: mingw_32
 
-    - R_VERSION: patched
+    - R_VERSION: release
       R_ARCH: x64
       GCC_PATH: mingw_64
 
-    - R_VERSION: patched
+    - R_VERSION: release
       GCC_PATH: mingw_32
 
 # Adapt as necessary starting from here
@@ -36,7 +37,7 @@ build_script:
   - echo Current directory=%CD%
   - travis-tool.sh github_package r-lib/remotes
   - travis-tool.sh install_r testthat knitr
-  - travis-tool.sh install_bioc BiocVersion
+  - travis-tool.sh install_bioc BiocVersion org.Hs.eg.db GenomeInfoDbData
   - travis-tool.sh install_bioc_deps
   - travis-tool.sh install_deps
 
