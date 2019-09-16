@@ -4,7 +4,7 @@
 \alias{survdiff.survTerms}
 \title{Test differences between survival curves}
 \usage{
-survdiff.survTerms(survTerms, ...)
+\method{survdiff}{survTerms}(survTerms, ...)
 }
 \arguments{
 \item{survTerms}{survTerms object: processed survival terms}

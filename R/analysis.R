@@ -472,12 +472,11 @@ processSurvTerms <- function(clinical, censoring, event, timeStart,
 #' @inheritDotParams survival::survfit.formula -formula -data
 #' 
 #' @importFrom survival survfit
-#' @method survfit survTerms
 #' 
 #' @return \code{survfit} object. See \code{survfit.object} for details. Methods
 #' defined for survfit objects are \code{print}, \code{plot}, \code{lines}, and 
 #' \code{points}.
-#' @export survfit.survTerms
+#' @export
 #'
 #' @examples 
 #' clinical <- read.table(text = "2549   NA ii  female
@@ -517,6 +516,7 @@ survfit.survTerms <- function(survTerms, ...) {
 #' 
 #' @importFrom survival survdiff
 #' 
+#' @method survdiff survTerms
 #' @return an object of class "survfit". See survfit.object for details. Methods
 #' defined for survfit objects are print, plot, lines, and points.
 #' @export
