@@ -522,6 +522,7 @@ survfit.survTerms <- function(survTerms, ...) {
 #' @export
 #'
 #' @examples
+#' library(survival)
 #' clinical <- read.table(text = "2549   NA ii  female
 #'                                 840   NA i   female
 #'                                  NA 1204 iv    male
