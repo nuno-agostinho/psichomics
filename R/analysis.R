@@ -505,10 +505,6 @@ survfit.survTerms <- function(survTerms, ...) {
 }
 
 #' @inherit survival::survdiff
-#' @export
-survdiff <- function(x, ...) UseMethod("survdiff")
-
-#' @rdname survdiff
 #' @param survTerms \code{survTerms} object: survival terms obtained after 
 #'   running \code{processSurvTerms} (see examples)
 #' @param ... Arguments passed on to \code{\link{survival::survdiff}} (arguments
@@ -518,7 +514,6 @@ survdiff <- function(x, ...) UseMethod("survdiff")
 #' @export
 #'
 #' @examples
-#' library(survival)
 #' clinical <- read.table(text = "2549   NA ii  female
 #'                                 840   NA i   female
 #'                                  NA 1204 iv    male
@@ -534,15 +529,10 @@ survdiff <- function(x, ...) UseMethod("survdiff")
 #' formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
 #' survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
 #'                                formulaStr=formulaStr)
-#' survdiff(survTerms)
-survdiff.survTerms <- function(survTerms, ...) {
+#' survdiffTerms(survTerms)
+survdiffTerms <- function(survTerms, ...) {
     survdiff(survTerms$form, data=survTerms$survTime, ...)
 }
-
-#' @importFrom survival survdiff
-#' @rdname survdiff
-#' @export
-survdiff.default <- survival::survdiff
 
 #' Plot survival curves
 #' 
@@ -634,7 +624,7 @@ processSurvival <- function(session, ...) {
 
 #' Test the survival difference between groups of patients
 #' 
-#' @inheritParams survdiff.survTerms
+#' @inheritParams survdiffTerms
 #' @inheritDotParams survival::survdiff -formula -data
 #' 
 #' @note Instead of raising errors, an \code{NA} is returned
@@ -660,7 +650,7 @@ testSurvival <- function (survTerms, ...) {
     # If there's an error with survdiff, return NA
     pvalue <- tryCatch({
         # Test the difference between survival curves
-        diff <- survdiff(survTerms, ...)
+        diff <- survdiffTerms(survTerms, ...)
         
         # Calculate p-value with given significant digits
         pvalue <- 1 - pchisq(diff$chisq, length(diff$n) - 1)
