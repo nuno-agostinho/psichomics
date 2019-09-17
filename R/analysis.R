@@ -467,8 +467,8 @@ processSurvTerms <- function(clinical, censoring, event, timeStart,
 }
 
 #' @inherit survival::survfit title details return
-#' @param survTerms \code{survTerms} object: processed survival terms
-#' @inheritDotParams survival::survfit.formula -formula -data
+#' @inheritParams survdiffTerms
+#' @inheritDotParams survival::survdiff -formula -data
 #' 
 #' @importFrom survival survfit
 #' @export
@@ -507,8 +507,7 @@ survfit.survTerms <- function(survTerms, ...) {
 #' @inherit survival::survdiff
 #' @param survTerms \code{survTerms} object: survival terms obtained after 
 #'   running \code{processSurvTerms} (see examples)
-#' @param ... Arguments passed on to \code{\link{survival::survdiff}} (arguments
-#'   \code{formula} and \code{data} are reserved for internal use)
+#' @inheritDotParams survival::survdiff -formula -data
 #' 
 #' @importFrom survival survdiff
 #' @export

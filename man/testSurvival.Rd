@@ -10,9 +10,6 @@ testSurvival(survTerms, ...)
 \item{survTerms}{\code{survTerms} object: survival terms obtained after 
 running \code{processSurvTerms} (see examples)}
 
-\item{...}{Arguments passed on to \code{\link{survival::survdiff}} (arguments
-\code{formula} and \code{data} are reserved for internal use)}
-
 \item{...}{Arguments passed on to \code{survival::survdiff}
 \describe{
   \item{subset}{

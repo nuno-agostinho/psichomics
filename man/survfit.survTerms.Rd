@@ -7,44 +7,28 @@
 \method{survfit}{survTerms}(survTerms, ...)
 }
 \arguments{
-\item{survTerms}{\code{survTerms} object: processed survival terms}
+\item{survTerms}{\code{survTerms} object: survival terms obtained after 
+running \code{processSurvTerms} (see examples)}
 
-\item{...}{Arguments passed on to \code{survival::survfit.formula}
+\item{...}{Arguments passed on to \code{survival::survdiff}
 \describe{
-  \item{weights}{
-    The weights must be nonnegative and it is strongly recommended that  
-    they be strictly positive, since zero weights are ambiguous, compared 
-    to use of the \code{subset} argument.
-  }
   \item{subset}{
-    expression saying that only a subset of the rows of the data 
-    should be used in the fit. 
-  }
+expression indicating which subset of the rows of data should be used in
+the fit.  This can be a logical vector (which is replicated to have
+length equal to the number of observations), a numeric vector indicating
+which observation numbers are to be included (or excluded if negative),
+or a character vector of row names to be included.  All observations are
+included by default.
+}
   \item{na.action}{
-    a missing-data filter function, applied to the model frame, after any 
-    \code{subset} argument has been used. 
-    Default is \code{options()$na.action}. 
-  }
-  \item{stype}{the method to be used estimation of the survival curve:
-    1 = direct,  2 = exp(cumulative hazard). }
-  \item{ctype}{the method to be used for estimation of the cumulative
-    hazard: 1 = Nelson-Aalen formula, 2 = Fleming-Harrington correction
-    for tied events.}
-  \item{id}{
-    identifies individual subjects, when a given person can have multiple
-    lines of data.
-  }
-  \item{cluster}{used to group observations for the infinitesmal
-    jackknife variance estimate, defaults to the value of id}
-  \item{istate}{for multi-state models, identifies the initial state of
-    each subject or observation}
+a missing-data filter function.  This is applied to the \code{model.frame} after any
+subset argument has been used.  Default is \code{options()$na.action}.
+}
+  \item{rho}{
+a scalar parameter that controls the type of test.
+}
   \item{timefix}{process times through the \code{aeqSurv} function to
   eliminate potential roundoff issues.}
-  \item{etype}{
-    a variable giving the type of event.  This has been superseded by
-    multi-state Surv objects and is depricated; see example below.
-  }
-  \item{error}{this argument is no longer used}
 }}
 }
 \value{
