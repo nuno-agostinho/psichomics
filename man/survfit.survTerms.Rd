@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis.R
 \name{survfit.survTerms}
 \alias{survfit.survTerms}
-\title{Compute estimates of survival curves}
+\title{Create survival curves}
 \usage{
 \method{survfit}{survTerms}(survTerms, ...)
 }
@@ -48,14 +48,37 @@
 }}
 }
 \value{
-\code{survfit} object. See \code{survfit.object} for details. Methods
-defined for survfit objects are \code{print}, \code{plot}, \code{lines}, and 
-\code{points}.
+An object of class \code{survfit} containing one or more survival curves.
 }
 \description{
-Compute estimates of survival curves
+Create survival curves
+}
+\details{
+A survival curve is based on a tabulation of the number at risk and
+  number of events at each unique death time.  When time is a floating
+  point number the definition of "unique" is subject to interpretation.
+  The code uses factor() to define the set.
+  For further details see the documentation for the appropriate method, i.e.,
+  \code{?survfit.formula} or \code{?survfit.coxph}.  
+
+  A survfit object may contain a single curve, a set of curves, or a
+  matrix curves.
+  Predicted curves from a \code{coxph} model have one row for each
+  stratum in the Cox model fit and one column for each specified
+  covariate set.
+  Curves from a multi-state model have one row for each stratum and
+  a column for each state, the strata correspond to predictors on the
+  right hand side of the equation.  The default printing and plotting
+  order for curves is by column, as with other matrices.
+
+  Curves can be subscripted using either a single or double subscript.
+  If the set of curves is a matrix, as in the above, and one of the
+  dimensions is 1 then the code allows a single subscript to be used.
+  (That is, it is not quite as general as using a single subscript for
+  a numeric matrix.)
 }
 \examples{
+library("survival")
 clinical <- read.table(text = "2549   NA ii  female
                                 840   NA i   female
                                  NA 1204 iv    male
@@ -71,6 +94,5 @@ event      <- "days_to_death"
 formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
 survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
                                formulaStr=formulaStr)
-require("survival")
 survfit(survTerms)
 }

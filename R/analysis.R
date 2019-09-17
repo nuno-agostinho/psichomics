@@ -466,19 +466,15 @@ processSurvTerms <- function(clinical, censoring, event, timeStart,
     return(res)
 }
 
-#' Compute estimates of survival curves
-#' 
+#' @inherit survival::survfit title details return
 #' @param survTerms \code{survTerms} object: processed survival terms
 #' @inheritDotParams survival::survfit.formula -formula -data
 #' 
 #' @importFrom survival survfit
-#' 
-#' @return \code{survfit} object. See \code{survfit.object} for details. Methods
-#' defined for survfit objects are \code{print}, \code{plot}, \code{lines}, and 
-#' \code{points}.
 #' @export
-#'
+#' 
 #' @examples 
+#' library("survival")
 #' clinical <- read.table(text = "2549   NA ii  female
 #'                                 840   NA i   female
 #'                                  NA 1204 iv    male
@@ -494,7 +490,6 @@ processSurvTerms <- function(clinical, censoring, event, timeStart,
 #' formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
 #' survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
 #'                                formulaStr=formulaStr)
-#' require("survival")
 #' survfit(survTerms)
 survfit.survTerms <- function(survTerms, ...) {
     res <- survfit(survTerms$form, data=survTerms$survTime, ...)
@@ -509,16 +504,17 @@ survfit.survTerms <- function(survTerms, ...) {
     return(res)
 }
 
-#' Test differences between survival curves
-#' 
-#' @param survTerms survTerms object: processed survival terms
-#' @inheritDotParams survival::survdiff -formula -data
+#' @inherit survival::survdiff
+#' @export
+survdiff <- function(x, ...) UseMethod("survdiff")
+
+#' @rdname survdiff
+#' @param survTerms \code{survTerms} object: survival terms obtained after 
+#'   running \code{processSurvTerms} (see examples)
+#' @param ... Arguments passed on to \code{\link{survival::survdiff}} (arguments
+#'   \code{formula} and \code{data} are reserved for internal use)
 #' 
 #' @importFrom survival survdiff
-#' 
-#' @method survdiff survTerms
-#' @return an object of class "survfit". See survfit.object for details. Methods
-#' defined for survfit objects are print, plot, lines, and points.
 #' @export
 #'
 #' @examples
@@ -542,6 +538,11 @@ survfit.survTerms <- function(survTerms, ...) {
 survdiff.survTerms <- function(survTerms, ...) {
     survdiff(survTerms$form, data=survTerms$survTime, ...)
 }
+
+#' @importFrom survival survdiff
+#' @rdname survdiff
+#' @export
+survdiff.default <- survival::survdiff
 
 #' Plot survival curves
 #' 
