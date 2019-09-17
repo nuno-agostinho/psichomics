@@ -53,5 +53,5 @@ event      <- "days_to_death"
 formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
 survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
                                formulaStr=formulaStr)
-survdiff.survTerms(survTerms)
+survdiff(survTerms)
 }

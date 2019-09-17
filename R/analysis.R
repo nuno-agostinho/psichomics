@@ -537,7 +537,7 @@ survfit.survTerms <- function(survTerms, ...) {
 #' formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
 #' survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
 #'                                formulaStr=formulaStr)
-#' survdiff.survTerms(survTerms)
+#' survdiff(survTerms)
 survdiff.survTerms <- function(survTerms, ...) {
     survdiff(survTerms$form, data=survTerms$survTime, ...)
 }
@@ -658,7 +658,7 @@ testSurvival <- function (survTerms, ...) {
     # If there's an error with survdiff, return NA
     pvalue <- tryCatch({
         # Test the difference between survival curves
-        diff <- survdiff.survTerms(survTerms, ...)
+        diff <- survdiff(survTerms, ...)
         
         # Calculate p-value with given significant digits
         pvalue <- 1 - pchisq(diff$chisq, length(diff$n) - 1)
