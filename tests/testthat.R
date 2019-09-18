@@ -1,4 +1,4 @@
 library(testthat)
 library(psichomics)
 
-# test_check("psichomics")
+test_check("psichomics")
