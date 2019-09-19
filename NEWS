@@ -1,3 +1,7 @@
+# 1.10.1 (19 Sep, 2019)
+
+Avoid timeouts in CI tools and Bioconductor builds by skipping a specific unit test
+
 # 1.8.3 (21 April, 2019)
 
 Replace deprecated `R.utils::evalWithTimeout()` with `R.utils::withTimeout()`
