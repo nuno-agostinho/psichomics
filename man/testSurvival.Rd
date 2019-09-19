@@ -7,7 +7,8 @@
 testSurvival(survTerms, ...)
 }
 \arguments{
-\item{survTerms}{survTerms object: processed survival terms}
+\item{survTerms}{\code{survTerms} object: survival terms obtained after 
+running \code{processSurvTerms} (see examples)}
 
 \item{...}{Arguments passed on to \code{survival::survdiff}
 \describe{

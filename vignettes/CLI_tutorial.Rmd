@@ -149,7 +149,7 @@ survival curves
 * `testSurvival`: Test the survival difference between groups of patients
 * `processSurvTerms`: Process survival curves terms to calculate survival curves
 * `survfit`: Compute estimates of survival curves
-* `survdiff`: Test differences between survival curves
+* `survdiffTerms`: Test differences between survival curves
 * `plotSurvivalCurves`: Plot survival curves
 * `plotSurvivalPvaluesByCutoff`: Plot p-values of survival difference between
 groups based on multiple cutoffs
