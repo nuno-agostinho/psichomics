@@ -1,3 +1,7 @@
+# 1.10.2 (4 Oct, 2019)
+
+Fix warnings in Windows-specific CI tools and Bioconductor
+
 # 1.10.1 (19 Sep, 2019)
 
 Avoid timeouts in CI tools and Bioconductor builds by skipping a specific unit test
