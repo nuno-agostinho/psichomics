@@ -16,6 +16,7 @@ environment:
   global:
     _R_CHECK_FORCE_SUGGESTS_: false
     R_COMPILE_AND_INSTALL_PACKAGES: always
+    WARNINGS_ARE_ERRORS: true
 
   matrix:
     - R_VERSION: devel

@@ -1422,7 +1422,7 @@ filterGroups <- function(vector, group, threshold=1) {
 #' \code{\link[ggplot2]{geom_point}} related to selected points
 #' @param labelled Integer: index of rows/points to be labelled
 #' @param labelledParams List of parameters to pass to 
-#' \code{\link[ggrepel]{geom_label_repel}} related to labelled points
+#' \code{ggrepel::geom_label_repel} related to labelled points
 #' @param xlim Numeric: limits of X axis
 #' @param ylim Numeric: limits of Y axis
 #' 
