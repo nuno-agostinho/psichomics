@@ -94,7 +94,7 @@ psichomics()
 ## Tutorials
 
 The following case studies and tutorials are available and were based on our 
-[original article][article] (currently in preprint):
+[original article][article]:
 
 * [Visual interface][tutorial-gui]
 * [Command-line interface][tutorial-cli]
