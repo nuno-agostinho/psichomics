@@ -5,9 +5,10 @@ Version: 1.8.2
 Encoding: UTF-8
 Authors@R: c(
         person("Nuno", "Saraiva-Agostinho",
-            email="nunodanielagostinho@gmail.com", role = c("aut", "cre")),
-        person(c("Nuno", "Luís"), "Barbosa-Morais", 
-            role=c("aut", "led", "ths")),
+               email="nunodanielagostinho@gmail.com", role=c("aut", "cre"),
+               comment=c(ORCID="0000-0002-5549-105X")),
+        person(c("Nuno", "Luís"), "Barbosa-Morais", role=c("aut", "led", "ths"),
+               comment=c(ORCID="0000-0002-1215-0538")),
         person("André", "Falcão", role="ths"), 
         person("Lina", "Gallego Paez", role="ctb"), 
         person("Marie", "Bordone", role="ctb"), 
