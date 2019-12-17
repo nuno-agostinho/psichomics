@@ -24,7 +24,7 @@ localDataUI <- function(id, panel) {
                 tags$hr(), helpText("Example:"), tags$table(
                     class="table table-condensed",
                     tags$thead(
-                        tableRow("Sample ID", "Type", "Tissue", "Subject",
+                        tableRow("Sample ID", "Type", "Tissue", "Subject ID",
                                  th=TRUE)),
                     tags$tbody(
                         tableRow("SMP-01", "Tumour", "Lung", "SUBJ-03"),
@@ -64,14 +64,16 @@ localDataUI <- function(id, panel) {
                         "The first column must contain junction identifiers",
                         "and be named", tags$kbd("Junction ID")),
                     tags$li(
-                        "Only numbers (or X and Y) are extracted from the",
-                        "junction identifier. Acceptable junction identifiers",
-                        "include: ", tags$kbd("10_18748_21822"), ", ",
-                        tags$kbd("chromosome 10 (18748 to 21822)"), " and ", 
+                        "Only chromosome number/capital letters X, Y, Z, W",
+                        "and M, followed by the genomic regions are supported.",
+                        "Acceptable junction identifiers include:",
+                        tags$kbd("10_18748_21822"), ",",
+                        tags$kbd("chromosome 10 (18748 to 21822)"), "and",
                         tags$kbd("chr10:18748-21822")),
                     tags$li(
-                        "The strand is optional. If desired, it needs to come",
-                        "in the end of the string. For instance,", 
+                        "Optionally, indicate the strand with", tags$kbd("+"),
+                        "or", tags$kbd("-"),
+                        "at the end of the junction identifier. For instance,", 
                         tags$kbd("10:3213:9402:+"), "and",
                         tags$kbd("chr10:3213-9402 -"))),
                 tags$hr(), helpText("Example:"), tags$table(

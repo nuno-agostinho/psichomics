@@ -73,7 +73,7 @@
 * Improve console logging of error and warning alerts
 * Fix crash when loading psichomics with test data that is not locally available
 (by automatically downloading said data if not found)
-* Allow to edit file path in file/directory browser elemnts
+* Allow to edit file path in file/directory browser elements
 * Documentation:
     - Export functions mentioned in the documentation
     - Hide documentation of internal functions from the PDF reference manual
