@@ -1,8 +1,16 @@
-# 1.10.1 (19 June, 2019)
+# 1.12.1 (19 December, 2019)
+
+* User-provided junction quantification loading:
+    - Support junction coordinates from mitochondrial, Z and W chromosomes
+    - Fix issues with files containing splice junctions within random, alt and
+    unknown chromosomes by discarding those rows (a warning is raised)
 
 ## Bug fixes and minor changes
 
 * Data loading and manipulation:
+    - Copy-edit information on the format of user-provided files
+    - Warn when discarding rows with duplicated rownames after loading
+    user-provided files
     - Fix `getGtexDataTypes()` not being available
     - Fix `loadFirebrowseData()` not returning expected data when asking for 
     many datasets (such as in the case of performing a pan-cancer analysis)
@@ -10,6 +18,7 @@
     `coords = TRUE` and `char = FALSE`
     - Improve dialog when trying to load a local folder without any supported 
     files available
+    - Improve tutorial on loading user-provided data
 * Alternative splicing annotation:
     - Fix confirmation dialog for folder creation in the console (even when 
     running the visual interface)
@@ -23,6 +32,7 @@
 * Fix `prepareGeneQuant()` not working if its argument `strandedness` is either
 `stranded` or `stranded (reverse)`
 * Fix warning/error alerts crashing the visual interface
+* Improve unit tests
 
 # 1.8.2 (26 March, 2019)
 

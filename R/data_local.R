@@ -75,7 +75,11 @@ localDataUI <- function(id, panel) {
                         "or", tags$kbd("-"),
                         "at the end of the junction identifier. For instance,", 
                         tags$kbd("10:3213:9402:+"), "and",
-                        tags$kbd("chr10:3213-9402 -"))),
+                        tags$kbd("chr10:3213-9402 -")),
+                    tags$li(
+                        "Rows whose junction identifiers contain",
+                        tags$kbd("alt"), tags$kbd("random"), "or",
+                        tags$kbd("Un"), "in chromosome names are discarded.")),
                 tags$hr(), helpText("Example:"), tags$table(
                     class="table table-condensed",
                     tags$thead(
@@ -121,7 +125,7 @@ localDataUI <- function(id, panel) {
               tabPanel("Folder input", addFolder)))
 }
 
-#' Prepare files to be loaded into psichomics
+#' Prepare user-provided files to be loaded into psichomics
 #' 
 #' @param file Character: path to file
 #' @param output Character: path of output file (if \code{NULL}, only returns 
@@ -129,27 +133,30 @@ localDataUI <- function(id, panel) {
 #' 
 #' @importFrom data.table fread fwrite
 #' 
-#' @return Prepared file
+#' @return Prepared file (if \code{output != NULL}) and object
 #' @export
 prepareSRAmetadata <- function(file, output="psichomics_metadata.txt") {
     data <- fread(file)
     data <- cbind("Sample ID"=data$Run, data)
-    if (!is.null(output)) fwrite(data, output, sep="\t")
-    return(data)
+    if (!is.null(output)) {
+        fwrite(data, output, sep="\t")
+        return(invisible(data))
+    } else {
+        return(data)
+    }
 }
 
-#' Process and save SRA quantification data
+#' Process SRA quantification data
 #' 
 #' @param files Character: path to SRA quantification files
 #' @param data Data frame: processed quantification data
-#' @param output Character: output filename (if \code{NULL}, no file is saved)
 #' @param IDcolname Character: name of the column containing the identifiers
 #' 
 #' @importFrom utils askYesNo
 #' 
-#' @return Process file and save its output
+#' @return Process file
 #' @keywords internal
-processAndSaveSRAdata <- function(files, data, output, IDcolname) {
+processSRAdata <- function(files, data, IDcolname) {
     # Add sample names
     samples <- names(files)
     if (is.null(samples)) {
@@ -167,7 +174,18 @@ processAndSaveSRAdata <- function(files, data, output, IDcolname) {
     
     quant <- cbind(rownames(data), data)
     setnames(quant, "V1", IDcolname)
-    
+    return(quant)
+}
+
+#' Save processed SRA data in file
+#' 
+#' @param data Object to save
+#' @param output Character: output filename (if \code{NULL}, no file is saved)
+#' 
+#' @return If \code{output = NULL}, save input to a file and return it as
+#'   invisible; otherwise, just return the input
+#' @keywords internal
+saveProcessedSRAdata <- function(data, output=NULL) {
     # Save data to given path
     if (!is.null(output)) {
         if (file.exists(output)) {
@@ -180,16 +198,18 @@ processAndSaveSRAdata <- function(files, data, output, IDcolname) {
         } else {
             allowOverwrite <- FALSE
         }
-        fwrite(quant, output, sep="\t", na=0, quote=FALSE)
+        fwrite(data, output, sep="\t", na=0, quote=FALSE)
         message(sprintf("File %s was %s", output, 
                         ifelse(allowOverwrite, "overwritten", "created")))
+        return(invisible(data))
+    } else {
+        return(data)
     }
-    return(quant)
 }
 
 #' @rdname prepareSRAmetadata
 #' 
-#' @param ... Character: path to file(s) to read
+#' @param ... Character: path of (optionally named) input files (see Examples)
 #' @param startOffset Numeric: value to offset start position
 #' @param endOffset Numeric: value to offset end position
 #' 
@@ -212,8 +232,9 @@ prepareJunctionQuant <- function(..., output="psichomics_junctions.txt",
     # Prepare junction quantification accordingly
     data  <- prepareJunctionQuantSTAR(..., startOffset=startOffset, 
                                       endOffset=endOffset)
-    quant <- processAndSaveSRAdata(files, data, output, "Junction ID")
-    return(quant)
+    quant <- processSRAdata(files, data, "Junction ID")
+    quant <- saveProcessedSRAdata(quant, output)
+    return(invisible(quant))
 }
 
 #' @inherit prepareSRAmetadata
@@ -283,8 +304,9 @@ prepareGeneQuant <- function(..., output="psichomics_gene_counts.txt",
     
     # Prepare file accordingly
     data  <- prepareGeneQuantSTAR(..., strandedness=strandedness)
-    quant <- processAndSaveSRAdata(files, data, output, "Gene ID")
-    return(quant)
+    quant <- processSRAdata(files, data, "Gene ID")
+    quant <- saveProcessedSRAdata(quant, output)
+    return(invisible(quant))
 }
 
 #' @rdname prepareJunctionQuantSTAR
