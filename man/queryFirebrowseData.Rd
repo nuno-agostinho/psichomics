@@ -6,8 +6,7 @@
 \usage{
 queryFirebrowseData(format = "json", date = NULL, cohort = NULL,
   data_type = NULL, tool = NULL, platform = NULL, center = NULL,
-  level = NULL, protocol = NULL, page = NULL, page_size = NULL,
-  sort_by = NULL)
+  level = NULL, protocol = NULL, page = NULL, sort_by = NULL)
 }
 \arguments{
 \item{format}{Character: response format as \code{JSON}, \code{CSV} or
