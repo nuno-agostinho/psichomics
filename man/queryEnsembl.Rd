@@ -11,11 +11,11 @@ queryEnsembl(path, query, grch37 = TRUE)
 
 \item{query}{Character: API query}
 
-\item{grch37}{Boolean: query the Ensembl GRCh37 API? TRUE by default;
-otherwise, query the most recent API}
+\item{grch37}{Boolean: query the Ensembl GRCh37 API? if \code{FALSE}, query
+the most recent API}
 }
 \value{
-Parsed response or NULL if there's no response
+Parsed response or \code{NULL} if no response
 }
 \description{
 Query the Ensembl REST API

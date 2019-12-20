@@ -18,8 +18,7 @@ hc_scatter(hc, x, y, z = NULL, label = NULL, showInLegend = FALSE,
 
 \item{label}{Character: data label for each point (optional)}
 
-\item{showInLegend}{Boolean: show the data in the legend box? FALSE by
-default}
+\item{showInLegend}{Boolean: show the data in the legend box?}
 
 \item{...}{Arguments passed on to \code{highcharter::hc_add_series}
 \describe{

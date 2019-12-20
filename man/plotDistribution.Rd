@@ -44,3 +44,7 @@ groups <- paste("Group", c(rep("A", 10), rep("B", 10)))
 label  <- paste("Sample", 1:20)
 plotDistribution(data, groups, label=label)
 }
+\seealso{
+Other functions to perform and plot differential analyses: \code{\link{diffAnalyses}}
+}
+\concept{functions to perform and plot differential analyses}

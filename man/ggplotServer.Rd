@@ -17,7 +17,8 @@ ggplotAuxServer(input, output, id)
 
 \item{id}{Character: identifier}
 
-\item{plot}{Character: plot expression (NULL renders no plot)}
+\item{plot}{Character: plot expression (if \code{NULL}, no plots are
+rendered)}
 
 \item{df}{Data frame}
 
@@ -26,7 +27,8 @@ ggplotAuxServer(input, output, id)
 \item{y}{Character: name of the variable used for the Y axis}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (only used to modify the Shiny session's state or
+  internal variables)
 }
 \description{
 Logic set to create an interactive ggplot

@@ -10,8 +10,8 @@ queryFirebrowseData(format = "json", date = NULL, cohort = NULL,
   sort_by = NULL)
 }
 \arguments{
-\item{format}{Character: response format as \code{JSON} (default), \code{CSV}
-or \code{TSV}}
+\item{format}{Character: response format as \code{JSON}, \code{CSV} or
+\code{TSV}}
 
 \item{date}{Character: dates of the data retrieval by Firebrowse (by default,
 it uses the most recent data available)}
@@ -34,9 +34,6 @@ data for all cohorts)}
 
 \item{page}{Integer: page of the results to return (optional)}
 
-\item{page_size}{Integer: number of records per page of results; max is 2000
-(optional)}
-
 \item{sort_by}{String: column used to sort the data (by default, it sorts by
 cohort)}
 }
@@ -47,11 +44,11 @@ Response from the Firebrowse web API (it needs to be parsed)
 Query the Firebrowse web API for TCGA data
 }
 \examples{
-cohort <- psichomics:::getFirebrowseCohorts()[1]
+cohort <- getFirebrowseCohorts()[1]
 psichomics:::queryFirebrowseData(cohort = cohort, data_type = "mRNASeq")
 
 # Querying for data from a specific date
-dates <- psichomics:::getFirebrowseDates()
+dates <- getFirebrowseDates()
 dates <- format(dates, psichomics:::getFirebrowseDateFormat()$query)
 
 psichomics:::queryFirebrowseData(date = dates[2], cohort = cohort)

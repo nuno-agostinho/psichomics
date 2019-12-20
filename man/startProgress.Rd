@@ -32,15 +32,15 @@ closeProgress(message = NULL, global = if (isRunning()) sharedData else
 \item{console}{Boolean: print message to console?}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state or
-internal hidden variables)
+\code{NULL} (only used to modify the Shiny session's state or
+  internal variables)
 }
 \description{
 Create, set and terminate a progress object
 }
 \details{
 If \code{divisions} is not \code{NULL}, a progress bar starts with 
-the given divisions. If \code{value} is \code{NULL}, the progress bar 
-increments one unit; otherwise, the progress bar increments \code{value}.
+the given divisions. If \code{value = NULL}, the progress bar increments one
+unit; otherwise, the progress bar increments \code{value}.
 }
 \keyword{internal}

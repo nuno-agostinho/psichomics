@@ -133,6 +133,7 @@ localDataUI <- function(id, panel) {
 #' 
 #' @importFrom data.table fread fwrite
 #' 
+#' @family functions to load local files
 #' @return Prepared file (if \code{output != NULL}) and object
 #' @export
 prepareSRAmetadata <- function(file, output="psichomics_metadata.txt") {
@@ -355,6 +356,7 @@ prepareGeneQuantSTAR <- function(..., strandedness=c("unstranded", "stranded",
 #' 
 #' @importFrom stats setNames
 #' 
+#' @family functions to load local files
 #' @return List of data frames from valid files
 #' @export
 #' 
@@ -415,11 +417,11 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."),
 #' @param input Shiny input
 #' @param output Shiny output
 #' @param session Shiny session
-#' @param replace Boolean: replace loaded data? TRUE by default
+#' @param replace Boolean: replace loaded data?
 #' 
 #' @importFrom shinyjs disable enable
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 setLocalData <- function(input, output, session, replace=TRUE) {
     time <- startProcess("acceptFile")

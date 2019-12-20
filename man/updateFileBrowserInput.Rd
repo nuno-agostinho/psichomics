@@ -16,12 +16,13 @@ updateFileBrowserInput(session, id, ..., value = NULL)
 \item{id}{Character: input identifier}
 
 \item{...}{Additional arguments passed to \code{\link{fileBrowser}}. Only
-used if \code{value} is \code{NULL}.}
+used if \code{value = NULL}.}
 
 \item{value}{Character: file or directory path}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (only used to modify the Shiny session's state or
+  internal variables)
 }
 \description{
 Change the value of a fileBrowserInput on the client

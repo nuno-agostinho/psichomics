@@ -17,14 +17,15 @@ operateOnGroups(input, session, operation, buttonId, symbol = " ", type,
 \item{buttonId}{Character: ID of the button to trigger operation}
 
 \item{symbol}{Character: Unicode symbol to visually indicate the operation
-performed (" " by default)}
+performed}
 
 \item{type}{Character: type of group where set operations are to be performed}
 
 \item{sharedData}{Shiny app's global variable}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (only used to modify the Shiny session's state or
+  internal variables)
 }
 \description{
 This function can be used on groups to merge, intersect, subtract, etc.

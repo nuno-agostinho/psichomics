@@ -7,11 +7,11 @@
 showGroupsTable(type)
 }
 \arguments{
-\item{type}{Character: type of groups (either "Patients", "Samples", 
-"ASevents" or "Genes")}
+\item{type}{Character: type of groups (either \code{Patients}, 
+\code{Samples}, \code{ASevents} or \code{Genes})}
 }
 \value{
-Matrix with groups ordered (or NULL if no groups exist)
+Matrix with groups ordered (or \code{NULL} if there are no groups)
 }
 \description{
 Present groups table

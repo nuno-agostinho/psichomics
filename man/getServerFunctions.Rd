@@ -12,8 +12,8 @@ getServerFunctions(loader, ..., priority = NULL)
 \item{...}{Extra arguments to pass to server functions}
 
 \item{priority}{Character: name of functions to prioritise by the given
-order; for instance, c("data", "analyses") would load "data", then "analyses"
-then remaining functions}
+order; for instance, \code{c("data", "analyses")} would load \code{data},
+then \code{analyses} and finally the remaining functions}
 }
 \value{
 Invisible TRUE

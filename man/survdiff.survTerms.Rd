@@ -31,8 +31,9 @@ a scalar parameter that controls the type of test.
 }}
 }
 \value{
-an object of class "survfit". See survfit.object for details. Methods
-defined for survfit objects are print, plot, lines, and points.
+an object of class \code{survfit}. See \code{survfit.object} for
+details. Methods defined for survfit objects are \code{print}, \code{plot},
+\code{lines}, and \code{points}.
 }
 \description{
 Test differences between survival curves
@@ -55,3 +56,15 @@ survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
                                formulaStr=formulaStr)
 survdiff.survTerms(survTerms)
 }
+\seealso{
+Other functions to analyse survival: \code{\link{assignValuePerSubject}},
+  \code{\link{getAttributesTime}},
+  \code{\link{labelBasedOnCutoff}},
+  \code{\link{optimalSurvivalCutoff}},
+  \code{\link{plotSurvivalCurves}},
+  \code{\link{plotSurvivalPvaluesByCutoff}},
+  \code{\link{processSurvTerms}},
+  \code{\link{survfit.survTerms}},
+  \code{\link{testSurvival}}
+}
+\concept{functions to analyse survival}

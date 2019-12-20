@@ -136,6 +136,7 @@ geNormalisationFilteringUI <- function(id, panel) {
 #' @importFrom edgeR DGEList [.DGEList calcNormFactors cpm
 #' @importFrom limma voom
 #'
+#' @family functions for gene expression pre-processing
 #' @return Filtered and normalised gene expression
 #' @export
 #'
@@ -273,7 +274,8 @@ loadGeneExpressionSet <- function(session, input, output) {
 #' @importFrom AnnotationDbi select
 #' @importFrom data.table data.table
 #' @importFrom org.Hs.eg.db org.Hs.eg.db
-#'
+#' 
+#' @family functions for gene expression pre-processing
 #' @return Character vector of the respective targets of gene identifiers. The
 #' previous identifiers remain other identifiers have the same target (in case
 #' \code{ignoreDuplicatedTargets = TRUE}) or if no target was found.
@@ -345,6 +347,7 @@ convertGeneIdentifiers <- function(annotation, genes, key="ENSEMBL",
 #'
 #' @importFrom edgeR filterByExpr
 #'
+#' @family functions for gene expression pre-processing
 #' @return Boolean vector indicating which genes have sufficiently large counts
 #' @export
 #' 
@@ -383,6 +386,7 @@ filterGeneExpr <- function(geneExpr, minMean=0, maxMean=Inf, minVar=0,
 #'
 #' @importFrom highcharter %>% hc_yAxis
 #'
+#' @family functions for gene expression pre-processing
 #' @return Gene expression distribution plots
 #' @export
 #'

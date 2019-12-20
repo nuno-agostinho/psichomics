@@ -13,7 +13,7 @@ display(char, timeStr = "Time difference of")
 the \code{char} argument}
 }
 \value{
-NULL (display message in command-line)
+\code{NULL} (display message in command-line)
 }
 \description{
 Display characters in the command-line

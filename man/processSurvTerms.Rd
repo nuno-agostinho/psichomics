@@ -11,8 +11,8 @@ processSurvTerms(clinical, censoring, event, timeStart, timeStop = NULL,
 \arguments{
 \item{clinical}{Data frame: clinical data}
 
-\item{censoring}{Character: censor using "left", "right", "interval" or
-"interval2"}
+\item{censoring}{Character: censor using \code{left}, \code{right},
+\code{interval} or \code{interval2}}
 
 \item{event}{Character: name of column containing time of the event of
 interest}
@@ -23,15 +23,14 @@ interval or follow up time}
 \item{timeStop}{Character: name of column containing ending time of the 
 interval (only relevant for interval censoring)}
 
-\item{group}{Character: group relative to each patient}
+\item{group}{Character: group relative to each subject}
 
 \item{formulaStr}{Character: formula to use}
 
-\item{coxph}{Boolean: fit a Cox proportional hazards regression model? FALSE 
-by default}
+\item{coxph}{Boolean: fit a Cox proportional hazards regression model?}
 
-\item{scale}{Character: rescale the survival time to "days", "weeks",
-"months" or "years"}
+\item{scale}{Character: rescale the survival time to \code{days},
+\code{weeks}, \code{months} or \code{years}}
 
 \item{followup}{Character: name of column containing follow up time}
 
@@ -46,13 +45,15 @@ needed to calculate survival curves
 Process survival curves terms to calculate survival curves
 }
 \details{
-If \code{survTime} is NULL, the survival times will be fetch from the
-clinical dataset according to the names given in \code{timeStart},
-\code{timeStop}, \code{event} and \code{followup}. This can became quite slow
-when using the function in a for loop. If these variables are constant, 
-consider running the function \code{\link{getAttributesTime}} to retrieve the
-time of such columns once and hand the result to the \code{survTime} argument
-of this function.
+The \code{event} time is only used to determine whether the event
+has occurred (\code{1}) or not (\code{0}) in case of missing values.
+
+If \code{survTime = NULL}, survival times are obtained from the clinical
+dataset according to the names given in \code{timeStart}, \code{timeStop},
+\code{event} and \code{followup}. This may become quite slow when used in a
+loop. If the aforementioned variables are constant, consider running
+\code{\link{getAttributesTime}} outside the loop and using its output via the
+\code{survTime} argument of this function (see Examples).
 }
 \examples{
 clinical <- read.table(text = "2549   NA ii  female
@@ -70,4 +71,26 @@ event      <- "days_to_death"
 formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
 survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
                                formulaStr=formulaStr)
+                               
+\dontrun{
+# If run multiple times, consider calculating survTime only once
+survTime <- getAttributesTime(clinical, event, timeStart, timeStop, followup)
+for (1:5) {
+  survTerms <- processSurvTerms(clinical, censoring="right", event,
+                                timeStart, formulaStr=formulaStr,
+                                survTime=survTime)
 }
+}
+}
+\seealso{
+Other functions to analyse survival: \code{\link{assignValuePerSubject}},
+  \code{\link{getAttributesTime}},
+  \code{\link{labelBasedOnCutoff}},
+  \code{\link{optimalSurvivalCutoff}},
+  \code{\link{plotSurvivalCurves}},
+  \code{\link{plotSurvivalPvaluesByCutoff}},
+  \code{\link{survdiff.survTerms}},
+  \code{\link{survfit.survTerms}},
+  \code{\link{testSurvival}}
+}
+\concept{functions to analyse survival}

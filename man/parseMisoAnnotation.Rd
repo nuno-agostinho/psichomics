@@ -31,10 +31,9 @@ origin; see details)}
 depends on the program of origin)}
 
 \item{complexEvents}{Boolean: should complex events in A3SS and A5SS be
-parsed? FALSE by default}
+parsed?}
 
-\item{novelEvents}{Boolean: parse events dedected due to novel splice sites 
-(TRUE by default)}
+\item{novelEvents}{Boolean: parse events dedected due to novel splice sites}
 }
 \value{
 Retrieve data frame with events based on a given alternative splicing
@@ -81,3 +80,7 @@ mats <- parseMatsAnnotation(matsOutput)
 # Do not parse novel events
 mats <- parseMatsAnnotation(matsOutput, novelEvents=FALSE)
 }
+\seealso{
+Other functions to prepare alternative splicing annotations: \code{\link{prepareAnnotationFromEvents}}
+}
+\concept{functions to prepare alternative splicing annotations}

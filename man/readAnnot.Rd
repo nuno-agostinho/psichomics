@@ -11,10 +11,11 @@ readAnnot(session, annotation, showProgress = FALSE)
 
 \item{annotation}{Character: chosen annotation}
 
-\item{showProgress}{Boolean: show progress? FALSE by default}
+\item{showProgress}{Boolean: show progress?}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (only used to modify the Shiny session's state or
+  internal variables)
 }
 \description{
 Instructions to build the Shiny app

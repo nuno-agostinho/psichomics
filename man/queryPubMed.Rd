@@ -12,12 +12,13 @@ queryPubMed(primary, ..., top = 3, field = "abstract",
 
 \item{...}{Character: other relevant search terms}
 
-\item{top}{Numeric: number of articles to retrieve (3 by default)}
+\item{top}{Numeric: number of articles to retrieve}
 
-\item{field}{Character: field of interest where to look for terms ("abstract"
-by default)}
+\item{field}{Character: field of interest where to look for terms
+(\code{abstract} by default)}
 
-\item{sort}{Character: sort by a given parameter ("relevance" by default)}
+\item{sort}{Character: sort by a given parameter (\code{relevance} by
+default)}
 }
 \value{
 Parsed response

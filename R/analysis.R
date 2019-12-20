@@ -8,7 +8,7 @@ NULL
 #' @param buttonId Character: identifier of button to take user to load missing 
 #' data
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 #' 
 #' @examples
@@ -122,15 +122,15 @@ analysesServer <- function(input, output, session) {
 
 # Survival analyses helper functions --------------------------------------
 
-#' Helper text to explain what happens when a patient matches multiple samples
+#' Helper text to explain what happens when a subject matches multiple samples
 #' when performing survival analysis
 #' 
 #' @return Character
 #' @keywords internal
-patientMultiMatchWarning <- function() {
-    paste("While stratifying patients for survival analysis, patients",
+subjectMultiMatchWarning <- function() {
+    paste("While stratifying subjects for survival analysis, subjects",
           "with multipe samples are assigned the average value of their",
-          "corresponding samples. However, for patients with both disease",
+          "corresponding samples. However, for subjects with both disease",
           "and normal samples, it may be inappropriate to include the",
           "values of their normal samples for survival analysis.")
 }
@@ -152,19 +152,21 @@ getClinicalDataForSurvival <- function(..., formulaStr=NULL) {
     return(clinical)
 }
 
-#' Assign average sample values to their corresponding patients
+#' Assign average sample values to their corresponding subjects
 #' 
 #' @param data One-row data frame/matrix or vector: values per sample for a 
 #' single gene
-#' @param match Matrix: match between samples and patients
+#' @param match Matrix: match between samples and subjects
 #' @param clinical Data frame or matrix: clinical dataset (only required if the
-#' \code{patients} argument is not handed)
-#' @param patients Character: patient identifiers (only required if the
+#' \code{subjects} argument is not handed)
+#' @param patients Character: subject identifiers (only required if the
 #' \code{clinical} argument is not handed)
-#' @param samples Character: samples to use when assigning values per patient 
+#' @param samples Character: samples to use when assigning values per subject 
 #' (if \code{NULL}, all samples will be used)
 #' 
-#' @return Values per patient
+#' @aliases getValuePerSubject getValuePerPatient assignValuePerPatient
+#' @family functions to analyse survival
+#' @return Values per subject
 #' @export
 #' 
 #' @examples 
@@ -175,11 +177,12 @@ getClinicalDataForSurvival <- function(..., formulaStr=NULL) {
 #' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 #' 
 #' # Match between subjects and samples
-#' match <- rep(paste("Patient", 1:3), 2)
+#' match <- rep(paste("Subject", 1:3), 2)
 #' names(match) <- colnames(psi)
 #' 
+#' # Assign PSI values to each subject based on the PSI of their samples
 #' assignValuePerSubject(psi[3, ], match)
-getValuePerPatient <- function(data, match, clinical=NULL, patients=NULL,
+assignValuePerSubject <- function(data, match, clinical=NULL, patients=NULL,
                                samples=NULL) {
     hasOneRow     <- !is.null(nrow(data)) && nrow(data) == 1
     isNamedVector <- is.vector(data) && !is.null(names(data))
@@ -200,50 +203,29 @@ getValuePerPatient <- function(data, match, clinical=NULL, patients=NULL,
     if (!is.null(samples)) match <- match[names(match) %in% samples]
     match <- match[!is.na(match)]
     
-    # For each patient, assign the average value of its respective samples
+    # For each subject, assign the average value of its respective samples
     res <- sapply(split(data[names(match)], match), mean, na.rm=TRUE)
     return(res)
 }
 
-#' @rdname getValuePerPatient
 #' @export
-getValuePerSubject <- getValuePerPatient
+getValuePerPatient <- assignValuePerSubject
 
-#' @rdname getValuePerPatient
 #' @export
-assignValuePerPatient <- getValuePerPatient
+assignValuePerPatient <- assignValuePerSubject
 
-#' @rdname getValuePerPatient
 #' @export
-assignValuePerSubject <- getValuePerPatient
-
-#' @rdname getValuePerPatient
-#' @param psi Data frame or matrix: values per sample
-#' @param ... Deprecated arguments
-#' @export
-getPSIperPatient <- function(psi, match, clinical=NULL, patients=NULL, ...) {
-    .Deprecated("getValuePerPatient")
-    getValuePerPatient(psi, match, clinical, patients)
-}
+getValuePerSubject <- assignValuePerSubject
 
 #' Process survival data to calculate survival curves
 #' 
 #' @inheritParams getAttributesTime
-#' @param group Character: group relative to each patient
+#' @param group Character: group relative to each subject
 #' @param clinical Data frame: clinical data
 #' @param survTime \code{survTime} object: Times to follow up, time start, time 
 #' stop and event (optional)
 #' 
-#' @details The event time will only be used to determine whether the event has
-#' occurred (1) or not (0) in case of missing values.
-#' 
-#' If \code{survTime} is NULL, the survival times will be fetch from the
-#' clinical dataset according to the names given in \code{timeStart},
-#' \code{timeStop}, \code{event} and \code{followup}. This can became quite slow
-#' when using the function in a for loop. If these variables are constant, 
-#' consider running the function \code{\link{getAttributesTime}} to retrieve the
-#' time of such columns once and hand the result to the \code{survTime} argument
-#' of this function.
+#' @inherit processSurvTerms details
 #' 
 #' @return Data frame with terms needed to calculate survival curves
 #' @keywords internal
@@ -288,47 +270,39 @@ processSurvData <- function(event, timeStart, timeStop, followup, group,
 #' interval (only relevant for interval censoring)
 #' @param followup Character: name of column containing follow up time
 #' 
+#' @family functions to analyse survival
 #' @return Data frame containing the time for the given columns
 #' @export
 #' 
 #' @examples 
 #' df <- data.frame(followup=c(200, 300, 400), death=c(NA, 300, NA))
-#' rownames(df) <- paste("patient", 1:3)
+#' rownames(df) <- paste("subject", 1:3)
 #' getAttributesTime(df, event="death", timeStart="death", followup="followup")
 getAttributesTime <- function(clinical, event, timeStart, timeStop=NULL,
                               followup="days_to_last_followup") {
     cols <- c(followup=followup, start=timeStart, stop=timeStop, event=event)
     
     # Retrive time for given attributes
-    timePerPatient <- function(col, clinical) {
+    timePerSubject <- function(col, clinical) {
         cols <- grep(col, colnames(clinical), value=TRUE)
         row  <- apply(clinical[cols], 1, function(i)
             if(!all(is.na(i))) max(as.numeric(i), na.rm = TRUE) else NA)
         return(row)
     }
-    survTime <- lapply(cols, timePerPatient, clinical)
+    survTime <- lapply(cols, timePerSubject, clinical)
     
     survTime <- as.data.frame(survTime)
     class(survTime) <- c("data.frame", "survTime")
     return(survTime)
 }
 
-#' @rdname getAttributesTime
-#' @export
-getColumnsTime <- function(clinical, event, timeStart, timeStop=NULL,
-                           followup="days_to_last_followup") {
-    .Deprecated("getAttributesTime")
-    getAttributesTime(clinical=clinical, event=event, timeStart=timeStart, 
-                      timeStop=timeStop, followup=followup)
-}
-
 #' Update available clinical attributes when the clinical data changes
 #' 
 #' @param session Shiny session
-#' @param attrs Character: patient attributes
+#' @param attrs Character: subject attributes
 #' 
 #' @importFrom shiny observe updateSelectizeInput
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 updateClinicalParams <- function(session, attrs) {
     if (!is.null(attrs)) {
@@ -374,28 +348,29 @@ updateClinicalParams <- function(session, attrs) {
 #' Process survival curves terms to calculate survival curves
 #'
 #' @inheritParams processSurvData
-#' @param censoring Character: censor using "left", "right", "interval" or
-#' "interval2"
-#' @param scale Character: rescale the survival time to "days", "weeks",
-#' "months" or "years"
+#' @param censoring Character: censor using \code{left}, \code{right},
+#' \code{interval} or \code{interval2}
+#' @param scale Character: rescale the survival time to \code{days},
+#' \code{weeks}, \code{months} or \code{years}
 #' @param formulaStr Character: formula to use
-#' @param coxph Boolean: fit a Cox proportional hazards regression model? FALSE 
-#' by default
+#' @param coxph Boolean: fit a Cox proportional hazards regression model?
 #' @param survTime survTime object: times to follow up, time start, time stop
 #' and event (optional)
 #' 
 #' @importFrom stats formula
 #' @importFrom survival coxph Surv
 #'
-#' @details 
-#' If \code{survTime} is NULL, the survival times will be fetch from the
-#' clinical dataset according to the names given in \code{timeStart},
-#' \code{timeStop}, \code{event} and \code{followup}. This can became quite slow
-#' when using the function in a for loop. If these variables are constant, 
-#' consider running the function \code{\link{getAttributesTime}} to retrieve the
-#' time of such columns once and hand the result to the \code{survTime} argument
-#' of this function.
+#' @details The \code{event} time is only used to determine whether the event
+#' has occurred (\code{1}) or not (\code{0}) in case of missing values.
+#' 
+#' If \code{survTime = NULL}, survival times are obtained from the clinical
+#' dataset according to the names given in \code{timeStart}, \code{timeStop},
+#' \code{event} and \code{followup}. This may become quite slow when used in a
+#' loop. If the aforementioned variables are constant, consider running
+#' \code{\link{getAttributesTime}} outside the loop and using its output via the
+#' \code{survTime} argument of this function (see Examples).
 #'
+#' @family functions to analyse survival
 #' @return A list with a \code{formula} object and a data frame with terms
 #' needed to calculate survival curves
 #' @export
@@ -416,6 +391,16 @@ updateClinicalParams <- function(session, attrs) {
 #' formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
 #' survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
 #'                                formulaStr=formulaStr)
+#'                                
+#' \dontrun{
+#' # If run multiple times, consider calculating survTime only once
+#' survTime <- getAttributesTime(clinical, event, timeStart, timeStop, followup)
+#' for (1:5) {
+#'   survTerms <- processSurvTerms(clinical, censoring="right", event,
+#'                                 timeStart, formulaStr=formulaStr,
+#'                                 survTime=survTime)
+#' }
+#' }
 processSurvTerms <- function(clinical, censoring, event, timeStart, 
                              timeStop=NULL, group=NULL, formulaStr=NULL, 
                              coxph=FALSE, scale="days",
@@ -474,6 +459,7 @@ processSurvTerms <- function(clinical, censoring, event, timeStart,
 #' @importFrom survival survfit
 #' @method survfit survTerms
 #' 
+#' @family functions to analyse survival
 #' @return \code{survfit} object. See \code{survfit.object} for details. Methods
 #' defined for survfit objects are \code{print}, \code{plot}, \code{lines}, and 
 #' \code{points}.
@@ -517,8 +503,10 @@ survfit.survTerms <- function(survTerms, ...) {
 #' 
 #' @importFrom survival survdiff
 #' 
-#' @return an object of class "survfit". See survfit.object for details. Methods
-#' defined for survfit objects are print, plot, lines, and points.
+#' @family functions to analyse survival
+#' @return an object of class \code{survfit}. See \code{survfit.object} for
+#' details. Methods defined for survfit objects are \code{print}, \code{plot},
+#' \code{lines}, and \code{points}.
 #' @export
 #'
 #' @examples
@@ -545,16 +533,17 @@ survdiff.survTerms <- function(survTerms, ...) {
 #' Plot survival curves
 #' 
 #' @param surv Survival object
-#' @param interval Boolean: show interval ranges? FALSE by default
-#' @param mark Boolean: mark times? TRUE by default
+#' @param interval Boolean: show interval ranges?
+#' @param mark Boolean: mark times?
 #' @param title Character: plot title
 #' @param pvalue Numeric: p-value of the survival curves
-#' @param scale Character: time scale; default is "days"
-#' @param auto Boolean: return the plot automatically prepared (TRUE) or only
-#' the bare minimum (FALSE)? TRUE by default
+#' @param scale Character: time scale (default is \code{days})
+#' @param auto Boolean: return the plot automatically prepared (\code{TRUE}) or
+#' only the bare minimum (\code{FALSE})?
 #' 
 #' @importFrom shiny tags br
-#' 
+#'
+#' @family functions to analyse survival
 #' @return Plot of survival curves
 #' @export
 #' 
@@ -630,13 +619,14 @@ processSurvival <- function(session, ...) {
     return(survTerms)
 }
 
-#' Test the survival difference between groups of patients
+#' Test the survival difference between groups of subjects
 #' 
 #' @inheritParams survdiff.survTerms
 #' @inheritDotParams survival::survdiff -formula -data
 #' 
-#' @note Instead of raising errors, an \code{NA} is returned
+#' @note Instead of raising errors, returns \code{NA}
 #' 
+#' @family functions to analyse survival
 #' @return p-value of the survival difference or \code{NA}
 #' @export
 #' 
@@ -671,10 +661,11 @@ testSurvival <- function (survTerms, ...) {
 #' 
 #' @param data Numeric: test data
 #' @param cutoff Numeric: test cutoff
-#' @param label Character: label to prefix group names (NULL by default)
-#' @param gte Boolean: test with greater than or equal to cutoff (TRUE) or use
-#' less than or equal to cutoff (FALSE)? TRUE by default
+#' @param label Character: label to prefix group names
+#' @param gte Boolean: test using greater than or equal than cutoff
+#' (\code{TRUE}) or less than or equal than cutoff (\code{FALSE})?
 #' 
+#' @family functions to analyse survival
 #' @return Labelled groups
 #' @export
 #' 
@@ -718,7 +709,7 @@ labelBasedOnCutoff <- function (data, cutoff, label=NULL, gte=TRUE) {
 #' @inheritParams processSurvTerms
 #' @param cutoff Numeric: Cutoff of interest
 #' @param data Numeric: elements of interest to test against the cutoff
-#' @param filter Boolean or numeric: elements to use (all by default)
+#' @param filter Boolean or numeric: elements to use (all are used by default)
 #' @inheritDotParams processSurvTerms -group -clinical
 #' @param session Shiny session
 #' @param survivalInfo Boolean: return extra survival information
@@ -757,10 +748,12 @@ testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
 #' @inheritParams testSurvivalCutoff
 #' @param data Numeric: data values
 #' @param session Shiny session (only used for the visual interface)
-#' @param lower,upper Bounds in which to search (if NULL, they will be 
-#' automatically set to 0 and 1 if all data values are within that interval;
-#' otherwise, they will be set to the minimum and maximum values of data)
+#' @param lower,upper Bounds in which to search (if \code{NULL}, bounds are set
+#' to \code{lower = 0} and \code{upper = 1} if all data values are within that
+#' interval; otherwise, \code{lower = min(data, na.rm = TRUE)} and
+#' \code{upper = max(data, na.rm = TRUE)})
 #' 
+#' @family functions to analyse survival
 #' @return List containg the optimal cutoff (\code{par}) and the corresponding 
 #' p-value (\code{value})
 #' @export
@@ -813,20 +806,6 @@ optimalSurvivalCutoff <- function(clinical, data, censoring, event, timeStart,
               # Method and parameters interval
               method="Brent", lower=lower, upper=upper))
     return(opt)
-}
-
-#' @rdname optimalSurvivalCutoff
-#' @param psi Numeric: PSI values to test against the cutoff
-#' @export
-optimalPSIcutoff <- function(clinical, psi, censoring, event, timeStart, 
-                             timeStop=NULL, followup="days_to_last_followup",
-                             session=NULL, filter=TRUE, survTime=NULL) {
-    .Deprecated("optimalSurvivalCutoff")
-    
-    optimalSurvivalCutoff(clinical=clinical, data=psi, censoring=censoring, 
-                          event=event, timeStart=timeStart, timeStop=timeStop, 
-                          followup=followup, session=session, filter=filter, 
-                          survTime=survTime, lower=0, upper=1)
 }
 
 # Differential analyses helper functions -----------------------------------
@@ -897,7 +876,7 @@ prepareEventPlotOptions <- function(id, ns, labelsPanel=NULL) {
 #' 
 #' @inheritParams plotDistribution
 #' @param stat Data frame or matrix: values of the analyses to be performed (if
-#' NULL, the analyses will be performed)
+#' \code{NULL}, the analyses will be performed)
 #' 
 #' @details
 #' \itemize{
@@ -1431,7 +1410,7 @@ filterGroups <- function(vector, group, threshold=1) {
 #' \code{\link[ggplot2]{geom_point}} related to selected points
 #' @param labelled Integer: index of rows/points to be labelled
 #' @param labelledParams List of parameters to pass to 
-#' \code{\link[ggrepel]{geom_label_repel}} related to labelled points
+#' \code{ggrepel::geom_label_repel} related to labelled points
 #' @param xlim Numeric: limits of X axis
 #' @param ylim Numeric: limits of Y axis
 #' 
@@ -1508,7 +1487,7 @@ createEventPlotting <- function(df, x, y, params, highlightX, highlightY,
 #' 
 #' @param label Character: label to display
 #' @param type Character: show the variable transformation for the chosen type;
-#' NULL (by default) to show all variable transformations
+#' if \code{NULL}, show all variable transformations
 #' 
 #' @return Character labelling variable transformation(s)
 #' @keywords internal
@@ -1534,10 +1513,9 @@ transformOptions <- function(label, type=NULL) {
 #' 
 #' @param val Integer: values to transform
 #' @param type Character: type of transformation
-#' @param avoidZero Boolean: add the smallest non-zero number available to zero
-#' values; avoids returning infinity values during Log transformation (which are
-#' not plotted); useful for preserving p-values of 0, for instance; TRUE by
-#' default
+#' @param avoidZero Boolean: add the smallest non-zero number available
+#' (\code{.Machine$double.xmin}) to avoid infinity values following
+#' log-transformation (may not be plotted); useful for p-values of 0
 #' 
 #' @return Integer containing transformed values
 #' @keywords internal
@@ -1588,9 +1566,9 @@ transformData <- function(input, df, x, y) {
 #' @param id Character: identifier
 #' @param description Character: display text for user
 #' @param help Character: extra text to help the user
-#' @param colour Character: default colour ("black" by default)
-#' @param size Integer: default size (2 by default)
-#' @param alpha Numeric: default transparency value; (opaque by default)
+#' @param colour Character: default colour
+#' @param size Integer: default size
+#' @param alpha Numeric: default transparency value
 #' 
 #' @importFrom shiny tagList h4 helpText sliderInput
 #' 
@@ -1636,6 +1614,7 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' JS
 #' @importFrom stats median var density
 #' 
+#' @family functions to perform and plot differential analyses
 #' @return Highcharter object with density plot
 #' @export
 #' 
@@ -1827,8 +1806,8 @@ renderBoxplot <- function(data, outliers=FALSE, sortByMedian=TRUE,
 #' \code{car:::leveneTest.default} with a more standard result.
 #' 
 #' @inheritParams stats::kruskal.test
-#' @param centers Function used to calculate how much values spread 
-#' (\code{median} by default; another common function used is \code{mean})
+#' @param centers Function used to calculate how much values spread; for
+#' instance, \code{median} (default) or \code{mean}
 #' 
 #' @importFrom stats complete.cases anova median lm
 #' 
@@ -1978,9 +1957,8 @@ createSparklines <- function(hc, data, events, FUN, groups=NULL,
 #' 
 #' @param vector Numeric
 #' @param group Character: group of each element in the vector
-#' @param threshold Integer: minimum number of data points to perform analysis
-#' in a group (default is 1)
-#' @param analyses Character: analyses to perform (see "Details")
+#' @param threshold Integer: minimum number of values per group
+#' @param analyses Character: analyses to perform (see Details)
 #' @param step Numeric: number of events before the progress bar is updated
 #' (a bigger number allows for a faster execution)
 #' 
@@ -2108,8 +2086,8 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
 #' quantification
 #' @param groups Named list of characters (containing elements belonging to each
 #' group) or character vector (containing the group of each individual sample);
-#' if NULL, sample types are used instead when available, e.g. normal, tumour 
-#' and metastasis
+#' if \code{NULL}, sample types are used instead when available, e.g. normal,
+#' tumour and metastasis
 #' @param analyses Character: statistical tests to perform (see Details)
 #' @param pvalueAdjust Character: method used to adjust p-values (see Details)
 #' @param geneExpr Character: name of the gene expression dataset (only required
@@ -2146,6 +2124,7 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
 #'      \item{\code{hommel}: Hommel's method (family-wise error rate)}
 #' }
 #' 
+#' @family functions to perform and plot differential analyses
 #' @return Table of statistical analyses
 #' @export
 #' @examples 

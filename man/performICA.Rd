@@ -30,8 +30,7 @@ performICA(data, n.comp = min(5, ncol(data)), center = TRUE,
     value is passed to \code{\link{scale}}.}
 
 \item{missingValues}{Integer: number of tolerated missing values per column
-to be replaced with the mean of the values of that same column (5% of total
-rows by default)}
+to be replaced with the mean of the values of that same column}
 
 \item{alg.typ}{if \code{alg.typ == "parallel"} the components are extracted
     simultaneously (the default). if \code{alg.typ == "deflation"} the
@@ -57,4 +56,7 @@ performICA(USArrests)
 \seealso{
 \code{\link{plotICA}}, \code{\link{performPCA}} and
 \code{\link{plotPCA}}
+
+Other functions to analyse independent components: \code{\link{plotICA}}
 }
+\concept{functions to analyse independent components}

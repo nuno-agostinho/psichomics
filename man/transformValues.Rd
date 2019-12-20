@@ -11,10 +11,9 @@ transformValues(val, type, avoidZero = TRUE)
 
 \item{type}{Character: type of transformation}
 
-\item{avoidZero}{Boolean: add the smallest non-zero number available to zero
-values; avoids returning infinity values during Log transformation (which are
-not plotted); useful for preserving p-values of 0, for instance; TRUE by
-default}
+\item{avoidZero}{Boolean: add the smallest non-zero number available
+(\code{.Machine$double.xmin}) to avoid infinity values following
+log-transformation (may not be plotted); useful for p-values of 0}
 }
 \value{
 Integer containing transformed values

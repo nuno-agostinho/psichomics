@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis.R
 \name{testSurvival}
 \alias{testSurvival}
-\title{Test the survival difference between groups of patients}
+\title{Test the survival difference between groups of subjects}
 \usage{
 testSurvival(survTerms, ...)
 }
@@ -34,10 +34,10 @@ a scalar parameter that controls the type of test.
 p-value of the survival difference or \code{NA}
 }
 \description{
-Test the survival difference between groups of patients
+Test the survival difference between groups of subjects
 }
 \note{
-Instead of raising errors, an \code{NA} is returned
+Instead of raising errors, returns \code{NA}
 }
 \examples{
 require("survival")
@@ -54,3 +54,15 @@ survTerms <- processSurvTerms(data, censoring=censoring, event=event,
                               formulaStr=formulaStr)
 testSurvival(survTerms)
 }
+\seealso{
+Other functions to analyse survival: \code{\link{assignValuePerSubject}},
+  \code{\link{getAttributesTime}},
+  \code{\link{labelBasedOnCutoff}},
+  \code{\link{optimalSurvivalCutoff}},
+  \code{\link{plotSurvivalCurves}},
+  \code{\link{plotSurvivalPvaluesByCutoff}},
+  \code{\link{processSurvTerms}},
+  \code{\link{survdiff.survTerms}},
+  \code{\link{survfit.survTerms}}
+}
+\concept{functions to analyse survival}

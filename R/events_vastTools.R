@@ -1,7 +1,7 @@
 #' @rdname parseMisoAnnotation
 #' 
 #' @param complexEvents Boolean: should complex events in A3SS and A5SS be
-#' parsed? FALSE by default
+#' parsed?
 #' 
 #' @export
 #' @examples 

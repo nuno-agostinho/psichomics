@@ -11,13 +11,12 @@ processSurvival(session, ...)
 
 \item{...}{Arguments passed on to \code{processSurvTerms}
 \describe{
-  \item{censoring}{Character: censor using "left", "right", "interval" or
-"interval2"}
-  \item{scale}{Character: rescale the survival time to "days", "weeks",
-"months" or "years"}
+  \item{censoring}{Character: censor using \code{left}, \code{right},
+\code{interval} or \code{interval2}}
+  \item{scale}{Character: rescale the survival time to \code{days},
+\code{weeks}, \code{months} or \code{years}}
   \item{formulaStr}{Character: formula to use}
-  \item{coxph}{Boolean: fit a Cox proportional hazards regression model? FALSE 
-by default}
+  \item{coxph}{Boolean: fit a Cox proportional hazards regression model?}
   \item{survTime}{survTime object: times to follow up, time start, time stop
 and event (optional)}
   \item{clinical}{Data frame: clinical data}
@@ -27,7 +26,7 @@ interest}
 interval or follow up time}
   \item{timeStop}{Character: name of column containing ending time of the 
 interval (only relevant for interval censoring)}
-  \item{group}{Character: group relative to each patient}
+  \item{group}{Character: group relative to each subject}
   \item{followup}{Character: name of column containing follow up time}
 }}
 }

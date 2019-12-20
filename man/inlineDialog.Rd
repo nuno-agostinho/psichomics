@@ -19,13 +19,13 @@ warningDialog(description, ...)
 
 \item{...}{Extra parameters when creating the alert}
 
-\item{buttonLabel}{Character: button label (NULL by default)}
+\item{buttonLabel}{Character: button label}
 
-\item{buttonIcon}{Character: button icon (NULL by default)}
+\item{buttonIcon}{Character: button icon}
 
-\item{buttonId}{Character: button identifier (NULL by default)}
+\item{buttonId}{Character: button identifier}
 
-\item{id}{Character: identifier (NULL by default)}
+\item{id}{Character: identifier}
 
 \item{type}{Character: type of alert (error or warning)}
 

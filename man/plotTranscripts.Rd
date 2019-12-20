@@ -15,11 +15,11 @@ plotTranscripts(info, eventPosition = NULL, event = NULL,
 
 \item{event}{Character: identifier of the alternative splicing event to plot}
 
-\item{shiny}{Boolean: is the function running in a Shiny session? FALSE by
-default}
+\item{shiny}{Boolean: is the function running in a Shiny session?}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (only used to modify the Shiny session's state or
+  internal variables)
 }
 \description{
 Plot transcripts
@@ -31,3 +31,9 @@ info  <- queryEnsemblByEvent(event, species="human", assembly="hg19")
 plotTranscripts(info, event=event)
 }
 }
+\seealso{
+Other functions to retrieve external information: \code{\link{ensemblToUniprot}},
+  \code{\link{plotProtein}},
+  \code{\link{queryEnsemblByGene}}
+}
+\concept{functions to retrieve external information}

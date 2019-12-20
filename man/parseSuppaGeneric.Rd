@@ -30,7 +30,8 @@ parseSuppaA5SS(junctions, strand)
 \arguments{
 \item{junctions}{List of integers: exon-exon junctions of an event}
 
-\item{strand}{Character: positive ("+") or negative ("-") strand}
+\item{strand}{Character: positive-sense (\code{+}) or negative-sense
+(\code{-}) strand}
 
 \item{coords}{Character: coordinate positions to fill}
 

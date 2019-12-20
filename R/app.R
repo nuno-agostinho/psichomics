@@ -81,8 +81,8 @@ getServerFunctions <- function(loader, ..., priority=NULL) {
 #' @param loader Character: loader to run the functions
 #' @param ... Extra arguments to pass to the user interface (UI) functions
 #' @param priority Character: name of functions to prioritise by the given
-#' order; for instance, c("data", "analyses") would load "data", then "analyses"
-#' then remaining functions
+#' order; for instance, \code{c("data", "analyses")} would load \code{data},
+#' then \code{analyses} and finally the remaining functions
 #' 
 #' @return List of functions related to the given loader
 #' @keywords internal
@@ -161,7 +161,7 @@ navSelectize <- function(id, label, placeholder=label) {
 #' @param title Character: title of the tab
 #' @param icon Character: name of the icon
 #' @param ... HTML elements to render
-#' @param menu Boolean: create a dropdown menu-like tab? FALSE by default
+#' @param menu Boolean: create a dropdown menu-like tab?
 #' 
 #' @importFrom shiny navbarMenu tabPanel
 #' 
@@ -238,7 +238,7 @@ appUI <- function() {
 #' 
 #' @importFrom shiny observe parseQueryString updateTabsetPanel
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 browserHistory <- function(navId, input, session) {
     # Update browser history when user changes the active tab
@@ -275,7 +275,7 @@ browserHistory <- function(navId, input, session) {
 #' 
 #' @importFrom shiny observe stopApp
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 appServer <- function(input, output, session) {
     ns <- session$ns
     groupsServerOnce(input, output, session)
@@ -348,24 +348,25 @@ appServer <- function(input, output, session) {
 
 #' Start graphical interface of psichomics
 #'
+#' @inheritParams shiny::runApp
 #' @inheritDotParams shiny::runApp -appDir -launch.browser
 #' @param reset Boolean: reset Shiny session? Requires package \code{devtools}
 #' @param testData Boolean: auto-start with test data
 #'
 #' @importFrom shiny shinyApp runApp addResourcePath
 #'
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @return \code{NULL} (only used to modify the Shiny session's state or
+#'   internal variables)
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' psichomics()
 #' }
-psichomics <- function(..., reset=FALSE, testData=FALSE) {
+psichomics <- function(..., launch.browser=TRUE, reset=FALSE, testData=FALSE) {
     # Add icons related to set operations
     addResourcePath("set-operations",
                     insideFile("shiny", "www", "set-operations"))
-    
     if (reset) devtools::load_all()
     
     if (testData) {
@@ -379,7 +380,6 @@ psichomics <- function(..., reset=FALSE, testData=FALSE) {
             }
             readRDS(file)
         }
-        
         data <- NULL
         data[["Clinical data"]]    <- loadFile("vignettes/BRCA_clinical.RDS")
         data[["Gene expression"]]  <- loadFile("vignettes/BRCA_geneExpr.RDS")
@@ -388,7 +388,6 @@ psichomics <- function(..., reset=FALSE, testData=FALSE) {
             data[["Inclusion levels"]]))
         setData(list("Test data"=data))
     }
-    
     app <- shinyApp(appUI(), appServer)
-    runApp(app, launch.browser = TRUE, ...)
+    runApp(app, launch.browser=launch.browser, ...)
 }

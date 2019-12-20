@@ -17,3 +17,7 @@ List containing downloaded projects
 \description{
 Download and load SRA projects
 }
+\seealso{
+Other functions associated with SRA data retrieval: \code{\link{getDownloadsFolder}}
+}
+\concept{functions associated with SRA data retrieval}

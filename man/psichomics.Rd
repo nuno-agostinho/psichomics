@@ -4,7 +4,8 @@
 \alias{psichomics}
 \title{Start graphical interface of psichomics}
 \usage{
-psichomics(..., reset = FALSE, testData = FALSE)
+psichomics(..., launch.browser = TRUE, reset = FALSE,
+  testData = FALSE)
 }
 \arguments{
 \item{...}{Arguments passed on to \code{shiny::runApp}
@@ -30,12 +31,18 @@ only used for recording or running automated tests. Defaults to the
 \code{shiny.testmode} option, or FALSE if the option is not set.}
 }}
 
+\item{launch.browser}{If true, the system's default web browser will be
+launched automatically after the app is started. Defaults to true in
+interactive sessions only. This value of this parameter can also be a
+function to call with the application's URL.}
+
 \item{reset}{Boolean: reset Shiny session? Requires package \code{devtools}}
 
 \item{testData}{Boolean: auto-start with test data}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (only used to modify the Shiny session's state or
+  internal variables)
 }
 \description{
 Start graphical interface of psichomics

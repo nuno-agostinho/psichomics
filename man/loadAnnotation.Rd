@@ -10,8 +10,7 @@ loadAnnotation(annotation, cache = NULL)
 \item{annotation}{Character: annotation to load}
 
 \item{cache}{Character: directory path of cache (if \code{NULL}, default 
-location is the one provided by
-\code{AnnotationHub::getAnnotationHubOption("CACHE")})}
+location is \code{AnnotationHub::getAnnotationHubOption("CACHE")})}
 }
 \value{
 List of data frames containing the alternative splicing annotation
@@ -26,3 +25,11 @@ human <- listSplicingAnnotations()[[1]]
 annot <- loadAnnotation(human)
 }
 }
+\seealso{
+Other functions for PSI quantification: \code{\link{filterPSI}},
+  \code{\link{getSplicingEventTypes}},
+  \code{\link{listSplicingAnnotations}},
+  \code{\link{plotRowStats}},
+  \code{\link{quantifySplicing}}
+}
+\concept{functions for PSI quantification}

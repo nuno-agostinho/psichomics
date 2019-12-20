@@ -30,16 +30,15 @@ setLabelledPoints(id, events, category = getCategory())
 \arguments{
 \item{id}{Character: identifier}
 
-\item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
-it uses the selected data category}
+\item{category}{Character: data category}
 
 \item{events}{Integer: index of events}
 
 \item{zoom}{Integer: range of X and Y coordinates for zooming}
 }
 \value{
-Getters return globally accessible data, whereas setters return NULL 
-as they are only used to modify the Shiny session's state
+Getters return globally accessible data, whereas setters return 
+\code{NULL} as they are only used to modify the Shiny session's state
 }
 \description{
 Get or set points or regions for plots

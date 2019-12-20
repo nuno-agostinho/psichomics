@@ -204,7 +204,7 @@ findASeventsFromGene <- function(psi, gene) {
 #' 
 #' @importFrom stats cor.test
 #' 
-#' @export
+#' @family functions to correlate gene expression and alternative splicing
 #' @return List of correlations where each element contains:
 #' \item{\code{eventID}}{Alternative splicing event identifier}
 #' \item{\code{cor}}{Correlation between gene expression and alternative 
@@ -212,6 +212,7 @@ findASeventsFromGene <- function(psi, gene) {
 #' \item{\code{geneExpr}}{Gene expression for the selected gene}
 #' \item{\code{psi}}{Alternative splicing quantification for the alternative 
 #' splicing event}
+#' @export
 #' 
 #' @examples 
 #' annot <- readFile("ex_splicing_annotation.RDS")
@@ -289,6 +290,7 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #' 
 #' @importFrom stats na.omit
 #' 
+#' @family functions to correlate gene expression and alternative splicing
 #' @return \code{GEandAScorrelation} object subset
 #' @export
 `[.GEandAScorrelation` <- function(x, genes=NULL, ASevents=NULL) {
@@ -337,6 +339,9 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 }
 
 #' Display results of correlation analyses
+#' 
+#' Plot, print and display as table the results of gene expression and 
+#' alternative splicing
 #'
 #' @param x \code{GEandAScorrelation} object (obtained after running
 #'   \code{\link{correlateGEandAS}})
@@ -368,8 +373,9 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #' @importFrom stats loess.smooth
 #'
 #' @method plot GEandAScorrelation
-#' @export
+#' @family functions to correlate gene expression and alternative splicing
 #' @return Plots, summary tables or results of correlation analyses
+#' @export
 #'
 #' @examples
 #' annot <- readFile("ex_splicing_annotation.RDS")

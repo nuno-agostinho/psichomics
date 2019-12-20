@@ -33,7 +33,8 @@ recountDataUI <- function(id, panel) {
 #' @importFrom recount download_study
 #' @importFrom data.table fread
 #' @importFrom SummarizedExperiment assay seqnames start end strand
-#' 
+#'
+#' @family functions associated with SRA data retrieval
 #' @return List containing downloaded projects
 #' @export
 loadSRAproject <- function(project, outdir=getDownloadsFolder()) {

@@ -12,7 +12,7 @@ testSingleIndependence(ref, groups, elements, pvalueAdjust = "BH")
 \item{groups}{List of characters: list of groups where each element contains
 the identifiers of respective elements}
 
-\item{elements}{Character: all patient identifiers}
+\item{elements}{Character: all subject identifiers}
 
 \item{pvalueAdjust}{Character: method used to adjust p-values (see Details)}
 }

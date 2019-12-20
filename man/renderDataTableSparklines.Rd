@@ -25,7 +25,8 @@ in an interactive R Markdown document.}
 \item{options}{List of options to pass to \code{\link{renderDataTable}}}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (only used to modify the Shiny session's state or
+  internal variables)
 }
 \description{
 Render a data table with sparkline HTML elements

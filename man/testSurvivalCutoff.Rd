@@ -12,19 +12,18 @@ testSurvivalCutoff(cutoff, data, filter = TRUE, clinical, ...,
 
 \item{data}{Numeric: elements of interest to test against the cutoff}
 
-\item{filter}{Boolean or numeric: elements to use (all by default)}
+\item{filter}{Boolean or numeric: elements to use (all are used by default)}
 
 \item{clinical}{Data frame: clinical data}
 
 \item{...}{Arguments passed on to \code{processSurvTerms}
 \describe{
-  \item{censoring}{Character: censor using "left", "right", "interval" or
-"interval2"}
-  \item{scale}{Character: rescale the survival time to "days", "weeks",
-"months" or "years"}
+  \item{censoring}{Character: censor using \code{left}, \code{right},
+\code{interval} or \code{interval2}}
+  \item{scale}{Character: rescale the survival time to \code{days},
+\code{weeks}, \code{months} or \code{years}}
   \item{formulaStr}{Character: formula to use}
-  \item{coxph}{Boolean: fit a Cox proportional hazards regression model? FALSE 
-by default}
+  \item{coxph}{Boolean: fit a Cox proportional hazards regression model?}
   \item{survTime}{survTime object: times to follow up, time start, time stop
 and event (optional)}
   \item{event}{Character: name of column containing time of the event of

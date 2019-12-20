@@ -80,7 +80,8 @@ group (coloured based on the \code{colour} argument)}
 Plots, summary tables or results of correlation analyses
 }
 \description{
-Display results of correlation analyses
+Plot, print and display as table the results of gene expression and 
+alternative splicing
 }
 \details{
 The following methods for p-value adjustment are supported by using the 
@@ -115,3 +116,8 @@ colourGroups <- list(Normal=paste("Normal", 1:3),
 attr(colourGroups, "Colour") <- c(Normal="#00C65A", Tumour="#EEE273")
 plot(corr, colourGroups=colourGroups, alpha=1)
 }
+\seealso{
+Other functions to correlate gene expression and alternative splicing: \code{\link{[.GEandAScorrelation}},
+  \code{\link{correlateGEandAS}}
+}
+\concept{functions to correlate gene expression and alternative splicing}

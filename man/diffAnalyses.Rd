@@ -14,8 +14,8 @@ quantification}
 
 \item{groups}{Named list of characters (containing elements belonging to each
 group) or character vector (containing the group of each individual sample);
-if NULL, sample types are used instead when available, e.g. normal, tumour 
-and metastasis}
+if \code{NULL}, sample types are used instead when available, e.g. normal,
+tumour and metastasis}
 
 \item{analyses}{Character: statistical tests to perform (see Details)}
 
@@ -68,3 +68,7 @@ psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 group <- c(rep("Normal", 3), rep("Tumour", 3))
 diffAnalyses(psi, group)
 }
+\seealso{
+Other functions to perform and plot differential analyses: \code{\link{plotDistribution}}
+}
+\concept{functions to perform and plot differential analyses}

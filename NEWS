@@ -4,6 +4,9 @@
     - Support junction coordinates from mitochondrial, Z and W chromosomes
     - Fix issues with files containing splice junctions within random, alt and
     unknown chromosomes by discarding those rows (a warning is raised)
+* Tutorials:
+    - Copy-edit command-line interface (CLI) tutorial
+    - Copy-edit tutorial on custom alternative splicing annotation preparation
 
 ## Bug fixes and minor changes
 
@@ -24,15 +27,15 @@
     running the visual interface)
     - Allow to select cache directory where AnnotationHub was installed 
     (command-line interface)
+    - Fix `prepareGeneQuant()` not working if its argument `strandedness` is 
+    either `stranded` or `stranded (reverse)`
 * Survival analysis (p-value plot):
     - Fix alternative splicing quantification cutoff being selected based on the
     one whose difference has the highest (instead of the lowest) p-value
     - Fix plot line label presenting "p < 0.05" independently of the threshold 
     used for significance
-* Fix `prepareGeneQuant()` not working if its argument `strandedness` is either
-`stranded` or `stranded (reverse)`
 * Fix warning/error alerts crashing the visual interface
-* Improve unit tests
+* Improve unit tests and function documentation
 
 # 1.8.2 (26 March, 2019)
 

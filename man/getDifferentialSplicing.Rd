@@ -34,8 +34,7 @@ getDifferentialSplicingColumns(category = getCategory())
 setDifferentialSplicingColumns(columns, category = getCategory())
 }
 \arguments{
-\item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
-it uses the selected data category}
+\item{category}{Character: data category}
 
 \item{differential}{Data frame or matrix: differential analyses table}
 
@@ -46,8 +45,8 @@ it uses the selected data category}
 \item{columns}{Character: differential analyses' column names}
 }
 \value{
-Getters return globally accessible data, whereas setters return NULL 
-as they are only used to modify the Shiny session's state
+Getters return globally accessible data, whereas setters return 
+\code{NULL} as they are only used to modify the Shiny session's state
 }
 \description{
 Get or set differential splicing' elements for a data category

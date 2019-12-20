@@ -14,11 +14,11 @@ renderGeneticInfo(output, ns, info, species = NULL, assembly = NULL,
 
 \item{info}{Information as retrieved from Ensembl}
 
-\item{species}{Character: species name (NULL by default)}
+\item{species}{Character: species name}
 
-\item{assembly}{Character: assembly version (NULL by default)}
+\item{assembly}{Character: assembly version}
 
-\item{grch37}{Boolean: use version GRCh37 of the genome? FALSE by default}
+\item{grch37}{Boolean: use version GRCh37 of the genome?}
 }
 \value{
 HTML elements to render gene, protein and transcript annotation

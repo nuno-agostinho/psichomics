@@ -21,6 +21,7 @@
 #'      \item Tandem UTR
 #' }
 #'
+#' @family functions to prepare alternative splicing annotations
 #' @return Retrieve data frame with events based on a given alternative splicing
 #' annotation
 #' @export
@@ -135,15 +136,15 @@ parseMisoEventID <- function(eventID, annotation, IDcolumn) {
 #' @inheritParams parseMisoEvent
 #' @param validator Character: valid elements for each event
 #' @param areMultipleExonsValid Boolean: consider runs of exons as valid when
-#' comparing with the validator? Default is FALSE (see details)
+#' comparing with the validator? Default is \code{FALSE} (see details)
 #'
 #' @details \code{areMultipleExonsValid} allows to consider runs of exons (i.e. 
-#' sequences where "exon" occurs consecutively) as valid when comparing with 
-#' given validator. For example, if the validator is \code{c("gene", "mRNA",
-#' "exon")} and \code{areMultipleExonsValid = FALSE}, this function will only
-#' considerate events as valid if they have the exact same elements. If
-#' \code{areMultipleExonsValid = TRUE}, a valid events could include the
-#' elements \code{c("gene", "mRNA", "exon", "exon", "exon")}.
+#' sequences where \code{exon} occurs consecutively) as valid when comparing
+#' based on the \code{validator}. For example, if \code{validator = c("gene",
+#' "mRNA", "exon")} and \code{areMultipleExonsValid = FALSE}, the event 
+#' \code{c("gene", "mRNA", "exon", "exon")} is not valid as it has one 
+#' additional exon. If \code{areMultipleExonsValid = TRUE}, the same event would
+#' be valid.
 #'
 #' @return Data.frame with valid events
 #' @keywords internal
@@ -406,7 +407,8 @@ parseMisoMXE <- function(event) {
 }
 
 #' @rdname parseMisoGeneric
-#' @param strand Character: "+" or "-" strand
+#' @param strand Character: positive-sense (\code{+}) or negative-sense \code{-}
+#' strand
 #' @examples
 #'
 #' # intron retention (RI) event

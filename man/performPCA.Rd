@@ -26,8 +26,7 @@ performPCA(data, center = TRUE, scale. = FALSE,
     value is passed to \code{\link{scale}}.}
 
 \item{missingValues}{Integer: number of tolerated missing values per column
-to be replaced with the mean of the values of that same column (5% of total
-rows by default)}
+to be replaced with the mean of the values of that same column}
 
 \item{...}{Arguments passed on to \code{stats::prcomp}}
 }
@@ -43,4 +42,8 @@ performPCA(USArrests)
 \seealso{
 \code{\link{plotPCA}}, \code{\link{performICA}} and 
   \code{\link{plotICA}}
+
+Other functions to analyse principal components: \code{\link{calculateLoadingsContribution}},
+  \code{\link{plotPCA}}, \code{\link{plotVariance}}
 }
+\concept{functions to analyse principal components}

@@ -12,20 +12,19 @@ setGroups(type = c("Patients", "Samples", "ASevents", "Genes"), groups,
   category = getCategory())
 }
 \arguments{
-\item{type}{Character: type of groups (either "Patients", "Samples", 
-"ASevents" or "Genes")}
+\item{type}{Character: type of groups (either \code{Patients}, 
+\code{Samples}, \code{ASevents} or \code{Genes})}
 
-\item{complete}{Boolean: return all the information on groups (TRUE) or just 
-the group names and respective indexes (FALSE)? FALSE by default}
+\item{complete}{Boolean: return all the information on groups (\code{TRUE})
+or just the group names and respective indexes (\code{FALSE})?}
 
-\item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
-it uses the selected data category}
+\item{category}{Character: data category}
 
 \item{groups}{Matrix: groups of dataset}
 }
 \value{
-Getters return globally accessible data, whereas setters return NULL 
-as they are only used to modify the Shiny session's state
+Getters return globally accessible data, whereas setters return 
+\code{NULL} as they are only used to modify the Shiny session's state
 }
 \description{
 Get or set groups

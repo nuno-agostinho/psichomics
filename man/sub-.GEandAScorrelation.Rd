@@ -21,3 +21,8 @@ quantification}
 Subset correlation results between gene expression and splicing 
 quantification
 }
+\seealso{
+Other functions to correlate gene expression and alternative splicing: \code{\link{correlateGEandAS}},
+  \code{\link{plot.GEandAScorrelation}}
+}
+\concept{functions to correlate gene expression and alternative splicing}

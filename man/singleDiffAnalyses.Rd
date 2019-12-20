@@ -12,13 +12,12 @@ singleDiffAnalyses(vector, group, threshold = 1, step = 100,
 
 \item{group}{Character: group of each element in the vector}
 
-\item{threshold}{Integer: minimum number of data points to perform analysis
-in a group (default is 1)}
+\item{threshold}{Integer: minimum number of values per group}
 
 \item{step}{Numeric: number of events before the progress bar is updated
 (a bigger number allows for a faster execution)}
 
-\item{analyses}{Character: analyses to perform (see "Details")}
+\item{analyses}{Character: analyses to perform (see Details)}
 }
 \value{
 A row from a data frame with the results

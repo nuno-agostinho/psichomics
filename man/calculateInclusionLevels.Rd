@@ -18,7 +18,7 @@ and junctions as rows}
 event type}
 
 \item{minReads}{Integer: minimum of total reads required to consider the
-quantification as valid (10 by default)}
+quantification as valid}
 }
 \value{
 Matrix with inclusion levels

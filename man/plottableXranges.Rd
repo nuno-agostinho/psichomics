@@ -9,8 +9,7 @@ plottableXranges(hc, shiny = FALSE)
 \arguments{
 \item{hc}{\code{highcharter} object}
 
-\item{shiny}{Boolean: is the function running in a Shiny session? FALSE by
-default}
+\item{shiny}{Boolean: is the function running in a Shiny session?}
 }
 \value{
 HTML elements

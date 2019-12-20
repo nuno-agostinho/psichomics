@@ -4,7 +4,7 @@
 \alias{prepareSRAmetadata}
 \alias{prepareJunctionQuant}
 \alias{prepareGeneQuant}
-\title{Prepare files to be loaded into psichomics}
+\title{Prepare user-provided files to be loaded into psichomics}
 \usage{
 prepareSRAmetadata(file, output = "psichomics_metadata.txt")
 
@@ -20,7 +20,7 @@ prepareGeneQuant(..., output = "psichomics_gene_counts.txt",
 \item{output}{Character: path of output file (if \code{NULL}, only returns 
 the data without saving it to a file)}
 
-\item{...}{Character: path to file(s) to read}
+\item{...}{Character: path of (optionally named) input files (see Examples)}
 
 \item{startOffset}{Numeric: value to offset start position}
 
@@ -31,10 +31,10 @@ of the following: \code{unstraded}, \code{stranded} or
 \code{stranded (reverse)}}
 }
 \value{
-Prepared file
+Prepared file (if \code{output != NULL}) and object
 }
 \description{
-Prepare files to be loaded into psichomics
+Prepare user-provided files to be loaded into psichomics
 }
 \examples{
 \dontrun{
@@ -50,3 +50,7 @@ prepareGeneQuant("Control rep1"=geneCountFile1,
                  "KD rep2"=geneCountFile4)
 }
 }
+\seealso{
+Other functions to load local files: \code{\link{loadLocalFiles}}
+}
+\concept{functions to load local files}

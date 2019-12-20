@@ -6,14 +6,16 @@ NULL
 
 #' Creates a template of alternative splicing junctions
 #' 
-#' @param nrow Integer: Number of rows
-#' @param program Character: Program used to get the junctions
-#' @param event.type Character: Event type of the respective events
-#' @param chromosome Character: Chromosome of the junctions
-#' @param strand Character: positive ("+") or negative ("-") strand of the event
-#' @param id Character: events' ID
+#' @param nrow Integer: row number
+#' @param program Character: program used to get the junctions
+#' @param event.type Character: event type
+#' @param chromosome Character: chromosome
+#' @param strand Character: positive-sense (\code{+}) or negative-sense
+#' (\code{-}) strand
+#' @param id Character: event identifiers
 #' 
-#' @return A data frame with the junctions coordinate names pre-filled with NAs
+#' @return A data frame with the junctions coordinate names pre-filled with
+#' \code{NA}
 #' @keywords internal
 #' 
 #' @examples
@@ -43,7 +45,7 @@ createJunctionsTemplate <- function(nrow, program = character(0),
 #' 
 #' @param type Character: alternative splicing event type
 #' @param sorting Boolean: get coordinates used for sorting and comparison 
-#' between different programs? FALSE by default
+#' between different programs?
 #' 
 #' @return Coordinates of interest according to the alternative splicing event
 #' type
@@ -77,8 +79,7 @@ getSplicingEventCoordinates <- function(type, sorting=FALSE) {
 #'
 #' @param table Data matrix: table
 #' @param by Character: column names of interest
-#' @param toNumeric Boolean: which columns to convert to numeric (FALSE by
-#' default)
+#' @param toNumeric Boolean: which columns to convert to numeric
 #'
 #' @return Processed data matrix
 #' @keywords internal
@@ -176,6 +177,7 @@ joinEventsPerType <- function(events, types) {
 #'
 #' @importFrom plyr rbind.fill dlply
 #'
+#' @family functions to prepare alternative splicing annotations
 #' @return List of data frames with the annotation from different data frames
 #' joined by event type
 #' @export
@@ -394,7 +396,7 @@ sortCoordinates <- function(events) {
 #' @param annotation Data.frame: alternative splicing annotation related to
 #' event type
 #' @param minReads Integer: minimum of total reads required to consider the
-#' quantification as valid (10 by default)
+#' quantification as valid
 #' 
 #' @importFrom fastmatch fmatch
 #' 

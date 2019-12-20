@@ -25,8 +25,7 @@ reduceDimensionality(data, type = c("pca", "ica"), center = TRUE,
 (deprecated)}
 
 \item{missingValues}{Integer: number of tolerated missing values per column
-to be replaced with the mean of the values of that same column (5% of total
-rows by default)}
+to be replaced with the mean of the values of that same column}
 
 \item{...}{Extra parameters passed to FUN}
 }

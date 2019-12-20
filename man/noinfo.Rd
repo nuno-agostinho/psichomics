@@ -14,16 +14,17 @@ noinfo(output,
 
 \item{...}{Arguments passed on to \code{inlineDialog}
 \describe{
-  \item{id}{Character: identifier (NULL by default)}
-  \item{buttonId}{Character: button identifier (NULL by default)}
-  \item{buttonLabel}{Character: button label (NULL by default)}
-  \item{buttonIcon}{Character: button icon (NULL by default)}
+  \item{id}{Character: identifier}
+  \item{buttonId}{Character: button identifier}
+  \item{buttonLabel}{Character: button label}
+  \item{buttonIcon}{Character: button icon}
   \item{type}{Character: type of alert (error or warning)}
   \item{bigger}{Boolean: wrap the \code{description} in a \code{h4} tag?}
 }}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (only used to modify the Shiny session's state or
+  internal variables)
 }
 \description{
 Interface when no information could be retrieved

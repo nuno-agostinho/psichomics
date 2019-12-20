@@ -4,13 +4,13 @@
 #'
 #' @param path Character: API path
 #' @param query Character: API query
-#' @param grch37 Boolean: query the Ensembl GRCh37 API? TRUE by default;
-#' otherwise, query the most recent API
+#' @param grch37 Boolean: query the Ensembl GRCh37 API? if \code{FALSE}, query
+#' the most recent API
 #'
 #' @importFrom httr GET timeout
 #' @importFrom jsonlite fromJSON
 #'
-#' @return Parsed response or NULL if there's no response
+#' @return Parsed response or \code{NULL} if no response
 #' @keywords internal
 #'
 #' @examples
@@ -40,6 +40,7 @@ queryEnsembl <- function(path, query, grch37 = TRUE) {
 #' @param assembly Character: assembly version (may be NULL for an Ensembl 
 #' identifier)
 #' 
+#' @family functions to retrieve external information
 #' @return Information from Ensembl
 #' @export
 #' 
@@ -106,10 +107,11 @@ queryUniprot <- function(molecule, format="xml") {
 #' 
 #' @param primary Character: primary search term
 #' @param ... Character: other relevant search terms
-#' @param top Numeric: number of articles to retrieve (3 by default)
-#' @param field Character: field of interest where to look for terms ("abstract"
-#'  by default)
-#' @param sort Character: sort by a given parameter ("relevance" by default)
+#' @param top Numeric: number of articles to retrieve
+#' @param field Character: field of interest where to look for terms
+#' (\code{abstract} by default)
+#' @param sort Character: sort by a given parameter (\code{relevance} by
+#' default)
 #' 
 #' @importFrom httr GET
 #' @importFrom jsonlite fromJSON
@@ -152,6 +154,7 @@ queryPubMed <- function(primary, ..., top=3, field="abstract",
 #' 
 #' @param protein Character: Ensembl identifier
 #' 
+#' @family functions to retrieve external information
 #' @return UniProt protein identifier
 #' @export
 #' 
@@ -207,7 +210,7 @@ infoUI <- function(id) {
 #' 
 #' @importFrom shiny renderUI h3 br tags
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 noinfo <- function(output, description=paste(
     "No information available for this gene."), ...) {
@@ -282,6 +285,7 @@ parseUniprotXML <- function(xml) {
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip
 #' hc_add_series
 #'
+#' @family functions to retrieve external information
 #' @return \code{highcharter} object
 #' @export
 #' @examples
@@ -481,13 +485,13 @@ plotSplicingEvent <- function(hc, event) {
 #' @param eventPosition Numeric: coordinates of the alternative splicing event
 #' (ignored if \code{event} is set)
 #' @param event Character: identifier of the alternative splicing event to plot
-#' @param shiny Boolean: is the function running in a Shiny session? FALSE by
-#' default
+#' @param shiny Boolean: is the function running in a Shiny session?
 #' 
 #' @importFrom highcharter highchart hc_chart hc_title hc_legend hc_xAxis
 #' hc_yAxis hc_plotOptions hc_tooltip hc_series
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @family functions to retrieve external information
+#' @inherit psichomics return
 #' @export
 #' 
 #' @examples
@@ -575,9 +579,9 @@ plotTranscripts <- function(info, eventPosition=NULL, event=NULL, shiny=FALSE) {
 #' @param output Shiny output
 #' @param ns Namespace function
 #' @param info Information as retrieved from Ensembl
-#' @param species Character: species name (NULL by default)
-#' @param assembly Character: assembly version (NULL by default)
-#' @param grch37 Boolean: use version GRCh37 of the genome? FALSE by default
+#' @param species Character: species name
+#' @param assembly Character: assembly version
+#' @param grch37 Boolean: use version GRCh37 of the genome?
 #' 
 #' @importFrom shiny renderUI h2 h3 plotOutput
 #' 

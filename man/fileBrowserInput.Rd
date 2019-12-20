@@ -15,7 +15,7 @@ fileBrowserInput(id, label, value = NULL, placeholder = NULL,
 \arguments{
 \item{id}{Character: input identifier}
 
-\item{label}{Character: input label (NULL to show no label)}
+\item{label}{Character: input label (if \code{NULL}, no labels are displayed)}
 
 \item{value}{Character: initial value (paths are expanded via
 \code{\link{path.expand}})}

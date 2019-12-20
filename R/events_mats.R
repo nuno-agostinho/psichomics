@@ -1,7 +1,6 @@
 #' @rdname parseMisoAnnotation
 #' 
-#' @param novelEvents Boolean: parse events dedected due to novel splice sites 
-#' (TRUE by default)
+#' @param novelEvents Boolean: parse events dedected due to novel splice sites
 #' @export
 #' 
 #' @examples 

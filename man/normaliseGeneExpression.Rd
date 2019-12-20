@@ -43,3 +43,10 @@ is \code{quantile}.
 geneExpr <- readFile("ex_gene_expression.RDS")
 normaliseGeneExpression(geneExpr)
 }
+\seealso{
+Other functions for gene expression pre-processing: \code{\link{convertGeneIdentifiers}},
+  \code{\link{filterGeneExpr}},
+  \code{\link{plotGeneExprPerSample}},
+  \code{\link{plotRowStats}}
+}
+\concept{functions for gene expression pre-processing}

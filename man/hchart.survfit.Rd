@@ -22,16 +22,16 @@
 -log(y)), and \code{cloglog} creates a complimentary log-log survival plot
 (f(y) = log(-log(y)) along with log scale for the x-axis.}
 
-\item{markTimes}{Label curves marked at each censoring time? TRUE by default}
+\item{markTimes}{Label curves marked at each censoring time?}
 
-\item{symbol}{Symbol to use as marker (plus sign by default)}
+\item{symbol}{Symbol to use as marker}
 
-\item{markerColor}{Colour of the marker ("black" by default); use NULL to use
-the respective colour of each series}
+\item{markerColor}{Colour of the marker; if \code{NULL}, the respective
+colour of each series are used}
 
-\item{ranges}{Plot interval ranges? FALSE by default}
+\item{ranges}{Plot interval ranges?}
 
-\item{rangesOpacity}{Opacity of the interval ranges (0.3 by default)}
+\item{rangesOpacity}{Opacity of the interval ranges}
 }
 \value{
 \code{highcharter} object to plot survival curves

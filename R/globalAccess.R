@@ -12,7 +12,8 @@ sharedData <- reactiveValues()
 #' Get or set hidden globally accessible elements
 #' 
 #' @return Getters return hidden globally accessible data, whereas setters 
-#' return NULL as they are only used to modify the state of hidden elements
+#' return \code{NULL} as they are only used to modify the state of hidden
+#' elements
 #' @keywords internal
 getHidden <- function() .hidden$elem
 
@@ -22,8 +23,7 @@ setHidden <- function(val) .hidden$elem <- val
 
 #' Get or set globally accessible elements
 #' 
-#' @param category Character: data category (e.g. "Carcinoma 2016"); by default,
-#' it uses the selected data category
+#' @param category Character: data category
 #' @param ... Arguments to identify a variable
 #' @param sep Character to separate identifiers
 #' 
@@ -32,8 +32,8 @@ setHidden <- function(val) .hidden$elem <- val
 #' @seealso \code{\link{getGlobal}}, \code{\link{getClinicalMatchFrom}},
 #' \code{\link{getGroups}} and \code{\link{getDifferentialSplicing}}
 #' 
-#' @return Getters return globally accessible data, whereas setters return NULL 
-#' as they are only used to modify the Shiny session's state
+#' @return Getters return globally accessible data, whereas setters return 
+#' \code{NULL} as they are only used to modify the Shiny session's state
 #' @keywords internal
 getGlobal <- function(category=getCategory(), ..., sep="_") {
     sharedData[[paste(category, ..., sep=sep)]]
@@ -154,6 +154,7 @@ getGenes <- function() {
 #'   proteins, 167 of which are splicing factors}
 #' }
 #'
+#' @family functions for data grouping
 #' @return List of genes
 #' @export
 #'
@@ -237,8 +238,8 @@ getActiveDataset <- reactive(sharedData$activeDataset)
 setActiveDataset <- function(dataset) setGlobal("activeDataset", value=dataset)
 
 #' @rdname getGlobal
-#' @param attrs Character: name of attributes to retrieve (if NULL, the whole 
-#' dataset is returned)
+#' @param attrs Character: name of attributes to retrieve (if \code{NULL}, the
+#' whole dataset is returned)
 getClinicalData <- function(attrs=NULL) {
     clinical <- getCategoryData()[["Clinical data"]]
     attrs <- attrs[attrs != ""]
@@ -255,7 +256,7 @@ getClinicalData <- function(attrs=NULL) {
 }
 
 #' @rdname getGlobal
-getPatientId <- function() {
+getSubjectId <- function() {
     clinical <- getClinicalData()
     if ( !is.null(clinical) ) {
         return( rownames(clinical) )
@@ -265,12 +266,12 @@ getPatientId <- function() {
 }
 
 #' @rdname getGlobal
-getPatientAttributes <- function() {
+getSubjectAttributes <- function() {
     clinical <- getClinicalData()
     if ( !is.null(clinical) ) {
-        patientAttrs <- colnames(clinical)
-        attr(patientAttrs, "default") <- attr(clinical, "show")
-        return(patientAttrs)
+        subjectAttrs <- colnames(clinical)
+        attr(subjectAttrs, "default") <- attr(clinical, "show")
+        return(subjectAttrs)
     } else {
         return(NULL)
     }
@@ -445,7 +446,7 @@ setURLtoDownload <- function(url) setGlobal("URLtoDownload", value=url)
 
 #' Get or set clinical matches from a given data type
 #' @inherit getGlobal
-#' @param dataset Character: data set name (e.g. "Junction quantification")
+#' @param dataset Character: data set name
 #' @keywords internal
 getClinicalMatchFrom <- function(dataset, category=getCategory())
     getGlobal(category, dataset, "clinicalMatch")
@@ -459,10 +460,10 @@ setClinicalMatchFrom <- function(dataset, matches, category=getCategory())
 #' 
 #' @inherit getGlobal
 #' 
-#' @param type Character: type of groups (either "Patients", "Samples", 
-#' "ASevents" or "Genes")
-#' @param complete Boolean: return all the information on groups (TRUE) or just 
-#' the group names and respective indexes (FALSE)? FALSE by default
+#' @param type Character: type of groups (either \code{Patients}, 
+#' \code{Samples}, \code{ASevents} or \code{Genes})
+#' @param complete Boolean: return all the information on groups (\code{TRUE})
+#' or just the group names and respective indexes (\code{FALSE})?
 #' 
 #' @keywords internal
 getGroups <- function(type=c("Patients", "Samples", "ASevents", "Genes"), 

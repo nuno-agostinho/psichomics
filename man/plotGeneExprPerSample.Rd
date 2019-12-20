@@ -30,3 +30,10 @@ df <- data.frame(geneA=c(2, 4, 5),
 colnames(df) <- paste("Sample", 1:3)
 plotGeneExprPerSample(df)
 }
+\seealso{
+Other functions for gene expression pre-processing: \code{\link{convertGeneIdentifiers}},
+  \code{\link{filterGeneExpr}},
+  \code{\link{normaliseGeneExpression}},
+  \code{\link{plotRowStats}}
+}
+\concept{functions for gene expression pre-processing}

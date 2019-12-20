@@ -8,6 +8,7 @@
 #' @inheritParams stats::prcomp
 #' @inheritParams reduceDimensionality
 #' 
+#' @family functions to analyse principal components
 #' @return PCA result in a \code{prcomp} object
 #' @export
 #' 
@@ -174,6 +175,7 @@ pcaUI <- function(id) {
 #' hc_plotOptions hc_xAxis hc_yAxis hc_legend hc_tooltip hc_exporting
 #' @importFrom shiny tags
 #' 
+#' @family functions to analyse principal components
 #' @return Plot variance as an \code{highchart} object
 #' @export
 #' @examples 
@@ -226,10 +228,11 @@ plotVariance <- function(pca) {
 #' 
 #' @source \url{http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/}
 #'
-#' @export
+#' @family functions to analyse principal components
 #' @return Data frame containing the correlation between variables and selected 
 #' principal components and the contribution of variables to the selected 
 #' principal components (both individual and total contribution)
+#' @export
 #' 
 #' @examples 
 #' pca <- performPCA(USArrests)
@@ -292,9 +295,11 @@ calculateLoadingsContribution <- function(pca, pcX=1, pcY=2) {
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip %>%
 #' tooltip_table
-#' @return Scatterplot as an \code{highchart} object
 #' 
+#' @family functions to analyse principal components
+#' @return Scatterplot as an \code{highchart} object
 #' @export
+#' 
 #' @examples
 #' pca <- prcomp(USArrests, scale=TRUE)
 #' plotPCA(pca)
@@ -385,7 +390,7 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
 #' @importFrom cluster pam clara silhouette
 #' @importFrom shiny renderTable tableOutput
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 clusterSet <- function(session, input, output) {
     clusterPCA <- reactive({
@@ -537,11 +542,11 @@ clusterSet <- function(session, input, output) {
                             "Samples"=new)
             rownames(groups) <- names
             
-            # Match samples with patients (if loaded)
-            patients <- isolate(getPatientId())
-            if (!is.null(patients)) {
+            # Match samples with subjects (if loaded)
+            subjects <- isolate(getSubjectId())
+            if (!is.null(subjects)) {
                 indiv <- lapply(new, function(i)
-                    unname(getPatientFromSample(i, patientId=patients)))
+                    unname(getSubjectFromSample(i, patientId=subjects)))
                 groups <- cbind(groups[ , 1:3, drop=FALSE], "Patients"=indiv, 
                                 groups[ ,   4, drop=FALSE])
             }
@@ -559,7 +564,7 @@ clusterSet <- function(session, input, output) {
             colnames(groups)[1] <- "Group"
             groups[ , "Samples"]  <- sapply(groups[ , "Samples"], length)
             cols <- c(1, 4)
-            if (!is.null(patients)) {
+            if (!is.null(subjects)) {
                 groups[ , "Patients"] <- sapply(groups[ , "Patients"], length)
                 cols <- c(cols, 5)
             }

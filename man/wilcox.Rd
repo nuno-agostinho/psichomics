@@ -34,7 +34,7 @@ character vector of length 1, all data points will be considered of the same
 group}
 
 \item{stat}{Data frame or matrix: values of the analyses to be performed (if
-NULL, the analyses will be performed)}
+\code{NULL}, the analyses will be performed)}
 }
 \value{
 HTML elements

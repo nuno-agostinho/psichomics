@@ -40,3 +40,8 @@ plotPCA(pca, pcX=2, pcY=3)
 # Plot both individuals and loadings
 plotPCA(pca, pcX=2, pcY=3, loadings=TRUE)
 }
+\seealso{
+Other functions to analyse principal components: \code{\link{calculateLoadingsContribution}},
+  \code{\link{performPCA}}, \code{\link{plotVariance}}
+}
+\concept{functions to analyse principal components}

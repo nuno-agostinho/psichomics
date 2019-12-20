@@ -6,9 +6,6 @@
 \usage{
 getGtexTissues(dataFolder = getDownloadsFolder())
 }
-\arguments{
-\item{dataFolder}{Character: folder containing data}
-}
 \value{
 Character: available tissues
 }
@@ -20,3 +17,9 @@ Get GTEx tissues from given GTEx sample attributes
 getGtexTissues()
 }
 }
+\seealso{
+Other functions associated with GTEx data retrieval: \code{\link{getDownloadsFolder}},
+  \code{\link{getGtexDataTypes}},
+  \code{\link{loadGtexData}}
+}
+\concept{functions associated with GTEx data retrieval}

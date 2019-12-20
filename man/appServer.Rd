@@ -91,7 +91,8 @@ helpServer(input, output, session)
 \item{session}{Session object}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (only used to modify the Shiny session's state or
+  internal variables)
 }
 \description{
 Instructions to build the Shiny app

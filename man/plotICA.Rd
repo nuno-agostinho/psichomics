@@ -58,3 +58,7 @@ groups$ozEntrance <- c("Kansas")
 groups$novel <- c("New Mexico", "New York", "New Hampshire", "New Jersey")
 plotICA(ica, groups=groups)
 }
+\seealso{
+Other functions to analyse independent components: \code{\link{performICA}}
+}
+\concept{functions to analyse independent components}

@@ -44,8 +44,8 @@ test_that("Each index can belong to multiple groups", {
     expect_equal(groupPerElem(groups), expected)
 })
 
-test_that("Non-matching patients are returned as NAs or custom group", {
-    # Return non-matching patients as NAs
+test_that("Non-matching subjects are returned as NAs or custom group", {
+    # Return non-matching subjects as NAs
     groups <- list(c(2, 4), c(1, 6), c(9, 10))
     names(groups) <- c("Alive", "Dead", "Zombie")
     
@@ -56,7 +56,7 @@ test_that("Non-matching patients are returned as NAs or custom group", {
         
     expect_equal(groupPerElem(groups, elem), expected)
     
-    # Return non-matching patients as part of a custom group
+    # Return non-matching subjects as part of a custom group
     groups <- list(c(2, 4), c(1, 6), c(9, 10))
     names(groups) <- c("Alive", "Dead", "Zombie")
     
@@ -75,43 +75,43 @@ test_that("No groups returns a custom string", {
 
 context("Test set operations") ################################################
 
-# Prepare groups containing both patients and samples
+# Prepare groups containing both subjects and samples
 dummySampleId <- function(i)
     if (length(i) > 0) paste0("sample-", i, "-test")
-dummyPatientId <- function(i)
-    if (length(i) > 0) paste0("patient-", i)
+dummySubjectId <- function(i)
+    if (length(i) > 0) paste0("subject-", i)
 
 matches <- list("1"=c(1:2), "2"=c(3:5), "3"=c(6:10), "4"=c(11:15), "5"=c(),
                 "6"=c(16), "7"=c(17, 18, 20))
 matches <- sapply(matches, dummySampleId)
-names(matches) <- dummyPatientId(names(matches))
+names(matches) <- dummySubjectId(names(matches))
 
 inverted <- c("1"=1, "2"=1, "3"=2, "4"=2, "5"=2, "6"=3, "7"=3, "8"=3, "9"=3,
               "10"=3, "11"=4, "12"=4, "13"=4, "14"=4, "15"=4, "16"=6, 
               "17"=7, "18"=7, "19"=NULL, "20"=7)
 ns <- dummySampleId(names(inverted))
-inverted <- dummyPatientId(inverted)
+inverted <- dummySubjectId(inverted)
 names(inverted) <- ns
 
-returnSamples   <- function(patients) {
-    res <- unique(unname(unlist(matches[patients], use.names=FALSE)))
+returnSamples   <- function(subjects) {
+    res <- unique(unname(unlist(matches[subjects], use.names=FALSE)))
     res[!is.na(res)]
 }
-returnPatients  <- function(samples) {
+returnSubjects  <- function(samples) {
     res <- unique(unname(unlist(inverted[samples], use.names=FALSE)))
     res[!is.na(res)]
 }
 
 prepareTestGroups <- function(matches, inverted) {
-    male   <- dummyPatientId(1:3)
-    female <- dummyPatientId(4:7)
+    male   <- dummySubjectId(1:3)
+    female <- dummySubjectId(4:7)
     maleSamples   <- returnSamples(male)
     femaleSamples <- returnSamples(female)
     
     normal <- dummySampleId(c(1, 3, 6, 10, 11, 15:18))
     tumour <- dummySampleId(c(2, 4, 5, 7:9, 12:14, 20))
-    normalMatch <- returnPatients(normal)
-    tumourMatch <- returnPatients(tumour)
+    normalMatch <- returnSubjects(normal)
+    tumourMatch <- returnSubjects(tumour)
     
     df <- rbind(
         cbind("male",   "Attr", "gender",      list(male),   list(maleSamples)),
@@ -131,33 +131,33 @@ test_that("Set union", {
     df2 <- setOperation("union", df, selected, matches=inverted)
     
     samples  <- Reduce(union, df[selected, "Samples"])
-    patients <- Reduce(union, df[selected, "Patients"])
-    patients <- unique(c(patients, returnPatients(samples)))
+    subjects <- Reduce(union, df[selected, "Patients"])
+    subjects <- unique(c(subjects, returnSubjects(samples)))
     
     expect_equal(df2[[1, "Samples"]], samples)
-    expect_equal(df2[[1, "Patients"]], patients)
+    expect_equal(df2[[1, "Patients"]], subjects)
     
     # Test with 2 groups
     selected <- 2:3
     df2 <- setOperation("union", df, selected, matches=inverted)
     
     samples  <- Reduce(union, df[selected, "Samples"])
-    patients <- Reduce(union, df[selected, "Patients"])
-    patients <- unique(c(patients, returnPatients(samples)))
+    subjects <- Reduce(union, df[selected, "Patients"])
+    subjects <- unique(c(subjects, returnSubjects(samples)))
     
     expect_equal(df2[[1, "Samples"]], samples)
-    expect_equal(df2[[1, "Patients"]], patients)
+    expect_equal(df2[[1, "Patients"]], subjects)
     
     # Test with 4 groups
     selected <- 1:4
     df2 <- setOperation("union", df, selected, matches=inverted)
     
     samples  <- Reduce(union, df[selected, "Samples"])
-    patients <- Reduce(union, df[selected, "Patients"])
-    patients <- unique(c(patients, returnPatients(samples)))
+    subjects <- Reduce(union, df[selected, "Patients"])
+    subjects <- unique(c(subjects, returnSubjects(samples)))
     
     expect_equal(df2[[1, "Samples"]], samples)
-    expect_equal(df2[[1, "Patients"]], patients)
+    expect_equal(df2[[1, "Patients"]], subjects)
 })
 
 test_that("Set intersect", {
@@ -166,74 +166,74 @@ test_that("Set intersect", {
     df2 <- setOperation("intersect", df, selected, matches=inverted)
     
     samples  <- Reduce(intersect, df[selected, "Samples"])
-    patients <- Reduce(intersect, df[selected, "Patients"])
-    patients <- unique(c(patients, returnPatients(samples)))
+    subjects <- Reduce(intersect, df[selected, "Patients"])
+    subjects <- unique(c(subjects, returnSubjects(samples)))
     
     expect_equal(df2[[1, "Samples"]], samples)
-    expect_equal(df2[[1, "Patients"]], patients)
+    expect_equal(df2[[1, "Patients"]], subjects)
     
     # Test with 2 groups
     selected <- c(2, 4)
     df2 <- setOperation("intersect", df, selected, matches=inverted)
     
     samples  <- Reduce(intersect, df[selected, "Samples"])
-    patients <- Reduce(intersect, df[selected, "Patients"])
-    patients <- unique(c(patients, returnPatients(samples)))
+    subjects <- Reduce(intersect, df[selected, "Patients"])
+    subjects <- unique(c(subjects, returnSubjects(samples)))
     
     expect_equal(df2[[1, "Samples"]], samples)
-    expect_equal(df2[[1, "Patients"]], patients)
+    expect_equal(df2[[1, "Patients"]], subjects)
     
     # Test with 4 groups
     selected <- 1:4
     df2 <- setOperation("intersect", df, selected, matches=inverted)
     
     samples  <- Reduce(intersect, df[selected, "Samples"])
-    patients <- Reduce(intersect, df[selected, "Patients"])
-    patients <- unique(c(patients, returnPatients(samples)))
+    subjects <- Reduce(intersect, df[selected, "Patients"])
+    subjects <- unique(c(subjects, returnSubjects(samples)))
     
     expect_equal(df2[[1, "Samples"]], samples)
-    expect_equal(df2[[1, "Patients"]], patients)
+    expect_equal(df2[[1, "Patients"]], subjects)
 })
 
 test_that("Set complement", {
     allSamples <- dummySampleId(1:20)
-    allPatients <- dummyPatientId(1:7)
+    allSubjects <- dummySubjectId(1:7)
     
     # Test with 1 group
     selected <- 3
-    df2 <- setOperation("complement", df, selected, first=allPatients,
+    df2 <- setOperation("complement", df, selected, first=allSubjects,
                         second=allSamples, symbol="U \u005c ", matches=inverted)
     
     samples  <- setdiff(allSamples, df[[selected, "Samples"]])
-    patients <- setdiff(allPatients, df[[selected, "Patients"]])
-    patients <- unique(c(patients, returnPatients(samples)))
+    subjects <- setdiff(allSubjects, df[[selected, "Patients"]])
+    subjects <- unique(c(subjects, returnSubjects(samples)))
     
     expect_equal(df2[[1, "Samples"]], samples)
-    expect_equal(df2[[1, "Patients"]], patients)
+    expect_equal(df2[[1, "Patients"]], subjects)
     
     # Test with 2 groups
     selected <- c(2, 4)
-    df2 <- setOperation("complement", df, selected, first=allPatients,
+    df2 <- setOperation("complement", df, selected, first=allSubjects,
                         second=allSamples, symbol="U \u005c ", matches=inverted)
     
     samples  <- setdiff(allSamples, Reduce(union, df[selected, "Samples"]))
-    patients <- setdiff(allPatients, Reduce(union, df[selected, "Patients"]))
-    patients <- unique(c(patients, returnPatients(samples)))
+    subjects <- setdiff(allSubjects, Reduce(union, df[selected, "Patients"]))
+    subjects <- unique(c(subjects, returnSubjects(samples)))
     
     expect_equal(df2[[1, "Samples"]], samples)
-    expect_equal(df2[[1, "Patients"]], patients)
+    expect_equal(df2[[1, "Patients"]], subjects)
     
     # Test with 4 groups
     selected <- c(1:4)
-    df2 <- setOperation("complement", df, selected, first=allPatients,
+    df2 <- setOperation("complement", df, selected, first=allSubjects,
                         second=allSamples, symbol="U \u005c ", matches=inverted)
     
     samples  <- setdiff(allSamples, Reduce(union, df[selected, "Samples"]))
-    patients <- setdiff(allPatients, Reduce(union, df[selected, "Patients"]))
-    patients <- unique(c(patients, returnPatients(samples)))
+    subjects <- setdiff(allSubjects, Reduce(union, df[selected, "Patients"]))
+    subjects <- unique(c(subjects, returnSubjects(samples)))
     
     expect_equal(df2[[1, "Samples"]], samples)
-    expect_equal(df2[[1, "Patients"]], patients)
+    expect_equal(df2[[1, "Patients"]], subjects)
 })
 
 test_that("Set subtract", {
@@ -243,12 +243,12 @@ test_that("Set subtract", {
     
     samples  <- setdiff(df[[selected[1], "Samples"]],
                         df[[selected[2], "Samples"]])
-    patients <- setdiff(df[[selected[1], "Patients"]],
+    subjects <- setdiff(df[[selected[1], "Patients"]],
                         df[[selected[2], "Patients"]])
-    patients <- unique(c(patients, returnPatients(samples)))
+    subjects <- unique(c(subjects, returnSubjects(samples)))
     
     expect_equal(df2[[1, "Samples"]], samples)
-    expect_equal(df2[[1, "Patients"]], patients)
+    expect_equal(df2[[1, "Patients"]], subjects)
     
     # Error if only 1 group is provided
     selected <- 2
@@ -268,12 +268,12 @@ test_that("Set symmetric difference", {
     
     samples  <- setdiff(Reduce(union, df[selected, "Samples"]),
                         Reduce(intersect, df[selected, "Samples"]))
-    patients <- setdiff(Reduce(union, df[selected, "Patients"]),
+    subjects <- setdiff(Reduce(union, df[selected, "Patients"]),
                         Reduce(intersect, df[selected, "Patients"]))
-    patients <- unique(c(patients, returnPatients(samples)))
+    subjects <- unique(c(subjects, returnSubjects(samples)))
     
     expect_equal(df2[[1, "Samples"]], samples)
-    expect_equal(df2[[1, "Patients"]], patients)
+    expect_equal(df2[[1, "Patients"]], subjects)
     
     # Test with 2 groups
     selected <- c(2, 4)
@@ -281,12 +281,12 @@ test_that("Set symmetric difference", {
     
     samples  <- setdiff(Reduce(union, df[selected, "Samples"]),
                         Reduce(intersect, df[selected, "Samples"]))
-    patients <- setdiff(Reduce(union, df[selected, "Patients"]),
+    subjects <- setdiff(Reduce(union, df[selected, "Patients"]),
                         Reduce(intersect, df[selected, "Patients"]))
-    patients <- unique(c(patients, returnPatients(samples)))
+    subjects <- unique(c(subjects, returnSubjects(samples)))
     
     expect_equal(df2[[1, "Samples"]], samples)
-    expect_equal(df2[[1, "Patients"]], patients)
+    expect_equal(df2[[1, "Patients"]], subjects)
     
     # Test with 4 groups
     selected <- 1:4
@@ -294,12 +294,12 @@ test_that("Set symmetric difference", {
     
     samples  <- setdiff(Reduce(union, df[selected, "Samples"]),
                         Reduce(intersect, df[selected, "Samples"]))
-    patients <- setdiff(Reduce(union, df[selected, "Patients"]),
+    subjects <- setdiff(Reduce(union, df[selected, "Patients"]),
                         Reduce(intersect, df[selected, "Patients"]))
-    patients <- unique(c(patients, returnPatients(samples)))
+    subjects <- unique(c(subjects, returnSubjects(samples)))
     
     expect_equal(df2[[1, "Samples"]], samples)
-    expect_equal(df2[[1, "Patients"]], patients)
+    expect_equal(df2[[1, "Patients"]], subjects)
 })
 
 test_that("Rename groups", {

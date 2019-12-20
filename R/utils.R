@@ -104,6 +104,7 @@ colourInputMod <- function(...) {
 #' 
 #' @param acronymsAsNames Boolean: return acronyms as names?
 #' 
+#' @family functions for PSI quantification
 #' @return Named character vector with splicing event types
 #' @export
 #' 
@@ -143,14 +144,14 @@ areSplicingEvents <- function(char, num=6) {
 #' Parse an alternative splicing event based on a given identifier
 #' 
 #' @param event Character: event identifier
-#' @param char Boolean: return a single character instead of list with parsed
+#' @param char Boolean: return character vector instead of list with parsed
 #' values?
 #' @param pretty Boolean: return a prettier name of the event identifier?
 #' @param extra Character: extra information to add (such as species and
-#' assembly version); only used if \code{pretty} and \code{char} are \code{TRUE}
-#' @param coords Boolean: extra coordinates regarding the alternative and 
-#' constitutive regions of alternative splicing events; only used if \code{char}
-#' is \code{FALSE}
+#' assembly version); only used if \code{pretty = TRUE} and \code{char = TRUE}
+#' @param coords Boolean: display extra coordinates regarding the alternative 
+#' and constitutive regions of alternative splicing events? If 
+#' \code{char = FALSE}, all coordinates are always displayed
 #' 
 #' @return Parsed event
 #' @export
@@ -373,13 +374,13 @@ prepareWordBreak <- function(str, pattern=c(".", "-", "\\", "/", "_", ",",
     return(HTML(res))
 }
 
-#' Filter NULL elements from vector or list
+#' Filter \code{NULL} elements from a vector or a list
 #' 
 #' @param v Vector or list
 #' 
-#' @return Filtered vector or list with no NULL elements; if the input is a
-#' vector composed of only NULL elements, it returns a NULL (note that it will
-#' returns an empty list if the input is a list with only NULL elements)
+#' @return Filtered vector or list with no \code{NULL} elements; if \code{v} is
+#' a vector composed of \code{NULL} elements, returns a \code{NULL}; if \code{v}
+#' is a list of \code{NULL} elements, returns an empty list
 #' @keywords internal
 rm.null <- function(v) Filter(Negate(is.null), v)
 
@@ -519,7 +520,7 @@ processButton <- function(id, label, ..., class="btn-primary") {
 #' \itemize{
 #'   \item{\code{startProcess}: Style button to show a process is in progress}
 #'   \item{\code{endProcess}: Style button to show a process finished; also, 
-#'   closes the progress bar (if \code{closeProgressbar} is \code{TRUE}) and 
+#'   closes the progress bar (if \code{closeProgressbar = TRUE}) and 
 #'   prints the difference between the current time and \code{time}}
 #' }
 #' 
@@ -540,8 +541,8 @@ startProcess <- function(id) {
 #' @rdname startProcess
 #' 
 #' @param time \code{POSIXct} object: start time needed to show the interval
-#' time (if NULL, the time interval is not displayed)
-#' @param closeProgressBar Boolean: close progress bar? TRUE by default
+#' time (if \code{NULL}, the time interval is not displayed)
+#' @param closeProgressBar Boolean: close progress bar?
 #' 
 #' @importFrom shinyjs enable hide
 endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
@@ -556,97 +557,100 @@ endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
     return(NULL)
 }
 
-#' Get patients from given samples
+#' Get subjects from given samples
 #'
 #' @param sampleId Character: sample identifiers
-#' @param patientId Character: patient identifiers to filter by (optional; if a
-#' matrix or data frame is given, its rownames will be used to infer the patient
+#' @param patientId Character: subject identifiers to filter by (optional; if a
+#' matrix or data frame is given, its rownames will be used to infer the subject
 #' identifiers)
-#' @param na Boolean: return NA for samples with no matching patients
+#' @param na Boolean: return \code{NA} for samples with no matching subjects
 #' @param sampleInfo Data frame or matrix: sample information containing the
 #' sample identifiers as rownames and a column named "Subject ID" with the
 #' respective subject identifiers
 #'
-#' @return Character: patient identifiers corresponding to the given samples
+#' @aliases getPatientFromSample
+#' @family functions for data grouping
+#' @return Character: subject identifiers corresponding to the given samples
 #' 
 #' @export
 #' @examples
 #' samples <- paste0("GTEX-", c("ABC", "DEF", "GHI", "JKL", "MNO"), "-sample")
-#' getPatientFromSample(samples)
+#' getSubjectFromSample(samples)
 #' 
-#' # Filter returned samples based on available patients
-#' patients <- paste0("GTEX-", c("DEF", "MNO"))
-#' getPatientFromSample(samples, patients)
-getPatientFromSample <- function(sampleId, patientId=NULL, na=FALSE,
+#' # Filter returned samples based on available subjects
+#' subjects <- paste0("GTEX-", c("DEF", "MNO"))
+#' getSubjectFromSample(samples, subjects)
+getSubjectFromSample <- function(sampleId, patientId=NULL, na=FALSE,
                                  sampleInfo=NULL) {
     if (!is.null(patientId) && 
         (is.matrix(patientId) || is.data.frame(patientId))) {
         patientId <- rownames(patientId)
     }
     
-    # Extract patient identifiers from sample ID and then retrieve their index
-    extractPatientIndex <- function(pattern, samples, allPatients) {
-        patient <- gsub(pattern, "\\1", samples)
-        names(patient) <- samples
+    # Extract subject identifiers from sample ID and then retrieve their index
+    extractSubjectIndex <- function(pattern, samples, allSubjects) {
+        subject <- gsub(pattern, "\\1", samples)
+        names(subject) <- samples
         
-        if (!is.null(allPatients)) {
-            # Filter by patients of interest
+        if (!is.null(allSubjects)) {
+            # Filter by subjects of interest
             if (na) {
-                # Return NA as the corresponding patient
-                patient[!patient %in% allPatients] <- NA
+                # Return NA as the corresponding subject
+                subject[!subject %in% allSubjects] <- NA
             } else {
-                patient <- patient[patient %in% allPatients]
+                subject <- subject[subject %in% allSubjects]
             }
         }
-        return(patient)
+        return(subject)
     }
     
     if ( any(grepl("^TCGA", sampleId)) ) {
-        # Retrieve TCGA patient index
-        extractPatientIndex("(TCGA-.*?-.*?)-.*", sampleId, patientId)
+        # Retrieve TCGA subject index
+        extractSubjectIndex("(TCGA-.*?-.*?)-.*", sampleId, patientId)
     } else if ( any(grepl("^GTEX", sampleId)) ) {
-        # Retrieve GTEx patient index
-        extractPatientIndex("(GTEX-.*?)-.*", sampleId, patientId)
+        # Retrieve GTEx subject index
+        extractSubjectIndex("(GTEX-.*?)-.*", sampleId, patientId)
     } else if ( "Subject ID" %in% colnames(sampleInfo) ) {
         # Based on user-provided files
-        patients <- as.character(sampleInfo[ , "Subject ID"])
-        names(patients) <- rownames(sampleInfo)
-        return(patients)
+        subjects <- as.character(sampleInfo[ , "Subject ID"])
+        names(subjects) <- rownames(sampleInfo)
+        return(subjects)
     } else {
         return(NULL)
     }
 }
 
-#' @rdname getPatientFromSample
 #' @export
-getSubjectFromSample <- getPatientFromSample
+getPatientFromSample <- getSubjectFromSample
 
-#' Get samples matching the given patients
+#' Get samples matching the given subjects
 #' 
-#' @inheritParams getPatientFromSample
-#' @param patients Character or list of characters: patient identifiers
+#' @inheritParams getSubjectFromSample
+#' @param patients Character or list of characters: subject identifiers
 #' @param samples Character: sample identifiers
 #' @param clinical Data frame or matrix: clinical dataset
-#' @param rm.NA Boolean: remove NAs? TRUE by default
-#' @param match Integer: vector of patient index with the sample identifiers as
+#' @param rm.NA Boolean: remove missing values?
+#' @param match Integer: vector of subject index with the sample identifiers as
 #' name to save time (optional)
-#' @param showMatch Boolean: show matching patient index? FALSE by default
+#' @param showMatch Boolean: show matching subject index?
 #' 
-#' @return Names of the matching samples (if \code{showMatch} is \code{TRUE},
-#' a character with the patients as values and their respective samples as names
+#' @aliases getSampleFromPatient getSampleFromSubject
+#' @family functions for data grouping
+#' @return Names of the matching samples (if \code{showMatch = TRUE},
+#' a character with the subjects as values and their respective samples as names
 #' is returned)
 #' @export
 #' 
 #' @examples 
-#' patients <- c("GTEX-ABC", "GTEX-DEF", "GTEX-GHI", "GTEX-JKL", "GTEX-MNO")
-#' samples <- paste0(patients, "-sample")
+#' subjects <- c("GTEX-ABC", "GTEX-DEF", "GTEX-GHI", "GTEX-JKL", "GTEX-MNO")
+#' samples <- paste0(subjects, "-sample")
 #' clinical <- data.frame(samples=samples)
-#' rownames(clinical) <- patients
-#' getMatchingSamples(patients[c(1, 4)], samples, clinical)
+#' rownames(clinical) <- subjects
+#' getMatchingSamples(subjects[c(1, 4)], samples, clinical)
 getMatchingSamples <- function(patients, samples, clinical=NULL, rm.NA=TRUE,
                                match=NULL, showMatch=FALSE) {
     if (is.null(match))
-        match <- getPatientFromSample(samples, clinical)
+        match <- getSubjectFromSample(samples, clinical)
     
     if (is.list(patients)) {
         samples <- lapply(patients, function(i) {
@@ -663,21 +667,20 @@ getMatchingSamples <- function(patients, samples, clinical=NULL, rm.NA=TRUE,
     return(samples)
 }
 
-#' @rdname getMatchingSamples
 #' @export
 getSampleFromPatient <- getMatchingSamples
 
-#' @rdname getMatchingSamples
 #' @export
 getSampleFromSubject <- getMatchingSamples
 
 #' Assign one group to each element
 #' 
 #' @param groups List of integers: groups of elements
-#' @param elem Character: all elements available (NULL by default)
-#' @param outerGroupName Character: name to give to outer group (NA by default; 
-#' set to NULL to only show elements matched to their respective groups)
+#' @param elem Character: all elements available
+#' @param outerGroupName Character: name to give to outer group (if \code{NULL}, 
+#' only show elements matched to their respective groups)
 #' 
+#' @family functions for data grouping
 #' @return Character vector where each element corresponds to the group of the
 #' respective element
 #' @export
@@ -721,29 +724,6 @@ groupPerElem <- function(groups, elem=NULL, outerGroupName=NA) {
     return(finalGroups)
 }
 
-#' @rdname groupPerElem
-#' 
-#' @param patients Integer: total number of patients
-#' @param includeOuterGroup Boolean: join the patients that have no groups?
-#' 
-#' @export
-groupPerPatient <- function(groups, patients=NULL, includeOuterGroup=FALSE, 
-                            outerGroupName="(Outer data)") {
-    .Deprecated("groupPerElem")
-    if (!includeOuterGroup) outerGroupName <- NULL
-    groupPerElem(groups, patients, outerGroupName)
-}
-
-#' @rdname groupPerElem
-#' @param samples Character: all available samples
-#' @export
-groupPerSample <- function(groups, samples, includeOuterGroup=FALSE, 
-                           outerGroupName="(Outer data)") {
-    .Deprecated("groupPerElem")
-    if (!includeOuterGroup) outerGroupName <- NULL
-    groupPerElem(groups, samples, outerGroupName)
-}
-
 #' @rdname missingDataModal
 #' 
 #' @param modal Character: modal identifier
@@ -774,7 +754,7 @@ loadRequiredData <- function( modal=NULL ) {
 #' @importFrom R.utils capitalize
 #'
 #' @seealso \code{\link{showAlert}}
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 styleModal <- function(session, title, ..., style=NULL,
                        iconName="exclamation-circle", footer=NULL, echo=FALSE, 
@@ -832,7 +812,7 @@ infoModal <- function(session, title, ..., size="small", footer=NULL,
 #' @seealso \code{\link{showModal}}
 #' @importFrom shiny span h3 renderUI div tagList
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 showAlert <- function(session, ..., title, style=NULL, dismissible=TRUE, 
                       alertId="alert", iconName=NULL, caller=NULL) {
@@ -888,11 +868,11 @@ removeAlert <- function(output, alertId="alert") {
 
 #' Alert in the style of a dialogue box with a button
 #' 
-#' @param id Character: identifier (NULL by default)
+#' @param id Character: identifier
 #' @param description Character: description
-#' @param buttonId Character: button identifier (NULL by default)
-#' @param buttonLabel Character: button label (NULL by default)
-#' @param buttonIcon Character: button icon (NULL by default)
+#' @param buttonId Character: button identifier
+#' @param buttonLabel Character: button label
+#' @param buttonIcon Character: button icon
 #' @param ... Extra parameters when creating the alert
 #' @param type Character: type of alert (error or warning)
 #' @param bigger Boolean: wrap the \code{description} in a \code{h4} tag?
@@ -944,6 +924,10 @@ warningDialog <- function(description, ...)
     inlineDialog(description, ..., type="warning")
 
 #' Get the Downloads folder of the user
+#' 
+#' @family functions associated with TCGA data retrieval
+#' @family functions associated with GTEx data retrieval
+#' @family functions associated with SRA data retrieval
 #' @return Path to Downloads folder
 #' @export
 #' 
@@ -984,7 +968,7 @@ parseSampleGroups <- function(sample, filename = system.file(
 #' 
 #' @importFrom shiny isRunning
 #' 
-#' @return NULL (display message in command-line)
+#' @return \code{NULL} (display message in command-line)
 #' @keywords internal
 display <- function(char, timeStr="Time difference of") {
     if (!isRunning()) cat("", fill=TRUE)
@@ -1005,8 +989,7 @@ display <- function(char, timeStr="Time difference of") {
 #' @importFrom shiny isRunning Progress
 #' @importFrom utils txtProgressBar
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state or
-#' internal hidden variables)
+#' @inherit psichomics return
 #' @keywords internal
 startProgress <- function(message, divisions,
                           global=if (isRunning()) sharedData else getHidden()) {
@@ -1024,8 +1007,8 @@ startProgress <- function(message, divisions,
 #' @rdname startProgress
 #' 
 #' @details If \code{divisions} is not \code{NULL}, a progress bar starts with 
-#' the given divisions. If \code{value} is \code{NULL}, the progress bar 
-#' increments one unit; otherwise, the progress bar increments \code{value}.
+#' the given divisions. If \code{value = NULL}, the progress bar increments one
+#' unit; otherwise, the progress bar increments \code{value}.
 #' 
 #' @param value Integer: current progress value
 #' @param max Integer: maximum progress value
@@ -1161,7 +1144,7 @@ bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL,
 #' 
 #' @importFrom shinyjs disable addClass
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 disableTab <- function(tab) {
     # Style item as disabled
@@ -1226,7 +1209,7 @@ textSuggestions <- function(id, words, novalue="No matching value", char=" ") {
 #' @param colour1 Character: HEX colour
 #' @param colour2 Character: HEX colour
 #' @param colour1Percentage Character: percentage of colour 1 mixed in blended 
-#' colour (default is 0.5)
+#' colour
 #'
 #' @source Code modified from \url{https://stackoverflow.com/questions/5560248}
 #'
@@ -1267,12 +1250,12 @@ blendColours <- function (colour1, colour2, colour1Percentage=0.5) {
 #' (f(y) = 1-y), \code{cumhaz} plots the cumulative hazard function (f(y) =
 #' -log(y)), and \code{cloglog} creates a complimentary log-log survival plot
 #' (f(y) = log(-log(y)) along with log scale for the x-axis.
-#' @param markTimes Label curves marked at each censoring time? TRUE by default
-#' @param symbol Symbol to use as marker (plus sign by default)
-#' @param markerColor Colour of the marker ("black" by default); use NULL to use
-#' the respective colour of each series
-#' @param ranges Plot interval ranges? FALSE by default
-#' @param rangesOpacity Opacity of the interval ranges (0.3 by default)
+#' @param markTimes Label curves marked at each censoring time?
+#' @param symbol Symbol to use as marker
+#' @param markerColor Colour of the marker; if \code{NULL}, the respective
+#' colour of each series are used
+#' @param ranges Plot interval ranges?
+#' @param rangesOpacity Opacity of the interval ranges
 #' 
 #' @method hchart survfit
 #' @importFrom highcharter %>% hc_add_series highchart hc_tooltip hc_yAxis
@@ -1425,7 +1408,7 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
 #' 
 #' @importFrom DT renderDataTable JS
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 renderDataTableSparklines <- function(..., options=NULL) {
     # Escape is set to FALSE to render the Sparkline HTML elements
@@ -1486,8 +1469,7 @@ export_highcharts <- function(hc, fill="transparent", text="Export") {
 #' @param y Numeric: Y axis
 #' @param z Numeric: Z axis to set the bubble size (optional)
 #' @param label Character: data label for each point (optional)
-#' @param showInLegend Boolean: show the data in the legend box? FALSE by
-#' default
+#' @param showInLegend Boolean: show the data in the legend box?
 #' @inheritDotParams highcharter::hc_add_series -hc -data
 #' 
 #' @importFrom highcharter hc_add_series list_parse
@@ -1582,7 +1564,7 @@ isRStudioServer <- function() {
 #' \itemize{
 #'  \item{\strong{Windows}: calls the \code{utils::choose.files} R function.}
 #'  \item{\strong{macOS}: uses AppleScript to display a folder selection 
-#'  dialogue. If \code{default} is \code{NA}, folder selection fallbacks to the
+#'  dialogue. If \code{default = NA}, folder selection fallbacks to the
 #'  default behaviour of the \code{choose folder} AppleScript command.
 #'  Otherwise, paths are expanded with \code{\link{path.expand}}.}
 #'  \item{\strong{Linux}: calls the \code{zenity} system command.}
@@ -1660,7 +1642,7 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
 #' Input to interactively select a file or directory on the server
 #'
 #' @param id Character: input identifier
-#' @param label Character: input label (NULL to show no label)
+#' @param label Character: input label (if \code{NULL}, no labels are displayed)
 #' @param value Character: initial value (paths are expanded via
 #' \code{\link{path.expand}})
 #' @param placeholder Character: placeholder when no file or folder is selected
@@ -1751,7 +1733,7 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
 #' @param id Character: input identifier
 #' @param value Character: file or directory path
 #' @param ... Additional arguments passed to \code{\link{fileBrowser}}. Only
-#' used if \code{value} is \code{NULL}.
+#' used if \code{value = NULL}.
 #'
 #' @details
 #' Sends a message to the client, telling it to change the value of the input
@@ -1762,7 +1744,7 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
 #' @source Original code by wleepang:
 #' \url{https://github.com/wleepang/shiny-directory-input}
 #'
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 updateFileBrowserInput <- function(session, id, ..., value=NULL) {
     if (is.null(value)) value <- fileBrowser(...)
@@ -1780,7 +1762,7 @@ updateFileBrowserInput <- function(session, id, ..., value=NULL) {
 #' @inheritDotParams fileBrowser
 #' @param modalId Character: modal window identifier
 #'
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 prepareFileBrowser <- function(session, input, id, modalId="modal", ...) {
     buttonId <- sprintf("%sButton", id)
@@ -1946,12 +1928,13 @@ ggplotTooltip <- function(df, hover, x, y) {
 #' @param input Shiny input
 #' @param output Shiny output
 #' @param id Character: identifier
-#' @param plot Character: plot expression (NULL renders no plot)
+#' @param plot Character: plot expression (if \code{NULL}, no plots are
+#' rendered)
 #' @inheritParams ggplotTooltip
 #' 
 #' @importFrom shiny renderPlot renderUI
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 ggplotServer <- function(input, output, id, plot=NULL, df=NULL, x=NULL, 
                          y=NULL) {

@@ -8,14 +8,13 @@
 #' @param noGroupsLabel Character: label to explicitly allow to select no groups
 #' (if \code{NULL}, this option is not displayed to the user)
 #' @param groupsLabel Character: label to explicetly allow to select groups
-#' (only required if the \code{noGroupsLabel} argument is not \code{NULL})
+#' (only required if \code{noGroupsLabel} is not \code{NULL})
 #' @param maxItems Numeric: maximum number of groups to select
 #' @param returnAllDataLabel Character: label to allow to return data outside
 #' selected groups as belonging to an outside group (if \code{NULL}, this option
 #' is not displayed to the user)
 #' @param returnAllDataValue Boolean: default value to whether return all data
-#' or not (only required if the \code{returnAllDataLabel} argument is not 
-#' \code{NULL})
+#' or not (only required if \code{returnAllDataLabel} is not \code{NULL})
 #' 
 #' @importFrom shiny fluidRow column uiOutput selectizeInput actionButton
 #' radioButtons actionLink downloadLink
@@ -80,7 +79,7 @@ selectGroupsUI <- function (
 #' @inheritParams getGroups
 #' @param session Shiny session
 #' @param preference Character: name of groups to pre-select, when available
-#' (if NULL, all groups will be pre-selected)
+#' (if \code{NULL}, all groups will be pre-selected)
 #' 
 #' @importFrom shinyjs enable disable onclick toggleClass runjs
 #' 
@@ -209,7 +208,7 @@ groupManipulationInput <- function(id, type) {
         title  <- "By subjects"
         first  <- groupOptions("Patients", title)
         # firstAlert  <- tabPanel(title, value="NoPatients", missingData(
-        #     "Clinical data", "No clinical data loaded to group by patients.",
+        #     "Clinical data", "No clinical data loaded to group by subjects.",
         #     "Please, load clinical data."))
         
         title  <- "By samples"
@@ -606,7 +605,7 @@ groupByGrep <- function(ns, cols, id) {
 #' @inheritParams createGroupFromInput
 #' @param output Shiny output
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 createGroup <- function(session, input, output, id, type, selected=NULL, 
                         expr=NULL, groupNames=NULL) {
@@ -669,7 +668,7 @@ assignColours <- function(new, groups=NULL) {
 #' @param new Rows of groups to be added
 #' @param clearOld Boolean: clear old groups?
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 appendNewGroups <- function(type, new, clearOld=FALSE) {
     # Rename duplicated group names
@@ -690,32 +689,32 @@ appendNewGroups <- function(type, new, clearOld=FALSE) {
     setGroups(type, groups)
 }
 
-#' Match patients and samples in a group
+#' Match subjects and samples in a group
 #' 
 #' @param id Character: identifier
 #' @param group Data frame: group
 #' 
 #' @return Data frame with groups containing matching elements
 #' @keywords internal
-matchGroupPatientsAndSamples <- function(id, group) {
-    patients <- getPatientId()
+matchGroupSubjectsAndSamples <- function(id, group) {
+    subjects <- getSubjectId()
     samples  <- getSampleId()
     match    <- getClinicalMatchFrom("Inclusion levels")
     
-    # Match patients with samples (or vice-versa)
-    if (!is.null(patients) && !is.null(samples) && !is.null(match)) {
+    # Match subjects with samples (or vice-versa)
+    if (!is.null(subjects) && !is.null(samples) && !is.null(match)) {
         if (id == "Patients") {
-            patients <- group[ , "Patients"]
-            samples <- getMatchingSamples(patients, samples, patients,
+            subjects <- group[ , "Patients"]
+            samples <- getMatchingSamples(subjects, samples, subjects,
                                           match=match)
             group <- cbind(group, "Samples"=samples)
         } else if (id == "Samples") {
-            samples2patients <- function(i, match) {
+            samples2subjects <- function(i, match) {
                 m <- match[i]
                 return(unique(m[!is.na(m)]))
             }
-            patients <- lapply(group[ , "Samples"], samples2patients, match)
-            group <- cbind(group, "Patients"=patients)
+            subjects <- lapply(group[ , "Samples"], samples2subjects, match)
+            group <- cbind(group, "Patients"=subjects)
             
             lastCol <- ncol(group)
             group   <- group[ , c(seq(lastCol - 2), lastCol, lastCol - 1),
@@ -727,7 +726,7 @@ matchGroupPatientsAndSamples <- function(id, group) {
 
 #' Match AS events and genes in a group
 #' 
-#' @inheritParams matchGroupPatientsAndSamples
+#' @inheritParams matchGroupSubjectsAndSamples
 #' 
 #' @return Data frame with groups containing matching elements
 #' @keywords internal
@@ -781,7 +780,7 @@ createGroupFromInput <- function (session, input, dataset, id, type,
         group <- cbind(names(group), type, selected, group)
     } else if (type == "Index/Identifier") {
         strRows <- paste(selected, collapse=", ")
-        identifiers <- switch(id, "Patients"=getPatientId(),
+        identifiers <- switch(id, "Patients"=getSubjectId(),
                               "Samples"=getSampleId(),
                               "ASevents"=getASevents(),
                               "Genes"=getGenes())
@@ -843,18 +842,11 @@ createGroupFromInput <- function (session, input, dataset, id, type,
     rownames(group) <- NULL
     
     if (id %in% c("Patients", "Samples")) {
-        group <- matchGroupPatientsAndSamples(id, group)
+        group <- matchGroupSubjectsAndSamples(id, group)
     } else if (id %in% c("ASevents", "Genes")) {
         group <- matchGroupASeventsAndGenes(id, group, getASevents())
     }
     return(group)
-}
-
-#' @rdname createGroupByAttribute
-#' @export
-createGroupByColumn <- function(col, dataset) {
-    .Deprecated("createGroupByAttribute")
-    createGroupByAttribute(col, dataset)
 }
 
 #' Split elements into groups based on a given column of a dataset
@@ -864,6 +856,7 @@ createGroupByColumn <- function(col, dataset) {
 #' @param col Character: column name
 #' @param dataset Matrix or data frame: dataset
 #' 
+#' @family functions for data grouping
 #' @return Named list with each unique value from a given column and respective
 #' elements
 #' @export
@@ -871,7 +864,7 @@ createGroupByColumn <- function(col, dataset) {
 #' @examples 
 #' df <- data.frame(gender=c("male", "female"),
 #'                  stage=paste("stage", c(1, 3, 1, 4, 2, 3, 2, 2)))
-#' rownames(df) <- paste0("patient-", LETTERS[1:8])
+#' rownames(df) <- paste0("subject-", LETTERS[1:8])
 #' createGroupByAttribute(col="stage", dataset=df)
 createGroupByAttribute <- function(col, dataset) {
     if (!col %in% colnames(dataset))
@@ -916,7 +909,7 @@ createGroupById <- function(session, rows, identifiers) {
     } else {
         parsed <- NULL
     }
-    # Check indexes higher than the number of patients available
+    # Check indexes higher than the number of subjects available
     valid <- parsed <= length(identifiers)
     
     # Warn about invalid input
@@ -961,18 +954,17 @@ renameGroups <- function(new, old) {
 #' @param groups Matrix: groups
 #' @param selected Integer: index of rows regarding selected groups
 #' @param symbol Character: Unicode symbol to visually indicate the operation
-#' performed (" " by default)
-#' @param groupName Character: group name (automatically created if NULL or
-#' \code{""})
+#' performed
+#' @param groupName Character: group name (automatically created if \code{NULL}
+#' or \code{""})
 #' @param first Character: identifiers of the first element (required when 
 #' performing the \code{complement} operation)
 #' @param second Character: identifiers of the second element (required when 
 #' performing the \code{complement} operation)
-#' @param matches Character: match between samples (as names) and patients (as
+#' @param matches Character: match between samples (as names) and subjects (as
 #' values)
 #' @param type Character: type of group where set operations are to be performed
-#' @param assignColoursToGroups Boolean: assign colours to new groups? FALSE by
-#' default
+#' @param assignColoursToGroups Boolean: assign colours to new groups?
 #' 
 #' @return Matrix containing groups (new group is in the first row)
 #' @keywords internal
@@ -1111,7 +1103,7 @@ setOperation <- function(operation, groups, selected, symbol=" ",
 #' 
 #' @inheritParams setOperation
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 operateOnGroups <- function(input, session, operation, buttonId, symbol=" ",
                             type, sharedData=sharedData) {
@@ -1133,7 +1125,7 @@ operateOnGroups <- function(input, session, operation, buttonId, symbol=" ",
             updateTextInput(session, "groupName", value="")
         
         if (type == "Samples") {
-            first   <- getPatientId()
+            first   <- getSubjectId()
             second  <- getSampleId()
             matches <- getClinicalMatchFrom("Inclusion levels")
         } else if (type == "ASevents") {
@@ -1153,7 +1145,7 @@ operateOnGroups <- function(input, session, operation, buttonId, symbol=" ",
 #' @inheritParams getGroups
 #' @importFrom shiny tags
 #' 
-#' @return Matrix with groups ordered (or NULL if no groups exist)
+#' @return Matrix with groups ordered (or \code{NULL} if there are no groups)
 #' @keywords internal
 showGroupsTable <- function(type) {
     groups <- getGroups(type, complete=TRUE)
@@ -1170,7 +1162,7 @@ showGroupsTable <- function(type) {
             elem2 <- "Genes"
         }
         
-        # Show number of patients or AS events for each group (if available)
+        # Show number of subjects or AS events for each group (if available)
         showElem1 <- elem1 %in% colnames(groups)
         if (showElem1) {
             groups[ , elem1] <- unlist( lapply(groups[ , elem1], length) )
@@ -1237,7 +1229,7 @@ groupManipulation <- function(input, output, session, type) {
     if (type == "Samples") {
         updateAttributes <- function(id) {
             if (id == "Patients") {
-                attrs <- getPatientAttributes()
+                attrs <- getSubjectAttributes()
             } else if (id == "Samples") {
                 attrs <- getSampleAttributes()
             }
@@ -1266,7 +1258,7 @@ groupManipulation <- function(input, output, session, type) {
     observe({
         if (type == "Samples") {
             updateSelectizeInput(session, paste0("groupRows", "Patients"),
-                                 choices=getPatientId(), server=TRUE)
+                                 choices=getSubjectId(), server=TRUE)
             updateSelectizeInput(session, paste0("groupRows", "Samples"),
                                  choices=getSampleId(), server=TRUE)
         } else if (type == "ASevents") {
@@ -1333,7 +1325,7 @@ groupManipulation <- function(input, output, session, type) {
         # Update available attributes to suggest in the subset expression
         output[[paste0("groupExpressionSuggestions", id)]] <- renderUI({
             if (id == "Patients")
-                attrs <- getPatientAttributes()
+                attrs <- getSubjectAttributes()
             else if (id == "Samples")
                 attrs <- getSampleAttributes()
             attrs <- sprintf("`%s`", attrs)
@@ -1371,7 +1363,7 @@ groupManipulation <- function(input, output, session, type) {
             sub             <- head(group, groupsToPreview)
             sub             <- cbind(names(sub), sub)
             colnames(sub)   <- c("Group", id)
-            sub             <- matchGroupPatientsAndSamples(id, sub)
+            sub             <- matchGroupSubjectsAndSamples(id, sub)
             
             table <- cbind(sub[ , "Group"],
                            if ("Patients" %in% colnames(sub))
@@ -1679,13 +1671,13 @@ groupManipulation <- function(input, output, session, type) {
                 if (length(firstElem) == 0 && length(secondElem) == 0) 
                     return(NULL)
                 
-                # Prepare patients or splicing events per group
-                patientGroupNames <- NULL
+                # Prepare subjects or splicing events per group
+                subjectGroupNames <- NULL
                 if (length(firstElem) > 0) {
                     matched  <- firstElem %in% first
                     firstElem <- split(firstElem[matched], groups[matched])
                     firstElem <- lapply(firstElem, unique)
-                    patientGroupNames <- names(firstElem)
+                    subjectGroupNames <- names(firstElem)
                 }
                 
                 # Prepare samples or genes per group
@@ -1697,7 +1689,7 @@ groupManipulation <- function(input, output, session, type) {
                 }
                 
                 # Prepare matrix with imported groups
-                groupNames <- unique(c(patientGroupNames, sampleGroupNames))
+                groupNames <- unique(c(subjectGroupNames, sampleGroupNames))
                 imported   <- matrix(nrow=length(groupNames), ncol=3)
                 colnames(imported) <- c("Names", "Subset", "Input")
                 imported[ , "Names"]   <- groupNames
@@ -1722,7 +1714,7 @@ groupManipulation <- function(input, output, session, type) {
                         firstElem[sapply(firstElem, is.null)] <- character(0)
                         names(firstElem) <- groupNames
                     } else if (!is.null(match)) {
-                        # Provide patients/AS events based on the samples/genes
+                        # Provide subjects/AS events based on the samples/genes
                         secondTofirst <- function(i, match) {
                             m <- match[i]
                             return(unique(m[!is.na(m)]))
@@ -1770,7 +1762,7 @@ groupManipulation <- function(input, output, session, type) {
         
         isolate({
             if (type == "Samples") {
-                first  <- getPatientId()
+                first  <- getsubjectId()
                 second <- getSampleId()
                 match  <- getClinicalMatchFrom("Inclusion levels")
             } else if (type == "ASevents") {
@@ -1794,7 +1786,7 @@ groupManipulation <- function(input, output, session, type) {
     })
     
     if (type == "Samples") {
-        # Test group indepedence for patient/sample groups only
+        # Test group indepedence for subject/sample groups only
         observeEvent(input[["testGroups-button"]], {
             isolate({
                 # Get selected groups
@@ -1918,7 +1910,7 @@ groupsServer <- function(input, output, session) {
 #' 
 #' @inheritParams groupsServer
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 groupsServerOnce <- function(input, output, session) {
     # Update groups according to the availability of sample identifiers
@@ -1928,25 +1920,25 @@ groupsServerOnce <- function(input, output, session) {
         if (is.null(group)) return(NULL)
         
         samples     <- getSampleId()
-        patients    <- getPatientId()
+        subjects    <- getSubjectId()
         match       <- getClinicalMatchFrom("Inclusion levels")
         showSamples <- "Samples" %in% colnames(group)
         
         if ( is.null(samples) && showSamples ) {
             # Remove sample identifiers from groups
             if ( "Patients" %in% colnames(group) ) {
-                # Groups are made with patients and samples; only remove samples
+                # Groups are made with subjects and samples; only remove samples
                 group <- group[ , -match("Samples", colnames(group))]
             } else {
                 # Groups are only made of samples; remove all groups
                 group <- NULL
             }
             setGroups("Samples", group)
-        } else if ( !is.null(samples) && !showSamples && !is.null(patients) &&
+        } else if ( !is.null(samples) && !showSamples && !is.null(subjects) &&
                     !is.null(match) && "Patients" %in% colnames(group)) {
-            # Update groups if previously made with patients only
+            # Update groups if previously made with subjects only
             samples <- getMatchingSamples(group[ , "Patients"], samples, 
-                                          patients, match=match)
+                                          subjects, match=match)
             group <- cbind(group, "Samples"=samples)
             setGroups("Samples", group)
         }
@@ -1985,11 +1977,11 @@ groupsServerOnce <- function(input, output, session) {
             groups <- cbind("Names"=names(new), "Subset"="Attribute",
                             "Input"="Sample types", "Samples"=new)
 
-            # Match samples with patients (if loaded)
-            patients <- isolate(getPatientId())
-            if (!is.null(patients)) {
+            # Match samples with subjects (if loaded)
+            subjects <- isolate(getSubjectId())
+            if (!is.null(subjects)) {
                 indiv <- lapply(new, function(i)
-                    unname(getPatientFromSample(i, patientId=patients)))
+                    unname(getSubjectFromSample(i, patientId=subjects)))
                 groups <- cbind(groups[ , 1:3, drop=FALSE], "Patients"=indiv,
                                 groups[ ,   4, drop=FALSE])
             }
@@ -2007,8 +1999,8 @@ groupsServerOnce <- function(input, output, session) {
 #' @param filter Character: get groups only if they are present in this argument
 #' (if TCGA-styled gene symbols, they will be "converted" to gene symbols alone)
 #' 
-#' @return \code{getSelectedGroups}: List with selected groups (or NULL if no
-#' groups were selected)
+#' @return \code{getSelectedGroups}: List with selected groups (or \code{NULL}
+#' when no groups are selected)
 getSelectedGroups <- function(input, id, type, filter=NULL) {
     selection <- input[[paste0(id, "Selection")]]
     noGroups  <- !is.null(selection) && selection == "noGroups"
@@ -2057,7 +2049,7 @@ getSelectedGroups <- function(input, id, type, filter=NULL) {
 #' @examples 
 #' df <- data.frame("race"=c("caucasian", "caucasian", "asian"),
 #'                  "gender"=c("male", "female", "male"))
-#' rownames(df) <- paste("patient", 1:3)
+#' rownames(df) <- paste("subject", 1:3)
 #' parseCategoricalGroups(df)
 parseCategoricalGroups <- function(df) {
     isCategorical <- sapply(seq(ncol(df)), function(i) is.factor(df[ , i]))
@@ -2079,7 +2071,7 @@ parseCategoricalGroups <- function(df) {
 #' @param ref Character: identifier of elements in reference group
 #' @param groups List of characters: list of groups where each element contains
 #' the identifiers of respective elements
-#' @param elements Character: all patient identifiers
+#' @param elements Character: all subject identifiers
 #' @param pvalueAdjust Character: method used to adjust p-values (see Details)
 #' 
 #' @importFrom stats p.adjust fisher.test
@@ -2169,6 +2161,7 @@ testSingleIndependence <- function(ref, groups, elements, pvalueAdjust="BH") {
 #'     \item{\code{hommel}: Hommel's method (family-wise error rate)}
 #' }
 #' 
+#' @family functions for data grouping
 #' @return \code{multiGroupIndependenceTest} object, a data frame containing:
 #' \item{attribute}{Name of the original groups compared against the reference
 #' groups}
@@ -2180,7 +2173,7 @@ testSingleIndependence <- function(ref, groups, elements, pvalueAdjust="BH") {
 #' 
 #' @export
 #' @examples 
-#' elements <- paste("patients", 1:10)
+#' elements <- paste("subjects", 1:10)
 #' ref      <- elements[5:10]
 #' groups   <- list(race=list(asian=elements[1:3],
 #'                            white=elements[4:7],
@@ -2263,11 +2256,12 @@ discardOutsideSamplesFromGroups <- function(groups, samples, clean=FALSE) {
 #' @seealso \code{\link{parseCategoricalGroups}} and 
 #' \code{\link{testGroupIndependence}}
 #' 
+#' @family functions for data grouping
 #' @return \code{ggplot} object
 #' @export
 #' 
 #' @examples 
-#' elements <- paste("patients", 1:50)
+#' elements <- paste("subjects", 1:50)
 #' ref      <- elements[10:50]
 #' groups   <- list(race=list(asian=elements[1:3],
 #'                            white=elements[4:7],

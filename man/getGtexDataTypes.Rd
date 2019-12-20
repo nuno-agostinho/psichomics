@@ -15,3 +15,8 @@ Get GTEx data types
 \examples{
 getGtexDataTypes()
 }
+\seealso{
+Other functions associated with GTEx data retrieval: \code{\link{getDownloadsFolder}},
+  \code{\link{getGtexTissues}}, \code{\link{loadGtexData}}
+}
+\concept{functions associated with GTEx data retrieval}

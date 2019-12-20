@@ -33,7 +33,7 @@ Plot -log10(p-values) of the results obtained after multiple group
 independence testing
 }
 \examples{
-elements <- paste("patients", 1:50)
+elements <- paste("subjects", 1:50)
 ref      <- elements[10:50]
 groups   <- list(race=list(asian=elements[1:3],
                            white=elements[4:7],
@@ -46,4 +46,12 @@ plotGroupIndependence(groupTesting)
 \seealso{
 \code{\link{parseCategoricalGroups}} and 
 \code{\link{testGroupIndependence}}
+
+Other functions for data grouping: \code{\link{createGroupByAttribute}},
+  \code{\link{getGeneList}},
+  \code{\link{getMatchingSamples}},
+  \code{\link{getSubjectFromSample}},
+  \code{\link{groupPerElem}},
+  \code{\link{testGroupIndependence}}
 }
+\concept{functions for data grouping}

@@ -25,7 +25,8 @@ prepareFileBrowser(session, input, id, modalId = "modal", ...)
 }}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (only used to modify the Shiny session's state or
+  internal variables)
 }
 \description{
 Prepare file browser dialogue and update the input's value accordingly to

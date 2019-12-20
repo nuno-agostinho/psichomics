@@ -1,5 +1,6 @@
 #' List the alternative splicing annotation files available
 #'
+#' @family functions for PSI quantification
 #' @return Named character vector with splicing annotation files available
 #' @export
 #'
@@ -163,11 +164,12 @@ inclusionLevelsUI <- function(id, panel) {
 #' @param minReads Integer: discard alternative splicing quantified using a
 #' number of reads below this threshold
 #' @param genes Character: gene symbols for which the splicing quantification
-#' of associated splicing events is performed (by default, all splicing events
-#' undergo splicing quantification)
+#' of associated splicing events is performed (by default, splicing events from
+#' all genes are selected)
 #'
 #' @importFrom fastmatch %fin%
 #'
+#' @family functions for PSI quantification
 #' @return Data frame with the quantification of the alternative splicing events
 #' @export
 #'
@@ -234,12 +236,12 @@ quantifySplicing <- function(annotation, junctionQuant,
 #'
 #' @param annotation Character: annotation to load
 #' @param cache Character: directory path of cache (if \code{NULL}, default 
-#' location is the one provided by
-#' \code{AnnotationHub::getAnnotationHubOption("CACHE")})
+#' location is \code{AnnotationHub::getAnnotationHubOption("CACHE")})
 #'
 #' @importFrom BiocFileCache BiocFileCache
 #' @importFrom AnnotationHub AnnotationHub query getAnnotationHubOption
 #'
+#' @family functions for PSI quantification
 #' @return List of data frames containing the alternative splicing annotation
 #' per event type
 #' @export
@@ -448,7 +450,7 @@ loadSplicingQuantificationSet <- function(session, input, output) {
 #'
 #' @inherit inclusionLevelsServer
 #' @param annotation Character: chosen annotation
-#' @param showProgress Boolean: show progress? FALSE by default
+#' @param showProgress Boolean: show progress?
 #'
 #' @keywords internal
 readAnnot <- function(session, annotation, showProgress=FALSE) {
@@ -652,6 +654,7 @@ quantifySplicingSet <- function(session, input) {
 #'
 #' @importFrom miscTools rowMedians
 #' 
+#' @family functions for PSI quantification
 #' @return Boolean vector indicating which splicing events pass the thresholds
 #' @export
 #' 

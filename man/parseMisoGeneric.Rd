@@ -45,7 +45,8 @@ files)}
 
 \item{minusIndex}{Integer: index of the coordinates for a minus strand event}
 
-\item{strand}{Character: "+" or "-" strand}
+\item{strand}{Character: positive-sense (\code{+}) or negative-sense \code{-}
+strand}
 }
 \value{
 List of parsed junctions

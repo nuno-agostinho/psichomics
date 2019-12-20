@@ -49,19 +49,21 @@ library(psichomics)
 
 ### Data retrieval
 
+* `getDownloadsFolder`: Get the user's Downloads folder
+
 **TCGA/Firebrowse**
 
-* `getDownloadsFolder`: Get the user's Downloads folder
 * `isFirebrowseUp`: Check if Firebrowse web API is online
-* `getFirebrowseCohorts`: Query the Firebrowse web API for TCGA cohorts
-* `getFirebrowseDataTypes`: Query the Firebrowse web API for TCGA data types
-* `getFirebrowseDates`: Query the Firebrowse web API for processing dates
-* `loadFirebrowseData`: Download and load TCGA data through the Firebrowse web 
+* `getTCGAcohorts`: Query the Firebrowse web API for TCGA cohorts
+* `getTCGAdataTypes`: Query the Firebrowse web API for TCGA data types
+* `getTCGAdates`: Query the Firebrowse web API for processing dates
+* `loadTCGAdata`: Download and load TCGA data through the Firebrowse web 
 API
-* `parseTcgaSampleInfo`: Parse sample information from TCGA samples
+* `parseTCGAsampleInfo`: Parse sample information from TCGA samples
 
 **GTEx**
 
+* `getGtexDataTypes`: Check available data types from GTEx
 * `getGtexTissues`: Check available tissues from a file containing sample
 metadata
 * `loadGtexData`: Load GTEx data
@@ -262,13 +264,11 @@ following commands to quickly filter and normalise gene expression:
 ```{r normalise gene expression}
 # Check genes where min. counts are available in at least N samples and filter
 # out genes with mean expression and variance of 0
-checkCounts <- rowSums(geneExpr >= 10) >= 10
-filter <- rowMeans(geneExpr) > 0 & rowVars(geneExpr) > 0 & checkCounts
+filter <- filterGeneExpr(geneExpr)
 geneExprFiltered <- geneExpr[filter, ]
 
-# Normalise gene expression and perform log2-transformation (after adding 0.5
-# to avoid zeroes)
-geneExprNorm <- normaliseGeneExpression(geneExprFiltered, log2transform=TRUE)
+# Normalise gene expression and perform log2-transformation
+geneExprNorm <- normaliseGeneExpression(geneExprFiltered)
 ```
 
 
@@ -560,7 +560,7 @@ match <- getSubjectFromSample(samples, clinical, sampleInfo=sampleInfo)
 survPlots <- list()
 for (event in events) {
     # Find optimal cutoff for the event
-    eventPSI <- assignValuePerPatient(psi[event, ], match, clinical,
+    eventPSI <- assignValuePerSubject(psi[event, ], match, clinical,
                                       samples=unlist(tumour))
     opt <- optimalSurvivalCutoff(clinical, eventPSI, censoring="right", 
                                  event="days_to_death", 
@@ -666,7 +666,7 @@ individuals whose samples have a PSI below and above that threshold).
 ```{r UHRF2 PSI survival}
 # Find optimal cutoff for the event
 UHRF2skippedExon10 <- events[1]
-eventPSI <- assignValuePerPatient(psi[UHRF2skippedExon10, ], match, clinical,
+eventPSI <- assignValuePerSubject(psi[UHRF2skippedExon10, ], match, clinical,
                                   samples=unlist(tumour))
 opt <- optimalSurvivalCutoff(clinical, eventPSI, censoring="right", 
                              event="days_to_death", timeStart="days_to_death")
@@ -691,7 +691,7 @@ To check whether alternative splicing changes are related with gene expression
 alterations, let us perform differential expression analysis on UHRF2:
 
 ```{r UHRF2 GE diff expression}
-plotDistribution(geneExprNorm["UHRF2", ], normalVSstage1Tumour, psi=FALSE)
+plotDistribution(geneExprNorm["UHRF2", ], normalVSstage1Tumour)
 ```
 
 It seems UHRF2 is differentially expressed between *Tumour Stage I* and 
@@ -705,7 +705,7 @@ To confirm if gene expression has an overall prognostic value, perform the
 following:
 
 ```{r UHRF2 GE survival}
-UHRF2ge <- assignValuePerPatient(geneExprNorm["UHRF2", ], match, clinical, 
+UHRF2ge <- assignValuePerSubject(geneExprNorm["UHRF2", ], match, clinical, 
                                  samples=unlist(tumour))
 
 # Survival curves based on optimal gene expression cutoff
@@ -770,32 +770,25 @@ p-value > 0.05).
 
 # Loading data from other sources
 
-## Load GTEx files
+## Load GTEx data
 
-First, GTEx data needs to be downloaded from the
-[GTEx Portal](http://gtexportal.org). Afterwards, load GTEx data (subject
-phenotype, sample attributes and junction quantification for given tissues) by
-following these commands:
+GTEx data (subject phenotype, sample attributes, gene expression and junction
+quantification) can be automatically retrieved and loaded by following these
+commands:
 
 ```{r load GTEx, eval=FALSE}
-# Replace with the correct path to these files
-subjects <- "~/Downloads/GTEx_Data_V6_Annotations_SubjectPhenotypesDS.txt"
-sampleAttr <- "~/Downloads/GTEx_Data_V6_Annotations_SampleAttributesDS.txt"
-junctionQuant <- "~/Downloads/GTEx_junction_reads.txt"
-
 # Check GTEx tissues available based on the sample attributes
 getGtexTissues(sampleAttr)
 
 tissues <- c("blood", "brain")
-gtex <- loadGtexData(subjects, sampleAttr, junctionQuant, tissues)
+gtex <- loadGtexData("~/Downloads", tissues)
 ```
 
 If you desire to load junction quantification for all tissues, you can also do
-so through the following commands:
+so through the following command:
 
 ```{r load all GTEx, eval=FALSE}
-tissues <- NULL
-gtex <- loadGtexData(subjectPhenotype, sampleAttr, junctionQuant, tissues)
+gtex <- loadGtexData("~/Downloads", tissues=NULL)
 ```
 
 ## Load SRA project data using recount
@@ -834,9 +827,10 @@ ignore <- c(".aux.", ".mage-tab.")
 data <- loadLocalFiles(folder, ignore=ignore)
 
 # Select clinical and junction quantification dataset
-clinical      <- data[[1]]$`Clinical data`
-sampleInfo    <- data[[1]]$`Sample metadata`
-junctionQuant <- data[[1]]$`Junction quantification (Illumina HiSeq)`
+clinical      <- data[[1]][["Clinical data"]]
+sampleInfo    <- data[[1]][["Sample metadata"]]
+geneExpr      <- data[[1]][["Gene expression"]]
+junctionQuant <- data[[1]][["Junction quantification"]]
 ```
 
 # Feedback

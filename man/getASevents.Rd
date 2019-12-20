@@ -7,8 +7,8 @@
 getASevents()
 }
 \value{
-Getters return globally accessible data, whereas setters return NULL 
-as they are only used to modify the Shiny session's state
+Getters return globally accessible data, whereas setters return 
+\code{NULL} as they are only used to modify the Shiny session's state
 }
 \description{
 Get or set globally accessible elements

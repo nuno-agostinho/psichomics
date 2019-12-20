@@ -60,3 +60,8 @@ psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 geneExpr <- readFile("ex_gene_expression.RDS")
 correlateGEandAS(geneExpr, psi, "ALDOA")
 }
+\seealso{
+Other functions to correlate gene expression and alternative splicing: \code{\link{[.GEandAScorrelation}},
+  \code{\link{plot.GEandAScorrelation}}
+}
+\concept{functions to correlate gene expression and alternative splicing}

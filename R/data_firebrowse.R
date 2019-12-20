@@ -1,3 +1,108 @@
+#' Parse information from TCGA sample identifiers
+#' 
+#' @param samples Character: sample identifiers
+#' @param match Integer: match between samples and subjects (\code{NULL} by
+#' default; performs the match)
+#' 
+#' @aliases parseTcgaSampleInfo
+#' @family functions associated with TCGA data retrieval
+#' @return Data frame containing metadata associated with each TCGA sample
+#' @export
+#' 
+#' @examples
+#' samples <- c("TCGA-3C-AAAU-01A-11R-A41B-07", "TCGA-3C-AALI-01A-11R-A41B-07",
+#'              "TCGA-3C-AALJ-01A-31R-A41B-07", "TCGA-3C-AALK-01A-11R-A41B-07", 
+#'              "TCGA-4H-AAAK-01A-12R-A41B-07", "TCGA-5L-AAT0-01A-12R-A41B-07")
+#' 
+#' parseTcgaSampleInfo(samples)
+parseTCGAsampleInfo <- function (samples, match=NULL) {
+    parsed <- parseSampleGroups(samples)
+    if ( all(is.na(parsed)) ) return(NULL)
+    
+    info <- data.frame(parsed)
+    colnames(info) <- "Sample types"
+    rownames(info) <- samples
+    
+    if (is.null(match)) match <- getSubjectFromSample(samples)
+    info <- cbind(info, "Patient ID"=match)
+    
+    # Metadata
+    attr(info, "rowNames")    <- TRUE
+    attr(info, "description") <- "Metadata for TCGA samples"
+    attr(info, "dataType")    <- "Sample metadata"
+    attr(info, "tablename")   <- "Sample metadata"
+    attr(info, "rows")        <- "samples"
+    attr(info, "columns")     <- "attributes"
+    return(info)
+}
+
+#' @export
+parseTcgaSampleInfo <- parseTCGAsampleInfo
+
+#' Prepare TCGA sample metadata from loaded datasets
+#' 
+#' If no TCGA datasets apply, the input is returned
+#' 
+#' @param data List of list of data frames
+#' 
+#' @return List of list of data frames
+#' @keywords internal
+loadTCGAsampleMetadata <- function(data) {
+    for (i in seq(data)) {
+        # Retrieve sample metadata from junction quantification
+        match <- sapply(data[[i]], attr, "dataType") ==
+            "Junction quantification"
+        junctionQuantSamples <- NULL
+        if (any(match)) {
+            junctionQuant <- data[[i]][match]
+            if (!is.null(junctionQuant)) {
+                samples <- unique(unlist(lapply(junctionQuant, colnames)))
+                if (any(grepl("^TCGA", samples))) {
+                    junctionQuantSamples <- samples
+                    data[[i]]$"Sample metadata" <- parseTcgaSampleInfo(samples)
+                }
+            }
+        }
+        
+        # Retrieve sample metadata from gene expression
+        match <- sapply(data[[i]], attr, "dataType") == "Gene expression"
+        if (any(match)) {
+            geneExpr <- data[[i]][match]
+            if (!is.null(geneExpr)) {
+                samples <- unique(unlist(lapply(geneExpr, colnames)))
+                samples <- samples[!samples %in% junctionQuantSamples]
+                if (any(grepl("^TCGA", samples))) {
+                    data[[i]]$"Sample metadata" <- parseTcgaSampleInfo(samples)
+                }
+            }
+        }
+    }
+    return(data)
+}
+
+#' Get available TCGA data types
+#' 
+#' @importFrom R.utils capitalize
+#' 
+#' @aliases getFirebrowseDataTypes
+#' @family functions associated with TCGA data retrieval
+#' @return Named character vector
+#' @export
+#' 
+#' @examples
+#' getTCGAdataTypes()
+getTCGAdataTypes <- function() {
+    choices <- list("RNA sequencing"=c(
+        "junction_quantification", "exon_quantification", 
+        "exon_expression", "junction_expression",
+        "RSEM_genes", "RSEM_genes_normalized", "RSEM_isoforms", "Preprocess"))
+    names(choices[[1]]) <- capitalize(gsub("_", " ", choices[[1]], fixed=TRUE))
+    return(choices)
+}
+
+#' @export
+getFirebrowseDataTypes <- getTCGAdataTypes
+
 #' Returns the date format used by the Firebrowse web API
 #'
 #' @return Named list with Firebrowse web API's date formats
@@ -31,17 +136,15 @@ parseDateResponse <- function(string) {
     return(date)
 }
 
-#' Check whether the Firebrowse web API is running
-#'
-#' The Firebrowse web API is running if it returns the status condition 200; if
-#' this is not the status code obtained from the API, the function will raise a
-#' warning with the status code and a brief explanation.
+#' Check if \href{http://firebrowse.org/api-docs/}{Firebrowse API} is running
 #'
 #' @importFrom httr GET warn_for_status http_error
 #' @importFrom methods is
 #'
-#' @return Invisible TRUE if the Firebrowse web API is working; otherwise, 
-#' raises a warning
+#' @family functions associated with TCGA data retrieval
+#' @return Invisible \code{TRUE} if the
+#' \href{http://firebrowse.org/api-docs/}{Firebrowse API} is working; otherwise,
+#' raises a warning with the status code and a brief explanation.
 #' @export
 #'
 #' @examples
@@ -61,8 +164,8 @@ isFirebrowseUp <- function() {
 
 #' Query the Firebrowse web API for TCGA data
 #'
-#' @param format Character: response format as \code{JSON} (default), \code{CSV}
-#' or \code{TSV}
+#' @param format Character: response format as \code{JSON}, \code{CSV} or
+#' \code{TSV}
 #' @param date Character: dates of the data retrieval by Firebrowse (by default,
 #' it uses the most recent data available)
 #' @param cohort Character: abbreviation of the cohorts (by default, returns
@@ -84,18 +187,18 @@ isFirebrowseUp <- function() {
 #' @keywords internal
 #'
 #' @examples
-#' cohort <- psichomics:::getFirebrowseCohorts()[1]
+#' cohort <- getFirebrowseCohorts()[1]
 #' psichomics:::queryFirebrowseData(cohort = cohort, data_type = "mRNASeq")
 #' 
 #' # Querying for data from a specific date
-#' dates <- psichomics:::getFirebrowseDates()
+#' dates <- getFirebrowseDates()
 #' dates <- format(dates, psichomics:::getFirebrowseDateFormat()$query)
 #' 
 #' psichomics:::queryFirebrowseData(date = dates[2], cohort = cohort)
 queryFirebrowseData <- function(format = "json", date = NULL, cohort = NULL, 
                                 data_type = NULL, tool = NULL, platform = NULL,
                                 center = NULL, level = NULL, protocol = NULL,
-                                page = NULL, page_size = NULL, sort_by = NULL) {
+                                page = NULL, sort_by = NULL) {
     # Only allow these response formats
     format <- match.arg(format, c("json", "csv", "tsv"))
     
@@ -104,7 +207,7 @@ queryFirebrowseData <- function(format = "json", date = NULL, cohort = NULL,
     
     # Process the parameters of the query
     labels <- list("format", "date", "cohort", "data_type", "tool", "platform",
-                   "center", "level", "protocol", "page", "page_size",
+                   "center", "level", "protocol", "page",
                    "sort_by")
     query <- lapply(labels, dynGet)
     names(query) <- labels
@@ -154,33 +257,45 @@ parseFirebrowseMetadata <- function(type, ...) {
     return(response)
 }
 
-#' Query the Firebrowse web API
+#' Get available parameters for TCGA data
+#' 
+#' Parameters obtained via \href{http://firebrowse.org/api-docs/}{Firebrowse}
 #'
+#' @aliases getFirebrowseDates
+#' @family functions associated with TCGA data retrieval
 #' @return Parsed response
 #' @export
 #' 
 #' @examples
 #' if (isFirebrowseUp()) getFirebrowseDates()
-getFirebrowseDates <- function() {
+getTCGAdates <- function() {
     dates <- parseFirebrowseMetadata("Dates")$Dates
     format <- getFirebrowseDateFormat()
     dates <- as.Date(dates, format$query)
     return(dates)
 }
 
-#' @rdname getFirebrowseDates
-#'
-#' @param cohort Character: filter results by given cohorts (optional)
+#' @export
+getFirebrowseDates <- getTCGAdates
+
+#' @rdname getTCGAdates
+#' 
+#' @param cohort Character: filter results by cohorts (optional)
+#' 
+#' @aliases getFirebrowseCohorts
 #' @export
 #'
 #' @examples
-#' if (isFirebrowseUp()) getFirebrowseCohorts()
-getFirebrowseCohorts <- function(cohort = NULL) {
+#' if (isFirebrowseUp()) getTCGAcohorts()
+getTCGAcohorts <- function(cohort = NULL) {
     response <- parseFirebrowseMetadata("Cohorts", cohort=cohort)
     cohorts <- response$Cohorts[[2]]
     names(cohorts) <- response$Cohorts[[1]]
     return(cohorts)
 }
+
+#' @export
+getFirebrowseCohorts <- getTCGAcohorts
 
 #' Download files to a given directory
 #'
@@ -379,35 +494,40 @@ loadFirebrowseFolders <- function(folder, exclude="") {
     return(loaded)
 }
 
-#' Downloads and processes data from the Firebrowse web API and loads it into R
+#' Download and process TCGA data
+#' 
+#' TCGA data obtained via \href{http://firebrowse.org/api-docs/}{Firebrowse}
 #' 
 #' @param folder Character: directory to store the downloaded archives (by
-#' default, it saves in the user's "Downloads" folder)
-#' @param data Character: data to load
+#' default, saves to \code{\link{getDownloadsFolder()}})
+#' @param data Character: data to load (\code{\link{getFirebrowseDataTypes()}})
 #' @param exclude Character: files and folders to exclude from downloading and
-#' from loading into R (by default, it excludes \code{.aux.}, \code{.mage-tab.}
-#' and \code{MANIFEST.TXT} files)
+#' from loading into R (by default, exclude files containing \code{.aux.},
+#' \code{.mage-tab.} and \code{MANIFEST.TXT})
 #' @inheritDotParams queryFirebrowseData
-#' @param download Boolean: download missing files through the function
-#' \code{download.file} (TRUE by default)
+#' @param download Boolean: download missing files
 #' 
 #' @include formats.R
 #' @importFrom tools file_ext file_path_sans_ext
 #' @importFrom httr stop_for_status
 #' @importFrom utils download.file
 #' 
-#' @return URL of missing files ("missing" class) if files need to be downloaded
-#' and if the argument \code{download} is \code{FALSE}; else, a list with loaded
-#' data
+#' @aliases loadFirebrowseData
+#' @family functions associated with TCGA data retrieval
+#' @return A list with the loaded data, unless required files are unavailable
+#' and \code{download = FALSE} (if so, it returns the URL of files to download)
 #' @export
 #' 
-#' @examples 
+#' @examples
+#' getFirebrowseDataTypes() 
 #' \dontrun{
 #' loadFirebrowseData(cohort = "ACC", data_type = "Clinical")
 #' }
-loadFirebrowseData <- function(folder=getDownloadsFolder(), data=NULL, 
-                               exclude=c(".aux.", ".mage-tab.", "MANIFEST.txt"),
-                               ..., download=TRUE) {
+loadTCGAdata <- function(folder=getDownloadsFolder(), 
+                         data=c("clinical", "junction_quantification",
+                                "RSEM_genes"), 
+                         exclude=c(".aux.", ".mage-tab.", "MANIFEST.txt"),
+                         ..., download=TRUE) {
     args <- list(...)
     
     datasets <- unlist(getFirebrowseDataTypes())
@@ -518,6 +638,9 @@ loadFirebrowseData <- function(folder=getDownloadsFolder(), data=NULL,
     return(loaded)
 }
 
+#' @export
+loadFirebrowseData <- loadTCGAdata
+
 #' Creates a UI set with options to add data from TCGA/Firebrowse
 #' @param ns Namespace function
 #' 
@@ -526,11 +649,11 @@ loadFirebrowseData <- function(folder=getDownloadsFolder(), data=NULL,
 #' @return A UI set that can be added to a UI definition
 #' @keywords internal
 addTCGAdata <- function(ns) {
-    cohorts <- getFirebrowseCohorts()
+    cohorts <- getTCGAcohorts()
     acronyms <- names(cohorts)
     names(acronyms) <- sprintf("%s (%s)", cohorts, names(cohorts))
     
-    dates <- as.character(getFirebrowseDates())
+    dates <- as.character(getTCGAdates())
     names(dates) <- dates
     names(dates)[1] <- paste(names(dates)[1], "(most recent)")
     
@@ -625,13 +748,13 @@ checkFirebrowse <- function(ns) {
 #' @param input Shiny input
 #' @param output Shiny output
 #' @param session Shiny session
-#' @param replace Boolean: replace loaded data? TRUE by default
+#' @param replace Boolean: replace loaded data?
 #' 
 #' @importFrom shinyjs disable enable
 #' @importFrom shiny div fluidRow column icon tags
 #' @importFrom shinyBS bsTooltip
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 setFirebrowseData <- function(input, output, session, replace=TRUE) {
     ns <- session$ns

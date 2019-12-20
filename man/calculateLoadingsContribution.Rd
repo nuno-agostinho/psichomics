@@ -32,3 +32,8 @@ are the eigenvalues of principal components (x and y)
 pca <- performPCA(USArrests)
 calculateLoadingsContribution(pca)
 }
+\seealso{
+Other functions to analyse principal components: \code{\link{performPCA}},
+  \code{\link{plotPCA}}, \code{\link{plotVariance}}
+}
+\concept{functions to analyse principal components}

@@ -33,7 +33,7 @@ related to most points}
 \item{labelled}{Integer: index of rows/points to be labelled}
 
 \item{labelledParams}{List of parameters to pass to 
-\code{\link[ggrepel]{geom_label_repel}} related to labelled points}
+\code{ggrepel::geom_label_repel} related to labelled points}
 
 \item{xlim}{Numeric: limits of X axis}
 

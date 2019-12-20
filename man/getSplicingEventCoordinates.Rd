@@ -10,7 +10,7 @@ getSplicingEventCoordinates(type, sorting = FALSE)
 \item{type}{Character: alternative splicing event type}
 
 \item{sorting}{Boolean: get coordinates used for sorting and comparison 
-between different programs? FALSE by default}
+between different programs?}
 }
 \value{
 Coordinates of interest according to the alternative splicing event

@@ -29,3 +29,7 @@ ignore <- c(".aux.", ".mage-tab.", "junction quantification")
 loadLocalFiles(folder, ignore)
 }
 }
+\seealso{
+Other functions to load local files: \code{\link{prepareSRAmetadata}}
+}
+\concept{functions to load local files}

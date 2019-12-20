@@ -184,7 +184,7 @@ loadFileFormats <- function() {
 #' @importFrom data.table fread
 #' 
 #' @return Data frame with the contents of the given file if the file format is
-#' recognised; otherwise, returns NULL
+#' recognised; otherwise, returns \code{NULL}
 #' @keywords internal
 parseValidFile <- function(file, formats, ...) {
     if (!is.list(formats[[1]])) formats <- list(formats)

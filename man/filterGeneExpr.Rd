@@ -42,3 +42,10 @@ geneExpr <- rbind(geneExpr,
 # Filter out genes with low reads across samples
 geneExpr[filterGeneExpr(geneExpr), ]
 }
+\seealso{
+Other functions for gene expression pre-processing: \code{\link{convertGeneIdentifiers}},
+  \code{\link{normaliseGeneExpression}},
+  \code{\link{plotGeneExprPerSample}},
+  \code{\link{plotRowStats}}
+}
+\concept{functions for gene expression pre-processing}

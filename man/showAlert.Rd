@@ -38,7 +38,8 @@ removeAlert(output, alertId = "alert")
 \item{output}{Shiny output}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (only used to modify the Shiny session's state or
+  internal variables)
 }
 \description{
 Show or remove an alert

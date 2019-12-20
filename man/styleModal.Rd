@@ -53,7 +53,8 @@ from a call to \code{\link{removeModal}} on the server.}
 \item{caller}{Character: caller module identifier}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (only used to modify the Shiny session's state or
+  internal variables)
 }
 \description{
 Create a modal window

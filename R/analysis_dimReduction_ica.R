@@ -5,6 +5,7 @@
 #' @inheritParams reduceDimensionality
 #' @inheritParams fastICA::fastICA
 #' 
+#' @family functions to analyse independent components
 #' @return ICA result in a \code{prcomp} object
 #' @export
 #' 
@@ -34,6 +35,7 @@ performICA <- function(data, n.comp=min(5, ncol(data)), center=TRUE,
 #' 
 #' @importFrom pairsD3 pairsD3
 #' 
+#' @family functions to analyse independent components
 #' @return Multiple scatterplots as a \code{pairsD3} object
 #' @export
 #' 
@@ -259,7 +261,7 @@ icaUI <- function(id) {
 #' @importFrom shiny renderTable tableOutput
 #' @importFrom pairsD3 renderPairsD3
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 clusterICAset <- function(session, input, output) {
     clusterICA <- reactive({
@@ -345,11 +347,11 @@ clusterICAset <- function(session, input, output) {
                             "Samples"=new)
             rownames(groups) <- names
             
-            # Match samples with patients (if loaded)
-            patients <- isolate(getPatientId())
-            if (!is.null(patients)) {
+            # Match samples with subjects (if loaded)
+            subjects <- isolate(getSubjectId())
+            if (!is.null(subjects)) {
                 indiv  <- lapply(new, function(i)
-                    unname(getPatientFromSample(i, patientId=patients)))
+                    unname(getSubjectFromSample(i, patientId=subjects)))
                 groups <- cbind(groups[ , 1:3, drop=FALSE], "Patients"=indiv, 
                                 groups[ ,   4, drop=FALSE])
             }
@@ -360,7 +362,7 @@ clusterICAset <- function(session, input, output) {
             colnames(groups)[1] <- "Group"
             groups[ , "Samples"]  <- sapply(groups[ , "Samples"], length)
             cols <- c(1, 4)
-            if (!is.null(patients)) {
+            if (!is.null(subjects)) {
                 groups[ , "Patients"] <- sapply(groups[ , "Patients"], length)
                 cols <- c(cols, 5)
             }

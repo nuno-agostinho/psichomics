@@ -2,7 +2,7 @@ gtexClinicalInfoFormat <- function() {
     list(
         tablename   = "Clinical data",
         filename    = "GTEx_Data_V6_Annotations_SubjectPhenotypesDS.txt",
-        description = "Clinical data of GTEx patients",
+        description = "Clinical data of GTEx subjects",
         dataType    = "Clinical data",
         
         # Transpose data before parsing? If so, a row in the transposed dataset
@@ -29,7 +29,7 @@ gtexClinicalInfoFormat <- function() {
         unique = FALSE,
         
         # Identity of rows and columns
-        rows    = "patients",
+        rows    = "subjects",
         columns = "attributes",
         
         # Default columns to show (NULL to show all)

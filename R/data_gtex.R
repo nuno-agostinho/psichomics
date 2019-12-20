@@ -1,5 +1,6 @@
 #' Get GTEx data types
 #' 
+#' @family functions associated with GTEx data retrieval
 #' @return GTEx data types
 #' @export
 #' 
@@ -58,6 +59,7 @@ gtexDataUI <- function(id, panel) {
 #'
 #' @inheritParams loadGtexData
 #'
+#' @family functions associated with GTEx data retrieval
 #' @return Character: available tissues
 #' @export
 #' 
@@ -131,12 +133,12 @@ loadGtexFile <- function(path, pattern, samples=NULL) {
         if (pattern == "Sample") {
             # Retrieve samples based on tissues
             parsed <- parsed[samples, ]
-        } else if (pattern=="Subject") {
-            # Retrieve patients for which samples are available
-            patients <- getPatientFromSample(samples, rownames(parsed))
-            patients <- patients[!is.na(patients)]
-            patients <- sort(unique(patients))
-            parsed <- parsed[patients, ]
+        } else if (pattern == "Subject") {
+            # Retrieve subjects for which samples are available
+            subjects <- getSubjectFromSample(samples, rownames(parsed))
+            subjects <- subjects[!is.na(subjects)]
+            subjects <- sort(unique(subjects))
+            parsed <- parsed[subjects, ]
         }
     }
     return(parsed)
@@ -168,32 +170,33 @@ downloadGtexFiles <- function(filepath, dataTypes) {
 
 #' Load GTEx data
 #'
-#' @param dataTypes Character: data types to load (see \code{getGtexDataTypes})
-#' @param dataFolder Character: folder containing data
+#' @param data Character: data types to load (see \code{getGtexDataTypes})
+#' @param folder Character: folder containing data
 #' @param tissue Character: tissues to load (if \code{NULL}, load all); tissue
 #' selection may speed up data loading
 #'
 #' @importFrom tools file_path_sans_ext
 #' @importFrom R.utils gunzip
-#'
+#' 
+#' @family functions associated with GTEx data retrieval
 #' @return List with loaded data
 #' @export
 #' 
 #' @examples 
 #' \dontrun{
-#' # Load all available GTEx data
+#' # Download and load all available GTEx data
 #' data <- loadGtexData()
 #' 
-#' # Load only junction quantification and sample info from GTEx
+#' # Download and load only junction quantification and sample info from GTEx
 #' getGtexDataTypes()
 #' data <- loadGtexData(dataTypes=c("sampleInfo", "junctionQuant"))
 #' 
-#' # Load only data for specific tissues
+#' # Download and load only data for specific tissues
 #' getGtexTissues()
 #' data <- loadGtexData(tissue=c("Stomach", "Small Intestine"))
 #' }
-loadGtexData <- function(dataTypes=getGtexDataTypes(), 
-                         dataFolder=getDownloadsFolder(), tissue=NULL) {
+loadGtexData <- function(folder=getDownloadsFolder(), data=getGtexDataTypes(), 
+                         tissue=NULL) {
     if (is.null(dataTypes))  stop("Argument 'dataTypes' cannot be NULL.")
     if (is.null(dataFolder)) stop("Argument 'dataFolder' cannot be NULL.")
     
@@ -274,9 +277,9 @@ loadGtexData <- function(dataTypes=getGtexDataTypes(),
 #' 
 #' @param session Shiny session
 #' @param input Shiny input
-#' @param replace Boolean: replace loaded data? TRUE by default
+#' @param replace Boolean: replace loaded data?
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 loadGtexDataShiny <- function(session, input, replace=TRUE) {
     dataTypes  <- input$dataTypes
