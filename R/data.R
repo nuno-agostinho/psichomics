@@ -617,7 +617,18 @@ dataServer <- function(input, output, session) {
                     description=attr(data, "description"))
             }
         )
-        do.call(tabsetPanel, c(id=ns("datasetTab"), dataTablesUI))
+        tabLoad <- tabPanel(title=tags$span(icon("plus"), "Load"),
+                            value="Settings", "Not working... :(")
+        tabSettings <- tabPanel(title=tags$span(icon("wrench"), "Edit"),
+                                value="Settings", "Not working... :(")
+        tabs <- do.call(tabsetPanel, c(id=ns("datasetTab"), 
+                                       c(dataTablesUI,
+                                         list(tabSettings, tabLoad))))
+        tabs[[3]][[1]][[3]][[1]][[length(dataTablesUI) + 1]][[2]] <- c(
+            "class"="pull-right")
+        tabs[[3]][[1]][[3]][[1]][[length(dataTablesUI) + 2]][[2]] <- c(
+            "class"="pull-right")
+        return(tabs)
     })
     
     # Change the active dataset
