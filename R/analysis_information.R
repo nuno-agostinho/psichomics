@@ -384,7 +384,7 @@ plottableXranges <- function(hc, shiny=FALSE) {
         tags$script(sprintf("Highcharts.chart('container', %s)", hc))))
 }
 
-plotSplicingEvent <- function(hc, event) {
+plotASeventRegion <- function(hc, event) {
     parsed <- parseSplicingEvent(event[[1]], coords=TRUE)
     con1   <- sort(parsed$constitutive1[[1]])
     alt1   <- sort(parsed$alternative1[[1]])
@@ -555,7 +555,7 @@ plotTranscripts <- function(info, eventPosition=NULL, event=NULL, shiny=FALSE) {
     hc <- do.call("hc_series", c(list(hc), data))
     
     if (!is.null(event)) {
-        hc <- hc %>% plotSplicingEvent(event)
+        hc <- hc %>% plotASeventRegion(event)
     } else if (!is.null(eventPosition)) {
         # Draw region if only splicing event position is provided
         eventStart <- eventPosition[1]

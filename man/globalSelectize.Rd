@@ -4,12 +4,14 @@
 \alias{globalSelectize}
 \title{Create a selectize input available from any page}
 \usage{
-globalSelectize(id, placeholder)
+globalSelectize(id, placeholder, ASevent = FALSE)
 }
 \arguments{
 \item{id}{Character: input identifier}
 
 \item{placeholder}{Character: input placeholder}
+
+\item{ASevent}{Boolean: select alternative splicing events?}
 }
 \value{
 HTML element for a global selectize input

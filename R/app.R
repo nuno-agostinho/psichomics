@@ -111,25 +111,37 @@ getUiFunctions <- function(ns, loader, ..., priority=NULL) {
 }
 
 #' Create a selectize input available from any page
+#' 
 #' @param id Character: input identifier
 #' @param placeholder Character: input placeholder
+#' @param ASevent Boolean: select alternative splicing events?
 #' 
 #' @importFrom shiny selectizeInput tagAppendAttributes
 #' 
 #' @return HTML element for a global selectize input
 #' @keywords internal
-globalSelectize <- function(id, placeholder) {
+globalSelectize <- function(id, placeholder, ASevent=FALSE) {
     elem <- paste0(id, "Elem")
     hideElem <- sprintf("$('#%s')[0].style.display = 'none';", id)
     
-    select <- selectizeInput(elem, "", choices=NULL, width="auto", options=list(
-        onItemAdd=I(paste0("function(value, $item) {", hideElem, "}")),
-        onBlur=I(paste0("function() {", hideElem, "}")),
-        placeholder=placeholder))
+    onItemAdd <- I(paste0("function(value, $item) {", hideElem, "}"))
+    onBlur    <- I(paste0("function() {", hideElem, "}"))
+    onType    <- I(paste0(
+        "function(value) { $('#selectizeEvent .selectize-dropdown-content')",
+        ".unmark().mark(value, {exclude: ['text']}); }"))
+    
+    render <- NULL
+    if (ASevent) render <- I("{ option: renderEvent }")
+    
+    opts <- list(onItemAdd=onItemAdd, onBlur=onBlur, maxOptions=20,
+                 placeholder=placeholder, render=render, highlight=FALSE,
+                 onType=onType)
+    
+    select <- selectizeInput(elem, "", choices=NULL, width="95%", options=opts)
     select[[3]][[1]] <- NULL
     select <- tagAppendAttributes(select, id=id, style=paste(
         "display: none;",
-        "width: 95%;", "position: absolute;",  "margin-top: 5px !important;"))
+        "position: absolute;",  "margin-top: 5px !important;"))
     return(select)
 }
 
@@ -140,12 +152,12 @@ globalSelectize <- function(id, placeholder) {
 #' 
 #' @return HTML element to be included in a navigation bar
 #' @keywords internal
-navSelectize <- function(id, label, placeholder=label) {
+navSelectize <- function(id, label, placeholder=label, ASevent=FALSE) {
     value <- paste0(id, "Value")
     tags$li( tags$div(
         class="navbar-text",
         style="margin-top: 5px !important; margin-bottom: 0px !important;", 
-        globalSelectize(id, placeholder),
+        globalSelectize(id, placeholder, ASevent=ASevent),
         tags$small(tags$b(label), tags$a(
             "Change...", onclick=paste0(
                 '$("#', id, '")[0].style.display = "block";',
@@ -194,12 +206,15 @@ appUI <- function() {
                              priority=c("dataUI", "analysesUI"))
     
     header <- tagList(
-        includeCSS(insideFile("shiny", "www", "styles.css")),
+        # Include CSS files
         includeCSS(insideFile("shiny", "www", "animate.min.css")),
-        includeScript(insideFile("shiny", "www", "functions.js")),
+        includeCSS(insideFile("shiny", "www", "psichomics.css")),
+        # Include JavaScript files
+        includeScript(insideFile("shiny", "www", "jquery.mark.min.js")),
         includeScript(insideFile("shiny", "www", "highcharts.ext.js")),
         includeScript(insideFile("shiny", "www", "fuzzy.min.js")),
         includeScript(insideFile("shiny", "www", "jquery.textcomplete.min.js")),
+        includeScript(insideFile("shiny", "www", "psichomics.js")),
         conditionalPanel(
             condition="$('html').hasClass('shiny-busy')",
             div(class="text-right", id="loadmessage",
@@ -222,7 +237,8 @@ appUI <- function() {
                 navSelectize("selectizeCategory", "Selected dataset",
                              "Select dataset"),
                 navSelectize("selectizeEvent", "Selected splicing event",
-                             "Search by gene, chromosome and coordinates")))
+                             "Search by gene and coordinates...",
+                             ASevent=TRUE)))
     shinyUI(nav)
 }
 
@@ -303,9 +319,44 @@ appServer <- function(input, output, session) {
         if (!is.null(selected) && selected != "") setCategory(selected)
     })
     
-    # Update available events
-    observe(updateSelectizeChoices(session, "selectizeEventElem", 
-                                   getASevents(), server=TRUE))
+    # Prepare representation of alternative splicing events
+    prepareASeventsRepresentation <- reactive({
+        ASevent <- getASevents()
+        if (!is.null(ASevent)) {
+            diagram        <- plotSplicingEvent(ASevent, raw=TRUE)
+            representation <- ASevent
+            names(representation) <- paste(ASevent, "__", diagram)
+            
+            # Fully extend acronyms for alternative splicing event types
+            eventTypes <- getSplicingEventTypes(acronymsAsNames=TRUE)
+            for (type in names(eventTypes)) {
+                find <- paste0("^", type)
+                rep  <- sprintf("%s (%s)", eventTypes[[type]], type)
+                names(representation) <- gsub(find, rep, names(representation))
+            }
+            # Improve chromosome and strand representation
+            names(representation) <- gsub("_([0-9A-Za-z].*)_([+-])_",
+                                          "_(chr\\1, \\2 strand)_",
+                                          names(representation))
+        } else {
+            representation <- NULL
+        }
+        return(representation)
+    })
+    
+    # Update available alternative splicing events
+    observe({
+        representation <- prepareASeventsRepresentation()
+        selected <- getASevent()
+        if (!is.null(representation) && !is.null(selected)) {
+            # Move the selected alternative splicing event to the top
+            find <- match(selected, representation)
+            sort <- unique(c(find, seq(representation)))
+            representation <- representation[sort]
+        }   
+        updateSelectizeChoices(session, "selectizeEventElem", representation,
+                               server=TRUE)
+    })
     
     # Set alternative splicing event
     observeEvent(input[["selectizeEventElem"]], {

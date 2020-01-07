@@ -46,6 +46,7 @@ library(psichomics)
 * `parseSplicingEvent`: Parse splicing events
 * `getSplicingEventFromGenes`: Get alternative splicing events from genes
 * `getGenesFromSplicingEvents`: Get genes from alternative splicing events
+* `plotSplicingEvent`: Plot the representation of given alternative splicing events
 
 ### Data retrieval
 
@@ -471,6 +472,9 @@ between tumour and normal TCGA breast samples. To do so:
 ASevents <- rownames(psi)
 (tmp     <- grep("NUMB", ASevents, value=TRUE))
 NUMBskippedExon12 <- tmp[1]
+
+# Plot the representation of NUMB exon 12 inclusion
+plotSplicingEvent(NUMBskippedExon12)
 
 # Plot its PSI distribution
 plotDistribution(psi[NUMBskippedExon12, ], normalVStumour)

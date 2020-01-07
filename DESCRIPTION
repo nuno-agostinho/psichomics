@@ -136,6 +136,7 @@ Collate:
     'formats_recountSampleInfo.R'
     'groups.R'
     'help.R'
+    'utils_drawSplicingEvent.R'
     'utils_fileBrowserDialog.R'
     'utils_interactiveGgplot.R'
     'utils_interface.R'

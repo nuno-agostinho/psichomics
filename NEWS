@@ -5,6 +5,10 @@
     - Support junction coordinates from mitochondrial, Z and W chromosomes
     - Fix issues with files containing splice junctions within random, alt and
     unknown chromosomes by discarding those rows (a warning is raised)
+* Alternative splicing events can now be represented via diagrams:
+    - Redesign of alternative splicing event selection (graphical interface)
+    - Function `plotSplicingEvent()` plots diagram representation of alternative
+    splicing events
 * Tutorials:
     - Copy-edit command-line interface (CLI) tutorial
     - Copy-edit tutorial on custom alternative splicing annotation preparation
