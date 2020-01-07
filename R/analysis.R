@@ -2041,6 +2041,8 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
     series  <- split(vector, group)
     samples <- vapply(series, function(i) sum(!is.na(i)), integer(1))
     valid   <- names(series)[samples >= threshold]
+    if(length(valid) == 0) return(NULL)
+    
     inGroup <- group %in% valid
     group   <- group[inGroup]
     vector  <- vector[inGroup]
@@ -2261,6 +2263,7 @@ diffAnalyses <- function(data, groups=NULL,
         elems <- match == k
         df2   <- t(data.frame(ll[elems], stringsAsFactors=FALSE))
         cols  <- colnames(df2)
+        if (nrow(df2) == 0) return(NULL)
         
         df2           <- data.frame(df2, stringsAsFactors=FALSE)
         colnames(df2) <- cols
