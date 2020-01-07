@@ -53,6 +53,18 @@
 * Fix warning/error alerts crashing the visual interface
 * Improve unit tests and function documentation
 
+# 1.10.2 (4 Oct, 2019)
+
+Fix warnings in Windows-specific CI tools and Bioconductor
+
+# 1.10.1 (19 Sep, 2019)
+
+Avoid timeouts in CI tools and Bioconductor builds by skipping a specific unit test
+
+# 1.8.3 (21 April, 2019)
+
+Replace deprecated `R.utils::evalWithTimeout()` with `R.utils::withTimeout()`
+
 # 1.8.2 (26 March, 2019)
 
 * Data loading:

@@ -705,7 +705,6 @@ blendColours <- function (colour1, colour2, colour1Percentage=0.5) {
 #' @param ranges Plot interval ranges?
 #' @param rangesOpacity Opacity of the interval ranges
 #' 
-#' @method hchart survfit
 #' @importFrom highcharter %>% hc_add_series highchart hc_tooltip hc_yAxis
 #' hc_plotOptions fa_icon_mark JS
 #' @importFrom stats setNames

@@ -286,8 +286,6 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #' @param genes Character: genes
 #' @param ASevents Character: ASevents
 #' 
-#' @method [ GEandAScorrelation
-#' 
 #' @importFrom stats na.omit
 #' 
 #' @family functions to correlate gene expression and alternative splicing
@@ -490,7 +488,6 @@ plot.GEandAScorrelation <- function(
 plotCorrelation <- plot.GEandAScorrelation
 
 #' @rdname plot.GEandAScorrelation
-#' @method print GEandAScorrelation
 #' @export
 print.GEandAScorrelation <- function(x, ...) {
     for (item in x) {
@@ -522,7 +519,6 @@ print.GEandAScorrelation <- function(x, ...) {
 #'      \item{\code{hochberg}: Hochberg's method (family-wise error rate)}
 #'      \item{\code{hommel}: Hommel's method (family-wise error rate)}
 #' }
-#' @method as.table GEandAScorrelation
 #' @export
 as.table.GEandAScorrelation <- function (x, pvalueAdjust="BH", ...) {
     prepareCol <- function(object, FUN) unlist(lapply(object, lapply, FUN))

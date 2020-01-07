@@ -451,13 +451,12 @@ processSurvTerms <- function(clinical, censoring, event, timeStart,
     return(res)
 }
 
-#' Compute estimates of survival curves
-#' 
-#' @param survTerms \code{survTerms} object: processed survival terms
-#' @inheritDotParams survival::survfit.formula -formula -data
+#' @inherit survival::survfit title details return
+#' @inheritParams survdiffTerms
+#' @inheritDotParams survival::survdiff -formula -data
 #' 
 #' @importFrom survival survfit
-#' @method survfit survTerms
+#' @export
 #' 
 #' @family functions to analyse survival
 #' @return \code{survfit} object. See \code{survfit.object} for details. Methods
@@ -466,6 +465,7 @@ processSurvTerms <- function(clinical, censoring, event, timeStart,
 #' @export survfit.survTerms
 #'
 #' @examples 
+#' library("survival")
 #' clinical <- read.table(text = "2549   NA ii  female
 #'                                 840   NA i   female
 #'                                  NA 1204 iv    male
@@ -481,7 +481,6 @@ processSurvTerms <- function(clinical, censoring, event, timeStart,
 #' formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
 #' survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
 #'                                formulaStr=formulaStr)
-#' require("survival")
 #' survfit(survTerms)
 survfit.survTerms <- function(survTerms, ...) {
     res <- survfit(survTerms$form, data=survTerms$survTime, ...)
@@ -496,9 +495,9 @@ survfit.survTerms <- function(survTerms, ...) {
     return(res)
 }
 
-#' Test differences between survival curves
-#' 
-#' @param survTerms survTerms object: processed survival terms
+#' @inherit survival::survdiff
+#' @param survTerms \code{survTerms} object: survival terms obtained after 
+#'   running \code{processSurvTerms} (see examples)
 #' @inheritDotParams survival::survdiff -formula -data
 #' 
 #' @importFrom survival survdiff
@@ -525,8 +524,8 @@ survfit.survTerms <- function(survTerms, ...) {
 #' formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
 #' survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
 #'                                formulaStr=formulaStr)
-#' survdiff.survTerms(survTerms)
-survdiff.survTerms <- function(survTerms, ...) {
+#' survdiffTerms(survTerms)
+survdiffTerms <- function(survTerms, ...) {
     survdiff(survTerms$form, data=survTerms$survTime, ...)
 }
 
@@ -621,7 +620,7 @@ processSurvival <- function(session, ...) {
 
 #' Test the survival difference between groups of subjects
 #' 
-#' @inheritParams survdiff.survTerms
+#' @inheritParams survdiffTerms
 #' @inheritDotParams survival::survdiff -formula -data
 #' 
 #' @note Instead of raising errors, returns \code{NA}
@@ -648,7 +647,7 @@ testSurvival <- function (survTerms, ...) {
     # If there's an error with survdiff, return NA
     pvalue <- tryCatch({
         # Test the difference between survival curves
-        diff <- survdiff.survTerms(survTerms, ...)
+        diff <- survdiffTerms(survTerms, ...)
         
         # Calculate p-value with given significant digits
         pvalue <- 1 - pchisq(diff$chisq, length(diff$n) - 1)
@@ -1206,9 +1205,9 @@ kruskal <- function(data, groups, stat=NULL) {
 #' 
 #' @importFrom shiny tagList tags h4 br
 #' @importFrom stats fisher.test
-#' @importFrom R.utils evalWithTimeout
+#' @importFrom R.utils withTimeout
 fisher <- function(data, groups) {
-    stat <- try(evalWithTimeout(
+    stat <- try(withTimeout(
         fisher.test(data, factor(groups)),
         timeout = 1,
         onTimeout = "error"))
