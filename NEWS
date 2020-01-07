@@ -30,6 +30,17 @@
     (command-line interface)
     - Fix `prepareGeneQuant()` not working if its argument `strandedness` is 
     either `stranded` or `stranded (reverse)`
+* Density plot:
+    - Fix visual bug when plotting a group with only one sample (if one data
+    point is available for a group, only the rug plot is drawn)
+    - After hiding all plot series, rug plots of the different groups can be 
+    distinguished based on the Y axis (different arbitrary Y values are given to
+    each rug plot series)
+    - Rug plot labels now show data values if sample names are not provided
+    - Rug plot labels can now be rotated (rotation is not enabled by default
+    given Highcharts issues that may occur at different zoom levels and
+    depending on proximity between different sample values)
+    - Fix misguiding example in function documentation
 * Survival analysis (p-value plot):
     - Fix alternative splicing quantification cutoff being selected based on the
     one whose difference has the highest (instead of the lowest) p-value
@@ -117,7 +128,7 @@
     - Fix distribution plots requiring all samples in a group when using 
     function `plotDistribution()`
     - Fix group colours and opacity for rug plot points within the distribution 
-    plot (occured in the command-line version; function `plotDistribution()`)
+    plot (occurred in the command-line version; function `plotDistribution()`)
     - Fix wrong information in the table of differential splicing results (only
     occurs when the first splicing event is one for which there is not enough
     information to calculate statistical tests)

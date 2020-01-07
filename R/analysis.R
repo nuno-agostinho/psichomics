@@ -1592,23 +1592,34 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' Plot distribution through a density plot
 #' 
 #' The tooltip shows the median, variance, max, min and number of non-NA samples
-#' of each data series.
+#' of each data series (if \code{data} contains names or column names, those
+#' will be used as sample names and also appear in the tooltip).
 #' 
-#' @param data Numeric, data frame or matrix: data for one gene or alternative 
-#' splicing event
-#' @param groups List of characters (list of groups containing data identifiers)
-#' or character vector (group of each value in \code{data}); if \code{NULL} or a
-#' character vector of length 1, all data points will be considered of the same 
-#' group
-#' @param rug Boolean: include rug plot to better visualise data distribution
-#' @param vLine Boolean: include vertical plot lines to display descriptive 
-#' statistics for each group
-#' @param ... Extra parameters passed to \code{density} to create the kernel
-#' density estimates
+#' @param data Numeric, data frame or matrix: gene expression data or
+#' alternative splicing event quantification values (sample names are based on
+#' their \code{names} or \code{colnames})
+#' @param groups List of sample names or vector containg the group name per
+#' \code{data} value (read Details); if \code{NULL} or a character vector of
+#' length 1, \code{data} values are considered from the same group
+#' @param rug Boolean: show rug plot?
+#' @param vLine Boolean: plot vertical lines (including descriptive statistics
+#' for each group)?
+#' @inheritDotParams stats::density.default -x -na.rm
 #' @param title Character: plot title
-#' @param psi Boolean: are data composed of PSI values? Automatically set to
-#' \code{TRUE} if all \code{data} values are between 0 and 1
-#' @param rugLabels Boolean: plot names or colnames of \code{data} in the rug?
+#' @param psi Boolean: are \code{data} composed of PSI values? If \code{NULL},
+#'   \code{psi = TRUE} if all \code{data} values are between 0 and 1
+#' @param rugLabels Boolean: plot sample names in the rug?
+#' @param rugLabelsRotation Numeric: rotation (in degrees) of rug labels; this
+#'   may present issues at different zoom levels and depending on the proximity
+#'   of \code{data} values
+#' 
+#' @details Argument \code{groups} can be either:
+#' \itemize{
+#' \item{a list of sample names, e.g.
+#' \code{list("Group 1"=c("Sample A", "Sample B"), "Group 2"=c("Sample C")))}}
+#' \item{a character vector with the same length as \code{data}, e.g.
+#' \code{c("Sample A", "Sample C", "Sample B")}.}
+#' }
 #' 
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_plotOptions hc_tooltip
 #' JS
@@ -1621,23 +1632,25 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' @examples
 #' data   <- sample(20, rep=TRUE)/20
 #' groups <- paste("Group", c(rep("A", 10), rep("B", 10)))
-#' label  <- paste("Sample", 1:20)
-#' plotDistribution(data, groups, label=label)
-plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, 
-                             ..., title=NULL, psi=NULL, rugLabels=FALSE) {
-    if (is.null(psi)) 
+#' names(data) <- paste("Sample", 1:20)
+#' plotDistribution(data, groups)
+plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
+                             title=NULL, psi=NULL, rugLabels=FALSE,
+                             rugLabelsRotation=0) {
+    if (is.null(psi)) {
         psi <- min(data, na.rm=TRUE) >= 0 && max(data, na.rm=TRUE) <= 1
+    }
     
     if (psi) {
-        xMin <- 0
-        xMax <- 1
+        xMin   <- 0
+        xMax   <- 1
         xLabel <- "Distribution of PSI values"
-        id <- "Inclusion level: "
+        id     <- "Inclusion level: "
     } else {
-        xMin <- NULL
-        xMax <- NULL
+        xMin   <- NULL
+        xMax   <- NULL
         xLabel <- "Distribution of gene expression"
-        id <- "Gene expression: "
+        id     <- "Gene expression: "
     }
     
     # Include X-axis zoom and hide markers
@@ -1648,8 +1661,8 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE,
                                      marker=list(enabled=FALSE))) %>%
         hc_tooltip(
             headerFormat=NULL,
-            pointFormat = paste(
-                "{point.label}", br(), 
+            pointFormat=paste(
+                "{point.tooltipLabel}", br(), 
                 span(style="color:{point.color}", "\u25CF "),
                 tags$b("{series.name}"), br(),
                 id, "{point.x:.2f}", br(),
@@ -1661,19 +1674,22 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE,
     
     if (!is.null(title)) hc <- hc %>% hc_title(text=title)
     
-    if (is.null(groups)) groups <- "All samples"
-    if (is.list(groups))
+    if (is.null(groups)) {
+        ns <- groups <- "All samples"
+    } else if (is.list(groups)) {
         ns <- names(groups)
-    else
+    } else {
         ns <- groups
+    }
     
     count <- 0
     plotLines <- list()
     for (group in unique(ns)) {
-        if (is.list(groups))
+        if (is.list(groups)) {
             filter <- groups[[group]]
-        else
+        } else {
             filter <- groups == group
+        }
         
         if (is.vector(data)) {
             row      <- data[filter]
@@ -1684,12 +1700,23 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE,
             row      <- data[ , filter]
         }
         
-        label <- names(row)
-        if (is.null(label)) label <- colnames(row)
-        
+        # Prepare labels based on sample names (or the values themselves)
+        if (!is.null(names(row))) {
+            rugLabel     <- names(row)
+            tooltipLabel <- rugLabel
+        } else if (!is.null(colnames(row))) {
+            rugLabel     <- colnames(row)
+            tooltipLabel <- rugLabel
+        } else {
+            rugLabel     <- round(row, 2)
+            tooltipLabel <- NULL
+        }
+        if (!rugLabels) rugLabel <- NULL
+
         row <- as.numeric(row)
         if (length(row) == 0) next
         
+        # Stats
         med  <- roundDigits(median(row, na.rm=TRUE))
         vari <- roundDigits(var(row, na.rm=TRUE))
         max  <- roundDigits(max(row, na.rm=TRUE))
@@ -1697,19 +1724,31 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE,
         samples <- sum(!is.na(row))
         
         colour <- unname(attr(groups, "Colour")[group])
-        if (is.null(colour))
+        if (is.null(colour)) {
             colour <- JS(paste0("Highcharts.getOptions().colors[", count, "]"))
+        }
         
         # Calculate the density of inclusion levels for each sample group
         den <- tryCatch(density(row, na.rm=TRUE, ...), error=return,
                         warning=return)
-        if (is(den, "error") || is(den, "warning")) {
-            hc <- hc %>% hc_add_series(NULL)
-        } else {
+        if (length(row) == 1) {
+            den  <- row
+            vari <- max <- min <- med
+        } else if (is(den, "error") || is(den, "warning")) {
+            den <- NULL
+        }
+        
+        if (!is.null(den)) {
             hc <- hc %>% hc_add_series(den, type="area", name=group, median=med,
                                        var=vari, samples=samples, max=max, 
                                        color=colour, min=min)
-        }
+            if (length(row) == 1) {
+                len <- length(hc$x$hc_opts$series)
+                hc$x$hc_opts$series[[len]]$visible <- FALSE
+                hc$x$hc_opts$series[[len]]$events$legendItemClick <- JS(
+                    "function(e) { e.preventDefault() }")
+            }
+        }        
         # Rug plot
         if (rug) {
             isHexColour <- function(string) {
@@ -1730,11 +1769,21 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE,
                 fill <- colour
             }
             
+            # Add different, arbitrary y values per group (useful when only
+            # displaying the rug plot)
+            y <- match(group, unique(ns))/1000
             hc <- hc %>%
                 hc_scatter(
-                    row, rep(0, length(row)), name=group, label=label, 
+                    row, rep(y, length(row)), name=group,
+                    rugLabel=rugLabel, tooltipLabel=tooltipLabel,
                     marker=list(enabled=TRUE, radius=4, fillColor=fill),
                     median=med, var=vari, samples=samples, max=max, min=min)
+            if (length(row) == 1) {
+                len <- length(hc$x$hc_opts$series)
+                hc$x$hc_opts$series[[len]] <- c(
+                    hc$x$hc_opts$series[[len]],
+                    median=med, var=vari, samples=samples, max=max, min=min)
+            }
         }
         # Plot line with basic statistics
         if (vLine) {
@@ -1751,8 +1800,26 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE,
     
     # Show or hide rug labels
     rugSeries <- which(sapply(hc$x$hc_opts$series, "[[", "type") == "scatter")
-    for (k in rugSeries)
-        hc$x$hc_opts$series[[k]]$dataLabels$enabled <- rugLabels
+    for (k in rugSeries) {
+        hc$x$hc_opts$series[[k]]$dataLabels <- list(
+            enabled=rugLabels,
+            format="{point.rugLabel}",
+            rotation=rugLabelsRotation)
+        
+        if (rugLabelsRotation != 0) {
+            rugLabelsRotation <- rugLabelsRotation %% 360
+            
+            hc$x$hc_opts$series[[k]]$dataLabels$crop  <- FALSE
+            if (rugLabelsRotation > 0 && rugLabelsRotation < 180) {
+                align <- "right"
+            } else if (rugLabelsRotation > 180 && rugLabelsRotation < 360) {
+                align <- "left"
+            } else {
+                align <- "center"
+            }
+            hc$x$hc_opts$series[[k]]$dataLabels$align <- align
+        }
+    }
     return(hc)
 }
 
