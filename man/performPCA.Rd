@@ -4,12 +4,17 @@
 \alias{performPCA}
 \title{Perform principal component analysis after processing missing values}
 \usage{
-performPCA(data, center = TRUE, scale. = FALSE,
-  missingValues = round(0.05 * nrow(data)), ...)
+performPCA(
+  data,
+  center = TRUE,
+  scale. = FALSE,
+  missingValues = round(0.05 * nrow(data)),
+  ...
+)
 }
 \arguments{
 \item{data}{an optional data frame (or similar: see
-    \code{\link{model.frame}}) containing the variables in the
+    \code{\link[stats]{model.frame}}) containing the variables in the
     formula \code{formula}.  By default the variables are taken from
     \code{environment(formula)}.}
 
@@ -43,7 +48,9 @@ performPCA(USArrests)
 \code{\link{plotPCA}}, \code{\link{performICA}} and 
   \code{\link{plotICA}}
 
-Other functions to analyse principal components: \code{\link{calculateLoadingsContribution}},
-  \code{\link{plotPCA}}, \code{\link{plotVariance}}
+Other functions to analyse principal components: 
+\code{\link{calculateLoadingsContribution}()},
+\code{\link{plotPCA}()},
+\code{\link{plotVariance}()}
 }
 \concept{functions to analyse principal components}

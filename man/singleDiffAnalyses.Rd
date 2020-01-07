@@ -4,8 +4,13 @@
 \alias{singleDiffAnalyses}
 \title{Perform statistical analysis on a given splicing event}
 \usage{
-singleDiffAnalyses(vector, group, threshold = 1, step = 100,
-  analyses = c("wilcoxRankSum", "ttest", "kruskal", "levene", "fligner"))
+singleDiffAnalyses(
+  vector,
+  group,
+  threshold = 1,
+  step = 100,
+  analyses = c("wilcoxRankSum", "ttest", "kruskal", "levene", "fligner")
+)
 }
 \arguments{
 \item{vector}{Numeric}

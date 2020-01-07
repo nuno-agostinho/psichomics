@@ -94,7 +94,7 @@ getPrecision <- function() {
 #' @rdname getGlobal
 setPrecision <- function(integer) setGlobal("precision", value=integer)
 
-#' @inherit getGlobal
+#' @rdname getGlobal
 #' @keywords internal
 getASevents <- function() {
     psi <- getInclusionLevels()
@@ -105,7 +105,7 @@ getASevents <- function() {
     }
 }
 
-#' @inherit getGlobal
+#' @rdname getGlobal
 #' @keywords internal
 getASevent <- reactive(sharedData$event)
 

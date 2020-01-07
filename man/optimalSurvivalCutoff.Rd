@@ -4,10 +4,20 @@
 \alias{optimalSurvivalCutoff}
 \title{Calculate optimal data cutoff that best separates survival curves}
 \usage{
-optimalSurvivalCutoff(clinical, data, censoring, event, timeStart,
-  timeStop = NULL, followup = "days_to_last_followup",
-  session = NULL, filter = TRUE, survTime = NULL, lower = NULL,
-  upper = NULL)
+optimalSurvivalCutoff(
+  clinical,
+  data,
+  censoring,
+  event,
+  timeStart,
+  timeStop = NULL,
+  followup = "days_to_last_followup",
+  session = NULL,
+  filter = TRUE,
+  survTime = NULL,
+  lower = NULL,
+  upper = NULL
+)
 }
 \arguments{
 \item{clinical}{Data frame: clinical data}
@@ -66,14 +76,15 @@ psi <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
 opt <- optimalSurvivalCutoff(clinical, psi, "right", event, timeStart)
 }
 \seealso{
-Other functions to analyse survival: \code{\link{assignValuePerSubject}},
-  \code{\link{getAttributesTime}},
-  \code{\link{labelBasedOnCutoff}},
-  \code{\link{plotSurvivalCurves}},
-  \code{\link{plotSurvivalPvaluesByCutoff}},
-  \code{\link{processSurvTerms}},
-  \code{\link{survdiff.survTerms}},
-  \code{\link{survfit.survTerms}},
-  \code{\link{testSurvival}}
+Other functions to analyse survival: 
+\code{\link{assignValuePerSubject}()},
+\code{\link{getAttributesTime}()},
+\code{\link{labelBasedOnCutoff}()},
+\code{\link{plotSurvivalCurves}()},
+\code{\link{plotSurvivalPvaluesByCutoff}()},
+\code{\link{processSurvTerms}()},
+\code{\link{survdiff.survTerms}()},
+\code{\link{survfit.survTerms}()},
+\code{\link{testSurvival}()}
 }
 \concept{functions to analyse survival}

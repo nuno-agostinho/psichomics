@@ -7,11 +7,11 @@
 groupManipulation(input, output, session, type)
 }
 \arguments{
-\item{input}{Input object}
+\item{input}{Shiny input}
 
-\item{output}{Output object}
+\item{output}{Shiny output}
 
-\item{session}{Session object}
+\item{session}{Shiny session}
 
 \item{type}{Character: type of data for each the interface is intended}
 }

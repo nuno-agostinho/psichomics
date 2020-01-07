@@ -31,14 +31,15 @@ labelBasedOnCutoff(data=c(1, 0, 0, 1, 0, 1), cutoff=0.5, "Ratio")
 labelBasedOnCutoff(data=c(1, 0, 0, 0.5, 0, 1), cutoff=0.5, gte=FALSE)
 }
 \seealso{
-Other functions to analyse survival: \code{\link{assignValuePerSubject}},
-  \code{\link{getAttributesTime}},
-  \code{\link{optimalSurvivalCutoff}},
-  \code{\link{plotSurvivalCurves}},
-  \code{\link{plotSurvivalPvaluesByCutoff}},
-  \code{\link{processSurvTerms}},
-  \code{\link{survdiff.survTerms}},
-  \code{\link{survfit.survTerms}},
-  \code{\link{testSurvival}}
+Other functions to analyse survival: 
+\code{\link{assignValuePerSubject}()},
+\code{\link{getAttributesTime}()},
+\code{\link{optimalSurvivalCutoff}()},
+\code{\link{plotSurvivalCurves}()},
+\code{\link{plotSurvivalPvaluesByCutoff}()},
+\code{\link{processSurvTerms}()},
+\code{\link{survdiff.survTerms}()},
+\code{\link{survfit.survTerms}()},
+\code{\link{testSurvival}()}
 }
 \concept{functions to analyse survival}

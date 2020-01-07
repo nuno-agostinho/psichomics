@@ -4,9 +4,19 @@
 \alias{queryFirebrowseData}
 \title{Query the Firebrowse web API for TCGA data}
 \usage{
-queryFirebrowseData(format = "json", date = NULL, cohort = NULL,
-  data_type = NULL, tool = NULL, platform = NULL, center = NULL,
-  level = NULL, protocol = NULL, page = NULL, sort_by = NULL)
+queryFirebrowseData(
+  format = "json",
+  date = NULL,
+  cohort = NULL,
+  data_type = NULL,
+  tool = NULL,
+  platform = NULL,
+  center = NULL,
+  level = NULL,
+  protocol = NULL,
+  page = NULL,
+  sort_by = NULL
+)
 }
 \arguments{
 \item{format}{Character: response format as \code{JSON}, \code{CSV} or

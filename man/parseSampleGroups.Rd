@@ -4,8 +4,10 @@
 \alias{parseSampleGroups}
 \title{Return the type of a given sample}
 \usage{
-parseSampleGroups(sample, filename = system.file("extdata",
-  "TCGAsampleType.RDS", package = "psichomics"))
+parseSampleGroups(
+  sample,
+  filename = system.file("extdata", "TCGAsampleType.RDS", package = "psichomics")
+)
 }
 \arguments{
 \item{sample}{Character: ID of the sample}

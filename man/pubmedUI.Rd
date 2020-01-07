@@ -11,14 +11,15 @@ pubmedUI(ns, gene, ...)
 
 \item{gene}{Character: gene}
 
-\item{...}{Arguments passed on to \code{queryPubMed}
-\describe{
-  \item{top}{Numeric: number of articles to retrieve}
-  \item{field}{Character: field of interest where to look for terms
+\item{...}{
+  Arguments passed on to \code{\link[=queryPubMed]{queryPubMed}}
+  \describe{
+    \item{\code{top}}{Numeric: number of articles to retrieve}
+    \item{\code{field}}{Character: field of interest where to look for terms
 (\code{abstract} by default)}
-  \item{sort}{Character: sort by a given parameter (\code{relevance} by
+    \item{\code{sort}}{Character: sort by a given parameter (\code{relevance} by
 default)}
-}}
+  }}
 }
 \value{
 HTML interface of relevant PubMed articles

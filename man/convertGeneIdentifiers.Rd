@@ -4,8 +4,13 @@
 \alias{convertGeneIdentifiers}
 \title{Convert gene identifiers}
 \usage{
-convertGeneIdentifiers(annotation, genes, key = "ENSEMBL",
-  target = "SYMBOL", ignoreDuplicatedTargets = TRUE)
+convertGeneIdentifiers(
+  annotation,
+  genes,
+  key = "ENSEMBL",
+  target = "SYMBOL",
+  ignoreDuplicatedTargets = TRUE
+)
 }
 \arguments{
 \item{annotation}{OrgDb: genome wide annotation for an organism, e.g.
@@ -41,9 +46,10 @@ if ( require("org.Hs.eg.db") ) {
 }
 }
 \seealso{
-Other functions for gene expression pre-processing: \code{\link{filterGeneExpr}},
-  \code{\link{normaliseGeneExpression}},
-  \code{\link{plotGeneExprPerSample}},
-  \code{\link{plotRowStats}}
+Other functions for gene expression pre-processing: 
+\code{\link{filterGeneExpr}()},
+\code{\link{normaliseGeneExpression}()},
+\code{\link{plotGeneExprPerSample}()},
+\code{\link{plotRowStats}()}
 }
 \concept{functions for gene expression pre-processing}

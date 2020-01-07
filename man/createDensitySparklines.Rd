@@ -4,8 +4,13 @@
 \alias{createDensitySparklines}
 \title{Create density sparklines for inclusion levels}
 \usage{
-createDensitySparklines(data, events, areSplicingEvents = TRUE,
-  groups = NULL, geneExpr = NULL)
+createDensitySparklines(
+  data,
+  events,
+  areSplicingEvents = TRUE,
+  groups = NULL,
+  geneExpr = NULL
+)
 }
 \arguments{
 \item{data}{Character: HTML-formatted data series of interest}

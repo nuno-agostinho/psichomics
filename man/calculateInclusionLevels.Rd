@@ -5,8 +5,13 @@
 \title{Calculate inclusion levels using alternative splicing event annotation and
 junction quantification for many samples}
 \usage{
-calculateInclusionLevels(eventType, junctionQuant, annotation,
-  minReads = 10)
+calculateInclusionLevels(
+  eventType,
+  junctionQuant,
+  annotation,
+  minReads = 10,
+  onlyReturnASeventNames = FALSE
+)
 }
 \arguments{
 \item{eventType}{Character: type of the alternative event to calculate}

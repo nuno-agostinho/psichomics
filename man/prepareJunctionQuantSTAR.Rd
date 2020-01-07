@@ -7,8 +7,10 @@
 \usage{
 prepareJunctionQuantSTAR(..., startOffset = -1, endOffset = +1)
 
-prepareGeneQuantSTAR(..., strandedness = c("unstranded", "stranded",
-  "stranded (reverse)"))
+prepareGeneQuantSTAR(
+  ...,
+  strandedness = c("unstranded", "stranded", "stranded (reverse)")
+)
 }
 \arguments{
 \item{...}{Character: path of (optionally named) input files (see Examples)}
@@ -42,5 +44,6 @@ prepareGeneQuant("Control rep1"=geneCountFile1,
 }
 }
 \seealso{
-Other functions to load local files: \code{\link{loadLocalFiles}}
+Other functions to load local files: 
+\code{\link{loadLocalFiles}()}
 }

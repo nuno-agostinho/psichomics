@@ -5,11 +5,17 @@
 \alias{setGroups}
 \title{Get or set groups}
 \usage{
-getGroups(type = c("Patients", "Samples", "ASevents", "Genes"),
-  complete = FALSE, category = getCategory())
+getGroups(
+  type = c("Patients", "Samples", "ASevents", "Genes"),
+  complete = FALSE,
+  category = getCategory()
+)
 
-setGroups(type = c("Patients", "Samples", "ASevents", "Genes"), groups,
-  category = getCategory())
+setGroups(
+  type = c("Patients", "Samples", "ASevents", "Genes"),
+  groups,
+  category = getCategory()
+)
 }
 \arguments{
 \item{type}{Character: type of groups (either \code{Patients}, 

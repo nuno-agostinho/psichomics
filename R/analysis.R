@@ -1538,7 +1538,7 @@ transformValues <- function(val, type, avoidZero=TRUE) {
 
 #' Transform data in data frame
 #' 
-#' @param input Shiny input
+#' @inheritParams appServer
 #' @param df Data frame
 #' @param x Character: column name
 #' @param y Character: column name
@@ -2366,8 +2366,7 @@ diffAnalyses <- function(data, groups=NULL,
 
 #' Set of functions to render differential analyses (plot and table)
 #' 
-#' @inherit diffSplicingTableServer
-#' 
+#' @inheritParams appServer
 #' @param analysesType Character: type of analyses (\code{GE} or \code{PSI})
 #' @param analysesID Character: identifier
 #' @param getAnalysesData Function: get analyses data
@@ -2383,6 +2382,7 @@ diffAnalyses <- function(data, groups=NULL,
 #' @importFrom shinyjs toggleElement toggleState
 #' @importFrom utils write.table
 #' 
+#' @inherit psichomics return
 #' @keywords internal
 analysesTableSet <- function(session, input, output, analysesType, analysesID,
                              getAnalysesData, getAnalysesFiltered, 

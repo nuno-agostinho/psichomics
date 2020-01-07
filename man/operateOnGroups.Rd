@@ -4,8 +4,15 @@
 \alias{operateOnGroups}
 \title{Set operations on groups}
 \usage{
-operateOnGroups(input, session, operation, buttonId, symbol = " ", type,
-  sharedData = sharedData)
+operateOnGroups(
+  input,
+  session,
+  operation,
+  buttonId,
+  symbol = " ",
+  type,
+  sharedData = sharedData
+)
 }
 \arguments{
 \item{input}{Shiny input}
@@ -24,8 +31,8 @@ performed}
 \item{sharedData}{Shiny app's global variable}
 }
 \value{
-\code{NULL} (only used to modify the Shiny session's state or
-  internal variables)
+\code{NULL} (function is only used to modify the Shiny session's
+state or internal variables)
 }
 \description{
 This function can be used on groups to merge, intersect, subtract, etc.

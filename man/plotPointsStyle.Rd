@@ -4,8 +4,15 @@
 \alias{plotPointsStyle}
 \title{Interface to modify the style of the plot points}
 \usage{
-plotPointsStyle(ns, id, description, help = NULL, size = 2,
-  colour = "black", alpha = 1)
+plotPointsStyle(
+  ns,
+  id,
+  description,
+  help = NULL,
+  size = 2,
+  colour = "black",
+  alpha = 1
+)
 }
 \arguments{
 \item{ns}{Namespace function}

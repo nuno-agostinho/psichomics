@@ -4,8 +4,15 @@
 \alias{processSurvData}
 \title{Process survival data to calculate survival curves}
 \usage{
-processSurvData(event, timeStart, timeStop, followup, group, clinical,
-  survTime = NULL)
+processSurvData(
+  event,
+  timeStart,
+  timeStop,
+  followup,
+  group,
+  clinical,
+  survTime = NULL
+)
 }
 \arguments{
 \item{event}{Character: name of column containing time of the event of

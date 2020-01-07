@@ -16,15 +16,20 @@ Get the Downloads folder of the user
 getDownloadsFolder()
 }
 \seealso{
-Other functions associated with TCGA data retrieval: \code{\link{getTCGAdataTypes}},
-  \code{\link{getTCGAdates}}, \code{\link{isFirebrowseUp}},
-  \code{\link{loadTCGAdata}},
-  \code{\link{parseTCGAsampleInfo}}
+Other functions associated with TCGA data retrieval: 
+\code{\link{getTCGAdataTypes}()},
+\code{\link{getTCGAdates}()},
+\code{\link{isFirebrowseUp}()},
+\code{\link{loadTCGAdata}()},
+\code{\link{parseTCGAsampleInfo}()}
 
-Other functions associated with GTEx data retrieval: \code{\link{getGtexDataTypes}},
-  \code{\link{getGtexTissues}}, \code{\link{loadGtexData}}
+Other functions associated with GTEx data retrieval: 
+\code{\link{getGtexDataTypes}()},
+\code{\link{getGtexTissues}()},
+\code{\link{loadGtexData}()}
 
-Other functions associated with SRA data retrieval: \code{\link{loadSRAproject}}
+Other functions associated with SRA data retrieval: 
+\code{\link{loadSRAproject}()}
 }
 \concept{functions associated with GTEx data retrieval}
 \concept{functions associated with SRA data retrieval}

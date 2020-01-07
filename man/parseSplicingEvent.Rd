@@ -4,8 +4,13 @@
 \alias{parseSplicingEvent}
 \title{Parse an alternative splicing event based on a given identifier}
 \usage{
-parseSplicingEvent(event, char = FALSE, pretty = FALSE, extra = NULL,
-  coords = FALSE)
+parseSplicingEvent(
+  event,
+  char = FALSE,
+  pretty = FALSE,
+  extra = NULL,
+  coords = FALSE
+)
 }
 \arguments{
 \item{event}{Character: event identifier}

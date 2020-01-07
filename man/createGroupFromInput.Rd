@@ -4,8 +4,16 @@
 \alias{createGroupFromInput}
 \title{Set new groups according to the user input}
 \usage{
-createGroupFromInput(session, input, dataset, id, type, selected = NULL,
-  expr = NULL, groupNames = NULL)
+createGroupFromInput(
+  session,
+  input,
+  dataset,
+  id,
+  type,
+  selected = NULL,
+  expr = NULL,
+  groupNames = NULL
+)
 }
 \arguments{
 \item{session}{Shiny session}

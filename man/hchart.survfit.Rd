@@ -4,17 +4,25 @@
 \alias{hchart.survfit}
 \title{Plot survival curves using Highcharts}
 \usage{
-\method{hchart}{survfit}(object, ..., fun = NULL, markTimes = TRUE,
-  symbol = "plus", markerColor = "black", ranges = FALSE,
-  rangesOpacity = 0.3)
+\method{hchart}{survfit}(
+  object,
+  ...,
+  fun = NULL,
+  markTimes = TRUE,
+  symbol = "plus",
+  markerColor = "black",
+  ranges = FALSE,
+  rangesOpacity = 0.3
+)
 }
 \arguments{
 \item{object}{A survfit object as returned from the \code{survfit} function}
 
-\item{...}{Arguments passed on to \code{highcharter::hc_add_series}
-\describe{
-  \item{}{}
-}}
+\item{...}{
+  Arguments passed on to \code{\link[highcharter:hc_add_series]{highcharter::hc_add_series}}
+  \describe{
+    \item{\code{}}{}
+  }}
 
 \item{fun}{Name of function or function used to transform the survival curve:
 \code{log} will put y axis on log scale, \code{event} plots cumulative events

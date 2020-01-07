@@ -17,27 +17,28 @@ correlateGEandAS(geneExpr, psi, gene, ASevents = NULL, ...)
 gene expression of a gene (if \code{NULL}, the events will be automatically
 retrieved from the given gene)}
 
-\item{...}{Arguments passed on to \code{stats:::cor.test.default}
-\describe{
-  \item{alternative}{indicates the alternative hypothesis and must be
+\item{...}{
+  Arguments passed on to \code{\link[stats::cor.test.default]{stats:::cor.test.default}}
+  \describe{
+    \item{\code{alternative}}{indicates the alternative hypothesis and must be
     one of \code{"two.sided"}, \code{"greater"} or \code{"less"}.  You
     can specify just the initial letter.  \code{"greater"} corresponds
     to positive association, \code{"less"} to negative association.}
-  \item{method}{a character string indicating which correlation
+    \item{\code{method}}{a character string indicating which correlation
     coefficient is to be  used for the test.  One of \code{"pearson"},
     \code{"kendall"}, or \code{"spearman"}, can be abbreviated.}
-  \item{exact}{a logical indicating whether an exact p-value should be
+    \item{\code{exact}}{a logical indicating whether an exact p-value should be
     computed.  Used for Kendall's \eqn{\tau}{tau} and
     Spearman's \eqn{\rho}{rho}.
     See \sQuote{Details} for the meaning of \code{NULL} (the default).}
-  \item{conf.level}{confidence level for the returned confidence
+    \item{\code{conf.level}}{confidence level for the returned confidence
     interval.  Currently only used for the Pearson product moment
     correlation coefficient if there are at least 4 complete pairs of
     observations.}
-  \item{continuity}{logical: if true, a continuity correction is used
+    \item{\code{continuity}}{logical: if true, a continuity correction is used
     for Kendall's \eqn{\tau}{tau} and Spearman's \eqn{\rho}{rho} when
     not computed exactly.}
-}}
+  }}
 }
 \value{
 List of correlations where each element contains:
@@ -61,7 +62,8 @@ geneExpr <- readFile("ex_gene_expression.RDS")
 correlateGEandAS(geneExpr, psi, "ALDOA")
 }
 \seealso{
-Other functions to correlate gene expression and alternative splicing: \code{\link{[.GEandAScorrelation}},
-  \code{\link{plot.GEandAScorrelation}}
+Other functions to correlate gene expression and alternative splicing: 
+\code{\link{[.GEandAScorrelation}()},
+\code{\link{plot.GEandAScorrelation}()}
 }
 \concept{functions to correlate gene expression and alternative splicing}

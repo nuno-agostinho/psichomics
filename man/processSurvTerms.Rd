@@ -4,9 +4,19 @@
 \alias{processSurvTerms}
 \title{Process survival curves terms to calculate survival curves}
 \usage{
-processSurvTerms(clinical, censoring, event, timeStart, timeStop = NULL,
-  group = NULL, formulaStr = NULL, coxph = FALSE, scale = "days",
-  followup = "days_to_last_followup", survTime = NULL)
+processSurvTerms(
+  clinical,
+  censoring,
+  event,
+  timeStart,
+  timeStop = NULL,
+  group = NULL,
+  formulaStr = NULL,
+  coxph = FALSE,
+  scale = "days",
+  followup = "days_to_last_followup",
+  survTime = NULL
+)
 }
 \arguments{
 \item{clinical}{Data frame: clinical data}
@@ -83,14 +93,15 @@ for (1:5) {
 }
 }
 \seealso{
-Other functions to analyse survival: \code{\link{assignValuePerSubject}},
-  \code{\link{getAttributesTime}},
-  \code{\link{labelBasedOnCutoff}},
-  \code{\link{optimalSurvivalCutoff}},
-  \code{\link{plotSurvivalCurves}},
-  \code{\link{plotSurvivalPvaluesByCutoff}},
-  \code{\link{survdiff.survTerms}},
-  \code{\link{survfit.survTerms}},
-  \code{\link{testSurvival}}
+Other functions to analyse survival: 
+\code{\link{assignValuePerSubject}()},
+\code{\link{getAttributesTime}()},
+\code{\link{labelBasedOnCutoff}()},
+\code{\link{optimalSurvivalCutoff}()},
+\code{\link{plotSurvivalCurves}()},
+\code{\link{plotSurvivalPvaluesByCutoff}()},
+\code{\link{survdiff.survTerms}()},
+\code{\link{survfit.survTerms}()},
+\code{\link{testSurvival}()}
 }
 \concept{functions to analyse survival}

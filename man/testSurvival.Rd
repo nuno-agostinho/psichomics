@@ -9,9 +9,10 @@ testSurvival(survTerms, ...)
 \arguments{
 \item{survTerms}{survTerms object: processed survival terms}
 
-\item{...}{Arguments passed on to \code{survival::survdiff}
-\describe{
-  \item{subset}{
+\item{...}{
+  Arguments passed on to \code{\link[survival:survdiff]{survival::survdiff}}
+  \describe{
+    \item{\code{subset}}{
 expression indicating which subset of the rows of data should be used in
 the fit.  This can be a logical vector (which is replicated to have
 length equal to the number of observations), a numeric vector indicating
@@ -19,16 +20,16 @@ which observation numbers are to be included (or excluded if negative),
 or a character vector of row names to be included.  All observations are
 included by default.
 }
-  \item{na.action}{
+    \item{\code{na.action}}{
 a missing-data filter function.  This is applied to the \code{model.frame} after any
 subset argument has been used.  Default is \code{options()$na.action}.
 }
-  \item{rho}{
+    \item{\code{rho}}{
 a scalar parameter that controls the type of test.
 }
-  \item{timefix}{process times through the \code{aeqSurv} function to
+    \item{\code{timefix}}{process times through the \code{aeqSurv} function to
   eliminate potential roundoff issues.}
-}}
+  }}
 }
 \value{
 p-value of the survival difference or \code{NA}
@@ -55,14 +56,15 @@ survTerms <- processSurvTerms(data, censoring=censoring, event=event,
 testSurvival(survTerms)
 }
 \seealso{
-Other functions to analyse survival: \code{\link{assignValuePerSubject}},
-  \code{\link{getAttributesTime}},
-  \code{\link{labelBasedOnCutoff}},
-  \code{\link{optimalSurvivalCutoff}},
-  \code{\link{plotSurvivalCurves}},
-  \code{\link{plotSurvivalPvaluesByCutoff}},
-  \code{\link{processSurvTerms}},
-  \code{\link{survdiff.survTerms}},
-  \code{\link{survfit.survTerms}}
+Other functions to analyse survival: 
+\code{\link{assignValuePerSubject}()},
+\code{\link{getAttributesTime}()},
+\code{\link{labelBasedOnCutoff}()},
+\code{\link{optimalSurvivalCutoff}()},
+\code{\link{plotSurvivalCurves}()},
+\code{\link{plotSurvivalPvaluesByCutoff}()},
+\code{\link{processSurvTerms}()},
+\code{\link{survdiff.survTerms}()},
+\code{\link{survfit.survTerms}()}
 }
 \concept{functions to analyse survival}

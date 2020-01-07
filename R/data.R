@@ -61,12 +61,12 @@ addObjectAttrs <- function (object, ...) {
 #' rangeVar  <- plotRowStats(psi, x="range", y="log10(var)", xlim=c(0, 1)) +
 #'     labs(x="PSI range", y="log10(PSI variance)")
 #' rangeVar
-plotRowStats <- function(data, x, y, xmin=NULL, xmax=NULL, ymin=NULL, ymax=NULL,
-                         xlim=NULL, ylim=NULL) {
+plotRowStats <- function(data, x, y, subset=NULL, xmin=NULL, xmax=NULL, 
+                         ymin=NULL, ymax=NULL, xlim=NULL, ylim=NULL) {
     stats <- c("range", "var", "median", "mean")
     if (!any(sapply(stats, grepl, x)) || !any(sapply(stats, grepl, y))) {
-        stop("x and y require to contain one of the strings:",
-             "median, var, range")
+        stop("Arguments 'x' and 'y' must contain one of the strings:",
+             paste(stats, collapse=", "))
     }
     
     calculateXandYvalues <- function(psi, stats) {
@@ -544,21 +544,7 @@ createDataTab <- function(index, data, name, session, input, output) {
                 plots <- list(plot=medianVar, plot=rangeVar)
             }
             attr(table, "plots") <- plots
-        }    
-        # lapply(seq(plots), function(i, tablename) {
-        #     FUN <- switch(names(plots)[[i]],
-        #                   highchart=renderHighchart, plot=renderPlot)
-        #     id <- paste(tablename, "plot", i, sep="-")
-        #     output[[id]] <- FUN(plots[[i]])
-        # }, tablename=attr(table, "tablenameID"))
-        # 
-        # plotOutputs <- lapply(seq(plots), function(i, tablename) {
-        #     FUN <- switch(names(plots)[[i]],
-        #                   highchart=highchartOutput, plot=plotOutput)
-        #     id <- paste(tablename, "plot", i, sep="-")
-        #     FUN(ns(id), height="200px")
-        # }, tablename=attr(table, "tablenameID"))
-        
+        }
         tablename <- attr(table, "tablenameID")
         plots     <- attr(table, "plots")
         

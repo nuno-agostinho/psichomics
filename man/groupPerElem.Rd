@@ -27,11 +27,12 @@ names(groups) <- paste("Stage", 1:3)
 groupPerElem(groups)
 }
 \seealso{
-Other functions for data grouping: \code{\link{createGroupByAttribute}},
-  \code{\link{getGeneList}},
-  \code{\link{getMatchingSamples}},
-  \code{\link{getSubjectFromSample}},
-  \code{\link{plotGroupIndependence}},
-  \code{\link{testGroupIndependence}}
+Other functions for data grouping: 
+\code{\link{createGroupByAttribute}()},
+\code{\link{getGeneList}()},
+\code{\link{getMatchingSamples}()},
+\code{\link{getSubjectFromSample}()},
+\code{\link{plotGroupIndependence}()},
+\code{\link{testGroupIndependence}()}
 }
 \concept{functions for data grouping}

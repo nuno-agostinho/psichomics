@@ -276,7 +276,7 @@ loadGtexData <- function(folder=getDownloadsFolder(), data=getGtexDataTypes(),
 #' Shiny wrapper to load GTEx data
 #' 
 #' @param session Shiny session
-#' @param input Shiny input
+#' @inheritParams appServer
 #' @param replace Boolean: replace loaded data?
 #' 
 #' @inherit psichomics return

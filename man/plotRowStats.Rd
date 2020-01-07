@@ -4,8 +4,18 @@
 \alias{plotRowStats}
 \title{Plot sample statistics per row}
 \usage{
-plotRowStats(data, x, y, subset = NULL, xmin = NULL, xmax = NULL,
-  ymin = NULL, ymax = NULL, xlim = NULL, ylim = NULL)
+plotRowStats(
+  data,
+  x,
+  y,
+  subset = NULL,
+  xmin = NULL,
+  xmax = NULL,
+  ymin = NULL,
+  ymax = NULL,
+  xlim = NULL,
+  ylim = NULL
+)
 }
 \arguments{
 \item{data}{Data frame or matrix}
@@ -51,16 +61,18 @@ rangeVar  <- plotRowStats(psi, x="range", y="log10(var)", xlim=c(0, 1)) +
 rangeVar
 }
 \seealso{
-Other functions for gene expression pre-processing: \code{\link{convertGeneIdentifiers}},
-  \code{\link{filterGeneExpr}},
-  \code{\link{normaliseGeneExpression}},
-  \code{\link{plotGeneExprPerSample}}
+Other functions for gene expression pre-processing: 
+\code{\link{convertGeneIdentifiers}()},
+\code{\link{filterGeneExpr}()},
+\code{\link{normaliseGeneExpression}()},
+\code{\link{plotGeneExprPerSample}()}
 
-Other functions for PSI quantification: \code{\link{filterPSI}},
-  \code{\link{getSplicingEventTypes}},
-  \code{\link{listSplicingAnnotations}},
-  \code{\link{loadAnnotation}},
-  \code{\link{quantifySplicing}}
+Other functions for PSI quantification: 
+\code{\link{filterPSI}()},
+\code{\link{getSplicingEventTypes}()},
+\code{\link{listSplicingAnnotations}()},
+\code{\link{loadAnnotation}()},
+\code{\link{quantifySplicing}()}
 }
 \concept{functions for PSI quantification}
 \concept{functions for gene expression pre-processing}

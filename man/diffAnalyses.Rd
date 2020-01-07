@@ -4,9 +4,14 @@
 \alias{diffAnalyses}
 \title{Perform statistical analyses}
 \usage{
-diffAnalyses(data, groups = NULL, analyses = c("wilcoxRankSum",
-  "ttest", "kruskal", "levene", "fligner"), pvalueAdjust = "BH",
-  geneExpr = NULL, psi = NULL)
+diffAnalyses(
+  data,
+  groups = NULL,
+  analyses = c("wilcoxRankSum", "ttest", "kruskal", "levene", "fligner"),
+  pvalueAdjust = "BH",
+  geneExpr = NULL,
+  psi = NULL
+)
 }
 \arguments{
 \item{data}{Data frame or matrix: gene expression or alternative splicing 
@@ -69,6 +74,7 @@ group <- c(rep("Normal", 3), rep("Tumour", 3))
 diffAnalyses(psi, group)
 }
 \seealso{
-Other functions to perform and plot differential analyses: \code{\link{plotDistribution}}
+Other functions to perform and plot differential analyses: 
+\code{\link{plotDistribution}()}
 }
 \concept{functions to perform and plot differential analyses}

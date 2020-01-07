@@ -257,7 +257,7 @@ loadAnnotation <- function(annotation, cache=NULL) {
     if (!dir.exists(cache)) {
         BiocFileCache(cache=cache, ask=FALSE)
         message(sprintf(
-            "The directory %s was created to store annotation", cache))
+            "The directory %s was created to store annotation data", cache))
     }
 
     ah <- AnnotationHub(cache=cache)

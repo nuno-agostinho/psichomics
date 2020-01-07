@@ -414,9 +414,7 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."),
 }
 
 #' Load local files
-#' @param input Shiny input
-#' @param output Shiny output
-#' @param session Shiny session
+#' @inheritParams appServer
 #' @param replace Boolean: replace loaded data?
 #' 
 #' @importFrom shinyjs disable enable

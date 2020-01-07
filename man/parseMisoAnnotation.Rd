@@ -8,18 +8,31 @@
 \alias{parseMatsAnnotation}
 \title{Get events from alternative splicing annotation}
 \usage{
-parseSuppaAnnotation(folder, types = c("SE", "AF", "AL", "MX", "A5",
-  "A3", "RI"), genome = "hg19")
+parseSuppaAnnotation(
+  folder,
+  types = c("SE", "AF", "AL", "MX", "A5", "A3", "RI"),
+  genome = "hg19"
+)
 
-parseVastToolsAnnotation(folder, types = c("ALT3", "ALT5", "COMBI", "IR",
-  "MERGE3m", "MIC", "EXSK", "MULTI"), genome = "Hsa",
-  complexEvents = FALSE)
+parseVastToolsAnnotation(
+  folder,
+  types = c("ALT3", "ALT5", "COMBI", "IR", "MERGE3m", "MIC", "EXSK", "MULTI"),
+  genome = "Hsa",
+  complexEvents = FALSE
+)
 
-parseMisoAnnotation(folder, types = c("SE", "AFE", "ALE", "MXE", "A5SS",
-  "A3SS", "RI", "TandemUTR"), genome = "hg19")
+parseMisoAnnotation(
+  folder,
+  types = c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI", "TandemUTR"),
+  genome = "hg19"
+)
 
-parseMatsAnnotation(folder, types = c("SE", "AFE", "ALE", "MXE", "A5SS",
-  "A3SS", "RI"), genome = "fromGTF", novelEvents = TRUE)
+parseMatsAnnotation(
+  folder,
+  types = c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI"),
+  genome = "fromGTF",
+  novelEvents = TRUE
+)
 }
 \arguments{
 \item{folder}{Character: path to folder}
@@ -81,6 +94,7 @@ mats <- parseMatsAnnotation(matsOutput)
 mats <- parseMatsAnnotation(matsOutput, novelEvents=FALSE)
 }
 \seealso{
-Other functions to prepare alternative splicing annotations: \code{\link{prepareAnnotationFromEvents}}
+Other functions to prepare alternative splicing annotations: 
+\code{\link{prepareAnnotationFromEvents}()}
 }
 \concept{functions to prepare alternative splicing annotations}

@@ -241,9 +241,7 @@ createOptimalSurvData <- function(eventPSI, clinical, censoring, event,
 #' 
 #' @importFrom shinyjs runjs show hide
 #' 
-#' @param session Shiny session
-#' @param input Shiny input
-#' @param output Shiny output
+#' @inheritParams appServer
 #' 
 #' @inherit psichomics return
 #' @keywords internal
@@ -420,7 +418,8 @@ optimSurvDiffSet <- function(session, input, output) {
 #' 
 #' @importFrom shinyBS updateCollapse
 #' 
-#' @inherit diffSplicingTableServer
+#' @inheritParams appServer
+#' @inherit psichomics return
 #' @keywords internal
 diffSplicingSet <- function(session, input, output) {
     ns <- session$ns

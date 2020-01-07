@@ -4,9 +4,15 @@
 \alias{plotSurvivalCurves}
 \title{Plot survival curves}
 \usage{
-plotSurvivalCurves(surv, mark = TRUE, interval = FALSE,
-  pvalue = NULL, title = "Survival analysis", scale = NULL,
-  auto = TRUE)
+plotSurvivalCurves(
+  surv,
+  mark = TRUE,
+  interval = FALSE,
+  pvalue = NULL,
+  title = "Survival analysis",
+  scale = NULL,
+  auto = TRUE
+)
 }
 \arguments{
 \item{surv}{Survival object}
@@ -36,14 +42,15 @@ fit <- survfit(Surv(time, status) ~ x, data = aml)
 plotSurvivalCurves(fit)
 }
 \seealso{
-Other functions to analyse survival: \code{\link{assignValuePerSubject}},
-  \code{\link{getAttributesTime}},
-  \code{\link{labelBasedOnCutoff}},
-  \code{\link{optimalSurvivalCutoff}},
-  \code{\link{plotSurvivalPvaluesByCutoff}},
-  \code{\link{processSurvTerms}},
-  \code{\link{survdiff.survTerms}},
-  \code{\link{survfit.survTerms}},
-  \code{\link{testSurvival}}
+Other functions to analyse survival: 
+\code{\link{assignValuePerSubject}()},
+\code{\link{getAttributesTime}()},
+\code{\link{labelBasedOnCutoff}()},
+\code{\link{optimalSurvivalCutoff}()},
+\code{\link{plotSurvivalPvaluesByCutoff}()},
+\code{\link{processSurvTerms}()},
+\code{\link{survdiff.survTerms}()},
+\code{\link{survfit.survTerms}()},
+\code{\link{testSurvival}()}
 }
 \concept{functions to analyse survival}

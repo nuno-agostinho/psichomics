@@ -25,11 +25,12 @@ rownames(df) <- paste0("subject-", LETTERS[1:8])
 createGroupByAttribute(col="stage", dataset=df)
 }
 \seealso{
-Other functions for data grouping: \code{\link{getGeneList}},
-  \code{\link{getMatchingSamples}},
-  \code{\link{getSubjectFromSample}},
-  \code{\link{groupPerElem}},
-  \code{\link{plotGroupIndependence}},
-  \code{\link{testGroupIndependence}}
+Other functions for data grouping: 
+\code{\link{getGeneList}()},
+\code{\link{getMatchingSamples}()},
+\code{\link{getSubjectFromSample}()},
+\code{\link{groupPerElem}()},
+\code{\link{plotGroupIndependence}()},
+\code{\link{testGroupIndependence}()}
 }
 \concept{functions for data grouping}

@@ -27,9 +27,11 @@ samples <- c("TCGA-3C-AAAU-01A-11R-A41B-07", "TCGA-3C-AALI-01A-11R-A41B-07",
 parseTcgaSampleInfo(samples)
 }
 \seealso{
-Other functions associated with TCGA data retrieval: \code{\link{getDownloadsFolder}},
-  \code{\link{getTCGAdataTypes}},
-  \code{\link{getTCGAdates}}, \code{\link{isFirebrowseUp}},
-  \code{\link{loadTCGAdata}}
+Other functions associated with TCGA data retrieval: 
+\code{\link{getDownloadsFolder}()},
+\code{\link{getTCGAdataTypes}()},
+\code{\link{getTCGAdates}()},
+\code{\link{isFirebrowseUp}()},
+\code{\link{loadTCGAdata}()}
 }
 \concept{functions associated with TCGA data retrieval}

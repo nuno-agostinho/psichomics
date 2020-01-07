@@ -268,10 +268,10 @@ browserHistory <- function(navId, input, session) {
 #' Server logic
 #' 
 #' Instructions to build the Shiny app
-#'
-#' @param input Input object
-#' @param output Output object
-#' @param session Session object
+#' 
+#' @param input Shiny input
+#' @param output Shiny output
+#' @param session Shiny session
 #' 
 #' @importFrom shiny observe stopApp
 #' 
@@ -355,8 +355,8 @@ appServer <- function(input, output, session) {
 #'
 #' @importFrom shiny shinyApp runApp addResourcePath
 #'
-#' @return \code{NULL} (only used to modify the Shiny session's state or
-#'   internal variables)
+#' @return \code{NULL} (function is only used to modify the Shiny session's
+#' state or internal variables)
 #' @export
 #'
 #' @examples

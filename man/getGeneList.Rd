@@ -20,11 +20,12 @@ Available gene lists:
 getGeneList()
 }
 \seealso{
-Other functions for data grouping: \code{\link{createGroupByAttribute}},
-  \code{\link{getMatchingSamples}},
-  \code{\link{getSubjectFromSample}},
-  \code{\link{groupPerElem}},
-  \code{\link{plotGroupIndependence}},
-  \code{\link{testGroupIndependence}}
+Other functions for data grouping: 
+\code{\link{createGroupByAttribute}()},
+\code{\link{getMatchingSamples}()},
+\code{\link{getSubjectFromSample}()},
+\code{\link{groupPerElem}()},
+\code{\link{plotGroupIndependence}()},
+\code{\link{testGroupIndependence}()}
 }
 \concept{functions for data grouping}

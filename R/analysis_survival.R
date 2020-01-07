@@ -142,8 +142,7 @@ survivalUI <- function(id) {
 
 #' Prepare survival terms in case of valid input
 #' 
-#' @param session Shiny session
-#' @param input Shiny input
+#' @inheritParams appServer
 #' @param coxph Boolean: prepare data for Cox models?
 #' 
 #' @inherit psichomics return

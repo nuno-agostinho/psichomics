@@ -5,9 +5,15 @@
 \title{Plot -log10(p-values) of the results obtained after multiple group 
 independence testing}
 \usage{
-plotGroupIndependence(groups, top = 50, textSize = 10,
-  colourLow = "lightgrey", colourMid = "blue", colourHigh = "orange",
-  colourMidpoint = 150)
+plotGroupIndependence(
+  groups,
+  top = 50,
+  textSize = 10,
+  colourLow = "lightgrey",
+  colourMid = "blue",
+  colourHigh = "orange",
+  colourMidpoint = 150
+)
 }
 \arguments{
 \item{groups}{\code{multiGroupIndependenceTest} object (obtained after 
@@ -47,11 +53,12 @@ plotGroupIndependence(groupTesting)
 \code{\link{parseCategoricalGroups}} and 
 \code{\link{testGroupIndependence}}
 
-Other functions for data grouping: \code{\link{createGroupByAttribute}},
-  \code{\link{getGeneList}},
-  \code{\link{getMatchingSamples}},
-  \code{\link{getSubjectFromSample}},
-  \code{\link{groupPerElem}},
-  \code{\link{testGroupIndependence}}
+Other functions for data grouping: 
+\code{\link{createGroupByAttribute}()},
+\code{\link{getGeneList}()},
+\code{\link{getMatchingSamples}()},
+\code{\link{getSubjectFromSample}()},
+\code{\link{groupPerElem}()},
+\code{\link{testGroupIndependence}()}
 }
 \concept{functions for data grouping}

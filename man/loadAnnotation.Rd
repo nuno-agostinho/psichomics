@@ -26,10 +26,11 @@ annot <- loadAnnotation(human)
 }
 }
 \seealso{
-Other functions for PSI quantification: \code{\link{filterPSI}},
-  \code{\link{getSplicingEventTypes}},
-  \code{\link{listSplicingAnnotations}},
-  \code{\link{plotRowStats}},
-  \code{\link{quantifySplicing}}
+Other functions for PSI quantification: 
+\code{\link{filterPSI}()},
+\code{\link{getSplicingEventTypes}()},
+\code{\link{listSplicingAnnotations}()},
+\code{\link{plotRowStats}()},
+\code{\link{quantifySplicing}()}
 }
 \concept{functions for PSI quantification}

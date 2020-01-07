@@ -7,19 +7,47 @@
 \alias{as.table.GEandAScorrelation}
 \title{Display results of correlation analyses}
 \usage{
-\method{plot}{GEandAScorrelation}(x, autoZoom = FALSE,
-  loessSmooth = TRUE, loessFamily = c("gaussian", "symmetric"),
-  colour = "black", alpha = 0.2, size = 1.5, loessColour = "red",
-  loessAlpha = 1, loessWidth = 0.5, fontSize = 12, ...,
-  colourGroups = NULL, legend = FALSE, showAllData = TRUE,
-  density = FALSE, densityColour = "blue", densityWidth = 0.5)
+\method{plot}{GEandAScorrelation}(
+  x,
+  autoZoom = FALSE,
+  loessSmooth = TRUE,
+  loessFamily = c("gaussian", "symmetric"),
+  colour = "black",
+  alpha = 0.2,
+  size = 1.5,
+  loessColour = "red",
+  loessAlpha = 1,
+  loessWidth = 0.5,
+  fontSize = 12,
+  ...,
+  colourGroups = NULL,
+  legend = FALSE,
+  showAllData = TRUE,
+  density = FALSE,
+  densityColour = "blue",
+  densityWidth = 0.5
+)
 
-plotCorrelation(x, autoZoom = FALSE, loessSmooth = TRUE,
-  loessFamily = c("gaussian", "symmetric"), colour = "black",
-  alpha = 0.2, size = 1.5, loessColour = "red", loessAlpha = 1,
-  loessWidth = 0.5, fontSize = 12, ..., colourGroups = NULL,
-  legend = FALSE, showAllData = TRUE, density = FALSE,
-  densityColour = "blue", densityWidth = 0.5)
+plotCorrelation(
+  x,
+  autoZoom = FALSE,
+  loessSmooth = TRUE,
+  loessFamily = c("gaussian", "symmetric"),
+  colour = "black",
+  alpha = 0.2,
+  size = 1.5,
+  loessColour = "red",
+  loessAlpha = 1,
+  loessWidth = 0.5,
+  fontSize = 12,
+  ...,
+  colourGroups = NULL,
+  legend = FALSE,
+  showAllData = TRUE,
+  density = FALSE,
+  densityColour = "blue",
+  densityWidth = 0.5
+)
 
 \method{print}{GEandAScorrelation}(x, ...)
 
@@ -53,13 +81,14 @@ least-squares, and if \code{symmetric}, a re-descending M estimator is used}
 
 \item{fontSize}{Numeric: plot font size}
 
-\item{...}{Arguments passed on to \code{stats::loess.smooth}
-\describe{
-  \item{span}{smoothness parameter for \code{loess}.}
-  \item{degree}{degree of local polynomial used.}
-  \item{evaluation}{number of points at which to evaluate the smooth
+\item{...}{
+  Arguments passed on to \code{\link[stats:loess.smooth]{stats::loess.smooth}}
+  \describe{
+    \item{\code{span}}{smoothness parameter for \code{loess}.}
+    \item{\code{degree}}{degree of local polynomial used.}
+    \item{\code{evaluation}}{number of points at which to evaluate the smooth
     curve.}
-}}
+  }}
 
 \item{colourGroups}{List of characters: sample colouring by group}
 
@@ -117,7 +146,8 @@ attr(colourGroups, "Colour") <- c(Normal="#00C65A", Tumour="#EEE273")
 plot(corr, colourGroups=colourGroups, alpha=1)
 }
 \seealso{
-Other functions to correlate gene expression and alternative splicing: \code{\link{[.GEandAScorrelation}},
-  \code{\link{correlateGEandAS}}
+Other functions to correlate gene expression and alternative splicing: 
+\code{\link{[.GEandAScorrelation}()},
+\code{\link{correlateGEandAS}()}
 }
 \concept{functions to correlate gene expression and alternative splicing}

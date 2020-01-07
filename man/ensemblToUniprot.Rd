@@ -23,8 +23,9 @@ protein <- "ENSP00000445929"
 ensemblToUniprot(protein)
 }
 \seealso{
-Other functions to retrieve external information: \code{\link{plotProtein}},
-  \code{\link{plotTranscripts}},
-  \code{\link{queryEnsemblByGene}}
+Other functions to retrieve external information: 
+\code{\link{plotProtein}()},
+\code{\link{plotTranscripts}()},
+\code{\link{queryEnsemblByGene}()}
 }
 \concept{functions to retrieve external information}

@@ -7,8 +7,13 @@
 \alias{assignValuePerPatient}
 \title{Assign average sample values to their corresponding subjects}
 \usage{
-assignValuePerSubject(data, match, clinical = NULL, patients = NULL,
-  samples = NULL)
+assignValuePerSubject(
+  data,
+  match,
+  clinical = NULL,
+  patients = NULL,
+  samples = NULL
+)
 }
 \arguments{
 \item{data}{One-row data frame/matrix or vector: values per sample for a 
@@ -46,14 +51,15 @@ names(match) <- colnames(psi)
 assignValuePerSubject(psi[3, ], match)
 }
 \seealso{
-Other functions to analyse survival: \code{\link{getAttributesTime}},
-  \code{\link{labelBasedOnCutoff}},
-  \code{\link{optimalSurvivalCutoff}},
-  \code{\link{plotSurvivalCurves}},
-  \code{\link{plotSurvivalPvaluesByCutoff}},
-  \code{\link{processSurvTerms}},
-  \code{\link{survdiff.survTerms}},
-  \code{\link{survfit.survTerms}},
-  \code{\link{testSurvival}}
+Other functions to analyse survival: 
+\code{\link{getAttributesTime}()},
+\code{\link{labelBasedOnCutoff}()},
+\code{\link{optimalSurvivalCutoff}()},
+\code{\link{plotSurvivalCurves}()},
+\code{\link{plotSurvivalPvaluesByCutoff}()},
+\code{\link{processSurvTerms}()},
+\code{\link{survdiff.survTerms}()},
+\code{\link{survfit.survTerms}()},
+\code{\link{testSurvival}()}
 }
 \concept{functions to analyse survival}

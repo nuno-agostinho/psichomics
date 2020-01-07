@@ -4,27 +4,31 @@
 \alias{noinfo}
 \title{Interface when no information could be retrieved}
 \usage{
-noinfo(output,
-  description = paste("No information available for this gene."), ...)
+noinfo(
+  output,
+  description = paste("No information available for this gene."),
+  ...
+)
 }
 \arguments{
 \item{output}{Shiny output}
 
 \item{description}{Character: description of the message to show to the user}
 
-\item{...}{Arguments passed on to \code{inlineDialog}
-\describe{
-  \item{id}{Character: identifier}
-  \item{buttonId}{Character: button identifier}
-  \item{buttonLabel}{Character: button label}
-  \item{buttonIcon}{Character: button icon}
-  \item{type}{Character: type of alert (error or warning)}
-  \item{bigger}{Boolean: wrap the \code{description} in a \code{h4} tag?}
-}}
+\item{...}{
+  Arguments passed on to \code{\link[=inlineDialog]{inlineDialog}}
+  \describe{
+    \item{\code{id}}{Character: identifier}
+    \item{\code{buttonId}}{Character: button identifier}
+    \item{\code{buttonLabel}}{Character: button label}
+    \item{\code{buttonIcon}}{Character: button icon}
+    \item{\code{type}}{Character: type of alert (error or warning)}
+    \item{\code{bigger}}{Boolean: wrap the \code{description} in a \code{h4} tag?}
+  }}
 }
 \value{
-\code{NULL} (only used to modify the Shiny session's state or
-  internal variables)
+\code{NULL} (function is only used to modify the Shiny session's
+state or internal variables)
 }
 \description{
 Interface when no information could be retrieved

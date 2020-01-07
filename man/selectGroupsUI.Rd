@@ -6,9 +6,16 @@
 \alias{getSelectedGroups}
 \title{Group selection}
 \usage{
-selectGroupsUI(id, label, placeholder = "Type to search for groups",
-  noGroupsLabel = NULL, groupsLabel = NULL, maxItems = NULL,
-  returnAllDataLabel = NULL, returnAllDataValue = FALSE)
+selectGroupsUI(
+  id,
+  label,
+  placeholder = "Type to search for groups",
+  noGroupsLabel = NULL,
+  groupsLabel = NULL,
+  maxItems = NULL,
+  returnAllDataLabel = NULL,
+  returnAllDataValue = FALSE
+)
 
 selectGroupsServer(session, id, type, preference = NULL)
 

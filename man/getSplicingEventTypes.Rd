@@ -19,9 +19,11 @@ Splicing event types available
 getSplicingEventTypes()
 }
 \seealso{
-Other functions for PSI quantification: \code{\link{filterPSI}},
-  \code{\link{listSplicingAnnotations}},
-  \code{\link{loadAnnotation}}, \code{\link{plotRowStats}},
-  \code{\link{quantifySplicing}}
+Other functions for PSI quantification: 
+\code{\link{filterPSI}()},
+\code{\link{listSplicingAnnotations}()},
+\code{\link{loadAnnotation}()},
+\code{\link{plotRowStats}()},
+\code{\link{quantifySplicing}()}
 }
 \concept{functions for PSI quantification}

@@ -20,8 +20,8 @@ createDataTab(index, data, name, session, input, output)
 \item{output}{Shiny session output}
 }
 \value{
-\code{NULL} (only used to modify the Shiny session's state or
-  internal variables)
+\code{NULL} (function is only used to modify the Shiny session's
+state or internal variables)
 }
 \description{
 Render a specific data tab (including data table and related interface)

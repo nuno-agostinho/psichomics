@@ -5,9 +5,13 @@
 \alias{loadFirebrowseData}
 \title{Download and process TCGA data}
 \usage{
-loadTCGAdata(folder = getDownloadsFolder(), data = c("clinical",
-  "junction_quantification", "RSEM_genes"), exclude = c(".aux.",
-  ".mage-tab.", "MANIFEST.txt"), ..., download = TRUE)
+loadTCGAdata(
+  folder = getDownloadsFolder(),
+  data = c("clinical", "junction_quantification", "RSEM_genes"),
+  exclude = c(".aux.", ".mage-tab.", "MANIFEST.txt"),
+  ...,
+  download = TRUE
+)
 }
 \arguments{
 \item{folder}{Character: directory to store the downloaded archives (by
@@ -19,25 +23,26 @@ default, saves to \code{\link{getDownloadsFolder()}})}
 from loading into R (by default, exclude files containing \code{.aux.},
 \code{.mage-tab.} and \code{MANIFEST.TXT})}
 
-\item{...}{Arguments passed on to \code{queryFirebrowseData}
-\describe{
-  \item{format}{Character: response format as \code{JSON}, \code{CSV} or
+\item{...}{
+  Arguments passed on to \code{\link[=queryFirebrowseData]{queryFirebrowseData}}
+  \describe{
+    \item{\code{format}}{Character: response format as \code{JSON}, \code{CSV} or
 \code{TSV}}
-  \item{date}{Character: dates of the data retrieval by Firebrowse (by default,
+    \item{\code{date}}{Character: dates of the data retrieval by Firebrowse (by default,
 it uses the most recent data available)}
-  \item{cohort}{Character: abbreviation of the cohorts (by default, returns
+    \item{\code{cohort}}{Character: abbreviation of the cohorts (by default, returns
 data for all cohorts)}
-  \item{data_type}{Character: data types (optional)}
-  \item{tool}{Character: data produced by the selected Firebrowse tools
+    \item{\code{data_type}}{Character: data types (optional)}
+    \item{\code{tool}}{Character: data produced by the selected Firebrowse tools
 (optional)}
-  \item{platform}{Character: data generation platforms (optional)}
-  \item{center}{Character: data generation centres (optional)}
-  \item{level}{Integer: data levels (optional)}
-  \item{protocol}{Character: sample characterization protocols (optional)}
-  \item{page}{Integer: page of the results to return (optional)}
-  \item{sort_by}{String: column used to sort the data (by default, it sorts by
+    \item{\code{platform}}{Character: data generation platforms (optional)}
+    \item{\code{center}}{Character: data generation centres (optional)}
+    \item{\code{level}}{Integer: data levels (optional)}
+    \item{\code{protocol}}{Character: sample characterization protocols (optional)}
+    \item{\code{page}}{Integer: page of the results to return (optional)}
+    \item{\code{sort_by}}{String: column used to sort the data (by default, it sorts by
 cohort)}
-}}
+  }}
 
 \item{download}{Boolean: download missing files}
 }
@@ -55,9 +60,11 @@ loadFirebrowseData(cohort = "ACC", data_type = "Clinical")
 }
 }
 \seealso{
-Other functions associated with TCGA data retrieval: \code{\link{getDownloadsFolder}},
-  \code{\link{getTCGAdataTypes}},
-  \code{\link{getTCGAdates}}, \code{\link{isFirebrowseUp}},
-  \code{\link{parseTCGAsampleInfo}}
+Other functions associated with TCGA data retrieval: 
+\code{\link{getDownloadsFolder}()},
+\code{\link{getTCGAdataTypes}()},
+\code{\link{getTCGAdates}()},
+\code{\link{isFirebrowseUp}()},
+\code{\link{parseTCGAsampleInfo}()}
 }
 \concept{functions associated with TCGA data retrieval}

@@ -13,6 +13,8 @@
 \alias{setSignificant}
 \alias{getPrecision}
 \alias{setPrecision}
+\alias{getASevents}
+\alias{getASevent}
 \alias{setASevent}
 \alias{getEvent}
 \alias{setEvent}
@@ -77,6 +79,10 @@ getPrecision()
 
 setPrecision(integer)
 
+getASevents()
+
+getASevent()
+
 setASevent(event)
 
 getEvent()
@@ -113,8 +119,7 @@ getSampleAttributes()
 
 getJunctionQuantification(category = getCategory())
 
-getGeneExpression(item = NULL, category = getCategory(),
-  EList = FALSE)
+getGeneExpression(item = NULL, category = getCategory(), EList = FALSE)
 
 setNormalisedGeneExpression(geneExpr, category = getCategory())
 
@@ -136,8 +141,7 @@ setCorrelation(correlation, category = getCategory())
 
 getGroupIndependenceTesting(category = getCategory())
 
-setGroupIndependenceTesting(groupIndependenceTesting,
-  category = getCategory())
+setGroupIndependenceTesting(groupIndependenceTesting, category = getCategory())
 
 getSpecies(category = getCategory())
 

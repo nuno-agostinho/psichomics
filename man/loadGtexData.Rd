@@ -4,8 +4,11 @@
 \alias{loadGtexData}
 \title{Load GTEx data}
 \usage{
-loadGtexData(folder = getDownloadsFolder(), data = getGtexDataTypes(),
-  tissue = NULL)
+loadGtexData(
+  folder = getDownloadsFolder(),
+  data = getGtexDataTypes(),
+  tissue = NULL
+)
 }
 \arguments{
 \item{folder}{Character: folder containing data}
@@ -36,8 +39,9 @@ data <- loadGtexData(tissue=c("Stomach", "Small Intestine"))
 }
 }
 \seealso{
-Other functions associated with GTEx data retrieval: \code{\link{getDownloadsFolder}},
-  \code{\link{getGtexDataTypes}},
-  \code{\link{getGtexTissues}}
+Other functions associated with GTEx data retrieval: 
+\code{\link{getDownloadsFolder}()},
+\code{\link{getGtexDataTypes}()},
+\code{\link{getGtexTissues}()}
 }
 \concept{functions associated with GTEx data retrieval}

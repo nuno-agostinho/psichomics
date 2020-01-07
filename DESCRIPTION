@@ -32,7 +32,7 @@ Depends:
     shinyBS
 License: MIT + file LICENSE
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Imports:
     AnnotationDbi,
     AnnotationHub,
@@ -136,6 +136,9 @@ Collate:
     'formats_recountSampleInfo.R'
     'groups.R'
     'help.R'
+    'utils_fileBrowserDialog.R'
+    'utils_interactiveGgplot.R'
+    'utils_interface.R'
 biocViews: Sequencing, RNASeq, AlternativeSplicing,
     DifferentialSplicing, Transcription, GUI, PrincipalComponent,
     Survival, BiomedicalInformatics, Transcriptomics, ImmunoOncology,

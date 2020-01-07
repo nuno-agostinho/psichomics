@@ -18,9 +18,11 @@ Check if \href{http://firebrowse.org/api-docs/}{Firebrowse API} is running
 isFirebrowseUp()
 }
 \seealso{
-Other functions associated with TCGA data retrieval: \code{\link{getDownloadsFolder}},
-  \code{\link{getTCGAdataTypes}},
-  \code{\link{getTCGAdates}}, \code{\link{loadTCGAdata}},
-  \code{\link{parseTCGAsampleInfo}}
+Other functions associated with TCGA data retrieval: 
+\code{\link{getDownloadsFolder}()},
+\code{\link{getTCGAdataTypes}()},
+\code{\link{getTCGAdates}()},
+\code{\link{loadTCGAdata}()},
+\code{\link{parseTCGAsampleInfo}()}
 }
 \concept{functions associated with TCGA data retrieval}

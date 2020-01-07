@@ -4,8 +4,14 @@
 \alias{renderGeneticInfo}
 \title{Render genetic information}
 \usage{
-renderGeneticInfo(output, ns, info, species = NULL, assembly = NULL,
-  grch37 = FALSE)
+renderGeneticInfo(
+  output,
+  ns,
+  info,
+  species = NULL,
+  assembly = NULL,
+  grch37 = FALSE
+)
 }
 \arguments{
 \item{output}{Shiny output}

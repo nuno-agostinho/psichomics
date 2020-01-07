@@ -25,9 +25,11 @@ if (isFirebrowseUp()) getFirebrowseDates()
 if (isFirebrowseUp()) getTCGAcohorts()
 }
 \seealso{
-Other functions associated with TCGA data retrieval: \code{\link{getDownloadsFolder}},
-  \code{\link{getTCGAdataTypes}},
-  \code{\link{isFirebrowseUp}}, \code{\link{loadTCGAdata}},
-  \code{\link{parseTCGAsampleInfo}}
+Other functions associated with TCGA data retrieval: 
+\code{\link{getDownloadsFolder}()},
+\code{\link{getTCGAdataTypes}()},
+\code{\link{isFirebrowseUp}()},
+\code{\link{loadTCGAdata}()},
+\code{\link{parseTCGAsampleInfo}()}
 }
 \concept{functions associated with TCGA data retrieval}

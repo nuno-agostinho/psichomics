@@ -14,8 +14,8 @@ browserHistory(navId, input, session)
 \item{session}{Session object}
 }
 \value{
-\code{NULL} (only used to modify the Shiny session's state or
-  internal variables)
+\code{NULL} (function is only used to modify the Shiny session's
+state or internal variables)
 }
 \description{
 Navigate app according to the location given by the navigation bar. Code

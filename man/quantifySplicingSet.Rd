@@ -7,13 +7,13 @@
 quantifySplicingSet(session, input)
 }
 \arguments{
-\item{session}{Session object}
+\item{session}{Shiny session}
 
-\item{input}{Input object}
+\item{input}{Shiny input}
 }
 \value{
-\code{NULL} (only used to modify the Shiny session's state or
-  internal variables)
+\code{NULL} (function is only used to modify the Shiny session's
+state or internal variables)
 }
 \description{
 Instructions to build the Shiny app

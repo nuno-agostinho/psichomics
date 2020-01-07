@@ -4,9 +4,14 @@
 \alias{createJunctionsTemplate}
 \title{Creates a template of alternative splicing junctions}
 \usage{
-createJunctionsTemplate(nrow, program = character(0),
-  event.type = character(0), chromosome = character(0),
-  strand = character(0), id = character(0))
+createJunctionsTemplate(
+  nrow,
+  program = character(0),
+  event.type = character(0),
+  chromosome = character(0),
+  strand = character(0),
+  id = character(0)
+)
 }
 \arguments{
 \item{nrow}{Integer: row number}

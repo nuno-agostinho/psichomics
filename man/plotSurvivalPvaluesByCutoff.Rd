@@ -4,9 +4,17 @@
 \alias{plotSurvivalPvaluesByCutoff}
 \title{Plot p-values of survival difference between groups based on multiple cutoffs}
 \usage{
-plotSurvivalPvaluesByCutoff(clinical, data, censoring, event, timeStart,
-  timeStop = NULL, followup = "days_to_last_followup",
-  significance = 0.05, cutoffs = seq(0, 0.99, 0.01))
+plotSurvivalPvaluesByCutoff(
+  clinical,
+  data,
+  censoring,
+  event,
+  timeStart,
+  timeStop = NULL,
+  followup = "days_to_last_followup",
+  significance = 0.05,
+  cutoffs = seq(0, 0.99, 0.01)
+)
 }
 \arguments{
 \item{clinical}{Data frame: clinical data}
@@ -64,14 +72,15 @@ plotSurvivalPvaluesByCutoff(clinical, eventData, censoring="right",
                             event=event, timeStart=timeStart)
 }
 \seealso{
-Other functions to analyse survival: \code{\link{assignValuePerSubject}},
-  \code{\link{getAttributesTime}},
-  \code{\link{labelBasedOnCutoff}},
-  \code{\link{optimalSurvivalCutoff}},
-  \code{\link{plotSurvivalCurves}},
-  \code{\link{processSurvTerms}},
-  \code{\link{survdiff.survTerms}},
-  \code{\link{survfit.survTerms}},
-  \code{\link{testSurvival}}
+Other functions to analyse survival: 
+\code{\link{assignValuePerSubject}()},
+\code{\link{getAttributesTime}()},
+\code{\link{labelBasedOnCutoff}()},
+\code{\link{optimalSurvivalCutoff}()},
+\code{\link{plotSurvivalCurves}()},
+\code{\link{processSurvTerms}()},
+\code{\link{survdiff.survTerms}()},
+\code{\link{survfit.survTerms}()},
+\code{\link{testSurvival}()}
 }
 \concept{functions to analyse survival}

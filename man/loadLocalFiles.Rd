@@ -4,8 +4,7 @@
 \alias{loadLocalFiles}
 \title{Load local files}
 \usage{
-loadLocalFiles(folder, ignore = c(".aux.", ".mage-tab."),
-  name = "Data")
+loadLocalFiles(folder, ignore = c(".aux.", ".mage-tab."), name = "Data")
 }
 \arguments{
 \item{folder}{Character: path to folder containing files of interest}
@@ -30,6 +29,7 @@ loadLocalFiles(folder, ignore)
 }
 }
 \seealso{
-Other functions to load local files: \code{\link{prepareSRAmetadata}}
+Other functions to load local files: 
+\code{\link{prepareSRAmetadata}()}
 }
 \concept{functions to load local files}

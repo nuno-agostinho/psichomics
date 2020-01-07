@@ -167,7 +167,7 @@ expression (for any genes of interest) and alternative splicing quantification
 * `plotCorrelation`: Scatter plots of the correlation results
 * `as.table`: Table of the correlation results
 
-### Annotation retrieval
+### Gene, transcript and protein annotation retrieval
 * `queryEnsemblByEvent`: Query Ensembl based on an alternative splicing event
 * `queryEnsemblByGene`: Query Ensembl based on a gene
 * `ensemblToUniprot`: Convert an Ensembl identifier to the respective UniProt 

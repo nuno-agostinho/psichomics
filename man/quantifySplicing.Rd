@@ -4,8 +4,13 @@
 \alias{quantifySplicing}
 \title{Quantify alternative splicing events}
 \usage{
-quantifySplicing(annotation, junctionQuant, eventType = c("SE", "MXE",
-  "ALE", "AFE", "A3SS", "A5SS"), minReads = 10, genes = NULL)
+quantifySplicing(
+  annotation,
+  junctionQuant,
+  eventType = c("SE", "MXE", "ALE", "AFE", "A3SS", "A5SS"),
+  minReads = 10,
+  genes = NULL
+)
 }
 \arguments{
 \item{annotation}{List of data frames: annotation for each alternative
@@ -36,9 +41,11 @@ junctionQuant <- readFile("ex_junctionQuant.RDS")
 psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 }
 \seealso{
-Other functions for PSI quantification: \code{\link{filterPSI}},
-  \code{\link{getSplicingEventTypes}},
-  \code{\link{listSplicingAnnotations}},
-  \code{\link{loadAnnotation}}, \code{\link{plotRowStats}}
+Other functions for PSI quantification: 
+\code{\link{filterPSI}()},
+\code{\link{getSplicingEventTypes}()},
+\code{\link{listSplicingAnnotations}()},
+\code{\link{loadAnnotation}()},
+\code{\link{plotRowStats}()}
 }
 \concept{functions for PSI quantification}

@@ -4,8 +4,7 @@
 \alias{plotTranscripts}
 \title{Plot transcripts}
 \usage{
-plotTranscripts(info, eventPosition = NULL, event = NULL,
-  shiny = FALSE)
+plotTranscripts(info, eventPosition = NULL, event = NULL, shiny = FALSE)
 }
 \arguments{
 \item{info}{Information retrieved from Ensembl}
@@ -18,8 +17,8 @@ plotTranscripts(info, eventPosition = NULL, event = NULL,
 \item{shiny}{Boolean: is the function running in a Shiny session?}
 }
 \value{
-\code{NULL} (only used to modify the Shiny session's state or
-  internal variables)
+\code{NULL} (function is only used to modify the Shiny session's
+state or internal variables)
 }
 \description{
 Plot transcripts
@@ -32,8 +31,9 @@ plotTranscripts(info, event=event)
 }
 }
 \seealso{
-Other functions to retrieve external information: \code{\link{ensemblToUniprot}},
-  \code{\link{plotProtein}},
-  \code{\link{queryEnsemblByGene}}
+Other functions to retrieve external information: 
+\code{\link{ensemblToUniprot}()},
+\code{\link{plotProtein}()},
+\code{\link{queryEnsemblByGene}()}
 }
 \concept{functions to retrieve external information}

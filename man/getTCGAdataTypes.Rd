@@ -17,9 +17,11 @@ Get available TCGA data types
 getTCGAdataTypes()
 }
 \seealso{
-Other functions associated with TCGA data retrieval: \code{\link{getDownloadsFolder}},
-  \code{\link{getTCGAdates}}, \code{\link{isFirebrowseUp}},
-  \code{\link{loadTCGAdata}},
-  \code{\link{parseTCGAsampleInfo}}
+Other functions associated with TCGA data retrieval: 
+\code{\link{getDownloadsFolder}()},
+\code{\link{getTCGAdates}()},
+\code{\link{isFirebrowseUp}()},
+\code{\link{loadTCGAdata}()},
+\code{\link{parseTCGAsampleInfo}()}
 }
 \concept{functions associated with TCGA data retrieval}

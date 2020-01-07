@@ -9,26 +9,27 @@ processSurvival(session, ...)
 \arguments{
 \item{session}{Shiny session}
 
-\item{...}{Arguments passed on to \code{processSurvTerms}
-\describe{
-  \item{censoring}{Character: censor using \code{left}, \code{right},
+\item{...}{
+  Arguments passed on to \code{\link[=processSurvTerms]{processSurvTerms}}
+  \describe{
+    \item{\code{censoring}}{Character: censor using \code{left}, \code{right},
 \code{interval} or \code{interval2}}
-  \item{scale}{Character: rescale the survival time to \code{days},
+    \item{\code{scale}}{Character: rescale the survival time to \code{days},
 \code{weeks}, \code{months} or \code{years}}
-  \item{formulaStr}{Character: formula to use}
-  \item{coxph}{Boolean: fit a Cox proportional hazards regression model?}
-  \item{survTime}{survTime object: times to follow up, time start, time stop
+    \item{\code{formulaStr}}{Character: formula to use}
+    \item{\code{coxph}}{Boolean: fit a Cox proportional hazards regression model?}
+    \item{\code{survTime}}{survTime object: times to follow up, time start, time stop
 and event (optional)}
-  \item{clinical}{Data frame: clinical data}
-  \item{event}{Character: name of column containing time of the event of
+    \item{\code{clinical}}{Data frame: clinical data}
+    \item{\code{event}}{Character: name of column containing time of the event of
 interest}
-  \item{timeStart}{Character: name of column containing starting time of the
+    \item{\code{timeStart}}{Character: name of column containing starting time of the
 interval or follow up time}
-  \item{timeStop}{Character: name of column containing ending time of the 
+    \item{\code{timeStop}}{Character: name of column containing ending time of the 
 interval (only relevant for interval censoring)}
-  \item{group}{Character: group relative to each subject}
-  \item{followup}{Character: name of column containing follow up time}
-}}
+    \item{\code{group}}{Character: group relative to each subject}
+    \item{\code{followup}}{Character: name of column containing follow up time}
+  }}
 }
 \value{
 List with survival analysis results

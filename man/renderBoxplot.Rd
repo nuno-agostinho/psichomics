@@ -4,8 +4,14 @@
 \alias{renderBoxplot}
 \title{Render boxplot}
 \usage{
-renderBoxplot(data, outliers = FALSE, sortByMedian = TRUE,
-  showXlabels = TRUE, title = NULL, seriesName = "Gene expression")
+renderBoxplot(
+  data,
+  outliers = FALSE,
+  sortByMedian = TRUE,
+  showXlabels = TRUE,
+  title = NULL,
+  seriesName = "Gene expression"
+)
 }
 \arguments{
 \item{data}{Data frame or matrix}

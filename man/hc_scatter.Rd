@@ -4,8 +4,7 @@
 \alias{hc_scatter}
 \title{Create scatter plot}
 \usage{
-hc_scatter(hc, x, y, z = NULL, label = NULL, showInLegend = FALSE,
-  ...)
+hc_scatter(hc, x, y, z = NULL, label = NULL, showInLegend = FALSE, ...)
 }
 \arguments{
 \item{hc}{\code{Highchart} object}
@@ -20,10 +19,11 @@ hc_scatter(hc, x, y, z = NULL, label = NULL, showInLegend = FALSE,
 
 \item{showInLegend}{Boolean: show the data in the legend box?}
 
-\item{...}{Arguments passed on to \code{highcharter::hc_add_series}
-\describe{
-  \item{}{}
-}}
+\item{...}{
+  Arguments passed on to \code{\link[highcharter:hc_add_series]{highcharter::hc_add_series}}
+  \describe{
+    \item{\code{}}{}
+  }}
 }
 \value{
 \code{highcharter} object containing information for a scatter plot

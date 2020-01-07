@@ -33,7 +33,9 @@ pca <- performPCA(USArrests)
 calculateLoadingsContribution(pca)
 }
 \seealso{
-Other functions to analyse principal components: \code{\link{performPCA}},
-  \code{\link{plotPCA}}, \code{\link{plotVariance}}
+Other functions to analyse principal components: 
+\code{\link{performPCA}()},
+\code{\link{plotPCA}()},
+\code{\link{plotVariance}()}
 }
 \concept{functions to analyse principal components}

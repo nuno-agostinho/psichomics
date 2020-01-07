@@ -6,8 +6,14 @@
 \alias{getSampleFromSubject}
 \title{Get samples matching the given subjects}
 \usage{
-getMatchingSamples(patients, samples, clinical = NULL, rm.NA = TRUE,
-  match = NULL, showMatch = FALSE)
+getMatchingSamples(
+  patients,
+  samples,
+  clinical = NULL,
+  rm.NA = TRUE,
+  match = NULL,
+  showMatch = FALSE
+)
 }
 \arguments{
 \item{patients}{Character or list of characters: subject identifiers}
@@ -39,11 +45,12 @@ rownames(clinical) <- subjects
 getMatchingSamples(subjects[c(1, 4)], samples, clinical)
 }
 \seealso{
-Other functions for data grouping: \code{\link{createGroupByAttribute}},
-  \code{\link{getGeneList}},
-  \code{\link{getSubjectFromSample}},
-  \code{\link{groupPerElem}},
-  \code{\link{plotGroupIndependence}},
-  \code{\link{testGroupIndependence}}
+Other functions for data grouping: 
+\code{\link{createGroupByAttribute}()},
+\code{\link{getGeneList}()},
+\code{\link{getSubjectFromSample}()},
+\code{\link{groupPerElem}()},
+\code{\link{plotGroupIndependence}()},
+\code{\link{testGroupIndependence}()}
 }
 \concept{functions for data grouping}

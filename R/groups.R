@@ -761,8 +761,7 @@ matchGroupASeventsAndGenes <- function(id, group, ASevents) {
 
 #' Set new groups according to the user input
 #' 
-#' @param session Shiny session
-#' @param input Shiny input
+#' @inheritParams appServer
 #' @param dataset Data frame or matrix: dataset of interest
 #' @param id Character: identifier of the group selection
 #' @param type Character: type of group to create
@@ -1096,8 +1095,7 @@ setOperation <- function(operation, groups, selected, symbol=" ",
 #' 
 #' This function can be used on groups to merge, intersect, subtract, etc.
 #' 
-#' @param input Shiny input
-#' @param session Shiny session
+#' @inheritParams appServer
 #' @param buttonId Character: ID of the button to trigger operation
 #' @param sharedData Shiny app's global variable
 #' 
@@ -1211,7 +1209,7 @@ showGroupsTable <- function(type) {
 
 #' Logic server to manipulate data grouping
 #' 
-#' @inheritParams groupsServer
+#' @inheritParams appServer
 #' @param type Character: type of data for each the interface is intended
 #' 
 #' @importFrom DT renderDataTable dataTableOutput
@@ -1897,8 +1895,6 @@ groupManipulation <- function(input, output, session, type) {
 }
 
 #' @rdname appServer
-#'
-#' @inheritParams operateOnGroups
 groupsServer <- function(input, output, session) {
     callModule(groupManipulation, "sampleGroupModule",  "Samples")
     callModule(groupManipulation, "ASeventGroupModule", "ASevents")
@@ -1908,7 +1904,7 @@ groupsServer <- function(input, output, session) {
 #' 
 #' These functions only run once instead of running for every instance of groups
 #' 
-#' @inheritParams groupsServer
+#' @inheritParams appServer
 #' 
 #' @inherit psichomics return
 #' @keywords internal
@@ -1995,7 +1991,7 @@ groupsServerOnce <- function(input, output, session) {
 #' @rdname selectGroupsUI
 #'  
 #' @inheritParams getGroups
-#' @param input Shiny input
+#' @inheritParams appServer
 #' @param filter Character: get groups only if they are present in this argument
 #' (if TCGA-styled gene symbols, they will be "converted" to gene symbols alone)
 #' 

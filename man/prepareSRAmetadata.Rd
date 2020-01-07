@@ -8,11 +8,18 @@
 \usage{
 prepareSRAmetadata(file, output = "psichomics_metadata.txt")
 
-prepareJunctionQuant(..., output = "psichomics_junctions.txt",
-  startOffset = NULL, endOffset = NULL)
+prepareJunctionQuant(
+  ...,
+  output = "psichomics_junctions.txt",
+  startOffset = NULL,
+  endOffset = NULL
+)
 
-prepareGeneQuant(..., output = "psichomics_gene_counts.txt",
-  strandedness = c("unstranded", "stranded", "stranded (reverse)"))
+prepareGeneQuant(
+  ...,
+  output = "psichomics_gene_counts.txt",
+  strandedness = c("unstranded", "stranded", "stranded (reverse)")
+)
 }
 \arguments{
 \item{file}{Character: path to file}
@@ -51,6 +58,7 @@ prepareGeneQuant("Control rep1"=geneCountFile1,
 }
 }
 \seealso{
-Other functions to load local files: \code{\link{loadLocalFiles}}
+Other functions to load local files: 
+\code{\link{loadLocalFiles}()}
 }
 \concept{functions to load local files}

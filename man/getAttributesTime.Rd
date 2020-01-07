@@ -4,8 +4,13 @@
 \alias{getAttributesTime}
 \title{Retrieve the time for given columns in a clinical dataset}
 \usage{
-getAttributesTime(clinical, event, timeStart, timeStop = NULL,
-  followup = "days_to_last_followup")
+getAttributesTime(
+  clinical,
+  event,
+  timeStart,
+  timeStop = NULL,
+  followup = "days_to_last_followup"
+)
 }
 \arguments{
 \item{clinical}{Data frame: clinical data}
@@ -33,14 +38,15 @@ rownames(df) <- paste("subject", 1:3)
 getAttributesTime(df, event="death", timeStart="death", followup="followup")
 }
 \seealso{
-Other functions to analyse survival: \code{\link{assignValuePerSubject}},
-  \code{\link{labelBasedOnCutoff}},
-  \code{\link{optimalSurvivalCutoff}},
-  \code{\link{plotSurvivalCurves}},
-  \code{\link{plotSurvivalPvaluesByCutoff}},
-  \code{\link{processSurvTerms}},
-  \code{\link{survdiff.survTerms}},
-  \code{\link{survfit.survTerms}},
-  \code{\link{testSurvival}}
+Other functions to analyse survival: 
+\code{\link{assignValuePerSubject}()},
+\code{\link{labelBasedOnCutoff}()},
+\code{\link{optimalSurvivalCutoff}()},
+\code{\link{plotSurvivalCurves}()},
+\code{\link{plotSurvivalPvaluesByCutoff}()},
+\code{\link{processSurvTerms}()},
+\code{\link{survdiff.survTerms}()},
+\code{\link{survfit.survTerms}()},
+\code{\link{testSurvival}()}
 }
 \concept{functions to analyse survival}

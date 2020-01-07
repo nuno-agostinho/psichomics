@@ -57,6 +57,7 @@ mats <- parseMatsAnnotation(matsOutput)
 annot <- prepareAnnotationFromEvents(suppa, mats)
 }
 \seealso{
-Other functions to prepare alternative splicing annotations: \code{\link{parseSuppaAnnotation}}
+Other functions to prepare alternative splicing annotations: 
+\code{\link{parseSuppaAnnotation}()}
 }
 \concept{functions to prepare alternative splicing annotations}
