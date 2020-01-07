@@ -456,13 +456,12 @@ processSurvTerms <- function(clinical, censoring, event, timeStart,
 #' @inheritDotParams survival::survdiff -formula -data
 #' 
 #' @importFrom survival survfit
-#' @export
 #' 
 #' @family functions to analyse survival
 #' @return \code{survfit} object. See \code{survfit.object} for details. Methods
 #' defined for survfit objects are \code{print}, \code{plot}, \code{lines}, and 
 #' \code{points}.
-#' @export survfit.survTerms
+#' @export
 #'
 #' @examples 
 #' library("survival")

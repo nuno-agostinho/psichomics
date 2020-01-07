@@ -49,7 +49,7 @@ Other functions to analyse survival:
 \code{\link{optimalSurvivalCutoff}()},
 \code{\link{plotSurvivalPvaluesByCutoff}()},
 \code{\link{processSurvTerms}()},
-\code{\link{survdiff.survTerms}()},
+\code{\link{survdiffTerms}()},
 \code{\link{survfit.survTerms}()},
 \code{\link{testSurvival}()}
 }
