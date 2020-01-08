@@ -1760,7 +1760,7 @@ groupManipulation <- function(input, output, session, type) {
         
         isolate({
             if (type == "Samples") {
-                first  <- getsubjectId()
+                first  <- getSubjectId()
                 second <- getSampleId()
                 match  <- getClinicalMatchFrom("Inclusion levels")
             } else if (type == "ASevents") {

@@ -127,7 +127,7 @@ survivalUI <- function(id) {
     tagList(
         uiOutput(ns("modal")),
         sidebarPanel(
-            errorDialog("No clinical data is available.",
+            errorDialog("Clinical data not loaded.",
                         id=ns("survivalDialog"),
                         buttonId=ns("loadClinical"),
                         buttonLabel="Load clinical data"),

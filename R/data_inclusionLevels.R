@@ -139,7 +139,7 @@ inclusionLevelsInterface <- function(ns) {
         uiOutput(ns("modal")),
         helpText("Exon inclusion levels are measured from exon-exon junction",
                  "quantification using the Percent Spliced-In (PSI) metric."),
-        errorDialog("No junction quantification is loaded.",
+        errorDialog("Junction quantification not loaded.",
                     id=ns("missingData"), style="margin: 10px;"),
         hidden(options),
         actionButton(ns("loadIncLevels"), "Load from file..."),

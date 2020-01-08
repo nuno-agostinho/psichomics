@@ -1,6 +1,7 @@
-# 1.12.1 (19 December, 2019)
+# 1.12.1 (8 January, 2019)
 
-* Fix loading of a portion of TCGA data if too many cohorts are selected
+* Fix loading only a portion of TCGA data (with no warning) if too many cohorts
+are selected
 * User-provided junction quantification loading:
     - Support junction coordinates from mitochondrial, Z and W chromosomes
     - Fix issues with files containing splice junctions within random, alt and

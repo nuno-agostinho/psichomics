@@ -98,7 +98,7 @@ geNormalisationFilteringInterface <- function(ns) {
 
     tagList(
         uiOutput(ns("modal")),
-        errorDialog("No gene expression data is loaded.",
+        errorDialog("Gene expression not loaded.",
                     id=ns("missingData"), style="margin: 10px;"),
         hidden(options),
         actionButton(ns("loadGeneExpr"), "Load from file..."),
