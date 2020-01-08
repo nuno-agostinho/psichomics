@@ -269,7 +269,7 @@ plotSplicingEvent <- function(
     
     parsed <- split(parsed, type)
     svg <- NULL
-    for (each in type) {
+    for (each in names(parsed)) {
         svg <- c(svg, diagramSplicingEvent(
             parsed[[each]], each, showPath=showPath, showText=showText,
             showAlternative1=showAlternative1,
