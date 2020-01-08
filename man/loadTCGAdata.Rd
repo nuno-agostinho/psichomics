@@ -40,7 +40,8 @@ data for all cohorts)}
     \item{\code{level}}{Integer: data levels (optional)}
     \item{\code{protocol}}{Character: sample characterization protocols (optional)}
     \item{\code{page}}{Integer: page of the results to return (optional)}
-    \item{\code{sort_by}}{String: column used to sort the data (by default, it sorts by
+    \item{\code{page_size}}{Integer: number of records per page of results (optional)}
+    \item{\code{sort_by}}{String: column used to sort the data (by default, sort by
 cohort)}
   }}
 

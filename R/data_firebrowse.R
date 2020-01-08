@@ -178,7 +178,8 @@ isFirebrowseUp <- function() {
 #' @param level Integer: data levels (optional)
 #' @param protocol Character: sample characterization protocols (optional)
 #' @param page Integer: page of the results to return (optional)
-#' @param sort_by String: column used to sort the data (by default, it sorts by
+#' @param page_size Integer: number of records per page of results (optional)
+#' @param sort_by String: column used to sort the data (by default, sort by
 #' cohort)
 #'
 #' @importFrom httr GET
@@ -198,7 +199,7 @@ isFirebrowseUp <- function() {
 queryFirebrowseData <- function(format = "json", date = NULL, cohort = NULL, 
                                 data_type = NULL, tool = NULL, platform = NULL,
                                 center = NULL, level = NULL, protocol = NULL,
-                                page = NULL, sort_by = NULL) {
+                                page = NULL, page_size = NULL, sort_by = NULL) {
     # Only allow these response formats
     format <- match.arg(format, c("json", "csv", "tsv"))
     
@@ -207,7 +208,7 @@ queryFirebrowseData <- function(format = "json", date = NULL, cohort = NULL,
     
     # Process the parameters of the query
     labels <- list("format", "date", "cohort", "data_type", "tool", "platform",
-                   "center", "level", "protocol", "page",
+                   "center", "level", "protocol", "page", "page_size",
                    "sort_by")
     query <- lapply(labels, dynGet)
     names(query) <- labels

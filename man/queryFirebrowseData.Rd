@@ -15,6 +15,7 @@ queryFirebrowseData(
   level = NULL,
   protocol = NULL,
   page = NULL,
+  page_size = NULL,
   sort_by = NULL
 )
 }
@@ -43,7 +44,9 @@ data for all cohorts)}
 
 \item{page}{Integer: page of the results to return (optional)}
 
-\item{sort_by}{String: column used to sort the data (by default, it sorts by
+\item{page_size}{Integer: number of records per page of results (optional)}
+
+\item{sort_by}{String: column used to sort the data (by default, sort by
 cohort)}
 }
 \value{
