@@ -203,21 +203,6 @@ infoUI <- function(id) {
         uiOutput(ns("info")))
 }
 
-#' Interface when no information could be retrieved
-#' @param output Shiny output
-#' @param description Character: description of the message to show to the user
-#' @inheritDotParams inlineDialog -description
-#' 
-#' @importFrom shiny renderUI h3 br tags
-#' 
-#' @inherit psichomics return
-#' @keywords internal
-noinfo <- function(output, description=paste(
-    "No information available for this gene."), ...) {
-    output$info <- renderUI(
-        errorDialog(description, style="width: 400px;", ...))
-}
-
 #' Parse XML from UniProt's RESTful service
 #'
 #' @param xml response from UniProt
