@@ -216,7 +216,7 @@ styleModal <- function(session, title, ..., style=NULL,
     if (echo) {
         if (style == "info") style <- "Information"
         msg <- sprintf("%s: %s", capitalize(style), title)
-        if (!is.null(caller)) msg <- sprintf('%s (in "%s")', msg, caller)
+        if (!is.null(caller)) msg <- sprintf('%s [in "%s"]', msg, caller)
         message(msg)
     }
     return(invisible(TRUE))
@@ -272,10 +272,21 @@ showAlert <- function(session, ..., title, style=NULL, dismissible=TRUE,
     args <- list(...)
     if (style == "info") style <- "Information"
     msg <- sprintf("%s: %s", capitalize(style), title)
-    if (!is.null(caller)) msg <- sprintf('%s (in "%s")', msg, caller)
-    message(msg, "\n  ", paste(lapply(args, format), collapse=" "))
+    if (!is.null(caller)) msg <- sprintf('%s [in "%s"]', msg, caller)
+    body <- paste(lapply(args, format), collapse=" ")
     
-    style <- switch(style, "error"="alert-danger", "warning"="alert-warning")
+    newline <- "\n  "
+    processHTML <- function(str, newline) {
+        str <- gsub("\n[ ]*", " ", str) # Strip forced newlines
+        str <- gsub("[ ]*<br[/]{0,1}>[ ]*", newline, str) # Convert newline
+        str <- gsub("[ ]*<.*?>[ ]*", "", str) # Strip other HTML tags
+        return(str)
+    }
+    body <- processHTML(body, newline)
+    message(msg, newline, body)
+    
+    style <- switch(style, "error"="alert-danger", "warning"="alert-warning",
+                    "success"="alert-success")
     
     output <- session$output
     output[[alertId]] <- renderUI({
@@ -283,6 +294,14 @@ showAlert <- function(session, ..., title, style=NULL, dismissible=TRUE,
                     class=style, role="alert", class="animated bounceInUp", 
                     class=dismissible, dismiss, ...))
     })
+}
+
+#' @rdname showAlert
+successAlert <- function(session, ..., title=NULL, dismissible=TRUE,
+                         alertId="success", caller=NULL) {
+    showAlert(session, ..., style="success", title=title, 
+              iconName="check-circle", dismissible=dismissible, 
+              alertId=alertId, caller=caller)
 }
 
 #' @rdname showAlert

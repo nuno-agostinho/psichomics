@@ -7,6 +7,7 @@
 createGroupFromInput(
   session,
   input,
+  output,
   dataset,
   id,
   type,
@@ -19,6 +20,8 @@ createGroupFromInput(
 \item{session}{Shiny session}
 
 \item{input}{Shiny input}
+
+\item{output}{Shiny output}
 
 \item{dataset}{Data frame or matrix: dataset of interest}
 

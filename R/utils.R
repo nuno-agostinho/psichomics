@@ -111,6 +111,7 @@ areSplicingEvents <- function(char, num=6) {
 #' parseSplicingEvent(events)
 parseSplicingEvent <- function(event, char=FALSE, pretty=FALSE, extra=NULL, 
                                coords=FALSE) {
+    if (is.null(event)) return(NULL)
     # Pre-treat special case of exon-centred AFE and ALE
     event <- gsub("AFE_exon", "AFE", event, fixed=TRUE)
     event <- gsub("ALE_exon", "ALE", event, fixed=TRUE)

@@ -2,6 +2,7 @@
 % Please edit documentation in R/utils_interface.R
 \name{showAlert}
 \alias{showAlert}
+\alias{successAlert}
 \alias{errorAlert}
 \alias{warningAlert}
 \alias{removeAlert}
@@ -15,6 +16,15 @@ showAlert(
   dismissible = TRUE,
   alertId = "alert",
   iconName = NULL,
+  caller = NULL
+)
+
+successAlert(
+  session,
+  ...,
+  title = NULL,
+  dismissible = TRUE,
+  alertId = "success",
   caller = NULL
 )
 

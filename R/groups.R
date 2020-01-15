@@ -485,12 +485,13 @@ groupByPreMadeList <- function(ns, data, id) {
     
     tagList(
         helpText("Load pre-made, literature-based lists of genes."),
-        selectizeInput(ns(paste0("groupAttribute", id)), "Select gene list",
+        selectizeInput(ns(paste0("groupAttribute", id)), "Gene list",
                        width="auto", choices=cols, options=list(
                            lockOptgroupOrder=TRUE, placeholder="Gene list")),
+        tags$small(uiOutput(ns(paste0("geneListNumber", id)))),
         tags$small(tags$b("Source:"),
                    helpText(textOutput(ns(paste0("geneListSource", id))))),
-        actionButton(ns(paste0("loadPreMadeGroup", id)), "Load as group",
+        actionButton(ns(paste0("loadPreMadeGroup", id)), "Create group",
                      class="btn-primary")
     )
 }
@@ -518,12 +519,27 @@ preparePreMadeGroupForSelection <- function(groups) {
 #' 
 #' @return Elements of selected item
 #' @keywords internal
-selectPreMadeGroup <- function(groups, selected) {
-    selected <- strsplit(selected, "|||", fixed=TRUE)[[1]]
-    first  <- selected[[1]]
-    second <- selected[[2]]
+selectPreMadeGroup <- function(groups, selected, genes=NULL) {
+    selected <- strsplit(selected, "\\|\\|\\|| ~ ")[[1]]
+    first    <- selected[[1]]
+    second   <- selected[[2]]
+    res      <- groups[[first]][[second]]
     
-    res <- groups[[first]][[second]]
+    # Filter genes based on those currently available
+    if (!is.null(genes)) {
+        valid     <- res %in% genes
+        total     <- length(res)
+        discarded <- sum(!valid)
+        perc      <- round(discarded / total * 100)
+        
+        res <- res[valid]
+        if (discarded > 0) {
+            msg <- tagList(tags$b(sprintf("%s out of %s genes (%s%%)", 
+                                          discarded, total, perc)),
+                           "do not match loaded data and were discarded")
+            attr(res, "discarded") <- msg
+        }
+    }
     attr(res, "title") <- sprintf("%s (%s)", second, first)
     attr(res, "citation") <- attr(groups[[first]], "citation")
     return(res)
@@ -610,7 +626,6 @@ groupByGrep <- function(ns, cols, id) {
 createGroup <- function(session, input, output, id, type, selected=NULL, 
                         expr=NULL, groupNames=NULL) {
     removeAlert(output, alertId="alert-side")
-    
     if (id == "Patients") {
         dataset <- getClinicalData()
     } else if (id == "Samples") {
@@ -618,9 +633,8 @@ createGroup <- function(session, input, output, id, type, selected=NULL,
     } else {
         dataset <- NULL
     }
-    
-    new <- createGroupFromInput(session, input, dataset, id, type, selected,
-                                expr, groupNames)
+    new <- createGroupFromInput(session, input, output, dataset, id, type,
+                                selected, expr, groupNames)
     if (!is.null(new)) appendNewGroups(id, new)
 }
 
@@ -642,8 +656,9 @@ assignColours <- function(new, groups=NULL) {
     
     # Avoid setting colours that were previously assigned
     priority <- NULL
-    if (!is.null(groups) && "Colour" %in% colnames(groups))
+    if (!is.null(groups) && "Colour" %in% colnames(groups)) {
         priority <- colours[!colours %in% groups[ , "Colour"]]
+    }
     
     # Repeat default colours when there are many groups
     reps    <- ceiling((nrow(new) - length(priority)) / length(colours))
@@ -652,10 +667,11 @@ assignColours <- function(new, groups=NULL) {
     
     hasColnames <- !is.null(colnames(new))
     new <- cbind(new, colours)
-    if (hasColnames)
+    if (hasColnames) {
         colnames(new)[ncol(new)] <- "Colour"
-    else
+    } else {
         colnames(new) <- NULL
+    }
     return(new)
 }
 
@@ -672,13 +688,16 @@ assignColours <- function(new, groups=NULL) {
 #' @keywords internal
 appendNewGroups <- function(type, new, clearOld=FALSE) {
     # Rename duplicated group names
-    if (clearOld) 
+    if (clearOld)  {
         groups <- NULL
-    else
+    } else {
         groups <- getGroups(type, complete=TRUE)
-    
+    }
     new <- renameGroups(new, groups)
-    new <- assignColours(new, groups)
+    
+    # Assign colours if not previously assigned
+    hasAssignedColours <- "Colour" %in% colnames(new)
+    if (!hasAssignedColours) new <- assignColours(new, groups)
     
     if (clearOld) {
         groups <- new
@@ -771,8 +790,8 @@ matchGroupASeventsAndGenes <- function(id, group, ASevents) {
 #' 
 #' @return Matrix with the group names and respective elements
 #' @keywords internal
-createGroupFromInput <- function (session, input, dataset, id, type, 
-                                  selected=NULL, expr=NULL, groupNames=NULL) {
+createGroupFromInput <- function(session, input, output, dataset, id, type, 
+                                 selected=NULL, expr=NULL, groupNames=NULL) {
     if (type == "Attribute") {
         if (selected == "") return(NULL)
         group <- createGroupByAttribute(selected, dataset)
@@ -788,27 +807,23 @@ createGroupFromInput <- function (session, input, dataset, id, type,
     } else if (type == "Subset") {
         # Test expression before running
         set <- tryCatch(subset(dataset, eval(parse(text=expr))), error=return)
-        
         # Display error
         if ("simpleError" %in% class(set)) {
             errorAlert(session, title="Issue with subset expression",
                        "Check if column names are correct.", br(),
-                       "The following error was raised:",
+                       "The following error was raised:", 
                        tags$code(set$message), alertId="alert-side",
                        caller="Data grouping")
             return(NULL)
         }
-        
-        rows <- match(rownames(set), rownames(dataset))
-        rows <- rownames(dataset)[rows]
+        rows  <- match(rownames(set), rownames(dataset))
+        rows  <- rownames(dataset)[rows]
         group <- cbind(groupNames, type, expr, list(rows))
     } else if (type == "Regex") {
         # Subset dataset column using given regular expression
         colData    <- as.character(dataset[[selected]])
-        
         # Test expression before running
         set <- tryCatch(grep(expr, colData), error=return)
-        
         # Show error to the user
         if ("simpleError" %in% class(set)) {
             errorAlert(session, title="Issue with GREP expression",
@@ -817,20 +832,24 @@ createGroupFromInput <- function (session, input, dataset, id, type,
                        caller="Data grouping")
             return(NULL)
         }
-        
-        set <- rownames(dataset)[set]
+        set     <- rownames(dataset)[set]
         strRows <- sprintf('"%s" in %s', expr, selected)
-        group <- cbind(groupNames, "GREP", strRows, list(set))
+        group   <- cbind(groupNames, "GREP", strRows, list(set))
     } else if (type == "PreMadeList") {
-        group      <- selectPreMadeGroup(getGeneList(), selected)
-        groupNames <- attr(group, "title")
-        selected   <- gsub("|||", " ~ ", selected, fixed=TRUE)
-        group      <- cbind(groupNames, type, selected, list(group))
+        group        <- selectPreMadeGroup(getGeneList(), selected, getGenes())
+        groupNames   <- attr(group, "title")
+        discardedMsg <- attr(group, "discarded")
+        selected     <- gsub("|||", " ~ ", selected, fixed=TRUE)
+        group        <- cbind(groupNames, type, selected, list(group))
+        
+        if (!is.null(discardedMsg)) {
+            removeAlert(output, alertId="alert-main")
+            warningAlert(session, title="Discarded values", discardedMsg,
+                         alertId="alert-main", caller="Data grouping")
+        }
     }
-    
     # Name group if empty
     if (group[[1]] == "") group[[1]] <- "Unlabelled group"
-    
     # Standardise rows
     ns <- c("Names", "Subset", "Input", id)
     if (is.matrix(group)) {
@@ -1207,6 +1226,221 @@ showGroupsTable <- function(type) {
     }
 }
 
+#' Check type of groups within file
+#' 
+#' @param file Character: file path
+#' 
+#' @return Type of group: \code{Samples}, \code{ASevents} or \code{NULL}
+#' @keywords internal
+checkGroupType <- function(file) {
+    head <- fread(file, header=FALSE, nrows=1, stringsAsFactors=FALSE, 
+                  data.table=FALSE)
+    
+    prepareGroupFileFormat <- function(check) {
+        formatSamples <- list(check=check, colNames=1, ignoreRows=1,
+                              checkIndex=1, rowCheck=TRUE)
+    }
+    headerSamples   <- c("Group", paste(c("Sample", "Patient"), "ID"))
+    formatSamples   <- prepareGroupFileFormat(headerSamples)
+    isSamplesGroup  <- checkFileFormat(formatSamples, head)
+    
+    headerASevents  <- c("Group", paste(c("AS event", "Gene"), "ID"))
+    formatASevents  <- prepareGroupFileFormat(headerASevents)
+    isASeventsGroup <- checkFileFormat(formatASevents, head)
+    
+    if (isSamplesGroup) {
+        type <- "Samples"
+    } else if (isASeventsGroup) {
+        type <- "ASevents"
+    } else {
+        type <- NA
+    }
+    return(type)
+}
+
+#' Export groups to a file
+#' 
+#' @param groups Matrix with groups
+#' @param file Character: path to output file
+#' @param match Match between elements within groups
+#' 
+#' @return Saves groups to file
+#' @keywords internal
+exportGroupsToFile <- function(groups, file, match=NULL) {
+    if (nrow(groups) == 0) stop("Groups must have one or more rows.")
+    
+    if ("Samples" %in% colnames(groups)) {
+        uniqueID  <- "Samples"
+        matchedID <- "Patients"
+    } else if ("Genes" %in% colnames(groups)) {
+        uniqueID  <- "ASevents"
+        matchedID <- "Genes"
+    } else {
+        stop("Unexpected group format.")
+    }
+    data <- NULL
+    for (g in seq(nrow(groups))) {
+        group        <- groups[g, ]
+        name         <- group[["Names"]]
+        uniqueGroup  <- group[[uniqueID]]
+        matchedGroup <- group[[matchedID]]
+        colour       <- group[["Colour"]]
+        
+        if (!is.null(uniqueGroup) && length(uniqueGroup) > 0) {
+            if (!is.null(matchedGroup) && length(matchedGroup) > 0) {
+                # Match unique and matched elements available in the group
+                matchedElems <- match[names(match) %in% uniqueGroup]
+                matchedElems[!matchedElems %in% matchedGroup] <- NA
+                data <- rbind(
+                    data, 
+                    cbind(name, names(matchedElems), matchedElems, colour))
+                
+                # Get remaining matched elements
+                matchedGroup <- matchedGroup[!matchedGroup %in% matchedElems]
+                if (length(matchedGroup) > 0) {
+                    data <- rbind(data, cbind(name, NA, matchedGroup, colour))
+                }
+                
+                # Get remaining unique elements
+                uniqueGroup <- uniqueGroup[
+                   !uniqueGroup %in% names(matchedElems)]
+                if (length(uniqueGroup) > 0) {
+                    data <- rbind(data, cbind(name, uniqueGroup, NA, colour))
+                }
+            } else {
+                data <- rbind(data, cbind(name, uniqueGroup, NA, colour))
+            }
+        } else {
+            if (length(matchedGroup) == 0) matchedGroup <- NA
+            data <- rbind(data, cbind(name, NA, matchedGroup, colour))
+        }
+    }
+    uniqueID <- gsub("ASevent", "AS event", uniqueID)
+    strs <- paste(gsub("s$", "", c(uniqueID, matchedID)), "ID")
+    
+    if (ncol(data) == 4) {
+        cols <- c("Group", strs, "Colour")
+    } else {
+        cols <- c("Group", strs)
+    }
+    colnames(data) <- cols
+    rownames(data) <- NULL
+    write.table(data, file, quote=FALSE, row.names=FALSE, sep="\t")
+}
+
+processCol <- function(col, group) {
+    uniqueNonNA <- function(x) unique(x[!is.na(x)])
+    res <- lapply(split(col, group), uniqueNonNA)
+    res <- res[unique(group)] # Order by original group names
+    return(res)
+}
+
+discardElemsInList <- function(data, keep=NULL, element=NULL) {
+    if (is.null(keep)) return(data)
+    filterByMatches <- function(x, keep) return(x[x %in% keep])
+    res       <- lapply(data, filterByMatches, keep)
+    kept      <- length(unique(unlist(res)))
+    total     <- length(unique(unlist(data)))
+    discarded <- total - kept
+    perc      <- round(discarded / total * 100)
+    if (discarded > 0) {
+        element <- paste0(tolower(element), "s")
+        attr(res, "discarded") <- sprintf("%s out of %s %s (%s%%)",
+                                          discarded, total, element, perc)
+    }
+    return(res)
+}
+
+#' Import groups from a file
+#' 
+#' @param file Character: path to file
+#' @param uniqueElems Character: vector of unique elements (samples or 
+#' alternative splicing events)
+#' @param matchingElems Character: vector of matching elements (subjects or
+#' genes)
+#' @param match Match between elements within groups
+#' 
+#' @return Matrix with groups
+#' @keywords internal
+importGroupsFrom <- function(file, uniqueElems=NULL, matchingElems=NULL,
+                             match=NULL, type=NULL) {
+    if (is.null(type)) type <- checkGroupType(file)
+    
+    if (is.null(type)) {
+        stop("File does not contain group data.")
+    } else if (type == "Samples") {
+        uniqueID  <- "Sample"
+        matchedID <- "Patient"
+    } else if (type == "ASevents") {
+        uniqueID  <- "AS event"
+        matchedID <- "Gene"
+    }
+    strs <- paste(c(uniqueID, matchedID), "ID")
+    
+    # Load groups file
+    groups <- fread(file, colClasses="character")
+    groups[["Group"]][is.na(groups[["Group"]])] <- "NA" # Read NA as group name
+    groupNames <- unique(groups[["Group"]])
+    
+    data <- matrix(nrow=length(groupNames), ncol=3,
+                   dimnames=list(groupNames, c("Names", "Subset", "Input")))
+    data[ , "Names"]  <- groupNames
+    data[ , "Subset"] <- "Groups loaded from file"
+    data[ , "Input"]  <- file
+    
+    # Process columns containing samples/AS events
+    uniqueCol   <- processCol(groups[[strs[[1]]]], groups[["Group"]])
+    # Process columns containing subjects/genes
+    matchingCol <- processCol(groups[[strs[[2]]]], groups[["Group"]])
+    
+    # Include available matching elements if uniqueCol or matchingCol are empty
+    if (!is.null(match)) {
+        anyUniqueIdLoaded  <- any(sapply(uniqueCol,   length))
+        anyMatchedIdLoaded <- any(sapply(matchingCol, length))
+        for (group in groupNames) {
+            if (!anyUniqueIdLoaded) {
+                uniqueCol[[group]] <- unique(
+                    names(match[match %in% matchingCol[[group]]]))
+            } else if (!anyMatchedIdLoaded) {
+                matchingCol[[group]] <- unique(
+                    unname(match[uniqueCol[[group]]]))
+            }
+        }
+    }
+    
+    # Discard elements based on whether they are present or not
+    uniqueCol   <- discardElemsInList(uniqueCol,   uniqueElems,   uniqueID)
+    matchingCol <- discardElemsInList(matchingCol, matchingElems, matchedID)
+    
+    df <- cbind(data, matchingCol, uniqueCol)
+    colnames(df)[4:5] <- c(paste0(matchedID, "s"), type)
+    
+    if (nrow(df) == 0) {
+        return(NULL)
+    } else if (type == "ASevents") {
+        df <- df[ , c(1:3, 5, 4), drop=FALSE] # Fix column order
+    }
+    
+    # Include colour if available
+    colours <- groups[["Colour"]]
+    if (!is.null(colours)) {
+        colours <- setNames(colours, groups[["Group"]])
+        df <- cbind(df, "Colour"=colours[groupNames])
+    }
+    
+    # Attach message with number of discarded elements
+    uniqueColDiscarded   <- attr(uniqueCol,   "discarded")
+    matchingColDiscarded <- attr(matchingCol, "discarded")
+    if (!is.null(uniqueColDiscarded) || !is.null(matchingColDiscarded)) {
+        msg <- tags$ul(tags$li(
+            tags$b(paste(c(matchingColDiscarded, uniqueColDiscarded),
+                         collapse=" and ")),
+            "do not match loaded data and were discarded"))
+        attr(df, "discarded") <- msg
+    }
+    return(df)
+}
+
 #' Logic server to manipulate data grouping
 #' 
 #' @inheritParams appServer
@@ -1302,9 +1536,15 @@ groupManipulation <- function(input, output, session, type) {
                         selected=selected)
         })
         
+        output[[paste0("geneListNumber", id)]] <- renderUI({
+            selected <- input$groupAttributeGenes
+            group    <- selectPreMadeGroup(getGeneList(), selected)
+            return(tagList(tags$b("Genes:"), length(group)))
+        })
+        
         output[[paste0("geneListSource", id)]] <- renderText({
             selected <- input$groupAttributeGenes
-            group <- selectPreMadeGroup(getGeneList(), selected)
+            group    <- selectPreMadeGroup(getGeneList(), selected)
             return(attr(group, "citation"))
         })
         
@@ -1563,49 +1803,6 @@ groupManipulation <- function(input, output, session, type) {
     # Remove all groups
     observeEvent(input[["removeAll-button"]], setGroups(type, NULL))
     
-    # Export groups to file
-    exportGroupsToFile <- function(groups, file, type, match) {
-        if (type == "Samples") {
-            first  <- "Patients"
-            second <- "Samples"
-        } else if (type == "ASevents") {
-            first  <- "Genes"
-            second <- "ASevents"
-        }
-        
-        data <- NULL
-        for (g in seq(nrow(groups))) {
-            group       <- groups[g, ]
-            name        <- group$Names
-            firstGroup  <- group[[first]]
-            secondGroup <- group[[second]]
-            
-            if (!is.null(secondGroup) && length(secondGroup) > 0) {
-                if (!is.null(firstGroup) && length(firstGroup) > 0) {
-                    # Match first and second elements available in the group
-                    matchingElems <- match[names(match) %in% secondGroup]
-                    matchingElems[!matchingElems %in% firstGroup] <- NA
-                    data <- rbind(data, cbind(name, names(matchingElems),
-                                              matchingElems))
-                    
-                    # Get remaining first elements
-                    firstGroup <- firstGroup[!firstGroup %in% matchingElems]
-                    if (length(firstGroup) > 0)
-                        data <- rbind(data, cbind(name, NA, firstGroup))
-                } else {
-                    data <- rbind(data, cbind(name, secondGroup, NA))
-                }
-            } else {
-                data <- rbind(data, cbind(name, NA, firstGroup))
-            }
-        }
-        second <- gsub("ASevent", "AS event", second)
-        strs <- paste(gsub("s$", "", c(second, first)), "ID")
-        colnames(data) <- c("Group", strs)
-        rownames(data) <- NULL
-        write.table(data, file, quote=FALSE, row.names=FALSE, sep="\t")
-    }
-    
     output[["saveSelectedGroups-button"]] <- downloadHandler(
         filename = function() {
             paste0("psichomics groups ", getCategory(), ".txt")
@@ -1615,13 +1812,14 @@ groupManipulation <- function(input, output, session, type) {
             groups   <- getGroups(type, complete=TRUE)
             groups   <- groups[selected, , drop=FALSE]
             
-            if (type == "Samples")
+            if (type == "Samples") {
                 match <- getClinicalMatchFrom("Inclusion levels")
-            else if (type == "ASevents" && !is.null(getASevents()) )
+            } else if (type == "ASevents" && !is.null(getASevents()) ) {
                 match <- getGenesFromSplicingEvents(getASevents())
-            else
+            } else {
                 match <- NULL
-            exportGroupsToFile(groups, file, type, match)
+            }
+            exportGroupsToFile(groups, file, match)
         }
     )
     
@@ -1630,157 +1828,64 @@ groupManipulation <- function(input, output, session, type) {
             paste0("psichomics groups ", getCategory(), ".txt")
         }, content = function(file) {
             groups <- getGroups(type, complete=TRUE)
-            if (type == "Samples")
+            if (type == "Samples") {
                 match <- getClinicalMatchFrom("Inclusion levels")
-            else if (type == "ASevents" && !is.null(getASevents()) )
+            } else if (type == "ASevents" && !is.null(getASevents()) ) {
                 match <- getGenesFromSplicingEvents(getASevents())
-            else
+            } else {
                 match <- NULL
-            exportGroupsToFile(groups, file, type, match)
+            }
+            exportGroupsToFile(groups, file, match)
         }
     )
     
     # Import groups from file
     observeEvent(input[["loadGroups-button"]], {
-        importGroupsFrom <- function (file, first, second, type, match) {
-            # Check if file contains group information
-            format <- NULL
-            if (type == "Samples")
-                strs <- paste(c("Sample", "Patient"), "ID")
-            else if (type == "ASevents")
-                strs <- paste(c("Gene", "AS event"), "ID")
-            format$check <- c("Group", strs)
-            format$colNames   <- 1
-            format$ignoreRows <- 1
-            format$checkIndex <- 1
-            format$rowCheck   <- TRUE
-            
-            head <- fread(file, header=FALSE, nrows=1, stringsAsFactors=FALSE, 
-                          data.table=FALSE)
-            
-            isGroupFile <- checkFileFormat(format, head)
-            if (isGroupFile) {
-                groups     <- loadFile(format, file)
-                firstElem  <- as.character(groups[[strs[2]]])
-                secondElem <- as.character(groups[[strs[1]]])
-                groups     <- as.character(groups$Group)
-                groups[is.na(groups)] <- "NA" # Retrieve groups named NA
-                
-                if (length(firstElem) == 0 && length(secondElem) == 0) 
-                    return(NULL)
-                
-                # Prepare subjects or splicing events per group
-                subjectGroupNames <- NULL
-                if (length(firstElem) > 0) {
-                    matched  <- firstElem %in% first
-                    firstElem <- split(firstElem[matched], groups[matched])
-                    firstElem <- lapply(firstElem, unique)
-                    subjectGroupNames <- names(firstElem)
-                }
-                
-                # Prepare samples or genes per group
-                sampleGroupNames <- NULL
-                if (length(secondElem) > 0) {
-                    matched <- secondElem %in% second
-                    secondElem <- split(secondElem[matched], groups[matched])
-                    sampleGroupNames <- names(secondElem)
-                }
-                
-                # Prepare matrix with imported groups
-                groupNames <- unique(c(subjectGroupNames, sampleGroupNames))
-                imported   <- matrix(nrow=length(groupNames), ncol=3)
-                colnames(imported) <- c("Names", "Subset", "Input")
-                imported[ , "Names"]   <- groupNames
-                rownames(imported)     <- groupNames
-                
-                info <- paste("Groups loaded from file", file)
-                imported[ , "Subset"] <- info
-                imported[ , "Input"]  <- info
-                
-                fillEmptyGroups <- function(g, vec) {
-                    group <- vec[[g]]
-                    if (is.null(group))
-                        return(character(0))
-                    else
-                        return(group)
-                }
-                
-                if (!is.null(first)) {
-                    if (length(firstElem) > 0) {
-                        firstElem <- lapply(groupNames, fillEmptyGroups, 
-                                            firstElem)
-                        firstElem[sapply(firstElem, is.null)] <- character(0)
-                        names(firstElem) <- groupNames
-                    } else if (!is.null(match)) {
-                        # Provide subjects/AS events based on the samples/genes
-                        secondTofirst <- function(i, match) {
-                            m <- match[i]
-                            return(unique(m[!is.na(m)]))
-                        }
-                        firstElem <- lapply(secondElem, secondTofirst, match)
-                    } else {
-                        firstElem <- list(character(0))
-                    }
-                    firstElem <- lapply(firstElem, unique)
-                    imported <- cbind(imported, "YYY"=firstElem)
-                    
-                    if (type == "Samples")       firstStr <- "Patients"
-                    else if (type == "ASevents") firstStr <- "ASevents"
-                    colnames(imported)[colnames(imported) == "YYY"] <- firstStr
-                }
-                
-                if (!is.null(second)) {
-                    if (length(secondElem) > 0) {
-                        secondElem <- lapply(groupNames, fillEmptyGroups, 
-                                             secondElem)
-                        secondElem <- lapply(secondElem, unique)
-                        names(secondElem) <- groupNames
-                    } else {
-                        secondElem <- list(character(0))
-                    }
-                    imported <- cbind(imported, "ZZZ"=secondElem)
-                    
-                    if (type == "Samples")       secondStr <- "Samples"
-                    else if (type == "ASevents") secondStr <- "Genes"
-                    colnames(imported)[colnames(imported) == "ZZZ"] <- secondStr
-                }
-                
-                # Keep original order if possible
-                if ( all(unique(groups) %in% rownames(imported)) )
-                    imported <- imported[unique(groups), ]    
-                
-                return(imported)
-            } else {
-                stop("File does not contain group data.")
-            }
-        }
-        
         groupsFile <- fileBrowser()
         if (is.na(groupsFile)) return(NULL) # Action cancelled by the user
         
+        groupType <- checkGroupType(groupsFile)
         isolate({
-            if (type == "Samples") {
-                first  <- getSubjectId()
-                second <- getSampleId()
-                match  <- getClinicalMatchFrom("Inclusion levels")
-            } else if (type == "ASevents") {
-                first  <- getASevents() 
-                second <- getGenes()
-                match  <- getGenesFromSplicingEvents(first)
+            if (groupType == "Samples") {
+                uniqueElems   <- getSampleId()
+                matchingElems <- getSubjectId()
+                match         <- getClinicalMatchFrom("Inclusion levels")
+                groupTypeMsg  <- "samples/subjects"
+            } else if (groupType == "ASevents") {
+                uniqueElems   <- getASevents() 
+                matchingElems <- getGenes()
+                match         <- getGenesFromSplicingEvents(uniqueElems)
+                groupTypeMsg  <- "AS events/genes"
             }
         })
         
         removeAlert(output, alertId="alert-main")
         imported <- tryCatch(
-            importGroupsFrom(groupsFile, first, second, type, match), 
+            importGroupsFrom(groupsFile, uniqueElems, matchingElems, match,
+                             type=groupType), 
             error=return)
-        
-        if (!is.null(imported) && !is(imported, "error"))
-            appendNewGroups(type, imported)
-        else
-            errorAlert(session, title="Groups file could not be loaded",
-                       imported$message, alertId="alert-main", 
-                       caller="Data grouping")
+        if (!is.null(imported) && !is(imported, "error")) {
+            appendNewGroups(groupType, imported)
+            groups <- nrow(imported)
+            title  <- paste(groups, ifelse(groups == 1, "group", "groups"),
+                            sprintf("loaded (containing %s)", groupTypeMsg))
+            
+            msg <- attr(imported, "discarded")
+            if (!is.null(msg)) {
+                warningAlert(
+                    session, title=title, msg, br(),
+                    "Groups imported based on file:", tags$code(groupsFile),
+                    alertId="alert-main", caller="Data grouping")
+            } else {
+                successAlert(
+                    session, title=title, 
+                    "Groups imported based on file:", tags$code(groupsFile),
+                    alertId="alert-main", caller="Data grouping")
+            }
+        } else {
+            errorAlert(session, title="File not loaded", imported$message,
+                       alertId="alert-main", caller="Data grouping")
+        }
     })
     
     if (type == "Samples") {
@@ -1947,11 +2052,12 @@ groupsServerOnce <- function(input, output, session) {
         psi     <- getInclusionLevels()
         
         if (!is.null(geneExp) || !is.null(psi)) {
-            groups     <- unlist(getGeneList(), recursive=FALSE)
-            groupNames <- unlist(lapply(names(getGeneList()), function(i)
-                sprintf("%s (%s)", names(getGeneList()[[i]]), i)))
-            selected   <- unlist(lapply(names(getGeneList()), function(i)
-                paste(i, names(getGeneList()[[i]]), sep=" ~ ")))
+            geneList   <- getGeneList()
+            groups     <- unlist(geneList, recursive=FALSE)
+            groupNames <- unlist(lapply(names(geneList), function(i)
+                sprintf("%s (%s)", names(geneList[[i]]), i)))
+            selected   <- unlist(lapply(names(geneList), function(i)
+                paste(i, names(geneList[[i]]), sep=" ~ ")))
             groups     <- cbind(groupNames, "PreMadeList", selected, groups)
             
             # Standardise rows

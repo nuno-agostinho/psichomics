@@ -1,4 +1,4 @@
-# 1.12.1 (8 January, 2019)
+# 1.12.1 (15 January, 2019)
 
 * Fix loading only a portion of TCGA data (with no warning) if too many cohorts
 are selected
@@ -10,11 +10,12 @@ are selected
     - Redesign of alternative splicing event selection (graphical interface)
     - Function `plotSplicingEvent()` plots diagram representation of alternative
     splicing events
+* Improve import/export of data groups from/to a file, including colour support
 * Tutorials:
     - Copy-edit command-line interface (CLI) tutorial
     - Copy-edit tutorial on custom alternative splicing annotation preparation
 
-## Bug fixes and minor changes
+## More bug fixes and minor changes
 
 * Data loading and manipulation:
     - Copy-edit information on the format of user-provided files
@@ -35,6 +36,16 @@ are selected
     (command-line interface)
     - Fix `prepareGeneQuant()` not working if its argument `strandedness` is 
     either `stranded` or `stranded (reverse)`
+* Data grouping:
+    - Fix discarding of samples not associated with any subject when exporting
+    groups
+    - Fix issues related with importing groups based on a file with groups of
+    splicing events and/or genes
+    - Inform user when groups are successfully loaded from a file and whether
+    any group elements are discarded in the process
+    - Show number of genes contained in pre-made gene lists
+    - Discard unavailable genes when creating group of genes based on pre-made
+    gene lists
 * Density plot:
     - Fix visual bug when plotting a group with only one sample (if one data
     point is available for a group, only the rug plot is drawn)
@@ -51,7 +62,9 @@ are selected
     one whose difference has the highest (instead of the lowest) p-value
     - Fix plot line label presenting "p < 0.05" independently of the threshold 
     used for significance
-* Fix warning/error alerts crashing the visual interface
+* Improve warning/error alerts:
+    - Fix alerts crashing the visual interface
+    - Improve message formatting regarding HTML-containing alerts
 * Improve unit tests and function documentation
 
 # 1.10.2 (4 Oct, 2019)
@@ -60,7 +73,8 @@ Fix warnings in Windows-specific CI tools and Bioconductor
 
 # 1.10.1 (19 Sep, 2019)
 
-Avoid timeouts in CI tools and Bioconductor builds by skipping a specific unit test
+Avoid timeouts in CI tools and Bioconductor builds by skipping a specific unit
+test
 
 # 1.8.3 (21 April, 2019)
 
