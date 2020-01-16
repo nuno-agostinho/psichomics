@@ -98,11 +98,21 @@ plotRowStats <- function(data, x, y, subset=NULL, xmin=NULL, xmax=NULL,
     vars <- calculateXandYvalues(data, stats)
     
     message("Preparing plot...")
-    plot <- ggplot(vars, aes_string(x, y)) +
-        # geom_hex(na.rm=TRUE) +
-        geom_point(size=1, na.rm=TRUE, alpha=0.5) +
-        geom_density_2d(colour="orange", na.rm=TRUE) +
-        labs(x=x, y=y)
+    if (!is.null(subset)) {
+        varsSubset <- vars[subset]
+        plot <- ggplot(vars, aes_string(x, y)) +
+            geom_point(size=1, na.rm=TRUE, alpha=0.5, colour="grey") +
+            geom_point(data=varsSubset, size=1, na.rm=TRUE, alpha=0.5, 
+                       colour="grey") +
+            geom_density_2d(data=varsSubset, colour="orange", na.rm=TRUE) +
+            labs(x=x, y=y)
+    } else {
+        plot <- ggplot(vars, aes_string(x, y)) +
+            geom_point(size=1, na.rm=TRUE, alpha=0.5) +
+            geom_point(size=1, na.rm=TRUE, alpha=0.5) +
+            geom_density_2d(colour="orange", na.rm=TRUE) +
+            labs(x=x, y=y)
+    }
     
     if (!is.null(xlim)) plot <- plot + xlim(xlim)
     if (!is.null(ylim)) plot <- plot + ylim(ylim)
