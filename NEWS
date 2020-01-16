@@ -1,4 +1,4 @@
-# 1.12.1 (15 January, 2019)
+# 1.12.1 (16 January, 2019)
 
 * Fix loading only a portion of TCGA data (with no warning) if too many cohorts
 are selected
@@ -8,7 +8,7 @@ are selected
     unknown chromosomes by discarding those rows (a warning is raised)
 * Alternative splicing events can now be represented via diagrams:
     - Redesign of alternative splicing event selection (graphical interface)
-    - Function `plotSplicingEvent()` plots diagram representation of alternative
+    - `plotSplicingEvent()` plots diagram representation of alternative
     splicing events
 * Improve import/export of data groups from/to a file, including colour support
 * Tutorials:
@@ -21,32 +21,31 @@ are selected
     - Copy-edit information on the format of user-provided files
     - Warn when discarding rows with duplicated rownames after loading
     user-provided files
-    - Fix `getGtexDataTypes()` not being available
-    - Fix `loadFirebrowseData()` not returning expected data when asking for 
-    many datasets (such as in the case of performing a pan-cancer analysis)
+    - Fix `getGtexDataTypes()` not being exported
+    - `loadFirebrowseData()` now returns expected data when asking for multiple
+    datasets (such as in the case of performing a pan-cancer analysis)
     - `parseSplicingEvent()` now returns the coordinates as numeric if 
     `coords = TRUE` and `char = FALSE`
     - Improve dialog when trying to load a local folder without any supported 
     files available
     - Improve tutorial on loading user-provided data
 * Alternative splicing annotation:
-    - Fix confirmation dialog for folder creation in the console (even when 
-    running the visual interface)
-    - Allow to select cache directory where AnnotationHub was installed 
-    (command-line interface)
-    - Fix `prepareGeneQuant()` not working if its argument `strandedness` is 
+    - Confirmation dialog is not displayed anymore when creating folder
+    (specially useful while running the visual interface)
+    - Allow to select cache directory of AnnotationHub (command-line interface)
+    - Fix `prepareGeneQuant()` discarding the argument `strandedness` if
     either `stranded` or `stranded (reverse)`
 * Data grouping:
-    - Fix discarding of samples not associated with any subject when exporting
-    groups
+    - Samples not associated with any subject are now kept when exporting groups
+    to a file
     - Fix issues related with importing groups based on a file with groups of
     splicing events and/or genes
     - Inform user when groups are successfully loaded from a file and whether
     any group elements are discarded in the process
     - Show number of genes contained in pre-made gene lists
     - Discard unavailable genes when creating group of genes based on pre-made
-    gene lists
-* Density plot:
+    gene lists (unless these are automatically created at startup)
+* Density plot (`plotDistribution()`):
     - Fix visual bug when plotting a group with only one sample (if one data
     point is available for a group, only the rug plot is drawn)
     - After hiding all plot series, rug plots of the different groups can be 
@@ -556,7 +555,7 @@ alternative splicing quantification
     - Fix not performing statistical tests for two selected sample types while
     analysing a single event with three or more sample types
     - Fix differential analysis on one splicing event not working when using
-    `diffAnalyses()` function
+    `diffAnalyses()`
     - Fix differential analysis not showing for individual events before
     navigating to the page where the analysis is performed for all events
     - Improve readability and information of statistical tests for single events
