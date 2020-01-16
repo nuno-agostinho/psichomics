@@ -34,9 +34,9 @@ License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 7.0.2
 Imports:
-    reshape2,
     AnnotationDbi,
     AnnotationHub,
+    BiocFileCache,
     cluster,
     colourpicker,
     data.table,
