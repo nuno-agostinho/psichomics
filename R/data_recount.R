@@ -27,6 +27,9 @@ recountDataUI <- function(id, panel) {
 
 #' Download and load SRA projects
 #' 
+#' \code{\link[recount2]{recount_abstract}} allows to check available SRA
+#' projects to load
+#' 
 #' @param project Character: SRA project identifiers to download
 #' @param outdir Character: directory to store the downloaded files
 #' 
@@ -35,7 +38,7 @@ recountDataUI <- function(id, panel) {
 #' @importFrom SummarizedExperiment assay seqnames start end strand
 #'
 #' @family functions associated with SRA data retrieval
-#' @return List containing downloaded projects
+#' @return List with loaded projects
 #' @export
 loadSRAproject <- function(project, outdir=getDownloadsFolder()) {
     data <- list()

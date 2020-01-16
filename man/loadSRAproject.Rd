@@ -12,10 +12,11 @@ loadSRAproject(project, outdir = getDownloadsFolder())
 \item{outdir}{Character: directory to store the downloaded files}
 }
 \value{
-List containing downloaded projects
+List with loaded projects
 }
 \description{
-Download and load SRA projects
+\code{\link[recount2]{recount_abstract}} allows to check available SRA
+projects to load
 }
 \seealso{
 Other functions associated with SRA data retrieval: 

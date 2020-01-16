@@ -1,5 +1,5 @@
 ## TODO(NunoA): should default columns be a perfect match or just a partial
-## match? If only a partial match... that would be better for certain situations
+## match? A partial match would be better for certain situations
 
 ## TODO(NunoA): render UI for each data table instead of rendering UI for all
 ## so there's no refresh
@@ -422,7 +422,7 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
                         dataTableOutput(tablename)),
         bsCollapsePanel(tagList(icon("pie-chart"), "Summary"), value="Summary",
                         multiHighchartsPlots)))
-    }
+}
 
 #' Render a specific data tab (including data table and related interface)
 #' 

@@ -31,7 +31,7 @@ data <- loadGtexData()
 
 # Download and load only junction quantification and sample info from GTEx
 getGtexDataTypes()
-data <- loadGtexData(dataTypes=c("sampleInfo", "junctionQuant"))
+data <- loadGtexData(data=c("sampleInfo", "junctionQuant"))
 
 # Download and load only data for specific tissues
 getGtexTissues()
