@@ -2,11 +2,13 @@
 % Please edit documentation in R/utils_drawSplicingEvent.R
 \name{plotSplicingEvent}
 \alias{plotSplicingEvent}
-\title{Render representations of alternative splicing events}
+\title{Plot diagram of alternative splicing events}
 \usage{
 plotSplicingEvent(
   ASevent,
   raw = FALSE,
+  class = NULL,
+  style = NULL,
   showText = TRUE,
   showPath = TRUE,
   showAlternative1 = TRUE,
@@ -27,6 +29,10 @@ plotSplicingEvent(
 
 \item{raw}{Boolean: if \code{FALSE}, plot the events; if \code{TRUE}, return
 the respective SVG raw code}
+
+\item{class}{Character: class of SVG parent tag}
+
+\item{style}{Character: style of SVG parent tag}
 
 \item{showText}{Boolean: display coordinates and exon length (if available)}
 
@@ -64,7 +70,7 @@ required for mutually exclusive exons)}
 List of SVG (one for each alternative splicing event)
 }
 \description{
-Render representations of alternative splicing events
+Plot diagram of alternative splicing events
 }
 \examples{
 ASevent <- c(

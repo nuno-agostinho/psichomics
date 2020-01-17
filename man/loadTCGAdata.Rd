@@ -15,9 +15,9 @@ loadTCGAdata(
 }
 \arguments{
 \item{folder}{Character: directory to store the downloaded archives (by
-default, saves to \code{\link{getDownloadsFolder()}})}
+default, saves to \code{\link{getDownloadsFolder}()})}
 
-\item{data}{Character: data to load (\code{\link{getFirebrowseDataTypes()}})}
+\item{data}{Character: data to load (see \code{\link{getTCGAdataTypes}()})}
 
 \item{exclude}{Character: files and folders to exclude from downloading and
 from loading into R (by default, exclude files containing \code{.aux.},
@@ -64,8 +64,8 @@ loadFirebrowseData(cohort = "ACC", data_type = "Clinical")
 Other functions associated with TCGA data retrieval: 
 \code{\link{getDownloadsFolder}()},
 \code{\link{getTCGAdataTypes}()},
-\code{\link{getTCGAdates}()},
 \code{\link{isFirebrowseUp}()},
+\code{\link{parseSampleGroups}()},
 \code{\link{parseTCGAsampleInfo}()}
 }
 \concept{functions associated with TCGA data retrieval}

@@ -7,6 +7,8 @@
 diagramSplicingEvent(
   parsed,
   type,
+  class = "pull-right",
+  style = NULL,
   showText = TRUE,
   showPath = TRUE,
   showAlternative1 = TRUE,
@@ -26,6 +28,10 @@ diagramSplicingEvent(
 \item{parsed}{Alternative splicing event}
 
 \item{type}{Character: alternative splicing event type}
+
+\item{class}{Character: class of SVG parent tag}
+
+\item{style}{Character: style of SVG parent tag}
 
 \item{showText}{Boolean: display coordinates and exon length (if available)}
 

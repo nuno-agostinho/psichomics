@@ -38,15 +38,11 @@ diffSplicingEventUI <- function(id) {
     singleEventInfo <- div(
         id=ns("singleEventInfo"),
         highchartOutput(ns("density")),
+        uiOutput(ns("eventDiagrams")),
         h4("Parametric tests"),
-        div(class="row",
-            card("ttest"),
-            card("levene")),
+        div(class="row", card("ttest"), card("levene")),
         h4("Non-parametric tests"),
-        div(class="row",
-            card("wilcox"),
-            card("kruskal"),
-            card("fligner")))
+        div(class="row", card("wilcox"), card("kruskal"), card("fligner")))
     
     tagList(
         uiOutput(ns("modal")),
@@ -121,6 +117,22 @@ diffSplicingEventServer <- function(input, output, session) {
         plot <- plotDistribution(eventPSI, groups, title=parseSplicingEvent(
             event, char=TRUE, pretty=TRUE, extra=assembly))
         output$density <- renderHighchart(plot)
+        
+        output$eventDiagrams <- renderUI({
+            isMXE <- parseSplicingEvent(event)$type == "MXE"
+            constitutive <- plotSplicingEvent(
+                style="position: absolute; top: 321px; left: 52px",
+                "MXE_1_+_1_2_3_4_5_6_7_8", class=NULL, intronLength=0,
+                constitutiveLength=40, alternativeLength=40,
+                showPath=FALSE, showText=FALSE, 
+                showAlternative1=FALSE, showAlternative2=isMXE)[[1]]
+            alternative <- plotSplicingEvent(
+                style="position: absolute; top: 321px; right: 25px",
+                "MXE_1_+_1_2_3_4_5_6_7_8", class=NULL, intronLength=0,
+                constitutiveLength=40, alternativeLength=40,
+                showPath=FALSE, showText=FALSE, showAlternative2=FALSE)[[1]]
+            return(tagList(constitutive, alternative))
+        })
         
         output$basicStats <- renderUI(basicStats(eventPSI, groups))
         output$ttest      <- renderUI(ttest(eventPSI, groups, stat))

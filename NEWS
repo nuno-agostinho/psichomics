@@ -10,6 +10,9 @@ are selected
     - Redesign of alternative splicing event selection (graphical interface)
     - `plotSplicingEvent()` plots diagram representation of alternative
     splicing events
+    - In the visual interface, alternative splicing event diagrams were added
+    below distribution plots (to quickly illustrate higher and lower values of
+    alternative splicing quantification) and in annotation page
 * Improve import/export of data groups from/to a file, including colour support
 * Tutorials:
     - Copy-edit command-line interface (CLI) tutorial
@@ -61,6 +64,8 @@ are selected
     one whose difference has the highest (instead of the lowest) p-value
     - Fix plot line label presenting "p < 0.05" independently of the threshold 
     used for significance
+* Annotation:
+    - Avoid app crash when searching for PubMed articles too many times
 * Improve warning/error alerts:
     - Fix alerts crashing the visual interface
     - Improve message formatting regarding HTML-containing alerts

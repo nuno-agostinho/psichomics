@@ -150,7 +150,7 @@ queryPubMed <- function(primary, ..., top=3, field="abstract",
     return(c(search=list(search), metadata))
 }
 
-#' Convert an Ensembl identifier to the respective UniProt identifier
+#' Convert from Ensembl to UniProt identifier
 #' 
 #' @param protein Character: Ensembl identifier
 #' 
@@ -633,6 +633,8 @@ renderGeneticInfo <- function(output, ns, info, species=NULL, assembly=NULL,
             tags$dt(style=dtWidth, "Description"),
             tags$dd(style=ddMargin,
                     sprintf("%s (%s)", info$description, info$biotype)),
+            tags$dt(style=dtWidth, "AS diagram"),
+            tags$dd(style=ddMargin, uiOutput(ns("eventDiagram"))),
             tags$dt(style=dtWidth, "Links"),
             tags$dd(style=ddMargin, 
                     tags$ul(class="list-inline", lapply(links, tags$li)) )))
@@ -776,14 +778,47 @@ renderProteinInfo <- function(protein, transcript, species, assembly) {
 infoServer <- function(input, output, session) {
     ns <- session$ns
     
-    # Update selected gene according to selected splicing event
+    # Update gene according to selected splicing event
     observe({
         ASevent <- getASevent()
         if (!is.null(ASevent)) {
             gene <- parseSplicingEvent(ASevent)$gene[[1]]
-            runjs(sprintf('$("#analyses-info-selectedGene")[0]
-                          .selectize.createItem("%s");', gene))
+            runjs(sprintf('$("#%s")[0].selectize.createItem("%s");', 
+                          ns("selectedGene"), gene))
         }
+    })
+    
+    output$eventDiagram <- renderUI({
+        ASevent <- getASevent()
+        if (!is.null(ASevent)) {
+            res <- plotSplicingEvent(ASevent)[[1]]
+        } else {
+            res <- "No alternative splicing event selected or available."
+        }
+        return(res)
+    })
+    
+    reactiveQueryPubMed <- reactive({
+        terms <- input$articleTerms
+        pubmed <- queryPubMed(terms[1], terms[-1])
+        return(pubmed)
+    })
+    
+    observeEvent(input$articleTerms, {
+        pubmed   <- tryCatch(reactiveQueryPubMed(), error=return)
+        if (is(pubmed, "error")) return(NULL)
+        
+        articles <- pubmed[-1]
+        articleList <- lapply(articles, articleUI)
+        output$articleList <- renderUI(articleList)
+        
+        search <- pubmed$search$querytranslation
+        search <- gsub("[Abstract]", "[Title/Abstract]", search, fixed=TRUE)
+        search <- paste0("http://www.ncbi.nlm.nih.gov/pubmed/?term=", 
+                         search)
+        link <- tags$a(href=search, target="_blank", class="pull-right",
+                       "Show more articles", icon("external-link"))
+        output$articleSearch <- renderUI(link)
     })
     
     observe({
@@ -794,7 +829,7 @@ infoServer <- function(input, output, session) {
         if (is.null(assembly)) assembly <- "hg19"
         
         grch37   <- assembly == "hg19"
-        gene <- input$selectedGene
+        gene     <- input$selectedGene
             
         if (gene == "") return(NULL)
         info <- tryCatch(queryEnsemblByGene(gene, species=species, 
@@ -830,22 +865,6 @@ infoServer <- function(input, output, session) {
             if (!is.null(category)) category <- unlist(strsplit(category, " "))
             articles <- pubmedUI(session$ns, gene, "cancer", category)
             return(articles)
-        })
-        
-        observeEvent(input$articleTerms, {
-            terms <- input$articleTerms
-            pubmed <- queryPubMed(terms[1], terms[-1])
-            articles <- pubmed[-1]
-            articleList <- lapply(articles, articleUI)
-            output$articleList <- renderUI(articleList)
-            
-            search <- pubmed$search$querytranslation
-            search <- gsub("[Abstract]", "[Title/Abstract]", search, fixed=TRUE)
-            search <- paste0("http://www.ncbi.nlm.nih.gov/pubmed/?term=", 
-                             search)
-            link <- tags$a(href=search, target="_blank", class="pull-right",
-                           "Show more articles", icon("external-link"))
-            output$articleSearch <- renderUI(link)
         })
         
         # Show NULL so it doesn't show previous results when loading

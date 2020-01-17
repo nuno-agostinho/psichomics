@@ -241,6 +241,6 @@ tr.active > td > a:hover { font-weight: bold; }
 }
 #selectizeEvent .selectize-dropdown-content { max-height: 500px !important; }
 
-div.active text.diagram.outside { fill: white !important; }
-div.active path.diagram { stroke: white !important; }
-div.active rect.diagram { stroke: white !important; }
+#selectizeEvent div.active text.diagram.outside { fill: white !important; }
+#selectizeEvent div.active path.diagram { stroke: white !important; }
+#selectizeEvent div.active rect.diagram { stroke: white !important; }

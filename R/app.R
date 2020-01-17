@@ -323,7 +323,8 @@ appServer <- function(input, output, session) {
     prepareASeventsRepresentation <- reactive({
         ASevent <- getASevents()
         if (!is.null(ASevent)) {
-            diagram        <- plotSplicingEvent(ASevent, raw=TRUE)
+            diagram        <- plotSplicingEvent(ASevent, raw=TRUE,
+                                                class="pull-right")
             representation <- ASevent
             names(representation) <- paste(ASevent, "__", diagram)
             
