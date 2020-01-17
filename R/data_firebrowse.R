@@ -64,6 +64,25 @@ getFirebrowseCohorts <- getTCGAcohorts
 
 # Process and manipulate Firebrowse data ---------------------------------------
 
+#' @rdname parseTCGAsampleInfo
+#' 
+#' @param filename Character: path to RDS file containing corresponding types
+#' 
+#' @aliases parseSampleGroups
+#' @export
+#' 
+#' @examples 
+#' parseTCGAsampleTypes(c("TCGA-01A-Tumour", "TCGA-10B-Normal"))
+parseTCGAsampleTypes <- function(samples, filename = system.file(
+    "extdata", "TCGAsampleType.RDS", package="psichomics")) {
+    typeList <- readRDS(filename)
+    type <- gsub(".*?-([0-9]{2}).-.*", "\\1", samples, perl = TRUE)
+    return(typeList[type])
+}
+
+#' @export
+parseSampleGroups <- parseTCGAsampleTypes
+
 #' Parse sample information from TCGA sample identifiers
 #' 
 #' @param samples Character: sample identifiers
@@ -72,7 +91,8 @@ getFirebrowseCohorts <- getTCGAcohorts
 #' 
 #' @aliases parseTcgaSampleInfo
 #' @family functions associated with TCGA data retrieval
-#' @return Data frame containing metadata associated with each TCGA sample
+#' 
+#' @return Metadata associated with each TCGA sample
 #' @export
 #' 
 #' @examples
@@ -80,9 +100,9 @@ getFirebrowseCohorts <- getTCGAcohorts
 #'              "TCGA-3C-AALJ-01A-31R-A41B-07", "TCGA-3C-AALK-01A-11R-A41B-07", 
 #'              "TCGA-4H-AAAK-01A-12R-A41B-07", "TCGA-5L-AAT0-01A-12R-A41B-07")
 #' 
-#' parseTcgaSampleInfo(samples)
-parseTCGAsampleInfo <- function (samples, match=NULL) {
-    parsed <- parseSampleGroups(samples)
+#' parseTCGAsampleInfo(samples)
+parseTCGAsampleInfo <- function(samples, match=NULL) {
+    parsed <- parseTCGAsampleTypes(samples)
     if ( all(is.na(parsed)) ) return(NULL)
     
     info <- data.frame(parsed)
@@ -253,7 +273,7 @@ loadTCGAsampleMetadata <- function(data) {
                 samples <- unique(unlist(lapply(junctionQuant, colnames)))
                 if (any(grepl("^TCGA", samples))) {
                     junctionQuantSamples <- samples
-                    data[[i]]$"Sample metadata" <- parseTcgaSampleInfo(samples)
+                    data[[i]]$"Sample metadata" <- parseTCGAsampleInfo(samples)
                 }
             }
         }
@@ -266,7 +286,7 @@ loadTCGAsampleMetadata <- function(data) {
                 samples <- unique(unlist(lapply(geneExpr, colnames)))
                 samples <- samples[!samples %in% junctionQuantSamples]
                 if (any(grepl("^TCGA", samples))) {
-                    data[[i]]$"Sample metadata" <- parseTcgaSampleInfo(samples)
+                    data[[i]]$"Sample metadata" <- parseTCGAsampleInfo(samples)
                 }
             }
         }

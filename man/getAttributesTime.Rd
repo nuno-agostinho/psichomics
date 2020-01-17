@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis.R
 \name{getAttributesTime}
 \alias{getAttributesTime}
-\title{Retrieve the time for given columns in a clinical dataset}
+\title{Get time values for given columns in a clinical dataset}
 \usage{
 getAttributesTime(
   clinical,
@@ -30,7 +30,7 @@ interval (only relevant for interval censoring)}
 Data frame containing the time for the given columns
 }
 \description{
-Retrieve the time for given columns in a clinical dataset
+Get time values for given columns in a clinical dataset
 }
 \examples{
 df <- data.frame(followup=c(200, 300, 400), death=c(NA, 300, NA))

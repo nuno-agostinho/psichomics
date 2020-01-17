@@ -322,7 +322,7 @@ psi <- quantifySplicing(annotation, junctionQuant, minReads=minReads)
 
 ```{r load splicing, echo=FALSE}
 psi <- readRDS("BRCA_psi.RDS")
-sampleInfo <- parseTcgaSampleInfo(colnames(psi))
+sampleInfo <- parseTCGAsampleInfo(colnames(psi))
 ```
 
 ```{r check splicing events}

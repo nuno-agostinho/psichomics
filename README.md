@@ -1,4 +1,10 @@
-# psichomics [![Build Status][travisIcon]][travis] [![AppVeyor Build Status][appVeyorIcon]][appVeyor] [![codecov][codecovIcon]][codecov]
+# psichomics
+
+<!-- badges: start -->
+[![Travis Build Status][travisIcon]][travis]
+[![AppVeyor Build Status][appVeyorIcon]][appVeyor]
+[![codecov][codecovIcon]][codecov]
+<!-- badges: end -->
 
 > **Original article:**
 >
@@ -14,13 +20,13 @@ alternative splicing and gene expression based on
 [Sequence Read Archive (SRA)][SRA] and user-provided data.
 
 *psichomics* interactively performs survival, dimensionality reduction and 
-median- and variance-based differential splicing and gene expression 
-analyses that benefit from the incorporation of clinical and molecular 
-sample-associated features (such as tumour stage or survival). Interactive
-visual access to genomic mapping and functional annotation of selected 
-alternative splicing events is also included.
+median- and variance-based differential splicing and gene expression analyses
+that benefit from the incorporation of clinical and molecular sample-associated
+features (such as tumour stage or survival). Interactive visual access to
+genomic mapping and functional annotation of selected alternative splicing
+events is also included.
 
-![Differential splicing analysis in *psichomics*](screenshot.png)
+![Differential splicing analysis in *psichomics*](man/figures/screenshot.png)
 
 ## Table of Contents
 
@@ -28,27 +34,16 @@ alternative splicing events is also included.
     * [Bioconductor release](#bioconductor-release)
     * [GitHub version](#github-version)
 * [Tutorials](#tutorials)
-* [Data input](#data-input)
-    * [Download TCGA data](#download-tcga-data)
-    * [Load GTEx data](#load-gtex-data)
-    * [Load SRA data](#load-sra-data)
-    * [Load user-provided files](#load-user-provided-files)
-* [Splicing quantification](#splicing-quantification)
-* [Gene expression processing](#gene-expression-processing)
-* [Data analyses](#data-analyses)
-    * [Differential splicing and gene expression analysis](#differential-splicing-and-gene-expression-analysis)
-    * [Dimensionality reduction](#dimensionality-reduction)
-    * [Survival analysis](#survival-analysis)
-    * [Gene, transcript and protein information](#gene-transcript-and-protein-information)
-    * [Correlation between gene expression and splicing quantification](#correlation-between-gene-expression-and-splicing-quantification)
-* [Data grouping](#data-grouping)
+* [Workflow](#workflow)
+    * [Data input](#data-input)
+        * [Splicing quantification](#splicing-quantification)
+        * [Gene expression processing](#gene-expression-processing)
+    * [Data grouping](#data-grouping)
+    * [Data analyses](#data-analyses)
 * [Feedback and support](#feedback-and-support)
-* [Contributions](#contributions)
 * [References](#references)
 
 ## Install and start running
-
-### Bioconductor release
 
 To install the package from [Bioconductor][bioconductor], type the following in 
 [RStudio][rstudio] or in an R console:
@@ -56,39 +51,6 @@ To install the package from [Bioconductor][bioconductor], type the following in
 ```r
 install.packages("BiocManager")
 BiocManager::install("psichomics")
-```
-
-### GitHub version
-
-To install and start using the GitHub version (that may be updated faster than
-its Bioconductor counterpart), follow the following steps:
-
-1. [Install R][r]
-2. Depending on your operative system, install:
-    - [Rtools](https://cran.r-project.org/bin/windows/Rtools/) (Windows)
-    - [Xcode command-line tools](https://developer.apple.com/downloads) (Mac)
-    - **r-devel** or **r-base-dev** (Linux)
-3. Open [RStudio][rstudio] or an R console
-4. Install [Bioconductor][bioconductor] with: 
-    - `install.packages("BiocManager")`
-5. Install, load and start the visual interface with:
-```r
-install.packages("devtools")
-devtools::install_github("nuno-agostinho/psichomics")
-library(psichomics)
-psichomics()
-```
-
-#### Running the latest versions of *psichomics* in R 3.2 or newer
-
-If you prefer to run *psichomics* in an older R version (3.2 or newer), run the
-following commands (note that the newest versions of *psichomics* were not 
-tested in older R versions and some features may not be supported):
-```r
-install.packages("devtools")
-devtools::install_github("nuno-agostinho/psichomics", ref="R3.2")
-library(psichomics)
-psichomics()
 ```
 
 ## Tutorials
@@ -101,37 +63,22 @@ The following case studies and tutorials are available and were based on our
 * [Loading SRA and user-provided RNA-seq data][tutorial-custom-data]
 * [Preparing alternative splicing annotations][tutorial-prep-AS-annotation]
 
-## Data input
+## Workflow
 
-### Download TCGA Data
+### Data input
 
-Pre-processed data of given tumours of interest can be automatically downloaded 
-from [TCGA][TCGA]. Subject- and sample-associated information, junction 
-quantification and gene expression data from TCGA are supported.
+Automatic retrieval and loading of pre-processed data from the following sources:
 
-### Load GTEx Data
+* [TCGA][TCGA] data of given tumours, including subject- and sample-associated
+information, junction quantification and gene expression data
+* [GTEx][GTEx] data of given tissues, including subject- and sample-associated
+information, junction quantification and gene expression data
+* [SRA][SRA] data from select SRA projects via the [recount2][recount2] package
 
-GTEx data needs to be manually downloaded from the [GTEx Portal][GTEx]. Subject- 
-and sample-associated data, junction quantification and gene expression data 
-from GTEx are supported.
-
-### Load SRA Data
-
-Although only select [SRA][SRA] projects are available to be automatically
-downloaded (based on pre-processed data from the [recount2][recount2] project), 
-other SRA projects can be manually downloaded, aligned using a splice-aware 
-aligner and loaded by the user, as per the instructions in
-[Loading SRA and user-provided RNA-seq data][tutorial-custom-data]. 
-Sample-associated files from SRA are also supported.
-
-### Load user-provided files
-
-User-provided files (including subject-associated data, sample-associated data, 
-junction quantification, alternative splicing quantification and gene 
-expression) can be loaded as per the instructions in
+Other SRA and user-provided data can be manually aligned and loaded. Please read
 [Loading SRA and user-provided RNA-seq data][tutorial-custom-data].
 
-## Splicing quantification
+#### Splicing quantification
 
 The quantification of each alternative splicing event is based on the proportion
 of junction reads that support the inclusion isoform, known as percent 
@@ -139,71 +86,56 @@ spliced-in or PSI [(Wang *et al.*, 2008)][Wang2008].
 
 An estimate of this value is obtained based on the the proportion of reads 
 supporting the inclusion of an exon over the reads supporting both the inclusion
-and exclusion of that exon. To measure this estimate, both alternative splicing 
-annotation and the quantification of RNA-Seq reads aligning to splice junctions
-(junction quantification) are required. While alternative splicing Human (hg19
-and hg38 assemblies) annotation is provided within the package, junction 
-quantification may be handed by the user or retrieved from [TCGA][TCGA], 
+and exclusion of that exon. To measure this estimate, we require:
+
+1. Alternative splicing annotation: human (hg19 and hg38 assemblies) annotation
+is provided and custom annotations can be used.
+2. Quantification of RNA-Seq reads aligning to splice junctions (junction
+quantification), either user-provided or retrieved from [TCGA][TCGA],
 [GTEx][GTEx] and [SRA][SRA].
 
-## Gene expression processing
+#### Gene expression processing
 
-Gene expression can be normalised, filtered and log2-transformed in-app.
-Alternatively, the user can also provide its own pre-processed gene expression 
-file.
+Gene expression can be normalised, filtered and log2-transformed in-app or
+provided by the user.
 
-## Data grouping
+### Data grouping
 
 Molecular and clinical sample-associated attributes allow to establish groups 
-that can be explored in data analyses. For instance, [TCGA][TCGA] data can be 
-analysed based on smoking history, gender and race, among other attributes. 
-Groups can also be manipulated (e.g. merged, intersected, etc.), allowing for 
-complex attribute combinations, as well as saved and loaded between sessions.
+that can be explored in data analyses.
 
-## Data Analyses
+For instance, [TCGA][TCGA] data can be analysed based on smoking history, gender
+and race, among other attributes. Groups can also be manipulated (e.g. merged,
+intersected, etc.), allowing for complex attribute combinations. Groups can also
+be saved and loaded between sessions.
 
-### Dimensionality reduction
+### Data Analyses
 
-Perform principal and independent component analysis (PCA and ICA, respectively)
-on alternative splicing quantification and gene expression based on the 
-previously created groups.
+* **Dimensionality reduction** via principal and independent component analysis
+(PCA and ICA) on alternative splicing quantification and gene expression.
 
-### Differential splicing and gene expression analysis
+* **Differential splicing and gene expression analysis** based on variance and
+median parametric and non-parametric statistical tests.
 
-Analyse alternative splicing quantification (based on variance and median 
-statistical tests) and gene expression data based on the previously created
-groups.
+* **Correlation between gene expression and splicing quantification**, useful to
+correlate the expression of a given event with the expression of RNA-binding
+proteins, for instance.
 
-### Correlation between gene expression and splicing quantification
+* **Survival analysis** via Kaplan-Meier curves and Cox models based on
+sample-associated features. Additionally, we can study the impact of a splicing
+event (based on its quantification) or a gene (based on its gene expression) on
+patient survivability.
 
-Test the correlation betweem the gene expression of a specific gene with the
-alternative splicing quantification of selected alternative splicing events.
-
-### Survival analysis
-
-Perform Kaplan-Meier curves and Cox models based on sample-associated features. 
-Additionally, study the impact of a splicing event (based on its quantification)
-or a gene (based on its gene expression) on patient survivability.
-
-### Gene, transcript and protein information
-
-Examine the annotation and corresponding transcripts and proteins for a gene of
-interest. Relevant research articles are also presented here.
+* **Gene, transcript and protein annotation** including relevant research
+articles
 
 ## Feedback and support
 
-All feedback on the program, documentation and associated material is welcome. 
-Please send any suggestions and comments to:
+Please send any feedback and questions on psichomics to:
 
 > Nuno Saraiva-Agostinho ([nunoagostinho@medicina.ulisboa.pt](mailto:nunoagostinho@medicina.ulisboa.pt))
 > 
 > [Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)][NMorais]
-
-## Contributions
-
-Please note that this project is released with a 
-[Contributor Code of Conduct][conduct]. By participating in this project you 
-agree to abide by its terms.
 
 ## References
 

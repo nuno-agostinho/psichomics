@@ -146,6 +146,6 @@ biocViews: Sequencing, RNASeq, AlternativeSplicing,
     DifferentialSplicing, Transcription, GUI, PrincipalComponent,
     Survival, BiomedicalInformatics, Transcriptomics, ImmunoOncology,
     Visualization, MultipleComparison, GeneExpression, DifferentialExpression
-URL: https://github.com/nuno-agostinho/psichomics
+URL: https://nuno-agostinho.github.io/psichomics/
 BugReports: https://github.com/nuno-agostinho/psichomics/issues
 Language: en-GB

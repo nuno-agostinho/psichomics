@@ -22,7 +22,6 @@ Other functions associated with TCGA data retrieval:
 \code{\link{getDownloadsFolder}()},
 \code{\link{getTCGAdataTypes}()},
 \code{\link{loadTCGAdata}()},
-\code{\link{parseSampleGroups}()},
-\code{\link{parseTCGAsampleInfo}()}
+\code{\link{parseTCGAsampleTypes}()}
 }
 \concept{functions associated with TCGA data retrieval}

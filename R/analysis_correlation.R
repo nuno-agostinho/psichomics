@@ -279,17 +279,13 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
     return(res)
 }
 
-#' Subset correlation results between gene expression and splicing 
-#' quantification
-#' 
-#' @param x \code{GEandAScorrelation} object to subset
+#' @rdname plot.GEandAScorrelation
 #' @param genes Character: genes
 #' @param ASevents Character: AS events
 #' 
 #' @importFrom stats na.omit
 #' 
 #' @family functions to correlate gene expression and alternative splicing
-#' @return \code{GEandAScorrelation} object subset
 #' @export
 `[.GEandAScorrelation` <- function(x, genes=NULL, ASevents=NULL) {
     x <- unclass(x)
@@ -341,8 +337,8 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #' Plot, print and display as table the results of gene expression and 
 #' alternative splicing
 #'
-#' @param x \code{GEandAScorrelation} object (obtained after running
-#'   \code{\link{correlateGEandAS}()})
+#' @param x \code{GEandAScorrelation} object obtained after running
+#'   \code{\link{correlateGEandAS}()}
 #' @param loessSmooth Boolean: plot a smooth curve computed by
 #'   \code{stats::loess.smooth}?
 #' @param autoZoom Boolean: automatically set the range of PSI values based on
@@ -375,6 +371,8 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #' @return Plots, summary tables or results of correlation analyses
 #' @export
 #'
+#' @aliases plotCorrelation
+#' 
 #' @examples
 #' annot <- readFile("ex_splicing_annotation.RDS")
 #' junctionQuant <- readFile("ex_junctionQuant.RDS")
@@ -483,7 +481,6 @@ plot.GEandAScorrelation <- function(
     lapply(x, lapply, plotCorrPerASevent)
 }
 
-#' @rdname plot.GEandAScorrelation
 #' @export
 plotCorrelation <- plot.GEandAScorrelation
 

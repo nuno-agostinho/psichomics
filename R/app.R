@@ -436,7 +436,7 @@ psichomics <- function(..., launch.browser=TRUE, reset=FALSE, testData=FALSE) {
         data[["Clinical data"]]    <- loadFile("vignettes/BRCA_clinical.RDS")
         data[["Gene expression"]]  <- loadFile("vignettes/BRCA_geneExpr.RDS")
         data[["Inclusion levels"]] <- loadFile("vignettes/BRCA_psi.RDS")
-        data[["Sample metadata"]]  <- parseTcgaSampleInfo(colnames(
+        data[["Sample metadata"]]  <- parseTCGAsampleInfo(colnames(
             data[["Inclusion levels"]]))
         setData(list("Test data"=data))
     }

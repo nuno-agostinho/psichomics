@@ -42,7 +42,6 @@ correlateGEandAS(geneExpr, psi, "ALDOA")
 }
 \seealso{
 Other functions to correlate gene expression and alternative splicing: 
-\code{\link{[.GEandAScorrelation}()},
-\code{\link{plot.GEandAScorrelation}()}
+\code{\link{[.GEandAScorrelation}()}
 }
 \concept{functions to correlate gene expression and alternative splicing}

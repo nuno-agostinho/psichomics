@@ -82,14 +82,12 @@ formulaStr <- "patient.stage_event.pathologic_stage + patient.gender"
 survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
                                formulaStr=formulaStr)
                                
-\dontrun{
-# If run multiple times, consider calculating survTime only once
-survTime <- getAttributesTime(clinical, event, timeStart, timeStop, followup)
-for (1:5) {
+# If running multiple times, consider calculating survTime only once
+survTime <- getAttributesTime(clinical, event, timeStart)
+for (i in seq(5)) {
   survTerms <- processSurvTerms(clinical, censoring="right", event,
                                 timeStart, formulaStr=formulaStr,
                                 survTime=survTime)
-}
 }
 }
 \seealso{

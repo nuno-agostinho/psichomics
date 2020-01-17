@@ -614,24 +614,6 @@ getDownloadsFolder <- function() {
     return(folder)
 }
 
-#' Return the type of a given sample
-#' 
-#' @param sample Character: ID of the sample
-#' @param filename Character: path to RDS file containing corresponding type
-#' 
-#' @family functions associated with TCGA data retrieval
-#' @return Types of the TCGA samples
-#' @export
-#' 
-#' @examples 
-#' parseSampleGroups(c("TCGA-01A-Tumour", "TCGA-10B-Normal"))
-parseSampleGroups <- function(sample, filename = system.file(
-    "extdata", "TCGAsampleType.RDS", package="psichomics")) {
-    typeList <- readRDS(filename)
-    type <- gsub(".*?-([0-9]{2}).-.*", "\\1", sample, perl = TRUE)
-    return(typeList[type])
-}
-
 #' Get number of significant digits
 #' 
 #' @param n Numeric: number to round

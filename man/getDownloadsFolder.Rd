@@ -20,8 +20,7 @@ Other functions associated with TCGA data retrieval:
 \code{\link{getTCGAdataTypes}()},
 \code{\link{isFirebrowseUp}()},
 \code{\link{loadTCGAdata}()},
-\code{\link{parseSampleGroups}()},
-\code{\link{parseTCGAsampleInfo}()}
+\code{\link{parseTCGAsampleTypes}()}
 
 Other functions associated with GTEx data retrieval: 
 \code{\link{getGtexDataTypes}()},

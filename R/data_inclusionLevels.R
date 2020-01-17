@@ -391,7 +391,7 @@ loadSplicingQuantificationSet <- function(session, input, output) {
                 setCategory(name)
                 
                 samples <- colnames(psi)
-                parsed <- parseTcgaSampleInfo(samples)
+                parsed <- parseTCGAsampleInfo(samples)
                 if ( !is.null(parsed) ) setSampleInfo(parsed)
             } else {
                 setInclusionLevels(psi)

@@ -259,7 +259,7 @@ processSurvData <- function(event, timeStart, timeStop, followup, group,
     return(survTime)
 }
 
-#' Retrieve the time for given columns in a clinical dataset
+#' Get time values for given columns in a clinical dataset
 #' 
 #' @param clinical Data frame: clinical data
 #' @param event Character: name of column containing time of the event of
@@ -392,14 +392,12 @@ updateClinicalParams <- function(session, attrs) {
 #' survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
 #'                                formulaStr=formulaStr)
 #'                                
-#' \dontrun{
-#' # If run multiple times, consider calculating survTime only once
-#' survTime <- getAttributesTime(clinical, event, timeStart, timeStop, followup)
-#' for (1:5) {
+#' # If running multiple times, consider calculating survTime only once
+#' survTime <- getAttributesTime(clinical, event, timeStart)
+#' for (i in seq(5)) {
 #'   survTerms <- processSurvTerms(clinical, censoring="right", event,
 #'                                 timeStart, formulaStr=formulaStr,
 #'                                 survTime=survTime)
-#' }
 #' }
 processSurvTerms <- function(clinical, censoring, event, timeStart, 
                              timeStop=NULL, group=NULL, formulaStr=NULL, 
@@ -2218,7 +2216,7 @@ diffAnalyses <- function(data, groups=NULL,
     
     if (is.null(groups)) {
         ids    <- names(data)
-        groups <- parseSampleGroups(ids)
+        groups <- parseTCGAsampleTypes(ids)
     } else if (is.list(groups)) {
         groups <- discardOutsideSamplesFromGroups(groups, colnames(data))
         data   <- data[ , unlist(groups)]
