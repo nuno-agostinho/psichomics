@@ -109,6 +109,6 @@ junctions <- read.table(text=
 psichomics:::parseMatsAFE(junctions, strand = "+")
 }
 \seealso{
-\code{\link{parseMatsEvent}}
+\code{\link{parseMatsEvent}()}
 }
 \keyword{internal}

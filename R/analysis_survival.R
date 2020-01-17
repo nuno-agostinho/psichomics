@@ -486,6 +486,7 @@ geneExprSurvSet <- function(session, input, output) {
 #' # Match between subjects and samples
 #' match <- paste0("subject", seq(psi))
 #' names(match) <- colnames(psi)
+#' rownames(clinical) <- match
 #' 
 #' eventData <- assignValuePerSubject(psi[1, ], match)
 #' 
@@ -526,7 +527,7 @@ plotSurvivalPvaluesByCutoff <- function(
     # significant points to the left
     signif <- minusLog10pvalues >= minusLog10signif
     labelAlign <- "left"
-    if (sum(signif[1:50]) > sum(signif[51:100])) labelAlign <- "right"
+    if (sum(signif[seq(50)]) > sum(signif[51:100])) labelAlign <- "right"
     
     pvaluePlot <- highchart(height="100px") %>%
         hc_add_series(data=data,
@@ -745,7 +746,7 @@ survivalServer <- function(input, output, session) {
             if (is.null(survTerms)) return(NULL)
             
             pvalue <- signifDigits(tests[, 3])
-            tests[, 1:2] <- roundDigits(tests[ , 1:2, drop=FALSE])
+            tests[, seq(2)] <- roundDigits(tests[ , seq(2), drop=FALSE])
             tests[, 3] <- pvalue
             return(tests)
         }, style="bootstrap", selection='none',

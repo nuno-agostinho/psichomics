@@ -61,6 +61,6 @@ junctions <- rbind(
 psichomics:::parseVastToolsA5SS(junctions)
 }
 \seealso{
-\code{\link{parseVastToolsEvent}}
+\code{\link{parseVastToolsEvent}()}
 }
 \keyword{internal}

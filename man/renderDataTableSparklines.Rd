@@ -23,7 +23,7 @@ call to \code{\link[shiny:dataTableOutput]{dataTableOutput()}} when \code{render
 in an interactive R Markdown document.}
   }}
 
-\item{options}{List of options to pass to \code{\link{renderDataTable}}}
+\item{options}{List of options to pass to \code{\link{renderDataTable}()}}
 }
 \value{
 \code{NULL} (function is only used to modify the Shiny session's
@@ -33,7 +33,7 @@ state or internal variables)
 Render a data table with sparkline HTML elements
 }
 \details{
-This slightly modified version of \code{\link{renderDataTable}}
+This slightly modified version of \code{\link{renderDataTable}()}
 calls a JavaScript function to convert the sparkline HTML elements to
 interactive Highcharts
 }

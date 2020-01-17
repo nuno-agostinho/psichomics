@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{parseSplicingEvent}
 \alias{parseSplicingEvent}
-\title{Parse an alternative splicing event based on a given identifier}
+\title{Parse alternative splicing event identifier}
 \usage{
 parseSplicingEvent(
   event,
@@ -31,7 +31,7 @@ and constitutive regions of alternative splicing events? If
 Parsed event
 }
 \description{
-Parse an alternative splicing event based on a given identifier
+Parse alternative splicing event identifier
 }
 \examples{
 events <- c("SE_1_-_123_456_789_1024_TST",

@@ -1,5 +1,5 @@
 ---
-title: 'psichomics case study: visual interface'
+title: 'Visual interface tutorial'
 author: "Nuno Saraiva-Agostinho"
 date: "`r Sys.Date()`"
 bibliography: refs.bib

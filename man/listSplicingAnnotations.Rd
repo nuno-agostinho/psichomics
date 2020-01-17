@@ -2,15 +2,15 @@
 % Please edit documentation in R/data_inclusionLevels.R
 \name{listSplicingAnnotations}
 \alias{listSplicingAnnotations}
-\title{List the alternative splicing annotation files available}
+\title{List alternative splicing annotations}
 \usage{
 listSplicingAnnotations()
 }
 \value{
-Named character vector with splicing annotation files available
+Named character vector with splicing annotation names
 }
 \description{
-List the alternative splicing annotation files available
+List alternative splicing annotations
 }
 \examples{
 listSplicingAnnotations()

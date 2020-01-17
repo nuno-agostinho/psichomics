@@ -37,7 +37,7 @@ isFile <- function(files) {
     return(fileExists)
 }
 
-#' Load local file
+#' Load psichomics-specific file
 #' @param file Character: path to the file
 #' 
 #' @return Loaded file
@@ -49,7 +49,7 @@ readFile <- function(file) {
     readRDS(insideFile("extdata", file))
 }
 
-#' Splicing event types available
+#' Get supported splicing event types
 #' 
 #' @param acronymsAsNames Boolean: return acronyms as names?
 #' 
@@ -90,7 +90,7 @@ areSplicingEvents <- function(char, num=6) {
         sum(charToRaw(i) == charToRaw("_")) > 3))
 }
 
-#' Parse an alternative splicing event based on a given identifier
+#' Parse alternative splicing event identifier
 #' 
 #' @param event Character: event identifier
 #' @param char Boolean: return character vector instead of list with parsed
@@ -403,7 +403,7 @@ renameDuplicated <- function(check, comp) {
     
     for (dup in which(repeated)) {
         # Locate matches (don't forget the counter)
-        all <- c(comp, head(check[1:dup], -1))
+        all <- c(comp, head(check[seq(dup)], -1))
         expr <- paste0(escape(check[dup]), " \\([0-9]+\\)|", escape(check[dup]))
         locate <- grep(expr, all, value = TRUE)
         
@@ -594,7 +594,7 @@ loadRequiredData <- function( modal=NULL ) {
     return(sprintf("showDataPanel('#%s');", modal))
 }
 
-#' Get the Downloads folder of the user
+#' Get the path to the Downloads folder
 #' 
 #' @family functions associated with TCGA data retrieval
 #' @family functions associated with GTEx data retrieval
@@ -619,6 +619,7 @@ getDownloadsFolder <- function() {
 #' @param sample Character: ID of the sample
 #' @param filename Character: path to RDS file containing corresponding type
 #' 
+#' @family functions associated with TCGA data retrieval
 #' @return Types of the TCGA samples
 #' @export
 #' 

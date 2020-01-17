@@ -38,7 +38,7 @@ Quantify alternative splicing events
 annot <- readFile("ex_splicing_annotation.RDS")
 junctionQuant <- readFile("ex_junctionQuant.RDS")
 
-psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 }
 \seealso{
 Other functions for PSI quantification: 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/groups.R
 \name{plotGroupIndependence}
 \alias{plotGroupIndependence}
-\title{Plot -log10(p-values) of the results obtained after multiple group 
+\title{Plot \code{-log10(p-values)} of the results obtained after multiple group
 independence testing}
 \usage{
 plotGroupIndependence(
@@ -17,7 +17,7 @@ plotGroupIndependence(
 }
 \arguments{
 \item{groups}{\code{multiGroupIndependenceTest} object (obtained after 
-running \code{\link{testGroupIndependence}})}
+running \code{\link{testGroupIndependence}()})}
 
 \item{top}{Integer: number of attributes to render}
 
@@ -35,7 +35,7 @@ running \code{\link{testGroupIndependence}})}
 \code{ggplot} object
 }
 \description{
-Plot -log10(p-values) of the results obtained after multiple group 
+Plot \code{-log10(p-values)} of the results obtained after multiple group
 independence testing
 }
 \examples{
@@ -50,8 +50,8 @@ groupTesting <- testGroupIndependence(ref, groups, elements)
 plotGroupIndependence(groupTesting)
 }
 \seealso{
-\code{\link{parseCategoricalGroups}} and 
-\code{\link{testGroupIndependence}}
+\code{\link{parseCategoricalGroups}()} and 
+\code{\link{testGroupIndependence}()}
 
 Other functions for data grouping: 
 \code{\link{createGroupByAttribute}()},

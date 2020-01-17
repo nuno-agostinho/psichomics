@@ -26,11 +26,11 @@ checkFileFormat <- function(format, head, filename="") {
     if (checkByCol) {
         # Check for a match in desired column
         if (nrow(head) < lenCheck) return(FALSE)
-        desired <- head[1:lenCheck, format$checkIndex]
+        desired <- head[seq(lenCheck), format$checkIndex]
     } else {
         # Check for a match in desired row
         if (ncol(head) < lenCheck) return(FALSE)
-        desired <- head[format$checkIndex, 1:lenCheck]
+        desired <- head[format$checkIndex, seq(lenCheck)]
     }
     allMatch <- all(trimws(desired) == format$check)
     return(allMatch)
@@ -110,7 +110,7 @@ loadFile <- function(format, file, ...) {
     
     # Convert columns to numeric if data was transposed
     if (!is.null(format$transpose) && format$transpose) {
-        for (col in 1:ncol(loaded)) {
+        for (col in seq(ncol(loaded))) {
             try <- tryCatch(as.numeric(as.character(loaded[ , col])),
                             warning=function(e) e)
             if (!"warning" %in% class(try))

@@ -253,9 +253,9 @@ parseUniprotXML <- function(xml) {
     # Convert list of characters to data frame of characters
     feature <- ldply(l, rbind)
     if (ncol(feature) > 0) {
-        for (col in 1:ncol(feature))
+        for (col in seq(ncol(feature))) {
             feature[[col]] <- as.character(feature[[col]])
-        
+        }
         feature$start <- as.numeric(feature$start)
         feature$stop <- as.numeric(feature$stop)
     }
@@ -487,7 +487,7 @@ plotASeventRegion <- function(hc, event) {
 #' }
 plotTranscripts <- function(info, eventPosition=NULL, event=NULL, shiny=FALSE) {
     data <- list()
-    for (i in 1:nrow(info$Transcript)) {
+    for (i in seq(nrow(info$Transcript))) {
         transcript <- info$Transcript[i, ]
         name    <- transcript$id
         display <- transcript$display_name
@@ -500,7 +500,7 @@ plotTranscripts <- function(info, eventPosition=NULL, event=NULL, shiny=FALSE) {
         # Prepare exons
         elements <- list()
         exons <- transcript$Exon[[1]]
-        for (k in 1:nrow(exons)) {
+        for (k in seq(nrow(exons))) {
             exon  <- exons[k, ]
             start <- exon$start
             end   <- exon$end
@@ -514,7 +514,7 @@ plotTranscripts <- function(info, eventPosition=NULL, event=NULL, shiny=FALSE) {
             introns <- NULL
             introns$start <- head(sort(exons$end), length(exons$end) - 1)
             introns$end   <- sort(exons$start)[-1]
-            for (j in 1:length(introns$start)) {
+            for (j in seq(length(introns$start))) {
                 start <- introns$start[[j]]
                 end   <- introns$end[[j]]
                 elements <- c(elements,

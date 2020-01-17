@@ -54,8 +54,8 @@ groupTesting <- testGroupIndependence(ref, groups, elements)
 # View(groupTesting)
 }
 \seealso{
-\code{\link{parseCategoricalGroups}} and 
-\code{\link{plotGroupIndependence}}
+\code{\link{parseCategoricalGroups}()} and 
+\code{\link{plotGroupIndependence}()}
 
 Other functions for data grouping: 
 \code{\link{createGroupByAttribute}()},

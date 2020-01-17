@@ -45,7 +45,7 @@ correlationUI <- function(id) {
         numericInput(ns("height"), "Height of each plot (pixels)", 
                      200, min=50, max=1000, step=50, width="100%"),
         selectizeInput(ns("cols"), "Plots per row", width="100%",
-                       choices=c(1:4, 6, 12), selected=3), 
+                       choices=c(1, 2, 3, 4, 6, 12), selected=3), 
         numericInput(ns("fontSize"), "Font size", 12, min=1, max=50,
                      step=1, width="100%"), hr(),
         sliderInput(ns("size"), "Size of points", 0, 4, 1.5, 0.5,
@@ -200,7 +200,7 @@ findASeventsFromGene <- function(psi, gene) {
 #' @param ASevents Character: alternative splicing events to correlate with
 #' gene expression of a gene (if \code{NULL}, the events will be automatically
 #' retrieved from the given gene)
-#' @inheritDotParams stats:::cor.test.default alternative:continuity
+#' @param ... Extra parameters passed to \link[stats]{cor.test}
 #' 
 #' @importFrom stats cor.test
 #' 
@@ -342,7 +342,7 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #' alternative splicing
 #'
 #' @param x \code{GEandAScorrelation} object (obtained after running
-#'   \code{\link{correlateGEandAS}})
+#'   \code{\link{correlateGEandAS}()})
 #' @param loessSmooth Boolean: plot a smooth curve computed by
 #'   \code{stats::loess.smooth}?
 #' @param autoZoom Boolean: automatically set the range of PSI values based on

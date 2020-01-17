@@ -61,9 +61,6 @@ Perform independent component analysis after processing missing values
 performICA(USArrests)
 }
 \seealso{
-\code{\link{plotICA}}, \code{\link{performPCA}} and
-\code{\link{plotPCA}}
-
 Other functions to analyse independent components: 
 \code{\link{plotICA}()}
 }

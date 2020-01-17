@@ -63,6 +63,7 @@ colnames(psi) <- paste0("sample", seq(psi))
 # Match between subjects and samples
 match <- paste0("subject", seq(psi))
 names(match) <- colnames(psi)
+rownames(clinical) <- match
 
 eventData <- assignValuePerSubject(psi[1, ], match)
 

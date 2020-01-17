@@ -17,28 +17,7 @@ correlateGEandAS(geneExpr, psi, gene, ASevents = NULL, ...)
 gene expression of a gene (if \code{NULL}, the events will be automatically
 retrieved from the given gene)}
 
-\item{...}{
-  Arguments passed on to \code{\link[stats::cor.test.default]{stats:::cor.test.default}}
-  \describe{
-    \item{\code{alternative}}{indicates the alternative hypothesis and must be
-    one of \code{"two.sided"}, \code{"greater"} or \code{"less"}.  You
-    can specify just the initial letter.  \code{"greater"} corresponds
-    to positive association, \code{"less"} to negative association.}
-    \item{\code{method}}{a character string indicating which correlation
-    coefficient is to be  used for the test.  One of \code{"pearson"},
-    \code{"kendall"}, or \code{"spearman"}, can be abbreviated.}
-    \item{\code{exact}}{a logical indicating whether an exact p-value should be
-    computed.  Used for Kendall's \eqn{\tau}{tau} and
-    Spearman's \eqn{\rho}{rho}.
-    See \sQuote{Details} for the meaning of \code{NULL} (the default).}
-    \item{\code{conf.level}}{confidence level for the returned confidence
-    interval.  Currently only used for the Pearson product moment
-    correlation coefficient if there are at least 4 complete pairs of
-    observations.}
-    \item{\code{continuity}}{logical: if true, a continuity correction is used
-    for Kendall's \eqn{\tau}{tau} and Spearman's \eqn{\rho}{rho} when
-    not computed exactly.}
-  }}
+\item{...}{Extra parameters passed to \link[stats]{cor.test}}
 }
 \value{
 List of correlations where each element contains:

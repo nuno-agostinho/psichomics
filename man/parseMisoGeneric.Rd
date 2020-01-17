@@ -155,6 +155,6 @@ event <- read.table(text = "
 psichomics:::parseMisoALE(event)
 }
 \seealso{
-\code{\link{parseMisoEvent}}
+\code{\link{parseMisoEvent}()}
 }
 \keyword{internal}

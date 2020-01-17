@@ -67,6 +67,6 @@ state or internal variables)
 Create a modal window
 }
 \seealso{
-\code{\link{showAlert}}
+\code{\link{showAlert}()}
 }
 \keyword{internal}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{getSplicingEventTypes}
 \alias{getSplicingEventTypes}
-\title{Splicing event types available}
+\title{Get supported splicing event types}
 \usage{
 getSplicingEventTypes(acronymsAsNames = FALSE)
 }
@@ -13,7 +13,7 @@ getSplicingEventTypes(acronymsAsNames = FALSE)
 Named character vector with splicing event types
 }
 \description{
-Splicing event types available
+Get supported splicing event types
 }
 \examples{
 getSplicingEventTypes()

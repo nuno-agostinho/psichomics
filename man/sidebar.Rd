@@ -13,6 +13,9 @@ sidebar(..., width = 4)
 sidebar takes up 1/3 of the width, and the main panel 2/3. The total
 width must be 12 or less.}
 }
+\value{
+HTML elements
+}
 \description{
 Modified version of \code{shiny::sidebarPanel} without a well
 }

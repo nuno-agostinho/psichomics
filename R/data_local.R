@@ -240,6 +240,7 @@ prepareJunctionQuant <- function(..., output="psichomics_junctions.txt",
 
 #' @inherit prepareSRAmetadata
 #' @importFrom data.table fread setnames setkeyv setorderv
+#' @keywords internal
 prepareJunctionQuantSTAR <- function(..., startOffset=-1, endOffset=+1) {
     if (is.null(startOffset)) startOffset <- -1
     if (is.null(endOffset))   endOffset   <- +1
@@ -249,7 +250,7 @@ prepareJunctionQuantSTAR <- function(..., startOffset=-1, endOffset=+1) {
     joint <- NULL
     for (file in files) {
         cat(sprintf("Processing %s...", file), fill=TRUE)
-        table    <- fread(file)[, c(1:4, 7)]
+        table    <- fread(file)[, c(1, 2, 3, 4, 7)]
         table$V2 <- table$V2 + startOffset
         table$V3 <- table$V3 + endOffset
         joint    <- c(joint, list(table))
@@ -273,7 +274,7 @@ prepareJunctionQuantSTAR <- function(..., startOffset=-1, endOffset=+1) {
     strand <- ifelse(junctionQuant$V4 == "1", "+", "-")
     cat("Preparing event identifiers...", fill=TRUE)
     ns     <- with(junctionQuant, paste(V1, V2, V3, strand, sep=":"))
-    junctionQuant <- junctionQuant[ , -c(1:4)]
+    junctionQuant <- junctionQuant[ , -c(1, 2, 3, 4)]
     rownames(junctionQuant) <- ns
     return(junctionQuant)
 }

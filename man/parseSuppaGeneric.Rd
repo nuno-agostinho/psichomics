@@ -90,6 +90,6 @@ junctions <- read.table(text = "50193276 50197008 50192997 50197008")
 psichomics:::parseSuppaA5SS(junctions, "+")
 }
 \seealso{
-\code{\link{parseSuppaEvent}}
+\code{\link{parseSuppaEvent}()}
 }
 \keyword{internal}

@@ -27,7 +27,7 @@ fileBrowserInput(
 \item{label}{Character: input label (if \code{NULL}, no labels are displayed)}
 
 \item{value}{Character: initial value (paths are expanded via
-\code{\link{path.expand}})}
+\code{\link{path.expand}()})}
 
 \item{placeholder}{Character: placeholder when no file or folder is selected}
 
@@ -52,16 +52,16 @@ HTML elements for a file browser input
 Input to interactively select a file or directory on the server
 }
 \details{
-To show the dialog for file input, the \code{\link{prepareFileBrowser}}
+To show the dialog for file input, the \code{\link{prepareFileBrowser}()}
 function needs to be included in the server logic.
 
-This widget relies on \code{\link{fileBrowser}} to present an interactive
+This widget relies on \code{\link{fileBrowser}()} to present an interactive
 dialogue to users for selecting a directory on the local filesystem. 
 Therefore, this widget is intended for shiny apps that are run locally - i.e. 
 on the same system that files/directories are to be accessed - and not from 
 hosted applications (e.g. from \url{https://www.shinyapps.io}).
 }
 \seealso{
-\code{\link{updateFileBrowserInput}} and \code{\link{prepareFileBrowser}}
+\code{\link{updateFileBrowserInput}()} and \code{\link{prepareFileBrowser}()}
 }
 \keyword{internal}

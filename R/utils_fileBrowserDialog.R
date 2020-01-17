@@ -12,7 +12,7 @@
 #'  \item{\strong{macOS}: uses AppleScript to display a folder selection 
 #'  dialogue. If \code{default = NA}, folder selection fallbacks to the
 #'  default behaviour of the \code{choose folder} AppleScript command.
-#'  Otherwise, paths are expanded with \code{\link{path.expand}}.}
+#'  Otherwise, paths are expanded with \code{\link{path.expand}()}.}
 #'  \item{\strong{Linux}: calls the \code{zenity} system command.}
 #' }
 #' 
@@ -90,7 +90,7 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
 #' @param id Character: input identifier
 #' @param label Character: input label (if \code{NULL}, no labels are displayed)
 #' @param value Character: initial value (paths are expanded via
-#' \code{\link{path.expand}})
+#' \code{\link{path.expand}()})
 #' @param placeholder Character: placeholder when no file or folder is selected
 #' @param info Boolean: add information icon for tooltips and popovers
 #' @param infoFUN Function to use to provide information (e.g.
@@ -102,10 +102,10 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
 #' @param clearable Boolean: allow to clear selected file or directory?
 #'
 #' @details
-#' To show the dialog for file input, the \code{\link{prepareFileBrowser}}
+#' To show the dialog for file input, the \code{\link{prepareFileBrowser}()}
 #' function needs to be included in the server logic.
 #' 
-#' This widget relies on \code{\link{fileBrowser}} to present an interactive
+#' This widget relies on \code{\link{fileBrowser}()} to present an interactive
 #' dialogue to users for selecting a directory on the local filesystem. 
 #' Therefore, this widget is intended for shiny apps that are run locally - i.e. 
 #' on the same system that files/directories are to be accessed - and not from 
@@ -120,7 +120,7 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
 #' @keywords internal
 #' 
 #' @seealso
-#' \code{\link{updateFileBrowserInput}} and \code{\link{prepareFileBrowser}}
+#' \code{\link{updateFileBrowserInput}()} and \code{\link{prepareFileBrowser}()}
 fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
                              info=FALSE, infoFUN=NULL, infoPlacement="right",
                              infoTitle="", infoContent="", clearable=FALSE) {
@@ -188,7 +188,7 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
 #' @param session Shiny session
 #' @param id Character: input identifier
 #' @param value Character: file or directory path
-#' @param ... Additional arguments passed to \code{\link{fileBrowser}}. Only
+#' @param ... Additional arguments passed to \code{\link{fileBrowser}()}. Only
 #' used if \code{value = NULL}.
 #'
 #' @details

@@ -21,8 +21,8 @@ isFirebrowseUp()
 Other functions associated with TCGA data retrieval: 
 \code{\link{getDownloadsFolder}()},
 \code{\link{getTCGAdataTypes}()},
-\code{\link{getTCGAdates}()},
 \code{\link{loadTCGAdata}()},
+\code{\link{parseSampleGroups}()},
 \code{\link{parseTCGAsampleInfo}()}
 }
 \concept{functions associated with TCGA data retrieval}

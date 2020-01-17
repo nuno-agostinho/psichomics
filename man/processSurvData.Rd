@@ -47,7 +47,7 @@ If \code{survTime = NULL}, survival times are obtained from the clinical
 dataset according to the names given in \code{timeStart}, \code{timeStop},
 \code{event} and \code{followup}. This may become quite slow when used in a
 loop. If the aforementioned variables are constant, consider running
-\code{\link{getAttributesTime}} outside the loop and using its output via the
-\code{survTime} argument of this function (see Examples).
+\code{\link{getAttributesTime}()} outside the loop and using its output via
+the \code{survTime} argument of this function (see Examples).
 }
 \keyword{internal}

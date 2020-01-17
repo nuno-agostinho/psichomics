@@ -38,7 +38,7 @@ function to call with the application's URL.}
 
 \item{reset}{Boolean: reset Shiny session? Requires package \code{devtools}}
 
-\item{testData}{Boolean: auto-start with test data}
+\item{testData}{Boolean: load with test data}
 }
 \value{
 \code{NULL} (function is only used to modify the Shiny session's

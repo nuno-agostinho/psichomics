@@ -23,3 +23,12 @@ Return the type of a given sample
 \examples{
 parseSampleGroups(c("TCGA-01A-Tumour", "TCGA-10B-Normal"))
 }
+\seealso{
+Other functions associated with TCGA data retrieval: 
+\code{\link{getDownloadsFolder}()},
+\code{\link{getTCGAdataTypes}()},
+\code{\link{isFirebrowseUp}()},
+\code{\link{loadTCGAdata}()},
+\code{\link{parseTCGAsampleInfo}()}
+}
+\concept{functions associated with TCGA data retrieval}

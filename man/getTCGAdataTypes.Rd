@@ -3,25 +3,38 @@
 \name{getTCGAdataTypes}
 \alias{getTCGAdataTypes}
 \alias{getFirebrowseDataTypes}
-\title{Get available TCGA data types}
+\alias{getTCGAdates}
+\alias{getFirebrowseDates}
+\alias{getTCGAcohorts}
+\alias{getFirebrowseCohorts}
+\title{Get available parameters for TCGA data}
 \usage{
 getTCGAdataTypes()
+
+getTCGAdates()
+
+getTCGAcohorts(cohort = NULL)
+}
+\arguments{
+\item{cohort}{Character: filter results by cohorts (optional)}
 }
 \value{
-Named character vector
+Parsed response
 }
 \description{
-Get available TCGA data types
+Parameters obtained via \href{http://firebrowse.org/api-docs/}{Firebrowse}
 }
 \examples{
 getTCGAdataTypes()
+if (isFirebrowseUp()) getFirebrowseDates()
+if (isFirebrowseUp()) getTCGAcohorts()
 }
 \seealso{
 Other functions associated with TCGA data retrieval: 
 \code{\link{getDownloadsFolder}()},
-\code{\link{getTCGAdates}()},
 \code{\link{isFirebrowseUp}()},
 \code{\link{loadTCGAdata}()},
+\code{\link{parseSampleGroups}()},
 \code{\link{parseTCGAsampleInfo}()}
 }
 \concept{functions associated with TCGA data retrieval}

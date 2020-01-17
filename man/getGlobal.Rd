@@ -221,7 +221,12 @@ Get or set globally accessible elements
 Needs to be called inside a reactive function
 }
 \seealso{
-\code{\link{getGlobal}}, \code{\link{getClinicalMatchFrom}},
-\code{\link{getGroups}} and \code{\link{getDifferentialSplicing}}
+Other functions to get and set global variables: 
+\code{\link{getClinicalMatchFrom}()},
+\code{\link{getDifferentialExpression}()},
+\code{\link{getDifferentialSplicing}()},
+\code{\link{getGroups}()},
+\code{\link{getHighlightedPoints}()}
 }
+\concept{functions to get and set global variables}
 \keyword{internal}

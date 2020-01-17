@@ -17,6 +17,6 @@ setOperationIcon(name, class = NULL, ...)
 Icon element
 }
 \description{
-Based on the \code{\link[shiny]{icon}} function
+Based on the \code{\link[shiny]{icon}()} function
 }
 \keyword{internal}

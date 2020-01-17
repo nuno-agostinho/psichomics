@@ -36,7 +36,12 @@ Getters return globally accessible data, whereas setters return
 Get or set groups
 }
 \seealso{
-\code{\link{getGlobal}}, \code{\link{getClinicalMatchFrom}},
-\code{\link{getGroups}} and \code{\link{getDifferentialSplicing}}
+Other functions to get and set global variables: 
+\code{\link{getClinicalMatchFrom}()},
+\code{\link{getDifferentialExpression}()},
+\code{\link{getDifferentialSplicing}()},
+\code{\link{getGlobal}()},
+\code{\link{getHighlightedPoints}()}
 }
+\concept{functions to get and set global variables}
 \keyword{internal}

@@ -16,7 +16,7 @@
 #' ll <- list(a="hey", b="there")
 #' psichomics:::addObjectAttrs(ll, "words"=2, "language"="English")
 addObjectAttrs <- function (object, ...) {
-    args <- as.list(match.call())[-c(1:2)]
+    args <- as.list(match.call())[-c(1, 2)]
     for (k in seq(args)) attr(object, names(args[k])) <- args[[k]]
     return(object)
 }
@@ -379,7 +379,7 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
     }
     
     # Get class of each column
-    colType <- sapply(1:ncol(data), function(i) class(data[[i]]))
+    colType <- sapply(seq(ncol(data)), function(i) class(data[[i]]))
     colType[colType == "character"] <- "string"
     
     # Show class of each column

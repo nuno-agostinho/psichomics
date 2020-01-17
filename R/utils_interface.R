@@ -6,6 +6,7 @@
 #' 
 #' @inherit shiny::sidebarPanel
 #' 
+#' @return HTML elements
 #' @keywords internal
 sidebar <- function(..., width=4) {
     div(class = paste0("col-sm-", width), tags$form(...))
@@ -99,7 +100,7 @@ processButton <- function(id, label, ..., class="btn-primary") {
 
 #' Create an icon based on set operations
 #' 
-#' Based on the \code{\link[shiny]{icon}} function
+#' Based on the \code{\link[shiny]{icon}()} function
 #' 
 #' @param name Character: icon name
 #' @param class Character: additional classes to customise the icon element
@@ -195,7 +196,7 @@ endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
 #' @importFrom shinyBS toggleModal
 #' @importFrom R.utils capitalize
 #'
-#' @seealso \code{\link{showAlert}}
+#' @seealso \code{\link{showAlert}()}
 #' @inherit psichomics return
 #' @keywords internal
 styleModal <- function(session, title, ..., style=NULL,
@@ -251,7 +252,7 @@ infoModal <- function(session, title, ..., size="small", footer=NULL,
 #' @param dismissible Boolean: is the alert dismissible?
 #' @param alertId Character: identifier
 #' 
-#' @seealso \code{\link{showModal}}
+#' @seealso \code{\link{showModal}()}
 #' @importFrom shiny span h3 renderUI div tagList
 #' 
 #' @inherit psichomics return
@@ -608,12 +609,12 @@ textSuggestions <- function(id, words, novalue="No matching value", char=" ") {
 
 #' Render a data table with sparkline HTML elements
 #' 
-#' @details This slightly modified version of \code{\link{renderDataTable}}
+#' @details This slightly modified version of \code{\link{renderDataTable}()}
 #' calls a JavaScript function to convert the sparkline HTML elements to
 #' interactive Highcharts
 #' 
 #' @inheritDotParams shiny::renderDataTable -options -escape -env
-#' @param options List of options to pass to \code{\link{renderDataTable}}
+#' @param options List of options to pass to \code{\link{renderDataTable}()}
 #' 
 #' @importFrom DT renderDataTable JS
 #' 

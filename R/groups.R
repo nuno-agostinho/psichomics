@@ -459,6 +459,7 @@ renderGroupInterface <- function(ns, multiFisherTests=TRUE) {
 #' @param example Character: text to show as an example
 #' 
 #' @return HTML elements
+#' @keywords internal
 groupByAttribute <- function(ns, cols, id, example) {
     if (!is.null(example)) example <- tagList(" ", example)
     
@@ -768,12 +769,12 @@ matchGroupASeventsAndGenes <- function(id, group, ASevents) {
             genes <- lapply(genes, function(gene) gsub("\\|.*$", "", gene))
             ASevents <- lapply(genes, filterBasedOnGenes, ASeventGenes)
             group <- cbind(group, ASevents)
-            group <- group[ , c(1:3, 5, 4), drop=FALSE]
+            group <- group[ , c(1, 2, 3, 5, 4), drop=FALSE]
         }
     } else if (id == "Genes") {
         ASevents <- lapply(seq(nrow(group)), function(i) character(0))
         group <- cbind(group, ASevents)
-        group <- group[ , c(1:3, 5, 4), drop=FALSE]
+        group <- group[ , c(1, 2, 3, 5, 4), drop=FALSE]
     }
     return(group)
 }
@@ -1015,7 +1016,7 @@ setOperation <- function(operation, groups, selected, symbol=" ",
             }
             return(names)
         }
-        setOperated <- lapply(1:3, setOperationString)
+        setOperated <- lapply(seq(3), setOperationString)
         if ( !is.null(groupName) && !identical(groupName, "") && 
              operation == "rename")
             setOperated[[1]] <- groupName
@@ -1418,7 +1419,7 @@ importGroupsFrom <- function(file, uniqueElems=NULL, matchingElems=NULL,
     if (nrow(df) == 0) {
         return(NULL)
     } else if (type == "ASevents") {
-        df <- df[ , c(1:3, 5, 4), drop=FALSE] # Fix column order
+        df <- df[ , c(1, 2, 3, 5, 4), drop=FALSE] # Fix column order
     }
     
     # Include colour if available
@@ -2084,8 +2085,8 @@ groupsServerOnce <- function(input, output, session) {
             if (!is.null(subjects)) {
                 indiv <- lapply(new, function(i)
                     unname(getSubjectFromSample(i, patientId=subjects)))
-                groups <- cbind(groups[ , 1:3, drop=FALSE], "Patients"=indiv,
-                                groups[ ,   4, drop=FALSE])
+                groups <- cbind(groups[ , seq(3), drop=FALSE], "Patients"=indiv,
+                                groups[ ,      4, drop=FALSE])
             }
             
             if (!is.null(groups)) 
@@ -2132,7 +2133,6 @@ getSelectedGroups <- function(input, id, type, filter=NULL) {
     return(groups)
 }
 
-
 # Multiple group independence testing -------------------------------------
 # Inspiration from https://rud.is/projects/facetedheatmaps.html
 
@@ -2143,8 +2143,8 @@ getSelectedGroups <- function(input, id, type, filter=NULL) {
 #' 
 #' @param df Data frame
 #' 
-#' @seealso \code{\link{testGroupIndependence}} and 
-#' \code{\link{plotGroupIndependence}}
+#' @seealso \code{\link{testGroupIndependence}()} and 
+#' \code{\link{plotGroupIndependence}()}
 #' 
 #' @return List of lists containing values based on rownames of \code{df}
 #' @export
@@ -2270,8 +2270,8 @@ testSingleIndependence <- function(ref, groups, elements, pvalueAdjust="BH") {
 #' \item{table}{Contigency table used for testing}
 #' \item{pvalue}{Fisher's exact test's p-value}
 #' 
-#' @seealso \code{\link{parseCategoricalGroups}} and 
-#' \code{\link{plotGroupIndependence}}
+#' @seealso \code{\link{parseCategoricalGroups}()} and 
+#' \code{\link{plotGroupIndependence}()}
 #' 
 #' @export
 #' @examples 
@@ -2340,11 +2340,11 @@ discardOutsideSamplesFromGroups <- function(groups, samples, clean=FALSE) {
     return(g)
 }
 
-#' Plot -log10(p-values) of the results obtained after multiple group 
+#' Plot \code{-log10(p-values)} of the results obtained after multiple group
 #' independence testing
 #' 
 #' @param groups \code{multiGroupIndependenceTest} object (obtained after 
-#' running \code{\link{testGroupIndependence}})
+#' running \code{\link{testGroupIndependence}()})
 #' @param top Integer: number of attributes to render
 #' @param textSize Integer: size of the text
 #' @param colourLow Character: name or HEX code of colour for lower values
@@ -2355,8 +2355,8 @@ discardOutsideSamplesFromGroups <- function(groups, samples, clean=FALSE) {
 #' @importFrom ggplot2 ggplot aes geom_tile theme coord_equal unit element_blank
 #' element_text scale_fill_gradient2
 #' 
-#' @seealso \code{\link{parseCategoricalGroups}} and 
-#' \code{\link{testGroupIndependence}}
+#' @seealso \code{\link{parseCategoricalGroups}()} and 
+#' \code{\link{testGroupIndependence}()}
 #' 
 #' @family functions for data grouping
 #' @return \code{ggplot} object

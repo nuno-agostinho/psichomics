@@ -173,7 +173,7 @@ parseVastToolsEvent <- function(event) {
 #'  \item{\bold{A3SS} (alternative 3' splice site)}
 #' }
 #'
-#' @seealso \code{\link{parseVastToolsEvent}}
+#' @seealso \code{\link{parseVastToolsEvent}()}
 #'
 #' @return List of parsed junctions
 #' @keywords internal

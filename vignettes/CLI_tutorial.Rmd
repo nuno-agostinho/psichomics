@@ -1,5 +1,5 @@
 ---
-title: 'psichomics case study: command-line interface (CLI)'
+title: 'Command-line interface (CLI) tutorial'
 author: "Nuno Saraiva-Agostinho"
 date: "`r Sys.Date()`"
 bibliography: refs.bib
@@ -249,8 +249,7 @@ files.
 > **Windows limitations**: If you are using *Windows*, note that the downloaded 
 files have huge names that may be over [*Windows* Maximum Path Length][maxpath].
 A workaround would be to manually rename the downloaded files to have shorter 
-names, move all downloaded files to a single folder and load such folder. Read
-how in section **Load unspecified local files** at the end of this document.
+names, move all downloaded files to a single folder and load such folder.
 
 ```{r prepare examples, include=FALSE}
 clinical <- readRDS("BRCA_clinical.RDS")
@@ -292,8 +291,8 @@ annotList
 can be prepared for *psichomics* by parsing the annotation from programs like 
 [VAST-TOOLS][VAST-TOOLS], [MISO][MISO], [SUPPA][SUPPA] and [rMATS][rMATS]. Note
 that SUPPA and rMATS are able to create their splicing annotation based on
-transcript annotation. For more information, 
-[read this tutorial][annotation-tutorial].
+transcript annotation. Please read
+[Preparing alternative splicing annotations][annotation-tutorial].
 
 To quantify alternative splicing, first select the junction quantification,
 alternative splicing annotation and alternative splicing event type(s) of 
@@ -785,11 +784,10 @@ commands:
 getGtexTissues(sampleAttr)
 
 tissues <- c("blood", "brain")
-gtex <- loadGtexData("~/Downloads", tissues)
+gtex <- loadGtexData("~/Downloads", tissues=tissues)
 ```
 
-If you desire to load junction quantification for all tissues, you can also do
-so through the following command:
+Junction quantification can be loaded for all GTEx tissues by typing:
 
 ```{r load all GTEx, eval=FALSE}
 gtex <- loadGtexData("~/Downloads", tissues=NULL)
@@ -812,18 +810,15 @@ sra <- loadSRAproject("SRP053101")
 
 > Although only select [SRA][SRA] projects are available to be automatically
 downloaded (based on pre-processed data from the [recount2][recount] project), 
-other SRA projects can be manually downloaded, aligned using a splice-aware 
-aligner and loaded by the user, as per the instructions in
+other SRA projects and user-provided data can be manually aligned using a
+splice-aware aligner and loaded by following the instructions in
 [Loading SRA and user-provided RNA-seq data][tutorial-custom-data]. 
-Sample-associated files from SRA are also supported.
 
-To load local files instead, indicate the folder of interest. Any files located
-in this folder and sub-folders will be loaded. To mitigate any errors during 
-this process, files of interest should be put in a dedicated folder.
+Local files can be loaded by indicating their containing folder Any files
+located in this folder and sub-folders will be loaded.
 
-For instance, to load [GTEx][GTEx] files in this way, create a directory called
-**GTEx**, put all files of interest inside that folder and follow these 
-commands:
+For instance, to load [GTEx][GTEx] files via local files, create a directory
+called **GTEx**, put all GTEx files within that folder and type these commands:
 
 ```{r load local, eval=FALSE}
 folder <- "~/Downloads/GTEx/"

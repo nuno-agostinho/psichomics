@@ -27,20 +27,20 @@ createEventPlotting(
 
 \item{y}{Character: name of the variable used for the Y axis}
 
-\item{params}{List of parameters to pass to \code{\link[ggplot2]{geom_point}}
-related to most points}
+\item{params}{List of parameters to pass to
+\code{\link[ggplot2]{geom_point}()} related to most points}
 
 \item{highlightX}{Integer: region of points in X axis to highlight}
 
 \item{highlightY}{Integer: region of points in Y axis to highlight}
 
 \item{highlightParams}{List of parameters to pass to
-\code{\link[ggplot2]{geom_point}} related to highlighted points}
+\code{\link[ggplot2]{geom_point}()} related to highlighted points}
 
 \item{selected}{Integer: index of rows/points to be coloured}
 
 \item{selectedParams}{List of parameters to pass to 
-\code{\link[ggplot2]{geom_point}} related to selected points}
+\code{\link[ggplot2]{geom_point}()} related to selected points}
 
 \item{labelled}{Integer: index of rows/points to be labelled}
 

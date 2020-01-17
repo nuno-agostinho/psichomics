@@ -12,9 +12,6 @@
 #' @return PCA result in a \code{prcomp} object
 #' @export
 #' 
-#' @seealso \code{\link{plotPCA}}, \code{\link{performICA}} and 
-#'   \code{\link{plotICA}}
-#' 
 #' @examples 
 #' performPCA(USArrests)
 performPCA <- function(data, center=TRUE, scale.=FALSE, 
@@ -264,7 +261,7 @@ calculateLoadingsContribution <- function(pca, pcX=1, pcY=2) {
         extra$pos  <- sapply(extra$pos,  paste0, collapse=", ")
         colnames(extra) <- c("Event type", "Chromosome", "Strand", "Gene",
                              "Event position")
-        extra <- extra[ , c(4, 1:3, 5)]
+        extra <- extra[ , c(4, 1, 2, 3, 5)]
         table <- cbind(extra, table)
     } else {
         table <- cbind("Genes"=rownames(table), table)
@@ -547,8 +544,8 @@ clusterSet <- function(session, input, output) {
             if (!is.null(subjects)) {
                 indiv <- lapply(new, function(i)
                     unname(getSubjectFromSample(i, patientId=subjects)))
-                groups <- cbind(groups[ , 1:3, drop=FALSE], "Patients"=indiv, 
-                                groups[ ,   4, drop=FALSE])
+                groups <- cbind(groups[ , seq(3), drop=FALSE], "Patients"=indiv,
+                                groups[ ,      4, drop=FALSE])
             }
             
             if (!is.null(groups)) appendNewGroups("Samples", groups)

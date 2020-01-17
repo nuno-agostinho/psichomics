@@ -3,7 +3,7 @@
 \name{parseTCGAsampleInfo}
 \alias{parseTCGAsampleInfo}
 \alias{parseTcgaSampleInfo}
-\title{Parse information from TCGA sample identifiers}
+\title{Parse sample information from TCGA sample identifiers}
 \usage{
 parseTCGAsampleInfo(samples, match = NULL)
 }
@@ -17,7 +17,7 @@ default; performs the match)}
 Data frame containing metadata associated with each TCGA sample
 }
 \description{
-Parse information from TCGA sample identifiers
+Parse sample information from TCGA sample identifiers
 }
 \examples{
 samples <- c("TCGA-3C-AAAU-01A-11R-A41B-07", "TCGA-3C-AALI-01A-11R-A41B-07",
@@ -30,8 +30,8 @@ parseTcgaSampleInfo(samples)
 Other functions associated with TCGA data retrieval: 
 \code{\link{getDownloadsFolder}()},
 \code{\link{getTCGAdataTypes}()},
-\code{\link{getTCGAdates}()},
 \code{\link{isFirebrowseUp}()},
-\code{\link{loadTCGAdata}()}
+\code{\link{loadTCGAdata}()},
+\code{\link{parseSampleGroups}()}
 }
 \concept{functions associated with TCGA data retrieval}

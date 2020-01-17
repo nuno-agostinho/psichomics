@@ -15,7 +15,7 @@ updateFileBrowserInput(session, id, ..., value = NULL)
 
 \item{id}{Character: input identifier}
 
-\item{...}{Additional arguments passed to \code{\link{fileBrowser}}. Only
+\item{...}{Additional arguments passed to \code{\link{fileBrowser}()}. Only
 used if \code{value = NULL}.}
 
 \item{value}{Character: file or directory path}

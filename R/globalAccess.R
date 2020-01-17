@@ -28,9 +28,7 @@ setHidden <- function(val) .hidden$elem <- val
 #' @param sep Character to separate identifiers
 #' 
 #' @note Needs to be called inside a reactive function
-#' 
-#' @seealso \code{\link{getGlobal}}, \code{\link{getClinicalMatchFrom}},
-#' \code{\link{getGroups}} and \code{\link{getDifferentialSplicing}}
+#' @family functions to get and set global variables
 #' 
 #' @return Getters return globally accessible data, whereas setters return 
 #' \code{NULL} as they are only used to modify the Shiny session's state
@@ -447,6 +445,8 @@ setURLtoDownload <- function(url) setGlobal("URLtoDownload", value=url)
 #' Get or set clinical matches from a given data type
 #' @inherit getGlobal
 #' @param dataset Character: data set name
+#' 
+#' @family functions to get and set global variables
 #' @keywords internal
 getClinicalMatchFrom <- function(dataset, category=getCategory())
     getGlobal(category, dataset, "clinicalMatch")
@@ -465,6 +465,7 @@ setClinicalMatchFrom <- function(dataset, matches, category=getCategory())
 #' @param complete Boolean: return all the information on groups (\code{TRUE})
 #' or just the group names and respective indexes (\code{FALSE})?
 #' 
+#' @family functions to get and set global variables
 #' @keywords internal
 getGroups <- function(type=c("Patients", "Samples", "ASevents", "Genes"), 
                       complete=FALSE, category=getCategory()) {
@@ -513,6 +514,7 @@ setGroups <- function(type=c("Patients", "Samples", "ASevents", "Genes"),
 #' 
 #' @inherit getGlobal
 #' 
+#' @family functions to get and set global variables
 #' @keywords internal
 getHighlightedPoints <- function(id, category=getCategory())
     getGlobal(category, id, "highlighted")
@@ -552,7 +554,10 @@ setLabelledPoints <- function(id, events, category=getCategory())
 # Differential expression --------------------------------------------------
 
 #' Get or set differential expression' elements for a data category
+#' 
 #' @inherit getGlobal
+#' 
+#' @family functions to get and set global variables
 #' @keywords internal
 getDifferentialExpression <- function(category=getCategory())
     getGlobal(category, "differentialExpression")
@@ -605,6 +610,7 @@ setDifferentialExpressionColumns <- function(columns, category=getCategory())
 #' 
 #' @inherit getGlobal
 #' 
+#' @family functions to get and set global variables
 #' @keywords internal
 getDifferentialSplicing <- function(category=getCategory())
     getGlobal(category, "differentialSplicing")

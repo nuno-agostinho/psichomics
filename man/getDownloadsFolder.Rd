@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{getDownloadsFolder}
 \alias{getDownloadsFolder}
-\title{Get the Downloads folder of the user}
+\title{Get the path to the Downloads folder}
 \usage{
 getDownloadsFolder()
 }
@@ -10,7 +10,7 @@ getDownloadsFolder()
 Path to Downloads folder
 }
 \description{
-Get the Downloads folder of the user
+Get the path to the Downloads folder
 }
 \examples{
 getDownloadsFolder()
@@ -18,9 +18,9 @@ getDownloadsFolder()
 \seealso{
 Other functions associated with TCGA data retrieval: 
 \code{\link{getTCGAdataTypes}()},
-\code{\link{getTCGAdates}()},
 \code{\link{isFirebrowseUp}()},
 \code{\link{loadTCGAdata}()},
+\code{\link{parseSampleGroups}()},
 \code{\link{parseTCGAsampleInfo}()}
 
 Other functions associated with GTEx data retrieval: 

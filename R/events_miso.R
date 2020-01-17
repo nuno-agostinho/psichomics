@@ -81,7 +81,7 @@ getDataRows <- function(i, data, firstRow, lastRow) {
         last <- nrow(data)
     }
     seq <- seq(first, last)
-    return(data[seq, 1:8])
+    return(data[seq, seq(8)])
 }
 
 #' Match MISO's splicing event IDs with the IDs present in the alternative
@@ -126,7 +126,7 @@ parseMisoEventID <- function(eventID, annotation, IDcolumn) {
     nextIndex <- events[fmatch(index, events) + 1]
     
     # Get the rows relative to each event
-    rows <- lapply(1:(length(index)), getDataRows, annotation, index,
+    rows <- lapply(seq(length(index)), getDataRows, annotation, index,
                    nextIndex - 1)
     return(rows)
 }
@@ -216,7 +216,7 @@ getValidEvents <- function(event, validator, areMultipleExonsValid = FALSE) {
         }
         
         invalidIndex <- unlist(
-            lapply(1:sum(!valid),
+            lapply(seq(sum(!valid)),
                    function(i) index[!valid][i]:(nextIndex[!valid][i]-1)
             )
         )
@@ -284,7 +284,7 @@ parseMisoEvent <- function(event) {
 #'  \item{\bold{Tandem UTR}}
 #' }
 #' 
-#' @seealso \code{\link{parseMisoEvent}}
+#' @seealso \code{\link{parseMisoEvent}()}
 #'
 #' @return List of parsed junctions
 #' @keywords internal

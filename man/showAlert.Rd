@@ -75,6 +75,6 @@ state or internal variables)
 Show or remove an alert
 }
 \seealso{
-\code{\link{showModal}}
+\code{\link{showModal}()}
 }
 \keyword{internal}

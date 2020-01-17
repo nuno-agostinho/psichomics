@@ -47,3 +47,4 @@ prepareGeneQuant("Control rep1"=geneCountFile1,
 Other functions to load local files: 
 \code{\link{loadLocalFiles}()}
 }
+\keyword{internal}

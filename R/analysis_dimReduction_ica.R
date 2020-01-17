@@ -9,9 +9,6 @@
 #' @return ICA result in a \code{prcomp} object
 #' @export
 #' 
-#' @seealso \code{\link{plotICA}}, \code{\link{performPCA}} and
-#' \code{\link{plotPCA}}
-#' 
 #' @examples 
 #' performICA(USArrests)
 performICA <- function(data, n.comp=min(5, ncol(data)), center=TRUE, 
@@ -27,7 +24,7 @@ performICA <- function(data, n.comp=min(5, ncol(data)), center=TRUE,
 
 #' Create multiple scatterplots from ICA
 #' 
-#' @param ica Object resulting from \code{\link{performICA}}
+#' @param ica Object resulting from \code{\link{performICA}()}
 #' @param components Numeric: independent components to plot
 #' @param groups Matrix: groups to plot indicating the index of interest of the
 #' samples (use clinical or sample groups)
@@ -352,8 +349,8 @@ clusterICAset <- function(session, input, output) {
             if (!is.null(subjects)) {
                 indiv  <- lapply(new, function(i)
                     unname(getSubjectFromSample(i, patientId=subjects)))
-                groups <- cbind(groups[ , 1:3, drop=FALSE], "Patients"=indiv, 
-                                groups[ ,   4, drop=FALSE])
+                groups <- cbind(groups[ , seq(3), drop=FALSE], "Patients"=indiv,
+                                groups[ ,     4, drop=FALSE])
             }
             
             if (!is.null(groups)) appendNewGroups("Samples", groups)

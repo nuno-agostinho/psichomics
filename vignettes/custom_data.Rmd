@@ -1,5 +1,5 @@
 ---
-title: 'Alternative Splicing Analysis on SRA and User-Provided Data'
+title: 'Loading SRA and user-provided RNA-seq data'
 author: "Nuno Saraiva-Agostinho"
 date: "`r Sys.Date()`"
 bibliography: refs.bib

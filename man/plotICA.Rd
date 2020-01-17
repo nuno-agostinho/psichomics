@@ -7,7 +7,7 @@
 plotICA(ica, components = seq(10), groups = NULL, ...)
 }
 \arguments{
-\item{ica}{Object resulting from \code{\link{performICA}}}
+\item{ica}{Object resulting from \code{\link{performICA}()}}
 
 \item{components}{Numeric: independent components to plot}
 

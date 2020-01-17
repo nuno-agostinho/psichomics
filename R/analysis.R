@@ -367,8 +367,8 @@ updateClinicalParams <- function(session, attrs) {
 #' dataset according to the names given in \code{timeStart}, \code{timeStop},
 #' \code{event} and \code{followup}. This may become quite slow when used in a
 #' loop. If the aforementioned variables are constant, consider running
-#' \code{\link{getAttributesTime}} outside the loop and using its output via the
-#' \code{survTime} argument of this function (see Examples).
+#' \code{\link{getAttributesTime}()} outside the loop and using its output via
+#' the \code{survTime} argument of this function (see Examples).
 #'
 #' @family functions to analyse survival
 #' @return A list with a \code{formula} object and a data frame with terms
@@ -1397,15 +1397,15 @@ filterGroups <- function(vector, group, threshold=1) {
 #' @param df Data frame
 #' @param x Character: name of the variable used for the X axis
 #' @param y Character: name of the variable used for the Y axis
-#' @param params List of parameters to pass to \code{\link[ggplot2]{geom_point}}
-#' related to most points
+#' @param params List of parameters to pass to
+#' \code{\link[ggplot2]{geom_point}()} related to most points
 #' @param highlightX Integer: region of points in X axis to highlight
 #' @param highlightY Integer: region of points in Y axis to highlight
 #' @param highlightParams List of parameters to pass to
-#' \code{\link[ggplot2]{geom_point}} related to highlighted points
+#' \code{\link[ggplot2]{geom_point}()} related to highlighted points
 #' @param selected Integer: index of rows/points to be coloured
 #' @param selectedParams List of parameters to pass to 
-#' \code{\link[ggplot2]{geom_point}} related to selected points
+#' \code{\link[ggplot2]{geom_point}()} related to selected points
 #' @param labelled Integer: index of rows/points to be labelled
 #' @param labelledParams List of parameters to pass to 
 #' \code{ggrepel::geom_label_repel} related to labelled points

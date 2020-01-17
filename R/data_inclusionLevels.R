@@ -1,7 +1,7 @@
-#' List the alternative splicing annotation files available
+#' List alternative splicing annotations
 #'
 #' @family functions for PSI quantification
-#' @return Named character vector with splicing annotation files available
+#' @return Named character vector with splicing annotation names
 #' @export
 #'
 #' @examples
@@ -178,7 +178,7 @@ inclusionLevelsUI <- function(id, panel) {
 #' annot <- readFile("ex_splicing_annotation.RDS")
 #' junctionQuant <- readFile("ex_junctionQuant.RDS")
 #'
-#' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+#' quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 quantifySplicing <- function(annotation, junctionQuant,
                              eventType=c("SE", "MXE", "ALE", "AFE", "A3SS",
                                          "A5SS"),

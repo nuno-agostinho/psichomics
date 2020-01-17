@@ -39,6 +39,8 @@ drawText <- function(text, x, y=8, anchor="start", baseline="auto",
 #' 
 #' @param parsed Alternative splicing event
 #' @param type Character: alternative splicing event type
+#' @param class Character: class of SVG parent tag
+#' @param style Character: style of SVG parent tag
 #' @param showText Boolean: display coordinates and exon length (if available)
 #' @param showPath Boolean: display alternative splicing junctions
 #' @param showAlternative1 Boolean: show alternative exon 1 and respective
@@ -64,7 +66,7 @@ drawText <- function(text, x, y=8, anchor="start", baseline="auto",
 #' @return Diagrams per alternative splicing event in SVG
 #' @keywords internal
 diagramSplicingEvent <- function(
-    parsed, type, showText=TRUE, showPath=TRUE,
+    parsed, type, class="pull-right", style=NULL, showText=TRUE, showPath=TRUE,
     showAlternative1=TRUE, showAlternative2=TRUE,
     constitutiveLength=60, alternativeLength=NULL, intronLength=15, 
     constitutiveFill="lightgray", constitutiveStroke="darkgray", 
@@ -188,7 +190,8 @@ diagramSplicingEvent <- function(
     }
     
     # Finalise SVG
-    svg <- tag("svg", c(height="50px", class="pull-right", width=diagramWidth))
+    svg <- tag("svg", 
+               c(height="50px", class=class, style=style, width=diagramWidth))
     svg <- tagAppendChildren(svg, exon, path, text)
     
     if (isSE || isA5SS || isA3SS) {
@@ -228,7 +231,7 @@ diagramSplicingEvent <- function(
     return(svgFinal)
 }
 
-#' Render representations of alternative splicing events
+#' Plot diagram of alternative splicing events
 #' 
 #' @param ASevent Character: alternative splicing event identifiers
 #' @inheritParams diagramSplicingEvent
@@ -255,8 +258,8 @@ diagramSplicingEvent <- function(
 #' diagram[[6]]
 #' diagram[["A3SS_3_-_145796903_145794682_145795711_PLOD2"]]
 plotSplicingEvent <- function(
-    ASevent, raw=FALSE, showText=TRUE, showPath=TRUE,
-    showAlternative1=TRUE, showAlternative2=TRUE,
+    ASevent, raw=FALSE, class=NULL, style=NULL, 
+    showText=TRUE, showPath=TRUE, showAlternative1=TRUE, showAlternative2=TRUE,
     constitutiveLength=60, alternativeLength=NULL, intronLength=15,
     constitutiveFill="lightgray", constitutiveStroke="darkgray",
     alternative1Fill="#ffb153", alternative1Stroke="#faa000",
@@ -271,7 +274,8 @@ plotSplicingEvent <- function(
     svg <- NULL
     for (each in names(parsed)) {
         svg <- c(svg, diagramSplicingEvent(
-            parsed[[each]], each, showPath=showPath, showText=showText,
+            parsed[[each]], each, class=class, style=style,
+            showPath=showPath, showText=showText,
             showAlternative1=showAlternative1,
             showAlternative2=showAlternative2,
             constitutiveLength=constitutiveLength, 

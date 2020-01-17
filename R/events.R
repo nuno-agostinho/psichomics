@@ -316,7 +316,7 @@ vennEvents <- function(join, eventType) {
     programs <- join[grep("Program", names(join))]
     nas <- !is.na(programs)
     nas <- ifelse(nas, row(nas), NA)
-    p <- lapply(1:ncol(nas), function(col) nas[!is.na(nas[ , col]), col])
+    p <- lapply(seq(ncol(nas)), function(col) nas[!is.na(nas[ , col]), col])
     names(p) <- sapply(programs, function(x) unique(x[!is.na(x)]))
     gplots::venn(p)
 }

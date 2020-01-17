@@ -403,7 +403,7 @@ appServer <- function(input, output, session) {
 #' @inheritParams shiny::runApp
 #' @inheritDotParams shiny::runApp -appDir -launch.browser
 #' @param reset Boolean: reset Shiny session? Requires package \code{devtools}
-#' @param testData Boolean: auto-start with test data
+#' @param testData Boolean: load with test data
 #'
 #' @importFrom shiny shinyApp runApp addResourcePath
 #'

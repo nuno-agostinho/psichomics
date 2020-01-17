@@ -55,7 +55,7 @@ plotCorrelation(
 }
 \arguments{
 \item{x}{\code{GEandAScorrelation} object (obtained after running
-\code{\link{correlateGEandAS}})}
+\code{\link{correlateGEandAS}()})}
 
 \item{autoZoom}{Boolean: automatically set the range of PSI values based on
 available data? If \code{FALSE}, the axis relative to PSI values will range

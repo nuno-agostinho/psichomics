@@ -1,4 +1,70 @@
-#' Parse information from TCGA sample identifiers
+# Get Firebrowse parameters ----------------------------------------------------
+
+#' Get available parameters for TCGA data
+#' 
+#' Parameters obtained via \href{http://firebrowse.org/api-docs/}{Firebrowse}
+#' 
+#' @family functions associated with TCGA data retrieval
+#' @return Parsed response
+#' 
+#' @importFrom R.utils capitalize
+#' 
+#' @aliases getFirebrowseDataTypes
+#' @export
+#' 
+#' @examples
+#' getTCGAdataTypes()
+getTCGAdataTypes <- function() {
+    choices <- list("RNA sequencing"=c(
+        "junction_quantification", "exon_quantification", 
+        "exon_expression", "junction_expression",
+        "RSEM_genes", "RSEM_genes_normalized", "RSEM_isoforms", "Preprocess"))
+    names(choices[[1]]) <- capitalize(gsub("_", " ", choices[[1]], fixed=TRUE))
+    return(choices)
+}
+
+#' @export
+getFirebrowseDataTypes <- getTCGAdataTypes
+
+#' @rdname getTCGAdataTypes
+#' @aliases getFirebrowseDates
+#' @export
+#' 
+#' @examples
+#' if (isFirebrowseUp()) getFirebrowseDates()
+getTCGAdates <- function() {
+    dates <- parseFirebrowseMetadata("Dates")$Dates
+    format <- getFirebrowseDateFormat()
+    dates <- as.Date(dates, format$query)
+    return(dates)
+}
+
+#' @export
+getFirebrowseDates <- getTCGAdates
+
+#' @rdname getTCGAdataTypes
+#' 
+#' @param cohort Character: filter results by cohorts (optional)
+#' 
+#' @aliases getFirebrowseCohorts
+#' @export
+#'
+#' @examples
+#' if (isFirebrowseUp()) getTCGAcohorts()
+getTCGAcohorts <- function(cohort = NULL) {
+    response <- parseFirebrowseMetadata("Cohorts", cohort=cohort)
+    cohorts <- response$Cohorts[[2]]
+    names(cohorts) <- response$Cohorts[[1]]
+    return(cohorts)
+}
+
+#' @export
+getFirebrowseCohorts <- getTCGAcohorts
+
+
+# Process and manipulate Firebrowse data ---------------------------------------
+
+#' Parse sample information from TCGA sample identifiers
 #' 
 #' @param samples Character: sample identifiers
 #' @param match Integer: match between samples and subjects (\code{NULL} by
@@ -39,6 +105,134 @@ parseTCGAsampleInfo <- function (samples, match=NULL) {
 #' @export
 parseTcgaSampleInfo <- parseTCGAsampleInfo
 
+#' Retrieve URLs from a response to a Firebrowse data query
+#'
+#' @param res Response from \code{httr::GET} to a Firebrowse data query
+#' 
+#' @importFrom jsonlite fromJSON
+#' @importFrom httr content
+#'
+#' @return Named character with URLs
+#' @keywords internal
+#'
+#' @examples
+#' res <- psichomics:::queryFirebrowseData(cohort = "ACC")
+#' url <- psichomics:::parseUrlsFromFirebrowseResponse(res)
+parseUrlsFromFirebrowseResponse <- function(res) {
+    # Parse the query response
+    parsed <- content(res, "text", encoding = "UTF8")
+    parsed <- fromJSON(parsed)[[1]]
+    parsed$date <- parseDateResponse(parsed$date)
+    
+    # Get cohort names
+    cohort <- getFirebrowseCohorts()
+    cohort <- cohort[parsed$cohort]
+    
+    ## TODO(NunoA): maybe this could be simplified?
+    # Split URLs from response by cohort and datestamp
+    url <- split(parsed$url, paste(cohort, format(parsed$date, "%Y-%m-%d")))
+    url <- lapply(url, unlist)
+    link <- unlist(url)
+    names(link) <- rep(names(url), vapply(url, length, numeric(1)))
+    return(link)
+}
+
+#' Returns the date format used by the Firebrowse web API
+#'
+#' @return Named list with Firebrowse web API's date formats
+#' @keywords internal
+#'
+#' @examples
+#' format <- psichomics:::getFirebrowseDateFormat()
+#' 
+#' # date format to use in a query to Firebrowse web API
+#' format$query
+#' 
+#' # date format to parse a date in a response from Firebrowse web API
+#' format$response
+getFirebrowseDateFormat <- function() {
+    query <- "%Y_%m_%d"
+    response <- "%d %b %Y" 
+    return(list(query=query, response=response))
+}
+
+#' Parse the date from a response
+#' 
+#' @param string Character: dates
+#' 
+#' @return Parsed date
+#' @keywords internal
+parseDateResponse <- function(string) {
+    format <- getFirebrowseDateFormat()$response
+    date <- strsplit(string, " ")
+    date <- lapply(date, function(i) paste(i[2:4], collapse=" "))
+    date <- as.Date(unlist(date), format=format)
+    return(date)
+}
+
+#' Query the Firebrowse web API for metadata
+#'
+#' @param type Character: metadata to retrieve
+#' @param ... Character: parameters to pass to query (optional)
+#' 
+#' @importFrom httr GET content
+#' @importFrom jsonlite fromJSON
+#' 
+#' @return List with parsed response
+#' @keywords internal
+#'
+#' @examples
+#' psichomics:::parseFirebrowseMetadata("Dates")
+#' psichomics:::parseFirebrowseMetadata("Centers")
+#' psichomics:::parseFirebrowseMetadata("HeartBeat")
+#' 
+#' # Get the abbreviation and description of all cohorts available
+#' psichomics:::parseFirebrowseMetadata("Cohorts")
+#' # Get the abbreviation and description of the selected cohorts
+#' psichomics:::parseFirebrowseMetadata("Cohorts", cohort = c("ACC", "BRCA"))
+parseFirebrowseMetadata <- function(type, ...) {
+    # Remove NULL arguments
+    args <- Filter(Negate(is.null), list(...))
+    
+    # Query multiple items by collapsing them with a comma
+    if (length(args) > 0)
+        args <- lapply(args, paste, collapse = ",")
+    
+    # Query the given link and parse the response
+    link <- paste0("http://firebrowse.org/api/v1/Metadata/", type)
+    response <- GET(link, query = c(format = "json", args))
+    response <- fromJSON(content(response, "text", encoding = "UTF8"))
+    return(response)
+}
+
+# Download and load Firebrowse data --------------------------------------------
+
+#' Check if \href{http://firebrowse.org/api-docs/}{Firebrowse API} is running
+#'
+#' @importFrom httr GET warn_for_status http_error
+#' @importFrom methods is
+#'
+#' @family functions associated with TCGA data retrieval
+#' @return Invisible \code{TRUE} if the
+#' \href{http://firebrowse.org/api-docs/}{Firebrowse API} is working; otherwise,
+#' raises a warning with the status code and a brief explanation.
+#' @export
+#'
+#' @examples
+#' isFirebrowseUp()
+isFirebrowseUp <- function() {
+    link <- paste0("http://firebrowse.org/api/v1/Metadata/HeartBeat")
+    heartbeat <- tryCatch(GET(link, query=list(format="json")), error=return)
+    if (is(heartbeat, "error")) {
+        return(FALSE)
+    } else if (http_error(heartbeat)) {
+        warn_for_status(heartbeat, "reach Firebrowse web API")
+        return(FALSE)
+    } else {
+        return(TRUE)
+    }
+}
+
 #' Prepare TCGA sample metadata from loaded datasets
 #' 
 #' If no TCGA datasets apply, the input is returned
@@ -78,88 +272,6 @@ loadTCGAsampleMetadata <- function(data) {
         }
     }
     return(data)
-}
-
-#' Get available TCGA data types
-#' 
-#' @importFrom R.utils capitalize
-#' 
-#' @aliases getFirebrowseDataTypes
-#' @family functions associated with TCGA data retrieval
-#' @return Named character vector
-#' @export
-#' 
-#' @examples
-#' getTCGAdataTypes()
-getTCGAdataTypes <- function() {
-    choices <- list("RNA sequencing"=c(
-        "junction_quantification", "exon_quantification", 
-        "exon_expression", "junction_expression",
-        "RSEM_genes", "RSEM_genes_normalized", "RSEM_isoforms", "Preprocess"))
-    names(choices[[1]]) <- capitalize(gsub("_", " ", choices[[1]], fixed=TRUE))
-    return(choices)
-}
-
-#' @export
-getFirebrowseDataTypes <- getTCGAdataTypes
-
-#' Returns the date format used by the Firebrowse web API
-#'
-#' @return Named list with Firebrowse web API's date formats
-#' @keywords internal
-#'
-#' @examples
-#' format <- psichomics:::getFirebrowseDateFormat()
-#' 
-#' # date format to use in a query to Firebrowse web API
-#' format$query
-#' 
-#' # date format to parse a date in a response from Firebrowse web API
-#' format$response
-getFirebrowseDateFormat <- function() {
-    query <- "%Y_%m_%d"
-    response <- "%d %b %Y" 
-    return(list(query=query, response=response))
-}
-
-#' Parse the date from a response
-#' 
-#' @param string Character: dates
-#' 
-#' @return Parsed date
-#' @keywords internal
-parseDateResponse <- function(string) {
-    format <- getFirebrowseDateFormat()$response
-    date <- strsplit(string, " ")
-    date <- lapply(date, function(i) paste(i[2:4], collapse=" "))
-    date <- as.Date(unlist(date), format=format)
-    return(date)
-}
-
-#' Check if \href{http://firebrowse.org/api-docs/}{Firebrowse API} is running
-#'
-#' @importFrom httr GET warn_for_status http_error
-#' @importFrom methods is
-#'
-#' @family functions associated with TCGA data retrieval
-#' @return Invisible \code{TRUE} if the
-#' \href{http://firebrowse.org/api-docs/}{Firebrowse API} is working; otherwise,
-#' raises a warning with the status code and a brief explanation.
-#' @export
-#'
-#' @examples
-#' isFirebrowseUp()
-isFirebrowseUp <- function() {
-    link <- paste0("http://firebrowse.org/api/v1/Metadata/HeartBeat")
-    heartbeat <- tryCatch(GET(link, query=list(format="json")), error=return)
-    if (is(heartbeat, "error")) {
-        return(FALSE)
-    } else if (http_error(heartbeat)) {
-        warn_for_status(heartbeat, "reach Firebrowse web API")
-        return(FALSE)
-    } else {
-        return(TRUE)
-    }
 }
 
 #' Query the Firebrowse web API for TCGA data
@@ -222,81 +334,6 @@ queryFirebrowseData <- function(format = "json", date = NULL, cohort = NULL,
                     path = "api/v1/Archives/StandardData")
     return(response)
 }
-
-#' Query the Firebrowse web API for metadata
-#'
-#' @param type Character: metadata to retrieve
-#' @param ... Character: parameters to pass to query (optional)
-#' 
-#' @importFrom httr GET content
-#' @importFrom jsonlite fromJSON
-#' 
-#' @return List with parsed response
-#' @keywords internal
-#'
-#' @examples
-#' psichomics:::parseFirebrowseMetadata("Dates")
-#' psichomics:::parseFirebrowseMetadata("Centers")
-#' psichomics:::parseFirebrowseMetadata("HeartBeat")
-#' 
-#' # Get the abbreviation and description of all cohorts available
-#' psichomics:::parseFirebrowseMetadata("Cohorts")
-#' # Get the abbreviation and description of the selected cohorts
-#' psichomics:::parseFirebrowseMetadata("Cohorts", cohort = c("ACC", "BRCA"))
-parseFirebrowseMetadata <- function(type, ...) {
-    # Remove NULL arguments
-    args <- Filter(Negate(is.null), list(...))
-    
-    # Query multiple items by collapsing them with a comma
-    if (length(args) > 0)
-        args <- lapply(args, paste, collapse = ",")
-    
-    # Query the given link and parse the response
-    link <- paste0("http://firebrowse.org/api/v1/Metadata/", type)
-    response <- GET(link, query = c(format = "json", args))
-    response <- fromJSON(content(response, "text", encoding = "UTF8"))
-    return(response)
-}
-
-#' Get available parameters for TCGA data
-#' 
-#' Parameters obtained via \href{http://firebrowse.org/api-docs/}{Firebrowse}
-#'
-#' @aliases getFirebrowseDates
-#' @family functions associated with TCGA data retrieval
-#' @return Parsed response
-#' @export
-#' 
-#' @examples
-#' if (isFirebrowseUp()) getFirebrowseDates()
-getTCGAdates <- function() {
-    dates <- parseFirebrowseMetadata("Dates")$Dates
-    format <- getFirebrowseDateFormat()
-    dates <- as.Date(dates, format$query)
-    return(dates)
-}
-
-#' @export
-getFirebrowseDates <- getTCGAdates
-
-#' @rdname getTCGAdates
-#' 
-#' @param cohort Character: filter results by cohorts (optional)
-#' 
-#' @aliases getFirebrowseCohorts
-#' @export
-#'
-#' @examples
-#' if (isFirebrowseUp()) getTCGAcohorts()
-getTCGAcohorts <- function(cohort = NULL) {
-    response <- parseFirebrowseMetadata("Cohorts", cohort=cohort)
-    cohorts <- response$Cohorts[[2]]
-    names(cohorts) <- response$Cohorts[[1]]
-    return(cohorts)
-}
-
-#' @export
-getFirebrowseCohorts <- getTCGAcohorts
 
 #' Download files to a given directory
 #'
@@ -426,38 +463,6 @@ prepareFirebrowseArchives <- function(archive, md5, folder, outdir) {
     return(invisible(TRUE))
 }
 
-#' Retrieve URLs from a response to a Firebrowse data query
-#'
-#' @param res Response from \code{httr::GET} to a Firebrowse data query
-#' 
-#' @importFrom jsonlite fromJSON
-#' @importFrom httr content
-#'
-#' @return Named character with URLs
-#' @keywords internal
-#'
-#' @examples
-#' res <- psichomics:::queryFirebrowseData(cohort = "ACC")
-#' url <- psichomics:::parseUrlsFromFirebrowseResponse(res)
-parseUrlsFromFirebrowseResponse <- function(res) {
-    # Parse the query response
-    parsed <- content(res, "text", encoding = "UTF8")
-    parsed <- fromJSON(parsed)[[1]]
-    parsed$date <- parseDateResponse(parsed$date)
-    
-    # Get cohort names
-    cohort <- getFirebrowseCohorts()
-    cohort <- cohort[parsed$cohort]
-    
-    ## TODO(NunoA): maybe this could be simplified?
-    # Split URLs from response by cohort and datestamp
-    url <- split(parsed$url, paste(cohort, format(parsed$date, "%Y-%m-%d")))
-    url <- lapply(url, unlist)
-    link <- unlist(url)
-    names(link) <- rep(names(url), vapply(url, length, numeric(1)))
-    return(link)
-}
-
 #' Load Firebrowse folders
 #'
 #' Loads the files present in each folder as a data.frame.
@@ -500,8 +505,8 @@ loadFirebrowseFolders <- function(folder, exclude="") {
 #' TCGA data obtained via \href{http://firebrowse.org/api-docs/}{Firebrowse}
 #' 
 #' @param folder Character: directory to store the downloaded archives (by
-#' default, saves to \code{\link{getDownloadsFolder()}})
-#' @param data Character: data to load (\code{\link{getFirebrowseDataTypes()}})
+#' default, saves to \code{\link{getDownloadsFolder}()})
+#' @param data Character: data to load (see \code{\link{getTCGAdataTypes}()})
 #' @param exclude Character: files and folders to exclude from downloading and
 #' from loading into R (by default, exclude files containing \code{.aux.},
 #' \code{.mage-tab.} and \code{MANIFEST.TXT})
@@ -641,6 +646,8 @@ loadTCGAdata <- function(folder=getDownloadsFolder(),
 
 #' @export
 loadFirebrowseData <- loadTCGAdata
+
+# Shiny-specific Firebrowse functions ------------------------------------------
 
 #' Creates a UI set with options to add data from TCGA/Firebrowse
 #' @param ns Namespace function

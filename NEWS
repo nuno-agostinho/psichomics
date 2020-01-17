@@ -1,4 +1,4 @@
-# 1.12.1 (16 January, 2019)
+# 1.12.1 (17 January, 2019)
 
 * Fix loading only a portion of TCGA data (with no warning) if too many cohorts
 are selected
@@ -24,7 +24,7 @@ are selected
     - Copy-edit information on the format of user-provided files
     - Warn when discarding rows with duplicated rownames after loading
     user-provided files
-    - Fix `getGtexDataTypes()` not being exported
+    - `getGtexDataTypes()` is now exported, as expected
     - `loadFirebrowseData()` now returns expected data when asking for multiple
     datasets (such as in the case of performing a pan-cancer analysis)
     - `parseSplicingEvent()` now returns the coordinates as numeric if 

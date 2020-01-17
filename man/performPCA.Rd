@@ -45,9 +45,6 @@ Perform principal component analysis after processing missing values
 performPCA(USArrests)
 }
 \seealso{
-\code{\link{plotPCA}}, \code{\link{performICA}} and 
-  \code{\link{plotICA}}
-
 Other functions to analyse principal components: 
 \code{\link{calculateLoadingsContribution}()},
 \code{\link{plotPCA}()},
