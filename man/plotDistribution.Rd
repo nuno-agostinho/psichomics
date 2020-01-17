@@ -133,6 +133,10 @@ data   <- sample(20, rep=TRUE)/20
 groups <- paste("Group", c(rep("A", 10), rep("B", 10)))
 names(data) <- paste("Sample", 1:20)
 plotDistribution(data, groups)
+
+# Using colours
+attr(groups, "Colour") <- c("Group A"="pink", "Group B"="orange")
+plotDistribution(data, groups)
 }
 \seealso{
 Other functions to perform and plot differential analyses: 

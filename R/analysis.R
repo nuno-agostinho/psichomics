@@ -1628,6 +1628,10 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' groups <- paste("Group", c(rep("A", 10), rep("B", 10)))
 #' names(data) <- paste("Sample", 1:20)
 #' plotDistribution(data, groups)
+#' 
+#' # Using colours
+#' attr(groups, "Colour") <- c("Group A"="pink", "Group B"="orange")
+#' plotDistribution(data, groups)
 plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
                              title=NULL, psi=NULL, rugLabels=FALSE,
                              rugLabelsRotation=0) {
@@ -1768,7 +1772,7 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
             y <- match(group, unique(ns))/1000
             hc <- hc %>%
                 hc_scatter(
-                    row, rep(y, length(row)), name=group,
+                    row, rep(y, length(row)), name=group, color=fill,
                     rugLabel=rugLabel, tooltipLabel=tooltipLabel,
                     marker=list(enabled=TRUE, radius=4, fillColor=fill),
                     median=med, var=vari, samples=samples, max=max, min=min)

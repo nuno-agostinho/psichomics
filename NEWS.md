@@ -59,6 +59,8 @@ are selected
     given Highcharts issues that may occur at different zoom levels and
     depending on proximity between different sample values)
     - Fix misguiding example in function documentation
+    - When hovering the values in the rug plot, the colour of the tooltip is now
+    the same used for the rug points as expected
 * Survival analysis (p-value plot):
     - Fix alternative splicing quantification cutoff being selected based on the
     one whose difference has the highest (instead of the lowest) p-value
