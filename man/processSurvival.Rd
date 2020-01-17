@@ -18,8 +18,8 @@ processSurvival(session, ...)
 \code{weeks}, \code{months} or \code{years}}
     \item{\code{formulaStr}}{Character: formula to use}
     \item{\code{coxph}}{Boolean: fit a Cox proportional hazards regression model?}
-    \item{\code{survTime}}{survTime object: times to follow up, time start, time stop
-and event (optional)}
+    \item{\code{survTime}}{\code{survTime} object: times to follow up, time start, time
+stop and event (optional)}
     \item{\code{clinical}}{Data frame: clinical data}
     \item{\code{event}}{Character: name of column containing time of the event of
 interest}

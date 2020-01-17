@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis_survival.R
 \name{geneExprSurvSet}
 \alias{geneExprSurvSet}
-\title{Logic set to perform survival analysis based on gene expression cut-offs}
+\title{Logic set to perform survival analysis based on gene expression cutoffs}
 \usage{
 geneExprSurvSet(session, input, output)
 }
@@ -18,6 +18,6 @@ geneExprSurvSet(session, input, output)
 state or internal variables)
 }
 \description{
-Logic set to perform survival analysis based on gene expression cut-offs
+Logic set to perform survival analysis based on gene expression cutoffs
 }
 \keyword{internal}

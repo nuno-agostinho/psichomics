@@ -65,7 +65,7 @@ spliced-in or PSI [@wang2008].
 To estimate this value for each splicing event, both alternative splicing
 annotation and junction quantification are required. While alternative splicing
 annotation is provided by the package, junction quantification may be retrieved
-from muliple sources.
+from multiple sources.
 
 Start by loading breast cancer data by following these instructions:
 

@@ -216,14 +216,19 @@ plotVariance <- function(pca) {
 #' Calculate the contribution of PCA loadings to the selected principal
 #' components
 #'
-#' Total contribution of a variable is calculated as per: 
-#' ((Cx \* Ex) + (Cy \* Ey))/(Ex + Ey), where Cx and Cy are the 
-#' contributions of a variable to principal components (x and y) and Ex and Ey 
-#' are the eigenvalues of principal components (x and y)
+#' Total contribution of a variable is calculated as per
+#' \code{((Cx * Ex) + (Cy * Ey))/(Ex + Ey)}, where:
+#' \itemize{
+#'   \item{\code{Cx} and \code{Cy} are the contributions of a variable to
+#'   principal components \code{x} and \code{y}}
+#'   \item{\code{Ex} and \code{Ey} are the eigenvalues of principal components
+#'   \code{x} and \code{y}}
+#' }
 #'
 #' @inheritParams plotPCA
 #' 
-#' @source \url{http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/}
+#' @source
+#' \url{http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/}
 #'
 #' @family functions to analyse principal components
 #' @return Data frame containing the correlation between variables and selected 

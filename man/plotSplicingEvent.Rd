@@ -44,7 +44,7 @@ splicing junctions and text?}
 \item{showAlternative2}{Boolean: show alternative exon 2 and respective 
 splicing junctions and text? (only related with mutually exclusive exons)}
 
-\item{constitutiveLength}{Numeric: length of constitutive exons's 
+\item{constitutiveLength}{Numeric: length of constitutive exon(s)'s 
 representation}
 
 \item{alternativeLength}{Numeric: length of alternative exon(s)'s

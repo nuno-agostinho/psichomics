@@ -3,11 +3,11 @@
 #' Group selection interface and logic
 #' 
 #' @param id Character: identifier
-#' @param label Character: selectize label
-#' @param placeholder Character: selectize placeholder
+#' @param label Character: \code{selectize} label
+#' @param placeholder Character: \code{selectize} placeholder
 #' @param noGroupsLabel Character: label to explicitly allow to select no groups
 #' (if \code{NULL}, this option is not displayed to the user)
-#' @param groupsLabel Character: label to explicetly allow to select groups
+#' @param groupsLabel Character: label to explicitly allow to select groups
 #' (only required if \code{noGroupsLabel} is not \code{NULL})
 #' @param maxItems Numeric: maximum number of groups to select
 #' @param returnAllDataLabel Character: label to allow to return data outside
@@ -497,7 +497,7 @@ groupByPreMadeList <- function(ns, data, id) {
     )
 }
 
-#' Prepare list of pre-made groups for a selectize element
+#' Prepare list of pre-made groups for a \code{selectize} element
 #' 
 #' @param groups List of list of characters
 #' 
@@ -2241,7 +2241,7 @@ testSingleIndependence <- function(ref, groups, elements, pvalueAdjust="BH") {
 #' Multiple independence tests between reference groups and list of groups
 #' 
 #' Test multiple contigency tables comprised by two groups (one reference group
-#' and another containing remaing elements) and provided groups.
+#' and another containing remaining elements) and provided groups.
 #' 
 #' @param ref List of character: list of groups where each element contains the
 #' identifiers of respective elements

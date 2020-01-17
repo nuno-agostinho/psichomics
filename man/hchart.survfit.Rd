@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{hchart.survfit}
 \alias{hchart.survfit}
-\title{Plot survival curves using Highcharts}
+\title{Plot survival curves}
 \usage{
 \method{hchart}{survfit}(
   object,
@@ -16,7 +16,8 @@
 )
 }
 \arguments{
-\item{object}{A survfit object as returned from the \code{survfit} function}
+\item{object}{\code{survfit} object as returned from
+\code{\link{survfit.survTerms}()} function}
 
 \item{...}{
   Arguments passed on to \code{\link[highcharter:hc_add_series]{highcharter::hc_add_series}}
@@ -42,10 +43,10 @@ colour of each series are used}
 \item{rangesOpacity}{Opacity of the interval ranges}
 }
 \value{
-\code{highcharter} object to plot survival curves
+\code{highchart} object to plot survival curves
 }
 \description{
-Plot survival curves using Highcharts
+Plot survival curves
 }
 \examples{
 

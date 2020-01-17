@@ -691,9 +691,10 @@ blendColours <- function (colour1, colour2, colour1Percentage=0.5) {
     return(paste0("#", blended));
 }
 
-#' Plot survival curves using Highcharts
+#' Plot survival curves
 #' 
-#' @param object A survfit object as returned from the \code{survfit} function
+#' @param object \code{survfit} object as returned from
+#' \code{\link{survfit.survTerms}()} function
 #' @inheritDotParams highcharter::hc_add_series -hc -data
 #' @param fun Name of function or function used to transform the survival curve:
 #' \code{log} will put y axis on log scale, \code{event} plots cumulative events
@@ -711,7 +712,7 @@ blendColours <- function (colour1, colour2, colour1Percentage=0.5) {
 #' hc_plotOptions fa_icon_mark JS
 #' @importFrom stats setNames
 #' 
-#' @return \code{highcharter} object to plot survival curves
+#' @return \code{highchart} object to plot survival curves
 #' @keywords internal
 #' 
 #' @examples

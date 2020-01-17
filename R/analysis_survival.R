@@ -276,7 +276,7 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
     }
 }
 
-#' Logic set to perform survival analysis based on gene expression cut-offs
+#' Logic set to perform survival analysis based on gene expression cutoffs
 #' 
 #' @inheritParams survivalServer
 #' 

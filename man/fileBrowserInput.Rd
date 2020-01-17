@@ -4,7 +4,6 @@
 \alias{fileBrowserInput}
 \title{File browser input}
 \source{
-Original code by wleepang:
 \url{https://github.com/wleepang/shiny-directory-input}
 }
 \usage{
@@ -31,7 +30,7 @@ fileBrowserInput(
 
 \item{placeholder}{Character: placeholder when no file or folder is selected}
 
-\item{info}{Boolean: add information icon for tooltips and popovers}
+\item{info}{Boolean: add information icon for tooltips and pop-overs}
 
 \item{infoFUN}{Function to use to provide information (e.g.
 \code{shinyBS::bsTooltip} and \code{shinyBS::bsPopover})}

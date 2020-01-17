@@ -110,7 +110,7 @@ getUiFunctions <- function(ns, loader, ..., priority=NULL) {
     return(uiList)
 }
 
-#' Create a selectize input available from any page
+#' Create a \code{selectize} input available from any page
 #' 
 #' @param id Character: input identifier
 #' @param placeholder Character: input placeholder
@@ -118,7 +118,7 @@ getUiFunctions <- function(ns, loader, ..., priority=NULL) {
 #' 
 #' @importFrom shiny selectizeInput tagAppendAttributes
 #' 
-#' @return HTML element for a global selectize input
+#' @return HTML element for a global \code{selectize} input
 #' @keywords internal
 globalSelectize <- function(id, placeholder, ASevent=FALSE) {
     elem <- paste0(id, "Elem")
@@ -145,7 +145,7 @@ globalSelectize <- function(id, placeholder, ASevent=FALSE) {
     return(select)
 }
 
-#' Create a special selectize input in the navigation bar
+#' Create a special \code{selectize} input in the navigation bar
 #' 
 #' @inheritParams globalSelectize
 #' @param label Character: input label

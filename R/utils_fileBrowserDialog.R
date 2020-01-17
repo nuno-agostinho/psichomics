@@ -6,7 +6,7 @@
 #' @param directory Boolean: allow to select directories instead of files?
 #'
 #' @details
-#' Pltaform-dependent implementation:
+#' Platform-dependent implementation:
 #' \itemize{
 #'  \item{\strong{Windows}: calls the \code{utils::choose.files} R function.}
 #'  \item{\strong{macOS}: uses AppleScript to display a folder selection 
@@ -19,8 +19,7 @@
 #' If for some reason an error occurs (e.g. when using a remote server), the
 #' dialog fallbacks to an alternative, non-native file browser.
 #'
-#' @source Original code by wleepang:
-#' \url{https://github.com/wleepang/shiny-directory-input}
+#' @source \url{https://github.com/wleepang/shiny-directory-input}
 #' 
 #' @return A length one character vector, character NA if 'Cancel' was selected
 #' @keywords internal
@@ -92,7 +91,7 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
 #' @param value Character: initial value (paths are expanded via
 #' \code{\link{path.expand}()})
 #' @param placeholder Character: placeholder when no file or folder is selected
-#' @param info Boolean: add information icon for tooltips and popovers
+#' @param info Boolean: add information icon for tooltips and pop-overs
 #' @param infoFUN Function to use to provide information (e.g.
 #' \code{shinyBS::bsTooltip} and \code{shinyBS::bsPopover})
 #' @param infoPlacement Character: placement of the information (top, bottom,
@@ -113,8 +112,7 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
 #'
 #' @importFrom shinyBS bsPopover bsTooltip
 #' 
-#' @source Original code by wleepang:
-#' \url{https://github.com/wleepang/shiny-directory-input}
+#' @source \url{https://github.com/wleepang/shiny-directory-input}
 #'
 #' @return HTML elements for a file browser input
 #' @keywords internal
@@ -183,7 +181,7 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
         showInfo)
 }
 
-#' Change the value of a fileBrowserInput on the client
+#' Change the value of a \code{\link{fileBrowserInput}()} on the client
 #'
 #' @param session Shiny session
 #' @param id Character: input identifier
@@ -193,12 +191,11 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
 #'
 #' @details
 #' Sends a message to the client, telling it to change the value of the input
-#' object. For \code{fileBrowserInput} objects, this changes the value displayed
-#' in the text-field and triggers a client-side change event. A directory
-#' selection dialogue is not displayed.
+#' object. For \code{\link{fileBrowserInput}()} objects, this changes the value
+#' displayed in the text-field and triggers a client-side change event. A
+#' directory selection dialogue is not displayed.
 #'
-#' @source Original code by wleepang:
-#' \url{https://github.com/wleepang/shiny-directory-input}
+#' @source \url{https://github.com/wleepang/shiny-directory-input}
 #'
 #' @inherit psichomics return
 #' @keywords internal

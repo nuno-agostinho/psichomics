@@ -2,7 +2,7 @@
 % Please edit documentation in R/groups.R
 \name{preparePreMadeGroupForSelection}
 \alias{preparePreMadeGroupForSelection}
-\title{Prepare list of pre-made groups for a selectize element}
+\title{Prepare list of pre-made groups for a \code{selectize} element}
 \usage{
 preparePreMadeGroupForSelection(groups)
 }
@@ -13,6 +13,6 @@ preparePreMadeGroupForSelection(groups)
 List
 }
 \description{
-Prepare list of pre-made groups for a selectize element
+Prepare list of pre-made groups for a \code{selectize} element
 }
 \keyword{internal}

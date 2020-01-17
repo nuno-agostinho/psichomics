@@ -610,8 +610,8 @@ textSuggestions <- function(id, words, novalue="No matching value", char=" ") {
 #' Render a data table with sparkline HTML elements
 #' 
 #' @details This slightly modified version of \code{\link{renderDataTable}()}
-#' calls a JavaScript function to convert the sparkline HTML elements to
-#' interactive Highcharts
+#' calls a JavaScript function to convert the sparkline HTML elements to an
+#' interactive \code{highchart} object
 #' 
 #' @inheritDotParams shiny::renderDataTable -options -escape -env
 #' @param options List of options to pass to \code{\link{renderDataTable}()}

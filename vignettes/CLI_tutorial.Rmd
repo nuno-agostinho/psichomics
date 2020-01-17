@@ -201,9 +201,9 @@ annotation and junction quantification are required. While alternative splicing
 annotation is provided by the package, junction quantification may be retrieved
 from [TCGA][TCGA], [GTEx][GTEx], [SRA][SRA] or user-provided files.
 
-Data is downloaded from [Firebrowse][Firebrowse], a service that hosts 
-proccessed data from [TCGA][TCGA], as required to run the downstream analyses. 
-Before downloading data, check the following options:
+Data is downloaded from [Firebrowse][Firebrowse], a service that hosts processed
+data from [TCGA][TCGA], as required to run the downstream analyses. Before
+downloading data, check the following options:
 
 ```{r TCGA options}
 # Available tumour types

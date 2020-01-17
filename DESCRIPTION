@@ -82,7 +82,8 @@ Suggests:
     gplots,
     covr,
     car,
-    rstudioapi
+    rstudioapi,
+    spelling
 LinkingTo: Rcpp
 VignetteBuilder: knitr
 Collate: 
@@ -147,3 +148,4 @@ biocViews: Sequencing, RNASeq, AlternativeSplicing,
     Visualization, MultipleComparison, GeneExpression, DifferentialExpression
 URL: https://github.com/nuno-agostinho/psichomics
 BugReports: https://github.com/nuno-agostinho/psichomics/issues
+Language: en-GB

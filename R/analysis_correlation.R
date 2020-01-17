@@ -284,7 +284,7 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #' 
 #' @param x \code{GEandAScorrelation} object to subset
 #' @param genes Character: genes
-#' @param ASevents Character: ASevents
+#' @param ASevents Character: AS events
 #' 
 #' @importFrom stats na.omit
 #' 

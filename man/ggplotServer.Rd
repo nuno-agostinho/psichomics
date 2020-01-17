@@ -3,7 +3,7 @@
 \name{ggplotServer}
 \alias{ggplotServer}
 \alias{ggplotAuxServer}
-\title{Logic set to create an interactive ggplot}
+\title{Logic set to create an interactive \code{\link[ggplot2]{ggplot}}}
 \usage{
 ggplotServer(input, output, id, plot = NULL, df = NULL, x = NULL, y = NULL)
 
@@ -30,7 +30,7 @@ rendered)}
 state or internal variables)
 }
 \description{
-Logic set to create an interactive ggplot
+Logic set to create an interactive \code{\link[ggplot2]{ggplot}}
 }
 \note{
 Insert \code{ggplotAuxSet} outside any observer (so it is only run 

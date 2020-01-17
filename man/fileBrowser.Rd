@@ -4,7 +4,6 @@
 \alias{fileBrowser}
 \title{Interactive folder selection using a native dialogue}
 \source{
-Original code by wleepang:
 \url{https://github.com/wleepang/shiny-directory-input}
 }
 \usage{
@@ -31,7 +30,7 @@ A length one character vector, character NA if 'Cancel' was selected
 Interactive folder selection using a native dialogue
 }
 \details{
-Pltaform-dependent implementation:
+Platform-dependent implementation:
 \itemize{
  \item{\strong{Windows}: calls the \code{utils::choose.files} R function.}
  \item{\strong{macOS}: uses AppleScript to display a folder selection 

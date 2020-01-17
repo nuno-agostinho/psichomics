@@ -34,8 +34,8 @@ a scalar parameter that controls the type of test.
 }
 \value{
 \code{survfit} object. See \code{survfit.object} for details. Methods
-defined for survfit objects are \code{print}, \code{plot}, \code{lines}, and 
-\code{points}.
+defined for \code{survfit} objects are \code{print}, \code{plot},
+\code{lines}, and \code{points}.
 }
 \description{
 Create survival curves

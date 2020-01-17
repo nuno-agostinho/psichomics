@@ -2,7 +2,7 @@
 % Please edit documentation in R/app.R
 \name{navSelectize}
 \alias{navSelectize}
-\title{Create a special selectize input in the navigation bar}
+\title{Create a special \code{selectize} input in the navigation bar}
 \usage{
 navSelectize(id, label, placeholder = label, ASevent = FALSE)
 }
@@ -19,6 +19,6 @@ navSelectize(id, label, placeholder = label, ASevent = FALSE)
 HTML element to be included in a navigation bar
 }
 \description{
-Create a special selectize input in the navigation bar
+Create a special \code{selectize} input in the navigation bar
 }
 \keyword{internal}

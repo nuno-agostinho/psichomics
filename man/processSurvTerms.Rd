@@ -44,8 +44,8 @@ interval (only relevant for interval censoring)}
 
 \item{followup}{Character: name of column containing follow up time}
 
-\item{survTime}{survTime object: times to follow up, time start, time stop
-and event (optional)}
+\item{survTime}{\code{survTime} object: times to follow up, time start, time
+stop and event (optional)}
 }
 \value{
 A list with a \code{formula} object and a data frame with terms

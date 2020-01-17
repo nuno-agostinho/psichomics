@@ -46,7 +46,7 @@ depends on the program of origin)}
 \item{complexEvents}{Boolean: should complex events in A3SS and A5SS be
 parsed?}
 
-\item{novelEvents}{Boolean: parse events dedected due to novel splice sites}
+\item{novelEvents}{Boolean: parse events detected due to novel splice sites}
 }
 \value{
 Retrieve data frame with events based on a given alternative splicing

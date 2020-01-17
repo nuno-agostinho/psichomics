@@ -137,18 +137,18 @@ parseUrlsFromFirebrowseResponse <- function(res) {
     return(link)
 }
 
-#' Returns the date format used by the Firebrowse web API
+#' Returns the date format used by the Firebrowse API
 #'
-#' @return Named list with Firebrowse web API's date formats
+#' @return Named list with date formats from Firebrowse API
 #' @keywords internal
 #'
 #' @examples
 #' format <- psichomics:::getFirebrowseDateFormat()
 #' 
-#' # date format to use in a query to Firebrowse web API
+#' # date format to use in a query to Firebrowse API
 #' format$query
 #' 
-#' # date format to parse a date in a response from Firebrowse web API
+#' # date format to parse a date in a response from Firebrowse API
 #' format$response
 getFirebrowseDateFormat <- function() {
     query <- "%Y_%m_%d"
@@ -170,7 +170,7 @@ parseDateResponse <- function(string) {
     return(date)
 }
 
-#' Query the Firebrowse web API for metadata
+#' Query the Firebrowse API for metadata
 #'
 #' @param type Character: metadata to retrieve
 #' @param ... Character: parameters to pass to query (optional)
@@ -226,7 +226,7 @@ isFirebrowseUp <- function() {
     if (is(heartbeat, "error")) {
         return(FALSE)
     } else if (http_error(heartbeat)) {
-        warn_for_status(heartbeat, "reach Firebrowse web API")
+        warn_for_status(heartbeat, "reach Firebrowse API")
         return(FALSE)
     } else {
         return(TRUE)
@@ -274,7 +274,7 @@ loadTCGAsampleMetadata <- function(data) {
     return(data)
 }
 
-#' Query the Firebrowse web API for TCGA data
+#' Query the Firebrowse API for TCGA data
 #'
 #' @param format Character: response format as \code{JSON}, \code{CSV} or
 #' \code{TSV}
@@ -296,7 +296,7 @@ loadTCGAsampleMetadata <- function(data) {
 #'
 #' @importFrom httr GET
 #' 
-#' @return Response from the Firebrowse web API (it needs to be parsed)
+#' @return Response from the Firebrowse API (it needs to be parsed)
 #' @keywords internal
 #'
 #' @examples

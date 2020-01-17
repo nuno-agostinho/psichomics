@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_interactiveGgplot.R
 \name{ggplotUI}
 \alias{ggplotUI}
-\title{Interface for interactive ggplot}
+\title{Interface for interactive \code{\link[ggplot2]{ggplot}}}
 \usage{
 ggplotUI(id)
 }
@@ -13,6 +13,6 @@ ggplotUI(id)
 HTML elements
 }
 \description{
-Interface for interactive ggplot
+Interface for interactive \code{\link[ggplot2]{ggplot}}
 }
 \keyword{internal}

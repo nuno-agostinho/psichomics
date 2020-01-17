@@ -21,7 +21,7 @@ plotDistribution(
 alternative splicing event quantification values (sample names are based on
 their \code{names} or \code{colnames})}
 
-\item{groups}{List of sample names or vector containg the group name per
+\item{groups}{List of sample names or vector containing the group name per
 \code{data} value (read Details); if \code{NULL} or a character vector of
 length 1, \code{data} values are considered from the same group}
 
@@ -112,7 +112,7 @@ may present issues at different zoom levels and depending on the proximity
 of \code{data} values}
 }
 \value{
-Highcharter object with density plot
+\code{highchart} object with density plot
 }
 \description{
 The tooltip shows the median, variance, max, min and number of non-NA samples

@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{queryFirebrowseData}
 \alias{queryFirebrowseData}
-\title{Query the Firebrowse web API for TCGA data}
+\title{Query the Firebrowse API for TCGA data}
 \usage{
 queryFirebrowseData(
   format = "json",
@@ -50,10 +50,10 @@ data for all cohorts)}
 cohort)}
 }
 \value{
-Response from the Firebrowse web API (it needs to be parsed)
+Response from the Firebrowse API (it needs to be parsed)
 }
 \description{
-Query the Firebrowse web API for TCGA data
+Query the Firebrowse API for TCGA data
 }
 \examples{
 cohort <- getFirebrowseCohorts()[1]

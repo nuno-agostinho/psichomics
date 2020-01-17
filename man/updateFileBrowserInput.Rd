@@ -2,9 +2,8 @@
 % Please edit documentation in R/utils_fileBrowserDialog.R
 \name{updateFileBrowserInput}
 \alias{updateFileBrowserInput}
-\title{Change the value of a fileBrowserInput on the client}
+\title{Change the value of a \code{\link{fileBrowserInput}()} on the client}
 \source{
-Original code by wleepang:
 \url{https://github.com/wleepang/shiny-directory-input}
 }
 \usage{
@@ -25,12 +24,12 @@ used if \code{value = NULL}.}
 state or internal variables)
 }
 \description{
-Change the value of a fileBrowserInput on the client
+Change the value of a \code{\link{fileBrowserInput}()} on the client
 }
 \details{
 Sends a message to the client, telling it to change the value of the input
-object. For \code{fileBrowserInput} objects, this changes the value displayed
-in the text-field and triggers a client-side change event. A directory
-selection dialogue is not displayed.
+object. For \code{\link{fileBrowserInput}()} objects, this changes the value
+displayed in the text-field and triggers a client-side change event. A
+directory selection dialogue is not displayed.
 }
 \keyword{internal}

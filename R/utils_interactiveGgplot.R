@@ -36,7 +36,7 @@ table2html <- function(data, rownames=TRUE, colnames=TRUE, class=NULL,
     return(html)
 }
 
-#' Interface for interactive ggplot
+#' Interface for interactive \code{\link[ggplot2]{ggplot}}
 #' 
 #' @param id Character: identifier
 #' 
@@ -131,7 +131,7 @@ ggplotTooltip <- function(df, hover, x, y) {
                                trItem(y, roundDigits(point[[y]])))))
 }
 
-#' Logic set to create an interactive ggplot
+#' Logic set to create an interactive \code{\link[ggplot2]{ggplot}}
 #' 
 #' @inheritParams appServer
 #' @param id Character: identifier

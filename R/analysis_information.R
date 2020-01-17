@@ -203,7 +203,7 @@ infoUI <- function(id) {
         uiOutput(ns("info")))
 }
 
-#' Parse XML from UniProt's RESTful service
+#' Parse XML from UniProt REST service
 #'
 #' @param xml response from UniProt
 #'

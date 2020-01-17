@@ -24,14 +24,14 @@ getSelectedGroups(input, id, type, filter = NULL)
 \arguments{
 \item{id}{Character: identifier}
 
-\item{label}{Character: selectize label}
+\item{label}{Character: \code{selectize} label}
 
-\item{placeholder}{Character: selectize placeholder}
+\item{placeholder}{Character: \code{selectize} placeholder}
 
 \item{noGroupsLabel}{Character: label to explicitly allow to select no groups
 (if \code{NULL}, this option is not displayed to the user)}
 
-\item{groupsLabel}{Character: label to explicetly allow to select groups
+\item{groupsLabel}{Character: label to explicitly allow to select groups
 (only required if \code{noGroupsLabel} is not \code{NULL})}
 
 \item{maxItems}{Numeric: maximum number of groups to select}

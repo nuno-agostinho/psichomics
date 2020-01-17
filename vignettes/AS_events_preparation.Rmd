@@ -65,7 +65,7 @@ saveRDS(annot, file=suppaFile)
 Just like [SUPPA][suppa], [rMATS][rmats] also allows to generate alternative 
 splicing events based on a transcript annotation, although two BAM or FASTQ 
 files are required to generate alternative splicing events. Read 
-[rMATS's page][rmats] for more information.
+[rMATS' page][rmats] for more information.
 
 The resulting output of [rMATS][rmats] is then handed out to the function
 `parseMatsAnnotation()`:
@@ -108,9 +108,9 @@ saveRDS(annot, file=misoFile)
 ```
 
 ## VAST-TOOLS annotation
-Simply retrieve [VAST-TOOLS's alternative splicing annotation][vastAnnot] and 
+Simply retrieve [VAST-TOOLS' alternative splicing annotation][vastAnnot] and 
 give the path to the downloaded folder as input. Note that, however, complex 
-events (i.e. alternative coordinates for the exon ends) are not yet parseable.
+events (i.e. alternative coordinates for the exon ends) are not yet parsable.
 
 ```{r, include=FALSE}
 vastAnnotation <- system.file("extdata/eventsAnnotSample/VASTDB/Hsa/TEMPLATES/",

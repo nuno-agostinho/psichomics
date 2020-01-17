@@ -125,13 +125,14 @@ geNormalisationFilteringUI <- function(id, panel) {
 #' @param log2transform Boolean: perform log2-transformation?
 #' @param priorCount Average count to add to each observation to avoid zeroes
 #' after log-transformation
-#' @param performVoom Boolean: perform mean-variance modelling (voom)?
+#' @param performVoom Boolean: perform mean-variance modelling
+#' (\code{\link[limma]{voom}})?
 #'
 #' @details \code{edgeR::calcNormFactors} will be used to normalise gene
-#' expression if one of the followin methods is set: \code{TMM}, \code{RLE},
-#' \code{upperquartile} or \code{none}. However, \code{limma::voom} will be
-#' used for normalisation if \code{performVoom = TRUE} and the selected method
-#' is \code{quantile}.
+#' expression if one of the following methods is set: \code{TMM}, \code{RLE},
+#' \code{upperquartile} or \code{none}. However, \code{\link[limma]{voom}} will
+#' be used for normalisation if \code{performVoom = TRUE} and the selected 
+#' method is \code{quantile}.
 #'
 #' @importFrom edgeR DGEList [.DGEList calcNormFactors cpm
 #' @importFrom limma voom
@@ -261,7 +262,7 @@ loadGeneExpressionSet <- function(session, input, output) {
 
 #' Convert gene identifiers
 #'
-#' @param annotation OrgDb: genome wide annotation for an organism, e.g.
+#' @param annotation \code{OrgDb}: genome wide annotation for an organism, e.g.
 #' \code{org.Hs.eg.db}
 #' @param genes Character: genes to be converted
 #' @param key Character: type of identifier used, e.g. \code{ENSEMBL}; read

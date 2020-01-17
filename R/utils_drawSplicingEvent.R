@@ -47,7 +47,7 @@ drawText <- function(text, x, y=8, anchor="start", baseline="auto",
 #'   splicing junctions and text?
 #' @param showAlternative2 Boolean: show alternative exon 2 and respective 
 #'   splicing junctions and text? (only related with mutually exclusive exons)
-#' @param constitutiveLength Numeric: length of constitutive exons's 
+#' @param constitutiveLength Numeric: length of constitutive exon(s)'s 
 #'   representation
 #' @param alternativeLength Numeric: length of alternative exon(s)'s
 #'   representation

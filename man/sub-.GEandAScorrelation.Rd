@@ -12,7 +12,7 @@ quantification}
 
 \item{genes}{Character: genes}
 
-\item{ASevents}{Character: ASevents}
+\item{ASevents}{Character: AS events}
 }
 \value{
 \code{GEandAScorrelation} object subset

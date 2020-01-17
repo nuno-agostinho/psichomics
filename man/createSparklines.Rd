@@ -7,7 +7,7 @@
 createSparklines(hc, data, events, FUN, groups = NULL, geneExpr = NULL)
 }
 \arguments{
-\item{hc}{Highcharts object}
+\item{hc}{\code{highchart} object}
 
 \item{data}{Character: HTML-formatted data series of interest}
 

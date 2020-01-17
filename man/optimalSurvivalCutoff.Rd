@@ -42,8 +42,8 @@ interval (only relevant for interval censoring)}
 
 \item{filter}{Boolean or numeric: elements to use (all are used by default)}
 
-\item{survTime}{survTime object: times to follow up, time start, time stop
-and event (optional)}
+\item{survTime}{\code{survTime} object: times to follow up, time start, time
+stop and event (optional)}
 
 \item{lower, upper}{Bounds in which to search (if \code{NULL}, bounds are set
 to \code{lower = 0} and \code{upper = 1} if all data values are within that
@@ -51,7 +51,7 @@ interval; otherwise, \code{lower = min(data, na.rm = TRUE)} and
 \code{upper = max(data, na.rm = TRUE)})}
 }
 \value{
-List containg the optimal cutoff (\code{par}) and the corresponding 
+List containing the optimal cutoff (\code{par}) and the corresponding
 p-value (\code{value})
 }
 \description{

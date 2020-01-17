@@ -13,7 +13,7 @@ convertGeneIdentifiers(
 )
 }
 \arguments{
-\item{annotation}{OrgDb: genome wide annotation for an organism, e.g.
+\item{annotation}{\code{OrgDb}: genome wide annotation for an organism, e.g.
 \code{org.Hs.eg.db}}
 
 \item{genes}{Character: genes to be converted}

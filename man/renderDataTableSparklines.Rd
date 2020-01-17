@@ -34,7 +34,7 @@ Render a data table with sparkline HTML elements
 }
 \details{
 This slightly modified version of \code{\link{renderDataTable}()}
-calls a JavaScript function to convert the sparkline HTML elements to
-interactive Highcharts
+calls a JavaScript function to convert the sparkline HTML elements to an
+interactive \code{highchart} object
 }
 \keyword{internal}

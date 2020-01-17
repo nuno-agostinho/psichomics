@@ -354,8 +354,8 @@ updateClinicalParams <- function(session, attrs) {
 #' \code{weeks}, \code{months} or \code{years}
 #' @param formulaStr Character: formula to use
 #' @param coxph Boolean: fit a Cox proportional hazards regression model?
-#' @param survTime survTime object: times to follow up, time start, time stop
-#' and event (optional)
+#' @param survTime \code{survTime} object: times to follow up, time start, time
+#' stop and event (optional)
 #' 
 #' @importFrom stats formula
 #' @importFrom survival coxph Surv
@@ -451,16 +451,14 @@ processSurvTerms <- function(clinical, censoring, event, timeStart,
     return(res)
 }
 
-#' @inherit survival::survfit title details return
+#' @inherit survival::survfit title details
 #' @inheritParams survdiffTerms
 #' @inheritDotParams survival::survdiff -formula -data
 #' 
 #' @importFrom survival survfit
 #' 
 #' @family functions to analyse survival
-#' @return \code{survfit} object. See \code{survfit.object} for details. Methods
-#' defined for survfit objects are \code{print}, \code{plot}, \code{lines}, and 
-#' \code{points}.
+#' @inherit survdiffTerms return
 #' @export
 #'
 #' @examples 
@@ -502,8 +500,8 @@ survfit.survTerms <- function(survTerms, ...) {
 #' @importFrom survival survdiff
 #' 
 #' @family functions to analyse survival
-#' @return an object of class \code{survfit}. See \code{survfit.object} for
-#' details. Methods defined for survfit objects are \code{print}, \code{plot},
+#' @return \code{survfit} object. See \code{survfit.object} for details. Methods
+#' defined for \code{survfit} objects are \code{print}, \code{plot},
 #' \code{lines}, and \code{points}.
 #' @export
 #'
@@ -752,7 +750,7 @@ testSurvivalCutoff <- function(cutoff, data, filter=TRUE, clinical, ...,
 #' \code{upper = max(data, na.rm = TRUE)})
 #' 
 #' @family functions to analyse survival
-#' @return List containg the optimal cutoff (\code{par}) and the corresponding 
+#' @return List containing the optimal cutoff (\code{par}) and the corresponding
 #' p-value (\code{value})
 #' @export
 #' 
@@ -1254,8 +1252,8 @@ spearman <- function(data, groups) {
 #' @param df Data frame
 #' @param xAxis Character: currently selected variable for the X axis
 #' @param yAxis Character: currently selected variable for the Y axis
-#' @param labelSortBy Character: currently selected variable for the selectize
-#' element to sort differentially analysis
+#' @param labelSortBy Character: currently selected variable for the
+#' \code{selectize} element to sort differentially analysis
 #' 
 #' @return HTML elements
 #' @keywords internal
@@ -1596,7 +1594,7 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' @param data Numeric, data frame or matrix: gene expression data or
 #' alternative splicing event quantification values (sample names are based on
 #' their \code{names} or \code{colnames})
-#' @param groups List of sample names or vector containg the group name per
+#' @param groups List of sample names or vector containing the group name per
 #' \code{data} value (read Details); if \code{NULL} or a character vector of
 #' length 1, \code{data} values are considered from the same group
 #' @param rug Boolean: show rug plot?
@@ -1624,7 +1622,7 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' @importFrom stats median var density
 #' 
 #' @family functions to perform and plot differential analyses
-#' @return Highcharter object with density plot
+#' @return \code{highchart} object with density plot
 #' @export
 #' 
 #' @examples
@@ -1970,7 +1968,7 @@ createDensitySparklines <- function(data, events, areSplicingEvents=TRUE,
 
 #' Create sparkline charts to be used in a data table
 #' 
-#' @param hc Highcharts object
+#' @param hc \code{highchart} object
 #' @param data Character: HTML-formatted data series of interest
 #' @param events Character: event identifiers
 #' @param FUN Character: JavaScript function to execute when clicking on a chart

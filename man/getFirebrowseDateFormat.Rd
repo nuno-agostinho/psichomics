@@ -2,23 +2,23 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{getFirebrowseDateFormat}
 \alias{getFirebrowseDateFormat}
-\title{Returns the date format used by the Firebrowse web API}
+\title{Returns the date format used by the Firebrowse API}
 \usage{
 getFirebrowseDateFormat()
 }
 \value{
-Named list with Firebrowse web API's date formats
+Named list with date formats from Firebrowse API
 }
 \description{
-Returns the date format used by the Firebrowse web API
+Returns the date format used by the Firebrowse API
 }
 \examples{
 format <- psichomics:::getFirebrowseDateFormat()
 
-# date format to use in a query to Firebrowse web API
+# date format to use in a query to Firebrowse API
 format$query
 
-# date format to parse a date in a response from Firebrowse web API
+# date format to parse a date in a response from Firebrowse API
 format$response
 }
 \keyword{internal}

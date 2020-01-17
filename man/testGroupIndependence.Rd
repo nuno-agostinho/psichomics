@@ -27,7 +27,7 @@ groups}
 }
 \description{
 Test multiple contigency tables comprised by two groups (one reference group
-and another containing remaing elements) and provided groups.
+and another containing remaining elements) and provided groups.
 }
 \details{
 The following methods for p-value adjustment are supported by using 

@@ -11,7 +11,7 @@ basicStats(data, groups)
 alternative splicing event quantification values (sample names are based on
 their \code{names} or \code{colnames})}
 
-\item{groups}{List of sample names or vector containg the group name per
+\item{groups}{List of sample names or vector containing the group name per
 \code{data} value (read Details); if \code{NULL} or a character vector of
 length 1, \code{data} values are considered from the same group}
 }
