@@ -14,6 +14,9 @@ are selected
     below distribution plots (to quickly illustrate higher and lower values of
     alternative splicing quantification) and in annotation page
 * Improve import/export of data groups from/to a file, including colour support
+* Gene, transcript and protein annotation:
+    - Show available annotation information and query PubMed even if Ensembl is
+    down
 * Tutorials:
     - Copy-edit command-line interface (CLI) tutorial
     - Copy-edit tutorial on custom alternative splicing annotation preparation
