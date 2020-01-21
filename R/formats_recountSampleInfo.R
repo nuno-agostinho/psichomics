@@ -38,14 +38,28 @@ recountSampleFormat <- function() {
         process = function(data) {
             # Unfold data characteristics if available
             if (any(!is.na(data$characteristics))) {
-                extra <- gsub(": ", "\"=\"", data$characteristics, fixed=TRUE)
-                extra <- gsub("c(\"", "data.frame(\"", extra, fixed=TRUE)
-                extra <- gsub("\")", "\", check.names=FALSE)", extra, fixed=TRUE)
-                extra <- paste0("plyr::rbind.fill(", 
-                                paste0(extra, collapse=", "), ")")
-                extra <- eval(parse(text=extra))
-                data  <- cbind(data, extra)
-                data$characteristics <- NULL
+                dataFramework <- paste("data.frame(\"%s\",",
+                                       "check.names=FALSE,",
+                                       "stringsAsFactors=FALSE)")
+                extra <- gsub(": ", '"="', data$characteristics, fixed=TRUE)
+                extra <- gsub('c\\("(.*)"\\)', sprintf(dataFramework, "\\1"),
+                              extra)
+                
+                # In cases containing only one item of extra information
+                extra <- ifelse(grepl("^data\\.frame", extra), extra, 
+                                sprintf(dataFramework, extra))
+                extra <- sprintf("plyr::rbind.fill(%s)", 
+                                 paste0(extra, collapse=", "))
+                extra <- tryCatch(eval(parse(text=extra)), error=return)
+                
+                if (is(extra, "error")) {
+                    msg <- paste("SRA sample metadata contained extra",
+                                 "information that could not be parsed.")
+                    warning(msg)
+                } else {
+                    data  <- cbind(data, extra)
+                    data$characteristics <- NULL
+                }
             }
             return(data)
         }
