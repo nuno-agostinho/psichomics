@@ -757,7 +757,7 @@ prepareExternalLinks <- function(info, species, assembly, grch37, gene) {
     url <- list()
     if (!is.null(info)) {
         gene  <- info$id
-        chr   <- info$info$seq_region_name
+        chr   <- info$seq_region_name
         start <- as.numeric(info$start)
         end   <- as.numeric(info$end)
         
