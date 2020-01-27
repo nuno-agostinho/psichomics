@@ -57,12 +57,13 @@ Query the Firebrowse API for TCGA data
 }
 \examples{
 cohort <- getFirebrowseCohorts()[1]
-psichomics:::queryFirebrowseData(cohort = cohort, data_type = "mRNASeq")
+psichomics:::queryFirebrowseData(cohort = names(cohort),
+                                 data_type = "mRNASeq")
 
 # Querying for data from a specific date
 dates <- getFirebrowseDates()
 dates <- format(dates, psichomics:::getFirebrowseDateFormat()$query)
 
-psichomics:::queryFirebrowseData(date = dates[2], cohort = cohort)
+psichomics:::queryFirebrowseData(date = dates[2], cohort = names(cohort))
 }
 \keyword{internal}

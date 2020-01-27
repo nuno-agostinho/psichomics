@@ -1,6 +1,6 @@
-# psichomics 1.12.1 (21 January, 2020)
+# psichomics 1.12.1 (27 January, 2020)
 
-* Loading of TCGA and SRA data:
+* TCGA and SRA data loading:
     - All supported TCGA data can now be completely loaded when all cohorts are
     selected instead of loading only a portion of TCGA data without any warning
     - SRA projects containing only one column of extra information in sample
