@@ -6,7 +6,9 @@ BAM
 Barbosa
 Benjamini
 BH
+BiocViews
 Biometrika
+bioRxiv
 Bonferroni
 BRCA
 Burge
@@ -30,6 +32,7 @@ FASTA
 FASTQ
 fastq
 Firebrowse
+Firehose
 Fligner
 FontAwesome
 Gehan
@@ -61,9 +64,12 @@ MISO's
 Morais
 MX
 MXE
+OV
+PAAD
 parsable
 Peto
 Pfam
+PRAD
 PubMed
 QKI
 RI
@@ -97,6 +103,8 @@ UniProt
 UniProt's
 UTR
 VastDB
+XLS
 YDG
 Yekutieli's
+zoomable
 Δ

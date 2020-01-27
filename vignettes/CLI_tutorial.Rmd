@@ -122,7 +122,7 @@ attribute
 * `getSubjectFromSample`: Get patients matching the given samples
 * `groupPerElem`: Return a vector with one group for each element
 * `testGroupIndependence`: Test multiple contigency tables comprised by two 
-groups (one reference group and another containing remaing elements) and 
+groups (one reference group and another containing remaining elements) and 
 provided groups
 * `plotGroupIndependence`: Plot -log10(p-values) of the results obtained after 
 multiple group independence testing
