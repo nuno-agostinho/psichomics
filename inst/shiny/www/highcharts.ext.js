@@ -15,11 +15,13 @@
     defaultPlotOptions.xrange = H.merge(defaultPlotOptions.column, {
         tooltip: {
             headerFormat: "",
-            pointFormat: "<span style=\"color:{point.color}\">\u25CF</span>  " + 
-                "<b>{series.name} ({series.options.display}): {point.name}" +
-                "</b><br/><small>chr{series.options.chr}: {point.x:,.0f} to " +
-                "{point.x2:,.0f} ({series.options.strand} strand)<br/>" + 
-                "<i>{series.options.biotype}</i></small>"
+            pointFormat:
+                "chr{series.options.chr}, {series.options.strand} strand" +
+                "<br/>{point.name} ({point.length} nts): " +
+                "{point.x:,.0f} to {point.x2:,.0f}<br/>" + 
+                "<span style=\"color:{point.color}\">\u25CF</span>  " +
+                "<b>{series.name} ({series.options.display})</b><br/>" +
+                "Transcript type: <i>{series.options.biotype}</i>"
         }
     });
     

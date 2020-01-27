@@ -13,9 +13,9 @@ diagramSplicingEvent(
   showPath = TRUE,
   showAlternative1 = TRUE,
   showAlternative2 = TRUE,
-  constitutiveLength = 60,
-  alternativeLength = NULL,
-  intronLength = 15,
+  constitutiveWidth = 60,
+  alternativeWidth = NULL,
+  intronWidth = 15,
   constitutiveFill = "lightgray",
   constitutiveStroke = "darkgray",
   alternative1Fill = "#ffb153",
@@ -33,7 +33,7 @@ diagramSplicingEvent(
 
 \item{style}{Character: style of SVG parent tag}
 
-\item{showText}{Boolean: display coordinates and exon length (if available)}
+\item{showText}{Boolean: display coordinates and length (if available)}
 
 \item{showPath}{Boolean: display alternative splicing junctions}
 
@@ -43,13 +43,11 @@ splicing junctions and text?}
 \item{showAlternative2}{Boolean: show alternative exon 2 and respective 
 splicing junctions and text? (only related with mutually exclusive exons)}
 
-\item{constitutiveLength}{Numeric: length of constitutive exon(s)'s 
-representation}
+\item{constitutiveWidth}{Numeric: width of constitutive exon(s)}
 
-\item{alternativeLength}{Numeric: length of alternative exon(s)'s
-representation}
+\item{alternativeWidth}{Numeric: width of alternative exon(s)}
 
-\item{intronLength}{Numeric: length of intron's representation}
+\item{intronWidth}{Numeric: width of intron's representation}
 
 \item{constitutiveFill}{Character: fill colour of constitutive exons}
 
@@ -59,11 +57,9 @@ representation}
 
 \item{alternative1Stroke}{Character: stroke colour of alternative exon 1}
 
-\item{alternative2Fill}{Character: fill colour of alternative exon 2 (only
-required for mutually exclusive exons)}
+\item{alternative2Fill}{Character: fill colour of alternative exon 2}
 
-\item{alternative2Stroke}{Character: stroke colour of alternative exon 2
-(only required for mutually exclusive exons)}
+\item{alternative2Stroke}{Character: stroke colour of alternative exon 2}
 }
 \value{
 Diagrams per alternative splicing event in SVG

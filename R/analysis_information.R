@@ -360,8 +360,7 @@ plottableXranges <- function(hc, shiny=FALSE) {
         container <- tagList(
             tags$script(src="https://code.highcharts.com/highcharts.js"),
             tags$script(src="https://code.highcharts.com/modules/exporting.js"),
-            extended,
-            div(id="container", style="height: 100vh;"))
+            extended, div(id="container", style="height: 100vh;"))
     }
     
     browsable(tagList(
@@ -434,10 +433,10 @@ plotASeventRegion <- function(hc, event) {
         # Shift a given position
         shift <- function(pos, FUN, by=200) { FUN(as.numeric(pos), by) }
         
-        if (type == "A3SS")      greyPos <- c(con1, alt1)
-        else if (type == "A5SS") greyPos <- c(alt2, con2)
-        else if (type == "AFE")  greyPos <- c(alt1, con2)
-        else if (type == "ALE")  greyPos <- c(con1, alt2)
+        if (type == "A3SS")      greyPos <- range(con1, alt1, alt2)
+        else if (type == "A5SS") greyPos <- range(alt1, alt2, con2)
+        else if (type == "AFE")  greyPos <- range(alt1, alt2, con2)
+        else if (type == "ALE")  greyPos <- range(con1, alt1, alt2)
         
         plusStrand <- parsed$strand == "+"
         downstreamMinus <- type %in% c("A3SS", "ALE") && !plusStrand
@@ -491,7 +490,7 @@ plotTranscripts <- function(info, eventPosition=NULL, event=NULL, shiny=FALSE) {
         transcript <- info$Transcript[i, ]
         name    <- transcript$id
         display <- transcript$display_name
-        strand  <- ifelse(transcript$strand == 1, "forward", "reverse")
+        strand  <- ifelse(transcript$strand == 1, "+", "-")
         chr     <- transcript$seq_region_name
         start   <- transcript$start
         end     <- transcript$end
@@ -504,9 +503,9 @@ plotTranscripts <- function(info, eventPosition=NULL, event=NULL, shiny=FALSE) {
             exon  <- exons[k, ]
             start <- exon$start
             end   <- exon$end
-            elements <- c(elements,
-                          list(list(name="exon", x=start, x2=end, y=0,
-                                    width=20)))
+            len   <- abs(end - start)
+            elements <- c(elements, list(list(
+                name="exon", x=start, x2=end, y=0, width=20, length=len)))
         }
         
         if (nrow(exons) > 1) {
@@ -517,13 +516,13 @@ plotTranscripts <- function(info, eventPosition=NULL, event=NULL, shiny=FALSE) {
             for (j in seq(length(introns$start))) {
                 start <- introns$start[[j]]
                 end   <- introns$end[[j]]
-                elements <- c(elements,
-                              list(list(name="intron", x=start, x2=end, y=0,
-                                        width=5)))
+                len   <- abs(end - start)
+                elements <- c(elements, list(list(
+                    name="intron", x=start, x2=end, y=0, width=5, length=len)))
             }
         }
         data <- c(data, list(list(name=name, borderRadius=0, pointWidth=10,
-                                  display=display, strand=strand, chr=chr, 
+                                  display=display, strand=strand, chr=chr,
                                   biotype=biotype, data=elements)))
     }
     
@@ -542,15 +541,13 @@ plotTranscripts <- function(info, eventPosition=NULL, event=NULL, shiny=FALSE) {
     if (!is.null(event)) {
         hc <- hc %>% plotASeventRegion(event)
     } else if (!is.null(eventPosition)) {
-        # Draw region if only splicing event position is provided
+        # Draw region only if splicing event position is provided
         eventStart <- eventPosition[1]
         eventEnd   <- eventPosition[2]
-        hc <- hc_xAxis(hc, 
-                       plotBands=list(
-                           color="#7cb5ec50", from=eventStart, 
-                           to=eventEnd, label=list(
-                               text="Splicing Event", y=10,
-                               style=list(fontWeight="bold"))))
+        hc <- hc_xAxis(hc, plotBands=list(
+            color="#7cb5ec50", from=eventStart, 
+            to=eventEnd, label=list(text="Splicing Event", y=10,
+                                    style=list(fontWeight="bold"))))
     }
     
     if (shiny)
