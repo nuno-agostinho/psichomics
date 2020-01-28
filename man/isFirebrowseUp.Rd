@@ -2,19 +2,26 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{isFirebrowseUp}
 \alias{isFirebrowseUp}
-\title{Check whether the Firebrowse web API is running}
+\title{Check if \href{http://firebrowse.org/api-docs/}{Firebrowse API} is running}
 \usage{
 isFirebrowseUp()
 }
 \value{
-Invisible TRUE if the Firebrowse web API is working; otherwise, 
-raises a warning
+Invisible \code{TRUE} if the
+\href{http://firebrowse.org/api-docs/}{Firebrowse API} is working; otherwise,
+raises a warning with the status code and a brief explanation.
 }
 \description{
-The Firebrowse web API is running if it returns the status condition 200; if
-this is not the status code obtained from the API, the function will raise a
-warning with the status code and a brief explanation.
+Check if \href{http://firebrowse.org/api-docs/}{Firebrowse API} is running
 }
 \examples{
 isFirebrowseUp()
 }
+\seealso{
+Other functions associated with TCGA data retrieval: 
+\code{\link{getDownloadsFolder}()},
+\code{\link{getTCGAdataTypes}()},
+\code{\link{loadTCGAdata}()},
+\code{\link{parseTCGAsampleTypes}()}
+}
+\concept{functions associated with TCGA data retrieval}

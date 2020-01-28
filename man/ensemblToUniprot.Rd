@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis_information.R
 \name{ensemblToUniprot}
 \alias{ensemblToUniprot}
-\title{Convert an Ensembl identifier to the respective UniProt identifier}
+\title{Convert from Ensembl to UniProt identifier}
 \usage{
 ensemblToUniprot(protein)
 }
@@ -13,7 +13,7 @@ ensemblToUniprot(protein)
 UniProt protein identifier
 }
 \description{
-Convert an Ensembl identifier to the respective UniProt identifier
+Convert from Ensembl to UniProt identifier
 }
 \examples{
 gene <- "ENSG00000173262"
@@ -22,3 +22,10 @@ ensemblToUniprot(gene)
 protein <- "ENSP00000445929"
 ensemblToUniprot(protein)
 }
+\seealso{
+Other functions to retrieve external information: 
+\code{\link{plotProtein}()},
+\code{\link{plotTranscripts}()},
+\code{\link{queryEnsemblByGene}()}
+}
+\concept{functions to retrieve external information}

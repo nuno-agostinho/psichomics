@@ -11,10 +11,11 @@ checkSurvivalInput(session, input, coxph = FALSE)
 
 \item{input}{Shiny input}
 
-\item{coxph}{Boolean: prepare data for Cox models? FALSE by default}
+\item{coxph}{Boolean: prepare data for Cox models?}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (function is only used to modify the Shiny session's
+state or internal variables)
 }
 \description{
 Prepare survival terms in case of valid input

@@ -33,20 +33,28 @@ genericJunctionReadsFormat <- function() {
         columns = "samples",
         
         process = function(data) {
-            strand <- all(grepl("[+-]$", head(rownames(data))))
-            if (strand) {
-                # Parse the chromosome, start/end positions and strand of the 
-                # junction (by this order)
-                rownames(data) <- gsub(
-                    "^.*?([0-9XY]{1,}).*?([0-9]{1,}).*?([0-9]{1,}).*([+-])$",
-                    "chr\\1:\\2:\\3:\\4", rownames(data))
-            } else {
-                # Parse the chromosome and start/end positions of the junction 
-                # (by this order)
-                rownames(data) <- gsub(
-                    "^.*?([0-9XY]{1,}).*?([0-9]{1,}).*?([0-9]{1,}).*$",
-                    "chr\\1:\\2:\\3", rownames(data))
+            # Discard rows containing alt, random and Un (unknown chromosome)
+            discard <- grepl("random|alt|Un", rownames(data))
+            if (sum(discard) > 0) {
+                data <- data[!discard, ]
+                warning(sprintf(paste(
+                    "Discarded %s rows containing 'alt', 'random'",
+                    "or 'Un' in chromosome names."), sum(discard)))
             }
+            if (is.null(data) || nrow(data) == 0) return(NULL)
+            
+            # Parse the chromosome and genomic range of the junction
+            strand <- all(grepl("[+-]$", head(rownames(data))))
+            regex  <- "^.*?([0-9XYZWM]{1,}).*?([0-9]{1,}).*?([0-9]{1,}).*"
+            if (strand) {
+                # Also parse the strand
+                regex <- paste0(regex, "([+-])$")
+                rep   <- "chr\\1:\\2:\\3:\\4"
+            } else {
+                regex <- paste0(regex, "$")
+                rep   <- "chr\\1:\\2:\\3"
+            }
+            rownames(data) <- gsub(regex, rep, rownames(data))
             return(data)
         }
     )

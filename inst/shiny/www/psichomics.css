@@ -1,3 +1,5 @@
+/* psichomics.css */
+
 /* Avoid fixed-top navbar from obscuring content */
 body { padding-top: 70px; }
 
@@ -15,6 +17,12 @@ a { cursor: pointer; }
 .selectize-control.loading {
     margin-top: 0;
     text-align: left;
+}
+
+mark {
+    padding: 0;
+    color: #333;
+    background-color: #f1c40f;
 }
 
 /* Alerts appear fixed on the top right above other elements */
@@ -224,3 +232,15 @@ tr.active > td > a:hover { font-weight: bold; }
 
 /* Improve style of lists in popovers */
 .popover-list { padding-left: 20px !important; }
+
+/* Alternative splicing diagram style */
+#selectizeEvent .selectize-dropdown {
+    width: 700px !important;
+    left: initial !important;
+    right: 0 !important;
+}
+#selectizeEvent .selectize-dropdown-content { max-height: 500px !important; }
+
+#selectizeEvent div.active text.diagram.outside { fill: white !important; }
+#selectizeEvent div.active path.diagram { stroke: white !important; }
+#selectizeEvent div.active rect.diagram { stroke: white !important; }

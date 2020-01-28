@@ -5,33 +5,43 @@
 \alias{setGroups}
 \title{Get or set groups}
 \usage{
-getGroups(type = c("Patients", "Samples", "ASevents", "Genes"),
-  complete = FALSE, category = getCategory())
+getGroups(
+  type = c("Patients", "Samples", "ASevents", "Genes"),
+  complete = FALSE,
+  category = getCategory()
+)
 
-setGroups(type = c("Patients", "Samples", "ASevents", "Genes"), groups,
-  category = getCategory())
+setGroups(
+  type = c("Patients", "Samples", "ASevents", "Genes"),
+  groups,
+  category = getCategory()
+)
 }
 \arguments{
-\item{type}{Character: type of groups (either "Patients", "Samples", 
-"ASevents" or "Genes")}
+\item{type}{Character: type of groups (either \code{Patients}, 
+\code{Samples}, \code{ASevents} or \code{Genes})}
 
-\item{complete}{Boolean: return all the information on groups (TRUE) or just 
-the group names and respective indexes (FALSE)? FALSE by default}
+\item{complete}{Boolean: return all the information on groups (\code{TRUE})
+or just the group names and respective indexes (\code{FALSE})?}
 
-\item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
-it uses the selected data category}
+\item{category}{Character: data category}
 
 \item{groups}{Matrix: groups of dataset}
 }
 \value{
-Getters return globally accessible data, whereas setters return NULL 
-as they are only used to modify the Shiny session's state
+Getters return globally accessible data, whereas setters return 
+\code{NULL} as they are only used to modify the Shiny session's state
 }
 \description{
 Get or set groups
 }
 \seealso{
-\code{\link{getGlobal}}, \code{\link{getClinicalMatchFrom}},
-\code{\link{getGroups}} and \code{\link{getDifferentialSplicing}}
+Other functions to get and set global variables: 
+\code{\link{getClinicalMatchFrom}()},
+\code{\link{getDifferentialExpression}()},
+\code{\link{getDifferentialSplicing}()},
+\code{\link{getGlobal}()},
+\code{\link{getHighlightedPoints}()}
 }
+\concept{functions to get and set global variables}
 \keyword{internal}

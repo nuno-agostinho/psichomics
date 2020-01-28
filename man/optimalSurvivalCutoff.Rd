@@ -2,25 +2,30 @@
 % Please edit documentation in R/analysis.R
 \name{optimalSurvivalCutoff}
 \alias{optimalSurvivalCutoff}
-\alias{optimalPSIcutoff}
 \title{Calculate optimal data cutoff that best separates survival curves}
 \usage{
-optimalSurvivalCutoff(clinical, data, censoring, event, timeStart,
-  timeStop = NULL, followup = "days_to_last_followup",
-  session = NULL, filter = TRUE, survTime = NULL, lower = NULL,
-  upper = NULL)
-
-optimalPSIcutoff(clinical, psi, censoring, event, timeStart,
-  timeStop = NULL, followup = "days_to_last_followup",
-  session = NULL, filter = TRUE, survTime = NULL)
+optimalSurvivalCutoff(
+  clinical,
+  data,
+  censoring,
+  event,
+  timeStart,
+  timeStop = NULL,
+  followup = "days_to_last_followup",
+  session = NULL,
+  filter = TRUE,
+  survTime = NULL,
+  lower = NULL,
+  upper = NULL
+)
 }
 \arguments{
 \item{clinical}{Data frame: clinical data}
 
 \item{data}{Numeric: data values}
 
-\item{censoring}{Character: censor using "left", "right", "interval" or
-"interval2"}
+\item{censoring}{Character: censor using \code{left}, \code{right},
+\code{interval} or \code{interval2}}
 
 \item{event}{Character: name of column containing time of the event of
 interest}
@@ -35,19 +40,18 @@ interval (only relevant for interval censoring)}
 
 \item{session}{Shiny session (only used for the visual interface)}
 
-\item{filter}{Boolean or numeric: elements to use (all by default)}
+\item{filter}{Boolean or numeric: elements to use (all are used by default)}
 
-\item{survTime}{survTime object: times to follow up, time start, time stop
-and event (optional)}
+\item{survTime}{\code{survTime} object: times to follow up, time start, time
+stop and event (optional)}
 
-\item{lower, upper}{Bounds in which to search (if NULL, they will be 
-automatically set to 0 and 1 if all data values are within that interval;
-otherwise, they will be set to the minimum and maximum values of data)}
-
-\item{psi}{Numeric: PSI values to test against the cutoff}
+\item{lower, upper}{Bounds in which to search (if \code{NULL}, bounds are set
+to \code{lower = 0} and \code{upper = 1} if all data values are within that
+interval; otherwise, \code{lower = min(data, na.rm = TRUE)} and
+\code{upper = max(data, na.rm = TRUE)})}
 }
 \value{
-List containg the optimal cutoff (\code{par}) and the corresponding 
+List containing the optimal cutoff (\code{par}) and the corresponding
 p-value (\code{value})
 }
 \description{
@@ -71,3 +75,16 @@ event      <- "days_to_death"
 psi <- c(0.1, 0.2, 0.9, 1, 0.2, 0.6)
 opt <- optimalSurvivalCutoff(clinical, psi, "right", event, timeStart)
 }
+\seealso{
+Other functions to analyse survival: 
+\code{\link{assignValuePerSubject}()},
+\code{\link{getAttributesTime}()},
+\code{\link{labelBasedOnCutoff}()},
+\code{\link{plotSurvivalCurves}()},
+\code{\link{plotSurvivalPvaluesByCutoff}()},
+\code{\link{processSurvTerms}()},
+\code{\link{survdiffTerms}()},
+\code{\link{survfit.survTerms}()},
+\code{\link{testSurvival}()}
+}
+\concept{functions to analyse survival}

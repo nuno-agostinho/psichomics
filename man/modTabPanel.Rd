@@ -13,7 +13,7 @@ modTabPanel(title, ..., icon = NULL, menu = FALSE)
 
 \item{icon}{Character: name of the icon}
 
-\item{menu}{Boolean: create a dropdown menu-like tab? FALSE by default}
+\item{menu}{Boolean: create a dropdown menu-like tab?}
 }
 \value{
 HTML interface

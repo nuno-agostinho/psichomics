@@ -4,8 +4,18 @@
 \alias{plotRowStats}
 \title{Plot sample statistics per row}
 \usage{
-plotRowStats(data, x, y, xmin = NULL, xmax = NULL, ymin = NULL,
-  ymax = NULL, xlim = NULL, ylim = NULL)
+plotRowStats(
+  data,
+  x,
+  y,
+  subset = NULL,
+  xmin = NULL,
+  xmax = NULL,
+  ymin = NULL,
+  ymax = NULL,
+  xlim = NULL,
+  ylim = NULL
+)
 }
 \arguments{
 \item{data}{Data frame or matrix}
@@ -13,6 +23,9 @@ plotRowStats(data, x, y, xmin = NULL, xmax = NULL, ymin = NULL,
 \item{x, y}{Character: statistic to calculate and display in the plot per row;
 choose between \code{mean}, \code{median}, \code{var} or \code{range}
 (or transformations of those variables, e.g. \code{log10(var)})}
+
+\item{subset}{Boolean or integer: \code{data} points to highlight (if
+\code{NULL}, all points are highlighted)}
 
 \item{xmin, xmax, ymin, ymax}{Numeric: minimum and maximum X and Y values to 
 draw in the plot}
@@ -47,3 +60,19 @@ rangeVar  <- plotRowStats(psi, x="range", y="log10(var)", xlim=c(0, 1)) +
     labs(x="PSI range", y="log10(PSI variance)")
 rangeVar
 }
+\seealso{
+Other functions for gene expression pre-processing: 
+\code{\link{convertGeneIdentifiers}()},
+\code{\link{filterGeneExpr}()},
+\code{\link{normaliseGeneExpression}()},
+\code{\link{plotGeneExprPerSample}()}
+
+Other functions for PSI quantification: 
+\code{\link{filterPSI}()},
+\code{\link{getSplicingEventTypes}()},
+\code{\link{listSplicingAnnotations}()},
+\code{\link{loadAnnotation}()},
+\code{\link{quantifySplicing}()}
+}
+\concept{functions for PSI quantification}
+\concept{functions for gene expression pre-processing}

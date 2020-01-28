@@ -8,18 +8,31 @@
 \alias{parseMatsAnnotation}
 \title{Get events from alternative splicing annotation}
 \usage{
-parseSuppaAnnotation(folder, types = c("SE", "AF", "AL", "MX", "A5",
-  "A3", "RI"), genome = "hg19")
+parseSuppaAnnotation(
+  folder,
+  types = c("SE", "AF", "AL", "MX", "A5", "A3", "RI"),
+  genome = "hg19"
+)
 
-parseVastToolsAnnotation(folder, types = c("ALT3", "ALT5", "COMBI", "IR",
-  "MERGE3m", "MIC", "EXSK", "MULTI"), genome = "Hsa",
-  complexEvents = FALSE)
+parseVastToolsAnnotation(
+  folder,
+  types = c("ALT3", "ALT5", "COMBI", "IR", "MERGE3m", "MIC", "EXSK", "MULTI"),
+  genome = "Hsa",
+  complexEvents = FALSE
+)
 
-parseMisoAnnotation(folder, types = c("SE", "AFE", "ALE", "MXE", "A5SS",
-  "A3SS", "RI", "TandemUTR"), genome = "hg19")
+parseMisoAnnotation(
+  folder,
+  types = c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI", "TandemUTR"),
+  genome = "hg19"
+)
 
-parseMatsAnnotation(folder, types = c("SE", "AFE", "ALE", "MXE", "A5SS",
-  "A3SS", "RI"), genome = "fromGTF", novelEvents = TRUE)
+parseMatsAnnotation(
+  folder,
+  types = c("SE", "AFE", "ALE", "MXE", "A5SS", "A3SS", "RI"),
+  genome = "fromGTF",
+  novelEvents = TRUE
+)
 }
 \arguments{
 \item{folder}{Character: path to folder}
@@ -31,10 +44,9 @@ origin; see details)}
 depends on the program of origin)}
 
 \item{complexEvents}{Boolean: should complex events in A3SS and A5SS be
-parsed? FALSE by default}
+parsed?}
 
-\item{novelEvents}{Boolean: parse events dedected due to novel splice sites 
-(TRUE by default)}
+\item{novelEvents}{Boolean: parse events detected due to novel splice sites}
 }
 \value{
 Retrieve data frame with events based on a given alternative splicing
@@ -81,3 +93,8 @@ mats <- parseMatsAnnotation(matsOutput)
 # Do not parse novel events
 mats <- parseMatsAnnotation(matsOutput, novelEvents=FALSE)
 }
+\seealso{
+Other functions to prepare alternative splicing annotations: 
+\code{\link{prepareAnnotationFromEvents}()}
+}
+\concept{functions to prepare alternative splicing annotations}

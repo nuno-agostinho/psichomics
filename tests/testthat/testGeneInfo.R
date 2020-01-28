@@ -64,10 +64,33 @@ test_that("Plot transcripts", {
         "MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7")
     
     for (event in events) {
+        print(event)
         info <- queryEnsemblByEvent(event, species="human", assembly="hg19")
         hc   <- plotTranscripts(info, event=event)
-        print(hc)
         expect_is(hc, "shiny.tag.list")
+        hc   <- fromJSON(gsub(".*?(\\{.*\\}).*", "\\1", hc[[2]][[3]][[1]]))
+        expect_is(hc$xAxis$plotBands, "data.frame")
+    }
+    
+    # Event identifiers based on a different exon reference
+    events <- c(
+        "A3SS_15_+_63353138_63353397_63353912_TPM1",
+        "A3SS_11_-_61118463_61117894_61117115_CYB561A3",
+        "A5SS_21_+_48056459_48055675_48056808_PRMT2",
+        "A5SS_1_-_1274667_1274742_1274033_DVL1",
+        "AFE_9_+_131901928_131902430_131904724_PPP2R4",
+        "AFE_5_-_134688636_134686513_134681747_H2AFY",
+        "ALE_12_+_56554104_56555171_56554410_MYL6",
+        "ALE_8_-_38314874_38285953_38287466_FGFR1",
+        "MXE_15_+_63335142_63336226_63336351_63335905_63336030_63349184_TPM1",
+        "MXE_17_-_74090495_74086478_74086410_74087316_74087224_74085401_EXOC7")
+    
+    for (event in events) {
+        info <- queryEnsemblByEvent(event, species="human", assembly="hg19")
+        hc   <- plotTranscripts(info, event=event)
+        expect_is(hc, "shiny.tag.list")
+        hc   <- fromJSON(gsub(".*?(\\{.*\\}).*", "\\1", hc[[2]][[3]][[1]]))
+        expect_is(hc$xAxis$plotBands, "data.frame")
     }
 })
 

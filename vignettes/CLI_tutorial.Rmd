@@ -1,5 +1,5 @@
 ---
-title: 'psichomics case study: command-line interface (CLI)'
+title: 'Command-line interface (CLI) tutorial'
 author: "Nuno Saraiva-Agostinho"
 date: "`r Sys.Date()`"
 bibliography: refs.bib
@@ -46,22 +46,25 @@ library(psichomics)
 * `parseSplicingEvent`: Parse splicing events
 * `getSplicingEventFromGenes`: Get alternative splicing events from genes
 * `getGenesFromSplicingEvents`: Get genes from alternative splicing events
+* `plotSplicingEvent`: Plot the representation of given alternative splicing events
 
 ### Data retrieval
 
+* `getDownloadsFolder`: Get the user's Downloads folder
+
 **TCGA/Firebrowse**
 
-* `getDownloadsFolder`: Get the user's Downloads folder
 * `isFirebrowseUp`: Check if Firebrowse web API is online
-* `getFirebrowseCohorts`: Query the Firebrowse web API for TCGA cohorts
-* `getFirebrowseDataTypes`: Query the Firebrowse web API for TCGA data types
-* `getFirebrowseDates`: Query the Firebrowse web API for processing dates
-* `loadFirebrowseData`: Download and load TCGA data through the Firebrowse web 
+* `getTCGAcohorts`: Query the Firebrowse web API for TCGA cohorts
+* `getTCGAdataTypes`: Query the Firebrowse web API for TCGA data types
+* `getTCGAdates`: Query the Firebrowse web API for processing dates
+* `loadTCGAdata`: Download and load TCGA data through the Firebrowse web 
 API
-* `parseTcgaSampleInfo`: Parse sample information from TCGA samples
+* `parseTCGAsampleInfo`: Parse sample information from TCGA samples
 
 **GTEx**
 
+* `getGtexDataTypes`: Check available data types from GTEx
 * `getGtexTissues`: Check available tissues from a file containing sample
 metadata
 * `loadGtexData`: Load GTEx data
@@ -119,7 +122,7 @@ attribute
 * `getSubjectFromSample`: Get patients matching the given samples
 * `groupPerElem`: Return a vector with one group for each element
 * `testGroupIndependence`: Test multiple contigency tables comprised by two 
-groups (one reference group and another containing remaing elements) and 
+groups (one reference group and another containing remaining elements) and 
 provided groups
 * `plotGroupIndependence`: Plot -log10(p-values) of the results obtained after 
 multiple group independence testing
@@ -165,7 +168,7 @@ expression (for any genes of interest) and alternative splicing quantification
 * `plotCorrelation`: Scatter plots of the correlation results
 * `as.table`: Table of the correlation results
 
-### Annotation retrieval
+### Gene, transcript and protein annotation retrieval
 * `queryEnsemblByEvent`: Query Ensembl based on an alternative splicing event
 * `queryEnsemblByGene`: Query Ensembl based on a gene
 * `ensemblToUniprot`: Convert an Ensembl identifier to the respective UniProt 
@@ -198,9 +201,9 @@ annotation and junction quantification are required. While alternative splicing
 annotation is provided by the package, junction quantification may be retrieved
 from [TCGA][TCGA], [GTEx][GTEx], [SRA][SRA] or user-provided files.
 
-Data is downloaded from [Firebrowse][Firebrowse], a service that hosts 
-proccessed data from [TCGA][TCGA], as required to run the downstream analyses. 
-Before downloading data, check the following options:
+Data is downloaded from [Firebrowse][Firebrowse], a service that hosts processed
+data from [TCGA][TCGA], as required to run the downstream analyses. Before
+downloading data, check the following options:
 
 ```{r TCGA options}
 # Available tumour types
@@ -246,8 +249,7 @@ files.
 > **Windows limitations**: If you are using *Windows*, note that the downloaded 
 files have huge names that may be over [*Windows* Maximum Path Length][maxpath].
 A workaround would be to manually rename the downloaded files to have shorter 
-names, move all downloaded files to a single folder and load such folder. Read
-how in section **Load unspecified local files** at the end of this document.
+names, move all downloaded files to a single folder and load such folder.
 
 ```{r prepare examples, include=FALSE}
 clinical <- readRDS("BRCA_clinical.RDS")
@@ -262,15 +264,12 @@ following commands to quickly filter and normalise gene expression:
 ```{r normalise gene expression}
 # Check genes where min. counts are available in at least N samples and filter
 # out genes with mean expression and variance of 0
-checkCounts <- rowSums(geneExpr >= 10) >= 10
-filter <- rowMeans(geneExpr) > 0 & rowVars(geneExpr) > 0 & checkCounts
+filter <- filterGeneExpr(geneExpr)
 geneExprFiltered <- geneExpr[filter, ]
 
-# Normalise gene expression and perform log2-transformation (after adding 0.5
-# to avoid zeroes)
-geneExprNorm <- normaliseGeneExpression(geneExprFiltered, log2transform=TRUE)
+# Normalise gene expression and perform log2-transformation
+geneExprNorm <- normaliseGeneExpression(geneExprFiltered)
 ```
-
 
 ## Quantifying alternative splicing
 After loading the clinical and alternative splicing junction quantification data
@@ -291,8 +290,8 @@ annotList
 can be prepared for *psichomics* by parsing the annotation from programs like 
 [VAST-TOOLS][VAST-TOOLS], [MISO][MISO], [SUPPA][SUPPA] and [rMATS][rMATS]. Note
 that SUPPA and rMATS are able to create their splicing annotation based on
-transcript annotation. For more information, 
-[read this tutorial][annotation-tutorial].
+transcript annotation. Please read
+[Preparing alternative splicing annotations][annotation-tutorial].
 
 To quantify alternative splicing, first select the junction quantification,
 alternative splicing annotation and alternative splicing event type(s) of 
@@ -300,8 +299,8 @@ interest:
 
 ```{r prepare to quantify splicing, eval=FALSE}
 # Load Human (hg19/GRCh37 assembly) annotation
-human <- listSplicingAnnotations()[[1]]
-annotation <- loadAnnotation(human)
+hg19 <- listSplicingAnnotations(assembly="hg19")[[1]]
+annotation <- loadAnnotation(hg19)
 ```
 
 ```{r event types}
@@ -322,7 +321,7 @@ psi <- quantifySplicing(annotation, junctionQuant, minReads=minReads)
 
 ```{r load splicing, echo=FALSE}
 psi <- readRDS("BRCA_psi.RDS")
-sampleInfo <- parseTcgaSampleInfo(colnames(psi))
+sampleInfo <- parseTCGAsampleInfo(colnames(psi))
 ```
 
 ```{r check splicing events}
@@ -472,6 +471,9 @@ ASevents <- rownames(psi)
 (tmp     <- grep("NUMB", ASevents, value=TRUE))
 NUMBskippedExon12 <- tmp[1]
 
+# Plot the representation of NUMB exon 12 inclusion
+plotSplicingEvent(NUMBskippedExon12)
+
 # Plot its PSI distribution
 plotDistribution(psi[NUMBskippedExon12, ], normalVStumour)
 ```
@@ -560,7 +562,7 @@ match <- getSubjectFromSample(samples, clinical, sampleInfo=sampleInfo)
 survPlots <- list()
 for (event in events) {
     # Find optimal cutoff for the event
-    eventPSI <- assignValuePerPatient(psi[event, ], match, clinical,
+    eventPSI <- assignValuePerSubject(psi[event, ], match, clinical,
                                       samples=unlist(tumour))
     opt <- optimalSurvivalCutoff(clinical, eventPSI, censoring="right", 
                                  event="days_to_death", 
@@ -666,7 +668,7 @@ individuals whose samples have a PSI below and above that threshold).
 ```{r UHRF2 PSI survival}
 # Find optimal cutoff for the event
 UHRF2skippedExon10 <- events[1]
-eventPSI <- assignValuePerPatient(psi[UHRF2skippedExon10, ], match, clinical,
+eventPSI <- assignValuePerSubject(psi[UHRF2skippedExon10, ], match, clinical,
                                   samples=unlist(tumour))
 opt <- optimalSurvivalCutoff(clinical, eventPSI, censoring="right", 
                              event="days_to_death", timeStart="days_to_death")
@@ -691,7 +693,7 @@ To check whether alternative splicing changes are related with gene expression
 alterations, let us perform differential expression analysis on UHRF2:
 
 ```{r UHRF2 GE diff expression}
-plotDistribution(geneExprNorm["UHRF2", ], normalVSstage1Tumour, psi=FALSE)
+plotDistribution(geneExprNorm["UHRF2", ], normalVSstage1Tumour)
 ```
 
 It seems UHRF2 is differentially expressed between *Tumour Stage I* and 
@@ -705,7 +707,7 @@ To confirm if gene expression has an overall prognostic value, perform the
 following:
 
 ```{r UHRF2 GE survival}
-UHRF2ge <- assignValuePerPatient(geneExprNorm["UHRF2", ], match, clinical, 
+UHRF2ge <- assignValuePerSubject(geneExprNorm["UHRF2", ], match, clinical, 
                                  samples=unlist(tumour))
 
 # Survival curves based on optimal gene expression cutoff
@@ -770,32 +772,24 @@ p-value > 0.05).
 
 # Loading data from other sources
 
-## Load GTEx files
+## Load GTEx data
 
-First, GTEx data needs to be downloaded from the
-[GTEx Portal](http://gtexportal.org). Afterwards, load GTEx data (subject
-phenotype, sample attributes and junction quantification for given tissues) by
-following these commands:
+GTEx data (subject phenotype, sample attributes, gene expression and junction
+quantification) can be automatically retrieved and loaded by following these
+commands:
 
 ```{r load GTEx, eval=FALSE}
-# Replace with the correct path to these files
-subjects <- "~/Downloads/GTEx_Data_V6_Annotations_SubjectPhenotypesDS.txt"
-sampleAttr <- "~/Downloads/GTEx_Data_V6_Annotations_SampleAttributesDS.txt"
-junctionQuant <- "~/Downloads/GTEx_junction_reads.txt"
-
 # Check GTEx tissues available based on the sample attributes
 getGtexTissues(sampleAttr)
 
 tissues <- c("blood", "brain")
-gtex <- loadGtexData(subjects, sampleAttr, junctionQuant, tissues)
+gtex <- loadGtexData("~/Downloads", tissues=tissues)
 ```
 
-If you desire to load junction quantification for all tissues, you can also do
-so through the following commands:
+Junction quantification can be loaded for all GTEx tissues by typing:
 
 ```{r load all GTEx, eval=FALSE}
-tissues <- NULL
-gtex <- loadGtexData(subjectPhenotype, sampleAttr, junctionQuant, tissues)
+gtex <- loadGtexData("~/Downloads", tissues=NULL)
 ```
 
 ## Load SRA project data using recount
@@ -815,18 +809,15 @@ sra <- loadSRAproject("SRP053101")
 
 > Although only select [SRA][SRA] projects are available to be automatically
 downloaded (based on pre-processed data from the [recount2][recount] project), 
-other SRA projects can be manually downloaded, aligned using a splice-aware 
-aligner and loaded by the user, as per the instructions in
+other SRA projects and user-provided data can be manually aligned using a
+splice-aware aligner and loaded by following the instructions in
 [Loading SRA and user-provided RNA-seq data][tutorial-custom-data]. 
-Sample-associated files from SRA are also supported.
 
-To load local files instead, indicate the folder of interest. Any files located
-in this folder and sub-folders will be loaded. To mitigate any errors during 
-this process, files of interest should be put in a dedicated folder.
+Local files can be loaded by indicating their containing folder Any files
+located in this folder and sub-folders will be loaded.
 
-For instance, to load [GTEx][GTEx] files in this way, create a directory called
-**GTEx**, put all files of interest inside that folder and follow these 
-commands:
+For instance, to load [GTEx][GTEx] files via local files, create a directory
+called **GTEx**, put all GTEx files within that folder and type these commands:
 
 ```{r load local, eval=FALSE}
 folder <- "~/Downloads/GTEx/"
@@ -834,9 +825,10 @@ ignore <- c(".aux.", ".mage-tab.")
 data <- loadLocalFiles(folder, ignore=ignore)
 
 # Select clinical and junction quantification dataset
-clinical      <- data[[1]]$`Clinical data`
-sampleInfo    <- data[[1]]$`Sample metadata`
-junctionQuant <- data[[1]]$`Junction quantification (Illumina HiSeq)`
+clinical      <- data[[1]][["Clinical data"]]
+sampleInfo    <- data[[1]][["Sample metadata"]]
+geneExpr      <- data[[1]][["Gene expression"]]
+junctionQuant <- data[[1]][["Junction quantification"]]
 ```
 
 # Feedback

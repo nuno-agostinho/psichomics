@@ -1,7 +1,6 @@
 #' @rdname parseMisoAnnotation
 #' 
-#' @param novelEvents Boolean: parse events dedected due to novel splice sites 
-#' (TRUE by default)
+#' @param novelEvents Boolean: parse events detected due to novel splice sites
 #' @export
 #' 
 #' @examples 
@@ -141,7 +140,7 @@ parseMatsEvent <- function(event, event_type) {
 #' 
 #' You can use \code{parseMatsGeneric} to parse other event types.
 #' 
-#' @seealso \code{\link{parseMatsEvent}}
+#' @seealso \code{\link{parseMatsEvent}()}
 #' 
 #' @return Data frame with parsed junctions
 #' @keywords internal
@@ -177,7 +176,7 @@ parseMatsSE <- function(junctions, strand) {
     coords <- c("A1.start", "A1.end",
                 "C1.start", "C1.end",
                 "C2.start", "C2.end")
-    plus  <- c(1:6)
+    plus  <- seq(6)
     minus <- c(2:1, 6:3)
     parseMatsGeneric(junctions, strand, coords, plus, minus)
 }
@@ -194,7 +193,7 @@ parseMatsMXE <- function(junctions, strand) {
                 "A2.start", "A2.end",
                 "C1.start", "C1.end",
                 "C2.start", "C2.end")
-    plus  <- c(1:8)
+    plus  <- seq(8)
     minus <- c(2:1, 4:3, 8:5)
     parseMatsGeneric(junctions, strand, coords, plus, minus)
 }
@@ -257,8 +256,8 @@ parseMatsAFE <- function(junctions, strand) {
     coords <- c("A2.start", "A2.end",
                 "A1.start", "A1.end",
                 "C2.start", "C2.end")
-    plus  <- c(3:4, 1:2, 5:6)
-    minus <- c(4:3, 2:1, 6:5)
+    plus  <- c(3, 4, 1, 2, 5, 6)
+    minus <- c(4, 3, 2, 1, 6, 5)
     parseMatsGeneric(junctions, strand, coords, plus, minus)
 }
 
@@ -273,7 +272,7 @@ parseMatsALE <- function(junctions, strand) {
     coords <- c("C1.start", "C1.end",
                 "A1.start", "A1.end",
                 "A2.start", "A2.end")
-    plus  <- c(5:6, 3:4, 1:2)
-    minus <- c(6:5, 4:3, 2:1)
+    plus  <- c(5, 6, 3, 4, 1, 2)
+    minus <- c(6, 5, 4, 3, 2, 1)
     parseMatsGeneric(junctions, strand, coords, plus, minus)
 }

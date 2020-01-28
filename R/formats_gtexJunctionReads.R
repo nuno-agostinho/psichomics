@@ -18,12 +18,12 @@ gtexJunctionReadsFormat <- function() {
         check = c("TargetID", "Gene_Symbol", "Chr", "Coord"),
         
         # Parsing information
-        delim       = "\t", # Delimiter used to separate fields
-        colNames    = 1,    # Row to use for column names
-        rowNames    = 1,    # Column to use for row names
-        ignoreCols  = 1:4,  # Columns to ignore
-        ignoreRows  = 1,    # Rows to ignore
-        commentChar = NULL, # Ignore lines starting with this string
+        delim       = "\t",   # Delimiter used to separate fields
+        colNames    = 1,      # Row to use for column names
+        rowNames    = 1,      # Column to use for row names
+        ignoreCols  = seq(4), # Columns to ignore
+        ignoreRows  = 1,      # Rows to ignore
+        commentChar = NULL,   # Ignore lines starting with this string
         
         # Remove duplicated rows
         unique = TRUE,

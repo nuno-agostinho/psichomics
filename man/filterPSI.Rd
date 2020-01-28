@@ -4,8 +4,15 @@
 \alias{filterPSI}
 \title{Filter alternative splicing quantification}
 \usage{
-filterPSI(psi, minMedian = -Inf, maxMedian = Inf, minLogVar = -Inf,
-  maxLogVar = Inf, minRange = -Inf, maxRange = Inf)
+filterPSI(
+  psi,
+  minMedian = -Inf,
+  maxMedian = Inf,
+  minLogVar = -Inf,
+  maxLogVar = Inf,
+  minRange = -Inf,
+  maxRange = Inf
+)
 }
 \arguments{
 \item{psi}{Data frame or matrix: alternative splicing quantification}
@@ -40,3 +47,12 @@ junctionQuant <- readFile("ex_junctionQuant.RDS")
 psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 psi[filterPSI(psi, minMedian=0.05, maxMedian=0.95, minRange=0.15), ]
 }
+\seealso{
+Other functions for PSI quantification: 
+\code{\link{getSplicingEventTypes}()},
+\code{\link{listSplicingAnnotations}()},
+\code{\link{loadAnnotation}()},
+\code{\link{plotRowStats}()},
+\code{\link{quantifySplicing}()}
+}
+\concept{functions for PSI quantification}

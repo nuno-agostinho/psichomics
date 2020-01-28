@@ -29,7 +29,7 @@ genericClinicalFormat <- function() {
         unique = FALSE,
         
         # Identity of rows and columns
-        rows    = "patients",
+        rows    = "subjects",
         columns = "attributes",
         
         # Default columns to show (NULL to show all)

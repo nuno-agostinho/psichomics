@@ -2,18 +2,26 @@
 % Please edit documentation in R/data_recount.R
 \name{loadSRAproject}
 \alias{loadSRAproject}
-\title{Download and load SRA projects}
+\title{Download and load SRA projects via
+\href{https://jhubiostatistics.shinyapps.io/recount/}{recount2}}
 \usage{
 loadSRAproject(project, outdir = getDownloadsFolder())
 }
 \arguments{
-\item{project}{Character: SRA project identifiers to download}
+\item{project}{Character: SRA project identifiers (check
+\code{\link[recount]{recount_abstract}})}
 
 \item{outdir}{Character: directory to store the downloaded files}
 }
 \value{
-List containing downloaded projects
+List with loaded projects
 }
 \description{
-Download and load SRA projects
+Download and load SRA projects via
+\href{https://jhubiostatistics.shinyapps.io/recount/}{recount2}
 }
+\seealso{
+Other functions associated with SRA data retrieval: 
+\code{\link{getDownloadsFolder}()}
+}
+\concept{functions associated with SRA data retrieval}

@@ -7,38 +7,39 @@
 plotICA(ica, components = seq(10), groups = NULL, ...)
 }
 \arguments{
-\item{ica}{Object resulting from \code{\link{performICA}}}
+\item{ica}{Object resulting from \code{\link{performICA}()}}
 
 \item{components}{Numeric: independent components to plot}
 
 \item{groups}{Matrix: groups to plot indicating the index of interest of the
 samples (use clinical or sample groups)}
 
-\item{...}{Arguments passed on to \code{pairsD3::pairsD3}
-\describe{
-  \item{group}{a optional vector specifying the group each observation
+\item{...}{
+  Arguments passed on to \code{\link[pairsD3:pairsD3]{pairsD3::pairsD3}}
+  \describe{
+    \item{\code{group}}{a optional vector specifying the group each observation
 belongs to.  Used for tooltips and colouring the observations.}
-  \item{subset}{an optional vector specifying a subset of observations
+    \item{\code{subset}}{an optional vector specifying a subset of observations
 to be used for plotting. Useful when you have a large number of
 observations, you can specify a random subset.}
-  \item{labels}{the names of the variables (column names of \code{x}
+    \item{\code{labels}}{the names of the variables (column names of \code{x}
 used by default).}
-  \item{cex}{the magnification of the plotting symbol (default=3)}
-  \item{width}{the width (and height) of the plot when viewed externally.}
-  \item{col}{an optional (hex) colour for each of the levels in the group
+    \item{\code{cex}}{the magnification of the plotting symbol (default=3)}
+    \item{\code{width}}{the width (and height) of the plot when viewed externally.}
+    \item{\code{col}}{an optional (hex) colour for each of the levels in the group
 vector.}
-  \item{big}{a logical parameter.  Prevents inadvertent plotting of huge
+    \item{\code{big}}{a logical parameter.  Prevents inadvertent plotting of huge
 data sets.  Default limit is 10 variables, to plot more than 10 set
 \code{big=TRUE}.}
-  \item{theme}{a character parameter specifying whether the theme should
+    \item{\code{theme}}{a character parameter specifying whether the theme should
 be colour \code{colour} (default) or black and white \code{bw}.}
-  \item{opacity}{numeric between 0 and 1. The opacity of the plotting
+    \item{\code{opacity}}{numeric between 0 and 1. The opacity of the plotting
 symbols (default 0.9).}
-  \item{tooltip}{an optional vector with the tool tip to be displayed when
+    \item{\code{tooltip}}{an optional vector with the tool tip to be displayed when
 hovering over an observation. You can include basic html.}
-  \item{leftmar}{space on the left margin}
-  \item{topmar}{space on the bottom margin}
-}}
+    \item{\code{leftmar}}{space on the left margin}
+    \item{\code{topmar}}{space on the bottom margin}
+  }}
 }
 \value{
 Multiple scatterplots as a \code{pairsD3} object
@@ -58,3 +59,8 @@ groups$ozEntrance <- c("Kansas")
 groups$novel <- c("New Mexico", "New York", "New Hampshire", "New Jersey")
 plotICA(ica, groups=groups)
 }
+\seealso{
+Other functions to analyse independent components: 
+\code{\link{performICA}()}
+}
+\concept{functions to analyse independent components}

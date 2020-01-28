@@ -10,9 +10,10 @@ survdiffTerms(survTerms, ...)
 \item{survTerms}{\code{survTerms} object: survival terms obtained after 
 running \code{processSurvTerms} (see examples)}
 
-\item{...}{Arguments passed on to \code{survival::survdiff}
-\describe{
-  \item{subset}{
+\item{...}{
+  Arguments passed on to \code{\link[survival:survdiff]{survival::survdiff}}
+  \describe{
+    \item{\code{subset}}{
 expression indicating which subset of the rows of data should be used in
 the fit.  This can be a logical vector (which is replicated to have
 length equal to the number of observations), a numeric vector indicating
@@ -20,40 +21,21 @@ which observation numbers are to be included (or excluded if negative),
 or a character vector of row names to be included.  All observations are
 included by default.
 }
-  \item{na.action}{
+    \item{\code{na.action}}{
 a missing-data filter function.  This is applied to the \code{model.frame} after any
 subset argument has been used.  Default is \code{options()$na.action}.
 }
-  \item{rho}{
+    \item{\code{rho}}{
 a scalar parameter that controls the type of test.
 }
-  \item{timefix}{process times through the \code{aeqSurv} function to
+    \item{\code{timefix}}{process times through the \code{aeqSurv} function to
   eliminate potential roundoff issues.}
-}}
+  }}
 }
 \value{
-a list with components:
-
-\item{n}{
-the number of subjects in each group.
-}
-\item{obs}{
-the weighted observed number of events in each group.
-If there are strata, this will be a matrix with one column per stratum.
-}
-\item{exp}{
-the weighted expected number of events in each group.
-If there are strata, this will be a matrix with one column per stratum.
-}
-\item{chisq}{
-the chisquare statistic for a test of equality.
-}
-\item{var}{
-the variance matrix of the test.
-}
-\item{strata}{
-optionally, the number of subjects contained in each stratum.
-}
+\code{survfit} object. See \code{survfit.object} for details. Methods
+defined for \code{survfit} objects are \code{print}, \code{plot},
+\code{lines}, and \code{points}.
 }
 \description{
 Tests if there is a difference between two or more survival curves using
@@ -101,3 +83,16 @@ A class of rank test procedures for censored survival data.
 \emph{Biometrika}
 \bold{69}, 553-566.
 }
+\seealso{
+Other functions to analyse survival: 
+\code{\link{assignValuePerSubject}()},
+\code{\link{getAttributesTime}()},
+\code{\link{labelBasedOnCutoff}()},
+\code{\link{optimalSurvivalCutoff}()},
+\code{\link{plotSurvivalCurves}()},
+\code{\link{plotSurvivalPvaluesByCutoff}()},
+\code{\link{processSurvTerms}()},
+\code{\link{survfit.survTerms}()},
+\code{\link{testSurvival}()}
+}
+\concept{functions to analyse survival}

@@ -10,22 +10,26 @@ getClinicalMatchFrom(dataset, category = getCategory())
 setClinicalMatchFrom(dataset, matches, category = getCategory())
 }
 \arguments{
-\item{dataset}{Character: data set name (e.g. "Junction quantification")}
+\item{dataset}{Character: data set name}
 
-\item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
-it uses the selected data category}
+\item{category}{Character: data category}
 
 \item{matches}{Vector of integers: clinical matches of dataset}
 }
 \value{
-Getters return globally accessible data, whereas setters return NULL 
-as they are only used to modify the Shiny session's state
+Getters return globally accessible data, whereas setters return 
+\code{NULL} as they are only used to modify the Shiny session's state
 }
 \description{
 Get or set clinical matches from a given data type
 }
 \seealso{
-\code{\link{getGlobal}}, \code{\link{getClinicalMatchFrom}},
-\code{\link{getGroups}} and \code{\link{getDifferentialSplicing}}
+Other functions to get and set global variables: 
+\code{\link{getDifferentialExpression}()},
+\code{\link{getDifferentialSplicing}()},
+\code{\link{getGlobal}()},
+\code{\link{getGroups}()},
+\code{\link{getHighlightedPoints}()}
 }
+\concept{functions to get and set global variables}
 \keyword{internal}

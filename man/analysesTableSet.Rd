@@ -5,20 +5,39 @@
 \alias{analysesPlotSet}
 \title{Set of functions to render differential analyses (plot and table)}
 \usage{
-analysesTableSet(session, input, output, analysesType, analysesID,
-  getAnalysesData, getAnalysesFiltered, setAnalysesFiltered,
-  getAnalysesSurvival, getAnalysesColumns, setAnalysesColumns,
-  getResetPaging, setResetPaging)
+analysesTableSet(
+  session,
+  input,
+  output,
+  analysesType,
+  analysesID,
+  getAnalysesData,
+  getAnalysesFiltered,
+  setAnalysesFiltered,
+  getAnalysesSurvival,
+  getAnalysesColumns,
+  setAnalysesColumns,
+  getResetPaging,
+  setResetPaging
+)
 
-analysesPlotSet(session, input, output, analysesType, analysesID,
-  getAnalysesData, getAnalysesFiltered, getAnalysesSurvival)
+analysesPlotSet(
+  session,
+  input,
+  output,
+  analysesType,
+  analysesID,
+  getAnalysesData,
+  getAnalysesFiltered,
+  getAnalysesSurvival
+)
 }
 \arguments{
-\item{session}{Session object}
+\item{session}{Shiny session}
 
-\item{input}{Input object}
+\item{input}{Shiny input}
 
-\item{output}{Output object}
+\item{output}{Shiny output}
 
 \item{analysesType}{Character: type of analyses (\code{GE} or \code{PSI})}
 
@@ -41,9 +60,10 @@ analysesPlotSet(session, input, output, analysesType, analysesID,
 \item{setResetPaging}{Function: set toggle of reset paging}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (function is only used to modify the Shiny session's
+state or internal variables)
 }
 \description{
-Instructions to build the Shiny app
+Set of functions to render differential analyses (plot and table)
 }
 \keyword{internal}

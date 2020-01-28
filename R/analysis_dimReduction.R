@@ -6,8 +6,7 @@
 #' @param naTolerance Integer: percentage of tolerated missing values per column
 #' (deprecated)
 #' @param missingValues Integer: number of tolerated missing values per column
-#' to be replaced with the mean of the values of that same column (5% of total
-#' rows by default)
+#' to be replaced with the mean of the values of that same column
 #' @param scale. Boolean: scale variables?
 #' @param ... Extra parameters passed to FUN
 #' @inheritParams base::scale

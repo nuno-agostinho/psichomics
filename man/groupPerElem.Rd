@@ -2,31 +2,17 @@
 % Please edit documentation in R/utils.R
 \name{groupPerElem}
 \alias{groupPerElem}
-\alias{groupPerPatient}
-\alias{groupPerSample}
 \title{Assign one group to each element}
 \usage{
 groupPerElem(groups, elem = NULL, outerGroupName = NA)
-
-groupPerPatient(groups, patients = NULL, includeOuterGroup = FALSE,
-  outerGroupName = "(Outer data)")
-
-groupPerSample(groups, samples, includeOuterGroup = FALSE,
-  outerGroupName = "(Outer data)")
 }
 \arguments{
 \item{groups}{List of integers: groups of elements}
 
-\item{elem}{Character: all elements available (NULL by default)}
+\item{elem}{Character: all elements available}
 
-\item{outerGroupName}{Character: name to give to outer group (NA by default; 
-set to NULL to only show elements matched to their respective groups)}
-
-\item{patients}{Integer: total number of patients}
-
-\item{includeOuterGroup}{Boolean: join the patients that have no groups?}
-
-\item{samples}{Character: all available samples}
+\item{outerGroupName}{Character: name to give to outer group (if \code{NULL}, 
+only show elements matched to their respective groups)}
 }
 \value{
 Character vector where each element corresponds to the group of the
@@ -40,3 +26,13 @@ groups <- list(1:3, 4:7, 8:10)
 names(groups) <- paste("Stage", 1:3)
 groupPerElem(groups)
 }
+\seealso{
+Other functions for data grouping: 
+\code{\link{createGroupByAttribute}()},
+\code{\link{getGeneList}()},
+\code{\link{getMatchingSamples}()},
+\code{\link{getSubjectFromSample}()},
+\code{\link{plotGroupIndependence}()},
+\code{\link{testGroupIndependence}()}
+}
+\concept{functions for data grouping}

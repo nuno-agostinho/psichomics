@@ -2,19 +2,21 @@
 % Please edit documentation in R/app.R
 \name{globalSelectize}
 \alias{globalSelectize}
-\title{Create a selectize input available from any page}
+\title{Create a \code{selectize} input available from any page}
 \usage{
-globalSelectize(id, placeholder)
+globalSelectize(id, placeholder, ASevent = FALSE)
 }
 \arguments{
 \item{id}{Character: input identifier}
 
 \item{placeholder}{Character: input placeholder}
+
+\item{ASevent}{Boolean: select alternative splicing events?}
 }
 \value{
-HTML element for a global selectize input
+HTML element for a global \code{selectize} input
 }
 \description{
-Create a selectize input available from any page
+Create a \code{selectize} input available from any page
 }
 \keyword{internal}

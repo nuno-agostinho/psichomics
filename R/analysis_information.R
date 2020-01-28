@@ -4,13 +4,13 @@
 #'
 #' @param path Character: API path
 #' @param query Character: API query
-#' @param grch37 Boolean: query the Ensembl GRCh37 API? TRUE by default;
-#' otherwise, query the most recent API
+#' @param grch37 Boolean: query the Ensembl GRCh37 API? if \code{FALSE}, query
+#' the most recent API
 #'
 #' @importFrom httr GET timeout
 #' @importFrom jsonlite fromJSON
 #'
-#' @return Parsed response or NULL if there's no response
+#' @return Parsed response or \code{NULL} if no response
 #' @keywords internal
 #'
 #' @examples
@@ -40,6 +40,7 @@ queryEnsembl <- function(path, query, grch37 = TRUE) {
 #' @param assembly Character: assembly version (may be NULL for an Ensembl 
 #' identifier)
 #' 
+#' @family functions to retrieve external information
 #' @return Information from Ensembl
 #' @export
 #' 
@@ -106,10 +107,11 @@ queryUniprot <- function(molecule, format="xml") {
 #' 
 #' @param primary Character: primary search term
 #' @param ... Character: other relevant search terms
-#' @param top Numeric: number of articles to retrieve (3 by default)
-#' @param field Character: field of interest where to look for terms ("abstract"
-#'  by default)
-#' @param sort Character: sort by a given parameter ("relevance" by default)
+#' @param top Numeric: number of articles to retrieve
+#' @param field Character: field of interest where to look for terms
+#' (\code{abstract} by default)
+#' @param sort Character: sort by a given parameter (\code{relevance} by
+#' default)
 #' 
 #' @importFrom httr GET
 #' @importFrom jsonlite fromJSON
@@ -148,10 +150,11 @@ queryPubMed <- function(primary, ..., top=3, field="abstract",
     return(c(search=list(search), metadata))
 }
 
-#' Convert an Ensembl identifier to the respective UniProt identifier
+#' Convert from Ensembl to UniProt identifier
 #' 
 #' @param protein Character: Ensembl identifier
 #' 
+#' @family functions to retrieve external information
 #' @return UniProt protein identifier
 #' @export
 #' 
@@ -200,22 +203,7 @@ infoUI <- function(id) {
         uiOutput(ns("info")))
 }
 
-#' Interface when no information could be retrieved
-#' @param output Shiny output
-#' @param description Character: description of the message to show to the user
-#' @inheritDotParams inlineDialog -description
-#' 
-#' @importFrom shiny renderUI h3 br tags
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
-#' @keywords internal
-noinfo <- function(output, description=paste(
-    "No information available for this gene."), ...) {
-    output$info <- renderUI(
-        errorDialog(description, style="width: 400px;", ...))
-}
-
-#' Parse XML from UniProt's RESTful service
+#' Parse XML from UniProt REST service
 #'
 #' @param xml response from UniProt
 #'
@@ -265,9 +253,9 @@ parseUniprotXML <- function(xml) {
     # Convert list of characters to data frame of characters
     feature <- ldply(l, rbind)
     if (ncol(feature) > 0) {
-        for (col in 1:ncol(feature))
+        for (col in seq(ncol(feature))) {
             feature[[col]] <- as.character(feature[[col]])
-        
+        }
         feature$start <- as.numeric(feature$start)
         feature$stop <- as.numeric(feature$stop)
     }
@@ -282,6 +270,7 @@ parseUniprotXML <- function(xml) {
 #' @importFrom highcharter highchart hc_chart hc_xAxis hc_yAxis hc_tooltip
 #' hc_add_series
 #'
+#' @family functions to retrieve external information
 #' @return \code{highcharter} object
 #' @export
 #' @examples
@@ -371,8 +360,7 @@ plottableXranges <- function(hc, shiny=FALSE) {
         container <- tagList(
             tags$script(src="https://code.highcharts.com/highcharts.js"),
             tags$script(src="https://code.highcharts.com/modules/exporting.js"),
-            extended,
-            div(id="container", style="height: 100vh;"))
+            extended, div(id="container", style="height: 100vh;"))
     }
     
     browsable(tagList(
@@ -380,7 +368,7 @@ plottableXranges <- function(hc, shiny=FALSE) {
         tags$script(sprintf("Highcharts.chart('container', %s)", hc))))
 }
 
-plotSplicingEvent <- function(hc, event) {
+plotASeventRegion <- function(hc, event) {
     parsed <- parseSplicingEvent(event[[1]], coords=TRUE)
     con1   <- sort(parsed$constitutive1[[1]])
     alt1   <- sort(parsed$alternative1[[1]])
@@ -445,10 +433,10 @@ plotSplicingEvent <- function(hc, event) {
         # Shift a given position
         shift <- function(pos, FUN, by=200) { FUN(as.numeric(pos), by) }
         
-        if (type == "A3SS")      greyPos <- c(con1, alt1)
-        else if (type == "A5SS") greyPos <- c(alt2, con2)
-        else if (type == "AFE")  greyPos <- c(alt1, con2)
-        else if (type == "ALE")  greyPos <- c(con1, alt2)
+        if (type == "A3SS")      greyPos <- range(con1, alt1, alt2)
+        else if (type == "A5SS") greyPos <- range(alt1, alt2, con2)
+        else if (type == "AFE")  greyPos <- range(alt1, alt2, con2)
+        else if (type == "ALE")  greyPos <- range(con1, alt1, alt2)
         
         plusStrand <- parsed$strand == "+"
         downstreamMinus <- type %in% c("A3SS", "ALE") && !plusStrand
@@ -481,13 +469,13 @@ plotSplicingEvent <- function(hc, event) {
 #' @param eventPosition Numeric: coordinates of the alternative splicing event
 #' (ignored if \code{event} is set)
 #' @param event Character: identifier of the alternative splicing event to plot
-#' @param shiny Boolean: is the function running in a Shiny session? FALSE by
-#' default
+#' @param shiny Boolean: is the function running in a Shiny session?
 #' 
 #' @importFrom highcharter highchart hc_chart hc_title hc_legend hc_xAxis
 #' hc_yAxis hc_plotOptions hc_tooltip hc_series
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @family functions to retrieve external information
+#' @inherit psichomics return
 #' @export
 #' 
 #' @examples
@@ -498,11 +486,11 @@ plotSplicingEvent <- function(hc, event) {
 #' }
 plotTranscripts <- function(info, eventPosition=NULL, event=NULL, shiny=FALSE) {
     data <- list()
-    for (i in 1:nrow(info$Transcript)) {
+    for (i in seq(nrow(info$Transcript))) {
         transcript <- info$Transcript[i, ]
         name    <- transcript$id
         display <- transcript$display_name
-        strand  <- ifelse(transcript$strand == 1, "forward", "reverse")
+        strand  <- ifelse(transcript$strand == 1, "+", "-")
         chr     <- transcript$seq_region_name
         start   <- transcript$start
         end     <- transcript$end
@@ -511,13 +499,13 @@ plotTranscripts <- function(info, eventPosition=NULL, event=NULL, shiny=FALSE) {
         # Prepare exons
         elements <- list()
         exons <- transcript$Exon[[1]]
-        for (k in 1:nrow(exons)) {
+        for (k in seq(nrow(exons))) {
             exon  <- exons[k, ]
             start <- exon$start
             end   <- exon$end
-            elements <- c(elements,
-                          list(list(name="exon", x=start, x2=end, y=0,
-                                    width=20)))
+            len   <- abs(end - start)
+            elements <- c(elements, list(list(
+                name="exon", x=start, x2=end, y=0, width=20, length=len)))
         }
         
         if (nrow(exons) > 1) {
@@ -525,16 +513,16 @@ plotTranscripts <- function(info, eventPosition=NULL, event=NULL, shiny=FALSE) {
             introns <- NULL
             introns$start <- head(sort(exons$end), length(exons$end) - 1)
             introns$end   <- sort(exons$start)[-1]
-            for (j in 1:length(introns$start)) {
+            for (j in seq(length(introns$start))) {
                 start <- introns$start[[j]]
                 end   <- introns$end[[j]]
-                elements <- c(elements,
-                              list(list(name="intron", x=start, x2=end, y=0,
-                                        width=5)))
+                len   <- abs(end - start)
+                elements <- c(elements, list(list(
+                    name="intron", x=start, x2=end, y=0, width=5, length=len)))
             }
         }
         data <- c(data, list(list(name=name, borderRadius=0, pointWidth=10,
-                                  display=display, strand=strand, chr=chr, 
+                                  display=display, strand=strand, chr=chr,
                                   biotype=biotype, data=elements)))
     }
     
@@ -551,17 +539,15 @@ plotTranscripts <- function(info, eventPosition=NULL, event=NULL, shiny=FALSE) {
     hc <- do.call("hc_series", c(list(hc), data))
     
     if (!is.null(event)) {
-        hc <- hc %>% plotSplicingEvent(event)
+        hc <- hc %>% plotASeventRegion(event)
     } else if (!is.null(eventPosition)) {
-        # Draw region if only splicing event position is provided
+        # Draw region only if splicing event position is provided
         eventStart <- eventPosition[1]
         eventEnd   <- eventPosition[2]
-        hc <- hc_xAxis(hc, 
-                       plotBands=list(
-                           color="#7cb5ec50", from=eventStart, 
-                           to=eventEnd, label=list(
-                               text="Splicing Event", y=10,
-                               style=list(fontWeight="bold"))))
+        hc <- hc_xAxis(hc, plotBands=list(
+            color="#7cb5ec50", from=eventStart, 
+            to=eventEnd, label=list(text="Splicing Event", y=10,
+                                    style=list(fontWeight="bold"))))
     }
     
     if (shiny)
@@ -575,87 +561,69 @@ plotTranscripts <- function(info, eventPosition=NULL, event=NULL, shiny=FALSE) {
 #' @param output Shiny output
 #' @param ns Namespace function
 #' @param info Information as retrieved from Ensembl
-#' @param species Character: species name (NULL by default)
-#' @param assembly Character: assembly version (NULL by default)
-#' @param grch37 Boolean: use version GRCh37 of the genome? FALSE by default
+#' @param species Character: species name
+#' @param assembly Character: assembly version
+#' @param grch37 Boolean: use version GRCh37 of the genome?
+#' @param eventDiagram Diagram of selected alternative splicing event
 #' 
 #' @importFrom shiny renderUI h2 h3 plotOutput
 #' 
 #' @return HTML elements to render gene, protein and transcript annotation
 #' @keywords internal
-renderGeneticInfo <- function(output, ns, info, species=NULL, assembly=NULL, 
-                              grch37=FALSE) {
+renderGeneticInfo <- function(output, info, species=NULL, assembly=NULL, 
+                              grch37=FALSE, eventDiagram=NULL, gene=NULL) {
     start <- as.numeric(info$start)
     end   <- as.numeric(info$end)
     
-    if (!is.null(species))
-        ensembl <- tags$a("Ensembl", icon("external-link"), target="_blank",
-                          href=paste0("http://", if(grch37) { "grch37." }, 
-                                      "ensembl.org/", species, "/", 
-                                      "Gene/Summary?g=", info$id))
-    else
-        ensembl <- NULL
-    
-    links <- tagList(
-        ensembl,
-        tags$a("UCSC", icon("external-link"), target="_blank",
-               href=paste0("https://genome.ucsc.edu/cgi-bin/hgTracks",
-                           if(grch37) { "?db=hg19" }, "&position=chr",
-                           info$seq_region_name, ":", start, "-", end)),
-        tags$a("GeneCards", icon("external-link"), target="_blank",
-               href=paste0("http://www.genecards.org/cgi-bin/",
-                           "carddisp.pl?gene=", info$id)),
-        if (species == "human") { 
-            tags$a("Human Protein Atlas", icon("external-link"), 
-                   target="_blank",
-                   href=paste0("http://www.proteinatlas.org/", info$id, 
-                               "/pathology"))
-        },
-        tags$a("VAST-DB", icon("external-link"), target="_blank",
-               href=paste0("http://vastdb.crg.eu/wiki/Gene:", info$id, 
-                           "@Genome:", assembly))
-    )
-    
-    dtWidth  <- "width: 80px;"
-    ddMargin <- "margin-left: 100px;"
-    
-    if (!is.null(species)) {
-        if (!is.null(assembly))
-            speciesInfo <- sprintf("%s (%s assembly)", species, assembly)
-        else
-            speciesInfo <- species
-    } else {
-        speciesInfo <- "No species defined"
+    item <- function(dt, dd, dtWidth="width: 80px;", 
+                     ddMargin="margin-left: 100px;",
+                     ddStyle=NULL) {
+        tagList(tags$dt(style=dtWidth, dt),
+                tags$dd(style=ddMargin, style=ddStyle, dd))
     }
     
-    output$genetic <- renderUI({ tagList(
-        h2(style="margin-top: 0px;", info$display_name, tags$small(info$id)),
-        tags$dl(
-            class="dl-horizontal", style="margin-bottom: 0px;",
-            tags$dt(style=dtWidth, "Species"),
-            tags$dd(style=ddMargin, speciesInfo),
-            tags$dt(style=dtWidth, "Location"),
-            tags$dd(style=ddMargin,
-                    sprintf("Chromosome %s: %s-%s (%s strand)",
-                            info$seq_region_name,
-                            format(start, big.mark=",", scientific=FALSE),
-                            format(end, big.mark=",", scientific=FALSE),
-                            ifelse(info$strand == -1, "reverse", "forward"))),
-            tags$dt(style=dtWidth, "Description"),
-            tags$dd(style=ddMargin,
-                    sprintf("%s (%s)", info$description, info$biotype)),
-            tags$dt(style=dtWidth, "Links"),
-            tags$dd(style=ddMargin, 
-                    tags$ul(class="list-inline", lapply(links, tags$li)) )))
-    })
+    unavailableItem <- function(dt, dd, ...) {
+        info <- tagList(icon("times-circle"), dd)
+        return(item(dt, info, ddStyle="color: gray;"))
+    }
+    
+    if (!is.null(species)) {
+        if (!is.null(assembly)) {
+            speciesInfo <- sprintf("%s (%s assembly)", species, assembly)
+        } else {
+            speciesInfo <- species
+        }
+        speciesInfo <- item("Species", speciesInfo)
+    } else {
+        speciesInfo <- unavailableItem("Species", "Undefined species")
+    }
+    
+    if (is.null(info)) {
+        msg <- "Information from Ensembl currently unavailable"
+        genomicLocation <- unavailableItem("Location", msg)
+        description     <- unavailableItem("Description", msg)
+    } else {
+        genomicLocation <- item(
+            "Location", sprintf(
+                "Chromosome %s: %s-%s (%s strand)",
+                info$seq_region_name,
+                format(start, big.mark=",", scientific=FALSE),
+                format(end, big.mark=",", scientific=FALSE),
+                ifelse(info$strand == -1, "reverse", "forward")))
+        description <- item("Description", 
+                            sprintf("%s (%s)", info$description, info$biotype))
+    }
+    links <- prepareExternalLinks(info, species, assembly, grch37, gene)
     
     tagList(
-        h3("Transcripts"), 
-        uiOutput(ns("plotTranscripts")),
-        h3("Protein domains"),
-        uiOutput(ns("selectProtein")),
-        uiOutput(ns("proteinError")),
-        highchartOutput(ns("plotProtein"), height="200px"))
+        h2(style="margin-top: 0px;", info$display_name, tags$small(info$id)),
+        tags$dl(class="dl-horizontal", style="margin-bottom: 0px;",
+                speciesInfo,
+                genomicLocation,
+                description,
+                item("AS diagram", eventDiagram),
+                item("Links",
+                     tags$ul(class="list-inline", lapply(links, tags$li)))))
 }
 
 #' Return the interface to display an article
@@ -778,6 +746,48 @@ renderProteinInfo <- function(protein, transcript, species, assembly) {
         return(links)
 }
 
+prepareExternalLinks <- function(info, species, assembly, grch37, gene) {
+    linkTo <- function(title, href) {
+        tags$a(title, icon("external-link"), target="_blank", href=href)
+    }
+    
+    url <- list()
+    if (!is.null(info)) {
+        gene  <- info$id
+        chr   <- info$seq_region_name
+        start <- as.numeric(info$start)
+        end   <- as.numeric(info$end)
+        
+        ucscPos <- sprintf("chr%s:%s-%s", chr, start, end)
+        url$humanProteinAtlas <- sprintf(
+            "http://www.proteinatlas.org/%s/pathology", gene)
+        url$vastdb <- sprintf("http://vastdb.crg.eu/wiki/Gene:%s@Genome%s",
+                              gene, assembly)
+    } else {
+        ucscPos <- gene
+        url$humanProteinAtlas <- sprintf(
+            "http://www.proteinatlas.org/search/%s", gene)
+        url$vastdb <- paste0("http://vastdb.crg.eu/wiki/search?query=", gene)
+    }
+    url$ensembl   <- paste0("http://", if (grch37) { "grch37." }, 
+                            "ensembl.org/", species, "/", 
+                            "Gene/Summary?g=", gene)
+    url$ucsc      <- paste0("https://genome.ucsc.edu/cgi-bin/hgTracks?",
+                            if (grch37) { "db=hg19&" }, "position=", ucscPos)
+    url$geneCards <- paste0("http://www.genecards.org/cgi-bin/",
+                            "carddisp.pl?gene=", gene)
+    
+    links <- tagList(
+        if (!is.null(species) && species != "")
+            linkTo("Ensembl", url$ensembl),
+        linkTo("UCSC", url$ucsc),
+        linkTo("GeneCards", url$geneCards),
+        if (!is.null(species) && species == "human")
+            linkTo("Human Protein Atlas", url$humanProteinAtlas),
+        linkTo("VastDB", url$vastdb))
+    return(links)
+}
+
 #' @rdname appServer
 #' 
 #' @importFrom highcharter highchart %>%
@@ -787,14 +797,65 @@ renderProteinInfo <- function(protein, transcript, species, assembly) {
 infoServer <- function(input, output, session) {
     ns <- session$ns
     
-    # Update selected gene according to selected splicing event
+    # Update gene according to selected splicing event
     observe({
         ASevent <- getASevent()
         if (!is.null(ASevent)) {
             gene <- parseSplicingEvent(ASevent)$gene[[1]]
-            runjs(sprintf('$("#analyses-info-selectedGene")[0]
-                          .selectize.createItem("%s");', gene))
+            runjs(sprintf('$("#%s")[0].selectize.createItem("%s");', 
+                          ns("selectedGene"), gene))
         }
+    })
+    
+    output$eventDiagram <- renderUI({
+        ASevent <- getASevent()
+        if (!is.null(ASevent)) {
+            res <- HTML(plotSplicingEvent(ASevent)[[1]])
+        } else {
+            res <- "No alternative splicing event selected or available."
+        }
+        return(res)
+    })
+    
+    reactiveQueryPubMed <- reactive({
+        terms <- input$articleTerms
+        pubmed <- queryPubMed(terms[1], terms[-1])
+        return(pubmed)
+    })
+    
+    observeEvent(input$articleTerms, {
+        pubmed   <- tryCatch(reactiveQueryPubMed(), error=return)
+        if (is(pubmed, "error")) return(NULL)
+        
+        articles <- pubmed[-1]
+        if (length(articles) >= 1) {
+            articleList <- lapply(articles, articleUI)
+        } else {
+            articleList <- helpText(class="list-group-item",
+                                    "No articles match your search terms.")
+        }
+        output$articleList <- renderUI(articleList)
+        
+        search <- pubmed$search$querytranslation
+        search <- gsub("[Abstract]", "[Title/Abstract]", search, fixed=TRUE)
+        search <- paste0("http://www.ncbi.nlm.nih.gov/pubmed/?term=", 
+                         search)
+        link <- tags$a(href=search, target="_blank", class="pull-right",
+                       "Show more articles", icon("external-link"))
+        output$articleSearch <- renderUI(link)
+    })
+    
+    # Render relevant articles according to available gene
+    observe({
+        gene <- input$selectedGene
+        if (gene == "") return(NULL)
+        output$articles <- renderUI({
+            category <- getCategory()
+            if (!is.null(category)) category <- unlist(strsplit(category, " "))
+            
+            articles <- pubmedUI(session$ns, gene, "cancer", category)
+            return(articles)
+        })
     })
     
     observe({
@@ -805,58 +866,48 @@ infoServer <- function(input, output, session) {
         if (is.null(assembly)) assembly <- "hg19"
         
         grch37   <- assembly == "hg19"
-        gene <- input$selectedGene
-            
+        gene     <- input$selectedGene
+        
         if (gene == "") return(NULL)
         info <- tryCatch(queryEnsemblByGene(gene, species=species, 
                                             assembly=assembly), error=return)
             
         if (is(info, "error") || is.null(info)) {
-            output$info <- renderUI({
-                title <- "No response from Ensembl"
-                description <- "Please select another gene or try again later."
-                fluidRow(column(
-                    6, errorDialog(title, description, bigger=TRUE)))
-            })
-            
-            hide("genetic")
-            hide("articles")
-            return(NULL)
+            hide("info")
         } else {
-            show("genetic")
-            show("articles")
+            show("info")
         }
         
-        output$info <- renderUI(
-            renderGeneticInfo(output, ns, info, species, assembly, grch37))
+        output$genetic <- renderUI({
+            if (is(info, "error")) info <- NULL
+            geneticInfo <- renderGeneticInfo(
+                output, info, species, assembly, grch37,
+                eventDiagram=uiOutput(ns("eventDiagram")), gene=gene)
+            
+            if (is.null(info)) {
+                error <- errorDialog(
+                    "No response from Ensembl", bigger=TRUE,
+                    "Please select another gene or try again later.")
+                res <- tagList(geneticInfo, error)
+            } else {
+                res <- geneticInfo
+            }
+            return(res)
+        })
+        
+        output$info <- renderUI({
+            tagList(
+                h3("Transcripts"), 
+                uiOutput(ns("plotTranscripts")),
+                h3("Protein domains"),
+                uiOutput(ns("selectProtein")),
+                uiOutput(ns("proteinError")),
+                highchartOutput(ns("plotProtein"), height="200px"))
+        })
         
         output$plotTranscripts <- renderUI({
             info <- queryEnsemblByGene(gene, species=species, assembly=assembly)
             plotTranscripts(info, event=getASevent(), shiny=TRUE)
-        })
-        
-        # Render relevant articles according to available gene
-        output$articles <- renderUI({
-            category <- getCategory()
-            if (!is.null(category)) category <- unlist(strsplit(category, " "))
-            articles <- pubmedUI(session$ns, gene, "cancer", category)
-            return(articles)
-        })
-        
-        observeEvent(input$articleTerms, {
-            terms <- input$articleTerms
-            pubmed <- queryPubMed(terms[1], terms[-1])
-            articles <- pubmed[-1]
-            articleList <- lapply(articles, articleUI)
-            output$articleList <- renderUI(articleList)
-            
-            search <- pubmed$search$querytranslation
-            search <- gsub("[Abstract]", "[Title/Abstract]", search, fixed=TRUE)
-            search <- paste0("http://www.ncbi.nlm.nih.gov/pubmed/?term=", 
-                             search)
-            link <- tags$a(href=search, target="_blank", class="pull-right",
-                           "Show more articles", icon("external-link"))
-            output$articleSearch <- renderUI(link)
         })
         
         # Show NULL so it doesn't show previous results when loading

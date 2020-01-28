@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{getDownloadsFolder}
 \alias{getDownloadsFolder}
-\title{Get the Downloads folder of the user}
+\title{Get the path to the Downloads folder}
 \usage{
 getDownloadsFolder()
 }
@@ -10,8 +10,26 @@ getDownloadsFolder()
 Path to Downloads folder
 }
 \description{
-Get the Downloads folder of the user
+Get the path to the Downloads folder
 }
 \examples{
 getDownloadsFolder()
 }
+\seealso{
+Other functions associated with TCGA data retrieval: 
+\code{\link{getTCGAdataTypes}()},
+\code{\link{isFirebrowseUp}()},
+\code{\link{loadTCGAdata}()},
+\code{\link{parseTCGAsampleTypes}()}
+
+Other functions associated with GTEx data retrieval: 
+\code{\link{getGtexDataTypes}()},
+\code{\link{getGtexTissues}()},
+\code{\link{loadGtexData}()}
+
+Other functions associated with SRA data retrieval: 
+\code{\link{loadSRAproject}()}
+}
+\concept{functions associated with GTEx data retrieval}
+\concept{functions associated with SRA data retrieval}
+\concept{functions associated with TCGA data retrieval}

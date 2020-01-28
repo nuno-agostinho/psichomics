@@ -7,14 +7,15 @@
 clusterICAset(session, input, output)
 }
 \arguments{
-\item{session}{Session object}
+\item{session}{Shiny session}
 
-\item{input}{Input object}
+\item{input}{Shiny input}
 
-\item{output}{Output object}
+\item{output}{Shiny output}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (function is only used to modify the Shiny session's
+state or internal variables)
 }
 \description{
 Server logic for clustering ICA data

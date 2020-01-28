@@ -81,8 +81,8 @@ getServerFunctions <- function(loader, ..., priority=NULL) {
 #' @param loader Character: loader to run the functions
 #' @param ... Extra arguments to pass to the user interface (UI) functions
 #' @param priority Character: name of functions to prioritise by the given
-#' order; for instance, c("data", "analyses") would load "data", then "analyses"
-#' then remaining functions
+#' order; for instance, \code{c("data", "analyses")} would load \code{data},
+#' then \code{analyses} and finally the remaining functions
 #' 
 #' @return List of functions related to the given loader
 #' @keywords internal
@@ -110,42 +110,54 @@ getUiFunctions <- function(ns, loader, ..., priority=NULL) {
     return(uiList)
 }
 
-#' Create a selectize input available from any page
+#' Create a \code{selectize} input available from any page
+#' 
 #' @param id Character: input identifier
 #' @param placeholder Character: input placeholder
+#' @param ASevent Boolean: select alternative splicing events?
 #' 
 #' @importFrom shiny selectizeInput tagAppendAttributes
 #' 
-#' @return HTML element for a global selectize input
+#' @return HTML element for a global \code{selectize} input
 #' @keywords internal
-globalSelectize <- function(id, placeholder) {
+globalSelectize <- function(id, placeholder, ASevent=FALSE) {
     elem <- paste0(id, "Elem")
     hideElem <- sprintf("$('#%s')[0].style.display = 'none';", id)
     
-    select <- selectizeInput(elem, "", choices=NULL, width="auto", options=list(
-        onItemAdd=I(paste0("function(value, $item) {", hideElem, "}")),
-        onBlur=I(paste0("function() {", hideElem, "}")),
-        placeholder=placeholder))
+    onItemAdd <- I(paste0("function(value, $item) {", hideElem, "}"))
+    onBlur    <- I(paste0("function() {", hideElem, "}"))
+    onType    <- I(paste0(
+        "function(value) { $('#selectizeEvent .selectize-dropdown-content')",
+        ".unmark().mark(value, {exclude: ['text']}); }"))
+    
+    render <- NULL
+    if (ASevent) render <- I("{ option: renderEvent }")
+    
+    opts <- list(onItemAdd=onItemAdd, onBlur=onBlur, maxOptions=20,
+                 placeholder=placeholder, render=render, highlight=FALSE,
+                 onType=onType)
+    
+    select <- selectizeInput(elem, "", choices=NULL, width="95%", options=opts)
     select[[3]][[1]] <- NULL
     select <- tagAppendAttributes(select, id=id, style=paste(
         "display: none;",
-        "width: 95%;", "position: absolute;",  "margin-top: 5px !important;"))
+        "position: absolute;",  "margin-top: 5px !important;"))
     return(select)
 }
 
-#' Create a special selectize input in the navigation bar
+#' Create a special \code{selectize} input in the navigation bar
 #' 
 #' @inheritParams globalSelectize
 #' @param label Character: input label
 #' 
 #' @return HTML element to be included in a navigation bar
 #' @keywords internal
-navSelectize <- function(id, label, placeholder=label) {
+navSelectize <- function(id, label, placeholder=label, ASevent=FALSE) {
     value <- paste0(id, "Value")
     tags$li( tags$div(
         class="navbar-text",
         style="margin-top: 5px !important; margin-bottom: 0px !important;", 
-        globalSelectize(id, placeholder),
+        globalSelectize(id, placeholder, ASevent=ASevent),
         tags$small(tags$b(label), tags$a(
             "Change...", onclick=paste0(
                 '$("#', id, '")[0].style.display = "block";',
@@ -161,7 +173,7 @@ navSelectize <- function(id, label, placeholder=label) {
 #' @param title Character: title of the tab
 #' @param icon Character: name of the icon
 #' @param ... HTML elements to render
-#' @param menu Boolean: create a dropdown menu-like tab? FALSE by default
+#' @param menu Boolean: create a dropdown menu-like tab?
 #' 
 #' @importFrom shiny navbarMenu tabPanel
 #' 
@@ -194,12 +206,15 @@ appUI <- function() {
                              priority=c("dataUI", "analysesUI"))
     
     header <- tagList(
-        includeCSS(insideFile("shiny", "www", "styles.css")),
+        # Include CSS files
         includeCSS(insideFile("shiny", "www", "animate.min.css")),
-        includeScript(insideFile("shiny", "www", "functions.js")),
+        includeCSS(insideFile("shiny", "www", "psichomics.css")),
+        # Include JavaScript files
+        includeScript(insideFile("shiny", "www", "jquery.mark.min.js")),
         includeScript(insideFile("shiny", "www", "highcharts.ext.js")),
         includeScript(insideFile("shiny", "www", "fuzzy.min.js")),
         includeScript(insideFile("shiny", "www", "jquery.textcomplete.min.js")),
+        includeScript(insideFile("shiny", "www", "psichomics.js")),
         conditionalPanel(
             condition="$('html').hasClass('shiny-busy')",
             div(class="text-right", id="loadmessage",
@@ -222,7 +237,8 @@ appUI <- function() {
                 navSelectize("selectizeCategory", "Selected dataset",
                              "Select dataset"),
                 navSelectize("selectizeEvent", "Selected splicing event",
-                             "Search by gene, chromosome and coordinates")))
+                             "Search by gene and coordinates...",
+                             ASevent=TRUE)))
     shinyUI(nav)
 }
 
@@ -238,7 +254,7 @@ appUI <- function() {
 #' 
 #' @importFrom shiny observe parseQueryString updateTabsetPanel
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 browserHistory <- function(navId, input, session) {
     # Update browser history when user changes the active tab
@@ -268,14 +284,14 @@ browserHistory <- function(navId, input, session) {
 #' Server logic
 #' 
 #' Instructions to build the Shiny app
-#'
-#' @param input Input object
-#' @param output Output object
-#' @param session Session object
+#' 
+#' @param input Shiny input
+#' @param output Shiny output
+#' @param session Shiny session
 #' 
 #' @importFrom shiny observe stopApp
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 appServer <- function(input, output, session) {
     ns <- session$ns
     groupsServerOnce(input, output, session)
@@ -303,9 +319,44 @@ appServer <- function(input, output, session) {
         if (!is.null(selected) && selected != "") setCategory(selected)
     })
     
-    # Update available events
-    observe(updateSelectizeChoices(session, "selectizeEventElem", 
-                                   getASevents(), server=TRUE))
+    # Prepare representation of alternative splicing events
+    prepareASeventsRepresentation <- reactive({
+        ASevent <- getASevents()
+        if (!is.null(ASevent)) {
+            diagram        <- plotSplicingEvent(ASevent, class="pull-right")
+            representation <- ASevent
+            names(representation) <- paste(ASevent, "__", diagram)
+            
+            # Fully extend acronyms for alternative splicing event types
+            eventTypes <- getSplicingEventTypes(acronymsAsNames=TRUE)
+            for (type in names(eventTypes)) {
+                find <- paste0("^", type)
+                rep  <- sprintf("%s (%s)", eventTypes[[type]], type)
+                names(representation) <- gsub(find, rep, names(representation))
+            }
+            # Improve chromosome and strand representation
+            names(representation) <- gsub("_([0-9A-Za-z].*)_([+-])_",
+                                          "_(chr\\1, \\2 strand)_",
+                                          names(representation))
+        } else {
+            representation <- NULL
+        }
+        return(representation)
+    })
+    
+    # Update available alternative splicing events
+    observe({
+        representation <- prepareASeventsRepresentation()
+        selected <- getASevent()
+        if (!is.null(representation) && !is.null(selected)) {
+            # Move the selected alternative splicing event to the top
+            find <- match(selected, representation)
+            sort <- unique(c(find, seq(representation)))
+            representation <- representation[sort]
+        }   
+        updateSelectizeChoices(session, "selectizeEventElem", representation,
+                               server=TRUE)
+    })
     
     # Set alternative splicing event
     observeEvent(input[["selectizeEventElem"]], {
@@ -348,24 +399,25 @@ appServer <- function(input, output, session) {
 
 #' Start graphical interface of psichomics
 #'
+#' @inheritParams shiny::runApp
 #' @inheritDotParams shiny::runApp -appDir -launch.browser
 #' @param reset Boolean: reset Shiny session? Requires package \code{devtools}
-#' @param testData Boolean: auto-start with test data
+#' @param testData Boolean: load with test data
 #'
 #' @importFrom shiny shinyApp runApp addResourcePath
 #'
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @return \code{NULL} (function is only used to modify the Shiny session's
+#' state or internal variables)
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' psichomics()
 #' }
-psichomics <- function(..., reset=FALSE, testData=FALSE) {
+psichomics <- function(..., launch.browser=TRUE, reset=FALSE, testData=FALSE) {
     # Add icons related to set operations
     addResourcePath("set-operations",
                     insideFile("shiny", "www", "set-operations"))
-    
     if (reset) devtools::load_all()
     
     if (testData) {
@@ -379,16 +431,14 @@ psichomics <- function(..., reset=FALSE, testData=FALSE) {
             }
             readRDS(file)
         }
-        
         data <- NULL
         data[["Clinical data"]]    <- loadFile("vignettes/BRCA_clinical.RDS")
         data[["Gene expression"]]  <- loadFile("vignettes/BRCA_geneExpr.RDS")
         data[["Inclusion levels"]] <- loadFile("vignettes/BRCA_psi.RDS")
-        data[["Sample metadata"]]  <- parseTcgaSampleInfo(colnames(
+        data[["Sample metadata"]]  <- parseTCGAsampleInfo(colnames(
             data[["Inclusion levels"]]))
         setData(list("Test data"=data))
     }
-    
     app <- shinyApp(appUI(), appServer)
-    runApp(app, launch.browser = TRUE, ...)
+    runApp(app, launch.browser=launch.browser, ...)
 }

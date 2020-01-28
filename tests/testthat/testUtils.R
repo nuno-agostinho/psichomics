@@ -86,33 +86,33 @@ test_that("Create a button with a loading indicator", {
     expect_equal(icon[[2]][[3]], "shinyjs-hide")
 })
 
-test_that("Retrieve patients from sample identifiers", {
-    patients <- c("GTEX-ABC", "GTEX-DEF", "GTEX-GHI", "GTEX-JKL", "GTEX-MNO")
-    samples <- paste0(patients, "-sample")
+test_that("Retrieve subjects from sample identifiers", {
+    subjects <- c("GTEX-ABC", "GTEX-DEF", "GTEX-GHI", "GTEX-JKL", "GTEX-MNO")
+    samples <- paste0(subjects, "-sample")
     clinical <- data.frame(samples=samples)
-    rownames(clinical) <- patients
+    rownames(clinical) <- subjects
     
-    match <- getPatientFromSample(samples, clinical)
+    match <- getSubjectFromSample(samples, clinical)
     expect_is(match, "character")
-    expect_equivalent(match, patients)
+    expect_equivalent(match, subjects)
     expect_equal(names(match), samples)
 })
 
-test_that("Retrieve samples from patient identifiers", {
-    patients <- c("GTEX-ABC", "GTEX-DEF", "GTEX-GHI", "GTEX-JKL", "GTEX-MNO")
-    samples <- paste0(patients, "-sample")
+test_that("Retrieve samples from subject identifiers", {
+    subjects <- c("GTEX-ABC", "GTEX-DEF", "GTEX-GHI", "GTEX-JKL", "GTEX-MNO")
+    samples <- paste0(subjects, "-sample")
     clinical <- data.frame(samples=samples)
-    rownames(clinical) <- patients
+    rownames(clinical) <- subjects
     
     ref <- c(1, 4)
-    match <- getMatchingSamples(patients[ref], samples, clinical)
+    match <- getMatchingSamples(subjects[ref], samples, clinical)
     expect_is(match, "character")
     expect_equivalent(match[], as.character(clinical$samples[ref]))
     
     # Retrieve samples when previously matched
-    patients <- getPatientFromSample(samples, clinical)
-    match <- getMatchingSamples(patients[ref], samples, clinical, 
-                                match=patients)
+    subjects <- getSubjectFromSample(samples, clinical)
+    match <- getMatchingSamples(subjects[ref], samples, clinical, 
+                                match=subjects)
     expect_is(match, "character")
     expect_equivalent(match[], as.character(clinical$samples[ref]))
 })

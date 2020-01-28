@@ -6,9 +6,16 @@
 \alias{getSelectedGroups}
 \title{Group selection}
 \usage{
-selectGroupsUI(id, label, placeholder = "Type to search for groups",
-  noGroupsLabel = NULL, groupsLabel = NULL, maxItems = NULL,
-  returnAllDataLabel = NULL, returnAllDataValue = FALSE)
+selectGroupsUI(
+  id,
+  label,
+  placeholder = "Type to search for groups",
+  noGroupsLabel = NULL,
+  groupsLabel = NULL,
+  maxItems = NULL,
+  returnAllDataLabel = NULL,
+  returnAllDataValue = FALSE
+)
 
 selectGroupsServer(session, id, type, preference = NULL)
 
@@ -17,15 +24,15 @@ getSelectedGroups(input, id, type, filter = NULL)
 \arguments{
 \item{id}{Character: identifier}
 
-\item{label}{Character: selectize label}
+\item{label}{Character: \code{selectize} label}
 
-\item{placeholder}{Character: selectize placeholder}
+\item{placeholder}{Character: \code{selectize} placeholder}
 
 \item{noGroupsLabel}{Character: label to explicitly allow to select no groups
 (if \code{NULL}, this option is not displayed to the user)}
 
-\item{groupsLabel}{Character: label to explicetly allow to select groups
-(only required if the \code{noGroupsLabel} argument is not \code{NULL})}
+\item{groupsLabel}{Character: label to explicitly allow to select groups
+(only required if \code{noGroupsLabel} is not \code{NULL})}
 
 \item{maxItems}{Numeric: maximum number of groups to select}
 
@@ -34,16 +41,15 @@ selected groups as belonging to an outside group (if \code{NULL}, this option
 is not displayed to the user)}
 
 \item{returnAllDataValue}{Boolean: default value to whether return all data
-or not (only required if the \code{returnAllDataLabel} argument is not 
-\code{NULL})}
+or not (only required if \code{returnAllDataLabel} is not \code{NULL})}
 
 \item{session}{Shiny session}
 
-\item{type}{Character: type of groups (either "Patients", "Samples", 
-"ASevents" or "Genes")}
+\item{type}{Character: type of groups (either \code{Patients}, 
+\code{Samples}, \code{ASevents} or \code{Genes})}
 
 \item{preference}{Character: name of groups to pre-select, when available
-(if NULL, all groups will be pre-selected)}
+(if \code{NULL}, all groups will be pre-selected)}
 
 \item{input}{Shiny input}
 
@@ -55,8 +61,8 @@ or not (only required if the \code{returnAllDataLabel} argument is not
 
 \code{selectGroupsServer}: Server logic for group selection
 
-\code{getSelectedGroups}: List with selected groups (or NULL if no
-groups were selected)
+\code{getSelectedGroups}: List with selected groups (or \code{NULL}
+when no groups are selected)
 }
 \description{
 Group selection interface and logic

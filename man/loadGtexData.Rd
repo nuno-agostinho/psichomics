@@ -4,13 +4,16 @@
 \alias{loadGtexData}
 \title{Load GTEx data}
 \usage{
-loadGtexData(dataTypes = getGtexDataTypes(),
-  dataFolder = getDownloadsFolder(), tissue = NULL)
+loadGtexData(
+  folder = getDownloadsFolder(),
+  data = getGtexDataTypes(),
+  tissue = NULL
+)
 }
 \arguments{
-\item{dataTypes}{Character: data types to load (see \code{getGtexDataTypes})}
+\item{folder}{Character: folder containing data}
 
-\item{dataFolder}{Character: folder containing data}
+\item{data}{Character: data types to load (see \code{getGtexDataTypes})}
 
 \item{tissue}{Character: tissues to load (if \code{NULL}, load all); tissue
 selection may speed up data loading}
@@ -21,3 +24,24 @@ List with loaded data
 \description{
 Load GTEx data
 }
+\examples{
+\dontrun{
+# Download and load all available GTEx data
+data <- loadGtexData()
+
+# Download and load only junction quantification and sample info from GTEx
+getGtexDataTypes()
+data <- loadGtexData(data=c("sampleInfo", "junctionQuant"))
+
+# Download and load only data for specific tissues
+getGtexTissues()
+data <- loadGtexData(tissue=c("Stomach", "Small Intestine"))
+}
+}
+\seealso{
+Other functions associated with GTEx data retrieval: 
+\code{\link{getDownloadsFolder}()},
+\code{\link{getGtexDataTypes}()},
+\code{\link{getGtexTissues}()}
+}
+\concept{functions associated with GTEx data retrieval}

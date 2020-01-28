@@ -2,19 +2,28 @@
 % Please edit documentation in R/utils.R
 \name{hchart.survfit}
 \alias{hchart.survfit}
-\title{Plot survival curves using Highcharts}
+\title{Plot survival curves}
 \usage{
-\method{hchart}{survfit}(object, ..., fun = NULL, markTimes = TRUE,
-  symbol = "plus", markerColor = "black", ranges = FALSE,
-  rangesOpacity = 0.3)
+\method{hchart}{survfit}(
+  object,
+  ...,
+  fun = NULL,
+  markTimes = TRUE,
+  symbol = "plus",
+  markerColor = "black",
+  ranges = FALSE,
+  rangesOpacity = 0.3
+)
 }
 \arguments{
-\item{object}{A survfit object as returned from the \code{survfit} function}
+\item{object}{\code{survfit} object as returned from
+\code{\link{survfit.survTerms}()} function}
 
-\item{...}{Arguments passed on to \code{highcharter::hc_add_series}
-\describe{
-  \item{}{}
-}}
+\item{...}{
+  Arguments passed on to \code{\link[highcharter:hc_add_series]{highcharter::hc_add_series}}
+  \describe{
+    \item{\code{}}{}
+  }}
 
 \item{fun}{Name of function or function used to transform the survival curve:
 \code{log} will put y axis on log scale, \code{event} plots cumulative events
@@ -22,22 +31,22 @@
 -log(y)), and \code{cloglog} creates a complimentary log-log survival plot
 (f(y) = log(-log(y)) along with log scale for the x-axis.}
 
-\item{markTimes}{Label curves marked at each censoring time? TRUE by default}
+\item{markTimes}{Label curves marked at each censoring time?}
 
-\item{symbol}{Symbol to use as marker (plus sign by default)}
+\item{symbol}{Symbol to use as marker}
 
-\item{markerColor}{Colour of the marker ("black" by default); use NULL to use
-the respective colour of each series}
+\item{markerColor}{Colour of the marker; if \code{NULL}, the respective
+colour of each series are used}
 
-\item{ranges}{Plot interval ranges? FALSE by default}
+\item{ranges}{Plot interval ranges?}
 
-\item{rangesOpacity}{Opacity of the interval ranges (0.3 by default)}
+\item{rangesOpacity}{Opacity of the interval ranges}
 }
 \value{
-\code{highcharter} object to plot survival curves
+\code{highchart} object to plot survival curves
 }
 \description{
-Plot survival curves using Highcharts
+Plot survival curves
 }
 \examples{
 

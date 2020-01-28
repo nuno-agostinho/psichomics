@@ -26,11 +26,11 @@ checkFileFormat <- function(format, head, filename="") {
     if (checkByCol) {
         # Check for a match in desired column
         if (nrow(head) < lenCheck) return(FALSE)
-        desired <- head[1:lenCheck, format$checkIndex]
+        desired <- head[seq(lenCheck), format$checkIndex]
     } else {
         # Check for a match in desired row
         if (ncol(head) < lenCheck) return(FALSE)
-        desired <- head[format$checkIndex, 1:lenCheck]
+        desired <- head[format$checkIndex, seq(lenCheck)]
     }
     allMatch <- all(trimws(desired) == format$check)
     return(allMatch)
@@ -58,6 +58,7 @@ loadFile <- function(format, file, ...) {
     transpose <- !is.null(format$transpose) && format$transpose
     loaded <- fread(file, sep=delim, header=FALSE, stringsAsFactors=!transpose,
                     data.table=FALSE, skip=skip, ...)
+    if (is.null(loaded)) return(NULL)
     
     # Transpose data
     if (transpose) {
@@ -83,11 +84,16 @@ loadFile <- function(format, file, ...) {
     
     # Add row names and remove duplicated rows
     rowNames <- NULL
-    if (!is.null(format$rowNames)) { 
+    if (!is.null(format$rowNames)) {
         rowNames <- as.character(loaded[, format$rowNames])
         if (!is.null(format$unique) && format$unique) {
-            loaded <- loaded[!duplicated(rowNames), ]
-            rowNames <- as.character(loaded[, format$rowNames])
+            dups <- duplicated(rowNames)
+            if (sum(dups) > 0) {
+                loaded <- loaded[!dups, ]
+                warning(sprintf("Discarded %s row%s with duplicated rownames.", 
+                                sum(dups), if (sum(dups) > 1) "s" else ""))
+            }
+            rowNames <- as.character(loaded[ , format$rowNames])
         }
     } else {
         ## TODO(NunoA): Slow process... try to improve this
@@ -104,7 +110,7 @@ loadFile <- function(format, file, ...) {
     
     # Convert columns to numeric if data was transposed
     if (!is.null(format$transpose) && format$transpose) {
-        for (col in 1:ncol(loaded)) {
+        for (col in seq(ncol(loaded))) {
             try <- tryCatch(as.numeric(as.character(loaded[ , col])),
                             warning=function(e) e)
             if (!"warning" %in% class(try))
@@ -117,7 +123,10 @@ loadFile <- function(format, file, ...) {
     attr(loaded, "rowNames") <- !is.null(rowNames)
     
     # Further process the dataset if needed
-    if (!is.null(format$process)) loaded <- format$process(loaded)
+    if (!is.null(format$process)) {
+        loaded <- format$process(loaded)
+        if (is.null(loaded)) return(NULL)
+    }
     
     # Add table name, description and other attributes
     attr(loaded, "filename") <- file
@@ -175,7 +184,7 @@ loadFileFormats <- function() {
 #' @importFrom data.table fread
 #' 
 #' @return Data frame with the contents of the given file if the file format is
-#' recognised; otherwise, returns NULL
+#' recognised; otherwise, returns \code{NULL}
 #' @keywords internal
 parseValidFile <- function(file, formats, ...) {
     if (!is.list(formats[[1]])) formats <- list(formats)

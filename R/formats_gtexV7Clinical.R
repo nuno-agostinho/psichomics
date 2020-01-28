@@ -2,7 +2,7 @@ gtexV7ClinicalInfoFormat <- function() {
     list(
         tablename   = "Clinical data",    # Name of the created table
         filename    = "GTEx_v7_Annotations_SubjectPhenotypesDS.txt",
-        description = "Clinical data of GTEx patients",
+        description = "Clinical data of GTEx subjects",
         dataType    = "Clinical data",    # General category for the data
         
         # Transpose the data? This is the first step before parsing the information!
@@ -29,7 +29,7 @@ gtexV7ClinicalInfoFormat <- function() {
         unique = FALSE, # Remove duplicated rows
         
         # Identity of rows and columns
-        rows    = "patients",
+        rows    = "subjects",
         columns = "attributes",
         
         # Default columns to show (NULL to show all)

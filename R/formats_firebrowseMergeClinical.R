@@ -19,12 +19,12 @@ firebrowseMergeClinicalFormat <- function() {
                   "admin.month_of_dcc_upload"),
         
         # Parsing information
-        delim       = "\t",  # Delimiter used to separate fields
-        colNames    = 1,     # Row to use for column names
+        delim       = "\t",   # Delimiter used to separate fields
+        colNames    = 1,      # Row to use for column names
         rowNames    = "patient.bcr_patient_barcode",  # Column for row names
-        ignoreCols  = NULL,  # Columns to ignore
-        ignoreRows  = 1:2,   # Rows to ignore
-        commentChar = NULL,  # String to identify comments (which are ignored)
+        ignoreCols  = NULL,   # Columns to ignore
+        ignoreRows  = seq(2), # Rows to ignore
+        commentChar = NULL,   # String to identify comments (which are ignored)
         
         # Remove duplicated rows
         unique = FALSE,
@@ -99,7 +99,7 @@ firebrowseMergeClinicalFormat <- function() {
             col <- grep("stage.*pathologic_stage", colnames(data))
             colnames(data)[col] <- paste0(colnames(data)[col], "_tumor_stage")
             
-            # Transform patient identifiers to upper case
+            # Transform subject identifiers to upper case
             rownames(data) <- toupper(rownames(data))
             
             # Remove columns only containing missing values

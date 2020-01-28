@@ -1,29 +1,8 @@
 ## TODO(NunoA): should default columns be a perfect match or just a partial
-## match? If only a partial match... that would be better for certain situations
+## match? A partial match would be better for certain situations
 
 ## TODO(NunoA): render UI for each data table instead of rendering UI for all
 ## so there's no refresh
-
-#' Get data types available from Firebrowse
-#' 
-#' @importFrom R.utils capitalize
-#' 
-#' @return Named character vector
-#' @export
-#' 
-#' @examples
-#' getFirebrowseDataTypes()
-getFirebrowseDataTypes <- function() {
-    choices <- list("RNA sequencing"=c(
-        "junction_quantification", "exon_quantification", 
-        "exon_expression", "junction_expression",
-        "RSEM_genes", "RSEM_genes_normalized", "RSEM_isoforms", "Preprocess"))
-    names(choices[[1]]) <- capitalize(gsub("_", " ", choices[[1]], fixed=TRUE))
-    return(choices)
-}
-
-#' @rdname getFirebrowseDataTypes
-getFirehoseDataTypes <- getFirebrowseDataTypes
 
 #' Set attributes to an object
 #' 
@@ -37,89 +16,9 @@ getFirehoseDataTypes <- getFirebrowseDataTypes
 #' ll <- list(a="hey", b="there")
 #' psichomics:::addObjectAttrs(ll, "words"=2, "language"="English")
 addObjectAttrs <- function (object, ...) {
-    args <- as.list(match.call())[-c(1:2)]
+    args <- as.list(match.call())[-c(1, 2)]
     for (k in seq(args)) attr(object, names(args[k])) <- args[[k]]
     return(object)
-}
-
-#' Parse sample information from TCGA samples
-#' 
-#' @param samples Character: sample identifiers
-#' @param match Integer: match between samples and patients (NULL by default;
-#' performs the match)
-#' 
-#' @return Data frame containing metadata associated with each TCGA sample
-#' @export
-#' 
-#' @examples
-#' samples <- c("TCGA-3C-AAAU-01A-11R-A41B-07", "TCGA-3C-AALI-01A-11R-A41B-07",
-#'              "TCGA-3C-AALJ-01A-31R-A41B-07", "TCGA-3C-AALK-01A-11R-A41B-07", 
-#'              "TCGA-4H-AAAK-01A-12R-A41B-07", "TCGA-5L-AAT0-01A-12R-A41B-07")
-#' 
-#' parseTcgaSampleInfo(samples)
-parseTcgaSampleInfo <- function (samples, match=NULL) {
-    parsed <- parseSampleGroups(samples)
-    if ( all(is.na(parsed)) ) return(NULL)
-    
-    info <- data.frame(parsed)
-    colnames(info) <- "Sample types"
-    rownames(info) <- samples
-    
-    if (is.null(match)) match <- getPatientFromSample(samples)
-    info <- cbind(info, "Patient ID"=match)
-    
-    # Metadata
-    attr(info, "rowNames")    <- TRUE
-    attr(info, "description") <- "Metadata for TCGA samples"
-    attr(info, "dataType")    <- "Sample metadata"
-    attr(info, "tablename")   <- "Sample metadata"
-    attr(info, "rows")        <- "samples"
-    attr(info, "columns")     <- "attributes"
-    return(info)
-}
-
-#' @rdname parseTcgaSampleInfo
-parseTCGAsampleInfo <- parseTcgaSampleInfo
-
-#' Prepare TCGA sample metadata from loaded datasets
-#' 
-#' If no TCGA datasets apply, the input is returned
-#' 
-#' @param data List of list of data frames
-#' 
-#' @return List of list of data frames
-#' @keywords internal
-loadTCGAsampleMetadata <- function(data) {
-    for (i in seq(data)) {
-        # Retrieve sample metadata from junction quantification
-        match <- sapply(data[[i]], attr, "dataType") ==
-            "Junction quantification"
-        junctionQuantSamples <- NULL
-        if (any(match)) {
-            junctionQuant <- data[[i]][match]
-            if (!is.null(junctionQuant)) {
-                samples <- unique(unlist(lapply(junctionQuant, colnames)))
-                if (any(grepl("^TCGA", samples))) {
-                    junctionQuantSamples <- samples
-                    data[[i]]$"Sample metadata" <- parseTcgaSampleInfo(samples)
-                }
-            }
-        }
-        
-        # Retrieve sample metadata from gene expression
-        match <- sapply(data[[i]], attr, "dataType") == "Gene expression"
-        if (any(match)) {
-            geneExpr <- data[[i]][match]
-            if (!is.null(geneExpr)) {
-                samples <- unique(unlist(lapply(geneExpr, colnames)))
-                samples <- samples[!samples %in% junctionQuantSamples]
-                if (any(grepl("^TCGA", samples))) {
-                    data[[i]]$"Sample metadata" <- parseTcgaSampleInfo(samples)
-                }
-            }
-        }
-    }
-    return(data)
 }
 
 #' Plot sample statistics per row
@@ -128,12 +27,16 @@ loadTCGAsampleMetadata <- function(data) {
 #' @param x,y Character: statistic to calculate and display in the plot per row;
 #' choose between \code{mean}, \code{median}, \code{var} or \code{range}
 #' (or transformations of those variables, e.g. \code{log10(var)})
+#' @param subset Boolean or integer: \code{data} points to highlight (if
+#' \code{NULL}, all points are highlighted)
 #' @param xmin,xmax,ymin,ymax Numeric: minimum and maximum X and Y values to 
 #' draw in the plot
 #' @param xlim,ylim Numeric: X and Y axis range
 #'
 #' @importFrom ggplot2 geom_vline geom_hline xlim ylim ggtitle
 #'
+#' @family functions for gene expression pre-processing
+#' @family functions for PSI quantification
 #' @return Plot of \code{data}
 #' @export
 #' 
@@ -158,12 +61,12 @@ loadTCGAsampleMetadata <- function(data) {
 #' rangeVar  <- plotRowStats(psi, x="range", y="log10(var)", xlim=c(0, 1)) +
 #'     labs(x="PSI range", y="log10(PSI variance)")
 #' rangeVar
-plotRowStats <- function(data, x, y, xmin=NULL, xmax=NULL, ymin=NULL, ymax=NULL,
-                         xlim=NULL, ylim=NULL) {
+plotRowStats <- function(data, x, y, subset=NULL, xmin=NULL, xmax=NULL, 
+                         ymin=NULL, ymax=NULL, xlim=NULL, ylim=NULL) {
     stats <- c("range", "var", "median", "mean")
     if (!any(sapply(stats, grepl, x)) || !any(sapply(stats, grepl, y))) {
-        stop("x and y require to contain one of the strings:",
-             "median, var, range")
+        stop("Arguments 'x' and 'y' must contain one of the strings:",
+             paste(stats, collapse=", "))
     }
     
     calculateXandYvalues <- function(psi, stats) {
@@ -195,11 +98,21 @@ plotRowStats <- function(data, x, y, xmin=NULL, xmax=NULL, ymin=NULL, ymax=NULL,
     vars <- calculateXandYvalues(data, stats)
     
     message("Preparing plot...")
-    plot <- ggplot(vars, aes_string(x, y)) +
-        # geom_hex(na.rm=TRUE) +
-        geom_point(size=1, na.rm=TRUE, alpha=0.5) +
-        geom_density_2d(colour="orange", na.rm=TRUE) +
-        labs(x=x, y=y)
+    if (!is.null(subset)) {
+        varsSubset <- vars[subset]
+        plot <- ggplot(vars, aes_string(x, y)) +
+            geom_point(size=1, na.rm=TRUE, alpha=0.5, colour="grey") +
+            geom_point(data=varsSubset, size=1, na.rm=TRUE, alpha=0.5, 
+                       colour="grey") +
+            geom_density_2d(data=varsSubset, colour="orange", na.rm=TRUE) +
+            labs(x=x, y=y)
+    } else {
+        plot <- ggplot(vars, aes_string(x, y)) +
+            geom_point(size=1, na.rm=TRUE, alpha=0.5) +
+            geom_point(size=1, na.rm=TRUE, alpha=0.5) +
+            geom_density_2d(colour="orange", na.rm=TRUE) +
+            labs(x=x, y=y)
+    }
     
     if (!is.null(xlim)) plot <- plot + xlim(xlim)
     if (!is.null(ylim)) plot <- plot + ylim(ylim)
@@ -369,12 +282,12 @@ dataUI <- function(id, tab) {
                    "variance and median statistical tests) and gene expression",
                    "data. The groups available for differential analyses",
                    "comprise sample types (e.g. normal versus tumour) and",
-                   "clinical attributes of patients (e.g. tumour stage)."),
+                   "clinical attributes of subjects (e.g. tumour stage)."),
             column(3, style="padding: 5px !important;",
                    h4("Survival analysis"),
                    "Analyse survival based on clinical attributes (e.g. tumour",
                    "stage, gender and race). Additionally, study the impact of",
-                   "of a single alternative splicing event or gene on patient",
+                   "of a single alternative splicing event or gene on subject",
                    "survivability."),
             column(3, style="padding: 5px !important;",
                    h4("Gene, transcript and protein information"),
@@ -466,7 +379,7 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
     }
     
     # Get class of each column
-    colType <- sapply(1:ncol(data), function(i) class(data[[i]]))
+    colType <- sapply(seq(ncol(data)), function(i) class(data[[i]]))
     colType[colType == "character"] <- "string"
     
     # Show class of each column
@@ -509,7 +422,7 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
                         dataTableOutput(tablename)),
         bsCollapsePanel(tagList(icon("pie-chart"), "Summary"), value="Summary",
                         multiHighchartsPlots)))
-    }
+}
 
 #' Render a specific data tab (including data table and related interface)
 #' 
@@ -527,7 +440,7 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
 #' @importFrom shinyjs show hide
 #' @importFrom ggplot2 labs ggtitle theme_light
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 createDataTab <- function(index, data, name, session, input, output) {
     ns <- session$ns
@@ -641,21 +554,7 @@ createDataTab <- function(index, data, name, session, input, output) {
                 plots <- list(plot=medianVar, plot=rangeVar)
             }
             attr(table, "plots") <- plots
-        }    
-        # lapply(seq(plots), function(i, tablename) {
-        #     FUN <- switch(names(plots)[[i]],
-        #                   highchart=renderHighchart, plot=renderPlot)
-        #     id <- paste(tablename, "plot", i, sep="-")
-        #     output[[id]] <- FUN(plots[[i]])
-        # }, tablename=attr(table, "tablenameID"))
-        # 
-        # plotOutputs <- lapply(seq(plots), function(i, tablename) {
-        #     FUN <- switch(names(plots)[[i]],
-        #                   highchart=highchartOutput, plot=plotOutput)
-        #     id <- paste(tablename, "plot", i, sep="-")
-        #     FUN(ns(id), height="200px")
-        # }, tablename=attr(table, "tablenameID"))
-        
+        }
         tablename <- attr(table, "tablenameID")
         plots     <- attr(table, "plots")
         
@@ -736,11 +635,11 @@ dataServer <- function(input, output, session) {
     
     # Match clinical data with sample information
     observe({
-        patients   <- getPatientId()
+        subjects   <- getSubjectId()
         samples    <- getSampleId()
-        if ( !is.null(patients) && !is.null(samples) ) {
+        if ( !is.null(subjects) && !is.null(samples) ) {
             startProgress("Matching subjects to their samples...", 1)
-            match <- getSubjectFromSample(samples, patients, 
+            match <- getSubjectFromSample(samples, subjects, 
                                           sampleInfo=getSampleInfo())
             setClinicalMatchFrom("Inclusion levels", match)
             closeProgress("Matching process concluded")

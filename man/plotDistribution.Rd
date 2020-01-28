@@ -4,43 +4,142 @@
 \alias{plotDistribution}
 \title{Plot distribution through a density plot}
 \usage{
-plotDistribution(data, groups = NULL, rug = TRUE, vLine = TRUE, ...,
-  title = NULL, psi = NULL, rugLabels = FALSE)
+plotDistribution(
+  data,
+  groups = NULL,
+  rug = TRUE,
+  vLine = TRUE,
+  ...,
+  title = NULL,
+  psi = NULL,
+  rugLabels = FALSE,
+  rugLabelsRotation = 0
+)
 }
 \arguments{
-\item{data}{Numeric, data frame or matrix: data for one gene or alternative 
-splicing event}
+\item{data}{Numeric, data frame or matrix: gene expression data or
+alternative splicing event quantification values (sample names are based on
+their \code{names} or \code{colnames})}
 
-\item{groups}{List of characters (list of groups containing data identifiers)
-or character vector (group of each value in \code{data}); if \code{NULL} or a
-character vector of length 1, all data points will be considered of the same 
-group}
+\item{groups}{List of sample names or vector containing the group name per
+\code{data} value (read Details); if \code{NULL} or a character vector of
+length 1, \code{data} values are considered from the same group}
 
-\item{rug}{Boolean: include rug plot to better visualise data distribution}
+\item{rug}{Boolean: show rug plot?}
 
-\item{vLine}{Boolean: include vertical plot lines to display descriptive 
-statistics for each group}
+\item{vLine}{Boolean: plot vertical lines (including descriptive statistics
+for each group)?}
 
-\item{...}{Extra parameters passed to \code{density} to create the kernel
-density estimates}
+\item{...}{
+  Arguments passed on to \code{\link[stats:density.default]{stats::density.default}}
+  \describe{
+    \item{\code{bw}}{the smoothing bandwidth to be used.  The kernels are scaled
+    such that this is the standard deviation of the smoothing kernel.
+    (Note this differs from the reference books cited below, and from S-PLUS.)
+
+    \code{bw} can also be a character string giving a rule to choose the
+    bandwidth.  See \code{\link[stats]{bw.nrd}}. \cr The default,
+    \code{"nrd0"}, has remained the default for historical and
+    compatibility reasons, rather than as a general recommendation,
+    where e.g., \code{"SJ"} would rather fit, see also Venables and
+    Ripley (2002).
+
+    The specified (or computed) value of \code{bw} is multiplied by
+    \code{adjust}.
+  }
+    \item{\code{adjust}}{the bandwidth used is actually \code{adjust*bw}.
+    This makes it easy to specify values like \sQuote{half the default}
+    bandwidth.}
+    \item{\code{kernel}}{a character string giving the smoothing kernel
+    to be used. This must partially match one of \code{"gaussian"},
+    \code{"rectangular"}, \code{"triangular"}, \code{"epanechnikov"},
+    \code{"biweight"}, \code{"cosine"} or \code{"optcosine"}, with default
+    \code{"gaussian"}, and may be abbreviated to a unique prefix (single
+    letter).
+
+    \code{"cosine"} is smoother than \code{"optcosine"}, which is the
+    usual \sQuote{cosine} kernel in the literature and almost MSE-efficient.
+    However, \code{"cosine"} is the version used by S.
+  }
+    \item{\code{window}}{a character string giving the smoothing kernel
+    to be used. This must partially match one of \code{"gaussian"},
+    \code{"rectangular"}, \code{"triangular"}, \code{"epanechnikov"},
+    \code{"biweight"}, \code{"cosine"} or \code{"optcosine"}, with default
+    \code{"gaussian"}, and may be abbreviated to a unique prefix (single
+    letter).
+
+    \code{"cosine"} is smoother than \code{"optcosine"}, which is the
+    usual \sQuote{cosine} kernel in the literature and almost MSE-efficient.
+    However, \code{"cosine"} is the version used by S.
+  }
+    \item{\code{weights}}{numeric vector of non-negative observation weights,
+    hence of same length as \code{x}. The default \code{NULL} is
+    equivalent to \code{weights = rep(1/nx, nx)} where \code{nx} is the
+    length of (the finite entries of) \code{x[]}.}
+    \item{\code{width}}{this exists for compatibility with S; if given, and
+    \code{bw} is not, will set \code{bw} to \code{width} if this is a
+    character string, or to a kernel-dependent multiple of \code{width}
+    if this is numeric.}
+    \item{\code{give.Rkern}}{logical; if true, \emph{no} density is estimated, and
+    the \sQuote{canonical bandwidth} of the chosen \code{kernel} is returned
+    instead.}
+    \item{\code{n}}{the number of equally spaced points at which the density is
+    to be estimated.  When \code{n > 512}, it is rounded up to a power
+    of 2 during the calculations (as \code{\link[stats]{fft}} is used) and the
+    final result is interpolated by \code{\link[stats]{approx}}.  So it almost
+    always makes sense to specify \code{n} as a power of two.
+  }
+    \item{\code{from}}{the left and right-most points of the grid at which the
+    density is to be estimated; the defaults are \code{cut * bw} outside
+    of \code{range(x)}.}
+    \item{\code{to}}{the left and right-most points of the grid at which the
+    density is to be estimated; the defaults are \code{cut * bw} outside
+    of \code{range(x)}.}
+    \item{\code{cut}}{by default, the values of \code{from} and \code{to} are
+    \code{cut} bandwidths beyond the extremes of the data.  This allows
+    the estimated density to drop to approximately zero at the extremes.}
+  }}
 
 \item{title}{Character: plot title}
 
-\item{psi}{Boolean: are data composed of PSI values? Automatically set to
-\code{TRUE} if all \code{data} values are between 0 and 1}
+\item{psi}{Boolean: are \code{data} composed of PSI values? If \code{NULL},
+\code{psi = TRUE} if all \code{data} values are between 0 and 1}
 
-\item{rugLabels}{Boolean: plot names or colnames of \code{data} in the rug?}
+\item{rugLabels}{Boolean: plot sample names in the rug?}
+
+\item{rugLabelsRotation}{Numeric: rotation (in degrees) of rug labels; this
+may present issues at different zoom levels and depending on the proximity
+of \code{data} values}
 }
 \value{
-Highcharter object with density plot
+\code{highchart} object with density plot
 }
 \description{
 The tooltip shows the median, variance, max, min and number of non-NA samples
-of each data series.
+of each data series (if \code{data} contains names or column names, those
+will be used as sample names and also appear in the tooltip).
+}
+\details{
+Argument \code{groups} can be either:
+\itemize{
+\item{a list of sample names, e.g.
+\code{list("Group 1"=c("Sample A", "Sample B"), "Group 2"=c("Sample C")))}}
+\item{a character vector with the same length as \code{data}, e.g.
+\code{c("Sample A", "Sample C", "Sample B")}.}
+}
 }
 \examples{
 data   <- sample(20, rep=TRUE)/20
 groups <- paste("Group", c(rep("A", 10), rep("B", 10)))
-label  <- paste("Sample", 1:20)
-plotDistribution(data, groups, label=label)
+names(data) <- paste("Sample", 1:20)
+plotDistribution(data, groups)
+
+# Using colours
+attr(groups, "Colour") <- c("Group A"="pink", "Group B"="orange")
+plotDistribution(data, groups)
 }
+\seealso{
+Other functions to perform and plot differential analyses: 
+\code{\link{diffAnalyses}()}
+}
+\concept{functions to perform and plot differential analyses}

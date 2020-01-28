@@ -22,3 +22,10 @@ plotProtein(protein)
 transcript <- "ENST00000488540"
 plotProtein(transcript)
 }
+\seealso{
+Other functions to retrieve external information: 
+\code{\link{ensemblToUniprot}()},
+\code{\link{plotTranscripts}()},
+\code{\link{queryEnsemblByGene}()}
+}
+\concept{functions to retrieve external information}

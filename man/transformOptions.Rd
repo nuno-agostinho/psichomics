@@ -10,7 +10,7 @@ transformOptions(label, type = NULL)
 \item{label}{Character: label to display}
 
 \item{type}{Character: show the variable transformation for the chosen type;
-NULL (by default) to show all variable transformations}
+if \code{NULL}, show all variable transformations}
 }
 \value{
 Character labelling variable transformation(s)

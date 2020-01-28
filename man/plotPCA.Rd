@@ -4,8 +4,15 @@
 \alias{plotPCA}
 \title{Create a scatterplot from a PCA object}
 \usage{
-plotPCA(pca, pcX = 1, pcY = 2, groups = NULL, individuals = TRUE,
-  loadings = FALSE, nLoadings = NULL)
+plotPCA(
+  pca,
+  pcX = 1,
+  pcY = 2,
+  groups = NULL,
+  individuals = TRUE,
+  loadings = FALSE,
+  nLoadings = NULL
+)
 }
 \arguments{
 \item{pca}{\code{prcomp} object}
@@ -40,3 +47,10 @@ plotPCA(pca, pcX=2, pcY=3)
 # Plot both individuals and loadings
 plotPCA(pca, pcX=2, pcY=3, loadings=TRUE)
 }
+\seealso{
+Other functions to analyse principal components: 
+\code{\link{calculateLoadingsContribution}()},
+\code{\link{performPCA}()},
+\code{\link{plotVariance}()}
+}
+\concept{functions to analyse principal components}

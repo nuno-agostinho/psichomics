@@ -23,12 +23,23 @@ principal components and the contribution of variables to the selected
 principal components (both individual and total contribution)
 }
 \description{
-Total contribution of a variable is calculated as per: 
-((Cx \* Ex) + (Cy \* Ey))/(Ex + Ey), where Cx and Cy are the 
-contributions of a variable to principal components (x and y) and Ex and Ey 
-are the eigenvalues of principal components (x and y)
+Total contribution of a variable is calculated as per
+\code{((Cx * Ex) + (Cy * Ey))/(Ex + Ey)}, where:
+\itemize{
+  \item{\code{Cx} and \code{Cy} are the contributions of a variable to
+  principal components \code{x} and \code{y}}
+  \item{\code{Ex} and \code{Ey} are the eigenvalues of principal components
+  \code{x} and \code{y}}
+}
 }
 \examples{
 pca <- performPCA(USArrests)
 calculateLoadingsContribution(pca)
 }
+\seealso{
+Other functions to analyse principal components: 
+\code{\link{performPCA}()},
+\code{\link{plotPCA}()},
+\code{\link{plotVariance}()}
+}
+\concept{functions to analyse principal components}

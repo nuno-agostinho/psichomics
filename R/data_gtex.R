@@ -1,7 +1,11 @@
 #' Get GTEx data types
 #' 
+#' @family functions associated with GTEx data retrieval
 #' @return GTEx data types
-#' @keywords internal
+#' @export
+#' 
+#' @examples 
+#' getGtexDataTypes()
 getGtexDataTypes <- function() {
     c("Sample attributes"="sampleInfo",
       "Subject phenotypes"="subjectInfo",
@@ -29,12 +33,12 @@ gtexDataUI <- function(id, panel) {
                              placeholder="Select data types",
                              plugins=list("remove_button"))),
           fileBrowserInput(
-              ns("dataFolder"), "Folder where data is stored",
+              ns("folder"), "Folder where data is stored",
               value=getDownloadsFolder(),
               placeholder="No folder selected",
               info=TRUE, infoFUN=bsTooltip,
-              infoTitle=paste("Data will be downloaded if not available in this",
-                              "folder.")),
+              infoTitle=paste("Data will be downloaded if not available in",
+                              "this folder.")),
           bsCollapse(
               id=ns("filterCollapse"),
               bsCollapsePanel(
@@ -55,11 +59,17 @@ gtexDataUI <- function(id, panel) {
 #'
 #' @inheritParams loadGtexData
 #'
+#' @family functions associated with GTEx data retrieval
 #' @return Character: available tissues
 #' @export
-getGtexTissues <- function(dataFolder=getDownloadsFolder()) {
+#' 
+#' @examples 
+#' \dontrun{
+#' getGtexTissues()
+#' }
+getGtexTissues <- function(folder=getDownloadsFolder()) {
     sampleFile <- "GTEx_v7_Annotations_SampleAttributesDS.txt"
-    filepath <- file.path(dataFolder, sampleFile)
+    filepath <- file.path(folder, sampleFile)
     names(filepath) <- sampleFile
     downloadGtexFiles(filepath, "Samples")
     
@@ -123,12 +133,12 @@ loadGtexFile <- function(path, pattern, samples=NULL) {
         if (pattern == "Sample") {
             # Retrieve samples based on tissues
             parsed <- parsed[samples, ]
-        } else if (pattern=="Subject") {
-            # Retrieve patients for which samples are available
-            patients <- getPatientFromSample(samples, rownames(parsed))
-            patients <- patients[!is.na(patients)]
-            patients <- sort(unique(patients))
-            parsed <- parsed[patients, ]
+        } else if (pattern == "Subject") {
+            # Retrieve subjects for which samples are available
+            subjects <- getSubjectFromSample(samples, rownames(parsed))
+            subjects <- subjects[!is.na(subjects)]
+            subjects <- sort(unique(subjects))
+            parsed <- parsed[subjects, ]
         }
     }
     return(parsed)
@@ -160,20 +170,35 @@ downloadGtexFiles <- function(filepath, dataTypes) {
 
 #' Load GTEx data
 #'
-#' @param dataTypes Character: data types to load (see \code{getGtexDataTypes})
-#' @param dataFolder Character: folder containing data
+#' @param data Character: data types to load (see \code{getGtexDataTypes})
+#' @param folder Character: folder containing data
 #' @param tissue Character: tissues to load (if \code{NULL}, load all); tissue
 #' selection may speed up data loading
 #'
 #' @importFrom tools file_path_sans_ext
 #' @importFrom R.utils gunzip
-#'
+#' 
+#' @family functions associated with GTEx data retrieval
 #' @return List with loaded data
 #' @export
-loadGtexData <- function(dataTypes=getGtexDataTypes(), 
-                         dataFolder=getDownloadsFolder(), tissue=NULL) {
-    if (is.null(dataTypes))  stop("Argument 'dataTypes' cannot be NULL.")
-    if (is.null(dataFolder)) stop("Argument 'dataFolder' cannot be NULL.")
+#' 
+#' @examples 
+#' \dontrun{
+#' # Download and load all available GTEx data
+#' data <- loadGtexData()
+#' 
+#' # Download and load only junction quantification and sample info from GTEx
+#' getGtexDataTypes()
+#' data <- loadGtexData(data=c("sampleInfo", "junctionQuant"))
+#' 
+#' # Download and load only data for specific tissues
+#' getGtexTissues()
+#' data <- loadGtexData(tissue=c("Stomach", "Small Intestine"))
+#' }
+loadGtexData <- function(folder=getDownloadsFolder(), data=getGtexDataTypes(), 
+                         tissue=NULL) {
+    if (is.null(data))   stop("Argument 'data' cannot be NULL.")
+    if (is.null(folder)) stop("Argument 'folder' cannot be NULL.")
     
     files <- c(
         "GTEx_v7_Annotations_SampleAttributesDS.txt",
@@ -181,13 +206,13 @@ loadGtexData <- function(dataTypes=getGtexDataTypes(),
         "GTEx_Analysis_2016-01-15_v7_RNASeQCv1.1.8_gene_reads.gct.gz",
         "GTEx_Analysis_2016-01-15_v7_STARv2.4.2a_junctions.gct.gz")
     names(files) <- getGtexDataTypes()
-    files <- files[dataTypes]
-    filepath <- file.path(dataFolder, files)
+    files <- files[data]
+    filepath <- file.path(folder, files)
     names(filepath) <- files
     
-    downloadGtexFiles(filepath, dataTypes)
+    downloadGtexFiles(filepath, data)
     
-    updateProgress("Loading files...", divisions=length(dataTypes))
+    updateProgress("Loading files...", divisions=length(data))
     
     loadThisGtexFile <- function(path, pattern, samples=NULL) {
         name <- ifelse(is.character(path), basename(path), path$name)
@@ -242,27 +267,27 @@ loadGtexData <- function(dataTypes=getGtexDataTypes(),
     names(loaded) <- sapply(loaded, attr, "tablename")
     loaded <- Filter(length, loaded)
     
-    data <- setNames(list(loaded), "GTEx")
-    data <- processDatasetNames(data)
+    gtex <- setNames(list(loaded), "GTEx")
+    gtex <- processDatasetNames(gtex)
     closeProgress()
-    return(data)
+    return(gtex)
 }
 
 #' Shiny wrapper to load GTEx data
 #' 
 #' @param session Shiny session
-#' @param input Shiny input
-#' @param replace Boolean: replace loaded data? TRUE by default
+#' @inheritParams appServer
+#' @param replace Boolean: replace loaded data?
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 loadGtexDataShiny <- function(session, input, replace=TRUE) {
     dataTypes  <- input$dataTypes
-    dataFolder <- input$dataFolder
+    folder     <- input$folder
     tissue     <- input$tissues
     
     time <- startProcess("load")
-    data <- loadGtexData(dataTypes, dataFolder, tissue)
+    data <- loadGtexData(dataTypes, folder, tissue)
     
     if (!is.null(data)) {
         if (!replace) data <- c(getData(), data)
@@ -284,7 +309,7 @@ gtexDataServer <- function(input, output, session) {
     
     # Select available tissues from GTEx
     showAvailableTissues <- reactive({
-        dataFolder     <- input$dataFolder
+        folder         <- input$folder
         progressBar    <- "loadingAvailableTissues"
         tissueSelect   <- "tissues"
         
@@ -294,7 +319,7 @@ gtexDataServer <- function(input, output, session) {
         fadeOut(progressBar)
         fadeOut(tissueSelect)
         tissues <- tryCatch(
-            getGtexTissues(dataFolder), error=return, warning=return)
+          getGtexTissues(folder), error=return, warning=return)
         fadeIn(tissueSelect, animType="fade")
         tissues <- c(tissues, "Select available tissues"="")
         

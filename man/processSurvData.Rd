@@ -4,8 +4,15 @@
 \alias{processSurvData}
 \title{Process survival data to calculate survival curves}
 \usage{
-processSurvData(event, timeStart, timeStop, followup, group, clinical,
-  survTime = NULL)
+processSurvData(
+  event,
+  timeStart,
+  timeStop,
+  followup,
+  group,
+  clinical,
+  survTime = NULL
+)
 }
 \arguments{
 \item{event}{Character: name of column containing time of the event of
@@ -19,7 +26,7 @@ interval (only relevant for interval censoring)}
 
 \item{followup}{Character: name of column containing follow up time}
 
-\item{group}{Character: group relative to each patient}
+\item{group}{Character: group relative to each subject}
 
 \item{clinical}{Data frame: clinical data}
 
@@ -33,15 +40,14 @@ Data frame with terms needed to calculate survival curves
 Process survival data to calculate survival curves
 }
 \details{
-The event time will only be used to determine whether the event has
-occurred (1) or not (0) in case of missing values.
+The \code{event} time is only used to determine whether the event
+has occurred (\code{1}) or not (\code{0}) in case of missing values.
 
-If \code{survTime} is NULL, the survival times will be fetch from the
-clinical dataset according to the names given in \code{timeStart},
-\code{timeStop}, \code{event} and \code{followup}. This can became quite slow
-when using the function in a for loop. If these variables are constant, 
-consider running the function \code{\link{getAttributesTime}} to retrieve the
-time of such columns once and hand the result to the \code{survTime} argument
-of this function.
+If \code{survTime = NULL}, survival times are obtained from the clinical
+dataset according to the names given in \code{timeStart}, \code{timeStop},
+\code{event} and \code{followup}. This may become quite slow when used in a
+loop. If the aforementioned variables are constant, consider running
+\code{\link{getAttributesTime}()} outside the loop and using its output via
+the \code{survTime} argument of this function (see Examples).
 }
 \keyword{internal}

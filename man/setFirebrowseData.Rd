@@ -13,10 +13,11 @@ setFirebrowseData(input, output, session, replace = TRUE)
 
 \item{session}{Shiny session}
 
-\item{replace}{Boolean: replace loaded data? TRUE by default}
+\item{replace}{Boolean: replace loaded data?}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (function is only used to modify the Shiny session's
+state or internal variables)
 }
 \description{
 Set data from Firebrowse

@@ -4,9 +4,18 @@
 \alias{setOperation}
 \title{Perform set operations on selected groups}
 \usage{
-setOperation(operation, groups, selected, symbol = " ",
-  groupName = NULL, first = NULL, second = NULL, matches = NULL,
-  type = "Samples", assignColoursToGroups = FALSE)
+setOperation(
+  operation,
+  groups,
+  selected,
+  symbol = " ",
+  groupName = NULL,
+  first = NULL,
+  second = NULL,
+  matches = NULL,
+  type = "Samples",
+  assignColoursToGroups = FALSE
+)
 }
 \arguments{
 \item{operation}{Character: set operation}
@@ -16,10 +25,10 @@ setOperation(operation, groups, selected, symbol = " ",
 \item{selected}{Integer: index of rows regarding selected groups}
 
 \item{symbol}{Character: Unicode symbol to visually indicate the operation
-performed (" " by default)}
+performed}
 
-\item{groupName}{Character: group name (automatically created if NULL or
-\code{""})}
+\item{groupName}{Character: group name (automatically created if \code{NULL}
+or \code{""})}
 
 \item{first}{Character: identifiers of the first element (required when 
 performing the \code{complement} operation)}
@@ -27,13 +36,12 @@ performing the \code{complement} operation)}
 \item{second}{Character: identifiers of the second element (required when 
 performing the \code{complement} operation)}
 
-\item{matches}{Character: match between samples (as names) and patients (as
+\item{matches}{Character: match between samples (as names) and subjects (as
 values)}
 
 \item{type}{Character: type of group where set operations are to be performed}
 
-\item{assignColoursToGroups}{Boolean: assign colours to new groups? FALSE by
-default}
+\item{assignColoursToGroups}{Boolean: assign colours to new groups?}
 }
 \value{
 Matrix containing groups (new group is in the first row)

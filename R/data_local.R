@@ -8,9 +8,8 @@ localDataUI <- function(id, panel) {
     addMultipleFiles <- tagList(
         helpText("All fields below are optional."),
         fileBrowserInput(
-            ns("sampleInfo"),
-            "File with sample information",
-            placeholder="No file selected",
+            ns("sampleInfo"), "File with sample information",
+            placeholder="No file selected", clearable=TRUE,
             info=TRUE, infoFUN=bsPopover, infoTitle=paste(
                 "File containing sample identifiers as rows and their",
                 "attributes as columns."),
@@ -25,7 +24,7 @@ localDataUI <- function(id, panel) {
                 tags$hr(), helpText("Example:"), tags$table(
                     class="table table-condensed",
                     tags$thead(
-                        tableRow("Sample ID", "Type", "Tissue", "Subject",
+                        tableRow("Sample ID", "Type", "Tissue", "Subject ID",
                                  th=TRUE)),
                     tags$tbody(
                         tableRow("SMP-01", "Tumour", "Lung", "SUBJ-03"),
@@ -65,16 +64,22 @@ localDataUI <- function(id, panel) {
                         "The first column must contain junction identifiers",
                         "and be named", tags$kbd("Junction ID")),
                     tags$li(
-                        "Only numbers (or X and Y) are extracted from the",
-                        "junction identifier. Acceptable junction identifiers",
-                        "include: ", tags$kbd("10_18748_21822"), ", ",
-                        tags$kbd("chromosome 10 (18748 to 21822)"), " and ", 
+                        "Only chromosome number/capital letters X, Y, Z, W",
+                        "and M, followed by the genomic regions are supported.",
+                        "Acceptable junction identifiers include:",
+                        tags$kbd("10_18748_21822"), ",",
+                        tags$kbd("chromosome 10 (18748 to 21822)"), "and",
                         tags$kbd("chr10:18748-21822")),
                     tags$li(
-                        "The strand is optional. If desired, it needs to come",
-                        "in the end of the string. For instance,", 
+                        "Optionally, indicate the strand with", tags$kbd("+"),
+                        "or", tags$kbd("-"),
+                        "at the end of the junction identifier. For instance,", 
                         tags$kbd("10:3213:9402:+"), "and",
-                        tags$kbd("chr10:3213-9402 -"))),
+                        tags$kbd("chr10:3213-9402 -")),
+                    tags$li(
+                        "Rows whose junction identifiers contain",
+                        tags$kbd("alt"), tags$kbd("random"), "or",
+                        tags$kbd("Un"), "in chromosome names are discarded.")),
                 tags$hr(), helpText("Example:"), tags$table(
                     class="table table-condensed",
                     tags$thead(
@@ -120,7 +125,7 @@ localDataUI <- function(id, panel) {
               tabPanel("Folder input", addFolder)))
 }
 
-#' Prepare files to be loaded into psichomics
+#' Prepare user-provided files to be loaded into psichomics
 #' 
 #' @param file Character: path to file
 #' @param output Character: path of output file (if \code{NULL}, only returns 
@@ -128,27 +133,31 @@ localDataUI <- function(id, panel) {
 #' 
 #' @importFrom data.table fread fwrite
 #' 
-#' @return Prepared file
+#' @family functions to load local files
+#' @return Prepared file (if \code{output != NULL}) and object
 #' @export
 prepareSRAmetadata <- function(file, output="psichomics_metadata.txt") {
     data <- fread(file)
     data <- cbind("Sample ID"=data$Run, data)
-    if (!is.null(output)) fwrite(data, output, sep="\t")
-    return(data)
+    if (!is.null(output)) {
+        fwrite(data, output, sep="\t")
+        return(invisible(data))
+    } else {
+        return(data)
+    }
 }
 
-#' Process and save SRA quantification data
+#' Process SRA quantification data
 #' 
 #' @param files Character: path to SRA quantification files
 #' @param data Data frame: processed quantification data
-#' @param output Character: output filename (if \code{NULL}, no file is saved)
 #' @param IDcolname Character: name of the column containing the identifiers
 #' 
 #' @importFrom utils askYesNo
 #' 
-#' @return Process file and save its output
+#' @return Process file
 #' @keywords internal
-processAndSaveSRAdata <- function(files, data, output, IDcolname) {
+processSRAdata <- function(files, data, IDcolname) {
     # Add sample names
     samples <- names(files)
     if (is.null(samples)) {
@@ -166,7 +175,18 @@ processAndSaveSRAdata <- function(files, data, output, IDcolname) {
     
     quant <- cbind(rownames(data), data)
     setnames(quant, "V1", IDcolname)
-    
+    return(quant)
+}
+
+#' Save processed SRA data in file
+#' 
+#' @param data Object to save
+#' @param output Character: output filename (if \code{NULL}, no file is saved)
+#' 
+#' @return If \code{output = NULL}, save input to a file and return it as
+#'   invisible; otherwise, just return the input
+#' @keywords internal
+saveProcessedSRAdata <- function(data, output=NULL) {
     # Save data to given path
     if (!is.null(output)) {
         if (file.exists(output)) {
@@ -179,16 +199,18 @@ processAndSaveSRAdata <- function(files, data, output, IDcolname) {
         } else {
             allowOverwrite <- FALSE
         }
-        fwrite(quant, output, sep="\t", na=0, quote=FALSE)
+        fwrite(data, output, sep="\t", na=0, quote=FALSE)
         message(sprintf("File %s was %s", output, 
                         ifelse(allowOverwrite, "overwritten", "created")))
+        return(invisible(data))
+    } else {
+        return(data)
     }
-    return(quant)
 }
 
 #' @rdname prepareSRAmetadata
 #' 
-#' @param ... Character: path to file(s) to read
+#' @param ... Character: path of (optionally named) input files (see Examples)
 #' @param startOffset Numeric: value to offset start position
 #' @param endOffset Numeric: value to offset end position
 #' 
@@ -211,12 +233,14 @@ prepareJunctionQuant <- function(..., output="psichomics_junctions.txt",
     # Prepare junction quantification accordingly
     data  <- prepareJunctionQuantSTAR(..., startOffset=startOffset, 
                                       endOffset=endOffset)
-    quant <- processAndSaveSRAdata(files, data, output, "Junction ID")
-    return(quant)
+    quant <- processSRAdata(files, data, "Junction ID")
+    quant <- saveProcessedSRAdata(quant, output)
+    return(invisible(quant))
 }
 
 #' @inherit prepareSRAmetadata
 #' @importFrom data.table fread setnames setkeyv setorderv
+#' @keywords internal
 prepareJunctionQuantSTAR <- function(..., startOffset=-1, endOffset=+1) {
     if (is.null(startOffset)) startOffset <- -1
     if (is.null(endOffset))   endOffset   <- +1
@@ -226,7 +250,7 @@ prepareJunctionQuantSTAR <- function(..., startOffset=-1, endOffset=+1) {
     joint <- NULL
     for (file in files) {
         cat(sprintf("Processing %s...", file), fill=TRUE)
-        table    <- fread(file)[, c(1:4, 7)]
+        table    <- fread(file)[, c(1, 2, 3, 4, 7)]
         table$V2 <- table$V2 + startOffset
         table$V3 <- table$V3 + endOffset
         joint    <- c(joint, list(table))
@@ -250,7 +274,7 @@ prepareJunctionQuantSTAR <- function(..., startOffset=-1, endOffset=+1) {
     strand <- ifelse(junctionQuant$V4 == "1", "+", "-")
     cat("Preparing event identifiers...", fill=TRUE)
     ns     <- with(junctionQuant, paste(V1, V2, V3, strand, sep=":"))
-    junctionQuant <- junctionQuant[ , -c(1:4)]
+    junctionQuant <- junctionQuant[ , -c(1, 2, 3, 4)]
     rownames(junctionQuant) <- ns
     return(junctionQuant)
 }
@@ -282,8 +306,9 @@ prepareGeneQuant <- function(..., output="psichomics_gene_counts.txt",
     
     # Prepare file accordingly
     data  <- prepareGeneQuantSTAR(..., strandedness=strandedness)
-    quant <- processAndSaveSRAdata(files, data, output, "Gene ID")
-    return(quant)
+    quant <- processSRAdata(files, data, "Gene ID")
+    quant <- saveProcessedSRAdata(quant, output)
+    return(invisible(quant))
 }
 
 #' @rdname prepareJunctionQuantSTAR
@@ -307,7 +332,7 @@ prepareGeneQuantSTAR <- function(..., strandedness=c("unstranded", "stranded",
     index <- 0
     lapply(joint, function(table) {
         index <<- index + 1
-        setnames(table, "V2", paste0("col", index))
+        setnames(table, colnames(table)[[2]], paste0("col", index))
         setkeyv(table, "V1")
     })
     
@@ -332,6 +357,7 @@ prepareGeneQuantSTAR <- function(..., strandedness=c("unstranded", "stranded",
 #' 
 #' @importFrom stats setNames
 #' 
+#' @family functions to load local files
 #' @return List of data frames from valid files
 #' @export
 #' 
@@ -364,23 +390,37 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."),
         if (!is(loadedFile, "error")) loaded[[each]] <- loadedFile
     }
     names(loaded) <- sapply(loaded, attr, "tablename")
-    loaded <- list(Filter(length, loaded))
-    loaded <- loadTCGAsampleMetadata(loaded)
+    loaded <- Filter(length, loaded)
     
-    data <- setNames(loaded, name)
-    data <- processDatasetNames(data)
+    if (length(loaded) == 0) {
+        compressed <- grep("tar.gz$|tar$|zip$", files, value=TRUE,
+                           ignore.case=TRUE)
+        anyCompressed <- length(compressed) > 0
+        msg <- "No supported files were found in the given folder."
+        if (anyCompressed) {
+            msg <- paste(msg, 
+                         "\n\nIf applicable, ensure to extract the contents",
+                         "from compressed folders (e.g. ZIP and TAR folders).")
+        }
+        warning(msg)
+        data <- NULL
+    } else {
+        loaded <- list(loaded)
+        loaded <- loadTCGAsampleMetadata(loaded)
+        
+        data <- setNames(loaded, name)
+        data <- processDatasetNames(data)
+    }
     return(data)
 }
 
 #' Load local files
-#' @param input Shiny input
-#' @param output Shiny output
-#' @param session Shiny session
-#' @param replace Boolean: replace loaded data? TRUE by default
+#' @inheritParams appServer
+#' @param replace Boolean: replace loaded data?
 #' 
 #' @importFrom shinyjs disable enable
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 setLocalData <- function(input, output, session, replace=TRUE) {
     time <- startProcess("acceptFile")
@@ -391,15 +431,17 @@ setLocalData <- function(input, output, session, replace=TRUE) {
     ignore <- c(".aux.", ".mage-tab.", input$localIgnore)
     
     # Load valid local files
-    data <- loadLocalFiles(folder, name=category, ignore)
-    
-    if (!is.null(data)) {
-        if(replace) {
-            setData(data)
-        } else {
-            data <- processDatasetNames(c(getData(), data))
-            setData(data)
-        }
+    data <- tryCatch(loadLocalFiles(folder, name=category, ignore), 
+                     warning=return, error=return)
+    if (is(data, "warning") || is(data, "error")) {
+        warningModal(session, "No files available to load", data$message,
+                     modalId="localDataModal", caller="Load local data")
+    } else if (!is.null(data)) {
+        if (!replace) data <- processDatasetNames(c(getData(), data))
+        setData(data)
+    } else {
+        errorModal(session, "No data loaded", "Something went wrong...",
+                   modalId="localDataModal", caller="Load local data")
     }
     endProcess("acceptFile", time)
 }
@@ -538,7 +580,7 @@ localDataServer <- function(input, output, session) {
         if (!dir.exists(folder)) {
             # Folder not found
             errorModal(session, "Folder not found",
-                       "Check if folder path is correct.",
+                       "Check if the folder path is correct.",
                        modalId="localDataModal", caller="Load local data")
             enable("acceptFile")
             return(NULL)

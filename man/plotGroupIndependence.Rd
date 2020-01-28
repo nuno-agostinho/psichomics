@@ -2,16 +2,22 @@
 % Please edit documentation in R/groups.R
 \name{plotGroupIndependence}
 \alias{plotGroupIndependence}
-\title{Plot -log10(p-values) of the results obtained after multiple group 
+\title{Plot \code{-log10(p-values)} of the results obtained after multiple group
 independence testing}
 \usage{
-plotGroupIndependence(groups, top = 50, textSize = 10,
-  colourLow = "lightgrey", colourMid = "blue", colourHigh = "orange",
-  colourMidpoint = 150)
+plotGroupIndependence(
+  groups,
+  top = 50,
+  textSize = 10,
+  colourLow = "lightgrey",
+  colourMid = "blue",
+  colourHigh = "orange",
+  colourMidpoint = 150
+)
 }
 \arguments{
 \item{groups}{\code{multiGroupIndependenceTest} object (obtained after 
-running \code{\link{testGroupIndependence}})}
+running \code{\link{testGroupIndependence}()})}
 
 \item{top}{Integer: number of attributes to render}
 
@@ -29,11 +35,11 @@ running \code{\link{testGroupIndependence}})}
 \code{ggplot} object
 }
 \description{
-Plot -log10(p-values) of the results obtained after multiple group 
+Plot \code{-log10(p-values)} of the results obtained after multiple group
 independence testing
 }
 \examples{
-elements <- paste("patients", 1:50)
+elements <- paste("subjects", 1:50)
 ref      <- elements[10:50]
 groups   <- list(race=list(asian=elements[1:3],
                            white=elements[4:7],
@@ -44,6 +50,15 @@ groupTesting <- testGroupIndependence(ref, groups, elements)
 plotGroupIndependence(groupTesting)
 }
 \seealso{
-\code{\link{parseCategoricalGroups}} and 
-\code{\link{testGroupIndependence}}
+\code{\link{parseCategoricalGroups}()} and 
+\code{\link{testGroupIndependence}()}
+
+Other functions for data grouping: 
+\code{\link{createGroupByAttribute}()},
+\code{\link{getGeneList}()},
+\code{\link{getMatchingSamples}()},
+\code{\link{getSubjectFromSample}()},
+\code{\link{groupPerElem}()},
+\code{\link{testGroupIndependence}()}
 }
+\concept{functions for data grouping}

@@ -4,8 +4,15 @@
 \alias{filterGeneExpr}
 \title{Filter genes based on their expression}
 \usage{
-filterGeneExpr(geneExpr, minMean = 0, maxMean = Inf, minVar = 0,
-  maxVar = Inf, minCounts = 10, minTotalCounts = 15)
+filterGeneExpr(
+  geneExpr,
+  minMean = 0,
+  maxMean = Inf,
+  minVar = 0,
+  maxVar = Inf,
+  minCounts = 10,
+  minTotalCounts = 15
+)
 }
 \arguments{
 \item{geneExpr}{Data frame or matrix: gene expression}
@@ -42,3 +49,11 @@ geneExpr <- rbind(geneExpr,
 # Filter out genes with low reads across samples
 geneExpr[filterGeneExpr(geneExpr), ]
 }
+\seealso{
+Other functions for gene expression pre-processing: 
+\code{\link{convertGeneIdentifiers}()},
+\code{\link{normaliseGeneExpression}()},
+\code{\link{plotGeneExprPerSample}()},
+\code{\link{plotRowStats}()}
+}
+\concept{functions for gene expression pre-processing}

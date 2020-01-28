@@ -37,20 +37,7 @@ isFile <- function(files) {
     return(fileExists)
 }
 
-#' Sidebar without a well
-#' 
-#' Modified version of \code{shiny::sidebarPanel} without a well
-#' 
-#' @importFrom shiny div tags
-#' 
-#' @inherit shiny::sidebarPanel
-#' 
-#' @keywords internal
-sidebar <- function(..., width=4) {
-    div(class = paste0("col-sm-", width), tags$form(...))
-}
-
-#' Load local file
+#' Load psichomics-specific file
 #' @param file Character: path to the file
 #' 
 #' @return Loaded file
@@ -62,48 +49,11 @@ readFile <- function(file) {
     readRDS(insideFile("extdata", file))
 }
 
-#' Link to run arbitrary JavaScript code
-#' 
-#' @param text Character: text label
-#' @param code Character: JavaScript code
-#' 
-#' @return HTML elements
-#' @keywords internal
-linkToRunJS <- function(text, code) {
-    HTML(sprintf('<a href="#" onclick="%s; return false;">%s</a>', code, text))
-}
-
-#' Create a row for a HTML table
-#' 
-#' @param ... Elements to include in the row
-#' @param th Boolean: is this row the table head?
-#' 
-#' @return HTML elements
-#' @keywords internal
-tableRow <- function (..., th=FALSE) {
-    args <- list(...)
-    if (th) row <- tags$th
-    else    row <- tags$td
-    do.call(tags$tr, lapply(args, row))
-}
-
-#' Modified colour input with 100\% width
-#' 
-#' @inheritDotParams colourpicker::colourInput
-#' @importFrom colourpicker colourInput
-#' 
-#' @return HTML elements
-#' @keywords internal
-colourInputMod <- function(...) {
-    colourSelector <- colourInput(...)
-    colourSelector[[2]][["style"]] <- "width: 100%;"
-    return(colourSelector)
-}
-
-#' Splicing event types available
+#' Get supported splicing event types
 #' 
 #' @param acronymsAsNames Boolean: return acronyms as names?
 #' 
+#' @family functions for PSI quantification
 #' @return Named character vector with splicing event types
 #' @export
 #' 
@@ -140,17 +90,17 @@ areSplicingEvents <- function(char, num=6) {
         sum(charToRaw(i) == charToRaw("_")) > 3))
 }
 
-#' Parse an alternative splicing event based on a given identifier
+#' Parse alternative splicing event identifier
 #' 
 #' @param event Character: event identifier
-#' @param char Boolean: return a single character instead of list with parsed
+#' @param char Boolean: return character vector instead of list with parsed
 #' values?
 #' @param pretty Boolean: return a prettier name of the event identifier?
 #' @param extra Character: extra information to add (such as species and
-#' assembly version); only used if \code{pretty} and \code{char} are \code{TRUE}
-#' @param coords Boolean: extra coordinates regarding the alternative and 
-#' constitutive regions of alternative splicing events; only used if \code{char}
-#' is \code{FALSE}
+#' assembly version); only used if \code{pretty = TRUE} and \code{char = TRUE}
+#' @param coords Boolean: display extra coordinates regarding the alternative 
+#' and constitutive regions of alternative splicing events? If 
+#' \code{char = FALSE}, all coordinates are always displayed
 #' 
 #' @return Parsed event
 #' @export
@@ -161,6 +111,7 @@ areSplicingEvents <- function(char, num=6) {
 #' parseSplicingEvent(events)
 parseSplicingEvent <- function(event, char=FALSE, pretty=FALSE, extra=NULL, 
                                coords=FALSE) {
+    if (is.null(event)) return(NULL)
     # Pre-treat special case of exon-centred AFE and ALE
     event <- gsub("AFE_exon", "AFE", event, fixed=TRUE)
     event <- gsub("ALE_exon", "ALE", event, fixed=TRUE)
@@ -208,7 +159,7 @@ parseSplicingEvent <- function(event, char=FALSE, pretty=FALSE, extra=NULL,
     
     # Parse position according to type of alternative splicing event
     parsed$pos <- lapply(seq_along(event), 
-                         function(i) event[[i]][4:lenMinus1[[i]]])
+                         function(i) as.numeric(event[[i]][4:lenMinus1[[i]]]))
     if (coords) {
         parsed$constitutive1 <- NA
         parsed$alternative1  <- NA
@@ -355,31 +306,13 @@ trimWhitespace <- function(word) {
     return(word)
 }
 
-#' Create word break opportunities (for HTML) using given characters
-#' 
-#' @param str Character: text
-#' @param pattern Character: pattern(s) of interest to be used as word break
-#' opportunities
-#' 
-#' @importFrom shiny HTML
-#' 
-#' @return String containing HTML elements
-#' @keywords internal
-prepareWordBreak <- function(str, pattern=c(".", "-", "\\", "/", "_", ",", 
-                                            " ")) {
-    res <- str
-    # wbr: word break opportunity
-    for (p in pattern) res <- gsub(p, paste0(p, "<wbr>"), res, fixed=TRUE)
-    return(HTML(res))
-}
-
-#' Filter NULL elements from vector or list
+#' Filter \code{NULL} elements from a vector or a list
 #' 
 #' @param v Vector or list
 #' 
-#' @return Filtered vector or list with no NULL elements; if the input is a
-#' vector composed of only NULL elements, it returns a NULL (note that it will
-#' returns an empty list if the input is a list with only NULL elements)
+#' @return Filtered vector or list with no \code{NULL} elements; if \code{v} is
+#' a vector composed of \code{NULL} elements, returns a \code{NULL}; if \code{v}
+#' is a list of \code{NULL} elements, returns an empty list
 #' @keywords internal
 rm.null <- function(v) Filter(Negate(is.null), v)
 
@@ -392,16 +325,6 @@ rm.null <- function(v) Filter(Negate(is.null), v)
 escape <- function(...) {
     # return(gsub("/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]", "\\$&", string))
     return(gsub("(\\W)", "\\\\\\1", paste0(...)))
-}
-
-#' Convert vector of values to JavaScript array
-#' 
-#' @param values Character vector
-#' 
-#' @return Character with valid JavaScript array
-#' @keywords internal
-toJSarray <- function(values) {
-    paste0("[", paste0(paste0("\'", values, "\'"), collapse=", "), "]")
 }
 
 #' Check if a number is whole
@@ -480,7 +403,7 @@ renameDuplicated <- function(check, comp) {
     
     for (dup in which(repeated)) {
         # Locate matches (don't forget the counter)
-        all <- c(comp, head(check[1:dup], -1))
+        all <- c(comp, head(check[seq(dup)], -1))
         expr <- paste0(escape(check[dup]), " \\([0-9]+\\)|", escape(check[dup]))
         locate <- grep(expr, all, value = TRUE)
         
@@ -495,158 +418,99 @@ renameDuplicated <- function(check, comp) {
     return(check)
 }
 
-#' Style button used to initiate a process
-#' 
-#' @param id Character: button identifier
-#' @param label Character: label
-#' @inheritDotParams shiny::actionButton -inputId -label
-#' @param class Character: class
-#' 
-#' @importFrom shinyjs hidden
-#' @importFrom shiny tags actionButton
-#' 
-#' @return HTML for a button
-#' @keywords internal
-processButton <- function(id, label, ..., class="btn-primary") {
-    spinner <- tags$i(id=paste0(id, "Loading"), class="fa fa-spinner fa-spin")
-    button  <- actionButton(id, class=class, type="button", 
-                            label=div(hidden(spinner), label), ...)
-    return(button)
-}
-
-#' Set the status of a process to style a given button
-#' 
-#' \itemize{
-#'   \item{\code{startProcess}: Style button to show a process is in progress}
-#'   \item{\code{endProcess}: Style button to show a process finished; also, 
-#'   closes the progress bar (if \code{closeProgressbar} is \code{TRUE}) and 
-#'   prints the difference between the current time and \code{time}}
-#' }
-#' 
-#' @param id Character: button identifier
-#' @importFrom shinyjs show
-#' 
-#' @return \code{startProcess} returns the start time of the process (may be 
-#' used as the \code{time} argument to \code{endProcess}), whereas
-#' \code{endProcess} returns the difference between current time and \code{time}
-#' (or \code{NULL} if \code{time} is not specified)
-#' @keywords internal
-startProcess <- function(id) {
-    disable(id)
-    show(paste0(id, "Loading"))
-    return(Sys.time())
-}
-
-#' @rdname startProcess
-#' 
-#' @param time \code{POSIXct} object: start time needed to show the interval
-#' time (if NULL, the time interval is not displayed)
-#' @param closeProgressBar Boolean: close progress bar? TRUE by default
-#' 
-#' @importFrom shinyjs enable hide
-endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
-    enable(id)
-    hide(paste0(id, "Loading"))
-    if (closeProgressBar) suppressWarnings(closeProgress())
-    if (!is.null(time)) {
-        diffTime <- Sys.time() - time
-        display(diffTime, "Process finished in")
-        return(diffTime)
-    }
-    return(NULL)
-}
-
-#' Get patients from given samples
+#' Get subjects from given samples
 #'
 #' @param sampleId Character: sample identifiers
-#' @param patientId Character: patient identifiers to filter by (optional; if a
-#' matrix or data frame is given, its rownames will be used to infer the patient
+#' @param patientId Character: subject identifiers to filter by (optional; if a
+#' matrix or data frame is given, its rownames will be used to infer the subject
 #' identifiers)
-#' @param na Boolean: return NA for samples with no matching patients
+#' @param na Boolean: return \code{NA} for samples with no matching subjects
 #' @param sampleInfo Data frame or matrix: sample information containing the
 #' sample identifiers as rownames and a column named "Subject ID" with the
 #' respective subject identifiers
 #'
-#' @return Character: patient identifiers corresponding to the given samples
+#' @aliases getPatientFromSample
+#' @family functions for data grouping
+#' @return Character: subject identifiers corresponding to the given samples
 #' 
 #' @export
 #' @examples
 #' samples <- paste0("GTEX-", c("ABC", "DEF", "GHI", "JKL", "MNO"), "-sample")
-#' getPatientFromSample(samples)
+#' getSubjectFromSample(samples)
 #' 
-#' # Filter returned samples based on available patients
-#' patients <- paste0("GTEX-", c("DEF", "MNO"))
-#' getPatientFromSample(samples, patients)
-getPatientFromSample <- function(sampleId, patientId=NULL, na=FALSE,
+#' # Filter returned samples based on available subjects
+#' subjects <- paste0("GTEX-", c("DEF", "MNO"))
+#' getSubjectFromSample(samples, subjects)
+getSubjectFromSample <- function(sampleId, patientId=NULL, na=FALSE,
                                  sampleInfo=NULL) {
     if (!is.null(patientId) && 
         (is.matrix(patientId) || is.data.frame(patientId))) {
         patientId <- rownames(patientId)
     }
     
-    # Extract patient identifiers from sample ID and then retrieve their index
-    extractPatientIndex <- function(pattern, samples, allPatients) {
-        patient <- gsub(pattern, "\\1", samples)
-        names(patient) <- samples
+    # Extract subject identifiers from sample ID and then retrieve their index
+    extractSubjectIndex <- function(pattern, samples, allSubjects) {
+        subject <- gsub(pattern, "\\1", samples)
+        names(subject) <- samples
         
-        if (!is.null(allPatients)) {
-            # Filter by patients of interest
+        if (!is.null(allSubjects)) {
+            # Filter by subjects of interest
             if (na) {
-                # Return NA as the corresponding patient
-                patient[!patient %in% allPatients] <- NA
+                # Return NA as the corresponding subject
+                subject[!subject %in% allSubjects] <- NA
             } else {
-                patient <- patient[patient %in% allPatients]
+                subject <- subject[subject %in% allSubjects]
             }
         }
-        return(patient)
+        return(subject)
     }
     
     if ( any(grepl("^TCGA", sampleId)) ) {
-        # Retrieve TCGA patient index
-        extractPatientIndex("(TCGA-.*?-.*?)-.*", sampleId, patientId)
+        # Retrieve TCGA subject index
+        extractSubjectIndex("(TCGA-.*?-.*?)-.*", sampleId, patientId)
     } else if ( any(grepl("^GTEX", sampleId)) ) {
-        # Retrieve GTEx patient index
-        extractPatientIndex("(GTEX-.*?)-.*", sampleId, patientId)
+        # Retrieve GTEx subject index
+        extractSubjectIndex("(GTEX-.*?)-.*", sampleId, patientId)
     } else if ( "Subject ID" %in% colnames(sampleInfo) ) {
         # Based on user-provided files
-        patients <- as.character(sampleInfo[ , "Subject ID"])
-        names(patients) <- rownames(sampleInfo)
-        return(patients)
+        subjects <- as.character(sampleInfo[ , "Subject ID"])
+        names(subjects) <- rownames(sampleInfo)
+        return(subjects)
     } else {
         return(NULL)
     }
 }
 
-#' @rdname getPatientFromSample
 #' @export
-getSubjectFromSample <- getPatientFromSample
+getPatientFromSample <- getSubjectFromSample
 
-#' Get samples matching the given patients
+#' Get samples matching the given subjects
 #' 
-#' @inheritParams getPatientFromSample
-#' @param patients Character or list of characters: patient identifiers
+#' @param patients Character or list of characters: subject identifiers
 #' @param samples Character: sample identifiers
 #' @param clinical Data frame or matrix: clinical dataset
-#' @param rm.NA Boolean: remove NAs? TRUE by default
-#' @param match Integer: vector of patient index with the sample identifiers as
+#' @param rm.NA Boolean: remove missing values?
+#' @param match Integer: vector of subject index with the sample identifiers as
 #' name to save time (optional)
-#' @param showMatch Boolean: show matching patient index? FALSE by default
+#' @param showMatch Boolean: show matching subject index?
 #' 
-#' @return Names of the matching samples (if \code{showMatch} is \code{TRUE},
-#' a character with the patients as values and their respective samples as names
+#' @aliases getSampleFromPatient getSampleFromSubject
+#' @family functions for data grouping
+#' @return Names of the matching samples (if \code{showMatch = TRUE},
+#' a character with the subjects as values and their respective samples as names
 #' is returned)
 #' @export
 #' 
 #' @examples 
-#' patients <- c("GTEX-ABC", "GTEX-DEF", "GTEX-GHI", "GTEX-JKL", "GTEX-MNO")
-#' samples <- paste0(patients, "-sample")
+#' subjects <- c("GTEX-ABC", "GTEX-DEF", "GTEX-GHI", "GTEX-JKL", "GTEX-MNO")
+#' samples <- paste0(subjects, "-sample")
 #' clinical <- data.frame(samples=samples)
-#' rownames(clinical) <- patients
-#' getMatchingSamples(patients[c(1, 4)], samples, clinical)
+#' rownames(clinical) <- subjects
+#' getMatchingSamples(subjects[c(1, 4)], samples, clinical)
 getMatchingSamples <- function(patients, samples, clinical=NULL, rm.NA=TRUE,
                                match=NULL, showMatch=FALSE) {
     if (is.null(match))
-        match <- getPatientFromSample(samples, clinical)
+        match <- getSubjectFromSample(samples, clinical)
     
     if (is.list(patients)) {
         samples <- lapply(patients, function(i) {
@@ -663,21 +527,20 @@ getMatchingSamples <- function(patients, samples, clinical=NULL, rm.NA=TRUE,
     return(samples)
 }
 
-#' @rdname getMatchingSamples
 #' @export
 getSampleFromPatient <- getMatchingSamples
 
-#' @rdname getMatchingSamples
 #' @export
 getSampleFromSubject <- getMatchingSamples
 
 #' Assign one group to each element
 #' 
 #' @param groups List of integers: groups of elements
-#' @param elem Character: all elements available (NULL by default)
-#' @param outerGroupName Character: name to give to outer group (NA by default; 
-#' set to NULL to only show elements matched to their respective groups)
+#' @param elem Character: all elements available
+#' @param outerGroupName Character: name to give to outer group (if \code{NULL}, 
+#' only show elements matched to their respective groups)
 #' 
+#' @family functions for data grouping
 #' @return Character vector where each element corresponds to the group of the
 #' respective element
 #' @export
@@ -721,29 +584,6 @@ groupPerElem <- function(groups, elem=NULL, outerGroupName=NA) {
     return(finalGroups)
 }
 
-#' @rdname groupPerElem
-#' 
-#' @param patients Integer: total number of patients
-#' @param includeOuterGroup Boolean: join the patients that have no groups?
-#' 
-#' @export
-groupPerPatient <- function(groups, patients=NULL, includeOuterGroup=FALSE, 
-                            outerGroupName="(Outer data)") {
-    .Deprecated("groupPerElem")
-    if (!includeOuterGroup) outerGroupName <- NULL
-    groupPerElem(groups, patients, outerGroupName)
-}
-
-#' @rdname groupPerElem
-#' @param samples Character: all available samples
-#' @export
-groupPerSample <- function(groups, samples, includeOuterGroup=FALSE, 
-                           outerGroupName="(Outer data)") {
-    .Deprecated("groupPerElem")
-    if (!includeOuterGroup) outerGroupName <- NULL
-    groupPerElem(groups, samples, outerGroupName)
-}
-
 #' @rdname missingDataModal
 #' 
 #' @param modal Character: modal identifier
@@ -754,195 +594,11 @@ loadRequiredData <- function( modal=NULL ) {
     return(sprintf("showDataPanel('#%s');", modal))
 }
 
-#' Create a modal window
-#'
-#' @param session Shiny session
-#' @param title Character: title
-#' @inheritDotParams shiny::modalDialog -title -size -footer
-#' @param style Character: style (\code{NULL}, \code{warning}, \code{error} or
-#'   \code{info})
-#' @param iconName Character: icon name
-#' @param footer HTML elements to use in footer
-#' @param echo Boolean: print to console?
-#' @param size Character: size of the modal (\code{small}, \code{medium} or
-#'   \code{large})
-#' @param dismissButton Boolean: show dismiss button in footer?
-#' @param caller Character: caller module identifier
-#'
-#' @importFrom shiny renderUI div icon showModal modalButton modalDialog
-#' @importFrom shinyBS toggleModal
-#' @importFrom R.utils capitalize
-#'
-#' @seealso \code{\link{showAlert}}
-#' @return NULL (this function is used to modify the Shiny session's state)
-#' @keywords internal
-styleModal <- function(session, title, ..., style=NULL,
-                       iconName="exclamation-circle", footer=NULL, echo=FALSE, 
-                       size="medium", dismissButton=TRUE, caller=NULL) {
-    size <- switch(size, "small"="s", "large"="l", "medium"="m")
-    if (dismissButton) footer <- tagList(modalButton("Dismiss"), footer)
-    
-    modal <- modalDialog(..., title=div(icon(iconName), title), size=size,
-                         footer=footer, easyClose=FALSE)
-    if (!is.null(style)) {
-        style <- match.arg(style, c("info", "warning", "error"))
-        modal[[3]][[1]][[3]][[1]][[3]][[1]] <-
-            tagAppendAttributes(modal[[3]][[1]][[3]][[1]][[3]][[1]],
-                                class=style)
-    }
-    showModal(modal, session)
-    if (echo) {
-        if (style == "info") style <- "Information"
-        msg <- sprintf("%s: %s", capitalize(style), title)
-        if (!is.null(caller)) msg <- sprintf('%s (in "%s")', msg, caller)
-        message(msg)
-    }
-    return(invisible(TRUE))
-}
-
-#' @rdname styleModal
-errorModal <- function(session, title, ..., size="small", footer=NULL, 
-                       caller=NULL) {
-    styleModal(session, title, ..., footer=footer, style="error", size=size,
-               echo=TRUE, iconName="times-circle", caller=caller)
-}
-
-#' @rdname styleModal
-warningModal <- function(session, title, ..., size="small", footer=NULL,
-                         caller=NULL) {
-    styleModal(session, title, ..., footer=footer, style="warning", size=size,
-               echo=TRUE, iconName="exclamation-circle", caller=caller)
-}
-
-#' @rdname styleModal
-infoModal <- function(session, title, ..., size="small", footer=NULL,
-                      caller=NULL) {
-    styleModal(session, title, ..., footer=footer, style="info", size=size,
-               echo=TRUE, iconName="info-circle", caller=caller)
-}
-
-#' Show or remove an alert
+#' Get the path to the Downloads folder
 #' 
-#' @inheritParams styleModal
-#' @param ... Arguments to render as elements of alert
-#' @param style Character: style (\code{error}, \code{warning} or \code{NULL})
-#' @param dismissible Boolean: is the alert dismissible?
-#' @param alertId Character: identifier
-#' 
-#' @seealso \code{\link{showModal}}
-#' @importFrom shiny span h3 renderUI div tagList
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
-#' @keywords internal
-showAlert <- function(session, ..., title, style=NULL, dismissible=TRUE, 
-                      alertId="alert", iconName=NULL, caller=NULL) {
-    if (dismissible) {
-        dismissible <- "alert-dismissible"
-        dismiss <- tags$button(type="button", class="close",
-                               "data-dismiss"="alert", "aria-label"="Close",
-                               span("aria-hidden"="true", "\u00D7"))
-    } else {
-        dismissible <- NULL
-        dismiss <- NULL
-    }
-    
-    # Log information
-    if (style == "info") style <- "Information"
-    msg <- sprintf("%s: %s", capitalize(style), title)
-    if (!is.null(caller)) msg <- sprintf('%s (in "%s")', msg, caller)
-    message(msg, "\n  ", paste(lapply(args, format), collapse=" "))
-    
-    style <- switch(style, "error"="alert-danger", "warning"="alert-warning")
-    
-    output <- session$output
-    output[[alertId]] <- renderUI({
-        tagList(div(h4(icon(iconName), title), id="myAlert", class="alert",
-                    class=style, role="alert", class="animated bounceInUp", 
-                    class=dismissible, dismiss, ...))
-    })
-}
-
-#' @rdname showAlert
-errorAlert <- function(session, ..., title=NULL, dismissible=TRUE,
-                       alertId="alert", caller=NULL) {
-    showAlert(session, ..., style="error", title=title, 
-              iconName="times-circle", dismissible=dismissible, 
-              alertId=alertId, caller=caller)
-}
-
-#' @rdname showAlert
-warningAlert <- function(session, ..., title=NULL, dismissible=TRUE,
-                         alertId="alert", caller=NULL) {
-    showAlert(session, ..., style="warning", title=title, 
-              iconName="exclamation-circle", dismissible=dismissible, 
-              alertId=alertId, caller=caller)
-}
-
-#' @rdname showAlert
-#' 
-#' @param output Shiny output
-removeAlert <- function(output, alertId="alert") {
-    output[[alertId]] <- renderUI(NULL)
-}
-
-#' Alert in the style of a dialogue box with a button
-#' 
-#' @param id Character: identifier (NULL by default)
-#' @param description Character: description
-#' @param buttonId Character: button identifier (NULL by default)
-#' @param buttonLabel Character: button label (NULL by default)
-#' @param buttonIcon Character: button icon (NULL by default)
-#' @param ... Extra parameters when creating the alert
-#' @param type Character: type of alert (error or warning)
-#' @param bigger Boolean: wrap the \code{description} in a \code{h4} tag?
-#'
-#' @importFrom shiny icon div actionButton
-#'
-#' @return HTML elements
-#' @keywords internal
-inlineDialog <- function(description, ..., buttonLabel=NULL, buttonIcon=NULL, 
-                         buttonId=NULL, id=NULL, type=c("error", "warning"),
-                         bigger=FALSE) {
-    type <- match.arg(type)
-    if (identical(type, "error")) type <- "danger"
-    typeIcon <- switch(type, danger="exclamation-circle",
-                       warning="exclamation-triangle")
-    
-    if (!is.null(buttonLabel)) {
-        if (!is.null(buttonIcon))
-            icon <- icon(buttonIcon)
-        else
-            icon <- NULL
-        
-        typeClass <- sprintf("btn-%s btn-block", type)
-        button <- tagList(br(), br(), actionButton(buttonId, icon=icon, 
-                                                   buttonLabel,
-                                                   class=typeClass))
-    } else {
-        button <- NULL
-    }
-    
-    if (bigger) {
-        description <- h4(style="margin-top: 5px !important;",
-                          icon(typeIcon), description)
-    } else {
-        description <- tagList(icon(typeIcon), description)
-    }
-    
-    typeClass <- sprintf("alert alert-%s", type)
-    div(id=id, class=typeClass, role="alert", style="margin-bottom: 0px;",
-        description, button, ...)
-}
-
-#' @rdname inlineDialog
-errorDialog <- function(description, ...)
-    inlineDialog(description, ..., type="error")
-
-#' @rdname inlineDialog
-warningDialog <- function(description, ...)
-    inlineDialog(description, ..., type="warning")
-
-#' Get the Downloads folder of the user
+#' @family functions associated with TCGA data retrieval
+#' @family functions associated with GTEx data retrieval
+#' @family functions associated with SRA data retrieval
 #' @return Path to Downloads folder
 #' @export
 #' 
@@ -956,144 +612,6 @@ getDownloadsFolder <- function() {
     folder <- file.path(folder, "Downloads")
     folder <- paste0(folder, .Platform$file.sep)
     return(folder)
-}
-
-#' Return the type of a given sample
-#' 
-#' @param sample Character: ID of the sample
-#' @param filename Character: path to RDS file containing corresponding type
-#' 
-#' @return Types of the TCGA samples
-#' @export
-#' 
-#' @examples 
-#' parseSampleGroups(c("TCGA-01A-Tumour", "TCGA-10B-Normal"))
-parseSampleGroups <- function(sample, filename = system.file(
-    "extdata", "TCGAsampleType.RDS", package="psichomics")) {
-    typeList <- readRDS(filename)
-    type <- gsub(".*?-([0-9]{2}).-.*", "\\1", sample, perl = TRUE)
-    return(typeList[type])
-}
-
-#' Display characters in the command-line
-#' 
-#' @param char Character: message
-#' @param timeStr Character: message when a \code{difftime} object is passed to
-#' the \code{char} argument
-#' 
-#' @importFrom shiny isRunning
-#' 
-#' @return NULL (display message in command-line)
-#' @keywords internal
-display <- function(char, timeStr="Time difference of") {
-    if (!isRunning()) cat("", fill=TRUE)
-    if (is(char, "difftime")) {
-        message(timeStr, " ", format(unclass(char), digits=3), " ", 
-                attr(char, "units"))
-    } else {
-        cat(char, fill=TRUE)
-    }
-}
-
-#' Create, set and terminate a progress object
-#' 
-#' @param message Character: progress message
-#' @param divisions Integer: number of divisions in the progress bar
-#' @param global Shiny's global variable
-#' 
-#' @importFrom shiny isRunning Progress
-#' @importFrom utils txtProgressBar
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state or
-#' internal hidden variables)
-#' @keywords internal
-startProgress <- function(message, divisions,
-                          global=if (isRunning()) sharedData else getHidden()) {
-    display(message)
-    if (isRunning()) {
-        global$progress <- Progress$new()
-        global$progress$set(message = message, value = 0)
-    } else {
-        global$progress <- txtProgressBar(style=3)
-    }
-    global$progress.divisions <- divisions
-    return(invisible(global))
-}
-
-#' @rdname startProgress
-#' 
-#' @details If \code{divisions} is not \code{NULL}, a progress bar starts with 
-#' the given divisions. If \code{value} is \code{NULL}, the progress bar 
-#' increments one unit; otherwise, the progress bar increments \code{value}.
-#' 
-#' @param value Integer: current progress value
-#' @param max Integer: maximum progress value
-#' @param detail Character: detailed message
-#' @param console Boolean: print message to console?
-#' 
-#' @importFrom shiny isRunning Progress
-#' @importFrom utils setTxtProgressBar
-updateProgress <- function(message="Loading...", value=NULL, max=NULL, 
-                           detail=NULL, divisions=NULL, 
-                           global=if (isRunning()) sharedData else getHidden(),
-                           console=TRUE) {
-    isGUIversion <- isRunning()
-    if (!interactive()) return(NULL)
-    if (!is.null(divisions)) {
-        if (!isGUIversion)
-            setHidden(startProgress(message, divisions, new.env()))
-        else
-            startProgress(message, divisions, global)
-        return(NULL)
-    }
-    
-    divisions <- global$progress.divisions
-    if (is.null(value)) {
-        if (!isRunning()) { # CLI version
-            currentValue <- global$progress$getVal()
-            max   <- 1
-        } else {
-            currentValue <- global$progress$getValue()
-            max          <- global$progress$getMax()
-        }
-        value <- currentValue + (max - currentValue)
-    }
-    amount <- ifelse(is.null(max), value/divisions, 1/max/divisions)
-    
-    # Print message to console
-    if (console) {
-        msg <- message
-        if (!is.null(detail) && !identical(detail, ""))
-            msg <- paste(msg, detail, sep=": ")
-        display(msg)
-    }
-    
-    # Increment progress
-    if (!isGUIversion) {
-        if (!is.null(global)) {
-            value <- min(global$progress$getVal() + amount, 1)
-            setTxtProgressBar(global$progress, value)
-            setHidden(global)
-        }
-    } else {
-        if (is.null(detail)) detail <- ""
-        global$progress$inc(amount=amount, message=message, detail=detail)
-    }
-    return(invisible(TRUE))
-}
-
-#' @rdname startProgress
-#' @importFrom shiny isRunning Progress
-closeProgress <- function(message=NULL, 
-                          global=if (isRunning()) sharedData else getHidden()) {
-    # Close the progress even if there's an error
-    if (!is.null(message)) display(message)
-    
-    isGUIversion <- isRunning()
-    if (isGUIversion)
-        global$progress$close()
-    else
-        close(global$progress)
 }
 
 #' Get number of significant digits
@@ -1118,114 +636,12 @@ roundDigits <- function(n) {
     return(isolate(formatC(n, getPrecision(), format="f")))
 }
 
-#' Modified version of \code{shinyBS::bsModal}
-#' 
-#' \code{bsModal} is used within the UI to create a modal window. This allows to
-#' modify the modal footer.
-#' 
-#' @inheritParams shinyBS::bsModal
-#' @param footer UI set: List of elements to include in the footer
-#' @param style Character: message style can be \code{warning}, \code{error}, 
-#' \code{info} or \code{NULL}
-#' @param size Character: Modal size (\code{small}, \code{default} or 
-#' \code{large})
-#' 
-#' @importFrom shiny tagAppendAttributes
-#' @importFrom shinyBS bsModal
-#' 
-#' @return HTML elements
-#' @keywords internal
-bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL, 
-                      style = NULL)  {
-    if (is.null(size))
-        modal <- bsModal(id, title, trigger, ...)
-    else
-        modal <- bsModal(id, title, trigger, ..., size=size)
-    
-    if (!is.null(style)) {
-        style <- match.arg(style, c("info", "warning", "error"))
-        modal[[3]][[1]][[3]][[1]][[3]][[1]] <-
-            tagAppendAttributes(modal[[3]][[1]][[3]][[1]][[3]][[1]],
-                                class=style)
-    }
-    
-    modal[[3]][[1]][[3]][[1]][[3]][[3]] <-
-        tagAppendChild(modal[[3]][[1]][[3]][[1]][[3]][[3]], footer)
-    return(modal)
-}
-
-#' Enable or disable a tab from the \code{navbar}
-#' 
-#' @param tab Character: tab
-#' 
-#' @importFrom shinyjs disable addClass
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
-#' @keywords internal
-disableTab <- function(tab) {
-    # Style item as disabled
-    addClass(selector = paste0(".navbar li:has(a[data-value=", tab, "])"),
-             class = "disabled")
-    # Disable link itself
-    disable(selector = paste0(".navbar li a[data-value=", tab, "]"))
-}
-
-#' @rdname disableTab
-#' @importFrom shinyjs removeClass enable
-enableTab <- function(tab) {
-    # Style item as enabled
-    removeClass(selector = paste0(".navbar li:has(a[data-value=", tab, "])"),
-                class = "disabled")
-    # Enable link itself
-    enable(selector = paste0(".navbar li a[data-value=", tab, "]"))
-}
-
-#' Create script for auto-completion of text input
-#' 
-#' Uses the JavaScript library \code{jquery.textcomplete}
-#' 
-#' @param id Character: input ID
-#' @param words Character: words to suggest
-#' @param novalue Character: string when there's no matching values
-#' @param char Character to succeed accepted word
-#'
-#' @return HTML string with the JavaScript script prepared to run
-#' @keywords internal
-#' 
-#' @examples 
-#' words <- c("tumor_stage", "age", "gender")
-#' psichomics:::textSuggestions("textareaid", words)
-textSuggestions <- function(id, words, novalue="No matching value", char=" ") {
-    varId <- paste0(gsub("-", "_", id), "_words")
-    var <- paste0(varId, ' = ["', paste(words, collapse = '", "'), '"];')
-    
-    js <- paste0('$("#', escape(id), '").textcomplete([{
-            match: /([a-zA-Z0-9_\\.]{1,})$/,
-            search: function(term, callback) {
-                var words = ', varId, ', sorted = [];
-                for (i = 0; i < words.length; i++) { 
-                    sorted[i] = fuzzy(words[i], term);
-                }
-                sorted.sort(fuzzy.matchComparator);
-                sorted = sorted.map(function(i) { return i.term; });
-                callback(sorted);
-            }, 
-            index: 1,
-            cache: true,
-            replace: function(word) {
-            return word + "', char ,'";
-        }}], { noResultsMessage: "', novalue, '"});')
-    js <- HTML("<script>", var, js, "</script>")
-    return(js)
-}
-
-
 #' Blend two HEX colours
 #' 
 #' @param colour1 Character: HEX colour
 #' @param colour2 Character: HEX colour
 #' @param colour1Percentage Character: percentage of colour 1 mixed in blended 
-#' colour (default is 0.5)
+#' colour
 #'
 #' @source Code modified from \url{https://stackoverflow.com/questions/5560248}
 #'
@@ -1257,27 +673,28 @@ blendColours <- function (colour1, colour2, colour1Percentage=0.5) {
     return(paste0("#", blended));
 }
 
-#' Plot survival curves using Highcharts
+#' Plot survival curves
 #' 
-#' @param object A survfit object as returned from the \code{survfit} function
+#' @param object \code{survfit} object as returned from
+#' \code{\link{survfit.survTerms}()} function
 #' @inheritDotParams highcharter::hc_add_series -hc -data
 #' @param fun Name of function or function used to transform the survival curve:
 #' \code{log} will put y axis on log scale, \code{event} plots cumulative events
 #' (f(y) = 1-y), \code{cumhaz} plots the cumulative hazard function (f(y) =
 #' -log(y)), and \code{cloglog} creates a complimentary log-log survival plot
 #' (f(y) = log(-log(y)) along with log scale for the x-axis.
-#' @param markTimes Label curves marked at each censoring time? TRUE by default
-#' @param symbol Symbol to use as marker (plus sign by default)
-#' @param markerColor Colour of the marker ("black" by default); use NULL to use
-#' the respective colour of each series
-#' @param ranges Plot interval ranges? FALSE by default
-#' @param rangesOpacity Opacity of the interval ranges (0.3 by default)
+#' @param markTimes Label curves marked at each censoring time?
+#' @param symbol Symbol to use as marker
+#' @param markerColor Colour of the marker; if \code{NULL}, the respective
+#' colour of each series are used
+#' @param ranges Plot interval ranges?
+#' @param rangesOpacity Opacity of the interval ranges
 #' 
 #' @importFrom highcharter %>% hc_add_series highchart hc_tooltip hc_yAxis
 #' hc_plotOptions fa_icon_mark JS
 #' @importFrom stats setNames
 #' 
-#' @return \code{highcharter} object to plot survival curves
+#' @return \code{highchart} object to plot survival curves
 #' @keywords internal
 #' 
 #' @examples
@@ -1412,25 +829,6 @@ hchart.survfit <- function(object, ..., fun = NULL, markTimes = TRUE,
     return(hc)
 }
 
-#' Render a data table with sparkline HTML elements
-#' 
-#' @details This slightly modified version of \code{\link{renderDataTable}}
-#' calls a JavaScript function to convert the sparkline HTML elements to
-#' interactive Highcharts
-#' 
-#' @inheritDotParams shiny::renderDataTable -options -escape -env
-#' @param options List of options to pass to \code{\link{renderDataTable}}
-#' 
-#' @importFrom DT renderDataTable JS
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
-#' @keywords internal
-renderDataTableSparklines <- function(..., options=NULL) {
-    # Escape is set to FALSE to render the Sparkline HTML elements
-    renderDataTable(..., escape=FALSE, env=parent.frame(n=1), options=c(
-        list(drawCallback=JS("drawSparklines")), options))
-}
-
 #' Check unique rows of a data frame based on a set of its columns
 #' 
 #' @param data Data frame or matrix
@@ -1484,15 +882,16 @@ export_highcharts <- function(hc, fill="transparent", text="Export") {
 #' @param y Numeric: Y axis
 #' @param z Numeric: Z axis to set the bubble size (optional)
 #' @param label Character: data label for each point (optional)
-#' @param showInLegend Boolean: show the data in the legend box? FALSE by
-#' default
+#' @param showInLegend Boolean: show the data in the legend box?
+#' @param color Character: series colour
 #' @inheritDotParams highcharter::hc_add_series -hc -data
 #' 
 #' @importFrom highcharter hc_add_series list_parse
 #' 
 #' @return \code{highcharter} object containing information for a scatter plot
 #' @keywords internal
-hc_scatter <- function (hc, x, y, z=NULL, label=NULL, showInLegend=FALSE, ...) {
+hc_scatter <- function (hc, x, y, z=NULL, label=NULL, showInLegend=FALSE,
+                        color=NULL, ...) {
     df <- data.frame(x, y)
     if (!is.null(z)) df <- cbind(df, z=z)
     if (!is.null(label)) df <- cbind(df, label=label)
@@ -1517,43 +916,9 @@ hc_scatter <- function (hc, x, y, z=NULL, label=NULL, showInLegend=FALSE, ...) {
     else
         dlopts <- list(enabled=FALSE)
     
-    do.call("hc_add_series", c(list(hc, data=ds, type=type, 
+    do.call("hc_add_series", c(list(hc, data=ds, type=type, color=color,
                                     showInLegend=showInLegend,
                                     dataLabels=dlopts), args))
-}
-
-#' Create an icon based on set operations
-#' 
-#' Based on the \code{\link[shiny]{icon}} function
-#' 
-#' @param name Character: icon name
-#' @param class Character: additional classes to customise the icon element
-#' @param ... Extra arguments for the icon HTML element
-#' 
-#' @importFrom shiny icon
-#' @importFrom htmltools htmlDependency htmlDependencies htmlDependencies<-
-#' 
-#' @return Icon element
-#' @keywords internal
-setOperationIcon <- function (name, class=NULL, ...) {
-    if (length(list(...)) == 0) {
-        style <- paste("font-size: 20px;", "line-height: 0;",
-                       "vertical-align: bottom;", "display: inline-block;")
-    } else {
-        style <- NULL
-    }
-    
-    prefix <- "set"
-    iconClass <- ""
-    if (!is.null(name)) 
-        iconClass <- paste0(prefix, " ", prefix, "-", name)
-    if (!is.null(class)) 
-        iconClass <- paste(iconClass, class)
-    iconTag <- tags$i(class=iconClass, style=style, ...)
-    htmlDependencies(iconTag) <- htmlDependency(
-        "set-operations", "1.0",
-        c(href="set-operations"), stylesheet = "css/set-operations.css")
-    return(iconTag)
 }
 
 #' Check if running in RStudio Server
@@ -1564,444 +929,4 @@ isRStudioServer <- function() {
     tryCatch(
         rstudioapi::isAvailable() && rstudioapi::versionInfo()$mode == "server",
         error=function(i) FALSE)
-}
-
-# File browser dialog -----------------------------------------------------
-
-#' Interactive folder selection using a native dialogue
-#'
-#' @param default Character: path to initial folder
-#' @param caption Character: caption on the selection dialogue
-#' @param multiple Boolean: allow to select multiple files?
-#' @param directory Boolean: allow to select directories instead of files?
-#'
-#' @details
-#' Pltaform-dependent implementation:
-#' \itemize{
-#'  \item{\strong{Windows}: calls the \code{utils::choose.files} R function.}
-#'  \item{\strong{macOS}: uses AppleScript to display a folder selection 
-#'  dialogue. If \code{default} is \code{NA}, folder selection fallbacks to the
-#'  default behaviour of the \code{choose folder} AppleScript command.
-#'  Otherwise, paths are expanded with \code{\link{path.expand}}.}
-#'  \item{\strong{Linux}: calls the \code{zenity} system command.}
-#' }
-#' 
-#' If for some reason an error occurs (e.g. when using a remote server), the
-#' dialog fallbacks to an alternative, non-native file browser.
-#'
-#' @source Original code by wleepang:
-#' \url{https://github.com/wleepang/shiny-directory-input}
-#' 
-#' @return A length one character vector, character NA if 'Cancel' was selected
-#' @keywords internal
-fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
-                        directory=FALSE) {
-    system <- Sys.info()['sysname']
-    if (is.null(system)) {
-        stop("File browser is unsupported in this system")
-    } else if (isRStudioServer()) {
-        stop("File browser is currently unsupported for RStudio Server")
-    } else if (system == 'Darwin') {
-        directory <- ifelse(directory, "folder", "file")
-        multiple  <- ifelse(multiple, "with multiple selections allowed", "")
-        
-        if (!is.null(caption) && nzchar(caption))
-            prompt <- sprintf("with prompt \\\"%s\\\"", caption)
-        else
-            prompt <- ""
-        
-        # Default location
-        if (!is.null(default) && nzchar(default)) {
-            default <- sprintf("default location \\\"%s\\\"",
-                               path.expand(default))
-        } else {
-            default <- ""
-        }
-        
-        app  <- "path to frontmost application as text"
-        args <- '-e "tell app (%s) to POSIX path of (choose %s %s %s %s)"'
-        args <- sprintf(args, app, directory, multiple, prompt, default)
-        
-        path <- suppressWarnings(system2("osascript", args=args, stderr=TRUE))
-        
-        # Return NA if the user cancels the action
-        if (!is.null(attr(path, "status")) && attr(path, "status")) return(NA)
-    } else if (system == 'Linux') {
-        directory <- ifelse(directory, "--directory", "")
-        multiple  <- ifelse(multiple,  "--multiple", "")
-        
-        prompt <- ""
-        if (!is.null(caption) && nzchar(caption))
-            prompt <- sprintf("--title='%s'", caption)
-        
-        args <- " --file-selection %s %s %s"
-        args <- sprintf(args, directory, multiple, prompt)
-        path <- suppressWarnings(system2("zenity", args=args, stderr=TRUE))
-        
-        # Return NA if user cancels the action
-        if (!is.null(attr(path, "status")) && attr(path, "status")) return(NA) 
-        
-        # Error: Gtk-Message: GtkDialog mapped without a transient parent
-        if(length(path) == 2) path <- path[2]
-    } else if (system == "Windows") {
-        if (is.null(default)) default <- ""
-        if (is.null(caption)) caption <- ""
-        path <- utils::choose.files(default, caption, !directory && multiple)
-    }
-    
-    if (identical(path, "")) path <- NULL
-    return(path)
-}
-
-#' File browser input
-#'
-#' Input to interactively select a file or directory on the server
-#'
-#' @param id Character: input identifier
-#' @param label Character: input label (NULL to show no label)
-#' @param value Character: initial value (paths are expanded via
-#' \code{\link{path.expand}})
-#' @param placeholder Character: placeholder when no file or folder is selected
-#' @param info Boolean: add information icon for tooltips and popovers
-#' @param infoFUN Function to use to provide information (e.g.
-#' \code{shinyBS::bsTooltip} and \code{shinyBS::bsPopover})
-#' @param infoPlacement Character: placement of the information (top, bottom,
-#' right or left)
-#' @param infoTitle Character: text to show as title of information
-#' @param infoContent Character: text to show as content of information
-#'
-#' @details
-#' To show the dialog for file input, the \code{\link{prepareFileBrowser}}
-#' function needs to be included in the server logic.
-#' 
-#' This widget relies on \code{\link{fileBrowser}} to present an interactive
-#' dialogue to users for selecting a directory on the local filesystem. 
-#' Therefore, this widget is intended for shiny apps that are run locally - i.e. 
-#' on the same system that files/directories are to be accessed - and not from 
-#' hosted applications (e.g. from \url{https://www.shinyapps.io}).
-#'
-#' @importFrom shinyBS bsPopover bsTooltip
-#' 
-#' @source Original code by wleepang:
-#' \url{https://github.com/wleepang/shiny-directory-input}
-#'
-#' @return HTML elements for a file browser input
-#' @keywords internal
-#' 
-#' @seealso
-#' \code{\link{updateFileBrowserInput}} and \code{\link{prepareFileBrowser}}
-fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
-                             info=FALSE, infoFUN=NULL, infoPlacement="right",
-                             infoTitle="", infoContent="") {
-    if (!is.null(value) && !is.na(value)) value <- path.expand(value)
-    if (is.null(placeholder)) placeholder <- ""
-    
-    check <- function (x, y) {
-        # Based on shiny:::`%AND%`
-        if (!is.null(x) && !is.na(x)) 
-            if (!is.null(y) && !is.na(y)) 
-                return(y)
-        return(NULL)
-    }
-    
-    if (info) {
-        infoId   <- paste0(id, "-info")
-        infoElem <- div(class="input-group-addon", id=infoId,
-                        icon("question-circle"))
-    } else {
-        infoId   <- id
-        infoElem <- NULL
-    }
-    
-    infoTitle   <- gsub("\n", "", as.character(infoTitle),   fixed=TRUE)
-    infoContent <- gsub("\n", "", as.character(infoContent), fixed=TRUE)
-    if (identical(infoFUN, bsPopover)) {
-        showInfo <- infoFUN(infoId, placement=infoPlacement, 
-                            options=list(container="body"), 
-                            title=infoTitle, content=infoContent)
-    } else if (identical(infoFUN, bsTooltip)) {
-        showInfo <- infoFUN(infoId, placement=infoPlacement, 
-                            options=list(container="body"), title=infoTitle)
-    } else {
-        showInfo <- NULL
-    }
-    
-    fileBrowserButton <- div(class="btn btn-default fileBrowser-input",
-                             id=sprintf("%sButton", id), 'Browse...')
-    if (isRStudioServer()) fileBrowserButton <- disabled(fileBrowserButton)
-    fileBrowserButton <- div(class="input-group-btn", fileBrowserButton)
-    filepathInput <- tags$input(
-        id=id, value=value, type='text', placeholder=placeholder,
-        # readonly = if (!isRStudioServer()) 'readonly' else NULL,
-        class='form-control fileBrowser-input-chosen-dir')
-    
-    tagList(
-        div(class='form-group fileBrowser-input-container',
-            check(label, tags$label(label)),
-            div(class='input-group shiny-input-container', style='width:100%;',
-                fileBrowserButton, filepathInput, infoElem)),
-        showInfo)
-}
-
-#' Change the value of a fileBrowserInput on the client
-#'
-#' @param session Shiny session
-#' @param id Character: input identifier
-#' @param value Character: file or directory path
-#' @param ... Additional arguments passed to \code{\link{fileBrowser}}. Only
-#' used if \code{value} is \code{NULL}.
-#'
-#' @details
-#' Sends a message to the client, telling it to change the value of the input
-#' object. For \code{fileBrowserInput} objects, this changes the value displayed
-#' in the text-field and triggers a client-side change event. A directory
-#' selection dialogue is not displayed.
-#'
-#' @source Original code by wleepang:
-#' \url{https://github.com/wleepang/shiny-directory-input}
-#'
-#' @return NULL (this function is used to modify the Shiny session's state)
-#' @keywords internal
-updateFileBrowserInput <- function(session, id, ..., value=NULL) {
-    if (is.null(value)) value <- fileBrowser(...)
-    
-    button <- sprintf("%sButton", id)
-    session$sendInputMessage(button, list(path=value))
-}
-
-#' Prepare file browser dialogue and update the input's value accordingly to
-#' selected file or directory
-#'
-#' @param session Shiny session
-#' @param input Shiny input
-#' @param id Character: input identifier
-#' @inheritDotParams fileBrowser
-#' @param modalId Character: modal window identifier
-#'
-#' @return NULL (this function is used to modify the Shiny session's state)
-#' @keywords internal
-prepareFileBrowser <- function(session, input, id, modalId="modal", ...) {
-    buttonId <- sprintf("%sButton", id)
-    observeEvent(input[[buttonId]], {
-        if (input[[buttonId]] > 0) { # Prevent execution on initial launch
-            errorTitle <- NULL
-            if (is.null(Sys.info()))
-                errorTitle <- c(
-                    "The file browser is not supported for this system")
-            else if (isRStudioServer())
-                errorTitle <- c(
-                    "The file browser is not supported in RStudio Server")
-            else
-                updateFileBrowserInput(session, id, ...)
-            
-            if (!is.null(errorTitle)) {
-                errorModal(session, errorTitle, 
-                           "Please use instead the text input field to type",
-                           "the full path to the file or folder of interest.", 
-                           modalId=modalId, caller="File browser")
-            }
-        }
-    })
-}
-
-# Interactive ggplot ------------------------------------------------------
-
-#' Create HTML table from data frame or matrix
-#' 
-#' @param data Data frame or matrix
-#' @param rownames Boolean: print row names?
-#' @param colnames Boolean: print column names?
-#' @param class Character: table class
-#' @param style Character: table style
-#' @param thead Boolean: add a \code{thead} tag to the first row?
-#' 
-#' @importFrom xtable xtable print.xtable
-#' @importFrom shiny HTML
-#' 
-#' @return HTML elements
-#' @keywords internal
-table2html <- function(data, rownames=TRUE, colnames=TRUE, class=NULL, 
-                       style=NULL, thead=FALSE) {
-    table <- xtable(data)
-    table <- print(table, type="html", print.results=FALSE,
-                   include.rownames=rownames, include.colnames=colnames)
-    html <- HTML(table)
-    
-    if (thead)
-        html <- gsub("(<tr>[[:space:]]*<th>.*</th>[[:space:]]*</tr>)",
-                     "<thead>\\1</thead>", html)
-    
-    if (!is.null(class))
-        class <- sprintf('class="%s"', paste(class, collapse=" "))
-    
-    if (!is.null(style))
-        style <- sprintf('style="%s"', paste(style, collapse=" "))
-    
-    rep <- paste(class, style)
-    if (length(rep) > 0) 
-        html <- gsub("border=1", rep, html, fixed=TRUE)
-    
-    return(html)
-}
-
-#' Interface for interactive ggplot
-#' 
-#' @param id Character: identifier
-#' 
-#' @importFrom shiny tagList plotOutput brushOpts hoverOpts uiOutput 
-#' actionButton
-#' @importFrom shinyjs hidden
-#' 
-#' @return HTML elements
-#' @keywords internal
-ggplotUI <- function(id) {
-    idd <- function(str) paste(id, str, sep="-")
-    plotId    <- idd("plot")
-    tooltipId <- idd("tooltip")
-    brushId   <- idd("brush")
-    hoverId   <- idd("hover")
-    resetId   <- idd("resetZoom")
-    tagList(
-        # Mimic Highcharts button to reset zoom level
-        hidden(actionButton(
-            resetId, "Reset zoom",
-            style="font-size: 13px;",
-            style="background-color: #f7f7f7;",
-            style="border-color: #cccccc;",
-            style="padding-bottom: 5px;", style="padding-top: 5px;",
-            style="padding-left: 9px;", style="padding-right: 9px;",
-            style="position: absolute;", style="z-index: 1;",
-            style="top: 20px;", style="right: 35px;")),
-        plotOutput(plotId,
-                   brush=brushOpts(brushId, resetOnNew=TRUE),
-                   hover=hoverOpts(hoverId, delay=50, delayType="throttle")),
-        uiOutput(tooltipId))
-}
-
-#' Create the interface for the tooltip of a plot
-#' 
-#' @param df Data frame
-#' @param hover Mouse hover information for a given plot as retrieved from
-#' \code{\link[shiny]{hoverOpts}}
-#' @param x Character: name of the variable used for the X axis
-#' @param y Character: name of the variable used for the Y axis
-#' 
-#' @importFrom shiny tags nearPoints wellPanel
-#' 
-#' @return HTML elements
-#' @keywords internal
-ggplotTooltip <- function(df, hover, x, y) {
-    point <- nearPoints(df, hover, threshold=10, maxpoints=1, addDist=TRUE,
-                        xvar=x, yvar=y)
-    if (nrow(point) == 0) return(NULL)
-    
-    # Calculate point position inside the image as percent of total 
-    # dimensions from left (horizontal) and from top (vertical)
-    xDomain   <- hover$domain$right - hover$domain$left
-    right_pct <- (hover$domain$right - hover$x) / xDomain
-    yDomain   <- hover$domain$top - hover$domain$bottom
-    top_pct   <- (hover$domain$top - hover$y) / yDomain
-    
-    # Calculate distance from left and bottom in pixels
-    xRange   <- hover$range$right - hover$range$left
-    right_px <- right_pct * xRange + 25
-    yRange   <- hover$range$bottom - hover$range$top
-    top_px   <- hover$range$top + top_pct * yRange + 2
-    
-    trItem <- function(key, value) tags$tr(tags$td(tags$b(key)), tags$td(value))
-    
-    thisPoint <- rownames(point)
-    if ( areSplicingEvents(thisPoint) ) {
-        event  <- parseSplicingEvent(thisPoint, pretty=TRUE)
-        strand <- ifelse(event$strand == "+", "forward", "reverse")
-        gene   <- paste(event$gene[[1]], collapse=" or ")
-        type   <- trItem("Event type", event$type)
-        coord  <- trItem(
-            "Coordinates", 
-            sprintf("chr %s: %s to %s (%s strand)", event$chrom,
-                    event$pos[[1]][[1]], event$pos[[1]][[2]], strand))
-    } else {
-        gene  <- thisPoint
-        type  <- NULL
-        coord <- NULL
-    }
-    
-    # Tooltip
-    wellPanel(
-        class="well-sm",
-        style=paste0("position: absolute; z-index: 100;",
-                     "background-color: rgba(245, 245, 245, 0.85); ",
-                     "right:", right_px, "px; top:", top_px, "px;"),
-        tags$table(class="table table-condensed", style="margin-bottom: 0;",
-                   tags$thead( trItem("Gene", gene)),
-                   tags$tbody( type, coord,
-                               trItem(x, roundDigits(point[[x]])),
-                               trItem(y, roundDigits(point[[y]])))))
-}
-
-#' Logic set to create an interactive ggplot
-#' 
-#' @param input Shiny input
-#' @param output Shiny output
-#' @param id Character: identifier
-#' @param plot Character: plot expression (NULL renders no plot)
-#' @inheritParams ggplotTooltip
-#' 
-#' @importFrom shiny renderPlot renderUI
-#' 
-#' @return NULL (this function is used to modify the Shiny session's state)
-#' @keywords internal
-ggplotServer <- function(input, output, id, plot=NULL, df=NULL, x=NULL, 
-                         y=NULL) {
-    idd <- function(str) paste(id, str, sep="-")
-    output[[idd("plot")]] <- renderPlot(plot)
-    
-    if (is.null(plot)) {
-        output[[idd("tooltip")]] <- renderUI(NULL)
-    } else {
-        output[[idd("tooltip")]] <- renderUI(
-            ggplotTooltip(df, input[[idd("hover")]], x, y))
-    }
-}
-
-#' @rdname ggplotServer
-#' 
-#' @note Insert \code{ggplotAuxSet} outside any observer (so it is only run 
-#' once)
-ggplotAuxServer <- function(input, output, id) {
-    idd <- function(str) paste(id, str, sep="-")
-    
-    # Save zoom coordinates according to brushed area of the plot
-    observe({
-        brush <- input[[idd("brush")]]
-        if (!is.null(brush)) {
-            setZoom(id, brush)
-            setSelectedPoints(id, NULL)
-        }
-    })
-    
-    # Toggle visibility of reset zoom button
-    observe({
-        zoom <- getZoom(id)
-        if (is.null(zoom))
-            hide(idd("resetZoom"))
-        else
-            show(idd("resetZoom"))
-    })
-    
-    # Reset zoom when clicking the respective button
-    observeEvent(input[[idd("resetZoom")]], {
-        setZoom(id, NULL)
-        setSelectedPoints(id, NULL)
-    })
-}
-
-inheritAttrs <- function(original, objectToCopyFrom,
-                         avoid=c("names", "row.names", "class")) {
-    notNames <- !names(attributes(objectToCopyFrom)) %in% c(
-        names(attributes(original)), avoid)
-    attributes(original) <- c(attributes(original),
-                              attributes(objectToCopyFrom)[notNames])
-    colnames(original) <- colnames(objectToCopyFrom)
-    return(original)
 }

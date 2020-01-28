@@ -2,14 +2,15 @@
 % Please edit documentation in R/analysis.R
 \name{getAttributesTime}
 \alias{getAttributesTime}
-\alias{getColumnsTime}
-\title{Retrieve the time for given columns in a clinical dataset}
+\title{Get time values for given columns in a clinical dataset}
 \usage{
-getAttributesTime(clinical, event, timeStart, timeStop = NULL,
-  followup = "days_to_last_followup")
-
-getColumnsTime(clinical, event, timeStart, timeStop = NULL,
-  followup = "days_to_last_followup")
+getAttributesTime(
+  clinical,
+  event,
+  timeStart,
+  timeStop = NULL,
+  followup = "days_to_last_followup"
+)
 }
 \arguments{
 \item{clinical}{Data frame: clinical data}
@@ -29,10 +30,23 @@ interval (only relevant for interval censoring)}
 Data frame containing the time for the given columns
 }
 \description{
-Retrieve the time for given columns in a clinical dataset
+Get time values for given columns in a clinical dataset
 }
 \examples{
 df <- data.frame(followup=c(200, 300, 400), death=c(NA, 300, NA))
-rownames(df) <- paste("patient", 1:3)
+rownames(df) <- paste("subject", 1:3)
 getAttributesTime(df, event="death", timeStart="death", followup="followup")
 }
+\seealso{
+Other functions to analyse survival: 
+\code{\link{assignValuePerSubject}()},
+\code{\link{labelBasedOnCutoff}()},
+\code{\link{optimalSurvivalCutoff}()},
+\code{\link{plotSurvivalCurves}()},
+\code{\link{plotSurvivalPvaluesByCutoff}()},
+\code{\link{processSurvTerms}()},
+\code{\link{survdiffTerms}()},
+\code{\link{survfit.survTerms}()},
+\code{\link{testSurvival}()}
+}
+\concept{functions to analyse survival}

@@ -9,10 +9,11 @@ updateClinicalParams(session, attrs)
 \arguments{
 \item{session}{Shiny session}
 
-\item{attrs}{Character: patient attributes}
+\item{attrs}{Character: subject attributes}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (function is only used to modify the Shiny session's
+state or internal variables)
 }
 \description{
 Update available clinical attributes when the clinical data changes

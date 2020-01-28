@@ -4,43 +4,53 @@
 \alias{getMatchingSamples}
 \alias{getSampleFromPatient}
 \alias{getSampleFromSubject}
-\title{Get samples matching the given patients}
+\title{Get samples matching the given subjects}
 \usage{
-getMatchingSamples(patients, samples, clinical = NULL, rm.NA = TRUE,
-  match = NULL, showMatch = FALSE)
-
-getSampleFromPatient(patients, samples, clinical = NULL, rm.NA = TRUE,
-  match = NULL, showMatch = FALSE)
-
-getSampleFromSubject(patients, samples, clinical = NULL, rm.NA = TRUE,
-  match = NULL, showMatch = FALSE)
+getMatchingSamples(
+  patients,
+  samples,
+  clinical = NULL,
+  rm.NA = TRUE,
+  match = NULL,
+  showMatch = FALSE
+)
 }
 \arguments{
-\item{patients}{Character or list of characters: patient identifiers}
+\item{patients}{Character or list of characters: subject identifiers}
 
 \item{samples}{Character: sample identifiers}
 
 \item{clinical}{Data frame or matrix: clinical dataset}
 
-\item{rm.NA}{Boolean: remove NAs? TRUE by default}
+\item{rm.NA}{Boolean: remove missing values?}
 
-\item{match}{Integer: vector of patient index with the sample identifiers as
+\item{match}{Integer: vector of subject index with the sample identifiers as
 name to save time (optional)}
 
-\item{showMatch}{Boolean: show matching patient index? FALSE by default}
+\item{showMatch}{Boolean: show matching subject index?}
 }
 \value{
-Names of the matching samples (if \code{showMatch} is \code{TRUE},
-a character with the patients as values and their respective samples as names
+Names of the matching samples (if \code{showMatch = TRUE},
+a character with the subjects as values and their respective samples as names
 is returned)
 }
 \description{
-Get samples matching the given patients
+Get samples matching the given subjects
 }
 \examples{
-patients <- c("GTEX-ABC", "GTEX-DEF", "GTEX-GHI", "GTEX-JKL", "GTEX-MNO")
-samples <- paste0(patients, "-sample")
+subjects <- c("GTEX-ABC", "GTEX-DEF", "GTEX-GHI", "GTEX-JKL", "GTEX-MNO")
+samples <- paste0(subjects, "-sample")
 clinical <- data.frame(samples=samples)
-rownames(clinical) <- patients
-getMatchingSamples(patients[c(1, 4)], samples, clinical)
+rownames(clinical) <- subjects
+getMatchingSamples(subjects[c(1, 4)], samples, clinical)
 }
+\seealso{
+Other functions for data grouping: 
+\code{\link{createGroupByAttribute}()},
+\code{\link{getGeneList}()},
+\code{\link{getSubjectFromSample}()},
+\code{\link{groupPerElem}()},
+\code{\link{plotGroupIndependence}()},
+\code{\link{testGroupIndependence}()}
+}
+\concept{functions for data grouping}

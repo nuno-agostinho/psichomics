@@ -19,3 +19,10 @@ Create the explained variance plot from a PCA
 pca <- prcomp(USArrests)
 plotVariance(pca)
 }
+\seealso{
+Other functions to analyse principal components: 
+\code{\link{calculateLoadingsContribution}()},
+\code{\link{performPCA}()},
+\code{\link{plotPCA}()}
+}
+\concept{functions to analyse principal components}

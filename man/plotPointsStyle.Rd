@@ -4,8 +4,15 @@
 \alias{plotPointsStyle}
 \title{Interface to modify the style of the plot points}
 \usage{
-plotPointsStyle(ns, id, description, help = NULL, size = 2,
-  colour = "black", alpha = 1)
+plotPointsStyle(
+  ns,
+  id,
+  description,
+  help = NULL,
+  size = 2,
+  colour = "black",
+  alpha = 1
+)
 }
 \arguments{
 \item{ns}{Namespace function}
@@ -16,11 +23,11 @@ plotPointsStyle(ns, id, description, help = NULL, size = 2,
 
 \item{help}{Character: extra text to help the user}
 
-\item{size}{Integer: default size (2 by default)}
+\item{size}{Integer: default size}
 
-\item{colour}{Character: default colour ("black" by default)}
+\item{colour}{Character: default colour}
 
-\item{alpha}{Numeric: default transparency value; (opaque by default)}
+\item{alpha}{Numeric: default transparency value}
 }
 \value{
 HTML elements

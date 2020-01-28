@@ -19,10 +19,10 @@ column
 \examples{
 df <- data.frame("race"=c("caucasian", "caucasian", "asian"),
                  "gender"=c("male", "female", "male"))
-rownames(df) <- paste("patient", 1:3)
+rownames(df) <- paste("subject", 1:3)
 parseCategoricalGroups(df)
 }
 \seealso{
-\code{\link{testGroupIndependence}} and 
-\code{\link{plotGroupIndependence}}
+\code{\link{testGroupIndependence}()} and 
+\code{\link{plotGroupIndependence}()}
 }

@@ -27,7 +27,7 @@ groups}
 }
 \description{
 Test multiple contigency tables comprised by two groups (one reference group
-and another containing remaing elements) and provided groups.
+and another containing remaining elements) and provided groups.
 }
 \details{
 The following methods for p-value adjustment are supported by using 
@@ -43,7 +43,7 @@ the respective string in the \code{pvalueAdjust} argument:
 }
 }
 \examples{
-elements <- paste("patients", 1:10)
+elements <- paste("subjects", 1:10)
 ref      <- elements[5:10]
 groups   <- list(race=list(asian=elements[1:3],
                            white=elements[4:7],
@@ -54,6 +54,15 @@ groupTesting <- testGroupIndependence(ref, groups, elements)
 # View(groupTesting)
 }
 \seealso{
-\code{\link{parseCategoricalGroups}} and 
-\code{\link{plotGroupIndependence}}
+\code{\link{parseCategoricalGroups}()} and 
+\code{\link{plotGroupIndependence}()}
+
+Other functions for data grouping: 
+\code{\link{createGroupByAttribute}()},
+\code{\link{getGeneList}()},
+\code{\link{getMatchingSamples}()},
+\code{\link{getSubjectFromSample}()},
+\code{\link{groupPerElem}()},
+\code{\link{plotGroupIndependence}()}
 }
+\concept{functions for data grouping}

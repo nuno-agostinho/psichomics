@@ -2,31 +2,36 @@
 % Please edit documentation in R/utils.R
 \name{parseSplicingEvent}
 \alias{parseSplicingEvent}
-\title{Parse an alternative splicing event based on a given identifier}
+\title{Parse alternative splicing event identifier}
 \usage{
-parseSplicingEvent(event, char = FALSE, pretty = FALSE, extra = NULL,
-  coords = FALSE)
+parseSplicingEvent(
+  event,
+  char = FALSE,
+  pretty = FALSE,
+  extra = NULL,
+  coords = FALSE
+)
 }
 \arguments{
 \item{event}{Character: event identifier}
 
-\item{char}{Boolean: return a single character instead of list with parsed
+\item{char}{Boolean: return character vector instead of list with parsed
 values?}
 
 \item{pretty}{Boolean: return a prettier name of the event identifier?}
 
 \item{extra}{Character: extra information to add (such as species and
-assembly version); only used if \code{pretty} and \code{char} are \code{TRUE}}
+assembly version); only used if \code{pretty = TRUE} and \code{char = TRUE}}
 
-\item{coords}{Boolean: extra coordinates regarding the alternative and 
-constitutive regions of alternative splicing events; only used if \code{char}
-is \code{FALSE}}
+\item{coords}{Boolean: display extra coordinates regarding the alternative 
+and constitutive regions of alternative splicing events? If 
+\code{char = FALSE}, all coordinates are always displayed}
 }
 \value{
 Parsed event
 }
 \description{
-Parse an alternative splicing event based on a given identifier
+Parse alternative splicing event identifier
 }
 \examples{
 events <- c("SE_1_-_123_456_789_1024_TST",

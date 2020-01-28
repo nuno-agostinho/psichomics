@@ -41,15 +41,13 @@ diffExpressionEventUI <- function(id) {
         uiOutput(ns("diffStats")),
         hidden(survival))
     
-    singleGeneInfo <- div(id=ns("singleGeneInfo"),
-                          highchartOutput(ns("density")),
-                          h4("Parametric tests"), div(class="row",
-                                                      card("ttest"),
-                                                      card("levene")),
-                          h4("Non-parametric tests"), div(class="row",
-                                                          card("wilcox"),
-                                                          card("kruskal"),
-                                                          card("fligner")))
+    singleGeneInfo <- div(
+        id=ns("singleGeneInfo"),
+        highchartOutput(ns("density")),
+        h4("Parametric tests"),
+        div(class="row", card("ttest"), card("levene")),
+        h4("Non-parametric tests"), 
+        div(class="row", card("wilcox"), card("kruskal"), card("fligner")))
     
     tagList(
         uiOutput(ns("modal")),

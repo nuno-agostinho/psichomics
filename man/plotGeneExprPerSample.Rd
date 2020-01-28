@@ -9,13 +9,14 @@ plotGeneExprPerSample(geneExpr, ...)
 \arguments{
 \item{geneExpr}{Data frame or matrix: gene expression}
 
-\item{...}{Arguments passed on to \code{renderBoxplot}
-\describe{
-  \item{data}{Data frame or matrix}
-  \item{outliers}{Boolean: draw outliers?}
-  \item{sortByMedian}{Boolean: sort box plots based on ascending median?}
-  \item{showXlabels}{Boolean: show labels in X axis?}
-}}
+\item{...}{
+  Arguments passed on to \code{\link[=renderBoxplot]{renderBoxplot}}
+  \describe{
+    \item{\code{data}}{Data frame or matrix}
+    \item{\code{outliers}}{Boolean: draw outliers?}
+    \item{\code{sortByMedian}}{Boolean: sort box plots based on ascending median?}
+    \item{\code{showXlabels}}{Boolean: show labels in X axis?}
+  }}
 }
 \value{
 Gene expression distribution plots
@@ -30,3 +31,11 @@ df <- data.frame(geneA=c(2, 4, 5),
 colnames(df) <- paste("Sample", 1:3)
 plotGeneExprPerSample(df)
 }
+\seealso{
+Other functions for gene expression pre-processing: 
+\code{\link{convertGeneIdentifiers}()},
+\code{\link{filterGeneExpr}()},
+\code{\link{normaliseGeneExpression}()},
+\code{\link{plotRowStats}()}
+}
+\concept{functions for gene expression pre-processing}

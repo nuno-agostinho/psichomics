@@ -15,8 +15,8 @@ leveneTest(x, g, centers = median)
     corresponding elements of \code{x}.  Ignored with a warning if
     \code{x} is a list.}
 
-\item{centers}{Function used to calculate how much values spread 
-(\code{median} by default; another common function used is \code{mean})}
+\item{centers}{Function used to calculate how much values spread; for
+instance, \code{median} (default) or \code{mean}}
 }
 \value{
 A list with class \code{"htest"} containing the following components:

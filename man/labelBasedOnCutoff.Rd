@@ -11,10 +11,10 @@ labelBasedOnCutoff(data, cutoff, label = NULL, gte = TRUE)
 
 \item{cutoff}{Numeric: test cutoff}
 
-\item{label}{Character: label to prefix group names (NULL by default)}
+\item{label}{Character: label to prefix group names}
 
-\item{gte}{Boolean: test with greater than or equal to cutoff (TRUE) or use
-less than or equal to cutoff (FALSE)? TRUE by default}
+\item{gte}{Boolean: test using greater than or equal than cutoff
+(\code{TRUE}) or less than or equal than cutoff (\code{FALSE})?}
 }
 \value{
 Labelled groups
@@ -30,3 +30,16 @@ labelBasedOnCutoff(data=c(1, 0, 0, 1, 0, 1), cutoff=0.5, "Ratio")
 # Use "greater than" instead of "greater than or equal to"
 labelBasedOnCutoff(data=c(1, 0, 0, 0.5, 0, 1), cutoff=0.5, gte=FALSE)
 }
+\seealso{
+Other functions to analyse survival: 
+\code{\link{assignValuePerSubject}()},
+\code{\link{getAttributesTime}()},
+\code{\link{optimalSurvivalCutoff}()},
+\code{\link{plotSurvivalCurves}()},
+\code{\link{plotSurvivalPvaluesByCutoff}()},
+\code{\link{processSurvTerms}()},
+\code{\link{survdiffTerms}()},
+\code{\link{survfit.survTerms}()},
+\code{\link{testSurvival}()}
+}
+\concept{functions to analyse survival}

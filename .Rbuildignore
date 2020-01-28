@@ -7,3 +7,6 @@
 ^codecov\.yml$
 rsconnect
 .RDataTmp
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

@@ -4,17 +4,25 @@
 \alias{plotSurvivalPvaluesByCutoff}
 \title{Plot p-values of survival difference between groups based on multiple cutoffs}
 \usage{
-plotSurvivalPvaluesByCutoff(clinical, data, censoring, event, timeStart,
-  timeStop = NULL, followup = "days_to_last_followup",
-  significance = 0.05, cutoffs = seq(0, 0.99, 0.01))
+plotSurvivalPvaluesByCutoff(
+  clinical,
+  data,
+  censoring,
+  event,
+  timeStart,
+  timeStop = NULL,
+  followup = "days_to_last_followup",
+  significance = 0.05,
+  cutoffs = seq(0, 0.99, 0.01)
+)
 }
 \arguments{
 \item{clinical}{Data frame: clinical data}
 
 \item{data}{Numeric: elements of interest to test against the cutoff}
 
-\item{censoring}{Character: censor using "left", "right", "interval" or
-"interval2"}
+\item{censoring}{Character: censor using \code{left}, \code{right},
+\code{interval} or \code{interval2}}
 
 \item{event}{Character: name of column containing time of the event of
 interest}
@@ -37,3 +45,43 @@ p-value plot
 \description{
 Plot p-values of survival difference between groups based on multiple cutoffs
 }
+\examples{
+clinical <- read.table(text = "2549   NA ii  female
+                                840   NA i   female
+                                 NA 1204 iv    male
+                                 NA  383 iv  female
+                               1293   NA iii   male")
+names(clinical) <- c("patient.days_to_last_followup", 
+                     "patient.days_to_death",
+                     "patient.stage_event.pathologic_stage",
+                     "patient.gender")
+clinical <- do.call(rbind, rep(list(clinical), 5))
+
+psi <- data.frame(t(c(rep(0.1, 9), rep(0.2, 13), rep(0.3, 3))))
+colnames(psi) <- paste0("sample", seq(psi))
+
+# Match between subjects and samples
+match <- paste0("subject", seq(psi))
+names(match) <- colnames(psi)
+rownames(clinical) <- match
+
+eventData <- assignValuePerSubject(psi[1, ], match)
+
+event      <- "days_to_death"
+timeStart  <- "days_to_death"
+plotSurvivalPvaluesByCutoff(clinical, eventData, censoring="right", 
+                            event=event, timeStart=timeStart)
+}
+\seealso{
+Other functions to analyse survival: 
+\code{\link{assignValuePerSubject}()},
+\code{\link{getAttributesTime}()},
+\code{\link{labelBasedOnCutoff}()},
+\code{\link{optimalSurvivalCutoff}()},
+\code{\link{plotSurvivalCurves}()},
+\code{\link{processSurvTerms}()},
+\code{\link{survdiffTerms}()},
+\code{\link{survfit.survTerms}()},
+\code{\link{testSurvival}()}
+}
+\concept{functions to analyse survival}

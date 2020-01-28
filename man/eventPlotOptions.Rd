@@ -15,8 +15,8 @@ eventPlotOptions(session, df, xAxis, yAxis, labelSortBy)
 
 \item{yAxis}{Character: currently selected variable for the Y axis}
 
-\item{labelSortBy}{Character: currently selected variable for the selectize
-element to sort differentially analysis}
+\item{labelSortBy}{Character: currently selected variable for the
+\code{selectize} element to sort differentially analysis}
 }
 \value{
 HTML elements

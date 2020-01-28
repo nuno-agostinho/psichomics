@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{readFile}
 \alias{readFile}
-\title{Load local file}
+\title{Load psichomics-specific file}
 \usage{
 readFile(file)
 }
@@ -13,7 +13,7 @@ readFile(file)
 Loaded file
 }
 \description{
-Load local file
+Load psichomics-specific file
 }
 \examples{
 junctionQuant <- readFile("ex_junctionQuant.RDS")

@@ -1,3 +1,5 @@
+/** psichomics.js */
+
 /* Ensure code escaping */
 window.escape = window.escape || window.encodeURI;
 
@@ -111,11 +113,25 @@ function renderGroupSelection (item, escape) {
 }
 
 /**
- * Change selected event
+ * Change selected alternative splicing event
  * @param {String} event Alternative splicing event
  */
 function changeEvent (event) {
     $("#selectizeEventElem").selectize()[0].selectize.setValue(event);
+}
+
+/**
+ * Render alternative splicing event
+ */
+function renderEvent (item, escape) {
+    var tmp    = item.label.split(" __ "),
+        parsed = tmp[0].split("_"),
+        type   = parsed[0],
+        pos    = parsed[1],
+        gene   = parsed.slice(-1)[0],
+        svg    = tmp[1];
+    if (svg === undefined) svg = "";
+    return `<div>${svg}<b>${gene}</b> ${pos}<br>${type}</div>`;
 }
 
 /**
@@ -359,7 +375,7 @@ function getPvaluePlotTooltip(object) {
     minuslog10pvalue = '-log₁₀(p-value): ' + object.point.y.toFixed(3) + 
         "<br/>";
     patients = '';
-    if(object.point.patients2 !== null) {
+    if (object.point.patients2 !== null) {
         patients = object.point.patients1 + ' vs ' + object.point.patients2 +
             ' patients';
     }
@@ -398,8 +414,7 @@ $.fn.extend({
             return( $(scope).find(".fileBrowser-input") );
         },
         getId: function(el) { return($(el).attr('id')); },
-        getValue: function(el) {
- return($(el).data('val') || 0); },
+        getValue: function(el) { return($(el).data('val') || 0); },
         setValue: function(el, value) { $(el).data('val', value); },
         receiveMessage: function(el, data) {
             // This is used for receiving messages that tell the input object to do

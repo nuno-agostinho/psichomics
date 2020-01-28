@@ -7,13 +7,13 @@
 basicStats(data, groups)
 }
 \arguments{
-\item{data}{Numeric, data frame or matrix: data for one gene or alternative 
-splicing event}
+\item{data}{Numeric, data frame or matrix: gene expression data or
+alternative splicing event quantification values (sample names are based on
+their \code{names} or \code{colnames})}
 
-\item{groups}{List of characters (list of groups containing data identifiers)
-or character vector (group of each value in \code{data}); if \code{NULL} or a
-character vector of length 1, all data points will be considered of the same 
-group}
+\item{groups}{List of sample names or vector containing the group name per
+\code{data} value (read Details); if \code{NULL} or a character vector of
+length 1, \code{data} values are considered from the same group}
 }
 \value{
 HTML elements

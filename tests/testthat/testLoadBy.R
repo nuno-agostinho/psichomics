@@ -1,10 +1,10 @@
-context("Hierarchy check")
+context("Function loading - hierarchy check")
 
-test_that("Gives FALSE if no one's responsible", {
+test_that("Returns FALSE if no party is assigned as the loader", {
     expect_false(loadBy(print, "someone"))
 })
 
-test_that("Gives boolean value depending on the responsible party", {
+test_that("Returns a boolean value depending on the responsible party", {
     d <- e <- f <- g <- h <- print
     attr(d, "loader") <- "charlie"
     attr(e, "loader") <- "snoopy"

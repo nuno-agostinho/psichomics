@@ -7,15 +7,16 @@
 appendNewGroups(type, new, clearOld = FALSE)
 }
 \arguments{
-\item{type}{Character: type of groups (either "Patients", "Samples", 
-"ASevents" or "Genes")}
+\item{type}{Character: type of groups (either \code{Patients}, 
+\code{Samples}, \code{ASevents} or \code{Genes})}
 
 \item{new}{Rows of groups to be added}
 
 \item{clearOld}{Boolean: clear old groups?}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (function is only used to modify the Shiny session's
+state or internal variables)
 }
 \description{
 Retrieve previous groups, rename duplicated group names in the new groups

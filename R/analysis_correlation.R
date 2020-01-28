@@ -45,7 +45,7 @@ correlationUI <- function(id) {
         numericInput(ns("height"), "Height of each plot (pixels)", 
                      200, min=50, max=1000, step=50, width="100%"),
         selectizeInput(ns("cols"), "Plots per row", width="100%",
-                       choices=c(1:4, 6, 12), selected=3), 
+                       choices=c(1, 2, 3, 4, 6, 12), selected=3), 
         numericInput(ns("fontSize"), "Font size", 12, min=1, max=50,
                      step=1, width="100%"), hr(),
         sliderInput(ns("size"), "Size of points", 0, 4, 1.5, 0.5,
@@ -200,11 +200,11 @@ findASeventsFromGene <- function(psi, gene) {
 #' @param ASevents Character: alternative splicing events to correlate with
 #' gene expression of a gene (if \code{NULL}, the events will be automatically
 #' retrieved from the given gene)
-#' @inheritDotParams stats:::cor.test.default alternative:continuity
+#' @param ... Extra parameters passed to \link[stats]{cor.test}
 #' 
 #' @importFrom stats cor.test
 #' 
-#' @export
+#' @family functions to correlate gene expression and alternative splicing
 #' @return List of correlations where each element contains:
 #' \item{\code{eventID}}{Alternative splicing event identifier}
 #' \item{\code{cor}}{Correlation between gene expression and alternative 
@@ -212,6 +212,7 @@ findASeventsFromGene <- function(psi, gene) {
 #' \item{\code{geneExpr}}{Gene expression for the selected gene}
 #' \item{\code{psi}}{Alternative splicing quantification for the alternative 
 #' splicing event}
+#' @export
 #' 
 #' @examples 
 #' annot <- readFile("ex_splicing_annotation.RDS")
@@ -278,16 +279,13 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
     return(res)
 }
 
-#' Subset correlation results between gene expression and splicing 
-#' quantification
-#' 
-#' @param x \code{GEandAScorrelation} object to subset
+#' @rdname plot.GEandAScorrelation
 #' @param genes Character: genes
-#' @param ASevents Character: ASevents
+#' @param ASevents Character: AS events
 #' 
 #' @importFrom stats na.omit
 #' 
-#' @return \code{GEandAScorrelation} object subset
+#' @family functions to correlate gene expression and alternative splicing
 #' @export
 `[.GEandAScorrelation` <- function(x, genes=NULL, ASevents=NULL) {
     x <- unclass(x)
@@ -335,9 +333,12 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 }
 
 #' Display results of correlation analyses
+#' 
+#' Plot, print and display as table the results of gene expression and 
+#' alternative splicing
 #'
-#' @param x \code{GEandAScorrelation} object (obtained after running
-#'   \code{\link{correlateGEandAS}})
+#' @param x \code{GEandAScorrelation} object obtained after running
+#'   \code{\link{correlateGEandAS}()}
 #' @param loessSmooth Boolean: plot a smooth curve computed by
 #'   \code{stats::loess.smooth}?
 #' @param autoZoom Boolean: automatically set the range of PSI values based on
@@ -365,9 +366,13 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
 #' aes theme_light scale_colour_manual geom_density_2d
 #' @importFrom stats loess.smooth
 #'
-#' @export
+#' @method plot GEandAScorrelation
+#' @family functions to correlate gene expression and alternative splicing
 #' @return Plots, summary tables or results of correlation analyses
+#' @export
 #'
+#' @aliases plotCorrelation
+#' 
 #' @examples
 #' annot <- readFile("ex_splicing_annotation.RDS")
 #' junctionQuant <- readFile("ex_junctionQuant.RDS")
@@ -476,7 +481,6 @@ plot.GEandAScorrelation <- function(
     lapply(x, lapply, plotCorrPerASevent)
 }
 
-#' @rdname plot.GEandAScorrelation
 #' @export
 plotCorrelation <- plot.GEandAScorrelation
 

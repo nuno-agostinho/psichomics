@@ -4,8 +4,17 @@
 \alias{createOptimalSurvData}
 \title{Create survival data based on a PSI cutoff}
 \usage{
-createOptimalSurvData(eventPSI, clinical, censoring, event, timeStart,
-  timeStop, match, patients, samples)
+createOptimalSurvData(
+  eventPSI,
+  clinical,
+  censoring,
+  event,
+  timeStart,
+  timeStop,
+  match,
+  patients,
+  samples
+)
 }
 \arguments{
 \item{eventPSI}{Numeric: alternative splicing quantification for multiple
@@ -13,8 +22,8 @@ samples relative to a single splicing event}
 
 \item{clinical}{Data frame: clinical data}
 
-\item{censoring}{Character: censor using "left", "right", "interval" or
-"interval2"}
+\item{censoring}{Character: censor using \code{left}, \code{right},
+\code{interval} or \code{interval2}}
 
 \item{event}{Character: name of column containing time of the event of
 interest}
@@ -25,12 +34,12 @@ interval or follow up time}
 \item{timeStop}{Character: name of column containing ending time of the 
 interval (only relevant for interval censoring)}
 
-\item{match}{Matrix: match between samples and patients}
+\item{match}{Matrix: match between samples and subjects}
 
-\item{patients}{Character: patient identifiers (only required if the
+\item{patients}{Character: subject identifiers (only required if the
 \code{clinical} argument is not handed)}
 
-\item{samples}{Character: samples to use when assigning values per patient 
+\item{samples}{Character: samples to use when assigning values per subject 
 (if \code{NULL}, all samples will be used)}
 }
 \value{

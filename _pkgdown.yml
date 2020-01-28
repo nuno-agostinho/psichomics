@@ -1,0 +1,127 @@
+destination: docs
+reference:
+    - title: "General functions"
+      contents:
+        - psichomics
+        - parseSplicingEvent
+        - getSplicingEventFromGenes
+        - getGenesFromSplicingEvents
+        - plotSplicingEvent
+        - getDownloadsFolder
+        - filterGroups
+    - title: "TCGA data retrieval"
+      desc: Retrieve TCGA data using [Firebrowse API](http://firebrowse.org/api-docs/)
+      contents:
+        - isFirebrowseUp
+        - getTCGAcohorts
+        - getTCGAdataTypes
+        - getTCGAdates
+        - loadTCGAdata
+        - parseTCGAsampleInfo
+    - title: "GTEx data retrieval"
+      contents:
+        - getGtexDataTypes
+        - getGtexTissues
+        - loadGtexData
+    - title: "SRA data retrieval"
+      contents:
+        - loadSRAproject
+    - title: "User-provided data loading"
+      contents:
+        - loadLocalFiles
+        - prepareSRAmetadata
+        - prepareJunctionQuant
+        - prepareGeneQuant
+    - title: "Gene expression pre-processing"
+      contents:
+        - plotRowStats
+        - plotGeneExprPerSample
+        - filterGeneExpr
+        - normaliseGeneExpression
+        - convertGeneIdentifiers
+    - title: "PSI quantification"
+      contents:
+        - getSplicingEventTypes
+        - listSplicingAnnotations
+        - loadAnnotation
+        - quantifySplicing
+        - plotRowStats
+        - filterPSI
+    - title: "Custom alternative splicing annotation preparation"
+      contents:
+        - prepareAnnotationFromEvents
+        - parseMatsAnnotation
+        - parseMisoAnnotation
+        - parseSuppaAnnotation
+        - parseVastToolsAnnotation
+    - title: "Data Grouping"
+      contents:
+        - getGeneList
+        - createGroupByAttribute
+        - getSampleFromSubject
+        - getSubjectFromSample
+        - groupPerElem
+        - testGroupIndependence
+        - plotGroupIndependence
+    - title: "Principal component analysis (PCA)"
+      contents:
+        - performPCA
+        - plotVariance
+        - calculateLoadingsContribution
+        - plotPCA
+    - title: "Independent component analysis (ICA)"
+      contents:
+        - performICA
+        - plotICA
+    - title: Survival analysis
+      contents:
+        - getAttributesTime
+        - assignValuePerSubject
+        - labelBasedOnCutoff
+        - optimalSurvivalCutoff
+        - testSurvival
+        - processSurvTerms
+        - survfit.survTerms
+        - survdiffTerms
+        - plotSurvivalCurves
+        - plotSurvivalPvaluesByCutoff
+    - title:  "Differential analyses"
+      contents:
+        - diffAnalyses
+        - plotDistribution
+    - title: "Gene expression and alternative splicing correlation"
+      contents:
+        - correlateGEandAS
+        - plotCorrelation
+    - title: "Gene, transcript and protein annotation retrieval"
+      contents:
+        - queryEnsemblByEvent
+        - queryEnsemblByGene
+        - ensemblToUniprot
+        - plotProtein
+        - plotTranscripts
+articles:
+    - title: All vignettes
+      contents:
+        - GUI_tutorial
+        - CLI_tutorial
+        - custom_data
+        - AS_events_preparation
+navbar:
+  components:
+    articles:
+      text: Articles
+      menu:
+      - text: 'Visual interface tutorial'
+        href: articles/GUI_tutorial.html
+      - text: 'Command-line interface (CLI) tutorial'
+        href: articles/CLI_tutorial.html
+      - text: 'Loading SRA and user-provided RNA-seq data'
+        href: articles/custom_data.html
+      - text: 'Preparing custom alternative splicing annotations'
+        href: articles/AS_events_preparation.html
+template:
+  params:
+    ganalytics: UA-156449666-1
+news:
+- one_page: false

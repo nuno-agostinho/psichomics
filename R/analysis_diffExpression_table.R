@@ -154,7 +154,8 @@ diffExpressionTableUI <- function(id) {
 #' @importFrom shinyBS updateCollapse
 #' @importFrom limma eBayes lmFit topTable
 #' 
-#' @inherit diffExpressionTableServer
+#' @inheritParams appServer
+#' @inherit psichomics return
 #' @keywords internal
 diffExpressionSet <- function(session, input, output) {
     ns <- session$ns

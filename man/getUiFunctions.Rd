@@ -14,8 +14,8 @@ getUiFunctions(ns, loader, ..., priority = NULL)
 \item{...}{Extra arguments to pass to the user interface (UI) functions}
 
 \item{priority}{Character: name of functions to prioritise by the given
-order; for instance, c("data", "analyses") would load "data", then "analyses"
-then remaining functions}
+order; for instance, \code{c("data", "analyses")} would load \code{data},
+then \code{analyses} and finally the remaining functions}
 }
 \value{
 List of functions related to the given loader

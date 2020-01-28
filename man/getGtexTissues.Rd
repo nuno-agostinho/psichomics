@@ -4,10 +4,10 @@
 \alias{getGtexTissues}
 \title{Get GTEx tissues from given GTEx sample attributes}
 \usage{
-getGtexTissues(dataFolder = getDownloadsFolder())
+getGtexTissues(folder = getDownloadsFolder())
 }
 \arguments{
-\item{dataFolder}{Character: folder containing data}
+\item{folder}{Character: folder containing data}
 }
 \value{
 Character: available tissues
@@ -15,3 +15,15 @@ Character: available tissues
 \description{
 Get GTEx tissues from given GTEx sample attributes
 }
+\examples{
+\dontrun{
+getGtexTissues()
+}
+}
+\seealso{
+Other functions associated with GTEx data retrieval: 
+\code{\link{getDownloadsFolder}()},
+\code{\link{getGtexDataTypes}()},
+\code{\link{loadGtexData}()}
+}
+\concept{functions associated with GTEx data retrieval}

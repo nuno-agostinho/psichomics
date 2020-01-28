@@ -32,3 +32,10 @@ queryEnsemblByGene("ENSG00000139618")
 event <- "SE_17_-_41251792_41249306_41249261_41246877_BRCA1"
 queryEnsemblByEvent(event, species="human", assembly="hg19")
 }
+\seealso{
+Other functions to retrieve external information: 
+\code{\link{ensemblToUniprot}()},
+\code{\link{plotProtein}()},
+\code{\link{plotTranscripts}()}
+}
+\concept{functions to retrieve external information}

@@ -23,7 +23,8 @@ missingDataGuide(dataType)
 data}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (function is only used to modify the Shiny session's
+state or internal variables)
 }
 \description{
 Missing information modal template

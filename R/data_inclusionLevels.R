@@ -1,17 +1,43 @@
-#' List the alternative splicing annotation files available
+#' List alternative splicing annotations
 #'
-#' @return Named character vector with splicing annotation files available
+#' @param species Character: filter results by species (regular expression)
+#' @param assembly Character: filter results by assembly (regular expression)
+#' @param date Character: filter results by date (regular expression)
+#'
+#' @family functions for PSI quantification
+#' @return Named character vector with splicing annotation names
+#' 
+#' @importFrom data.table data.table
+#' @importFrom R.utils capitalize
 #' @export
 #'
 #' @examples
-#' listSplicingAnnotations()
-listSplicingAnnotations <- function() {
-    c("Human hg19/GRCh37 (2017-10-20)"=
-          "annotationHub_alternativeSplicingEvents.hg19_V2.rda",
-      "Human hg19/GRCh37 (2016-10-11)"=
-          "annotationHub_alternativeSplicingEvents.hg19.rda",
-      "Human hg38 (2018-04-30)"=
-          "annotationHub_alternativeSplicingEvents.hg38_V2.rda")
+#' listSplicingAnnotations() # Return all alternative splicing annotations
+#' listSplicingAnnotations(assembly="hg19") # Search for hg19 annotation
+#' listSplicingAnnotations(assembly="hg38") # Search for hg38 annotation
+#' listSplicingAnnotations(date="201(7|8)") # Search for 2017 or 2018 annotation
+listSplicingAnnotations <- function(species=NULL, assembly=NULL, date=NULL) {
+    df <- data.table(
+        species=c("human", "human", "human"),
+        assembly=c("hg19/GRCh37", "hg19/GRCh37", "hg38"),
+        date=c("2017-10-20", "2016-10-11", "2018-04-30"),
+        filename=c("annotationHub_alternativeSplicingEvents.hg19_V2.rda",
+                   "annotationHub_alternativeSplicingEvents.hg19.rda",
+                   "annotationHub_alternativeSplicingEvents.hg38_V2.rda"))
+    
+    filter <- function(data, col, value) {
+        if (!is.null(value)) {
+            data <- data[grep(value, data[[col]], ignore.case=TRUE)]
+        }
+        return(data)
+    }
+    df <- filter(df, "species", species)
+    df <- filter(df, "assembly", assembly)
+    df <- filter(df, "date", date)
+    
+    ns <- sprintf("%s %s (%s)", capitalize(df$species), df$assembly, df$date)
+    res <- setNames(df$filename, ns)
+    return(res)
 }
 
 #' List alternative splicing annotation files available, as well as custom
@@ -138,7 +164,7 @@ inclusionLevelsInterface <- function(ns) {
         uiOutput(ns("modal")),
         helpText("Exon inclusion levels are measured from exon-exon junction",
                  "quantification using the Percent Spliced-In (PSI) metric."),
-        errorDialog("No junction quantification is loaded.",
+        errorDialog("Junction quantification not loaded.",
                     id=ns("missingData"), style="margin: 10px;"),
         hidden(options),
         actionButton(ns("loadIncLevels"), "Load from file..."),
@@ -163,11 +189,12 @@ inclusionLevelsUI <- function(id, panel) {
 #' @param minReads Integer: discard alternative splicing quantified using a
 #' number of reads below this threshold
 #' @param genes Character: gene symbols for which the splicing quantification
-#' of associated splicing events is performed (by default, all splicing events
-#' undergo splicing quantification)
+#' of associated splicing events is performed (by default, splicing events from
+#' all genes are selected)
 #'
 #' @importFrom fastmatch %fin%
 #'
+#' @family functions for PSI quantification
 #' @return Data frame with the quantification of the alternative splicing events
 #' @export
 #'
@@ -176,7 +203,7 @@ inclusionLevelsUI <- function(id, panel) {
 #' annot <- readFile("ex_splicing_annotation.RDS")
 #' junctionQuant <- readFile("ex_junctionQuant.RDS")
 #'
-#' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+#' quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 quantifySplicing <- function(annotation, junctionQuant,
                              eventType=c("SE", "MXE", "ALE", "AFE", "A3SS",
                                          "A5SS"),
@@ -233,9 +260,13 @@ quantifySplicing <- function(annotation, junctionQuant,
 #' Load alternative splicing annotation from \code{AnnotationHub}
 #'
 #' @param annotation Character: annotation to load
+#' @param cache Character: directory path of cache (if \code{NULL}, default 
+#' location is \code{AnnotationHub::getAnnotationHubOption("CACHE")})
 #'
-#' @importFrom AnnotationHub AnnotationHub query
+#' @importFrom BiocFileCache BiocFileCache
+#' @importFrom AnnotationHub AnnotationHub query getAnnotationHubOption
 #'
+#' @family functions for PSI quantification
 #' @return List of data frames containing the alternative splicing annotation
 #' per event type
 #' @export
@@ -245,8 +276,16 @@ quantifySplicing <- function(annotation, junctionQuant,
 #' \dontrun{
 #' annot <- loadAnnotation(human)
 #' }
-loadAnnotation <- function(annotation) {
-    ah <- AnnotationHub()
+loadAnnotation <- function(annotation, cache=NULL) {
+    if (is.null(cache)) cache <- getAnnotationHubOption("CACHE")
+
+    if (!dir.exists(cache)) {
+        BiocFileCache(cache=cache, ask=FALSE)
+        message(sprintf(
+            "The directory %s was created to store annotation data", cache))
+    }
+
+    ah <- AnnotationHub(cache=cache)
     annot <- gsub("^annotationHub_", "", annotation)
     annot <- ah[[names(query(ah, annot))]]
     return(annot)
@@ -377,7 +416,7 @@ loadSplicingQuantificationSet <- function(session, input, output) {
                 setCategory(name)
                 
                 samples <- colnames(psi)
-                parsed <- parseTcgaSampleInfo(samples)
+                parsed <- parseTCGAsampleInfo(samples)
                 if ( !is.null(parsed) ) setSampleInfo(parsed)
             } else {
                 setInclusionLevels(psi)
@@ -436,7 +475,7 @@ loadSplicingQuantificationSet <- function(session, input, output) {
 #'
 #' @inherit inclusionLevelsServer
 #' @param annotation Character: chosen annotation
-#' @param showProgress Boolean: show progress? FALSE by default
+#' @param showProgress Boolean: show progress?
 #'
 #' @keywords internal
 readAnnot <- function(session, annotation, showProgress=FALSE) {
@@ -640,6 +679,7 @@ quantifySplicingSet <- function(session, input) {
 #'
 #' @importFrom miscTools rowMedians
 #' 
+#' @family functions for PSI quantification
 #' @return Boolean vector indicating which splicing events pass the thresholds
 #' @export
 #' 

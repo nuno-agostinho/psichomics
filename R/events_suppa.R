@@ -99,7 +99,8 @@ parseSuppaEvent <- function(event) {
 #' Parse junctions of an event from SUPPA
 #'
 #' @param junctions List of integers: exon-exon junctions of an event
-#' @param strand Character: positive ("+") or negative ("-") strand
+#' @param strand Character: positive-sense (\code{+}) or negative-sense
+#' (\code{-}) strand
 #' @param coords Character: coordinate positions to fill
 #' @param plus_pos Integer: index of the coordinates for a plus strand event
 #' @param minus_pos Integer: index of the coordinates for a minus strand event
@@ -115,7 +116,7 @@ parseSuppaEvent <- function(event) {
 #'  \item{\bold{AFE} (alternative first exon)}
 #' }
 #'
-#' @seealso \code{\link{parseSuppaEvent}}
+#' @seealso \code{\link{parseSuppaEvent}()}
 #'
 #' @return Data frame of parsed junctions
 #' @keywords internal
@@ -147,7 +148,7 @@ parseSuppaSE <- function (junctions, strand) {
     coords <- c("C1.end", 
                 "A1.start", "A1.end",
                 "C2.start")
-    plus_pos  <- 1:4
+    plus_pos  <- seq(4)
     minus_pos <- 4:1
     parseSuppaGeneric(junctions, strand, coords, plus_pos, minus_pos)
 }
@@ -161,7 +162,7 @@ parseSuppaSE <- function (junctions, strand) {
 parseSuppaRI <- function (junctions, strand) {
     coords <- c("C1.start", "C1.end",
                 "C2.start", "C2.end")
-    plus_pos  <- 1:4
+    plus_pos  <- seq(4)
     minus_pos <- 4:1
     parseSuppaGeneric(junctions, strand, coords, plus_pos, minus_pos)
 }
@@ -176,7 +177,7 @@ parseSuppaALE <- function (junctions, strand) {
     coords <- c("C1.end",
                 "A1.start", "A1.end",
                 "A2.start", "A2.end")
-    plus_pos  <- c(1:3, 5:6)
+    plus_pos  <- c(seq(3), 5:6)
     minus_pos <- c(6:4, 2:1)
     parseSuppaGeneric(junctions, strand, coords, plus_pos, minus_pos)
 }
@@ -191,7 +192,7 @@ parseSuppaAFE <- function (junctions, strand) {
     coords <- c("A2.start", "A2.end",
                 "A1.start", "A1.end",
                 "C2.start")
-    plus_pos  <- c(4:5, 1:3)
+    plus_pos  <- c(4:5, seq(3))
     minus_pos <- c(3:2, 6:4)
     parseSuppaGeneric(junctions, strand, coords, plus_pos, minus_pos)
 }
@@ -207,7 +208,7 @@ parseSuppaMXE <- function (junctions, strand) {
                 "A1.start", "A1.end",
                 "A2.start", "A2.end",
                 "C2.start")
-    plus_pos  <- c(1:3, 6:8)
+    plus_pos  <- c(seq(3), 6:8)
     minus_pos <- c(8:6, 3:1)
     parseSuppaGeneric(junctions, strand, coords, plus_pos, minus_pos)
 }

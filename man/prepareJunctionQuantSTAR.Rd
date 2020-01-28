@@ -3,15 +3,17 @@
 \name{prepareJunctionQuantSTAR}
 \alias{prepareJunctionQuantSTAR}
 \alias{prepareGeneQuantSTAR}
-\title{Prepare files to be loaded into psichomics}
+\title{Prepare user-provided files to be loaded into psichomics}
 \usage{
 prepareJunctionQuantSTAR(..., startOffset = -1, endOffset = +1)
 
-prepareGeneQuantSTAR(..., strandedness = c("unstranded", "stranded",
-  "stranded (reverse)"))
+prepareGeneQuantSTAR(
+  ...,
+  strandedness = c("unstranded", "stranded", "stranded (reverse)")
+)
 }
 \arguments{
-\item{...}{Character: path to file(s) to read}
+\item{...}{Character: path of (optionally named) input files (see Examples)}
 
 \item{startOffset}{Numeric: value to offset start position}
 
@@ -22,10 +24,10 @@ of the following: \code{unstraded}, \code{stranded} or
 \code{stranded (reverse)}}
 }
 \value{
-Prepared file
+Prepared file (if \code{output != NULL}) and object
 }
 \description{
-Prepare files to be loaded into psichomics
+Prepare user-provided files to be loaded into psichomics
 }
 \examples{
 \dontrun{
@@ -41,3 +43,8 @@ prepareGeneQuant("Control rep1"=geneCountFile1,
                  "KD rep2"=geneCountFile4)
 }
 }
+\seealso{
+Other functions to load local files: 
+\code{\link{loadLocalFiles}()}
+}
+\keyword{internal}

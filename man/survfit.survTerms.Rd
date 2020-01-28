@@ -10,9 +10,10 @@
 \item{survTerms}{\code{survTerms} object: survival terms obtained after 
 running \code{processSurvTerms} (see examples)}
 
-\item{...}{Arguments passed on to \code{survival::survdiff}
-\describe{
-  \item{subset}{
+\item{...}{
+  Arguments passed on to \code{\link[survival:survdiff]{survival::survdiff}}
+  \describe{
+    \item{\code{subset}}{
 expression indicating which subset of the rows of data should be used in
 the fit.  This can be a logical vector (which is replicated to have
 length equal to the number of observations), a numeric vector indicating
@@ -20,19 +21,21 @@ which observation numbers are to be included (or excluded if negative),
 or a character vector of row names to be included.  All observations are
 included by default.
 }
-  \item{na.action}{
+    \item{\code{na.action}}{
 a missing-data filter function.  This is applied to the \code{model.frame} after any
 subset argument has been used.  Default is \code{options()$na.action}.
 }
-  \item{rho}{
+    \item{\code{rho}}{
 a scalar parameter that controls the type of test.
 }
-  \item{timefix}{process times through the \code{aeqSurv} function to
+    \item{\code{timefix}}{process times through the \code{aeqSurv} function to
   eliminate potential roundoff issues.}
-}}
+  }}
 }
 \value{
-An object of class \code{survfit} containing one or more survival curves.
+\code{survfit} object. See \code{survfit.object} for details. Methods
+defined for \code{survfit} objects are \code{print}, \code{plot},
+\code{lines}, and \code{points}.
 }
 \description{
 Create survival curves
@@ -80,3 +83,16 @@ survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
                                formulaStr=formulaStr)
 survfit(survTerms)
 }
+\seealso{
+Other functions to analyse survival: 
+\code{\link{assignValuePerSubject}()},
+\code{\link{getAttributesTime}()},
+\code{\link{labelBasedOnCutoff}()},
+\code{\link{optimalSurvivalCutoff}()},
+\code{\link{plotSurvivalCurves}()},
+\code{\link{plotSurvivalPvaluesByCutoff}()},
+\code{\link{processSurvTerms}()},
+\code{\link{survdiffTerms}()},
+\code{\link{testSurvival}()}
+}
+\concept{functions to analyse survival}

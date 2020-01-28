@@ -33,8 +33,8 @@ survivalUI <- function(id) {
                    "'].indexOf('interval') > -1"),
             selectizeInput(ns("timeStop"), "Ending time",
                            choices=c("No clinical data loaded"=""))),
-        helpText("For patients for which there is no event reported, time",
-                 "to last follow up is used instead."),
+        helpText("For subjects with no event reported, time to last follow up",
+                 "is used instead."),
         selectizeInput(ns("event"), "Event of interest",
                        choices=c("No clinical data loaded"="")),
         radioButtons(
@@ -84,7 +84,7 @@ survivalUI <- function(id) {
                 label=div(id=ns("helpFiltering"), "Sample filtering", 
                           icon("question-circle"))),
             bsTooltip(ns("helpFiltering"), options=list(container="body"),
-                      placement="right", patientMultiMatchWarning())),
+                      placement="right", subjectMultiMatchWarning())),
         conditionalPanel(
             sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "geCutoff"),
             hidden(selectizeInput(
@@ -127,7 +127,7 @@ survivalUI <- function(id) {
     tagList(
         uiOutput(ns("modal")),
         sidebarPanel(
-            errorDialog("No clinical data is available.",
+            errorDialog("Clinical data not loaded.",
                         id=ns("survivalDialog"),
                         buttonId=ns("loadClinical"),
                         buttonLabel="Load clinical data"),
@@ -142,17 +142,16 @@ survivalUI <- function(id) {
 
 #' Prepare survival terms in case of valid input
 #' 
-#' @param session Shiny session
-#' @param input Shiny input
-#' @param coxph Boolean: prepare data for Cox models? FALSE by default
+#' @inheritParams appServer
+#' @param coxph Boolean: prepare data for Cox models?
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 checkSurvivalInput <- function (session, input, coxph=FALSE) {
     ns <- session$ns
     
     isolate({
-        patients      <- getPatientId()
+        subjects      <- getSubjectId()
         match         <- getClinicalMatchFrom("Inclusion levels")
         splicingEvent <- getEvent()
         # Get user input
@@ -163,8 +162,6 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
         outGroup   <- input$dataGroupsShowAllData
         modelTerms <- input$modelTerms
         formulaStr <- input$formula
-        intRanges  <- input$ranges
-        markTimes  <- input$markTimes
         scale      <- input$scale
         # Get chosen groups
         chosen  <- getSelectedGroups(input, "dataGroups", "Patients")
@@ -180,15 +177,15 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
     else
         outGroupName <- NA
     
-    if ( is.null(patients) ) {
+    if ( is.null(subjects) ) {
         missingDataModal(session, "Clinical data", ns("missingClinical"))
         return(NULL)
     } else if (modelTerms == "none") {
-        groups <- groupPerElem(NULL, patients, outGroupName)
+        groups <- groupPerElem(NULL, subjects, outGroupName)
         formulaStr <- NULL
     } else if (modelTerms == "groups") {
-        # Assign one group for each clinical patient
-        groups <- groupPerElem(chosen, patients, outGroupName)
+        # Assign one group for each clinical subject
+        groups <- groupPerElem(chosen, subjects, outGroupName)
         formulaStr <- NULL
     } else if (modelTerms == "geCutoff") {
         isolate({
@@ -207,9 +204,9 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
             return(NULL)
         }
         
-        # Assign values to patients based on their samples
-        eventGE <- assignValuePerPatient(geneExpr[gene, ], match, 
-                                         patients=patients, 
+        # Assign values to subjects based on their samples
+        eventGE <- assignValuePerSubject(geneExpr[gene, ], match, 
+                                         patients=subjects, 
                                          samples=unlist(samples))
         
         # Assign a value based on the inclusion levels cutoff
@@ -232,9 +229,9 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
             return(NULL)
         }
         
-        # Assign values to patients based on their samples
-        eventPSI <- assignValuePerPatient(psi[splicingEvent, ], match, 
-                                          patients=patients, 
+        # Assign values to subjects based on their samples
+        eventPSI <- assignValuePerSubject(psi[splicingEvent, ], match, 
+                                          patients=subjects, 
                                           samples=unlist(samples))
         
         # Assign a value based on the inclusion levels cutoff
@@ -279,13 +276,13 @@ checkSurvivalInput <- function (session, input, coxph=FALSE) {
     }
 }
 
-#' Logic set to perform survival analysis based on gene expression cut-offs
+#' Logic set to perform survival analysis based on gene expression cutoffs
 #' 
 #' @inheritParams survivalServer
 #' 
 #' @importFrom shinyjs show hide
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 geneExprSurvSet <- function(session, input, output) {
     # Update available gene expression data choices
@@ -369,7 +366,7 @@ geneExprSurvSet <- function(session, input, output) {
         gene     <- input$gene
         terms    <- input$modelTerms
         
-        patients <- getPatientId()
+        subjects <- getSubjectId()
         match    <- getClinicalMatchFrom("Inclusion levels")
         # Get user input
         timeStart <- input$timeStart
@@ -386,9 +383,9 @@ geneExprSurvSet <- function(session, input, output) {
         if (!is.null(geneExpr) && !is.null(gene) && !identical(gene, "") &&
             terms == "geCutoff" && !is.null(clinical)) {
             
-            # Assign gene expression values to patients based on their samples
-            eventGE <- assignValuePerPatient(geneExpr[gene, ], match, 
-                                             patients=patients, 
+            # Assign gene expression values to subjects based on their samples
+            eventGE <- assignValuePerSubject(geneExpr[gene, ], match, 
+                                             patients=subjects, 
                                              samples=unlist(samples))
             
             # Mean gene expression cutoff
@@ -440,11 +437,11 @@ geneExprSurvSet <- function(session, input, output) {
     })
 
     observe({
-        patients <- getPatientId()
+        subjects <- getSubjectId()
         geneExpr <- getGeneExpression(input$geneExpr)
         gene     <- input$gene
 
-        if (is.null(patients)) {
+        if (is.null(subjects)) {
             hide("geOptions")
             info <- helpText(icon("exclamation-circle"),
                              "Please load clinical data.")
@@ -467,8 +464,36 @@ geneExprSurvSet <- function(session, input, output) {
 #' @param significance Numeric: significance threshold
 #' @param cutoffs Numeric: cutoffs to test
 #' 
+#' @family functions to analyse survival
 #' @return p-value plot
 #' @export
+#' 
+#' @examples 
+#' clinical <- read.table(text = "2549   NA ii  female
+#'                                 840   NA i   female
+#'                                  NA 1204 iv    male
+#'                                  NA  383 iv  female
+#'                                1293   NA iii   male")
+#' names(clinical) <- c("patient.days_to_last_followup", 
+#'                      "patient.days_to_death",
+#'                      "patient.stage_event.pathologic_stage",
+#'                      "patient.gender")
+#' clinical <- do.call(rbind, rep(list(clinical), 5))
+#' 
+#' psi <- data.frame(t(c(rep(0.1, 9), rep(0.2, 13), rep(0.3, 3))))
+#' colnames(psi) <- paste0("sample", seq(psi))
+#' 
+#' # Match between subjects and samples
+#' match <- paste0("subject", seq(psi))
+#' names(match) <- colnames(psi)
+#' rownames(clinical) <- match
+#' 
+#' eventData <- assignValuePerSubject(psi[1, ], match)
+#' 
+#' event      <- "days_to_death"
+#' timeStart  <- "days_to_death"
+#' plotSurvivalPvaluesByCutoff(clinical, eventData, censoring="right", 
+#'                             event=event, timeStart=timeStart)
 plotSurvivalPvaluesByCutoff <- function(
     clinical, data, censoring, event, timeStart, timeStop=NULL, 
     followup="days_to_last_followup", significance=0.05,
@@ -481,32 +506,32 @@ plotSurvivalPvaluesByCutoff <- function(
         clinical=clinical, censoring=censoring, timeStart=timeStart, 
         timeStop=timeStop, event=event, survTime=survTime, survivalInfo=TRUE)
     
-    patients     <- lapply(pvalues, function(n) attr(n, "info")$n)
-    noSeparation <- vapply(patients, length, numeric(1)) == 1
-    patients[noSeparation] <- NA
-    patients1 <- vapply(patients, "[[", 1, FUN.VALUE = numeric(1))
-    patients2 <- NA
-    patients2[!noSeparation] <- vapply(patients[!noSeparation], 
+    subjects     <- lapply(pvalues, function(n) attr(n, "info")$n)
+    noSeparation <- vapply(subjects, length, numeric(1)) == 1
+    subjects[noSeparation] <- NA
+    subjects1 <- vapply(subjects, "[[", 1, FUN.VALUE = numeric(1))
+    subjects2 <- NA
+    subjects2[!noSeparation] <- vapply(subjects[!noSeparation], 
                                        "[[", 2, FUN.VALUE = numeric(1))
     
-    pvalues      <- -log10(unlist(pvalues))
-    significance <- -log10(significance)
+    minusLog10pvalues <- -log10(unlist(pvalues))
+    minusLog10signif  <- -log10(significance)
     
-    data <- data.frame(x=cutoffs, y=pvalues, 
-                       patients1=patients1, patients2=patients2)
+    data <- data.frame(x=cutoffs, y=minusLog10pvalues, 
+                       patients1=subjects1, patients2=subjects2)
     data <- list_parse(data)
     
     firstSeriesColour <- JS("Highcharts.getOptions().colors[0]")
     
     # Put the label of p-value plot to the right when there are many
     # significant points to the left
-    signif <- pvalues >= significance
+    signif <- minusLog10pvalues >= minusLog10signif
     labelAlign <- "left"
-    if (sum(signif[1:50]) > sum(signif[51:100])) labelAlign <- "right"
+    if (sum(signif[seq(50)]) > sum(signif[51:100])) labelAlign <- "right"
     
     pvaluePlot <- highchart(height="100px") %>%
         hc_add_series(data=data,
-                      zones=list(list(value=significance,
+                      zones=list(list(value=minusLog10signif,
                                       color="lightgray"))) %>%
         hc_chart(zoomType="x") %>%
         hc_xAxis(tickInterval=0.1, showLastLabel=TRUE, endOnTick=TRUE,
@@ -519,7 +544,7 @@ plotSurvivalPvaluesByCutoff <- function(
                      value=significance, color=firstSeriesColour,
                      dashStyle="shortdash", width=1,
                      label=list(
-                         align=labelAlign, text="p < 0.05",
+                         align=labelAlign, text=paste("p <", significance),
                          style=list(color=firstSeriesColour))))) %>%
         hc_legend(NULL) %>% 
         hc_tooltip(formatter=JS(
@@ -554,7 +579,7 @@ survivalServer <- function(input, output, session) {
                        preference="Primary solid Tumor")
     
     observe({
-        if ( is.null(getPatientAttributes()) ) {
+        if ( is.null(getSubjectAttributes()) ) {
             show("survivalDialog")
             hide("survivalOptions")
         } else {
@@ -566,7 +591,7 @@ survivalServer <- function(input, output, session) {
     
     # Update available clinical data attributes to use in a formula
     output$formulaSuggestions <- renderUI({
-        textSuggestions(ns("formula"), getPatientAttributes())
+        textSuggestions(ns("formula"), getSubjectAttributes())
     })
     
     # Update selectize input label depending on the chosen censoring type
@@ -578,7 +603,7 @@ survivalServer <- function(input, output, session) {
     })
     
     # Update available clinical attributes when the clinical data changes
-    observe( updateClinicalParams(session, getPatientAttributes()) )
+    observe( updateClinicalParams(session, getSubjectAttributes()) )
     
     observeEvent(input$missingClinical, missingDataGuide("Clinical data"))
     observeEvent(input$missingInclusionLevels,
@@ -679,7 +704,7 @@ survivalServer <- function(input, output, session) {
                                class="pull-right btn-info"),
                 h3("Cox", tags$abbr("PH", title="Proportional Hazards"), 
                    "model", tags$small(
-                       summary$n, " patients with ", summary$nevent, " events",
+                       summary$n, " subjects with ", summary$nevent, " events",
                        if (len > 0)
                            paste0(" (", len, " missing values removed)"))),
                 tags$b("Concordance: "), roundDigits(summary$concordance[[1]]),
@@ -699,7 +724,7 @@ survivalServer <- function(input, output, session) {
                 len <- length(summary$na.action)
                 info <- paste0(
                     "Cox proportional hazards model\n",
-                    summary$n, "patients,", summary$nevent, "events",
+                    summary$n, "subjects,", summary$nevent, "events",
                     if (len > 0) paste0(" (", len, " missing values removed)"), 
                     "\nConcordance: ", summary$concordance[[1]],
                     "\nSE: ", summary$concordance[[2]],
@@ -721,7 +746,7 @@ survivalServer <- function(input, output, session) {
             if (is.null(survTerms)) return(NULL)
             
             pvalue <- signifDigits(tests[, 3])
-            tests[, 1:2] <- roundDigits(tests[ , 1:2, drop=FALSE])
+            tests[, seq(2)] <- roundDigits(tests[ , seq(2), drop=FALSE])
             tests[, 3] <- pvalue
             return(tests)
         }, style="bootstrap", selection='none',
@@ -745,7 +770,7 @@ survivalServer <- function(input, output, session) {
     
     # Calculate optimal inclusion levels
     output$pvaluePlot <- renderUI({
-        patients      <- getPatientId()
+        subjects      <- getSubjectId()
         psi           <- getInclusionLevels()
         match         <- getClinicalMatchFrom("Inclusion levels")
         splicingEvent <- getEvent()
@@ -760,7 +785,7 @@ survivalServer <- function(input, output, session) {
                                                followup)
         samples <- getSelectedGroups(input, "sampleFiltering", "Samples")
         
-        if (is.null(patients)) {
+        if (is.null(subjects)) {
             hide("psiCutoff")
             return(helpText(icon("exclamation-circle"), 
                             "Please load clinical data."))
@@ -779,9 +804,9 @@ survivalServer <- function(input, output, session) {
             # output$coxTests  <- renderDataTable(NULL)
             # output$coxGroups <- renderDataTable(NULL)
             
-            # Assign values to patients based on their samples
-            eventPSI <- assignValuePerPatient(psi[splicingEvent, ], match, 
-                                              patients=patients,
+            # Assign values to subjects based on their samples
+            eventPSI <- assignValuePerSubject(psi[splicingEvent, ], match, 
+                                              patients=subjects,
                                               samples=unlist(samples))
             
             show("psiCutoff")
@@ -815,7 +840,7 @@ survivalServer <- function(input, output, session) {
     
     # Update contextual information for selected PSI cutoff
     observeEvent(input$psiCutoff, {
-        patients      <- getPatientId()
+        subjects      <- getSubjectId()
         psi           <- getInclusionLevels()
         match         <- getClinicalMatchFrom("Inclusion levels")
         splicingEvent <- getEvent()
@@ -832,11 +857,11 @@ survivalServer <- function(input, output, session) {
         samples <- getSelectedGroups(input, "sampleFiltering", "Samples")
         
         if (is.null(splicingEvent) || splicingEvent == "" || 
-            is.null(psi) || is.null(patients)) return(NULL)
+            is.null(psi) || is.null(subjects)) return(NULL)
         
-        # Assign values to patients based on their samples
-        eventPSI <- assignValuePerPatient(psi[splicingEvent, ], match, 
-                                          patients=patients, 
+        # Assign values to subjects based on their samples
+        eventPSI <- assignValuePerSubject(psi[splicingEvent, ], match, 
+                                          patients=subjects, 
                                           samples=unlist(samples))
         
         pvalue <- testSurvivalCutoff(
@@ -845,14 +870,14 @@ survivalServer <- function(input, output, session) {
             session=session, survivalInfo = TRUE)
         surv <- attr(pvalue, "info")
         
-        patients <- NULL
+        subjects <- NULL
         if (!is.na(pvalue) && pvalue < 1)
-            patients <- paste0("(", surv$n[1], " vs ", surv$n[2], " patients)")
+            subjects <- paste0("(", surv$n[1], " vs ", surv$n[2], " subjects)")
         
         output$cutoffPvalue <- renderUI(
             tagList(div(style="text-align:right; font-size:small",
                         tags$b("p-value of selected cutoff:"), round(pvalue, 3),
-                        patients),
+                        subjects),
                     tags$br()))
     })
     

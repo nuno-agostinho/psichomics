@@ -4,21 +4,30 @@
 \alias{renderGeneticInfo}
 \title{Render genetic information}
 \usage{
-renderGeneticInfo(output, ns, info, species = NULL, assembly = NULL,
-  grch37 = FALSE)
+renderGeneticInfo(
+  output,
+  info,
+  species = NULL,
+  assembly = NULL,
+  grch37 = FALSE,
+  eventDiagram = NULL,
+  gene = NULL
+)
 }
 \arguments{
 \item{output}{Shiny output}
 
-\item{ns}{Namespace function}
-
 \item{info}{Information as retrieved from Ensembl}
 
-\item{species}{Character: species name (NULL by default)}
+\item{species}{Character: species name}
 
-\item{assembly}{Character: assembly version (NULL by default)}
+\item{assembly}{Character: assembly version}
 
-\item{grch37}{Boolean: use version GRCh37 of the genome? FALSE by default}
+\item{grch37}{Boolean: use version GRCh37 of the genome?}
+
+\item{eventDiagram}{Diagram of selected alternative splicing event}
+
+\item{ns}{Namespace function}
 }
 \value{
 HTML elements to render gene, protein and transcript annotation

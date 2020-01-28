@@ -98,7 +98,7 @@ geNormalisationFilteringInterface <- function(ns) {
 
     tagList(
         uiOutput(ns("modal")),
-        errorDialog("No gene expression data is loaded.",
+        errorDialog("Gene expression not loaded.",
                     id=ns("missingData"), style="margin: 10px;"),
         hidden(options),
         actionButton(ns("loadGeneExpr"), "Load from file..."),
@@ -125,17 +125,19 @@ geNormalisationFilteringUI <- function(id, panel) {
 #' @param log2transform Boolean: perform log2-transformation?
 #' @param priorCount Average count to add to each observation to avoid zeroes
 #' after log-transformation
-#' @param performVoom Boolean: perform mean-variance modelling (voom)?
+#' @param performVoom Boolean: perform mean-variance modelling
+#' (\code{\link[limma]{voom}})?
 #'
 #' @details \code{edgeR::calcNormFactors} will be used to normalise gene
-#' expression if one of the followin methods is set: \code{TMM}, \code{RLE},
-#' \code{upperquartile} or \code{none}. However, \code{limma::voom} will be
-#' used for normalisation if \code{performVoom = TRUE} and the selected method
-#' is \code{quantile}.
+#' expression if one of the following methods is set: \code{TMM}, \code{RLE},
+#' \code{upperquartile} or \code{none}. However, \code{\link[limma]{voom}} will
+#' be used for normalisation if \code{performVoom = TRUE} and the selected 
+#' method is \code{quantile}.
 #'
 #' @importFrom edgeR DGEList [.DGEList calcNormFactors cpm
 #' @importFrom limma voom
 #'
+#' @family functions for gene expression pre-processing
 #' @return Filtered and normalised gene expression
 #' @export
 #'
@@ -245,7 +247,7 @@ loadGeneExpressionSet <- function(session, input, output) {
                 setCategory(name)
 
                 samples <- colnames(geneExpr)
-                parsed <- parseTcgaSampleInfo(samples)
+                parsed <- parseTCGAsampleInfo(samples)
                 if ( !is.null(parsed) ) setSampleInfo(parsed)
             } else {
                 name <- renameDuplicated("Gene expression",
@@ -260,7 +262,7 @@ loadGeneExpressionSet <- function(session, input, output) {
 
 #' Convert gene identifiers
 #'
-#' @param annotation OrgDb: genome wide annotation for an organism, e.g.
+#' @param annotation \code{OrgDb}: genome wide annotation for an organism, e.g.
 #' \code{org.Hs.eg.db}
 #' @param genes Character: genes to be converted
 #' @param key Character: type of identifier used, e.g. \code{ENSEMBL}; read
@@ -273,7 +275,8 @@ loadGeneExpressionSet <- function(session, input, output) {
 #' @importFrom AnnotationDbi select
 #' @importFrom data.table data.table
 #' @importFrom org.Hs.eg.db org.Hs.eg.db
-#'
+#' 
+#' @family functions for gene expression pre-processing
 #' @return Character vector of the respective targets of gene identifiers. The
 #' previous identifiers remain other identifiers have the same target (in case
 #' \code{ignoreDuplicatedTargets = TRUE}) or if no target was found.
@@ -345,6 +348,7 @@ convertGeneIdentifiers <- function(annotation, genes, key="ENSEMBL",
 #'
 #' @importFrom edgeR filterByExpr
 #'
+#' @family functions for gene expression pre-processing
 #' @return Boolean vector indicating which genes have sufficiently large counts
 #' @export
 #' 
@@ -383,6 +387,7 @@ filterGeneExpr <- function(geneExpr, minMean=0, maxMean=Inf, minVar=0,
 #'
 #' @importFrom highcharter %>% hc_yAxis
 #'
+#' @family functions for gene expression pre-processing
 #' @return Gene expression distribution plots
 #' @export
 #'

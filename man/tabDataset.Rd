@@ -5,8 +5,16 @@
 \title{Creates a \code{tabPanel} template for a \code{datatable} with a title and
 description}
 \usage{
-tabDataset(ns, title, tableId, columns, visCols, data,
-  description = NULL, icon = NULL)
+tabDataset(
+  ns,
+  title,
+  tableId,
+  columns,
+  visCols,
+  data,
+  description = NULL,
+  icon = NULL
+)
 }
 \arguments{
 \item{ns}{Namespace function}

@@ -104,8 +104,8 @@ diffSplicingTableUI <- function(id) {
             sprintf("input[id='%s'].indexOf('interval') > -1", ns("censoring")),
             selectizeInput(ns("timeStop"), choices=character(), "Ending time",
                            width="100%")),
-        helpText("For patients for which there is no event reported, time",
-                 "to last follow up is used instead."),
+        helpText("For subjects with no event reported, time to last follow up",
+                 "is used instead."),
         selectizeInput(ns("event"), choices=NULL, width="100%",
                        "Event of interest"),
         selectGroupsUI(
@@ -113,7 +113,7 @@ diffSplicingTableUI <- function(id) {
             label=div(id=ns("helpFiltering"), "Sample filtering", 
                       icon("question-circle"))),
         bsTooltip(ns("helpFiltering"), options=list(container="body"),
-                  placement="right", patientMultiMatchWarning()),
+                  placement="right", subjectMultiMatchWarning()),
         radioButtons(
             ns("selected"), "Perform survival analysis based on", width="100%",
             choices=c(
@@ -196,7 +196,7 @@ diffSplicingTableUI <- function(id) {
 #' @inheritParams optimalSurvivalCutoff
 #' @param eventPSI Numeric: alternative splicing quantification for multiple
 #' samples relative to a single splicing event
-#' @inheritParams assignValuePerPatient
+#' @inheritParams assignValuePerSubject
 #' 
 #' @importFrom shiny tags
 #' @importFrom jsonlite toJSON
@@ -209,8 +209,8 @@ diffSplicingTableUI <- function(id) {
 createOptimalSurvData <- function(eventPSI, clinical, censoring, event, 
                                   timeStart, timeStop, match, patients, 
                                   samples) {
-    # Assign a value to patients based on their respective samples
-    eventPSI <- assignValuePerPatient(eventPSI, match, patients=patients,
+    # Assign a value to subjects based on their respective samples
+    eventPSI <- assignValuePerSubject(eventPSI, match, patients=patients,
                                       samples=samples)
     opt <- optimalSurvivalCutoff(clinical, eventPSI, censoring, event, 
                                  timeStart, timeStop)
@@ -241,18 +241,16 @@ createOptimalSurvData <- function(eventPSI, clinical, censoring, event,
 #' 
 #' @importFrom shinyjs runjs show hide
 #' 
-#' @param session Shiny session
-#' @param input Shiny input
-#' @param output Shiny output
+#' @inheritParams appServer
 #' 
-#' @return NULL (this function is used to modify the Shiny session's state)
+#' @inherit psichomics return
 #' @keywords internal
 optimSurvDiffSet <- function(session, input, output) {
     ns <- session$ns
     
     # Interface of survival analyses
     observe({
-        attrs  <- getPatientAttributes()
+        attrs  <- getSubjectAttributes()
         diffAn <- getDifferentialSplicing()
         
         if (!is.null(attrs) && !is.null(diffAn)) {
@@ -275,10 +273,10 @@ optimSurvDiffSet <- function(session, input, output) {
     # Update selectize input label depending on the chosen censoring type
     observe({
         anyDiffSplicing <- !is.null( getDifferentialSplicing() )
-        anyPatients     <- !is.null( getPatientId() )
+        anySubjects     <- !is.null( getSubjectId() )
         anyCensoring    <- !is.null( input$censoring )
         
-        if (anyDiffSplicing && anyPatients && anyCensoring) {
+        if (anyDiffSplicing && anySubjects && anyCensoring) {
             if (grepl("interval", input$censoring, fixed=TRUE)) {
                 label <- "Starting time"
             } else {
@@ -293,7 +291,7 @@ optimSurvDiffSet <- function(session, input, output) {
     observeEvent(input$survival, {
         time <- startProcess("survival")
         isolate({
-            patients      <- getPatientId()
+            subjects      <- getSubjectId()
             psi           <- getInclusionLevels()
             match         <- getClinicalMatchFrom("Inclusion levels")
             statsTable    <- getDifferentialSplicing()
@@ -343,7 +341,7 @@ optimSurvDiffSet <- function(session, input, output) {
         }
         startProgress("Performing survival analysis", nrow(subset))
         opt <- apply(subset, 1, createOptimalSurvData, clinical, censoring, 
-                     event, timeStart, timeStop, match, patients, 
+                     event, timeStart, timeStop, match, subjects, 
                      unlist(samples))
         
         if (length(opt) == 0) {
@@ -420,7 +418,8 @@ optimSurvDiffSet <- function(session, input, output) {
 #' 
 #' @importFrom shinyBS updateCollapse
 #' 
-#' @inherit diffSplicingTableServer
+#' @inheritParams appServer
+#' @inherit psichomics return
 #' @keywords internal
 diffSplicingSet <- function(session, input, output) {
     ns <- session$ns

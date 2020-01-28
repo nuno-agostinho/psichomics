@@ -4,7 +4,7 @@
 \alias{selectPreMadeGroup}
 \title{Select pre-made groups from a selected item}
 \usage{
-selectPreMadeGroup(groups, selected)
+selectPreMadeGroup(groups, selected, genes = NULL)
 }
 \arguments{
 \item{groups}{List of list of characters}

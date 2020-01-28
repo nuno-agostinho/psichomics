@@ -4,38 +4,45 @@
 \alias{psichomics}
 \title{Start graphical interface of psichomics}
 \usage{
-psichomics(..., reset = FALSE, testData = FALSE)
+psichomics(..., launch.browser = TRUE, reset = FALSE, testData = FALSE)
 }
 \arguments{
-\item{...}{Arguments passed on to \code{shiny::runApp}
-\describe{
-  \item{port}{The TCP port that the application should listen on. If the
+\item{...}{
+  Arguments passed on to \code{\link[shiny:runApp]{shiny::runApp}}
+  \describe{
+    \item{\code{port}}{The TCP port that the application should listen on. If the
 \code{port} is not specified, and the \code{shiny.port} option is set (with
 \code{options(shiny.port = XX)}), then that port will be used. Otherwise,
 use a random port.}
-  \item{host}{The IPv4 address that the application should listen on. Defaults
+    \item{\code{host}}{The IPv4 address that the application should listen on. Defaults
 to the \code{shiny.host} option, if set, or \code{"127.0.0.1"} if not. See
 Details.}
-  \item{workerId}{Can generally be ignored. Exists to help some editions of
+    \item{\code{workerId}}{Can generally be ignored. Exists to help some editions of
 Shiny Server Pro route requests to the correct process.}
-  \item{quiet}{Should Shiny status messages be shown? Defaults to FALSE.}
-  \item{display.mode}{The mode in which to display the application. If set to
+    \item{\code{quiet}}{Should Shiny status messages be shown? Defaults to FALSE.}
+    \item{\code{display.mode}}{The mode in which to display the application. If set to
 the value \code{"showcase"}, shows application code and metadata from a
 \code{DESCRIPTION} file in the application directory alongside the
 application. If set to \code{"normal"}, displays the application normally.
 Defaults to \code{"auto"}, which displays the application in the mode given
 in its \code{DESCRIPTION} file, if any.}
-  \item{test.mode}{Should the application be launched in test mode? This is
+    \item{\code{test.mode}}{Should the application be launched in test mode? This is
 only used for recording or running automated tests. Defaults to the
 \code{shiny.testmode} option, or FALSE if the option is not set.}
-}}
+  }}
+
+\item{launch.browser}{If true, the system's default web browser will be
+launched automatically after the app is started. Defaults to true in
+interactive sessions only. This value of this parameter can also be a
+function to call with the application's URL.}
 
 \item{reset}{Boolean: reset Shiny session? Requires package \code{devtools}}
 
-\item{testData}{Boolean: auto-start with test data}
+\item{testData}{Boolean: load with test data}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (function is only used to modify the Shiny session's
+state or internal variables)
 }
 \description{
 Start graphical interface of psichomics

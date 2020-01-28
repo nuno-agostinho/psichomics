@@ -4,8 +4,16 @@
 \alias{createGroup}
 \title{Prepare to create group according to specific details}
 \usage{
-createGroup(session, input, output, id, type, selected = NULL,
-  expr = NULL, groupNames = NULL)
+createGroup(
+  session,
+  input,
+  output,
+  id,
+  type,
+  selected = NULL,
+  expr = NULL,
+  groupNames = NULL
+)
 }
 \arguments{
 \item{session}{Shiny session}
@@ -25,7 +33,8 @@ createGroup(session, input, output, id, type, selected = NULL,
 \item{groupNames}{Character: group names}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (function is only used to modify the Shiny session's
+state or internal variables)
 }
 \description{
 Prepare to create group according to specific details

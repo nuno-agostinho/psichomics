@@ -4,9 +4,15 @@
 \alias{normaliseGeneExpression}
 \title{Filter and normalise gene expression}
 \usage{
-normaliseGeneExpression(geneExpr, geneFilter = NULL, method = "TMM",
-  p = 0.75, log2transform = TRUE, priorCount = 0.25,
-  performVoom = FALSE)
+normaliseGeneExpression(
+  geneExpr,
+  geneFilter = NULL,
+  method = "TMM",
+  p = 0.75,
+  log2transform = TRUE,
+  priorCount = 0.25,
+  performVoom = FALSE
+)
 }
 \arguments{
 \item{geneExpr}{Matrix or data frame: gene expression}
@@ -24,7 +30,8 @@ Details)}
 \item{priorCount}{Average count to add to each observation to avoid zeroes
 after log-transformation}
 
-\item{performVoom}{Boolean: perform mean-variance modelling (voom)?}
+\item{performVoom}{Boolean: perform mean-variance modelling
+(\code{\link[limma]{voom}})?}
 }
 \value{
 Filtered and normalised gene expression
@@ -34,12 +41,20 @@ Filter and normalise gene expression
 }
 \details{
 \code{edgeR::calcNormFactors} will be used to normalise gene
-expression if one of the followin methods is set: \code{TMM}, \code{RLE},
-\code{upperquartile} or \code{none}. However, \code{limma::voom} will be
-used for normalisation if \code{performVoom = TRUE} and the selected method
-is \code{quantile}.
+expression if one of the following methods is set: \code{TMM}, \code{RLE},
+\code{upperquartile} or \code{none}. However, \code{\link[limma]{voom}} will
+be used for normalisation if \code{performVoom = TRUE} and the selected 
+method is \code{quantile}.
 }
 \examples{
 geneExpr <- readFile("ex_gene_expression.RDS")
 normaliseGeneExpression(geneExpr)
 }
+\seealso{
+Other functions for gene expression pre-processing: 
+\code{\link{convertGeneIdentifiers}()},
+\code{\link{filterGeneExpr}()},
+\code{\link{plotGeneExprPerSample}()},
+\code{\link{plotRowStats}()}
+}
+\concept{functions for gene expression pre-processing}

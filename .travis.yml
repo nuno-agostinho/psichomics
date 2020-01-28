@@ -56,4 +56,10 @@ r_github_packages:
 
 after_success:
   - Rscript -e 'library(covr);codecov()'
-  
+
+# pkgdown site deployment in "gh-pages" branch
+before_cache: Rscript -e 'remotes::install_cran("pkgdown")'
+deploy:
+  provider: script
+  script: Rscript -e 'pkgdown::deploy_site_github()'
+  skip_cleanup: true

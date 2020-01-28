@@ -84,14 +84,15 @@ groupsServer(input, output, session)
 helpServer(input, output, session)
 }
 \arguments{
-\item{input}{Input object}
+\item{input}{Shiny input}
 
-\item{output}{Output object}
+\item{output}{Shiny output}
 
-\item{session}{Session object}
+\item{session}{Shiny session}
 }
 \value{
-NULL (this function is used to modify the Shiny session's state)
+\code{NULL} (function is only used to modify the Shiny session's
+state or internal variables)
 }
 \description{
 Instructions to build the Shiny app

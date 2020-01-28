@@ -4,9 +4,21 @@
 \alias{createEventPlotting}
 \title{Create plot for events}
 \usage{
-createEventPlotting(df, x, y, params, highlightX, highlightY,
-  highlightParams, selected, selectedParams, labelled, labelledParams,
-  xlim, ylim)
+createEventPlotting(
+  df,
+  x,
+  y,
+  params,
+  highlightX,
+  highlightY,
+  highlightParams,
+  selected,
+  selectedParams,
+  labelled,
+  labelledParams,
+  xlim,
+  ylim
+)
 }
 \arguments{
 \item{df}{Data frame}
@@ -15,20 +27,20 @@ createEventPlotting(df, x, y, params, highlightX, highlightY,
 
 \item{y}{Character: name of the variable used for the Y axis}
 
-\item{params}{List of parameters to pass to \code{\link[ggplot2]{geom_point}}
-related to most points}
+\item{params}{List of parameters to pass to
+\code{\link[ggplot2]{geom_point}()} related to most points}
 
 \item{highlightX}{Integer: region of points in X axis to highlight}
 
 \item{highlightY}{Integer: region of points in Y axis to highlight}
 
 \item{highlightParams}{List of parameters to pass to
-\code{\link[ggplot2]{geom_point}} related to highlighted points}
+\code{\link[ggplot2]{geom_point}()} related to highlighted points}
 
 \item{selected}{Integer: index of rows/points to be coloured}
 
 \item{selectedParams}{List of parameters to pass to 
-\code{\link[ggplot2]{geom_point}} related to selected points}
+\code{\link[ggplot2]{geom_point}()} related to selected points}
 
 \item{labelled}{Integer: index of rows/points to be labelled}
 

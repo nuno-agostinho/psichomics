@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{rm.null}
 \alias{rm.null}
-\title{Filter NULL elements from vector or list}
+\title{Filter \code{NULL} elements from a vector or a list}
 \usage{
 rm.null(v)
 }
@@ -10,11 +10,11 @@ rm.null(v)
 \item{v}{Vector or list}
 }
 \value{
-Filtered vector or list with no NULL elements; if the input is a
-vector composed of only NULL elements, it returns a NULL (note that it will
-returns an empty list if the input is a list with only NULL elements)
+Filtered vector or list with no \code{NULL} elements; if \code{v} is
+a vector composed of \code{NULL} elements, returns a \code{NULL}; if \code{v}
+is a list of \code{NULL} elements, returns an empty list
 }
 \description{
-Filter NULL elements from vector or list
+Filter \code{NULL} elements from a vector or a list
 }
 \keyword{internal}

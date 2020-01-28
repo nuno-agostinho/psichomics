@@ -13,6 +13,8 @@
 \alias{setSignificant}
 \alias{getPrecision}
 \alias{setPrecision}
+\alias{getASevents}
+\alias{getASevent}
 \alias{setASevent}
 \alias{getEvent}
 \alias{setEvent}
@@ -24,8 +26,8 @@
 \alias{getActiveDataset}
 \alias{setActiveDataset}
 \alias{getClinicalData}
-\alias{getPatientId}
-\alias{getPatientAttributes}
+\alias{getSubjectId}
+\alias{getSubjectAttributes}
 \alias{getSampleInfo}
 \alias{setSampleInfo}
 \alias{getSampleId}
@@ -77,6 +79,10 @@ getPrecision()
 
 setPrecision(integer)
 
+getASevents()
+
+getASevent()
+
 setASevent(event)
 
 getEvent()
@@ -99,9 +105,9 @@ setActiveDataset(dataset)
 
 getClinicalData(attrs = NULL)
 
-getPatientId()
+getSubjectId()
 
-getPatientAttributes()
+getSubjectAttributes()
 
 getSampleInfo()
 
@@ -113,8 +119,7 @@ getSampleAttributes()
 
 getJunctionQuantification(category = getCategory())
 
-getGeneExpression(item = NULL, category = getCategory(),
-  EList = FALSE)
+getGeneExpression(item = NULL, category = getCategory(), EList = FALSE)
 
 setNormalisedGeneExpression(geneExpr, category = getCategory())
 
@@ -136,8 +141,7 @@ setCorrelation(correlation, category = getCategory())
 
 getGroupIndependenceTesting(category = getCategory())
 
-setGroupIndependenceTesting(groupIndependenceTesting,
-  category = getCategory())
+setGroupIndependenceTesting(groupIndependenceTesting, category = getCategory())
 
 getSpecies(category = getCategory())
 
@@ -156,8 +160,7 @@ getURLtoDownload()
 setURLtoDownload(url)
 }
 \arguments{
-\item{category}{Character: data category (e.g. "Carcinoma 2016"); by default,
-it uses the selected data category}
+\item{category}{Character: data category}
 
 \item{...}{Arguments to identify a variable}
 
@@ -177,8 +180,8 @@ it uses the selected data category}
 
 \item{dataset}{Character: dataset name}
 
-\item{attrs}{Character: name of attributes to retrieve (if NULL, the whole 
-dataset is returned)}
+\item{attrs}{Character: name of attributes to retrieve (if \code{NULL}, the
+whole dataset is returned)}
 
 \item{item}{Character: name of specific item to retrieve (if \code{NULL}, the
 whole list is returned)}
@@ -208,8 +211,8 @@ results}
 \item{url}{Character: URL links to download}
 }
 \value{
-Getters return globally accessible data, whereas setters return NULL 
-as they are only used to modify the Shiny session's state
+Getters return globally accessible data, whereas setters return 
+\code{NULL} as they are only used to modify the Shiny session's state
 }
 \description{
 Get or set globally accessible elements
@@ -218,7 +221,12 @@ Get or set globally accessible elements
 Needs to be called inside a reactive function
 }
 \seealso{
-\code{\link{getGlobal}}, \code{\link{getClinicalMatchFrom}},
-\code{\link{getGroups}} and \code{\link{getDifferentialSplicing}}
+Other functions to get and set global variables: 
+\code{\link{getClinicalMatchFrom}()},
+\code{\link{getDifferentialExpression}()},
+\code{\link{getDifferentialSplicing}()},
+\code{\link{getGroups}()},
+\code{\link{getHighlightedPoints}()}
 }
+\concept{functions to get and set global variables}
 \keyword{internal}

@@ -4,25 +4,31 @@
 \alias{plotSurvivalCurves}
 \title{Plot survival curves}
 \usage{
-plotSurvivalCurves(surv, mark = TRUE, interval = FALSE,
-  pvalue = NULL, title = "Survival analysis", scale = NULL,
-  auto = TRUE)
+plotSurvivalCurves(
+  surv,
+  mark = TRUE,
+  interval = FALSE,
+  pvalue = NULL,
+  title = "Survival analysis",
+  scale = NULL,
+  auto = TRUE
+)
 }
 \arguments{
 \item{surv}{Survival object}
 
-\item{mark}{Boolean: mark times? TRUE by default}
+\item{mark}{Boolean: mark times?}
 
-\item{interval}{Boolean: show interval ranges? FALSE by default}
+\item{interval}{Boolean: show interval ranges?}
 
 \item{pvalue}{Numeric: p-value of the survival curves}
 
 \item{title}{Character: plot title}
 
-\item{scale}{Character: time scale; default is "days"}
+\item{scale}{Character: time scale (default is \code{days})}
 
-\item{auto}{Boolean: return the plot automatically prepared (TRUE) or only
-the bare minimum (FALSE)? TRUE by default}
+\item{auto}{Boolean: return the plot automatically prepared (\code{TRUE}) or
+only the bare minimum (\code{FALSE})?}
 }
 \value{
 Plot of survival curves
@@ -35,3 +41,16 @@ require("survival")
 fit <- survfit(Surv(time, status) ~ x, data = aml)
 plotSurvivalCurves(fit)
 }
+\seealso{
+Other functions to analyse survival: 
+\code{\link{assignValuePerSubject}()},
+\code{\link{getAttributesTime}()},
+\code{\link{labelBasedOnCutoff}()},
+\code{\link{optimalSurvivalCutoff}()},
+\code{\link{plotSurvivalPvaluesByCutoff}()},
+\code{\link{processSurvTerms}()},
+\code{\link{survdiffTerms}()},
+\code{\link{survfit.survTerms}()},
+\code{\link{testSurvival}()}
+}
+\concept{functions to analyse survival}

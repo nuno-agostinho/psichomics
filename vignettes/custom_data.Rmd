@@ -1,5 +1,5 @@
 ---
-title: 'Alternative Splicing Analysis on SRA and User-Provided Data'
+title: 'Loading SRA and user-provided RNA-seq data'
 author: "Nuno Saraiva-Agostinho"
 date: "`r Sys.Date()`"
 bibliography: refs.bib
@@ -52,12 +52,13 @@ Data from SRA can be downloaded using the [fastq-dump][fastq-dump] command from
 [SRP126561][SRP126561] project, we could do the following:
 
 ```
-fastq-dump --gzip --split-3 SRR6368612
-fastq-dump --gzip --split-3 SRR6368613
-fastq-dump --gzip --split-3 SRR6368614
-fastq-dump --gzip --split-3 SRR6368615
-fastq-dump --gzip --split-3 SRR6368616
-fastq-dump --gzip --split-3 SRR6368617
+# List SRA samples
+samples=(SRR6368612 SRR6368613 SRR6368614 SRR6368615 SRR6368616 SRR6368617)
+
+# Download each sample using fastq-dump
+for each in ${samples}; do
+    fastq-dump --gzip --split-3 ${each}
+done
 ```
 
 Arguments used in the previous command:
@@ -113,52 +114,26 @@ Arguments used in the previous command:
 
 ---
 
-After the genome index is generated, align the FASTQ files using the following
-commands to align read counts to both genes and splice junctions. These commands
-will allow STAR to output both gene and junction read counts.
+After the genome index is generated, the sequences in the FASTQ files are
+aligned against the annotated gene and splice junctions from the previously
+prepared reference. The following commands make STAR output both gene and
+junction read counts into files ending in `ReadsPerGene.out.tab` and
+`SJ.out.tab`, respectively.
 
 ```
-STAR --runThreadN 4 \
-     --genomeDir hg19_STAR \
-     --quantMode GeneCounts \
-     --readFilesCommand zcat \
-     --outFileNamePrefix SRR6368612 \
-     --readFilesIn SRR6368612_1.fastq.gz SRR6368612_2.fastq.gz
-     
-STAR --runThreadN 4 \
-     --genomeDir hg19_STAR \
-     --quantMode GeneCounts \
-     --readFilesCommand zcat \
-     --outFileNamePrefix SRR6368613 \
-     --readFilesIn SRR6368613_1.fastq.gz SRR6368613_2.fastq.gz
-     
-STAR --runThreadN 4 \
-     --genomeDir hg19_STAR \
-     --quantMode GeneCounts \
-     --readFilesCommand zcat \
-     --outFileNamePrefix SRR6368614 \
-     --readFilesIn SRR6368614_1.fastq.gz SRR6368614_2.fastq.gz
-     
-STAR --runThreadN 4 \
-     --genomeDir hg19_STAR \
-     --quantMode GeneCounts \
-     --readFilesCommand zcat \
-     --outFileNamePrefix SRR6368615 \
-     --readFilesIn SRR6368615_1.fastq.gz SRR6368615_2.fastq.gz
-     
-STAR --runThreadN 4 \
-     --genomeDir hg19_STAR \
-     --quantMode GeneCounts \
-     --readFilesCommand zcat \
-     --outFileNamePrefix SRR6368616 \
-     --readFilesIn SRR6368616_1.fastq.gz SRR6368616_2.fastq.gz
-     
-STAR --runThreadN 4 \
-     --genomeDir hg19_STAR \
-     --quantMode GeneCounts \
-     --readFilesCommand zcat \
-     --outFileNamePrefix SRR6368617 \
-     --readFilesIn SRR6368617_1.fastq.gz SRR6368617_2.fastq.gz
+align () {
+    echo "Aligning ${1} using STAR..."
+    STAR --runThreadN 16 \
+         --genomeDir hg19_STAR \
+         --quantMode GeneCounts \
+         --readFilesCommand zcat \
+         --outFileNamePrefix ${1} \
+         --readFilesIn ${1}_1.fastq.gz ${1}_2.fastq.gz
+}
+
+for each in ${samples}; do
+    align "${each}"
+done
 ```
 
 Arguments used in the previous command:
@@ -200,7 +175,8 @@ psichomics()
 
 Then, click **Load user files**. Click the **Folder input** tab and select the
 appropriate folder where the psichomics-prepared data is stored. Finally, click
-**Load files** to scan the folder for data that may be loaded by psichomics.
+**Load files** to automatically scan and load supported files in the selected
+folder.
 
 ## Load data in command-line interface (CLI)
 

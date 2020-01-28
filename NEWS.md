@@ -1,16 +1,101 @@
-# 1.10.2 (4 Oct, 2019)
+# psichomics 1.12.1 (28 January, 2020)
+
+* Alternative splicing events can now be represented via diagrams:
+    - Redesign of alternative splicing event selection (graphical interface)
+    - `plotSplicingEvent()` plots diagram representation of alternative
+    splicing events
+    - In the visual interface, alternative splicing event diagrams were added
+    below distribution plots (to quickly illustrate higher and lower values of
+    alternative splicing quantification) and in annotation page
+* User-provided junction quantification loading:
+    - Support junction coordinates from mitochondrial, Z and W chromosomes
+    - Fix issues with files containing splice junctions within `random`, `alt`
+    and `unknown` chromosomes by discarding those rows (a warning is raised)
+* Alternative splicing annotation:
+    - `listSplicingAnnotations()` can now be filtered by species, assembly and
+    data of available annotations
+* Improve import/export of data groups from/to a file, including colour support
+* Tutorials:
+    - Copy-edit command-line interface (CLI) tutorial
+    - Copy-edit tutorial on custom alternative splicing annotation preparation
+    - Improve tutorial on loading user-provided data
+
+## More bug fixes and minor changes
+
+* TCGA and SRA data loading:
+    - `loadFirebrowseData()` now returns expected data when asking for multiple
+    datasets (such as in the case of performing a pan-cancer analysis) in both
+    visual and command-line interface
+    - SRA projects containing only one column of extra information in sample
+    metadata are now correctly loaded instead of raising an error
+    (`loadSRAproject()`)
+* Data loading and manipulation:
+    - Copy-edit information on the format of user-provided files
+    - Warn when discarding rows with duplicated rownames after loading
+    user-provided files
+    - `getGtexDataTypes()` is now exported, as expected
+    - `parseSplicingEvent()` now returns the coordinates as numeric if 
+    `coords = TRUE` and `char = FALSE`
+    - Improve dialog when trying to load a local folder without any supported 
+    files available
+* Alternative splicing annotation:
+    - Confirmation dialog is not displayed any more when creating a folder
+    (specially useful while running the visual interface)
+    - Allow to select cache directory of `AnnotationHub` (command-line
+    interface)
+    - Fix `prepareGeneQuant()` discarding the argument `strandedness` if
+    either `stranded` or `stranded (reverse)`
+* Data grouping:
+    - Samples not associated with any subject are now kept when exporting groups
+    to a file
+    - Fix issues related with importing groups based on a file with groups of
+    splicing events and/or genes
+    - Inform user when groups are successfully loaded from a file and whether
+    any group elements are discarded in the process
+    - Show number of genes contained in pre-made gene lists
+    - Discard unavailable genes when creating group of genes based on pre-made
+    gene lists (unless these are automatically created at startup)
+* Density plot (`plotDistribution()`):
+    - Fix visual bug when plotting a group with only one sample (if one data
+    point is available for a group, only the rug plot is drawn)
+    - After hiding all plot series, rug plots of the different groups can be 
+    distinguished based on the Y axis (different arbitrary Y values are given to
+    each rug plot series)
+    - Rug plot labels now show data values if sample names are not provided
+    - Rug plot labels can now be rotated (rotation is not enabled by default
+    given `Highcharts` issues that may occur at different zoom levels and
+    depending on proximity between different sample values)
+    - Fix misguiding example in function documentation
+    - When hovering the values in the rug plot, the colour of the tooltip is now
+    the same used for the rug points as expected
+* Survival analysis (p-value plot):
+    - Fix alternative splicing quantification cutoff being selected based on the
+    one whose difference has the highest (instead of the lowest) p-value
+    - Fix plot line label presenting "p < 0.05" independently of the threshold 
+    used for significance
+* Gene, transcript and protein annotation:
+    - Show available annotation information and query PubMed even if Ensembl is
+    down
+    - Avoid app crash when searching for PubMed articles too many times
+* Improve warning/error alerts:
+    - Fix alerts crashing the visual interface
+    - Improve message formatting regarding HTML-containing alerts
+* Improve unit tests and function documentation
+
+# psichomics 1.10.2 (4 Oct, 2019)
 
 Fix warnings in Windows-specific CI tools and Bioconductor
 
-# 1.10.1 (19 Sep, 2019)
+# psichomics 1.10.1 (19 Sep, 2019)
 
-Avoid timeouts in CI tools and Bioconductor builds by skipping a specific unit test
+Avoid timeouts in CI tools and Bioconductor builds by skipping a specific unit
+test
 
-# 1.8.3 (21 April, 2019)
+# psichomics 1.8.3 (21 April, 2019)
 
 Replace deprecated `R.utils::evalWithTimeout()` with `R.utils::withTimeout()`
 
-# 1.8.2 (26 March, 2019)
+# psichomics 1.8.2 (26 March, 2019)
 
 * Data loading:
     - GTEx data can now be automatically downloaded and loaded on-demand
@@ -59,7 +144,7 @@ Replace deprecated `R.utils::evalWithTimeout()` with `R.utils::withTimeout()`
 * Improve console logging of error and warning alerts
 * Fix crash when loading psichomics with test data that is not locally available
 (by automatically downloading said data if not found)
-* Allow to edit file path in file/directory browser elemnts
+* Allow to edit file path in file/directory browser elements
 * Documentation:
     - Export functions mentioned in the documentation
     - Hide documentation of internal functions from the PDF reference manual
@@ -89,7 +174,7 @@ Replace deprecated `R.utils::evalWithTimeout()` with `R.utils::withTimeout()`
     - Fix distribution plots requiring all samples in a group when using 
     function `plotDistribution()`
     - Fix group colours and opacity for rug plot points within the distribution 
-    plot (occured in the command-line version; function `plotDistribution()`)
+    plot (occurred in the command-line version; function `plotDistribution()`)
     - Fix wrong information in the table of differential splicing results (only
     occurs when the first splicing event is one for which there is not enough
     information to calculate statistical tests)
@@ -100,11 +185,11 @@ Replace deprecated `R.utils::evalWithTimeout()` with `R.utils::withTimeout()`
     - Fix article title formatting (e.g. bold and italics)
 * Update psichomics citation with journal publication date
 
-# 1.8.1 (3 December, 2018)
+# psichomics 1.8.1 (3 December, 2018)
 
-* Add tag ImmunoOncology to BiocViews
+* Add tag `ImmunoOncology` to BiocViews
 
-# 1.6.2 (2 October, 2018)
+# psichomics 1.6.2 (2 October, 2018)
 
 * Update citations to link to article in Nucleic Acids Research:
 https://doi.org/10.1093/nar/gky888
@@ -136,16 +221,17 @@ used for dataset loading, options set upon dataset creation, etc.)
 * GTEx data:
     - Fix issues in downstream analyses when using GTEx data subset by tissues
 * Differential analysis:
-    - Avoid limitting X axis of density plot when values outside 0 and 1 are
-    provided, as in the case of gene expression ("plotDistribution" function)
+    - Avoid limiting X axis of density plot when values outside 0 and 1 are
+    provided, as in the case of gene expression (`plotDistribution()` function)
     - Fix filenames of exported tables from differential expression analysis
     incorrectly mentioning differential splicing analysis instead
 * Correlation analysis:
     - When plotting correlation analysis, loess curve was performed based on
-    gaussian fitting, independent of the "family" argument of "plotCorrelation"
+    gaussian fitting, independent of the "family" argument of
+    `plotCorrelation()`
 * Improve console logging of error and warning messages
 
-# 1.6.1 (5 July, 2018)
+# psichomics 1.6.1 (5 July, 2018)
 
 * Improve support for analysing SRA and user-provided data:
 	- New tutorial on performing alternative splicing analysis using SRA and 
@@ -172,8 +258,8 @@ used for dataset loading, options set upon dataset creation, etc.)
 * Data grouping:
     - Correctly suggest how to select variables in subset expression and give 
     more examples on how to use this feature
-    - Fix subject/sample attributes not being updated for selection for the GREP
-    interface
+    - Fix subject/sample attributes not being updated for selection for the 
+    `GREP` interface
     - Fix error alerts not appearing when trying to create groups based on 
     invalid parameters
     - Add an error alert when trying to extract group data from an user-provided
@@ -184,19 +270,19 @@ used for dataset loading, options set upon dataset creation, etc.)
     - Fix crash when inputting non-numeric values or minimum larger than the
     maximum limit as the axes for the splicing scatter plot
 
-# 1.4.5 (4 Apr, 2018)
+# psichomics 1.4.5 (4 Apr, 2018)
 
 * Mention psichomics manuscript throughout psichomics
 * Copy-edit graphical user interface and respective tutorial
 * Fix warnings and errors in Bioconductor
 
-# 1.4.4 (12 Feb, 2018)
+# psichomics 1.4.4 (12 Feb, 2018)
 
 * Update CITATION file to show citation to article in bioRxiv:
 https://www.biorxiv.org/content/early/2018/02/07/261180
 * Update vignettes to include a case study based on the aforementioned article
 * Gene expression pipeline:
-    - Perform limma-trend by default
+    - Perform `limma-trend` by default
 * Alternative splicing quantification:
     - Quantification of alternative first and last exons: following more 
     thorough testing, the new exon-centred method was considered to be less 
@@ -222,12 +308,12 @@ https://www.biorxiv.org/content/early/2018/02/07/261180
 
 ## Bug fixes
 
-* Fix problems related with DT versions >= 0.3:
+* Fix problems related with `DT` versions >= 0.3:
     - Groups displayed as having the same attributes as last created group
     - Table not being updated in differential analyses according to event
     filtering based on the volcano plot
 
-# 1.4.3 (12 Jan, 2018)
+# psichomics 1.4.3 (12 Jan, 2018)
 
 * Alternative splicing quantification:
     - Improve speed and memory usage when dealing with larger datasets
@@ -246,9 +332,10 @@ https://www.biorxiv.org/content/early/2018/02/07/261180
     plots)
 * Differential analysis:
     - Allow to input a list of groups for the "group" argument of the functions
-    "diffAnalyses" and "plotDistribution" (command-line interface)
+    `diffAnalyses()` and `plotDistribution()` (command-line interface)
     - Allow to input a non-numeric vector or a row of a matrix/data frame in the
-    "data" argument of the function "plotDistribution" (command-line interface)
+    "data" argument of the function `plotDistribution()` (command-line
+    interface)
 * Correlation between gene expression and alternative splicing:
     - Perform correlation between gene expression of multiple genes and 
     quantification of multiple alternative splicing events
@@ -258,12 +345,12 @@ https://www.biorxiv.org/content/early/2018/02/07/261180
 * Fix unnamed events when only one event for a event type is returned
 * Minor copy-editing and overall improvements
 
-# 1.4.2 (19 Dec, 2017)
+# psichomics 1.4.2 (19 Dec, 2017)
 
 * Fix error when trying to load alternative splicing annotation (given updated
 hg19 and hg38 annotation that is now available for use with psichomics)
 
-# 1.4.1 (14 Dec, 2017)
+# psichomics 1.4.1 (14 Dec, 2017)
 
 * GTEx data loading:
     - Add input elements to allow GTEx gene expression loading in the graphical
@@ -289,7 +376,7 @@ hg19 and hg38 annotation that is now available for use with psichomics)
 * Update file description and README
 * Minor bug fixes and improvements
 
-# 1.4.0 (22 Oct, 2017)
+# psichomics 1.4.0 (22 Oct, 2017)
 
 * Support for loading new GTEx V7 data
 * Support gene expression data:
@@ -384,13 +471,13 @@ and a quick reference for functions
     non-normal or non-control samples were used)
 * Multiple other bug fixes and visual improvements
 
-# 1.2.1 (24 Apr, 2017)
+# psichomics 1.2.1 (24 Apr, 2017)
 
 * Gene, protein and transcript information:
     - Fix missing file required for transcript plots
 * Update command-line interface tutorial to render a transcript plot
 
-# 1.2.0 (22 Apr, 2017)
+# psichomics 1.2.0 (22 Apr, 2017)
 
 * Gene, protein and transcript information:
     - Fix tooltip text presentation in transcript plot
@@ -411,12 +498,12 @@ and a quick reference for functions
     - Add links to tutorials and user feedback
     - Add app information and acknowledgements
     - Remove unused option for choosing cores (all performed operations are 
-    still single-core, given the difficulty of working with multiprocesses in
+    still single-core, given the difficulty of working with multi-processes in
     Shiny)
 * Improve dialogues regarding missing data and other minor interface elements
 * Update documentation with volcano plot
 
-# 1.0.9 (10 Apr, 2017)
+# psichomics 1.0.9 (10 Apr, 2017)
 
 * Differential splicing analyses:
     - Add volcano plot to represent events through selected attributes, such as
@@ -430,7 +517,7 @@ and a quick reference for functions
 * Gene, protein and transcript information:
     - Transcript plot is now interactive and zoomable
     - Protein are now rendered based on selected transcript alone
-    - Faster parsing of Uniprot's web API response
+    - Faster parsing of UniProt's web API response
     - Improve display of article information when data is missing
 * Principal component analysis:
     - Improve presentation of available options
@@ -441,7 +528,7 @@ options
 * Consistently use Firebrowse and Firehose across the package
 * Update documentation
 
-# 1.0.8 (21 Feb, 2017)
+# psichomics 1.0.8 (21 Feb, 2017)
 
 * Support GTEx data loading and analysis
 * Fix clinical data dependency:
@@ -466,17 +553,17 @@ options
 alternative splicing quantification
 * Minor UI improvements
 
-# 1.0.7 (22 Jan, 2017)
+# psichomics 1.0.7 (22 Jan, 2017)
 
 * Survival analysis:
     - Fix error caused by some non-matched patients not being in the 
     patient-sample matching matrix
 
-# 1.0.6 (17 Jan, 2017)
+# psichomics 1.0.6 (17 Jan, 2017)
 
 * Update tutorials with more relevant and complex examples
-* Update minimum versions required of highcharter (0.5.0) and shiny (1.0.0):
-    - Fix function usage as according to new version of highcharter
+* Update minimum versions required of `highcharter` (0.5.0) and shiny (1.0.0):
+    - Fix function usage as according to new version of `highcharter`
     - More options available when exporting plots (PNG, JPEG, SVG, XLS and CSV)
 * Faster alternative splicing quantification
 * Differential splicing analysis:
@@ -486,7 +573,7 @@ alternative splicing quantification
     - Fix not performing statistical tests for two selected sample types while
     analysing a single event with three or more sample types
     - Fix differential analysis on one splicing event not working when using
-    `diffAnalyses()` function
+    `diffAnalyses()`
     - Fix differential analysis not showing for individual events before
     navigating to the page where the analysis is performed for all events
     - Improve readability and information of statistical tests for single events
@@ -502,7 +589,7 @@ alternative splicing quantification
 * Protein annotation:
     - Warn user when trying to render proteins with no domains
 
-# 1.0.5 (7 Jan, 2017)
+# psichomics 1.0.5 (7 Jan, 2017)
 
 * Navigate history using the browser forward and back buttons
 * Fix delay when displaying large data by removing columns containing missing
@@ -522,7 +609,7 @@ values exclusively
     - Fix statistical tests not displaying for individual events after
     differentially analysing all events using the other statistical tests
 
-# 1.0.4 (18 Dec, 2016)
+# psichomics 1.0.4 (18 Dec, 2016)
 
 * Correctly load files and quantify alternative splicing for PRAD, OV and PAAD
 tumour types from The Cancer Genome Atlas (TCGA)
@@ -530,7 +617,7 @@ tumour types from The Cancer Genome Atlas (TCGA)
 * Improve text and behaviour of fields to select datasets and AS events
 * Fix author names and add contributor
 
-# 1.0.3 (13 Dec, 2016)
+# psichomics 1.0.3 (13 Dec, 2016)
     
 * Bug fixes regarding gene annotation:
     - Fix disabled gene selection when choosing a splicing event associated with
@@ -541,18 +628,18 @@ tumour types from The Cancer Genome Atlas (TCGA)
 * Bug fixes regarding groups:
     - Fix groups by rows not working
     - Fix group selection not working when only one group exists
-    - Improve argument name of getGroupsFrom()
+    - Improve argument name of `getGroupsFrom()`
 * Other minor improvements
 
-# 1.0.2 (3 Dec, 2016)
+# psichomics 1.0.2 (3 Dec, 2016)
 
 * Fix UTF-8 encoding in author list
 
-# 1.0.1 (1 Dec, 2016)
+# psichomics 1.0.1 (1 Dec, 2016)
 
 * Improve metadata (title, description, authors and vignette titles)
 
-# 1.0.0 (5 Oct, 2016)
+# psichomics 1.0.0 (5 Oct, 2016)
     
 * First release of psichomics
 * Quantify, analyse and visualise alternative splicing data

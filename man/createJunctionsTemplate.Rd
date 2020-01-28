@@ -4,25 +4,32 @@
 \alias{createJunctionsTemplate}
 \title{Creates a template of alternative splicing junctions}
 \usage{
-createJunctionsTemplate(nrow, program = character(0),
-  event.type = character(0), chromosome = character(0),
-  strand = character(0), id = character(0))
+createJunctionsTemplate(
+  nrow,
+  program = character(0),
+  event.type = character(0),
+  chromosome = character(0),
+  strand = character(0),
+  id = character(0)
+)
 }
 \arguments{
-\item{nrow}{Integer: Number of rows}
+\item{nrow}{Integer: row number}
 
-\item{program}{Character: Program used to get the junctions}
+\item{program}{Character: program used to get the junctions}
 
-\item{event.type}{Character: Event type of the respective events}
+\item{event.type}{Character: event type}
 
-\item{chromosome}{Character: Chromosome of the junctions}
+\item{chromosome}{Character: chromosome}
 
-\item{strand}{Character: positive ("+") or negative ("-") strand of the event}
+\item{strand}{Character: positive-sense (\code{+}) or negative-sense
+(\code{-}) strand}
 
-\item{id}{Character: events' ID}
+\item{id}{Character: event identifiers}
 }
 \value{
-A data frame with the junctions coordinate names pre-filled with NAs
+A data frame with the junctions coordinate names pre-filled with
+\code{NA}
 }
 \description{
 Creates a template of alternative splicing junctions

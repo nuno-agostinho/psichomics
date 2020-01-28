@@ -2,9 +2,9 @@
 % Please edit documentation in R/app.R
 \name{navSelectize}
 \alias{navSelectize}
-\title{Create a special selectize input in the navigation bar}
+\title{Create a special \code{selectize} input in the navigation bar}
 \usage{
-navSelectize(id, label, placeholder = label)
+navSelectize(id, label, placeholder = label, ASevent = FALSE)
 }
 \arguments{
 \item{id}{Character: input identifier}
@@ -12,11 +12,13 @@ navSelectize(id, label, placeholder = label)
 \item{label}{Character: input label}
 
 \item{placeholder}{Character: input placeholder}
+
+\item{ASevent}{Boolean: select alternative splicing events?}
 }
 \value{
 HTML element to be included in a navigation bar
 }
 \description{
-Create a special selectize input in the navigation bar
+Create a special \code{selectize} input in the navigation bar
 }
 \keyword{internal}

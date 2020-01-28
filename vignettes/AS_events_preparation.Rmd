@@ -48,7 +48,7 @@ suppaOutput <- system.file("extdata/eventsAnnotSample/suppa_output/suppaEvents",
 suppaFile <- tempfile(fileext=".RDS")
 ```
 
-```{r}
+```{r, results="hide"}
 # suppaOutput <- "path/to/SUPPA/output"
 
 # Replace `genome` for the string with the identifier before the first
@@ -65,7 +65,7 @@ saveRDS(annot, file=suppaFile)
 Just like [SUPPA][suppa], [rMATS][rmats] also allows to generate alternative 
 splicing events based on a transcript annotation, although two BAM or FASTQ 
 files are required to generate alternative splicing events. Read 
-[rMATS's page][rmats] for more information.
+[rMATS' page][rmats] for more information.
 
 The resulting output of [rMATS][rmats] is then handed out to the function
 `parseMatsAnnotation()`:
@@ -76,7 +76,7 @@ matsOutput <- system.file("extdata/eventsAnnotSample/mats_output/ASEvents/",
 matsFile <- tempfile("mats", fileext=".RDS")
 ```
 
-```{r}
+```{r, results="hide"}
 # matsOutput <- "path/to/rMATS/output"
 mats <- parseMatsAnnotation(
     matsOutput,         # Output directory from rMATS
@@ -98,7 +98,7 @@ misoAnnotation <- system.file("extdata/eventsAnnotSample/miso_annotation",
 misoFile <- tempfile("miso", fileext=".RDS")
 ```
 
-```{r}
+```{r, results="hide"}
 # misoAnnotation <- "path/to/MISO/annotation"
 miso <- parseMisoAnnotation(misoAnnotation)
 annot <- prepareAnnotationFromEvents(miso)
@@ -108,9 +108,10 @@ saveRDS(annot, file=misoFile)
 ```
 
 ## VAST-TOOLS annotation
-Simply retrieve [VAST-TOOLS's alternative splicing annotation][vastAnnot] and 
-give the path to the downloaded folder as input. Note that, however, complex 
-events (i.e. alternative coordinates for the exon ends) are not yet parseable.
+Download and extract [VAST-TOOLS' alternative splicing annotation][vastAnnot]
+and use the path to the `TEMPLATES` subfolder as the input of
+`parseVastToolsAnnotation()`. Complex events (i.e. alternative coordinates for
+the exon ends) are not currently supported.
 
 ```{r, include=FALSE}
 vastAnnotation <- system.file("extdata/eventsAnnotSample/VASTDB/Hsa/TEMPLATES/",
@@ -118,7 +119,7 @@ vastAnnotation <- system.file("extdata/eventsAnnotSample/VASTDB/Hsa/TEMPLATES/",
 vastFile <- tempfile("vast", fileext=".RDS")
 ```
 
-```{r}
+```{r, results="hide"}
 # vastAnnotation <- "path/to/VASTDB/libs/TEMPLATES"
 vast <- parseVastToolsAnnotation(vastAnnotation, genome="Hsa")
 annot <- prepareAnnotationFromEvents(vast)
@@ -135,13 +136,8 @@ of interest simultaneously to the function `prepareAnnotationFromEvents`:
 annotFile <- tempfile(fileext=".RDS")
 ```
 
-```{r}
-# Let's combine the annotation from SUPPA, MISO, rMATS and VAST-TOOLS
-suppa <- parseSuppaAnnotation(suppaOutput, genome="hg19")
-miso <- parseMisoAnnotation(misoAnnotation)
-mats <- parseMatsAnnotation(matsOutput, genome = "fromGTF", novelEvents=TRUE)
-vast <- parseVastToolsAnnotation(vastAnnotation)
-
+```{r, results="hide"}
+# Combine the annotation from SUPPA, MISO, rMATS and VAST-TOOLS
 annot <- prepareAnnotationFromEvents(suppa, vast, mats, miso)
 
 # annotFile <- "AS_annotation_hg19.RDS"
@@ -156,12 +152,15 @@ the button that appears below and select the recently created RDS file.
 
 Otherwise, if you are using the CLI version, perform the following steps:
 
-```{r}
-annot <- readRDS(annotFile) # "file" is the path to the annotation file
+```{r, results="hide"}
+annot <- readRDS(annotFile) # "annotFile" is the path to the annotation file
 junctionQuant <- readFile("ex_junctionQuant.RDS") # example set
 
 psi <- quantifySplicing(annot, junctionQuant, 
                         c("SE", "MXE", "A3SS", "A5SS", "AFE", "ALE"))
+```
+
+```{r}
 psi # may have 0 rows because of the small junction quantification set
 ```
 
@@ -179,5 +178,5 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 [miso]: http://genes.mit.edu/burgelab/miso/
 [vasttools]: https://github.com/vastgroup/vast-tools
 [misoAnnot]: https://miso.readthedocs.io/en/fastmiso/annotation.html
-[vastAnnot]: http://vastdb.crg.eu/libs/
+[vastAnnot]: https://github.com/vastgroup/vast-tools#vastdb-libraries
 [distrans]: http://imm.medicina.ulisboa.pt/group/distrans/

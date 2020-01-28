@@ -15,7 +15,7 @@ parseValidFile(file, formats, ...)
 }
 \value{
 Data frame with the contents of the given file if the file format is
-recognised; otherwise, returns NULL
+recognised; otherwise, returns \code{NULL}
 }
 \description{
 Tries to recognise the file format and parses the content of the given file
