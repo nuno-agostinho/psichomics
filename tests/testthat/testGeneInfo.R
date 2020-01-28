@@ -68,8 +68,8 @@ test_that("Plot transcripts", {
         info <- queryEnsemblByEvent(event, species="human", assembly="hg19")
         hc   <- plotTranscripts(info, event=event)
         expect_is(hc, "shiny.tag.list")
+        hc   <- fromJSON(gsub(".*?(\\{.*\\}).*", "\\1", hc[[2]][[3]][[1]]))
         expect_is(hc$xAxis$plotBands, "data.frame")
-        # hc   <- fromJSON(gsub(".*?(\\{.*\\}).*", "\\1", hc[[2]][[3]][[1]]))
     }
     
     # Event identifiers based on a different exon reference
@@ -89,8 +89,8 @@ test_that("Plot transcripts", {
         info <- queryEnsemblByEvent(event, species="human", assembly="hg19")
         hc   <- plotTranscripts(info, event=event)
         expect_is(hc, "shiny.tag.list")
+        hc   <- fromJSON(gsub(".*?(\\{.*\\}).*", "\\1", hc[[2]][[3]][[1]]))
         expect_is(hc$xAxis$plotBands, "data.frame")
-        # hc   <- fromJSON(gsub(".*?(\\{.*\\}).*", "\\1", hc[[2]][[3]][[1]]))
     }
 })
 

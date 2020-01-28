@@ -137,12 +137,7 @@ annotFile <- tempfile(fileext=".RDS")
 ```
 
 ```{r, results="hide"}
-# Let's combine the annotation from SUPPA, MISO, rMATS and VAST-TOOLS
-suppa <- parseSuppaAnnotation(suppaOutput, genome="hg19")
-miso <- parseMisoAnnotation(misoAnnotation)
-mats <- parseMatsAnnotation(matsOutput, genome = "fromGTF", novelEvents=TRUE)
-vast <- parseVastToolsAnnotation(vastAnnotation)
-
+# Combine the annotation from SUPPA, MISO, rMATS and VAST-TOOLS
 annot <- prepareAnnotationFromEvents(suppa, vast, mats, miso)
 
 # annotFile <- "AS_annotation_hg19.RDS"

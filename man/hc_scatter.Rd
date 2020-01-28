@@ -4,7 +4,16 @@
 \alias{hc_scatter}
 \title{Create scatter plot}
 \usage{
-hc_scatter(hc, x, y, z = NULL, label = NULL, showInLegend = FALSE, ...)
+hc_scatter(
+  hc,
+  x,
+  y,
+  z = NULL,
+  label = NULL,
+  showInLegend = FALSE,
+  color = NULL,
+  ...
+)
 }
 \arguments{
 \item{hc}{\code{Highchart} object}
@@ -18,6 +27,8 @@ hc_scatter(hc, x, y, z = NULL, label = NULL, showInLegend = FALSE, ...)
 \item{label}{Character: data label for each point (optional)}
 
 \item{showInLegend}{Boolean: show the data in the legend box?}
+
+\item{color}{Character: series colour}
 
 \item{...}{
   Arguments passed on to \code{\link[highcharter:hc_add_series]{highcharter::hc_add_series}}

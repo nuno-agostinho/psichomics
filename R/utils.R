@@ -883,13 +883,15 @@ export_highcharts <- function(hc, fill="transparent", text="Export") {
 #' @param z Numeric: Z axis to set the bubble size (optional)
 #' @param label Character: data label for each point (optional)
 #' @param showInLegend Boolean: show the data in the legend box?
+#' @param color Character: series colour
 #' @inheritDotParams highcharter::hc_add_series -hc -data
 #' 
 #' @importFrom highcharter hc_add_series list_parse
 #' 
 #' @return \code{highcharter} object containing information for a scatter plot
 #' @keywords internal
-hc_scatter <- function (hc, x, y, z=NULL, label=NULL, showInLegend=FALSE, ...) {
+hc_scatter <- function (hc, x, y, z=NULL, label=NULL, showInLegend=FALSE,
+                        color=NULL, ...) {
     df <- data.frame(x, y)
     if (!is.null(z)) df <- cbind(df, z=z)
     if (!is.null(label)) df <- cbind(df, label=label)
@@ -914,7 +916,7 @@ hc_scatter <- function (hc, x, y, z=NULL, label=NULL, showInLegend=FALSE, ...) {
     else
         dlopts <- list(enabled=FALSE)
     
-    do.call("hc_add_series", c(list(hc, data=ds, type=type, 
+    do.call("hc_add_series", c(list(hc, data=ds, type=type, color=color,
                                     showInLegend=showInLegend,
                                     dataLabels=dlopts), args))
 }

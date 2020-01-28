@@ -17,8 +17,10 @@ test_that("", {
     
     diagrams <- plotSplicingEvent(events)
     expect_is(diagrams, "list")
+    expect_is(diagrams, "splicingEventPlotList")
     for (each in diagrams) {
-        expect_is(each, "html")
+        expect_is(each, "splicingEventPlot")
+        expect_is(each, "character")
     }
     
     # Event identifiers based on a different exon reference
@@ -36,7 +38,9 @@ test_that("", {
     
     diagrams <- plotSplicingEvent(events)
     expect_is(diagrams, "list")
+    expect_is(diagrams, "splicingEventPlotList")
     for (each in diagrams) {
-        expect_is(each, "html")
+        expect_is(each, "splicingEventPlot")
+        expect_is(each, "character")
     }
 })

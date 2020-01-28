@@ -1,15 +1,5 @@
-# psichomics 1.12.1 (27 January, 2020)
+# psichomics 1.12.1 (28 January, 2020)
 
-* TCGA and SRA data loading:
-    - All supported TCGA data can now be completely loaded when all cohorts are
-    selected instead of loading only a portion of TCGA data without any warning
-    - SRA projects containing only one column of extra information in sample
-    metadata are now correctly loaded instead of raising an error
-    (`loadSRAproject()`)
-* User-provided junction quantification loading:
-    - Support junction coordinates from mitochondrial, Z and W chromosomes
-    - Fix issues with files containing splice junctions within `random`, `alt`
-    and `unknown` chromosomes by discarding those rows (a warning is raised)
 * Alternative splicing events can now be represented via diagrams:
     - Redesign of alternative splicing event selection (graphical interface)
     - `plotSplicingEvent()` plots diagram representation of alternative
@@ -17,31 +7,37 @@
     - In the visual interface, alternative splicing event diagrams were added
     below distribution plots (to quickly illustrate higher and lower values of
     alternative splicing quantification) and in annotation page
+* User-provided junction quantification loading:
+    - Support junction coordinates from mitochondrial, Z and W chromosomes
+    - Fix issues with files containing splice junctions within `random`, `alt`
+    and `unknown` chromosomes by discarding those rows (a warning is raised)
 * Alternative splicing annotation:
     - `listSplicingAnnotations()` can now be filtered by species, assembly and
     data of available annotations
 * Improve import/export of data groups from/to a file, including colour support
-* Gene, transcript and protein annotation:
-    - Show available annotation information and query PubMed even if Ensembl is
-    down
 * Tutorials:
     - Copy-edit command-line interface (CLI) tutorial
     - Copy-edit tutorial on custom alternative splicing annotation preparation
+    - Improve tutorial on loading user-provided data
 
 ## More bug fixes and minor changes
 
+* TCGA and SRA data loading:
+    - `loadFirebrowseData()` now returns expected data when asking for multiple
+    datasets (such as in the case of performing a pan-cancer analysis) in both
+    visual and command-line interface
+    - SRA projects containing only one column of extra information in sample
+    metadata are now correctly loaded instead of raising an error
+    (`loadSRAproject()`)
 * Data loading and manipulation:
     - Copy-edit information on the format of user-provided files
     - Warn when discarding rows with duplicated rownames after loading
     user-provided files
     - `getGtexDataTypes()` is now exported, as expected
-    - `loadFirebrowseData()` now returns expected data when asking for multiple
-    datasets (such as in the case of performing a pan-cancer analysis)
     - `parseSplicingEvent()` now returns the coordinates as numeric if 
     `coords = TRUE` and `char = FALSE`
     - Improve dialog when trying to load a local folder without any supported 
     files available
-    - Improve tutorial on loading user-provided data
 * Alternative splicing annotation:
     - Confirmation dialog is not displayed any more when creating a folder
     (specially useful while running the visual interface)
@@ -77,7 +73,9 @@
     one whose difference has the highest (instead of the lowest) p-value
     - Fix plot line label presenting "p < 0.05" independently of the threshold 
     used for significance
-* Annotation:
+* Gene, transcript and protein annotation:
+    - Show available annotation information and query PubMed even if Ensembl is
+    down
     - Avoid app crash when searching for PubMed articles too many times
 * Improve warning/error alerts:
     - Fix alerts crashing the visual interface
