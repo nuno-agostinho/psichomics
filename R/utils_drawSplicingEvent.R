@@ -319,6 +319,13 @@ diagramSplicingEvent <- function(
             ifelse(isA1ref, constitutiveStroke, alternative1Stroke))
     }
     names(svgFinal) <- names(parsed)
+    
+    addClass <- function(char) {
+        # char        <- HTML(char)
+        class(char) <- c("splicingEventPlot", class(char))
+        return(char)
+    }
+    svgFinal <- lapply(svgFinal, addClass)
     return(svgFinal)
 }
 
@@ -326,8 +333,6 @@ diagramSplicingEvent <- function(
 #' 
 #' @param ASevent Character: alternative splicing event identifiers
 #' @inheritParams diagramSplicingEvent
-#' @param raw Boolean: if \code{FALSE}, plot the events; if \code{TRUE}, return
-#'   the respective SVG raw code
 #' 
 #' @importFrom shiny tag tagList
 #' 
@@ -345,11 +350,11 @@ diagramSplicingEvent <- function(
 #'     "MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1")
 #' diagram <- plotSplicingEvent(ASevent)
 #' 
-#' diagram
-#' diagram[[6]]
 #' diagram[["A3SS_3_-_145796903_145794682_145795711_PLOD2"]]
+#' diagram[[6]]
+#' diagram
 plotSplicingEvent <- function(
-    ASevent, raw=FALSE, class=NULL, style=NULL, showText=TRUE, showPath=TRUE,
+    ASevent, class=NULL, style=NULL, showText=TRUE, showPath=TRUE,
     showAlternative1=TRUE, showAlternative2=TRUE,
     constitutiveWidth=60, alternativeWidth=NULL, intronWidth=15,
     constitutiveFill="lightgray", constitutiveStroke="darkgray",
@@ -378,11 +383,26 @@ plotSplicingEvent <- function(
             alternative2Fill=alternative2Fill,
             alternative2Stroke=alternative2Stroke))
     }
-    
-    # Order results based on original input
-    svg <- svg[ASevent]
-    
-    # Plottable SVG images
-    if (!raw) svg <- lapply(lapply(svg, HTML), browsable)
+    svg <- svg[ASevent] # Order results based on original input
+    class(svg) <- c("splicingEventPlotList", class(svg))
     return(svg)
+}
+
+#' @keywords internal
+print.splicingEventPlot <- function(x, ..., browse=TRUE) {
+    return(print(HTML(x), ..., browse=browse))
+}
+
+#' @importFrom DT dataTableOutput renderDataTable
+#' @keywords internal
+print.splicingEventPlotList <- function(x, ..., browse=TRUE) {
+    server <- function(input, output) {
+        prepareData <- reactive(
+            data.frame(cbind(names(x), x), stringsAsFactors=FALSE))
+        output$eventsTable <- renderDataTable(
+            prepareData(), rownames=FALSE, class="compat display",
+            colnames=c("Alternative splicing event", "Diagram"),
+            style="bootstrap", caption="Diagram of alternative splicing events")
+    }
+    runApp(list(ui=fluidPage(dataTableOutput("eventsTable")), server=server))
 }

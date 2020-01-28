@@ -130,7 +130,7 @@ diffSplicingEventServer <- function(input, output, session) {
                 constitutiveWidth=40, alternativeWidth=40, intronWidth=0,
                 event, class=NULL, showPath=FALSE, showText=FALSE,
                 showAlternative1=TRUE, showAlternative2=!isMXE)[[1]]
-            return(tagList(constitutive, alternative))
+            return(tagList(HTML(constitutive), HTML(alternative)))
         })
         
         output$basicStats <- renderUI(basicStats(eventPSI, groups))

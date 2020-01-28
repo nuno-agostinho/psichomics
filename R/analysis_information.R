@@ -810,7 +810,7 @@ infoServer <- function(input, output, session) {
     output$eventDiagram <- renderUI({
         ASevent <- getASevent()
         if (!is.null(ASevent)) {
-            res <- plotSplicingEvent(ASevent)[[1]]
+            res <- HTML(plotSplicingEvent(ASevent)[[1]])
         } else {
             res <- "No alternative splicing event selected or available."
         }

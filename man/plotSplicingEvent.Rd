@@ -6,7 +6,6 @@
 \usage{
 plotSplicingEvent(
   ASevent,
-  raw = FALSE,
   class = NULL,
   style = NULL,
   showText = TRUE,
@@ -26,9 +25,6 @@ plotSplicingEvent(
 }
 \arguments{
 \item{ASevent}{Character: alternative splicing event identifiers}
-
-\item{raw}{Boolean: if \code{FALSE}, plot the events; if \code{TRUE}, return
-the respective SVG raw code}
 
 \item{class}{Character: class of SVG parent tag}
 
@@ -79,7 +75,7 @@ ASevent <- c(
     "MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1")
 diagram <- plotSplicingEvent(ASevent)
 
-diagram
-diagram[[6]]
 diagram[["A3SS_3_-_145796903_145794682_145795711_PLOD2"]]
+diagram[[6]]
+diagram
 }
