@@ -1,8 +1,11 @@
 context("Loading SRA data using recount")
 
-test_that("Load", {
+test_that("Load SRA project", {
     skip_on_cran()
     skip_on_bioc()
+    skip_on_ci()
+    skip_on_travis()
+    skip_on_appveyor()
     
     dataTypes <- c("Gene expression", "Junction quantification",
                    "Sample metadata")
