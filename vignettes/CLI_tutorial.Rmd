@@ -271,7 +271,6 @@ geneExprFiltered <- geneExpr[filter, ]
 geneExprNorm <- normaliseGeneExpression(geneExprFiltered)
 ```
 
-
 ## Quantifying alternative splicing
 After loading the clinical and alternative splicing junction quantification data
 from TCGA, quantify alternative splicing by clicking the green panel 
@@ -300,8 +299,8 @@ interest:
 
 ```{r prepare to quantify splicing, eval=FALSE}
 # Load Human (hg19/GRCh37 assembly) annotation
-human <- listSplicingAnnotations()[[1]]
-annotation <- loadAnnotation(human)
+hg19 <- listSplicingAnnotations(assembly="hg19")[[1]]
+annotation <- loadAnnotation(hg19)
 ```
 
 ```{r event types}

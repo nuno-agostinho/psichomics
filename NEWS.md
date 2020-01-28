@@ -17,6 +17,9 @@
     - In the visual interface, alternative splicing event diagrams were added
     below distribution plots (to quickly illustrate higher and lower values of
     alternative splicing quantification) and in annotation page
+* Alternative splicing annotation:
+    - `listSplicingAnnotations()` can now be filtered by species, assembly and
+    data of available annotations
 * Improve import/export of data groups from/to a file, including colour support
 * Gene, transcript and protein annotation:
     - Show available annotation information and query PubMed even if Ensembl is
