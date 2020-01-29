@@ -1,10 +1,6 @@
 # Based on https://github.com/Bioconductor/BiocManager/blob/master/.travis.yml
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
-env:
-  global:
-    secure: "th4NtcM81kcZpzATTEa5UWaoNiKgSLTKTi3fhKdE6TxcWL7nZ00w4kXsZDc1Sn3jnVLPOtdb4rwrPoaTYRZkEN3p4szOGs8FYGZksEftqJD8epOp6jUhW/ncd1Ta0qZY10sJbOx0j84GWLWAUH8hk86vi2pvuwORwC0M3U6SZoQnTpD/olhBDoH7tA6CnEK8I7ByUwwJ0iGIIx+K9RKRitGCZn817EjAstEMe2ASIO8bcGfNRGI2TyIrvI5WyaFP2xyw5jB6zryE4nmYkkruu6da2ri9Y1eoKvZz7X5XTI+tefOa/WDusvKyQIzxVMhuRmNzXq27YZ+K4cH9r9DeskO6GvsyylkUYYrg77SRRC2GVXKz4HocdJd4cE03lLJ/ZhwKpwsevSYxfxkVhyBIX2t4GGDxJuu+V3kvPzGeUvFibmaPUUS/930K3y8HpgbufADlZU0Ye9H1tuaXKgoFJOsXwYFc6W5sSifjxfo2bI1h4psHP6ZR1QySBRxbO5U0MXqZKJflSwormgBLV1kaxE6ur4WlKV3iIrms7vjy/PzaFWLbaOyxmjCOHWoK0HyxRDqvC/zzhu4WRGrNqMaYTeHGXotAAEMGI4pChLu4eR+ibhDQ41u+FnKYBnxP/RtWnumXhEMKZP8fMYnQg7h+y/yDjhnpUd8HTFvi2dhGCVI="
-
 language: r
 sudo: required
 cache: packages
@@ -62,11 +58,6 @@ after_success:
   - Rscript -e 'library(covr);codecov()'
 
 # pkgdown site deployment in "gh-pages" branch
-before_install:
-  - |
-       openssl aes-256-cbc \
-       -K $encrypted_3ccb1dc4a77c_key \
-       -iv $encrypted_3ccb1dc4a77c_iv -in id_rsa.enc -out ~\/.ssh/id_rsa -d
 before_cache: Rscript -e 'remotes::install_cran("pkgdown")'
 deploy:
   provider: script

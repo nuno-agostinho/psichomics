@@ -10,4 +10,3 @@ rsconnect
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
-id_rsa.enc
