@@ -1,0 +1,9 @@
+pandoc: '2.2'
+pkgdown: 1.4.1
+pkgdown_sha: ~
+articles:
+  AS_events_preparation: AS_events_preparation.html
+  CLI_tutorial: CLI_tutorial.html
+  GUI_tutorial: GUI_tutorial.html
+  custom_data: custom_data.html
+
