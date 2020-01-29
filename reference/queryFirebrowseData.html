@@ -96,7 +96,7 @@
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
+    Tutorials
      
     <span class="caret"></span>
   </a>
@@ -224,7 +224,7 @@ cohort)</p></td>
     <pre class="examples"><div class='input'><span class='no'>cohort</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='getTCGAdataTypes.html'>getFirebrowseCohorts</a></span>()[<span class='fl'>1</span>]
 <span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'><a href='https://rdrr.io/pkg/psichomics/man/queryFirebrowseData.html'>queryFirebrowseData</a></span>(<span class='kw'>cohort</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='no'>cohort</span>),
                                  <span class='kw'>data_type</span> <span class='kw'>=</span> <span class='st'>"mRNASeq"</span>)</div><div class='output co'>#&gt; Response [http://firebrowse.org/api/v1/Archives/StandardData?format=json&amp;cohort=ACC&amp;data_type=mRNASeq]
-#&gt;   Date: 2020-01-29 01:22
+#&gt;   Date: 2020-01-29 15:59
 #&gt;   Status: 200
 #&gt;   Content-Type: application/json
 #&gt;   Size: 12.1 kB
@@ -244,7 +244,7 @@ cohort)</p></td>
 <span class='no'>dates</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/format.html'>format</a></span>(<span class='no'>dates</span>, <span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'><a href='https://rdrr.io/pkg/psichomics/man/getFirebrowseDateFormat.html'>getFirebrowseDateFormat</a></span>()$<span class='no'>query</span>)
 
 <span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'><a href='https://rdrr.io/pkg/psichomics/man/queryFirebrowseData.html'>queryFirebrowseData</a></span>(<span class='kw'>date</span> <span class='kw'>=</span> <span class='no'>dates</span>[<span class='fl'>2</span>], <span class='kw'>cohort</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='no'>cohort</span>))</div><div class='output co'>#&gt; Response [http://firebrowse.org/api/v1/Archives/StandardData?format=json&amp;date=2015_11_01&amp;cohort=ACC]
-#&gt;   Date: 2020-01-29 01:22
+#&gt;   Date: 2020-01-29 15:59
 #&gt;   Status: 200
 #&gt;   Content-Type: application/json
 #&gt;   Size: 37.2 kB

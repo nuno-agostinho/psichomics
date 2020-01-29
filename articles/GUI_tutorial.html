@@ -54,7 +54,7 @@
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
+    Tutorials
      
     <span class="caret"></span>
   </a>
@@ -173,7 +173,7 @@ Options to filter and normalise gene expression.
 <li>Select the alternative splicing event annotation <strong>Human hg19/GRCh37 (2017-10-20)</strong>. Note that there are other annotation files available and you can also load custom annotation files.</li>
 </ol>
 <blockquote>
-<p><strong>Custom splicing annotation:</strong> Additional alternative splicing annotations can be prepared for <em>psichomics</em> by parsing the annotation from programs like <a href="https://github.com/vastgroup/vast-tools">VAST-TOOLS</a>, <a href="http://genes.mit.edu/burgelab/miso/">MISO</a>, <a href="https://bitbucket.org/regulatorygenomicsupf/suppa">SUPPA</a> and <a href="http://rnaseq-mats.sourceforge.net">rMATS</a>. Note that SUPPA and rMATS are able to create their splicing annotation based on transcript annotation. For more information, <a href="http://rpubs.com/nuno-agostinho/alt-splicing-annotation">read this tutorial</a>.</p>
+<p><strong>Custom splicing annotation:</strong> Additional alternative splicing annotations can be prepared for <em>psichomics</em> by parsing the annotation from programs like <a href="https://github.com/vastgroup/vast-tools">VAST-TOOLS</a>, <a href="http://genes.mit.edu/burgelab/miso/">MISO</a>, <a href="https://bitbucket.org/regulatorygenomicsupf/suppa">SUPPA</a> and <a href="http://rnaseq-mats.sourceforge.net">rMATS</a>. Note that SUPPA and rMATS are able to create their splicing annotation based on transcript annotation. For more information, <a href="https://nuno-agostinho.github.io/psichomics/articles/AS_events_preparation.html">read this tutorial</a>.</p>
 </blockquote>
 <ol start="3" style="list-style-type: decimal">
 <li>Choose the event type(s) of interest. For the purposes of following the case study, select <strong>Skipped exon (SE)</strong>, <strong>Mutually exclusive exon (MXE)</strong>, <strong>Alternative 5’ splice site (A5SS)</strong>, <strong>Alternative 3’ splice site (A3SS)</strong>, <strong>Alternative first exon (AFE)</strong> and <strong>Alternative last exon (ALE)</strong>.</li>
@@ -504,10 +504,18 @@ Prognostic value of <em>UHRF2</em> expression (patients separated by the optimal
 </div>
 </div>
 </div>
+<div id="exploring-alternative-splicing-changes-between-human-isogenic-stem-cells-and-fibroblasts" class="section level1">
+<h1 class="hasAnchor">
+<a href="#exploring-alternative-splicing-changes-between-human-isogenic-stem-cells-and-fibroblasts" class="anchor"></a>Exploring alternative splicing changes between human isogenic stem cells and fibroblasts</h1>
+<p>Please refer to our methods article:</p>
+<blockquote>
+<p>Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2020). <strong><a href="https://doi.org/10.1007/978-1-0716-0301-7_10">Interactive Alternative Splicing Analysis of Human Stem Cells Using psichomics</a></strong>. In: Kidder B. (eds) Stem Cell Transcriptional Networks. <em>Methods in Molecular Biology</em>, vol 2117. Humana, New York, NY</p>
+</blockquote>
+</div>
 <div id="load-sra-and-user-provided-local-files" class="section level1">
 <h1 class="hasAnchor">
 <a href="#load-sra-and-user-provided-local-files" class="anchor"></a>Load SRA and user-provided local files</h1>
-<p>Although only select <a href="https://www.ncbi.nlm.nih.gov/sra">SRA</a> projects are available to be automatically downloaded (based on pre-processed data from the [recount2][recount2] project), other SRA projects can be manually downloaded, aligned using a splice-aware aligner and loaded by the user, as per the instructions in <a href="http://rpubs.com/nuno-agostinho/psichomics-custom-data">Loading SRA and user-provided RNA-seq data</a>. Sample-associated files from SRA are also supported.</p>
+<p>Although only select <a href="https://www.ncbi.nlm.nih.gov/sra">SRA</a> projects are available to be automatically downloaded (based on pre-processed data from the [recount2][recount2] project), other SRA projects can be manually downloaded, aligned using a splice-aware aligner and loaded by the user, as per the instructions in <a href="https://nuno-agostinho.github.io/psichomics/articles/custom_data.html">Loading SRA and user-provided RNA-seq data</a>. Sample-associated files from SRA are also supported.</p>
 </div>
 <div id="feedback" class="section level1">
 <h1 class="hasAnchor">
@@ -569,6 +577,7 @@ Prognostic value of <em>UHRF2</em> expression (patients separated by the optimal
       <li><a href="#differential-gene-expression">Differential gene expression</a></li>
       </ul>
 </li>
+      <li><a href="#exploring-alternative-splicing-changes-between-human-isogenic-stem-cells-and-fibroblasts">Exploring alternative splicing changes between human isogenic stem cells and fibroblasts</a></li>
       <li><a href="#load-sra-and-user-provided-local-files">Load SRA and user-provided local files</a></li>
       <li><a href="#feedback">Feedback</a></li>
       <li><a href="#references">References</a></li>

@@ -96,7 +96,7 @@
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
+    Tutorials
      
     <span class="caret"></span>
   </a>
@@ -227,7 +227,7 @@ respective string in the <code>pvalueAdjust</code> argument:</p><ul>
 
 <span class='no'>psi</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='quantifySplicing.html'>quantifySplicing</a></span>(<span class='no'>annot</span>, <span class='no'>junctionQuant</span>, <span class='kw'>eventType</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SE"</span>, <span class='st'>"MXE"</span>))</div><div class='output co'>#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% 
 #&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </div><div class='input'><span class='no'>group</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='st'>"Normal"</span>, <span class='fl'>3</span>), <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='st'>"Tumour"</span>, <span class='fl'>3</span>))
-<span class='fu'>diffAnalyses</span>(<span class='no'>psi</span>, <span class='no'>group</span>)</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.0291 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.00628 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.000295 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.00122 secs</span></div><div class='output co'>#&gt;                                              Event type Chromosome Strand  Gene
+<span class='fu'>diffAnalyses</span>(<span class='no'>psi</span>, <span class='no'>group</span>)</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.0311 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.00652 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.00036 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.00122 secs</span></div><div class='output co'>#&gt;                                              Event type Chromosome Strand  Gene
 #&gt; SE_1_+_32_35_37_38_ACTN1                   Skipped exon          1      + ACTN1
 #&gt; MXE_1_+_32_35_37_38_40_42_ACTN1 Mutually exclusive exon          1      + ACTN1
 #&gt; SE_2_+_32_35_37_38_ALDOA                   Skipped exon          2      + ALDOA
@@ -272,10 +272,10 @@ respective string in the <code>pvalueAdjust</code> argument:</p><ul>
 #&gt;                                                                   Wilcoxon method
 #&gt; SE_1_+_32_35_37_38_ACTN1        Wilcoxon rank sum test with continuity correction
 #&gt; MXE_1_+_32_35_37_38_40_42_ACTN1 Wilcoxon rank sum test with continuity correction
-#&gt; SE_2_+_32_35_37_38_ALDOA                             Wilcoxon rank sum exact test
-#&gt; SE_3_+_32_35_37_38_ANXA6                             Wilcoxon rank sum exact test
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA                      Wilcoxon rank sum exact test
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6                      Wilcoxon rank sum exact test
+#&gt; SE_2_+_32_35_37_38_ALDOA                                   Wilcoxon rank sum test
+#&gt; SE_3_+_32_35_37_38_ANXA6                                   Wilcoxon rank sum test
+#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA                            Wilcoxon rank sum test
+#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6                            Wilcoxon rank sum test
 #&gt;                                                   Wilcoxon data name
 #&gt; SE_1_+_32_35_37_38_ACTN1        vector[typeOne] and vector[!typeOne]
 #&gt; MXE_1_+_32_35_37_38_40_42_ACTN1 vector[typeOne] and vector[!typeOne]
