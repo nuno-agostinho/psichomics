@@ -394,6 +394,7 @@ print.splicingEventPlot <- function(x, ..., browse=TRUE) {
 }
 
 #' @importFrom DT dataTableOutput renderDataTable
+#' @importFrom shiny fluidPage
 #' @keywords internal
 print.splicingEventPlotList <- function(x, ..., browse=TRUE) {
     server <- function(input, output) {
