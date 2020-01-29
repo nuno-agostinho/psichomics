@@ -2,7 +2,7 @@
 % Please edit documentation in R/globalAccess.R
 \name{getGeneList}
 \alias{getGeneList}
-\title{Get pre-created, literature-based gene list}
+\title{Get curated, literature-based gene lists}
 \usage{
 getGeneList()
 }

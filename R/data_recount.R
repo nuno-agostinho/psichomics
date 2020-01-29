@@ -17,7 +17,8 @@ recountDataUI <- function(id, panel) {
           div(class="alert", class="alert-info", role="alert", 
               "SRA data unlisted below may be manually aligned and loaded.",
               tags$a(
-                  href="http://rpubs.com/nuno-agostinho/psichomics-custom-data",
+                  href=paste0("https://nuno-agostinho.github.io/psichomics/",
+                              "articles/custom_data.html"),
                   class="alert-link", target="_blank", "Learn more...")),
           div(id=ns("loading"), class="progress",
               div(class="progress-bar progress-bar-striped active",

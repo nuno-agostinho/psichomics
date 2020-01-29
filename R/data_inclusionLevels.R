@@ -302,7 +302,8 @@ loadCustomSplicingAnnotationSet <- function(session, input, output) {
     observe({
         ns <- session$ns
         if (input$annotation == "loadAnnotation") {
-            url <- "http://rpubs.com/nuno-agostinho/preparing-AS-annotation"
+            url <- paste0("https://nuno-agostinho.github.io/psichomics/",
+                          "articles/AS_events_preparation.html")
             
             updateSelectizeInput(session, "annotation",
                                  selected=listSplicingAnnotations())

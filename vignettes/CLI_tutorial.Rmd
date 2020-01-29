@@ -40,141 +40,9 @@ After the installation, load psichomics by typing:
 library(psichomics)
 ```
 
-# Available functions: quick reference
+# Quick reference of psichomics functions
 
-* `psichomics`: Start the visual interface of *psichomics*
-* `parseSplicingEvent`: Parse splicing events
-* `getSplicingEventFromGenes`: Get alternative splicing events from genes
-* `getGenesFromSplicingEvents`: Get genes from alternative splicing events
-* `plotSplicingEvent`: Plot the representation of given alternative splicing events
-
-### Data retrieval
-
-* `getDownloadsFolder`: Get the user's Downloads folder
-
-**TCGA/Firebrowse**
-
-* `isFirebrowseUp`: Check if Firebrowse web API is online
-* `getTCGAcohorts`: Query the Firebrowse web API for TCGA cohorts
-* `getTCGAdataTypes`: Query the Firebrowse web API for TCGA data types
-* `getTCGAdates`: Query the Firebrowse web API for processing dates
-* `loadTCGAdata`: Download and load TCGA data through the Firebrowse web 
-API
-* `parseTCGAsampleInfo`: Parse sample information from TCGA samples
-
-**GTEx**
-
-* `getGtexDataTypes`: Check available data types from GTEx
-* `getGtexTissues`: Check available tissues from a file containing sample
-metadata
-* `loadGtexData`: Load GTEx data
-
-**SRA**
-
-* `recount::recount_abstract`: Check available [SRA][SRA] projects from 
-[*recount*][recount]
-* `loadSRAproject`: Download and load [SRA][SRA] projects through the 
-[*recount*][recount] R package
-
-**Custom and/or local files**
-
-* `loadLocalFiles`: Load local files from a given folder
-* `prepareSRAmetadata`: Prepare metadata from [SRA][SRA] (as obtained from Run
-Selector page)
-* `prepareJunctionQuant`: Prepare junction quantification files from 
-splice-aware aligners (currently, psichomics supports the output of the 
-splice-aware aligner [STAR][STAR])
-* `prepareGeneQuant`: Prepare gene quantification files from splice-aware 
-aligners (currently, psichomics supports the output of the splice-aware aligner
-[STAR][STAR])
-
-### Gene expression pre-processing
-* `plotRowStats`: Plot statistics (median, variance, etc.) per gene
-* `plotGeneExprPerSample`: Plot distribution of gene expression per sample
-* `filterGeneExpr`: Filter genes based on their expression
-* `normaliseGeneExpression`: Normalise gene expression data
-* `convertGeneIdentifiers`: Convert between different gene identifiers
-
-### PSI quantification
-* `getSplicingEventTypes`: Get quantifiable splicing event types
-* `listSplicingAnnotations`: List available alternative splicing annotation 
-files
-* `loadAnnotation`: Load an alternative splicing annotation file
-* `quantifySplicing`: Quantify alternative splicing
-* `plotRowStats`: Plot statistics (median, variance, etc.) per alternative 
-splicing event
-* `filterPSI`: Filter alternative splicing quantification
-
-**Custom alternative splicing annotation preparation**
-
-* `prepareAnnotationFromEvents`
-* `parseMatsAnnotation`: Parse splicing annotation from [rMATS][rMATS]
-* `parseMisoAnnotation`: Parse splicing annotation from [MISO][MISO]
-* `parseSuppaAnnotation`: Parse splicing annotation from [SUPPA][SUPPA]
-* `parseVastToolsAnnotation`: Parse splicing annotation from 
-[VAST-TOOLS][VAST-TOOLS]
-
-### Data Grouping
-* `getGeneList`: Get pre-created, literature-based lists of genes
-* `createGroupByAttribute`: Split elements into groups based on a given 
-attribute
-* `getSampleFromSubject`: Get samples matching the given patients
-* `getSubjectFromSample`: Get patients matching the given samples
-* `groupPerElem`: Return a vector with one group for each element
-* `testGroupIndependence`: Test multiple contigency tables comprised by two 
-groups (one reference group and another containing remaining elements) and 
-provided groups
-* `plotGroupIndependence`: Plot -log10(p-values) of the results obtained after 
-multiple group independence testing
-
-### Dimensionality reduction
-
-**Principal component analysis (PCA)**
-
-* `performPCA`: Perform PCA
-* `plotVariance`: Render variance plot
-* `calculateLoadingsContribution`: Calculate the contribution of the variables
-and return values in a data frame
-* `plotPCA`: Plot PCA individuals (scores) and/or variable contributions
-
-**Independent component analysis (ICA)**
-
-* `performICA`: Perform ICA
-* `plotICA`: Plot ICA scores
-
-### Survival analysis
-* `getAttributesTime`: Get time for given columns in a clinical dataset
-* `assignValuePerSubject`: Assign average samples values to their corresponding
-patients
-* `labelBasedOnCutoff`: Label groups based on a given cutoff
-* `optimalSurvivalCutoff`: Calculate optimal data cutoff that best separates 
-survival curves
-* `testSurvival`: Test the survival difference between groups of patients
-* `processSurvTerms`: Process survival curves terms to calculate survival curves
-* `survfit`: Compute estimates of survival curves
-* `survdiffTerms`: Test differences between survival curves
-* `plotSurvivalCurves`: Plot survival curves
-* `plotSurvivalPvaluesByCutoff`: Plot p-values of survival difference between
-groups based on multiple cutoffs
-
-### Differential analyses
-* `diffAnalyses`: Perform statistical analyses (including differential splicing
-and gene expression)
-* `plotDistribution`: Plot distribution using a density plot
-
-### Gene expression and alternative splicing correlation
-* `correlateGEandAS`: Test for association between paired samples' gene 
-expression (for any genes of interest) and alternative splicing quantification
-* `plotCorrelation`: Scatter plots of the correlation results
-* `as.table`: Table of the correlation results
-
-### Gene, transcript and protein annotation retrieval
-* `queryEnsemblByEvent`: Query Ensembl based on an alternative splicing event
-* `queryEnsemblByGene`: Query Ensembl based on a gene
-* `ensemblToUniprot`: Convert an Ensembl identifier to the respective UniProt 
-identifier
-* `plotProtein`: Plot domains of a given protein
-* `plotTranscripts`: Plot transcripts of a given gene
+Please read the following [function reference][reference].
 
 # Exploration of clinically-relevant, differentially spliced events in breast cancer
 
@@ -805,6 +673,13 @@ View(recount_abstract)
 sra <- loadSRAproject("SRP053101")
 ```
 
+Please refer to our methods article for more information (the code for
+performing the analysis can be found at [GitHub][chapter-code]):
+
+> Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2020). 
+**[Interactive Alternative Splicing Analysis of Human Stem
+Cells Using psichomics][chapter]**. In: Kidder B. (eds) Stem Cell Transcriptional Networks. *Methods in Molecular Biology*, vol 2117. Humana, New York, NY
+
 ## Load other SRA and user-provided local files
 
 > Although only select [SRA][SRA] projects are available to be automatically
@@ -842,20 +717,23 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 
 # References
 
+[reference]: https://nuno-agostinho.github.io/psichomics/reference
 [SUPPA]: https://bitbucket.org/regulatorygenomicsupf/suppa
 [rMATS]: http://rnaseq-mats.sourceforge.net
 [MISO]: http://genes.mit.edu/burgelab/miso/
 [VAST-TOOLS]: https://github.com/vastgroup/vast-tools
 [TCGA]: https://tcga-data.nci.nih.gov/docs/publications/tcga
-[annotation-tutorial]: http://rpubs.com/nuno-agostinho/alt-splicing-annotation
+[annotation-tutorial]: https://nuno-agostinho.github.io/psichomics/articles/AS_events_preparation.html
 [iMM]: http://imm.medicina.ulisboa.pt/group/distrans/
 [GTEx]: http://gtexportal.org
 [maxpath]: https://msdn.microsoft.com/library/windows/desktop/aa365247.aspx#maxpath
 [article]: https://doi.org/10.1093/nar/gky888
+[chapter]: https://doi.org/10.1007/978-1-0716-0301-7_10
+[chapter-code]: https://github.com/nuno-agostinho/stem-cell-analysis-in-psichomics
 [Firebrowse]: http://firebrowse.org
 [Ensembl]: http://www.ensembl.org
 [UniProt]: http://www.uniprot.org
 [SRA]: https://www.ncbi.nlm.nih.gov/sra
 [recount]: https://jhubiostatistics.shinyapps.io/recount/
 [STAR]: https://github.com/alexdobin/STAR
-[tutorial-custom-data]: http://rpubs.com/nuno-agostinho/psichomics-custom-data
+[tutorial-custom-data]: https://nuno-agostinho.github.io/psichomics/articles/custom_data.html

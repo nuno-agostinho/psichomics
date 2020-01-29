@@ -17,24 +17,49 @@ options(shiny.sanitize.errors = TRUE)
 #' 
 #' @return HTML elements
 #' @keywords internal
-linkToArticle <- function() {
-    authors <- c("Nuno Saraiva-Agostinho", "Nuno L Barbosa-Morais")
-    title   <- paste("psichomics: graphical application for alternative",
-                     "splicing quantification and analysis.")
-    year    <- 2019
-    journal <- "Nucleic Acids Research"
-    volume  <- 47
-    number  <- 2
-    pages   <- "e7"
+linkToArticles <- function() {
+    article <- list()
+    article$description <- "Original article"
+    article$authors <- c("N Saraiva-Agostinho", "NL Barbosa-Morais")
+    article$title   <- paste(
+        "psichomics: graphical application for alternative splicing",
+        "quantification and analysis")
+    article$year    <- 2019
+    article$journal <- "Nucleic Acids Research"
+    article$volume  <- 47
+    article$number  <- 2
+    article$pages   <- "e7"
+    article$url     <- "https://doi.org/10.1093/nar/gky888"
     
-    tags$a(
-        target="_blank", href="https://doi.org/10.1093/nar/gky888",
-        tags$div(
-            class="alert alert-info", role="alert",
-            icon("paper-plane-o"), 
-            sprintf("%s (%s).", paste(authors, collapse=" and "), year),
-            tags$b(title), tags$i(paste0(journal, ".")),
-            sprintf("%s(%s), %s", volume, number, pages)))
+    chapter <- list()
+    chapter$description <- "Methods article"
+    chapter$authors <- c("N Saraiva-Agostinho", "NL Barbosa-Morais")
+    chapter$title   <- paste("Interactive Alternative Splicing Analysis of",
+                             "Human Stem Cells Using psichomics")
+    chapter$year    <- 2020
+    chapter$journal <- "Methods in Molecular Biology"
+    chapter$volume  <- 2117
+    chapter$pages   <- "179-205"
+    chapter$url     <- "https://doi.org/10.1007/978-1-0716-0301-7_10"
+    
+    prepareInfo <- function(data) {
+        number <- data$number
+        if (!is.null(number)) {
+            number <- sprintf("(%s)", number)
+        } else {
+            number <- ""
+        }
+        link <- tags$a(target="_blank", href=data$url,
+                       tags$b(data$title), sprintf("(%s)", data$year),
+                       tags$i(paste0(data$journal, ".")),
+                       sprintf("%s%s, %s", data$volume, number, data$pages))
+        tagList(tags$dt(style="width: 110px", data$description),
+                tags$dd(style="margin-left: 120px", link))
+    }
+    tags$div(class="alert alert-info", role="alert", style="padding: 10px",
+             tags$dl(class="dl-horizontal",
+                     style="margin-bottom: 0px !important;",
+                     prepareInfo(article), prepareInfo(chapter)))
 }
 
 #' Check if a given function should be loaded by the calling module

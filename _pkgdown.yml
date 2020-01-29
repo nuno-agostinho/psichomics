@@ -49,11 +49,11 @@ reference:
         - filterPSI
     - title: "Custom alternative splicing annotation preparation"
       contents:
-        - prepareAnnotationFromEvents
         - parseMatsAnnotation
         - parseMisoAnnotation
         - parseSuppaAnnotation
         - parseVastToolsAnnotation
+        - prepareAnnotationFromEvents
     - title: "Data Grouping"
       contents:
         - getGeneList
@@ -110,7 +110,7 @@ articles:
 navbar:
   components:
     articles:
-      text: Articles
+      text: Tutorials
       menu:
       - text: 'Visual interface tutorial'
         href: articles/GUI_tutorial.html

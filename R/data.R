@@ -272,33 +272,30 @@ dataUI <- function(id, tab) {
         fluidRow(
             column(3, style="padding: 5px !important;",
                    h4("Dimensionality reduction"),
-                   "Explore alternative splicing quantification and gene",
-                   "expression through principal component analysis (PCA) and",
-                   "independent component analysis (ICA) using groups based on",
-                   "clinical and sample attributes."),
+                   helpText(tags$ul(
+                       class="list-unstyled",
+                       tags$li("Principal Component Analysis (PCA)"),
+                       tags$li("Independent Component Analysis (ICA)")))),
             column(3, style="padding: 5px !important;",
                    h4("Differential splicing and expression analysis"),
-                   "Analyse alternative splicing quantification (based on",
-                   "variance and median statistical tests) and gene expression",
-                   "data. The groups available for differential analyses",
-                   "comprise sample types (e.g. normal versus tumour) and",
-                   "clinical attributes of subjects (e.g. tumour stage)."),
+                   helpText("Based on variance and median statistical tests")),
             column(3, style="padding: 5px !important;",
                    h4("Survival analysis"),
-                   "Analyse survival based on clinical attributes (e.g. tumour",
-                   "stage, gender and race). Additionally, study the impact of",
-                   "of a single alternative splicing event or gene on subject",
-                   "survivability."),
+                   helpText(tags$ul(
+                       class="list-unstyled",
+                       tags$li("Analyse survival based on clinical attributes",
+                               "(e.g. tumour stage, gender and race)"),
+                       tags$li("Study the impact of a single alternative",
+                               "splicing event or gene on subject survival")))),
             column(3, style="padding: 5px !important;",
                    h4("Gene, transcript and protein information"),
-                   "For a given splicing event, examine its gene's annotation",
-                   "and corresponding transcripts and proteins. Related",
-                   "research articles are also available.")))
+                   helpText("Check available annotation for splicing events",
+                            "and genes including related research articles."))))
     
     welcome <- div(
         id=ns("welcome"),
-        linkToArticle(),
-        h1("Welcome"), HTML(paste0(
+        linkToArticles(),
+        h1("Welcome to psichomics"), HTML(paste0(
             "Perform integrative analyses of alternative splicing and gene ",
             "expression based on transcriptomic and sample-associated data ",
             "from The Cancer Genome Atlas (", tcga, "), the Genotype-Tissue ",
@@ -325,16 +322,15 @@ dataUI <- function(id, tab) {
                         "Note: as", tcga, "does not include exon-intron",
                         "junction quantification, intron retention",
                         "events are not measurable.")),
-            tags$li("Explore statistically significant events or",
-                    "individual events of interest through the",
-                    "following analyses:")), 
+            tags$li("Explore statistically significant genes/events or",
+                    "individual genes/events of interest using:")), 
         analysesDescription, br(), br(),
         p(style="text-align:right",
           tags$a(href="http://imm.medicina.ulisboa.pt/group/distrans/",
                  target="_blank", "Disease Transcriptomics Lab, iMM"), 
           "(", tags$a(href="mailto:nunodanielagostinho@gmail.com", 
                       "Nuno Saraiva-Agostinho", icon("envelope-o")),
-          ", 2015-2019)", 
+          ", 2015-2020)", 
           br(), "Special thanks to my lab colleagues for their work-related",
           br(), "support and supporting chatter."))
     
