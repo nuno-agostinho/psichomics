@@ -50,16 +50,22 @@ bioc_packages:
   - BiocVersion
   - BiocStyle
   
-# Test code coverage
-r_github_packages:
-  - jimhester/covr
-
-after_success:
-  - Rscript -e 'library(covr);codecov()'
-
-# pkgdown site deployment in "gh-pages" branch
+r_github_packages: jimhester/covr
 before_cache: Rscript -e 'remotes::install_cran("pkgdown")'
-deploy:
-  provider: script
-  script: Rscript -e 'pkgdown::deploy_site_github(verbose=TRUE)'
-  skip_cleanup: true
+
+jobs:
+  include:
+    - stage: "Code coverage"
+      script: Rscript -e 'library(covr);codecov()'
+    - stage: "Deploy"
+      deploy:
+        provider: script
+        script: Rscript -e 'pkgdown::deploy_site_github(verbose=TRUE)'
+        skip_cleanup: true
+        github-token: $GITHUB_TOKEN
+        committer-from-gh: true
+        on:
+          branch: master
+  allow_failures:
+    - r: bioc-devel
+    - os: osx
