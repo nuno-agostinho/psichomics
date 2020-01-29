@@ -63,6 +63,12 @@ The following case studies and tutorials are available and were based on our
 * [Loading SRA and user-provided RNA-seq data][tutorial-custom-data]
 * [Preparing alternative splicing annotations][tutorial-prep-AS-annotation]
 
+Another tutorial was published as part of the Methods in Molecular Biology book
+series (the code for performing the analysis can be found [here][chapter-code]):
+
+> Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2020). 
+**[Interactive Alternative Splicing Analysis of Human Stem Cells Using psichomics][chapter]**. In: Kidder B. (eds) Stem Cell Transcriptional Networks. *Methods in Molecular Biology*, vol 2117. Humana, New York, NY
+
 ## Workflow
 
 ### Data input
@@ -159,9 +165,11 @@ Nature 456 (7221): 470–76.
 [codecov]: https://codecov.io/gh/nuno-agostinho/psichomics
 [GTEx]: http://www.gtexportal.org
 [article]: https://doi.org/10.1093/nar/gky888
+[chapter]: https://doi.org/10.1007/978-1-0716-0301-7_10
+[chapter-code]: https://github.com/nuno-agostinho/stem-cell-analysis-in-psichomics
 [SRA]: https://www.ncbi.nlm.nih.gov/sra
-[tutorial-gui]: http://rpubs.com/nuno-agostinho/psichomics-tutorial-visual
-[tutorial-cli]: http://rpubs.com/nuno-agostinho/psichomics-cli-tutorial
-[tutorial-custom-data]: http://rpubs.com/nuno-agostinho/psichomics-custom-data
-[tutorial-prep-AS-annotation]: http://rpubs.com/nuno-agostinho/preparing-AS-annotation
+[tutorial-gui]: https://nuno-agostinho.github.io/psichomics/articles/GUI_tutorial.html
+[tutorial-cli]: https://nuno-agostinho.github.io/psichomics/articles/CLI_tutorial.html
+[tutorial-custom-data]: https://nuno-agostinho.github.io/psichomics/articles/custom_data.html
+[tutorial-prep-AS-annotation]: https://nuno-agostinho.github.io/psichomics/articles/AS_events_preparation.html
 [recount2]: https://jhubiostatistics.shinyapps.io/recount/

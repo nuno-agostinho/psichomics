@@ -15,22 +15,89 @@ helpUI <- function(id, tab) {
     #                                min=1, step=1, width="auto")
     # }
     
+    link <- function(href, ..., target="_blank") {
+        a <- tags$a(href=href, target=target, ...)
+    }
+    
+    linkItem <- function(href, ..., target="_blank") {
+        a <- link(href, ..., target=target)
+        a <- tags$li(class="list-group-item", a)
+        return(a)
+    }
+    
+    guiLink <- paste0("https://nuno-agostinho.github.io/psichomics/",
+                      "articles/GUI_tutorial.html")
+    cliLink <- paste0("https://nuno-agostinho.github.io/psichomics/",
+                      "articles/CLI_tutorial.html")
+    customDataLink <- paste0("https://nuno-agostinho.github.io/psichomics/",
+                             "articles/custom_data.html")
+    customAnnotLink <- paste0("https://nuno-agostinho.github.io/psichomics/",
+                              "articles/AS_events_preparation.html")
+    tutorials <- div(
+        class="panel", class="panel-default",
+        div(class="panel-heading", icon("file-text"), tags$b("Tutorials")),
+        tags$ul(
+            class="list-group",
+            linkItem(guiLink, "Visual interface tutorial"),
+            linkItem(cliLink, "Command-line interface (CLI) tutorial"),
+            linkItem(customDataLink,
+                     "Loading SRA and user-provided RNA-seq data"),
+            linkItem(customAnnotLink,
+                     "Preparing custom alternative splicing annotations")))
+    
+    supportLink  <- "https://support.bioconductor.org/t/psichomics/"
+    githubIssues <- "https://github.com/nuno-agostinho/psichomics/issues/new"
+    feedback <- div(
+        class="panel", class="panel-default",
+        div(class="panel-heading", icon("comments"), tags$b("Feedback")),
+        tags$ul(class="list-group",
+                linkItem(supportLink, "Questions and general support"),
+                linkItem(githubIssues, "Suggestions and bug reports")))
+    
+    groupSite <- "http://imm.medicina.ulisboa.pt/group/distrans/"
+    immSite   <- "http://imm.medicina.ulisboa.pt"
+    about <- div(
+        class="panel", class="panel-default",
+        div(class="panel-heading",
+            icon("info-circle"), tags$b("About")),
+        div(class="panel-body", 
+            "psichomics is an interactive R package for integrative analyses",
+            "of alternative splicing and gene expression from large",
+            "transcriptomic datasets including those from",
+            link("https://cancergenome.nih.gov",
+                 "The Cancer Genome Atlas (TCGA)"),
+            "and from the",
+            link("https://www.gtexportal.org/home/",
+                 "Genotype-Tissue Expression (GTEx)"),
+            "project, as well as user-provided data."),
+        tags$ul(class="list-group",
+                tags$li(class="list-group-item",
+                        tags$b("Developer:"), 
+                        link("mailto:nunodanielagostinho@gmail.com",
+                             "Nuno Saraiva-Agostinho", icon("envelope-o"))),
+                tags$li(class="list-group-item",
+                        tags$b("Supervisor:"), "Nuno L. Barbosa-Morais"),
+                linkItem(groupSite, "Disease Transcriptomics lab"),
+                linkItem(immSite, "Instituto de Medicina Molecular"),
+                tags$li(class="list-group-item",
+                        tags$small(class="help-block", style="margin: 0;",
+                                   style="text-align: right;", "2015-2020"))))
+    
     credits <- c("Lina Gallego", "Marie Bordone", "Mariana Ferreira",
                  "Teresa Maia", "Carolina Leote", "Juan Carlos Verjan",
                  "Bernardo de Almeida")
     credits <- lapply(credits, tags$li, class="list-group-item")
+    acknowledgments <- div(
+        class="panel", class="panel-default",
+        div(class="panel-heading",
+            icon("life-ring"), tags$b("Acknowledgments")),
+        div(class="panel-body",
+            "This work would not be possible without the support of current",
+            "and former members of Nuno Morais lab. Thank you for your help."),
+        do.call(tags$ul, c(credits, list(class="list-group"))))
     
-    groupLink <- "http://imm.medicina.ulisboa.pt/group/distrans/"
-    immLink <- "http://imm.medicina.ulisboa.pt"
-    guiLink <- "http://rpubs.com/nuno-agostinho/psichomics-tutorial-visual"
-    cliLink <- "http://rpubs.com/nuno-agostinho/psichomics-cli-tutorial"
-    bioconductorSupportLink <- "https://support.bioconductor.org/t/psichomics/"
-    githubIssues <- "https://github.com/nuno-agostinho/psichomics/issues/new"
-    
-    tab(title="Help", icon="question",
-        linkToArticle(),
-        h2("Settings", style="margin-top: 0;"),
-        fluidRow(
+    tab(title="Help", icon="question", linkToArticles(),
+        h2("Settings", style="margin-top: 0;"), fluidRow(
             # column(4, coresInput),
             column(4,
                    sliderInput(ns("precision"), h4("Numeric precision"),
@@ -45,94 +112,9 @@ helpUI <- function(id, tab) {
                    textOutput(ns("significantExample")),
                    helpText("Only applies to new calculations."))),
         h2("Support"),
-        fluidRow(
-            column(
-                4, div(
-                    class="panel", class="panel-default",
-                    div(class="panel-heading", 
-                        icon("file-text"), tags$b("Tutorials")),
-                    tags$ul(
-                        class="list-group",
-                        tags$li(class="list-group-item",
-                                tags$a(
-                                    href=guiLink,
-                                    target="_blank",
-                                    "Visual interface tutorial")),
-                        tags$li(class="list-group-item",
-                                tags$a(
-                                    href=cliLink,
-                                    target="_blank",
-                                    "Command-line interface tutorial")))),
-                div(
-                    class="panel", class="panel-default",
-                    div(class="panel-heading",
-                        icon("comments"), tags$b("Feedback")),
-                    div(class="panel-body",
-                        "From questions to suggestions, all feedback is",
-                        "welcome."),
-                    tags$ul(
-                        class="list-group",
-                        tags$li(class="list-group-item",
-                                tags$a(
-                                    href=bioconductorSupportLink,
-                                    target="_blank",
-                                    "Questions and general support")),
-                        tags$li(class="list-group-item",
-                                tags$a(
-                                    href=githubIssues,
-                                    target="_blank",
-                                    "Suggestions and bug reports"))))),
-            column(
-                4, div(
-                    class="panel", class="panel-default",
-                    div(class="panel-heading",
-                        icon("info-circle"), tags$b("About")),
-                    div(class="panel-body", 
-                        "psichomics is an interactive R package for",
-                        "integrative analyses of alternative splicing and",
-                        "gene expression from large transcriptomic datasets,",
-                        "including those from",
-                        tags$a(href="https://cancergenome.nih.gov",
-                               target="_blank",
-                               "The Cancer Genome Atlas (TCGA)"),
-                        "and from the",
-                        tags$a(href="https://www.gtexportal.org/home/",
-                               target="_blank",
-                               "Genotype-Tissue Expression (GTEx)"),
-                        "project, as well as user-provided data."),
-                    tags$ul(
-                        class="list-group",
-                        tags$li(class="list-group-item",
-                                tags$b("Developer:"), tags$a(
-                                    href="mailto:nunodanielagostinho@gmail.com",
-                                    target="_blank",
-                                    "Nuno Saraiva-Agostinho",
-                                    icon("envelope-o"))),
-                        tags$li(class="list-group-item",
-                                tags$b("Supervisor:"), "Nuno Barbosa-Morais"),
-                        tags$li(class="list-group-item",
-                                tags$b("Host lab:"),
-                                tags$a(href=groupLink, target="_blank",
-                                       "Disease Transcriptomics lab")),
-                        tags$li(class="list-group-item",
-                                tags$b("Institution:"),
-                                tags$a(href=immLink, target="_blank",
-                                       "Instituto de Medicina Molecular")),
-                        tags$li(class="list-group-item",
-                                tags$small(class="help-block",
-                                           style="text-align: right;",
-                                           style="margin: 0;",
-                                           "2015-2019"))))),
-            column(
-                4, div(
-                    class="panel", class="panel-default",
-                    div(class="panel-heading",
-                        icon("life-ring"), tags$b("Acknowledgments")),
-                    div(class="panel-body",
-                        "This work would not be possible without the support",
-                        "of current and former members of Nuno Morais lab.",
-                        "Thank you all for your help."),
-                    do.call(tags$ul, c(credits, list(class="list-group")))))))
+        fluidRow(column(4, tutorials, feedback),
+                 column(4, about),
+                 column(4, acknowledgments)))
 }
 
 #' @rdname appServer

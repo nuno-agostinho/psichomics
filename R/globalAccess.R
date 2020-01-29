@@ -144,7 +144,7 @@ getGenes <- function() {
     return(genes)
 }
 
-#' Get pre-created, literature-based gene list
+#' Get curated, literature-based gene lists
 #'
 #' Available gene lists:
 #' \itemize{

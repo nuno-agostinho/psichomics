@@ -602,6 +602,13 @@ differentially expressed between tumour stage I and normal samples
 between patient groups stratified by its expression in tumour samples (log-rank 
 p-value = 0.279).
 
+# Exploring alternative splicing changes between human isogenic stem cells and fibroblasts
+
+Please refer to our methods article:
+
+> Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2020). 
+**[Interactive Alternative Splicing Analysis of Human Stem Cells Using psichomics][chapter]**. In: Kidder B. (eds) Stem Cell Transcriptional Networks. *Methods in Molecular Biology*, vol 2117. Humana, New York, NY
+
 # Load SRA and user-provided local files
 
 Although only select [SRA][SRA] projects are available to be automatically
@@ -627,10 +634,11 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 [MISO]: http://genes.mit.edu/burgelab/miso/
 [VAST-TOOLS]: https://github.com/vastgroup/vast-tools
 [TCGA]: https://tcga-data.nci.nih.gov/docs/publications/tcga
-[annotation-tutorial]: http://rpubs.com/nuno-agostinho/alt-splicing-annotation
+[annotation-tutorial]: https://nuno-agostinho.github.io/psichomics/articles/AS_events_preparation.html
 [iMM]: http://imm.medicina.ulisboa.pt/group/distrans/
 [GTEx]: http://gtexportal.org
 [maxpath]: https://msdn.microsoft.com/library/windows/desktop/aa365247.aspx#maxpath
 [article]: https://doi.org/10.1093/nar/gky888
+[chapter]: https://doi.org/10.1007/978-1-0716-0301-7_10
 [SRA]: https://www.ncbi.nlm.nih.gov/sra
-[tutorial-custom-data]: http://rpubs.com/nuno-agostinho/psichomics-custom-data
+[tutorial-custom-data]: https://nuno-agostinho.github.io/psichomics/articles/custom_data.html
