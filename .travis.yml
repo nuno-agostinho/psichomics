@@ -64,6 +64,8 @@ jobs:
         skip_cleanup: true
         github-token: $GITHUB_TOKEN
         committer-from-gh: true
+        on:
+          branch: master
   allow_failures:
     - r: bioc-devel
     - os: osx
