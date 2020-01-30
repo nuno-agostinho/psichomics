@@ -1,4 +1,4 @@
-# psichomics 1.12.1 (28 January, 2020)
+# psichomics 1.12.1 (29 January, 2020)
 
 * Alternative splicing events can now be represented via diagrams:
     - Redesign of alternative splicing event selection (graphical interface)
@@ -15,10 +15,9 @@
     - `listSplicingAnnotations()` can now be filtered by species, assembly and
     data of available annotations
 * Improve import/export of data groups from/to a file, including colour support
-* Tutorials:
-    - Copy-edit command-line interface (CLI) tutorial
-    - Copy-edit tutorial on custom alternative splicing annotation preparation
-    - Improve tutorial on loading user-provided data
+* Copy-edit and improve all tutorials, welcome message and help tab
+* Include link to article in Methods in Molecular Biology:
+https://doi.org/10.1007/978-1-0716-0301-7_10
 
 ## More bug fixes and minor changes
 
