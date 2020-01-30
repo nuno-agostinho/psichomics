@@ -1,8 +1,8 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-void progressBar(double progress) {
-    // Source: http://lists.r-forge.r-project.org/pipermail/rcpp-devel/2010-August/000964.html
+void progressBar (double progress) {
+    // Source: https://lists.r-forge.r-project.org/pipermail/rcpp-devel/2010-August/000964.html
     
     // Create progress bar
     int barWidth=40;
@@ -10,11 +10,21 @@ void progressBar(double progress) {
     
     // Print completed progress
     int complete = round(progress * barWidth);
-    for (int i=0; i < complete; i++) Rprintf("=");
+    for (int i = 0; i < complete; i++) Rprintf("=");
     // Print remaining progress
-    for (int i=complete; i < barWidth; i++) Rprintf(" ");
+    for (int i = complete; i < barWidth; i++) Rprintf(" ");
     Rprintf("| %3.0f%% \r", progress * 100);
     if (progress == 1) Rprintf("\n");
+}
+
+double calculatePSI (double inc, double exc, double minReads) {
+    double psi, total = inc + exc;
+    if (total < minReads) {
+        psi = NumericVector::get_na();
+    } else {
+        psi = inc / total;
+    }
+    return psi;
 }
 
 // [[Rcpp::export]]
@@ -24,29 +34,23 @@ NumericMatrix psiFastCalc(const NumericMatrix& mat,
                           const NumericVector excA=0, 
                           const NumericVector excB=0,
                           const int minReads=10) {
-    double inc, exc, total, psi, progress;
-    NumericMatrix out(incA.length(), mat.ncol());
+    double incReads, excReads;
+    int ncol = mat.ncol(), incLen = incA.length();
+    NumericMatrix out(incLen, ncol);
     
-    for (size_t col=0; col < mat.ncol(); col++) {
-        for (size_t idx=0; idx < incA.length(); idx++) {
-            inc = mat(incA[idx] - 1, col);
-            if ( incB[0] > 0 ) inc = (inc + mat(incB[idx] - 1, col))/2;
-            
-            exc = mat(excA[idx] - 1, col);
-            if ( excB[0] > 0 ) exc = (exc + mat(excB[idx] - 1, col))/2;
-            
-            total = inc + exc;
-            if (total < minReads)
-                psi = NumericVector::get_na();
-            else
-                psi = inc / total;
-            out(idx, col) = psi;
+    for (int col = 0; col < ncol; col++) {
+        for (int idx = 0; idx < incLen; idx++) {
+            incReads = mat(incA[idx] - 1, col);
+            if ( incB[0] > 0 ) {
+                incReads = (incReads + mat(incB[idx] - 1, col))/2;
+            }
+            excReads = mat(excA[idx] - 1, col);
+            if ( excB[0] > 0 ) {
+                excReads = (excReads + mat(excB[idx] - 1, col))/2;
+            }
+            out(idx, col) = calculatePSI(incReads, excReads, minReads);
         }
-        
-        if (mat.ncol() > 1) {
-            progress = double(col) / double(mat.ncol() - 1);
-            progressBar(progress);
-        }
+        if (ncol > 1) progressBar(double(col) / double(mat.ncol() - 1));
     }
     colnames(out) = colnames(mat);
     return out;
@@ -56,33 +60,26 @@ NumericMatrix psiFastCalc(const NumericMatrix& mat,
 NumericMatrix psiFastCalc2(const NumericMatrix& mat,
                            const List& inc, const List& exc, 
                            const int minReads=10) {
-    double incReads, excReads, totalReads, psi, progress;
-    NumericMatrix out(inc.length(), mat.ncol());
+    double incReads, excReads;
+    int ncol = mat.ncol(), incLen = inc.length();
+    NumericMatrix out(incLen, ncol);
+    NumericVector incIdx, excIdx;
     
-    for (size_t col=0; col < mat.ncol(); col++) {
-        for (size_t idx=0; idx < inc.length(); idx++) {
-            NumericVector incIdx = as<NumericVector>(inc[idx]);
+    for (int col = 0; col < ncol; col++) {
+        for (int idx = 0; idx < incLen; idx++) {
+            incIdx = as<NumericVector>(inc[idx]);
+            excIdx = as<NumericVector>(exc[idx]);
             incReads = 0;
-            for (size_t k=0; k < incIdx.length(); k++)
+            for (int k = 0; k < incIdx.length(); k++) {
                 incReads = incReads + mat(incIdx[k] - 1, col);
-            
-            NumericVector excIdx = as<NumericVector>(exc[idx]);
+            }
             excReads = 0;
-            for (size_t k=0; k < excIdx.length(); k++)
+            for (int k = 0; k < excIdx.length(); k++) {
                 excReads = excReads + mat(excIdx[k] - 1, col);
-            
-            totalReads = incReads + excReads;
-            if (totalReads < minReads)
-                psi = NumericVector::get_na();
-            else
-                psi = incReads / totalReads;
-            out(idx, col) = psi;
+            }
+            out(idx, col) = calculatePSI(incReads, excReads, minReads);
         }
-        
-        if (mat.ncol() > 1) {
-            progress = double(col) / double(mat.ncol() - 1);
-            progressBar(progress);
-        }
+        if (mat.ncol() > 1) progressBar(double(col) / double(mat.ncol() - 1));
     }
     colnames(out) = colnames(mat);
     return out;
