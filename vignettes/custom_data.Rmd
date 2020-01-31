@@ -47,24 +47,19 @@ of your interest is not available through this resource, thus making it easier
 to analyse gene expression and alternative splicing for your samples of 
 interest.
 
-Data from SRA can be downloaded using the [fastq-dump][fastq-dump] command from
-[sra-tools][sra-tools]. For instance, to retrieve samples from the 
-[SRP126561][SRP126561] project, we could do the following:
+Data from SRA can be downloaded using the [fasterq-dump][fasterq-dump] command
+from [sra-tools][sra-tools]. For instance, to retrieve samples from the 
+[SRP126561][SRP126561] project:
 
 ```
 # List SRA samples
 samples=(SRR6368612 SRR6368613 SRR6368614 SRR6368615 SRR6368616 SRR6368617)
 
-# Download each sample using fastq-dump
-for each in ${samples}; do
-    fastq-dump --gzip --split-3 ${each}
-done
+# Download samples
+fasterq-dump --split-3 ${samples}
 ```
 
-Arguments used in the previous command:
-
-- **`--gzip`**: compress FASTQ files in the GZIP format
-- **`--split-3`**: allows to output one or two FASTQ files for single-end or
+**`--split-3`**: allows to output one or two FASTQ files for single-end or
 paired-end sequencing, respectively (a third FASTQ file may also be returned 
 containing orphaned single-end reads obtained from paired-end sequencing data)
 
@@ -128,7 +123,7 @@ align () {
          --quantMode GeneCounts \
          --readFilesCommand zcat \
          --outFileNamePrefix ${1} \
-         --readFilesIn ${1}_1.fastq.gz ${1}_2.fastq.gz
+         --readFilesIn ${1}_1.fastq ${1}_2.fastq
 }
 
 for each in ${samples}; do
@@ -204,8 +199,8 @@ this tutorial) is welcome. Please send any comments and questions to:
 [sra]: https://www.ncbi.nlm.nih.gov/sra
 [star]: https://github.com/alexdobin/STAR
 [distrans]: http://imm.medicina.ulisboa.pt/group/distrans/
-[fastq-dump]: https://ncbi.github.io/sra-tools/fastq-dump.html
-[sra-tools]: https://ncbi.github.io/sra-tools/
+[fasterq-dump]: https://github.com/ncbi/sra-tools/wiki/HowTo:-fasterq-dump
+[sra-tools]: https://github.com/ncbi/sra-tools
 [hg19-data]: https://grch37.ensembl.org/info/data/ftp/
 [SRP126561]: https://trace.ncbi.nlm.nih.gov/Traces/study/?acc=SRP126561
 [recount]: https://jhubiostatistics.shinyapps.io/recount/

@@ -132,7 +132,7 @@ sample-associated features. Additionally, we can study the impact of a splicing
 event (based on its quantification) or a gene (based on its gene expression) on
 patient survivability.
 
-* **Gene, transcript and protein annotation** including relevant research
+* **Gene, transcript and protein annotation**, including relevant research.
 articles
 
 ## Feedback and support

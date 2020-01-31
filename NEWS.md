@@ -1,3 +1,12 @@
+# psichomics 1.12.2 (31 January, 2020)
+
+## Bug fixes and minor changes
+
+* Fix `R CMD check` warning of Unicode symbol translation in Windows
+* `Rcpp` functions: avoid install warnings when comparing signed and unsigned
+integers in Bioconductor
+* Copy-edit tutorial on loading user-provided data
+
 # psichomics 1.12.1 (29 January, 2020)
 
 * Alternative splicing events can now be represented via diagrams:
