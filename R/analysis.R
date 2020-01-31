@@ -2295,11 +2295,15 @@ diffAnalyses <- function(data, groups=NULL,
     deltaVar <- df[, grepl("Variance", colnames(df)), drop=FALSE]
     if (ncol(deltaVar) == 2) {
         updateProgress("Calculating delta variance and median")
-        time <- Sys.time()
+        time     <- Sys.time()
         deltaVar <- deltaVar[ , 1] - deltaVar[ , 2]
         deltaMed <- df[, grepl("Median", colnames(df))]
         deltaMed <- deltaMed[ , 1] - deltaMed[ , 2]
-        df <- cbind(df, "\u2206 Variance"=deltaVar, "\u2206 Median"=deltaMed)
+        # Avoid warning of Unicode symbol translation in Windows by not directly
+        # setting Unicode symbols in column names
+        colns <- colnames(df)
+        df    <- cbind(df, deltaVar, deltaMed)
+        colnames(df) <- c(colns, "\u2206 Variance", "\u2206 Median")
         display(Sys.time() - time)
     }
     
