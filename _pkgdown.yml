@@ -1,3 +1,8 @@
+url: https://nuno-agostinho.github.io/psichomics/
+
+home:
+  title: Visual interface for alternative splicing analysis and visualisation
+
 destination: docs
 reference:
     - title: "General functions"
