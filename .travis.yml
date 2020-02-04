@@ -25,12 +25,12 @@ jobs:
       os: linux
       r: bioc-release
     - stage: "Deploy"
+      os: linux
+      r: bioc-release
       deploy:
         provider: script
         script: Rscript -e 'pkgdown::deploy_site_github(verbose=TRUE)'
         cleanup: true
-        os: linux
-        r: bioc-release
         on:
           branch: master
   allow_failures:
