@@ -1,4 +1,4 @@
-#' Get events from alternative splicing annotation
+#' Parse events from alternative splicing annotation
 #'
 #' @param folder Character: path to folder
 #' @param types Character: type of events to retrieve (depends on the program of
