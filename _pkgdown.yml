@@ -13,9 +13,10 @@ reference:
         - getGenesFromSplicingEvents
         - plotSplicingEvent
         - getDownloadsFolder
-        - filterGroups
     - title: "TCGA data retrieval"
-      desc: Retrieve TCGA data using [Firebrowse API](http://firebrowse.org/api-docs/)
+      desc: >
+        Retrieve TCGA data using
+        [Firebrowse API](http://firebrowse.org/api-docs/)
       contents:
         - isFirebrowseUp
         - getTCGAcohorts
@@ -61,11 +62,12 @@ reference:
         - prepareAnnotationFromEvents
     - title: "Data Grouping"
       contents:
-        - getGeneList
         - createGroupByAttribute
+        - filterGroups
+        - groupPerElem
+        - getGeneList
         - getSampleFromSubject
         - getSubjectFromSample
-        - groupPerElem
         - testGroupIndependence
         - plotGroupIndependence
     - title: "Principal component analysis (PCA)"
@@ -78,19 +80,7 @@ reference:
       contents:
         - performICA
         - plotICA
-    - title: Survival analysis
-      contents:
-        - getAttributesTime
-        - assignValuePerSubject
-        - labelBasedOnCutoff
-        - optimalSurvivalCutoff
-        - testSurvival
-        - processSurvTerms
-        - survfit.survTerms
-        - survdiffTerms
-        - plotSurvivalCurves
-        - plotSurvivalPvaluesByCutoff
-    - title:  "Differential analyses"
+    - title: "Differential analyses"
       contents:
         - diffAnalyses
         - plotDistribution
@@ -98,6 +88,18 @@ reference:
       contents:
         - correlateGEandAS
         - plotCorrelation
+    - title: "Survival analysis"
+      contents:
+        - getAttributesTime
+        - processSurvTerms
+        - survfit.survTerms
+        - survdiffTerms
+        - plotSurvivalCurves
+        - testSurvival
+        - assignValuePerSubject
+        - labelBasedOnCutoff
+        - optimalSurvivalCutoff
+        - plotSurvivalPvaluesByCutoff
     - title: "Gene, transcript and protein annotation retrieval"
       contents:
         - queryEnsemblByEvent

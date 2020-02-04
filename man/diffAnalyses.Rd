@@ -39,8 +39,8 @@ Table of statistical analyses
 Perform statistical analyses
 }
 \details{
-The following statistical analyses may be performed by including the 
-respective string in the \code{analysis} argument:
+The following statistical analyses may be performed simultaneously via the
+\code{analysis} argument:
 \itemize{
      \item{\code{ttest} - Unpaired t-test (2 groups)}
      \item{\code{wilcoxRankSum} - Wilcoxon Rank Sum test (2 groups)}
@@ -51,8 +51,8 @@ respective string in the \code{analysis} argument:
      through the visual interface)}
 }
 
-The following methods for p-value adjustment are supported by using the 
-respective string in the \code{pvalueAdjust} argument:
+The following p-value adjustment methods are supported via the
+\code{pvalueAdjust} argument:
 \itemize{
      \item{\code{none}: do not adjust p-values}
      \item{\code{BH}: Benjamini-Hochberg's method (false discovery rate)}

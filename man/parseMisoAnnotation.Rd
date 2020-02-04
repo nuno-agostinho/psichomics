@@ -6,7 +6,7 @@
 \alias{parseVastToolsAnnotation}
 \alias{parseMisoAnnotation}
 \alias{parseMatsAnnotation}
-\title{Get events from alternative splicing annotation}
+\title{Parse events from alternative splicing annotation}
 \usage{
 parseSuppaAnnotation(
   folder,
@@ -53,7 +53,7 @@ Retrieve data frame with events based on a given alternative splicing
 annotation
 }
 \description{
-Get events from alternative splicing annotation
+Parse events from alternative splicing annotation
 }
 \details{
 Type of parsable events:
