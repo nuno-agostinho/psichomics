@@ -123,5 +123,8 @@ navbar:
 template:
   params:
     ganalytics: UA-156449666-1
+    docsearch:
+      api_key: fa0226bf1a3df7e1c8ab8f0e70450e0a
+      index_name: stem-cell-analysis-in-psichomics
 news:
 - one_page: false
