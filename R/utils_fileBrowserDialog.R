@@ -157,6 +157,14 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
         showInfo <- infoFUN(infoId, placement=infoPlacement, 
                             options=list(container="body"), 
                             title=infoTitle, content=infoContent)
+        constructor <- paste(sprintf(
+            "$.fn.popover.Constructor.DEFAULTS.whiteList.%s = [];",
+            c("kbd", "table", "tr", "td", "th", "thead", "tbody")),
+            collapse=" ")
+        showInfo[[3]][[1]] <- gsub(
+            "$(document).ready(function() {",
+            paste("$(document).ready(function() {", constructor),
+            showInfo[[3]][[1]], fixed=TRUE)
     } else if (identical(infoFUN, bsTooltip)) {
         showInfo <- infoFUN(infoId, placement=infoPlacement, 
                             options=list(container="body"), title=infoTitle)

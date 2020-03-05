@@ -1,10 +1,12 @@
-# psichomics 1.12.2 (31 January, 2020)
+# psichomics 1.12.2 (5 March, 2020)
 
 ## Bug fixes and minor changes
 
 * Fix `R CMD check` warning of Unicode symbol translation in Windows
 * `Rcpp` functions: avoid install warnings when comparing signed and unsigned
 integers in Bioconductor
+* Loading local files:
+    - Fix bad formatting of help tooltips when using `shiny 1.4.0` or newer
 * Density plots (`plotDistribution()`):
     - After hiding all plot series, hide Y axis (rug plots of the different
     groups have arbitrary Y values to easily distinguish them)
