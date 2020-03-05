@@ -119,7 +119,6 @@ analysesServer <- function(input, output, session) {
                                        "Server"))
 }
 
-
 # Survival analyses helper functions --------------------------------------
 
 #' Helper text to explain what happens when a subject matches multiple samples
@@ -1651,10 +1650,24 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
         id     <- "Gene expression: "
     }
     
+    autohideYaxis <- paste("
+        function() {
+		    function isInvisible(el) { return !el.visible; }
+            var groups = this.chart.legend.allItems,
+                areAllSeriesHidden = groups.map(isInvisible).every(Boolean);
+            if (!areAllSeriesHidden) {
+                this.chart.yAxis[0].options.gridLineWidth = 1;
+                return this.value;
+            } else {
+                this.chart.yAxis[0].options.gridLineWidth = 0;
+            }
+        }")
+    
     # Include X-axis zoom and hide markers
     hc <- highchart() %>%
         hc_chart(zoomType="x") %>%
         hc_xAxis(min=xMin, max=xMax, title=list(text=xLabel)) %>%
+        hc_yAxis(labels=list(formatter=JS(autohideYaxis))) %>%
         hc_plotOptions(series = list(fillOpacity=0.3,
                                      marker=list(enabled=FALSE))) %>%
         hc_tooltip(

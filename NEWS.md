@@ -5,6 +5,9 @@
 * Fix `R CMD check` warning of Unicode symbol translation in Windows
 * `Rcpp` functions: avoid install warnings when comparing signed and unsigned
 integers in Bioconductor
+* Density plots (`plotDistribution()`):
+    - After hiding all plot series, hide Y axis (rug plots of the different
+    groups have arbitrary Y values to easily distinguish them)
 * Copy-edit tutorial on loading user-provided data
 
 # psichomics 1.12.1 (29 January, 2020)
