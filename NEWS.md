@@ -7,6 +7,7 @@
 integers in Bioconductor
 * Loading local files:
     - Fix bad formatting of help tooltips when using `shiny 1.4.0` or newer
+    - Try to load cached alternative splicing annotation if a timeout occurs
 * Density plots (`plotDistribution()`):
     - After hiding all plot series, hide Y axis (rug plots of the different
     groups have arbitrary Y values to easily distinguish them)

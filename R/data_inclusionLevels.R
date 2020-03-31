@@ -284,8 +284,12 @@ loadAnnotation <- function(annotation, cache=NULL) {
         message(sprintf(
             "The directory %s was created to store annotation data", cache))
     }
-
-    ah <- AnnotationHub(cache=cache)
+    ah <- tryCatch(AnnotationHub(cache=cache), error=function(e) {
+        msg <- paste("Timeout reached while contacting AnnotationHub.",
+                     "Resuming with local cache...")
+        message(msg)
+        AnnotationHub(cache=cache, localHub=TRUE)
+    })
     annot <- gsub("^annotationHub_", "", annotation)
     annot <- ah[[names(query(ah, annot))]]
     return(annot)
