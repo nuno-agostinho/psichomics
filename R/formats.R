@@ -32,8 +32,9 @@ checkFileFormat <- function(format, head, filename="") {
         if (ncol(head) < lenCheck) return(FALSE)
         desired <- head[format$checkIndex, seq(lenCheck)]
     }
-    allMatch <- all(trimws(desired) == format$check)
-    return(allMatch)
+    res <- all(trimws(desired) == format$check)
+    if (!is.null(format$extraCheck)) res <- res && format$extraCheck(head)
+    return(res)
 }
 
 #' Loads a file according to its format
@@ -157,9 +158,10 @@ loadFileFormats <- function() {
         FUN <- eval(parse(text=format))
         # Check if module should be loaded by app
         if (loadBy("formats", FUN)) {
-            # Remove last "UI" from the name and use it as ID
-            name <- gsub("UI$", "", format)
-            FUN()
+            # Remove last "UI" from the name and use it as the identifier
+            item    <- FUN()
+            item$id <- gsub("UI$", "", format)
+            return(item)
         }
     })
     if (length(formats) == length(fun)) names(formats) <- fun
@@ -203,14 +205,11 @@ parseValidFile <- function(file, formats, ...) {
     recognised <- unlist(recognised)
     
     if (sum(recognised) > 1) {
-        ## TODO(NunoA): If more than one format is recognised, check if the
-        # filename is helpful in distinguishing the file
+        ## TODO(NunoA): still a conflict? Ask the user which file format to use
         stop("Error: more than one file format was recognised.")
-        ## TODO(NunoA): if there is still a conflict, ask the user which file
-        ## format to use
     } else if (sum(recognised) == 1) {
         format <- formats[recognised][[1]]
         loaded <- loadFile(format, file, ...)
         return(loaded)
-    } 
+    }
 }

@@ -7,7 +7,9 @@
 loadGtexData(
   folder = getDownloadsFolder(),
   data = getGtexDataTypes(),
-  tissue = NULL
+  tissue = NULL,
+  release = getGtexReleases()[[1]],
+  progress = TRUE
 )
 }
 \arguments{
@@ -17,6 +19,10 @@ loadGtexData(
 
 \item{tissue}{Character: tissues to load (if \code{NULL}, load all); tissue
 selection may speed up data loading}
+
+\item{release}{Numeric: GTEx data release to load}
+
+\item{progress}{Boolean: display progress?}
 }
 \value{
 List with loaded data
@@ -36,6 +42,9 @@ data <- loadGtexData(data=c("sampleInfo", "junctionQuant"))
 # Download and load only data for specific tissues
 getGtexTissues()
 data <- loadGtexData(tissue=c("Stomach", "Small Intestine"))
+
+# Download and load data from a specific GTEx data release
+data <- loadGtexData(tissue=c("Stomach", "Small Intestine"), release=7)
 }
 }
 \seealso{

@@ -1,7 +1,7 @@
 Package: psichomics
 Title: Graphical Interface for Alternative Splicing Quantification, Analysis and
     Visualisation
-Version: 1.12.1
+Version: 1.14.1
 Encoding: UTF-8
 Authors@R: c(
         person("Nuno", "Saraiva-Agostinho",
@@ -133,6 +133,7 @@ Collate:
     'formats_gtexSampleInfo.R'
     'formats_gtexV7Clinical.R'
     'formats_gtexV7JunctionReads.R'
+    'formats_gtexV8JunctionReads.R'
     'formats_psichomicsGeneExpression.R'
     'formats_psichomicsInclusionLevels.R'
     'formats_recountSampleInfo.R'

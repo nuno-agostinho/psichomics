@@ -5,89 +5,92 @@
 localDataUI <- function(id, panel) {
     ns <- NS(id)
 
+    sampleInfoBrowser <- fileBrowserInput(
+        ns("sampleInfo"), "File with sample information",
+        placeholder="No file selected", clearable=TRUE,
+        info=TRUE, infoFUN=bsPopover, infoTitle=paste(
+            "File containing sample identifiers as rows and their",
+            "attributes as columns."),
+        infoContent=paste(
+            tags$ul(
+                class="popover-list",
+                tags$li("The first column must contain sample identifiers",
+                        "and be named", tags$kbd("Sample ID")),
+                tags$li("Optionally, indicate the subject associated to",
+                        "each sample in a column named",
+                        tags$kbd("Subject ID"))),
+            tags$hr(), helpText("Example:"), tags$table(
+                class="table table-condensed",
+                tags$thead(
+                    tableRow("Sample ID", "Type", "Tissue", "Subject ID",
+                             th=TRUE)),
+                tags$tbody(
+                    tableRow("SMP-01", "Tumour", "Lung", "SUBJ-03"),
+                    tableRow("SMP-02", "Normal", "Blood", "SUBJ-12"),
+                    tableRow("SMP-03", "Normal", "Blood", "SUBJ-25")))))
+    subjectInfoBrowser <- fileBrowserInput(
+        ns("subjectInfo"),
+        "File with subject information",
+        placeholder="No file selected",
+        info=TRUE, infoFUN=bsPopover, infoTitle=paste(
+            "File containing subject identifiers as rows and their",
+            "attributes as columns."),
+        infoContent=paste(
+            "The first column must contain subject identifiers and be",
+            "named", tags$kbd("Subject ID"), tags$hr(),
+            helpText("Example:"), tags$table(
+                class="table table-condensed",
+                tags$thead(
+                    tableRow("Subject ID", "Age", "Gender", "Race", 
+                             th=TRUE)),
+                tags$tbody(
+                    tableRow("SUBJ-01", "4", "Female", "Black"),
+                    tableRow("SUBJ-02", "12", "Female", "Black"),
+                    tableRow("SUBJ-03", "8", "Female", "Asian")))))
+    junctionQuantBrowser <- fileBrowserInput(
+        ns("junctionQuant"),
+        "File with exon-exon junction read counts",
+        placeholder="No file selected",
+        info=TRUE, infoFUN=bsPopover, infoTitle=paste(
+            "File containing the read counts of each exon-exon junction",
+            "(rows) per sample (columns)."),
+        infoContent=paste(
+            tags$ul(
+                class="popover-list",
+                tags$li(
+                    "The first column must contain junction identifiers",
+                    "and be named", tags$kbd("Junction ID")),
+                tags$li(
+                    "Only chromosome number/capital letters X, Y, Z, W",
+                    "and M, followed by the genomic regions are supported.",
+                    "Acceptable junction identifiers include:",
+                    tags$kbd("10_18748_21822"), ",",
+                    tags$kbd("chromosome 10 (18748 to 21822)"), "and",
+                    tags$kbd("chr10:18748-21822")),
+                tags$li(
+                    "Optionally, indicate the strand with", tags$kbd("+"),
+                    "or", tags$kbd("-"),
+                    "at the end of the junction identifier. For instance,", 
+                    tags$kbd("10:3213:9402:+"), "and",
+                    tags$kbd("chr10:3213-9402 -")),
+                tags$li(
+                    "Rows whose junction identifiers contain",
+                    tags$kbd("alt"), tags$kbd("random"), "or",
+                    tags$kbd("Un"), "in chromosome names are discarded.")),
+            tags$hr(), helpText("Example:"), tags$table(
+                class="table table-condensed",
+                tags$thead(
+                    tableRow("Junction ID", "SMP-18", "SMP-03", th=TRUE)),
+                tags$tbody(
+                    tableRow("10:6752-7393", "4", "0"),
+                    tableRow("10:18748-21822", "8", "46"),
+                    tableRow("10:24257-25325", "83", "65")))))
     addMultipleFiles <- tagList(
         helpText("All fields below are optional."),
-        fileBrowserInput(
-            ns("sampleInfo"), "File with sample information",
-            placeholder="No file selected", clearable=TRUE,
-            info=TRUE, infoFUN=bsPopover, infoTitle=paste(
-                "File containing sample identifiers as rows and their",
-                "attributes as columns."),
-            infoContent=paste(
-                tags$ul(
-                    class="popover-list",
-                    tags$li("The first column must contain sample identifiers",
-                            "and be named", tags$kbd("Sample ID")),
-                    tags$li("Optionally, indicate the subject associated to",
-                            "each sample in a column named",
-                            tags$kbd("Subject ID"))),
-                tags$hr(), helpText("Example:"), tags$table(
-                    class="table table-condensed",
-                    tags$thead(
-                        tableRow("Sample ID", "Type", "Tissue", "Subject ID",
-                                 th=TRUE)),
-                    tags$tbody(
-                        tableRow("SMP-01", "Tumour", "Lung", "SUBJ-03"),
-                        tableRow("SMP-02", "Normal", "Blood", "SUBJ-12"),
-                        tableRow("SMP-03", "Normal", "Blood", "SUBJ-25"))))),
-        fileBrowserInput(
-            ns("subjectInfo"),
-            "File with subject information",
-            placeholder="No file selected",
-            info=TRUE, infoFUN=bsPopover, infoTitle=paste(
-                "File containing subject identifiers as rows and their",
-                "attributes as columns."),
-            infoContent=paste(
-                "The first column must contain subject identifiers and be",
-                "named", tags$kbd("Subject ID"), tags$hr(),
-                helpText("Example:"), tags$table(
-                    class="table table-condensed",
-                    tags$thead(
-                        tableRow("Subject ID", "Age", "Gender", "Race", 
-                                 th=TRUE)),
-                    tags$tbody(
-                        tableRow("SUBJ-01", "4", "Female", "Black"),
-                        tableRow("SUBJ-02", "12", "Female", "Black"),
-                        tableRow("SUBJ-03", "8", "Female", "Asian"))))),
+        sampleInfoBrowser,
+        subjectInfoBrowser,
         geneExprFileInput(ns("geneExpr")),
-        fileBrowserInput(
-            ns("junctionQuant"),
-            "File with exon-exon junction read counts",
-            placeholder="No file selected",
-            info=TRUE, infoFUN=bsPopover, infoTitle=paste(
-                "File containing the read counts of each exon-exon junction",
-                "(rows) per sample (columns)."),
-            infoContent=paste(
-                tags$ul(
-                    class="popover-list",
-                    tags$li(
-                        "The first column must contain junction identifiers",
-                        "and be named", tags$kbd("Junction ID")),
-                    tags$li(
-                        "Only chromosome number/capital letters X, Y, Z, W",
-                        "and M, followed by the genomic regions are supported.",
-                        "Acceptable junction identifiers include:",
-                        tags$kbd("10_18748_21822"), ",",
-                        tags$kbd("chromosome 10 (18748 to 21822)"), "and",
-                        tags$kbd("chr10:18748-21822")),
-                    tags$li(
-                        "Optionally, indicate the strand with", tags$kbd("+"),
-                        "or", tags$kbd("-"),
-                        "at the end of the junction identifier. For instance,", 
-                        tags$kbd("10:3213:9402:+"), "and",
-                        tags$kbd("chr10:3213-9402 -")),
-                    tags$li(
-                        "Rows whose junction identifiers contain",
-                        tags$kbd("alt"), tags$kbd("random"), "or",
-                        tags$kbd("Un"), "in chromosome names are discarded.")),
-                tags$hr(), helpText("Example:"), tags$table(
-                    class="table table-condensed",
-                    tags$thead(
-                        tableRow("Junction ID", "SMP-18", "SMP-03", th=TRUE)),
-                    tags$tbody(
-                        tableRow("10:6752-7393", "4", "0"),
-                        tableRow("10:18748-21822", "8", "46"),
-                        tableRow("10:24257-25325", "83", "65"))))),
+        junctionQuantBrowser,
         bsCollapse(
             id=ns("ASquantLoadCollapse"),
             bsCollapsePanel(
@@ -101,8 +104,7 @@ localDataUI <- function(id, panel) {
         processButton(ns("loadMultipleFiles"), "Load files"))
     
     addFolder <- tagList(
-        helpText("For your convenience, move all files to a single folder and",
-                 "load them by locating that folder in the field below."),
+        helpText("For your convenience, move all files to a single folder."),
         fileBrowserInput(ns("localFolder"), "Folder where data is stored",
                          placeholder="No folder selected",
                          value=getDownloadsFolder()),
@@ -379,7 +381,8 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."),
     ignore <- paste(ignore, collapse = "|")
     if (ignore != "") files <- files[!grepl(ignore, files)]
     
-    updateProgress("Searching inside the folder...", divisions=length(files))
+    updateProgress(sprintf("Browsing files in %s...", folder),
+                   divisions=length(files))
     
     loaded <- list()
     formats <- loadFileFormats()
@@ -387,10 +390,16 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."),
         updateProgress("Processing file", detail = basename(files[each]))
         loadedFile <- suppressWarnings(
             tryCatch(parseValidFile(files[each], formats), error=return))
-        if (!is(loadedFile, "error")) loaded[[each]] <- loadedFile
+        if (!is(loadedFile, "error")) {
+            loaded[[each]] <- loadedFile
+        } else {
+            warning(sprintf("Error while reading %s:\n    %s",
+                            files[each], loadedFile$message))
+        }
     }
     names(loaded) <- sapply(loaded, attr, "tablename")
     loaded <- Filter(length, loaded)
+    closeProgress()
     
     if (length(loaded) == 0) {
         compressed <- grep("tar.gz$|tar$|zip$", files, value=TRUE,

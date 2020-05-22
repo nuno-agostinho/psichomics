@@ -2,18 +2,22 @@
 % Please edit documentation in R/data_gtex.R
 \name{getGtexDataTypes}
 \alias{getGtexDataTypes}
-\title{Get GTEx data types}
+\alias{getGtexReleases}
+\title{Get GTEx data information}
 \usage{
 getGtexDataTypes()
+
+getGtexReleases()
 }
 \value{
-GTEx data types
+GTEx data information
 }
 \description{
-Get GTEx data types
+Get GTEx data information
 }
 \examples{
 getGtexDataTypes()
+getGtexReleases()
 }
 \seealso{
 Other functions associated with GTEx data retrieval: 

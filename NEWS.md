@@ -1,4 +1,8 @@
-# psichomics 1.12.2 (5 March, 2020)
+# psichomics 1.14.1 (18 May, 2020)
+
+* Load GTEx data (`loadGtexData()`):
+    - Support for loading GTEx data from V8, V7, V6 or V4 releases
+    - Organise GTEx data into folders named based on release version
 
 ## Bug fixes and minor changes
 
@@ -6,6 +10,9 @@
 * `Rcpp` functions: avoid install warnings when comparing signed and unsigned
 integers in Bioconductor
 * Loading local files:
+    - Support loading data from GTEx V8 release
+    - Show raised errors while reading a file (e.g. if file is too big for
+    available memory)
     - Fix bad formatting of help tooltips when using `shiny 1.4.0` or newer
     - Try to load cached alternative splicing annotation if a timeout occurs
 * Density plots (`plotDistribution()`):
