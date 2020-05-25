@@ -65,7 +65,8 @@ gtexDataUI <- function(id, panel) {
                   hidden(
                       selectizeInput(ns("tissues"), label=NULL, width="100%",
                                      choices=c("Select one or more tissues"=""),
-                                     multiple=TRUE)))),
+                                     multiple=TRUE, options=list(
+                                         plugins=list("remove_button")))))),
           processButton(ns("load"), "Load data"))
 }
 
@@ -372,11 +373,30 @@ loadGtexDataShiny <- function(session, input, replace=TRUE) {
 #' @rdname appServer
 #' @importFrom shinyjs show hide
 gtexDataServer <- function(input, output, session) {
+    prepareFileBrowser(session, input, "folder", directory=TRUE)
+    
     observeEvent(input$load, {
-        if (!is.null(getData()))
+        dataTypes <- input$dataTypes
+        folder    <- input$folder
+        release   <- input$release
+        
+        if (is.null(dataTypes)) {
+            errorModal(session, "No data types selected",
+                       "Please, select one or more data types.",
+                       caller="Load GTEx data")
+        } else if (is.null(folder) || folder == "") {
+            errorModal(session, "No folder selected",
+                       "Please, select a folder.",
+                       caller="Load GTEx data")
+        } else if (is.null(release) || release == "") {
+            errorModal(session, "No GTEx release version selected",
+                       "Please, select a GTEx release.",
+                       caller="Load GTEx data")
+        } else if (!is.null(getData())) {
             loadedDataModal(session, "modal", "replace", "append")
-        else
+        } else {
             loadGtexDataShiny(session, input)
+        }
     })
     
     # Select available tissues from GTEx
@@ -394,7 +414,7 @@ gtexDataServer <- function(input, output, session) {
         tissues <- tryCatch(getGtexTissues(folder, release),
                             error=return, warning=return)
         fadeIn(tissueSelect, animType="fade")
-        tissues <- c(tissues, "Select available tissues"="")
+        tissues <- c(tissues, "Select one or more tissues"="")
         return(tissues)
     })
     

@@ -15,7 +15,7 @@ recountDataUI <- function(id, panel) {
               a(href="https://jhubiostatistics.shinyapps.io/recount/",
                 target="_blank", "recount"), "R package."),
           div(class="alert", class="alert-info", role="alert", 
-              "SRA data unlisted below may be manually aligned and loaded.",
+              "SRA datasets unlisted below may be manually aligned and loaded.",
               tags$a(
                   href=paste0("https://nuno-agostinho.github.io/psichomics/",
                               "articles/custom_data.html"),
@@ -183,6 +183,8 @@ recountDataServer <- function(input, output, session) {
         hide("loading")
         return(ui)
     })
+    
+    prepareFileBrowser(session, input, "dataFolder", directory=TRUE)
     
     observeEvent(input$loadRecountData, {
         isolate({

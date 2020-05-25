@@ -15,6 +15,10 @@ integers in Bioconductor
     available memory)
     - Fix bad formatting of help tooltips when using `shiny 1.4.0` or newer
     - Try to load cached alternative splicing annotation if a timeout occurs
+* Loading GTEx and SRA data (visual interface):
+    - "Browse..." button now opens file browser to select folder where data is
+    stored (as expected)
+    - Error dialogs now appear if no GTEx data options are selected
 * Density plots (`plotDistribution()`):
     - After hiding all plot series, hide Y axis (rug plots of the different
     groups have arbitrary Y values to easily distinguish them)
