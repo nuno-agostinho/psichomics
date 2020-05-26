@@ -2,7 +2,7 @@
 % Please edit documentation in R/data.R
 \name{plotRowStats}
 \alias{plotRowStats}
-\title{Plot sample statistics per row}
+\title{Plot row-wise statistics}
 \usage{
 plotRowStats(
   data,
@@ -18,7 +18,8 @@ plotRowStats(
 )
 }
 \arguments{
-\item{data}{Data frame or matrix}
+\item{data}{Data frame or matrix containing samples per column and, for
+instance, gene or alternative splicing event per row}
 
 \item{x, y}{Character: statistic to calculate and display in the plot per row;
 choose between \code{mean}, \code{median}, \code{var} or \code{range}
@@ -36,7 +37,9 @@ draw in the plot}
 Plot of \code{data}
 }
 \description{
-Plot sample statistics per row
+Scatter plot to compare between the row-wise mean, median, variance or range
+from a data frame or matrix. Also supports transformations of those
+variables, such as \code{log10(mean)}.
 }
 \examples{
 library(ggplot2)
@@ -65,7 +68,8 @@ Other functions for gene expression pre-processing:
 \code{\link{convertGeneIdentifiers}()},
 \code{\link{filterGeneExpr}()},
 \code{\link{normaliseGeneExpression}()},
-\code{\link{plotGeneExprPerSample}()}
+\code{\link{plotGeneExprPerSample}()},
+\code{\link{plotLibrarySize}()}
 
 Other functions for PSI quantification: 
 \code{\link{filterPSI}()},

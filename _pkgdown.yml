@@ -42,6 +42,7 @@ reference:
       contents:
         - plotRowStats
         - plotGeneExprPerSample
+        - plotLibrarySize
         - filterGeneExpr
         - normaliseGeneExpression
         - convertGeneIdentifiers

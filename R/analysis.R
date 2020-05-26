@@ -1605,6 +1605,7 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' @param rugLabelsRotation Numeric: rotation (in degrees) of rug labels; this
 #'   may present issues at different zoom levels and depending on the proximity
 #'   of \code{data} values
+#' @param legend Boolean: show legend?
 #' 
 #' @details Argument \code{groups} can be either:
 #' \itemize{
@@ -1633,7 +1634,7 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' plotDistribution(data, groups)
 plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
                              title=NULL, psi=NULL, rugLabels=FALSE,
-                             rugLabelsRotation=0) {
+                             rugLabelsRotation=0, legend=TRUE) {
     if (is.null(psi)) {
         psi <- min(data, na.rm=TRUE) >= 0 && max(data, na.rm=TRUE) <= 1
     }
@@ -1650,24 +1651,29 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
         id     <- "Gene expression: "
     }
     
-    autohideYaxis <- paste("
-        function() {
-		    function isInvisible(el) { return !el.visible; }
-            var groups = this.chart.legend.allItems,
-                areAllSeriesHidden = groups.map(isInvisible).every(Boolean);
-            if (!areAllSeriesHidden) {
-                this.chart.yAxis[0].options.gridLineWidth = 1;
-                return this.value;
-            } else {
-                this.chart.yAxis[0].options.gridLineWidth = 0;
-            }
-        }")
-    
     # Include X-axis zoom and hide markers
     hc <- highchart() %>%
         hc_chart(zoomType="x") %>%
-        hc_xAxis(min=xMin, max=xMax, title=list(text=xLabel)) %>%
-        hc_yAxis(labels=list(formatter=JS(autohideYaxis))) %>%
+        hc_xAxis(min=xMin, max=xMax, title=list(text=xLabel))
+    
+    if (legend) {
+        autohideYaxis <- paste("
+            function() {
+                function isInvisible(el) { return !el.visible; }
+                var groups = this.chart.legend.allItems,
+                    areAllSeriesHidden = groups.map(isInvisible).every(Boolean);
+                if (!areAllSeriesHidden) {
+                    this.chart.yAxis[0].options.gridLineWidth = 1;
+                    return this.value;
+                } else {
+                    this.chart.yAxis[0].options.gridLineWidth = 0;
+                }
+            }")   
+        hc <- hc %>% hc_yAxis(labels=list(formatter=JS(autohideYaxis)))
+    }
+    
+    hc <- hc %>%
+        hc_legend(enabled=legend) %>%
         hc_plotOptions(series = list(fillOpacity=0.3,
                                      marker=list(enabled=FALSE))) %>%
         hc_tooltip(
@@ -1756,8 +1762,10 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
             if (length(row) == 1) {
                 len <- length(hc$x$hc_opts$series)
                 hc$x$hc_opts$series[[len]]$visible <- FALSE
-                hc$x$hc_opts$series[[len]]$events$legendItemClick <- JS(
-                    "function(e) { e.preventDefault() }")
+                if (legend) {
+                    hc$x$hc_opts$series[[len]]$events$legendItemClick <- JS(
+                        "function(e) { e.preventDefault() }")
+                }
             }
         }        
         # Rug plot
@@ -1864,11 +1872,13 @@ renderBoxplot <- function(data, outliers=FALSE, sortByMedian=TRUE,
         colnames(melted)[[1]] <- "variable"
     }
     
-    hc <- hcboxplot(melted$value, melted$variable, outliers=outliers) %>% 
-        hc_chart(zoomType="x", type="column") %>%
-        hc_plotOptions(boxplot=list(color="black", fillColor="orange")) %>%
-        hc_xAxis(labels=list(enabled=showXlabels), visible=showXlabels) %>%
-        hc_title(text=title)
+    # Avoid message about outdated `cols = c(data)` from highcharter/tibble
+    hc <- suppressWarnings(
+        hcboxplot(melted$value, melted$variable, outliers=outliers) %>% 
+            hc_chart(zoomType="x", type="column") %>%
+            hc_plotOptions(boxplot=list(color="black", fillColor="orange")) %>%
+            hc_xAxis(labels=list(enabled=showXlabels), visible=showXlabels) %>%
+            hc_title(text=title))
     if (min(melted$value) >= 0) hc <- hc %>% hc_yAxis(min=0)
     
     hc <- hc %>% export_highcharts()

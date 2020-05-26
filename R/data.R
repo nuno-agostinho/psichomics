@@ -21,9 +21,14 @@ addObjectAttrs <- function (object, ...) {
     return(object)
 }
 
-#' Plot sample statistics per row
+#' Plot row-wise statistics
 #'
-#' @param data Data frame or matrix
+#' Scatter plot to compare between the row-wise mean, median, variance or range
+#' from a data frame or matrix. Also supports transformations of those
+#' variables, such as \code{log10(mean)}.
+#'
+#' @param data Data frame or matrix containing samples per column and, for
+#' instance, gene or alternative splicing event per row
 #' @param x,y Character: statistic to calculate and display in the plot per row;
 #' choose between \code{mean}, \code{median}, \code{var} or \code{range}
 #' (or transformations of those variables, e.g. \code{log10(var)})
@@ -82,7 +87,7 @@ plotRowStats <- function(data, x, y, subset=NULL, xmin=NULL, xmax=NULL,
         vars <- list()
         for (stat in stats) {
             if (any(input[[stat]])) {
-                message(sprintf("Calculating %s per splicing event...", stat))
+                message(sprintf("Calculating %s per row...", stat))
                 FUN <- switch(stat,
                               "var"=rowVars,
                               "mean"=rowMeans,
@@ -517,20 +522,7 @@ createDataTab <- function(index, data, name, session, input, output) {
                 geneExprPerSamplePlot <- plotGeneExprPerSample(
                     table, sortByMedian=TRUE, 
                     title="Gene expression distribution per sample")
-                
-                librarySizePlot <- suppressWarnings(
-                    plotDistribution(log10(colSums(table)),
-                                     rugLabels=TRUE, vLine=FALSE) %>%
-                        hc_xAxis(title=list(text="log10(Library sizes)")) %>%
-                        hc_yAxis(title=list(text="Density")) %>%
-                        hc_legend(enabled=FALSE) %>%
-                        hc_title(
-                            text="Library size distribution across samples") %>%
-                        hc_subtitle(text=paste("Library size: number total",
-                                               "mapped reads")))
-                librarySizePlot$x$hc_opts$series[[1]]$color <- NULL
-                librarySizePlot$x$hc_opts$series[[2]]$marker$fillColor <- NULL
-                
+                librarySizePlot <- plotLibrarySize(table)
                 plots <- list(
                     highchart=geneExprPerSamplePlot,
                     highchart=librarySizePlot)

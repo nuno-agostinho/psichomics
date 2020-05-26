@@ -403,6 +403,46 @@ plotGeneExprPerSample <- function(geneExpr, ...) {
         hc_yAxis(title=list(text="Gene expression"))
 }
 
+#' Plot library size
+#' 
+#' @param data Data frame or matrix: gene expression
+#' @param title Character: plot title
+#' @param subtitle Character: plot subtitle
+#'
+#' @family functions for gene expression pre-processing
+#' @return Library size distribution
+#' @export
+#' 
+#' @examples
+#' df <- data.frame(geneA=c(2, 4, 5),
+#'                  geneB=c(20, 3, 5),
+#'                  geneC=c(5, 10, 21))
+#' colnames(df) <- paste("Sample", 1:3)
+#' plotLibrarySize(df)
+plotLibrarySize <- function(
+    data, log10=TRUE,
+    title="Library size distribution across samples",
+    subtitle="Library size: total number of mapped reads") {
+    
+    table <- colSums(data)
+    if (log10) {
+        table <- log10(table)
+        xAxisLabel <- "log10(Library sizes)"
+    } else {
+        xAxisLabel <- "Library sizes"
+    }
+    yAxisLabel <- "Density"
+    
+    plot <- plotDistribution(table, rugLabels=TRUE, vLine=FALSE, legend=FALSE, 
+                     title=title) %>%
+        hc_xAxis(title=list(text=xAxisLabel)) %>%
+        hc_yAxis(title=list(text=yAxisLabel)) %>%
+        hc_subtitle(text=paste(subtitle))
+    plot$x$hc_opts$series[[1]]$color <- NULL
+    plot$x$hc_opts$series[[2]]$marker$fillColor <- NULL
+    return(plot)
+}
+
 #' Sum columns using an \code{\link{EList-class}} object
 #' @inheritParams base::colSums
 #' 

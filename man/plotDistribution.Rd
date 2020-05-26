@@ -13,7 +13,8 @@ plotDistribution(
   title = NULL,
   psi = NULL,
   rugLabels = FALSE,
-  rugLabelsRotation = 0
+  rugLabelsRotation = 0,
+  legend = TRUE
 )
 }
 \arguments{
@@ -110,6 +111,8 @@ for each group)?}
 \item{rugLabelsRotation}{Numeric: rotation (in degrees) of rug labels; this
 may present issues at different zoom levels and depending on the proximity
 of \code{data} values}
+
+\item{legend}{Boolean: show legend?}
 }
 \value{
 \code{highchart} object with density plot
