@@ -2,8 +2,13 @@
 
 # Print how to start the graphical interface when attaching the package
 .onAttach <- function(libname, pkgname) {
-    packageStartupMessage("Start the visual interface by running the function ",
-                          "psichomics()")
+    version <- packageVersion(pkgname, libname)
+    msg <- sprintf(
+        "psichomics %s: start the visual interface by running psichomics()",
+        version)
+    site <- "https://nuno-agostinho.github.io/psichomics"
+    msg2 <- paste("Full documentation and tutorials at", site)
+    packageStartupMessage(paste("", msg, msg2, sep = "\n"))
 }
 
 #' Round down/up the minimum/maximum value
@@ -344,12 +349,11 @@ is.whole <- function(x, tol=.Machine$double.eps^0.5) {
 #' @param na.rm Boolean: remove missing values (\code{NA})?
 #' 
 #' @return Vector of means or variances
-#' @export
 #' 
 #' @examples
 #' df <- rbind("Gene 1"=c(3, 5, 7), "Gene 2"=c(8, 2, 4), "Gene 3"=c(9:11)) 
-#' rowMeans(df)
-#' rowVars(df)
+#' psichomics:::rowMeans(df)
+#' psichomics:::rowVars(df)
 rowMeans <- function(mat, na.rm=FALSE) {
     if ( !is.null(dim(mat)) ) {
         nas <- 0
@@ -361,7 +365,6 @@ rowMeans <- function(mat, na.rm=FALSE) {
 }
 
 #' @rdname rowMeans
-#' @export
 rowVars <- function(mat, na.rm=FALSE) {
     if ( !is.null(dim(mat)) ) {
         means      <- rowMeans(mat, na.rm=na.rm)

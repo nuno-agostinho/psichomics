@@ -22,6 +22,6 @@ Calculate mean or variance for each row of a matrix
 }
 \examples{
 df <- rbind("Gene 1"=c(3, 5, 7), "Gene 2"=c(8, 2, 4), "Gene 3"=c(9:11)) 
-rowMeans(df)
-rowVars(df)
+psichomics:::rowMeans(df)
+psichomics:::rowVars(df)
 }
