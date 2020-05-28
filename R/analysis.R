@@ -1582,11 +1582,11 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
     )
 }
 
-#' Plot distribution through a density plot
+#' Plot distribution using a density plot
 #' 
-#' The tooltip shows the median, variance, max, min and number of non-NA samples
-#' of each data series (if \code{data} contains names or column names, those
-#' will be used as sample names and also appear in the tooltip).
+#' The tooltip shows the median, variance, maximum, minimum and number of non-NA
+#' samples of each data series (if \code{data} contains names or column names,
+#' those will be used as sample names and also appear in the tooltip).
 #' 
 #' @param data Numeric, data frame or matrix: gene expression data or
 #' alternative splicing event quantification values (sample names are based on

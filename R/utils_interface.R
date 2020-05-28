@@ -193,7 +193,6 @@ endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
 #' @param caller Character: caller module identifier
 #'
 #' @importFrom shiny renderUI div icon showModal modalButton modalDialog
-#' @importFrom shinyBS toggleModal
 #' @importFrom R.utils capitalize
 #'
 #' @seealso \code{\link{showAlert}()}
@@ -502,44 +501,8 @@ closeProgress <- function(message=NULL,
     isGUIversion <- isRunning()
     if (isGUIversion)
         global$progress$close()
-    else
+    else if (is(global$progress, "txtProgressBar"))
         close(global$progress)
-}
-
-#' Modified version of \code{shinyBS::bsModal}
-#' 
-#' \code{bsModal} is used within the UI to create a modal window. This allows to
-#' modify the modal footer.
-#' 
-#' @inheritParams shinyBS::bsModal
-#' @param footer UI set: List of elements to include in the footer
-#' @param style Character: message style can be \code{warning}, \code{error}, 
-#' \code{info} or \code{NULL}
-#' @param size Character: Modal size (\code{small}, \code{default} or 
-#' \code{large})
-#' 
-#' @importFrom shiny tagAppendAttributes
-#' @importFrom shinyBS bsModal
-#' 
-#' @return HTML elements
-#' @keywords internal
-bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL, 
-                      style = NULL)  {
-    if (is.null(size))
-        modal <- bsModal(id, title, trigger, ...)
-    else
-        modal <- bsModal(id, title, trigger, ..., size=size)
-    
-    if (!is.null(style)) {
-        style <- match.arg(style, c("info", "warning", "error"))
-        modal[[3]][[1]][[3]][[1]][[3]][[1]] <-
-            tagAppendAttributes(modal[[3]][[1]][[3]][[1]][[3]][[1]],
-                                class=style)
-    }
-    
-    modal[[3]][[1]][[3]][[1]][[3]][[3]] <-
-        tagAppendChild(modal[[3]][[1]][[3]][[1]][[3]][[3]], footer)
-    return(modal)
 }
 
 #' Enable or disable a tab from the \code{navbar}

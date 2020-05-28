@@ -22,11 +22,11 @@ its rownames will be used)}
 \code{multiGroupIndependenceTest} object, a data frame containing:
 \item{attribute}{Name of the original groups compared against the reference
 groups}
-\item{table}{Contigency table used for testing}
+\item{table}{Contingency table used for testing}
 \item{pvalue}{Fisher's exact test's p-value}
 }
 \description{
-Test multiple contigency tables comprised by two groups (one reference group
+Test multiple contingency tables comprised by two groups (one reference group
 and another containing remaining elements) and provided groups.
 }
 \details{

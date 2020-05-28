@@ -14,6 +14,8 @@ plotLibrarySize(
 \arguments{
 \item{data}{Data frame or matrix: gene expression}
 
+\item{log10}{Boolean: log10-transform \code{data}?}
+
 \item{title}{Character: plot title}
 
 \item{subtitle}{Character: plot subtitle}

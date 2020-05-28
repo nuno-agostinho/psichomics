@@ -1,8 +1,15 @@
 ## Auxiliary functions used throughout the program
 
-# Print how to start the graphical interface when attaching the package
+#' Print startup message
+#' 
+#' @param pkgname Character: package name
+#' @param libname Character: library name
+#' 
+#' @importFrom utils packageVersion
+#' 
+#' @return Startup message
 .onAttach <- function(libname, pkgname) {
-    version <- packageVersion(pkgname, libname)
+    version <- utils::packageVersion(pkgname, libname)
     msg <- sprintf(
         "psichomics %s: start the visual interface by running psichomics()",
         version)

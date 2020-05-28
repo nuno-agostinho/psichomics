@@ -21,7 +21,7 @@ Returns a \code{groupIndependenceTest} object: a list where each
 element is a list containing:
 \item{attribute}{Name of the original groups compared against the reference
 groups}
-\item{table}{Contigency table used for testing}
+\item{table}{Contingency table used for testing}
 \item{pvalue}{Fisher's exact test's p-value}
 }
 \description{

@@ -9,9 +9,6 @@ fixed library size plot not working properly in visual interface
 
 ## Bug fixes and minor changes
 
-* Fix `R CMD check` warning of Unicode symbol translation in Windows
-* `Rcpp` functions: avoid install warnings when comparing signed and unsigned
-integers in Bioconductor
 * Loading local files:
     - Support loading data from GTEx V8 release
     - Show raised errors while reading a file (e.g. if file is too big for
@@ -21,10 +18,13 @@ integers in Bioconductor
 * Loading GTEx and SRA data (visual interface):
     - "Browse..." button now opens file browser to select folder where data is
     stored (as expected)
-    - Error dialogs now appear if no GTEx data options are selected
+    - The user is now alerted if no GTEx data options are selected
 * Density plots (`plotDistribution()`):
     - After hiding all plot series, hide Y axis (rug plots of the different
     groups have arbitrary Y values to easily distinguish them)
+* Fix warnings when installing the package:
+    - Fix `R CMD check` warning of Unicode symbol translation in Windows
+    - Fix comparing signed and unsigned integers in `Rcpp` functions
 * Copy-edit tutorial on loading user-provided data
 
 # psichomics 1.12.1 (29 January, 2020)

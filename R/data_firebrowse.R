@@ -31,7 +31,7 @@ getFirebrowseDataTypes <- getTCGAdataTypes
 #' @export
 #' 
 #' @examples
-#' if (isFirebrowseUp()) getFirebrowseDates()
+#' if (isFirebrowseUp()) getTCGAdates()
 getTCGAdates <- function() {
     dates <- parseFirebrowseMetadata("Dates")$Dates
     format <- getFirebrowseDateFormat()

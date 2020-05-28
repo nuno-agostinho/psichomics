@@ -406,6 +406,7 @@ plotGeneExprPerSample <- function(geneExpr, ...) {
 #' Plot library size
 #' 
 #' @param data Data frame or matrix: gene expression
+#' @param log10 Boolean: log10-transform \code{data}?
 #' @param title Character: plot title
 #' @param subtitle Character: plot subtitle
 #'

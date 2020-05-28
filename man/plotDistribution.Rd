@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis.R
 \name{plotDistribution}
 \alias{plotDistribution}
-\title{Plot distribution through a density plot}
+\title{Plot distribution using a density plot}
 \usage{
 plotDistribution(
   data,
@@ -118,9 +118,9 @@ of \code{data} values}
 \code{highchart} object with density plot
 }
 \description{
-The tooltip shows the median, variance, max, min and number of non-NA samples
-of each data series (if \code{data} contains names or column names, those
-will be used as sample names and also appear in the tooltip).
+The tooltip shows the median, variance, maximum, minimum and number of non-NA
+samples of each data series (if \code{data} contains names or column names,
+those will be used as sample names and also appear in the tooltip).
 }
 \details{
 Argument \code{groups} can be either:

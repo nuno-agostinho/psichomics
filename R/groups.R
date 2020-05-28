@@ -1972,12 +1972,12 @@ groupManipulation <- function(input, output, session, type) {
                 trItem <- function(key, value) 
                     tags$tr(tags$td(tags$b(key)), tags$td(value))
                 
-                # Prepare contigency table
+                # Prepare contingency table
                 ref <- as.character(point[["Reference"]])
                 ref <- gsub("vs others", "", ref, fixed=TRUE)
-                contigencyTable <- point[["Contigency table"]][[1]]
-                rownames(contigencyTable) <- c(ref, "Others")
-                contigencyTable <- table2html(contigencyTable)
+                contingencyTable <- point[["Contingency table"]][[1]]
+                rownames(contingencyTable) <- c(ref, "Others")
+                contingencyTable <- table2html(contingencyTable)
                 
                 wellPanel(
                     class="well-sm",
@@ -1994,7 +1994,7 @@ groupManipulation <- function(input, output, session, type) {
                             trItem("p-value (BH)",
                                    signifDigits(point$`Adjusted p-value`)))),
                     tags$div(style="padding-left: 5px;",
-                             tags$b("Contigency table"), contigencyTable))
+                             tags$b("Contingency table"), contingencyTable))
             }
         })
     }
@@ -2194,7 +2194,7 @@ parseCategoricalGroups <- function(df) {
 #' element is a list containing:
 #' \item{attribute}{Name of the original groups compared against the reference
 #' groups}
-#' \item{table}{Contigency table used for testing}
+#' \item{table}{Contingency table used for testing}
 #' \item{pvalue}{Fisher's exact test's p-value}
 #' 
 #' @keywords internal
@@ -2240,7 +2240,7 @@ testSingleIndependence <- function(ref, groups, elements, pvalueAdjust="BH") {
 
 #' Multiple independence tests between reference groups and list of groups
 #' 
-#' Test multiple contigency tables comprised by two groups (one reference group
+#' Test multiple contingency tables comprised by two groups (one reference group
 #' and another containing remaining elements) and provided groups.
 #' 
 #' @param ref List of character: list of groups where each element contains the
@@ -2267,7 +2267,7 @@ testSingleIndependence <- function(ref, groups, elements, pvalueAdjust="BH") {
 #' @return \code{multiGroupIndependenceTest} object, a data frame containing:
 #' \item{attribute}{Name of the original groups compared against the reference
 #' groups}
-#' \item{table}{Contigency table used for testing}
+#' \item{table}{Contingency table used for testing}
 #' \item{pvalue}{Fisher's exact test's p-value}
 #' 
 #' @seealso \code{\link{parseCategoricalGroups}()} and 
@@ -2313,11 +2313,11 @@ testGroupIndependence <- function(ref, groups, elements, pvalueAdjust="BH") {
                           "Attributes"=names(pvalue),
                           "p-value"=pvalue,
                           "Adjusted p-value"=adjusted,
-                          "Contigency table"=I(mat))
+                          "Contingency table"=I(mat))
         df <- rbind(df, new)
     }
     colnames(df) <- c("Reference", "Attributes", "p-value", "Adjusted p-value",
-                      "Contigency table")
+                      "Contingency table")
     class(df) <- c(class(df), "multiGroupIndependenceTest")
     return(df)
 }

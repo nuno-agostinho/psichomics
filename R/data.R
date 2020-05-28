@@ -252,8 +252,8 @@ ASquantFileInput <- function(ASquantFileId, speciesId, assemblyId){
                                    "Coordinate2_..._Gene"))),
                     tags$li(
                         "PSI values may be handed between 0 and 1 or between 0",
-                        "and 100. If the later, PSI values are then scaled",
-                        "betwen 0 and 1.")))),
+                        "and 100. If the latter, PSI values are scaled betwen",
+                        "0 and 1.")))),
         selectizeInput(speciesId, "Species", choices="Human", width = "100%",
                        options=list(create=TRUE)),
         selectizeInput(assemblyId, "Assembly", choices=c("hg19", "hg38"),
