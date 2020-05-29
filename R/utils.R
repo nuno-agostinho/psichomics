@@ -128,6 +128,12 @@ parseSplicingEvent <- function(event, char=FALSE, pretty=FALSE, extra=NULL,
     event <- gsub("AFE_exon", "AFE", event, fixed=TRUE)
     event <- gsub("ALE_exon", "ALE", event, fixed=TRUE)
     
+    # Protect genes with underscores
+    event <- gsub("(.*)_(Arg|Und|var1|B|[0-9]+)$", "\\1::\\2", event)
+    recoverGeneNamesWithUnderscore <- function(gene) {
+        gsub("::", "_", gene, fixed=TRUE)
+    }
+    
     if (char) {
         if (pretty) {
             event     <- strsplit(event, "_", fixed=TRUE)
@@ -140,6 +146,8 @@ parseSplicingEvent <- function(event, char=FALSE, pretty=FALSE, extra=NULL,
             strand    <- ifelse(sapply(event, "[[", 3) == "+", "positive",
                                 "negative")
             gene      <- sapply(event, function(i) i[[length(i)]])
+            gene      <- recoverGeneNamesWithUnderscore(gene)
+            
             start     <- sapply(event, "[[", 4)
             end       <- sapply(event, function(i) i[[length(i) - 1]])
             
@@ -168,6 +176,7 @@ parseSplicingEvent <- function(event, char=FALSE, pretty=FALSE, extra=NULL,
     parsed$gene   <- strsplit(vapply(seq_along(event), 
                                      function(i) event[[i]][[len[[i]]]],
                                      FUN.VALUE=character(1)), "/")
+    parsed$gene   <- recoverGeneNamesWithUnderscore(parsed$gene)
     
     # Parse position according to type of alternative splicing event
     parsed$pos <- lapply(seq_along(event), 

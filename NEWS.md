@@ -19,6 +19,7 @@ fixed library size plot not working properly in visual interface
     - "Browse..." button now opens file browser to select folder where data is
     stored (as expected)
     - The user is now alerted if no GTEx data options are selected
+* Correctly parse gene symbols containing underscores
 * Density plots (`plotDistribution()`):
     - After hiding all plot series, hide Y axis (rug plots of the different
     groups have arbitrary Y values to easily distinguish them)
