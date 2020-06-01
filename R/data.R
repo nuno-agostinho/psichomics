@@ -547,15 +547,28 @@ createDataTab <- function(index, data, name, session, input, output) {
         plots     <- attr(table, "plots")
         
         renderedPlots <- lapply(seq(plots), function(i) {
-            FUN <- switch(names(plots)[[i]],
-                          highchart=renderHighchart, plot=renderPlot)
-            FUN(plots[[i]])
+            type <- names(plots)[[i]]
+            FUN <- switch(type, highchart=renderHighchart, plot=renderPlot)
+            res <- FUN(plots[[i]])
+            attr(res, "type") <- type
+            return(res)
         })
+        
+        plotList <- tagList(NULL)
+        for (each in seq(renderedPlots)) {
+            plot <- renderedPlots[[each]]
+            type <- attr(plot, "type")
+            id   <- paste0(tablename, "-", type, each)
+            output[[id]] <- plot
+            
+            FUN  <- switch(type, highchart=highchartOutput, plot=plotOutput)
+            item <- tagList(FUN(ns(id)))
+            plotList <- tagAppendChild(plotList, item)
+        }
         
         tags$div(tags$h4(paste(ncol(table), cols)),
                  tags$h4(paste(nrow(table), rows)),
-                 # do.call(tagList, plotOutputs),
-                 renderedPlots,
+                 plotList,
                  extra)
     }
     

@@ -409,6 +409,7 @@ plotGeneExprPerSample <- function(geneExpr, ...) {
 #' @param log10 Boolean: log10-transform \code{data}?
 #' @param title Character: plot title
 #' @param subtitle Character: plot subtitle
+#' @param colour Character: data colour
 #'
 #' @family functions for gene expression pre-processing
 #' @return Library size distribution
@@ -423,7 +424,8 @@ plotGeneExprPerSample <- function(geneExpr, ...) {
 plotLibrarySize <- function(
     data, log10=TRUE,
     title="Library size distribution across samples",
-    subtitle="Library size: total number of mapped reads") {
+    subtitle="Library size: total number of mapped reads",
+    colour="orange") {
     
     table <- colSums(data)
     if (log10) {
@@ -434,13 +436,14 @@ plotLibrarySize <- function(
     }
     yAxisLabel <- "Density"
     
-    plot <- plotDistribution(table, rugLabels=TRUE, vLine=FALSE, legend=FALSE, 
-                     title=title) %>%
+    groups <- "All samples"
+    attr(groups, "Colour") <- c("All samples"=colour)
+    plot <- plotDistribution(table, groups,
+                             rugLabels=TRUE, vLine=FALSE, legend=FALSE, 
+                             title=title) %>%
         hc_xAxis(title=list(text=xAxisLabel)) %>%
         hc_yAxis(title=list(text=yAxisLabel)) %>%
         hc_subtitle(text=paste(subtitle))
-    plot$x$hc_opts$series[[1]]$color <- NULL
-    plot$x$hc_opts$series[[2]]$marker$fillColor <- NULL
     return(plot)
 }
 

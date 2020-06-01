@@ -3,8 +3,9 @@
 * Load GTEx data (`loadGtexData()`):
     - Support for loading GTEx data from V8, V7, V6 or V4 releases
     - Organise GTEx data into folders named based on release version
-* `plotLibrarySize()` added to plot library size from gene expression data and
-fixed library size plot not working properly in visual interface
+* `plotLibrarySize()` added to plot library size from gene expression data:
+    - Fixed library size plot not working properly in visual interface and
+    causing rendering issues in visual interface
 * Include Dockerfile to create Docker images based on code revisions
 
 ## Bug fixes and minor changes

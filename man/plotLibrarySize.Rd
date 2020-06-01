@@ -8,7 +8,8 @@ plotLibrarySize(
   data,
   log10 = TRUE,
   title = "Library size distribution across samples",
-  subtitle = "Library size: total number of mapped reads"
+  subtitle = "Library size: total number of mapped reads",
+  colour = "orange"
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ plotLibrarySize(
 \item{title}{Character: plot title}
 
 \item{subtitle}{Character: plot subtitle}
+
+\item{colour}{Character: data colour}
 }
 \value{
 Library size distribution
