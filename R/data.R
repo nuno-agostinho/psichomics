@@ -16,7 +16,7 @@
 #' ll <- list(a="hey", b="there")
 #' psichomics:::addObjectAttrs(ll, "words"=2, "language"="English")
 addObjectAttrs <- function (object, ...) {
-    args <- as.list(match.call())[-c(1, 2)]
+    args <- list(...)
     for (k in seq(args)) attr(object, names(args[k])) <- args[[k]]
     return(object)
 }

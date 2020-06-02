@@ -20,6 +20,10 @@
     - "Browse..." button now opens file browser to select folder where data is
     stored (as expected)
     - The user is now alerted if no GTEx data options are selected
+    - Show filename used to load gene expression and alternative splicing data
+    in visual interface
+* Fix settings not showing up after quantifying alternative splicing in visual
+interface
 * Correctly parse gene symbols containing underscores
 * Density plots (`plotDistribution()`):
     - After hiding all plot series, hide Y axis (rug plots of the different

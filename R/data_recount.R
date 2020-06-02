@@ -77,10 +77,11 @@ loadSRAproject <- function(project, outdir=getDownloadsFolder()) {
         }
     }
     
-    loadGeneExpression <- function(geneExpr, recountEnv) {
-        load(geneExpr, recountEnv)
-        geneExpr <- as.data.frame(assay(recountEnv$rse_gene))
+    loadGeneExpression <- function(file, env=new.env()) {
+        load(file, env)
+        geneExpr <- as.data.frame(assay(env$rse_gene))
         geneExpr <- addObjectAttrs(geneExpr,
+                                   "filename"=file,
                                    "rowNames"=1,
                                    "tablename"="Gene expression",
                                    "description"="Gene expression",
@@ -90,9 +91,9 @@ loadSRAproject <- function(project, outdir=getDownloadsFolder()) {
         return(geneExpr)
     }
     
-    loadJunctionQuantification <- function(junctionQuant, recountEnv) {
-        load(junctionQuant, recountEnv)
-        rse_jx <- recountEnv$rse_jx
+    loadJunctionQuantification <- function(file, env=new.env()) {
+        load(file, env)
+        rse_jx <- env$rse_jx
         junctionQuant <- as.data.frame(assay(rse_jx))
         
         ## Remove non-canonical chromosomes
@@ -108,6 +109,7 @@ loadSRAproject <- function(project, outdir=getDownloadsFolder()) {
         rownames(junctionQuant) <- paste(chr, start, end, strand, sep=":")
         junctionQuant <- addObjectAttrs(
             junctionQuant,
+            "filename"=file,
             "rowNames"=1,
             "tablename"="Junction quantification",
             "description"="Read counts of splicing junctions",
@@ -127,18 +129,15 @@ loadSRAproject <- function(project, outdir=getDownloadsFolder()) {
         downloadRequiredSRAfiles(
             folder, geneExpr, junctionQuant, sampleInfo, sra)
         
-        recountEnv  <- new.env()
         data[[sra]] <- list()
-        
         # Load gene expression
         updateProgress(paste("Loading", sra), detail="Gene expression")
-        data[[sra]][["Gene expression"]] <- loadGeneExpression(
-            geneExpr, recountEnv)
+        data[[sra]][["Gene expression"]] <- loadGeneExpression(geneExpr)
         
         # Load junction quantification
         updateProgress(paste("Loading", sra), detail="Junction quantification")
         data[[sra]][["Junction quantification"]] <- loadJunctionQuantification(
-            junctionQuant, recountEnv)
+            junctionQuant)
         
         # Sample metadata
         updateProgress(paste("Loading", sra), detail="Sample metadata")

@@ -625,8 +625,8 @@ quantifySplicingSet <- function(session, input) {
                 "Selected genes for splicing event quantification"=if (is.null(
                     filter)) "All available genes" else filter),
             sampleFilterSettings, filterSettings)
-        attr(psi, "settings") <- settings
-        attr(psi, "icon") <- list(symbol="calculator", colour="green")
+        attr(filteredPSI, "settings") <- settings
+        attr(filteredPSI, "icon") <- list(symbol="calculator", colour="green")
         
         setInclusionLevels(filteredPSI)
         endProcess("calcIncLevels", time)
