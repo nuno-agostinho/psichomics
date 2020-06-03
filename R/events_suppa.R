@@ -13,8 +13,10 @@ parseSuppaAnnotation <- function(
     genome="hg19") {
     
     display("Retrieving SUPPA annotation...")
-    typesFile <- file.path(folder, paste0(genome, "_", types, ".ioe"))
-    annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
+    typesRegex <- paste(types, collapse="|")
+    typesFile  <- list.files(folder, full.names=TRUE, pattern=paste0(
+        genome, ".*(", typesRegex, ").*\\.ioe"))
+    annot <- lapply(typesFile, read.delim, stringsAsFactors=FALSE,
                     comment.char="#", header=TRUE)
     
     display("Parsing SUPPA annotation...")

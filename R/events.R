@@ -116,12 +116,16 @@ getNumerics <- function(table, by = NULL, toNumeric = FALSE) {
 #' @param events Data frame or matrix: alternative splicing events
 #' @param types Character: alternative splicing types
 #' 
+#' @importFrom utils txtProgressBar setTxtProgressBar
+#' 
 #' @return List of events joined by alternative splicing event type
 #' @keywords internal
-joinEventsPerType <- function(events, types) {
-    if (missing(types)) types <- names(events)
-    joint <- lapply(types, function(type, events) {
-        display(type)
+joinEventsPerType <- function(events, types=NULL) {
+    if (is.null(types)) types <- names(events)
+    
+    pb <- txtProgressBar(max=length(types), style=3)
+    joinEvents <- function(k, type, events, pb) {
+        type <- types[k]
         # Create vector with comparable columns
         id <- c("Strand", "Chromosome", "Event.type")
         by <- c(id, getSplicingEventCoordinates(type))
@@ -142,8 +146,11 @@ joinEventsPerType <- function(events, types) {
         names(res) <- unique(unlist(cols))
         
         # Remove equal rows
-        return(unique(res))
-    }, events)
+        res <- unique(res)
+        setTxtProgressBar(pb, k)
+        return(res)
+    }
+    joint <- lapply(seq(types), joinEvents, types, events, pb)
     names(joint) <- types
     return(joint)
 }
@@ -205,7 +212,7 @@ prepareAnnotationFromEvents <- function(...) {
     
     # Remove the "chr" prefix from the chromosome field
     for (each in seq_along(events)) {
-        events[[each]]$Chromosome <- gsub("chr", "", events[[each]]$Chromosome)
+        events[[each]]$Chromosome <- gsub("^chr", "", events[[each]]$Chromosome)
     }
     
     # Organise splicing events by event type and then by program in a list of 
@@ -238,21 +245,45 @@ prepareAnnotationFromEvents <- function(...) {
         unlist(suppaALE)))
     
     # Organise columns
-    annot <- lapply(names(join), function(i) {
-        # Include genes if there is only one column
-        geneCols <- grep(".Gene", names(join[[i]]), fixed=TRUE)
-        if (length(geneCols) == 1) {
+    organiseCols <- function(i) {
+        data <- join[[i]]
+        # Include gene column
+        geneCol <- grep("Gene$", names(data))
+        if (length(geneCol) == 1) {
             gene <- "Gene"
-            names(join[[i]])[geneCols] <- gene
-            join[[i]][[gene]] <- as.list(join[[i]][[gene]])
+            names(data)[geneCol] <- gene
+            data[[gene]] <- as.list(data[[gene]])
+        } else if (length(geneCol) == 0) {
+            gene <- NULL
         } else {
             gene <- NULL
+            # De-prioritise ENSG gene names
+            isENSG <- function(col, data) {
+                genes <- data[col]
+                # Admit that genes are ENSG if over a given threshold
+                thershold <- 0.5
+                ensg <- grepl("^ENS(G|T)", unique(genes[!is.na(genes)]))
+                return(sum(ensg) >= thershold * length(ensg))
+            }
+            areENSGcols <- sapply(geneCol, isENSG, data)
+            geneCol <- c(geneCol[!areENSGcols], geneCol[areENSGcols])
+            
+            vec <- unlist(data[geneCol])
+            names(vec) <- rep(seq(nrow(data)), length(geneCol))
+            vec <- vec[!is.na(vec)]
+            vec <- vec[unique(names(vec))]
+            idx <- as.numeric(names(vec))
+            
+            gene <- "Gene"
+            data[[gene]] <- ""
+            data[[gene]][idx] <- vec
         }
         
         cols <- c("Chromosome", "Strand", gene, getSplicingEventCoordinates(i),
-                  grep("Event.ID", names(join[[i]]), value = TRUE))
-        return(join[[i]][, cols])
-    })
+                  grep("Event.ID", names(data), value = TRUE))
+        return(data[, cols])
+    }
+    annot <- lapply(names(join), organiseCols)
     names(annot) <- names(join)
     annot$AFE["C2.start"] <- AFE.C2.start
     annot$ALE["C1.end"]   <- ALE.C1.end
@@ -362,26 +393,39 @@ colsAsNumbers <- function(type, annotation) {
 #' @param events List of data frames with alternative splicing events for a 
 #' given program
 #' 
+#' @importFrom utils txtProgressBar setTxtProgressBar
+#' 
 #' @return List of data frames with alternative splicing events for a given
 #' program
 #' @keywords internal
 sortCoordinates <- function(events) {
     types <- names(events)
+    
+    progress    <- 0
+    maxProgress <- sum(sapply(events, length))
+    pb <- txtProgressBar(max=maxProgress, style=3)
     for (type in types) {
-        coord <- getSplicingEventCoordinates(type, sorting=TRUE)
+        coord          <- getSplicingEventCoordinates(type, sorting=TRUE)
         events[[type]] <- colsAsNumbers(type, events)
+        programs       <- names(events[[type]])
         if (!is.null(coord)) {
-            for (program in names(events[[type]])) {
-                display(paste(type, program))
+            for (program in programs) {
                 table <- events[[type]][[program]]
-                plus <- table[["Strand"]] == "+"
+                plus  <- table[["Strand"]] == "+"
                 plusOrd <- apply(table[plus, coord], 1, sort)
-                minusOrd <- apply(table[!plus, coord], 1, sort, decreasing=TRUE)
-                if (length(plusOrd) > 0)
+                if (length(plusOrd) > 0) {
                     events[[type]][[program]][plus, coord] <- t(plusOrd)
-                if (length(minusOrd) > 0)
+                }
+                minusOrd <- apply(table[!plus, coord], 1, sort, decreasing=TRUE)
+                if (length(minusOrd) > 0) {
                     events[[type]][[program]][!plus, coord] <- t(minusOrd)
+                }
+                progress <- progress + 1
+                setTxtProgressBar(pb, progress)
             }
+        } else {
+            progress <- progress + length(programs)
+            setTxtProgressBar(pb, progress)
         }
     }
     return(events)

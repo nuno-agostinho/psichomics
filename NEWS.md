@@ -6,6 +6,9 @@
 * `plotLibrarySize()` (plot library size from gene expression data)
 * Alternative splicing annotation:
     - Try to load cached alternative splicing annotation if a timeout occurs
+    - Include gene symbols in custom annotations if available
+    - Account for possible filename changes when parsing annotations from
+    VAST-TOOLS, rMATS, SUPPA and MISO
 * Include Dockerfile to create Docker images based on code revisions
 
 ## Bug fixes and minor changes
