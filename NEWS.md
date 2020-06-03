@@ -1,34 +1,36 @@
-# psichomics 1.14.1 (26 May, 2020)
+# psichomics 1.14.1 (3 June, 2020)
 
-* Load GTEx data (`loadGtexData()`):
+* GTEx data loading (`loadGtexData()`):
     - Support for loading GTEx data from V8, V7, V6 or V4 releases
     - Organise GTEx data into folders named based on release version
-* `plotLibrarySize()` added to plot library size from gene expression data:
-    - Fixed library size plot not working properly in visual interface and
-    causing rendering issues in visual interface
+* `plotLibrarySize()` (plot library size from gene expression data)
+* Alternative splicing annotation:
+    - Try to load cached alternative splicing annotation if a timeout occurs
 * Include Dockerfile to create Docker images based on code revisions
 
 ## Bug fixes and minor changes
 
-* Loading local files:
-    - Support loading data from GTEx V8 release
+* Data loading (visual interface):
+    - Correctly parse gene symbols containing underscores
+    - Fixed library size plot not working properly and causing rendering issues
+    - Fix settings not showing up after quantifying alternative splicing
     - Show raised errors while reading a file (e.g. if file is too big for
     available memory)
-    - Fix bad formatting of help tooltips when using `shiny 1.4.0` or newer
-    - Try to load cached alternative splicing annotation if a timeout occurs
-* Loading GTEx and SRA data (visual interface):
-    - "Browse..." button now opens file browser to select folder where data is
-    stored (as expected)
     - The user is now alerted if no GTEx data options are selected
+    - "Browse..." button now opens file browser to select folder where data is
+    stored (as expected) in GTEx and SRA panels
     - Show filename used to load gene expression and alternative splicing data
-    in visual interface
-* Fix settings not showing up after quantifying alternative splicing in visual
-interface
-* Correctly parse gene symbols containing underscores
+    from GTEx and SRA
+* Loading local files:
+    - Support loading data from GTEx V8 or previous releases
+    - Fix bad formatting of help tooltips when using `shiny 1.4.0` or newer
+    (visual interface)
 * Density plots (`plotDistribution()`):
     - After hiding all plot series, hide Y axis (rug plots of the different
     groups have arbitrary Y values to easily distinguish them)
-* Fix warnings when installing the package:
+* Fix issues when installing the package:
+    - Fix error when unit testing in R 4.0 or higher (strings in data frames are
+    not converted to factors by default)
     - Fix `R CMD check` warning of Unicode symbol translation in Windows
     - Fix comparing signed and unsigned integers in `Rcpp` functions
 * Copy-edit tutorial on loading user-provided data
