@@ -3,7 +3,10 @@
 * GTEx data loading (`loadGtexData()`):
     - Support for loading GTEx data from V8, V7, V6 or V4 releases
     - Organise GTEx data into folders named based on release version
-* `plotLibrarySize()` (plot library size from gene expression data)
+* `plotSplicingEvent()`: Alternative splicing diagrams now render automatically
+instead of showing SVG code (if printing more than one event, a table is
+displayed with event identifiers and respective diagrams)
+* `plotLibrarySize()`: plot library size from gene expression data
 * Alternative splicing annotation:
     - Try to load cached alternative splicing annotation if a timeout occurs
     - Include gene symbols in custom annotations if available

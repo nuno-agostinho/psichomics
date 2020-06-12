@@ -388,14 +388,14 @@ plotSplicingEvent <- function(
     return(svg)
 }
 
-#' @keywords internal
+#' @export
 print.splicingEventPlot <- function(x, ..., browse=TRUE) {
     return(print(HTML(x), ..., browse=browse))
 }
 
 #' @importFrom DT dataTableOutput renderDataTable
 #' @importFrom shiny fluidPage
-#' @keywords internal
+#' @export
 print.splicingEventPlotList <- function(x, ..., browse=TRUE) {
     server <- function(input, output) {
         prepareData <- reactive(
@@ -405,5 +405,11 @@ print.splicingEventPlotList <- function(x, ..., browse=TRUE) {
             colnames=c("Alternative splicing event", "Diagram"),
             style="bootstrap", caption="Diagram of alternative splicing events")
     }
-    runApp(list(ui=fluidPage(dataTableOutput("eventsTable")), server=server))
+    
+    if (length(x) == 1) {
+        print(x[[1]], ..., browse=browse)
+    } else {
+        runApp(list(ui=fluidPage(dataTableOutput("eventsTable")),
+                    server=server))
+    }
 }
