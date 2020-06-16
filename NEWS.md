@@ -1,3 +1,7 @@
+# psichomics 1.14.1 (16 June, 2020)
+
+Fix unit tests for R 4.0
+
 # psichomics 1.12.1 (29 January, 2020)
 
 * Alternative splicing events can now be represented via diagrams:
