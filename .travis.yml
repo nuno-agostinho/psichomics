@@ -16,30 +16,6 @@ os:
 # Strict checks in place
 warnings_are_errors: false
 
-# Run binary install of testthat
-r_binary_packages:
-  - testthat
-  - cluster
-  - colourpicker
-  - data.table
-  - digest
-  - dplyr
-  - fastICA
-  - fastmatch
-  - ggplot2
-  - ggrepel
-  - htmltools
-  - httr
-  - jsonlite
-  - miscTools
-  - plyr
-  - R.utils
-  - shinyjs
-  - stringr
-  - survival
-  - XML
-  - xtable
-
 r_packages:
   - knitr
   - rmarkdown
