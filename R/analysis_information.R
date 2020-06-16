@@ -64,13 +64,14 @@ queryEnsemblByGene <- function(gene, species=NULL, assembly=NULL) {
 #' @rdname queryEnsemblByGene
 #' 
 #' @param event Character: alternative splicing event
+#' @inheritParams parseSplicingEvent
 #' 
 #' @export
 #' @examples 
 #' event <- "SE_17_-_41251792_41249306_41249261_41246877_BRCA1"
 #' queryEnsemblByEvent(event, species="human", assembly="hg19")
-queryEnsemblByEvent <- function(event, species, assembly) {
-    gene <- parseSplicingEvent(event)$gene[[1]]
+queryEnsemblByEvent <- function(event, species=NULL, assembly=NULL, data=NULL) {
+    gene <- parseSplicingEvent(event, data=data)$gene[[1]]
     if (gene == "Hypothetical") stop("This event has no associated gene")
     return(queryEnsemblByGene(gene, species, assembly))
 }
@@ -368,8 +369,8 @@ plottableXranges <- function(hc, shiny=FALSE) {
         tags$script(sprintf("Highcharts.chart('container', %s)", hc))))
 }
 
-plotASeventRegion <- function(hc, event) {
-    parsed <- parseSplicingEvent(event[[1]], coords=TRUE)
+plotASeventRegion <- function(hc, event, data=NULL) {
+    parsed <- parseSplicingEvent(event, coords=TRUE, data=data)[1, , drop=FALSE]
     con1   <- sort(parsed$constitutive1[[1]])
     alt1   <- sort(parsed$alternative1[[1]])
     alt2   <- sort(parsed$alternative2[[1]])
@@ -469,6 +470,7 @@ plotASeventRegion <- function(hc, event) {
 #' @param eventPosition Numeric: coordinates of the alternative splicing event
 #' (ignored if \code{event} is set)
 #' @param event Character: identifier of the alternative splicing event to plot
+#' @param eventData Object containing event information to be parsed
 #' @param shiny Boolean: is the function running in a Shiny session?
 #' 
 #' @importFrom highcharter highchart hc_chart hc_title hc_legend hc_xAxis
@@ -484,7 +486,8 @@ plotASeventRegion <- function(hc, event) {
 #' \dontrun{
 #' plotTranscripts(info, event=event)
 #' }
-plotTranscripts <- function(info, eventPosition=NULL, event=NULL, shiny=FALSE) {
+plotTranscripts <- function(info, eventPosition=NULL, event=NULL,
+                            eventData=NULL, shiny=FALSE) {
     data <- list()
     for (i in seq(nrow(info$Transcript))) {
         transcript <- info$Transcript[i, ]
@@ -539,7 +542,7 @@ plotTranscripts <- function(info, eventPosition=NULL, event=NULL, shiny=FALSE) {
     hc <- do.call("hc_series", c(list(hc), data))
     
     if (!is.null(event)) {
-        hc <- hc %>% plotASeventRegion(event)
+        hc <- hc %>% plotASeventRegion(event, eventData)
     } else if (!is.null(eventPosition)) {
         # Draw region only if splicing event position is provided
         eventStart <- eventPosition[1]
@@ -810,9 +813,15 @@ infoServer <- function(input, output, session) {
     output$eventDiagram <- renderUI({
         ASevent <- getASevent()
         if (!is.null(ASevent)) {
-            res <- HTML(plotSplicingEvent(ASevent)[[1]])
+            diagram <- suppressWarnings(plotSplicingEvent(ASevent)[[1]])
+            if (diagram != "") {
+                res <- HTML(diagram)
+            } else {
+                res <- paste("Diagram not supported for selected alternative",
+                             "splicing event")
+            }
         } else {
-            res <- "No alternative splicing event selected or available."
+            res <- "No alternative splicing event selected or available"
         }
         return(res)
     })

@@ -217,7 +217,7 @@ loadGeneExpressionSet <- function(session, input, output) {
         formats <- allFormats[sapply(allFormats, "[[",
                                      "dataType") == "Gene expression"]
 
-        geneExpr <- tryCatch(parseValidFile(input$customGeneExpr, formats),
+        geneExpr <- tryCatch(loadFile(input$customGeneExpr, formats),
                              warning=return, error=return)
         if (is(geneExpr, "error")) {
             if (geneExpr$message == paste("'file' must be a character string",

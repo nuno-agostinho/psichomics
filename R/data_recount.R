@@ -26,6 +26,71 @@ recountDataUI <- function(id, panel) {
           uiOutput(ns("sraInterface")))
 }
 
+loadRecountGeneExpression <- function(file, env=new.env()) {
+    load(file, env)
+    geneExpr <- as.data.frame(assay(env$rse_gene))
+    geneExpr <- addObjectAttrs(geneExpr,
+                               "filename"=file,
+                               "rowNames"=1,
+                               "tablename"="Gene expression",
+                               "description"="Gene expression",
+                               "dataType"="Gene expression",
+                               "rows"="genes",
+                               "columns"="samples")
+    return(geneExpr)
+}
+
+loadRecountJunctionQuant <- function(file, env=new.env()) {
+    load(file, env)
+    rse_jx <- env$rse_jx
+    junctionQuant <- as.data.frame(assay(rse_jx))
+    
+    ## Remove non-canonical chromosomes
+    valid  <- as.vector(seqnames(rse_jx)) %in% 
+        paste0("chr", c(seq(22), "X", "Y", "M"))
+    
+    chr    <- as.vector(seqnames(rse_jx))[valid]
+    start  <- start(rse_jx)[valid] - 1
+    end    <- end(rse_jx)[valid]   + 1
+    strand <- as.vector(strand(rse_jx))[valid]
+    
+    junctionQuant           <- junctionQuant[valid, , drop=FALSE]
+    rownames(junctionQuant) <- paste(chr, start, end, strand, sep=":")
+    junctionQuant <- addObjectAttrs(
+        junctionQuant,
+        "filename"=file,
+        "rowNames"=1,
+        "tablename"="Junction quantification",
+        "description"="Read counts of splicing junctions",
+        "dataType"="Junction quantification",
+        "rows"="splice junctions",
+        "columns"="samples")
+    return(junctionQuant)
+}
+
+downloadRecountData <- function(folder, geneExpr, junctionQuant, sampleInfo,
+                                sra) {
+    fileType <- c("rse-gene"=geneExpr,
+                  "rse-jx"=junctionQuant, 
+                  "phenotype"=sampleInfo)
+    fileTypeToDownload <- !sapply(fileType, file.exists)
+    fileTypeToDownload <- names(fileType)[fileTypeToDownload]
+    
+    len <- length(fileTypeToDownload)
+    updateProgress(paste("Loading", sra), divisions=3 + len)
+    if (len > 0) {
+        downloadProject <- function(type, sra, folder, ...) {
+            detail <- switch(type, "rse-gene"="Gene expression",
+                             "rse-jx"="Junction quantification",
+                             "phenotype"="Sample metadata")
+            updateProgress(paste("Downloading", sra), detail=detail)
+            download_study(sra, outdir=folder, type=type, ...)
+        }
+        
+        sapply(fileTypeToDownload, downloadProject, sra=sra, folder=folder)
+    }
+}
+
 #' Download and load SRA projects via
 #' \href{https://jhubiostatistics.shinyapps.io/recount/}{recount2}
 #' 
@@ -54,71 +119,6 @@ loadSRAproject <- function(project, outdir=getDownloadsFolder()) {
                 paste(project[!available], collapse=", "))
     }
     
-    downloadRequiredSRAfiles <- function(folder, geneExpr, junctionQuant, 
-                                         sampleInfo, sra) {
-        fileType <- c("rse-gene"=geneExpr,
-                      "rse-jx"=junctionQuant, 
-                      "phenotype"=sampleInfo)
-        fileTypeToDownload <- !sapply(fileType, file.exists)
-        fileTypeToDownload <- names(fileType)[fileTypeToDownload]
-        
-        len <- length(fileTypeToDownload)
-        updateProgress(paste("Loading", sra), divisions=3 + len)
-        if (len > 0) {
-            downloadProject <- function(type, sra, folder, ...) {
-                detail <- switch(type, "rse-gene"="Gene expression",
-                                 "rse-jx"="Junction quantification",
-                                 "phenotype"="Sample metadata")
-                updateProgress(paste("Downloading", sra), detail=detail)
-                download_study(sra, outdir=folder, type=type, ...)
-            }
-            
-            sapply(fileTypeToDownload, downloadProject, sra=sra, folder=folder)
-        }
-    }
-    
-    loadGeneExpression <- function(file, env=new.env()) {
-        load(file, env)
-        geneExpr <- as.data.frame(assay(env$rse_gene))
-        geneExpr <- addObjectAttrs(geneExpr,
-                                   "filename"=file,
-                                   "rowNames"=1,
-                                   "tablename"="Gene expression",
-                                   "description"="Gene expression",
-                                   "dataType"="Gene expression",
-                                   "rows"="genes",
-                                   "columns"="samples")
-        return(geneExpr)
-    }
-    
-    loadJunctionQuantification <- function(file, env=new.env()) {
-        load(file, env)
-        rse_jx <- env$rse_jx
-        junctionQuant <- as.data.frame(assay(rse_jx))
-        
-        ## Remove non-canonical chromosomes
-        valid  <- as.vector(seqnames(rse_jx)) %in% 
-            paste0("chr", c(seq(22), "X", "Y", "M"))
-        
-        chr    <- as.vector(seqnames(rse_jx))[valid]
-        start  <- start(rse_jx)[valid] - 1
-        end    <- end(rse_jx)[valid]   + 1
-        strand <- as.vector(strand(rse_jx))[valid]
-        
-        junctionQuant           <- junctionQuant[valid, , drop=FALSE]
-        rownames(junctionQuant) <- paste(chr, start, end, strand, sep=":")
-        junctionQuant <- addObjectAttrs(
-            junctionQuant,
-            "filename"=file,
-            "rowNames"=1,
-            "tablename"="Junction quantification",
-            "description"="Read counts of splicing junctions",
-            "dataType"="Junction quantification",
-            "rows"="splice junctions",
-            "columns"="samples")
-        return(junctionQuant)
-    }
-    
     project <- project[available]
     for (sra in project) {
         # Download required files if needed
@@ -126,23 +126,22 @@ loadSRAproject <- function(project, outdir=getDownloadsFolder()) {
         geneExpr      <- file.path(folder, "rse_gene.Rdata")
         junctionQuant <- file.path(folder, "rse_jx.Rdata")
         sampleInfo    <- file.path(folder, paste0(sra, ".tsv"))
-        downloadRequiredSRAfiles(
-            folder, geneExpr, junctionQuant, sampleInfo, sra)
+        downloadRecountData(folder, geneExpr, junctionQuant, sampleInfo, sra)
         
         data[[sra]] <- list()
         # Load gene expression
         updateProgress(paste("Loading", sra), detail="Gene expression")
-        data[[sra]][["Gene expression"]] <- loadGeneExpression(geneExpr)
+        data[[sra]][["Gene expression"]] <- loadRecountGeneExpression(geneExpr)
         
         # Load junction quantification
         updateProgress(paste("Loading", sra), detail="Junction quantification")
-        data[[sra]][["Junction quantification"]] <- loadJunctionQuantification(
+        data[[sra]][["Junction quantification"]] <- loadRecountJunctionQuant(
             junctionQuant)
         
-        # Sample metadata
+        # Load sample metadata
         updateProgress(paste("Loading", sra), detail="Sample metadata")
         format <- loadFileFormats()$recountSampleFormat
-        data[[sra]][["Sample metadata"]] <- parseValidFile(sampleInfo, format)
+        data[[sra]][["Sample metadata"]] <- loadFile(sampleInfo, format)
         
         attr(data[[sra]], "source") <- "recount"
         closeProgress()

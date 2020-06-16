@@ -275,7 +275,9 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
         return(corr)
     })
     names(res) <- ASevents
+    res        <- preserveAttributes(res)
     class(res) <- c("GEandAScorrelation", class(res))
+    attr(res, "eventData") <- attr(psi, "rowData")
     return(res)
 }
 
@@ -399,10 +401,11 @@ plot.GEandAScorrelation <- function(
     showAllData=TRUE, density=FALSE, densityColour="blue", densityWidth=0.5) {
     loessFamily <- match.arg(loessFamily)
     
-    plotCorrPerASevent <- function(single) {
+    plotCorrPerASevent <- function(single, eventData) {
         expr    <- single$geneExpr
         event   <- single$psi
-        eventId <- parseSplicingEvent(single$eventID, char=TRUE, pretty=TRUE)
+        eventId <- parseSplicingEvent(single$eventID, char=TRUE, pretty=TRUE,
+                                      data=eventData)
         eventDisplay <- gsub(" \\(.*\\)", "", eventId)
         eventDetails <- gsub(".*\\((.*)\\)", "\\1", eventId)
         
@@ -478,7 +481,7 @@ plot.GEandAScorrelation <- function(
         return(plot + theme_light(fontSize))
     }
     
-    lapply(x, lapply, plotCorrPerASevent)
+    lapply(x, lapply, plotCorrPerASevent, attr(x, "eventData"))
 }
 
 #' @export
@@ -523,7 +526,7 @@ as.table.GEandAScorrelation <- function (x, pvalueAdjust="BH", ...) {
     gene     <- prepareCol(x, function(i) i[["gene"]])
     gene     <- prepareCol(x, function(i) i[["gene"]])
     eventID  <- prepareCol(x, function(i) i[["eventID"]])
-    eventID  <- gsub("_", " ", eventID, fixed=TRUE)
+    eventID  <- gsub("_", " ", eventID, fixed=TRUE) # Use prettifyEventID() ?
     
     estimate <- prepareCol(x, function(i) i[["cor"]][["estimate"]][[1]])
     pvalue   <- prepareCol(x, function(i) i[["cor"]][["p.value"]])
@@ -786,7 +789,8 @@ correlationServer <- function(input, output, session) {
         if (!is.null(corr)) {
             geneChoices    <- unique(unlist(sapply(corr, names)))
             ASeventChoices <- names(corr)
-            names(ASeventChoices) <- parseSplicingEvent(names(corr), char=TRUE)
+            names(ASeventChoices) <- parseSplicingEvent(names(corr), char=TRUE,
+                                                        data=corr)
         } else {
             geneChoices    <- character(0)
             ASeventChoices <- character(0)

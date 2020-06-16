@@ -306,6 +306,37 @@ browserHistory <- function(navId, input, session) {
     observeEvent(input$appLocation, { restorePage(input$appLocation) })
 }
 
+# Prepare alternative text for diagrams
+prepareAlternativeText <- function(alt) {
+    alt <- lapply(alt, prepareWordBreak)
+    styleAlt <- function(alt) {
+        HTML(as.character(tags$div(style="text-align: right", tags$small(
+            tags$b("Full coordinates:"), alt))))
+    }
+    return(lapply(alt, styleAlt))
+}
+
+# Prepare representation of alternative splicing events
+prepareASeventsRepresentation <- reactive({
+    ASevent <- getASevents()
+    if (!is.null(ASevent)) {
+        diagram <- suppressWarnings(
+            plotSplicingEvent(ASevent, class="pull-right"))
+        parsed  <- parseSplicingEvent(ASevent, pretty=TRUE)
+        
+        # Replace unsupported diagrams by text
+        unsupported <- vapply(diagram, `==`, "", FUN.VALUE=logical(1))
+        diagram[unsupported] <- prepareAlternativeText(
+            parsed$`full coordinates`[unsupported])
+        info <- paste(sep="_", parsed$subtype, parsed$chr, parsed$strand,
+                         parsed$start, parsed$end, parsed$id, parsed$gene)
+        representation <- setNames(ASevent, paste(info, "__", diagram))
+    } else {
+        representation <- NULL
+    }
+    return(representation)
+})
+
 #' Server logic
 #' 
 #' Instructions to build the Shiny app
@@ -344,31 +375,6 @@ appServer <- function(input, output, session) {
         if (!is.null(selected) && selected != "") setCategory(selected)
     })
     
-    # Prepare representation of alternative splicing events
-    prepareASeventsRepresentation <- reactive({
-        ASevent <- getASevents()
-        if (!is.null(ASevent)) {
-            diagram        <- plotSplicingEvent(ASevent, class="pull-right")
-            representation <- ASevent
-            names(representation) <- paste(ASevent, "__", diagram)
-            
-            # Fully extend acronyms for alternative splicing event types
-            eventTypes <- getSplicingEventTypes(acronymsAsNames=TRUE)
-            for (type in names(eventTypes)) {
-                find <- paste0("^", type)
-                rep  <- sprintf("%s (%s)", eventTypes[[type]], type)
-                names(representation) <- gsub(find, rep, names(representation))
-            }
-            # Improve chromosome and strand representation
-            names(representation) <- gsub("_([0-9A-Za-z].*)_([+-])_",
-                                          "_(chr\\1, \\2 strand)_",
-                                          names(representation))
-        } else {
-            representation <- NULL
-        }
-        return(representation)
-    })
-    
     # Update available alternative splicing events
     observe({
         representation <- prepareASeventsRepresentation()
@@ -386,7 +392,11 @@ appServer <- function(input, output, session) {
     # Set alternative splicing event
     observeEvent(input[["selectizeEventElem"]], {
         selected <- input[["selectizeEventElem"]]
-        if (!is.null(selected) && selected != "") setEvent(selected)
+        if (!is.null(selected) && selected != "") {
+            psi <- isolate(getInclusionLevels())
+            attr(selected, "eventData") <- attr(psi, "rowData")
+            setEvent(selected)
+        }
     })
     
     # Display selected category
@@ -407,12 +417,13 @@ appServer <- function(input, output, session) {
         selected <- getASevent()
         isSelectionValid <- !is.null(selected) && selected != ""
         
-        if (!areEventsLoaded)
+        if (!areEventsLoaded) {
             return("No events quantified")
-        else if (!isSelectionValid)
+        } else if (!isSelectionValid) {
             return("No event is selected")
-        else
+        } else {
             return(parseSplicingEvent(selected, char=TRUE))
+        }
     })
     
     session$onSessionEnded(function() {

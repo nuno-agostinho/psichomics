@@ -389,7 +389,7 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."),
     for (each in seq_along(files)) {
         updateProgress("Processing file", detail = basename(files[each]))
         loadedFile <- suppressWarnings(
-            tryCatch(parseValidFile(files[each], formats), error=return))
+            tryCatch(loadFile(files[each], formats), error=return))
         if (!is(loadedFile, "error")) {
             loaded[[each]] <- loadedFile
         } else {
@@ -507,7 +507,7 @@ setMultipleFilesData <- function(input, output, session, replace=TRUE) {
         formats <- allFormats[sapply(allFormats, "[[", "dataType") == dataType]
         
         updateProgress("Processing file", detail=basename(file))
-        loadedFile <- tryCatch(parseValidFile(file, formats),
+        loadedFile <- tryCatch(loadFile(file, formats),
                                warning=return, error=return)
         if (!is(loadedFile, "warning") && !is(loadedFile, "error"))
             loaded[[each]] <- loadedFile

@@ -49,7 +49,7 @@ Parse junctions of an event from SUPPA
 The following event types are available to be parsed:
 \itemize{
  \item{\bold{SE} (exon skipping)}
- \item{\bold{RI} (intron retention)}
+ \item{\bold{RI} (retained intron)}
  \item{\bold{MXE} (mutually exclusive exons)}
  \item{\bold{A5SS} (alternative 5' splice site)}
  \item{\bold{A3SS} (alternative 3' splice site)}

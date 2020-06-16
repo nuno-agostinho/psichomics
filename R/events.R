@@ -431,123 +431,24 @@ sortCoordinates <- function(events) {
     return(events)
 }
 
-#' Parse alternative splicing event annotation
-#' 
-#' @param eventType Character: type of the alternative event to calculate
-#' @param annotation Data.frame: alternative splicing annotation related to
-#' event type
-#' @param minReads Integer: minimum of total reads required to consider the
-#' quantification as valid
-#' 
-#' @return Character vector of parsed event names
-#' @keywords internal
-parseASeventNames <- function(eventType, annotation, minReads = 10) {
-    # Immediately return NULL if ALE and AFE events are missing coordinates
-    if (eventType %in% c("AFE", "AFE_exon") && 
-        is.null(annotation$`Constitutive exon 2 start`)) {
-        return(NULL)
-    } else if (eventType %in% c("ALE", "ALE_exon") && 
-               is.null(annotation$`Constitutive exon 1 end`)) {
-        return(NULL)
+prepareGenePresentation <- function(gene) {
+    # Prepare presentation of multiple genes for the same splicing event
+    multigene <- lapply(gene, length) > 1
+    gene[multigene] <- lapply(gene[multigene], paste, collapse="/")
+    return(gene)
+}
+
+listPairs <- function(vec1, vec2, vec3=NULL, sorted=FALSE) {
+    if (!is.null(vec3)) {
+        FUN <- range
+    } else if (sorted) {
+        FUN <- sort
+    } else {
+        FUN <- return
     }
-    
-    if (is.null(annotation$Gene))
-        geneCol <- NULL
-    else
-        geneCol <- "Gene"
-    
-    prepareGenePresentation <- function(annotation) {
-        # Prepare presentation of multigenes
-        gene <- annotation$Gene
-        multigene <- lapply(gene, length) > 1
-        gene[multigene] <- lapply(gene[multigene], paste, collapse="/")
-        return(gene)
-    }
-    
-    if (eventType == "SE") {
-        chr <- annotation$Chromosome
-        strand <- annotation$Strand
-        gene <- prepareGenePresentation(annotation)
-        eventNames <- paste(sep="_", eventType, chr, strand, 
-                            annotation$`Constitutive exon 1 end`, 
-                            annotation$`Alternative exon 1 start`, 
-                            annotation$`Alternative exon 1 end`,
-                            annotation$`Constitutive exon 2 start`, gene)
-    } else if (eventType == "MXE") {
-        chr <- annotation$Chromosome
-        strand <- annotation$Strand
-        gene <- prepareGenePresentation(annotation)
-        eventNames <- paste(sep="_", eventType, chr, strand, 
-                            annotation$`Constitutive exon 1 end`,
-                            annotation$`Alternative exon 1 start`,
-                            annotation$`Alternative exon 1 end`, 
-                            annotation$`Alternative exon 2 start`, 
-                            annotation$`Alternative exon 2 end`,
-                            annotation$`Constitutive exon 2 start`, gene)
-    } else if (eventType %in% c("A5SS", "AFE")) {
-        alt1end      <- "Alternative exon 1 end"
-        alt2end      <- "Alternative exon 2 end"
-        constitutive <- "Constitutive exon 2 start"
-        
-        # Backwards compatible with previous annotations
-        if (!alt2end %in% names(annotation))
-            alt2end <- "Constitutive exon 1 end"
-        
-        # annotation <- annotation[!is.na(annotation[[constitutive]]), ]
-        chr <- annotation$Chromosome
-        strand <- annotation$Strand
-        gene <- prepareGenePresentation(annotation)
-        eventNames <- paste(sep="_", eventType, chr, strand, 
-                            annotation[[alt2end]], 
-                            annotation[[alt1end]], 
-                            annotation[[constitutive]], gene)
-    } else if (eventType %in% c("A3SS", "ALE")) {
-        constitutive <- "Constitutive exon 1 end"
-        alt1start    <- "Alternative exon 1 start"
-        alt2start    <- "Alternative exon 2 start"
-        
-        # Backwards compatible with previous annotations
-        if (!alt2start %in% names(annotation)) 
-            alt2start <- "Constitutive exon 2 start"
-        
-        # annotation <- annotation[!is.na(annotation$`Constitutive exon 1 end`), ]
-        chr <- annotation$Chromosome
-        strand <- annotation$Strand
-        gene <- prepareGenePresentation(annotation)
-        eventNames <- paste(sep="_", eventType, chr, strand,
-                            annotation[[constitutive]],
-                            annotation[[alt1start]], 
-                            annotation[[alt2start]], gene)
-    } else if (eventType == "AFE_exon") {
-        alt1end      <- "Alternative exon 1 end"
-        alt2end      <- "Alternative exon 2 end"
-        
-        # Backwards compatible with previous annotations
-        if (!alt2end %in% names(annotation))
-            alt2end <- "Constitutive exon 1 end"
-        
-        chr <- annotation$Chromosome
-        strand <- annotation$Strand
-        gene <- prepareGenePresentation(annotation)
-        eventNames <- paste(sep="_", eventType, chr, strand, 
-                            annotation[[alt2end]], 
-                            annotation[[alt1end]], gene)
-    } else if (eventType == "ALE_exon") {
-        alt1start    <- "Alternative exon 1 start"
-        alt2start    <- "Alternative exon 2 start"
-        
-        # Backwards compatible with previous annotations
-        if (!alt2start %in% names(annotation)) 
-            alt2start <- "Constitutive exon 2 start"
-        
-        chr <- annotation$Chromosome
-        strand <- annotation$Strand
-        gene <- prepareGenePresentation(annotation)
-        eventNames <- paste(sep="_", eventType, chr, strand,
-                            annotation[[alt1start]], 
-                            annotation[[alt2start]], gene)
-    }
-    return(eventNames)
+    processElems <- function(i, FUN) FUN(c(vec1[[i]], vec2[[i]], vec3[[i]]))
+    res <- lapply(seq(length(vec1)), processElems, FUN)
+    return(res)
 }
 
 #' Calculate inclusion levels using alternative splicing event annotation and
@@ -577,51 +478,43 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         return(NULL)
     }
     
-    if (is.null(annotation$Gene))
+    if (is.null(annotation$Gene)) {
         geneCol <- NULL
-    else
+    } else {
         geneCol <- "Gene"
-    
-    coords <- rownames(junctionQuant)
-    showStrand <- any(grepl("\\+|\\-", coords))
-    
-    prepareGenePresentation <- function(annotation) {
-        # Prepare presentation of multigenes
-        gene <- annotation$Gene
-        multigene <- lapply(gene, length) > 1
-        gene[multigene] <- lapply(gene[multigene], paste, collapse="/")
-        return(gene)
     }
+    coords     <- rownames(junctionQuant)
+    showStrand <- any(grepl("\\+|\\-", coords))
     
     if (eventType == "SE") {
         # Remove duplicates based on columns used to create identifiers
+        con1end    <- "Constitutive exon 1 end"
+        alt1start  <- "Alternative exon 1 start"
+        alt1end    <- "Alternative exon 1 end"
+        con2start  <- "Constitutive exon 2 start"
         annotation <- uniqueBy(annotation, "Chromosome", "Strand",
-                               "Constitutive exon 1 end",
-                               "Alternative exon 1 start",
-                               "Alternative exon 1 end",
-                               "Constitutive exon 2 start", geneCol)
-        chr <- annotation$Chromosome
+                               con1end, alt1start, alt1end, con2start, geneCol)
+        chr    <- annotation$Chromosome
         strand <- annotation$Strand
-        gene <- prepareGenePresentation(annotation)
+        gene   <- prepareGenePresentation(annotation[[geneCol]])
+        
+        con1end    <- annotation[[con1end]]
+        alt1start  <- annotation[[alt1start]]
+        alt1end    <- annotation[[alt1end]]
+        con2start  <- annotation[[con2start]]
         eventNames <- paste(sep="_", eventType, chr, strand, 
-                            annotation$`Constitutive exon 1 end`, 
-                            annotation$`Alternative exon 1 start`, 
-                            annotation$`Alternative exon 1 end`,
-                            annotation$`Constitutive exon 2 start`, gene)
+                            con1end, alt1start, alt1end, con2start, gene)
+        # Prepare event data
+        coords_con1 <- I(as.list(con1end))
+        coords_alt1 <- I(listPairs(alt1start, alt1end))
+        coords_alt2 <- NA
+        coords_con2 <- I(as.list(con2start))
+        coords_pos  <- I(listPairs(con1end, con2start, sorted=TRUE))
         
         # Create searchable strings for junctions
-        incAstr <- junctionString(chr, strand,
-                                  annotation$`Constitutive exon 1 end`,
-                                  annotation$`Alternative exon 1 start`,
-                                  showStrand)
-        incBstr <- junctionString(chr, strand,
-                                  annotation$`Alternative exon 1 end`,
-                                  annotation$`Constitutive exon 2 start`,
-                                  showStrand)
-        excAstr <- junctionString(chr, strand, 
-                                  annotation$`Constitutive exon 1 end`, 
-                                  annotation$`Constitutive exon 2 start`,
-                                  showStrand)
+        incAstr <- junctionString(chr, strand, con1end, alt1start, showStrand)
+        incBstr <- junctionString(chr, strand, alt1end, con2start, showStrand)
+        excAstr <- junctionString(chr, strand, con1end, con2start, showStrand)
         
         # Get specific junction quantification
         incA <- fmatch(incAstr, coords)
@@ -636,39 +529,40 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         if (length(incA) == 0) return(NULL)
     } else if (eventType == "MXE") {
         # Remove duplicates based on columns used to create identifiers
-        annotation <- uniqueBy(
-            annotation, "Chromosome", "Strand", "Constitutive exon 1 end", 
-            "Alternative exon 1 start", "Alternative exon 1 end",
-            "Alternative exon 2 start", "Alternative exon 2 end",
-            "Constitutive exon 2 start", geneCol)
-        chr <- annotation$Chromosome
+        con1end    <- "Constitutive exon 1 end"
+        alt1start  <- "Alternative exon 1 start"
+        alt1end    <- "Alternative exon 1 end"
+        alt2start  <- "Alternative exon 2 start"
+        alt2end    <- "Alternative exon 2 end"
+        con2start  <- "Constitutive exon 2 start"
+        annotation <- uniqueBy(annotation, "Chromosome", "Strand", 
+                               con1end, alt1start, alt1end,
+                               alt2start, alt2end, con2start, geneCol)
+        chr    <- annotation$Chromosome
         strand <- annotation$Strand
-        gene <- prepareGenePresentation(annotation)
+        gene   <- prepareGenePresentation(annotation[[geneCol]])
+        
+        con1end    <- annotation[[con1end]]
+        alt1start  <- annotation[[alt1start]]
+        alt1end    <- annotation[[alt1end]]
+        alt2start  <- annotation[[alt2start]]
+        alt2end    <- annotation[[alt2end]]
+        con2start  <- annotation[[con2start]]
         eventNames <- paste(sep="_", eventType, chr, strand, 
-                            annotation$`Constitutive exon 1 end`,
-                            annotation$`Alternative exon 1 start`,
-                            annotation$`Alternative exon 1 end`, 
-                            annotation$`Alternative exon 2 start`, 
-                            annotation$`Alternative exon 2 end`,
-                            annotation$`Constitutive exon 2 start`, gene)
+                            con1end, alt1start, alt1end, 
+                            alt2start, alt2end, con2start, gene)
+        # Prepare event data
+        coords_con1 <- I(as.list(con1end))
+        coords_alt1 <- I(listPairs(alt1start, alt1end))
+        coords_alt2 <- I(listPairs(alt2start, alt2end))
+        coords_con2 <- I(as.list(con2start))
+        coords_pos  <- I(listPairs(con1end, con2start, sorted=TRUE))
         
         # Create searchable strings for junctions
-        incAstr <- junctionString(chr, strand,
-                                  annotation$`Constitutive exon 1 end`,
-                                  annotation$`Alternative exon 1 start`,
-                                  showStrand)
-        incBstr <- junctionString(chr, strand,
-                                  annotation$`Alternative exon 1 end`,
-                                  annotation$`Constitutive exon 2 start`,
-                                  showStrand)
-        excAstr <- junctionString(chr, strand,
-                                  annotation$`Constitutive exon 1 end`,
-                                  annotation$`Alternative exon 2 start`,
-                                  showStrand)
-        excBstr <- junctionString(chr, strand,
-                                  annotation$`Alternative exon 2 end`,
-                                  annotation$`Constitutive exon 2 start`,
-                                  showStrand)
+        incAstr <- junctionString(chr, strand, con1end, alt1start, showStrand)
+        incBstr <- junctionString(chr, strand, alt1end, con2start, showStrand)
+        excAstr <- junctionString(chr, strand, con1end, alt2start, showStrand)
+        excBstr <- junctionString(chr, strand, alt2end, con2start, showStrand)
         
         # Get specific junction quantification
         incA <- fmatch(incAstr, coords)
@@ -683,35 +577,37 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         excB <- excB[!nas]
         if (length(incA) == 0) return(NULL)
     } else if (eventType %in% c("A5SS", "AFE")) {
-        alt1end      <- "Alternative exon 1 end"
-        alt2end      <- "Alternative exon 2 end"
-        constitutive <- "Constitutive exon 2 start"
+        alt1end   <- "Alternative exon 1 end"
+        alt2end   <- "Alternative exon 2 end"
+        con2start <- "Constitutive exon 2 start"
         
         # Backwards compatible with previous annotations
         if (!alt2end %in% names(annotation))
             alt2end <- "Constitutive exon 1 end"
         
         # Remove duplicates based on columns used to create identifiers
-        annotation <- annotation[!is.na(annotation[[constitutive]]), ]
+        annotation <- annotation[!is.na(annotation[[con2start]]), ]
         annotation <- uniqueBy(annotation, "Chromosome", "Strand",
-                               alt2end, alt1end, constitutive, geneCol)
-        chr <- annotation$Chromosome
+                               alt2end, alt1end, con2start, geneCol)
+        chr    <- annotation$Chromosome
         strand <- annotation$Strand
-        gene <- prepareGenePresentation(annotation)
+        gene   <- prepareGenePresentation(annotation[[geneCol]])
+        
+        alt1end    <- annotation[[alt1end]]
+        alt2end    <- annotation[[alt2end]]
+        con2start  <- annotation[[con2start]]
         eventNames <- paste(sep="_", eventType, chr, strand, 
-                            annotation[[alt2end]], 
-                            annotation[[alt1end]], 
-                            annotation[[constitutive]], gene)
+                            alt2end, alt1end, con2start, gene)
+        # Prepare event data
+        coords_con1 <- NA
+        coords_alt1 <- I(as.list(alt1end))
+        coords_alt2 <- I(as.list(alt2end))
+        coords_con2 <- I(as.list(con2start))
+        coords_pos  <- I(listPairs(alt1end, alt2end, con2start, sorted=TRUE))
         
         # Create searchable strings for junctions
-        incAstr <- junctionString(chr, strand,
-                                  annotation[[alt1end]], 
-                                  annotation[[constitutive]],
-                                  showStrand)
-        excAstr <- junctionString(chr, strand,
-                                  annotation[[alt2end]],
-                                  annotation[[constitutive]],
-                                  showStrand)
+        incAstr <- junctionString(chr, strand, alt1end, con2start, showStrand)
+        excAstr <- junctionString(chr, strand, alt2end, con2start, showStrand)
         
         # Get specific junction quantification
         incA <- fmatch(incAstr, coords)
@@ -724,35 +620,37 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         excA <- excA[!nas]
         if (length(incA) == 0) return(NULL)
     } else if (eventType %in% c("A3SS", "ALE")) {
-        constitutive <- "Constitutive exon 1 end"
-        alt1start    <- "Alternative exon 1 start"
-        alt2start    <- "Alternative exon 2 start"
+        con1end   <- "Constitutive exon 1 end"
+        alt1start <- "Alternative exon 1 start"
+        alt2start <- "Alternative exon 2 start"
         
         # Backwards compatible with previous annotations
         if (!alt2start %in% names(annotation)) 
             alt2start <- "Constitutive exon 2 start"
         
         # Remove duplicates based on columns used to create identifiers
-        annotation <- annotation[!is.na(annotation$`Constitutive exon 1 end`), ]
+        annotation <- annotation[!is.na(annotation[[con1end]]), ]
         annotation <- uniqueBy(annotation, "Chromosome", "Strand",
-                               constitutive, alt1start, alt2start, geneCol)
-        chr <- annotation$Chromosome
+                               con1end, alt1start, alt2start, geneCol)
+        chr    <- annotation$Chromosome
         strand <- annotation$Strand
-        gene <- prepareGenePresentation(annotation)
-        eventNames <- paste(sep="_", eventType, chr, strand,
-                            annotation[[constitutive]],
-                            annotation[[alt1start]], 
-                            annotation[[alt2start]], gene)
+        gene   <- prepareGenePresentation(annotation[[geneCol]])
+        
+        con1end    <- annotation[[con1end]]
+        alt1start  <- annotation[[alt1start]]
+        alt2start  <- annotation[[alt2start]]
+        eventNames <- paste(sep="_", eventType, chr, strand, 
+                            con1end, alt1start, alt2start, gene)
+        # Prepare event data
+        coords_con1 <- I(as.list(con1end))
+        coords_alt1 <- I(as.list(alt1start))
+        coords_alt2 <- I(as.list(alt2start))
+        coords_con2 <- NA
+        coords_pos  <- I(listPairs(con1end, alt1start, alt2start, sorted=TRUE))
         
         # Create searchable strings for junctions
-        incAstr <- junctionString(chr, strand,
-                                  annotation[[constitutive]],
-                                  annotation[[alt1start]],
-                                  showStrand)
-        excAstr <- junctionString(chr, strand,
-                                  annotation[[constitutive]], 
-                                  annotation[[alt2start]],
-                                  showStrand)
+        incAstr <- junctionString(chr, strand, con1end, alt1start, showStrand)
+        excAstr <- junctionString(chr, strand, con1end, alt2start, showStrand)
         
         # Get specific junction quantification
         incA <- fmatch(incAstr, coords)
@@ -775,18 +673,24 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         # Remove duplicates based on columns used to create identifiers
         annotation <- uniqueBy(annotation, "Chromosome", "Strand",
                                alt2end, alt1end, geneCol)
-        chr <- annotation$Chromosome
+        chr    <- annotation$Chromosome
         strand <- annotation$Strand
-        gene <- prepareGenePresentation(annotation)
+        gene   <- prepareGenePresentation(annotation[[geneCol]])
+        
+        alt1end <- annotation[[alt1end]]
+        alt2end <- annotation[[alt2end]]
         eventNames <- paste(sep="_", eventType, chr, strand, 
-                            annotation[[alt2end]], 
-                            annotation[[alt1end]], gene)
+                            alt2end, alt1end, gene)
+        # Prepare event data
+        coords_con1 <- NA
+        coords_alt1 <- I(as.list(alt1end))
+        coords_alt2 <- I(as.list(alt2end))
+        coords_con2 <- NA
+        coords_pos  <- I(listPairs(alt1end, alt2end, sorted=TRUE))
         
         # Create searchable strings for junctions
-        incStr <- junctionString(chr, strand, annotation[[alt1end]], "",
-                                 showStrand)
-        excStr <- junctionString(chr, strand, annotation[[alt2end]], "",
-                                 showStrand)
+        incStr <- junctionString(chr, strand, alt1end, "", showStrand)
+        excStr <- junctionString(chr, strand, alt2end, "", showStrand)
         coords <- gsub(":[0-9]*:([\\+\\-])$", "::\\1", coords)
         
         # Get specific junction quantification
@@ -808,18 +712,24 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
         # Remove duplicates based on columns used to create identifiers
         annotation <- uniqueBy(annotation, "Chromosome", "Strand",
                                alt1start, alt2start, geneCol)
-        chr <- annotation$Chromosome
+        chr    <- annotation$Chromosome
         strand <- annotation$Strand
-        gene <- prepareGenePresentation(annotation)
-        eventNames <- paste(sep="_", eventType, chr, strand,
-                            annotation[[alt1start]], 
-                            annotation[[alt2start]], gene)
+        gene   <- prepareGenePresentation(annotation[[geneCol]])
+        
+        alt1start <- annotation[[alt1start]]
+        alt2start <- annotation[[alt2start]]
+        eventNames <- paste(sep="_", eventType, chr, strand, 
+                            alt1start, alt2start, gene)
+        # Prepare event data
+        coords_con1 <- NA
+        coords_alt1 <- I(as.list(alt1start))
+        coords_alt2 <- I(as.list(alt2start))
+        coords_con2 <- NA
+        coords_pos  <- I(listPairs(alt1start, alt2start, sorted=TRUE))
         
         # Create searchable strings for junctions
-        incStr <- junctionString(chr, strand, "",
-                                 annotation[[alt1start]], showStrand)
-        excStr <- junctionString(chr, strand, "",
-                                 annotation[[alt2start]], showStrand)
+        incStr <- junctionString(chr, strand, "", alt1start, showStrand)
+        excStr <- junctionString(chr, strand, "", alt2start, showStrand)
         coords <- gsub(":.*?:", "::", coords)
         
         # Get specific junction quantification
@@ -844,5 +754,21 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
     
     # Clear rows with nothing but missing values
     naRows <- rowSums(!is.na(psi)) == 0
-    return(psi[!naRows, , drop=FALSE])
+    psi    <- psi[!naRows, , drop=FALSE]
+    
+    # Finalise AS event information
+    gene <- annotation[[geneCol]]
+    if (!is.null(gene)) gene <- I(gene)
+    eventData <- data.frame(type=eventType, chrom=chr, strand=strand, gene=gene,
+                            start=sapply(coords_pos, min),
+                            end=sapply(coords_pos, max),
+                            pos=coords_pos,
+                            constitutive1=coords_con1,
+                            alternative1=coords_alt1,
+                            alternative2=coords_alt2,
+                            constitutive2=coords_con2)
+    rownames(eventData)    <- eventNames
+    eventData              <- eventData[rownames(psi), , drop=FALSE]
+    attr(psi, "eventData") <- eventData
+    return(psi)
 }

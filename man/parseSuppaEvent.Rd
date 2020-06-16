@@ -24,7 +24,7 @@ More information about SUPPA available at
 The following event types are available to be parsed:
 \itemize{
  \item{\bold{SE} (skipped exon)}
- \item{\bold{RI} (intron retention)}
+ \item{\bold{RI} (retained intron)}
  \item{\bold{MX} (mutually exclusive exons)}
  \item{\bold{A5} (alternative 5' splice site)}
  \item{\bold{A3} (alternative 3' splice site)}

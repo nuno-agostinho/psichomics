@@ -130,11 +130,11 @@ loadGtexFile <- function(path, pattern, samples=NULL) {
         for (i in seq(customFormat)) customFormat[[i]]$ignoreCols <- NULL
         
         # Load GTEx data exclusively for matching samples
-        allSamples <- colnames(parseValidFile(path, customFormat, nrows=0))
+        allSamples <- colnames(loadFile(path, customFormat, nrows=0))
         select <- c(1, # Retrieve junction identifier 
                     which(allSamples %in% samples))
     }
-    parsed <- parseValidFile(path, format, select=select)
+    parsed <- loadFile(path, format, select=select)
     
     if (!is.null(samples)) {
         if (pattern == "Sample") {

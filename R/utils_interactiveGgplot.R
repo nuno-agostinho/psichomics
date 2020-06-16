@@ -103,11 +103,11 @@ ggplotTooltip <- function(df, hover, x, y) {
     trItem <- function(key, value) tags$tr(tags$td(tags$b(key)), tags$td(value))
     
     thisPoint <- rownames(point)
-    if ( areSplicingEvents(thisPoint) ) {
-        event  <- parseSplicingEvent(thisPoint, pretty=TRUE)
+    if ( areSplicingEvents(thisPoint, data=df) ) {
+        event  <- parseSplicingEvent(thisPoint, pretty=TRUE, data=df)
         strand <- ifelse(event$strand == "+", "forward", "reverse")
         gene   <- paste(event$gene[[1]], collapse=" or ")
-        type   <- trItem("Event type", event$type)
+        type   <- trItem("Event type", event$subtype)
         coord  <- trItem(
             "Coordinates", 
             sprintf("chr %s: %s to %s (%s strand)", event$chrom,

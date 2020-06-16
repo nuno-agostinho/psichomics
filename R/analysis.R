@@ -2354,17 +2354,14 @@ diffAnalyses <- function(data, groups=NULL,
         }
     }
     
-    if ( areSplicingEvents(rownames(df)) ) {
+    areEvents <- areSplicingEvents(rownames(df), data=data)
+    if (areEvents) {
         # Add splicing event information
         updateProgress("Including splicing event information")
-        info <- suppressWarnings(parseSplicingEvent(rownames(df), pretty=TRUE))
-        
-        # Prepare presentation of multigenes
-        multigene <- lapply(info$gene, length) > 1
-        infoGene <- info$gene
-        infoGene[multigene] <- lapply(infoGene[multigene], paste, collapse="/")
-        
-        df <- cbind("Event type"=info$type, "Chromosome"=info$chrom,
+        info <- suppressWarnings(
+            parseSplicingEvent(rownames(df), data=data, pretty=TRUE))
+        infoGene <- prepareGenePresentation(info$gene)
+        df <- cbind("Event type"=info$subtype, "Chromosome"=info$chrom,
                     "Strand"=info$strand, "Gene"=unlist(infoGene), df)
     }
     
@@ -2373,11 +2370,9 @@ diffAnalyses <- function(data, groups=NULL,
         time <- Sys.time()
         
         df[ , "Distribution"] <- createDensitySparklines(
-            df[ , "Distribution"], rownames(df), 
-            areSplicingEvents(rownames(df)), groups=originalGroups, 
-            geneExpr=geneExpr)
-        name <- ifelse(areSplicingEvents(rownames(df)),
-                       "PSI.distribution", "GE.distribution")
+            df[ , "Distribution"], rownames(df), areEvents,
+            groups=originalGroups, geneExpr=geneExpr)
+        name <- ifelse(areEvents, "PSI.distribution", "GE.distribution")
         colnames(df)[match("Distribution", colnames(df))] <- name
         display(Sys.time() - time)
     }
@@ -2390,6 +2385,17 @@ diffAnalyses <- function(data, groups=NULL,
     
     # parallel::stopCluster(cl)
     return(df)
+}
+
+prettifyEventID <- function(event, data=NULL) {
+    eventData <- getEventData(event, data=data)
+    if (!is.null(eventData$id)) {
+        parsed <- parseSplicingEvent(event, data=data)
+        parsed <- parsed$id
+    } else {
+        parsed <- parseSplicingEvent(event, char=TRUE, data=data)
+    }
+    return(parsed)
 }
 
 #' Set of functions to render differential analyses (plot and table)
@@ -2454,9 +2460,8 @@ analysesTableSet <- function(session, input, output, analysesType, analysesID,
     proxy <- dataTableProxy("statsTable")
     observe({
         stats <- getAnalysesData()
-        
         if (!is.null(stats)) {
-            # Bind preview of survival curves based on PSI cutoff
+            # Bind preview of survival curves based on value cutoff
             optimSurv <- getAnalysesSurvival()
             if (!is.null(optimSurv)) {
                 cols <- sprintf(c("Optimal %s cutoff", "Log-rank p-value",
@@ -2512,9 +2517,7 @@ analysesTableSet <- function(session, input, output, analysesType, analysesID,
             # Set new data
             setAnalysesFiltered(stats)
             
-            # Properly display event identifiers
-            rownames(stats) <- parseSplicingEvent(rownames(stats), char=TRUE)
-            
+            rownames(stats) <- prettifyEventID(rownames(stats), data=stats)
             # Keep columns from data table (else, no data will be rendered)
             cols  <- getAnalysesColumns()
             stats <- stats[ , cols]
@@ -2610,17 +2613,18 @@ analysesTableSet <- function(session, input, output, analysesType, analysesID,
         
         if (analysesType == "PSI") {
             ASevents <- rownames(stats)
-            genes <- unique(names(getGenesFromSplicingEvents(ASevents)))
+            genes <- unique(names(getGenesFromSplicingEvents(
+                ASevents, data=attr(stats, "eventData"))))
             origin <- "Selection from differential splicing analysis"
         } else if (analysesType == "GE") {
             genes <- rownames(stats)
             
             ASevents <- getASevents()
-            if ( !is.null(ASevents) )
+            if ( !is.null(ASevents) ) {
                 ASevents <- getSplicingEventFromGenes(genes, ASevents)
-            else
+            } else {
                 ASevents <- character(0)
-            
+            }
             origin <- "Selection from differential expression analysis"
         }
         
@@ -2698,6 +2702,7 @@ analysesPlotSet <- function(session, input, output, analysesType, analysesID,
         if (!is.null(diffAnalyses)) {
             if (analysesType == "PSI") {
                 ASevents <- rownames(diffAnalyses)
+                # TODO: use prettifyEventID()?
                 names(ASevents) <- gsub("_", " ", ASevents)
                 updateSelectizeInput(session, "labelEvents", server=TRUE,
                                      choices=ASevents, selected=character(0))
@@ -2838,8 +2843,9 @@ analysesPlotSet <- function(session, input, output, analysesType, analysesID,
     
     # Plot events and render the plot tooltip
     observe({
-        stats    <- getAnalysesData()
-        filtered <- getAnalysesFiltered()
+        stats     <- getAnalysesData()
+        filtered  <- getAnalysesFiltered()
+        eventData <- attr(stats, "eventData")
         x <- input$xAxis
         y <- input$yAxis
         if (is.null(stats) || is.null(x) || is.null(y)) {
@@ -2867,6 +2873,7 @@ analysesPlotSet <- function(session, input, output, analysesType, analysesID,
         stats  <- res$data
         xLabel <- res$xLabel
         yLabel <- res$yLabel
+        attr(stats, "eventData") <- eventData
         
         ggplotServer(
             input=input, output=output, id=analysesID, df=stats, x=xLabel, 

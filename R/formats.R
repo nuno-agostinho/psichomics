@@ -37,7 +37,7 @@ checkFileFormat <- function(format, head, filename="") {
     return(res)
 }
 
-#' Loads a file according to its format
+#' Parse file according to its format
 #' 
 #' @inheritParams checkFileFormat
 #' @param file Character: file to load
@@ -51,7 +51,7 @@ checkFileFormat <- function(format, head, filename="") {
 #' 
 #' @return Data frame with the loaded file
 #' @keywords internal
-loadFile <- function(format, file, ...) {
+parseFile <- function(format, file, ...) {
     ## TODO(NunoA): account for the comment character
     delim <- ifelse(!is.null(format$delim), format$delim, "\t")
     skip <- ifelse(!is.null(format$skip), format$skip, 0)
@@ -170,7 +170,7 @@ loadFileFormats <- function() {
     return(formats)
 }
 
-#' Parse file given a list of file formats
+#' Load file based on its format
 #' 
 #' Tries to recognise the file format and parses the content of the given file
 #' accordingly.
@@ -178,6 +178,7 @@ loadFileFormats <- function() {
 #' @param file Character: file to parse
 #' @param formats List of file formats to check
 #' @param ... Extra parameters passed to \link[data.table]{fread}
+#' @param verbose Boolean: detail steps while parsing
 #' 
 #' @details The resulting data frame includes the attribute \code{tablename} 
 #' with the name of the data frame
@@ -188,7 +189,7 @@ loadFileFormats <- function() {
 #' @return Data frame with the contents of the given file if the file format is
 #' recognised; otherwise, returns \code{NULL}
 #' @keywords internal
-parseValidFile <- function(file, formats, ...) {
+loadFile <- function(file, formats=loadFileFormats(), ..., verbose=FALSE) {
     if (!is.list(formats[[1]])) formats <- list(formats)
     
     # The maximum number of rows to check a file is the maximum value asked by
@@ -208,8 +209,11 @@ parseValidFile <- function(file, formats, ...) {
         ## TODO(NunoA): still a conflict? Ask the user which file format to use
         stop("Error: more than one file format was recognised.")
     } else if (sum(recognised) == 1) {
+        if (verbose) {
+            message("Recognised format: ", names(recognised[recognised]))
+        }
         format <- formats[recognised][[1]]
-        loaded <- loadFile(format, file, ...)
+        loaded <- parseFile(format, file, ...)
         return(loaded)
     }
 }

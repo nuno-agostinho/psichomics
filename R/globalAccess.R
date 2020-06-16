@@ -1,6 +1,7 @@
 ## Functions to get and set globally accessible variables
 
 #' @include utils.R 
+#' @importFrom shiny reactiveValues
 NULL
 
 # Global variable with all the data of a session
@@ -94,14 +95,16 @@ setPrecision <- function(integer) setGlobal("precision", value=integer)
 
 #' @rdname getGlobal
 #' @keywords internal
-getASevents <- function() {
+getASevents <- reactive({
     psi <- getInclusionLevels()
     if (!is.null(psi)) {
-        choices <- rownames(psi)
-        names(choices) <- parseSplicingEvent(choices, char=TRUE)
-        return( sort(choices) )
+        choices <- sort(rownames(psi))
+        names(choices) <- parseSplicingEvent(choices, char=TRUE, data=psi)
+        attr(choices, "eventData") <- attr(psi, "rowData")
+        choices <- preserveAttributes(choices)
+        return(choices)
     }
-}
+})
 
 #' @rdname getGlobal
 #' @keywords internal
@@ -118,7 +121,7 @@ getEvent <- getASevent
 setEvent <- setASevent
 
 #' @rdname getGlobal
-getGenes <- function() {
+getGenes <- reactive({
     genes <- NULL
     
     # Retrieve genes from gene expression
@@ -132,8 +135,9 @@ getGenes <- function() {
     
     # Retrieve genes based on AS events
     ASevents <- getASevents()
-    if (!is.null(ASevents))
+    if (!is.null(ASevents)) {
         genes <- c(unlist(parseSplicingEvent(ASevents)$gene), genes)
+    }
     
     if (!is.null(genes)) {
         genes   <- sort(unique(genes))
@@ -142,7 +146,7 @@ getGenes <- function() {
         genes   <- c(genes[!unknown], genes[unknown])
     }
     return(genes)
-}
+})
 
 #' Get curated, literature-based gene lists
 #'

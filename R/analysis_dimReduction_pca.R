@@ -260,14 +260,16 @@ calculateLoadingsContribution <- function(pca, pcX=1, pcY=2) {
         sprintf("Contribution to PC%s and PC%s (%%)", pcX, pcY))
     
     # Parse alternative splicing events or genes
-    if ( areSplicingEvents(rownames(table)) ) {
-        extra <- parseSplicingEvent(rownames(table), pretty=TRUE)
+    if ( areSplicingEvents(rownames(table), data=pca) ) {
+        extra <- parseSplicingEvent(rownames(table), pretty=TRUE, data=pca)
+        id         <- extra$id
         extra$gene <- sapply(extra$gene, paste0, collapse=", ")
         extra$pos  <- sapply(extra$pos,  paste0, collapse=", ")
+        extra      <- extra[ , c("type", "chrom", "strand", "gene", "pos")]
         colnames(extra) <- c("Event type", "Chromosome", "Strand", "Gene",
                              "Event position")
-        extra <- extra[ , c(4, 1, 2, 3, 5)]
         table <- cbind(extra, table)
+        if (!is.null(id)) table <- cbind("Event ID"=id, table)
     } else {
         table <- cbind("Genes"=rownames(table), table)
     }
@@ -357,7 +359,11 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
         contrPCy   <- contr[ , ncol(contr) - 1]
         contrTotal <- contr[ , ncol(contr)]
         
-        names <- parseSplicingEvent(rownames(contr), char=TRUE)
+        if (areSplicingEvents(rownames(contr), data=pca)) {
+            names <- parseSplicingEvent(rownames(contr), char=TRUE, data=pca)
+        } else {
+            names <- rownames(contr)
+        }
         dfX <- c(paste0("PC", pcX, " loading"),
                  paste0("PC", pcY, " loading"),
                  paste0("Contribution to PC", pcX),
@@ -688,10 +694,13 @@ pcaServer <- function(input, output, session) {
             })
             
             # Subset data based on the selected groups
-            if ( !is.null(groups) ) 
+            if ( !is.null(groups) ) {
                 dataForPCA <- dataForPCA[ , unlist(groups), drop=FALSE]
-            if ( !is.null(groups2) )
+            }
+            if ( !is.null(groups2) ) {
                 dataForPCA <- dataForPCA[unlist(groups2), , drop=FALSE]
+            }
+            eventData <- attr(dataForPCA, "rowData")
             
             # Raise error if data has no rows
             if (nrow(dataForPCA) == 0) {
@@ -721,8 +730,9 @@ pcaServer <- function(input, output, session) {
                     "Constant/zero columns cannot be resized to unit variance",
                     caller="Principal component analysis")
             } else {
-                attr(pca, "dataType") <- dataType
-                attr(pca, "firstPCA") <- is.null(getPCA())
+                attr(pca, "dataType")  <- dataType
+                attr(pca, "firstPCA")  <- is.null(getPCA())
+                attr(pca, "eventData") <- eventData
                 setPCA(pca)
                 
                 # Clear previously plotted charts

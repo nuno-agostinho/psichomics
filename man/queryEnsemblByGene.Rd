@@ -7,7 +7,7 @@
 \usage{
 queryEnsemblByGene(gene, species = NULL, assembly = NULL)
 
-queryEnsemblByEvent(event, species, assembly)
+queryEnsemblByEvent(event, species = NULL, assembly = NULL, data = NULL)
 }
 \arguments{
 \item{gene}{Character: gene}

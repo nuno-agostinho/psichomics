@@ -18,6 +18,39 @@
     packageStartupMessage(paste("", msg, msg2, sep = "\n"))
 }
 
+#' Preserve attributes when extracting values
+#' 
+#' Add object to class "sticky"
+#' 
+#' @keywords internal
+preserveAttributes <- function(x) {
+    class(x) <- c("sticky", class(x))
+    return(x)
+}
+
+#' Preserve attributes of "sticky" objects when extracting
+#' @export
+`[.sticky` <- function(x, i, j, ...) {
+    attrs <- attributes(x)
+    attrs <- attrs[!names(attrs) %in% c("names", "dim", "dimnames", "class",
+                                        "row.names")]
+    res <- NextMethod()
+    res <- addObjectAttrs(res, attrs)
+    
+    # Subset rowData and colData based on row and column names, respectively
+    subsetInfo <- function(data, names) {
+        areValidNames <- !is.null(data) && !is.null(names) &&
+            all(names %in% rownames(data))
+        if (areValidNames) data <- data[names, ]
+        return(data)
+    }
+    attr(res, "rowData") <- subsetInfo(attr(res, "rowData"), rownames(res))
+    attr(res, "colData") <- subsetInfo(attr(res, "colData"), colnames(res))
+    
+    if (!is(res, "sticky")) res <- preserveAttributes(res)
+    return(res)
+}
+
 #' Round down/up the minimum/maximum value
 #' @param x Numeric: values
 #' @param digits Numeric: number of maximum digits
@@ -59,253 +92,6 @@ isFile <- function(files) {
 #' junctionQuant <- readFile("ex_junctionQuant.RDS")
 readFile <- function(file) {
     readRDS(insideFile("extdata", file))
-}
-
-#' Get supported splicing event types
-#' 
-#' @param acronymsAsNames Boolean: return acronyms as names?
-#' 
-#' @family functions for PSI quantification
-#' @return Named character vector with splicing event types
-#' @export
-#' 
-#' @examples 
-#' getSplicingEventTypes()
-getSplicingEventTypes <- function(acronymsAsNames=FALSE) {
-    types <- c(
-        "Skipped exon"="SE",
-        "Mutually exclusive exon"="MXE",
-        "Alternative 5' splice site"="A5SS",
-        "Alternative 3' splice site"="A3SS",
-        "Alternative first exon"="AFE",
-        "Alternative last exon"="ALE",
-        "Alternative first exon (exon-centred - less reliable)"="AFE_exon",
-        "Alternative last exon (exon-centred - less reliable)"="ALE_exon")
-    if (acronymsAsNames) {
-        tmp        <- names(types)
-        names(tmp) <- types
-        types      <- tmp
-    }
-    return(types)
-}
-
-#' Check if string identifies splicing events
-#' 
-#' @param char Character vector
-#' @param num Integer: number of elements to check
-#' 
-#' @return TRUE if first elements of the vector identify splicing events; FALSE,
-#'   otherwise
-#' @keywords internal
-areSplicingEvents <- function(char, num=6) {
-    all(sapply(head(char, num), function (i)
-        sum(charToRaw(i) == charToRaw("_")) > 3))
-}
-
-#' Parse alternative splicing event identifier
-#' 
-#' @param event Character: event identifier
-#' @param char Boolean: return character vector instead of list with parsed
-#' values?
-#' @param pretty Boolean: return a prettier name of the event identifier?
-#' @param extra Character: extra information to add (such as species and
-#' assembly version); only used if \code{pretty = TRUE} and \code{char = TRUE}
-#' @param coords Boolean: display extra coordinates regarding the alternative 
-#' and constitutive regions of alternative splicing events? If 
-#' \code{char = FALSE}, all coordinates are always displayed
-#' 
-#' @return Parsed event
-#' @export
-#' 
-#' @examples 
-#' events <- c("SE_1_-_123_456_789_1024_TST",
-#'             "MXE_3_+_473_578_686_736_834_937_HEY/YOU")
-#' parseSplicingEvent(events)
-parseSplicingEvent <- function(event, char=FALSE, pretty=FALSE, extra=NULL, 
-                               coords=FALSE) {
-    if (is.null(event)) return(NULL)
-    # Pre-treat special case of exon-centred AFE and ALE
-    event <- gsub("AFE_exon", "AFE", event, fixed=TRUE)
-    event <- gsub("ALE_exon", "ALE", event, fixed=TRUE)
-    
-    # Protect genes with underscores
-    event <- gsub("(.*)_(Arg|Und|var1|B|[0-9]+)$", "\\1::\\2", event)
-    recoverGeneNamesWithUnderscore <- function(gene) {
-        gsub("::", "_", gene, fixed=TRUE)
-    }
-    
-    if (char) {
-        if (pretty) {
-            event     <- strsplit(event, "_", fixed=TRUE)
-            
-            eventType <- sapply(event, "[[", 1)
-            eventType <- getSplicingEventTypes(acronymsAsNames=TRUE)[eventType]
-            eventType <- tolower(eventType)
-            
-            chrom     <- sapply(event, "[[", 2)
-            strand    <- ifelse(sapply(event, "[[", 3) == "+", "positive",
-                                "negative")
-            gene      <- sapply(event, function(i) i[[length(i)]])
-            gene      <- recoverGeneNamesWithUnderscore(gene)
-            
-            start     <- sapply(event, "[[", 4)
-            end       <- sapply(event, function(i) i[[length(i) - 1]])
-            
-            if (is.null(extra)) {
-                event <- sprintf("%s %s (chr%s: %s-%s, %s strand)", gene,
-                                 eventType, chrom, start, end, strand)
-            } else {
-                event <- sprintf("%s %s (chr%s: %s-%s, %s strand, %s)", gene,
-                                 eventType, chrom, start, end, strand, extra)
-            }
-        } else {
-            event <- gsub("_", " ", event, fixed=TRUE)
-        }
-        return(event)
-    }
-    
-    event <- strsplit(event, "_")
-    parsed <- data.frame(matrix(nrow=length(event)))
-    
-    len <- vapply(event, length, numeric(1))
-    lenMinus1 <- len - 1
-    
-    parsed$type   <- vapply(event, "[[", 1, FUN.VALUE=character(1))
-    parsed$chrom  <- vapply(event, "[[", 2, FUN.VALUE=character(1))
-    parsed$strand <- vapply(event, "[[", 3, FUN.VALUE=character(1))
-    parsed$gene   <- strsplit(vapply(seq_along(event), 
-                                     function(i) event[[i]][[len[[i]]]],
-                                     FUN.VALUE=character(1)), "/")
-    parsed$gene   <- recoverGeneNamesWithUnderscore(parsed$gene)
-    
-    # Parse position according to type of alternative splicing event
-    parsed$pos <- lapply(seq_along(event), 
-                         function(i) as.numeric(event[[i]][4:lenMinus1[[i]]]))
-    if (coords) {
-        parsed$constitutive1 <- NA
-        parsed$alternative1  <- NA
-        parsed$alternative2  <- NA
-        parsed$constitutive2 <- NA
-        for (row in seq(nrow(parsed))) {
-            type <- parsed[row, "type"]
-            
-            con1 <- NULL
-            alt1 <- NULL
-            alt2 <- NULL
-            con2 <- NULL
-            if (type == "SE") {
-                con1 <- 1
-                alt1 <- c(2, 3)
-                con2 <- 4
-            } else if (type == "MXE") {
-                con1 <- 1
-                alt1 <- c(2, 3)
-                alt2 <- c(4, 5)
-                con2 <- 6
-            } else if (type %in% c("A3SS", "ALE")) {
-                con1 <- 1
-                alt1 <- 2
-                alt2 <- 3
-            } else if (type %in% c("A5SS", "AFE")) {
-                alt1 <- 2
-                alt2 <- 1
-                con2 <- 3
-            }
-            
-            if (!is.null(con1))
-                parsed$constitutive1[[row]] <- list(parsed[[row, "pos"]][con1])
-            if (!is.null(alt1))
-                parsed$alternative1[[row]]  <- list(parsed[[row, "pos"]][alt1])
-            if (!is.null(alt2))
-                parsed$alternative2[[row]]  <- list(parsed[[row, "pos"]][alt2])
-            if (!is.null(con2))
-                parsed$constitutive2[[row]] <- list(parsed[[row, "pos"]][con2])
-        }
-        
-        parsed$alternative1  <- unlist(parsed$alternative1,  recursive=FALSE)
-        parsed$constitutive1 <- unlist(parsed$constitutive1, recursive=FALSE)
-        parsed$constitutive2 <- unlist(parsed$constitutive2, recursive=FALSE)
-        parsed$alternative2  <- unlist(parsed$alternative2,  recursive=FALSE)
-    }
-    
-    parsed$pos <- suppressWarnings( # Simply ignore non-numeric items
-        lapply(parsed$pos, function(i) range(as.numeric(i), na.rm=TRUE)))
-    
-    if (pretty)
-        parsed$type <- getSplicingEventTypes(acronymsAsNames=TRUE)[parsed$type]
-    
-    parsed[,1] <- NULL
-    return(parsed)
-}
-
-#' Match splicing events with respective genes
-#' 
-#' @param ASevents Character: alternative splicing events to be matched
-#' 
-#' @return Named character vector containing the splicing events and their
-#' respective gene as their name
-#' @keywords internal
-matchSplicingEventsWithGenes <- function(ASevents) {
-    ASeventParsed <- parseSplicingEvent(ASevents)$gene
-    ASeventGenes  <- rep(ASevents, sapply(ASeventParsed, length))
-    names(ASeventGenes) <- unlist(ASeventParsed)
-    return(ASeventGenes)
-}
-
-#' Get alternative splicing events from genes or vice-versa
-#' 
-#' @details 
-#' A list of alternative splicing events is required to run 
-#' \code{getSplicingEventFromGenes}
-#' 
-#' @param genes Character: gene symbols (or TCGA-styled gene symbols)
-#' @param ASevents Character: alternative splicing events
-#' 
-#' @return Named character containing alternative splicing events or genes and 
-#' their respective genes or alternative splicing events as names (depending on
-#' the function in use)
-#' 
-#' @export
-#' 
-#' @examples 
-#' ASevents <- c("SE_1_+_201763003_201763300_201763374_201763594_NAV1", 
-#'               "SE_1_+_183515472_183516238_183516387_183518343_SMG7",
-#'               "SE_1_+_183441784_183471388_183471526_183481972_SMG7",
-#'               "SE_1_+_181019422_181022709_181022813_181024361_MR1",
-#'               "SE_1_+_181695298_181700311_181700367_181701520_CACNA1E")
-#' genes <- c("NAV1", "SMG7", "MR1", "HELLO")
-#' 
-#' # Get splicing events from genes
-#' matchedASevents <- getSplicingEventFromGenes(genes, ASevents)
-#' 
-#' # Names of matched events are the matching input genes
-#' names(matchedASevents)
-#' matchedASevents
-#' 
-#' # Get genes from splicing events
-#' matchedGenes <- getGenesFromSplicingEvents (ASevents)
-#' 
-#' # Names of matched genes are the matching input alternative splicing events
-#' names(matchedGenes)
-#' matchedGenes
-getSplicingEventFromGenes <- function(genes, ASevents) {
-    if (!is(ASevents, "matched"))
-        ASeventGenes <- matchSplicingEventsWithGenes(ASevents)
-    else
-        ASeventGenes <- ASevents
-    
-    genes <- gsub("\\|.*$", "", genes) # Process TCGA-styled gene symbols
-    ASeventGenes <- ASeventGenes[names(ASeventGenes) %in% genes]
-    return(ASeventGenes)
-}
-
-#' @rdname getSplicingEventFromGenes
-#' @export
-getGenesFromSplicingEvents <- function(ASevents) {
-    genes <- parseSplicingEvent(ASevents)$gene
-    match <- unlist(genes)
-    names(match) <- rep(ASevents, sapply(genes, length))
-    return(match)
 }
 
 #' Trims whitespace from a word

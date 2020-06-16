@@ -230,6 +230,7 @@ quantifySplicing <- function(annotation, junctionQuant,
         mJunctionQuant <- as.matrix(junctionQuant)
     
     psi <- NULL
+    eventData <- NULL
     for (acronym in eventType) {
         eventTypes <- getSplicingEventTypes()
         type <- names(eventTypes)[[match(acronym, eventTypes)]]
@@ -238,8 +239,10 @@ quantifySplicing <- function(annotation, junctionQuant,
                        max=length(eventType))
         
         if (!is.null(thisAnnot) && nrow(thisAnnot) > 0) {
-            psi <- rbind(psi, calculateInclusionLevels(
-                acronym, mJunctionQuant, thisAnnot, minReads))
+            incLevels <- calculateInclusionLevels(acronym, mJunctionQuant, 
+                                                  thisAnnot, minReads)
+            eventData <- rbind(eventData, attr(incLevels, "eventData"))
+            psi <- rbind(psi, incLevels)
         }
     }
     
@@ -254,6 +257,9 @@ quantifySplicing <- function(annotation, junctionQuant,
         description="PSI values per alternative splicing events",
         dataType="Inclusion levels", tablename="Inclusion levels",
         rows="alternative splicing events", columns="samples")
+    class(eventData) <- c("eventData", class(eventData))
+    attr(psi, "rowData") <- eventData
+    psi <- preserveAttributes(psi)
     return(psi)
 }
 
@@ -391,7 +397,7 @@ loadSplicingQuantificationSet <- function(session, input, output) {
         formats <- allFormats[sapply(allFormats, "[[",
                                      "dataType") == "Inclusion levels"]
         
-        psi <- tryCatch(parseValidFile(input$customASquant, formats),
+        psi <- tryCatch(loadFile(input$customASquant, formats),
                         warning=return, error=return)
         if (is(psi, "error")) {
             if (psi$message == paste("'file' must be a character string or",

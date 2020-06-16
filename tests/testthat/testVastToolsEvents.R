@@ -196,7 +196,7 @@ test_that("parseVastToolsEvent parses alt. 5' splice site annotation with inform
     expect_equal(parsed$Strand[[3]], "+")
 })
 
-test_that("parseVastToolsEvent parses intron retention annotation", {
+test_that("parseVastToolsEvent parses retained intron annotation", {
     events <- read.table(
         text = "
         A2M    ENSG00000175899-A2M:NM_000014:9 chr12:9258942-9259086    145 chr12:9259087-9259201=9258832-9258941:-    IR-S    A2M:NM_000014:9
@@ -248,7 +248,7 @@ test_that("parseVastToolsSE parses exon skipping junctions", {
     expect_equal(parsed$C2.start[[2]], 99884983)
 })
 
-test_that("parseVastToolsRI parses intron retention junctions", {
+test_that("parseVastToolsRI parses retained intron junctions", {
     junctions <- read.table(
         text = "
         125549925 125550263 125558422 125558525

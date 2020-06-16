@@ -38,7 +38,7 @@ parseSuppaAnnotation <- function(
 #' @details The following event types are available to be parsed:
 #' \itemize{
 #'  \item{\bold{SE} (skipped exon)}
-#'  \item{\bold{RI} (intron retention)}
+#'  \item{\bold{RI} (retained intron)}
 #'  \item{\bold{MX} (mutually exclusive exons)}
 #'  \item{\bold{A5} (alternative 5' splice site)}
 #'  \item{\bold{A3} (alternative 3' splice site)}
@@ -110,7 +110,7 @@ parseSuppaEvent <- function(event) {
 #' @details The following event types are available to be parsed:
 #' \itemize{
 #'  \item{\bold{SE} (exon skipping)}
-#'  \item{\bold{RI} (intron retention)}
+#'  \item{\bold{RI} (retained intron)}
 #'  \item{\bold{MXE} (mutually exclusive exons)}
 #'  \item{\bold{A5SS} (alternative 5' splice site)}
 #'  \item{\bold{A3SS} (alternative 3' splice site)}

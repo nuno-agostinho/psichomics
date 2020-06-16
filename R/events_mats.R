@@ -131,7 +131,7 @@ parseMatsEvent <- function(event, event_type) {
 #' \itemize{
 #'  \item{\bold{SE} (skipped exon)}
 #'  \item{\bold{MXE} (mutually exclusive exon)}
-#'  \item{\bold{RI} (intron retention)}
+#'  \item{\bold{RI} (retained intron)}
 #'  \item{\bold{A5SS} (alternative 5' splice site)}
 #'  \item{\bold{A3SS} (alternative 3' splice site)}
 #'  \item{\bold{AFE} (alternative first exon)}
@@ -201,7 +201,7 @@ parseMatsMXE <- function(junctions, strand) {
 #' @rdname parseMatsGeneric
 #' @examples 
 #' 
-#' # Parse intron retention event
+#' # Parse retained intron event
 #' junctions <- read.table(text=
 #'     "15929853 15932100 15929853 15930016 15930687 15932100")
 #' psichomics:::parseMatsRI(junctions, strand = "+")

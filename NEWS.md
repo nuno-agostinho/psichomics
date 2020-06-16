@@ -1,11 +1,20 @@
-# psichomics 1.14.1 (3 June, 2020)
+# psichomics 1.14.1 (16 June, 2020)
 
+* Support for importing VAST-TOOLS' inclusion tables:
+    - VAST-TOOLS' inclusion tables can now be imported; in the visual interface,
+    use the **User-provided data loading** panel and load a specific alternative
+    splicing quantification or load the folder containing such file; in the
+    command-line interface, use `loadLocalFiles()`
+    - To parse splicing event from VAST-TOOLS in the command-line interface,
+    use for instance `parseSplicingEvent("HsaEX0007927", data=VASTTOOLSpsi)`
 * GTEx data loading (`loadGtexData()`):
     - Support for loading GTEx data from V8, V7, V6 or V4 releases
     - Organise GTEx data into folders named based on release version
-* `plotSplicingEvent()`: Alternative splicing diagrams now render automatically
-instead of showing SVG code (if printing more than one event, a table is
-displayed with event identifiers and respective diagrams)
+* `plotSplicingEvent()`:
+    - Alternative splicing diagrams now render automatically instead of showing
+    SVG code (if printing more than one event, a table is displayed with event
+    identifiers and respective diagrams)
+    - Added support to plot intron retention events (e.g. from VAST-TOOLS)
 * `plotLibrarySize()`: plot library size from gene expression data
 * Alternative splicing annotation:
     - Try to load cached alternative splicing annotation if a timeout occurs
@@ -13,6 +22,7 @@ displayed with event identifiers and respective diagrams)
     - Account for possible filename changes when parsing annotations from
     VAST-TOOLS, rMATS, SUPPA and MISO
 * Include Dockerfile to create Docker images based on code revisions
+* Copy-edit tutorial on loading user-provided data
 
 ## Bug fixes and minor changes
 
@@ -27,7 +37,7 @@ displayed with event identifiers and respective diagrams)
     stored (as expected) in GTEx and SRA panels
     - Show filename used to load gene expression and alternative splicing data
     from GTEx and SRA
-* Loading local files:
+* Local data loading:
     - Support loading data from GTEx V8 or previous releases
     - Fix bad formatting of help tooltips when using `shiny 1.4.0` or newer
     (visual interface)
@@ -39,7 +49,6 @@ displayed with event identifiers and respective diagrams)
     not converted to factors by default)
     - Fix `R CMD check` warning of Unicode symbol translation in Windows
     - Fix comparing signed and unsigned integers in `Rcpp` functions
-* Copy-edit tutorial on loading user-provided data
 
 # psichomics 1.12.1 (29 January, 2020)
 

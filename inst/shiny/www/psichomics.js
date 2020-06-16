@@ -127,11 +127,46 @@ function renderEvent (item, escape) {
     var tmp    = item.label.split(" __ "),
         parsed = tmp[0].split("_"),
         type   = parsed[0],
-        pos    = parsed[1],
-        gene   = parsed.slice(-1)[0],
+        chr    = parsed[1],
+        strand = parsed[2],
+        start  = parsed[3],
+        end    = parsed[4],
+        id     = parsed[5],
+        gene   = parsed[6],
         svg    = tmp[1];
-    if (svg === undefined) svg = "";
-    return `<div>${svg}<b>${gene}</b> ${pos}<br>${type}</div>`;
+    
+    function processStr (str, prefix="", suffix="") {
+        if (str === undefined || str === "") {
+            res = "";
+        } else {
+            res = prefix + `${str}` + suffix;
+        }
+        return res;
+    }
+    type   = processStr(type);
+    chr    = processStr(chr, "chr");
+    strand = processStr(strand, "", " strand");
+    start  = processStr(start);
+    end    = processStr(end);
+    id     = processStr(id, "", "<br>");
+    gene   = processStr(gene);
+    svg    = processStr(svg);
+    pos    = "";
+    start  = processStr(start);
+    end    = processStr(end);
+    if (svg === "" && start !== "" && end !== "") pos = `: ${start}-${end}`;
+    
+    function row (str) {
+        return `<div class="row">${str}</div>`;
+    }
+    function col (str, num, attr="") {
+        return `<div class="col-md-${num} ${attr}">${str}</div>`;
+    }
+    
+    var svgCol  = col(svg, 8, "pull-right"),
+        infoCol = col(
+            `<b>${id}${gene}</b> (${chr}${pos}, ${strand})<br>${type}`, 4);
+    return row(infoCol + svgCol);
 }
 
 /**

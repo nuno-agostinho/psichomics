@@ -755,7 +755,8 @@ matchGroupASeventsAndGenes <- function(id, group, ASevents) {
     if (!is.null(ASevents)) {
         if (id == "ASevents") {
             ASevents <- group[ , "ASevents"]
-            genes <- lapply(group[ , "ASevents"], parseSplicingEvent)
+            genes <- lapply(group[ , "ASevents"], parseSplicingEvent,
+                            data=ASevents)
             genes <- lapply(genes, "[[", "gene")
             group <- cbind(group, "Genes"=lapply(
                 genes, function(i) unique(unlist(i))))

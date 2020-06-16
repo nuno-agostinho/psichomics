@@ -114,22 +114,25 @@ diffSplicingEventServer <- function(input, output, session) {
         attr(groups, "Colour") <- colour
         
         assembly <- getAssemblyVersion()
-        plot <- plotDistribution(eventPSI, groups, title=parseSplicingEvent(
-            event, char=TRUE, pretty=TRUE, extra=assembly))
+        title    <- parseSplicingEvent(event, char=TRUE, pretty=TRUE, 
+                                       extra=assembly)
+        plot     <- plotDistribution(eventPSI, groups, title=title)
         output$density <- renderHighchart(plot)
         
         output$eventDiagrams <- renderUI({
             isMXE <- parseSplicingEvent(event)$type == "MXE"
-            constitutive <- plotSplicingEvent(
-                style="position: absolute; top: 321px; left: 52px",
-                constitutiveWidth=40, alternativeWidth=40, intronWidth=0,
-                event, class=NULL, showPath=FALSE, showText=FALSE, 
-                showAlternative1=FALSE, showAlternative2=TRUE)[[1]]
-            alternative <- plotSplicingEvent(
-                style="position: absolute; top: 321px; right: 25px",
-                constitutiveWidth=40, alternativeWidth=40, intronWidth=0,
-                event, class=NULL, showPath=FALSE, showText=FALSE,
-                showAlternative1=TRUE, showAlternative2=!isMXE)[[1]]
+            constitutive <- suppressWarnings(
+                plotSplicingEvent(
+                    style="position: absolute; top: 321px; left: 52px",
+                    constitutiveWidth=40, alternativeWidth=40, intronWidth=0,
+                    event, class=NULL, showPath=FALSE, showText=FALSE, 
+                    showAlternative1=FALSE, showAlternative2=TRUE)[[1]])
+            alternative <- suppressWarnings(
+                plotSplicingEvent(
+                    style="position: absolute; top: 321px; right: 25px",
+                    constitutiveWidth=40, alternativeWidth=40, intronWidth=0,
+                    event, class=NULL, showPath=FALSE, showText=FALSE,
+                    showAlternative1=TRUE, showAlternative2=!isMXE)[[1]])
             return(tagList(HTML(constitutive), HTML(alternative)))
         })
         

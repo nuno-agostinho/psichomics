@@ -29,7 +29,16 @@ psichomicsInclusionLevelsFormat <- function() {
         
         # Identity of rows and columns
         rows    = "alternative splicing events",
-        columns = "samples"
+        columns = "samples",
+        
+        process = function(data) {
+            events <- rownames(data)
+            if (!is.null(events)) {
+                attr(data, "rowData") <- parseSplicingEvent(events, coords=TRUE)
+                data <- preserveAttributes(data)
+            }
+            return(data)
+        }
     )
 }
 

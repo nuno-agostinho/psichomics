@@ -132,7 +132,7 @@ parseVastToolsEvent <- function(event) {
     junctions <- junctions[, 2:ncol(junctions)]
     junctions <- matrix(lapply(junctions, as.numeric), nrow = nrowJunctions)
     
-    # Get strand for intron retention
+    # Get strand for retained intron
     if (event_type == "RI") {
         len <- nchar(coord)
         strand <- substr(coord, len, len)
@@ -163,7 +163,7 @@ parseVastToolsEvent <- function(event) {
 #' @details The following event types are available to be parsed:
 #' \itemize{
 #'  \item{\bold{SE} (skipped exon)}
-#'  \item{\bold{RI} (intron retention)}
+#'  \item{\bold{RI} (retained intron)}
 #'  \item{\bold{A5SS} (alternative 5' splice site)}
 #'  \item{\bold{A3SS} (alternative 3' splice site)}
 #' }

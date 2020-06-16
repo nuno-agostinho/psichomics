@@ -515,7 +515,7 @@ loadFirebrowseFolders <- function(folder, exclude="") {
     for (each in seq_along(files)) {
         updateProgress("Processing file", detail = basename(files[each]), each, 
                        length(files))
-        loaded[[each]] <- parseValidFile(files[each], formats)
+        loaded[[each]] <- loadFile(files[each], formats)
     }
     names(loaded) <- sapply(loaded, attr, "tablename")
     loaded <- Filter(length, loaded)

@@ -17,7 +17,10 @@
 #' psichomics:::addObjectAttrs(ll, "words"=2, "language"="English")
 addObjectAttrs <- function (object, ...) {
     args <- list(...)
-    for (k in seq(args)) attr(object, names(args[k])) <- args[[k]]
+    if (length(args) == 1 && is.list(args[[1]])) args <- args[[1]]
+    if (length(args) > 0) {
+        for (k in seq(args)) attr(object, names(args[k])) <- args[[k]]
+    }
     return(object)
 }
 
@@ -325,8 +328,8 @@ dataUI <- function(id, tab) {
                     tags$br(), tags$small(
                         style="color: gray;",
                         "Note: as", tcga, "does not include exon-intron",
-                        "junction quantification, intron retention",
-                        "events are not measurable.")),
+                        "junction quantification, retained intron (RI) events",
+                        "are not measured.")),
             tags$li("Explore statistically significant genes/events or",
                     "individual genes/events of interest using:")), 
         analysesDescription, br(), br(),

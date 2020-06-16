@@ -21,8 +21,10 @@ splicing and gene expression based on [The Cancer Genome Atlas (TCGA)][tcga]
 [Genotype-Tissue Expression (GTEx)][gtex] project (containing data for multiple
 normal human tissues), [Sequence Read Archive][sra] and user-provided data.
 
-The following tutorial goes through the steps required to load custom RNA-seq 
-data:
+# Loading data based on RNA-seq data
+
+The following tutorial goes through the steps required to load data based on
+RNA-seq data:
 
 1. Retrieve FASTQ files and sample-associated information from the 
 [Sequence Read Archive (SRA)][sra] (optional if you already have your own FASTQ 
@@ -33,7 +35,7 @@ samples);
 by psichomics;
 4. Load data into psichomics.
 
-# Download data from SRA (optional)
+## Download data from SRA (optional)
 
 [SRA][sra] is a repository of biological sequence data that stores data from 
 many published articles. [SRA][sra] data may be useful to answer pressing 
@@ -67,7 +69,7 @@ Sample-associated data is also available from the [Run Selector][SRP126561]
 page. Click **RunInfo Table** to download the whole metadata table for all
 samples.
 
-# Align RNA-seq data to quantify splice junctions
+## Align RNA-seq data to quantify splice junctions
 
 The quantification of each alternative splicing event is based on the proportion
 of junction reads that support the inclusion isoform, known as percent 
@@ -81,7 +83,7 @@ user-provided data by aligning the RNA-seq reads from FASTQ files to a genome of
 reference. As junction reads are required to quantify alternative splicing, a
 splice-aware aligner will be used. psichomics currently supports STAR output.
 
-## STAR
+### STAR
 
 Before aligning FASTQ samples against a genome of reference, a genome index 
 needs to be prepared. 
@@ -140,7 +142,7 @@ Arguments used in the previous command:
 - **`--outFileNamePrefix`**: output prefix
 - **`--readFilesIn`**: FASTQ files to align
 
-# Prepare output for psichomics
+## Prepare output for psichomics
 
 To process the resulting data files, open an R console or RStudio and type:
 
@@ -159,7 +161,7 @@ prepareJunctionQuant("SRR6368612SJ.out.tab", "SRR6368613SJ.out.tab",
 prepareSRAmetadata("SraRunTable.txt")
 ```
 
-## Load data in visual interface
+### Load data in the visual interface
 
 Start psichomics with the following commands in an R console or RStudio:
 
@@ -170,10 +172,9 @@ psichomics()
 
 Then, click **Load user files**. Click the **Folder input** tab and select the
 appropriate folder where the psichomics-prepared data is stored. Finally, click
-**Load files** to automatically scan and load supported files in the selected
-folder.
+**Load files** to automatically scan and load supported files from that folder.
 
-## Load data in command-line interface (CLI)
+### Load data in command-line interface (CLI)
 
 ```{r, eval=FALSE}
 library(psichomics)
@@ -181,6 +182,33 @@ data          <- loadLocalFiles("/path/to/aligned/output/")
 geneExpr      <- data[[1]]$`Gene expression`
 junctionQuant <- data[[1]]$`Junction quantification`
 sampleInfo    <- data[[1]]$`Sample metadata`
+```
+
+# Loading alternative splicing quantification data from VAST-TOOLS
+
+After quantifying alternative splicing using VAST-TOOLS, put the inclusion
+levels table (containing alternative splicing quantification values) in a new
+folder.
+
+## Using the visual interface
+
+Start psichomics with the following commands in an R console or RStudio:
+
+```{r, eval=FALSE}
+library(psichomics)
+psichomics()
+```
+
+Then, click **Load user files**. Click the **Folder input** tab and select the
+appropriate folder. Finally, click **Load files** to automatically scan and load
+all supported files from that folder.
+
+## Using the command-line interface (CLI)
+
+```{r, eval=FALSE}
+library(psichomics)
+data <- loadLocalFiles("/path/to/vast-tools/folder")
+junctionQuant <- data[[1]]$`Junction quantification
 ```
 
 # Feedback

@@ -15,7 +15,7 @@ diagramSplicingEvent(
   showAlternative2 = TRUE,
   constitutiveWidth = 60,
   alternativeWidth = NULL,
-  intronWidth = 15,
+  intronWidth = NULL,
   constitutiveFill = "lightgray",
   constitutiveStroke = "darkgray",
   alternative1Fill = "#ffb153",

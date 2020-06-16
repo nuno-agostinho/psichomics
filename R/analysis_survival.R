@@ -325,19 +325,6 @@ geneExprSurvSet <- function(session, input, output) {
             hide("geInfo")
         }
     })
-    
-    # # Update selected gene based on currently selected splicing event
-    # observe({
-    #     geneExpr <- getGeneExpression(input$geneExpr)
-    #     event    <- getEvent()
-    #     if (isolate(input$modelTerms) == "geCutoff" && !is.null(geneExpr) &&
-    #         !is.null(event)) {
-    #         
-    #         gene <- parseSplicingEvent(event)$gene[[1]][[1]]
-    #         gene <- grep(gene, rownames(geneExpr), value=TRUE)[[1]]
-    #         updateSelectizeInput(session, "gene", selected=gene)
-    #     }
-    # })
 
     # Update gene expression cutoff values based on selected gene
     # Reactive avoids updating if the input remains the same

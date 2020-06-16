@@ -47,6 +47,19 @@ drawRect <- function(x1, x2, text1=NULL, text2=NULL, textLen=NULL, y=10,
         text1, text2, textLen)
 }
 
+# Prepare connecting lines between exons
+drawCurve <- function(x1, x2, y=30, ...) {
+    drawPath(x1, x2, y=y, type="curve", ...)
+}
+
+prepareSVG <- function(exon, path, class=NULL, style=NULL, width=NULL) {
+    svg <- tag("svg",
+               c(height="50px", class=class, style=style, width=width))
+    svg <- tagAppendChildren(svg, exon, path)
+    svg <- as.character(svg)
+    return(svg)
+}
+
 #' Prepare SVG diagram of alternative splicing events
 #' 
 #' @param parsed Alternative splicing event
@@ -76,12 +89,21 @@ drawRect <- function(x1, x2, text1=NULL, text2=NULL, textLen=NULL, y=10,
 diagramSplicingEvent <- function(
     parsed, type, class="pull-right", style=NULL,
     showText=TRUE, showPath=TRUE, showAlternative1=TRUE, showAlternative2=TRUE,
-    constitutiveWidth=60, alternativeWidth=NULL, intronWidth=15, 
+    constitutiveWidth=60, alternativeWidth=NULL, intronWidth=NULL, 
     constitutiveFill="lightgray", constitutiveStroke="darkgray", 
     alternative1Fill="#ffb153", alternative1Stroke="#faa000", 
     alternative2Fill="#caa06c", alternative2Stroke="#9d7039") {
     
     safeAreaWidth <- 1
+    
+    isVASTTOOLS <- parsed$source == "vast-tools"
+    if (!is.null(parsed$source) && isVASTTOOLS) {
+        if (type %in% c("S", paste0("C", 1:3), "ANN", "MIC")) {
+            type <- "SE"
+        } else if (type %in% c("IR-S", "IR-C")) {
+            type <- "RI"
+        }
+    }
     
     isSE   <- type == "SE"
     isMXE  <- type == "MXE"
@@ -89,8 +111,13 @@ diagramSplicingEvent <- function(
     isALE  <- type == "ALE"
     isA3SS <- type == "A3SS"
     isA5SS <- type == "A5SS"
-    if (!isSE && !isMXE && !isAFE && !isALE && !isA3SS && !isA5SS) {
+    isRI   <- type == "RI"
+    if (!isSE && !isMXE && !isAFE && !isALE && !isA3SS && !isA5SS && !isRI) {
         stop("Unsupported alternative splicing event type")
+    } else if (isVASTTOOLS && (isA3SS || isA5SS)) {
+        msg <- paste("Alt3 and Alt5 alternative splicing events from",
+                     "VAST-TOOLS are currentyly not supported")
+        stop(msg)
     }
     
     # Prepare element width
@@ -98,26 +125,18 @@ diagramSplicingEvent <- function(
         alternativeWidth <- 60
         if (isSE || isMXE) alternativeWidth <- 110
     }
-    
-    # Prepare connecting lines between exons
-    drawCurve <- function(x1, x2, y=30, ...)
-        drawPath(x1, x2, y=y, type="curve", ...)
-    
-    prepareSVG <- function(exon, path, class=NULL, style=NULL, width=NULL) {
-        svg <- tag("svg",
-                   c(height="50px", class=class, style=style, width=width))
-        svg <- tagAppendChildren(svg, exon, path)
-        svg <- as.character(svg)
-        return(svg)
+    if (is.null(intronWidth)) {
+        intronWidth <- 15
+        if (isRI && showAlternative1) intronWidth <- 110
     }
     
     exon <- tagList()
     path <- tagList()
     if (isSE) {
-        pos_C1e  <- as.numeric(sapply(parsed, "[[", 4))
-        pos_A1s  <- as.numeric(sapply(parsed, "[[", 5))
-        pos_A1e  <- as.numeric(sapply(parsed, "[[", 6))
-        pos_C2s  <- as.numeric(sapply(parsed, "[[", 7))
+        pos_C1e  <- as.numeric(parsed$constitutive1)
+        pos_A1s  <- as.numeric(sapply(parsed$alternative1, "[[", 1))
+        pos_A1e  <- as.numeric(sapply(parsed$alternative1, "[[", 2))
+        pos_C2s  <- as.numeric(parsed$constitutive2)
         A1len    <- abs(pos_A1e - pos_A1s)
         
         C1s <- safeAreaWidth
@@ -149,18 +168,17 @@ diagramSplicingEvent <- function(
         svg      <- prepareSVG(exon, path, class, style, diagramWidth)
         svgFinal <- sprintf(svg, pos_C1e, pos_A1s, pos_A1e, A1len, pos_C2s)
     } else if (isMXE) {
-        pos_C1e  <- as.numeric(sapply(parsed, "[[", 4))
-        pos_A1s  <- as.numeric(sapply(parsed, "[[", 5))
-        pos_A1e  <- as.numeric(sapply(parsed, "[[", 6))
-        pos_A2s  <- as.numeric(sapply(parsed, "[[", 7))
-        pos_A2e  <- as.numeric(sapply(parsed, "[[", 8))
-        pos_C2s  <- as.numeric(sapply(parsed, "[[", 9))
+        pos_C1e  <- as.numeric(parsed$constitutive1)
+        pos_A1s  <- as.numeric(sapply(parsed$alternative1,  "[[", 1))
+        pos_A1e  <- as.numeric(sapply(parsed$alternative1,  "[[", 2))
+        pos_A2s  <- as.numeric(sapply(parsed$alternative2,  "[[", 1))
+        pos_A2e  <- as.numeric(sapply(parsed$alternative2,  "[[", 2))
+        pos_C2s  <- as.numeric(parsed$constitutive2)
         
         A1len    <- abs(pos_A1e - pos_A1s)
         A2len    <- abs(pos_A2e - pos_A2s)
         
-        strand   <- sapply(parsed, "[[", 3)
-        isA1ref  <- !xor(strand == "+", pos_A1e <= pos_A2s)
+        isA1ref  <- !xor(parsed$strand == "+", pos_A1e <= pos_A2s)
         hideA1   <- (!showAlternative1 && isA1ref) ||
             (!showAlternative2 && !isA1ref)
         hideA2   <- (!showAlternative2 && isA1ref) ||
@@ -217,12 +235,11 @@ diagramSplicingEvent <- function(
             ifelse(isA1ref, alternative2Fill, alternative1Fill),
             ifelse(isA1ref, alternative2Stroke, alternative1Stroke))
     } else if (isAFE || isA5SS) {
-        pos_A1e  <- as.numeric(sapply(parsed, "[[", 4))
-        pos_A2e  <- as.numeric(sapply(parsed, "[[", 5))
-        pos_C2s  <- as.numeric(sapply(parsed, "[[", 6))
+        pos_A1e  <- as.numeric(parsed$alternative1)
+        pos_A2e  <- as.numeric(parsed$alternative2)
+        pos_C2s  <- as.numeric(parsed$constitutive2)
         
-        strand   <- sapply(parsed, "[[", 3)
-        isA2ref  <- !xor(strand == "+", pos_A1e >= pos_A2e)
+        isA2ref  <- !xor(parsed$strand == "+", pos_A1e >= pos_A2e)
         hideA1   <- (!showAlternative1 && isA2ref) || 
             (!showAlternative2 && !isA2ref)
         hideA2   <- (!showAlternative2 && isA2ref) ||
@@ -267,12 +284,11 @@ diagramSplicingEvent <- function(
             ifelse(isA2ref, constitutiveFill, alternative1Fill),
             ifelse(isA2ref, constitutiveStroke, alternative1Stroke))
     } else if (isALE || isA3SS) {
-        pos_C1s  <- as.numeric(sapply(parsed, "[[", 4))
-        pos_A1e  <- as.numeric(sapply(parsed, "[[", 5))
-        pos_A2e  <- as.numeric(sapply(parsed, "[[", 6))
+        pos_C1s  <- as.numeric(parsed$constitutive1)
+        pos_A1e  <- as.numeric(parsed$alternative1)
+        pos_A2e  <- as.numeric(parsed$alternative2)
         
-        strand   <- sapply(parsed, "[[", 3)
-        isA1ref  <- !xor(strand == "+", pos_A1e <= pos_A2e)
+        isA1ref  <- !xor(parsed$strand == "+", pos_A1e <= pos_A2e)
         
         hideA1 <- (!showAlternative1 && isA1ref) ||
             (!showAlternative2 && !isA1ref)
@@ -317,8 +333,37 @@ diagramSplicingEvent <- function(
             ifelse(isA1ref, alternative1Stroke, constitutiveStroke),
             ifelse(isA1ref, constitutiveFill, alternative1Fill),
             ifelse(isA1ref, constitutiveStroke, alternative1Stroke))
+    } else if (isRI) {
+        pos_C1e  <- as.numeric(sapply(parsed$constitutive1, "[[", 2))
+        pos_C2s  <- as.numeric(sapply(parsed$constitutive2, "[[", 1))
+        A1len    <- abs(pos_C1e - pos_C2s)
+        
+        C1s <- safeAreaWidth
+        C1e <- C1s + constitutiveWidth
+        A1s <- C1e
+        A1e <- A1s + intronWidth
+        C2s <- A1e
+        C2e <- C2s + constitutiveWidth
+        diagramWidth <- C2e + safeAreaWidth
+        
+        exon$C1 <- drawRect(C1s, C1e, text2="%1$s", showText=showText,
+                            fill=constitutiveFill, stroke=constitutiveStroke)
+        exon$A1 <- drawRect(A1s, A1e, textLen="%2$s nts", showText=showText,
+                            fill=alternative1Fill, stroke=alternative1Stroke,
+                            height=12, y=14)
+        exon$C2 <- drawRect(C2s, C2e, text1="%3$s", showText=showText,
+                            fill=constitutiveFill, stroke=constitutiveStroke)
+        
+        path$C1e_C2s <- drawCurve(C1e, C2s, stroke=constitutiveStroke)
+        if (!showPath) path <- NULL
+        
+        if (!showAlternative1) exon$A1 <- NULL
+        
+        # Replace with genomic positions per event
+        svg      <- prepareSVG(exon, path, class, style, diagramWidth)
+        svgFinal <- sprintf(svg, pos_C1e, A1len, pos_C2s)
     }
-    names(svgFinal) <- names(parsed)
+    names(svgFinal) <- rownames(parsed)
     
     addClass <- function(char) {
         # char        <- HTML(char)
@@ -356,35 +401,49 @@ diagramSplicingEvent <- function(
 plotSplicingEvent <- function(
     ASevent, class=NULL, style=NULL, showText=TRUE, showPath=TRUE,
     showAlternative1=TRUE, showAlternative2=TRUE,
-    constitutiveWidth=60, alternativeWidth=NULL, intronWidth=15,
+    constitutiveWidth=60, alternativeWidth=NULL, intronWidth=NULL,
     constitutiveFill="lightgray", constitutiveStroke="darkgray",
     alternative1Fill="#ffb153", alternative1Stroke="#faa000",
-    alternative2Fill="#caa06c", alternative2Stroke="#9d7039") {
+    alternative2Fill="#caa06c", alternative2Stroke="#9d7039", data=NULL) {
     
-    # Custom, faster parser of alternative splicing event type
-    parsed <- strsplit(ASevent, "_")
-    names(parsed) <- ASevent
-    type <- sapply(parsed, "[[", 1)
+    parsed <- parseSplicingEvent(ASevent, coords=TRUE, data=data)
+    parsed <- split(parsed, parsed$type)
     
-    parsed <- split(parsed, type)
     svg <- NULL
-    for (each in names(parsed)) {
-        svg <- c(svg, diagramSplicingEvent(
-            parsed[[each]], each, class=class, style=style,
-            showText=showText, showPath=showPath,
-            showAlternative1=showAlternative1, 
-            showAlternative2=showAlternative2,
-            constitutiveWidth=constitutiveWidth, 
-            alternativeWidth=alternativeWidth, intronWidth=intronWidth,
-            constitutiveFill=constitutiveFill, 
-            constitutiveStroke=constitutiveStroke,
-            alternative1Fill=alternative1Fill,
-            alternative1Stroke=alternative1Stroke, 
-            alternative2Fill=alternative2Fill,
-            alternative2Stroke=alternative2Stroke))
+    showWarning <- FALSE
+    for (type in names(parsed)) {
+        parsedType <- parsed[[type]]
+        diagram <- tryCatch(
+            diagramSplicingEvent(
+                parsedType, type, class=class, style=style,
+                showText=showText, showPath=showPath,
+                showAlternative1=showAlternative1, 
+                showAlternative2=showAlternative2,
+                constitutiveWidth=constitutiveWidth, 
+                alternativeWidth=alternativeWidth, intronWidth=intronWidth,
+                constitutiveFill=constitutiveFill, 
+                constitutiveStroke=constitutiveStroke,
+                alternative1Fill=alternative1Fill,
+                alternative1Stroke=alternative1Stroke, 
+                alternative2Fill=alternative2Fill,
+                alternative2Stroke=alternative2Stroke),
+            error=return)
+        
+        if (is(diagram, "error")) {
+            showWarning    <- TRUE
+            diagram        <- rep("", nrow(parsedType))
+            names(diagram) <- rownames(parsedType)
+        }
+        svg <- c(svg, diagram)
     }
     svg <- svg[ASevent] # Order results based on original input
     class(svg) <- c("splicingEventPlotList", class(svg))
+    
+    if (showWarning) {
+        msg <- paste("Diagrams could not be rendered for one or more",
+                     "alternative splicing event types.")
+        warning(msg)
+    }
     return(svg)
 }
 

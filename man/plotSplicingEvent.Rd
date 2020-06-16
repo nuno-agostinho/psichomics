@@ -14,13 +14,14 @@ plotSplicingEvent(
   showAlternative2 = TRUE,
   constitutiveWidth = 60,
   alternativeWidth = NULL,
-  intronWidth = 15,
+  intronWidth = NULL,
   constitutiveFill = "lightgray",
   constitutiveStroke = "darkgray",
   alternative1Fill = "#ffb153",
   alternative1Stroke = "#faa000",
   alternative2Fill = "#caa06c",
-  alternative2Stroke = "#9d7039"
+  alternative2Stroke = "#9d7039",
+  data = NULL
 )
 }
 \arguments{
