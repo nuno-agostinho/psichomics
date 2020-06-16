@@ -25,11 +25,11 @@ test_that("parseMisoEventID parses an event identifier from MISO", {
     expect_is(event, "list")
     expect_length(event, 2)
     expect_is(event[[1]], "data.frame")
-    expect_equal(unique(event[[1]][[2]]), factor("AFE"))
-    expect_equivalent(event[[1]][[3]][[1]], factor("gene"))
+    expect_equal(unique(event[[1]][[2]]), "AFE")
+    expect_equivalent(event[[1]][[3]][[1]], "gene")
     expect_is(event[[2]], "data.frame")
-    expect_equal(unique(event[[2]][[2]]), factor("AFE"))
-    expect_equivalent(event[[2]][[3]][[1]], factor("gene"))
+    expect_equal(unique(event[[2]][[2]]), "AFE")
+    expect_equivalent(event[[2]][[3]][[1]], "gene")
 })
 
 test_that("getValidEvents returns valid events depending on the validator", {
