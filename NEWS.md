@@ -44,6 +44,8 @@
 * Density plots (`plotDistribution()`):
     - After hiding all plot series, hide Y axis (rug plots of the different
     groups have arbitrary Y values to easily distinguish them)
+* `print()` extended to better display information on gene list objects; e.g.
+`print(getGeneList())`
 * Fix issues when installing the package:
     - Fix error when unit testing in R 4.0 or higher (strings in data frames are
     not converted to factors by default)

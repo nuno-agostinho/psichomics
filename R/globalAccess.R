@@ -194,13 +194,9 @@ getGeneList <- function() {
     return(res)
 }
 
-#' Print gene list
-#' 
-#' @param object \code{geneList}
-#' 
-#' @return Print available gene lists
-#' @keywords internal
-print.geneList <- function(object) {
+#' @export
+print.geneList <- function(x, ...) {
+    object <- x
     for (set in names(object)) {
         cat(sprintf(set), fill=TRUE)
         for (item in names(object[[set]])) {
