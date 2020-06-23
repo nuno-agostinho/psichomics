@@ -44,6 +44,9 @@
 * Density plots (`plotDistribution()`):
     - After hiding all plot series, hide Y axis (rug plots of the different
     groups have arbitrary Y values to easily distinguish them)
+* Alternative splicing event selection (visual interface):
+    - Include loading indicator while searching for events
+    - Decrease number of operations performed after selecting an event
 * `print()` extended to better display information on gene list objects; e.g.
 `print(getGeneList())`
 * Fix issues when installing the package:

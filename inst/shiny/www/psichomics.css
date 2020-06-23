@@ -244,3 +244,28 @@ tr.active > td > a:hover { font-weight: bold; }
 #selectizeEvent div.active text.diagram.outside { fill: white !important; }
 #selectizeEvent div.active path.diagram { stroke: white !important; }
 #selectizeEvent div.active rect.diagram { stroke: white !important; }
+
+#selectizeEvent .selectize-control::before {
+    -o-transition: opacity 0.2s;
+    -moz-transition: opacity 0.2s;
+    -webkit-transition: opacity 0.2s;
+    transition: opacity 0.2s;
+    
+    content: '\f110';
+    font-weight: 900;
+    font-family: "Font Awesome 5 Free";
+    
+    -moz-animation: fa-spin 2s infinite linear;
+    -webkit-animation: fa-spin 2s infinite linear;
+    animation: fa-spin 2s infinite linear;
+    
+    z-index: 2;
+    position: absolute;
+    display: block;
+    top: 45%;
+    right: 34px;
+    margin: -8px 0 0 0;
+    opacity: 0;
+}
+
+#selectizeEvent .selectize-control.loading::before { opacity: 0.4; }
