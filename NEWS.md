@@ -41,6 +41,7 @@
     - Support loading data from GTEx V8 or previous releases
     - Fix bad formatting of help tooltips when using `shiny 1.4.0` or newer
     (visual interface)
+* Hide message about gene expression being filtered without design matrix
 * Density plots (`plotDistribution()`):
     - After hiding all plot series, hide Y axis (rug plots of the different
     groups have arbitrary Y values to easily distinguish them)

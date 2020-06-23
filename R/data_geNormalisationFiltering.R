@@ -372,9 +372,10 @@ filterGeneExpr <- function(geneExpr, minMean=0, maxMean=Inf, minVar=0,
     varMeanFilter <- geneExprMean >= minMean & geneExprMean <= maxMean &
         geneExprVar >= minVar & geneExprVar <= maxVar
 
-    lowCountFilter <- filterByExpr(geneExpr[varMeanFilter, ],
-                                   min.count=minCounts,
-                                   min.total.count=minTotalCounts)
+    lowCountFilter <- suppressMessages(
+        filterByExpr(geneExpr[varMeanFilter, ],
+                     min.count=minCounts,
+                     min.total.count=minTotalCounts))
     filteredGenes <- varMeanFilter
     filteredGenes[names(lowCountFilter[!lowCountFilter])] <- FALSE
     return(filteredGenes)
