@@ -79,16 +79,19 @@ prettifyEventType <- function(eventType, source=NULL, decap=FALSE) {
         names(types)[is.na(names(types))] <- types[is.na(names(types))]
         types <- setNames(sprintf("%s (%s)", types, names(types)), names(types))
     } else if (all(source == "vast-tools")) {
-        types <- c("S"="Skipped exon (S)",
-                   "C1"="Skipped exon (C1)",
-                   "C2"="Skipped exon (C2)",
-                   "C3"="Skipped exon (C3)",
-                   "ANN"="Skipped exon (ANN)",
-                   "MIC"="Skipped microexon (MIC)",
-                   "IR-C"="Retained intron (IR-C)",
-                   "IR-S"="Retained intron (IR-S)",
-                   "Alt3"="Alternative 3' splice site (Alt3)",
-                   "Alt5"="Alternative 5' splice site (Alt5)")
+        types <- c("S"="Skipped exon",
+                   "C1"="Skipped exon",
+                   "C2"="Skipped exon",
+                   "C3"="Skipped exon",
+                   "ANN"="Skipped exon",
+                   "MIC"="Skipped microexon",
+                   "IR-C"="Retained intron",
+                   "IR-S"="Retained intron",
+                   "Alt3"="Alternative 3' splice site",
+                   "Alt5"="Alternative 5' splice site")
+        types <- setNames(rep(types, 2),
+                          c(names(types), paste0("A_", names(types))))
+        types <- setNames(sprintf("%s (%s)", types, names(types)), names(types))
         types <- types[eventType]
     }
     if (decap) types <- decapitalize(types)

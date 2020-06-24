@@ -1,3 +1,33 @@
+# Process event data based on event type
+processEventDataByType <- function(type, eventDataByType) {
+    dataType <- eventDataByType[[type]]
+    if (type == "RI") { # Retained intron
+        C1end   <- sapply(dataType$fullCoords, "[[", 2)
+        C2start <- sapply(dataType$fullCoords, "[[", 3)
+        exon1   <- lapply(seq(nrow(dataType)), function(i)
+            c(dataType$firstCoord[[i]], C1end[[i]]))
+        exon2   <- lapply(seq(nrow(dataType)), function(i)
+            c(C2start[[i]], dataType$lastCoord[[i]]))
+        
+        isPosStrand <- dataType$strand == "+"
+        dataType$constitutive1 <- ifelse(isPosStrand, exon1, exon2)
+        dataType$alternative1  <- NA
+        dataType$alternative2  <- NA
+        dataType$constitutive2 <- ifelse(isPosStrand, exon2, exon1)
+    } else if (type == "SE") { # Skipped exon
+        isPosStrand <- dataType$strand == "+"
+        dataType$constitutive1 <- ifelse(
+            isPosStrand, dataType$firstCoord, dataType$lastCoord)
+        dataType$alternative1  <- lapply(
+            seq(nrow(dataType)), function(i)
+                c(dataType$start[[i]], dataType$end[[i]]))
+        dataType$alternative2  <- NA
+        dataType$constitutive2 <- ifelse(
+            isPosStrand, dataType$lastCoord, dataType$firstCoord)
+    }
+    return(dataType)
+}
+
 vasttoolsInclusionLevelsFormat <- function() {
     list(
         tablename   = "Inclusion levels",
@@ -87,43 +117,22 @@ vasttoolsInclusionLevelsFormat <- function() {
                 "+", "-")
             
             # Parse coordinates
+            SEtypes <- c("S", "C1", "C2", "C3", "ANN", "MIC")
             types <- c(
-                "Alt3"="A3SS",
-                "Alt5"="A5SS",
-                setNames(rep("RI", 2), c("IR-C", "IR-S")),
-                setNames(rep("SE", 6), c("S", paste0("C", 1:3), "ANN", "MIC")))
-            rowData$type <- types[rowData$subtype]
+                setNames(rep("A3SS", 2), c("Alt3", "A_Alt3")),
+                setNames(rep("A5SS", 2), c("Alt5", "A_Alt5")),
+                setNames(rep("RI", 4), c("IR-C", "IR-S", "A_IR-C", "A_IR-S")),
+                setNames(rep("SE", 12),
+                         paste0(c("A_", ""), rep(SEtypes, each=2))))
+            eventTypes <- types[rowData$subtype]
+            rowData$type <- ifelse(!is.na(eventTypes), eventTypes, 
+                                   rowData$subtype)
             
             rowDataByType <- split(rowData, rowData$type)
-            for (type in names(rowDataByType)) {
-                dataType <- rowDataByType[[type]]
-                if (type == "RI") { # Retained intron
-                    C1end   <- sapply(dataType$fullCoords, "[[", 2)
-                    C2start <- sapply(dataType$fullCoords, "[[", 3)
-                    exon1   <- lapply(seq(nrow(dataType)), function(i)
-                        c(dataType$firstCoord[[i]], C1end[[i]]))
-                    exon2   <- lapply(seq(nrow(dataType)), function(i)
-                        c(C2start[[i]], dataType$lastCoord[[i]]))
-                    
-                    isPosStrand <- dataType$strand == "+"
-                    dataType$constitutive1 <- ifelse(isPosStrand, exon1, exon2)
-                    dataType$alternative1  <- NA
-                    dataType$alternative2  <- NA
-                    dataType$constitutive2 <- ifelse(isPosStrand, exon2, exon1)
-                } else if (type == "SE") { # Skipped exon
-                    isPosStrand <- dataType$strand == "+"
-                    dataType$constitutive1 <- ifelse(
-                        isPosStrand, dataType$firstCoord, dataType$lastCoord)
-                    dataType$alternative1  <- lapply(
-                        seq(nrow(dataType)), function(i)
-                            c(dataType$start[[i]], dataType$end[[i]]))
-                    dataType$alternative2  <- NA
-                    dataType$constitutive2 <- ifelse(
-                        isPosStrand, dataType$lastCoord, dataType$firstCoord)
-                }
-                rowDataByType[[type]] <- dataType
-            }
-            rowData <- unsplit(rowDataByType, rowData$type)
+            rowDataByType <- lapply(names(rowDataByType),
+                                    processEventDataByType, rowDataByType)
+            rowData       <- unsplit(rowDataByType, rowData$type)
+            
             rowData$firstCoord <- NULL
             rowData$lastCoord  <- NULL
             rowData$fullCoords <- NULL
