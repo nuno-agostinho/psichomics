@@ -112,13 +112,13 @@ plotRowStats <- function(data, x, y, subset=NULL, xmin=NULL, xmax=NULL,
             geom_point(size=1, na.rm=TRUE, alpha=0.5, colour="grey") +
             geom_point(data=varsSubset, size=1, na.rm=TRUE, alpha=0.5, 
                        colour="grey") +
-            geom_density_2d(data=varsSubset, colour="orange", na.rm=TRUE) +
+            # geom_density_2d(data=varsSubset, colour="orange", na.rm=TRUE) +
             labs(x=x, y=y)
     } else {
         plot <- ggplot(vars, aes_string(x, y)) +
             geom_point(size=1, na.rm=TRUE, alpha=0.5) +
             geom_point(size=1, na.rm=TRUE, alpha=0.5) +
-            geom_density_2d(colour="orange", na.rm=TRUE) +
+            # geom_density_2d(colour="orange", na.rm=TRUE) +
             labs(x=x, y=y)
     }
     
