@@ -449,10 +449,11 @@ updateProgress <- function(message="Loading...", value=NULL, max=NULL,
     isGUIversion <- isRunning()
     if (!interactive()) return(NULL)
     if (!is.null(divisions)) {
-        if (!isGUIversion)
+        if (!isGUIversion) {
             setHidden(startProgress(message, divisions, new.env()))
-        else
+        } else {
             startProgress(message, divisions, global)
+        }
         return(NULL)
     }
     

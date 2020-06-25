@@ -55,6 +55,7 @@
     not converted to factors by default)
     - Fix `R CMD check` warning of Unicode symbol translation in Windows
     - Fix comparing signed and unsigned integers in `Rcpp` functions
+* Progress bar is now animated as in previous releases
 
 # psichomics 1.12.1 (29 January, 2020)
 
