@@ -105,11 +105,17 @@ function renderGroupTable(table) {
  * Prepare interface for group selection
  */
 function renderGroupSelection (item, escape) {
-    var description =  item.label.split(" #")[0];
-    var colour = "#" + item.label.split(" #")[1];
-    return "<div><b><font color='" + colour + "'>\u25CF</font> " + 
-        escape(item.value) + "</b><small> " + escape(description) + 
-        "</small></div>";
+    var html;
+    if (item.label === "Edit") {
+        html = "<div class='editGroups'>" + escape(item.value)  + "</div>";
+    } else {
+        var description =  item.label.split(" #")[0];
+        var colour = "#" + item.label.split(" #")[1];
+        html = "<div><b><font color='" + colour + "'>\u25CF</font> " + 
+               escape(item.value) + "</b><small> " + escape(description) + 
+               "</small></div>";
+    }
+    return html;
 }
 
 /**

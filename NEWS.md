@@ -26,9 +26,11 @@
 
 ## Bug fixes and minor changes
 
+* Progress bar is now animated as in previous releases
+* Simplify group selection interface
 * Data loading (visual interface):
     - Correctly parse gene symbols containing underscores
-    - Fixed library size plot not working properly and causing rendering issues
+    - Fix library size plot not working properly and causing rendering issues
     - Fix settings not showing up after quantifying alternative splicing
     - Show raised errors while reading a file (e.g. if file is too big for
     available memory)
@@ -55,7 +57,6 @@
     not converted to factors by default)
     - Fix `R CMD check` warning of Unicode symbol translation in Windows
     - Fix comparing signed and unsigned integers in `Rcpp` functions
-* Progress bar is now animated as in previous releases
 
 # psichomics 1.12.1 (29 January, 2020)
 

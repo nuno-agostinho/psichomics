@@ -60,7 +60,8 @@ survivalUI <- function(id) {
         conditionalPanel(
             sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "groups"),
             selectGroupsUI(
-                ns("dataGroups"), label=NULL, returnAllDataValue=FALSE,
+                ns("dataGroups"), type="Samples",
+                label=NULL, returnAllDataValue=FALSE,
                 returnAllDataLabel="Display data outside selected groups")),
         conditionalPanel(
             sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "formula"),
@@ -79,10 +80,9 @@ survivalUI <- function(id) {
         conditionalPanel(
             sprintf("input[id='%s'].includes('%s')", ns("modelTerms"), 
                     "Cutoff"),
-            selectGroupsUI(
-                ns("sampleFiltering"),
-                label=div(id=ns("helpFiltering"), "Sample filtering", 
-                          icon("question-circle"))),
+            selectGroupsUI(ns("sampleFiltering"), type="Samples",
+                           label=div(id=ns("helpFiltering"), "Sample filtering",
+                                     icon("question-circle"))),
             bsTooltip(ns("helpFiltering"), options=list(container="body"),
                       placement="right", subjectMultiMatchWarning())),
         conditionalPanel(

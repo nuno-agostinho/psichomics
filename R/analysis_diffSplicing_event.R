@@ -28,7 +28,8 @@ diffSplicingEventUI <- function(id) {
     
     singleEventOptions <- div(
         id=ns("singleEventOptions"),
-        selectGroupsUI(ns("diffGroups"), label="Groups of samples to analyse",
+        selectGroupsUI(ns("diffGroups"), type="Samples",
+                       label="Groups of samples to analyse",
                        noGroupsLabel="All samples as one group",
                        groupsLabel="Samples by selected groups"),
         actionButton(ns("analyse"), "Perform analyses", class="btn-primary"),

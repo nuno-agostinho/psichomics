@@ -145,11 +145,11 @@ icaUI <- function(id) {
             "samples is used to replace those missing values.",
             "The remaining events are discarded."),
             options=list(container="body")),
-        selectGroupsUI(ns("dataGroups"), "Perform ICA on...",
-                       noGroupsLabel="All samples",
+        selectGroupsUI(ns("dataGroups"), "Perform ICA on...", type="Samples",
+                       noGroupsLabel="All samples", 
                        groupsLabel="Samples from selected groups"),
         selectGroupsUI(
-            ns("dataGroups2"), "Perform ICA on...",
+            ns("dataGroups2"), "Perform ICA on...", type="ASevents",
             noGroupsLabel="All genes and splicing events",
             groupsLabel="Genes and splicing events from selected groups"),
         processButton(ns("calculate"), "Calculate ICA")
@@ -173,9 +173,10 @@ icaUI <- function(id) {
                 ns("plotComponents"), choices=NULL, width="100%", multiple=TRUE,
                 "Independent components to plot (10 maximum)", options=list(
                     maxItems=10, plugins=list('remove_button', 'drag_drop'))),
-            selectGroupsUI(ns("colourGroups"), "Sample colouring",
-                           noGroupsLabel="Do not colour samples",
-                           groupsLabel="Colour using selected groups"),
+            selectGroupsUI(
+                ns("colourGroups"), "Sample colouring", type="Samples",
+                noGroupsLabel="Do not colour samples",
+                groupsLabel="Colour using selected groups"),
             bsCollapse(
                 bsCollapsePanel(
                     list(icon("paint-brush"), "Plot style"), value="Plot style",

@@ -39,20 +39,21 @@ pcaUI <- function(id) {
         checkboxGroupInput(ns("preprocess"), "Preprocessing",
                            c("Center values"="center", "Scale values"="scale"),
                            selected=c("center"), width="100%"),
-        selectGroupsUI(ns("dataGroups"), "Perform PCA on...",
+        selectGroupsUI(ns("dataGroups"), "Perform PCA on...", type="Samples",
                        noGroupsLabel="All samples",
                        groupsLabel="Samples from selected groups"),
         numericInput(ns("missingValues"), div(
-            "Number of missing values to tolerate per event",
+            "Acceptable number of missing values per event",
             icon("question-circle")), min=0, max=100, value=10, width="100%"),
         helpText(textOutput(ns("maxSamples"))),
         bsTooltip(ns("missingValues"), placement="right", paste(
-            "For events with a tolerable number of missing values, the median",
-            "value of the event across samples is used to replace those",
-            "missing values. The remaining events are discarded."),
+            "For events containing the user-defined number of missing values,",
+            "missing values are replaced with the median value of that event",
+            "across all samples. Events with a higher number of missing values",
+            "are discarded."),
             options=list(container="body")),
         selectGroupsUI(
-            ns("dataGroups2"), "Perform PCA on...",
+            ns("dataGroups2"), "Perform PCA on...", type="ASevents",
             noGroupsLabel="All genes and splicing events",
             groupsLabel="Genes and splicing events from selected groups"),
         processButton(ns("calculate"), "Calculate PCA")
@@ -81,9 +82,10 @@ pcaUI <- function(id) {
                            "Principal component for the X axis"),
             selectizeInput(ns("pcY"), choices=NULL, width="100%",
                            "Principal component for the Y axis"),
-            selectGroupsUI(ns("colourGroups"), "Sample colouring",
-                           noGroupsLabel="Do not colour samples",
-                           groupsLabel="Colour using selected groups"),
+            selectGroupsUI(
+                ns("colourGroups"), "Sample colouring", type="Samples",
+                noGroupsLabel="Do not colour samples",
+                groupsLabel="Colour using selected groups"),
             radioButtons(
                 ns("plotVariables"), "Variables to plot in loading plot", 
                 varsToPlot, selected="top100", width="100%"),
@@ -618,10 +620,11 @@ pcaServer <- function(input, output, session) {
                            value=defaultVal)
         
         observe({
-            missing <- input$missingValues
+            selected <- input$missingValues
+            perc     <- round(selected / samples * 100)
             text <- sprintf(
-                "%s available samples (the selected %s represent %s%%)",
-                samples, missing, round(missing / samples * 100))
+                "The selected number (%s) represents %s%% of %s total samples",
+                selected, perc, samples)
             output$maxSamples <- renderText(text)
         })
     })

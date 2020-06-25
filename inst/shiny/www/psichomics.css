@@ -282,3 +282,7 @@ tr.active > td > a:hover { font-weight: bold; }
 }
 
 #selectizeEvent .selectize-control.loading::before { opacity: 0.4; }
+
+/* Groups */
+.editGroups { color: #9A9A9A; }
+.editGroups .active { color: white; }

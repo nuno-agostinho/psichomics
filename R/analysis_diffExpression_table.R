@@ -31,7 +31,7 @@ diffExpressionTableUI <- function(id) {
                          "to fit a linear model per gene based on a design",
                          "matrix prepared from the two selected groups."),
                 selectGroupsUI(
-                    ns("diffGroups"), maxItems=2,
+                    ns("diffGroups"), maxItems=2, type="Samples",
                     label="Select two groups for differential expression")),
             bsCollapsePanel(
                 tagList(icon("adjust"), "Differential expression statistics"), 

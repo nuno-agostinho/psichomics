@@ -4,6 +4,7 @@
 #' 
 #' @param id Character: identifier
 #' @param label Character: \code{selectize} label
+#' @inheritParams getGroups
 #' @param placeholder Character: \code{selectize} placeholder
 #' @param noGroupsLabel Character: label to explicitly allow to select no groups
 #' (if \code{NULL}, this option is not displayed to the user)
@@ -25,21 +26,30 @@
 #' @return \code{selectGroupsUI}: Interface for group selection
 #' @keywords internal
 selectGroupsUI <- function (
-    id, label, placeholder="Type to search for groups",
-    noGroupsLabel=NULL, groupsLabel=NULL, maxItems=NULL, 
+    id, label, type, placeholder="Type to search groups",
+    noGroupsLabel=NULL, groupsLabel=NULL, maxItems=NULL,
     returnAllDataLabel=NULL, returnAllDataValue=FALSE) {
     
     editId <- paste0(id, "Edit")
+    onItemAdd <- sprintf(
+        "function(value, $item) {
+            var editLabel = 'Edit groups...';
+            if (value === editLabel) {
+                showGroups('%s');
+                this.removeItem(editLabel);
+                this.blur();
+            }
+        }", type)
     groupSelect <- selectizeInput(
         id, label, choices=NULL, multiple=TRUE, width="auto", options=list(
             plugins=list('remove_button', 'drag_drop'), maxItems=maxItems, 
             searchField=list("value", "label"), placeholder=placeholder, 
-            render=I(
+            onItemAdd=I(onItemAdd), render=I(
                 '{option: renderGroupSelection, item: renderGroupSelection}')))
     
     if ( !is.null(label) ) {
         if ( is.null(noGroupsLabel) ) {
-            label <- column(12, groupSelect$children[[1]])
+            label <- groupSelect$children[[1]]
         } else {
             # Use label in radio buttons instead
             radioLabel <- groupSelect$children[[1]]
@@ -47,18 +57,13 @@ selectGroupsUI <- function (
         }
         groupSelect$children[[1]] <- NULL
     }
-    
-    select <- fluidRow(
-        label, column(10, groupSelect), column(2, actionButton(
-            editId, "Groups", class="pull-right", class="btn-info",
-            style="z-index: 1; position: relative;")))
+    select <- tagList(label, groupSelect)
     
     if ( !is.null(returnAllDataLabel) ) {
         noGroupsId <- paste0(id, "ShowAllData")
         select <- tagList(select, checkboxInput(
             noGroupsId, returnAllDataLabel, value=returnAllDataValue))
     }
-    
     if ( !is.null(noGroupsLabel) ) {
         noGroupsId <- paste0(id, "Selection")
         
@@ -89,24 +94,14 @@ selectGroupsServer <- function(session, id, type, preference=NULL) {
     input  <- session$input
     output <- session$output
     
-    editId  <- paste0(id, "Edit")
     modalId <- paste0(id, "Modal")
-    
-    # Open correct group interface
-    observeEvent(input[[editId]], runjs(sprintf("showGroups('%s')", type)))
-    
     # Update groups shown in the selectize element
     observe({
         groupTable <- getGroups(type, complete=TRUE)
         groups <- rownames(groupTable)
         if (is.null(groups)) {
-            # Disable selection and animate button when clicking disabled input
             groups <- list()
-            disable(id)
-            onclick(id, runjs(
-                paste0("$('#", ns(editId), "').animateCss('rubberBand');")))
         } else {
-            enable(id)
             onclick(id, NULL)
             
             if (type %in% c("Patients", "Samples")) {
@@ -150,6 +145,7 @@ selectGroupsServer <- function(session, id, type, preference=NULL) {
         selected <- isolate(input[[id]])
         selected <- selected[selected %in% groups]
         if ( is.null(selected) ) selected <- character()
+        groups <- c(groups, "Edit"="Edit groups...")
         updateSelectizeInput(session, id, choices=groups, selected=selected)
     })
 }

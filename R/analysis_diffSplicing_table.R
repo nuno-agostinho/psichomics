@@ -20,11 +20,12 @@ diffSplicingTableUI <- function(id) {
     
     statAnalysesOptions <- div(
         id=ns("statAnalysesOptions"),
-        selectGroupsUI(ns("diffGroups"), label="Groups of samples to analyse",
+        selectGroupsUI(ns("diffGroups"), type="Samples",
+                       label="Groups of samples to analyse",
                        noGroupsLabel="All samples as one group",
                        groupsLabel="Samples by selected groups"),
         selectGroupsUI(ns("diffASevents"), label="Splicing events to analyse",
-                       noGroupsLabel="All splicing events",
+                       type="ASevents", noGroupsLabel="All splicing events",
                        groupsLabel="Splicing events from selected groups"),
         checkboxGroupInput(
             ns("statsChoices"), width="100%",
@@ -108,10 +109,9 @@ diffSplicingTableUI <- function(id) {
                  "is used instead."),
         selectizeInput(ns("event"), choices=NULL, width="100%",
                        "Event of interest"),
-        selectGroupsUI(
-            ns("sampleFiltering"),
-            label=div(id=ns("helpFiltering"), "Sample filtering", 
-                      icon("question-circle"))),
+        selectGroupsUI(ns("sampleFiltering"), type="Samples",
+                       label=div(id=ns("helpFiltering"), "Sample filtering",
+                                 icon("question-circle"))),
         bsTooltip(ns("helpFiltering"), options=list(container="body"),
                   placement="right", subjectMultiMatchWarning()),
         radioButtons(

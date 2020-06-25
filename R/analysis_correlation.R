@@ -9,9 +9,12 @@ correlationUI <- function(id) {
     corrParams <- bsCollapsePanel(
         tagList(icon("filter"), "Correlation parameters"), 
         value="corrParams", style="info",
+        helpText(paste("Correlate gene expression against alternative",
+                       "splicing quantification")),
         selectizeInput(ns("geneExpr"), "Gene expression", choices=NULL,
                        width="100%"),
-        selectGroupsUI(ns("genes"), label="Genes from selected groups"),
+        selectGroupsUI(ns("genes"), "Genes",
+                       label="Genes from selected groups"),
         radioButtons(
             ns("ASeventsSelection"), "Alternative splicing event(s)",
             c("Selected event"="selectedEvent",
@@ -19,7 +22,7 @@ correlationUI <- function(id) {
         conditionalPanel(
             sprintf("input[id='%s'] == '%s'",
                     ns("ASeventsSelection"), "byGroup"),
-            selectGroupsUI(ns("ASevents"), label=NULL)),
+            selectGroupsUI(ns("ASevents"), "ASevents", label=NULL)),
         hr(), selectizeInput(
             ns("method"), "Correlation method", width="100%",
             c("Pearson's product-moment correlation"="pearson", 
@@ -30,7 +33,7 @@ correlationUI <- function(id) {
                        c("Two-sided"="two.sided",
                          "Greater than zero"="greater", 
                          "Less than zero"="less"), width="100%"),
-        selectGroupsUI(ns("groupFilter"),
+        selectGroupsUI(ns("groupFilter"), "Samples",
                        label="Perform correlation analysis on...",
                        noGroupsLabel="All samples",
                        groupsLabel="Samples from selected groups"),
@@ -97,7 +100,7 @@ correlationUI <- function(id) {
                 choices=NULL, width="100%", multiple=TRUE,
                 options=list(placeholder="Select splicing events to plot"))),
         selectGroupsUI(
-            ns("groupColour"), label="Sample colouring",
+            ns("groupColour"), label="Sample colouring", "Samples",
             noGroupsLabel="Same colour for all samples",
             groupsLabel="Colour by selected groups", returnAllDataValue=TRUE,
             returnAllDataLabel="Display data outside selected groups"),
