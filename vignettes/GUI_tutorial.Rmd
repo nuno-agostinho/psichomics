@@ -1,5 +1,5 @@
 ---
-title: 'Visual interface tutorial'
+title: 'Case study: visual interface tutorial'
 author: "Nuno Saraiva-Agostinho"
 date: "`r Sys.Date()`"
 bibliography: refs.bib

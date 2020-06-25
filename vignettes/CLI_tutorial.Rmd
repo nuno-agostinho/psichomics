@@ -1,5 +1,5 @@
 ---
-title: 'Command-line interface (CLI) tutorial'
+title: 'Case study: command-line interface (CLI) tutorial'
 author: "Nuno Saraiva-Agostinho"
 date: "`r Sys.Date()`"
 bibliography: refs.bib
@@ -8,7 +8,7 @@ output:
     rmarkdown::html_vignette:
         toc: true
 vignette: >
-    %\VignetteIndexEntry{Case study: command-line interface (CLI)}
+    %\VignetteIndexEntry{Case study: command-line interface (CLI) tutorial}
     %\VignetteEngine{knitr::rmarkdown}
     \usepackage[utf8]{inputenc}
 ---

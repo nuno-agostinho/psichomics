@@ -8,7 +8,7 @@ output:
     rmarkdown::html_vignette:
         toc: true
 vignette: >
-  %\VignetteIndexEntry{SRA and user-provided RNA-seq data analysis}
+  %\VignetteIndexEntry{Loading SRA and user-provided RNA-seq data}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
