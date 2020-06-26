@@ -47,24 +47,26 @@ missingDataGuide <- function(dataType) {
 #' 
 #' @param id Character: identifier
 #' @inheritParams shiny::selectizeInput
+#' @param ... Arguments passed to the \code{options} list of
+#'   \code{selectizeInput()}
+#' @param placeholder Character: placeholder
 #' 
 #' @return HTML elements
 #' @keywords internal
-selectizeGeneInput <- function(id, label="Gene", choices=NULL, multiple=FALSE) {
+selectizeGeneInput <- function(id, label="Gene", choices=NULL, multiple=FALSE,
+                               ...,
+                               placeholder="Type to search for a gene...") {
     onFocus  <- NULL
     onChange <- NULL
     if (!multiple) {
-        onFocus  <- I(sprintf(
-            'function() { $("#%s")[0].selectize.clear(); }', id))
-        onChange <- I(sprintf(
-            'function(value) { $("#%s")[0].selectize.blur(); }', id))
+        onFocus  <- I(sprintf('function() { this.clear(); }', id))
+        onChange <- I(sprintf('function(value) { this.blur(); }', id))
     }
-    
     selectizeInput(
-        id, label, width="100%", multiple=multiple,
-        choices=c("Type to search for a gene..."="", choices), 
-        options=list(onFocus=onFocus, onChange=onChange, 
-                     plugins=list('remove_button', 'drag_drop')))
+        id, label, width="100%", multiple=multiple, choices=choices,
+        options=list(placeholder=placeholder,
+                     plugins=list('remove_button', 'drag_drop'),
+                     onFocus=onFocus, onChange=onChange, ...))
 }
 
 #' @rdname appUI

@@ -415,7 +415,7 @@ getSpecies <- function(category=getCategory())
 #' @rdname getGlobal
 #' @param species Character: species
 setSpecies <- function(species, category=getCategory())
-    setGlobal(category, "species", value=species)
+    setGlobal(category, "species", value=tolower(species))
 
 #' @rdname getGlobal
 getAssemblyVersion <- function(category=getCategory())

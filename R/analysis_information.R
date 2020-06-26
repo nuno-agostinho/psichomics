@@ -185,21 +185,19 @@ ensemblToUniprot <- function(protein) {
 infoUI <- function(id) {
     ns <- NS(id)
     
+    render <- I("{ option_create: function (data, escape) {
+        return '<div class=\"create\">Search for <strong>' +
+                escape(data.input) + '</strong>&hellip;</div>';}}")
+    selectGene    <- selectizeGeneInput(
+        ns("selectedGene"), create=TRUE, createOnBlur=TRUE, 
+        placeholder="Type a gene symbol...", render=render)
+    selectSpecies <- selectizeInput(
+        ns("selectedSpecies"), "Species", width="100%",
+        choices=c("Human (hg19 assembly)"="human hg19",
+                  "Human (hg38 assembly)"="human hg38"))
     tagList(fluidRow(
-        column(6, selectizeInput(
-            ns("selectedGene"), NULL, choices=c("Type a gene symbol..."=""), 
-            width="100%", options=list(
-                create=TRUE, createOnBlur=TRUE,
-                onFocus=I(paste0('function() { $("#', ns("selectedGene"), 
-                                 '")[0].selectize.clear(); }')),
-                onChange=I(paste0('function(value) { $("#',
-                                  ns("selectedGene"), 
-                                  '")[0].selectize.blur(); }')),
-                render=I(
-                    "{ option_create: function (data, escape) {
-                        return '<div class=\"create\">Search for <strong>' +
-                        escape(data.input) + '</strong>&hellip;</div>';}}"))),
-            uiOutput(ns("genetic"))),
+        column(6, fluidRow(column(8, selectGene), column(4, selectSpecies)),
+               uiOutput(ns("genetic"))),
         column(6, uiOutput(ns("articles")))),
         uiOutput(ns("info")))
 }
@@ -596,17 +594,6 @@ renderGeneticInfo <- function(output, info, species=NULL, assembly=NULL,
         return(item(dt, info, ddStyle="color: gray;"))
     }
     
-    if (!is.null(species)) {
-        if (!is.null(assembly)) {
-            speciesInfo <- sprintf("%s (%s assembly)", species, assembly)
-        } else {
-            speciesInfo <- species
-        }
-        speciesInfo <- item("Species", speciesInfo)
-    } else {
-        speciesInfo <- unavailableItem("Species", "Undefined species")
-    }
-    
     if (is.null(info)) {
         msg <- "Information from Ensembl currently unavailable"
         genomicLocation <- unavailableItem("Location", msg)
@@ -627,7 +614,6 @@ renderGeneticInfo <- function(output, info, species=NULL, assembly=NULL,
     tagList(
         h2(style="margin-top: 0px;", info$display_name, tags$small(info$id)),
         tags$dl(class="dl-horizontal", style="margin-bottom: 0px;",
-                speciesInfo,
                 genomicLocation,
                 description,
                 item("AS diagram", eventDiagram),
@@ -797,6 +783,15 @@ prepareExternalLinks <- function(info, species, assembly, grch37, gene) {
     return(links)
 }
 
+parseSpeciesAssembly <- function(info) {
+    speciesRegex <- "(.*) \\((.*) assembly\\)"
+    species      <- tolower(gsub(speciesRegex, "\\1", info))
+    assembly     <- tolower(gsub(speciesRegex, "\\2", info))
+    if (is.null(species) || length(species) == 0) species <- "human"
+    if (is.null(assembly)) assembly <- "hg19"
+    return(list(species=species, assembly=assembly))
+}
+
 #' @rdname appServer
 #' 
 #' @importFrom highcharter highchart %>%
@@ -805,6 +800,18 @@ prepareExternalLinks <- function(info, species, assembly, grch37, gene) {
 #' @importFrom shinyjs hide show runjs
 infoServer <- function(input, output, session) {
     ns <- session$ns
+    
+    # Update gene choices according to available genes
+    observe(updateSelectizeInput(
+        session, "selectedGene", choices=getGenes(), server=TRUE))
+    
+    # Update species/assembly according to the ones used for loading datasets
+    observe({
+        species  <- getSpecies()
+        assembly <- getAssemblyVersion()
+        selected <- paste(species, assembly)
+        updateSelectizeInput(session, "selectedSpecies", selected=selected)
+    })
     
     # Update gene according to selected splicing event
     observe({
@@ -874,12 +881,9 @@ infoServer <- function(input, output, session) {
     })
     
     observe({
-        species  <- tolower(getSpecies())
-        if (length(species) == 0) species <- "human"
-        
-        assembly <- getAssemblyVersion()
-        if (is.null(assembly)) assembly <- "hg19"
-        
+        parsed   <- parseSpeciesAssembly(input$selectedSpecies)
+        species  <- parsed$species
+        assembly <- parsed$assembly
         grch37   <- assembly == "hg19"
         gene     <- input$selectedGene
         
@@ -945,8 +949,9 @@ infoServer <- function(input, output, session) {
     # Render UniProt protein domains and information
     observe({
         transcript <- input$selectedTranscript
-        species    <- tolower(getSpecies())
-        assembly   <- getAssemblyVersion()
+        parsed     <- parseSpeciesAssembly(input$selectedSpecies)
+        species    <- parsed$species
+        assembly   <- parsed$assembly
         
         if (is.null(transcript) || transcript == "") {
             output$proteinInfo  <- renderUI(NULL)
