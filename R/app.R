@@ -148,27 +148,31 @@ getUiFunctions <- function(ns, loader, ..., priority=NULL) {
 globalSelectize <- function(id, placeholder, ASevent=FALSE) {
     elem <- paste0(id, "Elem")
     hideElem <- sprintf("$('#%s')[0].style.display = 'none';", id)
+    unmark   <- "this.$dropdown_content.unmark();"
+    mark     <- "this.$dropdown_content.unmark()
+                                       .mark(value, {exclude: ['text']});"
     
-    onItemAdd <- I(paste("function(value, $item) {",
-                         hideElem, "this.$dropdown_content.unmark(); }"))
-    onBlur    <- I(paste(
-        "function() {", hideElem, "this.$dropdown_content.unmark(); }"))
-    onType    <- I(paste0("function(value) {
-        this.$dropdown_content.unmark().mark(value, {exclude: ['text']}); }"))
+    onItemAdd <- I(paste("function(value, $item) {", hideElem, "}"))
+    onBlur    <- I(paste("function() {", hideElem, "}"))
+    onType    <- I(paste("function(value) {", mark, "}"))
+    onLoad    <- I(paste(
+        "function(data) { var value = this.currentResults.query;", mark, "}"))
     onOptionAdd <- I(paste(
-    "function(value, data) {
-        var tmp = data.label.split(\" __ \");
-        data.svg = tmp[1];
-        data.label = tmp[0];
-        return(data);
-    }"))
+        "function(value, data) {
+            var tmp = data.label.split(\" __ \");
+            data.svg = tmp[1];
+            data.label = tmp[0];
+            return(data);
+        }"))
+    onDropdownOpen <- I(paste("function($dropdown) {", unmark, "}"))
     
     render <- NULL
     if (ASevent) render <- I("{ option: renderEvent }")
     
     opts <- list(onItemAdd=onItemAdd, onBlur=onBlur, maxOptions=20,
                  placeholder=placeholder, render=render, highlight=FALSE,
-                 onType=onType, onOptionAdd=onOptionAdd)
+                 onType=onType, onLoad=onLoad, onOptionAdd=onOptionAdd,
+                 onDropdownOpen=onDropdownOpen)
     
     select <- selectizeInput(elem, "", choices=NULL, width="95%", options=opts)
     select[[3]][[1]] <- NULL
@@ -338,7 +342,9 @@ prepareASeventsRepresentation <- reactive({
         pos <- parsed$`full coordinates`
         if (is.null(pos)) pos <- parsed$pos
         if (!is.null(pos)) {
-            diagram[unsupported] <- prepareAlternativeText(pos[unsupported])
+            altText <- prepareAlternativeText(pos[unsupported])
+            diagram[unsupported] <- altText
+            coords[unsupported]  <- paste("Full coordinates:", pos[unsupported])
         }
         info <- paste(sep=";", parsed$subtype, 
                       sprintf("(chr%s, %s strand)", parsed$chr, parsed$strand),
@@ -415,12 +421,13 @@ appServer <- function(input, output, session) {
     # Display selected category
     output$selectizeCategoryValue <- renderUI({
         category <- getCategory()
-        if (is.null(category))
+        if (is.null(category)) {
             return("No dataset loaded")
-        else if(category == "")
+        } else if(category == "") {
             return("No dataset selected")
-        else
+        } else {
             return(category)
+        }
     })
     
     # Display selected event

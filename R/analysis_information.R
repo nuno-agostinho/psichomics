@@ -370,15 +370,20 @@ plottableXranges <- function(hc, shiny=FALSE) {
 }
 
 plotASeventRegion <- function(hc, event, data=NULL) {
-    parsed <- parseSplicingEvent(event, coords=TRUE, data=data)[1, , drop=FALSE]
+    parsed <- tryCatch(
+        parseSplicingEvent(event, coords=TRUE, data=data)[1, , drop=FALSE],
+        error=return)
+    if (is(parsed, "error")) return(NULL)
+    
     con1   <- sort(parsed$constitutive1[[1]])
     alt1   <- sort(parsed$alternative1[[1]])
     alt2   <- sort(parsed$alternative2[[1]])
     con2   <- sort(parsed$constitutive2[[1]])
+    if (length(c(con1, alt1, alt2, con2)) == 0) return(NULL)
     type   <- parsed$type
     
     if (type %in% c("AFE exon", "ALE exon")) type <- gsub(" exon", "", type)
-    pretty <- names(getSplicingEventTypes()[getSplicingEventTypes() == type])
+    pretty <- prettifyEventType(type)
     
     if (type %in% c("MXE", "A3SS", "A5SS", "AFE", "ALE")) {
         text <- paste(pretty, "(alternative regions in orange and blue)")
@@ -542,7 +547,8 @@ plotTranscripts <- function(info, eventPosition=NULL, event=NULL,
     hc <- do.call("hc_series", c(list(hc), data))
     
     if (!is.null(event)) {
-        hc <- hc %>% plotASeventRegion(event, eventData)
+        plotRegion <- plotASeventRegion(hc, event, eventData)
+        if (!is.null(plotRegion)) hc <- plotRegion
     } else if (!is.null(eventPosition)) {
         # Draw region only if splicing event position is provided
         eventStart <- eventPosition[1]

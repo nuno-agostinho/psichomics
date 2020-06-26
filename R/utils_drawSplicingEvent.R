@@ -94,14 +94,7 @@ diagramSplicingEvent <- function(
     alternative1Fill="#ffb153", alternative1Stroke="#faa000", 
     alternative2Fill="#caa06c", alternative2Stroke="#9d7039") {
     
-    isVASTTOOLS <- isTRUE(parsed$source == "vast-tools")
-    if (isVASTTOOLS) {
-        if (type %in% c("S", paste0("C", 1:3), "ANN", "MIC")) {
-            type <- "SE"
-        } else if (type %in% c("IR-S", "IR-C")) {
-            type <- "RI"
-        }
-    }
+    isVASTTOOLS <- isTRUE(any(parsed$source == "vast-tools"))
     
     isSE   <- type == "SE"
     isMXE  <- type == "MXE"
