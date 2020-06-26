@@ -53,6 +53,8 @@
 * Alternative splicing event selection (visual interface):
     - Include loading indicator while searching for events
     - Decrease number of operations performed after selecting an event
+    - Fix crash when changing to an alternative splicing quantification dataset
+    without the selected splicing event
 * `print()` extended to better display information on gene list objects; e.g.
 `print(getGeneList())`
 * Fix issues when installing the package:

@@ -365,8 +365,11 @@ getInclusionLevels <- reactive(getCategoryData()[["Inclusion levels"]])
 
 #' @rdname getGlobal
 #' @param incLevels Data frame or matrix: inclusion levels
-setInclusionLevels <- function(incLevels, category=getCategory())
+setInclusionLevels <- function(incLevels, category=getCategory()) {
+    ASevent <- isolate(getASevent())
+    if(!is.null(ASevent) && !ASevent %in% rownames(incLevels)) setASevent(NULL)
     setDataTable("Inclusion levels", incLevels, category)
+}
 
 #' @rdname getGlobal
 getPCA <- function(category=getCategory())

@@ -401,8 +401,10 @@ appServer <- function(input, output, session) {
         if (!is.null(representation) && !is.null(selected)) {
             # Move the selected alternative splicing event to the top
             find <- match(selected, representation)
-            sort <- unique(c(find, seq(representation)))
-            representation <- representation[sort]
+            if (!is.na(find)) {
+                sort <- unique(c(find, seq(representation)))
+                representation <- representation[sort]
+            }
         }   
         updateSelectizeChoices(session, "selectizeEventElem", representation,
                                server=TRUE)
