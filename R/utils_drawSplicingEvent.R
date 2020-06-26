@@ -94,10 +94,8 @@ diagramSplicingEvent <- function(
     alternative1Fill="#ffb153", alternative1Stroke="#faa000", 
     alternative2Fill="#caa06c", alternative2Stroke="#9d7039") {
     
-    safeAreaWidth <- 1
-    
-    isVASTTOOLS <- parsed$source == "vast-tools"
-    if (!is.null(parsed$source) && isVASTTOOLS) {
+    isVASTTOOLS <- isTRUE(parsed$source == "vast-tools")
+    if (isVASTTOOLS) {
         if (type %in% c("S", paste0("C", 1:3), "ANN", "MIC")) {
             type <- "SE"
         } else if (type %in% c("IR-S", "IR-C")) {
@@ -130,6 +128,7 @@ diagramSplicingEvent <- function(
         if (isRI && showAlternative1) intronWidth <- 110
     }
     
+    safeAreaWidth <- 1
     exon <- tagList()
     path <- tagList()
     if (isSE) {

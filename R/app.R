@@ -326,8 +326,11 @@ prepareASeventsRepresentation <- reactive({
         
         # Replace unsupported diagrams by text
         unsupported <- vapply(diagram, `==`, "", FUN.VALUE=logical(1))
-        diagram[unsupported] <- prepareAlternativeText(
-            parsed$`full coordinates`[unsupported])
+        pos <- parsed$`full coordinates`
+        if (is.null(pos)) pos <- parsed$pos
+        if (!is.null(pos)) {
+            diagram[unsupported] <- prepareAlternativeText(pos[unsupported])
+        }
         info <- paste(sep="_", parsed$subtype, parsed$chr, parsed$strand,
                          parsed$start, parsed$end, parsed$id, parsed$gene)
         representation <- setNames(ASevent, paste(info, "__", diagram))

@@ -323,8 +323,10 @@ parseEventFromStr <- function(event, char=FALSE, pretty=FALSE, extra=NULL,
     parsed$pos <- suppressWarnings( # Simply ignore non-numeric items
         lapply(parsed$pos, function(i) range(as.numeric(i), na.rm=TRUE)))
     
-    if (pretty)
+    if (pretty) {
         parsed$type <- getSplicingEventTypes(acronymsAsNames=TRUE)[parsed$type]
+    }
+    parsed$subtype <- parsed$type
     
     parsed[,1] <- NULL
     return(parsed)
