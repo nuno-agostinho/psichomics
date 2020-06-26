@@ -247,14 +247,10 @@ parseEventFromStr <- function(event, char=FALSE, pretty=FALSE, extra=NULL,
     if (char) {
         if (pretty) {
             event     <- strsplit(event, "_", fixed=TRUE)
-            
-            eventType <- sapply(event, "[[", 1)
-            eventType <- getSplicingEventTypes(acronymsAsNames=TRUE)[eventType]
-            eventType <- tolower(eventType)
-            
+            eventType <- prettifyEventType(sapply(event, "[[", 1), decap=TRUE)
             chrom     <- sapply(event, "[[", 2)
-            strand    <- ifelse(sapply(event, "[[", 3) == "+", "positive",
-                                "negative")
+            strand    <- ifelse(sapply(event, "[[", 3) == "+", 
+                                "positive", "negative")
             gene      <- sapply(event, function(i) i[[length(i)]])
             gene      <- recoverGeneNamesWithUnderscore(gene)
             
@@ -322,10 +318,10 @@ parseEventFromStr <- function(event, char=FALSE, pretty=FALSE, extra=NULL,
     
     parsed$pos <- suppressWarnings( # Simply ignore non-numeric items
         lapply(parsed$pos, function(i) range(as.numeric(i), na.rm=TRUE)))
+    parsed$start <- sapply(parsed$pos, "[[", 1)
+    parsed$end   <- sapply(parsed$pos, "[[", 2)
     
-    if (pretty) {
-        parsed$type <- getSplicingEventTypes(acronymsAsNames=TRUE)[parsed$type]
-    }
+    if (pretty) parsed$type <- prettifyEventType(parsed$type)
     parsed$subtype <- parsed$type
     
     parsed[,1] <- NULL

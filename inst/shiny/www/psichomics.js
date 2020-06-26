@@ -130,16 +130,12 @@ function changeEvent (event) {
  * Render alternative splicing event
  */
 function renderEvent (item, escape) {
-    var tmp    = item.label.split(" __ "),
-        parsed = tmp[0].split("_"),
+    var parsed = item.label.split(";"),
         type   = parsed[0],
-        chr    = parsed[1],
-        strand = parsed[2],
-        start  = parsed[3],
-        end    = parsed[4],
-        id     = parsed[5],
-        gene   = parsed[6],
-        svg    = tmp[1];
+        pos    = parsed[1],
+        id     = parsed[2],
+        gene   = parsed[3],
+        svg    = item.svg;
     
     function processStr (str, prefix="", suffix="") {
         if (str === undefined || str === "") {
@@ -150,17 +146,10 @@ function renderEvent (item, escape) {
         return res;
     }
     type   = processStr(type);
-    chr    = processStr(chr, "chr");
-    strand = processStr(strand, "", " strand");
-    start  = processStr(start);
-    end    = processStr(end);
+    pos    = processStr(pos, "<small>", "</small>");
     id     = processStr(id, "", "<br>");
     gene   = processStr(gene);
     svg    = processStr(svg);
-    pos    = "";
-    start  = processStr(start);
-    end    = processStr(end);
-    if (svg === "" && start !== "" && end !== "") pos = `: ${start}-${end}`;
     
     function row (str) {
         return `<div class="row">${str}</div>`;
@@ -170,8 +159,7 @@ function renderEvent (item, escape) {
     }
     
     var svgCol  = col(svg, 8, "pull-right"),
-        infoCol = col(
-            `<b>${id}${gene}</b> (${chr}${pos}, ${strand})<br>${type}`, 4);
+        infoCol = col(`<b>${id}${gene}</b> ${pos}<br>${type}`, 4);
     return row(infoCol + svgCol);
 }
 

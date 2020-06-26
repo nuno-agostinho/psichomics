@@ -149,18 +149,26 @@ globalSelectize <- function(id, placeholder, ASevent=FALSE) {
     elem <- paste0(id, "Elem")
     hideElem <- sprintf("$('#%s')[0].style.display = 'none';", id)
     
-    onItemAdd <- I(paste0("function(value, $item) {", hideElem, "}"))
-    onBlur    <- I(paste0("function() {", hideElem, "}"))
-    onType    <- I(paste0(
-        "function(value) { $('#selectizeEvent .selectize-dropdown-content')",
-        ".unmark().mark(value, {exclude: ['text']}); }"))
+    onItemAdd <- I(paste("function(value, $item) {",
+                         hideElem, "this.$dropdown_content.unmark(); }"))
+    onBlur    <- I(paste(
+        "function() {", hideElem, "this.$dropdown_content.unmark(); }"))
+    onType    <- I(paste0("function(value) {
+        this.$dropdown_content.unmark().mark(value, {exclude: ['text']}); }"))
+    onOptionAdd <- I(paste(
+    "function(value, data) {
+        var tmp = data.label.split(\" __ \");
+        data.svg = tmp[1];
+        data.label = tmp[0];
+        return(data);
+    }"))
     
     render <- NULL
     if (ASevent) render <- I("{ option: renderEvent }")
     
     opts <- list(onItemAdd=onItemAdd, onBlur=onBlur, maxOptions=20,
                  placeholder=placeholder, render=render, highlight=FALSE,
-                 onType=onType)
+                 onType=onType, onOptionAdd=onOptionAdd)
     
     select <- selectizeInput(elem, "", choices=NULL, width="95%", options=opts)
     select[[3]][[1]] <- NULL
@@ -323,6 +331,7 @@ prepareASeventsRepresentation <- reactive({
         diagram <- suppressWarnings(
             plotSplicingEvent(ASevent, class="pull-right"))
         parsed  <- parseSplicingEvent(ASevent, pretty=TRUE)
+        coords  <- attr(diagram, "position")
         
         # Replace unsupported diagrams by text
         unsupported <- vapply(diagram, `==`, "", FUN.VALUE=logical(1))
@@ -331,9 +340,10 @@ prepareASeventsRepresentation <- reactive({
         if (!is.null(pos)) {
             diagram[unsupported] <- prepareAlternativeText(pos[unsupported])
         }
-        info <- paste(sep="_", parsed$subtype, parsed$chr, parsed$strand,
-                         parsed$start, parsed$end, parsed$id, parsed$gene)
-        representation <- setNames(ASevent, paste(info, "__", diagram))
+        info <- paste(sep=";", parsed$subtype, 
+                      sprintf("(chr%s, %s strand)", parsed$chr, parsed$strand),
+                      parsed$id, parsed$gene, coords)
+        representation <- setNames(ASevent, paste(info, " __ ", diagram))
     } else {
         representation <- NULL
     }
