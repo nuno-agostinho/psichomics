@@ -21,9 +21,10 @@
     - Include gene symbols in custom annotations if available
     - Account for possible filename changes when parsing annotations from
     VAST-TOOLS, rMATS, SUPPA and MISO
-* Gene, transcript and protein annotation:
+* Gene, transcript and protein annotation (visual interface):
     - Suggest genes based on loaded data
     - Change species and assembly when fetching information
+    - Improve relevance of results from PubMed articles
 * Include Dockerfile to create Docker images based on code revisions
 * Copy-edit tutorial on loading user-provided data
 

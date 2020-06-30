@@ -125,12 +125,11 @@ queryUniprot <- function(molecule, format="xml") {
 queryPubMed <- function(primary, ..., top=3, field="abstract", 
                         sort="relevance") {
     args  <- unlist(list(...))
-    for (each in seq_along(args)) {
-        args[each] <- paste0("(", paste(primary, args[each], sep=" AND "), ")")
+    if (!is.null(args)) {
+        terms <- sprintf("%s AND (%s)", primary, paste(args, collapse=" OR "))
+    } else {
+        terms <- primary
     }
-    terms <- paste(args, collapse=" OR ")
-    terms <- paste(primary, terms, sep=" OR ")
-    
     url <- "https://eutils.ncbi.nlm.nih.gov"
     query <- list(db="pubmed", term=terms, retmax=top, tool="psichomics", 
                   field=field, sort=sort,
