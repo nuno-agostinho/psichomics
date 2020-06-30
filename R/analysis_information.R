@@ -791,6 +791,15 @@ parseSpeciesAssembly <- function(info) {
     return(list(species=species, assembly=assembly))
 }
 
+plotSplicingEventHelper <- function(ASevent, data=NULL) {
+    diagram <- suppressWarnings(plotSplicingEvent(ASevent, data=data)[[1]])
+    if (diagram != "") {
+        res <- HTML(diagram)
+    } else {
+        res <- paste("Diagram not supported")
+    }
+}
+
 #' @rdname appServer
 #' 
 #' @importFrom highcharter highchart %>%
@@ -825,13 +834,7 @@ infoServer <- function(input, output, session) {
     output$eventDiagram <- renderUI({
         ASevent <- getASevent()
         if (!is.null(ASevent)) {
-            diagram <- suppressWarnings(plotSplicingEvent(ASevent)[[1]])
-            if (diagram != "") {
-                res <- HTML(diagram)
-            } else {
-                res <- paste("Diagram not supported for selected alternative",
-                             "splicing event")
-            }
+            plotSplicinEventHelper(ASevent)
         } else {
             res <- "No alternative splicing event selected or available"
         }

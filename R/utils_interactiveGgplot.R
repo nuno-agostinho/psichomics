@@ -77,58 +77,51 @@ ggplotUI <- function(id) {
 #' \code{\link[shiny]{hoverOpts}}
 #' @param x Character: name of the variable used for the X axis
 #' @param y Character: name of the variable used for the Y axis
+#' @param eventData Alternative splicing event information (if available)
 #' 
 #' @importFrom shiny tags nearPoints wellPanel
 #' 
 #' @return HTML elements
 #' @keywords internal
-ggplotTooltip <- function(df, hover, x, y) {
+ggplotTooltip <- function(df, hover, x, y, eventData=NULL) {
     point <- nearPoints(df, hover, threshold=10, maxpoints=1, addDist=TRUE,
                         xvar=x, yvar=y)
     if (nrow(point) == 0) return(NULL)
     
-    # Calculate point position inside the image as percent of total 
-    # dimensions from left (horizontal) and from top (vertical)
-    xDomain   <- hover$domain$right - hover$domain$left
-    right_pct <- (hover$domain$right - hover$x) / xDomain
-    yDomain   <- hover$domain$top - hover$domain$bottom
-    top_pct   <- (hover$domain$top - hover$y) / yDomain
-    
-    # Calculate distance from left and bottom in pixels
-    xRange   <- hover$range$right - hover$range$left
-    right_px <- right_pct * xRange + 25
-    yRange   <- hover$range$bottom - hover$range$top
-    top_px   <- hover$range$top + top_pct * yRange + 2
-    
     trItem <- function(key, value) tags$tr(tags$td(tags$b(key)), tags$td(value))
     
     thisPoint <- rownames(point)
-    if ( areSplicingEvents(thisPoint, data=df) ) {
-        event  <- parseSplicingEvent(thisPoint, pretty=TRUE, data=df)
-        strand <- ifelse(event$strand == "+", "forward", "reverse")
-        gene   <- paste(event$gene[[1]], collapse=" or ")
-        type   <- trItem("Event type", event$subtype)
-        coord  <- trItem(
-            "Coordinates", 
-            sprintf("chr %s: %s to %s (%s strand)", event$chrom,
-                    event$pos[[1]][[1]], event$pos[[1]][[2]], strand))
+    if ( areSplicingEvents(thisPoint, data=eventData) ) {
+        event   <- parseSplicingEvent(thisPoint, pretty=TRUE, data=eventData)
+        strand  <- ifelse(event$strand == "+", "forward", "reverse")
+        gene    <- paste(event$gene[[1]], collapse=" or ")
+        type    <- trItem("Event type", event$subtype)
+        
+        coord   <- sprintf("chr %s: %s to %s (%s strand)", event$chrom,
+                           event$pos[[1]][[1]], event$pos[[1]][[2]], strand)
+        coord   <- trItem("Coordinates", coord)
+        diagram <- trItem("Diagram", plotSplicingEventHelper(thisPoint, 
+                                                             data=eventData))
     } else {
-        gene  <- thisPoint
-        type  <- NULL
-        coord <- NULL
+        gene    <- thisPoint
+        type    <- NULL
+        coord   <- NULL
+        diagram <- NULL
     }
     
-    # Tooltip
-    wellPanel(
-        class="well-sm",
-        style=paste0("position: absolute; z-index: 100;",
-                     "background-color: rgba(245, 245, 245, 0.85); ",
-                     "right:", right_px, "px; top:", top_px, "px;"),
-        tags$table(class="table table-condensed", style="margin-bottom: 0;",
-                   tags$thead( trItem("Gene", gene)),
-                   tags$tbody( type, coord,
-                               trItem(x, roundDigits(point[[x]])),
-                               trItem(y, roundDigits(point[[y]])))))
+    left <- hover$coords_css$x + 10
+    top  <- hover$coords_css$y + 5
+    tooltipStyle <- paste0("position: absolute; z-index: 100;",
+                           "background-color: rgba(245, 245, 245, 0.85);",
+                           "right: calc(100%% - %spx); top: %spx;")
+    tooltipStyle <- sprintf(tooltipStyle, left, top)
+    tooltip <- wellPanel(class="well-sm", style=tooltipStyle, tags$table(
+        class="table table-condensed", style="margin-bottom: 0;",
+        tags$thead(trItem("Gene", gene)),
+        tags$tbody(type, coord, diagram,
+                   trItem(x, roundDigits(point[[x]])),
+                   trItem(y, roundDigits(point[[y]])))))
+    return(tooltip)
 }
 
 #' Logic set to create an interactive \code{\link[ggplot2]{ggplot}}
@@ -144,7 +137,7 @@ ggplotTooltip <- function(df, hover, x, y) {
 #' @inherit psichomics return
 #' @keywords internal
 ggplotServer <- function(input, output, id, plot=NULL, df=NULL, x=NULL, 
-                         y=NULL) {
+                         y=NULL, eventData=NULL) {
     idd <- function(str) paste(id, str, sep="-")
     output[[idd("plot")]] <- renderPlot(plot)
     
@@ -152,7 +145,7 @@ ggplotServer <- function(input, output, id, plot=NULL, df=NULL, x=NULL,
         output[[idd("tooltip")]] <- renderUI(NULL)
     } else {
         output[[idd("tooltip")]] <- renderUI(
-            ggplotTooltip(df, input[[idd("hover")]], x, y))
+            ggplotTooltip(df, input[[idd("hover")]], x, y, eventData))
     }
 }
 

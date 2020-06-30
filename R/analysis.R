@@ -2843,11 +2843,12 @@ analysesPlotSet <- function(session, input, output, analysesType, analysesID,
     # Unlabel points
     observeEvent(input$unlabelPoints, setLabelledPoints(analysesID, NULL))
     
-    # Plot events and render the plot tooltip
+    # Plot data and prepare tooltip
     observe({
         stats     <- getAnalysesData()
         filtered  <- getAnalysesFiltered()
         eventData <- attr(stats, "eventData")
+        
         x <- input$xAxis
         y <- input$yAxis
         if (is.null(stats) || is.null(x) || is.null(y)) {
@@ -2875,11 +2876,10 @@ analysesPlotSet <- function(session, input, output, analysesType, analysesID,
         stats  <- res$data
         xLabel <- res$xLabel
         yLabel <- res$yLabel
-        attr(stats, "eventData") <- eventData
         
         ggplotServer(
             input=input, output=output, id=analysesID, df=stats, x=xLabel, 
-            y=yLabel, plot={
+            y=yLabel, eventData=eventData, plot={
                 parseHighlight <- function(input, arg) {
                     argStr <- function(...) paste0(arg, ...)
                     

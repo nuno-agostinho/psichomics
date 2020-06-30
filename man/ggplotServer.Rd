@@ -5,7 +5,16 @@
 \alias{ggplotAuxServer}
 \title{Logic set to create an interactive \code{\link[ggplot2]{ggplot}}}
 \usage{
-ggplotServer(input, output, id, plot = NULL, df = NULL, x = NULL, y = NULL)
+ggplotServer(
+  input,
+  output,
+  id,
+  plot = NULL,
+  df = NULL,
+  x = NULL,
+  y = NULL,
+  eventData = NULL
+)
 
 ggplotAuxServer(input, output, id)
 }
@@ -24,6 +33,8 @@ rendered)}
 \item{x}{Character: name of the variable used for the X axis}
 
 \item{y}{Character: name of the variable used for the Y axis}
+
+\item{eventData}{Alternative splicing event information (if available)}
 }
 \value{
 \code{NULL} (function is only used to modify the Shiny session's

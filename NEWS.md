@@ -21,6 +21,9 @@
     - Include gene symbols in custom annotations if available
     - Account for possible filename changes when parsing annotations from
     VAST-TOOLS, rMATS, SUPPA and MISO
+* Differential analysis:
+    - Tooltips of volcano plots now include diagram of alternative splicing
+    event (if available)
 * Gene, transcript and protein annotation (visual interface):
     - Suggest genes based on loaded data
     - Change species and assembly when fetching information
@@ -56,6 +59,9 @@
     - Decrease number of operations performed after selecting an event
     - Fix crash when changing to an alternative splicing quantification dataset
     without the selected splicing event
+* Differential analyses:
+    - Tooltips of volcano plots are now properly positioned in high-resolution
+    screens (visual interface)
 * `print()` extended to better display information on gene list objects; e.g.
 `print(getGeneList())`
 * Fix issues when installing the package:

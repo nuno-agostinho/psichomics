@@ -4,7 +4,7 @@
 \alias{ggplotTooltip}
 \title{Create the interface for the tooltip of a plot}
 \usage{
-ggplotTooltip(df, hover, x, y)
+ggplotTooltip(df, hover, x, y, eventData = NULL)
 }
 \arguments{
 \item{df}{Data frame}
@@ -15,6 +15,8 @@ ggplotTooltip(df, hover, x, y)
 \item{x}{Character: name of the variable used for the X axis}
 
 \item{y}{Character: name of the variable used for the Y axis}
+
+\item{eventData}{Alternative splicing event information (if available)}
 }
 \value{
 HTML elements
