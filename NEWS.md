@@ -59,6 +59,7 @@
     - Decrease number of operations performed after selecting an event
     - Fix crash when changing to an alternative splicing quantification dataset
     without the selected splicing event
+    - Allow to search using an event identifier directly
 * Differential analyses:
     - Tooltips of volcano plots are now properly positioned in high-resolution
     screens (visual interface)

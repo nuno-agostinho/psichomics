@@ -348,7 +348,7 @@ prepareASeventsRepresentation <- reactive({
         }
         info <- paste(sep=";", parsed$subtype, 
                       sprintf("(chr%s, %s strand)", parsed$chr, parsed$strand),
-                      parsed$id, parsed$gene, coords)
+                      parsed$id, parsed$gene, coords, ASevent)
         representation <- setNames(ASevent, paste(info, " __ ", diagram))
     } else {
         representation <- NULL
