@@ -52,9 +52,11 @@
     (visual interface)
 * Gene expression filtering:
     - Hide message regarding the usage of no design matrix
-* Density plots (`plotDistribution()`):
+* Distribution plots (`plotDistribution()`):
     - After hiding all plot series, hide Y axis (rug plots of the different
     groups have arbitrary Y values to easily distinguish them)
+    - Rug plots of gene expression density plots are now placed near the X axis
+    as expected
 * Alternative splicing event selection (visual interface):
     - Include loading indicator while searching for events
     - Decrease number of operations performed after selecting an event
