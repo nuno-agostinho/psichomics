@@ -133,7 +133,6 @@ diffExpressionEventServer <- function(input, output, session) {
         groups <- names(eventGE)
         attr(groups, "Colour") <- colour
         
-        assembly <- getAssemblyVersion()
         plot <- plotDistribution(eventGE, groups, psi=FALSE,
                                  title=paste(gene, "gene expression"))
         output$density <- renderHighchart(plot)

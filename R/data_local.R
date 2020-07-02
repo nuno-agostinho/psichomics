@@ -91,14 +91,8 @@ localDataUI <- function(id, panel) {
         subjectInfoBrowser,
         geneExprFileInput(ns("geneExpr")),
         junctionQuantBrowser,
-        bsCollapse(
-            id=ns("ASquantLoadCollapse"),
-            bsCollapsePanel(
-                title=tagList(icon("plus-circle"),
-                              "Load alternative splicing quantification"),
-                value="Load alternative splicing quantification",
-                ASquantFileInput(ns("ASquant"), ns("customSpecies"),
-                                 ns("customAssembly")))),
+        ASquantFileInput(ns("ASquant")),
+        tags$hr(),
         textInput(ns("userFilesCategory"), label="Dataset name", width = "100%",
                   value="User dataset", placeholder="Name to identify dataset"),
         processButton(ns("loadMultipleFiles"), "Load files"))
@@ -527,13 +521,7 @@ setMultipleFilesData <- function(input, output, session, replace=TRUE) {
             data <- processDatasetNames(c(getData(), data))
             setData(data)
         }
-        
-        if (all(ASquant != "")) {
-            # Set species and genome assembly for loaded dataset
-            setCategory(category)
-            setSpecies(input$customSpecies)
-            setAssemblyVersion(input$customAssembly)
-        }
+        if (all(ASquant != "")) setCategory(category)
     }
     endProcess("loadMultipleFiles", time)
 }

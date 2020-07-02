@@ -27,6 +27,8 @@
 * Gene, transcript and protein annotation (visual interface):
     - Suggest genes based on loaded data
     - Change species and assembly when fetching information
+    - Improve interface of PubMed article query, including persistent
+    user-inputted tags even when changing selected gene
     - Improve relevance of results from PubMed articles
 * Include Dockerfile to create Docker images based on code revisions
 * Copy-edit tutorial on loading user-provided data

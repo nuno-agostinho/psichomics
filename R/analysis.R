@@ -59,8 +59,8 @@ selectizeGeneInput <- function(id, label="Gene", choices=NULL, multiple=FALSE,
     onFocus  <- NULL
     onChange <- NULL
     if (!multiple) {
-        onFocus  <- I(sprintf('function() { this.clear(); }', id))
-        onChange <- I(sprintf('function(value) { this.blur(); }', id))
+        onFocus  <- I('function() { this.clear(); }')
+        onChange <- I('function(value) { this.blur(); }')
     }
     selectizeInput(
         id, label, width="100%", multiple=multiple, choices=choices,

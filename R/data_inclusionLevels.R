@@ -349,12 +349,9 @@ loadCustomSplicingAnnotationSet <- function(session, input, output) {
                        caller="Custom alternative splicing annotation")
         } else {
             custom <- customAnnot$datapath
-            names(custom) <- sprintf("%s (%s, %s)", customAnnot$name,
-                                     input$customSpecies, input$customAssembly)
+            names(custom) <- customAnnot$name
             updateSelectizeInput(session, "annotation", selected=custom,
                                  choices=listAllAnnotations(custom))
-            setSpecies(input$customSpecies)
-            setAssemblyVersion(input$customAssembly)
             removeModal()
             removeAlert(output)
         }
@@ -376,8 +373,7 @@ loadSplicingQuantificationSet <- function(session, input, output) {
     observeEvent(input$loadIncLevels, {
         infoModal(
             session, "Load alternative splicing quantification",
-            ASquantFileInput(ns("customASquant"), ns("customSpecies2"),
-                             ns("customAssembly2")),
+            ASquantFileInput(ns("customASquant")),
             uiOutput(ns("alertIncLevels")),
             footer=processButton(ns("loadASquant"), "Load quantification"))
     })
@@ -432,8 +428,6 @@ loadSplicingQuantificationSet <- function(session, input, output) {
             } else {
                 setInclusionLevels(psi)
             }
-            setSpecies(input$customSpecies2)
-            setAssemblyVersion(input$customAssembly2)
             removeModal()
         }
         endProcess("loadIncLevels", time)

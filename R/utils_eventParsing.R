@@ -241,7 +241,7 @@ parseEventFromStr <- function(event, char=FALSE, pretty=FALSE, extra=NULL,
     # Protect gene symbols made up of underscores
     event <- gsub("(.*)_(Arg|Und|var1|B|[0-9]+)$", "\\1::\\2", event)
     recoverGeneNamesWithUnderscore <- function(gene) {
-        gsub("::", "_", gene, fixed=TRUE)
+        lapply(gene, function(g) gsub("::", "_", g, fixed=TRUE))
     }
     
     if (char) {

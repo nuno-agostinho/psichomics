@@ -336,6 +336,7 @@ prepareASeventsRepresentation <- reactive({
             plotSplicingEvent(ASevent, class="pull-right"))
         parsed  <- parseSplicingEvent(ASevent, pretty=TRUE)
         coords  <- attr(diagram, "position")
+        gene    <- prepareGenePresentation(parsed$gene)
         
         # Replace unsupported diagrams by text
         unsupported <- vapply(diagram, `==`, "", FUN.VALUE=logical(1))
@@ -348,7 +349,7 @@ prepareASeventsRepresentation <- reactive({
         }
         info <- paste(sep=";", parsed$subtype, 
                       sprintf("(chr%s, %s strand)", parsed$chr, parsed$strand),
-                      parsed$id, parsed$gene, coords, ASevent)
+                      parsed$id, gene, coords, ASevent)
         representation <- setNames(ASevent, paste(info, " __ ", diagram))
     } else {
         representation <- NULL

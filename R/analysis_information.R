@@ -179,25 +179,81 @@ ensemblToUniprot <- function(protein) {
     return(uniprot)
 }
 
+#' Return the interface of relevant PubMed articles for a given gene
+#' 
+#' @param ns Namespace function
+#' @param gene Character: gene
+#' @inheritDotParams queryPubMed -primary
+#' 
+#' @return HTML interface of relevant PubMed articles
+#' @keywords internal
+pubmedUI <- function(ns, gene, ...) {
+    terms <- unlist(as.list(...))
+    if (!is.null(gene)) gene <- setNames("gene", gene)
+    terms <- c(gene, setNames(terms, terms))
+    
+    selectTerms <- selectizeInput(
+        ns("articleTerms"), label=NULL, choices=terms, selected=terms,
+        multiple=TRUE, width="auto", options=list(
+            create=TRUE, createOnBlur=TRUE, persist=TRUE,
+            plugins=list('remove_button'), placeholder="Add keywords..."))
+    selectTerms[[2]]$style <- paste(selectTerms[[2]]$style, "margin-bottom: 0;")
+    
+    div(class="panel panel-default", 
+        div(class="panel-heading", 
+            tags$b("Relevant PubMed articles", 
+                   uiOutput(ns("articleSearch"), inline=TRUE))),
+        div(class="list-group", tags$li(class="list-group-item", selectTerms),
+            uiOutput(ns("articleList"))))
+}
+
 #' @rdname appUI
 #' @importFrom shiny uiOutput
+#' @importFrom R.utils capitalize
 infoUI <- function(id) {
     ns <- NS(id)
     
-    render <- I("{ option_create: function (data, escape) {
-        return '<div class=\"create\">Search for <strong>' +
-                escape(data.input) + '</strong>&hellip;</div>';}}")
-    selectGene    <- selectizeGeneInput(
-        ns("selectedGene"), create=TRUE, createOnBlur=TRUE, 
-        placeholder="Type a gene symbol...", render=render)
+    renderSelectize <- function(option_create) {
+        render <- sprintf(
+            "{ option_create: function (data, escape) {
+                   return '<div class=\"create\">' + %s + '</div>'; }}",
+            option_create)
+        return(I(render))
+    }
+    
+    species <- c(paste("human", c("hg19", "hg38")),
+                 paste("mouse", c("mm9", "mm10")),
+                 "rat rn6",
+                 "zebrafish danRer11",
+                 "Drosophila_melanogaster dm6",
+                 "Caenorhabditis_elegans ce11",
+                 "Saccharomyces_cerevisiae sacCer3")
+    #setNames(paste(names(species), species),
+    #         capitalize(sprintf("%s (%s assembly)", names(species), species)))
+    
+    onFocus <- I('function() { this.clear(); }')
+    renderSpecies <- renderSelectize(
+        option_create=paste(
+            "'Search in <strong>' + escape(data.input).split(\" \")[0] +",
+            "' (' + escape(data.input).split(\" \")[1] + ' assembly)' +",
+            "'</strong>&hellip;'"))
     selectSpecies <- selectizeInput(
         ns("selectedSpecies"), "Species", width="100%",
-        choices=c("Human (hg19 assembly)"="human hg19",
-                  "Human (hg38 assembly)"="human hg38"))
-    tagList(fluidRow(
-        column(6, fluidRow(column(8, selectGene), column(4, selectSpecies)),
-               uiOutput(ns("genetic"))),
-        column(6, uiOutput(ns("articles")))),
+        choices=species, selected=species[[1]],
+        options=list(placeholder="Search for a species...", highlight=FALSE,
+                     create=TRUE, onFocus=onFocus, render=renderSpecies))
+    
+    renderGene <- renderSelectize(
+        option_create=paste(
+            "'Search for <strong>' + escape(data.input) + '</strong>&hellip;'"))
+    selectGene <- selectizeGeneInput(
+        ns("selectedGene"), create=TRUE, createOnBlur=TRUE, render=renderGene,
+        placeholder="Search for a gene symbol...")
+    tagList(
+        fluidRow(
+            column(6, fluidRow(column(6, selectGene), column(6, selectSpecies)),
+                   uiOutput(ns("genetic"))),
+            column(6, pubmedUI(ns, gene=NULL, "cancer"))),
         uiOutput(ns("info")))
 }
 
@@ -278,7 +334,6 @@ parseUniprotXML <- function(xml) {
 #' transcript <- "ENST00000488540"
 #' plotProtein(transcript)
 plotProtein <- function(molecule) {
-    display("Retrieving protein annotation from UniProt...")
     xml     <- queryUniprot(molecule, "xml")
     if (xml == "") return(NULL)
     parsed  <- parseUniprotXML(xml)
@@ -299,11 +354,10 @@ plotProtein <- function(molecule) {
     # The diverse types of features available
     types <- unique(feature$type)
     
-    display("Plotting protein domains...")
     featureList <- NULL
-    
-    if (nrow(feature) == 0)
-        stop("This protein has no annotated domains in UniProt.")
+    if (nrow(feature) == 0) {
+        stop("No annotated domains were found for this protein in UniProt")
+    }
     
     # Reverse elements from features so the first ones (smaller Y) are above
     for (feat in nrow(feature):1) {
@@ -663,35 +717,6 @@ articleUI <- function(article) {
                                        tags$small(description)))
 }
 
-#' Return the interface of relevant PubMed articles for a given gene
-#' 
-#' @param ns Namespace function
-#' @param gene Character: gene
-#' @inheritDotParams queryPubMed -primary
-#' 
-#' @return HTML interface of relevant PubMed articles
-#' @keywords internal
-pubmedUI <- function(ns, gene, ...) {
-    terms <- c(gene, as.list(...))
-    
-    selectTerms <- selectizeInput(
-        ns("articleTerms"), label=NULL, choices=terms, selected=terms, 
-        multiple=TRUE, width="auto", options=list(
-            create=TRUE, createOnBlur=TRUE, persist=FALSE,
-            plugins=list('remove_button', 'drag_drop'),
-            placeholder="Add keywords..."))
-    selectTerms[[2]]$style <- paste(selectTerms[[2]]$style, "margin-bottom: 0;")
-    
-    articleList <- uiOutput(ns("articleList"))
-    
-    div(class="panel panel-default", 
-        div(class="panel-heading", 
-            tags$b("Relevant PubMed articles", 
-                   uiOutput(ns("articleSearch"), inline=TRUE))),
-        div(class="list-group", tags$li(class="list-group-item", selectTerms),
-            articleList))
-}
-
 #' Render protein information
 #' 
 #' @param protein Character: protein identifier
@@ -720,24 +745,26 @@ renderProteinInfo <- function(protein, transcript, species, assembly) {
     }
     
     # Prepare external links
-    grch37   <- assembly == "hg19"
-    href <- paste0("http://", if(grch37) { "grch37." }, "ensembl.org/", 
-                   species, "/Transcript/Summary?t=", transcript)
+    grch37      <- if (assembly == "hg19") "grch37." else ""
+    href        <- sprintf("http://%sensembl.org/%s/Transcript/Summary?t=%s", 
+                           grch37, species, transcript)
     ensemblLink <- tags$a("Ensembl", icon("external-link"), href=href,
                           target="_blank")
     
-    href <- paste0("http://www.uniprot.org/uniprot/?query=", transcript)
+    href        <- paste0("http://www.uniprot.org/uniprot/?query=", transcript)
     uniprotLink <- tags$a("UniProt", icon("external-link"), href=href,
                           target="_blank")
+    
     links <- column(2, tags$label("External links"),
                     tags$ul(class="list-inline",
                             tags$li(style="padding-top: 7px;", ensemblLink),
                             tags$li(style="padding-top: 7px;", uniprotLink)))
-    
-    if (!is.null(protein))
-        return(tagList(name, role, links))
-    else
-        return(links)
+    if (!is.null(protein)) {
+        res <- tagList(name, role, links)
+    } else {
+        res <- links
+    }
+    return(res)
 }
 
 prepareExternalLinks <- function(info, species, assembly, grch37, gene) {
@@ -755,7 +782,7 @@ prepareExternalLinks <- function(info, species, assembly, grch37, gene) {
         ucscPos <- sprintf("chr%s:%s-%s", chr, start, end)
         url$humanProteinAtlas <- sprintf(
             "http://www.proteinatlas.org/%s/pathology", gene)
-        url$vastdb <- sprintf("http://vastdb.crg.eu/wiki/Gene:%s@Genome%s",
+        url$vastdb <- sprintf("http://vastdb.crg.eu/wiki/Gene:%s@Genome:%s",
                               gene, assembly)
     } else {
         ucscPos <- gene
@@ -763,31 +790,31 @@ prepareExternalLinks <- function(info, species, assembly, grch37, gene) {
             "http://www.proteinatlas.org/search/%s", gene)
         url$vastdb <- paste0("http://vastdb.crg.eu/wiki/search?query=", gene)
     }
-    url$ensembl   <- paste0("http://", if (grch37) { "grch37." }, 
-                            "ensembl.org/", species, "/", 
-                            "Gene/Summary?g=", gene)
-    url$ucsc      <- paste0("https://genome.ucsc.edu/cgi-bin/hgTracks?",
-                            if (grch37) { "db=hg19&" }, "position=", ucscPos)
-    url$geneCards <- paste0("http://www.genecards.org/cgi-bin/",
-                            "carddisp.pl?gene=", gene)
+    url$ensembl   <- sprintf("http://%sensembl.org/%s/Gene/Summary?g=%s",
+                             ifelse(grch37, "grch37.", ""), species, gene)
+    url$ucsc      <- sprintf(
+        "https://genome.ucsc.edu/cgi-bin/hgTracks?db=%s&position=%s",
+        assembly, ucscPos)
+    url$geneCards <- paste0(
+        "http://www.genecards.org/cgi-bin/carddisp.pl?gene=", gene)
     
+    isHuman <- !is.null(species) && species == "human"
     links <- tagList(
         if (!is.null(species) && species != "")
             linkTo("Ensembl", url$ensembl),
         linkTo("UCSC", url$ucsc),
-        linkTo("GeneCards", url$geneCards),
-        if (!is.null(species) && species == "human")
-            linkTo("Human Protein Atlas", url$humanProteinAtlas),
+        if (isHuman) linkTo("GeneCards", url$geneCards),
+        if (isHuman) linkTo("Human Protein Atlas", url$humanProteinAtlas),
         linkTo("VastDB", url$vastdb))
     return(links)
 }
 
 parseSpeciesAssembly <- function(info) {
-    speciesRegex <- "(.*) \\((.*) assembly\\)"
+    speciesRegex <- "(.*) (.*)"
     species      <- tolower(gsub(speciesRegex, "\\1", info))
     assembly     <- tolower(gsub(speciesRegex, "\\2", info))
-    if (is.null(species) || length(species) == 0) species <- "human"
-    if (is.null(assembly)) assembly <- "hg19"
+    if (is.null(species) || length(species) == 0 || species == "") return(NULL)
+    if (is.null(assembly)) assembly <- ""
     return(list(species=species, assembly=assembly))
 }
 
@@ -809,15 +836,15 @@ plotSplicingEventHelper <- function(ASevent, data=NULL) {
 infoServer <- function(input, output, session) {
     ns <- session$ns
     
-    # Update gene choices according to available genes
-    observe(updateSelectizeInput(
-        session, "selectedGene", choices=getGenes(), server=TRUE))
-    
     # Update species/assembly according to the ones used for loading datasets
     observe({
         species  <- getSpecies()
         assembly <- getAssemblyVersion()
         selected <- paste(species, assembly)
+        
+        if (is.null(selected) || selected == "" || length(selected) == 0) {
+            selected <- "human hg19"
+        }
         updateSelectizeInput(session, "selectedSpecies", selected=selected)
     })
     
@@ -826,15 +853,18 @@ infoServer <- function(input, output, session) {
         ASevent <- getASevent()
         if (!is.null(ASevent)) {
             gene <- parseSplicingEvent(ASevent)$gene[[1]]
-            runjs(sprintf('$("#%s")[0].selectize.createItem("%s");', 
-                          ns("selectedGene"), gene))
+        } else {
+            gene <- NULL
         }
+        # Update gene choices according to available genes
+        updateSelectizeInput(session, "selectedGene", choices=getGenes(),
+                             selected=gene, server=TRUE)
     })
     
     output$eventDiagram <- renderUI({
         ASevent <- getASevent()
         if (!is.null(ASevent)) {
-            plotSplicingEventHelper(ASevent)
+            res <- plotSplicingEventHelper(ASevent)
         } else {
             res <- "No alternative splicing event selected or available"
         }
@@ -843,12 +873,13 @@ infoServer <- function(input, output, session) {
     
     reactiveQueryPubMed <- reactive({
         terms <- input$articleTerms
+        terms <- gsub("^gene_", "", terms)
         pubmed <- queryPubMed(terms[1], terms[-1])
         return(pubmed)
     })
     
     observeEvent(input$articleTerms, {
-        pubmed   <- tryCatch(reactiveQueryPubMed(), error=return)
+        pubmed <- tryCatch(reactiveQueryPubMed(), error=return)
         if (is(pubmed, "error")) return(NULL)
         
         articles <- pubmed[-1]
@@ -856,34 +887,34 @@ infoServer <- function(input, output, session) {
             articleList <- lapply(articles, articleUI)
         } else {
             articleList <- helpText(class="list-group-item",
-                                    "No articles match your search terms.")
+                                    "No articles match your search terms")
         }
         output$articleList <- renderUI(articleList)
         
         search <- pubmed$search$querytranslation
         search <- gsub("[Abstract]", "[Title/Abstract]", search, fixed=TRUE)
-        search <- paste0("http://www.ncbi.nlm.nih.gov/pubmed/?term=", 
-                         search)
+        search <- paste0("http://www.ncbi.nlm.nih.gov/pubmed/?term=", search)
         link <- tags$a(href=search, target="_blank", class="pull-right",
                        "Show more articles", icon("external-link"))
         output$articleSearch <- renderUI(link)
     })
     
-    # Render relevant articles according to available gene
+    # Update gene used in search
     observe({
         gene <- input$selectedGene
         if (gene == "") return(NULL)
-        output$articles <- renderUI({
-            category <- getCategory()
-            if (!is.null(category)) category <- unlist(strsplit(category, " "))
-            
-            articles <- pubmedUI(session$ns, gene, "cancer", category)
-            return(articles)
-        })
+        terms <- isolate(input$articleTerms)
+        
+        genePrefix <- "gene_"
+        terms <- terms[!startsWith(terms, genePrefix)]
+        selected <- c(setNames(paste0(genePrefix, gene), gene), terms)
+        updateSelectizeInput(session, "articleTerms", choices=selected,
+                             selected=selected)
     })
     
     observe({
         parsed   <- parseSpeciesAssembly(input$selectedSpecies)
+        if (is.null(parsed)) return(NULL)
         species  <- parsed$species
         assembly <- parsed$assembly
         grch37   <- assembly == "hg19"
@@ -948,10 +979,13 @@ infoServer <- function(input, output, session) {
         })
     })
     
+    plotProteinReactive <- reactive({ plotProtein(input$selectedTranscript) })
+    
     # Render UniProt protein domains and information
     observe({
         transcript <- input$selectedTranscript
         parsed     <- parseSpeciesAssembly(input$selectedSpecies)
+        if (is.null(parsed)) return(NULL)
         species    <- parsed$species
         assembly   <- parsed$assembly
         
@@ -960,7 +994,7 @@ infoServer <- function(input, output, session) {
             output$proteinError <- renderUI(NULL)
             output$plotProtein  <- renderHighchart(NULL)
         } else {
-            hc <- tryCatch(plotProtein(transcript), error=return)
+            hc <- tryCatch(plotProteinReactive(), error=return)
             output$proteinInfo  <- renderUI({
                 if (is.null(species) || is.null(assembly)) return(NULL)
                 
@@ -977,7 +1011,7 @@ infoServer <- function(input, output, session) {
                     stop(safeError(hc$message))
                 else if (is.null(hc))
                     helpText("Protein information from UniProt for this",
-                             "transcript is not available.")
+                             "transcript not available")
             })
             output$plotProtein <- renderHighchart(hc)
         }

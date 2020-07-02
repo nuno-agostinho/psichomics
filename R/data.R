@@ -258,9 +258,7 @@ ASquantFileInput <- function(ASquantFileId, speciesId, assemblyId){
                         "and 100. If the latter, PSI values are scaled betwen",
                         "0 and 1.")))),
         selectizeInput(speciesId, "Species", choices="Human", width = "100%",
-                       options=list(create=TRUE)),
-        selectizeInput(assemblyId, "Assembly", choices=c("hg19", "hg38"),
-                       width = "100%", options=list(create=TRUE)))
+                       options=list(create=TRUE)))
 }
 
 #' @rdname appUI
