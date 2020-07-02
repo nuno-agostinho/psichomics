@@ -168,10 +168,11 @@ ggplotAuxServer <- function(input, output, id) {
     # Toggle visibility of reset zoom button
     observe({
         zoom <- getZoom(id)
-        if (is.null(zoom))
+        if (is.null(zoom)) {
             hide(idd("resetZoom"))
-        else
+        } else {
             show(idd("resetZoom"))
+        }
     })
     
     # Reset zoom when clicking the respective button

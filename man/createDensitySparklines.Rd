@@ -9,7 +9,8 @@ createDensitySparklines(
   events,
   areSplicingEvents = TRUE,
   groups = NULL,
-  geneExpr = NULL
+  geneExpr = NULL,
+  inputID = "sparklineInput"
 )
 }
 \arguments{
@@ -23,6 +24,9 @@ expression (FALSE)?}
 \item{groups}{Character: name of the groups used for differential analyses}
 
 \item{geneExpr}{Character: name of the gene expression dataset}
+
+\item{inputID}{Character: identifier of input to get attributes of clicked
+event (Shiny only)}
 }
 \value{
 HTML element with sparkline data

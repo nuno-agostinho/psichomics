@@ -18,11 +18,11 @@ diffSplicingEventUI <- function(id) {
     survival <- div(
         id=ns("survivalButton"), hr(),
         actionButton(
-            ns("optimalSurv1"), onclick="showSurvCutoff(null, null, false)",
+            ns("optimalSurv1"), onclick="showSurvCutoff(null)",
             icon=icon("heartbeat"), "Survival analysis by PSI cutoff", 
             class="btn-info btn-md btn-block", class="visible-lg visible-md"),
         actionButton(
-            ns("optimalSurv2"), onclick="showSurvCutoff(null, null, false)",
+            ns("optimalSurv2"), onclick="showSurvCutoff(null)",
             "Survival analysis by PSI cutoff", 
             class="btn-info btn-xs btn-block", class="visible-sm visible-xs"))
     
@@ -114,10 +114,8 @@ diffSplicingEventServer <- function(input, output, session) {
         groups <- names(eventPSI)
         attr(groups, "Colour") <- colour
         
-        assembly <- getAssemblyVersion()
-        title    <- parseSplicingEvent(event, char=TRUE, pretty=TRUE, 
-                                       extra=assembly)
-        plot     <- plotDistribution(eventPSI, groups, title=title)
+        title <- parseSplicingEvent(event, char=TRUE, pretty=TRUE)
+        plot  <- plotDistribution(eventPSI, groups, title=title)
         output$density <- renderHighchart(plot)
         
         output$eventDiagrams <- renderUI({

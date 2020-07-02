@@ -10,7 +10,7 @@ diffAnalyses(
   analyses = c("wilcoxRankSum", "ttest", "kruskal", "levene", "fligner"),
   pvalueAdjust = "BH",
   geneExpr = NULL,
-  psi = NULL
+  inputID = "sparklineInput"
 )
 }
 \arguments{
@@ -29,8 +29,8 @@ tumour and metastasis}
 \item{geneExpr}{Character: name of the gene expression dataset (only required
 for density sparklines available in the interactive mode)}
 
-\item{psi}{Data frame or matrix: alternative splicing quantification (defunct
-argument, use \code{data} instead)}
+\item{inputID}{Character: identifier of input to get attributes of clicked
+event (Shiny only)}
 }
 \value{
 Table of statistical analyses

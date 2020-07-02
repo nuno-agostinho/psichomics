@@ -57,9 +57,9 @@ geNormalisationFilteringInterface <- function(ns) {
             bsCollapsePanel(
                 tagList(icon("balance-scale"), "Normalisation"),
                 value="Normalisation",
-                helpText("Scale raw library sizes using the function",
-                         tags$code("edgeR::calcNormFactors"), ", unless the",
-                         tags$code("quantile"), "method is selected."),
+                helpText("Scale raw library sizes using",
+                         tags$code("edgeR::calcNormFactors()"), ", unless",
+                         tags$code("quantile"), "is selected."),
                 selectizeInput(
                     ns("normalisation"), "Normalisation method", width="100%",
                     c("Weighted trimmed mean of M-values (TMM)"="TMM",
@@ -78,14 +78,14 @@ geNormalisationFilteringInterface <- function(ns) {
                 checkboxInput(ns("voom"), width="100%",
                               "Perform mean-variance modelling using voom"),
                 helpText("If library sizes are very different,",
-                         tags$code("limma::voom"), "should be more powerful",
+                         tags$code("limma::voom()"), "should be more powerful",
                          "and preferred.")),
             bsCollapsePanel(
                 tagList(icon("retweet"), "Compute CPM and log-transform"),
                 value="Log-transformation",
                 helpText("Compute log2-transformed counts per million",
-                         "(log2CPM) using", tags$code("edgeR::cpm"), "(or",
-                         tags$code("limma::voom"), ", if selected)."),
+                         "(log2CPM) using", tags$code("edgeR::cpm()"), "(or",
+                         tags$code("limma::voom()"), ", if selected)."),
                 numericInput(
                     ns("priorCount"), value=0.25, width="100%",
                     paste("Average count to add to each observation to avoid",

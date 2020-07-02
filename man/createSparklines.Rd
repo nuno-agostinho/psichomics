@@ -4,7 +4,15 @@
 \alias{createSparklines}
 \title{Create sparkline charts to be used in a data table}
 \usage{
-createSparklines(hc, data, events, FUN, groups = NULL, geneExpr = NULL)
+createSparklines(
+  hc,
+  data,
+  events,
+  groups = NULL,
+  geneExpr = NULL,
+  inputID = "sparklineInput",
+  ...
+)
 }
 \arguments{
 \item{hc}{\code{highchart} object}
@@ -13,11 +21,14 @@ createSparklines(hc, data, events, FUN, groups = NULL, geneExpr = NULL)
 
 \item{events}{Character: event identifiers}
 
-\item{FUN}{Character: JavaScript function to execute when clicking on a chart}
-
 \item{groups}{Character: name of the groups used for differential analyses}
 
 \item{geneExpr}{Character: name of the gene expression dataset}
+
+\item{inputID}{Character: identifier of input to get attributes of clicked
+event (Shiny only)}
+
+\item{id}{Character: Shiny input identifier}
 }
 \value{
 HTML element with sparkline data

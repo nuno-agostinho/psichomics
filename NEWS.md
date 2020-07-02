@@ -50,7 +50,8 @@
     - Support loading data from GTEx V8 or previous releases
     - Fix bad formatting of help tooltips when using `shiny 1.4.0` or newer
     (visual interface)
-* Hide message about gene expression being filtered without design matrix
+* Gene expression filtering:
+    - Hide message regarding the usage of no design matrix
 * Density plots (`plotDistribution()`):
     - After hiding all plot series, hide Y axis (rug plots of the different
     groups have arbitrary Y values to easily distinguish them)
@@ -60,9 +61,17 @@
     - Fix crash when changing to an alternative splicing quantification dataset
     without the selected splicing event
     - Allow to search using an event identifier directly
+* Principal component analysis (visual interface):
+    - The correct splicing event is now selected when clicking on any loadings
+    in the loadings plot
 * Differential analyses:
+    - Fix occasional crash when performing differential analyses with different
+    number of groups during the same session (visual interface)
     - Tooltips of volcano plots are now properly positioned in high-resolution
     screens (visual interface)
+    - The correct splicing event is now selected when clicking the density plots
+    or survival curves in the table (visual interface)
+    - `diffAnalyses()`: deprecated `psi` argument was now removed
 * `print()` extended to better display information on gene list objects; e.g.
 `print(getGeneList())`
 * Fix issues when installing the package:

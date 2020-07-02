@@ -119,14 +119,6 @@ function renderGroupSelection (item, escape) {
 }
 
 /**
- * Change selected alternative splicing event
- * @param {String} event Alternative splicing event
- */
-function changeEvent (event) {
-    $("#selectizeEventElem").selectize()[0].selectize.setValue(event);
-}
-
-/**
  * Render alternative splicing event
  */
 function renderEvent (item, escape) {
@@ -216,16 +208,13 @@ function renderGEnormOptions (item, escape) {
  * @param {String} event Alternative splicing event
  * @param {String} groups List of groups used for differential analysis
  */
-function showDiffSplicing (event, groups = null) {
+function showDiffSplicing (groups = null) {
     var singleEventPage = "analyses-diffSplicing-diffSplicingEvent";
     
     // Navigate to differential splicing analyses for a single event
     var diff = "Individual alternative splicing event";
     $("a[data-value*='" + diff + "']").click();
     
-    // Change currently selected splicing event
-    changeEvent(event);
-        
     if (groups !== null) {
         // Set selected groups
         $("input[type='radio'][name='" + singleEventPage +
@@ -283,24 +272,6 @@ function showDiffExpression (gene, groups = null, geneExpr = null) {
 }
 
 /**
- * Prepare a cell from DataTable with a link to survival
- * 
- * @param data Cell data from DataTable
- * @param type Type of data from DataTable
- * @param row Row from DataTable
- */
-function linkToShowSurv(data, type, row) {
-    if (type === 'display') {
-        console.log(row[0]);
-        var event = row[0].replace(new RegExp(" ", 'g'), "_");
-        event = '\'' + event + '\'';
-        data  = '<a href="javascript:void(0)" onclick="showSurvCutoff(' +
-            event + ')">' + data + '</a>';
-    }
-    return data;
-}
-
-/**
  * Navigate user to survival analysis by a value cutoff
  * @param {String} event Alternative splicing event
  * @param {String} groups List of groups used for survival analysis
@@ -308,10 +279,7 @@ function linkToShowSurv(data, type, row) {
  * @param {Boolean} psi Prepare splicing quantification (true) or gene 
  * expression cutoff (false)?
  */
-function showSurvCutoff(event, groups = null, autoParams = true, psi = true) {
-    // Change currently selected splicing event
-    if (event !== null && psi) changeEvent(event);
-    
+function showSurvCutoff(event, groups = null, autoParams = false, psi = true) {
     // Navigate to survival analyses
     var surv = "Survival analysis";
     $("#nav > li > ul > li > a[data-value*='" + surv + "']").click();

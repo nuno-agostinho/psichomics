@@ -16,12 +16,12 @@ diffExpressionEventUI <- function(id) {
     survival <- div(
         id=ns("survivalButton"), hr(),
         actionButton(ns("optimalSurv1"),
-                     onclick="showSurvCutoff(null, null, false, false)",
+                     onclick="showSurvCutoff(null, psi=false)",
                      icon=icon("heartbeat"), "Survival analysis by GE cutoff", 
                      class="btn-info btn-md btn-block",
                      class="visible-lg visible-md"),
         actionButton(ns("optimalSurv2"), 
-                     onclick="showSurvCutoff(null, null, false, false)",
+                     onclick="showSurvCutoff(null, psi=false)",
                      "Survival analysis by GE cutoff", 
                      class="btn-info btn-xs btn-block",
                      class="visible-sm visible-xs"))

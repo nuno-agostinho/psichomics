@@ -60,9 +60,13 @@ shinyApp(ui, server)
 }
 }
 \seealso{
-Other layout functions: \code{\link[shiny]{fillPage}},
-  \code{\link[shiny]{fixedPage}}, \code{\link[shiny]{flowLayout}},
-  \code{\link[shiny]{fluidPage}}, \code{\link[shiny]{navbarPage}},
-  \code{\link[shiny]{splitLayout}}, \code{\link[shiny]{verticalLayout}}
+Other layout functions: 
+\code{\link[shiny]{fillPage}()},
+\code{\link[shiny]{fixedPage}()},
+\code{\link[shiny]{flowLayout}()},
+\code{\link[shiny]{fluidPage}()},
+\code{\link[shiny]{navbarPage}()},
+\code{\link[shiny]{splitLayout}()},
+\code{\link[shiny]{verticalLayout}()}
 }
 \keyword{internal}

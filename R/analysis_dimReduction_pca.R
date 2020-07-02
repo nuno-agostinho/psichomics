@@ -818,22 +818,28 @@ pcaServer <- function(input, output, session) {
         output$scatterplotLoadings <- renderHighchart({
             if (!is.null(pcX) && !is.null(pcY)) {
                 dataType <- attr(pca, "dataType")
+                groupsJS <- toJSarray(isolate(names(groups)))
                 if (dataType == "Inclusion levels") {
                     title <- "Alternative splicing events (PCA loadings)"
                     onClick <- sprintf(
                         "function() {
-                            sample = this.options.sample;
-                            sample = sample.replace(/ /g, '_');
-                            showDiffSplicing(sample, %s); }",
-                        toJSarray(isolate(names(groups))))
+                            var id = '%s',
+                                event = this.options.sample.replace(/ /g, '_'),
+                                param = {event: event, groups: %s};
+                            Shiny.setInputValue(id, param, {priority: 'event'});
+                        }",
+                        ns("pca_last_clicked"), groupsJS)
                 } else if (dataType == "Gene expression") {
                     title <- "Genes (PCA loadings)"
-                    
                     onClick <- sprintf(
                         "function() {
-                            sample = this.options.sample;
-                            showDiffExpression(sample, %s, '%s'); }",
-                        toJSarray(isolate(names(groups))),
+                            var id = '%s',
+                                gene = this.options.sample,
+                                param = {gene: gene, groups: %s, 
+                                          geneExpr: '%s'};
+                            Shiny.setInputValue(id, param, {priority: 'event'});
+                        }",
+                        ns("pca_last_clicked"), groupsJS,
                         isolate(input$dataForPCA))
                 }
                 
@@ -842,7 +848,7 @@ pcaServer <- function(input, output, session) {
                 
                 plotPCA(pca, pcX, pcY, individuals=FALSE, loadings=TRUE,
                         nLoadings=nLoadings) %>%
-                    hc_title(text=title) %>%
+                    hc_title(text=unname(title)) %>%
                     hc_plotOptions(series=list(cursor="pointer", 
                                                point=list(events=list(
                                                    click=JS(onClick)))))
@@ -873,6 +879,9 @@ pcaServer <- function(input, output, session) {
         updateSliderInput(session, "kmeansNstart", max=nrow(pca$x), value=100)
         updateSliderInput(session, "claraSamples", max=nrow(pca$x), value=50)
     })
+    
+    # Show differential analysis when clicking on PCA loadings
+    observe(processClickRedirection(input$pca_last_clicked))
     
     clusterSet(session, input, output)
 }

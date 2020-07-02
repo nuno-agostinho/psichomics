@@ -390,7 +390,8 @@ optimSurvDiffSet <- function(session, input, output) {
                                            marker=list(radius=1)))
             data <- as.character(df[ , 3])
             optimSurv[rownames(df), 3] <- createSparklines(
-                hc, data, rownames(df), groups=names(samples), "showSurvCutoff")
+                hc, data, rownames(df), groups=names(samples),
+                inputID=ns("statsTable_survCutoff_last_clicked"))
             setDifferentialSplicingResetPaging(FALSE)
             setDifferentialSplicingSurvival(optimSurv)
         }
@@ -412,7 +413,11 @@ optimSurvDiffSet <- function(session, input, output) {
         
         endProcess("survival", time)
     })
-    }
+    
+    # Show survival page when clicking the survival curves
+    observe(processClickRedirection(
+        input$statsTable_survCutoff_last_clicked, survival=TRUE))
+}
 
 #' Set of functions to perform differential analyses
 #' 
@@ -460,11 +465,12 @@ diffSplicingSet <- function(session, input, output) {
         # Prepare splicing events to analyse
         ASevents <- getSelectedGroups(input, "diffASevents", "ASevents",
                                       filter=rownames(psi))
-        if (!is.null(ASevents) ) 
+        if (!is.null(ASevents) ) {
             psi <- psi[unique(unlist(ASevents)), , drop=FALSE]
-        
-        stats <- diffAnalyses(psi, groups, statsChoices,
-                              pvalueAdjust=pvalueAdjust)
+        }
+        stats <- diffAnalyses(
+            psi, groups, statsChoices, pvalueAdjust=pvalueAdjust,
+            inputID=ns("statsTable_diffSplicing_last_clicked"))
         attr(stats, "groups")    <- attrGroups
         attr(stats, "eventData") <- attr(psi, "rowData")
         setDifferentialSplicing(stats)
@@ -503,6 +509,9 @@ diffSplicingSet <- function(session, input, output) {
         setDifferentialSplicingSurvival(NULL)
         setLabelledPoints("psi-volcano", NULL)
     })
+    
+    # Go to differential analysis when clicking on density plot
+    observe(processClickRedirection(input$statsTable_diffSplicing_last_clicked))
 }
 
 #' @rdname appServer

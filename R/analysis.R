@@ -560,7 +560,7 @@ plotSurvivalCurves <- function(surv, mark=TRUE, interval=FALSE, pvalue=NULL,
         
         hc <- hc %>%
             hc_chart(zoomType="xy") %>%
-            hc_title(text=title) %>%
+            hc_title(text=unname(title)) %>%
             hc_yAxis(title=list(text="Survival proportion"),
                      crosshair=TRUE) %>%
             hc_xAxis(title=list(text=paste("Time in", scale)),
@@ -1691,7 +1691,7 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
                 "Range: {series.options.min} - {series.options.max}")) %>%
         export_highcharts()
     
-    if (!is.null(title)) hc <- hc %>% hc_title(text=title)
+    if (!is.null(title)) hc <- hc %>% hc_title(text=unname(title))
     
     if (is.null(groups)) {
         ns <- groups <- "All samples"
@@ -1880,7 +1880,7 @@ renderBoxplot <- function(data, outliers=FALSE, sortByMedian=TRUE,
             hc_chart(zoomType="x", type="column") %>%
             hc_plotOptions(boxplot=list(color="black", fillColor="orange")) %>%
             hc_xAxis(labels=list(enabled=showXlabels), visible=showXlabels) %>%
-            hc_title(text=title))
+            hc_title(text=unname(title)))
     if (min(melted$value) >= 0) hc <- hc %>% hc_yAxis(min=0)
     
     hc <- hc %>% export_highcharts()
@@ -1946,17 +1946,18 @@ leveneTest <- function(x, g, centers=median) {
 
 #' Create density sparklines for inclusion levels
 #' 
-#' @importFrom highcharter highchart hc_credits hc_tooltip hc_chart hc_title
-#' hc_xAxis hc_yAxis hc_exporting hc_legend hc_plotOptions
-#' @importFrom shiny tags
-#' 
 #' @inherit createSparklines
 #' @param areSplicingEvents Boolean: are these splicing events (TRUE) or gene 
 #' expression (FALSE)?
 #' 
+#' @importFrom highcharter highchart hc_credits hc_tooltip hc_chart hc_title
+#' hc_xAxis hc_yAxis hc_exporting hc_legend hc_plotOptions
+#' @importFrom shiny tags
+#' 
 #' @keywords internal
-createDensitySparklines <- function(data, events, areSplicingEvents=TRUE, 
-                                    groups=NULL, geneExpr=NULL) {
+createDensitySparklines <- function(data, events, areSplicingEvents=TRUE,
+                                    groups=NULL, geneExpr=NULL,
+                                    inputID="sparklineInput") {
     if (areSplicingEvents) {
         minX <- 0
         maxX <- 1
@@ -1989,43 +1990,52 @@ createDensitySparklines <- function(data, events, areSplicingEvents=TRUE,
     
     if (!is.null(minX) || !is.null(maxX))
         hc <- hc %>% hc_xAxis(min=minX, max=maxX)
-    createSparklines(hc, data, events, FUN=FUN, groups=groups, 
-                     geneExpr=geneExpr)
+    createSparklines(hc, data, ns("statsTable_diffAnalysis_last_clicked"),
+                     events=events, groups=groups, geneExpr=geneExpr,
+                     inputID=inputID)
 }
 
 #' Create sparkline charts to be used in a data table
 #' 
 #' @param hc \code{highchart} object
 #' @param data Character: HTML-formatted data series of interest
+#' @param id Character: Shiny input identifier
 #' @param events Character: event identifiers
-#' @param FUN Character: JavaScript function to execute when clicking on a chart
 #' @param groups Character: name of the groups used for differential analyses
 #' @param geneExpr Character: name of the gene expression dataset
+#' @param inputID Character: identifier of input to get attributes of clicked
+#'   event (Shiny only)
 #' 
 #' @importFrom jsonlite toJSON
 #' 
 #' @return HTML element with sparkline data
 #' @keywords internal
-createSparklines <- function(hc, data, events, FUN, groups=NULL,
-                             geneExpr=NULL) {
+createSparklines <- function(hc, data, events, groups=NULL, geneExpr=NULL,
+                             inputID="sparklineInput", ...) {
     hc <- as.character(toJSON(hc$x$hc_opts, auto_unbox=TRUE))
     hc <- substr(hc, 1, nchar(hc)-1)
     
-    if (!is.null(groups) && !identical(groups, ""))
-        groups <- toJSarray(groups)
-    else
+    if (!is.null(groups) && !identical(groups, "")) {
+        groups <- toJSarray(unlist(groups))
+    } else {
         groups <- "null"
-    
-    if (is.null(geneExpr) || geneExpr == "")
-        geneExpr <- ")"
-    else
-        geneExpr <- sprintf(", \'%s\')", geneExpr)
-    
+    }
+    if (is.null(geneExpr) || geneExpr == "") {
+        geneExpr <- ""
+        type     <- "event"
+    } else {
+        geneExpr <- sprintf(", geneExpr: '%s'", geneExpr)
+        type     <- "gene"
+    }
+    params  <- sprintf("{%s: '%s', groups: %s%s}", 
+                       type, events, groups, geneExpr)
+    onclick <- sprintf("Shiny.setInputValue('%s', %s, {priority: 'event'});",
+                       inputID, params)
     json <- paste0(hc, ',"series":', data, "}")
-    sparklines <- sprintf(
-        paste('<sparkline onclick="%s(\'%s\', %s%s"',
-              'style="cursor:pointer;" data-sparkline=\'%s\'/>'), 
-        FUN, events, groups, geneExpr, json)
+    sparklines <- sprintf(paste(
+        '<sparkline onclick="%s"',
+        'style="cursor:pointer;" data-sparkline=\'%s\'/>'), 
+        onclick, json)
     return(sparklines)
 }
 
@@ -2165,11 +2175,71 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
                 "Survival by PSI cutoff"=as.numeric(NA),
                 "Optimal PSI cutoff"=as.numeric(NA),
                 "Log-rank p-value"=as.numeric(NA),
-                Samples=samples, "T-test"=ttest,
-                Wilcoxon=wilcox, Kruskal=kruskal, Levene=levene, 
-                "Fligner-Killeen"=fligner, Variance=var, Median=med)
+                "Samples"=samples, "T-test"=ttest,
+                "Wilcoxon"=wilcox, "Kruskal"=kruskal, "Levene"=levene, 
+                "Fligner-Killeen"=fligner, "Variance"=var, "Median"=med)
     vector <- vector[!vapply(vector, is.null, logical(1))] # Remove NULL
     return(vector)
+}
+
+#' @importFrom fastmatch fmatch
+#' @importFrom plyr rbind.fill
+convertListOfLists2DataFrame <- function(stats) {
+    # Check the column names of the different columns
+    ns    <- lapply(stats, names)
+    uniq  <- unique(ns)
+    match <- fmatch(ns, uniq)
+    
+    ll <- lapply(stats, function(i) lapply(i, unname))
+    ll <- lapply(ll, unlist)
+    ldf <- lapply(seq_along(uniq), function(k) {
+        elems <- match == k
+        df2   <- t(data.frame(ll[elems], stringsAsFactors=FALSE))
+        cols  <- colnames(df2)
+        if (nrow(df2) == 0) return(NULL)
+        
+        df2           <- data.frame(df2, stringsAsFactors=FALSE)
+        colnames(df2) <- cols
+        rownames(df2) <- names(stats)[elems]
+        return(df2)
+    })
+    df <- rbind.fill(ldf)
+    rownames(df) <- unlist(lapply(ldf, rownames))
+    return(df)
+}
+
+convertNumberCols2Numbers <- function(df) {
+    # Convert numeric columns to numeric
+    num <- suppressWarnings(apply(df, 2, as.numeric))
+    if (!is.matrix(num)) {
+        num <- t(as.matrix(num))
+        rownames(num) <- rownames(df)
+    }
+    numericCols <- colSums(is.na(num)) != nrow(num)
+    df[ , numericCols] <- num[ , numericCols]
+    
+    # Convert integer columns to integer
+    if (any(numericCols)) {
+        int <- apply(df[ , numericCols, drop=FALSE], 2,
+                     function(i) all(is.whole(i), na.rm=TRUE))
+        intCols <- numericCols
+        intCols[numericCols] <- int
+        if (any(intCols)) {
+            df[ , intCols] <- apply(df[ , intCols, drop=FALSE], 2, as.integer)
+        }
+    }
+    return(df)
+}
+
+combineSplicingEventInfo <- function(df, data) {
+    events <- rownames(df)
+    info   <- suppressWarnings(
+        parseSplicingEvent(events, data=data, pretty=TRUE))
+    infoGene <- prepareGenePresentation(info$gene)
+    df <- cbind("Event type"=info$subtype, "Chromosome"=info$chrom,
+                "Strand"=info$strand, "Gene"=unlist(infoGene), df)
+    rownames(df) <- events
+    return(df)
 }
 
 #' Perform statistical analyses
@@ -2184,11 +2254,8 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
 #' @param pvalueAdjust Character: method used to adjust p-values (see Details)
 #' @param geneExpr Character: name of the gene expression dataset (only required
 #' for density sparklines available in the interactive mode)
-#' @param psi Data frame or matrix: alternative splicing quantification (defunct
-#' argument, use \code{data} instead)
+#' @inherit createDensitySparklines
 #' 
-#' @importFrom plyr rbind.fill
-#' @importFrom fastmatch fmatch
 #' @importFrom stats p.adjust
 #' 
 #' @details 
@@ -2231,12 +2298,8 @@ singleDiffAnalyses <- function(vector, group, threshold=1, step=100,
 diffAnalyses <- function(data, groups=NULL, 
                          analyses=c("wilcoxRankSum", "ttest", "kruskal",
                                     "levene", "fligner"),
-                         pvalueAdjust="BH", geneExpr=NULL, psi=NULL) {
-    if (!is.null(psi)) {
-        warning("The argument 'psi' is deprecated: use 'data' instead.")
-        data <- psi
-    }
-    
+                         pvalueAdjust="BH", geneExpr=NULL,
+                         inputID="sparklineInput") {
     # cl <- parallel::makeCluster(getOption("cl.cores", getCores()))
     step <- 50 # Avoid updating progress too frequently
     updateProgress("Performing statistical analysis", 
@@ -2271,61 +2334,21 @@ diffAnalyses <- function(data, groups=NULL,
     }, groups, threshold=1, step=step, analyses=analyses)
     display(Sys.time() - time)
     
-    # Check the column names of the different columns
-    ns <- lapply(stats, names)
-    uniq <- unique(ns)
-    match <- fmatch(ns, uniq)
-    
     updateProgress("Preparing data")
     time <- Sys.time()
-    
-    # Convert list of lists to data frame
-    ll <- lapply(stats, function(i) lapply(i, unname))
-    ll <- lapply(ll, unlist)
-    ldf <- lapply(seq_along(uniq), function(k) {
-        elems <- match == k
-        df2   <- t(data.frame(ll[elems], stringsAsFactors=FALSE))
-        cols  <- colnames(df2)
-        if (nrow(df2) == 0) return(NULL)
-        
-        df2           <- data.frame(df2, stringsAsFactors=FALSE)
-        colnames(df2) <- cols
-        rownames(df2) <- names(stats)[elems]
-        return(df2)
-    })
-    df <- rbind.fill(ldf)
-    rownames(df) <- unlist(lapply(ldf, rownames))
-    
-    # Convert numeric columns to numeric
-    num <- suppressWarnings(apply(df, 2, as.numeric))
-    if (!is.matrix(num)) {
-        num <- t(as.matrix(num))
-        rownames(num) <- rownames(df)
-    }
-    numericCols <- colSums(is.na(num)) != nrow(num)
-    df[ , numericCols] <- num[ , numericCols]
-    
-    # Convert integer columns to integer
-    if (any(numericCols)) {
-        int <- apply(df[ , numericCols, drop=FALSE], 2, function(i) 
-            all(is.whole(i), na.rm=TRUE))
-        intCols <- numericCols
-        intCols[numericCols] <- int
-        if (any(intCols))
-            df[ , intCols] <- apply(df[ , intCols, drop=FALSE], 2, as.integer)
-    }
+    df   <- convertListOfLists2DataFrame(stats)
+    df   <- convertNumberCols2Numbers(df)
     display(Sys.time() - time)
     
     # Calculate delta variance and delta median if there are only 2 groups
-    deltaVar <- df[, grepl("Variance", colnames(df)), drop=FALSE]
+    deltaVar <- df[ , grepl("Variance", colnames(df)), drop=FALSE]
     if (ncol(deltaVar) == 2) {
         updateProgress("Calculating delta variance and median")
         time     <- Sys.time()
         deltaVar <- deltaVar[ , 1] - deltaVar[ , 2]
         deltaMed <- df[, grepl("Median", colnames(df))]
         deltaMed <- deltaMed[ , 1] - deltaMed[ , 2]
-        # Avoid warning of Unicode symbol translation in Windows by not directly
-        # setting Unicode symbols in column names
+        # Avoid R warnings in Windows by setting Unicode codes in column names
         colns <- colnames(df)
         df    <- cbind(df, deltaVar, deltaMed)
         colnames(df) <- c(colns, "\u2206 Variance", "\u2206 Median")
@@ -2335,8 +2358,7 @@ diffAnalyses <- function(data, groups=NULL,
     if (any(pvalueAdjust == c("BH", "BY", "bonferroni", "holm", "hochberg",
                               "hommel"))) {
         updateProgress("Adjusting p-values", detail=pvalueAdjust)
-        
-        cols   <- grep("p.value", colnames(df))[-1]
+        cols <- grep("p.value", colnames(df))[-1]
         if (length(cols > 0)) {
             time <- Sys.time()
             pvalue <- df[cols]
@@ -2358,13 +2380,8 @@ diffAnalyses <- function(data, groups=NULL,
     
     areEvents <- areSplicingEvents(rownames(df), data=data)
     if (areEvents) {
-        # Add splicing event information
         updateProgress("Including splicing event information")
-        info <- suppressWarnings(
-            parseSplicingEvent(rownames(df), data=data, pretty=TRUE))
-        infoGene <- prepareGenePresentation(info$gene)
-        df <- cbind("Event type"=info$subtype, "Chromosome"=info$chrom,
-                    "Strand"=info$strand, "Gene"=unlist(infoGene), df)
+        df <- combineSplicingEventInfo(df, data)
     }
     
     if (any("density" == analyses)) {
@@ -2373,7 +2390,7 @@ diffAnalyses <- function(data, groups=NULL,
         
         df[ , "Distribution"] <- createDensitySparklines(
             df[ , "Distribution"], rownames(df), areEvents,
-            groups=originalGroups, geneExpr=geneExpr)
+            groups=originalGroups, geneExpr=geneExpr, inputID=inputID)
         name <- ifelse(areEvents, "PSI.distribution", "GE.distribution")
         colnames(df)[match("Distribution", colnames(df))] <- name
         display(Sys.time() - time)
@@ -2391,11 +2408,13 @@ diffAnalyses <- function(data, groups=NULL,
 
 prettifyEventID <- function(event, data=NULL) {
     eventData <- getEventData(event, data=data)
-    if (!is.null(eventData$id)) {
-        parsed <- parseSplicingEvent(event, data=data)
+    hasID <- !is.null(eventData$id)
+    parsed <- tryCatch(parseSplicingEvent(event, char=!hasID, data=data),
+                       error=return)
+    if (is(parsed, "error")) {
+        parsed <- event
+    } else if (hasID) {
         parsed <- parsed$id
-    } else {
-        parsed <- parseSplicingEvent(event, char=TRUE, data=data)
     }
     return(parsed)
 }
@@ -2434,11 +2453,9 @@ analysesTableSet <- function(session, input, output, analysesType, analysesID,
     if (analysesType == "PSI") {
         searchableCols <- 5
         visibleCols    <- 6:8
-        extraRender    <- JS("linkToShowSurv")
     } else if (analysesType == "GE") {
         searchableCols <- 1
         visibleCols    <- 5:6
-        extraRender    <- NULL
     }
     
     # Render table with sparklines
@@ -2455,8 +2472,7 @@ analysesTableSet <- function(session, input, output, analysesType, analysesID,
     options=list(pageLength=10, dom="Bfrtip", buttons=I("colvis"), 
                  columnDefs=list(
                      list(targets=searchableCols, searchable=FALSE),
-                     list(targets=visibleCols, visible=FALSE, 
-                          render=extraRender))))
+                     list(targets=visibleCols, visible=FALSE))))
     
     # Update table with filtered information
     proxy <- dataTableProxy("statsTable")
@@ -2466,11 +2482,11 @@ analysesTableSet <- function(session, input, output, analysesType, analysesID,
             # Bind preview of survival curves based on value cutoff
             optimSurv <- getAnalysesSurvival()
             if (!is.null(optimSurv)) {
-                cols <- sprintf(c("Optimal %s cutoff", "Log-rank p-value",
-                                  "Survival by %s cutoff"), analysesType)
-                stats[[cols[[1]]]] <- optimSurv[[1]]
-                stats[[cols[[2]]]] <- optimSurv[[2]]
-                stats[[cols[[3]]]] <- optimSurv[[3]]
+                survCols <- sprintf(c("Optimal %s cutoff", "Log-rank p-value",
+                                      "Survival by %s cutoff"), analysesType)
+                stats[[survCols[[1]]]] <- optimSurv[[1]]
+                stats[[survCols[[2]]]] <- optimSurv[[2]]
+                stats[[survCols[[3]]]] <- optimSurv[[3]]
             }
             
             # Filter by highlighted events and events in the zoomed area
@@ -2520,14 +2536,15 @@ analysesTableSet <- function(session, input, output, analysesType, analysesID,
             setAnalysesFiltered(stats)
             
             rownames(stats) <- prettifyEventID(rownames(stats), data=stats)
-            # Keep columns from data table (else, no data will be rendered)
+            # Keep cols or no data will be rendered
             cols  <- getAnalysesColumns()
+            cols  <- cols[cols %in% colnames(stats)]
             stats <- stats[ , cols]
             
             # Check if paging should be reset
             resetPaging <- isolate(getResetPaging())
             if (is.null(resetPaging)) resetPaging <- TRUE
-            setResetPaging(TRUE)
+            setResetPaging(resetPaging)
             
             # Round numbers based on significant digits
             cols <- colnames(stats)
@@ -2656,6 +2673,31 @@ analysesTableSet <- function(session, input, output, analysesType, analysesID,
     # Disable groups based on selected AS events when no groups are selected
     observe(toggleState("groupBySelectedContainer",
                         !is.null(input$statsTable_rows_selected)))
+}
+
+#' Set up environment and redirect user to a page based on click information
+#' @keywords internal
+processClickRedirection <- function(click, survival=FALSE) {
+    if (is.null(click)) return(NULL)
+    
+    groups <- ifelse(is.null(click$groups), "null", toJSarray(click$groups))
+    
+    isSplicingEvent <- !is.null(click$event)
+    if (isSplicingEvent) setASevent(click$event)
+    
+    if (!survival) {
+        if (isSplicingEvent) {
+            js <- sprintf("showDiffSplicing(%s);", groups)
+        } else {
+            js <- sprintf("showDiffExpression('%s', %s, '%s');",
+                          click$gene, groups, click$geneExpr)
+        }
+    } else {
+        js <- sprintf("showSurvCutoff('%s', %s, autoParams = true, psi = %s)",
+                      click[[1]], groups, 
+                      ifelse(isSplicingEvent, "true", "false"))
+    }
+    runjs(js)
 }
 
 #' @rdname analysesTableSet
