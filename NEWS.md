@@ -65,6 +65,8 @@
     - The correct splicing event is now selected when clicking on any loadings
     in the loadings plot
 * Differential analyses:
+    - Use group colours in density plots of differential expression table
+    (visual interface)
     - Fix occasional crash when performing differential analyses with different
     number of groups during the same session (visual interface)
     - Tooltips of volcano plots are now properly positioned in high-resolution

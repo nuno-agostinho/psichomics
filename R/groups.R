@@ -2334,6 +2334,7 @@ discardOutsideSamplesFromGroups <- function(groups, samples, clean=FALSE) {
     g <- lapply(groups, getMatchingSamples)
     g <- lapply(g, na.omit)
     if (clean) g <- lapply(g, as.character)
+    attr(g, "Colour") <- attr(groups, "Colour")[names(g)]
     return(g)
 }
 
