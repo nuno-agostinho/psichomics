@@ -11,7 +11,7 @@ listAllAnnotations(...)
 \item{...}{Custom annotation loaded}
 }
 \value{
-Named character vector with splicing annotation files available#'
+Named character vector with splicing annotation files available
 }
 \description{
 List alternative splicing annotation files available, as well as custom

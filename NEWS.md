@@ -48,6 +48,9 @@
     stored (as expected) in GTEx and SRA panels
     - Show filename used to load gene expression and alternative splicing data
     from GTEx and SRA
+    - Allow to discard selected files in file browser input elements
+    - Show helpful context messages in panel interfaces
+    - Improve visual interface and minor copy-editing
 * Local data loading:
     - Support loading data from GTEx V8 or previous releases
     - Fix bad formatting of help tooltips when using `shiny 1.4.0` or newer

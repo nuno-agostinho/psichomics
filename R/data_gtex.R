@@ -56,7 +56,8 @@ gtexDataUI <- function(id, panel) {
           bsCollapse(
               id=ns("filterCollapse"),
               bsCollapsePanel(
-                  title=tagList(icon("filter"), "Filter tissues to load"), 
+                  title=tagList(icon("filter"), "Filter tissues to load",
+                                contextUI(ns("filterText"))), 
                   value="Load by tissue",
                   div(id=ns("loadingAvailableTissues"), class="progress",
                       div(class="progress-bar progress-bar-striped active",
@@ -422,6 +423,19 @@ gtexDataServer <- function(input, output, session) {
         if (!identical(input$filterCollapse, "Load by tissue")) return(NULL)
         tissues <- showAvailableTissues()
         updateSelectizeInput(session, "tissues", choices=tissues)
+    })
+    
+    # Update number of tissues selected in context
+    output$filterText <- renderText({
+        tissues <- input$tissues
+        if (is.null(tissues) || length(tissues) == 0) {
+            text <- "No tissues selected"
+        } else {
+            len  <- length(tissues)
+            text <- sprintf("%s tissue%s selected",
+                            len, ifelse(len == 1, "", "s"))
+        }
+        return(text)
     })
     
     # Replace or append data to existing data

@@ -25,8 +25,7 @@ geNormalisationFilteringInterface <- function(ns) {
             column(6, numericInput(ns("minCounts"), "Counts >=",
                                    min=0, max=100, value=10, width="100%")),
             column(6, numericInput(ns("minTotalCounts"), "Total counts >=",
-                                   min=0, max=100, value=15, width="100%"))),
-        helpText(textOutput(ns("filteredGenes"))))
+                                   min=0, max=100, value=15, width="100%"))))
 
     filteringAssistant <- NULL
     # filteringAssistant <- div(
@@ -37,25 +36,29 @@ geNormalisationFilteringInterface <- function(ns) {
     #                      "Boxplot of the variance expression"="var")),
     #     highchartOutput(ns("filteringAssistant"), height="150px")
     # )
-
+    
     options <- div(
         id=ns("options"),
         selectizeInput(ns("geneExpr"), "Gene expression dataset", width="100%",
                        choices=NULL),
         bsCollapse(
             bsCollapsePanel(
-                tagList(icon("filter"), "Sample filtering"),
+                tagList(icon("filter"), "Sample filtering",
+                        contextUI(ns("sampleFilterText"))),
                 value="Sample filtering",
                 selectizeInput(ns("sampleFilter"), "Samples to discard",
                                multiple=TRUE, width="100%",
                                choices=character(0))),
             bsCollapsePanel(
-                tagList(icon("filter"), "Gene filtering"), value="Filtering",
+                tagList(icon("filter"), "Gene filtering", 
+                        contextUI(ns("filterText"))),
+                value="Filtering",
                 checkboxInput(ns("enableFiltering"), value=TRUE, width="100%",
                               "Enable gene-wise filtering"),
                 filters, filteringAssistant),
             bsCollapsePanel(
-                tagList(icon("balance-scale"), "Normalisation"),
+                tagList(icon("balance-scale"), "Normalisation",
+                        contextUI(ns("normalisationText"))),
                 value="Normalisation",
                 helpText("Scale raw library sizes using",
                          tags$code("edgeR::calcNormFactors()"), ", unless",
@@ -81,13 +84,14 @@ geNormalisationFilteringInterface <- function(ns) {
                          tags$code("limma::voom()"), "should be more powerful",
                          "and preferred.")),
             bsCollapsePanel(
-                tagList(icon("retweet"), "Compute CPM and log-transform"),
+                tagList(icon("retweet"), "CPM and log2 transformation",
+                        contextUI(ns("logTransformText"))),
                 value="Log-transformation",
                 helpText("Compute log2-transformed counts per million",
                          "(log2CPM) using", tags$code("edgeR::cpm()"), "(or",
                          tags$code("limma::voom()"), ", if selected)."),
                 numericInput(
-                    ns("priorCount"), value=0.25, width="100%",
+                    ns("priorCount"), value=0.25, step=0.25, width="100%",
                     paste("Average count to add to each observation to avoid",
                           "zeroes after log-transformation")),
                 helpText())),
@@ -528,24 +532,6 @@ geNormalisationFilteringServer <- function(input, output, session) {
         }
     })
 
-    output$filteredGenes <- renderText({
-        geneExpr <- input$geneExpr
-        if (is.null(geneExpr) || geneExpr == "") return(NULL)
-        geneExpr <- isolate(getGeneExpression(geneExpr))
-
-        filter <- sum(getFilter())
-        total  <- nrow(geneExpr)
-        ratio  <- filter/total * 100
-
-        if (input$enableFiltering) {
-            msg <- sprintf("Selecting %s genes (%s%%) out of %s.",
-                           filter, round(ratio), total)
-        } else {
-            msg <- sprintf("Selecting all %s genes.", total)
-        }
-        return(msg)
-    })
-
     # Update sample filtering options
     observeEvent(input$geneExpr, {
         geneExpr <- isolate(input$geneExpr)
@@ -732,6 +718,49 @@ geNormalisationFilteringServer <- function(input, output, session) {
         endProcess("processGeneExpr", time=time)
     })
     loadGeneExpressionSet(session, input, output)
+    
+    # Update context
+    output$sampleFilterText <- renderText({
+        sampleFilter <- input$sampleFilter
+        if (is.null(sampleFilter) || sampleFilter == "") {
+            text <- "No samples to discard"
+        } else {
+            len  <- length(sampleFilter)
+            text <- sprintf("%s sample%s to discard",
+                            len, ifelse(len == 1, "", "s"))
+        }
+        return(text)
+    })
+    
+    output$filterText <- renderText({
+        geneExpr <- input$geneExpr
+        if (is.null(geneExpr) || geneExpr == "") return(NULL)
+        geneExpr <- isolate(getGeneExpression(geneExpr))
+        
+        filter <- sum(getFilter())
+        total  <- nrow(geneExpr)
+        ratio  <- filter/total * 100
+        
+        if (input$enableFiltering) {
+            msg <- sprintf("%s genes of %s (%s%%)", filter, total, round(ratio))
+        } else {
+            msg <- sprintf("%s genes (100%%)", total)
+        }
+        return(msg)
+    })
+    
+    output$normalisationText <- renderText({
+        text <- input$normalisation
+        if (text == "upperquartile") {
+            text <- sprintf("%s (%s)", text, input$upperquartilePercentile)
+        }
+        if (input$voom) text <- paste(text, "+ voom")
+        return(text)
+    })
+    
+    output$logTransformText <- renderText({
+        paste("Prior count:", input$priorCount)
+    })
 }
 
 attr(geNormalisationFilteringUI, "loader") <- "data"

@@ -135,8 +135,9 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
     
     if (info) {
         infoId   <- paste0(id, "-info")
-        infoElem <- div(class="input-group-addon", id=infoId,
-                        icon("question-circle"))
+        infoElem <- actionButton(inputId=infoId, label=NULL, 
+                                 style="background: #eee",
+                                 icon=icon("question-circle"))
     } else {
         infoId   <- id
         infoElem <- NULL
@@ -144,11 +145,18 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
     
     if (clearable) {
         clearId   <- paste0(id, "-clear")
-        clearElem <- div(class="input-group-addon", id=clearId,
-                         icon("times-circle"))
+        clearElem <- actionButton(inputId=clearId, label=NULL, 
+                                  style="background: #eee",
+                                  icon=icon("times-circle"))
     } else {
         clearId   <- id
         clearElem <- NULL
+    }
+    
+    if (info || clearable) {
+        buttonsElem <- div(class="input-group-btn", clearElem, infoElem)
+    } else {
+        buttonsElem <- NULL
     }
     
     infoTitle   <- gsub("\n", "", as.character(infoTitle),   fixed=TRUE)
@@ -172,7 +180,7 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
         showInfo <- NULL
     }
     
-    fileBrowserButton <- div(class="btn btn-default fileBrowser-input",
+    fileBrowserButton <- div(class="btn btn-info fileBrowser-input",
                              id=sprintf("%sButton", id), 'Browse...')
     if (isRStudioServer()) fileBrowserButton <- disabled(fileBrowserButton)
     fileBrowserButton <- div(class="input-group-btn", fileBrowserButton)
@@ -185,17 +193,18 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
         div(class='form-group fileBrowser-input-container',
             check(label, tags$label(label)),
             div(class='input-group shiny-input-container', style='width:100%;',
-                fileBrowserButton, filepathInput, clearElem, infoElem)),
+                fileBrowserButton, filepathInput, buttonsElem)),
         showInfo)
 }
 
 #' Change the value of a \code{\link{fileBrowserInput}()} on the client
 #'
 #' @param session Shiny session
-#' @param id Character: input identifier
-#' @param value Character: file or directory path
+#' @param id Character: identifier
 #' @param ... Additional arguments passed to \code{\link{fileBrowser}()}. Only
 #' used if \code{value = NULL}.
+#' @param value Character: file or directory path
+#' @param ask Boolean: ask user to pick a file using file browser?
 #'
 #' @details
 #' Sends a message to the client, telling it to change the value of the input
@@ -207,9 +216,8 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
 #'
 #' @inherit psichomics return
 #' @keywords internal
-updateFileBrowserInput <- function(session, id, ..., value=NULL) {
-    if (is.null(value)) value <- fileBrowser(...)
-    
+updateFileBrowserInput <- function(session, id, ..., value=NULL, ask=FALSE) {
+    if (ask) value <- fileBrowser(...)
     button <- sprintf("%sButton", id)
     session$sendInputMessage(button, list(path=value))
 }
@@ -229,21 +237,29 @@ prepareFileBrowser <- function(session, input, id, modalId="modal", ...) {
     observeEvent(input[[buttonId]], {
         if (input[[buttonId]] > 0) { # Prevent execution on initial launch
             errorTitle <- NULL
-            if (is.null(Sys.info()))
+            if (is.null(Sys.info())) {
                 errorTitle <- c(
                     "The file browser is not supported for this system")
-            else if (isRStudioServer())
+            } else if (isRStudioServer()) {
                 errorTitle <- c(
                     "The file browser is not supported in RStudio Server")
-            else
-                updateFileBrowserInput(session, id, ...)
-            
+            } else {
+                updateFileBrowserInput(session, id, ..., ask=TRUE)
+            }
             if (!is.null(errorTitle)) {
                 errorModal(session, errorTitle, 
                            "Please use instead the text input field to type",
                            "the full path to the file or folder of interest.", 
                            modalId=modalId, caller="File browser")
             }
+        }
+    })
+    
+    # Clear file selection
+    clearId <- paste0(id, "-clear")
+    observeEvent(input[[clearId]], {
+        if (input[[clearId]] > 0) { # Prevent execution on initial launch
+            updateTextInput(session, id, value="")
         }
     })
 }

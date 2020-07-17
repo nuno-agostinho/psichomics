@@ -4,10 +4,12 @@
 \alias{geneExprFileInput}
 \title{File input for gene expression}
 \usage{
-geneExprFileInput(geneExprFileId)
+geneExprFileInput(geneExprFileId, clearable = FALSE)
 }
 \arguments{
 \item{geneExprFileId}{Character: identifier for gene expression input}
+
+\item{clearable}{Boolean: allow to clear selected file or directory?}
 }
 \value{
 HTML elements

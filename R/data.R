@@ -4,6 +4,10 @@
 ## TODO(NunoA): render UI for each data table instead of rendering UI for all
 ## so there's no refresh
 
+contextUI <- function(id) {
+    tags$span(class="pull-right", tags$small(textOutput(id, inline=TRUE)))
+}
+
 #' Set attributes to an object
 #' 
 #' @param object Object
@@ -22,6 +26,12 @@ addObjectAttrs <- function (object, ...) {
         for (k in seq(args)) attr(object, names(args[k])) <- args[[k]]
     }
     return(object)
+}
+
+rowMins   <- function(data, na.rm=FALSE) apply(data, 1, min, na.rm=na.rm)
+rowMaxs   <- function(data, na.rm=FALSE) apply(data, 1, max, na.rm=na.rm)
+rowRanges <- function(data, na.rm=FALSE) {
+    rowMaxs(data, na.rm=na.rm) - rowMins(data, na.rm=na.rm)
 }
 
 #' Plot row-wise statistics
@@ -73,14 +83,14 @@ plotRowStats <- function(data, x, y, subset=NULL, xmin=NULL, xmax=NULL,
                          ymin=NULL, ymax=NULL, xlim=NULL, ylim=NULL) {
     stats <- c("range", "var", "median", "mean")
     if (!any(sapply(stats, grepl, x)) || !any(sapply(stats, grepl, y))) {
-        stop("Arguments 'x' and 'y' must contain one of the strings:",
+        stop("Arguments 'x' and 'y' must contain one of the strings: ",
              paste(stats, collapse=", "))
     }
     
     calculateXandYvalues <- function(psi, stats) {
         names(stats) <- stats
         input <- lapply(stats, grepl, c(x, y))
-        
+    
         rowRanges <- function(mat, ...) {
             apply(mat, 1, max, ...) - apply(mat, 1, min, ...)
             # apply(mat, 1, function(k) max(k, ...) - min(k, ...))
@@ -99,7 +109,7 @@ plotRowStats <- function(data, x, y, subset=NULL, xmin=NULL, xmax=NULL,
                 res <- FUN(psi, na.rm=TRUE)
                 vars[[stat]] <- res
             }
-        }
+    }
         vars <- data.frame(vars, stringsAsFactors=FALSE)
         return(vars)
     }
@@ -200,14 +210,14 @@ processDatasetNames <- function(data) {
 #' File input for gene expression
 #' 
 #' @param geneExprFileId Character: identifier for gene expression input
+#' @inheritParams fileBrowserInput
 #' 
 #' @return HTML elements
 #' @keywords internal
-geneExprFileInput <- function(geneExprFileId) {
-    fileBrowserInput(
-        geneExprFileId,
-        "File with gene expression",
-        placeholder="No file selected",
+geneExprFileInput <- function(geneExprFileId, clearable=FALSE) {
+    input <- fileBrowserInput(
+        geneExprFileId, "Gene expression",
+        placeholder="No file selected", clearable=clearable,
         info=TRUE, infoFUN=bsPopover, infoTitle=paste(
             "File containing the read counts of each gene (rows) per",
             "sample (columns)."),
@@ -222,43 +232,38 @@ geneExprFileInput <- function(geneExprFileId) {
                     tableRow("AMP1", "24", "10", "43"),
                     tableRow("BRCA1", "38", "46", "32"),
                     tableRow("BRCA2", "43", "65", "21")))))
+    return(input)
 }
 
 #' File input for alternative splicing quantification
 #' 
 #' @param ASquantFileId Character: identifier for alternative splicing 
 #' quantification input
-#' @param speciesId Character: identifier for species selection input
-#' @param assemblyId Character: identifier for genome assembly selection input
+#' @inheritParams fileBrowserInput
 #' 
 #' @return HTML elements
 #' @keywords internal
-ASquantFileInput <- function(ASquantFileId, speciesId, assemblyId){
-    tagList(
-        fileBrowserInput(
-            ASquantFileId, "File with alternative splicing quantification",
-            placeholder="No file selected",
-            info=TRUE, infoFUN=bsPopover, infoTitle=paste(
-                "File containing the PSI value of each alternative splicing",
-                "event (rows) per sample (columns)."),
-            infoContent=paste(
-                tags$ul(
-                    class="popover-list",
-                    tags$li(
-                        "The first column must contain alternative splicing",
-                        "event identifiers and should be named",
-                        tags$kbd("AS Event ID")),
-                    tags$li(
-                        "An alternative splicing event must be represented by:",
-                        tags$kbd(
-                            paste0("EventType_Chromosome_Strand_Coordinate1_",
-                                   "Coordinate2_..._Gene"))),
-                    tags$li(
-                        "PSI values may be handed between 0 and 1 or between 0",
+ASquantFileInput <- function(ASquantFileId, clearable=FALSE){
+    input <- fileBrowserInput(
+        ASquantFileId, "Alternative splicing quantification",
+        placeholder="No file selected", clearable=clearable,
+        info=TRUE, infoFUN=bsPopover, infoTitle=paste(
+            "File containing the PSI value of each alternative splicing event",
+            "(rows) per sample (columns)."),
+        infoContent=paste(
+            tags$ul(
+                class="popover-list",
+                tags$li(
+                    "The first column must contain alternative splicing event",
+                    "identifiers and should be named", tags$kbd("AS Event ID")),
+                tags$li(
+                    "An alternative splicing event must be represented by:",
+                    tags$kbd(paste0("EventType_Chromosome_Strand_Coordinate1_",
+                                    "Coordinate2_..._Gene"))),
+                tags$li("PSI values may be handed between 0 and 1 or between 0",
                         "and 100. If the latter, PSI values are scaled betwen",
-                        "0 and 1.")))),
-        selectizeInput(speciesId, "Species", choices="Human", width = "100%",
-                       options=list(create=TRUE)))
+                        "0 and 1."))))
+    return(input)
 }
 
 #' @rdname appUI
@@ -296,7 +301,7 @@ dataUI <- function(id, tab) {
             column(3, style="padding: 5px !important;",
                    h4("Gene, transcript and protein information"),
                    helpText("Check available annotation for splicing events",
-                            "and genes including related research articles."))))
+                            "and genes including related research articles"))))
     
     welcome <- div(
         id=ns("welcome"),
@@ -530,7 +535,7 @@ createDataTab <- function(index, data, name, session, input, output) {
             } else if (isPSI) {
                 medianVar <- plotRowStats(table, x="median", y="var", 
                                           xlim=c(0,1 )) +
-                    labs(x="PSI median", y="PSI variance") +
+                    labs(x="Median PSI", y="PSI variance") +
                     ggtitle(paste("Scatterplot of alternative splicing",
                                   "quantification per event")) +
                     theme_light(14)
@@ -576,6 +581,13 @@ createDataTab <- function(index, data, name, session, input, output) {
     attr(table, "tablenameID") <- tablename
     output[[multiPlotId]] <- renderUI(createInfoInterface(output, table))
 }
+
+prepareSubjectSampleMatch <- reactive({
+    samples  <- getSampleId()
+    subjects <- getSubjectId()
+    match <- getSubjectFromSample(samples, subjects, sampleInfo=getSampleInfo())
+    setClinicalMatchFrom("Inclusion levels", match)
+})
 
 #' @rdname appServer
 #'
@@ -637,13 +649,9 @@ dataServer <- function(input, output, session) {
     
     # Match clinical data with sample information
     observe({
-        subjects   <- getSubjectId()
-        samples    <- getSampleId()
-        if ( !is.null(subjects) && !is.null(samples) ) {
+        if ( !is.null(getSubjectId()) && !is.null(getSampleId()) ) {
             startProgress("Matching subjects to their samples...", 1)
-            match <- getSubjectFromSample(samples, subjects, 
-                                          sampleInfo=getSampleInfo())
-            setClinicalMatchFrom("Inclusion levels", match)
+            prepareSubjectSampleMatch()
             closeProgress("Matching process concluded")
         }
     })

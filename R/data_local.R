@@ -6,7 +6,7 @@ localDataUI <- function(id, panel) {
     ns <- NS(id)
 
     sampleInfoBrowser <- fileBrowserInput(
-        ns("sampleInfo"), "File with sample information",
+        ns("sampleInfo"), "Sample information",
         placeholder="No file selected", clearable=TRUE,
         info=TRUE, infoFUN=bsPopover, infoTitle=paste(
             "File containing sample identifiers as rows and their",
@@ -29,9 +29,8 @@ localDataUI <- function(id, panel) {
                     tableRow("SMP-02", "Normal", "Blood", "SUBJ-12"),
                     tableRow("SMP-03", "Normal", "Blood", "SUBJ-25")))))
     subjectInfoBrowser <- fileBrowserInput(
-        ns("subjectInfo"),
-        "File with subject information",
-        placeholder="No file selected",
+        ns("subjectInfo"), "Subject information",
+        placeholder="No file selected", clearable=TRUE,
         info=TRUE, infoFUN=bsPopover, infoTitle=paste(
             "File containing subject identifiers as rows and their",
             "attributes as columns."),
@@ -48,9 +47,8 @@ localDataUI <- function(id, panel) {
                     tableRow("SUBJ-02", "12", "Female", "Black"),
                     tableRow("SUBJ-03", "8", "Female", "Asian")))))
     junctionQuantBrowser <- fileBrowserInput(
-        ns("junctionQuant"),
-        "File with exon-exon junction read counts",
-        placeholder="No file selected",
+        ns("junctionQuant"), "Exon-exon junction read counts",
+        placeholder="No file selected", clearable=TRUE,
         info=TRUE, infoFUN=bsPopover, infoTitle=paste(
             "File containing the read counts of each exon-exon junction",
             "(rows) per sample (columns)."),
@@ -87,18 +85,22 @@ localDataUI <- function(id, panel) {
                     tableRow("10:24257-25325", "83", "65")))))
     addMultipleFiles <- tagList(
         helpText("All fields below are optional."),
+        h3(icon("vial"), "Metadata"),
         sampleInfoBrowser,
         subjectInfoBrowser,
-        geneExprFileInput(ns("geneExpr")),
+        tags$hr(),
+        h3(icon("dna"), "Molecular data"),
+        geneExprFileInput(ns("geneExpr"), clearable=TRUE),
         junctionQuantBrowser,
-        ASquantFileInput(ns("ASquant")),
+        ASquantFileInput(ns("ASquant"), clearable=TRUE),
         tags$hr(),
         textInput(ns("userFilesCategory"), label="Dataset name", width = "100%",
                   value="User dataset", placeholder="Name to identify dataset"),
         processButton(ns("loadMultipleFiles"), "Load files"))
     
     addFolder <- tagList(
-        helpText("For your convenience, move all files to a single folder."),
+        helpText("For your convenience, move all files to a single folder.",
+                 "Only files supported by psichomics will be loaded."),
         fileBrowserInput(ns("localFolder"), "Folder where data is stored",
                          placeholder="No folder selected",
                          value=getDownloadsFolder()),
@@ -117,8 +119,8 @@ localDataUI <- function(id, panel) {
           value="Load local files",
           uiOutput(ns("localDataModal")),
           tabsetPanel(
-              tabPanel("Stepwise file input", addMultipleFiles),
-              tabPanel("Folder input", addFolder)))
+              tabPanel("File by file", addMultipleFiles),
+              tabPanel("By folder", addFolder)))
 }
 
 #' Prepare user-provided files to be loaded into psichomics
@@ -503,8 +505,9 @@ setMultipleFilesData <- function(input, output, session, replace=TRUE) {
         updateProgress("Processing file", detail=basename(file))
         loadedFile <- tryCatch(loadFile(file, formats),
                                warning=return, error=return)
-        if (!is(loadedFile, "warning") && !is(loadedFile, "error"))
+        if (!is(loadedFile, "warning") && !is(loadedFile, "error")) {
             loaded[[each]] <- loadedFile
+        }
     }
     
     names(loaded) <- sapply(loaded, attr, "tablename")

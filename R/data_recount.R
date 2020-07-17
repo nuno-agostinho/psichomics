@@ -11,9 +11,9 @@ recountDataUI <- function(id, panel) {
           uiOutput(ns("recountDataModal")),
           helpText(
               "Gene expression, junction quantification and sample metadata",
-              "from select SRA projects are downloaded through the",
+              "from select SRA projects are downloaded using",
               a(href="https://jhubiostatistics.shinyapps.io/recount/",
-                target="_blank", "recount"), "R package."),
+                target="_blank", "recount")),
           div(class="alert", class="alert-info", role="alert", 
               "SRA datasets unlisted below may be manually aligned and loaded.",
               tags$a(
