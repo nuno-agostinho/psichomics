@@ -7,14 +7,19 @@
 plotRowStats(
   data,
   x,
-  y,
+  y = NULL,
   subset = NULL,
   xmin = NULL,
   xmax = NULL,
   ymin = NULL,
   ymax = NULL,
   xlim = NULL,
-  ylim = NULL
+  ylim = NULL,
+  cache = NULL,
+  verbose = FALSE,
+  data2 = NULL,
+  legend = FALSE,
+  legendLabels = c("Original", "Highlighted")
 )
 }
 \arguments{
@@ -25,13 +30,25 @@ instance, gene or alternative splicing event per row}
 choose between \code{mean}, \code{median}, \code{var} or \code{range}
 (or transformations of those variables, e.g. \code{log10(var)})}
 
-\item{subset}{Boolean or integer: \code{data} points to highlight (if
-\code{NULL}, all points are highlighted)}
+\item{subset}{Boolean or integer: \code{data} points to highlight}
 
 \item{xmin, xmax, ymin, ymax}{Numeric: minimum and maximum X and Y values to 
 draw in the plot}
 
 \item{xlim, ylim}{Numeric: X and Y axis range}
+
+\item{cache}{List of summary statistics for \code{data} previously calculated
+to avoid repeating calculations (output also returns cache in attribute
+named \code{cache} with appropriate data)}
+
+\item{verbose}{Boolean: print messages of the steps performed}
+
+\item{data2}{Same as \code{data} argument but points in \code{data2} are
+highlighted (unless \code{data2 = NULL})}
+
+\item{legend}{Boolean: show legend?}
+
+\item{legendLabels}{Character: legend labels}
 }
 \value{
 Plot of \code{data}

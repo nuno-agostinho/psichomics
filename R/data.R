@@ -34,6 +34,38 @@ rowRanges <- function(data, na.rm=FALSE) {
     rowMaxs(data, na.rm=na.rm) - rowMins(data, na.rm=na.rm)
 }
 
+calculateAxisStats <- function(data, x, y=NULL,
+                               stats=c("range", "var", "median", "mean"),
+                               cache=NULL, verbose=FALSE) {
+    names(stats) <- stats
+    input <- lapply(stats, grepl, c(x, y))
+    
+    x <- y <- NULL
+    vars <- list()
+    for (stat in stats) {
+        if (any(input[[stat]])) {
+            # Check if summary statistic was previously cached
+            if (!is.null(cache[[stat]])) {
+                vars[[stat]] <- cache[[stat]]
+                if (verbose) {
+                    message(sprintf("Loaded %s per row from cache", stat))
+                }
+            } else {
+                if (verbose) message(sprintf("Calculating %s per row...", stat))
+                FUN <- switch(stat,
+                              "var"=rowVars,
+                              "mean"=rowMeans,
+                              "median"=rowMedians,
+                              "range"=rowRanges)
+                vars[[stat]]  <- FUN(data, na.rm=TRUE)
+                cache[[stat]] <- vars[[stat]]
+            }
+        }
+    }
+    vars <- data.frame(vars, stringsAsFactors=FALSE)
+    return(list(vars=vars, cache=cache))
+}
+
 #' Plot row-wise statistics
 #'
 #' Scatter plot to compare between the row-wise mean, median, variance or range
@@ -45,13 +77,21 @@ rowRanges <- function(data, na.rm=FALSE) {
 #' @param x,y Character: statistic to calculate and display in the plot per row;
 #' choose between \code{mean}, \code{median}, \code{var} or \code{range}
 #' (or transformations of those variables, e.g. \code{log10(var)})
-#' @param subset Boolean or integer: \code{data} points to highlight (if
-#' \code{NULL}, all points are highlighted)
+#' @param subset Boolean or integer: \code{data} points to highlight
 #' @param xmin,xmax,ymin,ymax Numeric: minimum and maximum X and Y values to 
 #' draw in the plot
 #' @param xlim,ylim Numeric: X and Y axis range
+#' @param cache List of summary statistics for \code{data} previously calculated
+#'   to avoid repeating calculations (output also returns cache in attribute
+#'   named \code{cache} with appropriate data)
+#' @param verbose Boolean: print messages of the steps performed
+#' @param data2 Same as \code{data} argument but points in \code{data2} are
+#'   highlighted (unless \code{data2 = NULL})
+#' @param legend Boolean: show legend?
+#' @param legendLabels Character: legend labels
 #'
-#' @importFrom ggplot2 geom_vline geom_hline xlim ylim ggtitle
+#' @importFrom ggplot2 geom_vline geom_hline xlim ylim ggtitle geom_density
+#'   scale_fill_manual scale_colour_manual
 #'
 #' @family functions for gene expression pre-processing
 #' @family functions for PSI quantification
@@ -79,58 +119,50 @@ rowRanges <- function(data, na.rm=FALSE) {
 #' rangeVar  <- plotRowStats(psi, x="range", y="log10(var)", xlim=c(0, 1)) +
 #'     labs(x="PSI range", y="log10(PSI variance)")
 #' rangeVar
-plotRowStats <- function(data, x, y, subset=NULL, xmin=NULL, xmax=NULL, 
-                         ymin=NULL, ymax=NULL, xlim=NULL, ylim=NULL) {
+plotRowStats <- function(data, x, y=NULL, subset=NULL, xmin=NULL, xmax=NULL, 
+                         ymin=NULL, ymax=NULL, xlim=NULL, ylim=NULL,
+                         cache=NULL, verbose=FALSE, data2=NULL, legend=FALSE,
+                         legendLabels=c("Original", "Highlighted")) {
     stats <- c("range", "var", "median", "mean")
-    if (!any(sapply(stats, grepl, x)) || !any(sapply(stats, grepl, y))) {
+    isValidX <- any(sapply(stats, grepl, x))
+    isValidY <- !is.null(y) && any(sapply(stats, grepl, y))
+    if (!isValidX && !isValidY) {
         stop("Arguments 'x' and 'y' must contain one of the strings: ",
-             paste(stats, collapse=", "))
+             paste(stats, collapse=", "), " (alternatively, y may be NULL)")
     }
     
-    calculateXandYvalues <- function(psi, stats) {
-        names(stats) <- stats
-        input <- lapply(stats, grepl, c(x, y))
+    subsetCol <- "orange"
+    remainCol <- ifelse(!is.null(subset) || !is.null(data2), 
+                        "darkgrey", "black")
+    res   <- calculateAxisStats(data, x, y, stats, cache=cache, verbose=verbose)
+    cache <- res$cache
     
-        rowRanges <- function(mat, ...) {
-            apply(mat, 1, max, ...) - apply(mat, 1, min, ...)
-            # apply(mat, 1, function(k) max(k, ...) - min(k, ...))
-        }
-        
-        x <- y <- NULL
-        vars <- list()
-        for (stat in stats) {
-            if (any(input[[stat]])) {
-                message(sprintf("Calculating %s per row...", stat))
-                FUN <- switch(stat,
-                              "var"=rowVars,
-                              "mean"=rowMeans,
-                              "median"=rowMedians,
-                              "range"=rowRanges)
-                res <- FUN(psi, na.rm=TRUE)
-                vars[[stat]] <- res
-            }
-    }
-        vars <- data.frame(vars, stringsAsFactors=FALSE)
-        return(vars)
-    }
-    vars <- calculateXandYvalues(data, stats)
-    
-    message("Preparing plot...")
+    vars <- cbind(res$vars, colour=remainCol)
     if (!is.null(subset)) {
-        varsSubset <- vars[subset]
-        plot <- ggplot(vars, aes_string(x, y)) +
-            geom_point(size=1, na.rm=TRUE, alpha=0.5, colour="grey") +
-            geom_point(data=varsSubset, size=1, na.rm=TRUE, alpha=0.5, 
-                       colour="grey") +
-            # geom_density_2d(data=varsSubset, colour="orange", na.rm=TRUE) +
+        vars <- rbind(vars, cbind(vars[subset], colour=subsetCol))
+    }
+    if (!is.null(data2)) {
+        vars2 <- calculateAxisStats(data2, x, y, stats, verbose=verbose)$vars
+        vars  <- rbind(vars, cbind(vars2, colour=subsetCol))
+    }
+    
+    if (verbose) message("Preparing plot...")
+    if (isValidY) {
+        plot <- ggplot(vars, aes_string(x, y, colour="colour")) +
+            geom_point(size=1, na.rm=TRUE, alpha=0.5) +
             labs(x=x, y=y)
     } else {
-        plot <- ggplot(vars, aes_string(x, y)) +
-            geom_point(size=1, na.rm=TRUE, alpha=0.5) +
-            geom_point(size=1, na.rm=TRUE, alpha=0.5) +
-            # geom_density_2d(colour="orange", na.rm=TRUE) +
-            labs(x=x, y=y)
+        plot <- ggplot(vars, aes_string(x, colour="colour", fill="colour")) +
+            geom_density(na.rm=TRUE, adjust=0.5, alpha=0.1) +
+            labs(x=x)
     }
+    
+    values <- c("black"="black", "darkgrey"="darkgrey", "orange"="orange")
+    legend.position <- ifelse(legend, "bottom", "none")
+    plot <- plot +
+        scale_fill_manual(name="", labels=legendLabels, values=values) +
+        scale_colour_manual(name="", labels=legendLabels, values=values) +
+        theme(legend.position=legend.position)
     
     if (!is.null(xlim)) plot <- plot + xlim(xlim)
     if (!is.null(ylim)) plot <- plot + ylim(ylim)
@@ -140,6 +172,8 @@ plotRowStats <- function(data, x, y, subset=NULL, xmin=NULL, xmax=NULL,
     if (!is.null(xmax)) plot <- plot + geom_vline(xintercept=xmax, colour="red")
     if (!is.null(ymin)) plot <- plot + geom_hline(yintercept=ymin, colour="red")
     if (!is.null(ymax)) plot <- plot + geom_hline(yintercept=ymax, colour="red")
+    
+    attr(plot, "cache") <- cache
     return(plot)
 }
 
@@ -273,7 +307,8 @@ dataUI <- function(id, tab) {
     uiList <- getUiFunctions(
         ns, "data", bsCollapsePanel,
         priority=paste0(c("localData", "firebrowse", "gtexData", "recountData",
-                          "inclusionLevels", "geNormalisationFiltering"), "UI"))
+                          "inclusionLevels", "inclusionLevelsFilter",
+                          "geNormalisationFiltering"), "UI"))
     
     tcga <- tags$abbr(title="The Cancer Genome Atlas", "TCGA")
     gtex <- tags$abbr(title="Genotype-Tissue Expression project", "GTEx")
@@ -659,7 +694,8 @@ dataServer <- function(input, output, session) {
     # Run server logic from the scripts
     getServerFunctions("data", priority=paste0(
         c("localData", "firebrowse", "gtexData",
-          "inclusionLevels", "geNormalisationFiltering"), "Server"))
+          "inclusionLevels", "inclusionLevelsFilter",
+          "geNormalisationFiltering"), "Server"))
 }
 
 attr(dataUI, "loader") <- "app"

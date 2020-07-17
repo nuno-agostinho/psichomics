@@ -21,6 +21,12 @@
     - Include gene symbols in custom annotations if available
     - Account for possible filename changes when parsing annotations from
     VAST-TOOLS, rMATS, SUPPA and MISO
+* Alternative splicing quantification filtering (visual interface):
+    - New panel to allow filtering already loaded alternative splicing
+    quantification based on event types, samples, PSI statistics (such as
+    median, variance and range) and cognate genes (some filtering steps may not
+    be available when using your own tables with inclusion levels)
+    - Preview the original and filtered events in an easy-to-use plot
 * Differential analysis:
     - Tooltips of volcano plots now include diagram of alternative splicing
     event (if available)

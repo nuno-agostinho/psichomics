@@ -111,6 +111,7 @@ Collate:
     'data_geNormalisationFiltering.R'
     'data_gtex.R'
     'data_inclusionLevels.R'
+    'data_inclusionLevelsFilter.R'
     'data_local.R'
     'data_recount.R'
     'events_suppa.R'

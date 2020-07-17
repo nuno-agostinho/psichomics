@@ -7,7 +7,8 @@
 %   R/analysis_dimReduction_pca.R, R/analysis_information.R,
 %   R/analysis_survival.R, R/analysis_template.R, R/data.R, R/data_firebrowse.R,
 %   R/data_geNormalisationFiltering.R, R/data_gtex.R, R/data_inclusionLevels.R,
-%   R/data_local.R, R/data_recount.R, R/groups.R, R/help.R
+%   R/data_inclusionLevelsFilter.R, R/data_local.R, R/data_recount.R,
+%   R/groups.R, R/help.R
 \name{appUI}
 \alias{appUI}
 \alias{analysesUI}
@@ -29,6 +30,7 @@
 \alias{geNormalisationFilteringUI}
 \alias{gtexDataUI}
 \alias{inclusionLevelsUI}
+\alias{inclusionLevelsFilterUI}
 \alias{localDataUI}
 \alias{recountDataUI}
 \alias{groupsUI}
@@ -74,6 +76,8 @@ geNormalisationFilteringUI(id, panel)
 gtexDataUI(id, panel)
 
 inclusionLevelsUI(id, panel)
+
+inclusionLevelsFilterUI(id, panel)
 
 localDataUI(id, panel)
 

@@ -119,6 +119,17 @@ function renderGroupSelection (item, escape) {
 }
 
 /**
+ * Render interface for AS event type filtering
+ */
+function renderASeventTypeSelection (item, escape) {
+    var type   = item.value,
+        number = item.label,
+        html = "<div><b>" + escape(type) + "</b><small> " +
+               escape(number) + " AS events</small></div>";
+    return html;
+}
+
+/**
  * Render alternative splicing event
  */
 function renderEvent (item, escape) {

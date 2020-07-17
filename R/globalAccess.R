@@ -368,7 +368,19 @@ getInclusionLevels <- reactive(getCategoryData()[["Inclusion levels"]])
 setInclusionLevels <- function(incLevels, category=getCategory()) {
     ASevent <- isolate(getASevent())
     if(!is.null(ASevent) && !ASevent %in% rownames(incLevels)) setASevent(NULL)
+    setInclusionLevelsSummaryStatsCache(NULL)
     setDataTable("Inclusion levels", incLevels, category)
+}
+
+#' @rdname getGlobal
+getInclusionLevelsSummaryStatsCache <- function(category=getCategory()) {
+    getGlobal(category, "incLevelsSummaryStatsCache")
+}
+
+#' @rdname getGlobal
+#' @param cache List of summary statistics
+setInclusionLevelsSummaryStatsCache <- function(cache, category=getCategory()) {
+    setGlobal(category, "incLevelsSummaryStatsCache", value=cache)
 }
 
 #' @rdname getGlobal

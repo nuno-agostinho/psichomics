@@ -722,64 +722,6 @@ quantifySplicingSet <- function(session, input) {
     })
 }
 
-#' Filter alternative splicing quantification
-#' 
-#' @param psi Data frame or matrix: alternative splicing quantification
-#' @param minMedian Numeric: minimum of read count median per splicing event
-#' @param maxMedian Numeric: maximum of read count median per splicing event
-#' @param minLogVar Numeric: minimum log10(read count variance) per splicing
-#' event
-#' @param maxLogVar Numeric: maximum log10(read count variance) per splicing
-#' event
-#' @param minRange Numeric: minimum range of read counts across samples per 
-#' splicing event
-#' @param maxRange Numeric: maximum range of read counts across samples per 
-#' splicing event
-#'
-#' @importFrom miscTools rowMedians
-#' 
-#' @family functions for PSI quantification
-#' @return Boolean vector indicating which splicing events pass the thresholds
-#' @export
-#' 
-#' @examples 
-#' # Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events
-#' annot <- readFile("ex_splicing_annotation.RDS")
-#' junctionQuant <- readFile("ex_junctionQuant.RDS")
-#' 
-#' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
-#' psi[filterPSI(psi, minMedian=0.05, maxMedian=0.95, minRange=0.15), ]
-filterPSI <- function(psi, minMedian=-Inf, maxMedian=Inf,
-                      minLogVar=-Inf, maxLogVar=Inf,
-                      minRange=-Inf, maxRange=Inf) {
-    if (is.na(minMedian)) minMedian <- -Inf
-    if (is.na(maxMedian)) maxMedian <- Inf
-    if (is.na(minLogVar)) minLogVar <- -Inf
-    if (is.na(maxLogVar)) maxLogVar <- Inf
-    if (is.na(minRange)) minRange <- -Inf
-    if (is.na(maxRange)) maxRange <- Inf
-    
-    medians <- rowMedians(psi, na.rm=TRUE)
-    medianThres <- medians >= minMedian & medians <= maxMedian
-    
-    vars <- log10(rowVars(psi, na.rm=TRUE))
-    varThres <- vars >= minLogVar & vars <= maxLogVar
-    
-    ranges <- rowRanges(psi, na.rm=TRUE)
-    rangeThres <- ranges >= minRange & ranges <= maxRange
-    
-    thres <- which(medianThres & varThres & rangeThres)
-    
-    attr(thres, "filtered") <- c("Filter enabled"="Yes",
-                                 "Median >="=minMedian,
-                                 "Median <="=maxMedian,
-                                 "log10(variance) >="=minLogVar,
-                                 "log10(variance) <="=maxLogVar,
-                                 "Range >="=minRange,
-                                 "Range <="=maxRange)
-    return(thres)
-}
-
 #' @rdname appServer
 #'
 #' @importFrom shiny reactive observeEvent helpText removeModal

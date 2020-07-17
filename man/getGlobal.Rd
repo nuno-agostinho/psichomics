@@ -37,6 +37,8 @@
 \alias{setNormalisedGeneExpression}
 \alias{getInclusionLevels}
 \alias{setInclusionLevels}
+\alias{getInclusionLevelsSummaryStatsCache}
+\alias{setInclusionLevelsSummaryStatsCache}
 \alias{getPCA}
 \alias{setPCA}
 \alias{getICA}
@@ -127,6 +129,10 @@ getInclusionLevels()
 
 setInclusionLevels(incLevels, category = getCategory())
 
+getInclusionLevelsSummaryStatsCache(category = getCategory())
+
+setInclusionLevelsSummaryStatsCache(cache, category = getCategory())
+
 getPCA(category = getCategory())
 
 setPCA(pca, category = getCategory())
@@ -192,6 +198,8 @@ possible or as data frames?}
 \item{geneExpr}{Data frame or matrix: normalised gene expression}
 
 \item{incLevels}{Data frame or matrix: inclusion levels}
+
+\item{cache}{List of summary statistics}
 
 \item{pca}{\code{prcomp} object (principal component analysis)}
 
