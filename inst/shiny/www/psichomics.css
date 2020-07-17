@@ -264,7 +264,7 @@ tr.active > td > a:hover { font-weight: bold; }
     -webkit-transition: opacity 0.2s;
     transition: opacity 0.2s;
     
-    content: '\f110';
+    content: '\f863';
     font-weight: 900;
     font-family: "Font Awesome 5 Free";
     
