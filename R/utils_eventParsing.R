@@ -222,6 +222,9 @@ parseSplicingEvent <- function(event, char=FALSE, pretty=FALSE, extra=NULL,
             info$type <- prettifyEventType(eventType, source)
             if (!is.null(info$subtype)) {
                 info$subtype <- prettifyEventType(subtype, source)
+                if (all(is.na(info$type))) {
+                    info$type <- gsub(" \\(.*\\)", "", info$subtype)
+                }
             } else {
                 info$subtype <- info$type
             }
