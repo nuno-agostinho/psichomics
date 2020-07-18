@@ -117,12 +117,12 @@ vasttoolsInclusionLevelsFormat <- function() {
                 "+", "-")
             
             # Parse coordinates
-            SEtypes <- c("S", "C1", "C2", "C3", "ANN", "MIC")
+            SEtypes <- c("S", "C1", "C2", "C3", "ANN", "MIC", "NA")
             types <- c(
                 setNames(rep("A3SS", 2), c("Alt3", "A_Alt3")),
                 setNames(rep("A5SS", 2), c("Alt5", "A_Alt5")),
                 setNames(rep("RI", 4), c("IR-C", "IR-S", "A_IR-C", "A_IR-S")),
-                setNames(rep("SE", 12),
+                setNames(rep("SE", length(SEtypes) * 2),
                          paste0(c("A_", ""), rep(SEtypes, each=2))))
             eventTypes <- types[rowData$subtype]
             rowData$type <- ifelse(!is.na(eventTypes), eventTypes, 
