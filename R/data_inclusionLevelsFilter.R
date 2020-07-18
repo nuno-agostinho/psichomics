@@ -111,47 +111,59 @@ inclusionLevelsFilterInterface <- function(ns) {
             numInputCol(ns("maxRange"), "Range <=",
                         min=0, max=1, value=1, step=0.1)))
     
+    
+    unparsableError <- function(id) {
+        errorDialog(
+            paste("Loaded splicing events could not be parsed. Data cannot be",
+                  "filtered based on event type or cognate genes."),
+            id=ns(id), style="margin: 10px;")
+    }
     geneFiltering <- bsCollapsePanel(
         title=tagList(icon("filter"), "Cognate gene filtering",
                       contextUI(ns("geneFilterText"))),
         value="Filter by genes",
-        radioButtons(ns("filter"), label=NULL,
-                     c("Do not filter splicing events by genes"="noFilter",
-                       "Filter by selected genes"="select",
-                       "Filter by genes imported from a file"="file")),
-        conditionalPanel(
-            sprintf("input[id='%s'] == '%s'", ns("filter"), "select"),
-            filterGenesSelectize),
-        conditionalPanel(
-            sprintf("input[id='%s'] == '%s'", ns("filter"), "file"),
-            fileBrowserInput(ns("filterGenesFile"), label=NULL,
-                             clearable=TRUE, placeholder="No file selected"),
-            helpText("Provide a file containing gene symbols separated",
-                     "by space, comma, tab or new line. For instance: ",
-                     tags$code("BRCA1, BRAF, ABL"))))
+        hidden(unparsableError("unparsableGenes")),
+        tags$span(id=ns("geneOptions"),
+                  radioButtons(
+                      ns("filter"), label=NULL,
+                      c("Do not filter splicing events by genes"="noFilter",
+                        "Filter by selected genes"="select",
+                        "Filter by genes imported from a file"="file")),
+                  conditionalPanel(
+                      sprintf("input[id='%s'] == '%s'", ns("filter"), "select"),
+                      filterGenesSelectize),
+                  conditionalPanel(
+                      sprintf("input[id='%s'] == '%s'", ns("filter"), "file"),
+                      fileBrowserInput(
+                          ns("filterGenesFile"), label=NULL,
+                          clearable=TRUE, placeholder="No file selected"),
+                      helpText(
+                          "Provide a file containing gene symbols separated",
+                          "by space, comma, tab or new line. For instance: ",
+                          tags$code("BRCA1, BRAF, ABL")))))
     
     choicesX <- getPSIsummaryStats()
-    choicesY <- c(choicesX, "None"="none")
-    options <- div(id=ns("options"),
-                   selectizeInput(
-                       ns("eventType"), "Event types to keep", width="100%",
+    choicesY <- c(choicesX, "Density"="none")
+    options <- div(
+        id=ns("options"),
+        selectizeInput(ns("eventType"), "Event types to keep", width="100%",
                        selected=NULL, choices=NULL, multiple=TRUE),
-                   bsCollapse(sampleFiltering, psiFiltering, geneFiltering),
-                   checkboxInput(ns("preview"), value=FALSE,
-                                 "Preview plots (slow for large datasets)"),
-                   conditionalPanel(
-                       sprintf("input[id='%s']", ns("preview")),
-                       fluidRow(
-                           column(6, selectizeInput(
-                               ns("plotX"), "X axis", width="100%",
-                               choices=choicesX, selected="range")),
-                           column(6, selectizeInput(
-                               ns("plotY"), "Y axis", width="100%",
-                               choices=choicesY, selected="none"))),
-                       uiOutput(ns("alert")),
-                       plotOutput(ns("plot"), height="200px"),
-                       tags$small(helpText(class="pull-right", 
-                                           textOutput(ns("summary"))))))
+        hidden(unparsableError("unparsableEventTypes")),
+        bsCollapse(sampleFiltering, psiFiltering, geneFiltering),
+        checkboxInput(ns("preview"), value=FALSE,
+                      "Preview plots (slow for large datasets)"),
+        conditionalPanel(sprintf("input[id='%s']", ns("preview")),
+                         fluidRow(
+                             column(6, selectizeInput(
+                                 ns("plotX"), "X axis", width="100%",
+                                 choices=choicesX, selected="range")),
+                             column(6, selectizeInput(
+                                 ns("plotY"), "Y axis", width="100%",
+                                 choices=choicesY, selected="none"))),
+                         uiOutput(ns("alert")),
+                         plotOutput(ns("plot"), height="200px"),
+                         tags$small(helpText(class="pull-right", 
+                                             textOutput(ns("summary"))))))
     tagList(
         uiOutput(ns("modal")),
         errorDialog(
@@ -193,6 +205,7 @@ getCognateGenesToFilter <- function(inputFilter, inputFilterGenes,
 }
 
 #' @importFrom shiny updateCheckboxInput
+#' @importFrom shinyjs show hide enable disable
 psiFilteringOptionsSet <- function(session, input, output) {
     observeEvent(input$missing, missingDataGuide("Inclusion Levels"))
     prepareFileBrowser(session, input, "filterGenesFile")
@@ -222,6 +235,11 @@ psiFilteringOptionsSet <- function(session, input, output) {
                     plugins=list("remove_button"),
                     render=I('{option: renderASeventTypeSelection,
                                item: renderASeventTypeSelection}')))
+            hide("unparsableEventTypes")
+            show("eventType")
+        } else {
+            show("unparsableEventTypes")
+            hide("eventType")
         }
     })
     
@@ -240,12 +258,21 @@ psiFilteringOptionsSet <- function(session, input, output) {
     observe({
         filter    <- input$filter
         processed <- processPSI()
-        # Avoid loading if already loaded
-        if (filter == "select" && !is.null(processed)) {
-            # Load genes based on alternative splicing quantification
-            genes <- sort(unique(unlist(processed$gene)))
-            updateSelectizeInput(session, "filterGenes", choices=genes,
-                                 selected=character(0), server=TRUE)
+        
+        if (!is.null(processed)) {
+            # Avoid loading if already loaded
+            if (filter == "select") {
+                # Load genes based on alternative splicing quantification
+                genes <- sort(unique(unlist(processed$gene)))
+                updateSelectizeInput(session, "filterGenes", choices=genes,
+                                     selected=character(0), server=TRUE)
+            }
+            
+            hide("unparsableGenes")
+            show("geneOptions")
+        } else {
+            show("unparsableGenes")
+            hide("geneOptions")
         }
     })
     
@@ -300,22 +327,14 @@ psiFilteringOptionsSet <- function(session, input, output) {
         }
         return(text)
     })
-    
-    observeEvent(getInclusionLevels(),
-                 updateCheckboxInput(session, "preview", value=FALSE))
 }
 
 # Process PSI
 processPSI <- reactive({
-    psi <- getInclusionLevels()
+    psi <- isolate(getInclusionLevels())
     if (!is.null(psi)) {
-        parsed <- tryCatch(
-            parseSplicingEvent(rownames(psi), data=psi, pretty=TRUE),
-            error=return)
-        if (is(parsed, "error")) return(NULL)
+        parsed <- parseSplicingEvent(rownames(psi), data=psi, pretty=TRUE)
         return(parsed)
-    } else {
-        return(NULL)
     }
 })
 
@@ -323,14 +342,15 @@ filterSplicingOperation <- function(session, psi, processed, input) {
     areThereInclusionLevels <- function(psi) {
         return(!is.null(psi) && nrow(psi) != 0 && ncol(psi) != 0)
     }
-  
     filteredPSI <- NULL
     eventType <- input$eventType
     if (!areThereInclusionLevels(psi)) return(NULL)
     
     suppressWarnings(updateProgress("Subset based on event type"))
-    if (!is.null(eventType) && !is.null(processed$subtype)) {
+    if (!is.null(eventType) && eventType != "" && !is.null(processed$subtype)) {
         filteredPSI <- psi[processed$subtype %in% eventType, ]
+    } else {
+        filteredPSI <- psi
     }
     if (!areThereInclusionLevels(filteredPSI)) return(NULL)
 
@@ -397,7 +417,7 @@ filterSplicingSet <- function(session, input, output) {
     
     # Operation to filter splicing based on user-defined options
     filterSplicingBasedOnInput <- reactive({
-        psi       <- getInclusionLevels()
+        psi       <- isolate(getInclusionLevels())
         processed <- processPSI()
         filterSplicingOperation(session, psi, processed, input)
     })
@@ -461,7 +481,7 @@ filterSplicingSet <- function(session, input, output) {
                 yLabel <- names(stats[stats == y])
             }
             
-            data  <- getInclusionLevels()
+            data  <- isolate(getInclusionLevels())
             cache <- isolate(getInclusionLevelsSummaryStatsCache())
             data2 <- filterSplicingBasedOnInput()
             
@@ -503,6 +523,9 @@ filterSplicingSet <- function(session, input, output) {
 
 #' @rdname appServer
 inclusionLevelsFilterServer <- function(input, output, session) {
+    observeEvent(getInclusionLevels(),
+                 updateCheckboxInput(session, "preview", value=FALSE))
+    
     psiFilteringOptionsSet(session, input, output)
     filterSplicingSet(session, input, output)
 }

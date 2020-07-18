@@ -136,7 +136,8 @@ getGenes <- reactive({
     # Retrieve genes based on AS events
     ASevents <- getASevents()
     if (!is.null(ASevents)) {
-        genes <- c(unlist(parseSplicingEvent(ASevents)$gene), genes)
+        parsed < parseSplicingEvent(ASevents)
+        if (!is.null(parsed$gene)) genes <- c(unlist(parsed$gene), genes)
     }
     
     if (!is.null(genes)) {

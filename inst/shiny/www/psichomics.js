@@ -148,7 +148,7 @@ function renderEvent (item, escape) {
         }
         return res;
     }
-    type   = processStr(type);
+    type   = processStr(type, "<br>");
     pos    = processStr(pos, "<small>", "</small>");
     id     = processStr(id, "", "<br>");
     gene   = processStr(gene);
@@ -162,7 +162,7 @@ function renderEvent (item, escape) {
     }
     
     var svgCol  = col(svg, 8, "pull-right"),
-        infoCol = col(`<b>${id}${gene}</b> ${pos}<br>${type}`, 4);
+        infoCol = col(`<b>${id}${gene}</b> ${pos}${type}`, 4);
     return row(infoCol + svgCol);
 }
 

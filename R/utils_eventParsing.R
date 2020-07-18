@@ -135,6 +135,8 @@ getEventData <- function(event, data=NULL) {
 #' information (depending on what is available)
 #' @export
 #' 
+#' @importFrom shiny isRunning
+#' 
 #' @examples 
 #' events <- c(
 #'   "A3SS_15_+_63353138_63353912_63353397_TPM1",
@@ -154,7 +156,7 @@ parseSplicingEvent <- function(event, char=FALSE, pretty=FALSE, extra=NULL,
                                coords=FALSE, data=NULL) {
     eventData <- getEventData(event, data)
     if (is.null(eventData) || !all(event %in% rownames(eventData))) {
-        if (all(grepl("_", event, fixed=TRUE))) {
+        if (all(grepl("(.*_){3,}.*", event))) { # If event has >= 3 underscores
             original <- event
             event <- parseEventFromStr(event=event, char=char, pretty=pretty,
                                        extra=extra, coords=coords)
@@ -168,7 +170,9 @@ parseSplicingEvent <- function(event, char=FALSE, pretty=FALSE, extra=NULL,
                 "Cannot parse events. Try running parseSplicingEvent() and",
                 "passing alternative splicing quantification to the 'data'",
                 "argument.")
-            stop(msg)
+            # Show warning if not running Shiny app
+            if (!isRunning()) warning(msg)
+            if (!char) event <- NULL
         }
         return(event)
     }
@@ -341,6 +345,8 @@ parseEventFromStr <- function(event, char=FALSE, pretty=FALSE, extra=NULL,
 #' @keywords internal
 matchSplicingEventsWithGenes <- function(ASevents, data=NULL) {
     ASeventParsed <- parseSplicingEvent(ASevents, data=data)$gene
+    if (is.null(ASeventParsed)) return(NULL)
+    
     ASeventGenes  <- rep(ASevents, sapply(ASeventParsed, length))
     names(ASeventGenes) <- unlist(ASeventParsed)
     return(ASeventGenes)

@@ -119,7 +119,9 @@ diffSplicingEventServer <- function(input, output, session) {
         output$density <- renderHighchart(plot)
         
         output$eventDiagrams <- renderUI({
-            isMXE <- parseSplicingEvent(event)$type == "MXE"
+            parsed <- parseSplicingEvent(event)
+            if (is.null(parsed$type)) return(NULL)
+            isMXE <- parsed$type == "MXE"
             constitutive <- suppressWarnings(
                 plotSplicingEvent(
                     style="position: absolute; top: 321px; left: 52px",

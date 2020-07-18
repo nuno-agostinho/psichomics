@@ -1,12 +1,13 @@
 # psichomics 1.14.1 (16 June, 2020)
 
 * Support for importing VAST-TOOLS' inclusion tables:
-    - VAST-TOOLS' inclusion tables can now be imported; in the visual interface,
-    use the **User-provided data loading** panel and load a specific alternative
+    - Import VAST-TOOLS' inclusion tables; in the visual interface, use the
+    **User-provided data loading** panel and load a specific alternative
     splicing quantification or load the folder containing such file; in the
     command-line interface, use `loadLocalFiles()`
     - To parse splicing event from VAST-TOOLS in the command-line interface,
     use for instance `parseSplicingEvent("HsaEX0007927", data=VASTTOOLSpsi)`
+* Support for importing inclusion tables with arbitrary event names
 * GTEx data loading (`loadGtexData()`):
     - Support for loading GTEx data from V8, V7, V6 or V4 releases
     - Organise GTEx data into folders named based on release version
@@ -14,7 +15,7 @@
     - Alternative splicing diagrams now render automatically instead of showing
     SVG code (if printing more than one event, a table is displayed with event
     identifiers and respective diagrams)
-    - Added support to plot intron retention events (e.g. from VAST-TOOLS)
+    - Plot intron retention events (e.g. from VAST-TOOLS)
 * `plotLibrarySize()`: plot library size from gene expression data
 * Alternative splicing annotation:
     - Try to load cached alternative splicing annotation if a timeout occurs
@@ -41,7 +42,7 @@
 
 ## Bug fixes and minor changes
 
-* Progress bar is now animated as in previous releases
+* Progress bar is now animated as in previous versions
 * Simplify group selection interface
 * Data loading (visual interface):
     - Correctly parse gene symbols containing underscores

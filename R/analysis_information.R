@@ -72,7 +72,9 @@ queryEnsemblByGene <- function(gene, species=NULL, assembly=NULL) {
 #' queryEnsemblByEvent(event, species="human", assembly="hg19")
 queryEnsemblByEvent <- function(event, species=NULL, assembly=NULL, data=NULL) {
     gene <- parseSplicingEvent(event, data=data)$gene[[1]]
-    if (gene == "Hypothetical") stop("This event has no associated gene")
+    stopifnot(
+        "Could not parse AS event to identify cognate gene"=!is.null(gene),
+        "AS event has no associated gene"=gene != "Hypothetical")
     return(queryEnsemblByGene(gene, species, assembly))
 }
 
@@ -421,17 +423,15 @@ plottableXranges <- function(hc, shiny=FALSE) {
 }
 
 plotASeventRegion <- function(hc, event, data=NULL) {
-    parsed <- tryCatch(
-        parseSplicingEvent(event, coords=TRUE, data=data)[1, , drop=FALSE],
-        error=return)
-    if (is(parsed, "error")) return(NULL)
+    parsed <- parseSplicingEvent(event, coords=TRUE, data=data)[1, , drop=FALSE]
+    if (is.null(parsed)) return(NULL)
     
-    con1   <- sort(parsed$constitutive1[[1]])
-    alt1   <- sort(parsed$alternative1[[1]])
-    alt2   <- sort(parsed$alternative2[[1]])
-    con2   <- sort(parsed$constitutive2[[1]])
+    con1 <- sort(parsed$constitutive1[[1]])
+    alt1 <- sort(parsed$alternative1[[1]])
+    alt2 <- sort(parsed$alternative2[[1]])
+    con2 <- sort(parsed$constitutive2[[1]])
     if (length(c(con1, alt1, alt2, con2)) == 0) return(NULL)
-    type   <- parsed$type
+    type <- parsed$type
     
     if (type %in% c("AFE exon", "ALE exon")) type <- gsub(" exon", "", type)
     pretty <- prettifyEventType(type)

@@ -406,7 +406,12 @@ plotSplicingEvent <- function(
     alternative2Fill="#caa06c", alternative2Stroke="#9d7039", data=NULL) {
     
     parsed <- parseSplicingEvent(ASevent, coords=TRUE, data=data)
-    parsed <- split(parsed, parsed$type)
+    if (!is.null(parsed$type)) {
+        parsed <- split(parsed, parsed$type)
+    } else {
+        type   <- rep("NULL", length(ASevent))
+        parsed <- split(ASevent, type)
+    }
     
     svg <- NULL
     positions <- NULL
@@ -431,9 +436,16 @@ plotSplicingEvent <- function(
         
         if (is(diagram, "error")) {
             showWarning                <- TRUE
-            diagram                    <- rep("", nrow(parsedType))
+            
+            len <- nrow(parsedType)
+            if (is.null(len)) len <- length(parsedType)
+            
+            ns  <- rownames(parsedType)
+            if (is.null(ns)) ns <- parsedType
+            
+            diagram                    <- rep("", len)
             attr(diagram, "positions") <- diagram
-            names(diagram)             <- rownames(parsedType)
+            names(diagram)             <- ns
         }
         svg <- c(svg, diagram)
         positions <- c(positions, attr(diagram, "positions"))

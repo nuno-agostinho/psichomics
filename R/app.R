@@ -347,9 +347,11 @@ prepareASeventsRepresentation <- reactive({
             diagram[unsupported] <- altText
             coords[unsupported]  <- paste("Full coordinates:", pos[unsupported])
         }
+        id <- parsed$id
+        if (is.null(parsed)) id <- ASevent
         info <- paste(sep=";", parsed$subtype, 
                       sprintf("(chr%s, %s strand)", parsed$chr, parsed$strand),
-                      parsed$id, gene, coords, ASevent)
+                      id, gene, coords, ASevent)
         representation <- setNames(ASevent, paste(info, " __ ", diagram))
     } else {
         representation <- NULL

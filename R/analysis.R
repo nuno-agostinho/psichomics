@@ -2232,12 +2232,12 @@ convertNumberCols2Numbers <- function(df) {
 }
 
 combineSplicingEventInfo <- function(df, data) {
-    events <- rownames(df)
-    info   <- suppressWarnings(
-        parseSplicingEvent(events, data=data, pretty=TRUE))
+    events   <- rownames(df)
+    info     <- parseSplicingEvent(events, data=data, pretty=TRUE)
+    if (is.null(info)) return(NULL)
     infoGene <- prepareGenePresentation(info$gene)
-    df <- cbind("Event type"=info$subtype, "Chromosome"=info$chrom,
-                "Strand"=info$strand, "Gene"=unlist(infoGene), df)
+    df       <- cbind("Event type"=info$subtype, "Chromosome"=info$chrom,
+                      "Strand"=info$strand, "Gene"=unlist(infoGene), df)
     rownames(df) <- events
     return(df)
 }
@@ -2408,10 +2408,9 @@ diffAnalyses <- function(data, groups=NULL,
 
 prettifyEventID <- function(event, data=NULL) {
     eventData <- getEventData(event, data=data)
-    hasID <- !is.null(eventData$id)
-    parsed <- tryCatch(parseSplicingEvent(event, char=!hasID, data=data),
-                       error=return)
-    if (is(parsed, "error")) {
+    hasID     <- !is.null(eventData$id)
+    parsed    <- parseSplicingEvent(event, char=!hasID, data=data)
+    if (is.null(parsed)) {
         parsed <- event
     } else if (hasID) {
         parsed <- parsed$id

@@ -407,10 +407,6 @@ plot.GEandAScorrelation <- function(
     plotCorrPerASevent <- function(single, eventData) {
         expr    <- single$geneExpr
         event   <- single$psi
-        eventId <- parseSplicingEvent(single$eventID, char=TRUE, pretty=TRUE,
-                                      data=eventData)
-        eventDisplay <- gsub(" \\(.*\\)", "", eventId)
-        eventDetails <- gsub(".*\\((.*)\\)", "\\1", eventId)
         
         estimateMethod <- names(single$cor$estimate)
         if (!is.null(estimateMethod) && estimateMethod == "cor") 
@@ -476,9 +472,23 @@ plot.GEandAScorrelation <- function(
                                 size=densityWidth, na.rm=TRUE)
         }
         
+        eventId <- parseSplicingEvent(single$eventID, char=TRUE, pretty=TRUE,
+                                      data=eventData)
+        # Event ID example:
+        # UHRF2 skipped exon (SE) (chr9: 6486925-6493826, positive strand)
+        parenthesisRegex <- " \\((chr.*)\\)$"
+        if (grepl(parenthesisRegex, eventId)) {
+            eventDisplay <- gsub(parenthesisRegex, "", eventId)
+            eventDetails <- paste0(gsub(
+                paste0(".*", parenthesisRegex), "\\1", eventId), "\n")
+        } else {
+            eventDisplay <- eventId
+            eventDetails <- ""
+        }
+        
         plot <- plot +
             ggtitle(eventDisplay, 
-                    sprintf("%s\n%s: %s (p-value: %s)", eventDetails, 
+                    sprintf("%s%s: %s (p-value: %s)", eventDetails,
                             estimateMethod, estimate, pvalue)) +
             labs(x="PSI", y=paste(single$gene, "gene expression"))
         return(plot + theme_light(fontSize))

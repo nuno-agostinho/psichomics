@@ -38,8 +38,7 @@ genericInclusionLevelsFormat <- function() {
             
             events <- rownames(data)
             if (!is.null(events)) {
-                attr(data, "rowData") <- suppressWarnings(
-                    parseSplicingEvent(events, coords=TRUE))
+                attr(data, "rowData") <- parseSplicingEvent(events, coords=TRUE)
                 data <- preserveAttributes(data)
             }
             return(data)

@@ -93,6 +93,13 @@ ggplotTooltip <- function(df, hover, x, y, eventData=NULL) {
     thisPoint <- rownames(point)
     if ( areSplicingEvents(thisPoint, data=eventData) ) {
         event   <- parseSplicingEvent(thisPoint, pretty=TRUE, data=eventData)
+        if (is.null(event)) {
+            gene    <- NULL
+            type    <- NULL
+            coord   <- NULL
+            diagram <- NULL
+        }
+        
         strand  <- ifelse(event$strand == "+", "forward", "reverse")
         gene    <- paste(event$gene[[1]], collapse=" or ")
         type    <- trItem("Event type", event$subtype)
