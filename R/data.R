@@ -149,11 +149,12 @@ plotRowStats <- function(data, x, y=NULL, subset=NULL, xmin=NULL, xmax=NULL,
     if (verbose) message("Preparing plot...")
     if (isValidY) {
         plot <- ggplot(vars, aes_string(x, y, colour="colour")) +
-            geom_point(size=1, na.rm=TRUE, alpha=0.5) +
+            geom_point(size=1, na.rm=TRUE, alpha=0.5, show.legend=legend) +
             labs(x=x, y=y)
     } else {
         plot <- ggplot(vars, aes_string(x, colour="colour", fill="colour")) +
-            geom_density(na.rm=TRUE, adjust=0.5, alpha=0.1) +
+            geom_density(na.rm=TRUE, adjust=0.5, alpha=0.1,
+                         show.legend=legend) +
             labs(x=x)
     }
     
@@ -438,12 +439,7 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
     
     # Add a common HTML container to allow for multiple Highcharts plots
     multiPlotId        <- paste(tablename, "multiPlot", sep="-")
-    loadingMultiPlotId <- paste(tablename, "loadingMultiPlot", sep="-")
     multiHighchartsPlots <- fluidRow(column(12, uiOutput(multiPlotId)))
-    # div(id=loadingMultiPlotId, class="progress",
-    #     div(class="progress-bar progress-bar-striped active",
-    #         role="progressbar", style="width:100%",
-    #         "Loading summary plots")))
     
     if (is.null(icon)) {
         name <- title
@@ -464,6 +460,94 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
                         dataTableOutput(tablename)),
         bsCollapsePanel(tagList(icon("pie-chart"), "Summary"), value="Summary",
                         multiHighchartsPlots)))
+}
+
+prepareDatatableSettingsTable <- function(filename, settings) {
+    if (!is.null(filename)) {
+        filename <- prepareWordBreak(filename)
+        filename <- tags$small(tags$b("Loaded based on file:"),
+                               tags$var(filename))
+    }
+    
+    if (!is.null(settings)) {
+        settingsDf <- data.frame(names(settings), sapply(
+            sapply(settings, paste, collapse=", "), prepareWordBreak))
+        colnames(settingsDf) <- c("Attribute", "Item")
+        settings <- table2html(settingsDf, rownames=FALSE, thead=TRUE, 
+                               class="table table-condensed table-striped")
+        settings <- tags$small(tagList(tags$b("Dataset settings"), settings))
+        settings <- gsub("&lt;", "<", settings, fixed=TRUE)
+        settings <- gsub("&gt;", ">", settings, fixed=TRUE)
+        settings <- HTML(settings)
+        return(settings)
+    }
+    
+    extra <- NULL
+    if ( !is.null(filename) || !is.null(settings) ) {
+        extra <- tagList(
+            tags$hr(), filename, 
+            if (!is.null(filename) && !is.null(settings)) 
+                tagList(tags$br(), tags$br()), 
+            settings)
+    }
+}
+
+prepareDatatablePlots <- function(table, output, ns) {
+    plots <- NULL
+    if (is.null(attr(table, "plots"))) {
+        isGeneExpr <- !is.null(attr(table, "dataType")) &&
+            attr(table, "dataType") == "Gene expression"
+        isPSI <- !is.null(attr(table, "dataType")) &&
+            attr(table, "dataType") == "Inclusion levels"
+        if (isGeneExpr) {
+            if (is(table, "EList")) table <- table$E
+            geneExprPerSamplePlot <- plotGeneExprPerSample(
+                table, sortByMedian=TRUE, 
+                title="Gene expression distribution per sample")
+            librarySizePlot <- plotLibrarySize(table)
+            plots <- list(
+                highchart=geneExprPerSamplePlot,
+                highchart=librarySizePlot)
+        } else if (isPSI) {
+            medianVar <- plotRowStats(table, x="median", y="var", 
+                                      xlim=c(0,1 )) +
+                labs(x="Median PSI", y="PSI variance") +
+                ggtitle(paste("Scatterplot of alternative splicing",
+                              "quantification per event")) +
+                theme_light(14)
+            rangeVar  <- plotRowStats(table, x="range", y="log10(var)", 
+                                      xlim=c(0, 1)) +
+                labs(x="PSI range", y="log10(PSI variance)") +
+                ggtitle(paste("Scatterplot of alternative splicing",
+                              "quantification per event")) +
+                theme_light(14)
+            plots <- list(plot=medianVar, plot=rangeVar)
+        }
+        attr(table, "plots") <- plots
+    }
+    tablename <- attr(table, "tablenameID")
+    plots     <- attr(table, "plots")
+    
+    renderedPlots <- lapply(seq(plots), function(i) {
+        type <- names(plots)[[i]]
+        FUN <- switch(type, highchart=renderHighchart, plot=renderPlot)
+        res <- FUN(plots[[i]])
+        attr(res, "type") <- type
+        return(res)
+    })
+    
+    plotList <- tagList(NULL)
+    for (each in seq(renderedPlots)) {
+        plot <- renderedPlots[[each]]
+        type <- attr(plot, "type")
+        id   <- paste0(gsub(" ", "_", tablename), "-", type, each)
+        output[[id]] <- plot
+        
+        FUN  <- switch(type, highchart=highchartOutput, plot=plotOutput)
+        item <- tagList(FUN(ns(id)))
+        plotList <- tagAppendChild(plotList, item)
+    }
+    return(plotList)
 }
 
 #' Render a specific data tab (including data table and related interface)
@@ -510,107 +594,23 @@ createDataTab <- function(index, data, name, session, input, output) {
             res <- cbind(rownames(table), table)
             names(res)[1] <- attr(table, "dataType")
             write.table(res, file, quote=FALSE, row.names=FALSE, sep="\t")
-        })
+        }
+    )
     
     multiPlotId        <- paste(tablename, "multiPlot", sep="-")
-    loadingMultiPlotId <- paste(tablename, "loadingMultiPlot", sep="-")
-    
     createInfoInterface <- function(output, table) {
-        rows <- attr(table, "rows")
-        rows <- ifelse(!is.null(rows), rows, "rows")
-        cols <- attr(table, "columns")
-        cols <- ifelse(!is.null(cols), cols, "columns")
-        
-        filename <- attr(table, "filename")
-        if (!is.null(filename)) {
-            filename <- prepareWordBreak(filename)
-            filename <- tags$small(tags$b("Loaded based on file:"),
-                                   tags$var(filename))
-        }
-        
-        settings <- attr(table, "settings")
-        if (!is.null(settings)) {
-            settingsDf <- data.frame(names(settings), sapply(
-                sapply(settings, paste, collapse=", "), prepareWordBreak))
-            colnames(settingsDf) <- c("Attribute", "Item")
-            settings <- table2html(
-                settingsDf, rownames=FALSE, thead=TRUE, 
-                class="table table-condensed table-striped")
-            settings <- tags$small(tagList(tags$b("Dataset settings"), 
-                                           settings))
-            settings <- gsub("&lt;", "<", settings, fixed=TRUE)
-            settings <- gsub("&gt;", ">", settings, fixed=TRUE)
-            settings <- HTML(settings)
-        }
-        
-        extra <- NULL
-        if ( !is.null(filename) || !is.null(settings) ) {
-            extra <- tagList(
-                tags$hr(), filename, 
-                if (!is.null(filename) && !is.null(settings)) 
-                    tagList(tags$br(), tags$br()), 
-                settings)
-        }
-        
-        plots <- NULL
-        if (is.null(attr(table, "plots"))) {
-            isGeneExpr <- !is.null(attr(table, "dataType")) &&
-                attr(table, "dataType") == "Gene expression"
-            isPSI <- !is.null(attr(table, "dataType")) &&
-                attr(table, "dataType") == "Inclusion levels"
-            if (isGeneExpr) {
-                if (is(table, "EList")) table <- table$E
-                geneExprPerSamplePlot <- plotGeneExprPerSample(
-                    table, sortByMedian=TRUE, 
-                    title="Gene expression distribution per sample")
-                librarySizePlot <- plotLibrarySize(table)
-                plots <- list(
-                    highchart=geneExprPerSamplePlot,
-                    highchart=librarySizePlot)
-            } else if (isPSI) {
-                medianVar <- plotRowStats(table, x="median", y="var", 
-                                          xlim=c(0,1 )) +
-                    labs(x="Median PSI", y="PSI variance") +
-                    ggtitle(paste("Scatterplot of alternative splicing",
-                                  "quantification per event")) +
-                    theme_light(14)
-                rangeVar  <- plotRowStats(table, x="range", y="log10(var)", 
-                                          xlim=c(0, 1)) +
-                    labs(x="PSI range", y="log10(PSI variance)") +
-                    ggtitle(paste("Scatterplot of alternative splicing",
-                                  "quantification per event")) +
-                    theme_light(14)
-                plots <- list(plot=medianVar, plot=rangeVar)
-            }
-            attr(table, "plots") <- plots
-        }
-        tablename <- attr(table, "tablenameID")
-        plots     <- attr(table, "plots")
-        
-        renderedPlots <- lapply(seq(plots), function(i) {
-            type <- names(plots)[[i]]
-            FUN <- switch(type, highchart=renderHighchart, plot=renderPlot)
-            res <- FUN(plots[[i]])
-            attr(res, "type") <- type
-            return(res)
-        })
-        
-        plotList <- tagList(NULL)
-        for (each in seq(renderedPlots)) {
-            plot <- renderedPlots[[each]]
-            type <- attr(plot, "type")
-            id   <- paste0(tablename, "-", type, each)
-            output[[id]] <- plot
-            
-            FUN  <- switch(type, highchart=highchartOutput, plot=plotOutput)
-            item <- tagList(FUN(ns(id)))
-            plotList <- tagAppendChild(plotList, item)
-        }
+        rows     <- attr(table, "rows")
+        rows     <- ifelse(!is.null(rows), rows, "rows")
+        cols     <- attr(table, "columns")
+        cols     <- ifelse(!is.null(cols), cols, "columns")
+        settings <- prepareDatatableSettingsTable(attr(table, "filename"),
+                                                  attr(table, "settings"))
+        plotList <- prepareDatatablePlots(table, output, ns)
         
         tags$div(tags$h4(paste(ncol(table), cols)),
                  tags$h4(paste(nrow(table), rows)),
                  plotList,
-                 extra)
+                 settings)
     }
     
     attr(table, "tablenameID") <- tablename

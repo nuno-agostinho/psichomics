@@ -319,17 +319,11 @@ processPSI <- reactive({
     }
 })
 
-# Show error if no alternative splicing quantification is found
-areThereInclusionLevels <- function(psi) {
-    if (is.null(psi) || nrow(psi) == 0 || ncol(psi) == 0) {
-        status <- FALSE
-    } else {
-        status <- TRUE
-    }
-    return(status)
-}
-
 filterSplicingOperation <- function(session, psi, processed, input) {
+    areThereInclusionLevels <- function(psi) {
+        return(!is.null(psi) && nrow(psi) != 0 && ncol(psi) != 0)
+    }
+  
     filteredPSI <- NULL
     eventType <- input$eventType
     if (!areThereInclusionLevels(psi)) return(NULL)

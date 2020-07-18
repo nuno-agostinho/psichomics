@@ -57,6 +57,7 @@
     - Allow to discard selected files in file browser input elements
     - Show helpful context messages in panel interfaces
     - Improve visual interface and minor copy-editing
+    - Fix gene expression summary plots not showing in specific situations
 * Local data loading:
     - Support loading data from GTEx V8 or previous releases
     - Fix bad formatting of help tooltips when using `shiny 1.4.0` or newer
