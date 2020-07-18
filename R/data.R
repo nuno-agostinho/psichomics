@@ -509,18 +509,24 @@ prepareDatatablePlots <- function(table, output, ns) {
                 highchart=geneExprPerSamplePlot,
                 highchart=librarySizePlot)
         } else if (isPSI) {
-            medianVar <- plotRowStats(table, x="median", y="var", 
-                                      xlim=c(0,1 )) +
+            cache     <- isolate(getInclusionLevelsSummaryStatsCache())
+            medianVar <- plotRowStats(table, x="median", y="var",
+                                      xlim=c(0,1 ), cache=cache, verbose=TRUE) +
                 labs(x="Median PSI", y="PSI variance") +
                 ggtitle(paste("Scatterplot of alternative splicing",
                               "quantification per event")) +
                 theme_light(14)
-            rangeVar  <- plotRowStats(table, x="range", y="log10(var)", 
-                                      xlim=c(0, 1)) +
+            cache <- attr(medianVar, "cache")
+            
+            rangeVar  <- plotRowStats(table, x="range", y="log10(var)",
+                                      xlim=c(0, 1), cache=cache, verbose=TRUE) +
                 labs(x="PSI range", y="log10(PSI variance)") +
                 ggtitle(paste("Scatterplot of alternative splicing",
                               "quantification per event")) +
                 theme_light(14)
+            cache <- attr(rangeVar, "cache")
+            
+            setInclusionLevelsSummaryStatsCache(cache)
             plots <- list(plot=medianVar, plot=rangeVar)
         }
         attr(table, "plots") <- plots
