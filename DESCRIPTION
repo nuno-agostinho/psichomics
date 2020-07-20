@@ -119,6 +119,7 @@ Collate:
     'events_miso.R'
     'events_mats.R'
     'events.R'
+    'formats_SraRunTableSampleInfo.R'
     'formats_firebrowseGeneExpression.R'
     'formats_firebrowseJunctionReads.R'
     'formats_firebrowseMergeClinical.R'

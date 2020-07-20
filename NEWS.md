@@ -1,16 +1,26 @@
 # psichomics 1.14.1 (16 June, 2020)
 
-* Support for importing VAST-TOOLS' inclusion tables:
-    - Import VAST-TOOLS' inclusion tables; in the visual interface, use the
+## Support for loading more data formats
+
+* Support for importing VAST-TOOLS' inclusion levels tables:
+    - Import VAST-TOOLS' output files; in the visual interface, use the
     **User-provided data loading** panel and load a specific alternative
     splicing quantification or load the folder containing such file; in the
     command-line interface, use `loadLocalFiles()`
     - To parse splicing event from VAST-TOOLS in the command-line interface,
     use for instance `parseSplicingEvent("HsaEX0007927", data=VASTTOOLSpsi)`
-* Support for importing inclusion tables with arbitrary event names
+* Support for importing inclusion tables with arbitrary alternative splicing 
+event identifiers (information for these events will not be available, such as
+event type and cognate gene)
+* Automatically load metadata from the SRA Run Selector (usually comes in files
+named `SraRunTable.txt`) avoiding the need to use `prepareSRAmetadata()` first
 * GTEx data loading (`loadGtexData()`):
     - Support for loading GTEx data from V8, V7, V6 or V4 releases
     - Organise GTEx data into folders named based on release version
+* Copy-edit tutorial on loading user-provided data
+
+# New features
+
 * `plotSplicingEvent()`:
     - Alternative splicing diagrams now render automatically instead of showing
     SVG code (if printing more than one event, a table is displayed with event
@@ -26,7 +36,7 @@
     - New panel to allow filtering already loaded alternative splicing
     quantification based on event types, samples, PSI statistics (such as
     median, variance and range) and cognate genes (some filtering steps may not
-    be available when using your own tables with inclusion levels)
+    be available when using user-provided tables with inclusion levels)
     - Preview the original and filtered events in an easy-to-use plot
 * Differential analysis:
     - Tooltips of volcano plots now include diagram of alternative splicing
@@ -38,7 +48,6 @@
     user-inputted tags even when changing selected gene
     - Improve relevance of results from PubMed articles
 * Include Dockerfile to create Docker images based on code revisions
-* Copy-edit tutorial on loading user-provided data
 
 ## Bug fixes and minor changes
 

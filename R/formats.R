@@ -10,6 +10,9 @@
 #' @return TRUE if the file is of the given format; otherwise, returns FALSE
 #' @keywords internal
 checkFileFormat <- function(format, head, filename="") {
+    # Replace with `browser()` to debug any format with the attribute `debug`
+    if (!is.null(format$debug)) print(format$id)
+    
     # If file name is of importance, check if the filename matches
     if (isTRUE(format$matchName) && !identical(filename, "") &&
         !grepl(format$filename, filename, fixed = TRUE))

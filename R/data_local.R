@@ -135,8 +135,7 @@ localDataUI <- function(id, panel) {
 #' @return Prepared file (if \code{output != NULL}) and object
 #' @export
 prepareSRAmetadata <- function(file, output="psichomics_metadata.txt") {
-    data <- fread(file)
-    data <- cbind("Sample ID"=data$Run, data)
+    data <- loadFile(file, SraRunTableSampleInfoFormat())
     if (!is.null(output)) {
         fwrite(data, output, sep="\t")
         return(invisible(data))

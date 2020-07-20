@@ -67,7 +67,7 @@ containing orphaned single-end reads obtained from paired-end sequencing data)
 
 Sample-associated data is also available from the [Run Selector][SRP126561]
 page. Click **RunInfo Table** to download the whole metadata table for all
-samples.
+samples (usually downloaded in a file named `SraRunTable.txt`).
 
 ## Align RNA-seq data to quantify splice junctions
 
@@ -158,8 +158,11 @@ prepareGeneQuant(
 prepareJunctionQuant("SRR6368612SJ.out.tab", "SRR6368613SJ.out.tab", 
                      "SRR6368614SJ.out.tab", "SRR6368615SJ.out.tab",
                      "SRR6368616SJ.out.tab", "SRR6368617SJ.out.tab")
-prepareSRAmetadata("SraRunTable.txt")
 ```
+
+Ensure that the SRA metadata is also available in the same folder where the
+gene expression and junction quantification tables prepared for psichomics are
+located.
 
 ### Load data in the visual interface
 
@@ -178,7 +181,7 @@ appropriate folder where the psichomics-prepared data is stored. Finally, click
 
 ```{r, eval=FALSE}
 library(psichomics)
-data          <- loadLocalFiles("/path/to/aligned/output/")
+data          <- loadLocalFiles("/path/to/psichomics/prepared/output/")
 geneExpr      <- data[[1]]$`Gene expression`
 junctionQuant <- data[[1]]$`Junction quantification`
 sampleInfo    <- data[[1]]$`Sample metadata`
