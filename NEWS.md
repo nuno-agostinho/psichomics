@@ -27,11 +27,6 @@ named `SraRunTable.txt`) avoiding the need to use `prepareSRAmetadata()` first
     identifiers and respective diagrams)
     - Plot intron retention events (e.g. from VAST-TOOLS)
 * `plotLibrarySize()`: plot library size from gene expression data
-* Alternative splicing annotation:
-    - Try to load cached alternative splicing annotation if a timeout occurs
-    - Include gene symbols in custom annotations if available
-    - Account for possible filename changes when parsing annotations from
-    VAST-TOOLS, rMATS, SUPPA and MISO
 * Alternative splicing quantification filtering (visual interface):
     - New panel to allow filtering already loaded alternative splicing
     quantification based on event types, samples, PSI statistics (such as
@@ -40,7 +35,7 @@ named `SraRunTable.txt`) avoiding the need to use `prepareSRAmetadata()` first
     - Preview the original and filtered events in an easy-to-use plot
 * Differential analysis:
     - Tooltips of volcano plots now include diagram of alternative splicing
-    event (if available)
+    events
 * Gene, transcript and protein annotation (visual interface):
     - Suggest genes based on loaded data
     - Change species and assembly when fetching information
@@ -52,7 +47,6 @@ named `SraRunTable.txt`) avoiding the need to use `prepareSRAmetadata()` first
 ## Bug fixes and minor changes
 
 * Progress bar is now animated as in previous versions
-* Simplify group selection interface
 * Data loading (visual interface):
     - Correctly parse gene symbols containing underscores
     - Fix library size plot not working properly and causing rendering issues
@@ -74,17 +68,21 @@ named `SraRunTable.txt`) avoiding the need to use `prepareSRAmetadata()` first
     (visual interface)
 * Gene expression filtering:
     - Hide message regarding the usage of no design matrix
-* Distribution plots (`plotDistribution()`):
-    - After hiding all plot series, hide Y axis (rug plots of the different
-    groups have arbitrary Y values to easily distinguish them)
-    - Rug plots of gene expression density plots are now placed near the X axis
-    as expected
+* Alternative splicing annotation:
+    - Try to load cached alternative splicing annotation if a timeout occurs
+    - Include gene symbols in custom annotations if available
+    - Account for possible filename changes when parsing annotations from
+    VAST-TOOLS, rMATS, SUPPA and MISO
 * Alternative splicing event selection (visual interface):
     - Include loading indicator while searching for events
     - Decrease number of operations performed after selecting an event
     - Fix crash when changing to an alternative splicing quantification dataset
     without the selected splicing event
     - Allow to search using an event identifier directly
+* Data grouping (visual interface):
+    - Simplify group selection interface
+    - Fix suggested attributes in group creation not being updated when changing
+    to datasets with no attributes
 * Principal component analysis (visual interface):
     - The correct splicing event is now selected when clicking on any loadings
     in the loadings plot
@@ -98,6 +96,11 @@ named `SraRunTable.txt`) avoiding the need to use `prepareSRAmetadata()` first
     - The correct splicing event is now selected when clicking the density plots
     or survival curves in the table (visual interface)
     - `diffAnalyses()`: deprecated `psi` argument was now removed
+* Distribution plots (`plotDistribution()`):
+    - After hiding all plot series, hide Y axis (rug plots of the different
+    groups have arbitrary Y values to easily distinguish them)
+    - Rug plots of gene expression density plots are now placed near the X axis
+    as expected
 * `print()` extended to better display information on gene list objects; e.g.
 `print(getGeneList())`
 * Fix issues when installing the package:
