@@ -31,14 +31,7 @@ psichomicsInclusionLevelsFormat <- function() {
         rows    = "alternative splicing events",
         columns = "samples",
         
-        process = function(data) {
-            events <- rownames(data)
-            if (!is.null(events)) {
-                attr(data, "rowData") <- parseSplicingEvent(events, coords=TRUE)
-                data <- preserveAttributes(data)
-            }
-            return(data)
-        }
+        process = genericInclusionLevelsFormat()$process
     )
 }
 
