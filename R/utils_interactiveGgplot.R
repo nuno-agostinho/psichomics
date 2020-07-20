@@ -64,10 +64,10 @@ ggplotUI <- function(id) {
             style="padding-left: 9px;", style="padding-right: 9px;",
             style="position: absolute;", style="z-index: 1;",
             style="top: 20px;", style="right: 35px;")),
+        uiOutput(tooltipId),
         plotOutput(plotId,
                    brush=brushOpts(brushId, resetOnNew=TRUE),
-                   hover=hoverOpts(hoverId, delay=50, delayType="throttle")),
-        uiOutput(tooltipId))
+                   hover=hoverOpts(hoverId, delay=50, delayType="throttle")))
 }
 
 #' Create the interface for the tooltip of a plot
@@ -107,8 +107,8 @@ ggplotTooltip <- function(df, hover, x, y, eventData=NULL) {
         coord   <- sprintf("chr %s: %s to %s (%s strand)", event$chrom,
                            event$pos[[1]][[1]], event$pos[[1]][[2]], strand)
         coord   <- trItem("Coordinates", coord)
-        diagram <- trItem("Diagram", plotSplicingEventHelper(thisPoint, 
-                                                             data=eventData))
+        diagram <- plotSplicingEventHelper(thisPoint, data=eventData)
+        if (!is.null(diagram)) diagram <- trItem("Diagram", diagram)
     } else {
         gene    <- thisPoint
         type    <- NULL

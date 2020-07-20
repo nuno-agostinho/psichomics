@@ -823,8 +823,9 @@ plotSplicingEventHelper <- function(ASevent, data=NULL) {
     if (diagram != "") {
         res <- HTML(diagram)
     } else {
-        res <- paste("Diagram not supported")
+        res <- NULL
     }
+    return(res)
 }
 
 #' @rdname appServer
@@ -865,6 +866,7 @@ infoServer <- function(input, output, session) {
         ASevent <- getASevent()
         if (!is.null(ASevent)) {
             res <- plotSplicingEventHelper(ASevent)
+            if (is.null(res)) res <- "Diagram not supported"
         } else {
             res <- "No alternative splicing event selected or available"
         }

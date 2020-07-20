@@ -151,7 +151,7 @@ inclusionLevelsFilterInterface <- function(ns) {
         hidden(unparsableError("unparsableEventTypes")),
         bsCollapse(sampleFiltering, psiFiltering, geneFiltering),
         checkboxInput(ns("preview"), value=FALSE,
-                      "Preview plots (slow for large datasets)"),
+                      "Preview plot (slow for large datasets)"),
         conditionalPanel(sprintf("input[id='%s']", ns("preview")),
                          fluidRow(
                              column(6, selectizeInput(
@@ -331,7 +331,7 @@ psiFilteringOptionsSet <- function(session, input, output) {
 
 # Process PSI
 processPSI <- reactive({
-    psi <- isolate(getInclusionLevels())
+    psi <- getInclusionLevels()
     if (!is.null(psi)) {
         parsed <- parseSplicingEvent(rownames(psi), data=psi, pretty=TRUE)
         return(parsed)
@@ -417,7 +417,7 @@ filterSplicingSet <- function(session, input, output) {
     
     # Operation to filter splicing based on user-defined options
     filterSplicingBasedOnInput <- reactive({
-        psi       <- isolate(getInclusionLevels())
+        psi       <- getInclusionLevels()
         processed <- processPSI()
         filterSplicingOperation(session, psi, processed, input)
     })
@@ -481,7 +481,7 @@ filterSplicingSet <- function(session, input, output) {
                 yLabel <- names(stats[stats == y])
             }
             
-            data  <- isolate(getInclusionLevels())
+            data  <- getInclusionLevels()
             cache <- isolate(getInclusionLevelsSummaryStatsCache())
             data2 <- filterSplicingBasedOnInput()
             
