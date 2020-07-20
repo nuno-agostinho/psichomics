@@ -1474,6 +1474,7 @@ groupManipulation <- function(input, output, session, type) {
                 cols <- attrs
             }
             
+            if (is.null(cols)) cols <- list()
             updateSelectizeInput(session, paste0("groupAttribute", id),
                                  choices=cols, selected=character())
             updateSelectizeInput(session, paste0("grepColumn", id),
