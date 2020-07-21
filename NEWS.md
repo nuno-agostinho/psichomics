@@ -2,7 +2,7 @@
 
 ## Support for loading more data formats
 
-* Support for importing VAST-TOOLS' inclusion levels tables:
+* Support for importing VAST-TOOLS' inclusion levels and gene expression tables:
     - Import VAST-TOOLS' output files; in the visual interface, use the
     **User-provided data loading** panel and load a specific alternative
     splicing quantification or load the folder containing such file; in the

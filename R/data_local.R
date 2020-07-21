@@ -351,6 +351,7 @@ prepareGeneQuantSTAR <- function(..., strandedness=c("unstranded", "stranded",
 #' @param folder Character: path to folder containing files of interest
 #' @param name Character: name of the category containing all loaded datasets
 #' @param ignore Character: skip folders and filenames that match the expression
+#' @param verbose Boolean: detail steps while parsing?
 #' 
 #' @importFrom stats setNames
 #' 
@@ -367,7 +368,9 @@ prepareGeneQuantSTAR <- function(..., strandedness=c("unstranded", "stranded",
 #' loadLocalFiles(folder, ignore)
 #' }
 loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."), 
-                           name="Data") {
+                           name="Data", verbose=FALSE) {
+    if (!dir.exists(folder)) stop("Folder does not exist.")
+    
     # Get all files in the specified directory and subdirectories
     files <- list.files(folder, recursive=TRUE, full.names=TRUE)
     
@@ -383,8 +386,8 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."),
     formats <- loadFileFormats()
     for (each in seq_along(files)) {
         updateProgress("Processing file", detail = basename(files[each]))
-        loadedFile <- suppressWarnings(
-            tryCatch(loadFile(files[each], formats), error=return))
+        loadedFile <- suppressWarnings(tryCatch(
+            loadFile(files[each], formats, verbose=verbose), error=return))
         if (!is(loadedFile, "error")) {
             loaded[[each]] <- loadedFile
         } else {
@@ -402,9 +405,8 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."),
         anyCompressed <- length(compressed) > 0
         msg <- "No supported files were found in the given folder."
         if (anyCompressed) {
-            msg <- paste(msg, 
-                         "\n\nIf applicable, ensure to extract the contents",
-                         "from compressed folders (e.g. ZIP and TAR folders).")
+            msg <- paste(msg, "\n\nIf applicable, extract compressed archive",
+                         "files (e.g. ZIP and TAR).")
         }
         warning(msg)
         data <- NULL

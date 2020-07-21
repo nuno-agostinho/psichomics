@@ -7,7 +7,7 @@
 #' @param head Data.frame: head of the file to check
 #' @param filename Character: name of the file
 #'
-#' @return TRUE if the file is of the given format; otherwise, returns FALSE
+#' @return \code{TRUE} if the file matches the given format's attributes
 #' @keywords internal
 checkFileFormat <- function(format, head, filename="") {
     # Replace with `browser()` to debug any format with the attribute `debug`
@@ -28,16 +28,22 @@ checkFileFormat <- function(format, head, filename="") {
     checkByCol <- is.null(format$rowCheck) || !format$rowCheck
     if (checkByCol) {
         # Check for a match in desired column
-        if (nrow(head) < lenCheck) return(FALSE)
+        if (nrow(head) < lenCheck || ncol(head) < format$checkIndex) {
+            return(FALSE)
+        }
         desired <- head[seq(lenCheck), format$checkIndex]
     } else {
         # Check for a match in desired row
-        if (ncol(head) < lenCheck) return(FALSE)
+        if (ncol(head) < lenCheck || nrow(head) < format$checkIndex) {
+            return(FALSE)
+        }
         desired <- head[format$checkIndex, seq(lenCheck)]
     }
+    if (all(is.na(desired))) return(FALSE)
+    
     res <- all(trimws(desired) == format$check)
     if (!is.null(format$extraCheck)) res <- res && format$extraCheck(head)
-    return(res)
+    return(isTRUE(res))
 }
 
 #' Parse file according to its format
@@ -45,6 +51,7 @@ checkFileFormat <- function(format, head, filename="") {
 #' @inheritParams checkFileFormat
 #' @param file Character: file to load
 #' @param ... Extra parameters passed to \link[data.table]{fread}
+#' @param verbose Boolean: detail step while parsing?
 #' 
 #' @details The resulting data frame includes the attribute \code{tablename} 
 #' with the name of the data frame
@@ -54,21 +61,27 @@ checkFileFormat <- function(format, head, filename="") {
 #' 
 #' @return Data frame with the loaded file
 #' @keywords internal
-parseFile <- function(format, file, ...) {
+parseFile <- function(format, file, ..., verbose=FALSE) {
     ## TODO(NunoA): account for the comment character
     delim <- ifelse(!is.null(format$delim), format$delim, "\t")
     skip <- ifelse(!is.null(format$skip), format$skip, 0)
     
     transpose <- !is.null(format$transpose) && format$transpose
+    if (verbose) message("Reading file...")
     loaded <- fread(file, sep=delim, header=FALSE, stringsAsFactors=!transpose,
                     data.table=FALSE, skip=skip, ...)
-    if (is.null(loaded)) return(NULL)
+    if (is.null(loaded)) {
+        if (verbose) message("NULL returned while reading file")
+        return(NULL)
+    }
     
     # Transpose data
     if (transpose) {
+        if (verbose) message("Transposing data...")
         loaded <- data.frame(t(loaded), stringsAsFactors=TRUE, row.names=NULL)
     }
     
+    if (verbose) message("Processing data...")
     # Add column names from given row
     if (!is.null(format$colNames)) {
         if (skip != 0) {
@@ -101,12 +114,14 @@ parseFile <- function(format, file, ...) {
         }
     } else {
         ## TODO(NunoA): Slow process... try to improve this
+        if (verbose) message("Discarding duplicated rows...")
         if (!is.null(format$unique) && format$unique) loaded <- unique(loaded)
     }
     
     # Filter out unwanted columns
-    if (!is.null(format$ignoreCols))
+    if (!is.null(format$ignoreCols)) {
         loaded <- loaded[ , -format$ignoreCols, drop=FALSE]
+    }
     if (!is.null(format$ignoreRows)) {
         rowNames <- rowNames[-format$ignoreRows]
         loaded <- loaded[-format$ignoreRows, ]
@@ -128,8 +143,12 @@ parseFile <- function(format, file, ...) {
     
     # Further process the dataset if needed
     if (!is.null(format$process)) {
+        if (verbose) message("Performing format-specific processing...")
         loaded <- format$process(loaded)
-        if (is.null(loaded)) return(NULL)
+        if (is.null(loaded)) {
+            if (verbose) message("Format-specific processing returned NULL")
+            return(NULL)
+        }
     }
     
     # Add table name, description and other attributes
@@ -216,7 +235,7 @@ loadFile <- function(file, formats=loadFileFormats(), ..., verbose=FALSE) {
             message("Recognised format: ", names(recognised[recognised]))
         }
         format <- formats[recognised][[1]]
-        loaded <- parseFile(format, file, ...)
+        loaded <- parseFile(format, file, ..., verbose=verbose)
         return(loaded)
     }
 }

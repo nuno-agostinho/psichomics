@@ -14,7 +14,7 @@ checkFileFormat(format, head, filename = "")
 \item{filename}{Character: name of the file}
 }
 \value{
-TRUE if the file is of the given format; otherwise, returns FALSE
+\code{TRUE} if the file matches the given format's attributes
 }
 \description{
 Checks the format of a file

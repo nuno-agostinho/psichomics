@@ -4,7 +4,7 @@
 \alias{parseFile}
 \title{Parse file according to its format}
 \usage{
-parseFile(format, file, ...)
+parseFile(format, file, ..., verbose = FALSE)
 }
 \arguments{
 \item{format}{Environment: format of the file}
@@ -12,6 +12,8 @@ parseFile(format, file, ...)
 \item{file}{Character: file to load}
 
 \item{...}{Extra parameters passed to \link[data.table]{fread}}
+
+\item{verbose}{Boolean: detail step while parsing?}
 }
 \value{
 Data frame with the loaded file

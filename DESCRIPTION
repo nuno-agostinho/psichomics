@@ -139,6 +139,7 @@ Collate:
     'formats_psichomicsGeneExpression.R'
     'formats_psichomicsInclusionLevels.R'
     'formats_recountSampleInfo.R'
+    'formats_vasttoolsGeneExpression.R'
     'formats_vasttoolsInclusionLevels.R'
     'groups.R'
     'help.R'
