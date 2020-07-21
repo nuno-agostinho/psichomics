@@ -145,41 +145,107 @@ is.whole <- function(x, tol=.Machine$double.eps^0.5) {
     abs(x - round(x)) < tol
 }
 
-#' Calculate mean or variance for each row of a matrix
+#' Calculate statistics for each row or column of a matrix
 #' 
 #' @param mat Matrix
 #' @param na.rm Boolean: remove missing values (\code{NA})?
+#' @param fast Boolean: use \code{Rfast} functions? They may return different 
+#' results from R built-in functions
 #' 
-#' @return Vector of means or variances
+#' @importFrom Rfast rowmeans
+#' 
+#' @return Vector of selected statistic
+#' @keywords internal
 #' 
 #' @examples
 #' df <- rbind("Gene 1"=c(3, 5, 7), "Gene 2"=c(8, 2, 4), "Gene 3"=c(9:11)) 
-#' psichomics:::rowMeans(df)
-#' psichomics:::rowVars(df)
-rowMeans <- function(mat, na.rm=FALSE) {
-    if ( !is.null(dim(mat)) ) {
+#' psichomics:::customRowMeans(df)
+#' psichomics:::customRowVars(df, fast=TRUE)
+customRowMeans <- function(mat, na.rm=FALSE, fast=FALSE) {
+    if (fast) {
+        if (!is.matrix(mat)) mat <- as.matrix(mat)
+        res <- rowmeans(mat)
+        if (na.rm) {
+            nas      <- is.na(res)
+            res[nas] <- customRowMeans(mat[nas, ], na.rm=na.rm, fast=FALSE)
+        }
+    } else if ( !is.null(dim(mat)) ) {
         nas <- 0
         if (na.rm) nas <- rowSums(is.na(mat))
-        rowSums(mat, na.rm=na.rm) / (ncol(mat) - nas)
+        res <- rowSums(mat, na.rm=na.rm) / (ncol(mat) - nas)
     } else {
-        mean(mat, na.rm=na.rm)
+        res <- mean(mat, na.rm=na.rm)
     }
+    return(res)
 }
 
-#' @rdname rowMeans
-rowVars <- function(mat, na.rm=FALSE) {
-    if ( !is.null(dim(mat)) ) {
-        means      <- rowMeans(mat, na.rm=na.rm)
+#' @rdname customRowMeans
+#' @importFrom Rfast rowMedians
+customRowMedians <- function(mat, na.rm=FALSE, fast=FALSE) {
+    if (fast) {
+        if (!is.matrix(mat)) mat <- as.matrix(mat)
+        res <- rowMedians(as.matrix(mat), na.rm=na.rm)
+    } else {
+        res <- apply(mat, 1, median, na.rm=na.rm)
+    }
+    return(res)
+}
+
+#' @rdname customRowMeans
+#' @importFrom Rfast rowVars
+customRowVars <- function(mat, na.rm=FALSE, fast=FALSE) {
+    if (fast) {
+        if (!is.matrix(mat)) mat <- as.matrix(mat)
+        res <- rowVars(as.matrix(mat), na.rm=na.rm)
+    } else if ( !is.null(dim(mat)) ) {
+        means      <- customRowMeans(mat, na.rm=na.rm, fast=FALSE)
         meansSqDev <- (mat - means) ** 2
         squaresSum <- rowSums(meansSqDev, na.rm=na.rm)
         
         nas <- 0
         if (na.rm) nas <- rowSums(is.na(mat))
         dem <- ncol(mat) - nas - 1
-        squaresSum/dem
+        res <- squaresSum / dem
     } else {
-        var(mat, na.rm=na.rm)
+        res <- var(mat, na.rm=na.rm)
     }
+    return(res)
+}
+
+#' @rdname customRowMeans
+customRowMins <- function(mat, na.rm=FALSE) apply(mat, 1, min, na.rm=na.rm)
+
+#' @rdname customRowMeans
+customRowMaxs <- function(mat, na.rm=FALSE) apply(mat, 1, max, na.rm=na.rm)
+
+#' @rdname customRowMeans
+#' @importFrom Rfast rowrange
+customRowRanges <- function(mat, na.rm=FALSE, fast=FALSE) {
+    if (fast) {
+        if (!is.matrix(mat)) mat <- as.matrix(mat)
+        res <- rowrange(mat)
+        if (na.rm) {
+            nas      <- is.na(res)
+            res[nas] <- customRowRanges(mat[nas, ], na.rm=na.rm, fast=TRUE)
+        }
+    } else {
+        maxs <- customRowMaxs(mat, na.rm=na.rm)
+        mins <- customRowMins(mat, na.rm=na.rm)
+        res  <- maxs - mins
+    }
+    return(res)
+}
+
+#' @rdname customRowMeans
+#' @importFrom Rfast colMedians
+customColMedians <- function(mat, na.rm=FALSE, fast=FALSE) {
+    if (fast) {
+        if (!is.matrix(mat)) mat <- as.matrix(mat)
+        res <- colMedians(as.matrix(mat), na.rm=na.rm)
+    } else {
+        res <- apply(mat, 2, median, na.rm=na.rm)
+    }
+    return(res)
 }
 
 #' Rename vector to avoid duplicated values with another vector

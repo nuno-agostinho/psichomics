@@ -47,16 +47,21 @@ test_that("rm.null returns an empty list for a list with only NULL elements", {
     expect_equal(l2, list())
 })
 
-test_that("rowMeans calculates the mean per row of a matrix", {
+test_that("customRowMeans calculates the mean per row of a matrix", {
     # Passing a matrix
     mat <- replicate(10, rnorm(20))
     precisionError <- 10e-16
-    test <- apply(mat, 1, mean) - rowMeans(mat) < precisionError
+    test <- apply(mat, 1, mean) - customRowMeans(mat) < precisionError
     expect_true(all(test))
+    
+    test2 <- apply(mat, 1, mean) - customRowMeans(mat, fast=TRUE) < 
+        precisionError
+    expect_true(all(test2))
     
     # Passing a single vector
     mat <- mat[1, ]
-    expect_equal(rowMeans(mat), mean(mat))
+    expect_equal(customRowMeans(mat), mean(mat))
+    expect_equal(customRowMeans(mat, fast=TRUE), mean(mat))
 })
 
 test_that("Text suggestions create a runnable JS script", {

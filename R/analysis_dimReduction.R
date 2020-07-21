@@ -13,7 +13,6 @@
 #' 
 #' @importFrom stats prcomp
 #' @importFrom fastICA fastICA
-#' @importFrom miscTools rowMedians colMedians
 #' 
 #' @return PCA result in a \code{prcomp} object or ICA result
 #' object
@@ -28,7 +27,7 @@ reduceDimensionality <- function(data, type=c("pca", "ica"), center=TRUE,
     # if (nrow(data) == 0) return(NULL)
     
     # # Replace NAs with the medians for each individual (row)
-    # medians <- rowMedians(data, na.rm=TRUE)
+    # medians <- customRowMedians(data, na.rm=TRUE, fast=TRUE)
     # data[is.na(data)] <- rep(medians, sum(is.na(data)))
     
     # Get loadings (columns) with less than a given percentage of NAs
@@ -49,7 +48,7 @@ reduceDimensionality <- function(data, type=c("pca", "ica"), center=TRUE,
     }
     
     # Replace NAs with the medians for each loading (column)
-    medians <- colMedians(data, na.rm=TRUE)
+    medians <- customColMedians(data, na.rm=TRUE, fast=TRUE)
     nas <- colSums(is.na(data))
     data[is.na(data)] <- rep(medians, nas)
     

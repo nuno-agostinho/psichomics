@@ -37,7 +37,6 @@ RUN Rscript -e "install.packages('pairsD3')"
 
 RUN Rscript -e "BiocManager::install('org.Hs.eg.db')"
 RUN Rscript -e "install.packages('colourpicker')"
-RUN Rscript -e "install.packages('miscTools')"
 RUN Rscript -e "install.packages('ellipsis')"
 
 # Copy description

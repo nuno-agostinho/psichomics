@@ -42,6 +42,8 @@ named `SraRunTable.txt`) avoiding the need to use `prepareSRAmetadata()` first
     - Improve interface of PubMed article query, including persistent
     user-inputted tags even when changing selected gene
     - Improve relevance of results from PubMed articles
+* Much faster calculation of row/column-wise means, medians, variances and
+ranges (helpful for plotting statistics of large datasets)
 * Include Dockerfile to create Docker images based on code revisions
 
 ## Bug fixes and minor changes

@@ -11,8 +11,6 @@
 #' splicing event
 #' @param maxRange Numeric: maximum range of read counts across samples per 
 #' splicing event
-#'
-#' @importFrom miscTools rowMedians
 #' 
 #' @family functions for PSI quantification
 #' @return Boolean vector indicating which splicing events pass the thresholds
@@ -35,13 +33,13 @@ filterPSI <- function(psi, minMedian=-Inf, maxMedian=Inf,
     if (is.na(minRange)) minRange <- -Inf
     if (is.na(maxRange)) maxRange <- Inf
     
-    medians <- rowMedians(psi, na.rm=TRUE)
+    medians <- customRowMedians(psi, na.rm=TRUE, fast=TRUE)
     medianThres <- medians >= minMedian & medians <= maxMedian
     
-    vars <- log10(rowVars(psi, na.rm=TRUE))
+    vars <- log10(customRowVars(psi, na.rm=TRUE, fast=TRUE))
     varThres <- vars >= minLogVar & vars <= maxLogVar
     
-    ranges <- rowRanges(psi, na.rm=TRUE)
+    ranges <- customRowRanges(psi, na.rm=TRUE, fast=TRUE)
     rangeThres <- ranges >= minRange & ranges <= maxRange
     
     thres <- which(medianThres & varThres & rangeThres)

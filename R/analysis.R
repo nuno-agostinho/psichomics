@@ -1852,7 +1852,6 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
 #' @param showXlabels Boolean: show labels in X axis?
 #'
 #' @importFrom reshape2 melt
-#' @importFrom miscTools colMedians
 #'
 #' @return Box plot
 #' @keywords internal
@@ -1863,7 +1862,7 @@ renderBoxplot <- function(data, outliers=FALSE, sortByMedian=TRUE,
                           showXlabels=TRUE, title=NULL, 
                           seriesName="Gene expression") {
     if (sortByMedian) {
-        medians <- colMedians(data)
+        medians <- customColMedians(data, fast=TRUE)
         data <- data[ , order(medians)]
     }
     

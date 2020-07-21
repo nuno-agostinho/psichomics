@@ -28,12 +28,6 @@ addObjectAttrs <- function (object, ...) {
     return(object)
 }
 
-rowMins   <- function(data, na.rm=FALSE) apply(data, 1, min, na.rm=na.rm)
-rowMaxs   <- function(data, na.rm=FALSE) apply(data, 1, max, na.rm=na.rm)
-rowRanges <- function(data, na.rm=FALSE) {
-    rowMaxs(data, na.rm=na.rm) - rowMins(data, na.rm=na.rm)
-}
-
 calculateAxisStats <- function(data, x, y=NULL,
                                stats=c("range", "var", "median", "mean"),
                                cache=NULL, verbose=FALSE) {
@@ -53,11 +47,11 @@ calculateAxisStats <- function(data, x, y=NULL,
             } else {
                 if (verbose) message(sprintf("Calculating %s per row...", stat))
                 FUN <- switch(stat,
-                              "var"=rowVars,
-                              "mean"=rowMeans,
-                              "median"=rowMedians,
-                              "range"=rowRanges)
-                vars[[stat]]  <- FUN(data, na.rm=TRUE)
+                              "var"=customRowVars,
+                              "mean"=customRowMeans,
+                              "median"=customRowMedians,
+                              "range"=customRowRanges)
+                vars[[stat]]  <- FUN(data, na.rm=TRUE, fast=TRUE)
                 cache[[stat]] <- vars[[stat]]
             }
         }
@@ -121,7 +115,7 @@ calculateAxisStats <- function(data, x, y=NULL,
 #' rangeVar
 plotRowStats <- function(data, x, y=NULL, subset=NULL, xmin=NULL, xmax=NULL, 
                          ymin=NULL, ymax=NULL, xlim=NULL, ylim=NULL,
-                         cache=NULL, verbose=FALSE, data2=NULL, legend=FALSE,
+                         cache=NULL, verbose=TRUE, data2=NULL, legend=FALSE,
                          legendLabels=c("Original", "Highlighted")) {
     stats <- c("range", "var", "median", "mean")
     isValidX <- any(sapply(stats, grepl, x))

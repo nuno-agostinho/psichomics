@@ -370,8 +370,8 @@ convertGeneIdentifiers <- function(annotation, genes, key="ENSEMBL",
 #' geneExpr[filterGeneExpr(geneExpr), ]
 filterGeneExpr <- function(geneExpr, minMean=0, maxMean=Inf, minVar=0,
                            maxVar=Inf, minCounts=10, minTotalCounts=15) {
-    geneExprMean <- rowMeans(geneExpr)
-    geneExprVar  <- rowVars(geneExpr)
+    geneExprMean <- customRowMeans(geneExpr, fast=TRUE)
+    geneExprVar  <- customRowVars(geneExpr, fast=TRUE)
 
     varMeanFilter <- geneExprMean >= minMean & geneExprMean <= maxMean &
         geneExprVar >= minVar & geneExprVar <= maxVar
@@ -558,13 +558,13 @@ geNormalisationFilteringServer <- function(input, output, session) {
         }
 
         # Update mean range
-        geneExprMean <- rowMeans(geneExpr)
+        geneExprMean <- customRowMeans(geneExpr, fast=TRUE)
         maxMean      <- max(geneExprMean, na.rm=TRUE)
         updateNumericInput(session, "minMean", max=maxMean)
         # updateNumericInput(session, "maxMean", max=maxMean, value=maxMean)
 
         # Update variance range
-        geneExprVar <- rowVars(geneExpr)
+        geneExprVar <- customRowVars(geneExpr, fast=TRUE)
         maxVar      <- max(geneExprVar, na.rm=TRUE)
         updateNumericInput(session, "minVar", max=maxVar)
         # updateNumericInput(session, "maxVar", max=maxVar, value=maxVar)

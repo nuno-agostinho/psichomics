@@ -16,7 +16,7 @@ plotRowStats(
   xlim = NULL,
   ylim = NULL,
   cache = NULL,
-  verbose = FALSE,
+  verbose = TRUE,
   data2 = NULL,
   legend = FALSE,
   legendLabels = c("Original", "Highlighted")
