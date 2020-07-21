@@ -299,7 +299,7 @@ getPatientFromSample <- getSubjectFromSample
 #' name to save time (optional)
 #' @param showMatch Boolean: show matching subject index?
 #' 
-#' @aliases getSampleFromPatient getSampleFromSubject
+#' @aliases getSampleFromPatient getMatchingSamples
 #' @family functions for data grouping
 #' @return Names of the matching samples (if \code{showMatch = TRUE},
 #' a character with the subjects as values and their respective samples as names
@@ -311,8 +311,8 @@ getPatientFromSample <- getSubjectFromSample
 #' samples <- paste0(subjects, "-sample")
 #' clinical <- data.frame(samples=samples)
 #' rownames(clinical) <- subjects
-#' getMatchingSamples(subjects[c(1, 4)], samples, clinical)
-getMatchingSamples <- function(patients, samples, clinical=NULL, rm.NA=TRUE,
+#' getSampleFromSubject(subjects[c(1, 4)], samples, clinical)
+getSampleFromSubject <- function(patients, samples, clinical=NULL, rm.NA=TRUE,
                                match=NULL, showMatch=FALSE) {
     if (is.null(match))
         match <- getSubjectFromSample(samples, clinical)
@@ -333,10 +333,10 @@ getMatchingSamples <- function(patients, samples, clinical=NULL, rm.NA=TRUE,
 }
 
 #' @export
-getSampleFromPatient <- getMatchingSamples
+getSampleFromPatient <- getSampleFromSubject
 
 #' @export
-getSampleFromSubject <- getMatchingSamples
+getMatchingSamples <- getSampleFromSubject
 
 #' Assign one group to each element
 #' 

@@ -276,7 +276,7 @@ imputed; otherwise, the event is discarded from PCA).
 
 ```{r plot pca}
 # Explained variance across principal components
-plotVariance(pcaPSI_stage1Norm)
+plotPCAvariance(pcaPSI_stage1Norm)
 
 # Score plot (clinical individuals)
 plotPCA(pcaPSI_stage1Norm, groups=normalVSstage1Tumour)

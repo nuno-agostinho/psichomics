@@ -38,7 +38,7 @@ getSubjectFromSample(samples, subjects)
 Other functions for data grouping: 
 \code{\link{createGroupByAttribute}()},
 \code{\link{getGeneList}()},
-\code{\link{getMatchingSamples}()},
+\code{\link{getSampleFromSubject}()},
 \code{\link{groupPerElem}()},
 \code{\link{plotGroupIndependence}()},
 \code{\link{testGroupIndependence}()}

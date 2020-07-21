@@ -51,6 +51,6 @@ plotPCA(pca, pcX=2, pcY=3, loadings=TRUE)
 Other functions to analyse principal components: 
 \code{\link{calculateLoadingsContribution}()},
 \code{\link{performPCA}()},
-\code{\link{plotVariance}()}
+\code{\link{plotPCAvariance}()}
 }
 \concept{functions to analyse principal components}

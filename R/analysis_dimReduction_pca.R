@@ -168,6 +168,8 @@ pcaUI <- function(id) {
 
 #' Create the explained variance plot from a PCA
 #' 
+#' @aliases plotVariance
+#' 
 #' @param pca \code{prcomp} object
 #' 
 #' @importFrom highcharter highchart hc_chart hc_title hc_add_series 
@@ -179,8 +181,8 @@ pcaUI <- function(id) {
 #' @export
 #' @examples 
 #' pca <- prcomp(USArrests)
-#' plotVariance(pca)
-plotVariance <- function(pca) {
+#' plotPCAvariance(pca)
+plotPCAvariance <- function(pca) {
     # Get a proportional value to eigenvalues based on standard deviation
     eigenvalue <- unname( pca$sdev ^ 2 )
     variance <- eigenvalue * 100 / sum(eigenvalue)
@@ -214,6 +216,9 @@ plotVariance <- function(pca) {
         export_highcharts()
     return(hc)
 }
+
+#' @export
+plotVariance <- plotPCAvariance
 
 #' Calculate the contribution of PCA loadings to the selected principal
 #' components
@@ -790,7 +795,7 @@ pcaServer <- function(input, output, session) {
             }
             return(NULL)
         }
-        plotVariance(pca)
+        plotPCAvariance(pca)
     })
     
     # Plot the principal component analysis

@@ -105,14 +105,14 @@ test_that("Retrieve samples from subject identifiers", {
     rownames(clinical) <- subjects
     
     ref <- c(1, 4)
-    match <- getMatchingSamples(subjects[ref], samples, clinical)
+    match <- getSampleFromSubject(subjects[ref], samples, clinical)
     expect_is(match, "character")
     expect_equivalent(match[], as.character(clinical$samples[ref]))
     
     # Retrieve samples when previously matched
     subjects <- getSubjectFromSample(samples, clinical)
-    match <- getMatchingSamples(subjects[ref], samples, clinical, 
-                                match=subjects)
+    match <- getSampleFromSubject(subjects[ref], samples, clinical, 
+                                  match=subjects)
     expect_is(match, "character")
     expect_equivalent(match[], as.character(clinical$samples[ref]))
 })

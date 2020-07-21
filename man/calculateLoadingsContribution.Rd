@@ -39,7 +39,7 @@ calculateLoadingsContribution(pca)
 \seealso{
 Other functions to analyse principal components: 
 \code{\link{performPCA}()},
-\code{\link{plotPCA}()},
-\code{\link{plotVariance}()}
+\code{\link{plotPCAvariance}()},
+\code{\link{plotPCA}()}
 }
 \concept{functions to analyse principal components}

@@ -26,6 +26,7 @@ reference:
         - parseTCGAsampleInfo
     - title: "GTEx data retrieval"
       contents:
+        - getGtexReleases
         - getGtexDataTypes
         - getGtexTissues
         - loadGtexData
@@ -46,7 +47,7 @@ reference:
         - filterGeneExpr
         - normaliseGeneExpression
         - convertGeneIdentifiers
-    - title: "PSI quantification"
+    - title: "PSI quantification and filtering"
       contents:
         - getSplicingEventTypes
         - listSplicingAnnotations
@@ -74,7 +75,7 @@ reference:
     - title: "Principal component analysis (PCA)"
       contents:
         - performPCA
-        - plotVariance
+        - plotPCAvariance
         - calculateLoadingsContribution
         - plotPCA
     - title: "Independent component analysis (ICA)"

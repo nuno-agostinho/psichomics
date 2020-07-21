@@ -22,7 +22,7 @@ getGeneList()
 \seealso{
 Other functions for data grouping: 
 \code{\link{createGroupByAttribute}()},
-\code{\link{getMatchingSamples}()},
+\code{\link{getSampleFromSubject}()},
 \code{\link{getSubjectFromSample}()},
 \code{\link{groupPerElem}()},
 \code{\link{plotGroupIndependence}()},

@@ -721,8 +721,8 @@ matchGroupSubjectsAndSamples <- function(id, group) {
     if (!is.null(subjects) && !is.null(samples) && !is.null(match)) {
         if (id == "Patients") {
             subjects <- group[ , "Patients"]
-            samples <- getMatchingSamples(subjects, samples, subjects,
-                                          match=match)
+            samples <- getSampleFromSubject(subjects, samples, subjects,
+                                            match=match)
             group <- cbind(group, "Samples"=samples)
         } else if (id == "Samples") {
             samples2subjects <- function(i, match) {
@@ -2037,8 +2037,8 @@ groupsServerOnce <- function(input, output, session) {
         } else if ( !is.null(samples) && !showSamples && !is.null(subjects) &&
                     !is.null(match) && "Patients" %in% colnames(group)) {
             # Update groups if previously made with subjects only
-            samples <- getMatchingSamples(group[ , "Patients"], samples, 
-                                          subjects, match=match)
+            samples <- getSampleFromSubject(group[ , "Patients"], samples, 
+                                            subjects, match=match)
             group <- cbind(group, "Samples"=samples)
             setGroups("Samples", group)
         }
@@ -2331,8 +2331,8 @@ testGroupIndependence <- function(ref, groups, elements, pvalueAdjust="BH") {
 #' @return Groups without samples not found in \code{samples}
 #' @keywords internal
 discardOutsideSamplesFromGroups <- function(groups, samples, clean=FALSE) {
-    getMatchingSamples <- function(i) ifelse(i %in% samples, i, NA)
-    g <- lapply(groups, getMatchingSamples)
+    filterSamplesInGroups <- function(i) ifelse(i %in% samples, i, NA)
+    g <- lapply(groups, filterSamplesInGroups)
     g <- lapply(g, na.omit)
     if (clean) g <- lapply(g, as.character)
     attr(g, "Colour") <- attr(groups, "Colour")[names(g)]
