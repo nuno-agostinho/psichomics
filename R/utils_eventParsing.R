@@ -1,5 +1,6 @@
 #' Get supported splicing event types
 #' 
+#' @param psi Data frame or matrix: alternative splicing quantification data
 #' @param acronymsAsNames Boolean: return acronyms as names?
 #' 
 #' @family functions for PSI quantification
@@ -8,7 +9,7 @@
 #' 
 #' @examples 
 #' getSplicingEventTypes()
-getSplicingEventTypes <- function(acronymsAsNames=FALSE) {
+getSplicingEventTypes <- function(psi=NULL, acronymsAsNames=FALSE) {
     types <- c(
         "Skipped exon"="SE",
         "Mutually exclusive exon"="MXE",
@@ -18,6 +19,15 @@ getSplicingEventTypes <- function(acronymsAsNames=FALSE) {
         "Alternative last exon"="ALE",
         "Alternative first exon (exon-centred - less reliable)"="AFE_exon",
         "Alternative last exon (exon-centred - less reliable)"="ALE_exon")
+    
+    if (!is.null(psi)) {
+        types     <- c(types, "Retained intron"="RI")
+        dataTypes <- unique(getSplicingEventInformation(psi)$type)
+        if (is.null(dataTypes)) return(NULL)
+        # Return both known and unknown event types
+        types     <- c(types[types %in% dataTypes], 
+                       dataTypes[!dataTypes %in% types])
+    }
     if (acronymsAsNames) {
         tmp        <- names(types)
         names(tmp) <- types

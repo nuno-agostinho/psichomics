@@ -4,9 +4,11 @@
 \alias{getSplicingEventTypes}
 \title{Get supported splicing event types}
 \usage{
-getSplicingEventTypes(acronymsAsNames = FALSE)
+getSplicingEventTypes(psi = NULL, acronymsAsNames = FALSE)
 }
 \arguments{
+\item{psi}{Data frame or matrix: alternative splicing quantification data}
+
 \item{acronymsAsNames}{Boolean: return acronyms as names?}
 }
 \value{
