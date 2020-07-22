@@ -472,7 +472,7 @@ diffSplicingSet <- function(session, input, output) {
             psi, groups, statsChoices, pvalueAdjust=pvalueAdjust,
             inputID=ns("statsTable_diffSplicing_last_clicked"))
         attr(stats, "groups")    <- attrGroups
-        attr(stats, "eventData") <- attr(psi, "rowData")
+        attr(stats, "eventData") <- getSplicingEventInformation(psi)
         setDifferentialSplicing(stats)
         setDifferentialSplicingSurvival(NULL)
         updateCollapse(session, "diffSplicingCollapse", "plotEvents")

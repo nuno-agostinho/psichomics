@@ -98,7 +98,7 @@ prettifyEventType <- function(eventType, source=NULL, decap=FALSE) {
     return(types)
 }
 
-getEventData <- function(event, data=NULL) {
+getEventData <- function(event=NULL, data=NULL) {
     returnEventData <- function(data) {
         res <- NULL
         if (!is.null(data) && is(data, "eventData")) res <- data
@@ -117,6 +117,16 @@ getEventData <- function(event, data=NULL) {
     }
     return(eventData)
 }
+
+#' Get splicing event information for given alternative splicing quantification
+#' data
+#' 
+#' @param psi Matrix or data frame: alternative splicing quantification data
+#' 
+#' @return Matrix or data frame containing splicing event information for
+#' alternative splicing events in \code{psi} (if available)
+#' @export
+getSplicingEventInformation <- function(psi) getEventData(data=psi)
 
 #' Parse alternative splicing event identifier
 #' 

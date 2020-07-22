@@ -418,7 +418,7 @@ appServer <- function(input, output, session) {
         selected <- input[["selectizeEventElem"]]
         if (!is.null(selected) && selected != "") {
             psi <- isolate(getInclusionLevels())
-            attr(selected, "eventData") <- attr(psi, "rowData")
+            attr(selected, "eventData") <- getSplicingEventInformation(psi)
             setEvent(selected)
         }
     })

@@ -280,7 +280,7 @@ correlateGEandAS <- function(geneExpr, psi, gene, ASevents=NULL, ...) {
     names(res) <- ASevents
     res        <- preserveAttributes(res)
     class(res) <- c("GEandAScorrelation", class(res))
-    attr(res, "eventData") <- attr(psi, "rowData")
+    attr(res, "eventData") <- getSplicingEventInformation(psi)
     return(res)
 }
 

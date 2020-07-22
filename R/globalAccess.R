@@ -100,7 +100,7 @@ getASevents <- reactive({
     if (!is.null(psi)) {
         choices <- sort(rownames(psi))
         names(choices) <- parseSplicingEvent(choices, char=TRUE, data=psi)
-        attr(choices, "eventData") <- attr(psi, "rowData")
+        attr(choices, "eventData") <- getSplicingEventInformation(psi)
         choices <- preserveAttributes(choices)
         return(choices)
     }

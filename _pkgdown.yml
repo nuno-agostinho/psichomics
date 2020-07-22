@@ -9,6 +9,7 @@ reference:
       contents:
         - psichomics
         - parseSplicingEvent
+        - getSplicingEventInformation
         - getSplicingEventFromGenes
         - getGenesFromSplicingEvents
         - plotSplicingEvent
