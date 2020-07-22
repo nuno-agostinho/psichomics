@@ -320,8 +320,8 @@ calculateLoadingsContribution <- function(pca, pcX=1, pcY=2) {
 #' plotPCA(pca, pcX=2, pcY=3, loadings=TRUE)
 plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE, 
                     loadings=FALSE, nLoadings=NULL) {
-    if (is.character(pcX)) pcX <- as.numeric(gsub("[A-Z]", "", pcX))
-    if (is.character(pcY)) pcY <- as.numeric(gsub("[A-Z]", "", pcY))
+    if (is.character(pcX)) pcX <- as.numeric(gsub("[A-Za-z]", "", pcX))
+    if (is.character(pcY)) pcY <- as.numeric(gsub("[A-Za-z]", "", pcY))
     
     imp <- summary(pca)$importance[2, ]
     perc <- as.numeric(imp)

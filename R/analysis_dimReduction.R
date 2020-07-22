@@ -52,6 +52,9 @@ reduceDimensionality <- function(data, type=c("pca", "ica"), center=TRUE,
     nas <- colSums(is.na(data))
     data[is.na(data)] <- rep(medians, nas)
     
+    eventData <- attr(data, "colData")
+    if (!is(eventData, "eventData")) eventData <- NULL
+    
     if (type == "pca") {
         # Perform principal component analysis
         res <- tryCatch(prcomp(data, center=center, scale.=scale., ...), 
@@ -76,6 +79,8 @@ reduceDimensionality <- function(data, type=c("pca", "ica"), center=TRUE,
     
     # Result is useless if it only has one point
     if ("x" %in% names(res) && nrow(res$x) == 1) res <- NULL
+    
+    attr(res, "eventData") <- eventData
     return(res)
 }
 

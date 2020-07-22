@@ -28,7 +28,25 @@ preserveAttributes <- function(x) {
     return(x)
 }
 
-#' Preserve attributes of "sticky" objects when extracting
+#' Preserve attributes of \code{sticky} objects when extracting or transposing
+#' object
+#' @export
+t.sticky <- function(x) {
+    attrs <- attributes(x)
+    attrs <- attrs[!names(attrs) %in% c("names", "dim", "dimnames", "class",
+                                        "row.names")]
+    res <- NextMethod()
+    res <- addObjectAttrs(res, attrs)
+    
+    tmp <- attr(res, "rowData")
+    attr(res, "rowData") <- attr(res, "colData")
+    attr(res, "colData") <- tmp
+    
+    if (!is(res, "sticky")) res <- preserveAttributes(res)
+    return(res)
+}
+
+#' @rdname t.sticky
 #' @export
 `[.sticky` <- function(x, i, j, ...) {
     attrs <- attributes(x)

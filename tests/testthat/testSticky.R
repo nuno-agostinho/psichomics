@@ -132,7 +132,7 @@ test_that("Subset rowData and colData based on extracted sticky data", {
     
     rowData <- data.frame(
         rows=rownames(df1),
-        type=c("SE", "IR", "IR", "SE", "SE"),
+        type=c("SE", "RI", "RI", "SE", "SE"),
         gene=c("AAA", "BBB", "CCC", "DDD", "EEE")
     )
     rownames(rowData) <- rowData[[1]]
@@ -152,4 +152,52 @@ test_that("Subset rowData and colData based on extracted sticky data", {
     expect_identical(colnames(df2), rownames(attr(df2, "colData")))
     
     df3 <- df1[1, 5]
+})
+
+test_that("Transposing a sticky object preserves their attributes", {
+    df <- data.frame(1:5, 5:9, 45:49, 54:58, 62:66)
+    attr(df, "colour") <- "orange"
+    attr(df, "animal") <- "fox"
+    
+    df1 <- t(df)
+    attrsdf1 <- attributes(df1)
+    expect_null(attr(df1, "colour"))
+    expect_null(attr(df1, "animal"))
+    expect_equal(attr(df1, "dimnames")[[1]], colnames(df))
+    
+    df2 <- t(preserveAttributes(df))
+    expect_is(df2, "sticky")
+    compareAttrs(df2, df, c("colour", "animal"))
+    expect_equal(attr(df2, "dimnames")[[1]], colnames(df))
+    
+    # Transpose rowData and colData
+    colnames(df) <- paste0("sample", 1:5)
+    rownames(df) <- paste0("event", 6:10)
+    
+    colData <- data.frame(
+        cols=colnames(df), 
+        type=c("cancer", "normal", "cancer", "cancer", "normal"),
+        sex=c("male", "female", "male", "female", "male"))
+    rownames(colData) <- colData[[1]]
+    attr(df, "colData") <- colData
+    
+    rowData <- data.frame(
+        rows=rownames(df),
+        type=c("SE", "RI", "RI", "SE", "SE"),
+        gene=c("AAA", "BBB", "CCC", "DDD", "EEE")
+    )
+    rownames(rowData) <- rowData[[1]]
+    attr(df, "rowData") <- rowData
+    
+    attr(df, "colour") <- "orange"
+    attr(df, "animal") <- "fox"
+    
+    df3 <- t(df)
+    expect_null(attr(df3, "rowData"))
+    expect_null(attr(df3, "colData"))
+    
+    df4 <- t(preserveAttributes(df))
+    expect_is(df4, "sticky")
+    expect_equal(attr(df4, "rowData"), attr(df, "colData"))
+    expect_equal(attr(df4, "colData"), attr(df, "rowData"))
 })
