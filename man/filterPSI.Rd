@@ -6,16 +6,32 @@
 \usage{
 filterPSI(
   psi,
+  eventType = NULL,
+  eventSubtype = NULL,
   minMedian = -Inf,
   maxMedian = Inf,
   minLogVar = -Inf,
   maxLogVar = Inf,
   minRange = -Inf,
-  maxRange = Inf
+  maxRange = Inf,
+  minPSI = -Inf,
+  maxPSI = Inf,
+  vasttoolsCoverage = NULL
 )
 }
 \arguments{
 \item{psi}{Data frame or matrix: alternative splicing quantification}
+
+\item{eventType}{Character: filter data based on event type; check all event
+types available by using \code{getSplicingEventTypes(psi)}, where \code{psi}
+is the alternative splicing quantification data; if \code{eventType = NULL},
+events are not filtered by event type}
+
+\item{eventSubtype}{Character: filter data based on event subtype; check all
+event subtypes available in your data by using
+\code{unique(getSplicingEventInformation(psi)$subtype)}, where \code{psi} is
+the alternative splicing quantification data; if \code{eventSubtype = NULL},
+events are not filtered by event subtype}
 
 \item{minMedian}{Numeric: minimum of read count median per splicing event}
 
@@ -45,6 +61,7 @@ annot <- readFile("ex_splicing_annotation.RDS")
 junctionQuant <- readFile("ex_junctionQuant.RDS")
 
 psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+# Filter PSI
 psi[filterPSI(psi, minMedian=0.05, maxMedian=0.95, minRange=0.15), ]
 }
 \seealso{

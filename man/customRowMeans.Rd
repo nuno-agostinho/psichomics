@@ -16,9 +16,9 @@ customRowMedians(mat, na.rm = FALSE, fast = FALSE)
 
 customRowVars(mat, na.rm = FALSE, fast = FALSE)
 
-customRowMins(mat, na.rm = FALSE)
+customRowMins(mat, na.rm = FALSE, fast = FALSE)
 
-customRowMaxs(mat, na.rm = FALSE)
+customRowMaxs(mat, na.rm = FALSE, fast = FALSE)
 
 customRowRanges(mat, na.rm = FALSE, fast = FALSE)
 

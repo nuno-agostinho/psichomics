@@ -64,13 +64,15 @@ calculateAxisStats <- function(data, x, y=NULL,
 #'
 #' Scatter plot to compare between the row-wise mean, median, variance or range
 #' from a data frame or matrix. Also supports transformations of those
-#' variables, such as \code{log10(mean)}.
+#' variables, such as \code{log10(mean)}. If \code{y = NULL}, a density plot is
+#' rendered instead.
 #'
 #' @param data Data frame or matrix containing samples per column and, for
 #' instance, gene or alternative splicing event per row
 #' @param x,y Character: statistic to calculate and display in the plot per row;
 #' choose between \code{mean}, \code{median}, \code{var} or \code{range}
-#' (or transformations of those variables, e.g. \code{log10(var)})
+#' (or transformations of those variables, e.g. \code{log10(var)}); if
+#' \code{y = NULL}, the density of \code{x} will be plot instead
 #' @param subset Boolean or integer: \code{data} points to highlight
 #' @param xmin,xmax,ymin,ymax Numeric: minimum and maximum X and Y values to 
 #' draw in the plot
@@ -115,7 +117,7 @@ calculateAxisStats <- function(data, x, y=NULL,
 #' rangeVar
 plotRowStats <- function(data, x, y=NULL, subset=NULL, xmin=NULL, xmax=NULL, 
                          ymin=NULL, ymax=NULL, xlim=NULL, ylim=NULL,
-                         cache=NULL, verbose=TRUE, data2=NULL, legend=FALSE,
+                         cache=NULL, verbose=FALSE, data2=NULL, legend=FALSE,
                          legendLabels=c("Original", "Highlighted")) {
     stats <- c("range", "var", "median", "mean")
     isValidX <- any(sapply(stats, grepl, x))

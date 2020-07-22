@@ -16,7 +16,7 @@ plotRowStats(
   xlim = NULL,
   ylim = NULL,
   cache = NULL,
-  verbose = TRUE,
+  verbose = FALSE,
   data2 = NULL,
   legend = FALSE,
   legendLabels = c("Original", "Highlighted")
@@ -28,7 +28,8 @@ instance, gene or alternative splicing event per row}
 
 \item{x, y}{Character: statistic to calculate and display in the plot per row;
 choose between \code{mean}, \code{median}, \code{var} or \code{range}
-(or transformations of those variables, e.g. \code{log10(var)})}
+(or transformations of those variables, e.g. \code{log10(var)}); if
+\code{y = NULL}, the density of \code{x} will be plot instead}
 
 \item{subset}{Boolean or integer: \code{data} points to highlight}
 
@@ -56,7 +57,8 @@ Plot of \code{data}
 \description{
 Scatter plot to compare between the row-wise mean, median, variance or range
 from a data frame or matrix. Also supports transformations of those
-variables, such as \code{log10(mean)}.
+variables, such as \code{log10(mean)}. If \code{y = NULL}, a density plot is
+rendered instead.
 }
 \examples{
 library(ggplot2)

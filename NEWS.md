@@ -2,9 +2,9 @@
 
 ## Support for loading more data formats
 
-* Use `getSplicingEventInformation()` to get a table with all information for a
-given dataset of alternative splicing quantification data
-* Support for importing VAST-TOOLS' inclusion levels and gene expression tables:
+* `getSplicingEventInformation()`: get a table with all information for a given
+dataset of alternative splicing quantification data
+* VAST-TOOLS inclusion levels and gene expression tables:
     - Import VAST-TOOLS' output files; in the visual interface, use the
     **User-provided data loading** panel and load a specific alternative
     splicing quantification or load the folder containing such file; in the
@@ -14,8 +14,10 @@ given dataset of alternative splicing quantification data
 * Support for importing inclusion tables with arbitrary alternative splicing 
 event identifiers (information for these events will not be available, such as
 event type and cognate gene)
-* Automatically load metadata from the SRA Run Selector (usually comes in files
-named `SraRunTable.txt`) avoiding the need to use `prepareSRAmetadata()` first
+* SRA metadata:
+    - Automatically load metadata from the SRA Run Selector (usually comes in
+    files named `SraRunTable.txt`) avoiding the need to use
+    `prepareSRAmetadata()` first
 * GTEx data loading (`loadGtexData()`):
     - Support for loading GTEx data from V8, V7, V6 or V4 releases
     - Organise GTEx data into folders named based on release version

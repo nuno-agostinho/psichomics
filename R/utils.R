@@ -163,6 +163,31 @@ is.whole <- function(x, tol=.Machine$double.eps^0.5) {
     abs(x - round(x)) < tol
 }
 
+# Template for using faster version of row- or column-wise statistics from Rfast
+fasterDataStats <- function(mat, fastFUN, classicFUN=NULL, na.rm=FALSE,
+                            byRow=TRUE, ...) {
+    if (!is.matrix(mat)) mat <- as.matrix(mat)
+    
+    if (!is.null(classicFUN)) {
+        # Use classicFUN to calculate missing values
+        res <- fastFUN(mat, ...)
+        if (na.rm) {
+            nas      <- is.na(res)
+            res[nas] <- classicFUN(mat[nas, ], na.rm=na.rm, fast=FALSE)
+        }
+    } else {
+        res <- fastFUN(mat, na.rm=na.rm, ...)
+    }
+    
+    if (byRow) {
+        ns <- rownames
+    } else {
+        ns <- colnames
+    }
+    if (!is.null(ns(mat))) names(res) <- ns(mat)
+    return(res)
+}
+
 #' Calculate statistics for each row or column of a matrix
 #' 
 #' @param mat Matrix
@@ -181,12 +206,7 @@ is.whole <- function(x, tol=.Machine$double.eps^0.5) {
 #' psichomics:::customRowVars(df, fast=TRUE)
 customRowMeans <- function(mat, na.rm=FALSE, fast=FALSE) {
     if (fast) {
-        if (!is.matrix(mat)) mat <- as.matrix(mat)
-        res <- rowmeans(mat)
-        if (na.rm) {
-            nas      <- is.na(res)
-            res[nas] <- customRowMeans(mat[nas, ], na.rm=na.rm, fast=FALSE)
-        }
+        res <- fasterDataStats(mat, rowMeans, customRowMeans, na.rm=na.rm)
     } else if ( !is.null(dim(mat)) ) {
         nas <- 0
         if (na.rm) nas <- rowSums(is.na(mat))
@@ -201,8 +221,7 @@ customRowMeans <- function(mat, na.rm=FALSE, fast=FALSE) {
 #' @importFrom Rfast rowMedians
 customRowMedians <- function(mat, na.rm=FALSE, fast=FALSE) {
     if (fast) {
-        if (!is.matrix(mat)) mat <- as.matrix(mat)
-        res <- rowMedians(as.matrix(mat), na.rm=na.rm)
+        res <- fasterDataStats(mat, rowMedians, classicFUN=NULL, na.rm=na.rm)
     } else {
         res <- apply(mat, 1, median, na.rm=na.rm)
     }
@@ -213,8 +232,8 @@ customRowMedians <- function(mat, na.rm=FALSE, fast=FALSE) {
 #' @importFrom Rfast rowVars
 customRowVars <- function(mat, na.rm=FALSE, fast=FALSE) {
     if (fast) {
-        if (!is.matrix(mat)) mat <- as.matrix(mat)
-        res <- rowVars(as.matrix(mat), na.rm=na.rm)
+        res <- fasterDataStats(mat, rowVars, classicFUN=NULL, na.rm=na.rm)
+        res[res < 0] <- 0 # Safeguard for when log-transforming values
     } else if ( !is.null(dim(mat)) ) {
         means      <- customRowMeans(mat, na.rm=na.rm, fast=FALSE)
         meansSqDev <- (mat - means) ** 2
@@ -231,24 +250,36 @@ customRowVars <- function(mat, na.rm=FALSE, fast=FALSE) {
 }
 
 #' @rdname customRowMeans
-customRowMins <- function(mat, na.rm=FALSE) apply(mat, 1, min, na.rm=na.rm)
+#' @importFrom Rfast rowMins
+customRowMins <- function(mat, na.rm=FALSE, fast=FALSE) {
+    if (fast) {
+        res <- fasterDataStats(mat, rowMins, customRowMins, na.rm=na.rm,
+                               value=TRUE)
+    } else {
+        suppressWarnings(apply(mat, 1, min, na.rm=na.rm))
+    }
+}
 
 #' @rdname customRowMeans
-customRowMaxs <- function(mat, na.rm=FALSE) apply(mat, 1, max, na.rm=na.rm)
+#' @importFrom Rfast rowMaxs
+customRowMaxs <- function(mat, na.rm=FALSE, fast=FALSE) {
+    if (fast) {
+        res <- fasterDataStats(mat, rowMaxs, customRowMaxs, na.rm=na.rm,
+                               value=TRUE)
+    } else {
+        res <- suppressWarnings(apply(mat, 1, max, na.rm=na.rm))
+    }
+    return(res)
+}
 
 #' @rdname customRowMeans
 #' @importFrom Rfast rowrange
 customRowRanges <- function(mat, na.rm=FALSE, fast=FALSE) {
     if (fast) {
-        if (!is.matrix(mat)) mat <- as.matrix(mat)
-        res <- rowrange(mat)
-        if (na.rm) {
-            nas      <- is.na(res)
-            res[nas] <- customRowRanges(mat[nas, ], na.rm=na.rm, fast=TRUE)
-        }
+        res <- fasterDataStats(mat, rowrange, customRowRanges, na.rm=na.rm)
     } else {
-        maxs <- customRowMaxs(mat, na.rm=na.rm)
-        mins <- customRowMins(mat, na.rm=na.rm)
+        maxs <- customRowMaxs(mat, na.rm=na.rm, fast=FALSE)
+        mins <- customRowMins(mat, na.rm=na.rm, fast=FALSE)
         res  <- maxs - mins
     }
     return(res)
@@ -258,8 +289,8 @@ customRowRanges <- function(mat, na.rm=FALSE, fast=FALSE) {
 #' @importFrom Rfast colMedians
 customColMedians <- function(mat, na.rm=FALSE, fast=FALSE) {
     if (fast) {
-        if (!is.matrix(mat)) mat <- as.matrix(mat)
-        res <- colMedians(as.matrix(mat), na.rm=na.rm)
+        res <- fasterDataStats(mat, colMedians, classicFUN=NULL, na.rm=na.rm,
+                               byRow=FALSE)
     } else {
         res <- apply(mat, 2, median, na.rm=na.rm)
     }

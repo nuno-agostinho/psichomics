@@ -54,8 +54,9 @@ reference:
         - listSplicingAnnotations
         - loadAnnotation
         - quantifySplicing
-        - plotRowStats
+        - discardLowCoveragePSIvalues
         - filterPSI
+        - plotRowStats
     - title: "Custom alternative splicing annotation preparation"
       contents:
         - parseMatsAnnotation

@@ -1,6 +1,15 @@
 #' Filter alternative splicing quantification
 #' 
 #' @param psi Data frame or matrix: alternative splicing quantification
+#' @param eventType Character: filter data based on event type; check all event
+#' types available by using \code{getSplicingEventTypes(psi)}, where \code{psi}
+#' is the alternative splicing quantification data; if \code{eventType = NULL},
+#' events are not filtered by event type
+#' @param eventSubtype Character: filter data based on event subtype; check all
+#' event subtypes available in your data by using
+#' \code{unique(getSplicingEventInformation(psi)$subtype)}, where \code{psi} is
+#' the alternative splicing quantification data; if \code{eventSubtype = NULL},
+#' events are not filtered by event subtype
 #' @param minMedian Numeric: minimum of read count median per splicing event
 #' @param maxMedian Numeric: maximum of read count median per splicing event
 #' @param minLogVar Numeric: minimum log10(read count variance) per splicing
@@ -22,36 +31,134 @@
 #' junctionQuant <- readFile("ex_junctionQuant.RDS")
 #' 
 #' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
+#' # Filter PSI
 #' psi[filterPSI(psi, minMedian=0.05, maxMedian=0.95, minRange=0.15), ]
-filterPSI <- function(psi, minMedian=-Inf, maxMedian=Inf,
+filterPSI <- function(psi, eventType=NULL, eventSubtype=NULL,
+                      minMedian=-Inf, maxMedian=Inf,
                       minLogVar=-Inf, maxLogVar=Inf,
-                      minRange=-Inf, maxRange=Inf) {
+                      minRange=-Inf, maxRange=Inf,
+                      minPSI=-Inf, maxPSI=Inf,
+                      vasttoolsCoverage=NULL) {
     if (is.na(minMedian)) minMedian <- -Inf
     if (is.na(maxMedian)) maxMedian <- Inf
     if (is.na(minLogVar)) minLogVar <- -Inf
     if (is.na(maxLogVar)) maxLogVar <- Inf
     if (is.na(minRange)) minRange <- -Inf
     if (is.na(maxRange)) maxRange <- Inf
+    if (is.na(minPSI)) minPSI <- -Inf
+    if (is.na(maxPSI)) maxPSI <- Inf
     
-    medians <- customRowMedians(psi, na.rm=TRUE, fast=TRUE)
-    medianThres <- medians >= minMedian & medians <= maxMedian
+    trueVector <- function(len) rep(TRUE, len)
     
-    vars <- log10(customRowVars(psi, na.rm=TRUE, fast=TRUE))
-    varThres <- vars >= minLogVar & vars <= maxLogVar
+    type <- getSplicingEventInformation(psi)$type
+    if (!is.null(eventType) && !is.null(type)) {
+        type <- type %in% eventType
+        eventTypeText <- c("Type"=paste(eventType, collapse = ", "))
+    } else {
+        type <- trueVector(nrow(psi))
+        eventTypeText <- NULL
+    }
     
-    ranges <- customRowRanges(psi, na.rm=TRUE, fast=TRUE)
-    rangeThres <- ranges >= minRange & ranges <= maxRange
+    subtype <- getSplicingEventInformation(psi)$subtype
+    if (!is.null(eventSubtype) && !is.null(subtype)) {
+        subtype <- subtype %in% eventSubtype
+        eventSubtypeText <- c("Type"=paste(eventSubtype, collapse = ", "))
+    } else {
+        subtype <- trueVector(nrow(psi))
+        eventSubtypeText <- NULL
+    }
     
-    thres <- which(medianThres & varThres & rangeThres)
+    if (!is.infinite(minMedian) & !is.infinite(maxMedian)) {
+        medians <- customRowMedians(psi, na.rm=TRUE, fast=TRUE)
+        medianThres <- medians >= minMedian & medians <= maxMedian
+    } else {
+        medianThres <- trueVector(nrow(psi))
+    }
+    
+    if (!is.infinite(minLogVar) & !is.infinite(maxLogVar)) {
+        vars <- log10(customRowVars(psi, na.rm=TRUE, fast=TRUE))
+        varThres <- vars >= minLogVar & vars <= maxLogVar
+    } else {
+        varThres <- trueVector(nrow(psi))
+    }
+    
+    if (!is.infinite(minPSI) & !is.infinite(maxPSI)) {
+        mini <- customRowMins(psi, na.rm=TRUE, fast=TRUE)
+        maxi <- customRowMaxs(psi, na.rm=TRUE, fast=TRUE)
+        psiThres <- mini >= minPSI & maxi <= maxPSI
+    } else {
+        mini <- maxi <- NULL
+        psiThres <- trueVector(nrow(psi))
+    }
+    
+    if (!is.infinite(minRange) & !is.infinite(maxRange)) {
+        if (!is.null(mini) && !is.null(maxi)) {
+            ranges <- maxi - mini
+        } else {
+            ranges <- customRowRanges(psi, na.rm=TRUE, fast=TRUE)
+        }
+        rangeThres <- ranges >= minRange & ranges <= maxRange
+    } else {
+        rangeThres <- trueVector(nrow(psi))
+    }
+    
+    thres <- which(type & subtype &
+                       psiThres & medianThres & varThres & rangeThres)
     
     attr(thres, "filtered") <- c("Filter enabled"="Yes",
-                                 "Median >="=minMedian,
-                                 "Median <="=maxMedian,
-                                 "log10(variance) >="=minLogVar,
-                                 "log10(variance) <="=maxLogVar,
-                                 "Range >="=minRange,
-                                 "Range <="=maxRange)
+                                 eventTypeText,
+                                 eventSubtypeText,
+                                 "PSI >="=minPSI,
+                                 "PSI <="=maxPSI,
+                                 "Median PSI >="=minMedian,
+                                 "Median PSI <="=maxMedian,
+                                 "log10(PSI variance) >="=minLogVar,
+                                 "log10(PSI variance) <="=maxLogVar,
+                                 "PSI range >="=minRange,
+                                 "PSI range <="=maxRange)
     return(thres)
+}
+
+#' Remove alternative splicing quantification values based on coverage
+#' 
+#' @param psi Data frame or matrix: alternative splicing quantification
+#' @param minReads Currently this argument does nothing
+#' @param vasttoolsCoverage Character: if you are using inclusion levels from
+#' VAST-TOOLS, filter the data based on quality scores for read coverage, e.g.
+#' use \code{vasttoolsCoverage = c("SOK", "OK", "LOW")} to only keep events with
+#' good read coverage (by default, events are not filtered based on quality
+#' scores); read \url{https://github.com/vastgroup/vast-tools} for more
+#' information on VAST-TOOLS quality scores
+#' 
+#' @return Alternative splicing quantification data with missing values for any
+#' values with insufficient coverage
+#' @export
+discardLowCoveragePSIvalues <- function(
+    psi, minReads=10, vasttoolsScoresToDiscard=c("VLOW", "N")) {
+    
+    eventData <- getSplicingEventInformation(psi)
+    if (is.null(eventData)) return(psi)
+    
+    # Remove events containing only missing values
+    removeNAonlyEvents <- function(psi) psi[rowSums(!is.na(psi)) > 0, ]
+    
+    isVastTools <- unique(eventData$source) == "vast-tools"
+    if (!is.null(vasttoolsScoresToDiscard) && isVastTools) {
+        quality     <- eventData[ , endsWith(colnames(eventData), "-Q")]
+        qualityVals <- unlist(quality)
+        if ("OK" %in% vasttoolsScoresToDiscard) {
+            # Ignore OK from score 4
+            qualityVals <- gsub("OK@", "@", qualityVals)
+        }
+        scores <- sprintf(",%s,", vasttoolsScoresToDiscard)
+        lowCvg <- Reduce(`|`, lapply(scores, grepl, qualityVals, fixed=TRUE))
+        lowCvg <- matrix(lowCvg, ncol=ncol(quality))
+        psi[lowCvg] <- NA
+        psi <- removeNAonlyEvents(psi)
+        attr(psi, "filtered") <- c(
+            "VAST-TOOLS coverage"=vasttoolsScoresToDiscard)
+    }
+    return(psi)
 }
 
 getPSIsummaryStats <- function() {
@@ -144,9 +251,9 @@ inclusionLevelsFilterInterface <- function(ns) {
     choicesY <- c(choicesX, "Density"="none")
     options <- div(
         id=ns("options"),
-        selectizeInput(ns("eventType"), "Event types to keep", width="100%",
+        selectizeInput(ns("eventSubtype"), "Event types to keep", width="100%",
                        selected=NULL, choices=NULL, multiple=TRUE),
-        hidden(unparsableError("unparsableEventTypes")),
+        hidden(unparsableError("unparsableEventSubtypes")),
         bsCollapse(sampleFiltering, psiFiltering, geneFiltering),
         checkboxInput(ns("preview"), value=FALSE,
                       "Preview plot (slow for large datasets)"),
@@ -228,16 +335,16 @@ psiFilteringOptionsSet <- function(session, input, output) {
             types <- table(processed$subtype)
             types <- setNames(names(types), as.vector(types))
             updateSelectizeInput(
-                session, "eventType", choices=types, selected=types,
+                session, "eventSubtype", choices=types, selected=types,
                 options=list(
                     plugins=list("remove_button"),
                     render=I('{option: renderASeventTypeSelection,
                                item: renderASeventTypeSelection}')))
-            hide("unparsableEventTypes")
-            show("eventType")
+            hide("unparsableEventSubtypes")
+            show("eventSubtype")
         } else {
-            show("unparsableEventTypes")
-            hide("eventType")
+            show("unparsableEventSubtypes")
+            hide("eventSubtype")
         }
     })
     
@@ -340,17 +447,10 @@ filterSplicingOperation <- function(session, psi, processed, input) {
     areThereInclusionLevels <- function(psi) {
         return(!is.null(psi) && nrow(psi) != 0 && ncol(psi) != 0)
     }
-    filteredPSI <- NULL
-    eventType <- input$eventType
+    filteredPSI  <- NULL
+    eventSubtype <- input$eventSubtype
+    if (eventSubtype == "") eventSubtype <- NULL
     if (!areThereInclusionLevels(psi)) return(NULL)
-    
-    suppressWarnings(updateProgress("Subset based on event type"))
-    if (!is.null(eventType) && eventType != "" && !is.null(processed$subtype)) {
-        filteredPSI <- psi[processed$subtype %in% eventType, ]
-    } else {
-        filteredPSI <- psi
-    }
-    if (!areThereInclusionLevels(filteredPSI)) return(NULL)
 
     suppressWarnings(updateProgress("Discarding samples"))
     sampleFilter <- input$sampleFilter
@@ -363,12 +463,12 @@ filterSplicingOperation <- function(session, psi, processed, input) {
     }
     sampleFilterSettings <- c("Discarded samples"=sampleFilterText)
     if (!areThereInclusionLevels(filteredPSI)) return(NULL)
-
+    
     suppressWarnings(updateProgress("Filtering based on PSI values"))
     enablePSIfiltering <- input$enablePSIfiltering
     if (enablePSIfiltering) {
         filtered <- filterPSI(
-            filteredPSI,
+            filteredPSI, eventSubtype=eventSubtype,
             minMedian=input$minMedian, maxMedian=input$maxMedian,
             minLogVar=input$minLogVar, maxLogVar=input$maxLogVar,
             minRange=input$minRange, maxRange=input$maxRange)
@@ -395,7 +495,7 @@ filterSplicingOperation <- function(session, psi, processed, input) {
     # Include settings used for alternative splicing quantification
     settings <- c(
         list(
-            "Splicing event types"=input$eventType,
+            "Splicing event types"=input$eventSubtype,
             "Selected cognate genes"=if (is.null(
                 filter)) "All available genes" else filter),
         sampleFilterSettings, filterSettings)
