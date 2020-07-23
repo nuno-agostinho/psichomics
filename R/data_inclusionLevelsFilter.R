@@ -10,16 +10,14 @@
 #' \code{unique(getSplicingEventInformation(psi)$subtype)}, where \code{psi} is
 #' the alternative splicing quantification data; if \code{eventSubtype = NULL},
 #' events are not filtered by event subtype
-#' @param minMedian Numeric: minimum of read count median per splicing event
-#' @param maxMedian Numeric: maximum of read count median per splicing event
-#' @param minLogVar Numeric: minimum log10(read count variance) per splicing
-#' event
-#' @param maxLogVar Numeric: maximum log10(read count variance) per splicing
-#' event
-#' @param minRange Numeric: minimum range of read counts across samples per 
-#' splicing event
-#' @param maxRange Numeric: maximum range of read counts across samples per 
-#' splicing event
+#' @param minPSI Numeric: minimum PSI value
+#' @param maxPSI Numeric: maximum PSI value
+#' @param minMedian Numeric: minimum median PSI per splicing event
+#' @param maxMedian Numeric: maximum median PSI per splicing event
+#' @param minLogVar Numeric: minimum log10(PSI variance) per splicing event
+#' @param maxLogVar Numeric: maximum log10(PSI variance) per splicing event
+#' @param minRange Numeric: minimum PSI range across samples per splicing event
+#' @param maxRange Numeric: maximum PSI range across samples per splicing event
 #' 
 #' @family functions for PSI quantification
 #' @return Boolean vector indicating which splicing events pass the thresholds
@@ -34,18 +32,18 @@
 #' # Filter PSI
 #' psi[filterPSI(psi, minMedian=0.05, maxMedian=0.95, minRange=0.15), ]
 filterPSI <- function(psi, eventType=NULL, eventSubtype=NULL,
+                      minPSI=-Inf, maxPSI=Inf,
                       minMedian=-Inf, maxMedian=Inf,
                       minLogVar=-Inf, maxLogVar=Inf,
-                      minRange=-Inf, maxRange=Inf,
-                      minPSI=-Inf, maxPSI=Inf) {
+                      minRange=-Inf, maxRange=Inf) {
+    if (is.na(minPSI)) minPSI <- -Inf
+    if (is.na(maxPSI)) maxPSI <- Inf
     if (is.na(minMedian)) minMedian <- -Inf
     if (is.na(maxMedian)) maxMedian <- Inf
     if (is.na(minLogVar)) minLogVar <- -Inf
     if (is.na(maxLogVar)) maxLogVar <- Inf
     if (is.na(minRange)) minRange <- -Inf
     if (is.na(maxRange)) maxRange <- Inf
-    if (is.na(minPSI)) minPSI <- -Inf
-    if (is.na(maxPSI)) maxPSI <- Inf
     
     trueVector <- function(len) rep(TRUE, len)
     
@@ -141,7 +139,7 @@ discardLowCoveragePSIvalues <- function(
     # Remove events containing only missing values
     removeNAonlyEvents <- function(psi) psi[rowSums(!is.na(psi)) > 0, ]
     
-    isVastTools <- unique(eventData$source) == "vast-tools"
+    isVastTools <- isTRUE(unique(eventData$source) == "vast-tools")
     if (!is.null(vasttoolsScoresToDiscard) && isVastTools) {
         quality     <- eventData[ , endsWith(colnames(eventData), "-Q")]
         qualityVals <- unlist(quality)
@@ -200,6 +198,11 @@ inclusionLevelsFilterInterface <- function(ns) {
         checkboxInput(ns("enablePSIfiltering"), value=FALSE, width="100%",
                       "Filter splicing events based on their PSI values"),
         fluidRow(
+            numInputCol(ns("minPSI"), "PSI >=",
+                        min=0, max=1, value=0, step=0.1),
+            numInputCol(ns("maxPSI"), "PSI <=",
+                        min=0, max=1, value=1, step=0.1)),
+        fluidRow(
             numInputCol(ns("minMedian"), "Median >=",
                         min=0, max=1, value=0, step=0.1),
             numInputCol(ns("maxMedian"), "Median <=",
@@ -250,6 +253,10 @@ inclusionLevelsFilterInterface <- function(ns) {
     choicesY <- c(choicesX, "Density"="none")
     options <- div(
         id=ns("options"),
+        hidden(selectizeInput(ns("vasttoolsScoresToDiscard"), width="100%",
+                              "VAST-TOOLS: quality scores to discard",
+                              choices=c("SOK", "OK", "LOW", "VLOW", "N"),
+                              selected=c("VLOW", "N"), multiple=TRUE)),
         selectizeInput(ns("eventSubtype"), "Event types to keep", width="100%",
                        selected=NULL, choices=NULL, multiple=TRUE),
         hidden(unparsableError("unparsableEventSubtypes")),
@@ -266,7 +273,7 @@ inclusionLevelsFilterInterface <- function(ns) {
                                  choices=choicesY, selected="none"))),
                          uiOutput(ns("alert")),
                          plotOutput(ns("plot"), height="200px"),
-                         tags$small(helpText(class="pull-right", 
+                         tags$small(helpText(class="pull-right",
                                              textOutput(ns("summary"))))))
     tagList(
         uiOutput(ns("modal")),
@@ -308,11 +315,25 @@ getCognateGenesToFilter <- function(inputFilter, inputFilterGenes,
     return(filter)
 }
 
+#' @rdname appServer
 #' @importFrom shiny updateCheckboxInput
-#' @importFrom shinyjs show hide enable disable
-psiFilteringOptionsSet <- function(session, input, output) {
+inclusionLevelsFilterServer <- function(input, output, session) {
+    observeEvent(getInclusionLevels(), priority=1,
+                 updateCheckboxInput(session, "preview", value=FALSE))
+    
     observeEvent(input$missing, missingDataGuide("Inclusion Levels"))
     prepareFileBrowser(session, input, "filterGenesFile")
+    
+    ns <- session$ns
+    
+    # Process PSI
+    processPSI <- reactive({
+        psi <- getInclusionLevels()
+        if (!is.null(psi)) {
+            parsed <- parseSplicingEvent(rownames(psi), data=psi, pretty=TRUE)
+            return(parsed)
+        }
+    })
     
     # Warn user if alternative splicing quantification is not loaded
     observe({
@@ -324,6 +345,18 @@ psiFilteringOptionsSet <- function(session, input, output) {
             show("options")
             enable("filterIncLevels")
             hide("missingData")
+        }
+    })
+    
+    # Toggle VAST-TOOLS-specific coverage options
+    observe({
+        psi       <- getInclusionLevels()
+        eventData <- getSplicingEventInformation(psi)
+        if (!is.null(eventData) &&
+            isTRUE(unique(eventData$source) == "vast-tools")) {
+            show("vasttoolsScoresToDiscard")
+        } else {
+            hide("vasttoolsScoresToDiscard")
         }
     })
     
@@ -383,6 +416,8 @@ psiFilteringOptionsSet <- function(session, input, output) {
     # Toggle PSI filtering options
     observe({
         if (input$enablePSIfiltering) {
+            enable("minPSI")
+            enable("maxPSI")
             enable("minMedian")
             enable("maxMedian")
             enable("minLogVar")
@@ -390,6 +425,8 @@ psiFilteringOptionsSet <- function(session, input, output) {
             enable("minRange")
             enable("maxRange")
         } else {
+            disable("minPSI")
+            disable("maxPSI")
             disable("minMedian")
             disable("maxMedian")
             disable("minLogVar")
@@ -431,86 +468,100 @@ psiFilteringOptionsSet <- function(session, input, output) {
         }
         return(text)
     })
-}
-
-# Process PSI
-processPSI <- reactive({
-    psi <- getInclusionLevels()
-    if (!is.null(psi)) {
-        parsed <- parseSplicingEvent(rownames(psi), data=psi, pretty=TRUE)
-        return(parsed)
-    }
-})
-
-filterSplicingOperation <- function(session, psi, processed, input) {
-    areThereInclusionLevels <- function(psi) {
-        return(!is.null(psi) && nrow(psi) != 0 && ncol(psi) != 0)
-    }
-    filteredPSI  <- NULL
-    eventSubtype <- input$eventSubtype
-    if (eventSubtype == "") eventSubtype <- NULL
-    if (!areThereInclusionLevels(psi)) return(NULL)
-
-    suppressWarnings(updateProgress("Discarding samples"))
-    sampleFilter <- input$sampleFilter
-    if (!is.null(sampleFilter) && sampleFilter != "") {
-        samplesToKeep    <- !colnames(filteredPSI) %in% sampleFilter
-        filteredPSI      <- filteredPSI[ , samplesToKeep]
-        sampleFilterText <- paste(sampleFilter, collapse=", ")
-    } else {
-        sampleFilterText <- "None"
-    }
-    sampleFilterSettings <- c("Discarded samples"=sampleFilterText)
-    if (!areThereInclusionLevels(filteredPSI)) return(NULL)
     
-    suppressWarnings(updateProgress("Filtering based on PSI values"))
-    enablePSIfiltering <- input$enablePSIfiltering
-    if (enablePSIfiltering) {
-        filtered <- filterPSI(
-            filteredPSI, eventSubtype=eventSubtype,
-            minMedian=input$minMedian, maxMedian=input$maxMedian,
-            minLogVar=input$minLogVar, maxLogVar=input$maxLogVar,
-            minRange=input$minRange, maxRange=input$maxRange)
-        filteredPSI    <- filteredPSI[filtered, ]
-        filterSettings <- attr(filtered, "filtered")
-    } else {
-        filteredPSI    <- filteredPSI
-        filterSettings <- c("Filter enabled"="No")
-    }
-    if (!areThereInclusionLevels(filteredPSI)) return(NULL)
-
-    suppressWarnings(updateProgress("Filtering based on genes"))
-    if (!is.null(processed$gene)) {
-        filter <- getCognateGenesToFilter(input$filter, input$filterGenes,
-                                          input$filterGenesFile)
-        if (!is.null(filter)) {
-            filteredPSI <- filteredPSI[processed$gene %in% filter, ]
+    # Discard low coverage
+    discardLowCoverage <- reactive({
+        isolate({
+            psi <- getInclusionLevels()
+            vasttoolsScoresToDiscard <- input$vasttoolsScoresToDiscard
+        })
+        filtered <- discardLowCoveragePSIvalues(
+            psi, vasttoolsScoresToDiscard=vasttoolsScoresToDiscard)
+        return(filtered)
+    })
+    
+    filterSplicingOperation <- function(session, psi, processed, input) {
+        eventSubtype <- input$eventSubtype
+        sampleFilter <- input$sampleFilter
+        vasttoolsScoresToDiscard <- input$vasttoolsScoresToDiscard
+        
+        enablePSIfiltering <- input$enablePSIfiltering
+        minPSI    <- input$minPSI
+        maxPSI    <- input$maxPSI
+        minLogVar <- input$minLogVar
+        maxLogVar <- input$maxLogVar
+        minMedian <- input$minMedian
+        maxMedian <- input$maxMedian
+        minRange  <- input$minRange
+        maxRange  <- input$maxRange
+        
+        filterEnabled   <- input$filter
+        filterGenes     <- input$filterGenes
+        filterGenesFile <- input$filterGenesFile
+        
+        areThereInclusionLevels <- function(psi) {
+            return(!is.null(psi) && nrow(psi) != 0 && ncol(psi) != 0)
         }
-    } else {
-        filter <- NULL
+        if (!areThereInclusionLevels(psi)) return(NULL)
+        filteredPSI <- psi
+        
+        suppressWarnings(updateProgress("Discarding samples"))
+        if (!is.null(sampleFilter) && sampleFilter != "") {
+            samplesToKeep    <- !colnames(filteredPSI) %in% sampleFilter
+            filteredPSI      <- filteredPSI[ , samplesToKeep]
+            sampleFilterText <- paste(sampleFilter, collapse=", ")
+        } else {
+            sampleFilterText <- "None"
+        }
+        sampleFilterSettings <- c("Discarded samples"=sampleFilterText)
+        if (!areThereInclusionLevels(filteredPSI)) return(NULL)
+        
+        eventData <- getSplicingEventInformation(filteredPSI)
+        isVastTools <- isTRUE(unique(eventData$source) == "vast-tools")
+        if ( !is.null(vasttoolsScoresToDiscard) && isVastTools ) {
+            filteredPSI <- discardLowCoverage()
+            if (!areThereInclusionLevels(filteredPSI)) return(NULL)
+        }
+        
+        if (length(eventSubtype) == 1 && eventSubtype == "") eventSubtype <- NULL
+        suppressWarnings(updateProgress("Filtering based on PSI values"))
+        if (enablePSIfiltering) {
+            filtered <- filterPSI(filteredPSI, eventSubtype=eventSubtype,
+                                  minPSI=minPSI, maxPSI=maxPSI,
+                                  minMedian=minMedian, maxMedian=maxMedian,
+                                  minLogVar=minLogVar, maxLogVar=maxLogVar,
+                                  minRange=minRange, maxRange=maxRange)
+            filteredPSI    <- filteredPSI[filtered, ]
+            filterSettings <- attr(filtered, "filtered")
+        } else {
+            filterSettings <- c("Filter enabled"="No")
+        }
+        if (!areThereInclusionLevels(filteredPSI)) return(NULL)
+        
+        suppressWarnings(updateProgress("Filtering based on genes"))
+        if (!is.null(processed$gene)) {
+            filter <- getCognateGenesToFilter(filterEnabled, filterGenes,
+                                              filterGenesFile)
+            if (!is.null(filter)) {
+                filteredPSI <- filteredPSI[processed$gene %in% filter, ]
+            }
+        } else {
+            filter <- NULL
+        }
+        if (!areThereInclusionLevels(filteredPSI)) return(NULL)
+        
+        # Include settings used for alternative splicing quantification
+        settings <- c(
+            list(
+                "Splicing event types"=eventSubtype,
+                "Selected cognate genes"=if (is.null(
+                    filter)) "All available genes" else filter),
+            sampleFilterSettings, filterSettings)
+        attr(filteredPSI, "settings") <- settings
+        attr(filteredPSI, "icon") <- list(symbol="calculator", colour="green")
+        suppressWarnings(closeProgress())
+        return(filteredPSI)
     }
-    if (!areThereInclusionLevels(filteredPSI)) return(NULL)
-
-    # Include settings used for alternative splicing quantification
-    settings <- c(
-        list(
-            "Splicing event types"=input$eventSubtype,
-            "Selected cognate genes"=if (is.null(
-                filter)) "All available genes" else filter),
-        sampleFilterSettings, filterSettings)
-    attr(filteredPSI, "settings") <- settings
-    attr(filteredPSI, "icon") <- list(symbol="calculator", colour="green")
-    suppressWarnings(closeProgress())
-    return(filteredPSI)
-}
-
-#' Set of functions to filter alternative splicing
-#'
-#' @importFrom shiny tags
-#' @inherit inclusionLevelsFilterServer
-#' @keywords internal
-filterSplicingSet <- function(session, input, output) {
-    ns <- session$ns
     
     # Operation to filter splicing based on user-defined options
     filterSplicingBasedOnInput <- reactive({
@@ -616,15 +667,6 @@ filterSplicingSet <- function(session, input, output) {
             return(res)
         }
     })
-}
-
-#' @rdname appServer
-inclusionLevelsFilterServer <- function(input, output, session) {
-    observeEvent(getInclusionLevels(),
-                 updateCheckboxInput(session, "preview", value=FALSE))
-    
-    psiFilteringOptionsSet(session, input, output)
-    filterSplicingSet(session, input, output)
 }
 
 attr(inclusionLevelsFilterUI, "loader") <- "data"

@@ -130,6 +130,13 @@ inclusionLevelsInterface <- function(ns) {
                           "Filter splicing events based on their PSI values"),
             fluidRow(
                 column(6, numericInput(
+                    ns("minPSI"), "PSI >=",
+                    min=0, max=1, value=0, step=0.1, width="100%")),
+                column(6, numericInput(
+                    ns("maxPSI"), "PSI <=",
+                    min=0, max=1, value=1, step=0.1, width="100%"))),
+            fluidRow(
+                column(6, numericInput(
                     ns("minMedian"), "Median >=",
                     min=0, max=1, value=0, step=0.1, width="100%")),
                 column(6, numericInput(
@@ -522,6 +529,8 @@ psiFilteringSet <- function(session, input, output) {
     # Toggle PSI filtering options
     observe({
         if (input$enablePSIfiltering) {
+            enable("minPSI")
+            enable("maxPSI")
             enable("minMedian")
             enable("maxMedian")
             enable("minLogVar")
@@ -529,6 +538,8 @@ psiFilteringSet <- function(session, input, output) {
             enable("minRange")
             enable("maxRange")
         } else {
+            disable("minPSI")
+            disable("maxPSI")
             disable("minMedian")
             disable("maxMedian")
             disable("minLogVar")
@@ -655,7 +666,8 @@ quantifySplicingSet <- function(session, input) {
         enablePSIfiltering <- input$enablePSIfiltering
         if (enablePSIfiltering) {
             filtered <- filterPSI(
-                psi, minMedian=input$minMedian, maxMedian=input$maxMedian,
+                psi, minPSI=input$minPSI, maxPSI=input$maxPSI,
+                minMedian=input$minMedian, maxMedian=input$maxMedian,
                 minLogVar=input$minLogVar, maxLogVar=input$maxLogVar,
                 minRange=input$minRange, maxRange=input$maxRange)
             filteredPSI <- psi[filtered, ]

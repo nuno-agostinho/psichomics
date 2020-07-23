@@ -8,14 +8,14 @@ filterPSI(
   psi,
   eventType = NULL,
   eventSubtype = NULL,
+  minPSI = -Inf,
+  maxPSI = Inf,
   minMedian = -Inf,
   maxMedian = Inf,
   minLogVar = -Inf,
   maxLogVar = Inf,
   minRange = -Inf,
-  maxRange = Inf,
-  minPSI = -Inf,
-  maxPSI = Inf
+  maxRange = Inf
 )
 }
 \arguments{
@@ -32,21 +32,21 @@ event subtypes available in your data by using
 the alternative splicing quantification data; if \code{eventSubtype = NULL},
 events are not filtered by event subtype}
 
-\item{minMedian}{Numeric: minimum of read count median per splicing event}
+\item{minPSI}{Numeric: minimum PSI value}
 
-\item{maxMedian}{Numeric: maximum of read count median per splicing event}
+\item{maxPSI}{Numeric: maximum PSI value}
 
-\item{minLogVar}{Numeric: minimum log10(read count variance) per splicing
-event}
+\item{minMedian}{Numeric: minimum median PSI per splicing event}
 
-\item{maxLogVar}{Numeric: maximum log10(read count variance) per splicing
-event}
+\item{maxMedian}{Numeric: maximum median PSI per splicing event}
 
-\item{minRange}{Numeric: minimum range of read counts across samples per 
-splicing event}
+\item{minLogVar}{Numeric: minimum log10(PSI variance) per splicing event}
 
-\item{maxRange}{Numeric: maximum range of read counts across samples per 
-splicing event}
+\item{maxLogVar}{Numeric: maximum log10(PSI variance) per splicing event}
+
+\item{minRange}{Numeric: minimum PSI range across samples per splicing event}
+
+\item{maxRange}{Numeric: maximum PSI range across samples per splicing event}
 }
 \value{
 Boolean vector indicating which splicing events pass the thresholds
