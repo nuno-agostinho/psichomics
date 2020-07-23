@@ -4,7 +4,7 @@
 #' @importFrom shinyBS bsCollapse bsCollapsePanel bsPopover
 localDataUI <- function(id, panel) {
     ns <- NS(id)
-
+    
     sampleInfoBrowser <- fileBrowserInput(
         ns("sampleInfo"), "Sample information",
         placeholder="No file selected", clearable=TRUE,
@@ -346,6 +346,22 @@ prepareGeneQuantSTAR <- function(..., strandedness=c("unstranded", "stranded",
     return(geneQuant)
 }
 
+# Remove datasets containing the same information
+removeRedundantDatasets <- function(data) {
+    toRemove <- NULL
+    if (length(data) > 1) {
+        for (i in seq(length(data) - 1)) {
+            for (j in seq(i + 1, length(data))) {
+                isRedundant <- isTRUE(all.equal(data[[i]], data[[j]],
+                                                check.attributes=FALSE))
+                if (isRedundant) toRemove <- c(toRemove, j)
+            }
+        }
+        if (!is.null(toRemove)) data <- data[-c(toRemove)]
+    }
+    return(data)
+}
+
 #' Load local files
 #' 
 #' @param folder Character: path to folder containing files of interest
@@ -411,6 +427,7 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."),
         warning(msg)
         data <- NULL
     } else {
+        loaded <- removeRedundantDatasets(loaded)
         loaded <- list(loaded)
         loaded <- loadTCGAsampleMetadata(loaded)
         
