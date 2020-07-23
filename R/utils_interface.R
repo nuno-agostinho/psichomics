@@ -50,23 +50,44 @@ colourInputMod <- function(...) {
     return(colourSelector)
 }
 
+#' Faster version of \code{shiny::HTML}
+#' 
+#' @param text Character: text
+#' 
+#' @return HTML element
+#' @keywords internal
+HTMLfast <- function(text) {
+    attr(text, "html") <- TRUE
+    class(text) <- c("html", "character")
+    return(text)
+}
 
 #' Create word break opportunities (for HTML) using given characters
 #' 
 #' @param str Character: text
 #' @param pattern Character: pattern(s) of interest to be used as word break
 #' opportunities
+#' @param html Boolean: convert to HTML?
 #' 
 #' @importFrom shiny HTML
 #' 
 #' @return String containing HTML elements
 #' @keywords internal
 prepareWordBreak <- function(str, pattern=c(".", "-", "\\", "/", "_", ",", 
-                                            " ", "+", "=")) {
+                                            " ", "+", "="),
+                             html=TRUE) {
     res <- str
     # wbr: word break opportunity
     for (p in pattern) res <- gsub(p, paste0(p, "<wbr>"), res, fixed=TRUE)
-    return(HTML(res))
+    
+    if (html) {
+        if (length(res) == 1) {
+            res <- HTML(res)
+        } else {
+            res <- lapply(res, HTMLfast)
+        }
+    }
+    return(res)
 }
 
 #' Convert vector of values to JavaScript array

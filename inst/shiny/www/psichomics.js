@@ -154,6 +154,12 @@ function renderEvent (item, escape) {
     gene   = processStr(gene);
     svg    = processStr(svg);
     
+    if (svg.includes("altText: ")) {
+        svg = svg.split("altText: ")[1];
+        svg = `<div style="text-align: right;">` +
+              `<small><b>Full coordinates:</b> ${svg}</small></div>`;
+    }
+    
     function row (str) {
         return `<div class="row">${str}</div>`;
     }

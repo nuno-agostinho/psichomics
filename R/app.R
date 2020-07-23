@@ -318,16 +318,6 @@ browserHistory <- function(navId, input, session) {
     observeEvent(input$appLocation, { restorePage(input$appLocation) })
 }
 
-# Prepare alternative text for diagrams
-prepareAlternativeText <- function(alt) {
-    alt <- lapply(alt, prepareWordBreak)
-    styleAlt <- function(alt) {
-        HTML(as.character(tags$div(style="text-align: right", tags$small(
-            tags$b("Full coordinates:"), alt))))
-    }
-    return(lapply(alt, styleAlt))
-}
-
 # Prepare representation of alternative splicing events
 prepareASeventsRepresentation <- reactive({
     ASevent <- getASevents()
@@ -343,7 +333,7 @@ prepareASeventsRepresentation <- reactive({
         pos <- parsed$`full coordinates`
         if (is.null(pos)) pos <- parsed$pos
         if (!is.null(pos)) {
-            altText <- prepareAlternativeText(pos[unsupported])
+            altText <- paste("altText:", prepareWordBreak(pos[unsupported]))
             diagram[unsupported] <- altText
             coords[unsupported]  <- paste("Full coordinates:", pos[unsupported])
         }
@@ -357,7 +347,7 @@ prepareASeventsRepresentation <- reactive({
         representation <- NULL
     }
     return(representation)
-})
+}, label="app_prepareASeventsRepresentation")
 
 #' Server logic
 #' 
@@ -411,7 +401,7 @@ appServer <- function(input, output, session) {
         }   
         updateSelectizeChoices(session, "selectizeEventElem", representation,
                                server=TRUE)
-    })
+    }, label="app_updateASevents")
     
     # Set alternative splicing event
     observeEvent(input[["selectizeEventElem"]], {

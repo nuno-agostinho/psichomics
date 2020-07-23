@@ -6,7 +6,8 @@
 \usage{
 prepareWordBreak(
   str,
-  pattern = c(".", "-", "\\\\", "/", "_", ",", " ", "+", "=")
+  pattern = c(".", "-", "\\\\", "/", "_", ",", " ", "+", "="),
+  html = TRUE
 )
 }
 \arguments{
@@ -14,6 +15,8 @@ prepareWordBreak(
 
 \item{pattern}{Character: pattern(s) of interest to be used as word break
 opportunities}
+
+\item{html}{Boolean: convert to HTML?}
 }
 \value{
 String containing HTML elements
