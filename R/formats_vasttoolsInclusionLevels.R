@@ -70,7 +70,7 @@ parseEventData <- function(rowData) {
     
     # Parse coordinates
     SEtypes <- c("S", "C1", "C2", "C3", "ANN", "MIC", "NA")
-    RItypes <- c("RI", "RI-C", "RI-S", "IR", "IR-C", "I-S")
+    RItypes <- c("RI", "RI-C", "RI-S", "IR", "IR-C", "IR-S")
     types <- c(
         setNames(rep("A3SS", 2), c("Alt3", "A_Alt3")),
         setNames(rep("A5SS", 2), c("Alt5", "A_Alt5")),
