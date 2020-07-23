@@ -41,7 +41,7 @@ vasttoolsGeneExpressionFormat <- function() {
             colnames(data) <- gsub("_[12]{0,1}$", "\\1", colnames(data),
                                    perl=TRUE)
             # Avoid rows containing only missing values
-            data <- data[rowSums(!is.na(data)) > 0, ]
+            data <- data[rowSums(!is.na(data[ , -seq(2)])) > 0, ]
             
             # Use unambiguous gene symbols when possible
             genes <- as.character(data$NAME)
