@@ -2,7 +2,8 @@
 % Please edit documentation in R/utils_eventParsing.R
 \name{getSplicingEventInformation}
 \alias{getSplicingEventInformation}
-\title{Returns splicing event information available for inclusion levels}
+\title{Get splicing event information for given alternative splicing quantification
+data}
 \usage{
 getSplicingEventInformation(psi)
 }
@@ -14,5 +15,6 @@ Matrix or data frame containing splicing event information for
 alternative splicing events in \code{psi} (if available)
 }
 \description{
-Returns splicing event information available for inclusion levels
+Get splicing event information for given alternative splicing quantification
+data
 }

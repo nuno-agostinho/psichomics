@@ -15,11 +15,11 @@ discardLowCoveragePSIvalues(
 
 \item{minReads}{Currently this argument does nothing}
 
-\item{vasttoolsCoverage}{Character: if you are using inclusion levels from
-VAST-TOOLS, filter the data based on quality scores for read coverage, e.g.
-use \code{vasttoolsCoverage = c("SOK", "OK", "LOW")} to only keep events with
-good read coverage (by default, events are not filtered based on quality
-scores); read \url{https://github.com/vastgroup/vast-tools} for more
+\item{vasttoolsScoresToDiscard}{Character: if you are using inclusion levels
+from VAST-TOOLS, filter the data based on quality scores for read coverage,
+e.g. use \code{vasttoolsScoresToDiscard = c("SOK", "OK", "LOW")} to only keep
+events with good read coverage (by default, events are not filtered based on
+quality scores); read \url{https://github.com/vastgroup/vast-tools} for more
 information on VAST-TOOLS quality scores}
 }
 \value{

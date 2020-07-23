@@ -187,13 +187,14 @@ junctionQuant <- data[[1]]$`Junction quantification`
 sampleInfo    <- data[[1]]$`Sample metadata`
 ```
 
-# Loading alternative splicing quantification data from VAST-TOOLS
+# Loading data from VAST-TOOLS
 
-After quantifying alternative splicing using VAST-TOOLS, put the inclusion
-levels table (containing alternative splicing quantification values) in a new
-folder.
+psichomics supports loading inclusion levels and gene expression tables from
+VAST-TOOLS (the tables available after running `vast-tools combine`). To load
+those files, move them into a new folder. If you have sample and/or subject 
+information, you can also 
 
-## Using the visual interface
+## Load using the visual interface
 
 Start psichomics with the following commands in an R console or RStudio:
 
@@ -206,12 +207,14 @@ Then, click **Load user files**. Click the **Folder input** tab and select the
 appropriate folder. Finally, click **Load files** to automatically scan and load
 all supported files from that folder.
 
-## Using the command-line interface (CLI)
+## Load using the command-line interface (CLI)
 
 ```{r, eval=FALSE}
 library(psichomics)
 data <- loadLocalFiles("/path/to/vast-tools/folder")
-junctionQuant <- data[[1]]$`Junction quantification
+geneExpr      <- data[[1]]$`Gene expression`
+junctionQuant <- data[[1]]$`Junction quantification`
+sampleInfo    <- data[[1]]$`Sample metadata`
 ```
 
 # Feedback

@@ -15,8 +15,7 @@ filterPSI(
   minRange = -Inf,
   maxRange = Inf,
   minPSI = -Inf,
-  maxPSI = Inf,
-  vasttoolsCoverage = NULL
+  maxPSI = Inf
 )
 }
 \arguments{

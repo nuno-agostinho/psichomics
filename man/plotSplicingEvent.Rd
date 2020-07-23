@@ -6,8 +6,7 @@
 \usage{
 plotSplicingEvent(
   ASevent,
-  class = NULL,
-  style = NULL,
+  data = NULL,
   showText = TRUE,
   showPath = TRUE,
   showAlternative1 = TRUE,
@@ -21,15 +20,12 @@ plotSplicingEvent(
   alternative1Stroke = "#faa000",
   alternative2Fill = "#caa06c",
   alternative2Stroke = "#9d7039",
-  data = NULL
+  class = NULL,
+  style = NULL
 )
 }
 \arguments{
 \item{ASevent}{Character: alternative splicing event identifiers}
-
-\item{class}{Character: class of SVG parent tag}
-
-\item{style}{Character: style of SVG parent tag}
 
 \item{showText}{Boolean: display coordinates and length (if available)}
 
@@ -58,6 +54,10 @@ splicing junctions and text? (only related with mutually exclusive exons)}
 \item{alternative2Fill}{Character: fill colour of alternative exon 2}
 
 \item{alternative2Stroke}{Character: stroke colour of alternative exon 2}
+
+\item{class}{Character: class of SVG parent tag}
+
+\item{style}{Character: style of SVG parent tag}
 }
 \value{
 List of SVG (one for each alternative splicing event)

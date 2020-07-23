@@ -37,8 +37,7 @@ filterPSI <- function(psi, eventType=NULL, eventSubtype=NULL,
                       minMedian=-Inf, maxMedian=Inf,
                       minLogVar=-Inf, maxLogVar=Inf,
                       minRange=-Inf, maxRange=Inf,
-                      minPSI=-Inf, maxPSI=Inf,
-                      vasttoolsCoverage=NULL) {
+                      minPSI=-Inf, maxPSI=Inf) {
     if (is.na(minMedian)) minMedian <- -Inf
     if (is.na(maxMedian)) maxMedian <- Inf
     if (is.na(minLogVar)) minLogVar <- -Inf
@@ -123,11 +122,11 @@ filterPSI <- function(psi, eventType=NULL, eventSubtype=NULL,
 #' 
 #' @param psi Data frame or matrix: alternative splicing quantification
 #' @param minReads Currently this argument does nothing
-#' @param vasttoolsCoverage Character: if you are using inclusion levels from
-#' VAST-TOOLS, filter the data based on quality scores for read coverage, e.g.
-#' use \code{vasttoolsCoverage = c("SOK", "OK", "LOW")} to only keep events with
-#' good read coverage (by default, events are not filtered based on quality
-#' scores); read \url{https://github.com/vastgroup/vast-tools} for more
+#' @param vasttoolsScoresToDiscard Character: if you are using inclusion levels
+#' from VAST-TOOLS, filter the data based on quality scores for read coverage,
+#' e.g. use \code{vasttoolsScoresToDiscard = c("SOK", "OK", "LOW")} to only keep
+#' events with good read coverage (by default, events are not filtered based on
+#' quality scores); read \url{https://github.com/vastgroup/vast-tools} for more
 #' information on VAST-TOOLS quality scores
 #' 
 #' @return Alternative splicing quantification data with missing values for any

@@ -398,12 +398,13 @@ diagramSplicingEvent <- function(
 #' diagram[[6]]
 #' diagram
 plotSplicingEvent <- function(
-    ASevent, class=NULL, style=NULL, showText=TRUE, showPath=TRUE,
+    ASevent, data=NULL, showText=TRUE, showPath=TRUE, 
     showAlternative1=TRUE, showAlternative2=TRUE,
     constitutiveWidth=60, alternativeWidth=NULL, intronWidth=NULL,
     constitutiveFill="lightgray", constitutiveStroke="darkgray",
     alternative1Fill="#ffb153", alternative1Stroke="#faa000",
-    alternative2Fill="#caa06c", alternative2Stroke="#9d7039", data=NULL) {
+    alternative2Fill="#caa06c", alternative2Stroke="#9d7039",
+    class=NULL, style=NULL) {
     
     parsed <- parseSplicingEvent(ASevent, coords=TRUE, data=data)
     if (!is.null(parsed$type)) {
