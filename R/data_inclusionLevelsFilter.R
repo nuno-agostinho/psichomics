@@ -523,7 +523,9 @@ inclusionLevelsFilterServer <- function(input, output, session) {
             if (!areThereInclusionLevels(filteredPSI)) return(NULL)
         }
         
-        if (length(eventSubtype) == 1 && eventSubtype == "") eventSubtype <- NULL
+        if (length(eventSubtype) == 1 && eventSubtype == "") {
+            eventSubtype <- NULL
+        }
         suppressWarnings(updateProgress("Filtering based on PSI values"))
         if (enablePSIfiltering) {
             filtered <- filterPSI(filteredPSI, eventSubtype=eventSubtype,

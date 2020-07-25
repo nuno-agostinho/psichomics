@@ -76,9 +76,10 @@ areSplicingEvents <- function(char, data=NULL, num=6) {
     hasUnderscores <- all(sapply(probe, function (i)
         sum(charToRaw(i) == charToRaw("_")) > 3))
     
-    eventData <- getEventData(char, data)
-    isInEventData <- !is.null(eventData) && all(probe %in% rownames(eventData))
-    return(hasUnderscores || isInEventData)
+    taggedAsPSI <- isTRUE(attr(data, "dataType") == "Inclusion levels")
+    
+    hasEventData <- !is.null(getEventData(char, data))
+    return(hasUnderscores || taggedAsPSI || hasEventData)
 }
 
 #' @importFrom R.utils decapitalize
@@ -137,6 +138,12 @@ getEventData <- function(event=NULL, data=NULL) {
 #' alternative splicing events in \code{psi} (if available)
 #' @export
 getSplicingEventInformation <- function(psi) getEventData(data=psi)
+
+collapseElemsToSingleString <- function(ll) {
+    multi <- sapply(ll, length) > 1
+    ll[multi] <- lapply(ll[multi], paste, collapse=" ")
+    return(unlist(ll))
+}
 
 #' Parse alternative splicing event identifier
 #' 
@@ -229,9 +236,12 @@ parseSplicingEvent <- function(event, char=FALSE, pretty=FALSE, extra=NULL,
                                       info$alternative2, info$constitutive1)
                 col3        <- ifelse(isAFEorA5SS,
                                       info$constitutive1, info$alternative2)
-                fullCoords  <- paste(col1, info$alternative1, 
-                                     col3, info$constitutive2)
-                fullCoords  <- gsub("(NA)|[c\\(\\),\"]", "", fullCoords)
+                fullCoords  <- paste(
+                    collapseElemsToSingleString(col1),
+                    collapseElemsToSingleString(info$alternative1),
+                    collapseElemsToSingleString(col3),
+                    collapseElemsToSingleString(info$constitutive2))
+                fullCoords  <- gsub("NA", "", fullCoords, fixed=TRUE)
                 fullCoords  <- trimWhitespace(fullCoords)
                 parsed      <- paste(subtype, chrom, strand, fullCoords, gene,
                                      sep=sep)

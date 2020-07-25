@@ -112,7 +112,13 @@ getASevent <- reactive(sharedData$event)
 
 #' @rdname getGlobal
 #' @param event Character: alternative splicing event
-setASevent <- function(event) setGlobal("event", value=event)
+#' @param data Matrix or data frame: alternative splicing information
+setASevent <- function(event, data=NULL) {
+    if (!is.null(data)) {
+        attr(event, "eventData") <- getSplicingEventInformation(data)
+    }
+    setGlobal("event", value=event)
+}
 
 #' @rdname getGlobal
 getEvent <- getASevent

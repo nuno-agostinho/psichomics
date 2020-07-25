@@ -1,4 +1,4 @@
-# psichomics 1.14.1 (16 June, 2020)
+# psichomics 1.14.1 (27 July, 2020)
 
 ## Support for loading more data formats
 
@@ -88,6 +88,7 @@ ranges (helpful for plotting statistics of large datasets)
     - Fix crash when changing to an alternative splicing quantification dataset
     without the selected splicing event
     - Allow to search using an event identifier directly
+    - Show event identifier instead of prettier identifier to avoid confusion
 * Data grouping (visual interface):
     - Simplify group selection interface
     - Fix suggested attributes in group creation not being updated when changing
@@ -95,6 +96,8 @@ ranges (helpful for plotting statistics of large datasets)
 * Principal component analysis (visual interface):
     - The correct splicing event is now selected when clicking on any loadings
     in the loadings plot
+    - Loading plots now show parsed information of events (cognate gene, event
+    type and genomic position) if available
 * Differential analyses:
     - Use group colours in density plots of differential expression table
     (visual interface)

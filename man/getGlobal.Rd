@@ -85,11 +85,11 @@ getASevents()
 
 getASevent()
 
-setASevent(event)
+setASevent(event, data = NULL)
 
 getEvent()
 
-setEvent(event)
+setEvent(event, data = NULL)
 
 getGenes()
 
@@ -174,7 +174,7 @@ setURLtoDownload(url)
 
 \item{value}{Value to attribute to an element}
 
-\item{data}{List of data frame or matrix to set as data}
+\item{data}{Matrix or data frame: alternative splicing information}
 
 \item{name}{Character: data table name}
 

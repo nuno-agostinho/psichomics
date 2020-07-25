@@ -2068,7 +2068,7 @@ groupsServerOnce <- function(input, output, session) {
             if (!is.null(groups)) 
                 isolate( appendNewGroups("Genes", groups, clearOld=TRUE) )
         }
-    })
+    }, label="groups_premadeListOfGenes")
     
     # Create groups by sample types when loading TCGA data
     observe({

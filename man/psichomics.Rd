@@ -4,7 +4,13 @@
 \alias{psichomics}
 \title{Start graphical interface of psichomics}
 \usage{
-psichomics(..., launch.browser = TRUE, reset = FALSE, testData = FALSE)
+psichomics(
+  ...,
+  launch.browser = TRUE,
+  reset = FALSE,
+  testData = FALSE,
+  unparsableEvents = FALSE
+)
 }
 \arguments{
 \item{...}{
@@ -39,6 +45,9 @@ function to call with the application's URL.}
 \item{reset}{Boolean: reset Shiny session? Requires package \code{devtools}}
 
 \item{testData}{Boolean: load with test data}
+
+\item{unparsableEvents}{Boolean: when testing data, load alternative splicing
+quantification events that cannot be parsed?}
 }
 \value{
 \code{NULL} (function is only used to modify the Shiny session's

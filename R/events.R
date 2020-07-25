@@ -431,11 +431,37 @@ sortCoordinates <- function(events) {
     return(events)
 }
 
-prepareGenePresentation <- function(gene) {
-    # Prepare presentation of multiple genes for the same splicing event
+#' Prepare presentation of multiple genes for the same splicing event
+#' 
+#' @param gene Character: gene
+#' @param collapse Character: character string to separate in case of more than
+#'   one gene
+#' 
+#' @return Same object with items collapsed
+#' @keywords internal
+prepareGenePresentation <- function(gene, collapse="/") {
     multigene <- lapply(gene, length) > 1
-    gene[multigene] <- lapply(gene[multigene], paste, collapse="/")
+    gene[multigene] <- lapply(gene[multigene], paste, collapse=collapse)
     return(gene)
+}
+
+prepareEventInfoTooltip <- function(event, data=NULL, pretty=TRUE, ...) {
+    parsed <- parseSplicingEvent(event, ..., pretty=pretty, data=data)
+    if (is.null(parsed)) return(NULL)
+    gene    <- as.character(prepareGenePresentation(parsed$gene,
+                                                    collapse=" or "))
+    subtype <- parsed$subtype
+    strand  <- parsed$strand
+    if (!is.null(strand)) {
+        strand <- ifelse(strand == "+", "forward", "reverse")
+        strand <- sprintf(" (%s strand)", strand)
+    } else {
+        strand <- ""
+    }
+    coord <- sprintf("chr %s: %s to %s%s", parsed$chrom,
+                     parsed$start, parsed$end, strand)
+    res   <- list(gene=gene, subtype=subtype, coord=coord)
+    return(res)
 }
 
 listPairs <- function(vec1, vec2, vec3=NULL, sorted=FALSE) {

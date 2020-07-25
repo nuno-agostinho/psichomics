@@ -324,7 +324,7 @@ prepareASeventsRepresentation <- reactive({
     if (!is.null(ASevent)) {
         diagram <- suppressWarnings(
             plotSplicingEvent(ASevent, class="pull-right"))
-        parsed  <- parseSplicingEvent(ASevent, pretty=TRUE)
+        parsed  <- parseSplicingEvent(ASevent, coords=TRUE, pretty=TRUE)
         coords  <- attr(diagram, "position")
         gene    <- prepareGenePresentation(parsed$gene)
         
@@ -437,7 +437,7 @@ appServer <- function(input, output, session) {
         } else if (!isSelectionValid) {
             return("No event is selected")
         } else {
-            return(parseSplicingEvent(selected, char=TRUE))
+            return(selected)
         }
     })
     
@@ -454,6 +454,8 @@ appServer <- function(input, output, session) {
 #' @inheritDotParams shiny::runApp -appDir -launch.browser
 #' @param reset Boolean: reset Shiny session? Requires package \code{devtools}
 #' @param testData Boolean: load with test data
+#' @param unparsableEvents Boolean: when testing data, load alternative splicing
+#' quantification events that cannot be parsed?
 #'
 #' @importFrom shiny shinyApp runApp addResourcePath
 #'
@@ -465,7 +467,8 @@ appServer <- function(input, output, session) {
 #' \dontrun{
 #' psichomics()
 #' }
-psichomics <- function(..., launch.browser=TRUE, reset=FALSE, testData=FALSE) {
+psichomics <- function(..., launch.browser=TRUE, reset=FALSE, testData=FALSE,
+                       unparsableEvents=FALSE) {
     # Add icons related to set operations
     addResourcePath("set-operations",
                     insideFile("shiny", "www", "set-operations"))
@@ -485,9 +488,20 @@ psichomics <- function(..., launch.browser=TRUE, reset=FALSE, testData=FALSE) {
         data <- NULL
         data[["Clinical data"]]    <- loadFile("vignettes/BRCA_clinical.RDS")
         data[["Gene expression"]]  <- loadFile("vignettes/BRCA_geneExpr.RDS")
-        data[["Inclusion levels"]] <- loadFile("vignettes/BRCA_psi.RDS")
-        data[["Sample metadata"]]  <- parseTCGAsampleInfo(colnames(
-            data[["Inclusion levels"]]))
+        psi                        <- loadFile("vignettes/BRCA_psi.RDS")
+        
+        if (unparsableEvents) {
+            rownames(psi) <- paste0("undefASevent", seq(nrow(psi)))
+        }
+        data[["Inclusion levels"]] <- psi
+        data[["Sample metadata"]]  <- parseTCGAsampleInfo(colnames(psi))
+        
+        eventData <- suppressWarnings(
+            parseSplicingEvent(rownames(psi), coords=TRUE))
+        if (!is.null(eventData)) {
+            class(eventData) <- c("eventData", class(eventData))
+            attr(data[["Inclusion levels"]], "rowData") <- eventData
+        }
         setData(list("Test data"=data))
     }
     app <- shinyApp(appUI(), appServer)

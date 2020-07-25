@@ -269,14 +269,18 @@ calculateLoadingsContribution <- function(pca, pcX=1, pcY=2) {
     # Parse alternative splicing events or genes
     if ( areSplicingEvents(rownames(table), data=pca) ) {
         extra <- parseSplicingEvent(rownames(table), pretty=TRUE, data=pca)
-        id         <- extra$id
-        extra$gene <- sapply(extra$gene, paste0, collapse=", ")
-        extra$pos  <- sapply(extra$pos,  paste0, collapse=", ")
-        extra      <- extra[ , c("type", "chrom", "strand", "gene", "pos")]
-        colnames(extra) <- c("Event type", "Chromosome", "Strand", "Gene",
-                             "Event position")
-        table <- cbind(extra, table)
-        if (!is.null(id)) table <- cbind("Event ID"=id, table)
+        if (!is.null(extra)) {
+            id         <- extra$id
+            extra$gene <- sapply(extra$gene, paste0, collapse=", ")
+            extra$pos  <- sapply(extra$pos,  paste0, collapse=", ")
+            extra      <- extra[ , c("type", "chrom", "strand", "gene", "pos")]
+            colnames(extra) <- c("Event type", "Chromosome", "Strand", "Gene",
+                                 "Event position")
+            table <- cbind(extra, table)
+            if (!is.null(id)) table <- cbind("Event ID"=id, table)
+        } else {
+            table <- cbind("AS event"=rownames(table), table)
+        }
     } else {
         table <- cbind("Genes"=rownames(table), table)
     }
@@ -366,11 +370,7 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
         contrPCy   <- contr[ , ncol(contr) - 1]
         contrTotal <- contr[ , ncol(contr)]
         
-        if (areSplicingEvents(rownames(contr), data=pca)) {
-            names <- parseSplicingEvent(rownames(contr), char=TRUE, data=pca)
-        } else {
-            names <- rownames(contr)
-        }
+        names <- rownames(contr)
         dfX <- c(paste0("PC", pcX, " loading"),
                  paste0("PC", pcY, " loading"),
                  paste0("Contribution to PC", pcX),
@@ -381,11 +381,29 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
                  sprintf(" {point.contrPCx:.%sf}%%", getPrecision()),
                  sprintf(" {point.contrPCy:.%sf}%%", getPrecision()),
                  sprintf(" {point.contr:.%sf}%%", getPrecision()))
+        
+        gene    <- NULL
+        subtype <- NULL
+        coord   <- NULL
+        if (areSplicingEvents(rownames(contr), data=pca)) {
+            res <- prepareEventInfoTooltip(rownames(contr), data=pca)
+            if (!is.null(res)) {
+                gene    <- res$gene
+                subtype <- res$subtype
+                coord   <- res$coord
+                
+                dfX <- c("Gene", "Event type", "Position", dfX)
+                dfY <- c(" {point.gene}", " {point.subtype}", " {point.coord}",
+                         dfY)
+            }
+        }
+        
         ## TODO(NunoA): color points with a gradient; see colorRampPalette()
         # For loadings, add series (but don't add to legend)
         hc <- hc_scatter(hc, xValues, yValues, unname(contrTotal), 
                          name="Loadings", sample=names, contr=contrTotal,
-                         contrPCx=contrPCx, contrPCy=contrPCy) %>%
+                         contrPCx=contrPCx, contrPCy=contrPCy,
+                         gene=gene, subtype=subtype, coord=coord) %>%
             hc_subtitle(text=sprintf(
                 "Bubble size ~ relative contribution to PC%s and PC%s",
                 pcX, pcY)) %>%
@@ -708,7 +726,6 @@ pcaServer <- function(input, output, session) {
             if ( !is.null(groups2) ) {
                 dataForPCA <- dataForPCA[unlist(groups2), , drop=FALSE]
             }
-            eventData <- attr(dataForPCA, "rowData")
             
             # Raise error if data has no rows
             if (nrow(dataForPCA) == 0) {
@@ -740,7 +757,6 @@ pcaServer <- function(input, output, session) {
             } else {
                 attr(pca, "dataType")  <- dataType
                 attr(pca, "firstPCA")  <- is.null(getPCA())
-                attr(pca, "eventData") <- eventData
                 setPCA(pca)
                 
                 # Clear previously plotted charts
@@ -824,6 +840,7 @@ pcaServer <- function(input, output, session) {
             if (!is.null(pcX) && !is.null(pcY)) {
                 dataType <- attr(pca, "dataType")
                 groupsJS <- toJSarray(isolate(names(groups)))
+                if (is.null(groups)) groupsJS <- "null"
                 if (dataType == "Inclusion levels") {
                     title <- "Alternative splicing events (PCA loadings)"
                     onClick <- sprintf(
@@ -886,7 +903,8 @@ pcaServer <- function(input, output, session) {
     })
     
     # Show differential analysis when clicking on PCA loadings
-    observe(processClickRedirection(input$pca_last_clicked))
+    observe(processClickRedirection(input$pca_last_clicked,
+                                    psi=getInclusionLevels()))
     
     clusterSet(session, input, output)
 }

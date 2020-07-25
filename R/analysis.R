@@ -2233,7 +2233,7 @@ convertNumberCols2Numbers <- function(df) {
 combineSplicingEventInfo <- function(df, data) {
     events   <- rownames(df)
     info     <- parseSplicingEvent(events, data=data, pretty=TRUE)
-    if (is.null(info)) return(NULL)
+    if (is.null(info)) return(df)
     infoGene <- prepareGenePresentation(info$gene)
     df       <- cbind("Event type"=info$subtype, "Chromosome"=info$chrom,
                       "Strand"=info$strand, "Gene"=unlist(infoGene), df)
@@ -2533,7 +2533,6 @@ analysesTableSet <- function(session, input, output, analysesType, analysesID,
             # Set new data
             setAnalysesFiltered(stats)
             
-            rownames(stats) <- prettifyEventID(rownames(stats), data=stats)
             # Keep cols or no data will be rendered
             cols  <- getAnalysesColumns()
             cols  <- cols[cols %in% colnames(stats)]
@@ -2631,7 +2630,7 @@ analysesTableSet <- function(session, input, output, analysesType, analysesID,
         if (analysesType == "PSI") {
             ASevents <- rownames(stats)
             genes <- unique(names(getGenesFromSplicingEvents(
-                ASevents, data=attr(stats, "eventData"))))
+                ASevents, data=stats)))
             origin <- "Selection from differential splicing analysis"
         } else if (analysesType == "GE") {
             genes <- rownames(stats)
@@ -2675,13 +2674,15 @@ analysesTableSet <- function(session, input, output, analysesType, analysesID,
 
 #' Set up environment and redirect user to a page based on click information
 #' @keywords internal
-processClickRedirection <- function(click, survival=FALSE) {
+processClickRedirection <- function(click, psi=NULL, survival=FALSE) {
     if (is.null(click)) return(NULL)
     
-    groups <- ifelse(is.null(click$groups), "null", toJSarray(click$groups))
+    groups <- ifelse(is.null(click$groups),
+                     "null", toJSarray(click$groups))
+    if (groups == "['']") groups <- "null"
     
     isSplicingEvent <- !is.null(click$event)
-    if (isSplicingEvent) setASevent(click$event)
+    if (isSplicingEvent) setASevent(click$event, data=psi)
     
     if (!survival) {
         if (isSplicingEvent) {
@@ -2912,14 +2913,13 @@ analysesPlotSet <- function(session, input, output, analysesType, analysesID,
             output$tooltip <- renderUI(NULL)
             return(NULL)
         }
-        
-        stats  <- res$data
-        xLabel <- res$xLabel
-        yLabel <- res$yLabel
+        statsDf <- res$data
+        xLabel  <- res$xLabel
+        yLabel  <- res$yLabel
         
         ggplotServer(
-            input=input, output=output, id=analysesID, df=stats, x=xLabel, 
-            y=yLabel, eventData=eventData, plot={
+            input=input, output=output, id=analysesID, df=statsDf, x=xLabel, 
+            y=yLabel, eventData=stats, plot={
                 parseHighlight <- function(input, arg) {
                     argStr <- function(...) paste0(arg, ...)
                     
@@ -2959,7 +2959,7 @@ analysesPlotSet <- function(session, input, output, analysesType, analysesID,
                 # Check selected events
                 selected <- getSelectedPoints(analysesID)
                 selected <- rownames(filtered)[selected]
-                selected <- which(rownames(stats) %in% selected)
+                selected <- which(rownames(statsDf) %in% selected)
                 if (length(selected) < 1) selected <- NULL
                 
                 params <- list(size=input$baseSize, col=input$baseColour,
@@ -2985,7 +2985,7 @@ analysesPlotSet <- function(session, input, output, analysesType, analysesID,
                 
                 labelled <- getLabelledPoints(analysesID)
                 eventPlot <- createEventPlotting(
-                    stats, xLabel, yLabel, params, highlightX, highlightY, 
+                    statsDf, xLabel, yLabel, params, highlightX, highlightY, 
                     highlightParams, selected, selectedParams, labelled, 
                     labelledParams, xlim=xlim, ylim=ylim)
                 setHighlightedPoints(analysesID, eventPlot$highlighted)

@@ -4,7 +4,7 @@
 \alias{processClickRedirection}
 \title{Set up environment and redirect user to a page based on click information}
 \usage{
-processClickRedirection(click, survival = FALSE)
+processClickRedirection(click, psi = NULL, survival = FALSE)
 }
 \description{
 Set up environment and redirect user to a page based on click information

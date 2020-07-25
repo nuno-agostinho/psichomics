@@ -92,28 +92,21 @@ ggplotTooltip <- function(df, hover, x, y, eventData=NULL) {
     
     thisPoint <- rownames(point)
     if ( areSplicingEvents(thisPoint, data=eventData) ) {
-        event   <- parseSplicingEvent(thisPoint, pretty=TRUE, data=eventData)
-        if (is.null(event)) {
-            gene    <- NULL
-            type    <- NULL
-            coord   <- NULL
-            diagram <- NULL
+        res  <- prepareEventInfoTooltip(thisPoint, data=eventData)
+        head <- tags$div(style="padding: 5px;", tags$small(tags$b(thisPoint)))
+        if (!is.null(res)) {
+            gene    <- trItem("Gene", res$gene[[1]])
+            type    <- trItem("Event type", res$subtype[[1]])
+            coord   <- trItem("Coordinates", res$coord[[1]])
+            diagram <- plotSplicingEventHelper(thisPoint, data=eventData)
+            if (!is.null(diagram)) diagram <- trItem("Diagram", diagram)
+            params  <- tagList(gene, type, coord, diagram)
+        } else {
+            params  <- NULL
         }
-        
-        strand  <- ifelse(event$strand == "+", "forward", "reverse")
-        gene    <- paste(event$gene[[1]], collapse=" or ")
-        type    <- trItem("Event type", event$subtype)
-        
-        coord   <- sprintf("chr %s: %s to %s (%s strand)", event$chrom,
-                           event$pos[[1]][[1]], event$pos[[1]][[2]], strand)
-        coord   <- trItem("Coordinates", coord)
-        diagram <- plotSplicingEventHelper(thisPoint, data=eventData)
-        if (!is.null(diagram)) diagram <- trItem("Diagram", diagram)
     } else {
-        gene    <- thisPoint
-        type    <- NULL
-        coord   <- NULL
-        diagram <- NULL
+        head   <- tags$thead(trItem("Gene", thisPoint))
+        params <- NULL
     }
     
     left <- hover$coords_css$x + 10
@@ -123,9 +116,8 @@ ggplotTooltip <- function(df, hover, x, y, eventData=NULL) {
                            "right: calc(100%% - %spx); top: %spx;")
     tooltipStyle <- sprintf(tooltipStyle, left, top)
     tooltip <- wellPanel(class="well-sm", style=tooltipStyle, tags$table(
-        class="table table-condensed", style="margin-bottom: 0;",
-        tags$thead(trItem("Gene", gene)),
-        tags$tbody(type, coord, diagram,
+        class="table table-condensed", style="margin-bottom: 0;", head,
+        tags$tbody(params,
                    trItem(x, roundDigits(point[[x]])),
                    trItem(y, roundDigits(point[[y]])))))
     return(tooltip)

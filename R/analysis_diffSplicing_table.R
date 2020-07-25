@@ -415,8 +415,8 @@ optimSurvDiffSet <- function(session, input, output) {
     })
     
     # Show survival page when clicking the survival curves
-    observe(processClickRedirection(
-        input$statsTable_survCutoff_last_clicked, survival=TRUE))
+    observe(processClickRedirection(input$statsTable_survCutoff_last_clicked,
+                                    psi=getInclusionLevels(), survival=TRUE))
 }
 
 #' Set of functions to perform differential analyses
@@ -473,6 +473,7 @@ diffSplicingSet <- function(session, input, output) {
             inputID=ns("statsTable_diffSplicing_last_clicked"))
         attr(stats, "groups")    <- attrGroups
         attr(stats, "eventData") <- getSplicingEventInformation(psi)
+        attr(stats, "dataType")  <- attr(psi, "dataType")
         setDifferentialSplicing(stats)
         setDifferentialSplicingSurvival(NULL)
         updateCollapse(session, "diffSplicingCollapse", "plotEvents")
@@ -511,7 +512,8 @@ diffSplicingSet <- function(session, input, output) {
     })
     
     # Go to differential analysis when clicking on density plot
-    observe(processClickRedirection(input$statsTable_diffSplicing_last_clicked))
+    observe(processClickRedirection(input$statsTable_diffSplicing_last_clicked,
+                                    psi=getInclusionLevels()))
 }
 
 #' @rdname appServer
