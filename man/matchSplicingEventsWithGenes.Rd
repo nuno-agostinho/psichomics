@@ -8,6 +8,8 @@ matchSplicingEventsWithGenes(ASevents, data = NULL)
 }
 \arguments{
 \item{ASevents}{Character: alternative splicing events to be matched}
+
+\item{data}{Matrix or data frame: alternative splicing information}
 }
 \value{
 Named character vector containing the splicing events and their

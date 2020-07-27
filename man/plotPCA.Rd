@@ -46,6 +46,9 @@ plotPCA(pca, pcX=2, pcY=3)
 
 # Plot both individuals and loadings
 plotPCA(pca, pcX=2, pcY=3, loadings=TRUE)
+
+# Only plot loadings
+plotPCA(pca, pcX=2, pcY=3, loadings=TRUE, individuals=FALSE)
 }
 \seealso{
 Other functions to analyse principal components: 

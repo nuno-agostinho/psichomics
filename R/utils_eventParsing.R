@@ -156,6 +156,7 @@ collapseElemsToSingleString <- function(ll) {
 #' @param coords Boolean: display extra coordinates regarding the alternative 
 #' and constitutive regions of alternative splicing events? Only used if 
 #' \code{char = FALSE}
+#' @param data Matrix or data frame: alternative splicing information
 #' 
 #' @return Data.frame containing type of event, chromosome, strand, gene and
 #' position of alternative splicing events or character with that same

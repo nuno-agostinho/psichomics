@@ -1990,8 +1990,7 @@ createDensitySparklines <- function(data, events, areSplicingEvents=TRUE,
     
     if (!is.null(minX) || !is.null(maxX))
         hc <- hc %>% hc_xAxis(min=minX, max=maxX)
-    createSparklines(hc, data, ns("statsTable_diffAnalysis_last_clicked"),
-                     events=events, groups=groups, geneExpr=geneExpr,
+    createSparklines(hc, data, events=events, groups=groups, geneExpr=geneExpr,
                      inputID=inputID)
 }
 

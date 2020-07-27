@@ -27,6 +27,8 @@ plotSplicingEvent(
 \arguments{
 \item{ASevent}{Character: alternative splicing event identifiers}
 
+\item{data}{Matrix or data frame: alternative splicing information}
+
 \item{showText}{Boolean: display coordinates and length (if available)}
 
 \item{showPath}{Boolean: display alternative splicing junctions}
@@ -78,5 +80,5 @@ diagram <- plotSplicingEvent(ASevent)
 
 diagram[["A3SS_3_-_145796903_145794682_145795711_PLOD2"]]
 diagram[[6]]
-diagram
+\donttest{diagram}
 }

@@ -30,6 +30,13 @@ preserveAttributes <- function(x) {
 
 #' Preserve attributes of \code{sticky} objects when extracting or transposing
 #' object
+#' 
+#' Most attributes - with the exception of \code{names}, \code{dim},
+#' \code{dimnames}, \code{class} and \code{row.names} - are preserved in simple
+#' transformations of objects from class \code{sticky}
+#' 
+#' @return Transformed object with most attributes preserved
+#' 
 #' @export
 t.sticky <- function(x) {
     attrs <- attributes(x)
@@ -47,6 +54,10 @@ t.sticky <- function(x) {
 }
 
 #' @rdname t.sticky
+#' 
+#' @param x Object
+#' @param i,j,... Numeric or character: indices of elements to extract
+#' 
 #' @export
 `[.sticky` <- function(x, i, j, ...) {
     attrs <- attributes(x)

@@ -322,6 +322,9 @@ calculateLoadingsContribution <- function(pca, pcX=1, pcY=2) {
 #' 
 #' # Plot both individuals and loadings
 #' plotPCA(pca, pcX=2, pcY=3, loadings=TRUE)
+#' 
+#' # Only plot loadings
+#' plotPCA(pca, pcX=2, pcY=3, loadings=TRUE, individuals=FALSE)
 plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE, 
                     loadings=FALSE, nLoadings=NULL) {
     if (is.character(pcX)) pcX <- as.numeric(gsub("[A-Za-z]", "", pcX))

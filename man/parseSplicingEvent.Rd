@@ -27,6 +27,8 @@ assembly version); only used if \code{pretty = TRUE} and \code{char = TRUE}}
 \item{coords}{Boolean: display extra coordinates regarding the alternative 
 and constitutive regions of alternative splicing events? Only used if 
 \code{char = FALSE}}
+
+\item{data}{Matrix or data frame: alternative splicing information}
 }
 \value{
 Data.frame containing type of event, chromosome, strand, gene and

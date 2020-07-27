@@ -4,7 +4,7 @@
 #' 
 #' @importFrom shiny div tags
 #' 
-#' @inherit shiny::sidebarPanel
+#' @inheritParams shiny::sidebarPanel
 #' 
 #' @return HTML elements
 #' @keywords internal

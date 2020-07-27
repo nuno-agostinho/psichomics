@@ -10,7 +10,16 @@ object}
 
 \method{[}{sticky}(x, i, j, ...)
 }
+\arguments{
+\item{x}{Object}
+
+\item{i, j, ...}{Numeric or character: indices of elements to extract}
+}
+\value{
+Transformed object with most attributes preserved
+}
 \description{
-Preserve attributes of \code{sticky} objects when extracting or transposing
-object
+Most attributes - with the exception of \code{names}, \code{dim},
+\code{dimnames}, \code{class} and \code{row.names} - are preserved in simple
+transformations of objects from class \code{sticky}
 }

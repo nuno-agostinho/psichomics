@@ -13,6 +13,8 @@ getGenesFromSplicingEvents(ASevents, data = NULL)
 \item{genes}{Character: gene symbols (or TCGA-styled gene symbols)}
 
 \item{ASevents}{Character: alternative splicing events}
+
+\item{data}{Matrix or data frame: alternative splicing information}
 }
 \value{
 Named character containing alternative splicing events or genes and 

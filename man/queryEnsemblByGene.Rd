@@ -19,6 +19,8 @@ identifier)}
 identifier)}
 
 \item{event}{Character: alternative splicing event}
+
+\item{data}{Matrix or data frame: alternative splicing information}
 }
 \value{
 Information from Ensembl

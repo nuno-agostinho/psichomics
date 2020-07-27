@@ -376,6 +376,7 @@ diagramSplicingEvent <- function(
 #' Plot diagram of alternative splicing events
 #' 
 #' @param ASevent Character: alternative splicing event identifiers
+#' @inheritParams parseSplicingEvent
 #' @inheritParams diagramSplicingEvent
 #' 
 #' @importFrom shiny tag tagList
@@ -396,7 +397,7 @@ diagramSplicingEvent <- function(
 #' 
 #' diagram[["A3SS_3_-_145796903_145794682_145795711_PLOD2"]]
 #' diagram[[6]]
-#' diagram
+#' \donttest{diagram}
 plotSplicingEvent <- function(
     ASevent, data=NULL, showText=TRUE, showPath=TRUE, 
     showAlternative1=TRUE, showAlternative2=TRUE,
