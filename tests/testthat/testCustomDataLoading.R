@@ -41,8 +41,10 @@ test_that("Prepare SRA metadata", {
     sraMetadata <- paste(unlist(sraMetadata), collapse="\n")
     
     info <- prepareSRAmetadata(sraMetadata, output=NULL)
-    expect_identical(info$`Sample ID`, paste0("SRR636861", 2:5))
-    expect_identical(unique(info$`Assay Type`), "RNA-Seq")
+    info <- lapply(info, as.character)
+    
+    expect_identical(info$Run, paste0("SRR636861", 2:5))
+    expect_identical((unique(info$`Assay Type`)), "RNA-Seq")
     expect_identical(unique(info$Cell_Line), "HT29")
     expect_identical(unique(info$`Center Name`), "GEO")
     expect_identical(unique(info$Consent), "public")

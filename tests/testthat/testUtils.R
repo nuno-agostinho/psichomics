@@ -146,8 +146,9 @@ test_that("Parse alternative splicing event from identifiers", {
     expect_equal(unlist(parsed$gene),
                  c("TPM1", "CYB561A3", "PRMT2", "DVL1", "PPP2R4", "H2AFY",
                    "MYL6", "FGFR1", "UHRF2", "PTPRS", "TPM1", "EXOC7"))
-    expect_equal(tail(colnames(parsed), 4), 
-                 c("constitutive1", "alternative1", "alternative2",
-                   "constitutive2"))
+    expect_equal(colnames(parsed), 
+                 c("type", "chrom", "strand", "gene", "pos",
+                   "constitutive1", "alternative1", "alternative2",
+                   "constitutive2", "start", "end", "subtype"))
 })
 

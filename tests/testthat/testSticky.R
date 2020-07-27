@@ -75,9 +75,9 @@ test_that("Sticky data frames preserve attributes", {
     compareAttrs(df9, df10)
     compareAttrs(df9, df11, c("colour", "animal"))
     
-    df12 <- preserveAttributes(df1)
-    df13 <- df12 + 10
-    compareAttrs(df12, df13)
+    # df12 <- preserveAttributes(df1)
+    # df13 <- df12 + 10
+    # compareAttrs(df12, df13)
 })
 
 test_that("Sticky matrices preserve attributes", {

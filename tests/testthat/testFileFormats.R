@@ -72,7 +72,7 @@ test_that("Load generic junction reads", {
             chr3_JH159137v1_alt:616564:619706:-	11	32	42
             chr6_JH159137v1_random:2116564:2119706:-	83	70	95
             chrX_JH159137v1_alt:1564:1594:-	234	32	65"
-    expect_warning(table <- loadFIle(txt, formats))
+    expect_warning(table <- loadFile(txt, formats))
     expect_null(table)
     
     # Duplicated junctions are discarded with a warning

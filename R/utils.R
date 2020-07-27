@@ -166,7 +166,11 @@ is.whole <- function(x, tol=.Machine$double.eps^0.5) {
 # Template for using faster version of row- or column-wise statistics from Rfast
 fasterDataStats <- function(mat, fastFUN, classicFUN=NULL, na.rm=FALSE,
                             byRow=TRUE, ...) {
-    if (!is.matrix(mat)) mat <- as.matrix(mat)
+    if (is.vector(mat)) {
+        mat <- matrix(mat, nrow=1)
+    } else if (!is.matrix(mat)) {
+        mat <- as.matrix(mat)
+    }
     
     if (!is.null(classicFUN)) {
         # Use classicFUN to calculate missing values

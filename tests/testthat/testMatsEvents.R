@@ -6,7 +6,11 @@ test_that("parseMatsAnnotation parses annotation from rMATS", {
     mats <- parseMatsAnnotation(matsOutput)
     expect_equal(nrow(mats), 83)
     expect_is(mats, "ASevents")
-    expect_equal(length(mats), 15)
+    expect_equal(length(mats), 14)
+    expect_equal(colnames(mats),
+                 c("Program", "Gene", "Chromosome", "Strand", "Event.type",
+                   "Event.ID", "C1.start", "C1.end", "A1.start", "A1.end",
+                   "A2.start", "A2.end", "C2.start", "C2.end"))
     expect_equal(unique(mats$Program), "MATS")
     expect_equal(unique(mats$Strand), c("-", "+"))
     
@@ -14,7 +18,11 @@ test_that("parseMatsAnnotation parses annotation from rMATS", {
     mats <- parseMatsAnnotation(matsOutput, novelEvents=FALSE)
     expect_equal(nrow(mats), 63)
     expect_is(mats, "ASevents")
-    expect_equal(length(mats), 15)
+    expect_equal(length(mats), 14)
+    expect_equal(colnames(mats),
+                 c("Program", "Gene", "Chromosome", "Strand", "Event.type",
+                   "Event.ID", "C1.start", "C1.end", "A1.start", "A1.end",
+                   "A2.start", "A2.end", "C2.start", "C2.end"))
     expect_equal(unique(mats$Program), "MATS")
     expect_equal(unique(mats$Strand), c("-", "+"))
 })

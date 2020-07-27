@@ -1792,7 +1792,8 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
             
             # Add different, arbitrary y values per group (useful when only
             # displaying the rug plot)
-            y <- match(group, unique(ns)) * max(den$y) / 1000
+            maxi <- ifelse("y" %in% names(den), max(den$y), max(den))
+            y <- match(group, unique(ns)) * maxi / 1000
             hc <- hc %>%
                 hc_scatter(
                     row, rep(y, length(row)), name=group, color=fill,

@@ -91,7 +91,7 @@ context("Distribution plot")
 eventPSI <- as.numeric(psi[2, ])
 
 test_that("Plot distribution of multiple values per group", {
-    plot <- plotDistribution(eventPSI, group)
+    plot <- suppressWarnings(plotDistribution(eventPSI, group))
     
     expect_is(plot, "highchart")
     expect_equal(plot$x$type, "chart")

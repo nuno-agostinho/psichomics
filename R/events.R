@@ -509,6 +509,7 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
     } else {
         geneCol <- "Gene"
     }
+    gene       <- NULL
     coords     <- rownames(junctionQuant)
     showStrand <- any(grepl("\\+|\\-", coords))
     
@@ -522,7 +523,9 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                                con1end, alt1start, alt1end, con2start, geneCol)
         chr    <- annotation$Chromosome
         strand <- annotation$Strand
-        gene   <- prepareGenePresentation(annotation[[geneCol]])
+        if (!is.null(geneCol)) {
+            gene <- prepareGenePresentation(annotation[[geneCol]])
+        }
         
         con1end    <- annotation[[con1end]]
         alt1start  <- annotation[[alt1start]]
@@ -566,7 +569,9 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                                alt2start, alt2end, con2start, geneCol)
         chr    <- annotation$Chromosome
         strand <- annotation$Strand
-        gene   <- prepareGenePresentation(annotation[[geneCol]])
+        if (!is.null(geneCol)) {
+            gene <- prepareGenePresentation(annotation[[geneCol]])
+        }
         
         con1end    <- annotation[[con1end]]
         alt1start  <- annotation[[alt1start]]
@@ -617,7 +622,9 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                                alt2end, alt1end, con2start, geneCol)
         chr    <- annotation$Chromosome
         strand <- annotation$Strand
-        gene   <- prepareGenePresentation(annotation[[geneCol]])
+        if (!is.null(geneCol)) {
+            gene <- prepareGenePresentation(annotation[[geneCol]])
+        }
         
         alt1end    <- annotation[[alt1end]]
         alt2end    <- annotation[[alt2end]]
@@ -660,7 +667,9 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                                con1end, alt1start, alt2start, geneCol)
         chr    <- annotation$Chromosome
         strand <- annotation$Strand
-        gene   <- prepareGenePresentation(annotation[[geneCol]])
+        if (!is.null(geneCol)) {
+            gene <- prepareGenePresentation(annotation[[geneCol]])
+        }
         
         con1end    <- annotation[[con1end]]
         alt1start  <- annotation[[alt1start]]
@@ -701,7 +710,9 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                                alt2end, alt1end, geneCol)
         chr    <- annotation$Chromosome
         strand <- annotation$Strand
-        gene   <- prepareGenePresentation(annotation[[geneCol]])
+        if (!is.null(geneCol)) {
+            gene <- prepareGenePresentation(annotation[[geneCol]])
+        }
         
         alt1end <- annotation[[alt1end]]
         alt2end <- annotation[[alt2end]]
@@ -740,7 +751,9 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                                alt1start, alt2start, geneCol)
         chr    <- annotation$Chromosome
         strand <- annotation$Strand
-        gene   <- prepareGenePresentation(annotation[[geneCol]])
+        if (!is.null(geneCol)) {
+            gene <- prepareGenePresentation(annotation[[geneCol]])
+        }
         
         alt1start <- annotation[[alt1start]]
         alt2start <- annotation[[alt2start]]
@@ -783,8 +796,13 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
     psi    <- psi[!naRows, , drop=FALSE]
     
     # Finalise AS event information
-    gene <- annotation[[geneCol]]
-    if (!is.null(gene)) gene <- I(gene)
+    gene <- NULL
+    if (!is.null(geneCol)) gene <- annotation[[geneCol]]
+    if (!is.null(gene)) {
+        gene <- I(gene)
+    } else {
+        gene <- NA
+    }
     eventData <- data.frame(type=eventType, subtype=eventType, 
                             chrom=chr, strand=strand, gene=gene,
                             start=sapply(coords_pos, min),
