@@ -60,7 +60,7 @@ pcaUI <- function(id) {
     )
     
     performPcaCollapse <- bsCollapsePanel(
-        list(icon("sliders"), "Perform PCA"), value="Perform PCA", style="info",
+        list(icon("cogs"), "Perform PCA"), value="Perform PCA", style="info",
         errorDialog(paste("No alternative splicing quantification or gene",
                           "expression data are available."),
                     id=ns("pcaOptionsDialog"), buttonLabel="Load data",

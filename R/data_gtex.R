@@ -56,7 +56,7 @@ gtexDataUI <- function(id, panel) {
           bsCollapse(
               id=ns("filterCollapse"),
               bsCollapsePanel(
-                  title=tagList(icon("filter"), "Filter tissues to load",
+                  title=tagList(icon("lungs"), "Filter tissues to load",
                                 contextUI(ns("filterText"))), 
                   value="Load by tissue",
                   div(id=ns("loadingAvailableTissues"), class="progress",
@@ -414,6 +414,7 @@ gtexDataServer <- function(input, output, session) {
         fadeOut(tissueSelect)
         tissues <- tryCatch(getGtexTissues(folder, release),
                             error=return, warning=return)
+        suppressWarnings(closeProgress())
         fadeIn(tissueSelect, animType="fade")
         tissues <- c(tissues, "Select one or more tissues"="")
         return(tissues)

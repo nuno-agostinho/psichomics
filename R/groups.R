@@ -243,7 +243,7 @@ groupManipulationInput <- function(id, type) {
 groupsUI <- function(id, tab) {
     ns <- NS(id)
     
-    tab(icon="object-group", title="Groups", tabsetPanel(
+    tab(icon="object-ungroup", title="Groups", tabsetPanel(
         id="groupsTypeTab",
         tabPanel(
             "Subject and sample groups",

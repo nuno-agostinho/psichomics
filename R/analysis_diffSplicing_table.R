@@ -138,7 +138,7 @@ diffSplicingTableUI <- function(id) {
                     buttonId=ns("loadIncLevels")),
                 hidden(statAnalysesOptions)),
             bsCollapsePanel(
-                list(icon("sliders"), "Plot options and table filtering"),
+                list(icon("binoculars"), "Plot options and table filtering"),
                 style="info", value="plotEvents",
                 errorDialog("Differential splicing analysis not yet performed.",
                             id=ns("missingDiffAnalyses")),

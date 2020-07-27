@@ -118,7 +118,8 @@ survivalUI <- function(id) {
                        tagList(icon("users"), "Groups for survival analysis"),
                        value="survivalGroups", style="info", survivalGroups),
                    bsCollapsePanel(
-                       tagList(icon("sliders"), "Kaplan-Meier plot options"),
+                       tagList(icon("check-square"),
+                               "Kaplan-Meier plot options"),
                        value="KMoptions", style="info", kaplanMeierOptions)),
         actionButton(ns("coxModel"), "Fit Cox PH model"),
         actionButton(ns("survivalCurves"), class="btn-primary",

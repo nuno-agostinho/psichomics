@@ -187,7 +187,7 @@ inclusionLevelsFilterInterface <- function(ns) {
         options=list(plugins=list("remove_button")))
     
     sampleFiltering <- bsCollapsePanel(
-        tagList(icon("filter"), "Sample filtering",
+        tagList(icon("vial"), "Sample filtering",
                 contextUI(ns("sampleFilterText"))),
         value="Sample filtering",
         selectizeInput(ns("sampleFilter"), "Samples to discard", multiple=TRUE,
@@ -198,7 +198,7 @@ inclusionLevelsFilterInterface <- function(ns) {
     }
     
     psiFiltering <- bsCollapsePanel(
-        tagList(icon("filter"), "PSI filtering",
+        tagList(icon("sliders-h"), "PSI filtering",
                 contextUI(ns("psiFilterText"))),
         value="PSI filtering",
         checkboxInput(ns("enablePSIfiltering"), value=FALSE, width="100%",
@@ -232,7 +232,7 @@ inclusionLevelsFilterInterface <- function(ns) {
             id=ns(id), style="margin: 10px;")
     }
     geneFiltering <- bsCollapsePanel(
-        title=tagList(icon("filter"), "Cognate gene filtering",
+        title=tagList(icon("dna"), "Cognate gene filtering",
                       contextUI(ns("geneFilterText"))),
         value="Filter by genes",
         hidden(unparsableError("unparsableGenes")),

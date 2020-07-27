@@ -139,5 +139,5 @@ dimReductionServer <- function(input, output, session) {
 }
 
 attr(dimReductionUI, "loader") <- "analysis"
-attr(dimReductionUI, "name") <- "Dimensionality reduction techniques"
+attr(dimReductionUI, "name") <- "Dimensionality reduction"
 attr(dimReductionServer, "loader") <- "analysis"

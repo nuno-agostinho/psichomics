@@ -117,13 +117,13 @@ inclusionLevelsInterface <- function(ns) {
     
     filtering <- bsCollapse(
         bsCollapsePanel(
-            tagList(icon("filter"), "Sample filtering",
+            tagList(icon("vial"), "Sample filtering",
                     contextUI(ns("sampleFilterText"))),
             value="Sample filtering",
             selectizeInput(ns("sampleFilter"), "Samples to discard",
                            multiple=TRUE, width="100%", choices=character(0))),
         bsCollapsePanel(
-            tagList(icon("filter"), "PSI filtering",
+            tagList(icon("sliders-h"), "PSI filtering",
                     contextUI(ns("psiFilterText"))),
             value="PSI filtering",
             checkboxInput(ns("enablePSIfiltering"), value=FALSE, width="100%",
@@ -157,7 +157,7 @@ inclusionLevelsInterface <- function(ns) {
                     ns("maxRange"), "Range <=",
                     min=0, max=1, value=1, step=0.1, width="100%")))),
         bsCollapsePanel(
-            title=tagList(icon("filter"), "Cognate gene filtering",
+            title=tagList(icon("dna"), "Cognate gene filtering",
                           contextUI(ns("geneFilterText"))),
             value="Filter by genes",
             radioButtons(ns("filter"), label=NULL,

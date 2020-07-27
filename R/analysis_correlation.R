@@ -7,7 +7,7 @@ correlationUI <- function(id) {
     ns <- NS(id)
     
     corrParams <- bsCollapsePanel(
-        tagList(icon("filter"), "Correlation parameters"), 
+        tagList(icon("balance-scale-right"), "Correlation parameters"), 
         value="corrParams", style="info",
         helpText(paste("Correlate gene expression against alternative",
                        "splicing quantification")),

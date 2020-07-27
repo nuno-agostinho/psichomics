@@ -115,7 +115,8 @@ toJSarray <- function(values) {
 processButton <- function(id, label, ..., class="btn-primary") {
     spinner <- tags$i(id=paste0(id, "Loading"), class="fa fa-spinner fa-spin")
     button  <- actionButton(id, class=class, type="button", 
-                            label=div(hidden(spinner), label), ...)
+                            label=div(hidden(spinner), label), ...,
+                            style="margin-top: 4px; margin-bottom: 4px;")
     return(button)
 }
 

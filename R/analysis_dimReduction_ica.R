@@ -156,7 +156,7 @@ icaUI <- function(id) {
     )
     
     performIcaCollapse <- bsCollapsePanel(
-        list(icon("sliders"), "Perform ICA"), value="Perform ICA", style="info",
+        list(icon("cogs"), "Perform ICA"), value="Perform ICA", style="info",
         errorDialog(paste("No alternative splicing quantification or gene",
                           "expression data are available."),
                     id=ns("icaOptionsDialog"), buttonLabel="Load data",

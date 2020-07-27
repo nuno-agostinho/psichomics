@@ -107,7 +107,7 @@ diffExpressionTableUI <- function(id) {
                     buttonId=ns("loadGeneExpr")),
                 hidden(statAnalysesOptions)),
             bsCollapsePanel(
-                list(icon("sliders"), "Plot options and table filtering"),
+                list(icon("binoculars"), "Plot options and table filtering"),
                 style="info", value="plotEvents",
                 errorDialog(
                     "Differential expression analysis not yet performed.",

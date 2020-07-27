@@ -43,14 +43,14 @@ geNormalisationFilteringInterface <- function(ns) {
                        choices=NULL),
         bsCollapse(
             bsCollapsePanel(
-                tagList(icon("filter"), "Sample filtering",
+                tagList(icon("vial"), "Sample filtering",
                         contextUI(ns("sampleFilterText"))),
                 value="Sample filtering",
                 selectizeInput(ns("sampleFilter"), "Samples to discard",
                                multiple=TRUE, width="100%",
                                choices=character(0))),
             bsCollapsePanel(
-                tagList(icon("filter"), "Gene filtering", 
+                tagList(icon("dna"), "Gene filtering", 
                         contextUI(ns("filterText"))),
                 value="Filtering",
                 checkboxInput(ns("enableFiltering"), value=TRUE, width="100%",
