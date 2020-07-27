@@ -2,6 +2,7 @@
 % Please edit documentation in R/analysis.R
 \name{analysesTableSet}
 \alias{analysesTableSet}
+\alias{processClickRedirection}
 \alias{analysesPlotSet}
 \title{Set of functions to render differential analyses (plot and table)}
 \usage{
@@ -20,6 +21,8 @@ analysesTableSet(
   getResetPaging,
   setResetPaging
 )
+
+processClickRedirection(click, psi = NULL, survival = FALSE)
 
 analysesPlotSet(
   session,
@@ -58,6 +61,12 @@ analysesPlotSet(
 \item{getResetPaging}{Function: get toggle of reset paging}
 
 \item{setResetPaging}{Function: set toggle of reset paging}
+
+\item{click}{List: click information}
+
+\item{psi}{Data frame or matrix: alternative splicing quantification}
+
+\item{survival}{Boolean: redirect to survival page?}
 }
 \value{
 \code{NULL} (function is only used to modify the Shiny session's
@@ -65,5 +74,7 @@ state or internal variables)
 }
 \description{
 Set of functions to render differential analyses (plot and table)
+
+Set up environment and redirect user to a page based on click information
 }
 \keyword{internal}

@@ -20,7 +20,11 @@
 
 #' Preserve attributes when extracting values
 #' 
-#' Add object to class "sticky"
+#' Add object to class \code{sticky}
+#' 
+#' @param x Object
+#' 
+#' @return Object with class \code{sticky} 
 #' 
 #' @keywords internal
 preserveAttributes <- function(x) {

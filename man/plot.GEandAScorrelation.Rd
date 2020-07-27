@@ -68,7 +68,7 @@ least-squares, and if \code{symmetric}, a re-descending M estimator is used}
 \item{fontSize}{Numeric: plot font size}
 
 \item{...}{
-  Arguments passed on to \code{\link[stats:loess.smooth]{stats::loess.smooth}}
+  Arguments passed on to \code{\link[stats:scatter.smooth]{stats::loess.smooth}}
   \describe{
     \item{\code{span}}{smoothness parameter for \code{loess}.}
     \item{\code{degree}}{degree of local polynomial used.}

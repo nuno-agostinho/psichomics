@@ -17,6 +17,9 @@ getGtexDataURL(
 
 \item{offline}{Boolean: simulate offline behaviour}
 }
+\value{
+Character with URLs to download GTEx data
+}
 \description{
 Get links to download GTEx data
 }

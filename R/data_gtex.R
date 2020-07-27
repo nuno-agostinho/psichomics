@@ -183,6 +183,8 @@ downloadGtexFiles <- function(link, folder) {
 #' 
 #' @importFrom XML xmlParse xmlToDataFrame
 #' @importFrom httr GET http_error
+#' 
+#' @return Character with URLs to download GTEx data
 #' @keywords internal
 getGtexDataURL <- function(release, domain="https://storage.googleapis.com",
                            offline=FALSE) {
@@ -191,7 +193,7 @@ getGtexDataURL <- function(release, domain="https://storage.googleapis.com",
     date <- NULL
     if (!http_error(resp) && !offline) {
         doc <- xmlParse(resp)
-        df  <- xmlToDataFrame(doc, nodes=xmlRoot(doc)[-c(1:4)],
+        df  <- xmlToDataFrame(doc, nodes=xmlRoot(doc)[-c(seq(4))],
                               stringsAsFactors=FALSE)
         files  <- c("annotations/.*Annotations_SampleAttributesDS\\.txt",
                     "annotations/.*Annotations_SubjectPhenotypes.*DS\\.txt",

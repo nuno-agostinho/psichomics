@@ -2673,6 +2673,13 @@ analysesTableSet <- function(session, input, output, analysesType, analysesID,
 }
 
 #' Set up environment and redirect user to a page based on click information
+#' 
+#' @param click List: click information
+#' @param psi Data frame or matrix: alternative splicing quantification
+#' @param survival Boolean: redirect to survival page?
+#' 
+#' @rdname analysesTableSet
+#' 
 #' @keywords internal
 processClickRedirection <- function(click, psi=NULL, survival=FALSE) {
     if (is.null(click)) return(NULL)

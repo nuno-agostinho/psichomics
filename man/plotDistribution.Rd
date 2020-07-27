@@ -32,7 +32,7 @@ length 1, \code{data} values are considered from the same group}
 for each group)?}
 
 \item{...}{
-  Arguments passed on to \code{\link[stats:density.default]{stats::density.default}}
+  Arguments passed on to \code{\link[stats:density]{stats::density.default}}
   \describe{
     \item{\code{bw}}{the smoothing bandwidth to be used.  The kernels are scaled
     such that this is the standard deviation of the smoothing kernel.

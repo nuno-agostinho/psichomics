@@ -6,7 +6,13 @@
 \usage{
 preserveAttributes(x)
 }
+\arguments{
+\item{x}{Object}
+}
+\value{
+Object with class \code{sticky}
+}
 \description{
-Add object to class "sticky"
+Add object to class \code{sticky}
 }
 \keyword{internal}
