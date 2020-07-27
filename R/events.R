@@ -785,7 +785,8 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
     # Finalise AS event information
     gene <- annotation[[geneCol]]
     if (!is.null(gene)) gene <- I(gene)
-    eventData <- data.frame(type=eventType, chrom=chr, strand=strand, gene=gene,
+    eventData <- data.frame(type=eventType, subtype=eventType, 
+                            chrom=chr, strand=strand, gene=gene,
                             start=sapply(coords_pos, min),
                             end=sapply(coords_pos, max),
                             pos=coords_pos,

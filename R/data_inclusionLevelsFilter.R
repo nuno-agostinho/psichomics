@@ -116,8 +116,7 @@ filterPSI <- function(psi, eventType=NULL, eventSubtype=NULL,
     thres <- which(type & subtype &
                        psiThres & medianThres & varThres & rangeThres)
     
-    attr(thres, "filtered") <- c("Filter enabled"="Yes",
-                                 eventTypeText, eventSubtypeText, psiThresText,
+    attr(thres, "filtered") <- c(eventTypeText, eventSubtypeText, psiThresText,
                                  medianThresText, varThresText, rangeThresText)
     return(thres)
 }
@@ -372,11 +371,14 @@ inclusionLevelsFilterServer <- function(input, output, session) {
         processed <- processPSI()
         if (!is.null(processed)) {
             types <- table(processed$subtype)
-            types <- setNames(names(types), as.vector(types))
+            label <- names(types)
+            count <- paste(as.vector(types), "AS events")
+            
+            types <- setNames(label, paste(label, count, sep=" __ "))
             updateSelectizeInput(
                 session, "eventSubtype", choices=types, selected=types,
                 options=list(
-                    plugins=list("remove_button"),
+                    highlight=FALSE, plugins=list("remove_button"),
                     render=I('{option: renderASeventTypeSelection,
                                item: renderASeventTypeSelection}')))
             hide("unparsableEventSubtypes")
@@ -565,7 +567,7 @@ inclusionLevelsFilterServer <- function(input, output, session) {
                                   minLogVar=minLogVar, maxLogVar=maxLogVar,
                                   minRange=minRange, maxRange=maxRange)
             filteredPSI    <- filteredPSI[filtered, ]
-            filterSettings <- attr(filtered, "filtered")
+            filterSettings <- attr(filtered, "filtered")[-c(1, 2)]
         } else {
             filterSettings <- NULL
         }

@@ -173,7 +173,8 @@ fasterDataStats <- function(mat, fastFUN, classicFUN=NULL, na.rm=FALSE,
         res <- fastFUN(mat, ...)
         if (na.rm) {
             nas      <- is.na(res)
-            res[nas] <- classicFUN(mat[nas, ], na.rm=na.rm, fast=FALSE)
+            res[nas] <- classicFUN(mat[nas, , drop=FALSE], na.rm=na.rm,
+                                   fast=FALSE)
         }
     } else {
         res <- fastFUN(mat, na.rm=na.rm, ...)
