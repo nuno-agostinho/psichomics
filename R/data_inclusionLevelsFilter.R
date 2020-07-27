@@ -50,69 +50,75 @@ filterPSI <- function(psi, eventType=NULL, eventSubtype=NULL,
     type <- getSplicingEventInformation(psi)$type
     if (!is.null(eventType) && !is.null(type)) {
         type <- type %in% eventType
-        eventTypeText <- c("Type"=paste(eventType, collapse = ", "))
+        eventTypeText <- c("Splicing event types"=paste(eventType,
+                                                        collapse = ", "))
     } else {
         type <- trueVector(nrow(psi))
-        eventTypeText <- NULL
+        eventTypeText <- c("Splicing event types"="All")
     }
     
     subtype <- getSplicingEventInformation(psi)$subtype
     if (!is.null(eventSubtype) && !is.null(subtype)) {
-        subtype <- subtype %in% eventSubtype
-        eventSubtypeText <- c("Type"=paste(eventSubtype, collapse = ", "))
+        parsed  <- parseSplicingEvent(rownames(psi), data=psi,
+                                      pretty=TRUE)$subtype
+        subtype <- subtype %in% eventSubtype | parsed %in% eventSubtype
+        eventSubtypeText <- c("Splicing event subtypes"=paste(
+            eventSubtype, collapse = ", "))
     } else {
-        subtype <- trueVector(nrow(psi))
-        eventSubtypeText <- NULL
+        subtype          <- trueVector(nrow(psi))
+        eventSubtypeText <- c("Splicing event subtypes"="All")
     }
     
-    if (!is.infinite(minMedian) & !is.infinite(maxMedian)) {
-        medians <- customRowMedians(psi, na.rm=TRUE, fast=TRUE)
-        medianThres <- medians >= minMedian & medians <= maxMedian
+    if (!is.infinite(minMedian) && !is.infinite(maxMedian)) {
+        medians         <- customRowMedians(psi, na.rm=TRUE, fast=TRUE)
+        medianThres     <- medians >= minMedian & medians <= maxMedian
+        medianThresText <- c("Median PSI >="=minMedian,
+                             "Median PSI <="=maxMedian)
     } else {
-        medianThres <- trueVector(nrow(psi))
+        medianThres     <- trueVector(nrow(psi))
+        medianThresText <- NULL
     }
     
-    if (!is.infinite(minLogVar) & !is.infinite(maxLogVar)) {
-        vars <- log10(customRowVars(psi, na.rm=TRUE, fast=TRUE))
-        varThres <- vars >= minLogVar & vars <= maxLogVar
+    if (!is.infinite(minLogVar) && !is.infinite(maxLogVar)) {
+        vars         <- log10(customRowVars(psi, na.rm=TRUE, fast=TRUE))
+        varThres     <- vars >= minLogVar & vars <= maxLogVar
+        varThresText <- c("log10(PSI variance) >="=minLogVar,
+                          "log10(PSI variance) <="=maxLogVar)
     } else {
-        varThres <- trueVector(nrow(psi))
+        varThres     <- trueVector(nrow(psi))
+        varThresText <- NULL
     }
     
-    if (!is.infinite(minPSI) & !is.infinite(maxPSI)) {
-        mini <- customRowMins(psi, na.rm=TRUE, fast=TRUE)
-        maxi <- customRowMaxs(psi, na.rm=TRUE, fast=TRUE)
-        psiThres <- mini >= minPSI & maxi <= maxPSI
+    if (!is.infinite(minPSI) && !is.infinite(maxPSI)) {
+        mini         <- customRowMins(psi, na.rm=TRUE, fast=TRUE)
+        maxi         <- customRowMaxs(psi, na.rm=TRUE, fast=TRUE)
+        psiThres     <- mini >= minPSI & maxi <= maxPSI
+        psiThresText <- c("PSI >="=minPSI, "PSI <="=maxPSI)
     } else {
-        mini <- maxi <- NULL
-        psiThres <- trueVector(nrow(psi))
+        mini         <- maxi <- NULL
+        psiThres     <- trueVector(nrow(psi))
+        psiThresText <- NULL
     }
     
-    if (!is.infinite(minRange) & !is.infinite(maxRange)) {
+    if (!is.infinite(minRange) && !is.infinite(maxRange)) {
         if (!is.null(mini) && !is.null(maxi)) {
             ranges <- maxi - mini
         } else {
             ranges <- customRowRanges(psi, na.rm=TRUE, fast=TRUE)
         }
-        rangeThres <- ranges >= minRange & ranges <= maxRange
+        rangeThres     <- ranges >= minRange & ranges <= maxRange
+        rangeThresText <- c("PSI range >="=minRange, "PSI range <="=maxRange)
     } else {
-        rangeThres <- trueVector(nrow(psi))
+        rangeThres     <- trueVector(nrow(psi))
+        rangeThresText <- NULL
     }
     
     thres <- which(type & subtype &
                        psiThres & medianThres & varThres & rangeThres)
     
     attr(thres, "filtered") <- c("Filter enabled"="Yes",
-                                 eventTypeText,
-                                 eventSubtypeText,
-                                 "PSI >="=minPSI,
-                                 "PSI <="=maxPSI,
-                                 "Median PSI >="=minMedian,
-                                 "Median PSI <="=maxMedian,
-                                 "log10(PSI variance) >="=minLogVar,
-                                 "log10(PSI variance) <="=maxLogVar,
-                                 "PSI range >="=minRange,
-                                 "PSI range <="=maxRange)
+                                 eventTypeText, eventSubtypeText, psiThresText,
+                                 medianThresText, varThresText, rangeThresText)
     return(thres)
 }
 
@@ -153,7 +159,8 @@ discardLowCoveragePSIvalues <- function(
         psi[lowCvg] <- NA
         psi <- removeNAonlyEvents(psi)
         attr(psi, "filtered") <- c(
-            "VAST-TOOLS coverage"=vasttoolsScoresToDiscard)
+            "VAST-TOOLS coverage"=paste(vasttoolsScoresToDiscard, 
+                                        collapse=", "))
     }
     return(psi)
 }
@@ -470,15 +477,14 @@ inclusionLevelsFilterServer <- function(input, output, session) {
     })
     
     # Discard low coverage
-    discardLowCoverage <- reactive({
-        isolate({
-            psi <- getInclusionLevels()
-            vasttoolsScoresToDiscard <- input$vasttoolsScoresToDiscard
+    discardLowCoverage <- function(psi, vasttoolsScoresToDiscard) {
+        discardLowCvgReactive <- reactive({
+            filtered <- discardLowCoveragePSIvalues(
+                psi, vasttoolsScoresToDiscard)
+            return(filtered)
         })
-        filtered <- discardLowCoveragePSIvalues(
-            psi, vasttoolsScoresToDiscard=vasttoolsScoresToDiscard)
-        return(filtered)
-    })
+        discardLowCvgReactive()
+    }
     
     filterSplicingOperation <- function(session, psi, processed, input) {
         eventSubtype <- input$eventSubtype
@@ -505,41 +511,6 @@ inclusionLevelsFilterServer <- function(input, output, session) {
         if (!areThereInclusionLevels(psi)) return(NULL)
         filteredPSI <- psi
         
-        suppressWarnings(updateProgress("Discarding samples"))
-        if (!is.null(sampleFilter) && sampleFilter != "") {
-            samplesToKeep    <- !colnames(filteredPSI) %in% sampleFilter
-            filteredPSI      <- filteredPSI[ , samplesToKeep]
-            sampleFilterText <- paste(sampleFilter, collapse=", ")
-        } else {
-            sampleFilterText <- "None"
-        }
-        sampleFilterSettings <- c("Discarded samples"=sampleFilterText)
-        if (!areThereInclusionLevels(filteredPSI)) return(NULL)
-        
-        eventData <- getSplicingEventInformation(filteredPSI)
-        isVastTools <- isTRUE(unique(eventData$source) == "vast-tools")
-        if ( !is.null(vasttoolsScoresToDiscard) && isVastTools ) {
-            filteredPSI <- discardLowCoverage()
-            if (!areThereInclusionLevels(filteredPSI)) return(NULL)
-        }
-        
-        if (length(eventSubtype) == 1 && eventSubtype == "") {
-            eventSubtype <- NULL
-        }
-        suppressWarnings(updateProgress("Filtering based on PSI values"))
-        if (enablePSIfiltering) {
-            filtered <- filterPSI(filteredPSI, eventSubtype=eventSubtype,
-                                  minPSI=minPSI, maxPSI=maxPSI,
-                                  minMedian=minMedian, maxMedian=maxMedian,
-                                  minLogVar=minLogVar, maxLogVar=maxLogVar,
-                                  minRange=minRange, maxRange=maxRange)
-            filteredPSI    <- filteredPSI[filtered, ]
-            filterSettings <- attr(filtered, "filtered")
-        } else {
-            filterSettings <- c("Filter enabled"="No")
-        }
-        if (!areThereInclusionLevels(filteredPSI)) return(NULL)
-        
         suppressWarnings(updateProgress("Filtering based on genes"))
         if (!is.null(processed$gene)) {
             filter <- getCognateGenesToFilter(filterEnabled, filterGenes,
@@ -551,14 +522,58 @@ inclusionLevelsFilterServer <- function(input, output, session) {
             filter <- NULL
         }
         if (!areThereInclusionLevels(filteredPSI)) return(NULL)
+        geneFilterSettings <- list("Selected cognate genes"=if (
+            is.null(filter)) "All available genes" else filter)
+        
+        suppressWarnings(updateProgress("Discarding samples"))
+        if (!is.null(sampleFilter) && sampleFilter != "") {
+            samplesToKeep    <- !colnames(filteredPSI) %in% sampleFilter
+            filteredPSI      <- filteredPSI[ , samplesToKeep]
+            sampleFilterText <- paste(sampleFilter, collapse=", ")
+        } else {
+            sampleFilterText <- "None"
+        }
+        sampleFilterSettings <- c("Discarded samples"=sampleFilterText)
+        if (!areThereInclusionLevels(filteredPSI)) return(NULL)
+        
+        suppressWarnings(updateProgress("Filtering based on event types"))
+        if ((length(eventSubtype) == 1 && eventSubtype == "") ||
+            is.null(eventSubtype)) {
+            subtypeSettings <- NULL
+        } else {
+            filtered        <- filterPSI(filteredPSI, eventSubtype=eventSubtype)
+            filteredPSI     <- filteredPSI[filtered, ]
+            subtypeSettings <- attr(filtered, "filtered")
+        }
+        if (!areThereInclusionLevels(filteredPSI)) return(NULL)
+        
+        eventData <- getSplicingEventInformation(filteredPSI)
+        isVastTools <- isTRUE(unique(eventData$source) == "vast-tools")
+        if ( !is.null(vasttoolsScoresToDiscard) && isVastTools ) {
+            filteredPSI <- discardLowCoverage(filteredPSI,
+                                              vasttoolsScoresToDiscard)
+            vasttoolsFilterSettings <- attr(filteredPSI, "filtered")
+            if (!areThereInclusionLevels(filteredPSI)) return(NULL)
+        } else {
+            vasttoolsFilterSettings <- NULL
+        }
+        
+        suppressWarnings(updateProgress("Filtering based on PSI values"))
+        if (enablePSIfiltering) {
+            filtered <- filterPSI(filteredPSI, minPSI=minPSI, maxPSI=maxPSI,
+                                  minMedian=minMedian, maxMedian=maxMedian,
+                                  minLogVar=minLogVar, maxLogVar=maxLogVar,
+                                  minRange=minRange, maxRange=maxRange)
+            filteredPSI    <- filteredPSI[filtered, ]
+            filterSettings <- attr(filtered, "filtered")
+        } else {
+            filterSettings <- NULL
+        }
+        if (!areThereInclusionLevels(filteredPSI)) return(NULL)
         
         # Include settings used for alternative splicing quantification
-        settings <- c(
-            list(
-                "Splicing event types"=eventSubtype,
-                "Selected cognate genes"=if (is.null(
-                    filter)) "All available genes" else filter),
-            sampleFilterSettings, filterSettings)
+        settings <- c(geneFilterSettings, sampleFilterSettings, subtypeSettings,
+                      vasttoolsFilterSettings, filterSettings)
         attr(filteredPSI, "settings") <- settings
         attr(filteredPSI, "icon") <- list(symbol="calculator", colour="green")
         suppressWarnings(closeProgress())
@@ -575,7 +590,7 @@ inclusionLevelsFilterServer <- function(input, output, session) {
     # Filter inclusion levels
     filterSplicing <- function() {
         time <- startProcess("filterIncLevels")
-        startProgress("Filtering alternative splicing", divisions=4)
+        startProgress("Filtering alternative splicing", divisions=5)
         psi  <- filterSplicingBasedOnInput()
         if (!is.null(psi)) {
             setInclusionLevels(psi)

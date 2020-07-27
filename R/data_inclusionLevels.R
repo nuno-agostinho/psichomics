@@ -664,18 +664,17 @@ quantifySplicingSet <- function(session, input) {
         
         # Filter PSI values
         enablePSIfiltering <- input$enablePSIfiltering
-        if (enablePSIfiltering) {
-            filtered <- filterPSI(
-                psi, minPSI=input$minPSI, maxPSI=input$maxPSI,
-                minMedian=input$minMedian, maxMedian=input$maxMedian,
-                minLogVar=input$minLogVar, maxLogVar=input$maxLogVar,
-                minRange=input$minRange, maxRange=input$maxRange)
-            filteredPSI <- psi[filtered, ]
-            filterSettings <- attr(filtered, "settings")
-        } else {
-            filteredPSI <- psi
-            filterSettings <- c("Filter enabled"="No")
+        if (!enablePSIfiltering) {
+            minPSI <- minMedian <- minLogVar <- minRange <- -Inf
+            maxPSI <- maxMedian <- maxLogVar <- maxRange <- Inf
         }
+        filtered <- filterPSI(
+            psi, minPSI=input$minPSI, maxPSI=input$maxPSI,
+            minMedian=input$minMedian, maxMedian=input$maxMedian,
+            minLogVar=input$minLogVar, maxLogVar=input$maxLogVar,
+            minRange=input$minRange, maxRange=input$maxRange)
+        filteredPSI <- psi[filtered, ]
+        filterSettings <- attr(filtered, "settings")
         
         # Include settings used for alternative splicing quantification
         allEventTypes <- getSplicingEventTypes()
