@@ -249,12 +249,15 @@ geneExprFileInput <- function(geneExprFileId, clearable=FALSE) {
     input <- fileBrowserInput(
         geneExprFileId, "Gene expression",
         placeholder="No file selected", clearable=clearable,
-        info=TRUE, infoFUN=bsPopover, infoTitle=paste(
-            "File containing the read counts of each gene (rows) per",
-            "sample (columns)."),
+        info=TRUE, infoFUN=bsPopover, infoTitle="Gene expression",
         infoContent=paste(
-            "The first column must contain gene symbols and be named", 
-            tags$kbd("Gene ID"), tags$hr(), helpText("Example:"), tags$table(
+            tags$ul(
+                class="popover-list",
+                tags$li("Tab-separated values (TSV)"),
+                tags$li("Read counts of genes (rows) across sample (columns)"),
+                tags$li("The first column must contain gene symbols and be", 
+                        "named", tags$kbd("Gene ID"))),
+            tags$hr(), helpText("Example:"), tags$table(
                 class="table table-condensed",
                 tags$thead(
                     tableRow("Gene ID", "SMP-18", "SMP-03", "SMP-54", 
@@ -278,22 +281,29 @@ ASquantFileInput <- function(ASquantFileId, clearable=FALSE){
     input <- fileBrowserInput(
         ASquantFileId, "Alternative splicing quantification",
         placeholder="No file selected", clearable=clearable,
-        info=TRUE, infoFUN=bsPopover, infoTitle=paste(
-            "File containing the PSI value of each alternative splicing event",
-            "(rows) per sample (columns)."),
+        info=TRUE, infoFUN=bsPopover,
+        infoTitle="Alternative splicing quantification",
         infoContent=paste(
             tags$ul(
                 class="popover-list",
+                tags$li("Tab-separated values (TSV)"),
+                tags$li("PSI values of alternative splicing events (rows)",
+                        "across samples (columns)"),
                 tags$li(
                     "The first column must contain alternative splicing event",
-                    "identifiers and should be named", tags$kbd("AS Event ID")),
-                tags$li(
-                    "An alternative splicing event must be represented by:",
-                    tags$kbd(paste0("EventType_Chromosome_Strand_Coordinate1_",
-                                    "Coordinate2_..._Gene"))),
-                tags$li("PSI values may be handed between 0 and 1 or between 0",
-                        "and 100. If the latter, PSI values are scaled betwen",
-                        "0 and 1."))))
+                    "identifiers and be named", tags$kbd("AS Event ID")),
+                tags$li("PSI values must be between 0 and 1 or between 0 and",
+                        "100; if the latter, values are automatically scaled",
+                        "between 0 and 1.")),
+            tags$hr(), helpText("Example:"), tags$table(
+                class="table table-condensed",
+                tags$thead(
+                    tableRow("AS Event ID", "SMP-18", "SMP-03", th=TRUE)),
+                tags$tbody(
+                    tableRow("someASevent001", "0.71", "0.30"),
+                    tableRow("anotherASevent653", "0.63", "0.37"),
+                    tableRow("yeatAnother097", "0.38", "0.62")))))
+    
     return(input)
 }
 

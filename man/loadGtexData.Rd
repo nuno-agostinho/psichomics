@@ -52,5 +52,11 @@ Other functions associated with GTEx data retrieval:
 \code{\link{getDownloadsFolder}()},
 \code{\link{getGtexDataTypes}()},
 \code{\link{getGtexTissues}()}
+
+Other functions to load data: 
+\code{\link{loadLocalFiles}()},
+\code{\link{loadSRAproject}()},
+\code{\link{loadTCGAdata}()}
 }
 \concept{functions associated with GTEx data retrieval}
+\concept{functions to load data}

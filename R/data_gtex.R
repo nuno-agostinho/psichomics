@@ -253,6 +253,7 @@ getGtexDataURL <- function(release, domain="https://storage.googleapis.com",
 #' @importFrom R.utils gunzip
 #' 
 #' @family functions associated with GTEx data retrieval
+#' @family functions to load data
 #' @return List with loaded data
 #' @export
 #' 

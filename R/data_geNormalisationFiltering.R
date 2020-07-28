@@ -189,7 +189,6 @@ normaliseGeneExpression <- function(geneExpr, geneFilter=NULL, method="TMM",
 #' @inherit geNormalisationFilteringServer
 #'
 #' @importFrom shiny tags
-#' @importFrom shinyBS bsPopover
 #'
 #' @keywords internal
 loadGeneExpressionSet <- function(session, input, output) {

@@ -37,7 +37,6 @@ reference:
     - title: "User-provided data loading"
       contents:
         - loadLocalFiles
-        - prepareSRAmetadata
         - prepareJunctionQuant
         - prepareGeneQuant
     - title: "Gene expression pre-processing"

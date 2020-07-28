@@ -23,5 +23,11 @@ Download and load SRA projects via
 \seealso{
 Other functions associated with SRA data retrieval: 
 \code{\link{getDownloadsFolder}()}
+
+Other functions to load data: 
+\code{\link{loadGtexData}()},
+\code{\link{loadLocalFiles}()},
+\code{\link{loadTCGAdata}()}
 }
 \concept{functions associated with SRA data retrieval}
+\concept{functions to load data}

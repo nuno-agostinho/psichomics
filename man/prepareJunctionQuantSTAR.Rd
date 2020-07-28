@@ -43,8 +43,4 @@ prepareGeneQuant("Control rep1"=geneCountFile1,
                  "KD rep2"=geneCountFile4)
 }
 }
-\seealso{
-Other functions to load local files: 
-\code{\link{loadLocalFiles}()}
-}
 \keyword{internal}

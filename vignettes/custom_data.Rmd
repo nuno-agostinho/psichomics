@@ -1,5 +1,5 @@
 ---
-title: 'Loading SRA and user-provided RNA-seq data'
+title: 'Loading SRA, VAST-TOOLS and user-provided RNA-seq data'
 author: "Nuno Saraiva-Agostinho"
 date: "`r Sys.Date()`"
 bibliography: refs.bib
@@ -8,7 +8,7 @@ output:
     rmarkdown::html_vignette:
         toc: true
 vignette: >
-  %\VignetteIndexEntry{Loading SRA and user-provided RNA-seq data}
+  %\VignetteIndexEntry{Loading SRA, VAST-TOOLS and user-provided RNA-seq data}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -21,7 +21,106 @@ splicing and gene expression based on [The Cancer Genome Atlas (TCGA)][tcga]
 [Genotype-Tissue Expression (GTEx)][gtex] project (containing data for multiple
 normal human tissues), [Sequence Read Archive][sra] and user-provided data.
 
-# Loading data based on RNA-seq data
+# Preparing generic data
+
+psichomics now supports loading alternative splicing quantification and gene
+expression output directly from VAST-TOOLS
+([read here how](#loading-data-from-vast-tools)). psichomics also supports
+importing generic data from any other source as long as the tables are prepared
+as detailed below depeding on the dataset.
+
+> Please make sure that sample and subject identifiers are exactly identical
+between datasets
+
+## Sample information
+
+- Tab-separated values (TSV)
+- **Sample identifiers (rows)** and their **attributes (columns)**
+- The first column must contain sample identifiers and be named `Sample ID`
+- Optionally, indicate the subject associated to each sample in a column named
+`Subject ID`
+
+> Sample information retrieved from SRA Run Selector can be automatically
+loaded into psichomics using [`loadLocalFiles()`][loadLocalFiles]
+
+- Example:
+
+| Sample ID | Type   | Tissue | Subject ID |
+| --------- | ------ | ------ | ---------- |
+| SMP-01    | Tumour | Lung   | SUBJ-03    |
+| SMP-02    | Normal | Blood  | SUBJ-12    |
+| SMP-03    | Normal | Blood  | SUBJ-25    |
+    
+## Subject information
+
+- Tab-separated values (TSV)
+- **Subject identifiers (rows)** and their **attributes (columns)**
+- The first column must contain subject identifiers and be named `Subject ID`
+- Example:
+
+| Subject ID | Age | Gender | Race  |
+| ---------- | ---:| ------ | ----- |
+| SUBJ-01    |  34 | Female | Black |
+| SUBJ-02    |  22 | Male   | Black |
+| SUBJ-03    |  58 | Female | Asian |
+
+## Gene expression
+
+- Tab-separated values (TSV)
+- Read counts of **genes (rows)** across **sample (columns)**
+- The first column must contain gene symbols and be named `Gene ID`
+- Example:
+    
+| Gene ID | SMP-18 | SMP-03 | SMP-54 |
+| ------- | ------:| ------:| ------:|
+| AMP1    |     24 |     10 |     43 |
+| BRCA1   |     38 |     46 |     32 |
+| BRCA2   |     43 |     65 |     21 |
+    
+## Exon-exon junction quantification
+
+- Tab-separated values (TSV)
+- Read counts of **exon-exon junctions (rows)** across **samples (columns)**
+- The first column must contain junction identifiers and be named `Junction ID`
+- Only chromosome number and capital letters X, Y, Z, W, and M are supported, 
+followed by the genomic regions; acceptable junction identifiers include:
+`10_18748_21822`, `chromosome 10 (18748 to 21822)` and `chr10:18748-21822`
+- Optionally, indicate the strand with `+` or `-` at the end of the junction
+identifier; e.g. `10:3213:9402:+` and `chr10:3213-9402 -`
+- Rows whose junction identifiers contain `alt`, `random` or `Un` in chromosome
+names are discarded
+- Example:
+    
+| Junction ID    | SMP-18 | SMP-03 |
+| -------------- | ------:| ------:|
+| 10:6752-7393   |      4 |      0 |
+| 10:18748-21822 |      8 |     46 |
+| 10:24257-25325 |     83 |     65 |
+    
+## Alternative splicing quantification (also known as inclusion levels)
+
+- Tab-separated values (TSV)
+- Alternative splicing quantification values of
+**alternative splicing events (rows)** across **samples (columns)**
+- The first column must be named `AS Event ID`
+- Values between 0 and 1 or between 0 and 100: if the latter, values are
+automatically scaled between 0 and 1
+    
+> Note that there is currently no way to parse alternative splicing events (e.g.
+cognate gene and coordinates) from generic PSI tables
+    
+- Example:
+    
+| AS Event ID       | SMP-18 | SMP-03 |
+| ----------------- | ------:| ------:|
+| someASevent001    |   0.71 |   0.30 |
+| anotherASevent653 |   0.63 |   0.37 |
+| yeatAnother097    |   0.38 |   0.62 |
+
+To load the data, move the files to a new folder and follow the instructions in
+[Load user-provided data into psichomics][loading].
+
+# Preparing data based on RNA-seq data
 
 The following tutorial goes through the steps required to load data based on
 RNA-seq data:
@@ -160,39 +259,24 @@ prepareJunctionQuant("SRR6368612SJ.out.tab", "SRR6368613SJ.out.tab",
                      "SRR6368616SJ.out.tab", "SRR6368617SJ.out.tab")
 ```
 
-Ensure that the SRA metadata is also available in the same folder where the
-gene expression and junction quantification tables prepared for psichomics are
-located.
+To load the data, move the files (including the SRA metadata) to a new folder
+and follow the instructions in
+[Load user-provided data into psichomics][loading].
 
-### Load data in the visual interface
-
-Start psichomics with the following commands in an R console or RStudio:
-
-```{r, eval=FALSE}
-library(psichomics)
-psichomics()
-```
-
-Then, click **Load user files**. Click the **Folder input** tab and select the
-appropriate folder where the psichomics-prepared data is stored. Finally, click
-**Load files** to automatically scan and load supported files from that folder.
-
-### Load data in command-line interface (CLI)
-
-```{r, eval=FALSE}
-library(psichomics)
-data          <- loadLocalFiles("/path/to/psichomics/prepared/output/")
-geneExpr      <- data[[1]]$`Gene expression`
-junctionQuant <- data[[1]]$`Junction quantification`
-sampleInfo    <- data[[1]]$`Sample metadata`
-```
-
-# Loading data from VAST-TOOLS
+# Preparing VAST-TOOLS data
 
 psichomics supports loading inclusion levels and gene expression tables from
-VAST-TOOLS (the tables available after running `vast-tools combine`). To load
-those files, move them into a new folder. If you have sample and/or subject 
-information, you can also 
+VAST-TOOLS (the tables available after running `vast-tools combine`).
+
+Any sample and/or subject information may also be useful to load. Unless the
+sample metadata comes from SRA Run Selector, please ensure that it is recognised
+by psichomics, as according to [Preparing generic data][generic].
+
+To load the data, move all files to a new folder (VAST-TOOLS PSI and gene
+expression tables and sample/subject information) and follow the instructions in
+[Load user-provided data into psichomics][loading].
+
+# Load user-provided data into psichomics
 
 ## Load using the visual interface
 
@@ -209,9 +293,12 @@ all supported files from that folder.
 
 ## Load using the command-line interface (CLI)
 
+Use function [`loadLocalFiles()`][loadLocalFiles] with the folder path as an
+argument:
+
 ```{r, eval=FALSE}
 library(psichomics)
-data <- loadLocalFiles("/path/to/vast-tools/folder")
+data <- loadLocalFiles("/path/to/psichomics/input")
 geneExpr      <- data[[1]]$`Gene expression`
 junctionQuant <- data[[1]]$`Junction quantification`
 sampleInfo    <- data[[1]]$`Sample metadata`
@@ -238,3 +325,6 @@ this tutorial) is welcome. Please send any comments and questions to:
 [hg19-data]: https://grch37.ensembl.org/info/data/ftp/
 [SRP126561]: https://trace.ncbi.nlm.nih.gov/Traces/study/?acc=SRP126561
 [recount]: https://jhubiostatistics.shinyapps.io/recount/
+[loadLocalFiles]: https://nuno-agostinho.github.io/psichomics/reference/loadLocalFiles
+[generic]: #preparing-generic-data
+[loading]: #load-user-provided-data-into-psichomics

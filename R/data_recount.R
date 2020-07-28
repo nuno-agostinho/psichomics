@@ -103,6 +103,7 @@ downloadRecountData <- function(folder, geneExpr, junctionQuant, sampleInfo,
 #' @importFrom SummarizedExperiment assay seqnames start end strand
 #'
 #' @family functions associated with SRA data retrieval
+#' @family functions to load data
 #' @return List with loaded projects
 #' @export
 loadSRAproject <- function(project, outdir=getDownloadsFolder()) {

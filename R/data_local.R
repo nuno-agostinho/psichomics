@@ -8,12 +8,13 @@ localDataUI <- function(id, panel) {
     sampleInfoBrowser <- fileBrowserInput(
         ns("sampleInfo"), "Sample information",
         placeholder="No file selected", clearable=TRUE,
-        info=TRUE, infoFUN=bsPopover, infoTitle=paste(
-            "File containing sample identifiers as rows and their",
-            "attributes as columns."),
+        info=TRUE, infoFUN=bsPopover, infoTitle="Sample information",
         infoContent=paste(
             tags$ul(
                 class="popover-list",
+                tags$li("Tab-separated values (TSV)"),
+                tags$li(
+                    "Sample identifiers (rows) and their attributes (columns)"),
                 tags$li("The first column must contain sample identifiers",
                         "and be named", tags$kbd("Sample ID")),
                 tags$li("Optionally, indicate the subject associated to",
@@ -31,50 +32,56 @@ localDataUI <- function(id, panel) {
     subjectInfoBrowser <- fileBrowserInput(
         ns("subjectInfo"), "Subject information",
         placeholder="No file selected", clearable=TRUE,
-        info=TRUE, infoFUN=bsPopover, infoTitle=paste(
-            "File containing subject identifiers as rows and their",
-            "attributes as columns."),
+        info=TRUE, infoFUN=bsPopover, infoTitle="Subject information",
         infoContent=paste(
-            "The first column must contain subject identifiers and be",
-            "named", tags$kbd("Subject ID"), tags$hr(),
+            tags$ul(
+                class="popover-list",
+                tags$li("Tab-separated values (TSV)"),
+                tags$li("Subject identifiers (rows) and their attributes",
+                        "(columns)"),
+                tags$li("The first column must contain subject identifiers and",
+                        "be named", tags$kbd("Subject ID"))),
+            tags$hr(),
             helpText("Example:"), tags$table(
                 class="table table-condensed",
                 tags$thead(
                     tableRow("Subject ID", "Age", "Gender", "Race", 
                              th=TRUE)),
                 tags$tbody(
-                    tableRow("SUBJ-01", "4", "Female", "Black"),
-                    tableRow("SUBJ-02", "12", "Female", "Black"),
-                    tableRow("SUBJ-03", "8", "Female", "Asian")))))
+                    tableRow("SUBJ-01", "34", "Female", "Black"),
+                    tableRow("SUBJ-02", "22", "Male", "Black"),
+                    tableRow("SUBJ-03", "58", "Female", "Asian")))))
     junctionQuantBrowser <- fileBrowserInput(
         ns("junctionQuant"), "Exon-exon junction read counts",
         placeholder="No file selected", clearable=TRUE,
-        info=TRUE, infoFUN=bsPopover, infoTitle=paste(
-            "File containing the read counts of each exon-exon junction",
-            "(rows) per sample (columns)."),
+        info=TRUE, infoFUN=bsPopover,
+        infoTitle="Exon-exon junction read counts",
         infoContent=paste(
             tags$ul(
                 class="popover-list",
+                tags$li("Tab-separated values (TSV)"),
+                tags$li("Read counts of exon-exon junctions (rows) across",
+                        "samples (columns)"),
                 tags$li(
                     "The first column must contain junction identifiers",
                     "and be named", tags$kbd("Junction ID")),
                 tags$li(
-                    "Only chromosome number/capital letters X, Y, Z, W",
-                    "and M, followed by the genomic regions are supported.",
-                    "Acceptable junction identifiers include:",
+                    "Only chromosome number and capital letters X, Y, Z, W",
+                    "and M, followed by the genomic regions are supported;",
+                    "acceptable junction identifiers include:",
                     tags$kbd("10_18748_21822"), ",",
                     tags$kbd("chromosome 10 (18748 to 21822)"), "and",
                     tags$kbd("chr10:18748-21822")),
                 tags$li(
                     "Optionally, indicate the strand with", tags$kbd("+"),
                     "or", tags$kbd("-"),
-                    "at the end of the junction identifier. For instance,", 
+                    "at the end of the junction identifier; e.g.", 
                     tags$kbd("10:3213:9402:+"), "and",
                     tags$kbd("chr10:3213-9402 -")),
                 tags$li(
                     "Rows whose junction identifiers contain",
-                    tags$kbd("alt"), tags$kbd("random"), "or",
-                    tags$kbd("Un"), "in chromosome names are discarded.")),
+                    tags$kbd("alt"), ",", tags$kbd("random"), "or",
+                    tags$kbd("Un"), "in chromosome names are discarded")),
             tags$hr(), helpText("Example:"), tags$table(
                 class="table table-condensed",
                 tags$thead(
@@ -131,7 +138,6 @@ localDataUI <- function(id, panel) {
 #' 
 #' @importFrom data.table fread fwrite
 #' 
-#' @family functions to load local files
 #' @return Prepared file (if \code{output != NULL}) and object
 #' @export
 prepareSRAmetadata <- function(file, output="psichomics_metadata.txt") {
@@ -372,6 +378,7 @@ removeRedundantDatasets <- function(data) {
 #' @importFrom stats setNames
 #' 
 #' @family functions to load local files
+#' @family functions to load data
 #' @return List of data frames from valid files
 #' @export
 #' 

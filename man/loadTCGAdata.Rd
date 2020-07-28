@@ -65,5 +65,11 @@ Other functions associated with TCGA data retrieval:
 \code{\link{getTCGAdataTypes}()},
 \code{\link{isFirebrowseUp}()},
 \code{\link{parseTCGAsampleTypes}()}
+
+Other functions to load data: 
+\code{\link{loadGtexData}()},
+\code{\link{loadLocalFiles}()},
+\code{\link{loadSRAproject}()}
 }
 \concept{functions associated with TCGA data retrieval}
+\concept{functions to load data}

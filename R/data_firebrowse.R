@@ -542,6 +542,7 @@ loadFirebrowseFolders <- function(folder, exclude="") {
 #' 
 #' @aliases loadFirebrowseData
 #' @family functions associated with TCGA data retrieval
+#' @family functions to load data
 #' @return A list with the loaded data, unless required files are unavailable
 #' and \code{download = FALSE} (if so, it returns the URL of files to download)
 #' @export

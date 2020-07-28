@@ -643,8 +643,8 @@ p-value > 0.05).
 ## Load GTEx data
 
 GTEx data (subject phenotype, sample attributes, gene expression and junction
-quantification) can be automatically retrieved and loaded by following these
-commands:
+quantification) for specific tissues can be automatically retrieved and loaded
+by following these commands:
 
 ```{r load GTEx, eval=FALSE}
 # Check GTEx tissues available based on the sample attributes
@@ -654,7 +654,7 @@ tissues <- c("blood", "brain")
 gtex <- loadGtexData("~/Downloads", tissues=tissues)
 ```
 
-Junction quantification can be loaded for all GTEx tissues by typing:
+To load data for all GTEx tissues, please type:
 
 ```{r load all GTEx, eval=FALSE}
 gtex <- loadGtexData("~/Downloads", tissues=NULL)
@@ -678,7 +678,7 @@ performing the analysis can be found at [GitHub][chapter-code]):
 
 > Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2020). 
 **[Interactive Alternative Splicing Analysis of Human Stem
-Cells Using psichomics][chapter]**. In: Kidder B. (eds) Stem Cell Transcriptional Networks. *Methods in Molecular Biology*, vol 2117. Humana, New York, NY
+Cells Using psichomics][chapter]**. In: Kidder B. (eds) Stem CellTranscriptional Networks. *Methods in Molecular Biology*, vol 2117. Humana, New York, NY
 
 ## Load other SRA and user-provided local files
 
@@ -688,7 +688,7 @@ other SRA projects and user-provided data can be manually aligned using a
 splice-aware aligner and loaded by following the instructions in
 [Loading SRA and user-provided RNA-seq data][tutorial-custom-data]. 
 
-Local files can be loaded by indicating their containing folder Any files
+Local files can be loaded by indicating their containing folder. Any files
 located in this folder and sub-folders will be loaded.
 
 For instance, to load [GTEx][GTEx] files via local files, create a directory
