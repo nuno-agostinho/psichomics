@@ -1895,7 +1895,10 @@ renderBoxplot <- function(data, outliers=FALSE, sortByMedian=TRUE,
 #' @details The implementation of this function is based on
 #' \code{car:::leveneTest.default} with a more standard result.
 #' 
-#' @inheritParams stats::kruskal.test
+#' @param x Numeric vector or list of numeric vectors: non-numeric elements of a
+#' list will be coerced with a warning
+#' @param g Vector or factor: groups of elements in \code{x} (ignored with a
+#' warning if \code{x} is a list)
 #' @param centers Function used to calculate how much values spread; for
 #' instance, \code{median} (default) or \code{mean}
 #' 
