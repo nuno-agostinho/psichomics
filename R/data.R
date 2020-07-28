@@ -292,9 +292,9 @@ ASquantFileInput <- function(ASquantFileId, clearable=FALSE){
                 tags$li(
                     "The first column must contain alternative splicing event",
                     "identifiers and be named", tags$kbd("AS Event ID")),
-                tags$li("PSI values must be between 0 and 1 or between 0 and",
-                        "100; if the latter, values are automatically scaled",
-                        "between 0 and 1.")),
+                tags$li(
+                    "PSI values must be between 0 and 1 or between 0 and 100;",
+                    "if the latter, values are scaled between 0 and 1")),
             tags$hr(), helpText("Example:"), tags$table(
                 class="table table-condensed",
                 tags$thead(

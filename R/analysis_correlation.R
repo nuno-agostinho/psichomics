@@ -649,13 +649,18 @@ correlationServer <- function(input, output, session) {
         geneExpr <- geneExpr[ , groupFilter, drop=FALSE]
         psi      <- psi[ , groupFilter, drop=FALSE]
         
+        
+        
         # Perform correlation analyses
         startProcess("correlate")
         corr <- suppressWarnings(
-            correlateGEandAS(geneExpr, psi, gene, ASevents, method=method, 
-                             alternative=alternative))
-        setCorrelation(corr)
-        displayCorrTable()
+            tryCatch(correlateGEandAS(geneExpr, psi, gene, ASevents, 
+                                      method=method, alternative=alternative),
+                     error=return))
+        if ( !is(corr, "error") ) {
+            setCorrelation(corr)
+            displayCorrTable()
+        }
         endProcess("correlate")
     })
     
@@ -702,7 +707,17 @@ correlationServer <- function(input, output, session) {
                                              "data-dismiss"="modal"),
                          caller="Correlation analyses")
         } else {
-            performCorrelationAnalyses()
+            geneSubset <- tryCatch(
+                subsetGeneExpressionFromMatchingGenes(geneExpr, gene),
+                error=return)
+            if (is(geneSubset, "error")) {
+                errorModal(session, "Selected genes not available",
+                           "Gene expression dataset contains none of the",
+                           "selected genes",
+                           caller="Correlation analyses")
+            } else {
+                performCorrelationAnalyses()
+            }
         }
     })
     

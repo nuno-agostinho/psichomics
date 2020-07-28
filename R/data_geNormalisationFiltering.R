@@ -206,10 +206,8 @@ loadGeneExpressionSet <- function(session, input, output) {
     observeEvent(input$loadGeneExpr, {
         prepareFileBrowser(session, input, "customGeneExpr")
     }, once=TRUE)
-
-    observeEvent(input$loadCustomGE, loadGeneExpression())
-
-    # Load alternative splicing quantification
+    
+    # Load gene expression
     loadGeneExpression <- reactive({
         time <- startProcess("loadGeneExpr")
 
@@ -261,6 +259,7 @@ loadGeneExpressionSet <- function(session, input, output) {
         }
         endProcess("loadGeneExpr", time)
     })
+    observeEvent(input$loadCustomGE, loadGeneExpression())
 }
 
 #' Convert gene identifiers

@@ -57,20 +57,25 @@ ranges (helpful for plotting statistics of large datasets)
 
 * Progress bar is now animated as in previous versions
 * Data loading (visual interface):
-    - Correctly parse gene symbols containing underscores
-    - Fix library size plot not working properly and causing rendering issues
-    - Fix settings not showing up after quantifying alternative splicing
-    - Show raised errors while reading a file (e.g. if file is too big for
-    available memory)
-    - The user is now alerted if no GTEx data options are selected
+    - Allow to discard selected files in file browser input elements
+    - When creating groups by sample index/identifiers, suggest sample names not
+    only obtained from sample information, but also from alternative splicing
+    quantification and gene expression datasets
     - "Browse..." button now opens file browser to select folder where data is
     stored (as expected) in GTEx and SRA panels
-    - Show filename used to load gene expression and alternative splicing data
-    from GTEx and SRA
-    - Allow to discard selected files in file browser input elements
+    - Only pre-create groups of genes (based on literature-based gene lists) if
+    at least one of its genes exists in any of the loaded datasets
+    - Correctly parse gene symbols containing underscores
+    - Fix gene expression summary plots not showing in specific situations
+    - Fix library size plot not working properly and causing rendering issues
+    - Fix settings used to quantify alternative splicing not showing up
+    - Show errors raised while reading a file (e.g. if file is too big for
+    available memory)
+    - Show alert if no GTEx data options are selected
+    - Show filename of the file used to load gene expression and alternative
+    splicing data from GTEx and SRA
     - Show helpful context messages in panel interfaces
     - Improve visual interface and minor copy-editing
-    - Fix gene expression summary plots not showing in specific situations
 * Local data loading:
     - Support loading data from GTEx V8 or previous releases
     - Fix bad formatting of help tooltips when using `shiny 1.4.0` or newer
@@ -91,8 +96,10 @@ ranges (helpful for plotting statistics of large datasets)
     - Show event identifier instead of prettier identifier to avoid confusion
 * Data grouping (visual interface):
     - Simplify group selection interface
-    - Fix suggested attributes in group creation not being updated when changing
-    to datasets with no attributes
+    - Fix suggested attributes and index/identifiers in group creation not being
+    cleared when changing to datasets where such data is unavailable (thus
+    showing the attributes/index/identifiers of the previous dataset)
+    - Show an alert when there is no data to create groups
 * Principal component analysis (visual interface):
     - The correct splicing event is now selected when clicking on any loadings
     in the loadings plot
@@ -113,6 +120,9 @@ ranges (helpful for plotting statistics of large datasets)
     groups have arbitrary Y values to easily distinguish them)
     - Rug plots of gene expression density plots are now placed near the X axis
     as expected
+* Correlation analyses (visual interface):
+    - Warn when selecting genes that are not available in the selected gene
+    expression dataset (instead of crashing the app)
 * `print()` extended to better display information on gene list objects; e.g.
 `print(getGeneList())`
 * Fix issues when installing the package:

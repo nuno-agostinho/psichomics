@@ -133,7 +133,7 @@ getGenes <- reactive({
     # Retrieve genes from gene expression
     geneExpr <- getGeneExpression()
     if (!is.null(geneExpr)) {
-        original <- sort(unique(unlist(lapply(geneExpr, rownames))))
+        original <- unique(unlist(lapply(geneExpr, rownames)))
         genes    <- gsub("\\|.*", "", original) # Process TCGA gene symbols
         unknown  <- genes == "?"
         genes[unknown] <- original[unknown]
@@ -147,11 +147,12 @@ getGenes <- reactive({
     }
     
     if (!is.null(genes)) {
-        genes   <- sort(unique(genes))
+        genes   <- unique(genes)
         # Show unknown genes last
         unknown <- gsub("\\|.*", "", genes) == "?"
         genes   <- c(genes[!unknown], genes[unknown])
     }
+    genes <- genes[genes != ""]
     return(genes)
 })
 
@@ -163,13 +164,16 @@ getGenes <- reactive({
 #'   proteins, 167 of which are splicing factors}
 #' }
 #'
+#' @param genes Vector of characters: intersect lists with given genes (lists
+#' with no matching genes will not be returned)
+#'
 #' @family functions for data grouping
 #' @return List of genes
 #' @export
 #'
 #' @examples
 #' getGeneList()
-getGeneList <- function() {
+getGeneList <- function(genes=NULL) {
     prepareCitation <- function(attr) {
         if (length(attr$Author) == 1)
             authors <- attr$Author[[1]]
@@ -192,12 +196,24 @@ getGeneList <- function() {
     rbpSF    <- rbps$`RNA-binding proteins that are splicing factors`
     rbpNonSF <- rbps$`RNA-binding proteins that are not splicing factors`    
     sebestyen2016 <- list(
-        "RNA-binding protein splicing factors"=rbpSF,
-        "RNA-binding proteins"=sort(c(rbpSF, rbpNonSF)))
+        "Human RNA-binding protein splicing factors"=rbpSF,
+        "Human RNA-binding proteins"=sort(c(rbpSF, rbpNonSF)))
     attr(sebestyen2016, "citation") <- prepareCitation(attributes(rbps))
     
     res <- list("Sebestyen et al. 2016"=sebestyen2016)
+    
+    # Intersect with genes
+    if (!is.null(genes)) {
+        for (item in seq(length(res))) {
+            citation <- attr(res[[item]], "citation")
+            res[[item]] <- lapply(res[[item]], intersect, genes)
+            res[[item]] <- Filter(length, res[[item]])
+            attr(res[[item]], "citation") <- citation
+        }
+        res <- res[sapply(res, length) != 0]
+    }
     class(res) <- c("geneList", class(res))
+    if (length(res) == 0) res <- NULL
     return(res)
 }
 
@@ -290,14 +306,17 @@ setSampleInfo <- function(value, category = getCategory())
     setDataTable("Sample metadata", value, category)
 
 #' @rdname getGlobal
-getSampleId <- function() {
+getSampleId <- reactive({
     sampleInfo <- getSampleInfo()
     if ( !is.null(sampleInfo) ) {
-        return( rownames(sampleInfo) )
+        sampleId <- rownames(sampleInfo)
     } else {
-        return(NULL)
+        sampleId <- NULL
     }
-}
+    sampleId <- unique(c(sampleId, colnames(getInclusionLevels()),
+                         unlist(lapply(getGeneExpression(), colnames))))
+    return(sampleId)
+})
 
 #' @rdname getGlobal
 getSampleAttributes <- function() {

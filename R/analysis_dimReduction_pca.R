@@ -495,7 +495,7 @@ clusterSet <- function(session, input, output) {
         
         hc <- plotPCA(pca, pcX, pcY, groups) %>% 
             plotClusters(pca$x[ , c(pcX, pcY)], clustering) %>% 
-            hc_title(text="Clinical samples (PCA scores)") %>%
+            hc_title(text="Samples (PCA scores)") %>%
             hc_legend(symbolHeight=8, symbolWidth=8)
         output$scatterplot <- renderHighchart(hc)
         endProcess("plotClusters")
@@ -835,7 +835,7 @@ pcaServer <- function(input, output, session) {
         output$scatterplot <- renderHighchart({
             if (!is.null(pcX) && !is.null(pcY)) {
                 plotPCA(pca, pcX, pcY, groups) %>% 
-                    hc_title(text="Clinical samples (PCA scores)")
+                    hc_title(text="Samples (PCA scores)")
             }
         })
         

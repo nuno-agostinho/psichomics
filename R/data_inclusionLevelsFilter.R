@@ -545,7 +545,7 @@ inclusionLevelsFilterServer <- function(input, output, session) {
         } else {
             filtered        <- filterPSI(filteredPSI, eventSubtype=eventSubtype)
             filteredPSI     <- filteredPSI[filtered, ]
-            subtypeSettings <- attr(filtered, "filtered")
+            subtypeSettings <- attr(filtered, "filtered")[-c(1)]
         }
         if (!areThereInclusionLevels(filteredPSI)) return(NULL)
         

@@ -4,7 +4,11 @@
 \alias{getGeneList}
 \title{Get curated, literature-based gene lists}
 \usage{
-getGeneList()
+getGeneList(genes = NULL)
+}
+\arguments{
+\item{genes}{Vector of characters: intersect lists with given genes (lists
+with no matching genes will not be returned)}
 }
 \value{
 List of genes

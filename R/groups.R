@@ -191,7 +191,7 @@ groupManipulationInput <- function(id, type) {
                 tabPanel("Regular expression", groupByGrep(ns, cols, id)))
         } else if (id == "Genes") {
             navbarMenu(
-                title, 
+                title,
                 tabPanel("Gene names", identifierUI),
                 tabPanel("Pre-made gene lists", 
                          groupByPreMadeList(ns, getGeneList(), id)))
@@ -201,39 +201,45 @@ groupManipulationInput <- function(id, type) {
     }
     
     if (type == "Samples") {
-        title  <- "By subjects"
-        first  <- groupOptions("Patients", title)
-        # firstAlert  <- tabPanel(title, value="NoPatients", missingData(
-        #     "Clinical data", "No clinical data loaded to group by subjects.",
-        #     "Please, load clinical data."))
+        title       <- "By subjects"
+        first       <- groupOptions("Patients", title)
+        firstAlert  <- tabPanel(
+            title, value="NoSubjects", missingData(
+                "Subject information",
+                "No subject information available.",
+                "Please load subject information."))
         
-        title  <- "By samples"
-        second <- groupOptions("Samples", title)
-        # secondAlert <- tabPanel(title, value="NoSamples", missingData(
-        #     "Inclusion levels",
-        #     "No sample information loaded to group by samples.",
-        #     "Please, load sample information."))
+        title       <- "By samples"
+        second      <- groupOptions("Samples", title)
+        secondAlert <- tabPanel(
+            title, value="NoSamples", missingData(
+                "Sample information",
+                "No sample information available.",
+                "Please load sample information."))
     } else if (type == "ASevents") {
-        title  <- "By splicing events"
-        first  <- groupOptions("ASevents", title)
-        # firstAlert <- tabPanel(title, value="ASevents", missingData(
-        #     "Alternative splicing events",
-        #     "No alternative splicing events are available.",
-        #     "Please, load or quantify splicing events."))
+        title      <- "By splicing events"
+        first      <- groupOptions("ASevents", title)
+        firstAlert <- tabPanel(
+            title, value="NoASevents", missingData(
+                "Alternative splicing events",
+                "No alternative splicing events are available.",
+                "Please load or quantify splicing events."))
         
-        title  <- "By genes"
-        second <- groupOptions("Genes", title)
-        # secondAlert <- tabPanel(title, value="NoGenes", missingData(
-        #     "Genes", "No genes or alternative splicing events are available.",
-        #     paste("Please, load genes and/or load and quantify",
-        #           "splicing events.")))
+        title       <- "By genes"
+        second      <- groupOptions("Genes", title)
+        secondAlert <- tabPanel(
+            title, value="NoGenes", missingData(
+                "Genes", "No genes are available.",
+                "Please load gene expression or load/quantify splicing events.")
+        )
     }
     
     sidebarLayout(
         sidebarPanel(
             uiOutput(ns("alert-side")),
-            tabsetPanel(id=ns("groupBy"), type="pills", first, second) ),
-        mainPanel( 
+            tabsetPanel(id=ns("groupBy"), type="pills", 
+                        first, firstAlert, second, secondAlert) ),
+        mainPanel(
             uiOutput(ns("alert-main")),
             renderGroupInterface(ns, multiFisherTests) ))
 }
@@ -1446,7 +1452,7 @@ importGroupsFrom <- function(file, uniqueElems=NULL, matchingElems=NULL,
 #' 
 #' @importFrom DT renderDataTable dataTableOutput
 #' @importFrom shinyjs toggleState enable disable hidden show hide
-#' @importFrom shiny textInput
+#' @importFrom shiny textInput showTab hideTab
 #' @importFrom shinyBS updateCollapse
 #' @importFrom colourpicker updateColourInput
 #' 
@@ -1487,16 +1493,46 @@ groupManipulation <- function(input, output, session, type) {
     
     # Update identifiers to suggest in index/identifiers panel
     observe({
+        convertNull2List <- function(x) {
+            if (is.null(x)) x <- list()
+            return(x)
+        }
+        toggleTabsBy <- function(data, dataTab, noDataTab, inputId="groupBy",
+                                 select=FALSE) {
+            if (is.null(data)) {
+                showTab(inputId, noDataTab)
+                hideTab(inputId, dataTab)
+            } else {
+                hideTab(inputId, noDataTab)
+                showTab(inputId, dataTab, select=select)
+            }
+        }
+        
+        genes    <- getGenes()
+        ASevents <- getASevents()
         if (type == "Samples") {
-            updateSelectizeInput(session, paste0("groupRows", "Patients"),
-                                 choices=getSubjectId(), server=TRUE)
-            updateSelectizeInput(session, paste0("groupRows", "Samples"),
-                                 choices=getSampleId(), server=TRUE)
+            samples <- getSampleId()
+            toggleTabsBy(samples, "By samples", "NoSamples", select=TRUE)
+            updateSelectizeInput(
+                session, paste0("groupRows", "Samples"),
+                choices=convertNull2List(samples), server=TRUE)
+            
+            subjects <- getSubjectId()
+            toggleTabsBy(subjects, "By subjects", "NoSubjects", select=TRUE)
+            updateSelectizeInput(
+                session, paste0("groupRows", "Patients"),
+                choices=convertNull2List(subjects), server=TRUE)
         } else if (type == "ASevents") {
-            updateSelectizeInput(session, paste0("groupRows", "ASevents"),
-                                 choices=getASevents(), server=TRUE)
-            updateSelectizeInput(session, paste0("groupRows", "Genes"),
-                                 choices=getGenes(), server=TRUE)
+            toggleTabsBy(genes, "By genes", "NoGenes", select=TRUE)
+            updateSelectizeInput(
+                session, paste0("groupRows", "Genes"),
+                choices=convertNull2List(genes), server=TRUE)
+            
+            toggleTabsBy(ASevents, "By splicing events", "NoASevents",
+                         select=TRUE)
+            updateSelectizeInput(
+                session, paste0("groupRows", "ASevents"),
+                choices=convertNull2List(ASevents), server=TRUE)
         }
     })
     
@@ -2051,7 +2087,11 @@ groupsServerOnce <- function(input, output, session) {
         psi     <- getInclusionLevels()
         
         if (!is.null(geneExp) || !is.null(psi)) {
-            geneList   <- getGeneList()
+            # Intersect gene list with available genes
+            genes    <- getGenes()
+            geneList <- getGeneList(genes)
+            if (is.null(geneList)) return(NULL)
+            
             groups     <- unlist(geneList, recursive=FALSE)
             groupNames <- unlist(lapply(names(geneList), function(i)
                 sprintf("%s (%s)", names(geneList[[i]]), i)))
