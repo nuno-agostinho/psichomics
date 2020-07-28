@@ -2405,6 +2405,8 @@ diffAnalyses <- function(data, groups=NULL,
     colnames(df) <- col
     
     # parallel::stopCluster(cl)
+    attr(df, "rowData") <- getSplicingEventInformation(data)
+    df <- preserveAttributes(df)
     return(df)
 }
 

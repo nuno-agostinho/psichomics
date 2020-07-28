@@ -813,7 +813,6 @@ calculateInclusionLevels <- function(eventType, junctionQuant, annotation,
                             alternative2=coords_alt2,
                             constitutive2=coords_con2)
     rownames(eventData)    <- eventNames
-    eventData              <- eventData[rownames(psi), , drop=FALSE]
-    attr(psi, "eventData") <- eventData
+    attr(psi, "eventData") <- eventData[rownames(psi), , drop=FALSE]
     return(psi)
 }
