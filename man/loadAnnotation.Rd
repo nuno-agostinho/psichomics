@@ -9,7 +9,7 @@ loadAnnotation(annotation, cache = NULL)
 \arguments{
 \item{annotation}{Character: annotation to load}
 
-\item{cache}{Character: directory path of cache (if \code{NULL}, default 
+\item{cache}{Character: directory path of cache (if \code{NULL}, default
 location is \code{AnnotationHub::getAnnotationHubOption("CACHE")})}
 }
 \value{

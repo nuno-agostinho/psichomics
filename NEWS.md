@@ -39,6 +39,8 @@ event type and cognate gene)
     - Filter data based on individual PSI values (also available when
     quantifying alternative splicing)
     - Filter VAST-TOOLS events based on its quality scores for read coverage
+    - Toggle specific statistics based on alternative splicing quantification
+    values when filtering
     - Preview the original and filtered events in an easy-to-use plot
 * Differential analysis:
     - Tooltips of volcano plots now include diagram of alternative splicing
