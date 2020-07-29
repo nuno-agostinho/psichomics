@@ -19,18 +19,18 @@ vignette: >
 splicing and gene expression based on [The Cancer Genome Atlas (TCGA)][tcga]
 (containing molecular data associated with 34 tumour types), the
 [Genotype-Tissue Expression (GTEx)][gtex] project (containing data for multiple
-normal human tissues), [Sequence Read Archive][sra] and user-provided data.
+normal human tissues), [Sequence Read Archive][SRA] and user-provided data.
 
 # Preparing generic data
 
 psichomics now supports loading alternative splicing quantification and gene
 expression output directly from VAST-TOOLS
 ([read here how](#loading-data-from-vast-tools)). psichomics also supports
-importing generic data from any other source as long as the tables are prepared
-as detailed below depeding on the dataset.
+importing generic data from any source as long as the tables are prepared as
+detailed below.
 
 > Please make sure that sample and subject identifiers are exactly identical
-between datasets
+between datasets.
 
 ## Sample information
 
@@ -40,10 +40,10 @@ between datasets
 - Optionally, indicate the subject associated to each sample in a column named
 `Subject ID`
 
-> Sample information retrieved from SRA Run Selector can be automatically
-loaded into psichomics using [`loadLocalFiles()`][loadLocalFiles]
+> Sample information from the SRA Run Selector can be automatically loaded using
+the visual interface or [`loadLocalFiles()`][loadLocalFiles]
 
-- Example:
+- Example of a valid sample information dataset:
 
 | Sample ID | Type   | Tissue | Subject ID |
 | --------- | ------ | ------ | ---------- |
@@ -56,7 +56,7 @@ loaded into psichomics using [`loadLocalFiles()`][loadLocalFiles]
 - Tab-separated values (TSV)
 - **Subject identifiers (rows)** and their **attributes (columns)**
 - The first column must contain subject identifiers and be named `Subject ID`
-- Example:
+- Example of a valid subject information dataset:
 
 | Subject ID | Age | Gender | Race  |
 | ---------- | ---:| ------ | ----- |
@@ -69,7 +69,7 @@ loaded into psichomics using [`loadLocalFiles()`][loadLocalFiles]
 - Tab-separated values (TSV)
 - Read counts of **genes (rows)** across **sample (columns)**
 - The first column must contain gene symbols and be named `Gene ID`
-- Example:
+- Example of a valid gene expression dataset:
     
 | Gene ID | SMP-18 | SMP-03 | SMP-54 |
 | ------- | ------:| ------:| ------:|
@@ -84,12 +84,16 @@ loaded into psichomics using [`loadLocalFiles()`][loadLocalFiles]
 - The first column must contain junction identifiers and be named `Junction ID`
 - Only chromosome number and capital letters X, Y, Z, W, and M are supported, 
 followed by the genomic regions; acceptable junction identifiers include:
-`10_18748_21822`, `chromosome 10 (18748 to 21822)` and `chr10:18748-21822`
+    - `10_18748_21822`
+    - `chromosome 10 (18748 to 21822)`
+    - `chr10:18748-21822`
 - Optionally, indicate the strand with `+` or `-` at the end of the junction
-identifier; e.g. `10:3213:9402:+` and `chr10:3213-9402 -`
+identifier:
+    - `10:3213:9402:+`
+    - `chr10:3213-9402 -`
 - Rows whose junction identifiers contain `alt`, `random` or `Un` in chromosome
 names are discarded
-- Example:
+- Example of a valid exon-exon junction quantification dataset:
     
 | Junction ID    | SMP-18 | SMP-03 |
 | -------------- | ------:| ------:|
@@ -103,13 +107,13 @@ names are discarded
 - Alternative splicing quantification values of
 **alternative splicing events (rows)** across **samples (columns)**
 - The first column must be named `AS Event ID`
+
+> Note that psichomics cannot currently parse alternative splicing events (e.g.
+cognate gene and coordinates) from generic PSI tables.
+
 - Values between 0 and 1 or between 0 and 100: if the latter, values are
 automatically scaled between 0 and 1
-    
-> Note that there is currently no way to parse alternative splicing events (e.g.
-cognate gene and coordinates) from generic PSI tables
-    
-- Example:
+- Example of a valid alternative splicing quantification dataset:
     
 | AS Event ID       | SMP-18 | SMP-03 |
 | ----------------- | ------:| ------:|
@@ -122,23 +126,22 @@ To load the data, move the files to a new folder and follow the instructions in
 
 # Preparing data based on RNA-seq data
 
-The following tutorial goes through the steps required to load data based on
+The following section goes through the steps required to load data based on
 RNA-seq data:
 
 1. Retrieve FASTQ files and sample-associated information from the 
-[Sequence Read Archive (SRA)][sra] (optional if you already have your own FASTQ 
-samples);
-2. Map RNA-seq reads from the FASTQ files against a genome of reference using
-[STAR][star], a splice-aware aligner;
+[Sequence Read Archive (SRA)][SRA] (optional if you already have FASTQ files);
+2. Map RNA-seq reads from the FASTQ files against a genome of reference using a
+splice-aware aligner ([STAR][] in this case);
 3. Merge and prepare the output of such aligners to be correctly interpreted
 by psichomics;
 4. Load data into psichomics.
 
 ## Download data from SRA (optional)
 
-[SRA][sra] is a repository of biological sequence data that stores data from 
-many published articles. [SRA][sra] data may be useful to answer pressing 
-biological questions using publicly available data.
+[SRA][] is a repository of biological sequence data that stores data from many
+published articles. [SRA][] data may be useful to answer pressing biological
+questions using publicly available data.
 
 > The latest versions of psichomics support 
 **automatic downloading of SRA data** from [recount2][recount], a resource of
@@ -180,9 +183,12 @@ annotation and quantification of RNA-Seq reads aligning to splice junctions
 provided by the package, junction quantification will need to be prepared from
 user-provided data by aligning the RNA-seq reads from FASTQ files to a genome of
 reference. As junction reads are required to quantify alternative splicing, a
-splice-aware aligner will be used. psichomics currently supports STAR output.
+splice-aware aligner will be used. psichomics currently supports [STAR][]
+output.
 
-### STAR
+### [STAR][]
+
+#### Genome index
 
 Before aligning FASTQ samples against a genome of reference, a genome index 
 needs to be prepared. 
@@ -208,7 +214,7 @@ Arguments used in the previous command:
 - **`--genomeFastaFiles`**: path to genome file (FASTA format)
 - **`--sjdbGTFfile`**: path to transcript annotation (GTF format)
 
----
+#### Aligning against genome index
 
 After the genome index is generated, the sequences in the FASTQ files are
 aligned against the annotated gene and splice junctions from the previously
@@ -317,8 +323,8 @@ this tutorial) is welcome. Please send any comments and questions to:
 
 [tcga]: https://tcga-data.nci.nih.gov/docs/publications/tcga
 [gtex]: https://www.gtexportal.org
-[sra]: https://www.ncbi.nlm.nih.gov/sra
-[star]: https://github.com/alexdobin/STAR
+[SRA]: https://www.ncbi.nlm.nih.gov/sra
+[STAR]: https://github.com/alexdobin/STAR
 [distrans]: http://imm.medicina.ulisboa.pt/group/distrans/
 [fasterq-dump]: https://github.com/ncbi/sra-tools/wiki/HowTo:-fasterq-dump
 [sra-tools]: https://github.com/ncbi/sra-tools
