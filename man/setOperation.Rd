@@ -30,10 +30,10 @@ performed}
 \item{groupName}{Character: group name (automatically created if \code{NULL}
 or \code{""})}
 
-\item{first}{Character: identifiers of the first element (required when 
+\item{first}{Character: identifiers of the first element (required when
 performing the \code{complement} operation)}
 
-\item{second}{Character: identifiers of the second element (required when 
+\item{second}{Character: identifiers of the second element (required when
 performing the \code{complement} operation)}
 
 \item{matches}{Character: match between samples (as names) and subjects (as

@@ -17,7 +17,7 @@ the identifiers of respective elements}
 \item{pvalueAdjust}{Character: method used to adjust p-values (see Details)}
 }
 \value{
-Returns a \code{groupIndependenceTest} object: a list where each 
+Returns a \code{groupIndependenceTest} object: a list where each
 element is a list containing:
 \item{attribute}{Name of the original groups compared against the reference
 groups}
@@ -28,7 +28,7 @@ groups}
 Uses Fisher's exact test.
 }
 \details{
-The following methods for p-value adjustment are supported by using 
+The following methods for p-value adjustment are supported by using
 the respective string in the \code{pvalueAdjust} argument:
 \itemize{
     \item{\code{none}: Do not adjust p-values}

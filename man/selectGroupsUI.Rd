@@ -69,7 +69,7 @@ when no groups are selected)
 Group selection interface and logic
 }
 \note{
-To allow the user to (explicitly) select no groups, pass the 
+To allow the user to (explicitly) select no groups, pass the
 \code{noGroupsLabel} and \code{groupsLabel} arguments.
 }
 \keyword{internal}

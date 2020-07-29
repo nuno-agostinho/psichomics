@@ -30,7 +30,7 @@ Test multiple contingency tables comprised by two groups (one reference group
 and another containing remaining elements) and provided groups.
 }
 \details{
-The following methods for p-value adjustment are supported by using 
+The following methods for p-value adjustment are supported by using
 the respective string in the \code{pvalueAdjust} argument:
 \itemize{
     \item{\code{none}: Do not adjust p-values}
@@ -54,7 +54,7 @@ groupTesting <- testGroupIndependence(ref, groups, elements)
 # View(groupTesting)
 }
 \seealso{
-\code{\link{parseCategoricalGroups}()} and 
+\code{\link{parseCategoricalGroups}()} and
 \code{\link{plotGroupIndependence}()}
 
 Other functions for data grouping: 
