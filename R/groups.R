@@ -472,10 +472,9 @@ groupByAttribute <- function(ns, cols, id, example) {
                        width="auto", choices=cols, options=list(
                            lockOptgroupOrder=TRUE,
                            placeholder="Type to search attributes")),
+        uiOutput(ns(paste0("previewGroups", id))),
         actionButton(ns(paste0("createGroupAttribute", id)), "Create groups",
-                     class ="btn-primary"),
-        uiOutput(ns(paste0("previewGroups", id)))
-    )
+                     class ="btn-primary"))
 }
 
 #' @rdname groupByAttribute
@@ -1643,22 +1642,26 @@ groupManipulation <- function(input, output, session, type) {
                                as.character(sapply(sub[ , "Patients"], length)),
                            if ("Samples" %in% colnames(sub))
                                as.character(sapply(sub[ , "Samples"], length)))
-            colnames(table) <- colnames(sub)
+            colnames(table) <- gsub("Patient", "Subject", colnames(sub))
             
-            extra <- NULL
             totalGroups <- length(group)
             if (totalGroups > groupsToPreview) {
                 table <- rbind(table, rep("(...)", ncol(table)))
-                extra <- helpText(style="text-align: right;",
-                                  sprintf("Previewing %s out of %s groups",
-                                          groupsToPreview, totalGroups))
+                title <- sprintf("Preview %s out of %s groups",
+                                 groupsToPreview, totalGroups)
+            } else {
+                title <- sprintf("Preview %s group%s", totalGroups,
+                                 ifelse(totalGroups > 1, "s", ""))
             }
             
-            tagList(tags$hr(), tags$label("Groups to be created"),
-                    table2html(table, rownames=FALSE, style="margin-bottom: 0;",
-                               class="table table-condensed table-striped",
-                               thead=TRUE),
-                    extra)
+            htmlTable <- table2html(table, rownames=FALSE, thead=TRUE,
+                                    class="table table-condensed table-striped")
+            htmlTable <- gsub("<th>", '<th style="text-align: right">',
+                              htmlTable)
+            panel <- tags$div(class="panel panel-info",
+                              style="z-index: 1; position: relative;",
+                              tags$div(class="panel-heading", title), htmlTable)
+            return(panel)
         })
     }
     
