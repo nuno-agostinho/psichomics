@@ -107,15 +107,16 @@ ranges (helpful for plotting statistics of large datasets)
     in the loadings plot
     - Loading plots now show parsed information of events (cognate gene, event
     type and genomic position) if available
-* Differential analyses:
+* Differential analyses (visual interface):
     - Use group colours in density plots of differential expression table
-    (visual interface)
     - Fix occasional crash when performing differential analyses with different
-    number of groups during the same session (visual interface)
+    number of groups during the same session
     - Tooltips of volcano plots are now properly positioned in high-resolution
-    screens (visual interface)
+    screens
     - The correct splicing event is now selected when clicking the density plots
-    or survival curves in the table (visual interface)
+    or survival curves in the table
+    - When creating a group from differential splicing results, correctly set
+    cognate genes of alternative splicing events
     - `diffAnalyses()`: deprecated `psi` argument was now removed
 * Distribution plots (`plotDistribution()`):
     - After hiding all plot series, hide Y axis (rug plots of the different

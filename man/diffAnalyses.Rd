@@ -14,7 +14,7 @@ diffAnalyses(
 )
 }
 \arguments{
-\item{data}{Data frame or matrix: gene expression or alternative splicing 
+\item{data}{Data frame or matrix: gene expression or alternative splicing
 quantification}
 
 \item{groups}{Named list of characters (containing elements belonging to each
@@ -47,7 +47,7 @@ The following statistical analyses may be performed simultaneously via the
      \item{\code{kruskal} - Kruskal test (2 or more groups)}
      \item{\code{levene} - Levene's test (2 or more groups)}
      \item{\code{fligner} - Fligner-Killeen test (2 or more groups)}
-     \item{\code{density} - Sample distribution per group (only usable 
+     \item{\code{density} - Sample distribution per group (only usable
      through the visual interface)}
 }
 
