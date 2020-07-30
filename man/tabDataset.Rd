@@ -31,8 +31,8 @@ tabDataset(
 
 \item{description}{Character: description of the table (optional)}
 
-\item{icon}{Character: list containing an item named \code{symbol} 
-(FontAwesome icon name) and another one named \code{colour} (background 
+\item{icon}{Character: list containing an item named \code{symbol}
+(FontAwesome icon name) and another one named \code{colour} (background
 colour)}
 }
 \value{

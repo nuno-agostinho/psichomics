@@ -31,7 +31,7 @@ interest}
 \item{timeStart}{Character: name of column containing starting time of the
 interval or follow up time}
 
-\item{timeStop}{Character: name of column containing ending time of the 
+\item{timeStop}{Character: name of column containing ending time of the
 interval (only relevant for interval censoring)}
 
 \item{match}{Matrix: match between samples and subjects}
@@ -39,7 +39,7 @@ interval (only relevant for interval censoring)}
 \item{patients}{Character: subject identifiers (only required if the
 \code{clinical} argument is not handed)}
 
-\item{samples}{Character: samples to use when assigning values per subject 
+\item{samples}{Character: samples to use when assigning values per subject
 (if \code{NULL}, all samples will be used)}
 }
 \value{

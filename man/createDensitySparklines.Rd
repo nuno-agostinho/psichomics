@@ -18,7 +18,7 @@ createDensitySparklines(
 
 \item{events}{Character: event identifiers}
 
-\item{areSplicingEvents}{Boolean: are these splicing events (TRUE) or gene 
+\item{areSplicingEvents}{Boolean: are these splicing events (TRUE) or gene
 expression (FALSE)?}
 
 \item{groups}{Character: name of the groups used for differential analyses}

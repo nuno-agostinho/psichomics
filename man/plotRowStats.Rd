@@ -33,7 +33,7 @@ choose between \code{mean}, \code{median}, \code{var} or \code{range}
 
 \item{subset}{Boolean or integer: \code{data} points to highlight}
 
-\item{xmin, xmax, ymin, ymax}{Numeric: minimum and maximum X and Y values to 
+\item{xmin, xmax, ymin, ymax}{Numeric: minimum and maximum X and Y values to
 draw in the plot}
 
 \item{xlim, ylim}{Numeric: X and Y axis range}

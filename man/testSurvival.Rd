@@ -7,7 +7,7 @@
 testSurvival(survTerms, ...)
 }
 \arguments{
-\item{survTerms}{\code{survTerms} object: survival terms obtained after 
+\item{survTerms}{\code{survTerms} object: survival terms obtained after
 running \code{processSurvTerms} (see examples)}
 
 \item{...}{
@@ -51,7 +51,7 @@ data$event <- NA
 data$event[aml$status == 1] <- aml$time[aml$status == 1]
 censoring  <- "right"
 formulaStr <- "x"
-survTerms <- processSurvTerms(data, censoring=censoring, event=event, 
+survTerms <- processSurvTerms(data, censoring=censoring, event=event,
                               timeStart=timeStart, followup=followup,
                               formulaStr=formulaStr)
 testSurvival(survTerms)

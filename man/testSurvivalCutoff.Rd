@@ -38,7 +38,7 @@ stop and event (optional)}
 interest}
     \item{\code{timeStart}}{Character: name of column containing starting time of the
 interval or follow up time}
-    \item{\code{timeStop}}{Character: name of column containing ending time of the 
+    \item{\code{timeStop}}{Character: name of column containing ending time of the
 interval (only relevant for interval censoring)}
     \item{\code{followup}}{Character: name of column containing follow up time}
   }}

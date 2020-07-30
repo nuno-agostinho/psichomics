@@ -7,7 +7,7 @@
 ASquantFileInput(ASquantFileId, clearable = FALSE)
 }
 \arguments{
-\item{ASquantFileId}{Character: identifier for alternative splicing 
+\item{ASquantFileId}{Character: identifier for alternative splicing
 quantification input}
 
 \item{clearable}{Boolean: allow to clear selected file or directory?}
