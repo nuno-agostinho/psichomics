@@ -1,4 +1,4 @@
-# psichomics 1.14.1 (27 July, 2020)
+# psichomics 1.14.2 (3 August, 2020)
 
 ## Support for loading more data formats
 
@@ -133,6 +133,10 @@ ranges (helpful for plotting statistics of large datasets)
     not converted to factors by default)
     - Fix `R CMD check` warning of Unicode symbol translation in Windows
     - Fix comparing signed and unsigned integers in `Rcpp` functions
+
+# psichomics 1.14.1 (16 June, 2020)
+
+Fix unit tests for R 4.0
 
 # psichomics 1.12.1 (29 January, 2020)
 
