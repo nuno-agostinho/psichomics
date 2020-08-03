@@ -24,8 +24,8 @@ values?}
 \item{extra}{Character: extra information to add (such as species and
 assembly version); only used if \code{pretty = TRUE} and \code{char = TRUE}}
 
-\item{coords}{Boolean: display extra coordinates regarding the alternative 
-and constitutive regions of alternative splicing events? Only used if 
+\item{coords}{Boolean: display extra coordinates regarding the alternative
+and constitutive regions of alternative splicing events? Only used if
 \code{char = FALSE}}
 
 \item{data}{Matrix or data frame: alternative splicing information}
@@ -42,7 +42,7 @@ Parse alternative splicing event identifier
 events <- c(
   "A3SS_15_+_63353138_63353912_63353397_TPM1",
   "A3SS_11_-_61118463_61117115_61117894_CYB561A3",
-  "A5SS_21_+_48055675_48056459_48056808_PRMT2", 
+  "A5SS_21_+_48055675_48056459_48056808_PRMT2",
   "A5SS_1_-_1274742_1274667_1274033_DVL1",
   "AFE_9_+_131902430_131901928_131904724_PPP2R4",
   "AFE_5_-_134686513_134688636_134681747_H2AFY",

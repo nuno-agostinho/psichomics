@@ -22,10 +22,10 @@ retrieved from the given gene)}
 \value{
 List of correlations where each element contains:
 \item{\code{eventID}}{Alternative splicing event identifier}
-\item{\code{cor}}{Correlation between gene expression and alternative 
+\item{\code{cor}}{Correlation between gene expression and alternative
 splicing quantification of one alternative splicing event}
 \item{\code{geneExpr}}{Gene expression for the selected gene}
-\item{\code{psi}}{Alternative splicing quantification for the alternative 
+\item{\code{psi}}{Alternative splicing quantification for the alternative
 splicing event}
 }
 \description{

@@ -9,7 +9,7 @@ reference:
       contents:
         - psichomics
         - parseSplicingEvent
-        - getSplicingEventInformation
+        - getSplicingEventData
         - getSplicingEventFromGenes
         - getGenesFromSplicingEvents
         - plotSplicingEvent
@@ -56,7 +56,7 @@ reference:
         - discardLowCoveragePSIvalues
         - filterPSI
         - plotRowStats
-    - title: "Custom alternative splicing annotation preparation"
+    - title: "Custom alternative splicing annotation"
       contents:
         - parseMatsAnnotation
         - parseMisoAnnotation

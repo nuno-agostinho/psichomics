@@ -33,7 +33,7 @@ selectGroupsUI <- function (
     editId <- paste0(id, "Edit")
     onItemAdd <- sprintf(
         "function(value, $item) {
-            var editLabel = 'Edit groups...';
+            var editLabel = 'Create or edit groups...';
             if (value === editLabel) {
                 showGroups('%s');
                 this.removeItem(editLabel);
@@ -145,7 +145,7 @@ selectGroupsServer <- function(session, id, type, preference=NULL) {
         selected <- isolate(input[[id]])
         selected <- selected[selected %in% groups]
         if ( is.null(selected) ) selected <- character()
-        groups <- c(groups, "Edit"="Edit groups...")
+        groups <- c(groups, "Edit"="Create or edit groups...")
         updateSelectizeInput(session, id, choices=groups, selected=selected)
     })
 }
@@ -449,6 +449,7 @@ renderGroupInterface <- function(ns, multiFisherTests=TRUE) {
                 style="background-color: #d9534f;",
                 style="border-color: #d43f3a;", removeAllLink))
 
+    groupTestId <- "groupIndependenceTestingPlot"
     tagList(
         dataTableOutput(ns("groupsTable")),
         helpText("Click on groups in the table above to select them and",
@@ -458,8 +459,7 @@ renderGroupInterface <- function(ns, multiFisherTests=TRUE) {
         # checkboxInput(ns("removeSetsUsed"), "Remove original groups",
         #               value=TRUE)
         hidden(singleGroupSelectedInterface),
-        plotOutput(ns(groupTestId <- "groupIndependenceTestingPlot"),
-                   height="200px",
+        plotOutput(ns(groupTestId), height="200px",
                    hover=hoverOpts(ns(paste0(groupTestId, "-hover")),
                                    delay=50, delayType="throttle")),
         uiOutput(ns(paste0(groupTestId, "-tooltip"))))
@@ -1671,7 +1671,7 @@ groupManipulation <- function(input, output, session, type) {
             htmlTable <- gsub("<th>", '<th style="text-align: right">',
                               htmlTable)
             panel <- tags$div(class="panel panel-info",
-                              style="z-index: 1; position: relative;",
+                              style="z-index: 101; position: relative;",
                               tags$div(class="panel-heading", title), htmlTable)
             return(panel)
         })

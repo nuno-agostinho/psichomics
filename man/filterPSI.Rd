@@ -28,8 +28,8 @@ events are not filtered by event type}
 
 \item{eventSubtype}{Character: filter data based on event subtype; check all
 event subtypes available in your data by using
-\code{unique(getSplicingEventInformation(psi)$subtype)}, where \code{psi} is
-the alternative splicing quantification data; if \code{eventSubtype = NULL},
+\code{unique(getSplicingEventData(psi)$subtype)}, where \code{psi} is the
+alternative splicing quantification data; if \code{eventSubtype = NULL},
 events are not filtered by event subtype}
 
 \item{minPSI}{Numeric: minimum PSI value}

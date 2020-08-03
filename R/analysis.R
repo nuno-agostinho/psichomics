@@ -2405,13 +2405,13 @@ diffAnalyses <- function(data, groups=NULL,
     colnames(df) <- col
 
     # parallel::stopCluster(cl)
-    attr(df, "rowData") <- getSplicingEventInformation(data)
+    attr(df, "rowData") <- getSplicingEventData(data)
     df <- preserveAttributes(df)
     return(df)
 }
 
 prettifyEventID <- function(event, data=NULL) {
-    eventData <- getEventData(event, data=data)
+    eventData <- findEventData(event, data=data)
     hasID     <- !is.null(eventData$id)
     parsed    <- parseSplicingEvent(event, char=!hasID, data=data)
     if (is.null(parsed)) {

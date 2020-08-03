@@ -45,7 +45,7 @@ setDifferentialSplicingColumns(columns, category = getCategory())
 \item{columns}{Character: differential analyses' column names}
 }
 \value{
-Getters return globally accessible data, whereas setters return 
+Getters return globally accessible data, whereas setters return
 \code{NULL} as they are only used to modify the Shiny session's state
 }
 \description{

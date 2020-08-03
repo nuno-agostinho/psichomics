@@ -17,7 +17,7 @@ getGenesFromSplicingEvents(ASevents, data = NULL)
 \item{data}{Matrix or data frame: alternative splicing information}
 }
 \value{
-Named character containing alternative splicing events or genes and 
+Named character containing alternative splicing events or genes and
 their respective genes or alternative splicing events as names (depending on
 the function in use)
 }
@@ -25,11 +25,11 @@ the function in use)
 Get alternative splicing events from genes or vice-versa
 }
 \details{
-A list of alternative splicing events is required to run 
+A list of alternative splicing events is required to run
 \code{getSplicingEventFromGenes}
 }
 \examples{
-ASevents <- c("SE_1_+_201763003_201763300_201763374_201763594_NAV1", 
+ASevents <- c("SE_1_+_201763003_201763300_201763374_201763594_NAV1",
               "SE_1_+_183515472_183516238_183516387_183518343_SMG7",
               "SE_1_+_183441784_183471388_183471526_183481972_SMG7",
               "SE_1_+_181019422_181022709_181022813_181024361_MR1",

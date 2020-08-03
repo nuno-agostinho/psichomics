@@ -2,7 +2,7 @@
 
 ## Support for loading more data formats
 
-* `getSplicingEventInformation()`: get a table with all information for a given
+* `getSplicingEventData()`: get a table with all information for a given
 dataset of alternative splicing quantification data
 * VAST-TOOLS inclusion levels and gene expression tables:
     - Import VAST-TOOLS' output files; in the visual interface, use the

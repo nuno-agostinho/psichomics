@@ -7,7 +7,7 @@
 appendNewGroups(type, new, clearOld = FALSE)
 }
 \arguments{
-\item{type}{Character: type of groups (either \code{Patients}, 
+\item{type}{Character: type of groups (either \code{Patients},
 \code{Samples}, \code{ASevents} or \code{Genes})}
 
 \item{new}{Rows of groups to be added}

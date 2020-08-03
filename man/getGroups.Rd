@@ -18,7 +18,7 @@ setGroups(
 )
 }
 \arguments{
-\item{type}{Character: type of groups (either \code{Patients}, 
+\item{type}{Character: type of groups (either \code{Patients},
 \code{Samples}, \code{ASevents} or \code{Genes})}
 
 \item{complete}{Boolean: return all the information on groups (\code{TRUE})
@@ -29,7 +29,7 @@ or just the group names and respective indexes (\code{FALSE})?}
 \item{groups}{Matrix: groups of dataset}
 }
 \value{
-Getters return globally accessible data, whereas setters return 
+Getters return globally accessible data, whereas setters return
 \code{NULL} as they are only used to modify the Shiny session's state
 }
 \description{

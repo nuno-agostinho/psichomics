@@ -7,8 +7,8 @@
 #' events are not filtered by event type
 #' @param eventSubtype Character: filter data based on event subtype; check all
 #' event subtypes available in your data by using
-#' \code{unique(getSplicingEventInformation(psi)$subtype)}, where \code{psi} is
-#' the alternative splicing quantification data; if \code{eventSubtype = NULL},
+#' \code{unique(getSplicingEventData(psi)$subtype)}, where \code{psi} is the
+#' alternative splicing quantification data; if \code{eventSubtype = NULL},
 #' events are not filtered by event subtype
 #' @param minPSI Numeric: minimum PSI value
 #' @param maxPSI Numeric: maximum PSI value
@@ -47,7 +47,7 @@ filterPSI <- function(psi, eventType=NULL, eventSubtype=NULL,
 
     trueVector <- function(len) rep(TRUE, len)
 
-    type <- getSplicingEventInformation(psi)$type
+    type <- getSplicingEventData(psi)$type
     if (!is.null(eventType) && !is.null(type)) {
         type <- type %in% eventType
         eventTypeText <- c("Splicing event types"=paste(eventType,
@@ -57,7 +57,7 @@ filterPSI <- function(psi, eventType=NULL, eventSubtype=NULL,
         eventTypeText <- c("Splicing event types"="All")
     }
 
-    subtype <- getSplicingEventInformation(psi)$subtype
+    subtype <- getSplicingEventData(psi)$subtype
     if (!is.null(eventSubtype) && !is.null(subtype)) {
         parsed  <- parseSplicingEvent(rownames(psi), data=psi,
                                       pretty=TRUE)$subtype
@@ -146,7 +146,7 @@ filterPSI <- function(psi, eventType=NULL, eventSubtype=NULL,
 discardLowCoveragePSIvalues <- function(
     psi, minReads=10, vasttoolsScoresToDiscard=c("VLOW", "N")) {
 
-    eventData <- getSplicingEventInformation(psi)
+    eventData <- getSplicingEventData(psi)
     if (is.null(eventData)) return(psi)
 
     # Remove events containing only missing values
@@ -369,7 +369,7 @@ inclusionLevelsFilterServer <- function(input, output, session) {
     # Toggle VAST-TOOLS-specific coverage options
     observe({
         psi       <- getInclusionLevels()
-        eventData <- getSplicingEventInformation(psi)
+        eventData <- getSplicingEventData(psi)
         if (!is.null(eventData) &&
             isTRUE(unique(eventData$source) == "vast-tools")) {
             show("vasttoolsScoresToDiscard")
@@ -564,7 +564,7 @@ inclusionLevelsFilterServer <- function(input, output, session) {
         }
         if (!areThereInclusionLevels(filteredPSI)) return(NULL)
 
-        eventData <- getSplicingEventInformation(filteredPSI)
+        eventData <- getSplicingEventData(filteredPSI)
         isVastTools <- isTRUE(unique(eventData$source) == "vast-tools")
         if ( !is.null(vasttoolsScoresToDiscard) && isVastTools ) {
             filteredPSI <- discardLowCoverage(filteredPSI,

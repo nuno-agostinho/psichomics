@@ -7,7 +7,7 @@
 showGroupsTable(type)
 }
 \arguments{
-\item{type}{Character: type of groups (either \code{Patients}, 
+\item{type}{Character: type of groups (either \code{Patients},
 \code{Samples}, \code{ASevents} or \code{Genes})}
 }
 \value{

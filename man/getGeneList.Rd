@@ -16,7 +16,7 @@ List of genes
 \description{
 Available gene lists:
 \itemize{
-  \item{\strong{Sebestyen et al., 2016}: 1350 genes encoding RNA-binding 
+  \item{\strong{Sebestyen et al., 2016}: 1350 genes encoding RNA-binding
   proteins, 167 of which are splicing factors}
 }
 }
