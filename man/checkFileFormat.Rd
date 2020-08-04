@@ -20,7 +20,7 @@ checkFileFormat(format, head, filename = "")
 Checks the format of a file
 }
 \details{
-The name of the file may also be required to be considered of a 
+The name of the file may also be required to be considered of a
 certain format.
 }
 \keyword{internal}

@@ -4,7 +4,13 @@
 \alias{loadFile}
 \title{Load file based on its format}
 \usage{
-loadFile(file, formats = loadFileFormats(), ..., verbose = FALSE)
+loadFile(
+  file,
+  formats = loadFileFormats(),
+  ...,
+  verbose = FALSE,
+  multiple = FALSE
+)
 }
 \arguments{
 \item{file}{Character: file to parse}
@@ -14,6 +20,8 @@ loadFile(file, formats = loadFileFormats(), ..., verbose = FALSE)
 \item{...}{Extra parameters passed to \link[data.table]{fread}}
 
 \item{verbose}{Boolean: detail steps while parsing}
+
+\item{multiple}{Boolean: expect more than one file?}
 }
 \value{
 Data frame with the contents of the given file if the file format is
@@ -24,7 +32,7 @@ Tries to recognise the file format and parses the content of the given file
 accordingly.
 }
 \details{
-The resulting data frame includes the attribute \code{tablename} 
+The resulting data frame includes the attribute \code{tablename}
 with the name of the data frame
 }
 \keyword{internal}

@@ -40,7 +40,7 @@ Filter genes based on their expression
 geneExpr <- readFile("ex_gene_expression.RDS")
 
 # Add some genes with low expression
-geneExpr <- rbind(geneExpr, 
+geneExpr <- rbind(geneExpr,
                   lowReadGene1=c(rep(4:5, 10)),
                   lowReadGene2=c(rep(5:1, 10)),
                   lowReadGene3=c(rep(10:1, 10)),

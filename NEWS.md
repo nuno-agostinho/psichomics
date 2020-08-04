@@ -1,11 +1,12 @@
-# psichomics 1.14.2 (3 August, 2020)
+# psichomics 1.14.2 (4 August, 2020)
 
 ## Support for loading more data formats
 
 * `getSplicingEventData()`: get a table with all information for a given
 dataset of alternative splicing quantification data
 * VAST-TOOLS inclusion levels and gene expression tables:
-    - Import VAST-TOOLS' output files; in the visual interface, use the
+    - Import VAST-TOOLS' output files (inclusion levels, cRPKMs and gene read
+    count tables); in the visual interface, use the
     **User-provided data loading** panel and load a specific alternative
     splicing quantification or load the folder containing such file; in the
     command-line interface, use `loadLocalFiles()`

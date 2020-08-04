@@ -12,6 +12,7 @@ contextUI <- function(id) {
 #'
 #' @param object Object
 #' @param ... Named parameters to convert to attributes
+#' @param replace Boolean: replace an attribute if already set?
 #'
 #' @return Object with attributes set
 #' @keywords internal
@@ -19,11 +20,17 @@ contextUI <- function(id) {
 #' @examples
 #' ll <- list(a="hey", b="there")
 #' psichomics:::addObjectAttrs(ll, "words"=2, "language"="English")
-addObjectAttrs <- function (object, ...) {
+addObjectAttrs <- function (object, ..., replace=TRUE) {
     args <- list(...)
     if (length(args) == 1 && is.list(args[[1]])) args <- args[[1]]
     if (length(args) > 0) {
-        for (k in seq(args)) attr(object, names(args[k])) <- args[[k]]
+        for (k in seq(args)) {
+            attrName <- names(args[k])
+            # Attribute is not set if it is not NULL and replace=TRUE
+            if (is.null(attr(object, attrName)) || replace) {
+                attr(object, attrName) <- args[[k]]
+            }
+        }
     }
     return(object)
 }

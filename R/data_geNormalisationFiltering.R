@@ -36,7 +36,7 @@ geNormalisationFilteringInterface <- function(ns) {
     #                      "Boxplot of the variance expression"="var")),
     #     highchartOutput(ns("filteringAssistant"), height="150px")
     # )
-    
+
     options <- div(
         id=ns("options"),
         selectizeInput(ns("geneExpr"), "Gene expression dataset", width="100%",
@@ -50,7 +50,7 @@ geNormalisationFilteringInterface <- function(ns) {
                                multiple=TRUE, width="100%",
                                choices=character(0))),
             bsCollapsePanel(
-                tagList(icon("dna"), "Gene filtering", 
+                tagList(icon("dna"), "Gene filtering",
                         contextUI(ns("filterText"))),
                 value="Filtering",
                 checkboxInput(ns("enableFiltering"), value=TRUE, width="100%",
@@ -135,7 +135,7 @@ geNormalisationFilteringUI <- function(id, panel) {
 #' @details \code{edgeR::calcNormFactors} will be used to normalise gene
 #' expression if one of the following methods is set: \code{TMM}, \code{RLE},
 #' \code{upperquartile} or \code{none}. However, \code{\link[limma]{voom}} will
-#' be used for normalisation if \code{performVoom = TRUE} and the selected 
+#' be used for normalisation if \code{performVoom = TRUE} and the selected
 #' method is \code{quantile}.
 #'
 #' @importFrom edgeR DGEList [.DGEList calcNormFactors cpm
@@ -177,7 +177,7 @@ normaliseGeneExpression <- function(geneExpr, geneFilter=NULL, method="TMM",
     updateProgress("Preparing gene expression data")
     if (!is(geneExprNorm, "EList")) geneExprNorm <- data.frame(geneExprNorm)
     colnames(geneExprNorm) <- colnames(geneExpr)
-    
+
     geneExprNorm <- inheritAttrs(geneExprNorm, originalGeneExpr)
     if (is(geneExprNorm, "EList"))
         geneExprNorm$E <- inheritAttrs(geneExprNorm$E, originalGeneExpr)
@@ -206,7 +206,7 @@ loadGeneExpressionSet <- function(session, input, output) {
     observeEvent(input$loadGeneExpr, {
         prepareFileBrowser(session, input, "customGeneExpr")
     }, once=TRUE)
-    
+
     # Load gene expression
     loadGeneExpression <- reactive({
         time <- startProcess("loadGeneExpr")
@@ -218,8 +218,9 @@ loadGeneExpressionSet <- function(session, input, output) {
         formats <- allFormats[sapply(allFormats, "[[",
                                      "dataType") == "Gene expression"]
 
-        geneExpr <- tryCatch(loadFile(input$customGeneExpr, formats),
-                             warning=return, error=return)
+        geneExpr <- tryCatch(
+            loadFile(input$customGeneExpr, formats, multiple=TRUE),
+            warning=return, error=return)
         if (is(geneExpr, "error")) {
             if (geneExpr$message == paste("'file' must be a character string",
                                           "or connection"))
@@ -237,12 +238,32 @@ loadGeneExpressionSet <- function(session, input, output) {
         } else {
             removeAlert(output, "alertGeneExpr")
 
+            prepareGeneExpr <- function(geneExpr, set=FALSE) {
+                tablename <- attr(geneExpr, "tablename")
+                if (is.null(tablename)) tablename <- "Gene expression"
+                if (set) {
+                    name <- renameDuplicated(tablename,
+                                             names(getCategoryData()))
+                    setDataTable(name, geneExpr)
+                } else {
+                    res <- list(geneExpr)
+                    names(res) <- tablename
+                    return(res)
+                }
+            }
+
             if ( is.null(getData()) ) {
                 name <- file_path_sans_ext( basename(input$customGeneExpr) )
                 name <- gsub(" Gene expression.*$", "", name)
                 if (name == "") name <- "Unnamed"
 
-                data <- setNames(list(list("Gene expression"=geneExpr)), name)
+                if (is.data.frame(geneExpr)) {
+                    geneExpr <- prepareGeneExpr(geneExpr)
+                } else {
+                    geneExpr <- unlist(lapply(geneExpr, prepareGeneExpr),
+                                       recursive=FALSE)
+                }
+                data <- setNames(list(geneExpr), name)
                 data <- processDatasetNames(data)
                 setData(data)
                 setCategory(name)
@@ -250,10 +271,10 @@ loadGeneExpressionSet <- function(session, input, output) {
                 samples <- colnames(geneExpr)
                 parsed <- parseTCGAsampleInfo(samples)
                 if ( !is.null(parsed) ) setSampleInfo(parsed)
-            } else {
-                name <- renameDuplicated("Gene expression",
-                                         names(getCategoryData()))
-                setDataTable(name, geneExpr)
+            } else if (is.data.frame(geneExpr)) {
+                prepareGeneExpr(geneExpr, set=TRUE)
+            } else if (is.list(geneExpr)) {
+                lapply(geneExpr, prepareGeneExpr, set=TRUE)
             }
             removeModal()
         }
@@ -277,7 +298,7 @@ loadGeneExpressionSet <- function(session, input, output) {
 #' @importFrom AnnotationDbi select
 #' @importFrom data.table data.table
 #' @importFrom org.Hs.eg.db org.Hs.eg.db
-#' 
+#'
 #' @family functions for gene expression pre-processing
 #' @return Character vector of the respective targets of gene identifiers. The
 #' previous identifiers remain other identifiers have the same target (in case
@@ -353,17 +374,17 @@ convertGeneIdentifiers <- function(annotation, genes, key="ENSEMBL",
 #' @family functions for gene expression pre-processing
 #' @return Boolean vector indicating which genes have sufficiently large counts
 #' @export
-#' 
-#' @examples 
+#'
+#' @examples
 #' geneExpr <- readFile("ex_gene_expression.RDS")
-#' 
+#'
 #' # Add some genes with low expression
-#' geneExpr <- rbind(geneExpr, 
+#' geneExpr <- rbind(geneExpr,
 #'                   lowReadGene1=c(rep(4:5, 10)),
 #'                   lowReadGene2=c(rep(5:1, 10)),
 #'                   lowReadGene3=c(rep(10:1, 10)),
 #'                   lowReadGene4=c(rep(7:8, 10)))
-#' 
+#'
 #' # Filter out genes with low reads across samples
 #' geneExpr[filterGeneExpr(geneExpr), ]
 filterGeneExpr <- function(geneExpr, minMean=0, maxMean=Inf, minVar=0,
@@ -407,7 +428,7 @@ plotGeneExprPerSample <- function(geneExpr, ...) {
 }
 
 #' Plot library size
-#' 
+#'
 #' @param data Data frame or matrix: gene expression
 #' @param log10 Boolean: log10-transform \code{data}?
 #' @param title Character: plot title
@@ -417,7 +438,7 @@ plotGeneExprPerSample <- function(geneExpr, ...) {
 #' @family functions for gene expression pre-processing
 #' @return Library size distribution
 #' @export
-#' 
+#'
 #' @examples
 #' df <- data.frame(geneA=c(2, 4, 5),
 #'                  geneB=c(20, 3, 5),
@@ -429,7 +450,7 @@ plotLibrarySize <- function(
     title="Library size distribution across samples",
     subtitle="Library size: total number of mapped reads",
     colour="orange") {
-    
+
     table <- colSums(data)
     if (log10) {
         table <- log10(table)
@@ -438,11 +459,11 @@ plotLibrarySize <- function(
         xAxisLabel <- "Library sizes"
     }
     yAxisLabel <- "Density"
-    
+
     groups <- "All samples"
     attr(groups, "Colour") <- c("All samples"=colour)
     plot <- plotDistribution(table, groups,
-                             rugLabels=TRUE, vLine=FALSE, legend=FALSE, 
+                             rugLabels=TRUE, vLine=FALSE, legend=FALSE,
                              title=title) %>%
         hc_xAxis(title=list(text=xAxisLabel)) %>%
         hc_yAxis(title=list(text=yAxisLabel)) %>%
@@ -452,7 +473,7 @@ plotLibrarySize <- function(
 
 #' Sum columns using an \code{\link{EList-class}} object
 #' @inheritParams base::colSums
-#' 
+#'
 #' @return Numeric vector with the sum of the columns
 #' @export
 setMethod("colSums", signature="EList", function(x, na.rm=FALSE, dims=1) {
@@ -523,7 +544,7 @@ geNormalisationFilteringServer <- function(input, output, session) {
                 samplesToKeep <- !colnames(geneExpr) %in% sampleFilter
                 geneExpr <- geneExpr[ , samplesToKeep]
             }
-            
+
             filtered <- filterGeneExpr(geneExpr, minMean, maxMean, minVar,
                                        maxVar, minCounts, minTotalCounts)
             return(filtered)
@@ -539,7 +560,7 @@ geNormalisationFilteringServer <- function(input, output, session) {
         updateSelectizeInput(
             session, "sampleFilter", server=TRUE,
             choices=colnames(geneExpr),
-            options=list(placeholder="Select samples to discard", 
+            options=list(placeholder="Select samples to discard",
                          plugins=list("remove_button")))
     })
 
@@ -654,7 +675,7 @@ geNormalisationFilteringServer <- function(input, output, session) {
         } else {
             geneFilter <- NULL
         }
-        
+
         geneExprNorm <- normaliseGeneExpression(
             geneExpr, geneFilter, method, percentile, log2transform=TRUE,
             priorCount, performVoom=voom)
@@ -696,19 +717,30 @@ geNormalisationFilteringServer <- function(input, output, session) {
             "Replace unambiguous ENSEMBL gene identifiers with their gene",
             "symbols")
 
-        settings <- c(list(
-            "Original gene expression (file)"=attr(geneExpr, "filename"),
-            "Original gene expression (label)"=isolate(input$geneExpr)
-        ), sampleFilterSettings, geneFilterSettings, list(
-            "Normalisation method"=method,
-            "Mean-variance modelling (voom)"=if (voom) "Yes" else "No",
-            "Log2-transformation"="Yes"),
-        avgCountPerObservationText,
-        convertToGeneSymbolText)
-        attr(geneExprNorm, "settings") <- settings
-        attr(geneExprNorm, "icon") <- list(symbol="cogs", colour="green")
-        attr(geneExprNorm, "description") <- "Gene expression (normalised)"
-        attr(geneExprNorm, "dataType") <- "Gene expression"
+        settings <- c(
+            list(
+                "Original gene expression (file)"=attr(geneExpr, "filename"),
+                "Original gene expression (label)"=isolate(input$geneExpr)
+            ), sampleFilterSettings, geneFilterSettings, list(
+                "Normalisation method"=method,
+                "Mean-variance modelling (voom)"=if (voom) "Yes" else "No",
+                "Log2-transformation"="Yes"),
+            avgCountPerObservationText,
+            convertToGeneSymbolText)
+
+        description <- attr(geneExprNorm, "description")
+        if (!is.null(description)) {
+            description <- gsub(" \\(normalised\\)$", "", description)
+            description <- paste(description, "(normalised)")
+        } else {
+            description <- "Gene expression (normalised)"
+        }
+        geneExprNorm <- addObjectAttrs(
+            geneExprNorm,
+            "settings"=settings,
+            "icon"=list(symbol="cogs", colour="green"),
+            "description"="Gene expression (normalised)",
+            "dataType"="Gene expression")
 
         if (is(geneExprNorm, "EList"))
             geneExprNorm$E <- inheritAttrs(geneExprNorm$E, geneExprNorm)
@@ -716,7 +748,7 @@ geNormalisationFilteringServer <- function(input, output, session) {
         endProcess("processGeneExpr", time=time)
     })
     loadGeneExpressionSet(session, input, output)
-    
+
     # Update context
     output$sampleFilterText <- renderText({
         sampleFilter <- input$sampleFilter
@@ -729,16 +761,16 @@ geNormalisationFilteringServer <- function(input, output, session) {
         }
         return(text)
     })
-    
+
     output$filterText <- renderText({
         geneExpr <- input$geneExpr
         if (is.null(geneExpr) || geneExpr == "") return(NULL)
         geneExpr <- isolate(getGeneExpression(geneExpr))
-        
+
         filter <- sum(getFilter())
         total  <- nrow(geneExpr)
         ratio  <- filter/total * 100
-        
+
         if (input$enableFiltering) {
             msg <- sprintf("%s genes of %s (%s%%)", filter, total, round(ratio))
         } else {
@@ -746,7 +778,7 @@ geNormalisationFilteringServer <- function(input, output, session) {
         }
         return(msg)
     })
-    
+
     output$normalisationText <- renderText({
         text <- input$normalisation
         if (text == "upperquartile") {
@@ -755,7 +787,7 @@ geNormalisationFilteringServer <- function(input, output, session) {
         if (input$voom) text <- paste(text, "+ voom")
         return(text)
     })
-    
+
     output$logTransformText <- renderText({
         paste("Prior count:", input$priorCount)
     })
