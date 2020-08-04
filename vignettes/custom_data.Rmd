@@ -277,14 +277,20 @@ and follow the instructions in
 # Preparing [VAST-TOOLS][] data
 
 psichomics supports loading inclusion levels and gene expression tables from
-[VAST-TOOLS][] (the tables available after running `vast-tools combine`).
+[VAST-TOOLS][] (the tables available after running `vast-tools combine`). Note:
+
+* If you are interested in analysing gene expression, please run
+`vast-tools align` with argument `--expr`;
+* Gene expression is returned in cRPKMs; to get both cRPKMs and gene read
+counts, please run `vast-tools combine` with argument `-C` (in case of doubt,
+always calculate both cRPKMs and gene read counts).
 
 Any sample and/or subject information may also be useful to load. Unless the
-sample metadata comes from SRA Run Selector, please ensure that it is recognised
-by psichomics, as according to [Preparing generic data][generic].
+sample metadata comes from SRA Run Selector, please ensure that the table is 
+recognised by psichomics: read [Preparing generic data][generic].
 
 To load the data, move all files to a new folder (VAST-TOOLS alternative 
-splicing quantification and gene expression tables and sample/subject
+splicing quantification and gene expression tables and sample/subject-associated
 information) and follow the instructions in
 [Load user-provided data into psichomics][loading].
 

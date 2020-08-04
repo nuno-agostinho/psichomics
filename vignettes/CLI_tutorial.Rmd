@@ -134,10 +134,14 @@ following commands to quickly filter and normalise gene expression:
 # Check genes where min. counts are available in at least N samples and filter
 # out genes with mean expression and variance of 0
 filter <- filterGeneExpr(geneExpr)
-geneExprFiltered <- geneExpr[filter, ]
 
-# Normalise gene expression and perform log2-transformation
-geneExprNorm <- normaliseGeneExpression(geneExprFiltered)
+# 1) Filter gene expression
+# 2) Normalise gene expression using edgeR::calcNormFactors (with TMM method)
+# 3) Calculate log2-counts per million (logCPM)
+geneExprNorm <- normaliseGeneExpression(geneExpr,
+                                        geneFilter=filter,
+                                        method="TMM",
+                                        log2transform=TRUE)
 ```
 
 ## Quantifying alternative splicing

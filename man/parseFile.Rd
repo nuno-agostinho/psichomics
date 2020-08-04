@@ -22,7 +22,7 @@ Data frame with the loaded file
 Parse file according to its format
 }
 \details{
-The resulting data frame includes the attribute \code{tablename} 
+The resulting data frame includes the attribute \code{tablename}
 with the name of the data frame
 }
 \keyword{internal}

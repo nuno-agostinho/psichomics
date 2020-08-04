@@ -178,9 +178,9 @@ getPSIsummaryStats <- function() {
       "PSI range"="range")
 }
 
-numericInputWithCheckbox <- function(ns, id, label, ...) {
+numericInputWithCheckbox <- function(ns, id, label, ..., check=FALSE) {
     checkbox <- checkboxInput(ns(paste0("enable", capitalize(id))), label,
-                              value=FALSE, width="100%")
+                              value=check, width="100%")
     # Adjust margins
     checkbox[[2]][["style"]] <- paste(checkbox[[2]][["style"]],
                                       "margin-bottom: 5px;")
@@ -188,18 +188,27 @@ numericInputWithCheckbox <- function(ns, id, label, ...) {
     # Change label to bold
     checkbox[[3]][[1]][[3]][[1]][[3]][[2]][[2]]$style <- "font-weight: bold"
 
+    checkbox <- span(id=ns(paste0("element", capitalize(id))), checkbox)
     column(6, checkbox, numericInput(ns(id), label=NULL, ..., width="100%"))
 }
 
-psiFilteringSetting <- function(ns, id, min=0, max=1, step=0.1, ..., label=id) {
+psiFilteringSetting <- function(ns, id, min=0, max=1, step=0.1, ..., label=id,
+                                check=FALSE) {
     minValue <- paste0("min", id)
     maxValue <- paste0("max", id)
-    minLabel <- paste0(id, ">=")
-    maxLabel <- paste0(id, "<=")
+    minLabel <- paste(label, ">=")
+    maxLabel <- paste(label, "<=")
+
+    if (length(check) == 1) {
+        minCheck <- maxCheck <- check
+    } else if (length(check) == 2) {
+        minCheck <- check[[1]]
+        maxCheck <- check[[2]]
+    }
     fluidRow(
-        numericInputWithCheckbox(ns, minValue, minLabel, ...,
+        numericInputWithCheckbox(ns, minValue, minLabel, ..., check=minCheck,
                                  min=min, max=max, value=min, step=step),
-        numericInputWithCheckbox(ns, maxValue, maxLabel, ...,
+        numericInputWithCheckbox(ns, maxValue, maxLabel, ..., check=maxCheck,
                                  min=min, max=max, value=max, step=step))
 }
 
