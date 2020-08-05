@@ -1608,6 +1608,8 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #'   may present issues at different zoom levels and depending on the proximity
 #'   of \code{data} values
 #' @param legend Boolean: show legend?
+#' @param valueLabel Character: label for the value (by default, either
+#' \code{Inclusion levels} or \code{Gene expression})
 #'
 #' @details Argument \code{groups} can be either:
 #' \itemize{
@@ -1636,7 +1638,8 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
 #' plotDistribution(data, groups)
 plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
                              title=NULL, psi=NULL, rugLabels=FALSE,
-                             rugLabelsRotation=0, legend=TRUE) {
+                             rugLabelsRotation=0, legend=TRUE,
+                             valueLabel=NULL) {
     if (is.null(psi)) {
         psi <- min(data, na.rm=TRUE) >= 0 && max(data, na.rm=TRUE) <= 1
     }
@@ -1652,6 +1655,7 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
         xLabel <- "Distribution of gene expression"
         id     <- "Gene expression: "
     }
+    if (!is.null(valueLabel)) id <- paste0(valueLabel, ": ")
 
     # Include X-axis zoom and hide markers
     hc <- highchart() %>%
@@ -1683,8 +1687,8 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
             pointFormat=paste(
                 "{point.tooltipLabel}", br(),
                 span(style="color:{point.color}", "\u25CF "),
-                tags$b("{series.name}"), br(),
                 id, "{point.x:.2f}", br(),
+                tags$b("{series.name}"), br(),
                 "Number of samples: {series.options.samples}", br(),
                 "Median: {series.options.median}", br(),
                 "Variance: {series.options.var}", br(),
@@ -2527,14 +2531,14 @@ analysesTableSet <- function(session, input, output, analysesType, analysesID,
                 rowFilter <- TRUE
             }
             stats <- stats[rowFilter, ]
-            
+
             # Keep previously selected rows if possible
             before   <- isolate(getAnalysesFiltered())
             selected <- isolate(input$statsTable_rows_selected)
             selected <- rownames(before)[isolate(selected)]
             selected <- which(rownames(stats) %in% selected)
             if (length(selected) < 1) selected <- NULL
-            
+
             # Set new data
             setAnalysesFiltered(stats)
 

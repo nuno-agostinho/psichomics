@@ -533,7 +533,7 @@ plotLibrarySize <- function(
     attr(groups, "Colour") <- c("All samples"=colour)
     plot <- plotDistribution(table, groups,
                              rugLabels=TRUE, vLine=FALSE, legend=FALSE,
-                             title=title) %>%
+                             title=title, valueLabel="log10(library size)") %>%
         hc_xAxis(title=list(text=xAxisLabel)) %>%
         hc_yAxis(title=list(text=yAxisLabel)) %>%
         hc_subtitle(text=paste(subtitle))

@@ -14,7 +14,8 @@ plotDistribution(
   psi = NULL,
   rugLabels = FALSE,
   rugLabelsRotation = 0,
-  legend = TRUE
+  legend = TRUE,
+  valueLabel = NULL
 )
 }
 \arguments{
@@ -113,6 +114,9 @@ may present issues at different zoom levels and depending on the proximity
 of \code{data} values}
 
 \item{legend}{Boolean: show legend?}
+
+\item{valueLabel}{Character: label for the value (by default, either
+\code{Inclusion levels} or \code{Gene expression})}
 }
 \value{
 \code{highchart} object with density plot
