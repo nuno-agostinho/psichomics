@@ -17,7 +17,7 @@ reduceDimensionality(
 \arguments{
 \item{data}{Data frame: data}
 
-\item{type}{Character: dimensionality reduction technique (\code{pca} or 
+\item{type}{Character: dimensionality reduction technique (\code{pca} or
 \code{ica})}
 
 \item{center}{either a logical value or numeric-alike vector of length

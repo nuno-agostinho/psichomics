@@ -482,15 +482,16 @@ icaServer <- function(input, output, session) {
             dataForICA <- t(dataForICA)
 
             # Perform independent component analysis (ICA) on the subset data
-            ica <- performICA(dataForICA, n.comp=componentNumber,
-                              missingValues=missingValues,
-                              center="center" %in% preprocess,
-                              scale.="scale" %in% preprocess)
+            ica <- tryCatch(
+                performICA(dataForICA, n.comp=componentNumber,
+                           missingValues=missingValues,
+                           center="center" %in% preprocess,
+                           scale.="scale" %in% preprocess), error=return)
             if (is.null(ica)) {
                 errorModal(session, "No individuals to plot ICA",
                            "Try increasing the tolerance of missing values per",
                            "event", caller="Independent component analysis")
-            } else if (inherits(ica, "error")) {
+            } else if (is(ica, "error")) {
                 ## TODO(NunoA): what to do in this case?
                 errorModal(
                     session, "ICA calculation error",

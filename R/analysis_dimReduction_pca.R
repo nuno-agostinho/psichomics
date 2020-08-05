@@ -751,14 +751,15 @@ pcaServer <- function(input, output, session) {
             dataForPCA <- t(dataForPCA)
 
             # Perform principal component analysis (PCA) on the subset data
-            pca <- performPCA(dataForPCA, missingValues=missingValues,
-                              center="center" %in% preprocess,
-                              scale.="scale" %in% preprocess)
+            pca <- tryCatch(
+                performPCA(dataForPCA, missingValues=missingValues,
+                           center="center" %in% preprocess,
+                           scale.="scale" %in% preprocess), error=return)
             if (is.null(pca)) {
                 errorModal(session, "No individuals to plot PCA",
                            "Try increasing the tolerance of missing values",
                            "per event.", caller="Principal component analysis")
-            } else if (inherits(pca, "error")) {
+            } else if (is(pca, "error")) {
                 ## TODO(NunoA): what to do in this case?
                 errorModal(
                     session, "PCA calculation error",

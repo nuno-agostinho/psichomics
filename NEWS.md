@@ -108,11 +108,13 @@ ranges (helpful for plotting statistics of large datasets)
     cleared when changing to datasets where such data is unavailable (thus
     showing the attributes/index/identifiers of the previous dataset)
     - Show an alert when there is no data to create groups
-* Principal component analysis (visual interface):
-    - The correct splicing event is now selected when clicking on any loadings
-    in the loadings plot
-    - Loading plots now show parsed information of events (cognate gene, event
-    type and genomic position) if available
+* Dimensionality reduction:
+    - `performPCA()` and `performICA()` now directly raise errors (instead of
+    simply capturing and returning them)
+    - PCA: loading plots now show parsed information of events (cognate gene,
+    event type and genomic position) if available
+    - PCA: the correct splicing event is now selected when clicking on any
+    loadings in the loadings plot (visual interface)
 * Differential analyses (visual interface):
     - Use group colours in density plots of differential expression table
     - Fix occasional crash when performing differential analyses with different
