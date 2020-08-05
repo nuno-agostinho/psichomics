@@ -131,12 +131,14 @@ the RNA-seq section of `limma`'s user guide. Nevertheless, we present the
 following commands to quickly filter and normalise gene expression:
 
 ```{r normalise gene expression}
-# Check genes where min. counts are available in at least N samples and filter
-# out genes with mean expression and variance of 0
-filter <- filterGeneExpr(geneExpr)
+# Check genes with 10 or more counts in at least some samples and 15 or more
+# total counts across all samples
+filter <- filterGeneExpr(geneExpr, minCounts=10, minTotalCounts=15)
 
+# What normaliseGeneExpression() does:
 # 1) Filter gene expression
-# 2) Normalise gene expression using edgeR::calcNormFactors (with TMM method)
+# 2) Normalise gene expression with edgeR::calcNormFactors (internally) using
+#    the trimmed mean of M-values (TMM) method (by default)
 # 3) Calculate log2-counts per million (logCPM)
 geneExprNorm <- normaliseGeneExpression(geneExpr,
                                         geneFilter=filter,

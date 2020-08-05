@@ -2,9 +2,20 @@
 % Please edit documentation in R/data_geNormalisationFiltering.R
 \name{normaliseGeneExpression}
 \alias{normaliseGeneExpression}
+\alias{normalizeGeneExpression}
 \title{Filter and normalise gene expression}
 \usage{
 normaliseGeneExpression(
+  geneExpr,
+  geneFilter = NULL,
+  method = "TMM",
+  p = 0.75,
+  log2transform = TRUE,
+  priorCount = 0.25,
+  performVoom = FALSE
+)
+
+normalizeGeneExpression(
   geneExpr,
   geneFilter = NULL,
   method = "TMM",

@@ -289,10 +289,23 @@ Any sample and/or subject information may also be useful to load. Unless the
 sample metadata comes from SRA Run Selector, please ensure that the table is 
 recognised by psichomics: read [Preparing generic data][generic].
 
-To load the data, move all files to a new folder (VAST-TOOLS alternative 
+To load the data and move all files to a new folder (VAST-TOOLS alternative 
 splicing quantification and gene expression tables and sample/subject-associated
-information) and follow the instructions in
-[Load user-provided data into psichomics][loading].
+information).
+
+Follow the instructions in [Load user-provided data into psichomics][loading] to
+load the files in the visual interface. Otherwise, use function
+[`loadLocalFiles()`][loadLocalFiles] with the folder path as an argument:
+
+```{r, eval=FALSE}
+library(psichomics)
+data          <- loadLocalFiles("/path/to/psichomics/input")
+junctionQuant <- data[[1]]$`Junction quantification`
+sampleInfo    <- data[[1]]$`Sample metadata`
+# Both gene read counts and cRPKMs are loaded as separate data frames
+geneReadCounts <- data$`Gene expression (read counts)`
+cRPKM          <- data$`Gene expression (cRPKM)`
+```
 
 # Load user-provided data into psichomics
 
@@ -316,7 +329,7 @@ argument:
 
 ```{r, eval=FALSE}
 library(psichomics)
-data <- loadLocalFiles("/path/to/psichomics/input")
+data          <- loadLocalFiles("/path/to/psichomics/input")
 geneExpr      <- data[[1]]$`Gene expression`
 junctionQuant <- data[[1]]$`Junction quantification`
 sampleInfo    <- data[[1]]$`Sample metadata`

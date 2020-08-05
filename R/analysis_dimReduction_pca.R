@@ -282,7 +282,7 @@ calculateLoadingsContribution <- function(pca, pcX=1, pcY=2) {
             table <- cbind("AS event"=rownames(table), table)
         }
     } else {
-        table <- cbind("Genes"=rownames(table), table)
+        table <- cbind("Gene"=rownames(table), table)
     }
 
     # Sort by total contribution to principal components
