@@ -236,6 +236,10 @@ normaliseGeneExpression <- function(geneExpr, geneFilter=NULL, method="TMM",
     return(geneExprNorm)
 }
 
+#' @rdname normaliseGeneExpression
+#' @export
+normalizeGeneExpression <- normaliseGeneExpression
+
 #' Set of functions to load splicing quantification
 #'
 #' @inherit geNormalisationFilteringServer

@@ -1,7 +1,7 @@
 vasttoolsGeneExpressionFormat <- function() {
     list(
-        tablename   = "Gene expression (cRPKMs)",
-        description = "VAST-TOOLS' gene expression (cRPKMs)",
+        tablename   = "Gene expression (cRPKM)",
+        description = "VAST-TOOLS' gene expression (cRPKM)",
         dataType    = "Gene expression",
 
         # Transpose data before parsing? If so, a row in the transposed dataset
@@ -61,8 +61,8 @@ vasttoolsGeneExpressionFormat <- function() {
             cRPKMdata <- prepareData(cRPKMdata)
             cRPKMdata <- addObjectAttrs(
                 cRPKMdata,
-                "tablename"="Gene expression (cRPKMs)",
-                "description"="VAST-TOOLS' gene expression (cRPKMs)")
+                "tablename"="Gene expression (cRPKM)",
+                "description"="VAST-TOOLS' gene expression (cRPKM)")
 
             if (hasReadCounts) {
                 countData <- prepareData(countData)
