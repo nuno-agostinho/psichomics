@@ -560,7 +560,7 @@ setMethod("colSums", signature="EList", function(x, na.rm=FALSE, dims=1) {
 #' @importFrom tools file_path_sans_ext
 #' @importFrom shinyjs enable disable hide show
 #' @importFrom data.table fread
-#' @importFrom highcharter hcboxplot hc_plotOptions hc_xAxis hc_chart
+#' @importFrom highcharter hc_plotOptions hc_xAxis hc_chart
 #'
 #' @keywords internal
 geNormalisationFilteringServer <- function(input, output, session) {

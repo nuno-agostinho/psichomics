@@ -1857,6 +1857,7 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
 #' @param showXlabels Boolean: show labels in X axis?
 #'
 #' @importFrom reshape2 melt
+#' @importFrom highcharter data_to_boxplot hc_add_series_list
 #'
 #' @return Box plot
 #' @keywords internal
@@ -1877,14 +1878,14 @@ renderBoxplot <- function(data, outliers=FALSE, sortByMedian=TRUE,
         melted[[1]] <- NULL
         colnames(melted)[[1]] <- "variable"
     }
-
-    # Avoid message about outdated `cols = c(data)` from highcharter/tibble
-    hc <- suppressWarnings(
-        hcboxplot(melted$value, melted$variable, outliers=outliers) %>%
-            hc_chart(zoomType="x", type="column") %>%
-            hc_plotOptions(boxplot=list(color="black", fillColor="orange")) %>%
-            hc_xAxis(labels=list(enabled=showXlabels), visible=showXlabels) %>%
-            hc_title(text=unname(title)))
+    dat <- data_to_boxplot(melted, value, variable, add_outliers=outliers)
+    hc <- highchart() %>%
+        hc_add_series_list(dat) %>%
+        hc_chart(zoomType="x", type="column") %>%
+        hc_plotOptions(boxplot=list(color="gray", fillColor="orange")) %>%
+        hc_xAxis(type="category",
+                 labels=list(enabled=showXlabels), visible=showXlabels) %>%
+        hc_title(text=unname(title))
     if (min(melted$value) >= 0) hc <- hc %>% hc_yAxis(min=0)
 
     hc <- hc %>% export_highcharts()
