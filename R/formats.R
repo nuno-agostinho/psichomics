@@ -248,7 +248,9 @@ loadFile <- function(file, formats=loadFileFormats(), ..., verbose=FALSE,
         format <- formats[recognised][[1]]
         loaded <- parseFile(format, file, ..., verbose=verbose)
         # Avoid returning more than one dataset when not expected
-        if (!multiple && is.list(loaded)) loaded <- loaded[[1]]
+        if (!multiple && !is.data.frame(loaded) && is.list(loaded)) {
+            loaded <- loaded[[1]]
+        }
         return(loaded)
     }
 }
