@@ -1,0 +1,189 @@
+# Based on
+# - https://lcolladotor.github.io/biocthis/reference/use_bioc_github_action
+# - https://github.com/tidyverse/ggplot2/blob/master/.github/workflows/R-CMD-check.yaml
+# - https://github.com/r-lib/actions/tree/master/examples
+# - https://github.com/maxheld83/ghactions
+# - https://github.com/seandavi/BiocActions
+
+on:
+  push:
+    branches-ignore:
+      - gh-pages
+  pull_request:
+    branches-ignore:
+      - gh-pages
+
+name: R-CMD-check-bioc
+
+# Increment to clear the cache or include "/nocache" in commit message
+env:
+  cache-version: v3
+
+jobs:
+  R-CMD-check-r-lib:
+    runs-on: ${{ matrix.config.os }}
+    name: ${{ matrix.config.os }} (bioc-${{ matrix.config.biocversion }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: windows-latest, biocversion: "release"}
+          - {os: windows-latest, biocversion: "devel"}
+          - {os: macOS-latest,   biocversion: "release"}
+          - {os: macOS-latest,   biocversion: "devel"}
+          - {os: ubuntu-latest,  biocversion: "release"}
+          - {os: ubuntu-latest,  biocversion: "devel"}
+
+    env:
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      TZ: UTC
+      NOT_CRAN: true
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      BIOCVERSION: ${{ matrix.config.biocversion }}
+
+    steps:
+      # https://github.com/r-lib/actions/blob/master/examples/check-standard.yaml
+      - uses: actions/checkout@v2
+
+      - name: Find R version to run
+        run: |
+          # Define R version to use
+          config="https://bioconductor.org/config.yaml"
+          rversion=$(curl ${config} | \
+            grep r_version_associated_with_${BIOCVERSION} | \
+            grep -o "[0-9]*\.[0-9]*\.[0-9]*")
+          echo "Using R ${rversion}..."
+          echo "::set-output name=rversion::${rversion}"
+        shell:
+          bash {0}
+
+      - uses: r-lib/actions/setup-r@master
+        with:
+          r-version: ${{ env.rversion }}
+
+      - uses: r-lib/actions/setup-pandoc@master
+
+      - name: Query dependencies
+        run: |
+          install.packages('remotes')
+          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+        shell: Rscript {0}
+
+      - name: Cache R packages
+        if: "!contains(github.event.head_commit.message, '/nocache')"
+        uses: actions/cache@v1
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ env.cache-version }}-${{ runner.os }}-bioc-${{ matrix.config.biocversion }}-r-${{ env.rversion }}-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ env.cache-version }}-${{ runner.os }}-bioc-${{ matrix.config.biocversion }}-r-${{ env.rversion }}-
+
+      - name: Install Linux system dependencies
+        if: runner.os == 'Linux'
+        env:
+          RHUB_PLATFORM: linux-x86_64-ubuntu-gcc
+        run: |
+          Rscript -e "remotes::install_github('r-hub/sysreqs')"
+          sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
+          sudo -s eval "$sysreqs"
+
+      - name: Install macOS system dependencies
+        if: runner.os == 'macOS'
+        run: |
+          # Enable installing XML from source if needed
+          brew install libxml2
+          echo "::set-env name=XML_CONFIG::/usr/local/opt/libxml2/bin/xml2-config"
+
+          # Required to install magick as noted at
+          # https://github.com/r-lib/usethis/commit/f1f1e0d10c1ebc75fd4c18fa7e2de4551fd9978f#diff-9bfee71065492f63457918efcd912cf2
+          brew install imagemagick@6
+
+      - name: Install Windows system dependencies
+        if: runner.os == 'Windows'
+        run: |
+          # Edit below any Windows system dependencies
+        shell: Rscript {0}
+
+      - name: Install BiocManager
+        run: |
+          message(paste('****', Sys.time(), 'installing BiocManager ****'))
+          remotes::install_cran("BiocManager")
+
+          version <- Sys.getenv('BIOCVERSION')
+          if (version == "release") version <- BiocManager::version()
+          BiocManager::install(version = version, ask = FALSE)
+        shell: Rscript {0}
+
+      - name: Install dependencies
+        run: |
+          # Install dependencies in steps to avoid the issues described at
+          # - https://stat.ethz.ch/pipermail/bioc-devel/2020-April/016675.html
+          # - https://github.com/r-lib/remotes/issues/296
+
+          # Local dependencies
+          message(paste('****', Sys.time(), 'pass number 1 at installing dependencies: local dependencies ****'))
+          local_deps <- remotes::local_package_deps(dependencies = TRUE)
+          deps <- remotes::dev_package_deps(dependencies = TRUE, repos = BiocManager::repositories())
+          BiocManager::install(local_deps[local_deps %in% deps$package[deps$diff != 0]])
+
+          # Remaining dependencies
+          message(paste('****', Sys.time(), 'pass number 2 at installing dependencies: any remaining dependencies ****'))
+          deps <- remotes::dev_package_deps(dependencies = TRUE, repos = BiocManager::repositories())
+          BiocManager::install(deps$package[deps$diff != 0])
+
+          # For running the checks
+          message(paste('****', Sys.time(), 'installing rcmdcheck and BiocCheck ****'))
+          remotes::install_cran("rcmdcheck")
+          BiocManager::install("BiocCheck")
+        shell: Rscript {0}
+
+      - name: Session info
+        run: |
+          options(width = 100)
+          pkgs <- installed.packages()[, "Package"]
+          sessioninfo::session_info(pkgs, include_base = TRUE)
+        shell: Rscript {0}
+
+      - name: R CMD Check
+        env:
+          _R_CHECK_CRAN_INCOMING_: false
+        run: |
+          rcmdcheck::rcmdcheck(
+              args = c("--no-build-vignettes", "--no-manual", "--timings"),
+              build_args = c("--no-manual", "--no-resave-data"),
+              error_on = "warning",
+              check_dir = "check"
+          )
+        shell: Rscript {0}
+
+      - name: R CMD BiocCheck
+        run: |
+          # Continue even if BiocCheck finds an error
+          BiocCheck::BiocCheck(dir('check', 'tar.gz$', full.names = TRUE), `no-check-R-ver` = TRUE, `no-check-bioc-help` = TRUE)
+          # For more options check http://bioconductor.org/packages/release/bioc/vignettes/BiocCheck/inst/doc/BiocCheck.html
+        shell: Rscript {0}
+
+      - name: Upload check results
+        if: failure()
+        uses: actions/upload-artifact@master
+        with:
+          name: ${{ runner.os }}-bioc-${{ matrix.config.biocversion }}-r-${{ env.rversion }}-results
+          path: check
+          
+      - name: Test coverage
+        if: runner.os == 'macOS' && matrix.config.biocversion == 'release'
+        run: |
+          install.packages("remotes")
+          remotes::install_cran("covr")
+          covr::codecov()
+        shell: Rscript {0}
+
+      - name: Deploy package
+        if: runner.os == 'macOS' && matrix.config.biocversion == 'release' && github.ref == 'refs/heads/master' && github.event_name == 'push' 
+        run: |
+          install.packages("pkgdown")
+          R CMD INSTALL .
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          Rscript -e 'pkgdown::deploy_to_branch(new_process = FALSE)'

@@ -1,8 +1,7 @@
 # psichomics
 
 <!-- badges: start -->
-[![Travis Build Status][travisIcon]][travis]
-[![AppVeyor Build Status][appVeyorIcon]][appVeyor]
+[![GitHub Actions Build status][ghActionsIcon]][ghActions]
 [![codecov][codecovIcon]][codecov]
 <!-- badges: end -->
 
@@ -160,10 +159,8 @@ Nature 456 (7221): 470–76.
 [NMorais]: http://imm.medicina.ulisboa.pt/group/distrans/
 [conduct]: CONDUCT.md
 [Wang2008]: http://www.nature.com/nature/journal/v456/n7221/full/nature07509.html
-[travisIcon]: https://travis-ci.org/nuno-agostinho/psichomics.svg?branch=master
-[travis]: https://travis-ci.org/nuno-agostinho/psichomics
-[appVeyorIcon]: https://ci.appveyor.com/api/projects/status/github/nuno-agostinho/psichomics?branch=master&svg=true
-[appVeyor]: https://ci.appveyor.com/project/nuno-agostinho/psichomics
+[ghActionsIcon]: https://github.com/nuno-agostinho/psichomics/workflows/R-CMD-check-bioc/badge.svg
+[ghActions]: https://github.com/nuno-agostinho/psichomics/actions
 [codecovIcon]: https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg
 [codecov]: https://codecov.io/gh/nuno-agostinho/psichomics
 [GTEx]: http://www.gtexportal.org
