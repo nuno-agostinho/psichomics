@@ -36,7 +36,7 @@ plotSplicingEvent(
 \item{showAlternative1}{Boolean: show alternative exon 1 and respective
 splicing junctions and text?}
 
-\item{showAlternative2}{Boolean: show alternative exon 2 and respective 
+\item{showAlternative2}{Boolean: show alternative exon 2 and respective
 splicing junctions and text? (only related with mutually exclusive exons)}
 
 \item{constitutiveWidth}{Numeric: width of constitutive exon(s)}
@@ -80,5 +80,5 @@ diagram <- plotSplicingEvent(ASevent)
 
 diagram[["A3SS_3_-_145796903_145794682_145795711_PLOD2"]]
 diagram[[6]]
-\donttest{diagram}
+\dontrun{diagram}
 }

@@ -40,7 +40,7 @@ diagramSplicingEvent(
 \item{showAlternative1}{Boolean: show alternative exon 1 and respective
 splicing junctions and text?}
 
-\item{showAlternative2}{Boolean: show alternative exon 2 and respective 
+\item{showAlternative2}{Boolean: show alternative exon 2 and respective
 splicing junctions and text? (only related with mutually exclusive exons)}
 
 \item{constitutiveWidth}{Numeric: width of constitutive exon(s)}
