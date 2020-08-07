@@ -8,7 +8,7 @@ initialiseEventData <- function(data) {
     rowData$end     <- NA
     rowData$pos     <- NA
     rowData$strand  <- NA
-    
+
     rowData$constitutive1 <- NA
     rowData$alternative1  <- NA
     rowData$alternative2  <- NA
@@ -28,7 +28,7 @@ processEventDataByType <- function(type, eventDataByType) {
             c(dataType$firstCoord[[i]], C1end[[i]]))
         exon2   <- lapply(seq(nrow(dataType)), function(i)
             c(C2start[[i]], dataType$lastCoord[[i]]))
-        
+
         isPosStrand <- dataType$strand == "+"
         dataType$constitutive1 <- ifelse(isPosStrand, exon1, exon2)
         dataType$alternative1  <- NA
@@ -57,7 +57,7 @@ parseEventData <- function(rowData) {
     rowData$end    <- as.numeric(gsub(coordRegex, "\\4", coordinates))
     rowData$pos    <- lapply(seq(nrow(rowData)), function(i, start, end)
         c(start[[i]], end[[i]]), rowData$start, rowData$end)
-    
+
     fullCoords         <- gsub("^.*?:(.*?)(:.*$){0,1}$", "\\1",
                                rowData$`full coordinates`, perl=TRUE)
     rowData$fullCoords <- strsplit(fullCoords, "[-,+=]")
@@ -67,26 +67,26 @@ parseEventData <- function(rowData) {
     rowData$strand     <- ifelse(
         as.numeric(rowData$firstCoord) < as.numeric(rowData$lastCoord),
         "+", "-")
-    
+
     # Parse coordinates
     SEtypes <- c("S", "C1", "C2", "C3", "ANN", "MIC", "NA")
     RItypes <- c("RI", "RI-C", "RI-S", "IR", "IR-C", "IR-S")
     types <- c(
         setNames(rep("A3SS", 2), c("Alt3", "A_Alt3")),
         setNames(rep("A5SS", 2), c("Alt5", "A_Alt5")),
-        setNames(rep("RI", length(RItypes) * 2), 
+        setNames(rep("RI", length(RItypes) * 2),
                  paste0(c("A_", ""), rep(RItypes, each=2))),
         setNames(rep("SE", length(SEtypes) * 2),
                  paste0(c("A_", ""), rep(SEtypes, each=2))))
     eventTypes <- types[rowData$subtype]
-    rowData$type <- ifelse(!is.na(eventTypes), eventTypes, 
+    rowData$type <- ifelse(!is.na(eventTypes), eventTypes,
                            rowData$subtype)
-    
+
     rowDataByType <- split(rowData, rowData$type)
     rowDataByType <- lapply(names(rowDataByType),
                             processEventDataByType, rowDataByType)
     rowData       <- unsplit(rowDataByType, rowData$type)
-    
+
     rowData$firstCoord <- NULL
     rowData$lastCoord  <- NULL
     rowData$fullCoords <- NULL
@@ -100,13 +100,14 @@ processVastToolsPSItable <- function(data) {
     colnames(data) <- gsub("_[12](-Q){0,1}$", "\\1",  colnames(data), perl=TRUE)
     colnames(data)[seq(5)] <- c("gene", "coordinates", "length",
                                 "full coordinates", "type")
-    
+
     # Prepare PSI data and discard events only containing missing values
     psi <- data[seq(6, ncol(data), 2)]
     attr(psi, "rowData") <- initialiseEventData(data)
     psi <- preserveAttributes(psi)
     psi <- psi[rowSums(!is.na(psi)) > 0, ]
-    
+    if (nrow(psi) == 0) return(NULL)
+
     rowData <- attr(psi, "rowData")
     rowData <- parseEventData(rowData)
     class(rowData) <- c("eventData", class(rowData))
@@ -119,19 +120,19 @@ vasttoolsInclusionLevelsFormat <- function() {
         tablename   = "Inclusion levels",
         description = "VAST-TOOLS' PSI values per alternative splicing event",
         dataType    = "Inclusion levels",
-        
+
         # Transpose data before parsing? If so, a row in the transposed dataset
         # would be a column in the original
         skip        = 1,     # Rows to skip when parsing file (include header)
         transpose   = FALSE,
-        
+
         # Format checker information
         rowCheck    = TRUE,  # Check a row (TRUE) or a column (FALSE)
         checkIndex  = 1,     # Index of row/column to check the format
-        
+
         # File string to check
         check = c("GENE", "EVENT", "COORD", "LENGTH", "FullCO", "COMPLEX"),
-        
+
         # Parsing information
         delim       = "\t", # Delimiter used to separate fields
         colNames    = 1,    # Row to use for column names
@@ -139,26 +140,27 @@ vasttoolsInclusionLevelsFormat <- function() {
         ignoreCols  = NULL, # Columns to ignore
         ignoreRows  = NULL, # Rows to ignore
         commentChar = NULL, # Ignore lines starting with this string
-        
+
         # Remove duplicated rows
         unique = TRUE,
-        
+
         # Identity of rows and columns
         rows    = "alternative splicing events",
         columns = "samples",
-        
+
         process = function(data) {
             # VAST-TOOLS tables with "Raw_reads" should be ignored
             if (any(grepl("Raw_reads", colnames(data)))) return(NULL)
-            
+
             for (col in which(sapply(data, class) == "factor")) {
                 data[ , col] <- as.character(data[ , col])
             }
             psi <- processVastToolsPSItable(data)
-            
+            if (is.null(psi)) return(NULL)
+
             # Check if PSI values are all numeric
             if (!all(sapply(psi, is.numeric))) return(NULL)
-            
+
             # Scale data if PSI values are between 0 and 100
             maximum <- max(psi, na.rm=TRUE)
             if (maximum > 1 && maximum <= 100) {
