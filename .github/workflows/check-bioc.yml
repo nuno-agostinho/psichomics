@@ -7,22 +7,20 @@
 
 on:
   push:
-    branches:
-      - master
-      - dev
+    branches-ignore:
+      - gh-pages
   pull_request:
-    branches:
-      - master
-      - dev
+    branches-ignore:
+      - gh-pages
 
-name: check-bioc
+name: R-CMD-check-bioc
 
 # Increment to clear the cache or include "/nocache" in commit message
 env:
-  cache-version: v1
+  cache-version: v3
 
 jobs:
-  R-CMD-check-bioc:
+  R-CMD-check-r-lib:
     runs-on: ${{ matrix.config.os }}
     name: ${{ matrix.config.os }} (bioc-${{ matrix.config.biocversion }})
 
