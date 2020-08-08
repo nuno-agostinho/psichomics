@@ -1,4 +1,4 @@
-# psichomics 1.14.2 (4 August, 2020)
+# psichomics 1.14.2 (8 August, 2020)
 
 ## Support for loading more data formats
 
