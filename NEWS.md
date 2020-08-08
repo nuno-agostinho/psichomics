@@ -24,7 +24,7 @@ event type and cognate gene)
     - Organise GTEx data into folders named based on release version
 * Copy-edit tutorial on loading user-provided data
 
-# New features
+## New features
 
 * `plotSplicingEvent()`:
     - Alternative splicing diagrams now render automatically instead of showing
