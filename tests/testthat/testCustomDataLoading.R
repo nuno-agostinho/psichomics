@@ -2,7 +2,7 @@ context("Functions to load and process user-provided data")
 
 test_that("Load SRA metadata", {
     # SRA file with metadata
-    sraMetadata <- insideFile("tests/testthat/data/sraMetadata.txt")
+    sraMetadata <- "data/sraMetadata.txt"
     info        <- loadFile(sraMetadata)
     info_old    <- prepareSRAmetadata(sraMetadata, output=NULL)
     expect_identical(info, info_old)
@@ -33,7 +33,7 @@ test_that("Load SRA metadata", {
 })
 
 test_that("Load VAST-TOOLS' inclusion levels", {
-    file <- insideFile("tests/testthat/data/vasttools_incLevels.tab")
+    file <- "data/vasttools_incLevels.tab"
     data <- loadFile(file)
     expect_is(data, "data.frame")
     expect_is(data, "sticky")
@@ -68,7 +68,7 @@ test_that("Load VAST-TOOLS' inclusion levels", {
 
 test_that("Load VAST-TOOLS' gene expression", {
     # cRPKMS only
-    file   <- insideFile("tests/testthat/data/vasttools_cRPKM.tab")
+    file   <- "data/vasttools_cRPKM.tab"
     cRPKMs <- loadFile(file, multiple=TRUE)
     expect_is(cRPKMs, "data.frame")
 
@@ -81,7 +81,7 @@ test_that("Load VAST-TOOLS' gene expression", {
     expect_identical(attr(cRPKMs, "columns"), "samples")
 
     # cRPKMs and gene read counts
-    file <- insideFile("tests/testthat/data/vasttools_cRPKM_AND_COUNTS.tab")
+    file <- "data/vasttools_cRPKM_AND_COUNTS.tab"
     data <- loadFile(file, multiple=TRUE)
     expect_is(data, "list")
 
