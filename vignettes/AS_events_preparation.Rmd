@@ -11,8 +11,6 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
-  
----
 
 # Creating custom alternative splicing annotation
 

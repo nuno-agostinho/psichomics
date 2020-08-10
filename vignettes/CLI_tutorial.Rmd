@@ -14,8 +14,6 @@ vignette: >
     \usepackage[utf8]{inputenc}
 ---
 
----
-
 *psichomics* is an interactive R package for integrative analyses of alternative
 splicing and gene expression based on [The Cancer Genome Atlas (TCGA)][TCGA]
 (containing molecular data associated with 34 tumour types), the
