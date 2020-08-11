@@ -272,8 +272,12 @@ calculateLoadingsContribution <- function(pca, pcX=1, pcY=2) {
         if (!is.null(extra)) {
             id         <- extra$id
             extra$gene <- sapply(extra$gene, paste0, collapse=", ")
-            extra$pos  <- sapply(extra$pos,  paste0, collapse=", ")
-            extra      <- extra[ , c("type", "chrom", "strand", "gene", "pos")]
+            if (!is.null(extra$pos)) {
+                extra$pos <- sapply(extra$pos, paste0, collapse=", ")
+            } else {
+                extra$pos <- paste(extra$start, extra$end, sep=", ")
+            }
+            extra <- extra[ , c("type", "chrom", "strand", "gene", "pos")]
             colnames(extra) <- c("Event type", "Chromosome", "Strand", "Gene",
                                  "Event position")
             table <- cbind(extra, table)

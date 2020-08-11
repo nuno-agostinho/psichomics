@@ -6,7 +6,6 @@ initialiseEventData <- function(data) {
     rowData$chrom   <- NA
     rowData$start   <- NA
     rowData$end     <- NA
-    rowData$pos     <- NA
     rowData$strand  <- NA
 
     rowData$constitutive1 <- NA
@@ -55,8 +54,6 @@ parseEventData <- function(rowData) {
     rowData$chrom  <- gsub(coordRegex, "\\2", coordinates)
     rowData$start  <- as.numeric(gsub(coordRegex, "\\3", coordinates))
     rowData$end    <- as.numeric(gsub(coordRegex, "\\4", coordinates))
-    rowData$pos    <- lapply(seq(nrow(rowData)), function(i, start, end)
-        c(start[[i]], end[[i]]), rowData$start, rowData$end)
 
     fullCoords         <- gsub("^.*?:(.*?)(:.*$){0,1}$", "\\1",
                                rowData$`full coordinates`, perl=TRUE)
@@ -142,7 +139,7 @@ vasttoolsInclusionLevelsFormat <- function() {
         commentChar = NULL, # Ignore lines starting with this string
 
         # Remove duplicated rows
-        unique = TRUE,
+        unique = FALSE,
 
         # Identity of rows and columns
         rows    = "alternative splicing events",

@@ -331,7 +331,10 @@ prepareASeventsRepresentation <- reactive({
         # Replace unsupported diagrams by text
         unsupported <- vapply(diagram, `==`, "", FUN.VALUE=logical(1))
         pos <- parsed$`full coordinates`
-        if (is.null(pos)) pos <- parsed$pos
+        if (is.null(pos)) {
+            pos <- parsed$pos
+            if (is.null(pos)) pos <- paste(parsed$start, parsed$end, sep=", ")
+        }
         if (!is.null(pos)) {
             altText <- paste("altText:", prepareWordBreak(pos[unsupported]))
             diagram[unsupported] <- altText
