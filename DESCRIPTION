@@ -142,6 +142,7 @@ Collate:
     'formats_vasttoolsGeneExpression.R'
     'formats_vasttoolsInclusionLevels.R'
     'formats_vasttoolsInclusionLevelsTidy.R'
+    'formats_whippetInclusionLevels.R'
     'groups.R'
     'help.R'
     'utils_drawSplicingEvent.R'

@@ -423,6 +423,24 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."),
     }
     names(loaded) <- sapply(loaded, attr, "tablename")
     loaded <- Filter(length, loaded)
+
+    # Join any datasets if needed
+    joinFUN <- lapply(loaded, attr, "join")
+    datasetsToJoin <- sapply(joinFUN, Negate(is.null))
+    if (any(datasetsToJoin)) {
+        message("Joining datasets...")
+        names(joinFUN) <- lapply(loaded, attr, "format")
+        joinFUN <- joinFUN[datasetsToJoin]
+        for (format in unique(names(joinFUN))) {
+            isThisFormat <- names(joinFUN)[datasetsToJoin] == format
+            datasets <- loaded[isThisFormat]
+            # Discard single datasets and append joint dataset
+            loaded[isThisFormat] <- NULL
+            res <- joinFUN[[format]](datasets)
+            loaded[[length(loaded) + 1]] <- res
+            browser()
+        }
+    }
     closeProgress()
 
     if (length(loaded) == 0) {

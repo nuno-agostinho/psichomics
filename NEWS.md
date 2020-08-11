@@ -1,3 +1,8 @@
+# psichomics 1.14.3 (11 August, 2020)
+
+* Support for loading Whippet tables of inclusion levels
+* Updated tutorial on loading user-provided data
+
 # psichomics 1.14.2 (11 August, 2020)
 
 ## Support for loading more data formats

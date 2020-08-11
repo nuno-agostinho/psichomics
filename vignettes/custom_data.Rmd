@@ -30,6 +30,7 @@ redirect to instructions on how to load data from each source.
 | [SRA Run Selector][sra-run-tutorial]   | Yes |     |     |     |          |
 | [STAR][star-tutorial]                  |     |     | Yes | Yes |          |
 | [VAST-TOOLS][vast-tutorial]            |     |     | Yes |     | Yes      |
+| [Whippet][whippet-tutorial]            |     |     |     |     | Limited* |
 | [TCGA (via FireBrowse)][tcga-tutorial] | Yes | Yes | Yes | Yes |          |
 | [SRA (via recount)][recount-tutorial]  | Yes | Yes | Yes | Yes |          |
 | [GTEx][gtex-tutorial]                  | Yes | Yes | Yes | Yes |          |
@@ -222,6 +223,15 @@ geneReadCounts <- data$`Gene expression (read counts)`
 cRPKM          <- data$`Gene expression (cRPKM)`
 ```
 
+## Prepare [Whippet][] data
+
+psichomics supports loading inclusion levels from [Whippet][]. As Whippet
+creates a file per sample, psichomics will join the information from multiple
+files into a single dataset.
+
+Move Whippet output files to a folder and then load them by following the
+instructions in [Load user-provided data into psichomics][loading].
+
 ## Prepare [FireBrowse][] data
 
 [FireBrowse][] contains [TCGA][] data for multiple tumour types and can be
@@ -390,6 +400,7 @@ this tutorial) is welcome. Please send any comments and questions to:
 [fasterq-dump]: https://github.com/ncbi/sra-tools/wiki/HowTo:-fasterq-dump
 [sra-tools]: https://github.com/ncbi/sra-tools
 [VAST-TOOLS]: https://github.com/vastgroup/vast-tools
+[Whippet]: https://github.com/timbitz/Whippet.jl
 [hg19-data]: https://grch37.ensembl.org/info/data/ftp/
 [SRP126561]: https://trace.ncbi.nlm.nih.gov/Traces/study/?acc=SRP126561
 [recount]: https://jhubiostatistics.shinyapps.io/recount/
@@ -399,6 +410,7 @@ this tutorial) is welcome. Please send any comments and questions to:
 [generic-tutorial]: #prepare-data-from-any-source
 [sra-run-tutorial]: #prepare-sra-run-selector-data
 [vast-tutorial]: #prepare-vast-tools-data
+[whippet-tutorial]: #prepare-whippet-data
 [tcga-tutorial]: #prepare-firebrowse-data
 [tcga-tutorial-auto]: https://nuno-agostinho.github.io/psichomics/articles/CLI_tutorial.html#downloading-and-loading-tcga-data
 [gtex-tutorial]: #prepare-gtex-data

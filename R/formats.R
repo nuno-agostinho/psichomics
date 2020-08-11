@@ -74,7 +74,7 @@ addFileAttrs <- function(loaded, file, format) {
 #' with the name of the data frame
 #'
 #' @importFrom data.table fread
-#' @importFrom stringr str_split_fixed
+#' @importFrom stringr str_split_fixed str_match
 #'
 #' @return Data frame with the loaded file
 #' @keywords internal
@@ -167,6 +167,13 @@ parseFile <- function(format, file, ..., verbose=FALSE) {
             return(NULL)
         }
     }
+
+    # Add function to join multiple single datasets if needed
+    if (!is.null(format$join)) attr(loaded, "join") <- format$join
+
+    # Add file format
+    attr(loaded, "format") <- format$id
+
     if (is.list(loaded) && !is.data.frame(loaded)) {
         loaded <- lapply(loaded, addFileAttrs, file, format)
     } else {
