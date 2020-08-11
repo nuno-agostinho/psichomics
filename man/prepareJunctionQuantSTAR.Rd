@@ -20,7 +20,7 @@ prepareGeneQuantSTAR(
 \item{endOffset}{Numeric: value to offset end position}
 
 \item{strandedness}{Character: strandedness of RNA-seq protocol; may be one
-of the following: \code{unstraded}, \code{stranded} or 
+of the following: \code{unstraded}, \code{stranded} or
 \code{stranded (reverse)}}
 }
 \value{
@@ -33,18 +33,14 @@ Prepare user-provided files to be loaded into psichomics
 \dontrun{
 prepareJunctionQuant("Control rep1"=junctionFile1,
                      "Control rep2"=junctionFile2,
-                     "KD rep1"=junctionFile3, 
+                     "KD rep1"=junctionFile3,
                      "KD rep2"=junctionFile4)
 }
 \dontrun{
 prepareGeneQuant("Control rep1"=geneCountFile1,
                  "Control rep2"=geneCountFile2,
-                 "KD rep1"=geneCountFile3, 
+                 "KD rep1"=geneCountFile3,
                  "KD rep2"=geneCountFile4)
 }
-}
-\seealso{
-Other functions to load local files: 
-\code{\link{loadLocalFiles}()}
 }
 \keyword{internal}

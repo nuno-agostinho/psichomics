@@ -6,29 +6,28 @@
 \usage{
 plotSplicingEvent(
   ASevent,
-  class = NULL,
-  style = NULL,
+  data = NULL,
   showText = TRUE,
   showPath = TRUE,
   showAlternative1 = TRUE,
   showAlternative2 = TRUE,
   constitutiveWidth = 60,
   alternativeWidth = NULL,
-  intronWidth = 15,
+  intronWidth = NULL,
   constitutiveFill = "lightgray",
   constitutiveStroke = "darkgray",
   alternative1Fill = "#ffb153",
   alternative1Stroke = "#faa000",
   alternative2Fill = "#caa06c",
-  alternative2Stroke = "#9d7039"
+  alternative2Stroke = "#9d7039",
+  class = NULL,
+  style = NULL
 )
 }
 \arguments{
 \item{ASevent}{Character: alternative splicing event identifiers}
 
-\item{class}{Character: class of SVG parent tag}
-
-\item{style}{Character: style of SVG parent tag}
+\item{data}{Matrix or data frame: alternative splicing information}
 
 \item{showText}{Boolean: display coordinates and length (if available)}
 
@@ -37,7 +36,7 @@ plotSplicingEvent(
 \item{showAlternative1}{Boolean: show alternative exon 1 and respective
 splicing junctions and text?}
 
-\item{showAlternative2}{Boolean: show alternative exon 2 and respective 
+\item{showAlternative2}{Boolean: show alternative exon 2 and respective
 splicing junctions and text? (only related with mutually exclusive exons)}
 
 \item{constitutiveWidth}{Numeric: width of constitutive exon(s)}
@@ -57,6 +56,10 @@ splicing junctions and text? (only related with mutually exclusive exons)}
 \item{alternative2Fill}{Character: fill colour of alternative exon 2}
 
 \item{alternative2Stroke}{Character: stroke colour of alternative exon 2}
+
+\item{class}{Character: class of SVG parent tag}
+
+\item{style}{Character: style of SVG parent tag}
 }
 \value{
 List of SVG (one for each alternative splicing event)
@@ -77,5 +80,5 @@ diagram <- plotSplicingEvent(ASevent)
 
 diagram[["A3SS_3_-_145796903_145794682_145795711_PLOD2"]]
 diagram[[6]]
-diagram
+\dontrun{diagram}
 }

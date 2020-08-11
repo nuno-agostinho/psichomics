@@ -19,7 +19,7 @@ instance to be available (\url{http://datatables.net/extensions/}).}
     \item{\code{quoted}}{Is \code{expr} a quoted expression (with \code{quote()})? This
 is useful if you want to save an expression in a variable.}
     \item{\code{outputArgs}}{A list of arguments to be passed through to the implicit
-call to \code{\link[shiny:dataTableOutput]{dataTableOutput()}} when \code{renderDataTable} is used
+call to \code{\link[shiny:tableOutput]{dataTableOutput()}} when \code{renderDataTable} is used
 in an interactive R Markdown document.}
   }}
 

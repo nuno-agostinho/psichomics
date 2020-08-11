@@ -27,7 +27,7 @@ createGroupByAttribute(col="stage", dataset=df)
 \seealso{
 Other functions for data grouping: 
 \code{\link{getGeneList}()},
-\code{\link{getMatchingSamples}()},
+\code{\link{getSampleFromSubject}()},
 \code{\link{getSubjectFromSample}()},
 \code{\link{groupPerElem}()},
 \code{\link{plotGroupIndependence}()},

@@ -81,7 +81,7 @@ test_that("Tolerate NAs per columns", {
 
 test_that("Plot explained variance", {
     pca <- performPCA(data, center=FALSE, scale.=FALSE, missingValues=0)
-    hc <- plotVariance(pca)
+    hc <- plotPCAvariance(pca)
     expect_is(hc, "highchart")
     eigenvalue <- vapply(hc$x$hc_opts$series[[1]]$data, "[[", "eigenvalue", 
                          FUN.VALUE = numeric(1))

@@ -25,8 +25,9 @@ filterGeneExpr(
 
 \item{maxVar}{Numeric: maximum of read count variance per gene}
 
-\item{minCounts}{Numeric: minimum number of read counts per gene for at least
-some samples}
+\item{minCounts}{Numeric: minimum number of read counts per gene for a
+worthwhile number of samples (check \code{\link[edgeR]{filterByExpr}} for
+more information)}
 
 \item{minTotalCounts}{Numeric: minimum total number of read counts per gene}
 }
@@ -34,13 +35,14 @@ some samples}
 Boolean vector indicating which genes have sufficiently large counts
 }
 \description{
-Filter genes based on their expression
+Uses \code{\link[edgeR]{filterByExpr}} to determine genes with sufficiently
+large counts to retain for statistical analysis.
 }
 \examples{
 geneExpr <- readFile("ex_gene_expression.RDS")
 
 # Add some genes with low expression
-geneExpr <- rbind(geneExpr, 
+geneExpr <- rbind(geneExpr,
                   lowReadGene1=c(rep(4:5, 10)),
                   lowReadGene2=c(rep(5:1, 10)),
                   lowReadGene3=c(rep(10:1, 10)),
@@ -54,6 +56,7 @@ Other functions for gene expression pre-processing:
 \code{\link{convertGeneIdentifiers}()},
 \code{\link{normaliseGeneExpression}()},
 \code{\link{plotGeneExprPerSample}()},
+\code{\link{plotLibrarySize}()},
 \code{\link{plotRowStats}()}
 }
 \concept{functions for gene expression pre-processing}

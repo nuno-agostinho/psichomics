@@ -1,3 +1,147 @@
+# psichomics 1.14.2 (11 August, 2020)
+
+## Support for loading more data formats
+
+* `getSplicingEventData()`: get a table with all information for a given
+dataset of alternative splicing quantification data
+* VAST-TOOLS inclusion levels and gene expression tables:
+    - Import VAST-TOOLS' output files (inclusion levels, cRPKMs and gene read
+    count tables); in the visual interface, use the
+    **User-provided data loading** panel and load a specific alternative
+    splicing quantification or load the folder containing such file; in the
+    command-line interface, use `loadLocalFiles()`
+    - To parse splicing event from VAST-TOOLS in the command-line interface,
+    use for instance `parseSplicingEvent("HsaEX0007927", data=VASTTOOLSpsi)`
+* Support for importing inclusion tables with arbitrary alternative splicing 
+event identifiers (information for these events will not be available, such as
+event type and cognate gene)
+* SRA metadata:
+    - Automatically load metadata from the SRA Run Selector (usually comes in
+    files named `SraRunTable.txt`) avoiding the need to use
+    `prepareSRAmetadata()` first
+* GTEx data loading (`loadGtexData()`):
+    - Support for loading GTEx data from V8, V7, V6 or V4 releases
+    - Organise GTEx data into folders named based on release version
+* Copy-edit tutorial on loading user-provided data
+
+## New features
+
+* `plotSplicingEvent()`:
+    - Alternative splicing diagrams now render automatically instead of showing
+    SVG code (if printing more than one event, a table is displayed with event
+    identifiers and respective diagrams)
+    - Plot intron retention events (e.g. from VAST-TOOLS)
+* `plotLibrarySize()`: plot library size from gene expression data
+* Alternative splicing quantification filtering (visual interface):
+    - New panel to allow filtering already loaded alternative splicing
+    quantification based on event types, samples, PSI statistics (such as
+    median, variance and range) and cognate genes (some filtering steps may not
+    be available when using user-provided tables with inclusion levels)
+    - Filter data based on individual PSI values (also available when
+    quantifying alternative splicing)
+    - Filter VAST-TOOLS events based on its quality scores for read coverage
+    - Toggle specific statistics based on alternative splicing quantification
+    values when filtering
+    - Preview the original and filtered events in an easy-to-use plot
+* Gene expression filtering:
+    - Toggle specific statistics based on gene expression values when filtering
+    (visual interface)
+    - Arguments used in `filterGeneExpr()` and `normaliseGeneExpression()`
+    are now returned as attributes of those functions
+* Differential analysis:
+    - Tooltips of volcano plots now include diagram of alternative splicing
+    events
+* Gene, transcript and protein annotation (visual interface):
+    - Suggest genes based on loaded data
+    - Change species and assembly when fetching information
+    - Improve interface of PubMed article query, including persistent
+    user-inputted tags even when changing selected gene
+    - Improve relevance of results from PubMed articles
+* Much faster calculation of row/column-wise means, medians, variances and
+ranges (helpful for plotting statistics of large datasets)
+* Include Dockerfile to create Docker images based on code revisions
+
+## Bug fixes and minor changes
+
+* Progress bar is now animated as in previous versions
+* Data loading (visual interface):
+    - Allow to discard selected files in file browser input elements
+    - When creating groups by sample index/identifiers, suggest sample names not
+    only obtained from sample information, but also from alternative splicing
+    quantification and gene expression datasets
+    - "Browse..." button now opens file browser to select folder where data is
+    stored (as expected) in GTEx and SRA panels
+    - Only pre-create groups of genes (based on literature-based gene lists) if
+    at least one of its genes exists in any of the loaded datasets
+    - Correctly parse gene symbols containing underscores
+    - Fix gene expression summary plots not showing in specific situations
+    - Fix library size plot not working properly and causing rendering issues
+    - Fix settings used to quantify alternative splicing not showing up
+    - Show errors raised while reading a file (e.g. if file is too big for
+    available memory)
+    - Show alert if no GTEx data options are selected
+    - Show filename of the file used to load gene expression and alternative
+    splicing data from GTEx and SRA
+    - Show helpful context messages in panel interfaces
+    - Improve visual interface and minor copy-editing
+* Local data loading:
+    - Support loading data from GTEx V8 or previous releases
+    - Fix bad formatting of help tooltips when using `shiny 1.4.0` or newer
+    (visual interface)
+* Gene expression filtering:
+    - Hide message regarding the usage of no design matrix
+* Alternative splicing annotation:
+    - Try to load cached alternative splicing annotation if a timeout occurs
+    - Include gene symbols in custom annotations if available
+    - Account for possible filename changes when parsing annotations from
+    VAST-TOOLS, rMATS, SUPPA and MISO
+* Alternative splicing event selection (visual interface):
+    - Include loading indicator while searching for events
+    - Decrease number of operations performed after selecting an event
+    - Fix crash when changing to an alternative splicing quantification dataset
+    without the selected splicing event
+    - Allow to search using an event identifier directly
+    - Show event identifier instead of prettier identifier to avoid confusion
+* Data grouping (visual interface):
+    - Simplify group selection interface
+    - Fix suggested attributes and index/identifiers in group creation not being
+    cleared when changing to datasets where such data is unavailable (thus
+    showing the attributes/index/identifiers of the previous dataset)
+    - Show an alert when there is no data to create groups
+* Dimensionality reduction:
+    - `performPCA()` and `performICA()` now directly raise errors (instead of
+    simply capturing and returning them)
+    - PCA: loading plots now show parsed information of events (cognate gene,
+    event type and genomic position) if available
+    - PCA: the correct splicing event is now selected when clicking on any
+    loadings in the loadings plot (visual interface)
+* Differential analyses (visual interface):
+    - Use group colours in density plots of differential expression table
+    - Fix occasional crash when performing differential analyses with different
+    number of groups during the same session
+    - Tooltips of volcano plots are now properly positioned in high-resolution
+    screens
+    - The correct splicing event is now selected when clicking the density plots
+    or survival curves in the table
+    - When creating a group from differential splicing results, correctly set
+    cognate genes of alternative splicing events
+    - `diffAnalyses()`: deprecated `psi` argument was now removed
+* Distribution plots (`plotDistribution()`):
+    - After hiding all plot series, hide Y axis (rug plots of the different
+    groups have arbitrary Y values to easily distinguish them)
+    - Rug plots of gene expression density plots are now placed near the X axis
+    as expected
+* Correlation analyses (visual interface):
+    - Warn when selecting genes that are not available in the selected gene
+    expression dataset (instead of crashing the app)
+* `print()` extended to better display information on gene list objects; e.g.
+`print(getGeneList())`
+* Fix issues when installing the package:
+    - Fix error when unit testing in R 4.0 or higher (strings in data frames are
+    not converted to factors by default)
+    - Fix `R CMD check` warning of Unicode symbol translation in Windows
+    - Fix comparing signed and unsigned integers in `Rcpp` functions
+
 # psichomics 1.14.1 (16 June, 2020)
 
 Fix unit tests for R 4.0

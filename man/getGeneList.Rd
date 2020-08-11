@@ -4,7 +4,11 @@
 \alias{getGeneList}
 \title{Get curated, literature-based gene lists}
 \usage{
-getGeneList()
+getGeneList(genes = NULL)
+}
+\arguments{
+\item{genes}{Vector of characters: intersect lists with given genes (lists
+with no matching genes will not be returned)}
 }
 \value{
 List of genes
@@ -12,7 +16,7 @@ List of genes
 \description{
 Available gene lists:
 \itemize{
-  \item{\strong{Sebestyen et al., 2016}: 1350 genes encoding RNA-binding 
+  \item{\strong{Sebestyen et al., 2016}: 1350 genes encoding RNA-binding
   proteins, 167 of which are splicing factors}
 }
 }
@@ -22,7 +26,7 @@ getGeneList()
 \seealso{
 Other functions for data grouping: 
 \code{\link{createGroupByAttribute}()},
-\code{\link{getMatchingSamples}()},
+\code{\link{getSampleFromSubject}()},
 \code{\link{getSubjectFromSample}()},
 \code{\link{groupPerElem}()},
 \code{\link{plotGroupIndependence}()},

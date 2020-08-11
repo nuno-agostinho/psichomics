@@ -6,7 +6,11 @@ test_that("parseMatsAnnotation parses annotation from rMATS", {
     mats <- parseMatsAnnotation(matsOutput)
     expect_equal(nrow(mats), 83)
     expect_is(mats, "ASevents")
-    expect_equal(length(mats), 15)
+    expect_equal(length(mats), 14)
+    expect_equal(colnames(mats),
+                 c("Program", "Gene", "Chromosome", "Strand", "Event.type",
+                   "Event.ID", "C1.start", "C1.end", "A1.start", "A1.end",
+                   "A2.start", "A2.end", "C2.start", "C2.end"))
     expect_equal(unique(mats$Program), "MATS")
     expect_equal(unique(mats$Strand), c("-", "+"))
     
@@ -14,7 +18,11 @@ test_that("parseMatsAnnotation parses annotation from rMATS", {
     mats <- parseMatsAnnotation(matsOutput, novelEvents=FALSE)
     expect_equal(nrow(mats), 63)
     expect_is(mats, "ASevents")
-    expect_equal(length(mats), 15)
+    expect_equal(length(mats), 14)
+    expect_equal(colnames(mats),
+                 c("Program", "Gene", "Chromosome", "Strand", "Event.type",
+                   "Event.ID", "C1.start", "C1.end", "A1.start", "A1.end",
+                   "A2.start", "A2.end", "C2.start", "C2.end"))
     expect_equal(unique(mats$Program), "MATS")
     expect_equal(unique(mats$Strand), c("-", "+"))
 })
@@ -172,7 +180,7 @@ test_that("parseMatsEvent parses exon skipping event annotation", {
     expect_null(parsed$Inclusion.level.B)
 })
 
-test_that("parseMatsEvent parses intron retention events", {
+test_that("parseMatsEvent parses retained intron events", {
     event <- read.table(text = "
         2287 ENSG00000011295 TTC19 chr17 + 15929853 15932100 15929853 15930016 15930687 15932100 2287 0 4 1 0 112 56 0.122321609511 0.842461398441 0 1 -1
         1324 ENSG00000121851 POLR3GL chr1 - 145456990 145457309 145456990 145457104 145457235 145457309 1324 1 12 0 5 112 56 0.588614424316 0.920102552754 0.04 0 0.04
@@ -203,7 +211,7 @@ test_that("parseMatsEvent parses intron retention events", {
     expect_equal(parsed[2, "Inclusion.level.B"], 0)
 })
 
-test_that("parseMatsEvent parses intron retention event annotation", {
+test_that("parseMatsEvent parses retained intron event annotation", {
     event <- read.table(text = "
         1324 ENSG00000121851 POLR3GL chr1 - 145456990 145457309 145456990 145457104 145457235 145457309
     ")
@@ -375,7 +383,7 @@ test_that("parseMatsMXE parses a mutually exclusive exon event's junctions", {
     expect_equal(parsed$C2.end,   158284199)
 })
 
-test_that("parseMatsRI parses an intron retention event's junctions", {
+test_that("parseMatsRI parses a retained intron event's junctions", {
     junctions <- read.table(
         text = "15929853 15932100 15929853 15930016 15930687 15932100")
     parsed <- parseMatsRI(junctions, strand = "+")

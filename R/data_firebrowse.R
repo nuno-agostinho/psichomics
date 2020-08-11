@@ -31,7 +31,7 @@ getFirebrowseDataTypes <- getTCGAdataTypes
 #' @export
 #' 
 #' @examples
-#' if (isFirebrowseUp()) getFirebrowseDates()
+#' if (isFirebrowseUp()) getTCGAdates()
 getTCGAdates <- function() {
     dates <- parseFirebrowseMetadata("Dates")$Dates
     format <- getFirebrowseDateFormat()
@@ -145,7 +145,7 @@ parseUrlsFromFirebrowseResponse <- function(res) {
     parsed$date <- parseDateResponse(parsed$date)
     
     # Get cohort names
-    cohort <- getFirebrowseCohorts()
+    cohort <- getTCGAcohorts()
     cohort <- cohort[parsed$cohort]
     
     ## TODO(NunoA): maybe this could be simplified?
@@ -320,12 +320,12 @@ loadTCGAsampleMetadata <- function(data) {
 #' @keywords internal
 #'
 #' @examples
-#' cohort <- getFirebrowseCohorts()[1]
+#' cohort <- getTCGAcohorts()[1]
 #' psichomics:::queryFirebrowseData(cohort = names(cohort),
 #'                                  data_type = "mRNASeq")
 #' 
 #' # Querying for data from a specific date
-#' dates <- getFirebrowseDates()
+#' dates <- getTCGAdates()
 #' dates <- format(dates, psichomics:::getFirebrowseDateFormat()$query)
 #' 
 #' psichomics:::queryFirebrowseData(date = dates[2], cohort = names(cohort))
@@ -336,8 +336,9 @@ queryFirebrowseData <- function(format = "json", date = NULL, cohort = NULL,
     # Only allow these response formats
     format <- match.arg(format, c("json", "csv", "tsv"))
     
-    # Format date
-    if (!is.null(date)) date <- gsub("-", "_", date, fixed=TRUE)
+    # Use most recent date by default
+    if (is.null(date)) date <- getTCGAdates()[[1]]
+    date <- gsub("-", "_", date, fixed=TRUE)
     
     # Process the parameters of the query
     labels <- list("format", "date", "cohort", "data_type", "tool", "platform",
@@ -514,7 +515,7 @@ loadFirebrowseFolders <- function(folder, exclude="") {
     for (each in seq_along(files)) {
         updateProgress("Processing file", detail = basename(files[each]), each, 
                        length(files))
-        loaded[[each]] <- parseValidFile(files[each], formats)
+        loaded[[each]] <- loadFile(files[each], formats)
     }
     names(loaded) <- sapply(loaded, attr, "tablename")
     loaded <- Filter(length, loaded)
@@ -531,7 +532,7 @@ loadFirebrowseFolders <- function(folder, exclude="") {
 #' @param exclude Character: files and folders to exclude from downloading and
 #' from loading into R (by default, exclude files containing \code{.aux.},
 #' \code{.mage-tab.} and \code{MANIFEST.TXT})
-#' @inheritDotParams queryFirebrowseData
+#' @inheritDotParams queryFirebrowseData -format
 #' @param download Boolean: download missing files
 #' 
 #' @include formats.R
@@ -541,14 +542,16 @@ loadFirebrowseFolders <- function(folder, exclude="") {
 #' 
 #' @aliases loadFirebrowseData
 #' @family functions associated with TCGA data retrieval
+#' @family functions to load data
 #' @return A list with the loaded data, unless required files are unavailable
 #' and \code{download = FALSE} (if so, it returns the URL of files to download)
 #' @export
 #' 
 #' @examples
-#' getFirebrowseDataTypes() 
+#' getTCGAcohorts()
+#' getTCGAdataTypes()
 #' \dontrun{
-#' loadFirebrowseData(cohort = "ACC", data_type = "Clinical")
+#' loadTCGAdata(cohort = "ACC", data_type = "Clinical")
 #' }
 loadTCGAdata <- function(folder=getDownloadsFolder(), 
                          data=c("clinical", "junction_quantification",
@@ -557,7 +560,7 @@ loadTCGAdata <- function(folder=getDownloadsFolder(),
                          ..., download=TRUE) {
     args <- list(...)
     
-    datasets <- unlist(getFirebrowseDataTypes())
+    datasets <- unlist(getTCGAdataTypes())
     # Data types to load
     args$data_type <- c(data[!data %in% datasets], "mRNASeq")
     # Datasets to ignore
@@ -686,7 +689,7 @@ addTCGAdata <- function(ns) {
     names(dates) <- dates
     names(dates)[1] <- paste(names(dates)[1], "(most recent)")
     
-    dataTypes <- getFirebrowseDataTypes()
+    dataTypes <- getTCGAdataTypes()
     dataList <- dataTypes[[1]]
     names(dataList)[dataList == "RSEM_genes"] <- "Gene expression (RSEM)"
     names(dataList)[dataList == "RSEM_genes_normalized"] <- 

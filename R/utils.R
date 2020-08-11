@@ -1,9 +1,87 @@
 ## Auxiliary functions used throughout the program
 
-# Print how to start the graphical interface when attaching the package
+#' Print startup message
+#' 
+#' @param pkgname Character: package name
+#' @param libname Character: library name
+#' 
+#' @importFrom utils packageVersion
+#' 
+#' @return Startup message
 .onAttach <- function(libname, pkgname) {
-    packageStartupMessage("Start the visual interface by running the function ",
-                          "psichomics()")
+    version <- utils::packageVersion(pkgname, libname)
+    msg <- sprintf(
+        "psichomics %s: start the visual interface by running psichomics()",
+        version)
+    site <- "https://nuno-agostinho.github.io/psichomics"
+    msg2 <- paste("Full documentation and tutorials at", site)
+    packageStartupMessage(paste("", msg, msg2, sep = "\n"))
+}
+
+#' Preserve attributes when extracting values
+#' 
+#' Add object to class \code{sticky}
+#' 
+#' @param x Object
+#' 
+#' @return Object with class \code{sticky} 
+#' 
+#' @keywords internal
+preserveAttributes <- function(x) {
+    class(x) <- c("sticky", class(x))
+    return(x)
+}
+
+#' Preserve attributes of \code{sticky} objects when extracting or transposing
+#' object
+#' 
+#' Most attributes - with the exception of \code{names}, \code{dim},
+#' \code{dimnames}, \code{class} and \code{row.names} - are preserved in simple
+#' transformations of objects from class \code{sticky}
+#' 
+#' @return Transformed object with most attributes preserved
+#' 
+#' @export
+t.sticky <- function(x) {
+    attrs <- attributes(x)
+    attrs <- attrs[!names(attrs) %in% c("names", "dim", "dimnames", "class",
+                                        "row.names")]
+    res <- NextMethod()
+    res <- addObjectAttrs(res, attrs)
+    
+    tmp <- attr(res, "rowData")
+    attr(res, "rowData") <- attr(res, "colData")
+    attr(res, "colData") <- tmp
+    
+    if (!is(res, "sticky")) res <- preserveAttributes(res)
+    return(res)
+}
+
+#' @rdname t.sticky
+#' 
+#' @param x Object
+#' @param i,j,... Numeric or character: indices of elements to extract
+#' 
+#' @export
+`[.sticky` <- function(x, i, j, ...) {
+    attrs <- attributes(x)
+    attrs <- attrs[!names(attrs) %in% c("names", "dim", "dimnames", "class",
+                                        "row.names")]
+    res <- NextMethod()
+    res <- addObjectAttrs(res, attrs)
+    
+    # Subset rowData and colData based on row and column names, respectively
+    subsetInfo <- function(data, names) {
+        areValidNames <- !is.null(data) && !is.null(names) &&
+            all(names %in% rownames(data))
+        if (areValidNames) data <- data[names, ]
+        return(data)
+    }
+    attr(res, "rowData") <- subsetInfo(attr(res, "rowData"), rownames(res))
+    attr(res, "colData") <- subsetInfo(attr(res, "colData"), colnames(res))
+    
+    if (!is(res, "sticky")) res <- preserveAttributes(res)
+    return(res)
 }
 
 #' Round down/up the minimum/maximum value
@@ -47,244 +125,6 @@ isFile <- function(files) {
 #' junctionQuant <- readFile("ex_junctionQuant.RDS")
 readFile <- function(file) {
     readRDS(insideFile("extdata", file))
-}
-
-#' Get supported splicing event types
-#' 
-#' @param acronymsAsNames Boolean: return acronyms as names?
-#' 
-#' @family functions for PSI quantification
-#' @return Named character vector with splicing event types
-#' @export
-#' 
-#' @examples 
-#' getSplicingEventTypes()
-getSplicingEventTypes <- function(acronymsAsNames=FALSE) {
-    types <- c(
-        "Skipped exon"="SE",
-        "Mutually exclusive exon"="MXE",
-        "Alternative 5' splice site"="A5SS",
-        "Alternative 3' splice site"="A3SS",
-        "Alternative first exon"="AFE",
-        "Alternative last exon"="ALE",
-        "Alternative first exon (exon-centred - less reliable)"="AFE_exon",
-        "Alternative last exon (exon-centred - less reliable)"="ALE_exon")
-    if (acronymsAsNames) {
-        tmp        <- names(types)
-        names(tmp) <- types
-        types      <- tmp
-    }
-    return(types)
-}
-
-#' Check if string identifies splicing events
-#' 
-#' @param char Character vector
-#' @param num Integer: number of elements to check
-#' 
-#' @return TRUE if first elements of the vector identify splicing events; FALSE,
-#'   otherwise
-#' @keywords internal
-areSplicingEvents <- function(char, num=6) {
-    all(sapply(head(char, num), function (i)
-        sum(charToRaw(i) == charToRaw("_")) > 3))
-}
-
-#' Parse alternative splicing event identifier
-#' 
-#' @param event Character: event identifier
-#' @param char Boolean: return character vector instead of list with parsed
-#' values?
-#' @param pretty Boolean: return a prettier name of the event identifier?
-#' @param extra Character: extra information to add (such as species and
-#' assembly version); only used if \code{pretty = TRUE} and \code{char = TRUE}
-#' @param coords Boolean: display extra coordinates regarding the alternative 
-#' and constitutive regions of alternative splicing events? If 
-#' \code{char = FALSE}, all coordinates are always displayed
-#' 
-#' @return Parsed event
-#' @export
-#' 
-#' @examples 
-#' events <- c("SE_1_-_123_456_789_1024_TST",
-#'             "MXE_3_+_473_578_686_736_834_937_HEY/YOU")
-#' parseSplicingEvent(events)
-parseSplicingEvent <- function(event, char=FALSE, pretty=FALSE, extra=NULL, 
-                               coords=FALSE) {
-    if (is.null(event)) return(NULL)
-    # Pre-treat special case of exon-centred AFE and ALE
-    event <- gsub("AFE_exon", "AFE", event, fixed=TRUE)
-    event <- gsub("ALE_exon", "ALE", event, fixed=TRUE)
-    
-    if (char) {
-        if (pretty) {
-            event     <- strsplit(event, "_", fixed=TRUE)
-            
-            eventType <- sapply(event, "[[", 1)
-            eventType <- getSplicingEventTypes(acronymsAsNames=TRUE)[eventType]
-            eventType <- tolower(eventType)
-            
-            chrom     <- sapply(event, "[[", 2)
-            strand    <- ifelse(sapply(event, "[[", 3) == "+", "positive",
-                                "negative")
-            gene      <- sapply(event, function(i) i[[length(i)]])
-            start     <- sapply(event, "[[", 4)
-            end       <- sapply(event, function(i) i[[length(i) - 1]])
-            
-            if (is.null(extra)) {
-                event <- sprintf("%s %s (chr%s: %s-%s, %s strand)", gene,
-                                 eventType, chrom, start, end, strand)
-            } else {
-                event <- sprintf("%s %s (chr%s: %s-%s, %s strand, %s)", gene,
-                                 eventType, chrom, start, end, strand, extra)
-            }
-        } else {
-            event <- gsub("_", " ", event, fixed=TRUE)
-        }
-        return(event)
-    }
-    
-    event <- strsplit(event, "_")
-    parsed <- data.frame(matrix(nrow=length(event)))
-    
-    len <- vapply(event, length, numeric(1))
-    lenMinus1 <- len - 1
-    
-    parsed$type   <- vapply(event, "[[", 1, FUN.VALUE=character(1))
-    parsed$chrom  <- vapply(event, "[[", 2, FUN.VALUE=character(1))
-    parsed$strand <- vapply(event, "[[", 3, FUN.VALUE=character(1))
-    parsed$gene   <- strsplit(vapply(seq_along(event), 
-                                     function(i) event[[i]][[len[[i]]]],
-                                     FUN.VALUE=character(1)), "/")
-    
-    # Parse position according to type of alternative splicing event
-    parsed$pos <- lapply(seq_along(event), 
-                         function(i) as.numeric(event[[i]][4:lenMinus1[[i]]]))
-    if (coords) {
-        parsed$constitutive1 <- NA
-        parsed$alternative1  <- NA
-        parsed$alternative2  <- NA
-        parsed$constitutive2 <- NA
-        for (row in seq(nrow(parsed))) {
-            type <- parsed[row, "type"]
-            
-            con1 <- NULL
-            alt1 <- NULL
-            alt2 <- NULL
-            con2 <- NULL
-            if (type == "SE") {
-                con1 <- 1
-                alt1 <- c(2, 3)
-                con2 <- 4
-            } else if (type == "MXE") {
-                con1 <- 1
-                alt1 <- c(2, 3)
-                alt2 <- c(4, 5)
-                con2 <- 6
-            } else if (type %in% c("A3SS", "ALE")) {
-                con1 <- 1
-                alt1 <- 2
-                alt2 <- 3
-            } else if (type %in% c("A5SS", "AFE")) {
-                alt1 <- 2
-                alt2 <- 1
-                con2 <- 3
-            }
-            
-            if (!is.null(con1))
-                parsed$constitutive1[[row]] <- list(parsed[[row, "pos"]][con1])
-            if (!is.null(alt1))
-                parsed$alternative1[[row]]  <- list(parsed[[row, "pos"]][alt1])
-            if (!is.null(alt2))
-                parsed$alternative2[[row]]  <- list(parsed[[row, "pos"]][alt2])
-            if (!is.null(con2))
-                parsed$constitutive2[[row]] <- list(parsed[[row, "pos"]][con2])
-        }
-        
-        parsed$alternative1  <- unlist(parsed$alternative1,  recursive=FALSE)
-        parsed$constitutive1 <- unlist(parsed$constitutive1, recursive=FALSE)
-        parsed$constitutive2 <- unlist(parsed$constitutive2, recursive=FALSE)
-        parsed$alternative2  <- unlist(parsed$alternative2,  recursive=FALSE)
-    }
-    
-    parsed$pos <- suppressWarnings( # Simply ignore non-numeric items
-        lapply(parsed$pos, function(i) range(as.numeric(i), na.rm=TRUE)))
-    
-    if (pretty)
-        parsed$type <- getSplicingEventTypes(acronymsAsNames=TRUE)[parsed$type]
-    
-    parsed[,1] <- NULL
-    return(parsed)
-}
-
-#' Match splicing events with respective genes
-#' 
-#' @param ASevents Character: alternative splicing events to be matched
-#' 
-#' @return Named character vector containing the splicing events and their
-#' respective gene as their name
-#' @keywords internal
-matchSplicingEventsWithGenes <- function(ASevents) {
-    ASeventParsed <- parseSplicingEvent(ASevents)$gene
-    ASeventGenes  <- rep(ASevents, sapply(ASeventParsed, length))
-    names(ASeventGenes) <- unlist(ASeventParsed)
-    return(ASeventGenes)
-}
-
-#' Get alternative splicing events from genes or vice-versa
-#' 
-#' @details 
-#' A list of alternative splicing events is required to run 
-#' \code{getSplicingEventFromGenes}
-#' 
-#' @param genes Character: gene symbols (or TCGA-styled gene symbols)
-#' @param ASevents Character: alternative splicing events
-#' 
-#' @return Named character containing alternative splicing events or genes and 
-#' their respective genes or alternative splicing events as names (depending on
-#' the function in use)
-#' 
-#' @export
-#' 
-#' @examples 
-#' ASevents <- c("SE_1_+_201763003_201763300_201763374_201763594_NAV1", 
-#'               "SE_1_+_183515472_183516238_183516387_183518343_SMG7",
-#'               "SE_1_+_183441784_183471388_183471526_183481972_SMG7",
-#'               "SE_1_+_181019422_181022709_181022813_181024361_MR1",
-#'               "SE_1_+_181695298_181700311_181700367_181701520_CACNA1E")
-#' genes <- c("NAV1", "SMG7", "MR1", "HELLO")
-#' 
-#' # Get splicing events from genes
-#' matchedASevents <- getSplicingEventFromGenes(genes, ASevents)
-#' 
-#' # Names of matched events are the matching input genes
-#' names(matchedASevents)
-#' matchedASevents
-#' 
-#' # Get genes from splicing events
-#' matchedGenes <- getGenesFromSplicingEvents (ASevents)
-#' 
-#' # Names of matched genes are the matching input alternative splicing events
-#' names(matchedGenes)
-#' matchedGenes
-getSplicingEventFromGenes <- function(genes, ASevents) {
-    if (!is(ASevents, "matched"))
-        ASeventGenes <- matchSplicingEventsWithGenes(ASevents)
-    else
-        ASeventGenes <- ASevents
-    
-    genes <- gsub("\\|.*$", "", genes) # Process TCGA-styled gene symbols
-    ASeventGenes <- ASeventGenes[names(ASeventGenes) %in% genes]
-    return(ASeventGenes)
-}
-
-#' @rdname getSplicingEventFromGenes
-#' @export
-getGenesFromSplicingEvents <- function(ASevents) {
-    genes <- parseSplicingEvent(ASevents)$gene
-    match <- unlist(genes)
-    names(match) <- rep(ASevents, sapply(genes, length))
-    return(match)
 }
 
 #' Trims whitespace from a word
@@ -338,43 +178,143 @@ is.whole <- function(x, tol=.Machine$double.eps^0.5) {
     abs(x - round(x)) < tol
 }
 
-#' Calculate mean or variance for each row of a matrix
+# Template for using faster version of row- or column-wise statistics from Rfast
+fasterDataStats <- function(mat, fastFUN, classicFUN=NULL, na.rm=FALSE,
+                            byRow=TRUE, ...) {
+    if (is.vector(mat)) {
+        mat <- matrix(mat, nrow=1)
+    } else if (!is.matrix(mat)) {
+        mat <- as.matrix(mat)
+    }
+    
+    if (!is.null(classicFUN)) {
+        # Use classicFUN to calculate missing values
+        res <- fastFUN(mat, ...)
+        if (na.rm) {
+            nas      <- is.na(res)
+            res[nas] <- classicFUN(mat[nas, , drop=FALSE], na.rm=na.rm,
+                                   fast=FALSE)
+        }
+    } else {
+        res <- fastFUN(mat, na.rm=na.rm, ...)
+    }
+    
+    if (byRow) {
+        ns <- rownames
+    } else {
+        ns <- colnames
+    }
+    if (!is.null(ns(mat))) names(res) <- ns(mat)
+    return(res)
+}
+
+#' Calculate statistics for each row or column of a matrix
 #' 
 #' @param mat Matrix
 #' @param na.rm Boolean: remove missing values (\code{NA})?
+#' @param fast Boolean: use \code{Rfast} functions? They may return different 
+#' results from R built-in functions
 #' 
-#' @return Vector of means or variances
-#' @export
+#' @importFrom Rfast rowmeans
+#' 
+#' @return Vector of selected statistic
+#' @keywords internal
 #' 
 #' @examples
 #' df <- rbind("Gene 1"=c(3, 5, 7), "Gene 2"=c(8, 2, 4), "Gene 3"=c(9:11)) 
-#' rowMeans(df)
-#' rowVars(df)
-rowMeans <- function(mat, na.rm=FALSE) {
-    if ( !is.null(dim(mat)) ) {
+#' psichomics:::customRowMeans(df)
+#' psichomics:::customRowVars(df, fast=TRUE)
+customRowMeans <- function(mat, na.rm=FALSE, fast=FALSE) {
+    if (fast) {
+        res <- fasterDataStats(mat, rowMeans, customRowMeans, na.rm=na.rm)
+    } else if ( !is.null(dim(mat)) ) {
         nas <- 0
         if (na.rm) nas <- rowSums(is.na(mat))
-        rowSums(mat, na.rm=na.rm) / (ncol(mat) - nas)
+        res <- rowSums(mat, na.rm=na.rm) / (ncol(mat) - nas)
     } else {
-        mean(mat, na.rm=na.rm)
+        res <- mean(mat, na.rm=na.rm)
     }
+    return(res)
 }
 
-#' @rdname rowMeans
-#' @export
-rowVars <- function(mat, na.rm=FALSE) {
-    if ( !is.null(dim(mat)) ) {
-        means      <- rowMeans(mat, na.rm=na.rm)
+#' @rdname customRowMeans
+#' @importFrom Rfast rowMedians
+customRowMedians <- function(mat, na.rm=FALSE, fast=FALSE) {
+    if (fast) {
+        res <- fasterDataStats(mat, rowMedians, classicFUN=NULL, na.rm=na.rm)
+    } else {
+        res <- apply(mat, 1, median, na.rm=na.rm)
+    }
+    return(res)
+}
+
+#' @rdname customRowMeans
+#' @importFrom Rfast rowVars
+customRowVars <- function(mat, na.rm=FALSE, fast=FALSE) {
+    if (fast) {
+        res <- fasterDataStats(mat, rowVars, classicFUN=NULL, na.rm=na.rm)
+        res[res < 0] <- 0 # Safeguard for when log-transforming values
+    } else if ( !is.null(dim(mat)) ) {
+        means      <- customRowMeans(mat, na.rm=na.rm, fast=FALSE)
         meansSqDev <- (mat - means) ** 2
         squaresSum <- rowSums(meansSqDev, na.rm=na.rm)
         
         nas <- 0
         if (na.rm) nas <- rowSums(is.na(mat))
         dem <- ncol(mat) - nas - 1
-        squaresSum/dem
+        res <- squaresSum / dem
     } else {
-        var(mat, na.rm=na.rm)
+        res <- var(mat, na.rm=na.rm)
     }
+    return(res)
+}
+
+#' @rdname customRowMeans
+#' @importFrom Rfast rowMins
+customRowMins <- function(mat, na.rm=FALSE, fast=FALSE) {
+    if (fast) {
+        res <- fasterDataStats(mat, rowMins, customRowMins, na.rm=na.rm,
+                               value=TRUE)
+    } else {
+        suppressWarnings(apply(mat, 1, min, na.rm=na.rm))
+    }
+}
+
+#' @rdname customRowMeans
+#' @importFrom Rfast rowMaxs
+customRowMaxs <- function(mat, na.rm=FALSE, fast=FALSE) {
+    if (fast) {
+        res <- fasterDataStats(mat, rowMaxs, customRowMaxs, na.rm=na.rm,
+                               value=TRUE)
+    } else {
+        res <- suppressWarnings(apply(mat, 1, max, na.rm=na.rm))
+    }
+    return(res)
+}
+
+#' @rdname customRowMeans
+#' @importFrom Rfast rowrange
+customRowRanges <- function(mat, na.rm=FALSE, fast=FALSE) {
+    if (fast) {
+        res <- fasterDataStats(mat, rowrange, customRowRanges, na.rm=na.rm)
+    } else {
+        maxs <- customRowMaxs(mat, na.rm=na.rm, fast=FALSE)
+        mins <- customRowMins(mat, na.rm=na.rm, fast=FALSE)
+        res  <- maxs - mins
+    }
+    return(res)
+}
+
+#' @rdname customRowMeans
+#' @importFrom Rfast colMedians
+customColMedians <- function(mat, na.rm=FALSE, fast=FALSE) {
+    if (fast) {
+        res <- fasterDataStats(mat, colMedians, classicFUN=NULL, na.rm=na.rm,
+                               byRow=FALSE)
+    } else {
+        res <- apply(mat, 2, median, na.rm=na.rm)
+    }
+    return(res)
 }
 
 #' Rename vector to avoid duplicated values with another vector
@@ -494,7 +434,7 @@ getPatientFromSample <- getSubjectFromSample
 #' name to save time (optional)
 #' @param showMatch Boolean: show matching subject index?
 #' 
-#' @aliases getSampleFromPatient getSampleFromSubject
+#' @aliases getSampleFromPatient getMatchingSamples
 #' @family functions for data grouping
 #' @return Names of the matching samples (if \code{showMatch = TRUE},
 #' a character with the subjects as values and their respective samples as names
@@ -506,8 +446,8 @@ getPatientFromSample <- getSubjectFromSample
 #' samples <- paste0(subjects, "-sample")
 #' clinical <- data.frame(samples=samples)
 #' rownames(clinical) <- subjects
-#' getMatchingSamples(subjects[c(1, 4)], samples, clinical)
-getMatchingSamples <- function(patients, samples, clinical=NULL, rm.NA=TRUE,
+#' getSampleFromSubject(subjects[c(1, 4)], samples, clinical)
+getSampleFromSubject <- function(patients, samples, clinical=NULL, rm.NA=TRUE,
                                match=NULL, showMatch=FALSE) {
     if (is.null(match))
         match <- getSubjectFromSample(samples, clinical)
@@ -528,10 +468,10 @@ getMatchingSamples <- function(patients, samples, clinical=NULL, rm.NA=TRUE,
 }
 
 #' @export
-getSampleFromPatient <- getMatchingSamples
+getSampleFromPatient <- getSampleFromSubject
 
 #' @export
-getSampleFromSubject <- getMatchingSamples
+getMatchingSamples <- getSampleFromSubject
 
 #' Assign one group to each element
 #' 

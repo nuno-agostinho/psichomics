@@ -1,5 +1,5 @@
 ---
-title: 'Visual interface tutorial'
+title: 'Case study: visual interface tutorial'
 author: "Nuno Saraiva-Agostinho"
 date: "`r Sys.Date()`"
 bibliography: refs.bib
@@ -11,8 +11,6 @@ vignette: >
     %\VignetteIndexEntry{Case study: visual interface}
     %\VignetteEngine{knitr::rmarkdown}
     \usepackage[utf8]{inputenc}
----
-
 ---
 
 *psichomics* is an interactive R package for integrative analyses of alternative
@@ -255,9 +253,9 @@ knitr::include_graphics("img/5_pca.png")
 ```
 
 Two PCA plots are then rendered. The plot above is a **score plot** that shows
-the clinical samples, while the **loadings plot** below displays the variables 
-(in this case, alternative splicing events). The table below the loadings plot
-depicts the contribution of each variable to each PC.
+the samples, while the **loadings plot** below displays the variables (in this
+case, alternative splicing events). The table below the loadings plot depicts
+the contribution of each variable to each PC.
 
 > **Hint:** As most plots in *psichomics*, PCA plots can be zoomed-in by
 clicking-and-dragging within the plot (click *Reset zoom* to zoom-out). To 
@@ -489,7 +487,7 @@ knitr::include_graphics("img/UHRF2_exon_10_inclusion_differential_splicing.png")
 To study the impact of alternative splicing events on prognosis, Kaplan-Meier
 curves may be plotted for groups of patients separated by a given PSI 
 cutoff for a given alternative splicing event. The optimal PSI cutoff 
-maximises the  significance of group differences in survival analysis (i.e. 
+maximises the significance of group differences in survival analysis (i.e. 
 minimises the p-value of the log-rank tests of difference in survival between
 individuals whose samples have a PSI below and above that threshold).
 

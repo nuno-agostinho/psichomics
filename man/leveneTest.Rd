@@ -7,13 +7,11 @@
 leveneTest(x, g, centers = median)
 }
 \arguments{
-\item{x}{a numeric vector of data values, or a list of numeric data
-    vectors.  Non-numeric elements of a list will be coerced, with a
-    warning.}
+\item{x}{Numeric vector or list of numeric vectors: non-numeric elements of a
+list will be coerced with a warning}
 
-\item{g}{a vector or factor object giving the group for the
-    corresponding elements of \code{x}.  Ignored with a warning if
-    \code{x} is a list.}
+\item{g}{Vector or factor: groups of elements in \code{x} (ignored with a
+warning if \code{x} is a list)}
 
 \item{centers}{Function used to calculate how much values spread; for
 instance, \code{median} (default) or \code{mean}}

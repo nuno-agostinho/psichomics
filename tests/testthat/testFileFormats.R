@@ -12,7 +12,7 @@ test_that("Load generic junction reads", {
             chrZ:102899:115246:-	654	342	625
             chrM:102899:115246:+	362	8	158
             chrY:102899:115246:-	662	242	214"
-    table <- parseValidFile(txt, formats)
+    table <- loadFile(txt, formats)
     expect_is(table, "data.frame")
     expect_true(all(startsWith(
         rownames(table), 
@@ -31,7 +31,7 @@ test_that("Load generic junction reads", {
             Z:102899:115246:-	62	42	63
             chromosome M, from 102899 to 115246 +	62	42	63
             chrY, 102899-115246, -	62	42	63"
-    table <- parseValidFile(txt, formats)
+    table <- loadFile(txt, formats)
     expect_identical(rownames(table), c("chr11:102899:115246:+",
                                         "chr21:102899:115246:+",
                                         "chr4:102899:115246:+",
@@ -51,7 +51,7 @@ test_that("Load generic junction reads", {
             chrZ:102899:115246:-	57	62	43
             chrM:102899:115246:-	63	22	23
             chrY:102899:115246:+	42	42	13"
-    table <- parseValidFile(txt, formats)
+    table <- loadFile(txt, formats)
     expect_true(all(endsWith(rownames(table),
                              c("+", "-", "-", "+", "+", "-", "-", "+"))))
     
@@ -63,7 +63,7 @@ test_that("Load generic junction reads", {
             chr3_JH159137v1_alt:616564:619706:-	11	32	42
             chr6_JH159137v1_random:2116564:2119706:-	83	70	95
             chrX_JH159137v1_alt:1564:1594:-	234	32	65"
-    expect_warning(table <- parseValidFile(txt, formats))
+    expect_warning(table <- loadFile(txt, formats))
     expect_equal(nrow(table), 1)
     
     txt <- "Junction ID	SMPL001	SMPL002	SMPL003
@@ -72,7 +72,7 @@ test_that("Load generic junction reads", {
             chr3_JH159137v1_alt:616564:619706:-	11	32	42
             chr6_JH159137v1_random:2116564:2119706:-	83	70	95
             chrX_JH159137v1_alt:1564:1594:-	234	32	65"
-    expect_warning(table <- parseValidFile(txt, formats))
+    expect_warning(table <- loadFile(txt, formats))
     expect_null(table)
     
     # Duplicated junctions are discarded with a warning
@@ -80,5 +80,5 @@ test_that("Load generic junction reads", {
             chr11:102899:115246:-	62	431	72
             chr2:102899:115246:-	43	24	68
             chr11:102899:115246:-	43	73	45"
-    expect_warning(parseValidFile(txt, formats))
+    expect_warning(loadFile(txt, formats))
 })

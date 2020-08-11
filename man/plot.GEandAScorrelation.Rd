@@ -68,7 +68,7 @@ least-squares, and if \code{symmetric}, a re-descending M estimator is used}
 \item{fontSize}{Numeric: plot font size}
 
 \item{...}{
-  Arguments passed on to \code{\link[stats:loess.smooth]{stats::loess.smooth}}
+  Arguments passed on to \code{\link[stats:scatter.smooth]{stats::loess.smooth}}
   \describe{
     \item{\code{span}}{smoothness parameter for \code{loess}.}
     \item{\code{degree}}{degree of local polynomial used.}
@@ -95,11 +95,11 @@ group (coloured based on the \code{colour} argument)}
 Plots, summary tables or results of correlation analyses
 }
 \description{
-Plot, print and display as table the results of gene expression and 
+Plot, print and display as table the results of gene expression and
 alternative splicing
 }
 \details{
-The following methods for p-value adjustment are supported by using the 
+The following methods for p-value adjustment are supported by using the
 respective string in the \code{pvalueAdjust} argument:
 \itemize{
      \item{\code{none}: do not adjust p-values}
@@ -126,7 +126,7 @@ print(corr)
 as.table(corr)
 
 # Correlation analysis plots
-colourGroups <- list(Normal=paste("Normal", 1:3), 
+colourGroups <- list(Normal=paste("Normal", 1:3),
                      Tumour=paste("Cancer", 1:3))
 attr(colourGroups, "Colour") <- c(Normal="#00C65A", Tumour="#EEE273")
 plot(corr, colourGroups=colourGroups, alpha=1)

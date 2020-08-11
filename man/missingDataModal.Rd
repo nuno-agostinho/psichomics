@@ -19,7 +19,7 @@ missingDataGuide(dataType)
 
 \item{dataType}{Character: type of data missing}
 
-\item{buttonId}{Character: identifier of button to take user to load missing 
+\item{buttonId}{Character: identifier of button to take user to load missing
 data}
 }
 \value{

@@ -4,7 +4,7 @@
 \alias{joinEventsPerType}
 \title{Full outer join all given events based on select columns}
 \usage{
-joinEventsPerType(events, types)
+joinEventsPerType(events, types = NULL)
 }
 \arguments{
 \item{events}{Data frame or matrix: alternative splicing events}

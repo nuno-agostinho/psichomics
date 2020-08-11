@@ -19,13 +19,14 @@ parseMatsAnnotation <- function(
     novelEvents=TRUE) {
     
     display("Retrieving rMATS annotation...")
-    if (novelEvents)
-        detected <- c(types, paste0("novelEvents.", types))
-    else
-        detected <- types
-    
-    typesFile <- file.path(folder, paste(genome, detected, "txt", sep="."))
-    names(typesFile) <- rep(types, length(typesFile)/length(types))
+    typesRegex <- sprintf("(%s)", paste(types, collapse="|"))
+    typesFile  <- list.files(folder, pattern=paste0(genome, ".*", typesRegex),
+                             full.names=TRUE)
+    if (!novelEvents) {
+        typesFile <- grep("novel", typesFile, value=TRUE, invert=TRUE)
+    }
+    names(typesFile) <- gsub("^.*\\.([A-Za-z0-9]+)\\.[A-Za-z]+$", "\\1",
+                             typesFile)
     annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
                     comment.char="#", header=TRUE)
     
@@ -79,8 +80,7 @@ parseMatsEvent <- function(event, event_type) {
     len <- ncol(event)
     # Create list with event attributes
     event_attrs <- data.frame("Program"     = "MATS",
-                              "Gene"        = as.character(event[[2]]),
-                              "Gene symbol" = as.character(event[[3]]),
+                              "Gene"        = as.character(event[[3]]),
                               "Chromosome"  = as.character(event[[4]]),
                               "Strand"      = as.character(event[[5]]),
                               "Event type"  = event_type, 
@@ -131,7 +131,7 @@ parseMatsEvent <- function(event, event_type) {
 #' \itemize{
 #'  \item{\bold{SE} (skipped exon)}
 #'  \item{\bold{MXE} (mutually exclusive exon)}
-#'  \item{\bold{RI} (intron retention)}
+#'  \item{\bold{RI} (retained intron)}
 #'  \item{\bold{A5SS} (alternative 5' splice site)}
 #'  \item{\bold{A3SS} (alternative 3' splice site)}
 #'  \item{\bold{AFE} (alternative first exon)}
@@ -201,7 +201,7 @@ parseMatsMXE <- function(junctions, strand) {
 #' @rdname parseMatsGeneric
 #' @examples 
 #' 
-#' # Parse intron retention event
+#' # Parse retained intron event
 #' junctions <- read.table(text=
 #'     "15929853 15932100 15929853 15930016 15930687 15932100")
 #' psichomics:::parseMatsRI(junctions, strand = "+")

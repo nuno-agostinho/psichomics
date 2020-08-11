@@ -22,15 +22,15 @@ its rownames will be used)}
 \code{multiGroupIndependenceTest} object, a data frame containing:
 \item{attribute}{Name of the original groups compared against the reference
 groups}
-\item{table}{Contigency table used for testing}
+\item{table}{Contingency table used for testing}
 \item{pvalue}{Fisher's exact test's p-value}
 }
 \description{
-Test multiple contigency tables comprised by two groups (one reference group
+Test multiple contingency tables comprised by two groups (one reference group
 and another containing remaining elements) and provided groups.
 }
 \details{
-The following methods for p-value adjustment are supported by using 
+The following methods for p-value adjustment are supported by using
 the respective string in the \code{pvalueAdjust} argument:
 \itemize{
     \item{\code{none}: Do not adjust p-values}
@@ -54,13 +54,13 @@ groupTesting <- testGroupIndependence(ref, groups, elements)
 # View(groupTesting)
 }
 \seealso{
-\code{\link{parseCategoricalGroups}()} and 
+\code{\link{parseCategoricalGroups}()} and
 \code{\link{plotGroupIndependence}()}
 
 Other functions for data grouping: 
 \code{\link{createGroupByAttribute}()},
 \code{\link{getGeneList}()},
-\code{\link{getMatchingSamples}()},
+\code{\link{getSampleFromSubject}()},
 \code{\link{getSubjectFromSample}()},
 \code{\link{groupPerElem}()},
 \code{\link{plotGroupIndependence}()}

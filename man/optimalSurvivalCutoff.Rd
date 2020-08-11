@@ -33,7 +33,7 @@ interest}
 \item{timeStart}{Character: name of column containing starting time of the
 interval or follow up time}
 
-\item{timeStop}{Character: name of column containing ending time of the 
+\item{timeStop}{Character: name of column containing ending time of the
 interval (only relevant for interval censoring)}
 
 \item{followup}{Character: name of column containing follow up time}
@@ -65,7 +65,7 @@ clinical <- read.table(text = "2549   NA ii  female
                                  NA  383 iv  female
                                1293   NA iii   male
                                  NA 1355 ii    male")
-names(clinical) <- c("patient.days_to_last_followup", 
+names(clinical) <- c("patient.days_to_last_followup",
                      "patient.days_to_death",
                      "patient.stage_event.pathologic_stage",
                      "patient.gender")

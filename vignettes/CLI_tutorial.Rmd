@@ -1,5 +1,5 @@
 ---
-title: 'Command-line interface (CLI) tutorial'
+title: 'Case study: command-line interface (CLI) tutorial'
 author: "Nuno Saraiva-Agostinho"
 date: "`r Sys.Date()`"
 bibliography: refs.bib
@@ -7,27 +7,26 @@ csl: bioinformatics.csl
 output: 
     rmarkdown::html_vignette:
         toc: true
+        df_print: kable
 vignette: >
-    %\VignetteIndexEntry{Case study: command-line interface (CLI)}
+    %\VignetteIndexEntry{Case study: command-line interface (CLI) tutorial}
     %\VignetteEngine{knitr::rmarkdown}
     \usepackage[utf8]{inputenc}
----
-
 ---
 
 *psichomics* is an interactive R package for integrative analyses of alternative
 splicing and gene expression based on [The Cancer Genome Atlas (TCGA)][TCGA]
 (containing molecular data associated with 34 tumour types), the
 [Genotype-Tissue Expression (GTEx)][GTEx] project (containing data for multiple
-normal human tissues), [Sequence Read Archive][SRA] and user-provided data. The 
-data from GTEx, TCGA and select SRA projects include subject/sample-associated
-information and transcriptomic data, such as the quantification of RNA-Seq reads
-aligning to splice junctions (henceforth called junction quantification) and 
-exons.
+normal human tissues), [Sequence Read Archive (SRA)][SRA] and user-provided
+data. The  data from GTEx, TCGA and select SRA projects include
+subject/sample-associated information and transcriptomic data, such as the
+quantification of RNA-Seq reads aligning to splice junctions (henceforth called
+junction quantification) and exons.
 
 # Installing and starting the program
-Install *psichomics* by typing the following in an R console (the 
-[R environment](https://www.r-project.org/) is required):
+Install *psichomics* by typing the following in an R console (the
+[R environment][R] is required):
 
 ```{r install, eval=FALSE}
 install.packages("BiocManager")
@@ -67,10 +66,10 @@ spliced-in or PSI [@wang2008].
 To estimate this value for each splicing event, both alternative splicing
 annotation and junction quantification are required. While alternative splicing
 annotation is provided by the package, junction quantification may be retrieved
-from [TCGA][TCGA], [GTEx][GTEx], [SRA][SRA] or user-provided files.
+from [TCGA][], [GTEx][], [SRA][] or user-provided files.
 
 Data is downloaded from [Firebrowse][Firebrowse], a service that hosts processed
-data from [TCGA][TCGA], as required to run the downstream analyses. Before
+data from [TCGA][], as required to run the downstream analyses. Before
 downloading data, check the following options:
 
 ```{r TCGA options}
@@ -130,13 +129,19 @@ the RNA-seq section of `limma`'s user guide. Nevertheless, we present the
 following commands to quickly filter and normalise gene expression:
 
 ```{r normalise gene expression}
-# Check genes where min. counts are available in at least N samples and filter
-# out genes with mean expression and variance of 0
-filter <- filterGeneExpr(geneExpr)
-geneExprFiltered <- geneExpr[filter, ]
+# Check genes with 10 or more counts in at least some samples and 15 or more
+# total counts across all samples
+filter <- filterGeneExpr(geneExpr, minCounts=10, minTotalCounts=15)
 
-# Normalise gene expression and perform log2-transformation
-geneExprNorm <- normaliseGeneExpression(geneExprFiltered)
+# What normaliseGeneExpression() does:
+# 1) Filter gene expression
+# 2) Normalise gene expression with edgeR::calcNormFactors (internally) using
+#    the trimmed mean of M-values (TMM) method (by default)
+# 3) Calculate log2-counts per million (logCPM)
+geneExprNorm <- normaliseGeneExpression(geneExpr,
+                                        geneFilter=filter,
+                                        method="TMM",
+                                        log2transform=TRUE)
 ```
 
 ## Quantifying alternative splicing
@@ -156,10 +161,9 @@ annotList
 
 > **Custom splicing annotation:** Additional alternative splicing annotations 
 can be prepared for *psichomics* by parsing the annotation from programs like 
-[VAST-TOOLS][VAST-TOOLS], [MISO][MISO], [SUPPA][SUPPA] and [rMATS][rMATS]. Note
-that SUPPA and rMATS are able to create their splicing annotation based on
-transcript annotation. Please read
-[Preparing alternative splicing annotations][annotation-tutorial].
+[VAST-TOOLS][], [MISO][], [SUPPA][] and [rMATS][]. Note that SUPPA and rMATS are
+able to create their splicing annotation based on transcript annotation. Please
+read [Preparing alternative splicing annotations][annotation-tutorial].
 
 To quantify alternative splicing, first select the junction quantification,
 alternative splicing annotation and alternative splicing event type(s) of 
@@ -269,34 +273,37 @@ pcaPSI_stage1Norm <- performPCA(t(psi_stage1Norm))
 > As PCA cannot be performed on data with missing values, missing values need to
 be either removed (thus discarding data from whole splicing events or genes) or 
 impute them (i.e. attributing to missing values the median of the non-missing 
-ones). Use the argument `missingValues` within function `performPCA` to select
-the number of missing values that are tolerable per event (i.e. if a splicing 
-event or gene has less than N missing values, those missing values will be 
-imputed; otherwise, the event is discarded from PCA).
+ones). Use the argument `missingValues` of `performPCA()` to select the number
+of missing values that are tolerable per event (i.e. if a splicing event or gene
+has less than N missing values, those missing values will be imputed; otherwise,
+the event is discarded from PCA).
 
 ```{r plot pca}
 # Explained variance across principal components
-plotVariance(pcaPSI_stage1Norm)
+plotPCAvariance(pcaPSI_stage1Norm)
 
 # Score plot (clinical individuals)
 plotPCA(pcaPSI_stage1Norm, groups=normalVSstage1Tumour)
 
 # Loading plot (variable contributions)
-plotPCA(pcaPSI_stage1Norm, loadings=TRUE, individuals=FALSE)
-
-# Table of variable contributions (as used to plot PCA, also)
-table <- calculateLoadingsContribution(pcaPSI_stage1Norm)
-knitr::kable(head(table, 5))
+plotPCA(pcaPSI_stage1Norm, loadings=TRUE, individuals=FALSE,
+        nLoadings=100)
 ```
 
-> For performance reasons, the loading plot is able to exclusively render the 
-top variables that most contribute to the select principal components by using 
-the argument `nLoadings` within function `plotPCA`.
+> For performance reasons, the loading plot is able to limit the number of top
+variables that most contribute to the select principal components, as controlled
+by the argument `nLoadings` of `plotPCA()`.
 
 > **Hint:** As most plots in *psichomics*, PCA plots can be zoomed-in by
 clicking-and-dragging within the plot (click *Reset zoom* to zoom-out). To 
 toggle the visibility of the data series represented in the plot, click its 
 respective name in the plot legend.
+
+```{r pca contribution}
+# Table of variable contributions (as used to plot PCA, also)
+table <- calculateLoadingsContribution(pcaPSI_stage1Norm)
+head(table, 5)
+```
 
 To perform PCA using alternative splicing quantification and gene expression 
 data (both using *all samples* and only *Tumour Stage I* and *Normal* samples):
@@ -384,17 +391,21 @@ diffSplicing <- diffAnalyses(psi, normalVSstage1Tumour)
 # Filter based on |∆ Median PSI| > 0.1 and q-value < 0.01
 deltaPSIthreshold <- abs(diffSplicing$`∆ Median`) > 0.1
 pvalueThreshold   <- diffSplicing$`Wilcoxon p-value (BH adjusted)` < 0.01
+eventsThreshold <- diffSplicing[deltaPSIthreshold & pvalueThreshold, ]
 
 # Plot results
 library(ggplot2)
 ggplot(diffSplicing, aes(`∆ Median`, 
                          -log10(`Wilcoxon p-value (BH adjusted)`))) +
-    geom_point(data=diffSplicing[deltaPSIthreshold & pvalueThreshold, ],
+    geom_point(data=eventsThreshold,
                colour="orange", alpha=0.5, size=3) + 
     geom_point(data=diffSplicing[!deltaPSIthreshold | !pvalueThreshold, ],
                colour="gray", alpha=0.5, size=3) + 
     theme_light(16) +
     ylab("-log10(q-value)")
+
+# Table of events that pass the thresholds
+head(eventsThreshold)
 ```
 
 ### Performing multiple survival analysis
@@ -643,8 +654,8 @@ p-value > 0.05).
 ## Load GTEx data
 
 GTEx data (subject phenotype, sample attributes, gene expression and junction
-quantification) can be automatically retrieved and loaded by following these
-commands:
+quantification) for specific tissues can be automatically retrieved and loaded
+by following these commands:
 
 ```{r load GTEx, eval=FALSE}
 # Check GTEx tissues available based on the sample attributes
@@ -654,7 +665,7 @@ tissues <- c("blood", "brain")
 gtex <- loadGtexData("~/Downloads", tissues=tissues)
 ```
 
-Junction quantification can be loaded for all GTEx tissues by typing:
+To load data for all GTEx tissues, please type:
 
 ```{r load all GTEx, eval=FALSE}
 gtex <- loadGtexData("~/Downloads", tissues=NULL)
@@ -662,10 +673,10 @@ gtex <- loadGtexData("~/Downloads", tissues=NULL)
 
 ## Load SRA project data using recount
 
-[recount2][recount] is a resource of pre-processed data for thousands of 
-[SRA][SRA] projects (including gene read counts, splice junction quantification 
-and sample metadata). psichomics supports automatic downloading and loading of 
-[SRA][SRA] data from recount2, as exemplified below:
+[recount][] is a resource of pre-processed data for thousands of [SRA][]
+projects (including gene read counts, splice junction quantification and sample
+metadata). psichomics supports automatic downloading and loading of [SRA][] data
+from recount, as exemplified below:
 
 ```{r load recount, eval=FALSE}
 library(recount)
@@ -677,33 +688,30 @@ Please refer to our methods article for more information (the code for
 performing the analysis can be found at [GitHub][chapter-code]):
 
 > Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2020). 
-**[Interactive Alternative Splicing Analysis of Human Stem
-Cells Using psichomics][chapter]**. In: Kidder B. (eds) Stem Cell Transcriptional Networks. *Methods in Molecular Biology*, vol 2117. Humana, New York, NY
+**[Interactive Alternative Splicing Analysis of Human Stem Cells Using psichomics][chapter]**. In: Kidder B. (eds) Stem CellTranscriptional Networks. *Methods in Molecular Biology*, vol 2117. Humana, New York, NY
 
-## Load other SRA and user-provided local files
+## Load other SRA, VAST-TOOLS and user-provided data
 
-> Although only select [SRA][SRA] projects are available to be automatically
-downloaded (based on pre-processed data from the [recount2][recount] project), 
-other SRA projects and user-provided data can be manually aligned using a
-splice-aware aligner and loaded by following the instructions in
-[Loading SRA and user-provided RNA-seq data][tutorial-custom-data]. 
+> Any FASTQ files can be manually aligned using a splice-aware aligner and
+loaded by following the instructions in
+[Loading SRA, VAST-TOOLS and user-provided RNA-seq data][tutorial-custom-data]. 
 
-Local files can be loaded by indicating their containing folder Any files
+Local files can be loaded by indicating their containing folder. Any files
 located in this folder and sub-folders will be loaded.
 
-For instance, to load [GTEx][GTEx] files via local files, create a directory
-called **GTEx**, put all GTEx files within that folder and type these commands:
+For instance, to load [GTEx][] data via local files, create a directory called
+**GTEx**, put all GTEx files within that folder and type these commands:
 
 ```{r load local, eval=FALSE}
 folder <- "~/Downloads/GTEx/"
-ignore <- c(".aux.", ".mage-tab.")
-data <- loadLocalFiles(folder, ignore=ignore)
+ignore <- c(".aux.", ".mage-tab.") # File patterns to ignore
+data <- loadLocalFiles(folder, ignore=ignore)[[1]]
 
 # Select clinical and junction quantification dataset
-clinical      <- data[[1]][["Clinical data"]]
-sampleInfo    <- data[[1]][["Sample metadata"]]
-geneExpr      <- data[[1]][["Gene expression"]]
-junctionQuant <- data[[1]][["Junction quantification"]]
+clinical      <- data[["Clinical data"]]
+sampleInfo    <- data[["Sample metadata"]]
+geneExpr      <- data[["Gene expression"]]
+junctionQuant <- data[["Junction quantification"]]
 ```
 
 # Feedback
@@ -717,6 +725,7 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 
 # References
 
+[R]: https://www.r-project.org/
 [reference]: https://nuno-agostinho.github.io/psichomics/reference
 [SUPPA]: https://bitbucket.org/regulatorygenomicsupf/suppa
 [rMATS]: http://rnaseq-mats.sourceforge.net
@@ -731,9 +740,6 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 [chapter]: https://doi.org/10.1007/978-1-0716-0301-7_10
 [chapter-code]: https://github.com/nuno-agostinho/stem-cell-analysis-in-psichomics
 [Firebrowse]: http://firebrowse.org
-[Ensembl]: http://www.ensembl.org
-[UniProt]: http://www.uniprot.org
 [SRA]: https://www.ncbi.nlm.nih.gov/sra
 [recount]: https://jhubiostatistics.shinyapps.io/recount/
-[STAR]: https://github.com/alexdobin/STAR
 [tutorial-custom-data]: https://nuno-agostinho.github.io/psichomics/articles/custom_data.html

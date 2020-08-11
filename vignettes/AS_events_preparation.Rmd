@@ -7,11 +7,9 @@ output:
     rmarkdown::html_vignette:
         toc: true
 vignette: >
-  %\VignetteIndexEntry{Preparing alternative splicing annotations}
+  %\VignetteIndexEntry{Preparing an Alternative Splicing Annotation for psichomics}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
----
-  
 ---
 
 # Creating custom alternative splicing annotation
@@ -156,8 +154,7 @@ Otherwise, if you are using the CLI version, perform the following steps:
 annot <- readRDS(annotFile) # "annotFile" is the path to the annotation file
 junctionQuant <- readFile("ex_junctionQuant.RDS") # example set
 
-psi <- quantifySplicing(annot, junctionQuant, 
-                        c("SE", "MXE", "A3SS", "A5SS", "AFE", "ALE"))
+psi <- quantifySplicing(annot, junctionQuant)
 ```
 
 ```{r}

@@ -4,15 +4,13 @@
 \alias{ASquantFileInput}
 \title{File input for alternative splicing quantification}
 \usage{
-ASquantFileInput(ASquantFileId, speciesId, assemblyId)
+ASquantFileInput(ASquantFileId, clearable = FALSE)
 }
 \arguments{
-\item{ASquantFileId}{Character: identifier for alternative splicing 
+\item{ASquantFileId}{Character: identifier for alternative splicing
 quantification input}
 
-\item{speciesId}{Character: identifier for species selection input}
-
-\item{assemblyId}{Character: identifier for genome assembly selection input}
+\item{clearable}{Boolean: allow to clear selected file or directory?}
 }
 \value{
 HTML elements

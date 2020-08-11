@@ -13,7 +13,7 @@ parseCategoricalGroups(df)
 List of lists containing values based on rownames of \code{df}
 }
 \description{
-Retrieve elements grouped by their unique group based on each categorical 
+Retrieve elements grouped by their unique group based on each categorical
 column
 }
 \examples{
@@ -23,6 +23,6 @@ rownames(df) <- paste("subject", 1:3)
 parseCategoricalGroups(df)
 }
 \seealso{
-\code{\link{testGroupIndependence}()} and 
+\code{\link{testGroupIndependence}()} and
 \code{\link{plotGroupIndependence}()}
 }

@@ -28,9 +28,9 @@ samples (use clinical or sample groups)}
 
 \item{loadings}{Boolean: plot PCA loadings/rotations}
 
-\item{nLoadings}{Integer: Number of variables to plot, ordered by those that 
-most contribute to selected principal components (this allows for faster 
-performance as only the most contributing variables are rendered); if 
+\item{nLoadings}{Integer: Number of variables to plot, ordered by those that
+most contribute to selected principal components (this allows for faster
+performance as only the most contributing variables are rendered); if
 \code{NULL}, all variables are plotted}
 }
 \value{
@@ -46,11 +46,14 @@ plotPCA(pca, pcX=2, pcY=3)
 
 # Plot both individuals and loadings
 plotPCA(pca, pcX=2, pcY=3, loadings=TRUE)
+
+# Only plot loadings
+plotPCA(pca, pcX=2, pcY=3, loadings=TRUE, individuals=FALSE)
 }
 \seealso{
 Other functions to analyse principal components: 
 \code{\link{calculateLoadingsContribution}()},
 \code{\link{performPCA}()},
-\code{\link{plotVariance}()}
+\code{\link{plotPCAvariance}()}
 }
 \concept{functions to analyse principal components}

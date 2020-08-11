@@ -13,8 +13,10 @@ parseSuppaAnnotation <- function(
     genome="hg19") {
     
     display("Retrieving SUPPA annotation...")
-    typesFile <- file.path(folder, paste0(genome, "_", types, ".ioe"))
-    annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
+    typesRegex <- paste(types, collapse="|")
+    typesFile  <- list.files(folder, full.names=TRUE, pattern=paste0(
+        genome, ".*(", typesRegex, ").*\\.ioe"))
+    annot <- lapply(typesFile, read.delim, stringsAsFactors=FALSE,
                     comment.char="#", header=TRUE)
     
     display("Parsing SUPPA annotation...")
@@ -36,7 +38,7 @@ parseSuppaAnnotation <- function(
 #' @details The following event types are available to be parsed:
 #' \itemize{
 #'  \item{\bold{SE} (skipped exon)}
-#'  \item{\bold{RI} (intron retention)}
+#'  \item{\bold{RI} (retained intron)}
 #'  \item{\bold{MX} (mutually exclusive exons)}
 #'  \item{\bold{A5} (alternative 5' splice site)}
 #'  \item{\bold{A3} (alternative 3' splice site)}
@@ -108,7 +110,7 @@ parseSuppaEvent <- function(event) {
 #' @details The following event types are available to be parsed:
 #' \itemize{
 #'  \item{\bold{SE} (exon skipping)}
-#'  \item{\bold{RI} (intron retention)}
+#'  \item{\bold{RI} (retained intron)}
 #'  \item{\bold{MXE} (mutually exclusive exons)}
 #'  \item{\bold{A5SS} (alternative 5' splice site)}
 #'  \item{\bold{A3SS} (alternative 3' splice site)}

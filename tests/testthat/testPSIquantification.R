@@ -163,5 +163,5 @@ test_that("Process splicing quantification for multiple event types", {
     # when calculating for more event types
     junctionQuant <- as.matrix(junctionQuant)
     psiSE <- quantifySplicing(annot, junctionQuant, eventType="SE")
-    expect_identical(psi[1:3, ], psiSE)
+    expect_equivalent(psi[1:3, ], psiSE)
 })

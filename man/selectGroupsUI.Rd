@@ -9,7 +9,8 @@
 selectGroupsUI(
   id,
   label,
-  placeholder = "Type to search for groups",
+  type,
+  placeholder = "Type to search groups",
   noGroupsLabel = NULL,
   groupsLabel = NULL,
   maxItems = NULL,
@@ -25,6 +26,9 @@ getSelectedGroups(input, id, type, filter = NULL)
 \item{id}{Character: identifier}
 
 \item{label}{Character: \code{selectize} label}
+
+\item{type}{Character: type of groups (either \code{Patients},
+\code{Samples}, \code{ASevents} or \code{Genes})}
 
 \item{placeholder}{Character: \code{selectize} placeholder}
 
@@ -44,9 +48,6 @@ is not displayed to the user)}
 or not (only required if \code{returnAllDataLabel} is not \code{NULL})}
 
 \item{session}{Shiny session}
-
-\item{type}{Character: type of groups (either \code{Patients}, 
-\code{Samples}, \code{ASevents} or \code{Genes})}
 
 \item{preference}{Character: name of groups to pre-select, when available
 (if \code{NULL}, all groups will be pre-selected)}
@@ -68,7 +69,7 @@ when no groups are selected)
 Group selection interface and logic
 }
 \note{
-To allow the user to (explicitly) select no groups, pass the 
+To allow the user to (explicitly) select no groups, pass the
 \code{noGroupsLabel} and \code{groupsLabel} arguments.
 }
 \keyword{internal}

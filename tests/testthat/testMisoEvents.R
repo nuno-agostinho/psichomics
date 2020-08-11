@@ -279,7 +279,7 @@ test_that("parseMisoMXE doesn't parse unrecognized event", {
     expect_null(parsed)
 })
 
-test_that("parseMisoRI parses intron retention junctions", {
+test_that("parseMisoRI parses retained intron junctions", {
     event <- read.table(text = "
                         chr1 RI gene 1223053 1223417  .  +  .
                         chr1 RI mRNA 1222888 1223216  .  +  .

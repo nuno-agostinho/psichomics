@@ -26,7 +26,7 @@ Parameters obtained via \href{http://firebrowse.org/api-docs/}{Firebrowse}
 }
 \examples{
 getTCGAdataTypes()
-if (isFirebrowseUp()) getFirebrowseDates()
+if (isFirebrowseUp()) getTCGAdates()
 if (isFirebrowseUp()) getTCGAcohorts()
 }
 \seealso{

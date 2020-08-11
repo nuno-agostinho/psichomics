@@ -4,7 +4,12 @@
 \alias{loadLocalFiles}
 \title{Load local files}
 \usage{
-loadLocalFiles(folder, ignore = c(".aux.", ".mage-tab."), name = "Data")
+loadLocalFiles(
+  folder,
+  ignore = c(".aux.", ".mage-tab."),
+  name = "Data",
+  verbose = FALSE
+)
 }
 \arguments{
 \item{folder}{Character: path to folder containing files of interest}
@@ -12,6 +17,8 @@ loadLocalFiles(folder, ignore = c(".aux.", ".mage-tab."), name = "Data")
 \item{ignore}{Character: skip folders and filenames that match the expression}
 
 \item{name}{Character: name of the category containing all loaded datasets}
+
+\item{verbose}{Boolean: detail steps while parsing?}
 }
 \value{
 List of data frames from valid files
@@ -29,7 +36,10 @@ loadLocalFiles(folder, ignore)
 }
 }
 \seealso{
-Other functions to load local files: 
-\code{\link{prepareSRAmetadata}()}
+Other functions to load data: 
+\code{\link{loadGtexData}()},
+\code{\link{loadSRAproject}()},
+\code{\link{loadTCGAdata}()}
 }
+\concept{functions to load data}
 \concept{functions to load local files}

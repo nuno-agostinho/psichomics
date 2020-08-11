@@ -10,11 +10,11 @@ diffAnalyses(
   analyses = c("wilcoxRankSum", "ttest", "kruskal", "levene", "fligner"),
   pvalueAdjust = "BH",
   geneExpr = NULL,
-  psi = NULL
+  inputID = "sparklineInput"
 )
 }
 \arguments{
-\item{data}{Data frame or matrix: gene expression or alternative splicing 
+\item{data}{Data frame or matrix: gene expression or alternative splicing
 quantification}
 
 \item{groups}{Named list of characters (containing elements belonging to each
@@ -29,8 +29,8 @@ tumour and metastasis}
 \item{geneExpr}{Character: name of the gene expression dataset (only required
 for density sparklines available in the interactive mode)}
 
-\item{psi}{Data frame or matrix: alternative splicing quantification (defunct
-argument, use \code{data} instead)}
+\item{inputID}{Character: identifier of input to get attributes of clicked
+event (Shiny only)}
 }
 \value{
 Table of statistical analyses
@@ -39,20 +39,20 @@ Table of statistical analyses
 Perform statistical analyses
 }
 \details{
-The following statistical analyses may be performed by including the 
-respective string in the \code{analysis} argument:
+The following statistical analyses may be performed simultaneously via the
+\code{analysis} argument:
 \itemize{
      \item{\code{ttest} - Unpaired t-test (2 groups)}
      \item{\code{wilcoxRankSum} - Wilcoxon Rank Sum test (2 groups)}
      \item{\code{kruskal} - Kruskal test (2 or more groups)}
      \item{\code{levene} - Levene's test (2 or more groups)}
      \item{\code{fligner} - Fligner-Killeen test (2 or more groups)}
-     \item{\code{density} - Sample distribution per group (only usable 
+     \item{\code{density} - Sample distribution per group (only usable
      through the visual interface)}
 }
 
-The following methods for p-value adjustment are supported by using the 
-respective string in the \code{pvalueAdjust} argument:
+The following p-value adjustment methods are supported via the
+\code{pvalueAdjust} argument:
 \itemize{
      \item{\code{none}: do not adjust p-values}
      \item{\code{BH}: Benjamini-Hochberg's method (false discovery rate)}

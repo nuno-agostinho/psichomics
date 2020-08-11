@@ -30,7 +30,7 @@ interest}
 \item{timeStart}{Character: name of column containing starting time of the
 interval or follow up time}
 
-\item{timeStop}{Character: name of column containing ending time of the 
+\item{timeStop}{Character: name of column containing ending time of the
 interval (only relevant for interval censoring)}
 
 \item{followup}{Character: name of column containing follow up time}
@@ -56,16 +56,20 @@ names(clinical) <- c("patient.days_to_last_followup",
                      "patient.stage_event.pathologic_stage",
                      "patient.gender")
 clinical <- do.call(rbind, rep(list(clinical), 5))
+rownames(clinical) <- paste("Subject", seq(nrow(clinical)))
 
-psi <- data.frame(t(c(rep(0.1, 9), rep(0.2, 13), rep(0.3, 3))))
-colnames(psi) <- paste0("sample", seq(psi))
+# Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events
+annot <- readFile("ex_splicing_annotation.RDS")
+junctionQuant <- readFile("ex_junctionQuant.RDS")
+
+psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 
 # Match between subjects and samples
-match <- paste0("subject", seq(psi))
-names(match) <- colnames(psi)
-rownames(clinical) <- match
+match <- c("Cancer 1"="Subject 3",
+           "Cancer 2"="Subject 17",
+           "Cancer 3"="Subject 21")
 
-eventData <- assignValuePerSubject(psi[1, ], match)
+eventData <- assignValuePerSubject(psi[3, ], match)
 
 event      <- "days_to_death"
 timeStart  <- "days_to_death"

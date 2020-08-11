@@ -1,7 +1,6 @@
 AF
 AFE
 Agostinho
-AppVeyor
 BAM
 Barbosa
 Benjamini
@@ -14,14 +13,13 @@ BRCA
 Burge
 centered
 codecov
-contigency
 CPM
 cutoff
 Cutoff
 cutoffs
 DataTable
 DataTables
-dialog
+Dockerfile
 dropdown
 Ensembl
 etc
@@ -30,6 +28,7 @@ fallbacks
 fasrq
 FASTA
 FASTQ
+fasterq
 fastq
 Firebrowse
 Firehose

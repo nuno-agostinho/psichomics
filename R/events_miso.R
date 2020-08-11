@@ -1,4 +1,4 @@
-#' Get events from alternative splicing annotation
+#' Parse events from alternative splicing annotation
 #'
 #' @param folder Character: path to folder
 #' @param types Character: type of events to retrieve (depends on the program of
@@ -276,7 +276,7 @@ parseMisoEvent <- function(event) {
 #' \itemize{
 #'  \item{\bold{SE} (exon skipping)}
 #'  \item{\bold{MXE} (mutually exclusive exon)}
-#'  \item{\bold{RI} (intron retention)}
+#'  \item{\bold{RI} (retained intron)}
 #'  \item{\bold{A5SS} (alternative 5' splice site)}
 #'  \item{\bold{A3SS} (alternative 3' splice site)}
 #'  \item{\bold{AFE} (alternative first exon)}
@@ -411,7 +411,7 @@ parseMisoMXE <- function(event) {
 #' strand
 #' @examples
 #'
-#' # intron retention (RI) event
+#' # retained intron (RI) event
 #' event <- read.table(text = "
 #'  chr1 RI gene 17233 17742 . - .
 #'  chr1 RI mRNA 17233 17742 . - .

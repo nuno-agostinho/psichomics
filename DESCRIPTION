@@ -1,7 +1,7 @@
 Package: psichomics
 Title: Graphical Interface for Alternative Splicing Quantification, Analysis and
     Visualisation
-Version: 1.14.1
+Version: 1.14.2
 Encoding: UTF-8
 Authors@R: c(
         person("Nuno", "Saraiva-Agostinho",
@@ -28,11 +28,11 @@ Description: Interactive R package with an intuitive Shiny-based graphical
     annotation of selected alternative splicing events is also included.
 Depends:
     R (>= 4.0),
-    shiny (>= 1.0.3),
+    shiny (>= 1.5.0),
     shinyBS
 License: MIT + file LICENSE
 LazyData: true
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1
 Imports:
     AnnotationDbi,
     AnnotationHub,
@@ -55,11 +55,11 @@ Imports:
     httr,
     jsonlite,
     limma,
-    miscTools,
     pairsD3,
     plyr,
     Rcpp (>= 0.12.14),
     recount,
+    Rfast,
     R.utils,
     reshape2,
     shinyjs,
@@ -111,6 +111,7 @@ Collate:
     'data_geNormalisationFiltering.R'
     'data_gtex.R'
     'data_inclusionLevels.R'
+    'data_inclusionLevelsFilter.R'
     'data_local.R'
     'data_recount.R'
     'events_suppa.R'
@@ -118,6 +119,7 @@ Collate:
     'events_miso.R'
     'events_mats.R'
     'events.R'
+    'formats_SraRunTableSampleInfo.R'
     'formats_firebrowseGeneExpression.R'
     'formats_firebrowseJunctionReads.R'
     'formats_firebrowseMergeClinical.R'
@@ -133,12 +135,17 @@ Collate:
     'formats_gtexSampleInfo.R'
     'formats_gtexV7Clinical.R'
     'formats_gtexV7JunctionReads.R'
+    'formats_gtexV8JunctionReads.R'
     'formats_psichomicsGeneExpression.R'
     'formats_psichomicsInclusionLevels.R'
     'formats_recountSampleInfo.R'
+    'formats_vasttoolsGeneExpression.R'
+    'formats_vasttoolsInclusionLevels.R'
+    'formats_vasttoolsInclusionLevelsTidy.R'
     'groups.R'
     'help.R'
     'utils_drawSplicingEvent.R'
+    'utils_eventParsing.R'
     'utils_fileBrowserDialog.R'
     'utils_interactiveGgplot.R'
     'utils_interface.R'
@@ -146,6 +153,7 @@ biocViews: Sequencing, RNASeq, AlternativeSplicing,
     DifferentialSplicing, Transcription, GUI, PrincipalComponent,
     Survival, BiomedicalInformatics, Transcriptomics, ImmunoOncology,
     Visualization, MultipleComparison, GeneExpression, DifferentialExpression
-URL: https://nuno-agostinho.github.io/psichomics/
+URL: https://nuno-agostinho.github.io/psichomics/,
+    https://github.com/nuno-agostinho/psichomics/
 BugReports: https://github.com/nuno-agostinho/psichomics/issues
 Language: en-GB

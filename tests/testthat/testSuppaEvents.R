@@ -88,7 +88,7 @@ test_that("parseSuppaMXE parses a mutually exclusive exon event junctions", {
     expect_equal(parsed$C2.start, 220236296)
 })
 
-test_that("parseSuppaRI parses an intron retention event junctions", {
+test_that("parseSuppaRI parses a retained intron event junctions", {
     # Strand plus
     junctions <- read.table(text = "196709749 196709922 196711005 196711181")
     parsed <- parseSuppaRI(junctions, "+")

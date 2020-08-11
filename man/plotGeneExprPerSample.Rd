@@ -36,6 +36,7 @@ Other functions for gene expression pre-processing:
 \code{\link{convertGeneIdentifiers}()},
 \code{\link{filterGeneExpr}()},
 \code{\link{normaliseGeneExpression}()},
+\code{\link{plotLibrarySize}()},
 \code{\link{plotRowStats}()}
 }
 \concept{functions for gene expression pre-processing}

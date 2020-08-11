@@ -18,17 +18,18 @@ diffSplicingEventUI <- function(id) {
     survival <- div(
         id=ns("survivalButton"), hr(),
         actionButton(
-            ns("optimalSurv1"), onclick="showSurvCutoff(null, null, false)",
+            ns("optimalSurv1"), onclick="showSurvCutoff(null)",
             icon=icon("heartbeat"), "Survival analysis by PSI cutoff", 
             class="btn-info btn-md btn-block", class="visible-lg visible-md"),
         actionButton(
-            ns("optimalSurv2"), onclick="showSurvCutoff(null, null, false)",
+            ns("optimalSurv2"), onclick="showSurvCutoff(null)",
             "Survival analysis by PSI cutoff", 
             class="btn-info btn-xs btn-block", class="visible-sm visible-xs"))
     
     singleEventOptions <- div(
         id=ns("singleEventOptions"),
-        selectGroupsUI(ns("diffGroups"), label="Groups of samples to analyse",
+        selectGroupsUI(ns("diffGroups"), type="Samples",
+                       label="Groups of samples to analyse",
                        noGroupsLabel="All samples as one group",
                        groupsLabel="Samples by selected groups"),
         actionButton(ns("analyse"), "Perform analyses", class="btn-primary"),
@@ -113,23 +114,26 @@ diffSplicingEventServer <- function(input, output, session) {
         groups <- names(eventPSI)
         attr(groups, "Colour") <- colour
         
-        assembly <- getAssemblyVersion()
-        plot <- plotDistribution(eventPSI, groups, title=parseSplicingEvent(
-            event, char=TRUE, pretty=TRUE, extra=assembly))
+        title <- parseSplicingEvent(event, char=TRUE, pretty=TRUE)
+        plot  <- plotDistribution(eventPSI, groups, title=title)
         output$density <- renderHighchart(plot)
         
         output$eventDiagrams <- renderUI({
-            isMXE <- parseSplicingEvent(event)$type == "MXE"
-            constitutive <- plotSplicingEvent(
-                style="position: absolute; top: 321px; left: 52px",
-                constitutiveWidth=40, alternativeWidth=40, intronWidth=0,
-                event, class=NULL, showPath=FALSE, showText=FALSE, 
-                showAlternative1=FALSE, showAlternative2=TRUE)[[1]]
-            alternative <- plotSplicingEvent(
-                style="position: absolute; top: 321px; right: 25px",
-                constitutiveWidth=40, alternativeWidth=40, intronWidth=0,
-                event, class=NULL, showPath=FALSE, showText=FALSE,
-                showAlternative1=TRUE, showAlternative2=!isMXE)[[1]]
+            parsed <- parseSplicingEvent(event)
+            if (is.null(parsed$type)) return(NULL)
+            isMXE <- parsed$type == "MXE"
+            constitutive <- suppressWarnings(
+                plotSplicingEvent(
+                    style="position: absolute; top: 321px; left: 52px",
+                    constitutiveWidth=40, alternativeWidth=40, intronWidth=0,
+                    event, class=NULL, showPath=FALSE, showText=FALSE, 
+                    showAlternative1=FALSE, showAlternative2=TRUE)[[1]])
+            alternative <- suppressWarnings(
+                plotSplicingEvent(
+                    style="position: absolute; top: 321px; right: 25px",
+                    constitutiveWidth=40, alternativeWidth=40, intronWidth=0,
+                    event, class=NULL, showPath=FALSE, showText=FALSE,
+                    showAlternative1=TRUE, showAlternative2=!isMXE)[[1]])
             return(tagList(HTML(constitutive), HTML(alternative)))
         })
         

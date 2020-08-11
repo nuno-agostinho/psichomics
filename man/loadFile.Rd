@@ -2,25 +2,37 @@
 % Please edit documentation in R/formats.R
 \name{loadFile}
 \alias{loadFile}
-\title{Loads a file according to its format}
+\title{Load file based on its format}
 \usage{
-loadFile(format, file, ...)
+loadFile(
+  file,
+  formats = loadFileFormats(),
+  ...,
+  verbose = FALSE,
+  multiple = FALSE
+)
 }
 \arguments{
-\item{format}{Environment: format of the file}
+\item{file}{Character: file to parse}
 
-\item{file}{Character: file to load}
+\item{formats}{List of file formats to check}
 
 \item{...}{Extra parameters passed to \link[data.table]{fread}}
+
+\item{verbose}{Boolean: detail steps while parsing}
+
+\item{multiple}{Boolean: expect more than one file?}
 }
 \value{
-Data frame with the loaded file
+Data frame with the contents of the given file if the file format is
+recognised; otherwise, returns \code{NULL}
 }
 \description{
-Loads a file according to its format
+Tries to recognise the file format and parses the content of the given file
+accordingly.
 }
 \details{
-The resulting data frame includes the attribute \code{tablename} 
+The resulting data frame includes the attribute \code{tablename}
 with the name of the data frame
 }
 \keyword{internal}

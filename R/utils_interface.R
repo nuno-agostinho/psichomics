@@ -4,7 +4,7 @@
 #' 
 #' @importFrom shiny div tags
 #' 
-#' @inherit shiny::sidebarPanel
+#' @inheritParams shiny::sidebarPanel
 #' 
 #' @return HTML elements
 #' @keywords internal
@@ -50,23 +50,44 @@ colourInputMod <- function(...) {
     return(colourSelector)
 }
 
+#' Faster version of \code{shiny::HTML}
+#' 
+#' @param text Character: text
+#' 
+#' @return HTML element
+#' @keywords internal
+HTMLfast <- function(text) {
+    attr(text, "html") <- TRUE
+    class(text) <- c("html", "character")
+    return(text)
+}
 
 #' Create word break opportunities (for HTML) using given characters
 #' 
 #' @param str Character: text
 #' @param pattern Character: pattern(s) of interest to be used as word break
 #' opportunities
+#' @param html Boolean: convert to HTML?
 #' 
 #' @importFrom shiny HTML
 #' 
 #' @return String containing HTML elements
 #' @keywords internal
 prepareWordBreak <- function(str, pattern=c(".", "-", "\\", "/", "_", ",", 
-                                            " ")) {
+                                            " ", "+", "="),
+                             html=TRUE) {
     res <- str
     # wbr: word break opportunity
     for (p in pattern) res <- gsub(p, paste0(p, "<wbr>"), res, fixed=TRUE)
-    return(HTML(res))
+    
+    if (html) {
+        if (length(res) == 1) {
+            res <- HTML(res)
+        } else {
+            res <- lapply(res, HTMLfast)
+        }
+    }
+    return(res)
 }
 
 #' Convert vector of values to JavaScript array
@@ -94,7 +115,8 @@ toJSarray <- function(values) {
 processButton <- function(id, label, ..., class="btn-primary") {
     spinner <- tags$i(id=paste0(id, "Loading"), class="fa fa-spinner fa-spin")
     button  <- actionButton(id, class=class, type="button", 
-                            label=div(hidden(spinner), label), ...)
+                            label=div(hidden(spinner), label), ...,
+                            style="margin-top: 4px; margin-bottom: 4px;")
     return(button)
 }
 
@@ -193,7 +215,6 @@ endProcess <- function(id, time=NULL, closeProgressBar=TRUE) {
 #' @param caller Character: caller module identifier
 #'
 #' @importFrom shiny renderUI div icon showModal modalButton modalDialog
-#' @importFrom shinyBS toggleModal
 #' @importFrom R.utils capitalize
 #'
 #' @seealso \code{\link{showAlert}()}
@@ -450,10 +471,11 @@ updateProgress <- function(message="Loading...", value=NULL, max=NULL,
     isGUIversion <- isRunning()
     if (!interactive()) return(NULL)
     if (!is.null(divisions)) {
-        if (!isGUIversion)
+        if (!isGUIversion) {
             setHidden(startProgress(message, divisions, new.env()))
-        else
+        } else {
             startProgress(message, divisions, global)
+        }
         return(NULL)
     }
     
@@ -502,44 +524,8 @@ closeProgress <- function(message=NULL,
     isGUIversion <- isRunning()
     if (isGUIversion)
         global$progress$close()
-    else
+    else if (is(global$progress, "txtProgressBar"))
         close(global$progress)
-}
-
-#' Modified version of \code{shinyBS::bsModal}
-#' 
-#' \code{bsModal} is used within the UI to create a modal window. This allows to
-#' modify the modal footer.
-#' 
-#' @inheritParams shinyBS::bsModal
-#' @param footer UI set: List of elements to include in the footer
-#' @param style Character: message style can be \code{warning}, \code{error}, 
-#' \code{info} or \code{NULL}
-#' @param size Character: Modal size (\code{small}, \code{default} or 
-#' \code{large})
-#' 
-#' @importFrom shiny tagAppendAttributes
-#' @importFrom shinyBS bsModal
-#' 
-#' @return HTML elements
-#' @keywords internal
-bsModal2 <- function (id, title, trigger, ..., size=NULL, footer=NULL, 
-                      style = NULL)  {
-    if (is.null(size))
-        modal <- bsModal(id, title, trigger, ...)
-    else
-        modal <- bsModal(id, title, trigger, ..., size=size)
-    
-    if (!is.null(style)) {
-        style <- match.arg(style, c("info", "warning", "error"))
-        modal[[3]][[1]][[3]][[1]][[3]][[1]] <-
-            tagAppendAttributes(modal[[3]][[1]][[3]][[1]][[3]][[1]],
-                                class=style)
-    }
-    
-    modal[[3]][[1]][[3]][[1]][[3]][[3]] <-
-        tagAppendChild(modal[[3]][[1]][[3]][[1]][[3]][[3]], footer)
-    return(modal)
 }
 
 #' Enable or disable a tab from the \code{navbar}

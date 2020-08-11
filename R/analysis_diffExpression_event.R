@@ -16,12 +16,12 @@ diffExpressionEventUI <- function(id) {
     survival <- div(
         id=ns("survivalButton"), hr(),
         actionButton(ns("optimalSurv1"),
-                     onclick="showSurvCutoff(null, null, false, false)",
+                     onclick="showSurvCutoff(null, psi=false)",
                      icon=icon("heartbeat"), "Survival analysis by GE cutoff", 
                      class="btn-info btn-md btn-block",
                      class="visible-lg visible-md"),
         actionButton(ns("optimalSurv2"), 
-                     onclick="showSurvCutoff(null, null, false, false)",
+                     onclick="showSurvCutoff(null, psi=false)",
                      "Survival analysis by GE cutoff", 
                      class="btn-info btn-xs btn-block",
                      class="visible-sm visible-xs"))
@@ -30,11 +30,10 @@ diffExpressionEventUI <- function(id) {
         id=ns("singleGeneOptions"),
         selectizeInput(ns("geneExpr"), "Gene expression", choices=NULL),
         selectizeGeneInput(ns("gene")),
-        selectGroupsUI(
-            ns("diffGroups"),
-            label="Groups of samples to compare",
-            noGroupsLabel="All samples as one group",
-            groupsLabel="Samples by selected groups"),
+        selectGroupsUI(ns("diffGroups"), type="Samples",
+                       label="Groups of samples to compare",
+                       noGroupsLabel="All samples as one group",
+                       groupsLabel="Samples by selected groups"),
         actionButton(ns("analyse"), "Perform analyses",
                      class="btn-primary"),
         uiOutput(ns("basicStats")),
@@ -134,7 +133,6 @@ diffExpressionEventServer <- function(input, output, session) {
         groups <- names(eventGE)
         attr(groups, "Colour") <- colour
         
-        assembly <- getAssemblyVersion()
         plot <- plotDistribution(eventGE, groups, psi=FALSE,
                                  title=paste(gene, "gene expression"))
         output$density <- renderHighchart(plot)

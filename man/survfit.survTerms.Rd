@@ -7,7 +7,7 @@
 \method{survfit}{survTerms}(survTerms, ...)
 }
 \arguments{
-\item{survTerms}{\code{survTerms} object: survival terms obtained after 
+\item{survTerms}{\code{survTerms} object: survival terms obtained after
 running \code{processSurvTerms} (see examples)}
 
 \item{...}{
@@ -72,7 +72,7 @@ clinical <- read.table(text = "2549   NA ii  female
                                  NA  383 iv  female
                                1293   NA iii   male
                                  NA 1355 ii    male")
-names(clinical) <- c("patient.days_to_last_followup", 
+names(clinical) <- c("patient.days_to_last_followup",
                      "patient.days_to_death",
                      "patient.stage_event.pathologic_stage",
                      "patient.gender")

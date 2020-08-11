@@ -17,7 +17,7 @@ setClinicalMatchFrom(dataset, matches, category = getCategory())
 \item{matches}{Vector of integers: clinical matches of dataset}
 }
 \value{
-Getters return globally accessible data, whereas setters return 
+Getters return globally accessible data, whereas setters return
 \code{NULL} as they are only used to modify the Shiny session's state
 }
 \description{

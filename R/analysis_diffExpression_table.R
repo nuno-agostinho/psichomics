@@ -27,20 +27,20 @@ diffExpressionTableUI <- function(id) {
             bsCollapsePanel(
                 tagList(icon("compress"), "Gene-wise linear model fit"),
                 value="lmFit",
-                helpText("The", tags$code("limma::lmFit"), "function is used",
-                         "to fit a linear model per gene based on a design",
-                         "matrix prepared from the two selected groups."),
+                helpText(tags$code("limma::lmFit()"), "is used to fit a linear",
+                         "model per gene based on a design matrix prepared",
+                         "from two selected groups."),
                 selectGroupsUI(
-                    ns("diffGroups"), maxItems=2,
+                    ns("diffGroups"), maxItems=2, type="Samples",
                     label="Select two groups for differential expression")),
             bsCollapsePanel(
                 tagList(icon("adjust"), "Differential expression statistics"), 
                 value="eBayes",
                 helpText(
-                    "The", tags$code("limma::eBayes"), "function is used to",
-                    "compute moderated t-tests and log-odds of differential",
-                    "expression by empirical Bayes moderation of the standard",
-                    "errors towards a common value."),
+                    tags$code("limma::eBayes()"), "is used to compute",
+                    "moderated t-tests and log-odds of differential expression",
+                    "by empirical Bayes moderation of the standard errors",
+                    "towards a common value."),
                 sliderInput(
                     ns("ebayesProportion"), min=0, max=1, value=0.01, step=0.01,
                     width="100%",
@@ -107,7 +107,7 @@ diffExpressionTableUI <- function(id) {
                     buttonId=ns("loadGeneExpr")),
                 hidden(statAnalysesOptions)),
             bsCollapsePanel(
-                list(icon("sliders"), "Plot options and table filtering"),
+                list(icon("binoculars"), "Plot options and table filtering"),
                 style="info", value="plotEvents",
                 errorDialog(
                     "Differential expression analysis not yet performed.",
@@ -148,6 +148,49 @@ diffExpressionTableUI <- function(id) {
                 highchartOutput(ns("highchartsSparklines"), 0, 0))))
 }
 
+performSimpleDiffExpr <- function(geneExpr, groups, pvalueAdjust="BH",
+                                  ebayesProportion=0.01, ebayesStdevMin=0.1,
+                                  ebayesStdevMax=0.1, geneExprName=NULL, 
+                                  inputID="sparklineInput") {
+    # Prepare groups of samples to analyse and filter samples not available in
+    # the selected groups from the gene expression data
+    stopifnot(
+        "Only 2 groups are currently supported"=length(unique(groups)) == 2)
+    groups <- discardOutsideSamplesFromGroups(groups, colnames(geneExpr))
+    if (!is(geneExpr, "EList")) {
+        geneExpr <- geneExpr[ , unlist(groups), drop=FALSE]
+    } else {
+        geneExpr <- geneExpr[ , unlist(groups)]
+    }
+    isFromGroup1 <- colnames(geneExpr) %in% groups[[1]]
+    design       <- cbind(1, ifelse(isFromGroup1, 1, 0))
+    
+    # Fit a gene-wise linear model based on selected groups
+    fit <- lmFit(geneExpr, design)
+    
+    # Calculate moderated t-statistics and DE log-odds
+    stats <- eBayes(fit, proportion=ebayesProportion,
+                    trend=!is(geneExpr, "EList"),
+                    stdev.coef.lim=c(ebayesStdevMin, ebayesStdevMax))
+    
+    # Prepare data summary
+    summary <- topTable(stats, number=nrow(fit), coef=2, sort.by="none",
+                        adjust.method=pvalueAdjust, confint=TRUE)
+    summary$ID <- NULL
+    names(summary) <- c(
+        "log2 Fold-Change", "CI (low)", "CI (high)", 
+        "Average expression", "moderated t-statistics", "p-value", 
+        paste0("p-value (", pvalueAdjust, " adjusted)"), "B-statistics")
+    attr(summary, "groups") <- groups
+    
+    # Calculate basic statistics and density plots
+    stats  <- diffAnalyses(geneExpr, groups, c("basicStats", "density"),
+                           pvalueAdjust=NULL, geneExpr=geneExprName,
+                           inputID=inputID)
+    final  <- cbind(stats[ , c(1, 5:6)], summary,
+                    stats[ , 7:ncol(stats)])
+    return(final)
+}
 
 #' Set of functions to perform differential analyses
 #' 
@@ -174,50 +217,19 @@ diffExpressionSet <- function(session, input, output) {
     })
     
     performDiffExpression <- reactive({
-        geneExpr <- getGeneExpression(input$geneExpr, EList=TRUE)
         totalTime <- startProcess("startAnalyses")
-        
-        # Prepare groups of samples to analyse and filter samples not available 
-        # in the selected groups from the gene expression data
-        groups <- getSelectedGroups(input, "diffGroups", "Samples",
-                                    filter=colnames(geneExpr))
-        groups <- discardOutsideSamplesFromGroups(groups, colnames(geneExpr))
-        if (!is(geneExpr, "EList"))
-            geneExpr <- geneExpr[ , unlist(groups), drop=FALSE]
-        else
-            geneExpr <- geneExpr[ , unlist(groups)]
-        isFromGroup1 <- colnames(geneExpr) %in% groups[[1]]
-        design       <- cbind(1, ifelse(isFromGroup1, 1, 0))
-        
-        # Fit a gene-wise linear model based on selected groups
-        fit <- lmFit(geneExpr, design)
-        
-        # Calculate moderated t-statistics and DE log-odds using limma::eBayes
-        ebayesProportion <- input$ebayesProportion
-        ebayesStdevMin   <- input$ebayesStdevMin
-        ebayesStdevMax   <- input$ebayesStdevMax
-        
-        stats <- eBayes(fit, proportion=ebayesProportion,
-                        trend=!is(geneExpr, "EList"),
-                        stdev.coef.lim=c(ebayesStdevMin, ebayesStdevMax))
-        
-        # Prepare data summary
-        pvalueAdjust <- input$pvalueAdjust
-        summary <- topTable(stats, number=nrow(fit), coef=2, sort.by="none",
-                            adjust.method=pvalueAdjust, confint=TRUE)
-        summary$ID <- NULL
-        names(summary) <- c(
-            "log2 Fold-Change", "CI (low)", "CI (high)", "Average expression",
-            "moderated t-statistics", "p-value", 
-            paste0("p-value (", pvalueAdjust, " adjusted)"), "B-statistics")
-        attr(summary, "groups") <- groups
-        
-        # Calculate basic statistics and density plots
-        stats  <- diffAnalyses(geneExpr, groups, c("basicStats", "density"),
-                               pvalueAdjust=NULL, geneExpr=input$geneExpr)
-        final  <- cbind(stats[ , c(1, 5:6)], summary, stats[ , 7:ncol(stats)])
-        
-        setDifferentialExpression(final)
+        geneExpr  <- getGeneExpression(input$geneExpr, EList=TRUE)
+        groups    <- getSelectedGroups(input, "diffGroups", "Samples",
+                                       filter=colnames(geneExpr))
+        diffExpr <- performSimpleDiffExpr(
+            geneExpr, groups, 
+            pvalueAdjust=input$pvalueAdjust,
+            ebayesProportion=input$ebayesProportion,
+            ebayesStdevMin=input$ebayesStdevMin,
+            ebayesStdevMax=input$ebayesStdevMax,
+            geneExprName=input$geneExpr,
+            inputID=ns("statsTable_diffExpr_last_clicked"))
+        setDifferentialExpression(diffExpr)
         # setDifferentialExpressionSurvival(NULL)
         updateCollapse(session, "diffExpressionCollapse", "plotEvents")
         endProcess("startAnalyses", totalTime)
@@ -260,6 +272,9 @@ diffExpressionSet <- function(session, input, output) {
         # setDifferentialExpressionSurvival(NULL)
         setLabelledPoints("ge-volcano", NULL)
     })
+    
+    # Go to differential analysis when clicking on density plot
+    observe(processClickRedirection(input$statsTable_diffExpr_last_clicked))
 }
 
 #' @rdname appServer

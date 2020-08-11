@@ -1,6 +1,7 @@
 ## Functions to get and set globally accessible variables
 
-#' @include utils.R 
+#' @include utils.R
+#' @importFrom shiny reactiveValues
 NULL
 
 # Global variable with all the data of a session
@@ -10,8 +11,8 @@ sharedData <- reactiveValues()
 .hidden <- new.env()
 
 #' Get or set hidden globally accessible elements
-#' 
-#' @return Getters return hidden globally accessible data, whereas setters 
+#'
+#' @return Getters return hidden globally accessible data, whereas setters
 #' return \code{NULL} as they are only used to modify the state of hidden
 #' elements
 #' @keywords internal
@@ -22,15 +23,15 @@ getHidden <- function() .hidden$elem
 setHidden <- function(val) .hidden$elem <- val
 
 #' Get or set globally accessible elements
-#' 
+#'
 #' @param category Character: data category
 #' @param ... Arguments to identify a variable
 #' @param sep Character to separate identifiers
-#' 
+#'
 #' @note Needs to be called inside a reactive function
 #' @family functions to get and set global variables
-#' 
-#' @return Getters return globally accessible data, whereas setters return 
+#'
+#' @return Getters return globally accessible data, whereas setters return
 #' \code{NULL} as they are only used to modify the Shiny session's state
 #' @keywords internal
 getGlobal <- function(category=getCategory(), ..., sep="_") {
@@ -44,7 +45,7 @@ setGlobal <- function(category=getCategory(), ..., value, sep="_") {
 }
 
 #' Get global data
-#' 
+#'
 #' @return Variable containing all data of interest
 #' @keywords internal
 getData <- reactive(sharedData$data)
@@ -94,14 +95,16 @@ setPrecision <- function(integer) setGlobal("precision", value=integer)
 
 #' @rdname getGlobal
 #' @keywords internal
-getASevents <- function() {
+getASevents <- reactive({
     psi <- getInclusionLevels()
     if (!is.null(psi)) {
-        choices <- rownames(psi)
-        names(choices) <- parseSplicingEvent(choices, char=TRUE)
-        return( sort(choices) )
+        choices <- sort(rownames(psi))
+        names(choices) <- parseSplicingEvent(choices, char=TRUE, data=psi)
+        attr(choices, "eventData") <- getSplicingEventData(psi)
+        choices <- preserveAttributes(choices)
+        return(choices)
     }
-}
+})
 
 #' @rdname getGlobal
 #' @keywords internal
@@ -109,7 +112,13 @@ getASevent <- reactive(sharedData$event)
 
 #' @rdname getGlobal
 #' @param event Character: alternative splicing event
-setASevent <- function(event) setGlobal("event", value=event)
+#' @param data Matrix or data frame: alternative splicing information
+setASevent <- function(event, data=NULL) {
+    if (!is.null(data)) {
+        attr(event, "eventData") <- getSplicingEventData(data)
+    }
+    setGlobal("event", value=event)
+}
 
 #' @rdname getGlobal
 getEvent <- getASevent
@@ -118,39 +127,45 @@ getEvent <- getASevent
 setEvent <- setASevent
 
 #' @rdname getGlobal
-getGenes <- function() {
+getGenes <- reactive({
     genes <- NULL
-    
+
     # Retrieve genes from gene expression
     geneExpr <- getGeneExpression()
     if (!is.null(geneExpr)) {
-        original <- sort(unique(unlist(lapply(geneExpr, rownames))))
+        original <- unique(unlist(lapply(geneExpr, rownames)))
         genes    <- gsub("\\|.*", "", original) # Process TCGA gene symbols
         unknown  <- genes == "?"
         genes[unknown] <- original[unknown]
     }
-    
+
     # Retrieve genes based on AS events
     ASevents <- getASevents()
-    if (!is.null(ASevents))
-        genes <- c(unlist(parseSplicingEvent(ASevents)$gene), genes)
-    
+    if (!is.null(ASevents)) {
+        parsed <- parseSplicingEvent(ASevents)
+        if (!is.null(parsed$gene)) genes <- c(unlist(parsed$gene), genes)
+    }
+
     if (!is.null(genes)) {
-        genes   <- sort(unique(genes))
+        genes   <- unique(genes)
         # Show unknown genes last
         unknown <- gsub("\\|.*", "", genes) == "?"
         genes   <- c(genes[!unknown], genes[unknown])
     }
+    genes <- genes[genes != ""]
     return(genes)
-}
+})
 
 #' Get curated, literature-based gene lists
 #'
 #' Available gene lists:
 #' \itemize{
-#'   \item{\strong{Sebestyen et al., 2016}: 1350 genes encoding RNA-binding 
+#'   \item{\strong{Sebestyen et al., 2016}: 1350 genes encoding RNA-binding
 #'   proteins, 167 of which are splicing factors}
 #' }
+#'
+#' @param genes Vector of characters: intersect lists with given genes (lists
+#' with no matching genes will not be returned)
 #'
 #' @family functions for data grouping
 #' @return List of genes
@@ -158,45 +173,53 @@ getGenes <- function() {
 #'
 #' @examples
 #' getGeneList()
-getGeneList <- function() {
+getGeneList <- function(genes=NULL) {
     prepareCitation <- function(attr) {
         if (length(attr$Author) == 1)
             authors <- attr$Author[[1]]
         else
             authors <- paste(attr$Author[[1]], "et al.")
-        
+
         title   <- attr$`Article Title`
         journal <- attr$Journal
         year    <- attr$Date
         volume  <- attr$Volume
         issue   <- attr$Issue
         pages   <- attr$Pages
-        
-        sprintf("%s (%s). %s. %s, %s(%s), %s", 
+
+        sprintf("%s (%s). %s. %s, %s(%s), %s",
                 authors, year, title, journal, volume, issue, pages)
     }
 
     # Sebestyen et al. 2016
     rbps     <- readFile("Sebestyen_et_al_2016.RDS")
     rbpSF    <- rbps$`RNA-binding proteins that are splicing factors`
-    rbpNonSF <- rbps$`RNA-binding proteins that are not splicing factors`    
+    rbpNonSF <- rbps$`RNA-binding proteins that are not splicing factors`
     sebestyen2016 <- list(
-        "RNA-binding protein splicing factors"=rbpSF,
-        "RNA-binding proteins"=sort(c(rbpSF, rbpNonSF)))
+        "Human RNA-binding protein splicing factors"=rbpSF,
+        "Human RNA-binding proteins"=sort(c(rbpSF, rbpNonSF)))
     attr(sebestyen2016, "citation") <- prepareCitation(attributes(rbps))
-    
+
     res <- list("Sebestyen et al. 2016"=sebestyen2016)
+
+    # Intersect with genes
+    if (!is.null(genes)) {
+        for (item in seq(length(res))) {
+            citation <- attr(res[[item]], "citation")
+            res[[item]] <- lapply(res[[item]], intersect, genes)
+            res[[item]] <- Filter(length, res[[item]])
+            attr(res[[item]], "citation") <- citation
+        }
+        res <- res[sapply(res, length) != 0]
+    }
     class(res) <- c("geneList", class(res))
+    if (length(res) == 0) res <- NULL
     return(res)
 }
 
-#' Print gene list
-#' 
-#' @param object \code{geneList}
-#' 
-#' @return Print available gene lists
-#' @keywords internal
-print.geneList <- function(object) {
+#' @export
+print.geneList <- function(x, ...) {
+    object <- x
     for (set in names(object)) {
         cat(sprintf(set), fill=TRUE)
         for (item in names(object[[set]])) {
@@ -204,12 +227,12 @@ print.geneList <- function(object) {
             sample <- 4
             genes <- paste(head(ll, n=sample), collapse=", ")
             if (length(ll) > sample) genes <- paste0(genes, ", ...")
-            cat(sprintf("  -> %s [%s genes]: %s", 
+            cat(sprintf("  -> %s [%s genes]: %s",
                         item, length(ll), genes), fill=TRUE)
         }
         cat(fill=TRUE)
         cat("Source:", attr(object[[set]], "citation"), fill=TRUE)
-        
+
         consoleWidth <- options("width")
         cat(paste(rep("=", consoleWidth), collapse=""), fill=TRUE)
     }
@@ -283,14 +306,17 @@ setSampleInfo <- function(value, category = getCategory())
     setDataTable("Sample metadata", value, category)
 
 #' @rdname getGlobal
-getSampleId <- function() {
+getSampleId <- reactive({
     sampleInfo <- getSampleInfo()
     if ( !is.null(sampleInfo) ) {
-        return( rownames(sampleInfo) )
+        sampleId <- rownames(sampleInfo)
     } else {
-        return(NULL)
+        sampleId <- NULL
     }
-}
+    sampleId <- unique(c(sampleId, colnames(getInclusionLevels()),
+                         unlist(lapply(getGeneExpression(), colnames))))
+    return(sampleId)
+})
 
 #' @rdname getGlobal
 getSampleAttributes <- function() {
@@ -347,7 +373,7 @@ setNormalisedGeneExpression <- function(geneExpr, category=getCategory()) {
     ns  <- names(getData()[[category]])
     num <- gsub("Gene expression \\(normalised.*?([0-9]*).*\\)", "\\1", ns)
     num <- suppressWarnings(as.integer(num))
-    
+
     if (any(!is.na(num))) {
         num <- max(num, na.rm=TRUE)
         num <- paste0(" ", num + 1)
@@ -365,8 +391,23 @@ getInclusionLevels <- reactive(getCategoryData()[["Inclusion levels"]])
 
 #' @rdname getGlobal
 #' @param incLevels Data frame or matrix: inclusion levels
-setInclusionLevels <- function(incLevels, category=getCategory())
+setInclusionLevels <- function(incLevels, category=getCategory()) {
+    ASevent <- isolate(getASevent())
+    if(!is.null(ASevent) && !ASevent %in% rownames(incLevels)) setASevent(NULL)
+    setInclusionLevelsSummaryStatsCache(NULL)
     setDataTable("Inclusion levels", incLevels, category)
+}
+
+#' @rdname getGlobal
+getInclusionLevelsSummaryStatsCache <- function(category=getCategory()) {
+    getGlobal(category, "incLevelsSummaryStatsCache")
+}
+
+#' @rdname getGlobal
+#' @param cache List of summary statistics
+setInclusionLevelsSummaryStatsCache <- function(cache, category=getCategory()) {
+    setGlobal(category, "incLevelsSummaryStatsCache", value=cache)
+}
 
 #' @rdname getGlobal
 getPCA <- function(category=getCategory())
@@ -402,9 +443,9 @@ getGroupIndependenceTesting <- function(category=getCategory())
 #' @rdname getGlobal
 #' @param groupIndependenceTesting Object containing group independence testing
 #' results
-setGroupIndependenceTesting <- function(groupIndependenceTesting, 
+setGroupIndependenceTesting <- function(groupIndependenceTesting,
                                         category=getCategory()) {
-    setGlobal(category, "groupIndependenceTesting", 
+    setGlobal(category, "groupIndependenceTesting",
               value=groupIndependenceTesting)
 }
 
@@ -415,7 +456,7 @@ getSpecies <- function(category=getCategory())
 #' @rdname getGlobal
 #' @param species Character: species
 setSpecies <- function(species, category=getCategory())
-    setGlobal(category, "species", value=species)
+    setGlobal(category, "species", value=tolower(species))
 
 #' @rdname getGlobal
 getAssemblyVersion <- function(category=getCategory())
@@ -445,7 +486,7 @@ setURLtoDownload <- function(url) setGlobal("URLtoDownload", value=url)
 #' Get or set clinical matches from a given data type
 #' @inherit getGlobal
 #' @param dataset Character: data set name
-#' 
+#'
 #' @family functions to get and set global variables
 #' @keywords internal
 getClinicalMatchFrom <- function(dataset, category=getCategory())
@@ -457,34 +498,34 @@ setClinicalMatchFrom <- function(dataset, matches, category=getCategory())
     setGlobal(category, dataset, "clinicalMatch", value=matches)
 
 #' Get or set groups
-#' 
+#'
 #' @inherit getGlobal
-#' 
-#' @param type Character: type of groups (either \code{Patients}, 
+#'
+#' @param type Character: type of groups (either \code{Patients},
 #' \code{Samples}, \code{ASevents} or \code{Genes})
 #' @param complete Boolean: return all the information on groups (\code{TRUE})
 #' or just the group names and respective indexes (\code{FALSE})?
-#' 
+#'
 #' @family functions to get and set global variables
 #' @keywords internal
-getGroups <- function(type=c("Patients", "Samples", "ASevents", "Genes"), 
+getGroups <- function(type=c("Patients", "Samples", "ASevents", "Genes"),
                       complete=FALSE, category=getCategory()) {
     type <- match.arg(type)
     if (type %in% c("Patients", "Samples") )
         groups <- getGlobal(category, "sampleGroups")
     else if (type %in% c("ASevents", "Genes"))
         groups <- getGlobal(category, "ASeventGroups")
-    
+
     # Return all data if requested
     if (complete) return(groups)
-    
+
     # Check if data of interest is available
     if (!type %in% colnames(groups)) return(NULL)
-    
+
     # If available, return data of interest
     g <- groups[ , type, drop=TRUE]
     if (length(g) == 1) names(g) <- rownames(groups)
-    
+
     # Return colour lookup table for groups
     if ("Colour" %in% colnames(groups)) {
         colour <- groups[ , "Colour", drop=TRUE]
@@ -496,14 +537,14 @@ getGroups <- function(type=c("Patients", "Samples", "ASevents", "Genes"),
 
 #' @rdname getGroups
 #' @param groups Matrix: groups of dataset
-setGroups <- function(type=c("Patients", "Samples", "ASevents", "Genes"), 
+setGroups <- function(type=c("Patients", "Samples", "ASevents", "Genes"),
                       groups, category=getCategory()) {
     type <- match.arg(type)
     if (type %in% c("Patients", "Samples") )
         type <- "sampleGroups"
     else if (type %in% c("ASevents", "Genes"))
         type <- "ASeventGroups"
-    
+
     setGlobal(category, type, value=groups)
 }
 
@@ -511,9 +552,9 @@ setGroups <- function(type=c("Patients", "Samples", "ASevents", "Genes"),
 # Plot points or regions --------------------------------------------------
 
 #' Get or set points or regions for plots
-#' 
+#'
 #' @inherit getGlobal
-#' 
+#'
 #' @family functions to get and set global variables
 #' @keywords internal
 getHighlightedPoints <- function(id, category=getCategory())
@@ -554,9 +595,9 @@ setLabelledPoints <- function(id, events, category=getCategory())
 # Differential expression --------------------------------------------------
 
 #' Get or set differential expression' elements for a data category
-#' 
+#'
 #' @inherit getGlobal
-#' 
+#'
 #' @family functions to get and set global variables
 #' @keywords internal
 getDifferentialExpression <- function(category=getCategory())
@@ -572,7 +613,7 @@ getDifferentialExpressionFiltered <- function(category=getCategory())
     getGlobal(category, "differentialExpressionFiltered")
 
 #' @rdname getDifferentialExpression
-setDifferentialExpressionFiltered <- function(differential, 
+setDifferentialExpressionFiltered <- function(differential,
                                             category=getCategory())
     setGlobal(category, "differentialExpressionFiltered", value=differential)
 
@@ -607,9 +648,9 @@ setDifferentialExpressionColumns <- function(columns, category=getCategory())
 # Differential splicing ---------------------------------------------------
 
 #' Get or set differential splicing' elements for a data category
-#' 
+#'
 #' @inherit getGlobal
-#' 
+#'
 #' @family functions to get and set global variables
 #' @keywords internal
 getDifferentialSplicing <- function(category=getCategory())
@@ -625,7 +666,7 @@ getDifferentialSplicingFiltered <- function(category=getCategory())
     getGlobal(category, "differentialSplicingFiltered")
 
 #' @rdname getDifferentialSplicing
-setDifferentialSplicingFiltered <- function(differential, 
+setDifferentialSplicingFiltered <- function(differential,
                                             category=getCategory())
     setGlobal(category, "differentialSplicingFiltered", value=differential)
 

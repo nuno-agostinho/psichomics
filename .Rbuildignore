@@ -1,12 +1,12 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.Rprofile$
-^appveyor\.yml$
 ^CONDUCT\.md$
-^\.travis\.yml$
 ^codecov\.yml$
 rsconnect
 .RDataTmp
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^Dockerfile
+^\.github$

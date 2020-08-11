@@ -60,7 +60,8 @@ survivalUI <- function(id) {
         conditionalPanel(
             sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "groups"),
             selectGroupsUI(
-                ns("dataGroups"), label=NULL, returnAllDataValue=FALSE,
+                ns("dataGroups"), type="Samples",
+                label=NULL, returnAllDataValue=FALSE,
                 returnAllDataLabel="Display data outside selected groups")),
         conditionalPanel(
             sprintf("input[id='%s'] == '%s'", ns("modelTerms"), "formula"),
@@ -79,10 +80,9 @@ survivalUI <- function(id) {
         conditionalPanel(
             sprintf("input[id='%s'].includes('%s')", ns("modelTerms"), 
                     "Cutoff"),
-            selectGroupsUI(
-                ns("sampleFiltering"),
-                label=div(id=ns("helpFiltering"), "Sample filtering", 
-                          icon("question-circle"))),
+            selectGroupsUI(ns("sampleFiltering"), type="Samples",
+                           label=div(id=ns("helpFiltering"), "Sample filtering",
+                                     icon("question-circle"))),
             bsTooltip(ns("helpFiltering"), options=list(container="body"),
                       placement="right", subjectMultiMatchWarning())),
         conditionalPanel(
@@ -118,7 +118,8 @@ survivalUI <- function(id) {
                        tagList(icon("users"), "Groups for survival analysis"),
                        value="survivalGroups", style="info", survivalGroups),
                    bsCollapsePanel(
-                       tagList(icon("sliders"), "Kaplan-Meier plot options"),
+                       tagList(icon("check-square"),
+                               "Kaplan-Meier plot options"),
                        value="KMoptions", style="info", kaplanMeierOptions)),
         actionButton(ns("coxModel"), "Fit Cox PH model"),
         actionButton(ns("survivalCurves"), class="btn-primary",
@@ -325,19 +326,6 @@ geneExprSurvSet <- function(session, input, output) {
             hide("geInfo")
         }
     })
-    
-    # # Update selected gene based on currently selected splicing event
-    # observe({
-    #     geneExpr <- getGeneExpression(input$geneExpr)
-    #     event    <- getEvent()
-    #     if (isolate(input$modelTerms) == "geCutoff" && !is.null(geneExpr) &&
-    #         !is.null(event)) {
-    #         
-    #         gene <- parseSplicingEvent(event)$gene[[1]][[1]]
-    #         gene <- grep(gene, rownames(geneExpr), value=TRUE)[[1]]
-    #         updateSelectizeInput(session, "gene", selected=gene)
-    #     }
-    # })
 
     # Update gene expression cutoff values based on selected gene
     # Reactive avoids updating if the input remains the same
@@ -479,16 +467,20 @@ geneExprSurvSet <- function(session, input, output) {
 #'                      "patient.stage_event.pathologic_stage",
 #'                      "patient.gender")
 #' clinical <- do.call(rbind, rep(list(clinical), 5))
+#' rownames(clinical) <- paste("Subject", seq(nrow(clinical)))
 #' 
-#' psi <- data.frame(t(c(rep(0.1, 9), rep(0.2, 13), rep(0.3, 3))))
-#' colnames(psi) <- paste0("sample", seq(psi))
+#' # Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events
+#' annot <- readFile("ex_splicing_annotation.RDS")
+#' junctionQuant <- readFile("ex_junctionQuant.RDS")
+#' 
+#' psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 #' 
 #' # Match between subjects and samples
-#' match <- paste0("subject", seq(psi))
-#' names(match) <- colnames(psi)
-#' rownames(clinical) <- match
+#' match <- c("Cancer 1"="Subject 3",
+#'            "Cancer 2"="Subject 17",
+#'            "Cancer 3"="Subject 21")
 #' 
-#' eventData <- assignValuePerSubject(psi[1, ], match)
+#' eventData <- assignValuePerSubject(psi[3, ], match)
 #' 
 #' event      <- "days_to_death"
 #' timeStart  <- "days_to_death"
@@ -615,7 +607,6 @@ survivalServer <- function(input, output, session) {
     observeEvent(input$survivalCurves, {
         isolate({
             splicingEvent <- getEvent()
-            assembly      <- getAssemblyVersion()
             # Get user input
             modelTerms <- input$modelTerms
             intRanges  <- input$ranges
@@ -640,7 +631,7 @@ survivalServer <- function(input, output, session) {
         
         if (modelTerms == "psiCutoff") {
             plotTitle <- parseSplicingEvent(splicingEvent, char=TRUE,
-                                            pretty=TRUE, extra=assembly)
+                                            pretty=TRUE)
             sub <- paste0("PSI cutoff: ", psiCutoff,
                           "; Log-rank p-value: ", pvalue)
         } else {

@@ -1,8 +1,7 @@
 # psichomics
 
 <!-- badges: start -->
-[![Travis Build Status][travisIcon]][travis]
-[![AppVeyor Build Status][appVeyorIcon]][appVeyor]
+[![GitHub Actions Build status][ghActionsIcon]][ghActions]
 [![codecov][codecovIcon]][codecov]
 <!-- badges: end -->
 
@@ -36,7 +35,7 @@ events is also included.
 * [Tutorials](#tutorials)
 * [Workflow](#workflow)
     * [Data input](#data-input)
-        * [Splicing quantification](#splicing-quantification)
+        * [Alternative splicing quantification](#alternative-splicing-quantification)
         * [Gene expression processing](#gene-expression-processing)
     * [Data grouping](#data-grouping)
     * [Data analyses](#data-analyses)
@@ -45,8 +44,8 @@ events is also included.
 
 ## Install and start running
 
-To install the package from [Bioconductor][bioconductor], type the following in 
-[RStudio][rstudio] or in an R console:
+To install the package from [Bioconductor][], type the following in [RStudio][]
+or in an R console:
 
 ```r
 install.packages("BiocManager")
@@ -60,7 +59,7 @@ The following case studies and tutorials are available and were based on our
 
 * [Visual interface][tutorial-gui]
 * [Command-line interface][tutorial-cli]
-* [Loading SRA and user-provided RNA-seq data][tutorial-custom-data]
+* [Loading SRA, VAST-TOOLS and user-provided RNA-seq data][tutorial-custom-data]
 * [Preparing alternative splicing annotations][tutorial-prep-AS-annotation]
 
 Another tutorial was published as part of the Methods in Molecular Biology book
@@ -75,16 +74,18 @@ series (the code for performing the analysis can be found [here][chapter-code]):
 
 Automatic retrieval and loading of pre-processed data from the following sources:
 
-* [TCGA][TCGA] data of given tumours, including subject- and sample-associated
+* [TCGA][] data of given tumours, including subject- and sample-associated
 information, junction quantification and gene expression data
-* [GTEx][GTEx] data of given tissues, including subject- and sample-associated
+* [GTEx][] data of given tissues, including subject- and sample-associated
 information, junction quantification and gene expression data
-* [SRA][SRA] data from select SRA projects via the [recount2][recount2] package
+* [SRA][] data from select SRA projects via the [recount][] package
 
-Other SRA and user-provided data can be manually aligned and loaded. Please read
-[Loading SRA and user-provided RNA-seq data][tutorial-custom-data].
+Other SRA, [VAST-TOOLS][] and user-provided data can also be manually loaded.
+Please read
+[Loading SRA, VAST-TOOLS and user-provided RNA-seq data][tutorial-custom-data]
+for more information.
 
-#### Splicing quantification
+#### Alternative splicing quantification
 
 The quantification of each alternative splicing event is based on the proportion
 of junction reads that support the inclusion isoform, known as percent 
@@ -94,11 +95,11 @@ An estimate of this value is obtained based on the the proportion of reads
 supporting the inclusion of an exon over the reads supporting both the inclusion
 and exclusion of that exon. To measure this estimate, we require:
 
-1. Alternative splicing annotation: human (hg19 and hg38 assemblies) annotation
-is provided and custom annotations can be used.
-2. Quantification of RNA-Seq reads aligning to splice junctions (junction
-quantification), either user-provided or retrieved from [TCGA][TCGA],
-[GTEx][GTEx] and [SRA][SRA].
+1. **Alternative splicing annotation**: human annotation is provided and custom
+annotations can be prepared for use in psichomics.
+2. Quantification of RNA-Seq reads aligning to exon-exon splice junctions
+(**exon-exon junction quantification**), either user-provided or retrieved from
+[TCGA][], [GTEx][] and [SRA][].
 
 #### Gene expression processing
 
@@ -110,10 +111,10 @@ provided by the user.
 Molecular and clinical sample-associated attributes allow to establish groups 
 that can be explored in data analyses.
 
-For instance, [TCGA][TCGA] data can be analysed based on smoking history, gender
-and race, among other attributes. Groups can also be manipulated (e.g. merged,
+For instance, [TCGA][] data can be analysed based on smoking history, gender and
+race, among other attributes. Groups can also be manipulated (e.g. merged,
 intersected, etc.), allowing for complex attribute combinations. Groups can also
-be saved and loaded between sessions.
+be saved and loaded between different sessions.
 
 ### Data Analyses
 
@@ -129,17 +130,17 @@ proteins, for instance.
 
 * **Survival analysis** via Kaplan-Meier curves and Cox models based on
 sample-associated features. Additionally, we can study the impact of a splicing
-event (based on its quantification) or a gene (based on its gene expression) on
+event (based on its quantification) or a gene (based on its expression) on
 patient survivability.
 
-* **Gene, transcript and protein annotation** including relevant research
-articles
+* **Gene, transcript and protein annotation**, including relevant research
+articles.
 
 ## Feedback and support
 
 Please send any feedback and questions on psichomics to:
 
-> Nuno Saraiva-Agostinho ([nunoagostinho@medicina.ulisboa.pt](mailto:nunoagostinho@medicina.ulisboa.pt))
+> Nuno Saraiva-Agostinho ([nunoagostinho@medicina.ulisboa.pt][email])
 > 
 > [Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)][NMorais]
 
@@ -150,17 +151,16 @@ Kingsmore, G. P. Schroth, and C. B. Burge. 2008.
 [*Alternative isoform regulation in human tissue transcriptomes.*][Wang2008] 
 Nature 456 (7221): 470–76.
 
+[email]: mailto:nunoagostinho@medicina.ulisboa.pt
 [TCGA]: https://tcga-data.nci.nih.gov
-[bioconductor]: https://www.bioconductor.org
-[r]: https://www.r-project.org
-[rstudio]: https://www.rstudio.com/products/rstudio
+[Bioconductor]: https://www.bioconductor.org
+[R]: https://www.r-project.org
+[RStudio]: https://www.rstudio.com/products/rstudio
 [NMorais]: http://imm.medicina.ulisboa.pt/group/distrans/
 [conduct]: CONDUCT.md
 [Wang2008]: http://www.nature.com/nature/journal/v456/n7221/full/nature07509.html
-[travisIcon]: https://travis-ci.org/nuno-agostinho/psichomics.svg?branch=master
-[travis]: https://travis-ci.org/nuno-agostinho/psichomics
-[appVeyorIcon]: https://ci.appveyor.com/api/projects/status/github/nuno-agostinho/psichomics?branch=master&svg=true
-[appVeyor]: https://ci.appveyor.com/project/nuno-agostinho/psichomics
+[ghActionsIcon]: https://github.com/nuno-agostinho/psichomics/workflows/R-CMD-check-bioc/badge.svg
+[ghActions]: https://github.com/nuno-agostinho/psichomics/actions
 [codecovIcon]: https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg
 [codecov]: https://codecov.io/gh/nuno-agostinho/psichomics
 [GTEx]: http://www.gtexportal.org
@@ -168,8 +168,9 @@ Nature 456 (7221): 470–76.
 [chapter]: https://doi.org/10.1007/978-1-0716-0301-7_10
 [chapter-code]: https://github.com/nuno-agostinho/stem-cell-analysis-in-psichomics
 [SRA]: https://www.ncbi.nlm.nih.gov/sra
+[VAST-TOOLS]: https://github.com/vastgroup/vast-tools
 [tutorial-gui]: https://nuno-agostinho.github.io/psichomics/articles/GUI_tutorial.html
 [tutorial-cli]: https://nuno-agostinho.github.io/psichomics/articles/CLI_tutorial.html
 [tutorial-custom-data]: https://nuno-agostinho.github.io/psichomics/articles/custom_data.html
 [tutorial-prep-AS-annotation]: https://nuno-agostinho.github.io/psichomics/articles/AS_events_preparation.html
-[recount2]: https://jhubiostatistics.shinyapps.io/recount/
+[recount]: https://jhubiostatistics.shinyapps.io/recount/

@@ -17,55 +17,50 @@ parseVastToolsAnnotation <- function(
     complexEvents=FALSE) {
     
     display("Retrieving VAST-TOOLS annotation...")
-    typesFile <- file.path(folder,
-                           sprintf("%s.%s.Template%s.txt", genome, types,
-                                   c(rep("", 6), rep(".2", 2))#, rep(".2", 2))
-                           ))
-    names(typesFile) <- types
-    
+    typesRegex <- sprintf("(%s)", paste(types, collapse="|"))
+    typesFile <- list.files(folder, full.names=TRUE, pattern=sprintf(
+        "%s\\.%s\\..*.txt$", genome, typesRegex))
+    # Remove first file if available
+    typesFile <- grep("\\.1\\.txt", typesFile, invert=TRUE, value=TRUE)
+    names(typesFile) <- gsub(sprintf("^.*%s\\.(.*?)\\..*\\.txt$", genome),
+                             "\\1", typesFile)
     annot <- lapply(typesFile, read.delim, stringsAsFactors = FALSE,
                     comment.char="#", header=TRUE)
     
     display("Parsing VAST-TOOLS annotation...")
     types <- names(annot)
     skippedExon <- c("COMBI", "MERGE3m", "MIC", "EXSK", "MULTI")
-    events <- lapply(seq_along(annot),
-                     function(i) {
-                         type <- types[i]
-                         display(type)
-                         a <- annot[[i]]
-                         if (nrow(a) > 0) {
-                             parsed <- parseVastToolsEvent(a)
-                             if (!complexEvents) {
-                                 if (type == "ALT3") {
-                                     filter <- !is.na(parsed$A1.start)
-                                     parsed <- parsed[filter, ]
-                                     parsed <- uniqueBy(parsed, "Chromosome",
-                                                        "Strand", "C1.end",
-                                                        "A1.start", "C2.start")
-                                 } else if (type == "ALT5") {
-                                     filter <- !is.na(parsed$A1.end)
-                                     parsed <- parsed[filter, ]
-                                     parsed <- uniqueBy(parsed, "Chromosome",
-                                                        "Strand", "C1.end",
-                                                        "A1.end", "C2.start")
-                                 } else if (type %in% skippedExon) {
-                                     C1.end   <- vapply(parsed$C1.end, length, 
-                                                        numeric(1)) > 1
-                                     A1.start <- vapply(parsed$A1.start, length, 
-                                                        numeric(1)) > 1
-                                     A1.end   <- vapply(parsed$A1.end, length, 
-                                                        numeric(1)) > 1
-                                     C2.start <- vapply(parsed$C2.start, length, 
-                                                        numeric(1)) > 1
-                                     filter <- !(C1.end | A1.start | A1.end | 
-                                                     C2.start)
-                                     parsed <- parsed[filter, ]
-                                 }
-                             }
-                             return(parsed)
-                         }
-                     })
+    
+    parseEvents <- function(i) {
+        type <- types[i]
+        display(type)
+        a <- annot[[i]]
+        if (nrow(a) > 0) {
+            parsed <- parseVastToolsEvent(a)
+            if (!complexEvents) {
+                if (type == "ALT3") {
+                    filter <- !is.na(parsed$A1.start)
+                    parsed <- parsed[filter, ]
+                    parsed <- uniqueBy(parsed, "Chromosome", "Strand",
+                                       "C1.end", "A1.start", "C2.start")
+                } else if (type == "ALT5") {
+                    filter <- !is.na(parsed$A1.end)
+                    parsed <- parsed[filter, ]
+                    parsed <- uniqueBy(parsed, "Chromosome", "Strand",
+                                       "C1.end", "A1.end", "C2.start")
+                } else if (type %in% skippedExon) {
+                    C1.end   <- vapply(parsed$C1.end,   length, numeric(1)) > 1
+                    A1.start <- vapply(parsed$A1.start, length, numeric(1)) > 1
+                    A1.end   <- vapply(parsed$A1.end,   length, numeric(1)) > 1
+                    C2.start <- vapply(parsed$C2.start, length, numeric(1)) > 1
+                    filter   <- !(C1.end | A1.start | A1.end | C2.start)
+                    parsed   <- parsed[filter, ]
+                }
+            }
+            return(parsed)
+        }
+    }
+    events <- lapply(seq_along(annot), parseEvents)
     events <- rbind.fill(events)
     events <- unique(events)
     names(events)[match("Gene.symbol", names(events))] <- "Gene"
@@ -124,7 +119,7 @@ parseVastToolsEvent <- function(event) {
         split <- strsplit(i, "+", fixed=TRUE)
         if (length(split) < 4)
             split[[4]] <- character(0)
-            
+        
         return(split)
     }
     
@@ -136,8 +131,8 @@ parseVastToolsEvent <- function(event) {
     nrowJunctions <- nrow(junctions)
     junctions <- junctions[, 2:ncol(junctions)]
     junctions <- matrix(lapply(junctions, as.numeric), nrow = nrowJunctions)
-
-    # Get strand for intron retention
+    
+    # Get strand for retained intron
     if (event_type == "RI") {
         len <- nchar(coord)
         strand <- substr(coord, len, len)
@@ -168,7 +163,7 @@ parseVastToolsEvent <- function(event) {
 #' @details The following event types are available to be parsed:
 #' \itemize{
 #'  \item{\bold{SE} (skipped exon)}
-#'  \item{\bold{RI} (intron retention)}
+#'  \item{\bold{RI} (retained intron)}
 #'  \item{\bold{A5SS} (alternative 5' splice site)}
 #'  \item{\bold{A3SS} (alternative 3' splice site)}
 #' }
@@ -196,7 +191,7 @@ parseVastToolsSE <- function (junctions) {
     
     parsed[["C1.end"]]   <- junctions[, 1]
     parsed[["C2.start"]] <- junctions[, 4]
-
+    
     # Plus strand
     parsed[plus, ][["A1.start"]] <- junctions[plus, 2]
     parsed[plus, ][["A1.end"]]   <- junctions[plus, 3]

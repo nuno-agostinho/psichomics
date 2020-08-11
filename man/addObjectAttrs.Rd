@@ -4,12 +4,14 @@
 \alias{addObjectAttrs}
 \title{Set attributes to an object}
 \usage{
-addObjectAttrs(object, ...)
+addObjectAttrs(object, ..., replace = TRUE)
 }
 \arguments{
 \item{object}{Object}
 
 \item{...}{Named parameters to convert to attributes}
+
+\item{replace}{Boolean: replace an attribute if already set?}
 }
 \value{
 Object with attributes set

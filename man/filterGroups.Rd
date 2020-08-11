@@ -14,7 +14,7 @@ filterGroups(vector, group, threshold = 1)
 \item{threshold}{Integer: number of valid non-missing values by group}
 }
 \value{
-Named vector with filtered elements from valid groups. The group of 
+Named vector with filtered elements from valid groups. The group of
 the respective element is given in the name.
 }
 \description{

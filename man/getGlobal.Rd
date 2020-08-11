@@ -37,6 +37,8 @@
 \alias{setNormalisedGeneExpression}
 \alias{getInclusionLevels}
 \alias{setInclusionLevels}
+\alias{getInclusionLevelsSummaryStatsCache}
+\alias{setInclusionLevelsSummaryStatsCache}
 \alias{getPCA}
 \alias{setPCA}
 \alias{getICA}
@@ -83,11 +85,11 @@ getASevents()
 
 getASevent()
 
-setASevent(event)
+setASevent(event, data = NULL)
 
 getEvent()
 
-setEvent(event)
+setEvent(event, data = NULL)
 
 getGenes()
 
@@ -126,6 +128,10 @@ setNormalisedGeneExpression(geneExpr, category = getCategory())
 getInclusionLevels()
 
 setInclusionLevels(incLevels, category = getCategory())
+
+getInclusionLevelsSummaryStatsCache(category = getCategory())
+
+setInclusionLevelsSummaryStatsCache(cache, category = getCategory())
 
 getPCA(category = getCategory())
 
@@ -168,7 +174,7 @@ setURLtoDownload(url)
 
 \item{value}{Value to attribute to an element}
 
-\item{data}{List of data frame or matrix to set as data}
+\item{data}{Matrix or data frame: alternative splicing information}
 
 \item{name}{Character: data table name}
 
@@ -193,6 +199,8 @@ possible or as data frames?}
 
 \item{incLevels}{Data frame or matrix: inclusion levels}
 
+\item{cache}{List of summary statistics}
+
 \item{pca}{\code{prcomp} object (principal component analysis)}
 
 \item{ica}{Object containing independent component analysis}
@@ -211,7 +219,7 @@ results}
 \item{url}{Character: URL links to download}
 }
 \value{
-Getters return globally accessible data, whereas setters return 
+Getters return globally accessible data, whereas setters return
 \code{NULL} as they are only used to modify the Shiny session's state
 }
 \description{

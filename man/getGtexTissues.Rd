@@ -4,10 +4,12 @@
 \alias{getGtexTissues}
 \title{Get GTEx tissues from given GTEx sample attributes}
 \usage{
-getGtexTissues(folder = getDownloadsFolder())
+getGtexTissues(folder = getDownloadsFolder(), release = getGtexReleases()[[1]])
 }
 \arguments{
 \item{folder}{Character: folder containing data}
+
+\item{release}{Numeric: GTEx data release to load}
 }
 \value{
 Character: available tissues

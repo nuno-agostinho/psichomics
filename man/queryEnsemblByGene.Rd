@@ -7,7 +7,7 @@
 \usage{
 queryEnsemblByGene(gene, species = NULL, assembly = NULL)
 
-queryEnsemblByEvent(event, species, assembly)
+queryEnsemblByEvent(event, species = NULL, assembly = NULL, data = NULL)
 }
 \arguments{
 \item{gene}{Character: gene}
@@ -19,6 +19,8 @@ identifier)}
 identifier)}
 
 \item{event}{Character: alternative splicing event}
+
+\item{data}{Matrix or data frame: alternative splicing information}
 }
 \value{
 Information from Ensembl

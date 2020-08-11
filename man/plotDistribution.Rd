@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis.R
 \name{plotDistribution}
 \alias{plotDistribution}
-\title{Plot distribution through a density plot}
+\title{Plot distribution using a density plot}
 \usage{
 plotDistribution(
   data,
@@ -13,7 +13,9 @@ plotDistribution(
   title = NULL,
   psi = NULL,
   rugLabels = FALSE,
-  rugLabelsRotation = 0
+  rugLabelsRotation = 0,
+  legend = TRUE,
+  valueLabel = NULL
 )
 }
 \arguments{
@@ -31,7 +33,7 @@ length 1, \code{data} values are considered from the same group}
 for each group)?}
 
 \item{...}{
-  Arguments passed on to \code{\link[stats:density.default]{stats::density.default}}
+  Arguments passed on to \code{\link[stats:density]{stats::density.default}}
   \describe{
     \item{\code{bw}}{the smoothing bandwidth to be used.  The kernels are scaled
     such that this is the standard deviation of the smoothing kernel.
@@ -110,14 +112,19 @@ for each group)?}
 \item{rugLabelsRotation}{Numeric: rotation (in degrees) of rug labels; this
 may present issues at different zoom levels and depending on the proximity
 of \code{data} values}
+
+\item{legend}{Boolean: show legend?}
+
+\item{valueLabel}{Character: label for the value (by default, either
+\code{Inclusion levels} or \code{Gene expression})}
 }
 \value{
 \code{highchart} object with density plot
 }
 \description{
-The tooltip shows the median, variance, max, min and number of non-NA samples
-of each data series (if \code{data} contains names or column names, those
-will be used as sample names and also appear in the tooltip).
+The tooltip shows the median, variance, maximum, minimum and number of non-NA
+samples of each data series (if \code{data} contains names or column names,
+those will be used as sample names and also appear in the tooltip).
 }
 \details{
 Argument \code{groups} can be either:

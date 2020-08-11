@@ -18,8 +18,8 @@ calculateLoadingsContribution(pca, pcX = 1, pcY = 2)
 \item{pcY}{Character: name of the Y axis of interest from the PCA}
 }
 \value{
-Data frame containing the correlation between variables and selected 
-principal components and the contribution of variables to the selected 
+Data frame containing the correlation between variables and selected
+principal components and the contribution of variables to the selected
 principal components (both individual and total contribution)
 }
 \description{
@@ -39,7 +39,7 @@ calculateLoadingsContribution(pca)
 \seealso{
 Other functions to analyse principal components: 
 \code{\link{performPCA}()},
-\code{\link{plotPCA}()},
-\code{\link{plotVariance}()}
+\code{\link{plotPCAvariance}()},
+\code{\link{plotPCA}()}
 }
 \concept{functions to analyse principal components}

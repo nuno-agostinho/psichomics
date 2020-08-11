@@ -37,7 +37,7 @@ setLabelledPoints(id, events, category = getCategory())
 \item{zoom}{Integer: range of X and Y coordinates for zooming}
 }
 \value{
-Getters return globally accessible data, whereas setters return 
+Getters return globally accessible data, whereas setters return
 \code{NULL} as they are only used to modify the Shiny session's state
 }
 \description{

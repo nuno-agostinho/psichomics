@@ -4,7 +4,13 @@
 \alias{plotTranscripts}
 \title{Plot transcripts}
 \usage{
-plotTranscripts(info, eventPosition = NULL, event = NULL, shiny = FALSE)
+plotTranscripts(
+  info,
+  eventPosition = NULL,
+  event = NULL,
+  eventData = NULL,
+  shiny = FALSE
+)
 }
 \arguments{
 \item{info}{Information retrieved from Ensembl}
@@ -13,6 +19,8 @@ plotTranscripts(info, eventPosition = NULL, event = NULL, shiny = FALSE)
 (ignored if \code{event} is set)}
 
 \item{event}{Character: identifier of the alternative splicing event to plot}
+
+\item{eventData}{Object containing event information to be parsed}
 
 \item{shiny}{Boolean: is the function running in a Shiny session?}
 }

@@ -32,7 +32,7 @@ Perform statistical analyses on a given vector containing elements from
 different groups
 }
 \details{
-The following statistical analyses may be performed by including the 
+The following statistical analyses may be performed by including the
 respective string in the \code{analysis} argument:
 \itemize{
      \item{\code{ttest} - Unpaired t-test (2 groups)}

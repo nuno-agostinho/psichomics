@@ -11,11 +11,11 @@ recountDataUI <- function(id, panel) {
           uiOutput(ns("recountDataModal")),
           helpText(
               "Gene expression, junction quantification and sample metadata",
-              "from select SRA projects are downloaded through the",
+              "from select SRA projects are downloaded using",
               a(href="https://jhubiostatistics.shinyapps.io/recount/",
-                target="_blank", "recount"), "R package."),
+                target="_blank", "recount")),
           div(class="alert", class="alert-info", role="alert", 
-              "SRA data unlisted below may be manually aligned and loaded.",
+              "SRA datasets unlisted below may be manually aligned and loaded.",
               tags$a(
                   href=paste0("https://nuno-agostinho.github.io/psichomics/",
                               "articles/custom_data.html"),
@@ -24,6 +24,71 @@ recountDataUI <- function(id, panel) {
               div(class="progress-bar progress-bar-striped active",
                   role="progressbar", style="width: 100%", "Loading")),
           uiOutput(ns("sraInterface")))
+}
+
+loadRecountGeneExpression <- function(file, env=new.env()) {
+    load(file, env)
+    geneExpr <- as.data.frame(assay(env$rse_gene))
+    geneExpr <- addObjectAttrs(geneExpr,
+                               "filename"=file,
+                               "rowNames"=1,
+                               "tablename"="Gene expression",
+                               "description"="Gene expression",
+                               "dataType"="Gene expression",
+                               "rows"="genes",
+                               "columns"="samples")
+    return(geneExpr)
+}
+
+loadRecountJunctionQuant <- function(file, env=new.env()) {
+    load(file, env)
+    rse_jx <- env$rse_jx
+    junctionQuant <- as.data.frame(assay(rse_jx))
+    
+    ## Remove non-canonical chromosomes
+    valid  <- as.vector(seqnames(rse_jx)) %in% 
+        paste0("chr", c(seq(22), "X", "Y", "M"))
+    
+    chr    <- as.vector(seqnames(rse_jx))[valid]
+    start  <- start(rse_jx)[valid] - 1
+    end    <- end(rse_jx)[valid]   + 1
+    strand <- as.vector(strand(rse_jx))[valid]
+    
+    junctionQuant           <- junctionQuant[valid, , drop=FALSE]
+    rownames(junctionQuant) <- paste(chr, start, end, strand, sep=":")
+    junctionQuant <- addObjectAttrs(
+        junctionQuant,
+        "filename"=file,
+        "rowNames"=1,
+        "tablename"="Junction quantification",
+        "description"="Read counts of splicing junctions",
+        "dataType"="Junction quantification",
+        "rows"="splice junctions",
+        "columns"="samples")
+    return(junctionQuant)
+}
+
+downloadRecountData <- function(folder, geneExpr, junctionQuant, sampleInfo,
+                                sra) {
+    fileType <- c("rse-gene"=geneExpr,
+                  "rse-jx"=junctionQuant, 
+                  "phenotype"=sampleInfo)
+    fileTypeToDownload <- !sapply(fileType, file.exists)
+    fileTypeToDownload <- names(fileType)[fileTypeToDownload]
+    
+    len <- length(fileTypeToDownload)
+    updateProgress(paste("Loading", sra), divisions=3 + len)
+    if (len > 0) {
+        downloadProject <- function(type, sra, folder, ...) {
+            detail <- switch(type, "rse-gene"="Gene expression",
+                             "rse-jx"="Junction quantification",
+                             "phenotype"="Sample metadata")
+            updateProgress(paste("Downloading", sra), detail=detail)
+            download_study(sra, outdir=folder, type=type, ...)
+        }
+        
+        sapply(fileTypeToDownload, downloadProject, sra=sra, folder=folder)
+    }
 }
 
 #' Download and load SRA projects via
@@ -38,6 +103,7 @@ recountDataUI <- function(id, panel) {
 #' @importFrom SummarizedExperiment assay seqnames start end strand
 #'
 #' @family functions associated with SRA data retrieval
+#' @family functions to load data
 #' @return List with loaded projects
 #' @export
 loadSRAproject <- function(project, outdir=getDownloadsFolder()) {
@@ -54,69 +120,6 @@ loadSRAproject <- function(project, outdir=getDownloadsFolder()) {
                 paste(project[!available], collapse=", "))
     }
     
-    downloadRequiredSRAfiles <- function(folder, geneExpr, junctionQuant, 
-                                         sampleInfo, sra) {
-        fileType <- c("rse-gene"=geneExpr,
-                      "rse-jx"=junctionQuant, 
-                      "phenotype"=sampleInfo)
-        fileTypeToDownload <- !sapply(fileType, file.exists)
-        fileTypeToDownload <- names(fileType)[fileTypeToDownload]
-        
-        len <- length(fileTypeToDownload)
-        updateProgress(paste("Loading", sra), divisions=3 + len)
-        if (len > 0) {
-            downloadProject <- function(type, sra, folder, ...) {
-                detail <- switch(type, "rse-gene"="Gene expression",
-                                 "rse-jx"="Junction quantification",
-                                 "phenotype"="Sample metadata")
-                updateProgress(paste("Downloading", sra), detail=detail)
-                download_study(sra, outdir=folder, type=type, ...)
-            }
-            
-            sapply(fileTypeToDownload, downloadProject, sra=sra, folder=folder)
-        }
-    }
-    
-    loadGeneExpression <- function(geneExpr, recountEnv) {
-        load(geneExpr, recountEnv)
-        geneExpr <- as.data.frame(assay(recountEnv$rse_gene))
-        geneExpr <- addObjectAttrs(geneExpr,
-                                   "rowNames"=1,
-                                   "tablename"="Gene expression",
-                                   "description"="Gene expression",
-                                   "dataType"="Gene expression",
-                                   "rows"="genes",
-                                   "columns"="samples")
-        return(geneExpr)
-    }
-    
-    loadJunctionQuantification <- function(junctionQuant, recountEnv) {
-        load(junctionQuant, recountEnv)
-        rse_jx <- recountEnv$rse_jx
-        junctionQuant <- as.data.frame(assay(rse_jx))
-        
-        ## Remove non-canonical chromosomes
-        valid  <- as.vector(seqnames(rse_jx)) %in% 
-            paste0("chr", c(seq(22), "X", "Y", "M"))
-        
-        chr    <- as.vector(seqnames(rse_jx))[valid]
-        start  <- start(rse_jx)[valid] - 1
-        end    <- end(rse_jx)[valid]   + 1
-        strand <- as.vector(strand(rse_jx))[valid]
-        
-        junctionQuant           <- junctionQuant[valid, , drop=FALSE]
-        rownames(junctionQuant) <- paste(chr, start, end, strand, sep=":")
-        junctionQuant <- addObjectAttrs(
-            junctionQuant,
-            "rowNames"=1,
-            "tablename"="Junction quantification",
-            "description"="Read counts of splicing junctions",
-            "dataType"="Junction quantification",
-            "rows"="splice junctions",
-            "columns"="samples")
-        return(junctionQuant)
-    }
-    
     project <- project[available]
     for (sra in project) {
         # Download required files if needed
@@ -124,26 +127,22 @@ loadSRAproject <- function(project, outdir=getDownloadsFolder()) {
         geneExpr      <- file.path(folder, "rse_gene.Rdata")
         junctionQuant <- file.path(folder, "rse_jx.Rdata")
         sampleInfo    <- file.path(folder, paste0(sra, ".tsv"))
-        downloadRequiredSRAfiles(
-            folder, geneExpr, junctionQuant, sampleInfo, sra)
+        downloadRecountData(folder, geneExpr, junctionQuant, sampleInfo, sra)
         
-        recountEnv  <- new.env()
         data[[sra]] <- list()
-        
         # Load gene expression
         updateProgress(paste("Loading", sra), detail="Gene expression")
-        data[[sra]][["Gene expression"]] <- loadGeneExpression(
-            geneExpr, recountEnv)
+        data[[sra]][["Gene expression"]] <- loadRecountGeneExpression(geneExpr)
         
         # Load junction quantification
         updateProgress(paste("Loading", sra), detail="Junction quantification")
-        data[[sra]][["Junction quantification"]] <- loadJunctionQuantification(
-            junctionQuant, recountEnv)
+        data[[sra]][["Junction quantification"]] <- loadRecountJunctionQuant(
+            junctionQuant)
         
-        # Sample metadata
+        # Load sample metadata
         updateProgress(paste("Loading", sra), detail="Sample metadata")
         format <- loadFileFormats()$recountSampleFormat
-        data[[sra]][["Sample metadata"]] <- parseValidFile(sampleInfo, format)
+        data[[sra]][["Sample metadata"]] <- loadFile(sampleInfo, format)
         
         attr(data[[sra]], "source") <- "recount"
         closeProgress()
@@ -183,6 +182,8 @@ recountDataServer <- function(input, output, session) {
         hide("loading")
         return(ui)
     })
+    
+    prepareFileBrowser(session, input, "dataFolder", directory=TRUE)
     
     observeEvent(input$loadRecountData, {
         isolate({

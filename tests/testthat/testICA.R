@@ -12,29 +12,29 @@ test_that("Tolerate NAs per columns", {
     # Data is exclusively composed of NAs
     all.nas <- matrix(ncol=4, nrow=50)
     expect_warning(
-        ica <- performICA(all.nas, center=FALSE, scale.=FALSE, 
+        ica <- performICA(all.nas, center=FALSE, scale.=FALSE,
                           missingValues=30))
     expect_null(ica)
-    
+
     # Fill with missing values (column 1 = 100% NAs, 2 = 50%, 3 = 34%, 4 = 26%)
     nas <- data
     nas[[1]][seq(1, length(nas[[1]]), 1)] <- NA
     nas[[2]][seq(1, length(nas[[2]]), 2)] <- NA
     nas[[3]][seq(1, length(nas[[3]]), 3)] <- NA
     nas[[4]][seq(1, length(nas[[4]]), 4)] <- NA
-    
+
     # Tolerate columns containing 50% of NAs
     ica <- performICA(nas, center=FALSE, scale.=FALSE, missingValues=25)
     expect_equal(colnames(nas)[2:4], colnames(ica$X))
-    
+
     # Tolerate columns containing 49% of NAs
     ica <- performICA(nas, center=FALSE, scale.=FALSE, missingValues=24)
     expect_equal(colnames(nas)[3:4], colnames(ica$X))
-    
+
     # "Tolerate" columns containing 26% of NAs
-    ica <- performICA(nas, center=FALSE, scale.=FALSE, missingValues=13)
-    expect_is(ica, "error")
-    
+    ica <- expect_error(
+        performICA(nas, center=FALSE, scale.=FALSE, missingValues=13))
+
     # Tolerate columns containing 25% of NAs
     expect_warning(
         ica <- performICA(nas, center=FALSE, scale.=FALSE, missingValues=12))

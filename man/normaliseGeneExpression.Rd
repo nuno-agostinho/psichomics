@@ -2,9 +2,20 @@
 % Please edit documentation in R/data_geNormalisationFiltering.R
 \name{normaliseGeneExpression}
 \alias{normaliseGeneExpression}
+\alias{normalizeGeneExpression}
 \title{Filter and normalise gene expression}
 \usage{
 normaliseGeneExpression(
+  geneExpr,
+  geneFilter = NULL,
+  method = "TMM",
+  p = 0.75,
+  log2transform = TRUE,
+  priorCount = 0.25,
+  performVoom = FALSE
+)
+
+normalizeGeneExpression(
   geneExpr,
   geneFilter = NULL,
   method = "TMM",
@@ -17,7 +28,7 @@ normaliseGeneExpression(
 \arguments{
 \item{geneExpr}{Matrix or data frame: gene expression}
 
-\item{geneFilter}{Boolean: filtered genes}
+\item{geneFilter}{Boolean: filtered genes (if \code{NULL}, skip filtering)}
 
 \item{method}{Character: normalisation method, including \code{TMM},
 \code{RLE}, \code{upperquartile}, \code{none} or \code{quantile} (see
@@ -31,20 +42,45 @@ Details)}
 after log-transformation}
 
 \item{performVoom}{Boolean: perform mean-variance modelling
-(\code{\link[limma]{voom}})?}
+(using \code{\link[limma]{voom}})?}
 }
 \value{
 Filtered and normalised gene expression
 }
 \description{
-Filter and normalise gene expression
+Gene expression is filtered and normalised in the following steps:
+
+\itemize{
+\item{Filter gene expression;}
+\item{Normalise gene expression with \code{\link[edgeR]{calcNormFactors}};}
+\item{If \code{performVoom = FALSE}, compute counts per million (CPM) using
+\code{\link[edgeR]{cpm}} and log2-transform values if
+\code{log2transform = TRUE};}
+\item{If \code{performVoom = TRUE}, use \code{\link[limma]{voom}} to compute
+log2-CPM, quantile-normalise (if \code{method = "quantile"}) and estimate
+mean-variance relationship to calculate observation-level weights.}
+}
 }
 \details{
 \code{edgeR::calcNormFactors} will be used to normalise gene
-expression if one of the following methods is set: \code{TMM}, \code{RLE},
-\code{upperquartile} or \code{none}. However, \code{\link[limma]{voom}} will
-be used for normalisation if \code{performVoom = TRUE} and the selected 
-method is \code{quantile}.
+expression if \code{method} is \code{TMM}, \code{RLE}, \code{upperquartile}
+or \code{none}. If \code{performVoom = TRUE}, \code{\link[limma]{voom}} will
+only normalise if \code{method = "quantile"}.
+
+Available normalisation methods:
+\itemize{
+\item{\code{TMM} is recommended for most RNAseq data where more than half of
+the genes are believed not differentially expressed between any pair of
+samples;}
+\item{\code{RLE} calculates the median library from the geometric mean of all
+columns and the median ratio of each sample to the median library is taken as
+the scale factor;}
+\item{\code{upperquartile} calculates the scale factors from a given quantile
+of the counts for each library, after removing genes with zero counts in all
+libraries;}
+\item{\code{quantile} forces the entire empirical distribution of each
+column to be identical (only performed if \code{performVoom = TRUE}).}
+}
 }
 \examples{
 geneExpr <- readFile("ex_gene_expression.RDS")
@@ -55,6 +91,7 @@ Other functions for gene expression pre-processing:
 \code{\link{convertGeneIdentifiers}()},
 \code{\link{filterGeneExpr}()},
 \code{\link{plotGeneExprPerSample}()},
+\code{\link{plotLibrarySize}()},
 \code{\link{plotRowStats}()}
 }
 \concept{functions for gene expression pre-processing}

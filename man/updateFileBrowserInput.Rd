@@ -7,17 +7,19 @@
 \url{https://github.com/wleepang/shiny-directory-input}
 }
 \usage{
-updateFileBrowserInput(session, id, ..., value = NULL)
+updateFileBrowserInput(session, id, ..., value = NULL, ask = FALSE)
 }
 \arguments{
 \item{session}{Shiny session}
 
-\item{id}{Character: input identifier}
+\item{id}{Character: identifier}
 
 \item{...}{Additional arguments passed to \code{\link{fileBrowser}()}. Only
 used if \code{value = NULL}.}
 
 \item{value}{Character: file or directory path}
+
+\item{ask}{Boolean: ask user to pick a file using file browser?}
 }
 \value{
 \code{NULL} (function is only used to modify the Shiny session's

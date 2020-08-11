@@ -15,7 +15,7 @@ importGroupsFrom(
 \arguments{
 \item{file}{Character: path to file}
 
-\item{uniqueElems}{Character: vector of unique elements (samples or 
+\item{uniqueElems}{Character: vector of unique elements (samples or
 alternative splicing events)}
 
 \item{matchingElems}{Character: vector of matching elements (subjects or

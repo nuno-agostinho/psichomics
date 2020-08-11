@@ -4,13 +4,19 @@
 \alias{prepareWordBreak}
 \title{Create word break opportunities (for HTML) using given characters}
 \usage{
-prepareWordBreak(str, pattern = c(".", "-", "\\\\", "/", "_", ",", " "))
+prepareWordBreak(
+  str,
+  pattern = c(".", "-", "\\\\", "/", "_", ",", " ", "+", "="),
+  html = TRUE
+)
 }
 \arguments{
 \item{str}{Character: text}
 
 \item{pattern}{Character: pattern(s) of interest to be used as word break
 opportunities}
+
+\item{html}{Boolean: convert to HTML?}
 }
 \value{
 String containing HTML elements

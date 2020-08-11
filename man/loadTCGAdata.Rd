@@ -26,8 +26,6 @@ from loading into R (by default, exclude files containing \code{.aux.},
 \item{...}{
   Arguments passed on to \code{\link[=queryFirebrowseData]{queryFirebrowseData}}
   \describe{
-    \item{\code{format}}{Character: response format as \code{JSON}, \code{CSV} or
-\code{TSV}}
     \item{\code{date}}{Character: dates of the data retrieval by Firebrowse (by default,
 it uses the most recent data available)}
     \item{\code{cohort}}{Character: abbreviation of the cohorts (by default, returns
@@ -55,9 +53,10 @@ and \code{download = FALSE} (if so, it returns the URL of files to download)
 TCGA data obtained via \href{http://firebrowse.org/api-docs/}{Firebrowse}
 }
 \examples{
-getFirebrowseDataTypes() 
+getTCGAcohorts()
+getTCGAdataTypes()
 \dontrun{
-loadFirebrowseData(cohort = "ACC", data_type = "Clinical")
+loadTCGAdata(cohort = "ACC", data_type = "Clinical")
 }
 }
 \seealso{
@@ -66,5 +65,11 @@ Other functions associated with TCGA data retrieval:
 \code{\link{getTCGAdataTypes}()},
 \code{\link{isFirebrowseUp}()},
 \code{\link{parseTCGAsampleTypes}()}
+
+Other functions to load data: 
+\code{\link{loadGtexData}()},
+\code{\link{loadLocalFiles}()},
+\code{\link{loadSRAproject}()}
 }
 \concept{functions associated with TCGA data retrieval}
+\concept{functions to load data}

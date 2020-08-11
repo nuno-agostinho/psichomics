@@ -1,16 +1,23 @@
+url: https://nuno-agostinho.github.io/psichomics/
+
+home:
+  title: Visual interface for alternative splicing analysis and visualisation
+
 destination: docs
 reference:
     - title: "General functions"
       contents:
         - psichomics
         - parseSplicingEvent
+        - getSplicingEventData
         - getSplicingEventFromGenes
         - getGenesFromSplicingEvents
         - plotSplicingEvent
         - getDownloadsFolder
-        - filterGroups
     - title: "TCGA data retrieval"
-      desc: Retrieve TCGA data using [Firebrowse API](http://firebrowse.org/api-docs/)
+      desc: >
+        Retrieve TCGA data using
+        [Firebrowse API](http://firebrowse.org/api-docs/)
       contents:
         - isFirebrowseUp
         - getTCGAcohorts
@@ -20,6 +27,7 @@ reference:
         - parseTCGAsampleInfo
     - title: "GTEx data retrieval"
       contents:
+        - getGtexReleases
         - getGtexDataTypes
         - getGtexTissues
         - loadGtexData
@@ -29,25 +37,26 @@ reference:
     - title: "User-provided data loading"
       contents:
         - loadLocalFiles
-        - prepareSRAmetadata
         - prepareJunctionQuant
         - prepareGeneQuant
     - title: "Gene expression pre-processing"
       contents:
         - plotRowStats
         - plotGeneExprPerSample
+        - plotLibrarySize
         - filterGeneExpr
         - normaliseGeneExpression
         - convertGeneIdentifiers
-    - title: "PSI quantification"
+    - title: "PSI quantification and filtering"
       contents:
         - getSplicingEventTypes
         - listSplicingAnnotations
         - loadAnnotation
         - quantifySplicing
-        - plotRowStats
+        - discardLowCoveragePSIvalues
         - filterPSI
-    - title: "Custom alternative splicing annotation preparation"
+        - plotRowStats
+    - title: "Custom alternative splicing annotation"
       contents:
         - parseMatsAnnotation
         - parseMisoAnnotation
@@ -56,36 +65,25 @@ reference:
         - prepareAnnotationFromEvents
     - title: "Data Grouping"
       contents:
-        - getGeneList
         - createGroupByAttribute
+        - filterGroups
+        - groupPerElem
+        - getGeneList
         - getSampleFromSubject
         - getSubjectFromSample
-        - groupPerElem
         - testGroupIndependence
         - plotGroupIndependence
     - title: "Principal component analysis (PCA)"
       contents:
         - performPCA
-        - plotVariance
+        - plotPCAvariance
         - calculateLoadingsContribution
         - plotPCA
     - title: "Independent component analysis (ICA)"
       contents:
         - performICA
         - plotICA
-    - title: Survival analysis
-      contents:
-        - getAttributesTime
-        - assignValuePerSubject
-        - labelBasedOnCutoff
-        - optimalSurvivalCutoff
-        - testSurvival
-        - processSurvTerms
-        - survfit.survTerms
-        - survdiffTerms
-        - plotSurvivalCurves
-        - plotSurvivalPvaluesByCutoff
-    - title:  "Differential analyses"
+    - title: "Differential analyses"
       contents:
         - diffAnalyses
         - plotDistribution
@@ -93,6 +91,18 @@ reference:
       contents:
         - correlateGEandAS
         - plotCorrelation
+    - title: "Survival analysis"
+      contents:
+        - getAttributesTime
+        - processSurvTerms
+        - survfit.survTerms
+        - survdiffTerms
+        - plotSurvivalCurves
+        - testSurvival
+        - assignValuePerSubject
+        - labelBasedOnCutoff
+        - optimalSurvivalCutoff
+        - plotSurvivalPvaluesByCutoff
     - title: "Gene, transcript and protein annotation retrieval"
       contents:
         - queryEnsemblByEvent

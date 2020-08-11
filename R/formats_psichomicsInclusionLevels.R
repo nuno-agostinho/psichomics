@@ -29,7 +29,9 @@ psichomicsInclusionLevelsFormat <- function() {
         
         # Identity of rows and columns
         rows    = "alternative splicing events",
-        columns = "samples"
+        columns = "samples",
+        
+        process = genericInclusionLevelsFormat()$process
     )
 }
 

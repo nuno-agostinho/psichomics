@@ -16,7 +16,7 @@ assignValuePerSubject(
 )
 }
 \arguments{
-\item{data}{One-row data frame/matrix or vector: values per sample for a 
+\item{data}{One-row data frame/matrix or vector: values per sample for a
 single gene}
 
 \item{match}{Matrix: match between samples and subjects}
@@ -27,7 +27,7 @@ single gene}
 \item{patients}{Character: subject identifiers (only required if the
 \code{clinical} argument is not handed)}
 
-\item{samples}{Character: samples to use when assigning values per subject 
+\item{samples}{Character: samples to use when assigning values per subject
 (if \code{NULL}, all samples will be used)}
 }
 \value{

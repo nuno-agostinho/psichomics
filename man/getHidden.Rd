@@ -13,7 +13,7 @@ setHidden(val)
 \item{val}{Value to attribute}
 }
 \value{
-Getters return hidden globally accessible data, whereas setters 
+Getters return hidden globally accessible data, whereas setters
 return \code{NULL} as they are only used to modify the state of hidden
 elements
 }

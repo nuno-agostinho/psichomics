@@ -36,6 +36,11 @@ genericInclusionLevelsFormat <- function() {
             maximum <- max(data, na.rm=TRUE)
             if (maximum > 1 && maximum <= 100) data <- data/100
             
+            events <- rownames(data)
+            if (!is.null(events)) {
+                attr(data, "rowData") <- parseSplicingEvent(events, coords=TRUE)
+                data <- preserveAttributes(data)
+            }
             return(data)
         }
     )

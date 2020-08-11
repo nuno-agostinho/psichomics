@@ -16,7 +16,7 @@ plotGroupIndependence(
 )
 }
 \arguments{
-\item{groups}{\code{multiGroupIndependenceTest} object (obtained after 
+\item{groups}{\code{multiGroupIndependenceTest} object (obtained after
 running \code{\link{testGroupIndependence}()})}
 
 \item{top}{Integer: number of attributes to render}
@@ -50,13 +50,13 @@ groupTesting <- testGroupIndependence(ref, groups, elements)
 plotGroupIndependence(groupTesting)
 }
 \seealso{
-\code{\link{parseCategoricalGroups}()} and 
+\code{\link{parseCategoricalGroups}()} and
 \code{\link{testGroupIndependence}()}
 
 Other functions for data grouping: 
 \code{\link{createGroupByAttribute}()},
 \code{\link{getGeneList}()},
-\code{\link{getMatchingSamples}()},
+\code{\link{getSampleFromSubject}()},
 \code{\link{getSubjectFromSample}()},
 \code{\link{groupPerElem}()},
 \code{\link{testGroupIndependence}()}

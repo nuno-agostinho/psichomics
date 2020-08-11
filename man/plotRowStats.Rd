@@ -2,41 +2,63 @@
 % Please edit documentation in R/data.R
 \name{plotRowStats}
 \alias{plotRowStats}
-\title{Plot sample statistics per row}
+\title{Plot row-wise statistics}
 \usage{
 plotRowStats(
   data,
   x,
-  y,
+  y = NULL,
   subset = NULL,
   xmin = NULL,
   xmax = NULL,
   ymin = NULL,
   ymax = NULL,
   xlim = NULL,
-  ylim = NULL
+  ylim = NULL,
+  cache = NULL,
+  verbose = FALSE,
+  data2 = NULL,
+  legend = FALSE,
+  legendLabels = c("Original", "Highlighted")
 )
 }
 \arguments{
-\item{data}{Data frame or matrix}
+\item{data}{Data frame or matrix containing samples per column and, for
+instance, gene or alternative splicing event per row}
 
 \item{x, y}{Character: statistic to calculate and display in the plot per row;
 choose between \code{mean}, \code{median}, \code{var} or \code{range}
-(or transformations of those variables, e.g. \code{log10(var)})}
+(or transformations of those variables, e.g. \code{log10(var)}); if
+\code{y = NULL}, the density of \code{x} will be plot instead}
 
-\item{subset}{Boolean or integer: \code{data} points to highlight (if
-\code{NULL}, all points are highlighted)}
+\item{subset}{Boolean or integer: \code{data} points to highlight}
 
-\item{xmin, xmax, ymin, ymax}{Numeric: minimum and maximum X and Y values to 
+\item{xmin, xmax, ymin, ymax}{Numeric: minimum and maximum X and Y values to
 draw in the plot}
 
 \item{xlim, ylim}{Numeric: X and Y axis range}
+
+\item{cache}{List of summary statistics for \code{data} previously calculated
+to avoid repeating calculations (output also returns cache in attribute
+named \code{cache} with appropriate data)}
+
+\item{verbose}{Boolean: print messages of the steps performed}
+
+\item{data2}{Same as \code{data} argument but points in \code{data2} are
+highlighted (unless \code{data2 = NULL})}
+
+\item{legend}{Boolean: show legend?}
+
+\item{legendLabels}{Character: legend labels}
 }
 \value{
 Plot of \code{data}
 }
 \description{
-Plot sample statistics per row
+Scatter plot to compare between the row-wise mean, median, variance or range
+from a data frame or matrix. Also supports transformations of those
+variables, such as \code{log10(mean)}. If \code{y = NULL}, a density plot is
+rendered instead.
 }
 \examples{
 library(ggplot2)
@@ -65,7 +87,8 @@ Other functions for gene expression pre-processing:
 \code{\link{convertGeneIdentifiers}()},
 \code{\link{filterGeneExpr}()},
 \code{\link{normaliseGeneExpression}()},
-\code{\link{plotGeneExprPerSample}()}
+\code{\link{plotGeneExprPerSample}()},
+\code{\link{plotLibrarySize}()}
 
 Other functions for PSI quantification: 
 \code{\link{filterPSI}()},
