@@ -6,38 +6,50 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot sample statistics per row — plotRowStats • psichomics</title>
+<title>Plot row-wise statistics — plotRowStats • psichomics</title>
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script>
 
 
+<!-- docsearch -->
+<script src="../docsearch.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.3/docsearch.min.css" integrity="sha256-QOSRU/ra9ActyXkIBbiIB144aDBdtvXBcNc3OTNuX/Q=" crossorigin="anonymous" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
 
 
-<meta property="og:title" content="Plot sample statistics per row — plotRowStats" />
-<meta property="og:description" content="Plot sample statistics per row" />
-<meta name="twitter:card" content="summary" />
+
+<meta property="og:title" content="Plot row-wise statistics — plotRowStats" />
+<meta property="og:description" content="Scatter plot to compare between the row-wise mean, median, variance or range
+from a data frame or matrix. Also supports transformations of those
+variables, such as log10(mean). If y = NULL, a density plot is
+rendered instead." />
 
 
 
@@ -65,7 +77,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -79,7 +91,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.12.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.2</span>
       </span>
     </div>
 
@@ -120,8 +132,19 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/nuno-agostinho/psichomics/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
+      
+      <form class="navbar-form navbar-right hidden-xs hidden-sm" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
       
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -134,26 +157,34 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot sample statistics per row</h1>
-    
+    <h1>Plot row-wise statistics</h1>
+    <small class="dont-index">Source: <a href='https://github.com/nuno-agostinho/psichomics/blob/master/R/data.R'><code>R/data.R</code></a></small>
     <div class="hidden name"><code>plotRowStats.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plot sample statistics per row</p>
+    <p>Scatter plot to compare between the row-wise mean, median, variance or range
+from a data frame or matrix. Also supports transformations of those
+variables, such as <code><a href='https://rdrr.io/r/base/Log.html'>log10(mean)</a></code>. If <code>y = NULL</code>, a density plot is
+rendered instead.</p>
     </div>
 
     <pre class="usage"><span class='fu'>plotRowStats</span>(
   <span class='no'>data</span>,
   <span class='no'>x</span>,
-  <span class='no'>y</span>,
+  <span class='kw'>y</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>subset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>xmin</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>xmax</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>ymin</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>ymax</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+  <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>cache</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>data2</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>legend</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>legendLabels</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Original"</span>, <span class='st'>"Highlighted"</span>)
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -161,27 +192,51 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>data</th>
-      <td><p>Data frame or matrix</p></td>
+      <td><p>Data frame or matrix containing samples per column and, for
+instance, gene or alternative splicing event per row</p></td>
     </tr>
     <tr>
       <th>x, y</th>
       <td><p>Character: statistic to calculate and display in the plot per row;
 choose between <code>mean</code>, <code>median</code>, <code>var</code> or <code>range</code>
-(or transformations of those variables, e.g. <code><a href='https://rdrr.io/r/base/Log.html'>log10(var)</a></code>)</p></td>
+(or transformations of those variables, e.g. <code><a href='https://rdrr.io/r/base/Log.html'>log10(var)</a></code>); if
+<code>y = NULL</code>, the density of <code>x</code> will be plot instead</p></td>
     </tr>
     <tr>
       <th>subset</th>
-      <td><p>Boolean or integer: <code>data</code> points to highlight (if
-<code>NULL</code>, all points are highlighted)</p></td>
+      <td><p>Boolean or integer: <code>data</code> points to highlight</p></td>
     </tr>
     <tr>
       <th>xmin, xmax, ymin, ymax</th>
-      <td><p>Numeric: minimum and maximum X and Y values to 
+      <td><p>Numeric: minimum and maximum X and Y values to
 draw in the plot</p></td>
     </tr>
     <tr>
       <th>xlim, ylim</th>
       <td><p>Numeric: X and Y axis range</p></td>
+    </tr>
+    <tr>
+      <th>cache</th>
+      <td><p>List of summary statistics for <code>data</code> previously calculated
+to avoid repeating calculations (output also returns cache in attribute
+named <code>cache</code> with appropriate data)</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>Boolean: print messages of the steps performed</p></td>
+    </tr>
+    <tr>
+      <th>data2</th>
+      <td><p>Same as <code>data</code> argument but points in <code>data2</code> are
+highlighted (unless <code>data2 = NULL</code>)</p></td>
+    </tr>
+    <tr>
+      <th>legend</th>
+      <td><p>Boolean: show legend?</p></td>
+    </tr>
+    <tr>
+      <th>legendLabels</th>
+      <td><p>Character: legend labels</p></td>
     </tr>
     </table>
 
@@ -194,7 +249,8 @@ draw in the plot</p></td>
 <code><a href='convertGeneIdentifiers.html'>convertGeneIdentifiers</a>()</code>,
 <code><a href='filterGeneExpr.html'>filterGeneExpr</a>()</code>,
 <code><a href='normaliseGeneExpression.html'>normaliseGeneExpression</a>()</code>,
-<code><a href='plotGeneExprPerSample.html'>plotGeneExprPerSample</a>()</code></p>
+<code><a href='plotGeneExprPerSample.html'>plotGeneExprPerSample</a>()</code>,
+<code><a href='plotLibrarySize.html'>plotLibrarySize</a>()</code></p>
 <p>Other functions for PSI quantification: 
 <code><a href='filterPSI.html'>filterPSI</a>()</code>,
 <code><a href='getSplicingEventTypes.html'>getSplicingEventTypes</a>()</code>,
@@ -209,26 +265,23 @@ draw in the plot</p></td>
 <span class='no'>geneExpr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span>(<span class='st'>"ex_gene_expression.RDS"</span>)
 <span class='fu'>plotRowStats</span>(<span class='no'>geneExpr</span>, <span class='st'>"mean"</span>, <span class='st'>"var^(1/4)"</span>) +
     <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ggtitle</a></span>(<span class='st'>"Mean-variance plot"</span>) +
-    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span>(<span class='kw'>y</span><span class='kw'>=</span><span class='st'>"Square Root of the Standard Deviation"</span>)</div><div class='output co'>#&gt; <span class='message'>Calculating var per splicing event...</span></div><div class='output co'>#&gt; <span class='message'>Calculating mean per splicing event...</span></div><div class='output co'>#&gt; <span class='message'>Preparing plot...</span></div><div class='img'><img src='plotRowStats-1.png' alt='' width='700' height='433' /></div><div class='input'>
+    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span>(<span class='kw'>y</span><span class='kw'>=</span><span class='st'>"Square Root of the Standard Deviation"</span>)</div><div class='img'><img src='plotRowStats-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># Plotting alternative splicing quantification</span>
 <span class='no'>annot</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span>(<span class='st'>"ex_splicing_annotation.RDS"</span>)
 <span class='no'>junctionQuant</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span>(<span class='st'>"ex_junctionQuant.RDS"</span>)
 <span class='no'>psi</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='quantifySplicing.html'>quantifySplicing</a></span>(<span class='no'>annot</span>, <span class='no'>junctionQuant</span>, <span class='kw'>eventType</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SE"</span>, <span class='st'>"MXE"</span>))</div><div class='output co'>#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% 
 #&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </div><div class='input'>
 <span class='no'>medianVar</span> <span class='kw'>&lt;-</span> <span class='fu'>plotRowStats</span>(<span class='no'>psi</span>, <span class='kw'>x</span><span class='kw'>=</span><span class='st'>"median"</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"var"</span>, <span class='kw'>xlim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>)) +
-    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span>(<span class='kw'>x</span><span class='kw'>=</span><span class='st'>"Median PSI"</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"PSI variance"</span>)</div><div class='output co'>#&gt; <span class='message'>Calculating var per splicing event...</span></div><div class='output co'>#&gt; <span class='message'>Calculating median per splicing event...</span></div><div class='output co'>#&gt; <span class='message'>Preparing plot...</span></div><div class='input'><span class='no'>medianVar</span></div><div class='img'><img src='plotRowStats-2.png' alt='' width='700' height='433' /></div><div class='input'>
+    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span>(<span class='kw'>x</span><span class='kw'>=</span><span class='st'>"Median PSI"</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"PSI variance"</span>)
+<span class='no'>medianVar</span></div><div class='img'><img src='plotRowStats-2.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='no'>rangeVar</span>  <span class='kw'>&lt;-</span> <span class='fu'>plotRowStats</span>(<span class='no'>psi</span>, <span class='kw'>x</span><span class='kw'>=</span><span class='st'>"range"</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"log10(var)"</span>, <span class='kw'>xlim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>)) +
-    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span>(<span class='kw'>x</span><span class='kw'>=</span><span class='st'>"PSI range"</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"log10(PSI variance)"</span>)</div><div class='output co'>#&gt; <span class='message'>Calculating range per splicing event...</span></div><div class='output co'>#&gt; <span class='message'>Calculating var per splicing event...</span></div><div class='output co'>#&gt; <span class='message'>Preparing plot...</span></div><div class='input'><span class='no'>rangeVar</span></div><div class='img'><img src='plotRowStats-3.png' alt='' width='700' height='433' /></div></pre>
+    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span>(<span class='kw'>x</span><span class='kw'>=</span><span class='st'>"PSI range"</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"log10(PSI variance)"</span>)
+<span class='no'>rangeVar</span></div><div class='img'><img src='plotRowStats-3.png' alt='' width='700' height='433' /></div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#see-also">See also</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -239,13 +292,30 @@ draw in the plot</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
    </div>
 
   
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script>
+<script>
+  docsearch({
+    
+    
+    apiKey: 'fa0226bf1a3df7e1c8ab8f0e70450e0a',
+    indexName: 'stem-cell-analysis-in-psichomics',
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
+  });
+</script>
+
 
 
   </body>

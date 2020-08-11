@@ -10,28 +10,38 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script>
 
+
+<!-- docsearch -->
+<script src="../docsearch.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.3/docsearch.min.css" integrity="sha256-QOSRU/ra9ActyXkIBbiIB144aDBdtvXBcNc3OTNuX/Q=" crossorigin="anonymous" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
 
 
 
@@ -63,7 +73,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-index">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -77,7 +87,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.12.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.2</span>
       </span>
     </div>
 
@@ -118,8 +128,19 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/nuno-agostinho/psichomics/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
+      
+      <form class="navbar-form navbar-right hidden-xs hidden-sm" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
       
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -150,6 +171,11 @@
           <p class="section-desc"></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -162,6 +188,13 @@
           <p><code><a href="parseSplicingEvent.html">parseSplicingEvent()</a></code> </p>
         </td>
         <td><p>Parse alternative splicing event identifier</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="getSplicingEventData.html">getSplicingEventData()</a></code> </p>
+        </td>
+        <td><p>Get splicing event information for given alternative splicing quantification
+data</p></td>
       </tr><tr>
         
         <td>
@@ -180,12 +213,6 @@
           <p><code><a href="getDownloadsFolder.html">getDownloadsFolder()</a></code> </p>
         </td>
         <td><p>Get the path to the Downloads folder</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="filterGroups.html">filterGroups()</a></code> </p>
-        </td>
-        <td><p>Filter groups with less data points than the threshold</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -194,6 +221,11 @@
           <p class="section-desc"><p>Retrieve TCGA data using <a href="http://firebrowse.org/api-docs/">Firebrowse API</a></p></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -226,12 +258,17 @@
           <p class="section-desc"></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
-          <p><code><a href="getGtexDataTypes.html">getGtexDataTypes()</a></code> </p>
+          <p><code><a href="getGtexDataTypes.html">getGtexDataTypes()</a></code> <code><a href="getGtexDataTypes.html">getGtexReleases()</a></code> </p>
         </td>
-        <td><p>Get GTEx data types</p></td>
+        <td><p>Get GTEx data information</p></td>
       </tr><tr>
         
         <td>
@@ -252,6 +289,11 @@
           <p class="section-desc"></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -267,6 +309,11 @@
           <p class="section-desc"></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -287,12 +334,17 @@
           <p class="section-desc"></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
           <p><code><a href="plotRowStats.html">plotRowStats()</a></code> </p>
         </td>
-        <td><p>Plot sample statistics per row</p></td>
+        <td><p>Plot row-wise statistics</p></td>
       </tr><tr>
         
         <td>
@@ -302,13 +354,19 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="plotLibrarySize.html">plotLibrarySize()</a></code> </p>
+        </td>
+        <td><p>Plot library size</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="filterGeneExpr.html">filterGeneExpr()</a></code> </p>
         </td>
         <td><p>Filter genes based on their expression</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="normaliseGeneExpression.html">normaliseGeneExpression()</a></code> </p>
+          <p><code><a href="normaliseGeneExpression.html">normaliseGeneExpression()</a></code> <code><a href="normaliseGeneExpression.html">normalizeGeneExpression()</a></code> </p>
         </td>
         <td><p>Filter and normalise gene expression</p></td>
       </tr><tr>
@@ -321,10 +379,15 @@
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-psi-quantification" class="hasAnchor"><a href="#section-psi-quantification" class="anchor"></a>PSI quantification</h2>
+          <h2 id="section-psi-quantification-and-filtering" class="hasAnchor"><a href="#section-psi-quantification-and-filtering" class="anchor"></a>PSI quantification and filtering</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -352,29 +415,40 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="plotRowStats.html">plotRowStats()</a></code> </p>
+          <p><code><a href="discardLowCoveragePSIvalues.html">discardLowCoveragePSIvalues()</a></code> </p>
         </td>
-        <td><p>Plot sample statistics per row</p></td>
+        <td><p>Remove alternative splicing quantification values based on coverage</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="filterPSI.html">filterPSI()</a></code> </p>
         </td>
         <td><p>Filter alternative splicing quantification</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="plotRowStats.html">plotRowStats()</a></code> </p>
+        </td>
+        <td><p>Plot row-wise statistics</p></td>
       </tr>
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-custom-alternative-splicing-annotation-preparation" class="hasAnchor"><a href="#section-custom-alternative-splicing-annotation-preparation" class="anchor"></a>Custom alternative splicing annotation preparation</h2>
+          <h2 id="section-custom-alternative-splicing-annotation" class="hasAnchor"><a href="#section-custom-alternative-splicing-annotation" class="anchor"></a>Custom alternative splicing annotation</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
           <p><code><a href="parseMisoAnnotation.html">parseSuppaAnnotation()</a></code> <code><a href="parseMisoAnnotation.html">parseVastToolsAnnotation()</a></code> <code><a href="parseMisoAnnotation.html">parseMisoAnnotation()</a></code> <code><a href="parseMisoAnnotation.html">parseMatsAnnotation()</a></code> </p>
         </td>
-        <td><p>Get events from alternative splicing annotation</p></td>
+        <td><p>Parse events from alternative splicing annotation</p></td>
       </tr><tr>
         
         <td>
@@ -389,13 +463,12 @@
           <p class="section-desc"></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
-        
-        <td>
-          <p><code><a href="getGeneList.html">getGeneList()</a></code> </p>
-        </td>
-        <td><p>Get curated, literature-based gene lists</p></td>
-      </tr><tr>
         
         <td>
           <p><code><a href="createGroupByAttribute.html">createGroupByAttribute()</a></code> </p>
@@ -404,7 +477,25 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="getMatchingSamples.html">getMatchingSamples()</a></code> </p>
+          <p><code><a href="filterGroups.html">filterGroups()</a></code> </p>
+        </td>
+        <td><p>Filter groups with less data points than the threshold</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="groupPerElem.html">groupPerElem()</a></code> </p>
+        </td>
+        <td><p>Assign one group to each element</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="getGeneList.html">getGeneList()</a></code> </p>
+        </td>
+        <td><p>Get curated, literature-based gene lists</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="getSampleFromSubject.html">getSampleFromSubject()</a></code> </p>
         </td>
         <td><p>Get samples matching the given subjects</p></td>
       </tr><tr>
@@ -413,12 +504,6 @@
           <p><code><a href="getSubjectFromSample.html">getSubjectFromSample()</a></code> </p>
         </td>
         <td><p>Get subjects from given samples</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="groupPerElem.html">groupPerElem()</a></code> </p>
-        </td>
-        <td><p>Assign one group to each element</p></td>
       </tr><tr>
         
         <td>
@@ -440,6 +525,11 @@ independence testing</p></td>
           <p class="section-desc"></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -449,7 +539,7 @@ independence testing</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="plotVariance.html">plotVariance()</a></code> </p>
+          <p><code><a href="plotPCAvariance.html">plotPCAvariance()</a></code> </p>
         </td>
         <td><p>Create the explained variance plot from a PCA</p></td>
       </tr><tr>
@@ -473,6 +563,11 @@ components</p></td>
           <p class="section-desc"></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -489,40 +584,71 @@ components</p></td>
     </tbody><tbody>
       <tr>
         <th colspan="2">
+          <h2 id="section-differential-analyses" class="hasAnchor"><a href="#section-differential-analyses" class="anchor"></a>Differential analyses</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="diffAnalyses.html">diffAnalyses()</a></code> </p>
+        </td>
+        <td><p>Perform statistical analyses</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="plotDistribution.html">plotDistribution()</a></code> </p>
+        </td>
+        <td><p>Plot distribution using a density plot</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-gene-expression-and-alternative-splicing-correlation" class="hasAnchor"><a href="#section-gene-expression-and-alternative-splicing-correlation" class="anchor"></a>Gene expression and alternative splicing correlation</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="correlateGEandAS.html">correlateGEandAS()</a></code> </p>
+        </td>
+        <td><p>Correlate gene expression data against alternative splicing quantification</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="plot.GEandAScorrelation.html">`[`(<i>&lt;GEandAScorrelation&gt;</i>)</a></code> <code><a href="plot.GEandAScorrelation.html">plot(<i>&lt;GEandAScorrelation&gt;</i>)</a></code> <code><a href="plot.GEandAScorrelation.html">print(<i>&lt;GEandAScorrelation&gt;</i>)</a></code> <code><a href="plot.GEandAScorrelation.html">as.table(<i>&lt;GEandAScorrelation&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Display results of correlation analyses</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
           <h2 id="section-survival-analysis" class="hasAnchor"><a href="#section-survival-analysis" class="anchor"></a>Survival analysis</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
           <p><code><a href="getAttributesTime.html">getAttributesTime()</a></code> </p>
         </td>
         <td><p>Get time values for given columns in a clinical dataset</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="assignValuePerSubject.html">assignValuePerSubject()</a></code> </p>
-        </td>
-        <td><p>Assign average sample values to their corresponding subjects</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="labelBasedOnCutoff.html">labelBasedOnCutoff()</a></code> </p>
-        </td>
-        <td><p>Label groups based on a given cutoff</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="optimalSurvivalCutoff.html">optimalSurvivalCutoff()</a></code> </p>
-        </td>
-        <td><p>Calculate optimal data cutoff that best separates survival curves</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="testSurvival.html">testSurvival()</a></code> </p>
-        </td>
-        <td><p>Test the survival difference between groups of subjects</p></td>
       </tr><tr>
         
         <td>
@@ -550,49 +676,33 @@ components</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="testSurvival.html">testSurvival()</a></code> </p>
+        </td>
+        <td><p>Test the survival difference between groups of subjects</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="assignValuePerSubject.html">assignValuePerSubject()</a></code> </p>
+        </td>
+        <td><p>Assign average sample values to their corresponding subjects</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="labelBasedOnCutoff.html">labelBasedOnCutoff()</a></code> </p>
+        </td>
+        <td><p>Label groups based on a given cutoff</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="optimalSurvivalCutoff.html">optimalSurvivalCutoff()</a></code> </p>
+        </td>
+        <td><p>Calculate optimal data cutoff that best separates survival curves</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="plotSurvivalPvaluesByCutoff.html">plotSurvivalPvaluesByCutoff()</a></code> </p>
         </td>
         <td><p>Plot p-values of survival difference between groups based on multiple cutoffs</p></td>
-      </tr>
-    </tbody><tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-differential-analyses" class="hasAnchor"><a href="#section-differential-analyses" class="anchor"></a>Differential analyses</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="diffAnalyses.html">diffAnalyses()</a></code> </p>
-        </td>
-        <td><p>Perform statistical analyses</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plotDistribution.html">plotDistribution()</a></code> </p>
-        </td>
-        <td><p>Plot distribution through a density plot</p></td>
-      </tr>
-    </tbody><tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-gene-expression-and-alternative-splicing-correlation" class="hasAnchor"><a href="#section-gene-expression-and-alternative-splicing-correlation" class="anchor"></a>Gene expression and alternative splicing correlation</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="correlateGEandAS.html">correlateGEandAS()</a></code> </p>
-        </td>
-        <td><p>Correlate gene expression data against alternative splicing quantification</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot.GEandAScorrelation.html">`[`(<i>&lt;GEandAScorrelation&gt;</i>)</a></code> <code><a href="plot.GEandAScorrelation.html">plot(<i>&lt;GEandAScorrelation&gt;</i>)</a></code> <code><a href="plot.GEandAScorrelation.html">print(<i>&lt;GEandAScorrelation&gt;</i>)</a></code> <code><a href="plot.GEandAScorrelation.html">as.table(<i>&lt;GEandAScorrelation&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Display results of correlation analyses</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -601,6 +711,11 @@ components</p></td>
           <p class="section-desc"></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -630,25 +745,10 @@ components</p></td>
     </table>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-general-functions">General functions</a></li>
-      <li><a href="#section-tcga-data-retrieval">TCGA data retrieval</a></li>
-      <li><a href="#section-gtex-data-retrieval">GTEx data retrieval</a></li>
-      <li><a href="#section-sra-data-retrieval">SRA data retrieval</a></li>
-      <li><a href="#section-user-provided-data-loading">User-provided data loading</a></li>
-      <li><a href="#section-gene-expression-pre-processing">Gene expression pre-processing</a></li>
-      <li><a href="#section-psi-quantification">PSI quantification</a></li>
-      <li><a href="#section-custom-alternative-splicing-annotation-preparation">Custom alternative splicing annotation preparation</a></li>
-      <li><a href="#section-data-grouping">Data Grouping</a></li>
-      <li><a href="#section-principal-component-analysis-pca-">Principal component analysis (PCA)</a></li>
-      <li><a href="#section-independent-component-analysis-ica-">Independent component analysis (ICA)</a></li>
-      <li><a href="#section-survival-analysis">Survival analysis</a></li>
-      <li><a href="#section-differential-analyses">Differential analyses</a></li>
-      <li><a href="#section-gene-expression-and-alternative-splicing-correlation">Gene expression and alternative splicing correlation</a></li>
-      <li><a href="#section-gene-transcript-and-protein-annotation-retrieval">Gene, transcript and protein annotation retrieval</a></li>
-    </ul>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -659,13 +759,30 @@ components</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
    </div>
 
   
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script>
+<script>
+  docsearch({
+    
+    
+    apiKey: 'fa0226bf1a3df7e1c8ab8f0e70450e0a',
+    indexName: 'stem-cell-analysis-in-psichomics',
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
+  });
+</script>
+
 
 
   </body>

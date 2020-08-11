@@ -10,34 +10,43 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script>
 
 
+<!-- docsearch -->
+<script src="../docsearch.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.3/docsearch.min.css" integrity="sha256-QOSRU/ra9ActyXkIBbiIB144aDBdtvXBcNc3OTNuX/Q=" crossorigin="anonymous" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
 
 
 <meta property="og:title" content="Query the PubMed REST API — queryPubMed" />
 <meta property="og:description" content="Query the PubMed REST API" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -65,7 +74,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -79,7 +88,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.12.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.2</span>
       </span>
     </div>
 
@@ -120,8 +129,19 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/nuno-agostinho/psichomics/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
+      
+      <form class="navbar-form navbar-right hidden-xs hidden-sm" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
       
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -135,7 +155,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Query the PubMed REST API</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/nuno-agostinho/psichomics/blob/master/R/analysis_information.R'><code>R/analysis_information.R</code></a></small>
     <div class="hidden name"><code>queryPubMed.Rd</code></div>
     </div>
 
@@ -177,9 +197,9 @@ default)</p></td>
     <p>Parsed response</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'><a href='https://rdrr.io/pkg/psichomics/man/queryPubMed.html'>queryPubMed</a></span>(<span class='st'>"BRCA1"</span>, <span class='st'>"cancer"</span>, <span class='st'>"adrenocortical carcinoma"</span>)</div><div class='output co'>#&gt; $search
+    <pre class="examples"><div class='input'><span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>queryPubMed</span>(<span class='st'>"BRCA1"</span>, <span class='st'>"cancer"</span>, <span class='st'>"adrenocortical carcinoma"</span>)</div><div class='output co'>#&gt; $search
 #&gt; $search$count
-#&gt; [1] "16686"
+#&gt; [1] "15925"
 #&gt; 
 #&gt; $search$retmax
 #&gt; [1] "3"
@@ -188,7 +208,7 @@ default)</p></td>
 #&gt; [1] "0"
 #&gt; 
 #&gt; $search$idlist
-#&gt; [1] "30611917" "31174498" "29777908"
+#&gt; [1] "30720863" "30611917" "31174498"
 #&gt; 
 #&gt; $search$translationset
 #&gt;                       from
@@ -209,7 +229,7 @@ default)</p></td>
 #&gt; [1] "MeSH Terms"
 #&gt; 
 #&gt; $search$translationstack[[1]]$count
-#&gt; [1] "5876"
+#&gt; [1] "5953"
 #&gt; 
 #&gt; $search$translationstack[[1]]$explode
 #&gt; [1] "Y"
@@ -223,7 +243,7 @@ default)</p></td>
 #&gt; [1] "All Fields"
 #&gt; 
 #&gt; $search$translationstack[[2]]$count
-#&gt; [1] "1224946"
+#&gt; [1] "1261676"
 #&gt; 
 #&gt; $search$translationstack[[2]]$explode
 #&gt; [1] "N"
@@ -237,7 +257,7 @@ default)</p></td>
 #&gt; [1] "All Fields"
 #&gt; 
 #&gt; $search$translationstack[[3]]$count
-#&gt; [1] "16686"
+#&gt; [1] "17304"
 #&gt; 
 #&gt; $search$translationstack[[3]]$explode
 #&gt; [1] "N"
@@ -260,7 +280,7 @@ default)</p></td>
 #&gt; [1] "All Fields"
 #&gt; 
 #&gt; $search$translationstack[[7]]$count
-#&gt; [1] "5917"
+#&gt; [1] "5995"
 #&gt; 
 #&gt; $search$translationstack[[7]]$explode
 #&gt; [1] "N"
@@ -277,7 +297,7 @@ default)</p></td>
 #&gt; [1] "All Fields"
 #&gt; 
 #&gt; $search$translationstack[[9]]$count
-#&gt; [1] "16686"
+#&gt; [1] "17304"
 #&gt; 
 #&gt; $search$translationstack[[9]]$explode
 #&gt; [1] "N"
@@ -291,13 +311,13 @@ default)</p></td>
 #&gt; 
 #&gt; $search$translationstack[[12]]
 #&gt; $search$translationstack[[12]]$term
-#&gt; [1] "\"genes, brca1\"[MeSH Terms]"
+#&gt; [1] "\"neoplasms\"[MeSH Terms]"
 #&gt; 
 #&gt; $search$translationstack[[12]]$field
 #&gt; [1] "MeSH Terms"
 #&gt; 
 #&gt; $search$translationstack[[12]]$count
-#&gt; [1] "5876"
+#&gt; [1] "3349738"
 #&gt; 
 #&gt; $search$translationstack[[12]]$explode
 #&gt; [1] "Y"
@@ -305,101 +325,101 @@ default)</p></td>
 #&gt; 
 #&gt; $search$translationstack[[13]]
 #&gt; $search$translationstack[[13]]$term
-#&gt; [1] "\"genes\"[All Fields]"
+#&gt; [1] "\"neoplasms\"[All Fields]"
 #&gt; 
 #&gt; $search$translationstack[[13]]$field
 #&gt; [1] "All Fields"
 #&gt; 
 #&gt; $search$translationstack[[13]]$count
-#&gt; [1] "1224946"
+#&gt; [1] "2686405"
 #&gt; 
 #&gt; $search$translationstack[[13]]$explode
 #&gt; [1] "N"
 #&gt; 
 #&gt; 
 #&gt; $search$translationstack[[14]]
-#&gt; $search$translationstack[[14]]$term
-#&gt; [1] "\"brca1\"[All Fields]"
+#&gt; [1] "OR"
 #&gt; 
-#&gt; $search$translationstack[[14]]$field
+#&gt; $search$translationstack[[15]]
+#&gt; $search$translationstack[[15]]$term
+#&gt; [1] "\"cancer\"[All Fields]"
+#&gt; 
+#&gt; $search$translationstack[[15]]$field
 #&gt; [1] "All Fields"
 #&gt; 
-#&gt; $search$translationstack[[14]]$count
-#&gt; [1] "16686"
+#&gt; $search$translationstack[[15]]$count
+#&gt; [1] "2325138"
 #&gt; 
-#&gt; $search$translationstack[[14]]$explode
+#&gt; $search$translationstack[[15]]$explode
 #&gt; [1] "N"
 #&gt; 
 #&gt; 
-#&gt; $search$translationstack[[15]]
-#&gt; [1] "AND"
-#&gt; 
 #&gt; $search$translationstack[[16]]
-#&gt; [1] "GROUP"
+#&gt; [1] "OR"
 #&gt; 
 #&gt; $search$translationstack[[17]]
-#&gt; [1] "OR"
+#&gt; [1] "GROUP"
 #&gt; 
 #&gt; $search$translationstack[[18]]
 #&gt; $search$translationstack[[18]]$term
-#&gt; [1] "\"brca1 genes\"[All Fields]"
+#&gt; [1] "\"adrenocortical carcinoma\"[MeSH Terms]"
 #&gt; 
 #&gt; $search$translationstack[[18]]$field
-#&gt; [1] "All Fields"
+#&gt; [1] "MeSH Terms"
 #&gt; 
 #&gt; $search$translationstack[[18]]$count
-#&gt; [1] "5917"
+#&gt; [1] "1613"
 #&gt; 
 #&gt; $search$translationstack[[18]]$explode
-#&gt; [1] "N"
+#&gt; [1] "Y"
 #&gt; 
 #&gt; 
 #&gt; $search$translationstack[[19]]
-#&gt; [1] "OR"
+#&gt; $search$translationstack[[19]]$term
+#&gt; [1] "\"adrenocortical\"[All Fields]"
+#&gt; 
+#&gt; $search$translationstack[[19]]$field
+#&gt; [1] "All Fields"
+#&gt; 
+#&gt; $search$translationstack[[19]]$count
+#&gt; [1] "21849"
+#&gt; 
+#&gt; $search$translationstack[[19]]$explode
+#&gt; [1] "N"
+#&gt; 
 #&gt; 
 #&gt; $search$translationstack[[20]]
 #&gt; $search$translationstack[[20]]$term
-#&gt; [1] "\"brca1\"[All Fields]"
+#&gt; [1] "\"carcinoma\"[All Fields]"
 #&gt; 
 #&gt; $search$translationstack[[20]]$field
 #&gt; [1] "All Fields"
 #&gt; 
 #&gt; $search$translationstack[[20]]$count
-#&gt; [1] "16686"
+#&gt; [1] "832860"
 #&gt; 
 #&gt; $search$translationstack[[20]]$explode
 #&gt; [1] "N"
 #&gt; 
 #&gt; 
 #&gt; $search$translationstack[[21]]
-#&gt; [1] "OR"
+#&gt; [1] "AND"
 #&gt; 
 #&gt; $search$translationstack[[22]]
 #&gt; [1] "GROUP"
 #&gt; 
 #&gt; $search$translationstack[[23]]
-#&gt; $search$translationstack[[23]]$term
-#&gt; [1] "\"neoplasms\"[MeSH Terms]"
-#&gt; 
-#&gt; $search$translationstack[[23]]$field
-#&gt; [1] "MeSH Terms"
-#&gt; 
-#&gt; $search$translationstack[[23]]$count
-#&gt; [1] "3282632"
-#&gt; 
-#&gt; $search$translationstack[[23]]$explode
-#&gt; [1] "Y"
-#&gt; 
+#&gt; [1] "OR"
 #&gt; 
 #&gt; $search$translationstack[[24]]
 #&gt; $search$translationstack[[24]]$term
-#&gt; [1] "\"neoplasms\"[All Fields]"
+#&gt; [1] "\"adrenocortical carcinoma\"[All Fields]"
 #&gt; 
 #&gt; $search$translationstack[[24]]$field
 #&gt; [1] "All Fields"
 #&gt; 
 #&gt; $search$translationstack[[24]]$count
-#&gt; [1] "2629269"
+#&gt; [1] "3130"
 #&gt; 
 #&gt; $search$translationstack[[24]]$explode
 #&gt; [1] "N"
@@ -409,18 +429,7 @@ default)</p></td>
 #&gt; [1] "OR"
 #&gt; 
 #&gt; $search$translationstack[[26]]
-#&gt; $search$translationstack[[26]]$term
-#&gt; [1] "\"cancer\"[All Fields]"
-#&gt; 
-#&gt; $search$translationstack[[26]]$field
-#&gt; [1] "All Fields"
-#&gt; 
-#&gt; $search$translationstack[[26]]$count
-#&gt; [1] "2235285"
-#&gt; 
-#&gt; $search$translationstack[[26]]$explode
-#&gt; [1] "N"
-#&gt; 
+#&gt; [1] "GROUP"
 #&gt; 
 #&gt; $search$translationstack[[27]]
 #&gt; [1] "OR"
@@ -431,183 +440,161 @@ default)</p></td>
 #&gt; $search$translationstack[[29]]
 #&gt; [1] "AND"
 #&gt; 
-#&gt; $search$translationstack[[30]]
-#&gt; [1] "GROUP"
-#&gt; 
-#&gt; $search$translationstack[[31]]
-#&gt; [1] "OR"
-#&gt; 
-#&gt; $search$translationstack[[32]]
-#&gt; $search$translationstack[[32]]$term
-#&gt; [1] "\"genes, brca1\"[MeSH Terms]"
-#&gt; 
-#&gt; $search$translationstack[[32]]$field
-#&gt; [1] "MeSH Terms"
-#&gt; 
-#&gt; $search$translationstack[[32]]$count
-#&gt; [1] "5876"
-#&gt; 
-#&gt; $search$translationstack[[32]]$explode
-#&gt; [1] "Y"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[33]]
-#&gt; $search$translationstack[[33]]$term
-#&gt; [1] "\"genes\"[All Fields]"
-#&gt; 
-#&gt; $search$translationstack[[33]]$field
-#&gt; [1] "All Fields"
-#&gt; 
-#&gt; $search$translationstack[[33]]$count
-#&gt; [1] "1224946"
-#&gt; 
-#&gt; $search$translationstack[[33]]$explode
-#&gt; [1] "N"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[34]]
-#&gt; $search$translationstack[[34]]$term
-#&gt; [1] "\"brca1\"[All Fields]"
-#&gt; 
-#&gt; $search$translationstack[[34]]$field
-#&gt; [1] "All Fields"
-#&gt; 
-#&gt; $search$translationstack[[34]]$count
-#&gt; [1] "16686"
-#&gt; 
-#&gt; $search$translationstack[[34]]$explode
-#&gt; [1] "N"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[35]]
-#&gt; [1] "AND"
-#&gt; 
-#&gt; $search$translationstack[[36]]
-#&gt; [1] "GROUP"
-#&gt; 
-#&gt; $search$translationstack[[37]]
-#&gt; [1] "OR"
-#&gt; 
-#&gt; $search$translationstack[[38]]
-#&gt; $search$translationstack[[38]]$term
-#&gt; [1] "\"brca1 genes\"[All Fields]"
-#&gt; 
-#&gt; $search$translationstack[[38]]$field
-#&gt; [1] "All Fields"
-#&gt; 
-#&gt; $search$translationstack[[38]]$count
-#&gt; [1] "5917"
-#&gt; 
-#&gt; $search$translationstack[[38]]$explode
-#&gt; [1] "N"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[39]]
-#&gt; [1] "OR"
-#&gt; 
-#&gt; $search$translationstack[[40]]
-#&gt; $search$translationstack[[40]]$term
-#&gt; [1] "\"brca1\"[All Fields]"
-#&gt; 
-#&gt; $search$translationstack[[40]]$field
-#&gt; [1] "All Fields"
-#&gt; 
-#&gt; $search$translationstack[[40]]$count
-#&gt; [1] "16686"
-#&gt; 
-#&gt; $search$translationstack[[40]]$explode
-#&gt; [1] "N"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[41]]
-#&gt; [1] "OR"
-#&gt; 
-#&gt; $search$translationstack[[42]]
-#&gt; [1] "GROUP"
-#&gt; 
-#&gt; $search$translationstack[[43]]
-#&gt; $search$translationstack[[43]]$term
-#&gt; [1] "\"adrenocortical carcinoma\"[MeSH Terms]"
-#&gt; 
-#&gt; $search$translationstack[[43]]$field
-#&gt; [1] "MeSH Terms"
-#&gt; 
-#&gt; $search$translationstack[[43]]$count
-#&gt; [1] "1544"
-#&gt; 
-#&gt; $search$translationstack[[43]]$explode
-#&gt; [1] "Y"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[44]]
-#&gt; $search$translationstack[[44]]$term
-#&gt; [1] "\"adrenocortical\"[All Fields]"
-#&gt; 
-#&gt; $search$translationstack[[44]]$field
-#&gt; [1] "All Fields"
-#&gt; 
-#&gt; $search$translationstack[[44]]$count
-#&gt; [1] "21589"
-#&gt; 
-#&gt; $search$translationstack[[44]]$explode
-#&gt; [1] "N"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[45]]
-#&gt; $search$translationstack[[45]]$term
-#&gt; [1] "\"carcinoma\"[All Fields]"
-#&gt; 
-#&gt; $search$translationstack[[45]]$field
-#&gt; [1] "All Fields"
-#&gt; 
-#&gt; $search$translationstack[[45]]$count
-#&gt; [1] "811972"
-#&gt; 
-#&gt; $search$translationstack[[45]]$explode
-#&gt; [1] "N"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[46]]
-#&gt; [1] "AND"
-#&gt; 
-#&gt; $search$translationstack[[47]]
-#&gt; [1] "GROUP"
-#&gt; 
-#&gt; $search$translationstack[[48]]
-#&gt; [1] "OR"
-#&gt; 
-#&gt; $search$translationstack[[49]]
-#&gt; $search$translationstack[[49]]$term
-#&gt; [1] "\"adrenocortical carcinoma\"[All Fields]"
-#&gt; 
-#&gt; $search$translationstack[[49]]$field
-#&gt; [1] "All Fields"
-#&gt; 
-#&gt; $search$translationstack[[49]]$count
-#&gt; [1] "3021"
-#&gt; 
-#&gt; $search$translationstack[[49]]$explode
-#&gt; [1] "N"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[50]]
-#&gt; [1] "OR"
-#&gt; 
-#&gt; $search$translationstack[[51]]
-#&gt; [1] "GROUP"
-#&gt; 
-#&gt; $search$translationstack[[52]]
-#&gt; [1] "AND"
-#&gt; 
-#&gt; $search$translationstack[[53]]
-#&gt; [1] "GROUP"
-#&gt; 
-#&gt; $search$translationstack[[54]]
-#&gt; [1] "OR"
-#&gt; 
 #&gt; 
 #&gt; $search$querytranslation
-#&gt; [1] "(\"genes, brca1\"[MeSH Terms] OR (\"genes\"[All Fields] AND \"brca1\"[All Fields]) OR \"brca1 genes\"[All Fields] OR \"brca1\"[All Fields]) OR ((\"genes, brca1\"[MeSH Terms] OR (\"genes\"[All Fields] AND \"brca1\"[All Fields]) OR \"brca1 genes\"[All Fields] OR \"brca1\"[All Fields]) AND (\"neoplasms\"[MeSH Terms] OR \"neoplasms\"[All Fields] OR \"cancer\"[All Fields])) OR ((\"genes, brca1\"[MeSH Terms] OR (\"genes\"[All Fields] AND \"brca1\"[All Fields]) OR \"brca1 genes\"[All Fields] OR \"brca1\"[All Fields]) AND (\"adrenocortical carcinoma\"[MeSH Terms] OR (\"adrenocortical\"[All Fields] AND \"carcinoma\"[All Fields]) OR \"adrenocortical carcinoma\"[All Fields]))"
+#&gt; [1] "(\"genes, brca1\"[MeSH Terms] OR (\"genes\"[All Fields] AND \"brca1\"[All Fields]) OR \"brca1 genes\"[All Fields] OR \"brca1\"[All Fields]) AND ((\"neoplasms\"[MeSH Terms] OR \"neoplasms\"[All Fields] OR \"cancer\"[All Fields]) OR (\"adrenocortical carcinoma\"[MeSH Terms] OR (\"adrenocortical\"[All Fields] AND \"carcinoma\"[All Fields]) OR \"adrenocortical carcinoma\"[All Fields]))"
+#&gt; 
+#&gt; 
+#&gt; $`30720863`
+#&gt; $`30720863`$uid
+#&gt; [1] "30720863"
+#&gt; 
+#&gt; $`30720863`$pubdate
+#&gt; [1] "2019 Sep 15"
+#&gt; 
+#&gt; $`30720863`$epubdate
+#&gt; [1] "2019 Feb 22"
+#&gt; 
+#&gt; $`30720863`$source
+#&gt; [1] "Int J Cancer"
+#&gt; 
+#&gt; $`30720863`$authors
+#&gt;       name authtype clusterid
+#&gt; 1   Deng M   Author          
+#&gt; 2  Chen HH   Author          
+#&gt; 3    Zhu X   Author          
+#&gt; 4    Luo M   Author          
+#&gt; 5  Zhang K   Author          
+#&gt; 6    Xu CJ   Author          
+#&gt; 7    Hu KM   Author          
+#&gt; 8  Cheng P   Author          
+#&gt; 9  Zhou JJ   Author          
+#&gt; 10 Zheng S   Author          
+#&gt; 11 Chen YD   Author          
+#&gt; 
+#&gt; $`30720863`$lastauthor
+#&gt; [1] "Chen YD"
+#&gt; 
+#&gt; $`30720863`$title
+#&gt; [1] "Prevalence and clinical outcomes of germline mutations in BRCA1/2 and PALB2 genes in 2769 unselected breast cancer patients in China."
+#&gt; 
+#&gt; $`30720863`$sorttitle
+#&gt; [1] "prevalence and clinical outcomes of germline mutations in brca1 2 and palb2 genes in 2769 unselected breast cancer patients in china"
+#&gt; 
+#&gt; $`30720863`$volume
+#&gt; [1] "145"
+#&gt; 
+#&gt; $`30720863`$issue
+#&gt; [1] "6"
+#&gt; 
+#&gt; $`30720863`$pages
+#&gt; [1] "1517-1528"
+#&gt; 
+#&gt; $`30720863`$lang
+#&gt; [1] "eng"
+#&gt; 
+#&gt; $`30720863`$nlmuniqueid
+#&gt; [1] "0042124"
+#&gt; 
+#&gt; $`30720863`$issn
+#&gt; [1] "0020-7136"
+#&gt; 
+#&gt; $`30720863`$essn
+#&gt; [1] "1097-0215"
+#&gt; 
+#&gt; $`30720863`$pubtype
+#&gt; [1] "Journal Article"
+#&gt; 
+#&gt; $`30720863`$recordstatus
+#&gt; [1] "PubMed - indexed for MEDLINE"
+#&gt; 
+#&gt; $`30720863`$pubstatus
+#&gt; [1] "256"
+#&gt; 
+#&gt; $`30720863`$articleids
+#&gt;   idtype idtypen             value
+#&gt; 1 pubmed       1          30720863
+#&gt; 2    doi       3 10.1002/ijc.32184
+#&gt; 3    rid       8          30720863
+#&gt; 4    eid       8          30720863
+#&gt; 
+#&gt; $`30720863`$history
+#&gt;   pubstatus             date
+#&gt; 1  received 2018/08/17 00:00
+#&gt; 2   revised 2018/12/30 00:00
+#&gt; 3  accepted 2019/01/22 00:00
+#&gt; 4    pubmed 2019/02/06 06:00
+#&gt; 5   medline 2020/02/15 06:00
+#&gt; 6    entrez 2019/02/06 06:00
+#&gt; 
+#&gt; $`30720863`$references
+#&gt; list()
+#&gt; 
+#&gt; $`30720863`$attributes
+#&gt; [1] "Has Abstract"
+#&gt; 
+#&gt; $`30720863`$pmcrefcount
+#&gt; [1] 3
+#&gt; 
+#&gt; $`30720863`$fulljournalname
+#&gt; [1] "International journal of cancer"
+#&gt; 
+#&gt; $`30720863`$elocationid
+#&gt; [1] "doi: 10.1002/ijc.32184"
+#&gt; 
+#&gt; $`30720863`$doctype
+#&gt; [1] "citation"
+#&gt; 
+#&gt; $`30720863`$srccontriblist
+#&gt; list()
+#&gt; 
+#&gt; $`30720863`$booktitle
+#&gt; [1] ""
+#&gt; 
+#&gt; $`30720863`$medium
+#&gt; [1] ""
+#&gt; 
+#&gt; $`30720863`$edition
+#&gt; [1] ""
+#&gt; 
+#&gt; $`30720863`$publisherlocation
+#&gt; [1] ""
+#&gt; 
+#&gt; $`30720863`$publishername
+#&gt; [1] ""
+#&gt; 
+#&gt; $`30720863`$srcdate
+#&gt; [1] ""
+#&gt; 
+#&gt; $`30720863`$reportnumber
+#&gt; [1] ""
+#&gt; 
+#&gt; $`30720863`$availablefromurl
+#&gt; [1] ""
+#&gt; 
+#&gt; $`30720863`$locationlabel
+#&gt; [1] ""
+#&gt; 
+#&gt; $`30720863`$doccontriblist
+#&gt; list()
+#&gt; 
+#&gt; $`30720863`$docdate
+#&gt; [1] ""
+#&gt; 
+#&gt; $`30720863`$bookname
+#&gt; [1] ""
+#&gt; 
+#&gt; $`30720863`$chapter
+#&gt; [1] ""
+#&gt; 
+#&gt; $`30720863`$sortpubdate
+#&gt; [1] "2019/09/15 00:00"
+#&gt; 
+#&gt; $`30720863`$sortfirstauthor
+#&gt; [1] "Deng M"
+#&gt; 
+#&gt; $`30720863`$vernaculartitle
+#&gt; [1] ""
 #&gt; 
 #&gt; 
 #&gt; $`30611917`
@@ -912,159 +899,12 @@ default)</p></td>
 #&gt; $`31174498`$vernaculartitle
 #&gt; [1] ""
 #&gt; 
-#&gt; 
-#&gt; $`29777908`
-#&gt; $`29777908`$uid
-#&gt; [1] "29777908"
-#&gt; 
-#&gt; $`29777908`$pubdate
-#&gt; [1] "2018 Aug 20"
-#&gt; 
-#&gt; $`29777908`$epubdate
-#&gt; [1] "2018 May 17"
-#&gt; 
-#&gt; $`29777908`$source
-#&gt; [1] "Gene"
-#&gt; 
-#&gt; $`29777908`$authors
-#&gt;       name authtype clusterid
-#&gt; 1 Rahman S   Author          
-#&gt; 2  Zayed H   Author          
-#&gt; 
-#&gt; $`29777908`$lastauthor
-#&gt; [1] "Zayed H"
-#&gt; 
-#&gt; $`29777908`$title
-#&gt; [1] "Breast cancer in the GCC countries: A focus on BRCA1/2 and non-BRCA1/2 genes."
-#&gt; 
-#&gt; $`29777908`$sorttitle
-#&gt; [1] "breast cancer in the gcc countries a focus on brca1 2 and non brca1 2 genes"
-#&gt; 
-#&gt; $`29777908`$volume
-#&gt; [1] "668"
-#&gt; 
-#&gt; $`29777908`$issue
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29777908`$pages
-#&gt; [1] "73-76"
-#&gt; 
-#&gt; $`29777908`$lang
-#&gt; [1] "eng"
-#&gt; 
-#&gt; $`29777908`$nlmuniqueid
-#&gt; [1] "7706761"
-#&gt; 
-#&gt; $`29777908`$issn
-#&gt; [1] "0378-1119"
-#&gt; 
-#&gt; $`29777908`$essn
-#&gt; [1] "1879-0038"
-#&gt; 
-#&gt; $`29777908`$pubtype
-#&gt; [1] "Journal Article" "Review"         
-#&gt; 
-#&gt; $`29777908`$recordstatus
-#&gt; [1] "PubMed - indexed for MEDLINE"
-#&gt; 
-#&gt; $`29777908`$pubstatus
-#&gt; [1] "256"
-#&gt; 
-#&gt; $`29777908`$articleids
-#&gt;   idtype idtypen                      value
-#&gt; 1 pubmed       1                   29777908
-#&gt; 2    pii       4      S0378-1119(18)30534-1
-#&gt; 3    doi       3 10.1016/j.gene.2018.05.045
-#&gt; 4    rid       8                   29777908
-#&gt; 5    eid       8                   29777908
-#&gt; 
-#&gt; $`29777908`$history
-#&gt;   pubstatus             date
-#&gt; 1  received 2018/03/18 00:00
-#&gt; 2  accepted 2018/05/13 00:00
-#&gt; 3    pubmed 2018/05/20 06:00
-#&gt; 4   medline 2018/06/14 06:00
-#&gt; 5    entrez 2018/05/20 06:00
-#&gt; 
-#&gt; $`29777908`$references
-#&gt; list()
-#&gt; 
-#&gt; $`29777908`$attributes
-#&gt; [1] "Has Abstract"
-#&gt; 
-#&gt; $`29777908`$pmcrefcount
-#&gt; [1] 1
-#&gt; 
-#&gt; $`29777908`$fulljournalname
-#&gt; [1] "Gene"
-#&gt; 
-#&gt; $`29777908`$elocationid
-#&gt; [1] "doi: 10.1016/j.gene.2018.05.045"
-#&gt; 
-#&gt; $`29777908`$doctype
-#&gt; [1] "citation"
-#&gt; 
-#&gt; $`29777908`$srccontriblist
-#&gt; list()
-#&gt; 
-#&gt; $`29777908`$booktitle
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29777908`$medium
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29777908`$edition
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29777908`$publisherlocation
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29777908`$publishername
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29777908`$srcdate
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29777908`$reportnumber
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29777908`$availablefromurl
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29777908`$locationlabel
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29777908`$doccontriblist
-#&gt; list()
-#&gt; 
-#&gt; $`29777908`$docdate
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29777908`$bookname
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29777908`$chapter
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29777908`$sortpubdate
-#&gt; [1] "2018/08/20 00:00"
-#&gt; 
-#&gt; $`29777908`$sortfirstauthor
-#&gt; [1] "Rahman S"
-#&gt; 
-#&gt; $`29777908`$vernaculartitle
-#&gt; [1] ""
-#&gt; 
 #&gt; </div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -1075,13 +915,30 @@ default)</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
    </div>
 
   
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script>
+<script>
+  docsearch({
+    
+    
+    apiKey: 'fa0226bf1a3df7e1c8ab8f0e70450e0a',
+    indexName: 'stem-cell-analysis-in-psichomics',
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
+  });
+</script>
+
 
 
   </body>

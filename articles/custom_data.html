@@ -5,14 +5,16 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Loading SRA and user-provided RNA-seq data • psichomics</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Loading SRA and user-provided RNA-seq data">
-<meta property="og:description" content="">
-<meta name="twitter:card" content="summary">
+<title>Loading SRA, VAST-TOOLS and user-provided RNA-seq data • psichomics</title>
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="../pkgdown.js"></script><!-- docsearch --><script src="../docsearch.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.3/docsearch.min.css" integrity="sha256-QOSRU/ra9ActyXkIBbiIB144aDBdtvXBcNc3OTNuX/Q=" crossorigin="anonymous">
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script><meta property="og:title" content="Loading SRA, VAST-TOOLS and user-provided RNA-seq data">
+<meta property="og:description" content="psichomics">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -24,7 +26,7 @@
   gtag('config', 'UA-156449666-1');
 </script>
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -37,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.12.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.2</span>
       </span>
     </div>
 
@@ -77,8 +79,21 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/nuno-agostinho/psichomics/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+<form class="navbar-form navbar-right hidden-xs hidden-sm" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
 </div>
+      </form>
+      
+    </div>
 <!--/.nav-collapse -->
   </div>
 <!--/.container -->
@@ -87,64 +102,146 @@
 
       
 
-      </header><div class="row">
+      </header><script src="custom_data_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Loading SRA and user-provided RNA-seq data</h1>
+      <h1 data-toc-skip>Loading SRA, VAST-TOOLS and user-provided RNA-seq data</h1>
                         <h4 class="author">Nuno Saraiva-Agostinho</h4>
             
-            <h4 class="date">2020-02-13</h4>
+            <h4 class="date">2020-08-11</h4>
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/psichomics/blob/master/vignettes/custom_data.Rmd"><code>vignettes/custom_data.Rmd</code></a></small>
       <div class="hidden name"><code>custom_data.Rmd</code></div>
 
     </div>
 
     
     
-<hr>
-<p><em>psichomics</em> is an interactive R package for integrative analyses of alternative splicing and gene expression based on <a href="https://tcga-data.nci.nih.gov/docs/publications/tcga">The Cancer Genome Atlas (TCGA)</a> (containing molecular data associated with 34 tumour types), the <a href="https://www.gtexportal.org">Genotype-Tissue Expression (GTEx)</a> project (containing data for multiple normal human tissues), <a href="https://www.ncbi.nlm.nih.gov/sra">Sequence Read Archive</a> and user-provided data.</p>
-<p>The following tutorial goes through the steps required to load custom RNA-seq data:</p>
+<p><em>psichomics</em> is an interactive R package for integrative analyses of alternative splicing and gene expression based on <a href="https://tcga-data.nci.nih.gov/docs/publications/tcga">The Cancer Genome Atlas (TCGA)</a> (containing molecular data associated with 34 tumour types), the <a href="https://www.gtexportal.org">Genotype-Tissue Expression (GTEx)</a> project (containing data for multiple normal human tissues), <a href="https://www.ncbi.nlm.nih.gov/sra">Sequence Read Archive (SRA)</a> and user-provided data.</p>
+<div id="supported-file-formats-in-psichomics" class="section level1">
+<h1 class="hasAnchor">
+<a href="#supported-file-formats-in-psichomics" class="anchor"></a>Supported file formats in psichomics</h1>
+<p>The following file formats are supported by psichomics. The links in the table redirect to instructions on how to load data from each source.</p>
+<table class="table">
+<colgroup>
+<col width="55%">
+<col width="7%">
+<col width="7%">
+<col width="7%">
+<col width="7%">
+<col width="14%">
+</colgroup>
+<thead><tr class="header">
+<th>Source</th>
+<th align="center">Sample information</th>
+<th align="center">Subject information</th>
+<th align="center">Gene expression</th>
+<th align="center">Exon-exon junction quantification</th>
+<th align="center">Alternative splicing quantification</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><a href="#prepare-sra-run-selector-data">SRA Run Selector</a></td>
+<td align="center">Yes</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr class="even">
+<td><a href="#prepare-tables-based-on-rna-seq-data-using-star">STAR</a></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">Yes</td>
+<td align="center">Yes</td>
+<td align="center"></td>
+</tr>
+<tr class="odd">
+<td><a href="#prepare-vast-tools-data">VAST-TOOLS</a></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">Yes</td>
+<td align="center"></td>
+<td align="center">Yes</td>
+</tr>
+<tr class="even">
+<td><a href="#prepare-firebrowse-data">TCGA (via FireBrowse)</a></td>
+<td align="center">Yes</td>
+<td align="center">Yes</td>
+<td align="center">Yes</td>
+<td align="center">Yes</td>
+<td align="center"></td>
+</tr>
+<tr class="odd">
+<td><a href="https://nuno-agostinho.github.io/psichomics/articles/CLI_tutorial.html#load-sra-project-data-using-recount">SRA (via recount)</a></td>
+<td align="center">Yes</td>
+<td align="center">Yes</td>
+<td align="center">Yes</td>
+<td align="center">Yes</td>
+<td align="center"></td>
+</tr>
+<tr class="even">
+<td><a href="#prepare-gtex-data">GTEx</a></td>
+<td align="center">Yes</td>
+<td align="center">Yes</td>
+<td align="center">Yes</td>
+<td align="center">Yes</td>
+<td align="center"></td>
+</tr>
+<tr class="odd">
+<td><a href="#prepare-data-from-any-source">Other sources</a></td>
+<td align="center">Yes</td>
+<td align="center">Yes</td>
+<td align="center">Yes</td>
+<td align="center">Yes</td>
+<td align="center">Limited*</td>
+</tr>
+</tbody>
+</table>
+<p>* psichomics cannot fully parse alternative splicing events (e.g. it may not identify the cognate gene and coordinates) based on tables from these sources.</p>
+<div id="prepare-sra-run-selector-data" class="section level2">
+<h2 class="hasAnchor">
+<a href="#prepare-sra-run-selector-data" class="anchor"></a>Prepare <a href="https://www.ncbi.nlm.nih.gov/Traces/study/">SRA Run Selector</a> data</h2>
+<p>The <a href="https://www.ncbi.nlm.nih.gov/Traces/study/">SRA Run Selector</a> contains sample metadata that can be downloaded for all or selected samples from a SRA project. To download sample information, click the <strong>Metadata</strong> button in the <strong>Download</strong> columns. The output file is usually named <code>SraRunTable.txt</code>.</p>
+<p>To proceed loading the data, move the downloaded file to a new folder and follow the instructions in <a href="#load-user-provided-data-into-psichomics">Load user-provided data into psichomics</a>.</p>
+</div>
+<div id="prepare-tables-based-on-rna-seq-data-using-star" class="section level2">
+<h2 class="hasAnchor">
+<a href="#prepare-tables-based-on-rna-seq-data-using-star" class="anchor"></a>Prepare tables based on RNA-seq data using STAR</h2>
+<p>The following section goes through the steps required to load data based on RNA-seq data:</p>
 <ol style="list-style-type: decimal">
-<li>Retrieve FASTQ files and sample-associated information from the <a href="https://www.ncbi.nlm.nih.gov/sra">Sequence Read Archive (SRA)</a> (optional if you already have your own FASTQ samples);</li>
-<li>Map RNA-seq reads from the FASTQ files against a genome of reference using <a href="https://github.com/alexdobin/STAR">STAR</a>, a splice-aware aligner;</li>
-<li>Merge and prepare the output of such aligners to be correctly interpreted by psichomics;</li>
+<li>Retrieve FASTQ files and sample-associated information (optional if you already have the FASTQ files);</li>
+<li>Map RNA-seq reads from the FASTQ files against a genome of reference using a splice-aware aligner, such as <a href="https://github.com/alexdobin/STAR">STAR</a>;</li>
+<li>Merge and prepare its output to be correctly interpreted by psichomics;</li>
 <li>Load data into psichomics.</li>
 </ol>
-<div id="download-data-from-sra-optional" class="section level1">
-<h1 class="hasAnchor">
-<a href="#download-data-from-sra-optional" class="anchor"></a>Download data from SRA (optional)</h1>
-<p><a href="https://www.ncbi.nlm.nih.gov/sra">SRA</a> is a repository of biological sequence data that stores data from many published articles. <a href="https://www.ncbi.nlm.nih.gov/sra">SRA</a> data may be useful to answer pressing biological questions using publicly available data.</p>
+<div id="download-fastq-files-optional" class="section level3">
+<h3 class="hasAnchor">
+<a href="#download-fastq-files-optional" class="anchor"></a>Download FASTQ files (optional)</h3>
+<p><a href="https://www.ncbi.nlm.nih.gov/sra">SRA</a> is a repository of biological sequences that stores data from many published articles with the potential to answer pressing biological questions.</p>
 <blockquote>
-<p>The latest versions of psichomics support <strong>automatic downloading of SRA data</strong> from <a href="https://jhubiostatistics.shinyapps.io/recount/">recount2</a>, a resource of pre-processed data for thousands of SRA projects (including gene read counts, splice junction quantification and sample metadata). Check first if the project of your interest is not available through this resource, thus making it easier to analyse gene expression and alternative splicing for your samples of interest.</p>
+<p>The latest versions of psichomics support <strong>automatic downloading of SRA data</strong> from <a href="https://jhubiostatistics.shinyapps.io/recount/">recount</a>, a resource of pre-processed data for thousands of SRA projects (including gene read counts, splice junction quantification and sample metadata). First, check if the project of your interest is available in recount, thus making it quicker to analyse gene expression and alternative splicing for your samples of interest.</p>
 </blockquote>
-<p>Data from SRA can be downloaded using the <a href="https://ncbi.github.io/sra-tools/fastq-dump.html">fastq-dump</a> command from <a href="https://ncbi.github.io/sra-tools/">sra-tools</a>. For instance, to retrieve samples from the <a href="https://trace.ncbi.nlm.nih.gov/Traces/study/?acc=SRP126561">SRP126561</a> project, we could do the following:</p>
+<p>Data from SRA can be downloaded using the <a href="https://github.com/ncbi/sra-tools/wiki/HowTo:-fasterq-dump">fasterq-dump</a> command from <a href="https://github.com/ncbi/sra-tools">sra-tools</a>. For instance, to retrieve samples from the <a href="https://trace.ncbi.nlm.nih.gov/Traces/study/?acc=SRP126561">SRP126561</a> project:</p>
 <pre><code># List SRA samples
 samples=(SRR6368612 SRR6368613 SRR6368614 SRR6368615 SRR6368616 SRR6368617)
 
-# Download each sample using fastq-dump
-for each in ${samples}; do
-    fastq-dump --gzip --split-3 ${each}
-done</code></pre>
-<p>Arguments used in the previous command:</p>
-<ul>
-<li>
-<strong><code>--gzip</code></strong>: compress FASTQ files in the GZIP format</li>
-<li>
-<strong><code>--split-3</code></strong>: allows to output one or two FASTQ files for single-end or paired-end sequencing, respectively (a third FASTQ file may also be returned containing orphaned single-end reads obtained from paired-end sequencing data)</li>
-</ul>
-<p>Sample-associated data is also available from the <a href="https://trace.ncbi.nlm.nih.gov/Traces/study/?acc=SRP126561">Run Selector</a> page. Click <strong>RunInfo Table</strong> to download the whole metadata table for all samples.</p>
+# Download samples
+fasterq-dump --split-3 ${samples}</code></pre>
+<p><strong><code>--split-3</code></strong>: allows to output one or two FASTQ files for single-end or paired-end sequencing, respectively (a third FASTQ file may also be returned containing orphaned single-end reads obtained from paired-end sequencing data)</p>
+<p>Sample-associated data is also available from the <a href="https://trace.ncbi.nlm.nih.gov/Traces/study/?acc=SRP126561">Run Selector</a> page. Click <strong>RunInfo Table</strong> to download the whole metadata table for all samples (usually downloaded in a file named <code>SraRunTable.txt</code>).</p>
 </div>
-<div id="align-rna-seq-data-to-quantify-splice-junctions" class="section level1">
-<h1 class="hasAnchor">
-<a href="#align-rna-seq-data-to-quantify-splice-junctions" class="anchor"></a>Align RNA-seq data to quantify splice junctions</h1>
+<div id="align-rna-seq-data-to-quantify-splice-junctions" class="section level3">
+<h3 class="hasAnchor">
+<a href="#align-rna-seq-data-to-quantify-splice-junctions" class="anchor"></a>Align RNA-seq data to quantify splice junctions</h3>
 <p>The quantification of each alternative splicing event is based on the proportion of junction reads that support the inclusion isoform, known as percent spliced-in or PSI <span class="citation">(Wang <em>et al.</em>, 2008)</span>.</p>
-<p>To estimate this value for each splicing event, both alternative splicing annotation and quantification of RNA-Seq reads aligning to splice junctions (junction quantification) are required. While alternative splicing annotation is provided by the package, junction quantification will need to be prepared from user-provided data by aligning the RNA-seq reads from FASTQ files to a genome of reference. As junction reads are required to quantify alternative splicing, a splice-aware aligner will be used. psichomics currently supports STAR output.</p>
-<div id="star" class="section level2">
-<h2 class="hasAnchor">
-<a href="#star" class="anchor"></a>STAR</h2>
-<p>Before aligning FASTQ samples against a genome of reference, a genome index needs to be prepared.</p>
-<p>Start by downloading a FASTA file of the whole genome and a GTF file with annotated transcript. To run the following example, download the <a href="https://grch37.ensembl.org/info/data/ftp/">human FASTA and GTF files (hg19 assembly)</a>.</p>
+<p>To estimate this value for each splicing event, both alternative splicing annotation and quantification of RNA-Seq reads aligning to splice junctions (junction quantification) are required. While alternative splicing annotation is provided by the package, junction quantification will need to be prepared from user-provided data by aligning the RNA-seq reads from FASTQ files to a genome of reference. As junction reads are required to quantify alternative splicing, a splice-aware aligner will be used.</p>
+<p>psichomics currently supports <a href="https://github.com/alexdobin/STAR">STAR</a> output.</p>
+<div id="index-the-genome-using-star" class="section level4">
+<h4 class="hasAnchor">
+<a href="#index-the-genome-using-star" class="anchor"></a>Index the genome using STAR</h4>
+<p>Before aligning FASTQ samples against a genome of reference, an index needs to be prepared.</p>
+<p>Start by downloading a FASTA file of the whole genome and a GTF file with annotated transcripts. This command makes use of these <a href="https://grch37.ensembl.org/info/data/ftp/">human FASTA and GTF files (hg19 assembly)</a>.</p>
 <pre><code>mkdir hg19_STAR
 STAR --runThreadN 4 \
      --runMode genomeGenerate \
@@ -164,8 +261,11 @@ STAR --runThreadN 4 \
 <li>
 <strong><code>--sjdbGTFfile</code></strong>: path to transcript annotation (GTF format)</li>
 </ul>
-<hr>
-<p>After the genome index is generated, the sequences in the FASTQ files are aligned against the annotated gene and splice junctions from the previously prepared reference. The following commands make STAR output both gene and junction read counts into files ending in <code>ReadsPerGene.out.tab</code> and <code>SJ.out.tab</code>, respectively.</p>
+</div>
+<div id="align-against-genome-index-using-star" class="section level4">
+<h4 class="hasAnchor">
+<a href="#align-against-genome-index-using-star" class="anchor"></a>Align against genome index using STAR</h4>
+<p>After the genome index is generated, the sequences in the FASTQ files need to be aligned against the annotated gene and splice junctions from the previously prepared reference. The following commands make STAR output both gene and junction read counts into files ending in <code>ReadsPerGene.out.tab</code> and <code>SJ.out.tab</code>, respectively.</p>
 <pre><code>align () {
     echo "Aligning ${1} using STAR..."
     STAR --runThreadN 16 \
@@ -173,7 +273,7 @@ STAR --runThreadN 4 \
          --quantMode GeneCounts \
          --readFilesCommand zcat \
          --outFileNamePrefix ${1} \
-         --readFilesIn ${1}_1.fastq.gz ${1}_2.fastq.gz
+         --readFilesIn ${1}_1.fastq ${1}_2.fastq
 }
 
 for each in ${samples}; do
@@ -196,38 +296,298 @@ done</code></pre>
 </ul>
 </div>
 </div>
-<div id="prepare-output-for-psichomics" class="section level1">
-<h1 class="hasAnchor">
-<a href="#prepare-output-for-psichomics" class="anchor"></a>Prepare output for psichomics</h1>
-<p>To process the resulting data files, open an R console or RStudio and type:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># Change working directory to where the STAR output is</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/getwd.html">setwd</a></span>(<span class="st">"/path/to/aligned/output/"</span>)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(psichomics)</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="kw"><a href="../reference/prepareSRAmetadata.html">prepareGeneQuant</a></span>(</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">    <span class="st">"SRR6368612ReadsPerGene.out.tab"</span>, <span class="st">"SRR6368613ReadsPerGene.out.tab"</span>,</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">    <span class="st">"SRR6368614ReadsPerGene.out.tab"</span>, <span class="st">"SRR6368615ReadsPerGene.out.tab"</span>,</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8">    <span class="st">"SRR6368616ReadsPerGene.out.tab"</span>, <span class="st">"SRR6368617ReadsPerGene.out.tab"</span>)</a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="kw"><a href="../reference/prepareSRAmetadata.html">prepareJunctionQuant</a></span>(<span class="st">"SRR6368612SJ.out.tab"</span>, <span class="st">"SRR6368613SJ.out.tab"</span>, </a>
-<a class="sourceLine" id="cb4-10" data-line-number="10">                     <span class="st">"SRR6368614SJ.out.tab"</span>, <span class="st">"SRR6368615SJ.out.tab"</span>,</a>
-<a class="sourceLine" id="cb4-11" data-line-number="11">                     <span class="st">"SRR6368616SJ.out.tab"</span>, <span class="st">"SRR6368617SJ.out.tab"</span>)</a>
-<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="kw"><a href="../reference/prepareSRAmetadata.html">prepareSRAmetadata</a></span>(<span class="st">"SraRunTable.txt"</span>)</a></code></pre></div>
-<div id="load-data-in-visual-interface" class="section level2">
-<h2 class="hasAnchor">
-<a href="#load-data-in-visual-interface" class="anchor"></a>Load data in visual interface</h2>
-<p>Start psichomics with the following commands in an R console or RStudio:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(psichomics)</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw"><a href="../reference/psichomics.html">psichomics</a></span>()</a></code></pre></div>
-<p>Then, click <strong>Load user files</strong>. Click the <strong>Folder input</strong> tab and select the appropriate folder where the psichomics-prepared data is stored. Finally, click <strong>Load files</strong> to automatically scan and load supported files in the selected folder.</p>
+<div id="prepare-output-for-psichomics" class="section level3">
+<h3 class="hasAnchor">
+<a href="#prepare-output-for-psichomics" class="anchor"></a>Prepare output for psichomics</h3>
+<p>To process the resulting data files, type in R:</p>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="co"># Change working directory to where the STAR output is</span>
+<span class="fu"><a href="https://rdrr.io/r/base/getwd.html">setwd</a></span>(<span class="st">"/path/to/aligned/output/"</span>)
+
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">psichomics</span>)
+<span class="fu"><a href="../reference/prepareSRAmetadata.html">prepareGeneQuant</a></span>(
+    <span class="st">"SRR6368612ReadsPerGene.out.tab"</span>, <span class="st">"SRR6368613ReadsPerGene.out.tab"</span>,
+    <span class="st">"SRR6368614ReadsPerGene.out.tab"</span>, <span class="st">"SRR6368615ReadsPerGene.out.tab"</span>,
+    <span class="st">"SRR6368616ReadsPerGene.out.tab"</span>, <span class="st">"SRR6368617ReadsPerGene.out.tab"</span>)
+<span class="fu"><a href="../reference/prepareSRAmetadata.html">prepareJunctionQuant</a></span>(<span class="st">"SRR6368612SJ.out.tab"</span>, <span class="st">"SRR6368613SJ.out.tab"</span>,
+                     <span class="st">"SRR6368614SJ.out.tab"</span>, <span class="st">"SRR6368615SJ.out.tab"</span>,
+                     <span class="st">"SRR6368616SJ.out.tab"</span>, <span class="st">"SRR6368617SJ.out.tab"</span>)</pre></body></html></div>
+<p>To load the data, move the files (including the SRA metadata) to a new folder and follow the instructions in <a href="#load-user-provided-data-into-psichomics">Load user-provided data into psichomics</a>.</p>
 </div>
-<div id="load-data-in-command-line-interface-cli" class="section level2">
+</div>
+<div id="prepare-vast-tools-data" class="section level2">
 <h2 class="hasAnchor">
-<a href="#load-data-in-command-line-interface-cli" class="anchor"></a>Load data in command-line interface (CLI)</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(psichomics)</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">data          &lt;-<span class="st"> </span><span class="kw"><a href="../reference/loadLocalFiles.html">loadLocalFiles</a></span>(<span class="st">"/path/to/aligned/output/"</span>)</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">geneExpr      &lt;-<span class="st"> </span>data[[<span class="dv">1</span>]]<span class="op">$</span><span class="st">`</span><span class="dt">Gene expression</span><span class="st">`</span></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4">junctionQuant &lt;-<span class="st"> </span>data[[<span class="dv">1</span>]]<span class="op">$</span><span class="st">`</span><span class="dt">Junction quantification</span><span class="st">`</span></a>
-<a class="sourceLine" id="cb6-5" data-line-number="5">sampleInfo    &lt;-<span class="st"> </span>data[[<span class="dv">1</span>]]<span class="op">$</span><span class="st">`</span><span class="dt">Sample metadata</span><span class="st">`</span></a></code></pre></div>
+<a href="#prepare-vast-tools-data" class="anchor"></a>Prepare <a href="https://github.com/vastgroup/vast-tools">VAST-TOOLS</a> data</h2>
+<p>psichomics supports loading inclusion levels and gene expression tables from <a href="https://github.com/vastgroup/vast-tools">VAST-TOOLS</a> (the tables available after running <code>vast-tools combine</code>). Note:</p>
+<ul>
+<li>If you are interested in analysing gene expression, please run <code>vast-tools align</code> with argument <code>--expr</code>;</li>
+<li>Gene expression is returned in cRPKMs; to get both cRPKMs and gene read counts, please run <code>vast-tools combine</code> with argument <code>-C</code> (in case of doubt, always calculate both cRPKMs and gene read counts).</li>
+</ul>
+<p>Any sample and/or subject information may also be useful to load. Unless the sample metadata comes from <a href="https://www.ncbi.nlm.nih.gov/Traces/study/">SRA Run Selector</a>, please ensure that the table is recognised by psichomics: read <a href="#prepare-data-from-any-source">Prepare generic data</a>.</p>
+<p>To load the data and move all files to a new folder (VAST-TOOLS alternative splicing quantification and gene expression tables and sample/subject-associated information).</p>
+<p>Follow the instructions in <a href="#load-user-provided-data-into-psichomics">Load user-provided data into psichomics</a> to load the files in the visual interface. Otherwise, use function <a href="https://nuno-agostinho.github.io/psichomics/reference/loadLocalFiles"><code><a href="../reference/loadLocalFiles.html">loadLocalFiles()</a></code></a> with the folder path as an argument:</p>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">psichomics</span>)
+<span class="no">data</span>          <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/loadLocalFiles.html">loadLocalFiles</a></span>(<span class="st">"/path/to/psichomics/input"</span>)
+<span class="no">junctionQuant</span> <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Junction quantification`</span>
+<span class="no">sampleInfo</span>    <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Sample metadata`</span>
+<span class="co"># Both gene read counts and cRPKMs are loaded as separate data frames</span>
+<span class="no">geneReadCounts</span> <span class="kw">&lt;-</span> <span class="no">data</span>$<span class="no">`Gene expression (read counts)`</span>
+<span class="no">cRPKM</span>          <span class="kw">&lt;-</span> <span class="no">data</span>$<span class="no">`Gene expression (cRPKM)`</span></pre></body></html></div>
+</div>
+<div id="prepare-firebrowse-data" class="section level2">
+<h2 class="hasAnchor">
+<a href="#prepare-firebrowse-data" class="anchor"></a>Prepare <a href="http://firebrowse.org">FireBrowse</a> data</h2>
+<p><a href="http://firebrowse.org">FireBrowse</a> contains <a href="https://tcga-data.nci.nih.gov/docs/publications/tcga">TCGA</a> data for multiple tumour types and can be <a href="https://nuno-agostinho.github.io/psichomics/articles/CLI_tutorial.html#downloading-and-loading-tcga-data">automatically downloaded and then loaded</a> using psichomics.</p>
+<p>Alternatively, manually downloaded files from <a href="http://firebrowse.org">FireBrowse</a> can be moved to a folder and then loaded in psichomics by following the instructions in <a href="#load-user-provided-data-into-psichomics">Load user-provided data into psichomics</a>.</p>
+</div>
+<div id="prepare-gtex-data" class="section level2">
+<h2 class="hasAnchor">
+<a href="#prepare-gtex-data" class="anchor"></a>Prepare <a href="https://www.gtexportal.org">GTEx</a> data</h2>
+<p><a href="https://www.gtexportal.org">GTEx</a> contains data for multiple normal tissues. GTEx data can be <a href="https://nuno-agostinho.github.io/psichomics/articles/CLI_tutorial.html#load-gtex-data">automatically downloaded and then loaded</a> using psichomics.</p>
+<p>Alternatively, manually downloaded files from <a href="https://www.gtexportal.org">GTEx</a> can be moved to a folder and then loaded in psichomics by following the instructions in <a href="#load-user-provided-data-into-psichomics">Load user-provided data into psichomics</a>.</p>
+</div>
+<div id="prepare-data-from-any-source" class="section level2">
+<h2 class="hasAnchor">
+<a href="#prepare-data-from-any-source" class="anchor"></a>Prepare data from any source</h2>
+<p>psichomics supports importing generic data from any source as long as the tables are prepared as detailed below.</p>
+<blockquote>
+<p>Please make sure that sample and subject identifiers are exactly the same between <strong>all datasets</strong>.</p>
+</blockquote>
+<div id="sample-information" class="section level3">
+<h3 class="hasAnchor">
+<a href="#sample-information" class="anchor"></a>Sample information</h3>
+<blockquote>
+<p>Sample metadata from <strong>SRA</strong> can now be <a href="#prepare-sra-run-selector-data">automatically loaded</a>.</p>
+</blockquote>
+<ul>
+<li>Tab-separated values (TSV)</li>
+<li>
+<strong>Sample identifiers (rows)</strong> and their <strong>attributes (columns)</strong>
+</li>
+<li>The first column must contain sample identifiers and be named <code>Sample ID</code>
+</li>
+<li>Optionally, indicate the subject associated to each sample in a column named <code>Subject ID</code> (subject identifiers must be the same as the ones used in subject information)</li>
+<li>Example of a valid sample information dataset:</li>
+</ul>
+<table class="table">
+<thead><tr class="header">
+<th>Sample ID</th>
+<th>Type</th>
+<th>Tissue</th>
+<th>Subject ID</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>SMP-01</td>
+<td>Tumour</td>
+<td>Lung</td>
+<td>SUBJ-03</td>
+</tr>
+<tr class="even">
+<td>SMP-02</td>
+<td>Normal</td>
+<td>Blood</td>
+<td>SUBJ-12</td>
+</tr>
+<tr class="odd">
+<td>SMP-03</td>
+<td>Normal</td>
+<td>Blood</td>
+<td>SUBJ-25</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="subject-information" class="section level3">
+<h3 class="hasAnchor">
+<a href="#subject-information" class="anchor"></a>Subject information</h3>
+<ul>
+<li>Tab-separated values (TSV)</li>
+<li>
+<strong>Subject identifiers (rows)</strong> and their <strong>attributes (columns)</strong>
+</li>
+<li>The first column must contain subject identifiers and be named <code>Subject ID</code>
+</li>
+<li>Example of a valid subject information dataset:</li>
+</ul>
+<table class="table">
+<thead><tr class="header">
+<th>Subject ID</th>
+<th align="right">Age</th>
+<th>Gender</th>
+<th>Race</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>SUBJ-01</td>
+<td align="right">34</td>
+<td>Female</td>
+<td>Black</td>
+</tr>
+<tr class="even">
+<td>SUBJ-02</td>
+<td align="right">22</td>
+<td>Male</td>
+<td>Black</td>
+</tr>
+<tr class="odd">
+<td>SUBJ-03</td>
+<td align="right">58</td>
+<td>Female</td>
+<td>Asian</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="gene-expression" class="section level3">
+<h3 class="hasAnchor">
+<a href="#gene-expression" class="anchor"></a>Gene expression</h3>
+<ul>
+<li>Tab-separated values (TSV)</li>
+<li>Read counts of <strong>genes (rows)</strong> across <strong>sample (columns)</strong> (sample identifiers must be the same as the ones used in sample information)</li>
+<li>The first column must contain unique gene names (symbols, Ensembl ID, etc.) and be named <code>Gene ID</code>
+</li>
+<li>Example of a valid gene expression dataset:</li>
+</ul>
+<table class="table">
+<thead><tr class="header">
+<th>Gene ID</th>
+<th align="right">SMP-18</th>
+<th align="right">SMP-03</th>
+<th align="right">SMP-54</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>AMP1</td>
+<td align="right">24</td>
+<td align="right">10</td>
+<td align="right">43</td>
+</tr>
+<tr class="even">
+<td>BRCA1</td>
+<td align="right">38</td>
+<td align="right">46</td>
+<td align="right">32</td>
+</tr>
+<tr class="odd">
+<td>BRCA2</td>
+<td align="right">43</td>
+<td align="right">65</td>
+<td align="right">21</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="exon-exon-junction-quantification" class="section level3">
+<h3 class="hasAnchor">
+<a href="#exon-exon-junction-quantification" class="anchor"></a>Exon-exon junction quantification</h3>
+<ul>
+<li>Tab-separated values (TSV)</li>
+<li>Read counts of <strong>exon-exon junctions (rows)</strong> across <strong>samples (columns)</strong> (sample identifiers must be the same as the ones used in sample information)</li>
+<li>The first column must contain junction identifiers and be named <code>Junction ID</code>
+</li>
+<li>Only chromosome number and capital letters X, Y, Z, W, and M are supported, followed by the genomic regions; acceptable junction identifiers include:
+<ul>
+<li><code>10_18748_21822</code></li>
+<li><code>chromosome 10 (18748 to 21822)</code></li>
+<li><code>chr10:18748-21822</code></li>
+</ul>
+</li>
+<li>Optionally, indicate the strand with <code><a href="https://rdrr.io/r/base/Arithmetic.html">+</a></code> or <code><a href="https://rdrr.io/r/base/Arithmetic.html">-</a></code> at the end of the junction identifier:
+<ul>
+<li><code>10:3213:9402:+</code></li>
+<li><code>chr10:3213-9402 -</code></li>
+</ul>
+</li>
+<li>Junction identifiers whose chromosomes are <code>alt</code>, <code>random</code> or <code>Un</code> (i.e. alternative sequences) are discarded</li>
+<li>Example of a valid exon-exon junction quantification dataset:</li>
+</ul>
+<table class="table">
+<thead><tr class="header">
+<th>Junction ID</th>
+<th align="right">SMP-18</th>
+<th align="right">SMP-03</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>10:6752-7393</td>
+<td align="right">4</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td>10:18748-21822</td>
+<td align="right">8</td>
+<td align="right">46</td>
+</tr>
+<tr class="odd">
+<td>10:24257-25325</td>
+<td align="right">83</td>
+<td align="right">65</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="alternative-splicing-quantification-also-known-as-inclusion-levels" class="section level3">
+<h3 class="hasAnchor">
+<a href="#alternative-splicing-quantification-also-known-as-inclusion-levels" class="anchor"></a>Alternative splicing quantification (also known as inclusion levels)</h3>
+<blockquote>
+<p>Note that psichomics cannot currently parse alternative splicing events (e.g. identify the cognate gene and coordinates) from generic, user-provided tables.</p>
+</blockquote>
+<ul>
+<li>Tab-separated values (TSV)</li>
+<li>Quantification values of <strong>alternative splicing events (rows)</strong> across <strong>samples (columns)</strong> (sample identifiers must be the same as the ones used in sample information)</li>
+<li>The first column must be named <code>AS Event ID</code>
+</li>
+<li>Values between 0 and 1 or between 0 and 100: if the latter, values are automatically scaled between 0 and 1</li>
+<li>Example of a valid alternative splicing quantification dataset:</li>
+</ul>
+<table class="table">
+<thead><tr class="header">
+<th>AS Event ID</th>
+<th align="right">SMP-18</th>
+<th align="right">SMP-03</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>someASevent001</td>
+<td align="right">0.71</td>
+<td align="right">0.30</td>
+</tr>
+<tr class="even">
+<td>anotherASevent653</td>
+<td align="right">0.63</td>
+<td align="right">0.37</td>
+</tr>
+<tr class="odd">
+<td>yeatAnother097</td>
+<td align="right">0.38</td>
+<td align="right">0.62</td>
+</tr>
+</tbody>
+</table>
+<p>To load the data, move the files to a new folder and follow the instructions in <a href="#load-user-provided-data-into-psichomics">Load user-provided data into psichomics</a>.</p>
+</div>
+</div>
+</div>
+<div id="load-user-provided-data-into-psichomics" class="section level1">
+<h1 class="hasAnchor">
+<a href="#load-user-provided-data-into-psichomics" class="anchor"></a>Load user-provided data into psichomics</h1>
+<div id="load-using-the-visual-interface" class="section level2">
+<h2 class="hasAnchor">
+<a href="#load-using-the-visual-interface" class="anchor"></a>Load using the visual interface</h2>
+<p>Start psichomics with the following commands in an R console or RStudio:</p>
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">psichomics</span>)
+<span class="fu"><a href="../reference/psichomics.html">psichomics</a></span>()</pre></body></html></div>
+<p>Then, click <strong>Load user files</strong>. Click the <strong>Folder input</strong> tab and select the appropriate folder. Finally, click <strong>Load files</strong> to automatically scan and load all supported files from that folder.</p>
+</div>
+<div id="load-using-the-command-line-interface-cli" class="section level2">
+<h2 class="hasAnchor">
+<a href="#load-using-the-command-line-interface-cli" class="anchor"></a>Load using the command-line interface (CLI)</h2>
+<p>Use function <a href="https://nuno-agostinho.github.io/psichomics/reference/loadLocalFiles"><code><a href="../reference/loadLocalFiles.html">loadLocalFiles()</a></code></a> with the folder path as an argument:</p>
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">psichomics</span>)
+<span class="no">data</span>          <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/loadLocalFiles.html">loadLocalFiles</a></span>(<span class="st">"/path/to/psichomics/input"</span>)
+<span class="no">geneExpr</span>      <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Gene expression`</span>
+<span class="no">junctionQuant</span> <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Junction quantification`</span>
+<span class="no">sampleInfo</span>    <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Sample metadata`</span></pre></body></html></div>
 </div>
 </div>
 <div id="feedback" class="section level1">
@@ -235,7 +595,7 @@ done</code></pre>
 <a href="#feedback" class="anchor"></a>Feedback</h1>
 <p>All feedback on the program, documentation and associated material (including this tutorial) is welcome. Please send any comments and questions to:</p>
 <blockquote>
-<p>Nuno Saraiva-Agostinho (<a href="mailto:nunoagostinho@medicina.ulisboa.pt">nunoagostinho@medicina.ulisboa.pt</a>)</p>
+<p>Nuno Saraiva-Agostinho (<a href="mailto:nunoagostinho@medicina.ulisboa.pt" class="email">nunoagostinho@medicina.ulisboa.pt</a>)</p>
 <p><a href="http://imm.medicina.ulisboa.pt/group/distrans/">Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)</a></p>
 </blockquote>
 </div>
@@ -250,29 +610,11 @@ done</code></pre>
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <div id="tocnav">
-      <h2 class="hasAnchor">
-<a href="#tocnav" class="anchor"></a>Contents</h2>
-      <ul class="nav nav-pills nav-stacked">
-<li><a href="#download-data-from-sra-optional">Download data from SRA (optional)</a></li>
-      <li>
-<a href="#align-rna-seq-data-to-quantify-splice-junctions">Align RNA-seq data to quantify splice junctions</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#star">STAR</a></li>
-      </ul>
-</li>
-      <li>
-<a href="#prepare-output-for-psichomics">Prepare output for psichomics</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#load-data-in-visual-interface">Load data in visual interface</a></li>
-      <li><a href="#load-data-in-command-line-interface-cli">Load data in command-line interface (CLI)</a></li>
-      </ul>
-</li>
-      <li><a href="#feedback">Feedback</a></li>
-      <li><a href="#references">References</a></li>
-      </ul>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
 </div>
-      </div>
 
 </div>
 
@@ -283,14 +625,27 @@ done</code></pre>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
 </div>
 
   
-
-
-  </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script><script>
+  docsearch({
+    
+    
+    apiKey: 'fa0226bf1a3df7e1c8ab8f0e70450e0a',
+    indexName: 'stem-cell-analysis-in-psichomics',
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
+  });
+</script>
+</body>
 </html>

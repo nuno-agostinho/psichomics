@@ -10,38 +10,47 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script>
 
 
+<!-- docsearch -->
+<script src="../docsearch.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.3/docsearch.min.css" integrity="sha256-QOSRU/ra9ActyXkIBbiIB144aDBdtvXBcNc3OTNuX/Q=" crossorigin="anonymous" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
 
 
 <meta property="og:title" content="Get curated, literature-based gene lists — getGeneList" />
 <meta property="og:description" content="Available gene lists:
-Sebestyen et al., 2016: 1350 genes encoding RNA-binding 
+Sebestyen et al., 2016: 1350 genes encoding RNA-binding
   proteins, 167 of which are splicing factors
 
 " />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -69,7 +78,7 @@ Sebestyen et al., 2016: 1350 genes encoding RNA-binding
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -83,7 +92,7 @@ Sebestyen et al., 2016: 1350 genes encoding RNA-binding
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.12.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.2</span>
       </span>
     </div>
 
@@ -124,8 +133,19 @@ Sebestyen et al., 2016: 1350 genes encoding RNA-binding
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/nuno-agostinho/psichomics/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
+      
+      <form class="navbar-form navbar-right hidden-xs hidden-sm" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
       
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -139,20 +159,29 @@ Sebestyen et al., 2016: 1350 genes encoding RNA-binding
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Get curated, literature-based gene lists</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/nuno-agostinho/psichomics/blob/master/R/globalAccess.R'><code>R/globalAccess.R</code></a></small>
     <div class="hidden name"><code>getGeneList.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p>Available gene lists:</p><ul>
-<li><p><strong>Sebestyen et al., 2016</strong>: 1350 genes encoding RNA-binding 
+<li><p><strong>Sebestyen et al., 2016</strong>: 1350 genes encoding RNA-binding
   proteins, 167 of which are splicing factors</p></li>
 </ul>
 
     </div>
 
-    <pre class="usage"><span class='fu'>getGeneList</span>()</pre>
+    <pre class="usage"><span class='fu'>getGeneList</span>(<span class='kw'>genes</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>genes</th>
+      <td><p>Vector of characters: intersect lists with given genes (lists
+with no matching genes will not be returned)</p></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
@@ -161,330 +190,25 @@ Sebestyen et al., 2016: 1350 genes encoding RNA-binding
 
     <div class='dont-index'><p>Other functions for data grouping: 
 <code><a href='createGroupByAttribute.html'>createGroupByAttribute</a>()</code>,
-<code><a href='getMatchingSamples.html'>getMatchingSamples</a>()</code>,
+<code><a href='getSampleFromSubject.html'>getSampleFromSubject</a>()</code>,
 <code><a href='getSubjectFromSample.html'>getSubjectFromSample</a>()</code>,
 <code><a href='groupPerElem.html'>groupPerElem</a>()</code>,
 <code><a href='plotGroupIndependence.html'>plotGroupIndependence</a>()</code>,
 <code><a href='testGroupIndependence.html'>testGroupIndependence</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>getGeneList</span>()</div><div class='output co'>#&gt; $`Sebestyen et al. 2016`
-#&gt; $`Sebestyen et al. 2016`$`RNA-binding protein splicing factors`
-#&gt;   [1] "A1CF"      "ANKHD1"    "CELF1"     "CELF2"     "CELF3"     "CELF4"    
-#&gt;   [7] "CELF5"     "CELF6"     "CNOT4"     "CPEB1"     "CPEB2"     "CPEB3"    
-#&gt;  [13] "CPEB4"     "DAZAP1"    "ELAVL1"    "ELAVL2"    "ELAVL3"    "ELAVL4"   
-#&gt;  [19] "ENOX1"     "ESRP1"     "ESRP2"     "EWSR1"     "FMR1"      "FUS"      
-#&gt;  [25] "FXR1"      "FXR2"      "G3BP1"     "G3BP2"     "GEMIN5"    "HNRNPA0"  
-#&gt;  [31] "HNRNPA1"   "HNRNPA1L2" "HNRNPA2B1" "HNRNPA3"   "HNRNPAB"   "HNRNPC"   
-#&gt;  [37] "HNRNPCL1"  "HNRNPD"    "HNRNPDL"   "HNRNPF"    "HNRNPH1"   "HNRNPH2"  
-#&gt;  [43] "HNRNPH3"   "HNRNPK"    "HNRNPL"    "HNRNPLL"   "HNRNPM"    "HNRNPR"   
-#&gt;  [49] "HNRNPU"    "HNRNPUL1"  "HNRNPUL2"  "IGF2BP1"   "IGF2BP2"   "IGF2BP3"  
-#&gt;  [55] "KHDRBS1"   "KHDRBS2"   "KHDRBS3"   "KHSRP"     "LIN28A"    "MATR3"    
-#&gt;  [61] "MBNL1"     "MBNL2"     "MBNL3"     "MSI1"      "NOVA1"     "NOVA2"    
-#&gt;  [67] "PABPC1"    "PABPC3"    "PABPC4"    "PABPC5"    "PABPN1"    "PCBP1"    
-#&gt;  [73] "PCBP2"     "PCBP3"     "PPRC1"     "PRPF40A"   "PRPF40B"   "PTBP1"    
-#&gt;  [79] "PTBP2"     "QKI"       "RALY"      "RBFOX1"    "RBFOX2"    "RBFOX3"   
-#&gt;  [85] "RBM10"     "RBM11"     "RBM15"     "RBM15B"    "RBM17"     "RBM20"    
-#&gt;  [91] "RBM22"     "RBM23"     "RBM24"     "RBM25"     "RBM28"     "RBM3"     
-#&gt;  [97] "RBM38"     "RBM39"     "RBM4"      "RBM41"     "RBM42"     "RBM45"    
-#&gt; [103] "RBM46"     "RBM47"     "RBM4B"     "RBM5"      "RBM6"      "RBM7"     
-#&gt; [109] "RBM8A"     "RBMS1"     "RBMS3"     "RBMX"      "RBMXL1"    "RBMY1A1"  
-#&gt; [115] "RBMY1B"    "RBMY1D"    "RBMY1E"    "RBMY1F"    "RBMY1J"    "SAMD4A"   
-#&gt; [121] "SART3"     "SF1"       "SF3A1"     "SF3B1"     "SFPQ"      "SNRNP70"  
-#&gt; [127] "SNRPA"     "SRP54"     "SRPK1"     "SRPK2"     "SRPK3"     "SRRM1"    
-#&gt; [133] "SRRM2"     "SRRM3"     "SRRM4"     "SRSF1"     "SRSF10"    "SRSF11"   
-#&gt; [139] "SRSF12"    "SRSF2"     "SRSF3"     "SRSF4"     "SRSF5"     "SRSF6"    
-#&gt; [145] "SRSF7"     "SRSF8"     "SRSF9"     "SYNCRIP"   "TARDBP"    "TIA1"     
-#&gt; [151] "TIAL1"     "TRA2A"     "TRA2B"     "TUT1"      "U2AF1"     "U2AF1L4"  
-#&gt; [157] "U2AF2"     "WT1"       "YBX1"      "YBX2"      "ZC3H10"    "ZC3H14"   
-#&gt; [163] "ZCRB1"     "ZNF638"    "ZRANB2"    "ZRSR1"     "ZRSR2"    
+    <pre class="examples"><div class='input'><span class='fu'>getGeneList</span>()</div><div class='output co'>#&gt; Sebestyen et al. 2016
+#&gt;   -&gt; Human RNA-binding protein splicing factors [167 genes]: A1CF, ANKHD1, CELF1, CELF2, ...
+#&gt;   -&gt; Human RNA-binding proteins [1350 genes]: A1CF, AATF, ABCF1, ABT1, ...
 #&gt; 
-#&gt; $`Sebestyen et al. 2016`$`RNA-binding proteins`
-#&gt;    [1] "A1CF"        "AATF"        "ABCF1"       "ABT1"        "ACAA2"      
-#&gt;    [6] "ACIN1"       "ACTB"        "ACTN1"       "ACTN4"       "ADAR"       
-#&gt;   [11] "ADARB1"      "ADARB2"      "ADD1"        "ADK"         "AEN"        
-#&gt;   [16] "AFF2"        "AHNAK"       "AKAP1"       "AKAP8"       "AKAP8L"     
-#&gt;   [21] "ALDH18A1"    "ALDH6A1"     "ALDOA"       "ALG13"       "ALKBH5"     
-#&gt;   [26] "ANKHD1"      "ANKRD17"     "ANP32A"      "ANP32B"      "ANXA11"     
-#&gt;   [31] "ANXA2"       "ANXA7"       "APEH"        "APEX1"       "API5"       
-#&gt;   [36] "APOBEC3B"    "APOBEC3C"    "APOBEC3F"    "APOBEC3H"    "AQR"        
-#&gt;   [41] "ARCN1"       "ARF1"        "ARHGEF1"     "ARL6IP4"     "ASCC3"      
-#&gt;   [46] "ASS1"        "ATP5A1"      "ATP5C1"      "ATXN2"       "ATXN2L"     
-#&gt;   [51] "BAG4"        "BAT1"        "BAT2"        "BAT2L1"      "BAT2L2"     
-#&gt;   [56] "BCAS2"       "BCCIP"       "BCLAF1"      "BICC1"       "BMS1"       
-#&gt;   [61] "BOP1"        "BRDT"        "BRIX1"       "BST2"        "BTF3"       
-#&gt;   [66] "BUD13"       "BUD31"       "BYSL"        "BZW1"        "BZW2"       
-#&gt;   [71] "C11orf31"    "C11orf68"    "C12orf43"    "C14orf156"   "C14orf166"  
-#&gt;   [76] "C14orf21"    "C14orf93"    "C15orf52"    "C16orf57"    "C16orf80"   
-#&gt;   [81] "C16orf88"    "C17orf42"    "C17orf85"    "C19orf29"    "C19orf47"   
-#&gt;   [86] "C1orf107"    "C1orf131"    "C1orf204"    "C1orf25"     "C1orf31"    
-#&gt;   [91] "C1orf35"     "C1orf52"     "C1orf57"     "C1orf69"     "C1orf77"    
-#&gt;   [96] "C1QBP"       "C21orf70"    "C22orf28"    "C2orf15"     "C3orf26"    
-#&gt;  [101] "C3orf63"     "C4BPA"       "C4orf14"     "C4orf43"     "C6orf153"   
-#&gt;  [106] "C7orf50"     "C9orf114"    "C9orf23"     "CALR"        "CANX"       
-#&gt;  [111] "CAPRIN1"     "CASC3"       "CAST"        "CCAR1"       "CCBL2"      
-#&gt;  [116] "CCDC108"     "CCDC12"      "CCDC124"     "CCDC137"     "CCDC47"     
-#&gt;  [121] "CCDC55"      "CCDC59"      "CCDC86"      "CCDC9"       "CCDC94"     
-#&gt;  [126] "CCT3"        "CCT4"        "CCT6A"       "CD2BP2"      "CD3EAP"     
-#&gt;  [131] "CDC40"       "CDC42EP4"    "CDC5L"       "CDK11B"      "CDK12"      
-#&gt;  [136] "CDK13"       "CDKN2A"      "CEBPZ"       "CELF1"       "CELF2"      
-#&gt;  [141] "CELF3"       "CELF4"       "CELF5"       "CELF6"       "CGGBP1"     
-#&gt;  [146] "CHCHD1"      "CHD2"        "CHD3"        "CHERP"       "CIR1"       
-#&gt;  [151] "CIRBP"       "CIRH1A"      "CISD2"       "CKAP4"       "CLK1"       
-#&gt;  [156] "CLK2"        "CLK3"        "CLK4"        "CLNS1A"      "CLP1"       
-#&gt;  [161] "CLTC"        "CNBP"        "CNN3"        "CNOT1"       "CNOT4"      
-#&gt;  [166] "COL14A1"     "CORO1A"      "CPEB1"       "CPEB2"       "CPEB3"      
-#&gt;  [171] "CPEB4"       "CPNE3"       "CPSF1"       "CPSF2"       "CPSF3"      
-#&gt;  [176] "CPSF4"       "CPSF6"       "CPSF7"       "CRKL"        "CRNKL1"     
-#&gt;  [181] "CS"          "CSDA"        "CSDE1"       "CSNK1E"      "CSRP1"      
-#&gt;  [186] "CSTB"        "CSTF1"       "CSTF2"       "CSTF2T"      "CSTF3"      
-#&gt;  [191] "CTNNA1"      "CTNNBL1"     "CWC15"       "CWC22"       "CWC25"      
-#&gt;  [196] "CWC27"       "CXorf57"     "DAP3"        "DARS"        "DAZ1"       
-#&gt;  [201] "DAZ2"        "DAZ3"        "DAZ4"        "DAZAP1"      "DBR1"       
-#&gt;  [206] "DCAF13"      "DCD"         "DCN"         "DDX1"        "DDX10"      
-#&gt;  [211] "DDX17"       "DDX18"       "DDX20"       "DDX21"       "DDX23"      
-#&gt;  [216] "DDX24"       "DDX27"       "DDX28"       "DDX31"       "DDX39"      
-#&gt;  [221] "DDX3X"       "DDX41"       "DDX42"       "DDX46"       "DDX47"      
-#&gt;  [226] "DDX49"       "DDX5"        "DDX50"       "DDX51"       "DDX52"      
-#&gt;  [231] "DDX54"       "DDX55"       "DDX56"       "DDX6"        "DEK"        
-#&gt;  [236] "DGCR14"      "DHX15"       "DHX16"       "DHX29"       "DHX30"      
-#&gt;  [241] "DHX32"       "DHX33"       "DHX34"       "DHX35"       "DHX36"      
-#&gt;  [246] "DHX38"       "DHX57"       "DHX8"        "DHX9"        "DIAPH1"     
-#&gt;  [251] "DIDO1"       "DIMT1L"      "DIS3"        "DKC1"        "DMGDH"      
-#&gt;  [256] "DNAJC17"     "DNAJC2"      "DNAJC21"     "DNAJC8"      "DNM1"       
-#&gt;  [261] "DNTTIP2"     "DSP"         "DUS3L"       "DUSP11"      "DUSP14"     
-#&gt;  [266] "DUT"         "DYNC1H1"     "DYNC1LI1"    "DZIP3"       "EBNA1BP2"   
-#&gt;  [271] "ECH1"        "EDF1"        "EED"         "EEF1A1"      "EEF1G"      
-#&gt;  [276] "EEF2"        "EFTUD2"      "EIF1"        "EIF1AX"      "EIF1B"      
-#&gt;  [281] "EIF2AK2"     "EIF2C1"      "EIF2C2"      "EIF2C3"      "EIF2S1"     
-#&gt;  [286] "EIF2S2"      "EIF3A"       "EIF3C"       "EIF3CL"      "EIF3D"      
-#&gt;  [291] "EIF3E"       "EIF3G"       "EIF3H"       "EIF3L"       "EIF4A1"     
-#&gt;  [296] "EIF4A2"      "EIF4A3"      "EIF4B"       "EIF4E"       "EIF4E2"     
-#&gt;  [301] "EIF4ENIF1"   "EIF4G1"      "EIF4G2"      "EIF4G3"      "EIF4H"      
-#&gt;  [306] "EIF5"        "EIF5A"       "EIF5A2"      "EIF5B"       "ELAC2"      
-#&gt;  [311] "ELAVL1"      "ELAVL2"      "ELAVL3"      "ELAVL4"      "EMG1"       
-#&gt;  [316] "ENO1"        "ENOX1"       "EPPK1"       "ERAL1"       "ERH"        
-#&gt;  [321] "ERI3"        "ESF1"        "ESRP1"       "ESRP2"       "ETF1"       
-#&gt;  [326] "EWSR1"       "EXOSC1"      "EXOSC10"     "EXOSC2"      "EXOSC4"     
-#&gt;  [331] "EXOSC6"      "EXOSC9"      "EZR"         "FAM103A1"    "FAM120A"    
-#&gt;  [336] "FAM120C"     "FAM133B"     "FAM32A"      "FAM46A"      "FAM50A"     
-#&gt;  [341] "FAM98A"      "FAM98B"      "FARSA"       "FARSB"       "FASN"       
-#&gt;  [346] "FASTK"       "FASTKD1"     "FASTKD2"     "FASTKD3"     "FASTKD5"    
-#&gt;  [351] "FAU"         "FBL"         "FBLL1"       "FBRSL1"      "FCF1"       
-#&gt;  [356] "FDPS"        "FIP1L1"      "FKBP3"       "FKBP4"       "FLNA"       
-#&gt;  [361] "FLNB"        "FLYWCH2"     "FMR1"        "FNDC3A"      "FNDC3B"     
-#&gt;  [366] "FRG1"        "FSCN1"       "FTSJ3"       "FUBP1"       "FUBP3"      
-#&gt;  [371] "FUS"         "FXR1"        "FXR2"        "FYTTD1"      "G3BP1"      
-#&gt;  [376] "G3BP2"       "GANAB"       "GAR1"        "GCFC1"       "GCN1L1"     
-#&gt;  [381] "GDI2"        "GEMIN5"      "GEMIN6"      "GEMIN7"      "GEMIN8"     
-#&gt;  [386] "GFM1"        "GIGYF2"      "GLRX3"       "GLTSCR2"     "GNB2L1"     
-#&gt;  [391] "GNL2"        "GNL3"        "GNL3L"       "GOLGB1"      "GOT2"       
-#&gt;  [396] "GPATCH1"     "GPATCH4"     "GPATCH8"     "GPX4"        "GRB2"       
-#&gt;  [401] "GRN"         "GRSF1"       "GRWD1"       "GSPT1"       "GSPT2"      
-#&gt;  [406] "GTF2E2"      "GTF2F1"      "GTF2F2"      "GTPBP1"      "GTPBP10"    
-#&gt;  [411] "GTPBP4"      "H1F0"        "H1FX"        "HADHB"       "HARS2"      
-#&gt;  [416] "HDAC2"       "HDGF"        "HDLBP"       "HEATR1"      "HEATR6"     
-#&gt;  [421] "HELZ"        "HERC5"       "HEXIM1"      "HIST1H1B"    "HIST1H1C"   
-#&gt;  [426] "HIST1H1D"    "HIST1H1E"    "HIST1H4H"    "HK2"         "HLA-A"      
-#&gt;  [431] "HLTF"        "HMG20B"      "HMGB1"       "HMGB2"       "HMGB3"      
-#&gt;  [436] "HMGCS2"      "HMGN2"       "HMGN5"       "HNRNPA0"     "HNRNPA1"    
-#&gt;  [441] "HNRNPA1L2"   "HNRNPA2B1"   "HNRNPA3"     "HNRNPAB"     "HNRNPC"     
-#&gt;  [446] "HNRNPCL1"    "HNRNPD"      "HNRNPDL"     "HNRNPF"      "HNRNPH1"    
-#&gt;  [451] "HNRNPH2"     "HNRNPH3"     "HNRNPK"      "HNRNPL"      "HNRNPLL"    
-#&gt;  [456] "HNRNPM"      "HNRNPR"      "HNRNPU"      "HNRNPUL1"    "HNRNPUL2"   
-#&gt;  [461] "HOXB6"       "HRSP12"      "HSD17B10"    "HSP90AA1"    "HSP90AB1"   
-#&gt;  [466] "HSP90B1"     "HSPA1A"      "HSPA1B"      "HSPA1L"      "HSPA5"      
-#&gt;  [471] "HSPA7"       "HSPA8"       "HSPA9"       "HSPB1"       "HSPD1"      
-#&gt;  [476] "HSPE1"       "HSPG2"       "HTATSF1"     "HUWE1"       "IFI16"      
-#&gt;  [481] "IFIT2"       "IFIT5"       "IGF2BP1"     "IGF2BP2"     "IGF2BP3"    
-#&gt;  [486] "ILF2"        "ILF3"        "IMMT"        "IMP3"        "IMP4"       
-#&gt;  [491] "INTS6"       "IPO5"        "ISG20L2"     "ISY1"        "IVNS1ABP"   
-#&gt;  [496] "JMJD6"       "JUN"         "KCTD12"      "KHDRBS1"     "KHDRBS2"    
-#&gt;  [501] "KHDRBS3"     "KHSRP"       "KIAA0020"    "KIAA0802"    "KIAA1324"   
-#&gt;  [506] "KIAA1429"    "KIAA1967"    "KIF1C"       "KPNA2"       "KPNB1"      
-#&gt;  [511] "KRI1"        "KRR1"        "KRT18"       "KTN1"        "L1TD1"      
-#&gt;  [516] "LARP1"       "LARP1B"      "LARP4"       "LARP4B"      "LARP7"      
-#&gt;  [521] "LAS1L"       "LBR"         "LGALS1"      "LGALS3"      "LGTN"       
-#&gt;  [526] "LIN28A"      "LIN28B"      "LLPH"        "LRP1"        "LRPPRC"     
-#&gt;  [531] "LRRC47"      "LRRC59"      "LSG1"        "LSM1"        "LSM10"      
-#&gt;  [536] "LSM14A"      "LSM14B"      "LSM2"        "LSM3"        "LSM4"       
-#&gt;  [541] "LSM5"        "LSM6"        "LSM7"        "LSMD1"       "LTA4H"      
-#&gt;  [546] "LUC7L"       "LUC7L2"      "LUC7L3"      "LYAR"        "MACF1"      
-#&gt;  [551] "MAGOH"       "MAGOHB"      "MAK16"       "MANF"        "MAP4"       
-#&gt;  [556] "MAPRE1"      "MARK2"       "MATR3"       "MAZ"         "MBNL1"      
-#&gt;  [561] "MBNL2"       "MBNL3"       "MCAT"        "MDH2"        "MDN1"       
-#&gt;  [566] "MECP2"       "MEPCE"       "METAP2"      "METT10D"     "MEX3A"      
-#&gt;  [571] "MEX3B"       "MEX3C"       "MEX3D"       "MFAP1"       "MKI67"      
-#&gt;  [576] "MKI67IP"     "MKRN1"       "MKRN2"       "MLL3"        "MOV10"      
-#&gt;  [581] "MPHOSPH10"   "MRM1"        "MRPL1"       "MRPL10"      "MRPL11"     
-#&gt;  [586] "MRPL13"      "MRPL14"      "MRPL15"      "MRPL19"      "MRPL2"      
-#&gt;  [591] "MRPL20"      "MRPL21"      "MRPL22"      "MRPL27"      "MRPL28"     
-#&gt;  [596] "MRPL3"       "MRPL32"      "MRPL37"      "MRPL39"      "MRPL4"      
-#&gt;  [601] "MRPL40"      "MRPL41"      "MRPL42"      "MRPL43"      "MRPL44"     
-#&gt;  [606] "MRPL45"      "MRPL54"      "MRPL9"       "MRPS11"      "MRPS12"     
-#&gt;  [611] "MRPS14"      "MRPS15"      "MRPS18C"     "MRPS21"      "MRPS23"     
-#&gt;  [616] "MRPS24"      "MRPS26"      "MRPS27"      "MRPS28"      "MRPS30"     
-#&gt;  [621] "MRPS31"      "MRPS35"      "MRPS5"       "MRPS7"       "MRPS9"      
-#&gt;  [626] "MRTO4"       "MSI1"        "MSI2"        "MTDH"        "MTERF"      
-#&gt;  [631] "MTHFSD"      "MTIF2"       "MTO1"        "MTPAP"       "MYBBP1A"    
-#&gt;  [636] "MYEF2"       "MYH9"        "MYO18A"      "MYO5A"       "MYOD1"      
-#&gt;  [641] "NAA15"       "NACA2"       "NAF1"        "NAP1L1"      "NAP1L4"     
-#&gt;  [646] "NASP"        "NAT10"       "NBPF10"      "NCBP1"       "NCBP2"      
-#&gt;  [651] "NCL"         "NCOA5"       "NDUFV3"      "NFX1"        "NGDN"       
-#&gt;  [656] "NGRN"        "NHP2"        "NHP2L1"      "NIP7"        "NKAP"       
-#&gt;  [661] "NKRF"        "NLRP11"      "NMD3"        "NME1"        "NMT1"       
-#&gt;  [666] "NOC2L"       "NOC3L"       "NOC4L"       "NOL10"       "NOL11"      
-#&gt;  [671] "NOL12"       "NOL3"        "NOL6"        "NOL7"        "NOL8"       
-#&gt;  [676] "NOLC1"       "NOM1"        "NOMO1"       "NOMO2"       "NOMO3"      
-#&gt;  [681] "NONO"        "NOP14"       "NOP16"       "NOP2"        "NOP56"      
-#&gt;  [686] "NOP58"       "NOSIP"       "NOVA1"       "NOVA2"       "NPM1"       
-#&gt;  [691] "NPM3"        "NQO1"        "NSA2"        "NSUN2"       "NSUN5"      
-#&gt;  [696] "NUCKS1"      "NUDT16L1"    "NUDT21"      "NUFIP2"      "NUMA1"      
-#&gt;  [701] "NUPL2"       "NUSAP1"      "NVL"         "NXF1"        "OASL"       
-#&gt;  [706] "OLA1"        "OTUD4"       "P4HB"        "PA2G4"       "PABPC1"     
-#&gt;  [711] "PABPC3"      "PABPC4"      "PABPC4L"     "PABPC5"      "PABPN1"     
-#&gt;  [716] "PAK1IP1"     "PAPD5"       "PAPOLA"      "PAPOLB"      "PARN"       
-#&gt;  [721] "PARP1"       "PARP12"      "PATL1"       "PCBP1"       "PCBP2"      
-#&gt;  [726] "PCBP3"       "PCBP4"       "PCDH20"      "PCDHGA9"     "PCF11"      
-#&gt;  [731] "PCSK9"       "PDAP1"       "PDCD11"      "PDCD7"       "PDIA3"      
-#&gt;  [736] "PDIA4"       "PDIA6"       "PEBP1"       "PEF1"        "PEG10"      
-#&gt;  [741] "PELP1"       "PES1"        "PFN1"        "PHAX"        "PHF5A"      
-#&gt;  [746] "PHF6"        "PIN4"        "PKM2"        "PKN2"        "PLEC"       
-#&gt;  [751] "PLRG1"       "PNN"         "PNO1"        "PNPT1"       "POLDIP3"    
-#&gt;  [756] "POLR1E"      "POLR2A"      "POLR2B"      "POLR2C"      "POLR2D"     
-#&gt;  [761] "POLR2E"      "POLR2F"      "POLR2G"      "POLR2H"      "POLR2I"     
-#&gt;  [766] "POLR2J"      "POLR2K"      "POLR2L"      "POLRMT"      "POP1"       
-#&gt;  [771] "POP7"        "POU5F1"      "PPAN"        "PPAN-P2RY11" "PPARGC1A"   
-#&gt;  [776] "PPHLN1"      "PPIA"        "PPIB"        "PPIE"        "PPIG"       
-#&gt;  [781] "PPIH"        "PPIL1"       "PPIL2"       "PPIL3"       "PPIL4"      
-#&gt;  [786] "PPP1CC"      "PPP1R10"     "PPP1R8"      "PPP1R9B"     "PPP2CA"     
-#&gt;  [791] "PPP2R1A"     "PPP4R2"      "PPRC1"       "PPWD1"       "PQBP1"      
-#&gt;  [796] "PRDX1"       "PRIC285"     "PRKDC"       "PRKRA"       "PRMT1"      
-#&gt;  [801] "PRMT5"       "PRMT7"       "PRPF18"      "PRPF19"      "PRPF3"      
-#&gt;  [806] "PRPF31"      "PRPF38A"     "PRPF38B"     "PRPF39"      "PRPF4"      
-#&gt;  [811] "PRPF40A"     "PRPF40B"     "PRPF4B"      "PRPF6"       "PRPF8"      
-#&gt;  [816] "PRR3"        "PSIP1"       "PSMC1"       "PSMD4"       "PSPC1"      
-#&gt;  [821] "PTBP1"       "PTBP2"       "PTCD1"       "PTCD2"       "PTCD3"      
-#&gt;  [826] "PTPN1"       "PTRF"        "PTRH1"       "PUF60"       "PUM1"       
-#&gt;  [831] "PUM2"        "PURA"        "PURB"        "PURG"        "PUS1"       
-#&gt;  [836] "PUS7"        "PWP1"        "PWP2"        "QKI"         "R3HDM1"     
-#&gt;  [841] "R3HDM2"      "RALY"        "RALYL"       "RAN"         "RARS2"      
-#&gt;  [846] "RAVER1"      "RAVER2"      "RBBP6"       "RBFOX1"      "RBFOX2"     
-#&gt;  [851] "RBFOX3"      "RBM10"       "RBM11"       "RBM12"       "RBM12B"     
-#&gt;  [856] "RBM14"       "RBM15"       "RBM15B"      "RBM16"       "RBM17"      
-#&gt;  [861] "RBM19"       "RBM20"       "RBM22"       "RBM23"       "RBM24"      
-#&gt;  [866] "RBM25"       "RBM26"       "RBM27"       "RBM28"       "RBM3"       
-#&gt;  [871] "RBM33"       "RBM34"       "RBM38"       "RBM39"       "RBM4"       
-#&gt;  [876] "RBM41"       "RBM42"       "RBM45"       "RBM46"       "RBM47"      
-#&gt;  [881] "RBM4B"       "RBM5"        "RBM6"        "RBM7"        "RBM8A"      
-#&gt;  [886] "RBMS1"       "RBMS2"       "RBMS3"       "RBMX"        "RBMX2"      
-#&gt;  [891] "RBMXL1"      "RBMY1A1"     "RBMY1B"      "RBMY1D"      "RBMY1E"     
-#&gt;  [896] "RBMY1F"      "RBMY1J"      "RBPMS"       "RBPMS2"      "RC3H1"      
-#&gt;  [901] "RC3H2"       "RCC2"        "RDBP"        "RDX"         "REPIN1"     
-#&gt;  [906] "REXO4"       "RG9MTD1"     "RG9MTD2"     "RIMS1"       "RNASEN"     
-#&gt;  [911] "RNMTL1"      "RNPC3"       "RNPS1"       "RNU4ATAC"    "ROCK2"      
-#&gt;  [916] "ROD1"        "RP9"         "RPF1"        "RPF2"        "RPGR"       
-#&gt;  [921] "RPL10"       "RPL10A"      "RPL11"       "RPL12"       "RPL13"      
-#&gt;  [926] "RPL13A"      "RPL14"       "RPL15"       "RPL17"       "RPL18A"     
-#&gt;  [931] "RPL19"       "RPL21"       "RPL22"       "RPL22L1"     "RPL23"      
-#&gt;  [936] "RPL23A"      "RPL24"       "RPL26"       "RPL27"       "RPL27A"     
-#&gt;  [941] "RPL28"       "RPL29"       "RPL3"        "RPL30"       "RPL31"      
-#&gt;  [946] "RPL32"       "RPL35"       "RPL35A"      "RPL36"       "RPL36A"     
-#&gt;  [951] "RPL37A"      "RPL4"        "RPL5"        "RPL6"        "RPL7"       
-#&gt;  [956] "RPL7A"       "RPL7L1"      "RPL8"        "RPLP0"       "RPN1"       
-#&gt;  [961] "RPP25"       "RPP30"       "RPS10"       "RPS11"       "RPS12"      
-#&gt;  [966] "RPS13"       "RPS14"       "RPS15"       "RPS15A"      "RPS16"      
-#&gt;  [971] "RPS17"       "RPS18"       "RPS19"       "RPS19BP1"    "RPS2"       
-#&gt;  [976] "RPS20"       "RPS21"       "RPS23"       "RPS24"       "RPS25"      
-#&gt;  [981] "RPS26"       "RPS27"       "RPS27A"      "RPS27L"      "RPS28"      
-#&gt;  [986] "RPS3"        "RPS3A"       "RPS4X"       "RPS5"        "RPS6"       
-#&gt;  [991] "RPS7"        "RPS8"        "RPS9"        "RPSA"        "RPUSD2"     
-#&gt;  [996] "RPUSD3"      "RPUSD4"      "RRAGC"       "RRBP1"       "RRP1"       
-#&gt; [1001] "RRP12"       "RRP15"       "RRP1B"       "RRP7A"       "RRP8"       
-#&gt; [1006] "RRP9"        "RRS1"        "RSL1D1"      "RSRC1"       "RSRC2"      
-#&gt; [1011] "RTCD1"       "RTF1"        "RTN4"        "S100A16"     "S100A4"     
-#&gt; [1016] "SAFB"        "SAFB2"       "SAMD4A"      "SAMD4B"      "SAMSN1"     
-#&gt; [1021] "SAP18"       "SARNP"       "SARS2"       "SART1"       "SART3"      
-#&gt; [1026] "SBDS"        "SCAF1"       "SCG3"        "SCNM1"       "SDAD1"      
-#&gt; [1031] "SEC23IP"     "SEC61A1"     "SEC61B"      "SEC63"       "SECISBP2"   
-#&gt; [1036] "SECISBP2L"   "SERBP1"      "SERPINH1"    "SF1"         "SF3A1"      
-#&gt; [1041] "SF3A2"       "SF3A3"       "SF3B1"       "SF3B14"      "SF3B2"      
-#&gt; [1046] "SF3B3"       "SF3B4"       "SF3B5"       "SF4"         "SFPQ"       
-#&gt; [1051] "SFRS12"      "SFRS12IP1"   "SFRS14"      "SFRS15"      "SFRS16"     
-#&gt; [1056] "SFRS17A"     "SFRS18"      "SFRS2IP"     "SFRS8"       "SIP1"       
-#&gt; [1061] "SKIV2L2"     "SLBP"        "SLC16A3"     "SLC25A11"    "SLC25A5"    
-#&gt; [1066] "SLC3A2"      "SLTM"        "SLU7"        "SMC1A"       "SMG1"       
-#&gt; [1071] "SMN1"        "SMNDC1"      "SMU1"        "SND1"        "SNIP1"      
-#&gt; [1076] "SNRNP200"    "SNRNP25"     "SNRNP27"     "SNRNP35"     "SNRNP40"    
-#&gt; [1081] "SNRNP48"     "SNRNP70"     "SNRPA"       "SNRPA1"      "SNRPB"      
-#&gt; [1086] "SNRPB2"      "SNRPC"       "SNRPD1"      "SNRPD2"      "SNRPD3"     
-#&gt; [1091] "SNRPE"       "SNRPF"       "SNRPG"       "SNRPN"       "SNTB2"      
-#&gt; [1096] "SNW1"        "SON"         "SORBS2"      "SPATS2"      "SPATS2L"    
-#&gt; [1101] "SPEN"        "SPTAN1"      "SPTBN1"      "SR140"       "SRFBP1"     
-#&gt; [1106] "SRP14"       "SRP19"       "SRP54"       "SRP68"       "SRP72"      
-#&gt; [1111] "SRPK1"       "SRPK2"       "SRPK3"       "SRPR"        "SRRM1"      
-#&gt; [1116] "SRRM2"       "SRRM3"       "SRRM4"       "SRRT"        "SRSF1"      
-#&gt; [1121] "SRSF10"      "SRSF11"      "SRSF12"      "SRSF2"       "SRSF3"      
-#&gt; [1126] "SRSF4"       "SRSF5"       "SRSF6"       "SRSF7"       "SRSF8"      
-#&gt; [1131] "SRSF9"       "SSB"         "SSBP1"       "SSBP3"       "SSR1"       
-#&gt; [1136] "SSRP1"       "STAU1"       "STAU2"       "STIP1"       "STRAP"      
-#&gt; [1141] "STRBP"       "STXBP1"      "SUB1"        "SUCLG1"      "SUMO1"      
-#&gt; [1146] "SUMO2"       "SUPT16H"     "SUPT5H"      "SUPT6H"      "SUPV3L1"    
-#&gt; [1151] "SURF2"       "SURF6"       "SYF2"        "SYNCRIP"     "SYNE1"      
-#&gt; [1156] "TACO1"       "TAF15"       "TAGLN2"      "TARDBP"      "TBCA"       
-#&gt; [1161] "TBL2"        "TBL3"        "TBRG4"       "TCEA1"       "TCERG1"     
-#&gt; [1166] "TCF20"       "TCF25"       "TCOF1"       "TCP1"        "TDRD3"      
-#&gt; [1171] "TES"         "TEX10"       "TFAM"        "TFB1M"       "TFB2M"      
-#&gt; [1176] "TFIP11"      "TFRC"        "TGS1"        "THOC1"       "THOC2"      
-#&gt; [1181] "THOC3"       "THOC4"       "THOC5"       "THOC6"       "THOC7"      
-#&gt; [1186] "THRAP3"      "THUMPD1"     "TIA1"        "TIAL1"       "TNPO1"      
-#&gt; [1191] "TNRC6A"      "TNRC6B"      "TNS1"        "TOP1"        "TOP2A"      
-#&gt; [1196] "TOP3B"       "TPD52L2"     "TPI1"        "TPR"         "TPT1"       
-#&gt; [1201] "TRA2A"       "TRA2B"       "TRAP1"       "TRIM25"      "TRIM28"     
-#&gt; [1206] "TRIM56"      "TRIM71"      "TRIP6"       "TRMT1"       "TRMT2A"     
-#&gt; [1211] "TRMT6"       "TRNAU1AP"    "TRPT1"       "TRUB2"       "TSEN2"      
-#&gt; [1216] "TSEN34"      "TSEN54"      "TSFM"        "TSNAX"       "TSR1"       
-#&gt; [1221] "TTF2"        "TUBB"        "TUFM"        "TUT1"        "TWF2"       
-#&gt; [1226] "TWISTNB"     "TXN"         "TXNL4A"      "TXNL4B"      "U2AF1"      
-#&gt; [1231] "U2AF1L4"     "U2AF2"       "UBA1"        "UBAP2"       "UBAP2L"     
-#&gt; [1236] "UBC"         "UBE2D1"      "UBE2I"       "UBE2L3"      "UBE2N"      
-#&gt; [1241] "UBE2O"       "UBFD1"       "UBTF"        "UCHL5"       "UNK"        
-#&gt; [1246] "UPF1"        "UPF3B"       "URB1"        "URB2"        "USO1"       
-#&gt; [1251] "USP10"       "USP36"       "USP39"       "UTP11L"      "UTP14A"     
-#&gt; [1256] "UTP14C"      "UTP15"       "UTP18"       "UTP20"       "UTP23"      
-#&gt; [1261] "UTP3"        "UTP6"        "VCP"         "WBP11"       "WBP4"       
-#&gt; [1266] "WBSCR16"     "WBSCR22"     "WDR25"       "WDR3"        "WDR33"      
-#&gt; [1271] "WDR36"       "WDR43"       "WDR46"       "WDR6"        "WDR75"      
-#&gt; [1276] "WDR77"       "WDR83"       "WIBG"        "WT1"         "WTAP"       
-#&gt; [1281] "XAB2"        "XIRP1"       "XPO1"        "XPO5"        "XRCC5"      
-#&gt; [1286] "XRCC6"       "XRN1"        "XRN2"        "YARS"        "YARS2"      
-#&gt; [1291] "YBX1"        "YBX2"        "YLPM1"       "YTHDC1"      "YTHDC2"     
-#&gt; [1296] "YTHDF1"      "YTHDF2"      "YTHDF3"      "YWHAE"       "YWHAG"      
-#&gt; [1301] "YWHAH"       "YWHAZ"       "ZAK"         "ZBTB11"      "ZC3H10"     
-#&gt; [1306] "ZC3H11A"     "ZC3H13"      "ZC3H14"      "ZC3H15"      "ZC3H18"     
-#&gt; [1311] "ZC3H4"       "ZC3H7A"      "ZC3H7B"      "ZC3H8"       "ZC3HAV1"    
-#&gt; [1316] "ZCCHC11"     "ZCCHC17"     "ZCCHC24"     "ZCCHC3"      "ZCCHC6"     
-#&gt; [1321] "ZCCHC7"      "ZCCHC8"      "ZCCHC9"      "ZCRB1"       "ZFC3H1"     
-#&gt; [1326] "ZFP106"      "ZFP36"       "ZFP36L1"     "ZFP36L2"     "ZFR"        
-#&gt; [1331] "ZMAT2"       "ZMAT3"       "ZMAT5"       "ZNF138"      "ZNF207"     
-#&gt; [1336] "ZNF326"      "ZNF346"      "ZNF385A"     "ZNF579"      "ZNF593"     
-#&gt; [1341] "ZNF598"      "ZNF622"      "ZNF638"      "ZNF768"      "ZNFX1"      
-#&gt; [1346] "ZNHIT6"      "ZRANB2"      "ZRSR1"       "ZRSR2"       "ZYX"        
-#&gt; 
-#&gt; attr(,"citation")
-#&gt; [1] "Endre Sebestyén et al. (2016). Large-scale analysis of genome and transcriptome alterations in multiple tumors unveils novel cancer-relevant splicing networks. Genome Research, 26(6), 732-744"
-#&gt; 
-#&gt; attr(,"class")
-#&gt; [1] "geneList" "list"    </div></pre>
+#&gt; Source: 
+#&gt; Endre Sebestyén et al. (2016). Large-scale analysis of genome and transcriptome alterations in multiple tumors unveils novel cancer-relevant splicing networks. Genome Research, 26(6), 732-744
+#&gt; ================================================================================</div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#value">Value</a></li>
-      <li><a href="#see-also">See also</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -495,13 +219,30 @@ Sebestyen et al., 2016: 1350 genes encoding RNA-binding
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
    </div>
 
   
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script>
+<script>
+  docsearch({
+    
+    
+    apiKey: 'fa0226bf1a3df7e1c8ab8f0e70450e0a',
+    indexName: 'stem-cell-analysis-in-psichomics',
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
+  });
+</script>
+
 
 
   </body>

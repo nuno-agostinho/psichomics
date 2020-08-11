@@ -10,34 +10,43 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script>
 
 
+<!-- docsearch -->
+<script src="../docsearch.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.3/docsearch.min.css" integrity="sha256-QOSRU/ra9ActyXkIBbiIB144aDBdtvXBcNc3OTNuX/Q=" crossorigin="anonymous" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
 
 
 <meta property="og:title" content="Perform statistical analyses — diffAnalyses" />
 <meta property="og:description" content="Perform statistical analyses" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -65,7 +74,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -79,7 +88,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.12.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.2</span>
       </span>
     </div>
 
@@ -120,8 +129,19 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/nuno-agostinho/psichomics/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
+      
+      <form class="navbar-form navbar-right hidden-xs hidden-sm" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
       
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -135,7 +155,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Perform statistical analyses</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/nuno-agostinho/psichomics/blob/master/R/analysis.R'><code>R/analysis.R</code></a></small>
     <div class="hidden name"><code>diffAnalyses.Rd</code></div>
     </div>
 
@@ -149,7 +169,7 @@
   <span class='kw'>analyses</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"wilcoxRankSum"</span>, <span class='st'>"ttest"</span>, <span class='st'>"kruskal"</span>, <span class='st'>"levene"</span>, <span class='st'>"fligner"</span>),
   <span class='kw'>pvalueAdjust</span> <span class='kw'>=</span> <span class='st'>"BH"</span>,
   <span class='kw'>geneExpr</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>psi</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+  <span class='kw'>inputID</span> <span class='kw'>=</span> <span class='st'>"sparklineInput"</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -157,7 +177,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>data</th>
-      <td><p>Data frame or matrix: gene expression or alternative splicing 
+      <td><p>Data frame or matrix: gene expression or alternative splicing
 quantification</p></td>
     </tr>
     <tr>
@@ -181,9 +201,9 @@ tumour and metastasis</p></td>
 for density sparklines available in the interactive mode)</p></td>
     </tr>
     <tr>
-      <th>psi</th>
-      <td><p>Data frame or matrix: alternative splicing quantification (defunct
-argument, use <code>data</code> instead)</p></td>
+      <th>inputID</th>
+      <td><p>Character: identifier of input to get attributes of clicked
+event (Shiny only)</p></td>
     </tr>
     </table>
 
@@ -192,19 +212,19 @@ argument, use <code>data</code> instead)</p></td>
     <p>Table of statistical analyses</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The following statistical analyses may be performed by including the 
-respective string in the <code>analysis</code> argument:</p><ul>
+    <p>The following statistical analyses may be performed simultaneously via the
+<code>analysis</code> argument:</p><ul>
 <li><p><code>ttest</code> - Unpaired t-test (2 groups)</p></li>
 <li><p><code>wilcoxRankSum</code> - Wilcoxon Rank Sum test (2 groups)</p></li>
 <li><p><code>kruskal</code> - Kruskal test (2 or more groups)</p></li>
 <li><p><code>levene</code> - Levene's test (2 or more groups)</p></li>
 <li><p><code>fligner</code> - Fligner-Killeen test (2 or more groups)</p></li>
-<li><p><code>density</code> - Sample distribution per group (only usable 
+<li><p><code>density</code> - Sample distribution per group (only usable
      through the visual interface)</p></li>
 </ul>
 
-<p>The following methods for p-value adjustment are supported by using the 
-respective string in the <code>pvalueAdjust</code> argument:</p><ul>
+<p>The following p-value adjustment methods are supported via the
+<code>pvalueAdjust</code> argument:</p><ul>
 <li><p><code>none</code>: do not adjust p-values</p></li>
 <li><p><code>BH</code>: Benjamini-Hochberg's method (false discovery rate)</p></li>
 <li><p><code>BY</code>: Benjamini-Yekutieli's method (false discovery rate)</p></li>
@@ -227,20 +247,20 @@ respective string in the <code>pvalueAdjust</code> argument:</p><ul>
 
 <span class='no'>psi</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='quantifySplicing.html'>quantifySplicing</a></span>(<span class='no'>annot</span>, <span class='no'>junctionQuant</span>, <span class='kw'>eventType</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SE"</span>, <span class='st'>"MXE"</span>))</div><div class='output co'>#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% 
 #&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </div><div class='input'><span class='no'>group</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='st'>"Normal"</span>, <span class='fl'>3</span>), <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='st'>"Tumour"</span>, <span class='fl'>3</span>))
-<span class='fu'>diffAnalyses</span>(<span class='no'>psi</span>, <span class='no'>group</span>)</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.029 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.00656 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.000303 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.00119 secs</span></div><div class='output co'>#&gt;                                              Event type Chromosome Strand  Gene
-#&gt; SE_1_+_32_35_37_38_ACTN1                   Skipped exon          1      + ACTN1
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1 Mutually exclusive exon          1      + ACTN1
-#&gt; SE_2_+_32_35_37_38_ALDOA                   Skipped exon          2      + ALDOA
-#&gt; SE_3_+_32_35_37_38_ANXA6                   Skipped exon          3      + ANXA6
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA Mutually exclusive exon          2      + ALDOA
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6 Mutually exclusive exon          3      + ANXA6
-#&gt;                                 Survival by PSI cutoff Optimal PSI cutoff
-#&gt; SE_1_+_32_35_37_38_ACTN1                          &lt;NA&gt;               &lt;NA&gt;
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1                   &lt;NA&gt;               &lt;NA&gt;
-#&gt; SE_2_+_32_35_37_38_ALDOA                          &lt;NA&gt;               &lt;NA&gt;
-#&gt; SE_3_+_32_35_37_38_ANXA6                          &lt;NA&gt;               &lt;NA&gt;
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA                   &lt;NA&gt;               &lt;NA&gt;
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6                   &lt;NA&gt;               &lt;NA&gt;
+<span class='fu'>diffAnalyses</span>(<span class='no'>psi</span>, <span class='no'>group</span>)</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.0407 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.0134 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 5e-04 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.00161 secs</span></div><div class='output co'>#&gt;                                                    Event type Chromosome Strand
+#&gt; SE_1_+_32_35_37_38_ACTN1                    Skipped exon (SE)          1      +
+#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1 Mutually exclusive exon (MXE)          1      +
+#&gt; SE_2_+_32_35_37_38_ALDOA                    Skipped exon (SE)          2      +
+#&gt; SE_3_+_32_35_37_38_ANXA6                    Skipped exon (SE)          3      +
+#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA Mutually exclusive exon (MXE)          2      +
+#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6 Mutually exclusive exon (MXE)          3      +
+#&gt;                                  Gene Survival by PSI cutoff Optimal PSI cutoff
+#&gt; SE_1_+_32_35_37_38_ACTN1        ACTN1                   &lt;NA&gt;               &lt;NA&gt;
+#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1 ACTN1                   &lt;NA&gt;               &lt;NA&gt;
+#&gt; SE_2_+_32_35_37_38_ALDOA        ALDOA                   &lt;NA&gt;               &lt;NA&gt;
+#&gt; SE_3_+_32_35_37_38_ANXA6        ANXA6                   &lt;NA&gt;               &lt;NA&gt;
+#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA ALDOA                   &lt;NA&gt;               &lt;NA&gt;
+#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6 ANXA6                   &lt;NA&gt;               &lt;NA&gt;
 #&gt;                                 Log-rank p-value Samples (Normal)
 #&gt; SE_1_+_32_35_37_38_ACTN1                    &lt;NA&gt;                3
 #&gt; MXE_1_+_32_35_37_38_40_42_ACTN1             &lt;NA&gt;                3
@@ -438,16 +458,10 @@ respective string in the <code>pvalueAdjust</code> argument:</p><ul>
 #&gt; MXE_2_+_32_35_37_38_40_42_ALDOA  0.15816327
 #&gt; MXE_3_+_32_35_37_38_40_42_ANXA6 -0.12487512</div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#see-also">See also</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -458,13 +472,30 @@ respective string in the <code>pvalueAdjust</code> argument:</p><ul>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
    </div>
 
   
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script>
+<script>
+  docsearch({
+    
+    
+    apiKey: 'fa0226bf1a3df7e1c8ab8f0e70450e0a',
+    indexName: 'stem-cell-analysis-in-psichomics',
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
+  });
+</script>
+
 
 
   </body>

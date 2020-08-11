@@ -5,14 +5,16 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Visual interface tutorial • psichomics</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Visual interface tutorial">
-<meta property="og:description" content="">
-<meta name="twitter:card" content="summary">
+<title>Case study: visual interface tutorial • psichomics</title>
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="../pkgdown.js"></script><!-- docsearch --><script src="../docsearch.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.3/docsearch.min.css" integrity="sha256-QOSRU/ra9ActyXkIBbiIB144aDBdtvXBcNc3OTNuX/Q=" crossorigin="anonymous">
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script><meta property="og:title" content="Case study: visual interface tutorial">
+<meta property="og:description" content="psichomics">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -24,7 +26,7 @@
   gtag('config', 'UA-156449666-1');
 </script>
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -37,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.12.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.2</span>
       </span>
     </div>
 
@@ -77,8 +79,21 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/nuno-agostinho/psichomics/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+<form class="navbar-form navbar-right hidden-xs hidden-sm" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
 </div>
+      </form>
+      
+    </div>
 <!--/.nav-collapse -->
   </div>
 <!--/.container -->
@@ -87,32 +102,31 @@
 
       
 
-      </header><div class="row">
+      </header><script src="GUI_tutorial_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Visual interface tutorial</h1>
+      <h1 data-toc-skip>Case study: visual interface tutorial</h1>
                         <h4 class="author">Nuno Saraiva-Agostinho</h4>
             
-            <h4 class="date">2020-02-13</h4>
+            <h4 class="date">2020-08-11</h4>
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/psichomics/blob/master/vignettes/GUI_tutorial.Rmd"><code>vignettes/GUI_tutorial.Rmd</code></a></small>
       <div class="hidden name"><code>GUI_tutorial.Rmd</code></div>
 
     </div>
 
     
     
-<hr>
 <p><em>psichomics</em> is an interactive R package for integrative analyses of alternative splicing and gene expression based on <a href="https://tcga-data.nci.nih.gov/docs/publications/tcga">The Cancer Genome Atlas (TCGA)</a> (containing molecular data associated with 34 tumour types), the <a href="http://gtexportal.org">Genotype-Tissue Expression (GTEx)</a> project (containing data for multiple normal human tissues), <a href="https://www.ncbi.nlm.nih.gov/sra">Sequence Read Archive</a> and user-provided data. The data from GTEx, TCGA and select SRA projects include subject/sample-associated information and transcriptomic data, such as the quantification of RNA-Seq reads aligning to splice junctions (henceforth called junction quantification) and exons.</p>
 <div id="installing-and-starting-the-program" class="section level1">
 <h1 class="hasAnchor">
 <a href="#installing-and-starting-the-program" class="anchor"></a>Installing and starting the program</h1>
 <p>Install <em>psichomics</em> by typing the following in an R console (the <a href="https://www.r-project.org/">R environment</a> is required):</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"BiocManager"</span>)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">BiocManager<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(<span class="st">"psichomics"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"BiocManager"</span>)
+<span class="kw pkg">BiocManager</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(<span class="st">"psichomics"</span>)</pre></body></html></div>
 <p>After the installation, start the visual interface of the program in your default web browser by typing:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(psichomics)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="../reference/psichomics.html">psichomics</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">psichomics</span>)
+<span class="fu"><a href="../reference/psichomics.html">psichomics</a></span>()</pre></body></html></div>
 </div>
 <div id="exploration-of-clinically-relevant-differentially-spliced-events-in-breast-cancer" class="section level1">
 <h1 class="hasAnchor">
@@ -268,7 +282,7 @@ Options to save and load groups.
 Options to perform and visualise PCA.
 </p>
 </div>
-<p>Two PCA plots are then rendered. The plot above is a <strong>score plot</strong> that shows the clinical samples, while the <strong>loadings plot</strong> below displays the variables (in this case, alternative splicing events). The table below the loadings plot depicts the contribution of each variable to each PC.</p>
+<p>Two PCA plots are then rendered. The plot above is a <strong>score plot</strong> that shows the samples, while the <strong>loadings plot</strong> below displays the variables (in this case, alternative splicing events). The table below the loadings plot depicts the contribution of each variable to each PC.</p>
 <blockquote>
 <p><strong>Hint:</strong> As most plots in <em>psichomics</em>, PCA plots can be zoomed-in by clicking-and-dragging within the plot (click <em>Reset zoom</em> to zoom-out). To toggle the visibility of the data series represented in the plot, click its respective name in the plot legend.</p>
 </blockquote>
@@ -419,7 +433,7 @@ Differential splicing of <em>UHRF2</em> exon 10 between tumour stage I and norma
 <div id="survival-analysis" class="section level4">
 <h4 class="hasAnchor">
 <a href="#survival-analysis" class="anchor"></a>Survival analysis</h4>
-<p>To study the impact of alternative splicing events on prognosis, Kaplan-Meier curves may be plotted for groups of patients separated by a given PSI cutoff for a given alternative splicing event. The optimal PSI cutoff maximises the significance of group differences in survival analysis (i.e. minimises the p-value of the log-rank tests of difference in survival between individuals whose samples have a PSI below and above that threshold).</p>
+<p>To study the impact of alternative splicing events on prognosis, Kaplan-Meier curves may be plotted for groups of patients separated by a given PSI cutoff for a given alternative splicing event. The optimal PSI cutoff maximises the significance of group differences in survival analysis (i.e.  minimises the p-value of the log-rank tests of difference in survival between individuals whose samples have a PSI below and above that threshold).</p>
 <p>To perform survival analysis on a specific event, go to <strong>Analyses</strong> &gt; <strong>Survival analysis</strong>.</p>
 <ol style="list-style-type: decimal">
 <li>Check <strong>right</strong> data censoring.</li>
@@ -522,7 +536,7 @@ Prognostic value of <em>UHRF2</em> expression (patients separated by the optimal
 <a href="#feedback" class="anchor"></a>Feedback</h1>
 <p>All feedback on the program, documentation and associated material (including this tutorial) is welcome. Please send any suggestions and comments to:</p>
 <blockquote>
-<p>Nuno Saraiva-Agostinho (<a href="mailto:nunoagostinho@medicina.ulisboa.pt">nunoagostinho@medicina.ulisboa.pt</a>)</p>
+<p>Nuno Saraiva-Agostinho (<a href="mailto:nunoagostinho@medicina.ulisboa.pt" class="email">nunoagostinho@medicina.ulisboa.pt</a>)</p>
 <p><a href="http://imm.medicina.ulisboa.pt/group/distrans/">Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)</a></p>
 </blockquote>
 </div>
@@ -558,32 +572,11 @@ Prognostic value of <em>UHRF2</em> expression (patients separated by the optimal
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <div id="tocnav">
-      <h2 class="hasAnchor">
-<a href="#tocnav" class="anchor"></a>Contents</h2>
-      <ul class="nav nav-pills nav-stacked">
-<li><a href="#installing-and-starting-the-program">Installing and starting the program</a></li>
-      <li>
-<a href="#exploration-of-clinically-relevant-differentially-spliced-events-in-breast-cancer">Exploration of clinically-relevant, differentially spliced events in breast cancer</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#downloading-and-loading-tcga-data">Downloading and loading TCGA data</a></li>
-      <li><a href="#filtering-and-normalising-gene-expression">Filtering and normalising gene expression</a></li>
-      <li><a href="#quantifying-alternative-splicing">Quantifying alternative splicing</a></li>
-      <li><a href="#data-grouping">Data grouping</a></li>
-      <li><a href="#principal-component-analysis-pca">Principal component analysis (PCA)</a></li>
-      <li><a href="#numb-exon-12-inclusion-and-correlation-with-qki-gene-expression"><em>NUMB</em> exon 12 inclusion and correlation with QKI gene expression</a></li>
-      <li><a href="#differential-splicing-analysis">Differential splicing analysis</a></li>
-      <li><a href="#differential-gene-expression">Differential gene expression</a></li>
-      </ul>
-</li>
-      <li><a href="#exploring-alternative-splicing-changes-between-human-isogenic-stem-cells-and-fibroblasts">Exploring alternative splicing changes between human isogenic stem cells and fibroblasts</a></li>
-      <li><a href="#load-sra-and-user-provided-local-files">Load SRA and user-provided local files</a></li>
-      <li><a href="#feedback">Feedback</a></li>
-      <li><a href="#references">References</a></li>
-      </ul>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
 </div>
-      </div>
 
 </div>
 
@@ -594,14 +587,27 @@ Prognostic value of <em>UHRF2</em> expression (patients separated by the optimal
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
 </div>
 
   
-
-
-  </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script><script>
+  docsearch({
+    
+    
+    apiKey: 'fa0226bf1a3df7e1c8ab8f0e70450e0a',
+    indexName: 'stem-cell-analysis-in-psichomics',
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
+  });
+</script>
+</body>
 </html>

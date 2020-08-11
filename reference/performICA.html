@@ -10,34 +10,43 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script>
 
 
+<!-- docsearch -->
+<script src="../docsearch.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.3/docsearch.min.css" integrity="sha256-QOSRU/ra9ActyXkIBbiIB144aDBdtvXBcNc3OTNuX/Q=" crossorigin="anonymous" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
 
 
 <meta property="og:title" content="Perform independent component analysis after processing missing values — performICA" />
 <meta property="og:description" content="Perform independent component analysis after processing missing values" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -65,7 +74,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -79,7 +88,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.12.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.2</span>
       </span>
     </div>
 
@@ -120,8 +129,19 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/nuno-agostinho/psichomics/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
+      
+      <form class="navbar-form navbar-right hidden-xs hidden-sm" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
       
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -135,7 +155,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Perform independent component analysis after processing missing values</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/nuno-agostinho/psichomics/blob/master/R/analysis_dimReduction_ica.R'><code>R/analysis_dimReduction_ica.R</code></a></small>
     <div class="hidden name"><code>performICA.Rd</code></div>
     </div>
 
@@ -285,82 +305,77 @@ to be replaced with the mean of the values of that same column</p></td>
 #&gt; [4,] -0.0009066803 -0.014266122 -0.15162666  0.02942629
 #&gt; 
 #&gt; $W
-#&gt;            [,1]        [,2]        [,3]       [,4]
-#&gt; [1,]  0.0867415 -0.82467606  0.47272547  0.2981877
-#&gt; [2,] -0.2015532 -0.44938521 -0.21501959 -0.8433243
-#&gt; [3,]  0.9598988  0.04212483  0.06699893 -0.2689441
-#&gt; [4,] -0.1744892  0.34086335  0.85194386 -0.3571517
+#&gt;            [,1]        [,2]        [,3]        [,4]
+#&gt; [1,] -0.3272940 -0.94429966 -0.02925497 -0.01791523
+#&gt; [2,]  0.2522182 -0.07988422 -0.66871761  0.69485341
+#&gt; [3,]  0.4959778 -0.20255298  0.70075675  0.47108204
+#&gt; [4,]  0.7637216 -0.24675688 -0.24678106 -0.54308332
 #&gt; 
 #&gt; $A
-#&gt;            [,1]       [,2]      [,3]      [,4]
-#&gt; [1,] -0.4929255  -6.922371  3.698613 -6.008954
-#&gt; [2,]  1.7122844  67.710822  9.349292  6.203546
-#&gt; [3,] -3.8874550 -39.064508  1.104087 -2.605535
-#&gt; [4,] -0.5512311 -25.447043 10.149896  2.143420
+#&gt;             [,1]      [,2]      [,3]      [,4]
+#&gt; [1,] -0.83164439 27.496932 -1.679598 -1.641239
+#&gt; [2,]  3.92134419 77.722168  4.499120  7.331951
+#&gt; [3,] -0.07676045  2.141101 10.241290 -2.358271
+#&gt; [4,]  1.58637674  2.204880 -8.796661 -4.895097
 #&gt; 
 #&gt; $S
-#&gt;                         IC1         IC2         IC3         IC4
-#&gt; Alabama         0.311924003 -0.03851759 -1.35313631 -0.67385854
-#&gt; Alaska         -3.652697463  0.78496104  0.40496979 -1.16415333
-#&gt; Arizona        -0.060276108  2.13124519  0.95408017 -0.62031000
-#&gt; Arkansas       -0.326876784 -0.28018775 -0.18147584 -1.13410883
-#&gt; California     -0.997384644  2.13376309  0.63582484  0.83722637
-#&gt; Colorado       -1.797044392  0.94440254  0.47883994  0.96044300
-#&gt; Connecticut     1.457499380 -0.04041428  0.87530499  0.53997650
-#&gt; Delaware        1.370492808  1.29812761  1.04997978 -1.17289528
-#&gt; Florida         0.453492318  1.69104581 -1.24770249 -0.16254370
-#&gt; Georgia        -0.164837724 -0.87169052 -2.92571908  0.63543580
-#&gt; Hawaii          0.167303227 -0.95923775 -0.16685589  2.56097463
-#&gt; Idaho          -0.091993341 -0.34351498  1.32697251 -0.93136155
-#&gt; Illinois        1.007267030  1.18541470 -0.31946572  0.29600683
-#&gt; Indiana        -0.340456029 -0.73492261 -0.23900622  0.77381132
-#&gt; Iowa            0.109075043 -1.13184046  0.91632222  0.06175246
-#&gt; Kansas          0.092522561 -0.54725780  0.13613720  0.50088791
-#&gt; Kentucky       -0.146698209 -1.51379283 -1.17426340  0.24157481
-#&gt; Louisiana       0.746817404  0.04489965 -2.02623925 -0.04776650
-#&gt; Maine           0.479738670 -0.93072410  1.11595279 -0.87142421
-#&gt; Maryland        0.006748706  1.40959112 -0.12120725 -1.14383594
-#&gt; Massachusetts   1.349133853  0.60240559  0.85551647  0.77768730
-#&gt; Michigan       -0.935302819  0.92714698 -0.63749120  0.38965931
-#&gt; Minnesota       0.125240035 -0.71664027  0.89757802  0.56215949
-#&gt; Mississippi     0.539228051 -0.51719467 -2.20715206 -1.60219420
-#&gt; Missouri       -0.706439848  0.11766908 -0.25778434  0.61649315
-#&gt; Montana        -0.328081442 -0.97157657  0.10657615 -0.23258071
-#&gt; Nebraska       -0.047261969 -0.60619648  0.61352938  0.16009246
-#&gt; Nevada         -2.221500707  1.16370072 -0.52759210  1.31816147
-#&gt; New Hampshire   0.326873568 -1.14837379  0.93042931 -0.10244164
-#&gt; New Jersey      1.400100786  0.44916596 -0.07781475  1.39588609
-#&gt; New Mexico     -0.560960007  1.30879982 -0.20504381 -0.53943319
-#&gt; New York        0.908681898  1.25450282 -0.49732535  0.58320935
-#&gt; North Carolina  0.980317225  1.01111457 -0.55861394 -3.25148753
-#&gt; North Dakota   -0.065063748 -1.45609367  1.29176963 -0.89775651
-#&gt; Ohio            0.124736932 -0.39838008 -0.24731899  1.28043470
-#&gt; Oklahoma        0.123792314 -0.06030638  0.23105541  0.22767295
-#&gt; Oregon         -1.354597263  0.36336769  1.04794912  0.18875803
-#&gt; Pennsylvania    0.807571375 -0.59795001 -0.11134279  0.90507789
-#&gt; Rhode Island    2.706494081  1.05202630  1.24562267  0.02352225
-#&gt; South Carolina -0.056827313  0.15531549 -1.38420019 -1.69988244
-#&gt; South Dakota   -0.432962661 -1.22175635  0.65777129 -0.81205938
-#&gt; Tennessee      -0.744509641 -0.61769113 -1.62264838  0.37243458
-#&gt; Texas           0.513206448  0.14033653 -1.44628406  1.26569013
-#&gt; Utah           -0.094725783  0.31440668  1.18311137  1.04085958
-#&gt; Vermont        -1.120738534 -1.86661134  0.93870884 -1.27880551
-#&gt; Virginia       -0.082467748 -0.37304497 -0.36006408  0.16258930
-#&gt; Washington     -0.736403127  0.41076125  1.17827280  0.49679605
-#&gt; West Virginia  -0.120636521 -1.74345029 -0.07992878 -0.95622045
-#&gt; Wisconsin       0.622239597 -1.01046352  0.71535682  0.67152199
-#&gt; Wyoming         0.456246516 -0.19634004  0.18804477 -0.55167627
+#&gt;                        IC1         IC2         IC3          IC4
+#&gt; Alabama        -0.09449110  0.83631141 -0.00732968  1.294389562
+#&gt; Alaska          0.40717676  1.17895294 -3.42844353 -1.472300260
+#&gt; Arizona         1.81467992  0.97323601  0.21042435 -1.247542710
+#&gt; Arkansas        0.51751879  0.06841125 -0.86269229  0.698388250
+#&gt; California      0.37335669  1.28203521  0.09011010 -2.204951917
+#&gt; Colorado       -0.52095560  0.69068271 -0.84785891 -1.950820618
+#&gt; Connecticut     0.39534489 -0.95597259  1.44144313 -0.189028385
+#&gt; Delaware        2.26855195  0.03793316  0.94412073 -0.048947617
+#&gt; Florida         0.38374628  1.94884283  0.80884355  0.221349760
+#&gt; Georgia        -2.26982407  1.27146999  0.01142288  1.726777023
+#&gt; Hawaii         -2.28989784 -0.80332272  1.05337559 -0.732120046
+#&gt; Idaho           1.12285326 -1.02787566 -0.63867754 -0.171810595
+#&gt; Illinois        0.42067854  0.82452406  1.31953235 -0.107225346
+#&gt; Indiana        -1.07939230 -0.35600590 -0.12717930 -0.062665585
+#&gt; Iowa           -0.07580912 -1.44366582 -0.21560434 -0.004088263
+#&gt; Kansas         -0.50939954 -0.53997831  0.15398870 -0.051928527
+#&gt; Kentucky       -1.43215202 -0.31158418 -0.38413986  1.206082283
+#&gt; Louisiana      -0.71157202  1.19679959  0.69121407  1.500412771
+#&gt; Maine           0.87333007 -1.44250298 -0.27814040  0.424552704
+#&gt; Maryland        1.38081687  1.17730955 -0.12991985  0.021268558
+#&gt; Massachusetts   0.46849075 -0.47242248  1.63193282 -0.643342293
+#&gt; Michigan       -0.42258871  1.26091697 -0.34422904 -0.636895460
+#&gt; Minnesota      -0.25719862 -1.17099477  0.13848102 -0.440875337
+#&gt; Mississippi     0.01538190  1.06549723 -0.33767297  2.597548784
+#&gt; Missouri       -0.69882097  0.36257553 -0.27822425 -0.512054042
+#&gt; Montana        -0.29457702 -0.68316335 -0.64991598  0.375728830
+#&gt; Nebraska       -0.10116024 -0.83951298 -0.15139963 -0.183897991
+#&gt; Nevada         -1.27110597  1.57279745 -0.95228726 -1.819042227
+#&gt; New Hampshire   0.09870188 -1.50035992 -0.11054592  0.169585797
+#&gt; New Jersey     -0.47133303 -0.02892030  1.94609988 -0.326020598
+#&gt; New Mexico      0.71420128  1.23930305 -0.36079679 -0.429574662
+#&gt; New York        0.13470029  0.99139572  1.39116891 -0.224911490
+#&gt; North Carolina  2.76529846  1.11471858 -0.35615731  1.962466327
+#&gt; North Dakota    0.60208537 -1.81642144 -0.89982085  0.357080335
+#&gt; Ohio           -1.17635193 -0.24490367  0.58890363 -0.290441964
+#&gt; Oklahoma       -0.04715184 -0.23761108  0.18455113 -0.177317602
+#&gt; Oregon          0.16446492 -0.14129310 -0.99959108 -1.433388290
+#&gt; Pennsylvania   -0.75022078 -0.59920918  0.93874765  0.195317552
+#&gt; Rhode Island    1.74872549 -0.64333488  2.54826451 -0.135742538
+#&gt; South Carolina  0.61350611  1.15009861 -0.73337283  1.611213973
+#&gt; South Dakota    0.24519607 -1.15945721 -1.08838647  0.428020446
+#&gt; Tennessee      -1.50413977  0.74866363 -0.57460381  0.744599918
+#&gt; Texas          -1.39696370  0.84367322  1.09704592  0.331636005
+#&gt; Utah           -0.07116232 -0.59954293  0.43862118 -1.426205230
+#&gt; Vermont         0.24941394 -1.62570154 -2.06741533  0.526774770
+#&gt; Virginia       -0.47254364 -0.02794304 -0.08470155  0.266068117
+#&gt; Washington      0.18937013 -0.34849636 -0.32680775 -1.442925300
+#&gt; West Virginia  -0.14793289 -1.11190127 -1.00540999  1.306085915
+#&gt; Wisconsin      -0.41971477 -1.37991255  0.53639669 -0.053434541
+#&gt; Wyoming         0.51886918 -0.32413848  0.07663573  0.454151753
 #&gt; </div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#see-also">See also</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -371,13 +386,30 @@ to be replaced with the mean of the values of that same column</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
    </div>
 
   
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script>
+<script>
+  docsearch({
+    
+    
+    apiKey: 'fa0226bf1a3df7e1c8ab8f0e70450e0a',
+    indexName: 'stem-cell-analysis-in-psichomics',
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
+  });
+</script>
+
 
 
   </body>

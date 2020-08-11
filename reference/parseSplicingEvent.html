@@ -10,34 +10,43 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script>
 
 
+<!-- docsearch -->
+<script src="../docsearch.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.3/docsearch.min.css" integrity="sha256-QOSRU/ra9ActyXkIBbiIB144aDBdtvXBcNc3OTNuX/Q=" crossorigin="anonymous" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
 
 
 <meta property="og:title" content="Parse alternative splicing event identifier — parseSplicingEvent" />
 <meta property="og:description" content="Parse alternative splicing event identifier" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -65,7 +74,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -79,7 +88,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.12.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.2</span>
       </span>
     </div>
 
@@ -120,8 +129,19 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/nuno-agostinho/psichomics/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
+      
+      <form class="navbar-form navbar-right hidden-xs hidden-sm" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
       
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -135,7 +155,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Parse alternative splicing event identifier</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/nuno-agostinho/psichomics/blob/master/R/utils_eventParsing.R'><code>R/utils_eventParsing.R</code></a></small>
     <div class="hidden name"><code>parseSplicingEvent.Rd</code></div>
     </div>
 
@@ -148,7 +168,8 @@
   <span class='kw'>char</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>pretty</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>extra</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>coords</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
+  <span class='kw'>coords</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -174,31 +195,132 @@ assembly version); only used if <code>pretty = TRUE</code> and <code>char = TRUE
     </tr>
     <tr>
       <th>coords</th>
-      <td><p>Boolean: display extra coordinates regarding the alternative 
-and constitutive regions of alternative splicing events? If 
-<code>char = FALSE</code>, all coordinates are always displayed</p></td>
+      <td><p>Boolean: display extra coordinates regarding the alternative
+and constitutive regions of alternative splicing events? Only used if
+<code>char = FALSE</code></p></td>
+    </tr>
+    <tr>
+      <th>data</th>
+      <td><p>Matrix or data frame: alternative splicing information</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Parsed event</p>
+    <p>Data.frame containing type of event, chromosome, strand, gene and
+position of alternative splicing events or character with that same
+information (depending on what is available)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>events</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SE_1_-_123_456_789_1024_TST"</span>,
-            <span class='st'>"MXE_3_+_473_578_686_736_834_937_HEY/YOU"</span>)
-<span class='fu'>parseSplicingEvent</span>(<span class='no'>events</span>)</div><div class='output co'>#&gt;   type chrom strand     gene       pos
-#&gt; 1   SE     1      -      TST 123, 1024
-#&gt; 2  MXE     3      + HEY, YOU  473, 937</div></pre>
+    <pre class="examples"><div class='input'><span class='no'>events</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(
+  <span class='st'>"A3SS_15_+_63353138_63353912_63353397_TPM1"</span>,
+  <span class='st'>"A3SS_11_-_61118463_61117115_61117894_CYB561A3"</span>,
+  <span class='st'>"A5SS_21_+_48055675_48056459_48056808_PRMT2"</span>,
+  <span class='st'>"A5SS_1_-_1274742_1274667_1274033_DVL1"</span>,
+  <span class='st'>"AFE_9_+_131902430_131901928_131904724_PPP2R4"</span>,
+  <span class='st'>"AFE_5_-_134686513_134688636_134681747_H2AFY"</span>,
+  <span class='st'>"ALE_12_+_56554104_56554410_56555171_MYL6"</span>,
+  <span class='st'>"ALE_8_-_38314874_38287466_38285953_FGFR1"</span>,
+  <span class='st'>"SE_9_+_6486925_6492303_6492401_6493826_UHRF2"</span>,
+  <span class='st'>"SE_19_-_5218431_5216778_5216731_5215606_PTPRS"</span>,
+  <span class='st'>"MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1"</span>,
+  <span class='st'>"MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7"</span>)
+<span class='fu'>parseSplicingEvent</span>(<span class='no'>events</span>)</div><div class='output co'>#&gt;                                                                      type chrom
+#&gt; A3SS_15_+_63353138_63353912_63353397_TPM1                            A3SS    15
+#&gt; A3SS_11_-_61118463_61117115_61117894_CYB561A3                        A3SS    11
+#&gt; A5SS_21_+_48055675_48056459_48056808_PRMT2                           A5SS    21
+#&gt; A5SS_1_-_1274742_1274667_1274033_DVL1                                A5SS     1
+#&gt; AFE_9_+_131902430_131901928_131904724_PPP2R4                          AFE     9
+#&gt; AFE_5_-_134686513_134688636_134681747_H2AFY                           AFE     5
+#&gt; ALE_12_+_56554104_56554410_56555171_MYL6                              ALE    12
+#&gt; ALE_8_-_38314874_38287466_38285953_FGFR1                              ALE     8
+#&gt; SE_9_+_6486925_6492303_6492401_6493826_UHRF2                           SE     9
+#&gt; SE_19_-_5218431_5216778_5216731_5215606_PTPRS                          SE    19
+#&gt; MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1   MXE    15
+#&gt; MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7  MXE    17
+#&gt;                                                                      strand
+#&gt; A3SS_15_+_63353138_63353912_63353397_TPM1                                 +
+#&gt; A3SS_11_-_61118463_61117115_61117894_CYB561A3                             -
+#&gt; A5SS_21_+_48055675_48056459_48056808_PRMT2                                +
+#&gt; A5SS_1_-_1274742_1274667_1274033_DVL1                                     -
+#&gt; AFE_9_+_131902430_131901928_131904724_PPP2R4                              +
+#&gt; AFE_5_-_134686513_134688636_134681747_H2AFY                               -
+#&gt; ALE_12_+_56554104_56554410_56555171_MYL6                                  +
+#&gt; ALE_8_-_38314874_38287466_38285953_FGFR1                                  -
+#&gt; SE_9_+_6486925_6492303_6492401_6493826_UHRF2                              +
+#&gt; SE_19_-_5218431_5216778_5216731_5215606_PTPRS                             -
+#&gt; MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1       +
+#&gt; MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7      -
+#&gt;                                                                          gene
+#&gt; A3SS_15_+_63353138_63353912_63353397_TPM1                                TPM1
+#&gt; A3SS_11_-_61118463_61117115_61117894_CYB561A3                        CYB561A3
+#&gt; A5SS_21_+_48055675_48056459_48056808_PRMT2                              PRMT2
+#&gt; A5SS_1_-_1274742_1274667_1274033_DVL1                                    DVL1
+#&gt; AFE_9_+_131902430_131901928_131904724_PPP2R4                           PPP2R4
+#&gt; AFE_5_-_134686513_134688636_134681747_H2AFY                             H2AFY
+#&gt; ALE_12_+_56554104_56554410_56555171_MYL6                                 MYL6
+#&gt; ALE_8_-_38314874_38287466_38285953_FGFR1                                FGFR1
+#&gt; SE_9_+_6486925_6492303_6492401_6493826_UHRF2                            UHRF2
+#&gt; SE_19_-_5218431_5216778_5216731_5215606_PTPRS                           PTPRS
+#&gt; MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1      TPM1
+#&gt; MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7    EXOC7
+#&gt;                                                                                       pos
+#&gt; A3SS_15_+_63353138_63353912_63353397_TPM1                              63353138, 63353912
+#&gt; A3SS_11_-_61118463_61117115_61117894_CYB561A3                          61117115, 61118463
+#&gt; A5SS_21_+_48055675_48056459_48056808_PRMT2                             48055675, 48056808
+#&gt; A5SS_1_-_1274742_1274667_1274033_DVL1                                    1274033, 1274742
+#&gt; AFE_9_+_131902430_131901928_131904724_PPP2R4                         131901928, 131904724
+#&gt; AFE_5_-_134686513_134688636_134681747_H2AFY                          134681747, 134688636
+#&gt; ALE_12_+_56554104_56554410_56555171_MYL6                               56554104, 56555171
+#&gt; ALE_8_-_38314874_38287466_38285953_FGFR1                               38285953, 38314874
+#&gt; SE_9_+_6486925_6492303_6492401_6493826_UHRF2                             6486925, 6493826
+#&gt; SE_19_-_5218431_5216778_5216731_5215606_PTPRS                            5215606, 5218431
+#&gt; MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1    63335142, 63349184
+#&gt; MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7   74085401, 74090495
+#&gt;                                                                          start
+#&gt; A3SS_15_+_63353138_63353912_63353397_TPM1                             63353138
+#&gt; A3SS_11_-_61118463_61117115_61117894_CYB561A3                         61117115
+#&gt; A5SS_21_+_48055675_48056459_48056808_PRMT2                            48055675
+#&gt; A5SS_1_-_1274742_1274667_1274033_DVL1                                  1274033
+#&gt; AFE_9_+_131902430_131901928_131904724_PPP2R4                         131901928
+#&gt; AFE_5_-_134686513_134688636_134681747_H2AFY                          134681747
+#&gt; ALE_12_+_56554104_56554410_56555171_MYL6                              56554104
+#&gt; ALE_8_-_38314874_38287466_38285953_FGFR1                              38285953
+#&gt; SE_9_+_6486925_6492303_6492401_6493826_UHRF2                           6486925
+#&gt; SE_19_-_5218431_5216778_5216731_5215606_PTPRS                          5215606
+#&gt; MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1   63335142
+#&gt; MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7  74085401
+#&gt;                                                                            end
+#&gt; A3SS_15_+_63353138_63353912_63353397_TPM1                             63353912
+#&gt; A3SS_11_-_61118463_61117115_61117894_CYB561A3                         61118463
+#&gt; A5SS_21_+_48055675_48056459_48056808_PRMT2                            48056808
+#&gt; A5SS_1_-_1274742_1274667_1274033_DVL1                                  1274742
+#&gt; AFE_9_+_131902430_131901928_131904724_PPP2R4                         131904724
+#&gt; AFE_5_-_134686513_134688636_134681747_H2AFY                          134688636
+#&gt; ALE_12_+_56554104_56554410_56555171_MYL6                              56555171
+#&gt; ALE_8_-_38314874_38287466_38285953_FGFR1                              38314874
+#&gt; SE_9_+_6486925_6492303_6492401_6493826_UHRF2                           6493826
+#&gt; SE_19_-_5218431_5216778_5216731_5215606_PTPRS                          5218431
+#&gt; MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1   63349184
+#&gt; MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7  74090495
+#&gt;                                                                      subtype
+#&gt; A3SS_15_+_63353138_63353912_63353397_TPM1                               A3SS
+#&gt; A3SS_11_-_61118463_61117115_61117894_CYB561A3                           A3SS
+#&gt; A5SS_21_+_48055675_48056459_48056808_PRMT2                              A5SS
+#&gt; A5SS_1_-_1274742_1274667_1274033_DVL1                                   A5SS
+#&gt; AFE_9_+_131902430_131901928_131904724_PPP2R4                             AFE
+#&gt; AFE_5_-_134686513_134688636_134681747_H2AFY                              AFE
+#&gt; ALE_12_+_56554104_56554410_56555171_MYL6                                 ALE
+#&gt; ALE_8_-_38314874_38287466_38285953_FGFR1                                 ALE
+#&gt; SE_9_+_6486925_6492303_6492401_6493826_UHRF2                              SE
+#&gt; SE_19_-_5218431_5216778_5216731_5215606_PTPRS                             SE
+#&gt; MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1      MXE
+#&gt; MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7     MXE</div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -209,13 +331,30 @@ and constitutive regions of alternative splicing events? If
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
    </div>
 
   
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script>
+<script>
+  docsearch({
+    
+    
+    apiKey: 'fa0226bf1a3df7e1c8ab8f0e70450e0a',
+    indexName: 'stem-cell-analysis-in-psichomics',
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
+  });
+</script>
+
 
 
   </body>

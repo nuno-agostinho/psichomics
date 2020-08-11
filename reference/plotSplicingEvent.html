@@ -10,34 +10,43 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script>
 
 
+<!-- docsearch -->
+<script src="../docsearch.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.3/docsearch.min.css" integrity="sha256-QOSRU/ra9ActyXkIBbiIB144aDBdtvXBcNc3OTNuX/Q=" crossorigin="anonymous" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
 
 
 <meta property="og:title" content="Plot diagram of alternative splicing events — plotSplicingEvent" />
 <meta property="og:description" content="Plot diagram of alternative splicing events" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -65,7 +74,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -79,7 +88,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.12.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.2</span>
       </span>
     </div>
 
@@ -120,8 +129,19 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/nuno-agostinho/psichomics/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
+      
+      <form class="navbar-form navbar-right hidden-xs hidden-sm" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
       
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -135,7 +155,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Plot diagram of alternative splicing events</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/nuno-agostinho/psichomics/blob/master/R/utils_drawSplicingEvent.R'><code>R/utils_drawSplicingEvent.R</code></a></small>
     <div class="hidden name"><code>plotSplicingEvent.Rd</code></div>
     </div>
 
@@ -145,21 +165,22 @@
 
     <pre class="usage"><span class='fu'>plotSplicingEvent</span>(
   <span class='no'>ASevent</span>,
-  <span class='kw'>class</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>style</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>showText</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>showPath</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>showAlternative1</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>showAlternative2</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>constitutiveWidth</span> <span class='kw'>=</span> <span class='fl'>60</span>,
   <span class='kw'>alternativeWidth</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>intronWidth</span> <span class='kw'>=</span> <span class='fl'>15</span>,
+  <span class='kw'>intronWidth</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>constitutiveFill</span> <span class='kw'>=</span> <span class='st'>"lightgray"</span>,
   <span class='kw'>constitutiveStroke</span> <span class='kw'>=</span> <span class='st'>"darkgray"</span>,
   <span class='kw'>alternative1Fill</span> <span class='kw'>=</span> <span class='st'>"#ffb153"</span>,
   <span class='kw'>alternative1Stroke</span> <span class='kw'>=</span> <span class='st'>"#faa000"</span>,
   <span class='kw'>alternative2Fill</span> <span class='kw'>=</span> <span class='st'>"#caa06c"</span>,
-  <span class='kw'>alternative2Stroke</span> <span class='kw'>=</span> <span class='st'>"#9d7039"</span>
+  <span class='kw'>alternative2Stroke</span> <span class='kw'>=</span> <span class='st'>"#9d7039"</span>,
+  <span class='kw'>class</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>style</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -170,12 +191,8 @@
       <td><p>Character: alternative splicing event identifiers</p></td>
     </tr>
     <tr>
-      <th>class</th>
-      <td><p>Character: class of SVG parent tag</p></td>
-    </tr>
-    <tr>
-      <th>style</th>
-      <td><p>Character: style of SVG parent tag</p></td>
+      <th>data</th>
+      <td><p>Matrix or data frame: alternative splicing information</p></td>
     </tr>
     <tr>
       <th>showText</th>
@@ -192,7 +209,7 @@ splicing junctions and text?</p></td>
     </tr>
     <tr>
       <th>showAlternative2</th>
-      <td><p>Boolean: show alternative exon 2 and respective 
+      <td><p>Boolean: show alternative exon 2 and respective
 splicing junctions and text? (only related with mutually exclusive exons)</p></td>
     </tr>
     <tr>
@@ -231,6 +248,14 @@ splicing junctions and text? (only related with mutually exclusive exons)</p></t
       <th>alternative2Stroke</th>
       <td><p>Character: stroke colour of alternative exon 2</p></td>
     </tr>
+    <tr>
+      <th>class</th>
+      <td><p>Character: class of SVG parent tag</p></td>
+    </tr>
+    <tr>
+      <th>style</th>
+      <td><p>Character: style of SVG parent tag</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -248,56 +273,14 @@ splicing junctions and text? (only related with mutually exclusive exons)</p></t
     <span class='st'>"MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1"</span>)
 <span class='no'>diagram</span> <span class='kw'>&lt;-</span> <span class='fu'>plotSplicingEvent</span>(<span class='no'>ASevent</span>)
 
-<span class='no'>diagram</span><span class='kw'>[[</span><span class='st'>"A3SS_3_-_145796903_145794682_145795711_PLOD2"</span>]]</div><div class='output co'>#&gt; [1] "&lt;svg height=\"50px\" width=\"197\"&gt;\n  &lt;rect class=\"diagram\" x=\"1\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: lightgray; stroke: darkgray\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"61\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: end; dominant-baseline: auto\"&gt;145796903&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"76\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: lightgray; stroke: darkgray\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"76\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: start; dominant-baseline: auto\"&gt;145795711&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"136\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: #ffb153; stroke: #faa000\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"136\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: start; dominant-baseline: auto\"&gt;145794682&lt;/text&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: darkgray; stroke-width: 1.5px\" d=\"M 61 30 C 66 45 71 45 76 30\"&gt;&lt;/path&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: #faa000; stroke-width: 1.5px\" d=\"M 61 30 C 86 45 111 45 136 30\"&gt;&lt;/path&gt;\n&lt;/svg&gt;"
-#&gt; attr(,"class")
-#&gt; [1] "splicingEventPlot" "character"        </div><div class='input'><span class='no'>diagram</span><span class='kw'>[[</span><span class='fl'>6</span>]]</div><div class='output co'>#&gt; [1] "&lt;svg height=\"50px\" width=\"212\"&gt;\n  &lt;rect class=\"diagram\" x=\"1\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: lightgray; stroke: darkgray\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"61\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: end; dominant-baseline: auto\"&gt;5395066&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"76\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: #ffb153; stroke: #faa000\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"76\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: start; dominant-baseline: auto\"&gt;5394792&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"151\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: lightgray; stroke: darkgray\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"151\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: start; dominant-baseline: auto\"&gt;5393477&lt;/text&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: #faa000; stroke-width: 1.5px\" d=\"M 61 30 C 66 45 71 45 76 30\"&gt;&lt;/path&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: darkgray; stroke-width: 1.5px\" d=\"M 61 30 C 91 45 121 45 151 30\"&gt;&lt;/path&gt;\n&lt;/svg&gt;"
-#&gt; attr(,"class")
-#&gt; [1] "splicingEventPlot" "character"        </div><div class='input'><span class='no'>diagram</span></div><div class='output co'>#&gt; $`SE_9_+_6486925_6492303_6492401_6493826_UHRF2`
-#&gt; [1] "&lt;svg height=\"50px\" width=\"262\"&gt;\n  &lt;rect class=\"diagram\" x=\"1\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: lightgray; stroke: darkgray\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"61\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: end; dominant-baseline: auto\"&gt;6486925&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"76\" y=\"10\" width=\"110\" height=\"20\" style=\"stroke-width: 1.5px;; fill: #ffb153; stroke: #faa000\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"76\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: start; dominant-baseline: auto\"&gt;6492303&lt;/text&gt;\n  &lt;text class=\"diagram outside\" x=\"186\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: end; dominant-baseline: auto\"&gt;6492401&lt;/text&gt;\n  &lt;text class=\"diagram\" x=\"131\" y=\"20\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: middle; dominant-baseline: middle\"&gt;98 nts&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"201\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: lightgray; stroke: darkgray\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"201\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: start; dominant-baseline: auto\"&gt;6493826&lt;/text&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: darkgray; stroke-width: 1.5px\" d=\"M 61 30 C 108 45 154 45 201 30\"&gt;&lt;/path&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: #faa000; stroke-width: 1.5px\" d=\"M 61 30 C 66 45 71 45 76 30\"&gt;&lt;/path&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: #faa000; stroke-width: 1.5px\" d=\"M 186 30 C 191 45 196 45 201 30\"&gt;&lt;/path&gt;\n&lt;/svg&gt;"
-#&gt; attr(,"class")
-#&gt; [1] "splicingEventPlot" "character"        
-#&gt; 
-#&gt; $`SE_11_+_86925_92303_92401_93826_TESTING/MHG2`
-#&gt; [1] "&lt;svg height=\"50px\" width=\"262\"&gt;\n  &lt;rect class=\"diagram\" x=\"1\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: lightgray; stroke: darkgray\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"61\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: end; dominant-baseline: auto\"&gt;86925&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"76\" y=\"10\" width=\"110\" height=\"20\" style=\"stroke-width: 1.5px;; fill: #ffb153; stroke: #faa000\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"76\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: start; dominant-baseline: auto\"&gt;92303&lt;/text&gt;\n  &lt;text class=\"diagram outside\" x=\"186\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: end; dominant-baseline: auto\"&gt;92401&lt;/text&gt;\n  &lt;text class=\"diagram\" x=\"131\" y=\"20\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: middle; dominant-baseline: middle\"&gt;98 nts&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"201\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: lightgray; stroke: darkgray\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"201\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: start; dominant-baseline: auto\"&gt;93826&lt;/text&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: darkgray; stroke-width: 1.5px\" d=\"M 61 30 C 108 45 154 45 201 30\"&gt;&lt;/path&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: #faa000; stroke-width: 1.5px\" d=\"M 61 30 C 66 45 71 45 76 30\"&gt;&lt;/path&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: #faa000; stroke-width: 1.5px\" d=\"M 186 30 C 191 45 196 45 201 30\"&gt;&lt;/path&gt;\n&lt;/svg&gt;"
-#&gt; attr(,"class")
-#&gt; [1] "splicingEventPlot" "character"        
-#&gt; 
-#&gt; $`A5SS_15_+_63353472_63353987_63354414_TPM1`
-#&gt; [1] "&lt;svg height=\"50px\" width=\"197\"&gt;\n  &lt;rect class=\"diagram\" x=\"1\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: lightgray; stroke: darkgray\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"61\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: end; dominant-baseline: auto\"&gt;63353472&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"61\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: #ffb153; stroke: #faa000\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"121\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: end; dominant-baseline: auto\"&gt;63353987&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"136\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: lightgray; stroke: darkgray\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"136\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: start; dominant-baseline: auto\"&gt;63354414&lt;/text&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: darkgray; stroke-width: 1.5px\" d=\"M 61 30 C 86 45 111 45 136 30\"&gt;&lt;/path&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: #faa000; stroke-width: 1.5px\" d=\"M 121 30 C 126 45 131 45 136 30\"&gt;&lt;/path&gt;\n&lt;/svg&gt;"
-#&gt; attr(,"class")
-#&gt; [1] "splicingEventPlot" "character"        
-#&gt; 
-#&gt; $`A3SS_3_-_145796903_145794682_145795711_PLOD2`
-#&gt; [1] "&lt;svg height=\"50px\" width=\"197\"&gt;\n  &lt;rect class=\"diagram\" x=\"1\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: lightgray; stroke: darkgray\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"61\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: end; dominant-baseline: auto\"&gt;145796903&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"76\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: lightgray; stroke: darkgray\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"76\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: start; dominant-baseline: auto\"&gt;145795711&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"136\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: #ffb153; stroke: #faa000\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"136\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: start; dominant-baseline: auto\"&gt;145794682&lt;/text&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: darkgray; stroke-width: 1.5px\" d=\"M 61 30 C 66 45 71 45 76 30\"&gt;&lt;/path&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: #faa000; stroke-width: 1.5px\" d=\"M 61 30 C 86 45 111 45 136 30\"&gt;&lt;/path&gt;\n&lt;/svg&gt;"
-#&gt; attr(,"class")
-#&gt; [1] "splicingEventPlot" "character"        
-#&gt; 
-#&gt; $`AFE_17_-_15165746_15168471_15164078_PMP22`
-#&gt; [1] "&lt;svg height=\"50px\" width=\"212\"&gt;\n  &lt;rect class=\"diagram\" x=\"1\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: #ffb153; stroke: #faa000\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"61\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: end; dominant-baseline: auto\"&gt;15168471&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"76\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: lightgray; stroke: darkgray\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"136\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: end; dominant-baseline: auto\"&gt;15165746&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"151\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: lightgray; stroke: darkgray\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"151\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: start; dominant-baseline: auto\"&gt;15164078&lt;/text&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: #faa000; stroke-width: 1.5px\" d=\"M 61 30 C 91 45 121 45 151 30\"&gt;&lt;/path&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: darkgray; stroke-width: 1.5px\" d=\"M 136 30 C 141 45 146 45 151 30\"&gt;&lt;/path&gt;\n&lt;/svg&gt;"
-#&gt; attr(,"class")
-#&gt; [1] "splicingEventPlot" "character"        
-#&gt; 
-#&gt; $`ALE_18_-_5395066_5394792_5393477_EPB41L3`
-#&gt; [1] "&lt;svg height=\"50px\" width=\"212\"&gt;\n  &lt;rect class=\"diagram\" x=\"1\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: lightgray; stroke: darkgray\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"61\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: end; dominant-baseline: auto\"&gt;5395066&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"76\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: #ffb153; stroke: #faa000\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"76\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: start; dominant-baseline: auto\"&gt;5394792&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"151\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: lightgray; stroke: darkgray\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"151\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: start; dominant-baseline: auto\"&gt;5393477&lt;/text&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: #faa000; stroke-width: 1.5px\" d=\"M 61 30 C 66 45 71 45 76 30\"&gt;&lt;/path&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: darkgray; stroke-width: 1.5px\" d=\"M 61 30 C 91 45 121 45 151 30\"&gt;&lt;/path&gt;\n&lt;/svg&gt;"
-#&gt; attr(,"class")
-#&gt; [1] "splicingEventPlot" "character"        
-#&gt; 
-#&gt; $`MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1`
-#&gt; [1] "&lt;svg height=\"50px\" width=\"387\"&gt;\n  &lt;rect class=\"diagram\" x=\"1\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: lightgray; stroke: darkgray\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"61\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: end; dominant-baseline: auto\"&gt;63335142&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"76\" y=\"10\" width=\"110\" height=\"20\" style=\"stroke-width: 1.5px;; fill: #ffb153; stroke: #faa000\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"76\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: start; dominant-baseline: auto\"&gt;63335905&lt;/text&gt;\n  &lt;text class=\"diagram outside\" x=\"186\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: end; dominant-baseline: auto\"&gt;63336030&lt;/text&gt;\n  &lt;text class=\"diagram\" x=\"131\" y=\"20\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: middle; dominant-baseline: middle\"&gt;125 nts&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"201\" y=\"10\" width=\"110\" height=\"20\" style=\"stroke-width: 1.5px;; fill: #caa06c; stroke: #9d7039\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"201\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: start; dominant-baseline: auto\"&gt;63336226&lt;/text&gt;\n  &lt;text class=\"diagram outside\" x=\"311\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: end; dominant-baseline: auto\"&gt;63336351&lt;/text&gt;\n  &lt;text class=\"diagram\" x=\"256\" y=\"20\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: middle; dominant-baseline: middle\"&gt;125 nts&lt;/text&gt;\n  &lt;rect class=\"diagram\" x=\"326\" y=\"10\" width=\"60\" height=\"20\" style=\"stroke-width: 1.5px;; fill: lightgray; stroke: darkgray\"&gt;&lt;/rect&gt;\n  &lt;text class=\"diagram outside\" x=\"326\" y=\"8\" style=\"font-size: 10px; font-family: Helvetica, sans-serif; text-anchor: start; dominant-baseline: auto\"&gt;63349184&lt;/text&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: #faa000; stroke-width: 1.5px\" d=\"M 61 30 C 66 45 71 45 76 30\"&gt;&lt;/path&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: #faa000; stroke-width: 1.5px\" d=\"M 186 30 C 233 45 279 45 326 30\"&gt;&lt;/path&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: #9d7039; stroke-width: 1.5px\" d=\"M 61 30 C 108 45 154 45 201 30\"&gt;&lt;/path&gt;\n  &lt;path class=\"diagram\" style=\"fill: none; stroke: #9d7039; stroke-width: 1.5px\" d=\"M 311 30 C 316 45 321 45 326 30\"&gt;&lt;/path&gt;\n&lt;/svg&gt;"
-#&gt; attr(,"class")
-#&gt; [1] "splicingEventPlot" "character"        
-#&gt; 
-#&gt; attr(,"class")
-#&gt; [1] "splicingEventPlotList" "list"                 </div></pre>
+<span class='no'>diagram</span><span class='kw'>[[</span><span class='st'>"A3SS_3_-_145796903_145794682_145795711_PLOD2"</span>]]
+<span class='no'>diagram</span><span class='kw'>[[</span><span class='fl'>6</span>]]
+<span class='kw'>if</span> (<span class='fl'>FALSE</span>) <span class='no'>diagram</span></div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -308,13 +291,30 @@ splicing junctions and text? (only related with mutually exclusive exons)</p></t
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
    </div>
 
   
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script>
+<script>
+  docsearch({
+    
+    
+    apiKey: 'fa0226bf1a3df7e1c8ab8f0e70450e0a',
+    indexName: 'stem-cell-analysis-in-psichomics',
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
+  });
+</script>
+
 
 
   </body>
