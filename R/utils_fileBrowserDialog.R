@@ -9,18 +9,18 @@
 #' Platform-dependent implementation:
 #' \itemize{
 #'  \item{\strong{Windows}: calls the \code{utils::choose.files} R function.}
-#'  \item{\strong{macOS}: uses AppleScript to display a folder selection 
+#'  \item{\strong{macOS}: uses AppleScript to display a folder selection
 #'  dialogue. If \code{default = NA}, folder selection fallbacks to the
 #'  default behaviour of the \code{choose folder} AppleScript command.
 #'  Otherwise, paths are expanded with \code{\link{path.expand}()}.}
 #'  \item{\strong{Linux}: calls the \code{zenity} system command.}
 #' }
-#' 
+#'
 #' If for some reason an error occurs (e.g. when using a remote server), the
 #' dialog fallbacks to an alternative, non-native file browser.
 #'
 #' @source \url{https://github.com/wleepang/shiny-directory-input}
-#' 
+#'
 #' @return A length one character vector, character NA if 'Cancel' was selected
 #' @keywords internal
 fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
@@ -33,12 +33,12 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
     } else if (system == 'Darwin') {
         directory <- ifelse(directory, "folder", "file")
         multiple  <- ifelse(multiple, "with multiple selections allowed", "")
-        
+
         if (!is.null(caption) && nzchar(caption))
             prompt <- sprintf("with prompt \\\"%s\\\"", caption)
         else
             prompt <- ""
-        
+
         # Default location
         if (!is.null(default) && nzchar(default)) {
             default <- sprintf("default location \\\"%s\\\"",
@@ -46,30 +46,35 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
         } else {
             default <- ""
         }
-        
+
         app  <- "path to frontmost application as text"
-        args <- '-e "tell app (%s) to POSIX path of (choose %s %s %s %s)"'
+        args <- '-e "tell app (%s) to set thePaths to (choose %s %s %s %s)"'
+        # Get POSIX paths of selected files
+        args <- paste(args,
+                      '-e "repeat with eachPath in thePaths"',
+                      '-e "log POSIX path of eachPath"',
+                      '-e "end repeat"')
         args <- sprintf(args, app, directory, multiple, prompt, default)
-        
+
         path <- suppressWarnings(system2("osascript", args=args, stderr=TRUE))
-        
+
         # Return NA if the user cancels the action
         if (!is.null(attr(path, "status")) && attr(path, "status")) return(NA)
     } else if (system == 'Linux') {
         directory <- ifelse(directory, "--directory", "")
         multiple  <- ifelse(multiple,  "--multiple", "")
-        
+
         prompt <- ""
         if (!is.null(caption) && nzchar(caption))
             prompt <- sprintf("--title='%s'", caption)
-        
+
         args <- " --file-selection %s %s %s"
         args <- sprintf(args, directory, multiple, prompt)
         path <- suppressWarnings(system2("zenity", args=args, stderr=TRUE))
-        
+
         # Return NA if user cancels the action
-        if (!is.null(attr(path, "status")) && attr(path, "status")) return(NA) 
-        
+        if (!is.null(attr(path, "status")) && attr(path, "status")) return(NA)
+
         # Error: Gtk-Message: GtkDialog mapped without a transient parent
         if(length(path) == 2) path <- path[2]
     } else if (system == "Windows") {
@@ -77,8 +82,9 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
         if (is.null(caption)) caption <- ""
         path <- utils::choose.files(default, caption, !directory && multiple)
     }
-    
+
     if (identical(path, "")) path <- NULL
+    if (length(path) > 1) path <- paste(path, collapse=" && ")
     return(path)
 }
 
@@ -103,20 +109,20 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
 #' @details
 #' To show the dialog for file input, the \code{\link{prepareFileBrowser}()}
 #' function needs to be included in the server logic.
-#' 
+#'
 #' This widget relies on \code{\link{fileBrowser}()} to present an interactive
-#' dialogue to users for selecting a directory on the local filesystem. 
-#' Therefore, this widget is intended for shiny apps that are run locally - i.e. 
-#' on the same system that files/directories are to be accessed - and not from 
+#' dialogue to users for selecting a directory on the local filesystem.
+#' Therefore, this widget is intended for shiny apps that are run locally - i.e.
+#' on the same system that files/directories are to be accessed - and not from
 #' hosted applications (e.g. from \url{https://www.shinyapps.io}).
 #'
 #' @importFrom shinyBS bsPopover bsTooltip
-#' 
+#'
 #' @source \url{https://github.com/wleepang/shiny-directory-input}
 #'
 #' @return HTML elements for a file browser input
 #' @keywords internal
-#' 
+#'
 #' @seealso
 #' \code{\link{updateFileBrowserInput}()} and \code{\link{prepareFileBrowser}()}
 fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
@@ -124,46 +130,46 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
                              infoTitle="", infoContent="", clearable=FALSE) {
     if (!is.null(value) && !is.na(value)) value <- path.expand(value)
     if (is.null(placeholder)) placeholder <- ""
-    
+
     check <- function (x, y) {
         # Based on shiny:::`%AND%`
-        if (!is.null(x) && !is.na(x)) 
-            if (!is.null(y) && !is.na(y)) 
+        if (!is.null(x) && !is.na(x))
+            if (!is.null(y) && !is.na(y))
                 return(y)
         return(NULL)
     }
-    
+
     if (info) {
         infoId   <- paste0(id, "-info")
-        infoElem <- actionButton(inputId=infoId, label=NULL, 
+        infoElem <- actionButton(inputId=infoId, label=NULL,
                                  style="background: #eee",
                                  icon=icon("question-circle"))
     } else {
         infoId   <- id
         infoElem <- NULL
     }
-    
+
     if (clearable) {
         clearId   <- paste0(id, "-clear")
-        clearElem <- actionButton(inputId=clearId, label=NULL, 
+        clearElem <- actionButton(inputId=clearId, label=NULL,
                                   style="background: #eee",
                                   icon=icon("times-circle"))
     } else {
         clearId   <- id
         clearElem <- NULL
     }
-    
+
     if (info || clearable) {
         buttonsElem <- div(class="input-group-btn", clearElem, infoElem)
     } else {
         buttonsElem <- NULL
     }
-    
+
     infoTitle   <- gsub("\n", "", as.character(infoTitle),   fixed=TRUE)
     infoContent <- gsub("\n", "", as.character(infoContent), fixed=TRUE)
     if (identical(infoFUN, bsPopover)) {
-        showInfo <- infoFUN(infoId, placement=infoPlacement, 
-                            options=list(container="body"), 
+        showInfo <- infoFUN(infoId, placement=infoPlacement,
+                            options=list(container="body"),
                             title=infoTitle, content=infoContent)
         constructor <- paste(sprintf(
             "$.fn.popover.Constructor.DEFAULTS.whiteList.%s = [];",
@@ -174,12 +180,12 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
             paste("$(document).ready(function() {", constructor),
             showInfo[[3]][[1]], fixed=TRUE)
     } else if (identical(infoFUN, bsTooltip)) {
-        showInfo <- infoFUN(infoId, placement=infoPlacement, 
+        showInfo <- infoFUN(infoId, placement=infoPlacement,
                             options=list(container="body"), title=infoTitle)
     } else {
         showInfo <- NULL
     }
-    
+
     fileBrowserButton <- div(class="btn btn-info fileBrowser-input",
                              id=sprintf("%sButton", id), 'Browse...')
     if (isRStudioServer()) fileBrowserButton <- disabled(fileBrowserButton)
@@ -188,7 +194,7 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
         id=id, value=value, type='text', placeholder=placeholder,
         # readonly = if (!isRStudioServer()) 'readonly' else NULL,
         class='form-control fileBrowser-input-chosen-dir')
-    
+
     tagList(
         div(class='form-group fileBrowser-input-container',
             check(label, tags$label(label)),
@@ -247,14 +253,14 @@ prepareFileBrowser <- function(session, input, id, modalId="modal", ...) {
                 updateFileBrowserInput(session, id, ..., ask=TRUE)
             }
             if (!is.null(errorTitle)) {
-                errorModal(session, errorTitle, 
+                errorModal(session, errorTitle,
                            "Please use instead the text input field to type",
-                           "the full path to the file or folder of interest.", 
+                           "the full path to the file or folder of interest.",
                            modalId=modalId, caller="File browser")
             }
         }
     })
-    
+
     # Clear file selection
     clearId <- paste0(id, "-clear")
     observeEvent(input[[clearId]], {

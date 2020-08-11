@@ -33,7 +33,7 @@ Interactive folder selection using a native dialogue
 Platform-dependent implementation:
 \itemize{
  \item{\strong{Windows}: calls the \code{utils::choose.files} R function.}
- \item{\strong{macOS}: uses AppleScript to display a folder selection 
+ \item{\strong{macOS}: uses AppleScript to display a folder selection
  dialogue. If \code{default = NA}, folder selection fallbacks to the
  default behaviour of the \code{choose folder} AppleScript command.
  Otherwise, paths are expanded with \code{\link{path.expand}()}.}
