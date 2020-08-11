@@ -45,7 +45,7 @@ test_that("Load VAST-TOOLS' inclusion levels", {
     expect_is(rowData, "eventData")
     cols <- c("id", "source", "gene", "coordinates", "length",
               "full coordinates", "type", "subtype", "chrom", "start", "end",
-              "pos", "strand",
+              "strand",
               "constitutive1", "alternative1", "alternative2", "constitutive2")
     expect_true(all(cols == colnames(rowData)[seq(cols)]))
     expect_true(all(paste0(colnames(data), "-Q") %in% colnames(rowData)))
