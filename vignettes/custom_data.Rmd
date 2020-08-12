@@ -249,8 +249,8 @@ between **all datasets**.
 
 ### Sample information
 
-> Sample metadata from **SRA** can now be
-[automatically loaded][sra-run-tutorial].
+> If you are working with sample metadata from **SRA Run Selector**, see
+[how to prepare SRA Run Selector data][sra-run-tutorial].
 
 - Tab-separated values (TSV)
 - **Sample identifiers (rows)** and their **attributes (columns)**
