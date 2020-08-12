@@ -1,1 +1,8 @@
+# Disallow commenting
 comment: false
+# Allow to pass CI build with differences within this threshold
+coverage:
+  status:
+    project:
+      default:
+        threshold: 1%
