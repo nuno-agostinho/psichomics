@@ -18,20 +18,19 @@ alternative splicing and gene expression based on
 [Genotype-Tissue Expression (GTEx) project][GTEx], 
 [Sequence Read Archive (SRA)][SRA] and user-provided data.
 
-*psichomics* interactively performs survival, dimensionality reduction and 
-median- and variance-based differential splicing and gene expression analyses
-that benefit from the incorporation of clinical and molecular sample-associated
-features (such as tumour stage or survival). Interactive visual access to
-genomic mapping and functional annotation of selected alternative splicing
-events is also included.
+*psichomics* interactively performs:
+- Dimensionality reduction
+- Median- and variance-based differential splicing and gene expression analyses
+- Survival analysis
+- Correlation analysis
+- Grouping by clinical and molecular features (such as tumour stage or survival)
+- Genomic mapping and functional annotation of alternative splicing events and genes
 
 ![Differential splicing analysis in *psichomics*](man/figures/screenshot.png)
 
 ## Table of Contents
 
 * [Install and start running](#install-and-start-running)
-    * [Bioconductor release](#bioconductor-release)
-    * [GitHub version](#github-version)
 * [Tutorials](#tutorials)
 * [Workflow](#workflow)
     * [Data input](#data-input)
