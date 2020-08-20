@@ -1878,6 +1878,7 @@ renderBoxplot <- function(data, outliers=FALSE, sortByMedian=TRUE,
         melted[[1]] <- NULL
         colnames(melted)[[1]] <- "variable"
     }
+    value <- variable <- NULL
     dat <- data_to_boxplot(melted, value, variable, add_outliers=outliers)
     hc <- highchart() %>%
         hc_add_series_list(dat) %>%
