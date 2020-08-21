@@ -88,7 +88,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.3</span>
       </span>
     </div>
 
@@ -117,7 +117,7 @@
       <a href="../articles/CLI_tutorial.html">Command-line interface (CLI) tutorial</a>
     </li>
     <li>
-      <a href="../articles/custom_data.html">Loading SRA and user-provided RNA-seq data</a>
+      <a href="../articles/custom_data.html">Loading SRA, VAST-TOOLS and user-provided RNA-seq data</a>
     </li>
     <li>
       <a href="../articles/AS_events_preparation.html">Preparing custom alternative splicing annotations</a>
@@ -199,7 +199,7 @@ default)</p></td>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>queryPubMed</span>(<span class='st'>"BRCA1"</span>, <span class='st'>"cancer"</span>, <span class='st'>"adrenocortical carcinoma"</span>)</div><div class='output co'>#&gt; $search
 #&gt; $search$count
-#&gt; [1] "15932"
+#&gt; [1] "15963"
 #&gt; 
 #&gt; $search$retmax
 #&gt; [1] "3"
@@ -229,7 +229,7 @@ default)</p></td>
 #&gt; [1] "MeSH Terms"
 #&gt; 
 #&gt; $search$translationstack[[1]]$count
-#&gt; [1] "5953"
+#&gt; [1] "5954"
 #&gt; 
 #&gt; $search$translationstack[[1]]$explode
 #&gt; [1] "Y"
@@ -243,7 +243,7 @@ default)</p></td>
 #&gt; [1] "All Fields"
 #&gt; 
 #&gt; $search$translationstack[[2]]$count
-#&gt; [1] "1261874"
+#&gt; [1] "1263458"
 #&gt; 
 #&gt; $search$translationstack[[2]]$explode
 #&gt; [1] "N"
@@ -257,7 +257,7 @@ default)</p></td>
 #&gt; [1] "All Fields"
 #&gt; 
 #&gt; $search$translationstack[[3]]$count
-#&gt; [1] "17311"
+#&gt; [1] "17343"
 #&gt; 
 #&gt; $search$translationstack[[3]]$explode
 #&gt; [1] "N"
@@ -280,7 +280,7 @@ default)</p></td>
 #&gt; [1] "All Fields"
 #&gt; 
 #&gt; $search$translationstack[[7]]$count
-#&gt; [1] "5995"
+#&gt; [1] "5996"
 #&gt; 
 #&gt; $search$translationstack[[7]]$explode
 #&gt; [1] "N"
@@ -297,7 +297,7 @@ default)</p></td>
 #&gt; [1] "All Fields"
 #&gt; 
 #&gt; $search$translationstack[[9]]$count
-#&gt; [1] "17311"
+#&gt; [1] "17343"
 #&gt; 
 #&gt; $search$translationstack[[9]]$explode
 #&gt; [1] "N"
@@ -317,7 +317,7 @@ default)</p></td>
 #&gt; [1] "MeSH Terms"
 #&gt; 
 #&gt; $search$translationstack[[12]]$count
-#&gt; [1] "3349940"
+#&gt; [1] "3352400"
 #&gt; 
 #&gt; $search$translationstack[[12]]$explode
 #&gt; [1] "Y"
@@ -331,7 +331,7 @@ default)</p></td>
 #&gt; [1] "All Fields"
 #&gt; 
 #&gt; $search$translationstack[[13]]$count
-#&gt; [1] "2686554"
+#&gt; [1] "2688642"
 #&gt; 
 #&gt; $search$translationstack[[13]]$explode
 #&gt; [1] "N"
@@ -348,7 +348,7 @@ default)</p></td>
 #&gt; [1] "All Fields"
 #&gt; 
 #&gt; $search$translationstack[[15]]$count
-#&gt; [1] "2325620"
+#&gt; [1] "2329528"
 #&gt; 
 #&gt; $search$translationstack[[15]]$explode
 #&gt; [1] "N"
@@ -382,7 +382,7 @@ default)</p></td>
 #&gt; [1] "All Fields"
 #&gt; 
 #&gt; $search$translationstack[[19]]$count
-#&gt; [1] "21849"
+#&gt; [1] "21859"
 #&gt; 
 #&gt; $search$translationstack[[19]]$explode
 #&gt; [1] "N"
@@ -396,7 +396,7 @@ default)</p></td>
 #&gt; [1] "All Fields"
 #&gt; 
 #&gt; $search$translationstack[[20]]$count
-#&gt; [1] "832950"
+#&gt; [1] "833799"
 #&gt; 
 #&gt; $search$translationstack[[20]]$explode
 #&gt; [1] "N"
@@ -419,7 +419,7 @@ default)</p></td>
 #&gt; [1] "All Fields"
 #&gt; 
 #&gt; $search$translationstack[[24]]$count
-#&gt; [1] "3130"
+#&gt; [1] "3134"
 #&gt; 
 #&gt; $search$translationstack[[24]]$explode
 #&gt; [1] "N"
@@ -837,7 +837,7 @@ default)</p></td>
 #&gt; [1] "Has Abstract"
 #&gt; 
 #&gt; $`31174498`$pmcrefcount
-#&gt; [1] ""
+#&gt; [1] 2
 #&gt; 
 #&gt; $`31174498`$fulljournalname
 #&gt; [1] "BMC cancer"
