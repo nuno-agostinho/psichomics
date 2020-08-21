@@ -9,7 +9,7 @@ test_that("Query Ensembl API by event", {
     expect_equal(parsed$strand, "-")
     expect_equal(parsed$gene[[1]], "SLC2A14")
     expect_equal(parsed$pos[[1]], c(7982602, 7985318))
-    
+
     info <- queryEnsemblByEvent(event, species="human", assembly="hg19")
     # Check response
     if (!is.null(info)) {
@@ -20,7 +20,7 @@ test_that("Query Ensembl API by event", {
         expect_equal(info$strand, -1)
         expect_equal(info$source, "ensembl_havana")
         expect_equal(info$object_type, "Gene")
-        expect_equal(info$logic_name, "ensembl_havana_gene")
+        expect_equal(info$logic_name, "ensembl_havana_gene_homo_sapiens_37")
         expect_equal(info$version, 7)
         expect_equal(info$species, "human")
         expect_equal(info$start, 7965108)
@@ -29,7 +29,7 @@ test_that("Query Ensembl API by event", {
         expect_equal(info$id, "ENSG00000173262")
         expect_equal(info$db_type, "core")
         expect_equal(info$biotype, "protein_coding")
-        
+
         expect_is(info$Transcript, "data.frame")
         expect_is(info$Transcript$Exon, "list")
         expect_is(info$Transcript$Translation, "data.frame")
@@ -48,11 +48,11 @@ test_that("Plot transcripts", {
     # Issues running this test on CI tools and Bioconductor... why?
     skip_on_ci()
     skip_on_bioc()
-    
+
     events <- c(
         "A3SS_15_+_63353138_63353912_63353397_TPM1",
         "A3SS_11_-_61118463_61117115_61117894_CYB561A3",
-        "A5SS_21_+_48055675_48056459_48056808_PRMT2", 
+        "A5SS_21_+_48055675_48056459_48056808_PRMT2",
         "A5SS_1_-_1274742_1274667_1274033_DVL1",
         "AFE_9_+_131902430_131901928_131904724_PPP2R4",
         "AFE_5_-_134686513_134688636_134681747_H2AFY",
@@ -62,7 +62,7 @@ test_that("Plot transcripts", {
         "SE_19_-_5218431_5216778_5216731_5215606_PTPRS",
         "MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1",
         "MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7")
-    
+
     for (event in events) {
         print(event)
         info <- queryEnsemblByEvent(event, species="human", assembly="hg19")
@@ -71,7 +71,7 @@ test_that("Plot transcripts", {
         hc   <- fromJSON(gsub(".*?(\\{.*\\}).*", "\\1", hc[[2]][[3]][[1]]))
         expect_is(hc$xAxis$plotBands, "data.frame")
     }
-    
+
     # Event identifiers based on a different exon reference
     events <- c(
         "A3SS_15_+_63353138_63353397_63353912_TPM1",
@@ -84,7 +84,7 @@ test_that("Plot transcripts", {
         "ALE_8_-_38314874_38285953_38287466_FGFR1",
         "MXE_15_+_63335142_63336226_63336351_63335905_63336030_63349184_TPM1",
         "MXE_17_-_74090495_74086478_74086410_74087316_74087224_74085401_EXOC7")
-    
+
     for (event in events) {
         info <- queryEnsemblByEvent(event, species="human", assembly="hg19")
         hc   <- plotTranscripts(info, event=event)
@@ -98,7 +98,7 @@ test_that("Plot UniProt protein", {
     plot <- tryCatch(plotProtein("B7ZAC3"), error=return)
     if ("error" %in% class(plot))
         skip("Couldn't resolve host name")
-    
+
     expect_is(plot, "highchart")
     expect_equal(plot$x$type, "chart")
     expect_equivalent(plot$x$hc_opts$xAxis[c("min", "max")], c(0, 520))

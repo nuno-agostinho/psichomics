@@ -240,7 +240,7 @@ getGtexDataURL <- function(release, domain="https://storage.googleapis.com",
     return(res)
 }
 
-#' Load GTEx data
+#' Download and load GTEx data
 #'
 #' @param data Character: data types to load (see \code{getGtexDataTypes})
 #' @param folder Character: folder containing data

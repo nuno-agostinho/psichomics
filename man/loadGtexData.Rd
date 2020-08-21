@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_gtex.R
 \name{loadGtexData}
 \alias{loadGtexData}
-\title{Load GTEx data}
+\title{Download and load GTEx data}
 \usage{
 loadGtexData(
   folder = getDownloadsFolder(),
@@ -28,7 +28,7 @@ selection may speed up data loading}
 List with loaded data
 }
 \description{
-Load GTEx data
+Download and load GTEx data
 }
 \examples{
 \dontrun{

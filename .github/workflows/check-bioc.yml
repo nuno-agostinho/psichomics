@@ -12,6 +12,8 @@ on:
   pull_request:
     branches-ignore:
       - gh-pages
+  schedule:
+    - cron: "0 7 * * 1,3,5" # Run every Monday/Wednesday/Friday at 07:00 UTC
 
 name: R-CMD-check-bioc
 
@@ -170,7 +172,7 @@ jobs:
         with:
           name: ${{ runner.os }}-bioc-${{ matrix.config.biocversion }}-r-${{ env.rversion }}-results
           path: check
-          
+
       - name: Test coverage
         if: runner.os == 'macOS' && matrix.config.biocversion == 'release'
         run: |
@@ -180,7 +182,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Deploy package
-        if: runner.os == 'macOS' && matrix.config.biocversion == 'release' && github.ref == 'refs/heads/master' && github.event_name == 'push' 
+        if: runner.os == 'macOS' && matrix.config.biocversion == 'release' && github.ref == 'refs/heads/master' && github.event_name == 'push'
         run: |
           R CMD INSTALL .
           git config --local user.email "actions@github.com"
