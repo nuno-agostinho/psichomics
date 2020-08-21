@@ -1,3 +1,7 @@
+# psichomics 1.14.3 (21 August, 2020)
+
+* Fix unit tests due to changes in Ensembl API response
+
 # psichomics 1.14.2 (11 August, 2020)
 
 ## Support for loading more data formats
