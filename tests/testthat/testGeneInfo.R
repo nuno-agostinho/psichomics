@@ -20,7 +20,7 @@ test_that("Query Ensembl API by event", {
         expect_equal(info$strand, -1)
         expect_equal(info$source, "ensembl_havana")
         expect_equal(info$object_type, "Gene")
-        expect_equal(info$logic_name, "ensembl_havana_gene_homo_sapiens_37")
+        expect_true(grepl("ensembl_havana_gene", info$logic_name))
         expect_equal(info$version, 7)
         expect_equal(info$species, "human")
         expect_equal(info$start, 7965108)
