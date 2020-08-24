@@ -1,3 +1,8 @@
+# psichomics 1.14.4 (24 August, 2020)
+
+* Copy-edit tutorials on loading user-provided data and using the command-line
+version
+
 # psichomics 1.14.3 (21 August, 2020)
 
 * Fix unit tests due to changes in Ensembl API response
