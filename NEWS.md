@@ -1,5 +1,6 @@
-# psichomics 1.14.4 (24 August, 2020)
+# psichomics 1.14.4 (27 August, 2020)
 
+* File browser dialog now correctly allows to select a single file in macOS
 * Data loading:
     - Improve performance when loading compressed data (GZ and BZ2 files)
     - Increase optional verbosity while loading files

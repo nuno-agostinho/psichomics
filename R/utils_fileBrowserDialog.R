@@ -51,10 +51,15 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
         args <- '-e "tell app (%s) to set thePaths to (choose %s %s %s %s)"'
         # Get POSIX paths of selected files
         args <- paste(args,
+                      '-e "if class of thePaths is not list"',
+                      '-e "log POSIX path of thePaths"',
+                      '-e "else"',
                       '-e "repeat with eachPath in thePaths"',
                       '-e "log POSIX path of eachPath"',
-                      '-e "end repeat"')
+                      '-e "end repeat"',
+                      '-e "end if"')
         args <- sprintf(args, app, directory, multiple, prompt, default)
+        args <- trimWhitespace(args)
 
         path <- suppressWarnings(system2("osascript", args=args, stderr=TRUE))
 
