@@ -1,3 +1,13 @@
+# Interactive tests to perform:
+# - fileBrowser()
+# - fileBrowser("~/Desktop")
+# - fileBrowser(caption="Select a file")
+# - fileBrowser(directory=TRUE)
+# - fileBrowser(multiple=TRUE) # select one file
+# - fileBrowser(multiple=TRUE) # select two or more files
+# - fileBrowser(multiple=TRUE, directory=TRUE) # select one directory
+# - fileBrowser(multiple=TRUE, directory=TRUE) # select two or more directories
+
 chooseFilesLinux <- function(default, caption, multiple, directory) {
     directory <- ifelse(directory, "--directory", "")
     multiple  <- ifelse(multiple,  "--multiple",  "")
