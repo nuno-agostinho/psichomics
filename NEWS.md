@@ -1,8 +1,8 @@
-# psichomics 1.14.4 (27 August, 2020)
+# psichomics 1.14.4 (29 August, 2020)
 
 * Improve file browser dialog:
     - Now correctly allows to select a single file in macOS
-    - Fix selection of directories in Windows
+    - Now correctle allows to select a directory in Windows
     - Correctly set default location when opening a file in Linux
     - Internal improvements
 * Data loading:

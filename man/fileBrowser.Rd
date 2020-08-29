@@ -39,8 +39,5 @@ Platform-dependent implementation:
  Otherwise, paths are expanded with \code{\link{path.expand}()}.}
  \item{\strong{Linux}: calls the \code{zenity} system command.}
 }
-
-If for some reason an error occurs (e.g. when using a remote server), the
-dialog fallbacks to an alternative, non-native file browser.
 }
 \keyword{internal}
