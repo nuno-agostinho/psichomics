@@ -322,7 +322,7 @@ automatically scaled between 0 and 1
 | ----------------- | ------:| ------:|
 | someASevent001    |   0.71 |   0.30 |
 | anotherASevent653 |   0.63 |   0.37 |
-| yeatAnother097    |   0.38 |   0.62 |
+| yetAnother097     |   0.38 |   0.62 |
 
 To load the data, move the files to a new folder and follow the instructions in
 [Load user-provided data into psichomics][loading].

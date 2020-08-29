@@ -696,7 +696,7 @@ Please refer to our methods article for more information (the code for
 performing the analysis can be found at [GitHub][chapter-code]):
 
 > Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2020). 
-**[Interactive Alternative Splicing Analysis of Human Stem Cells Using psichomics][chapter]**. In: Kidder B. (eds) Stem CellTranscriptional Networks. *Methods in Molecular Biology*, vol 2117. Humana, New York, NY
+**[Interactive Alternative Splicing Analysis of Human Stem Cells Using psichomics][chapter]**. In: Kidder B. (eds) Stem Cell Transcriptional Networks. *Methods in Molecular Biology*, vol 2117. Humana, New York, NY
 
 ## Load other SRA, VAST-TOOLS and user-provided data
 

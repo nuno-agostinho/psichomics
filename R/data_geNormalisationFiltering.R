@@ -158,7 +158,7 @@ geNormalisationFilteringUI <- function(id, panel) {
 #'
 #' Available normalisation methods:
 #' \itemize{
-#' \item{\code{TMM} is recommended for most RNAseq data where more than half of
+#' \item{\code{TMM} is recommended for most RNA-seq data where more than half of
 #' the genes are believed not differentially expressed between any pair of
 #' samples;}
 #' \item{\code{RLE} calculates the median library from the geometric mean of all

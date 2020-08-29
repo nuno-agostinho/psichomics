@@ -2,7 +2,7 @@
 
 * Improve file browser dialog:
     - Now correctly allows to select a single file in macOS
-    - Now correctle allows to select a directory in Windows
+    - Now correctly allows to select a directory in Windows
     - Correctly set default location when opening a file in Linux
     - Internal improvements
 * Data loading:
