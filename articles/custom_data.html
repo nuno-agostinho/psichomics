@@ -39,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.4</span>
       </span>
     </div>
 
@@ -108,7 +108,7 @@
       <h1 data-toc-skip>Loading SRA, VAST-TOOLS and user-provided RNA-seq data</h1>
                         <h4 class="author">Nuno Saraiva-Agostinho</h4>
             
-            <h4 class="date">2020-08-21</h4>
+            <h4 class="date">2020-08-30</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/psichomics/blob/master/vignettes/custom_data.Rmd"><code>vignettes/custom_data.Rmd</code></a></small>
       <div class="hidden name"><code>custom_data.Rmd</code></div>
@@ -223,12 +223,14 @@
 <p>The latest versions of psichomics support <strong>automatic downloading of SRA data</strong> from <a href="https://jhubiostatistics.shinyapps.io/recount/">recount</a>, a resource of pre-processed data for thousands of SRA projects (including gene read counts, splice junction quantification and sample metadata). First, check if the project of your interest is available in recount, thus making it quicker to analyse gene expression and alternative splicing for your samples of interest.</p>
 </blockquote>
 <p>Data from SRA can be downloaded using the <a href="https://github.com/ncbi/sra-tools/wiki/HowTo:-fasterq-dump">fasterq-dump</a> command from <a href="https://github.com/ncbi/sra-tools">sra-tools</a>. For instance, to retrieve samples from the <a href="https://trace.ncbi.nlm.nih.gov/Traces/study/?acc=SRP126561">SRP126561</a> project:</p>
-<pre><code># List SRA samples
-samples=(SRR6368612 SRR6368613 SRR6368614 SRR6368615 SRR6368616 SRR6368617)
-
-# Download samples
-fasterq-dump --split-3 ${samples}</code></pre>
-<p><strong><code>--split-3</code></strong>: allows to output one or two FASTQ files for single-end or paired-end sequencing, respectively (a third FASTQ file may also be returned containing orphaned single-end reads obtained from paired-end sequencing data)</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># List SRA samples</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="va">samples=(</span>SRR6368612 SRR6368613 SRR6368614 SRR6368615 SRR6368616 SRR6368617<span class="va">)</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="co"># Download samples</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="ex">fasterq-dump</span> --split-3 <span class="va">${samples}</span></span></code></pre></div>
+<blockquote>
+<p><strong><code>--split-3</code></strong> allows to output one or two FASTQ files for single-end or paired-end sequencing, respectively (a third FASTQ file may also be returned containing orphaned single-end reads obtained from paired-end sequencing data)</p>
+</blockquote>
 <p>Sample-associated data is also available from the <a href="https://trace.ncbi.nlm.nih.gov/Traces/study/?acc=SRP126561">Run Selector</a> page. Click <strong>RunInfo Table</strong> to download the whole metadata table for all samples (usually downloaded in a file named <code>SraRunTable.txt</code>).</p>
 </div>
 <div id="align-rna-seq-data-to-quantify-splice-junctions" class="section level3">
@@ -242,58 +244,30 @@ fasterq-dump --split-3 ${samples}</code></pre>
 <a href="#index-the-genome-using-star" class="anchor"></a>Index the genome using STAR</h4>
 <p>Before aligning FASTQ samples against a genome of reference, an index needs to be prepared.</p>
 <p>Start by downloading a FASTA file of the whole genome and a GTF file with annotated transcripts. This command makes use of these <a href="https://grch37.ensembl.org/info/data/ftp/">human FASTA and GTF files (hg19 assembly)</a>.</p>
-<pre><code>mkdir hg19_STAR
-STAR --runThreadN 4 \
-     --runMode genomeGenerate \
-     --genomeDir hg19_STAR \
-     --genomeFastaFiles /path/to/hg19.fa \
-     --sjdbGTFfile /path/to/hg19.gtf</code></pre>
-<p>Arguments used in the previous command:</p>
-<ul>
-<li>
-<strong><code>--runThreadN 4</code></strong>: run STAR in parallel using 4 threads</li>
-<li>
-<strong><code>--runMode genomeGenerate</code></strong>: generate the genome index</li>
-<li>
-<strong><code>--genomeDir</code></strong>: directory of the genome index directory (output)</li>
-<li>
-<strong><code>--genomeFastaFiles</code></strong>: path to genome file (FASTA format)</li>
-<li>
-<strong><code>--sjdbGTFfile</code></strong>: path to transcript annotation (GTF format)</li>
-</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">mkdir</span> hg19_STAR</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="ex">STAR</span> --runMode genomeGenerate <span class="dt">\ </span>            <span class="co"># Generate the genome index</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>     <span class="ex">--genomeDir</span> hg19_STAR <span class="dt">\ </span>               <span class="co"># Path to genome index (output)</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>     <span class="ex">--genomeFastaFiles</span> /path/to/hg19.fa <span class="dt">\ </span> <span class="co"># Path to genome FASTA file(s)</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>     <span class="ex">--sjdbGTFfile</span> /path/to/hg19.gtf <span class="dt">\ </span>     <span class="co"># Path to junction GTF annotation</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>     <span class="ex">--runThreadN</span> 4                         <span class="co"># Run in parallel using 4 threads</span></span></code></pre></div>
 </div>
 <div id="align-against-genome-index-using-star" class="section level4">
 <h4 class="hasAnchor">
 <a href="#align-against-genome-index-using-star" class="anchor"></a>Align against genome index using STAR</h4>
 <p>After the genome index is generated, the sequences in the FASTQ files need to be aligned against the annotated gene and splice junctions from the previously prepared reference. The following commands make STAR output both gene and junction read counts into files ending in <code>ReadsPerGene.out.tab</code> and <code>SJ.out.tab</code>, respectively.</p>
-<pre><code>align () {
-    echo "Aligning ${1} using STAR..."
-    STAR --runThreadN 16 \
-         --genomeDir hg19_STAR \
-         --quantMode GeneCounts \
-         --readFilesCommand zcat \
-         --outFileNamePrefix ${1} \
-         --readFilesIn ${1}_1.fastq ${1}_2.fastq
-}
-
-for each in ${samples}; do
-    align "${each}"
-done</code></pre>
-<p>Arguments used in the previous command:</p>
-<ul>
-<li>
-<strong><code>--runThreadN 4</code></strong>: run STAR in parallel using 4 threads</li>
-<li>
-<strong><code>--genomeDir</code></strong>: directory of the genome index directory (input)</li>
-<li>
-<strong><code>--quantMode GeneCounts</code></strong>: count reads aligning per gene</li>
-<li>
-<strong><code>--readFilesCommand</code></strong>: command to extract compressed FASTQ files</li>
-<li>
-<strong><code>--outFileNamePrefix</code></strong>: output prefix</li>
-<li>
-<strong><code>--readFilesIn</code></strong>: FASTQ files to align</li>
-</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">align ()</span> <span class="kw">{</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>    <span class="bu">echo</span> <span class="st">"Aligning </span><span class="va">${1}</span><span class="st"> using STAR..."</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>    <span class="ex">STAR</span> --readFilesIn <span class="va">${1}</span>_1.fastq <span class="va">${1}</span>_2.fastq <span class="dt">\ </span> <span class="co"># FASTQ files to align</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>         <span class="ex">--runThreadN</span> 16 <span class="dt">\ </span>               <span class="co"># Run in parallel using 16 threads</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>         <span class="ex">--genomeDir</span> hg19_STAR <span class="dt">\ </span>         <span class="co"># Path to genome index (input)</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>         <span class="ex">--readFilesCommand</span> zcat <span class="dt">\ </span>       <span class="co"># Use zcat to extract compressed files</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>         <span class="ex">--quantMode</span> GeneCounts <span class="dt">\ </span>        <span class="co"># Return gene read counts</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>         <span class="ex">--outFileNamePrefix</span> <span class="va">${1}</span> <span class="dt">\ </span>      <span class="co"># Prefix for output files</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="kw">}</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="kw">for</span> <span class="ex">each</span> in <span class="va">${samples}</span><span class="kw">;</span> <span class="kw">do</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a>    <span class="ex">align</span> <span class="st">"</span><span class="va">${each}</span><span class="st">"</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="kw">done</span></span></code></pre></div>
 </div>
 </div>
 <div id="prepare-output-for-psichomics" class="section level3">
@@ -326,12 +300,15 @@ done</code></pre>
 <p>To load the data and move all files to a new folder (VAST-TOOLS alternative splicing quantification and gene expression tables and sample/subject-associated information).</p>
 <p>Follow the instructions in <a href="#load-user-provided-data-into-psichomics">Load user-provided data into psichomics</a> to load the files in the visual interface. Otherwise, use function <a href="https://nuno-agostinho.github.io/psichomics/reference/loadLocalFiles"><code><a href="../reference/loadLocalFiles.html">loadLocalFiles()</a></code></a> with the folder path as an argument:</p>
 <div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">psichomics</span>)
-<span class="no">data</span>          <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/loadLocalFiles.html">loadLocalFiles</a></span>(<span class="st">"/path/to/psichomics/input"</span>)
-<span class="no">junctionQuant</span> <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Junction quantification`</span>
-<span class="no">sampleInfo</span>    <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Sample metadata`</span>
+<span class="no">data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/loadLocalFiles.html">loadLocalFiles</a></span>(<span class="st">"/path/to/psichomics/input"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">data</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]])
+
+<span class="no">junctionQuant</span>  <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Junction quantification`</span>
+<span class="no">sampleInfo</span>     <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Sample metadata`</span>
 <span class="co"># Both gene read counts and cRPKMs are loaded as separate data frames</span>
-<span class="no">geneReadCounts</span> <span class="kw">&lt;-</span> <span class="no">data</span>$<span class="no">`Gene expression (read counts)`</span>
-<span class="no">cRPKM</span>          <span class="kw">&lt;-</span> <span class="no">data</span>$<span class="no">`Gene expression (cRPKM)`</span></pre></body></html></div>
+<span class="no">geneReadCounts</span> <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Gene expression (read counts)`</span>
+<span class="no">cRPKM</span>          <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Gene expression (cRPKM)`</span></pre></body></html></div>
 </div>
 <div id="prepare-firebrowse-data" class="section level2">
 <h2 class="hasAnchor">
@@ -558,7 +535,7 @@ done</code></pre>
 <td align="right">0.37</td>
 </tr>
 <tr class="odd">
-<td>yeatAnother097</td>
+<td>yetAnother097</td>
 <td align="right">0.38</td>
 <td align="right">0.62</td>
 </tr>
@@ -584,7 +561,10 @@ done</code></pre>
 <a href="#load-using-the-command-line-interface-cli" class="anchor"></a>Load using the command-line interface (CLI)</h2>
 <p>Use function <a href="https://nuno-agostinho.github.io/psichomics/reference/loadLocalFiles"><code><a href="../reference/loadLocalFiles.html">loadLocalFiles()</a></code></a> with the folder path as an argument:</p>
 <div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">psichomics</span>)
-<span class="no">data</span>          <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/loadLocalFiles.html">loadLocalFiles</a></span>(<span class="st">"/path/to/psichomics/input"</span>)
+<span class="no">data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/loadLocalFiles.html">loadLocalFiles</a></span>(<span class="st">"/path/to/psichomics/input"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">data</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]])
+
 <span class="no">geneExpr</span>      <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Gene expression`</span>
 <span class="no">junctionQuant</span> <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Junction quantification`</span>
 <span class="no">sampleInfo</span>    <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Sample metadata`</span></pre></body></html></div>

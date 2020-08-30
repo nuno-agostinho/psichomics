@@ -87,7 +87,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.4</span>
       </span>
     </div>
 
@@ -343,6 +343,30 @@
 <a href="#psichomics-1143-21-august-2020" class="anchor"></a>psichomics 1.14.3 (21 August, 2020)</h1>
 <ul>
 <li>Fix unit tests due to changes in Ensembl API response</li>
+</ul>
+</div>
+    <div id="psichomics-1144-30-august-2020" class="section level1">
+<h1 class="page-header" data-toc-text="1.14.4">
+<a href="#psichomics-1144-30-august-2020" class="anchor"></a>psichomics 1.14.4 (30 August, 2020)</h1>
+<ul>
+<li>Improve file browser dialog:
+<ul>
+<li>Now correctly allows to select a single file in macOS</li>
+<li>Now correctly allows to select a directory in Windows</li>
+<li>Correctly set default location when opening a file in Linux</li>
+<li>Internal improvements</li>
+</ul>
+</li>
+<li>Data loading:
+<ul>
+<li>Improve performance when loading compressed data (GZ and BZ2 files)</li>
+<li>Increase optional verbosity while loading files</li>
+<li>Speed up loading of VAST-TOOLS’ inclusion levels</li>
+<li>Fix loading of VAST-TOOLS’ inclusion levels sometimes returning an error regarding duplicated row names</li>
+<li>Fix issues with missing values as alternative splicing event complexity in VAST-TOOLS’ inclusion levels</li>
+</ul>
+</li>
+<li>Copy-edit tutorials on loading user-provided data and using the command-line version</li>
 </ul>
 </div>
   </div>
