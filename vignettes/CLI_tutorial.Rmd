@@ -100,6 +100,8 @@ data <- loadFirebrowseData(folder=folder,
                            data=c("clinical", "junction_quantification",
                                   "RSEM_genes"),
                            date="2016-01-28")
+names(data)
+names(data[[1]])
 
 # Select clinical and junction quantification dataset
 clinical      <- data[[1]]$`Clinical data`
@@ -663,12 +665,16 @@ getGtexTissues(sampleAttr)
 
 tissues <- c("blood", "brain")
 gtex <- loadGtexData("~/Downloads", tissues=tissues)
+names(gtex)
+names(gtex[[1]])
 ```
 
 To load data for all GTEx tissues, please type:
 
 ```{r load all GTEx, eval=FALSE}
 gtex <- loadGtexData("~/Downloads", tissues=NULL)
+names(gtex)
+names(gtex[[1]])
 ```
 
 ## Load SRA project data using recount
@@ -682,13 +688,15 @@ from recount, as exemplified below:
 library(recount)
 View(recount_abstract)
 sra <- loadSRAproject("SRP053101")
+names(sra)
+names(sra[[1]])
 ```
 
 Please refer to our methods article for more information (the code for
 performing the analysis can be found at [GitHub][chapter-code]):
 
 > Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2020). 
-**[Interactive Alternative Splicing Analysis of Human Stem Cells Using psichomics][chapter]**. In: Kidder B. (eds) Stem CellTranscriptional Networks. *Methods in Molecular Biology*, vol 2117. Humana, New York, NY
+**[Interactive Alternative Splicing Analysis of Human Stem Cells Using psichomics][chapter]**. In: Kidder B. (eds) Stem Cell Transcriptional Networks. *Methods in Molecular Biology*, vol 2117. Humana, New York, NY
 
 ## Load other SRA, VAST-TOOLS and user-provided data
 
@@ -706,6 +714,8 @@ For instance, to load [GTEx][] data via local files, create a directory called
 folder <- "~/Downloads/GTEx/"
 ignore <- c(".aux.", ".mage-tab.") # File patterns to ignore
 data <- loadLocalFiles(folder, ignore=ignore)[[1]]
+names(data)
+names(data[[1]])
 
 # Select clinical and junction quantification dataset
 clinical      <- data[["Clinical data"]]

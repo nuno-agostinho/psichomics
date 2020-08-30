@@ -1,3 +1,21 @@
+# psichomics 1.14.4 (30 August, 2020)
+
+* Improve file browser dialog:
+    - Now correctly allows to select a single file in macOS
+    - Now correctly allows to select a directory in Windows
+    - Correctly set default location when opening a file in Linux
+    - Internal improvements
+* Data loading:
+    - Improve performance when loading compressed data (GZ and BZ2 files)
+    - Increase optional verbosity while loading files
+    - Speed up loading of VAST-TOOLS' inclusion levels
+    - Fix loading of VAST-TOOLS' inclusion levels sometimes returning an error
+    regarding duplicated row names
+    - Fix issues with missing values as alternative splicing event complexity in
+    VAST-TOOLS' inclusion levels
+* Copy-edit tutorials on loading user-provided data and using the command-line
+version
+
 # psichomics 1.14.3 (21 August, 2020)
 
 * Fix unit tests due to changes in Ensembl API response

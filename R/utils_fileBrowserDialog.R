@@ -1,3 +1,86 @@
+# Interactive tests to perform:
+# - fileBrowser()
+# - fileBrowser("~/Desktop")
+# - fileBrowser(caption="Select a file")
+# - fileBrowser(directory=TRUE)
+# - fileBrowser(multiple=TRUE) # select one file
+# - fileBrowser(multiple=TRUE) # select two or more files
+# - fileBrowser(multiple=TRUE, directory=TRUE) # select one directory
+# - fileBrowser(multiple=TRUE, directory=TRUE) # select two or more directories
+
+chooseFilesLinux <- function(default, caption, multiple, directory) {
+    directory <- ifelse(directory, "--directory", "")
+    multiple  <- ifelse(multiple,  "--multiple",  "")
+    sep       <- " &sep& "
+    separator <- sprintf('--separator="%s"', sep)
+
+    # Default location
+    if (!is.null(default) && nzchar(default)) {
+        default <- gsub("\"", "\\\\\"", path.expand(default))
+        default <- sprintf('--filename="%s/"', default)
+    } else {
+        default <- ""
+    }
+
+    prompt <- ""
+    if (!is.null(caption) && nzchar(caption)) {
+        prompt <- sprintf("--title='%s'", caption)
+    }
+    args <- " --file-selection %s %s %s %s %s"
+    args <- sprintf(args, directory, multiple, prompt, separator, default)
+    path <- suppressWarnings(system2("zenity", args=args, stderr=TRUE))
+
+    # Return NA if user cancels the action
+    if (!is.null(attr(path, "status")) && attr(path, "status")) return(NA)
+
+    # Error: Gtk-Message: GtkDialog mapped without a transient parent
+    if(length(path) == 2) path <- path[2]
+
+    # Vector of multiple files/directories
+    path <- strsplit(path, sep)[[1]]
+    return(path)
+}
+
+chooseFilesMac <- function(default, caption, multiple, directory) {
+    directory <- ifelse(directory, "folder", "file")
+    multiple  <- ifelse(multiple, "with multiple selections allowed", "")
+
+    if (!is.null(caption) && nzchar(caption)) {
+        prompt <- sprintf("with prompt \\\"%s\\\"", caption)
+    } else {
+        prompt <- ""
+    }
+
+    # Default location
+    if (!is.null(default) && nzchar(default)) {
+        default <- sprintf("default location \\\"%s\\\"",
+                           path.expand(default))
+    } else {
+        default <- ""
+    }
+
+    app  <- "path to frontmost application as text"
+    args <- '-e "tell app (%s) to set thePaths to (choose %s %s %s %s)"'
+    # Get POSIX paths of selected files
+    args <- paste(args,
+                  '-e "if class of thePaths is not list"',
+                  '-e "log POSIX path of thePaths"',
+                  '-e "else"',
+                  '-e "repeat with eachPath in thePaths"',
+                  '-e "log POSIX path of eachPath"',
+                  '-e "end repeat"',
+                  '-e "end if"')
+    args <- sprintf(args, app, directory, multiple, prompt, default)
+    args <- trimWhitespace(args)
+
+    path <- suppressWarnings(system2("osascript", args=args, stderr=TRUE))
+
+    # Return NA if the user cancels the action
+    if (!is.null(attr(path, "status")) && attr(path, "status")) return(NA)
+
+    return(path)
+}
+
 #' Interactive folder selection using a native dialogue
 #'
 #' @param default Character: path to initial folder
@@ -16,9 +99,6 @@
 #'  \item{\strong{Linux}: calls the \code{zenity} system command.}
 #' }
 #'
-#' If for some reason an error occurs (e.g. when using a remote server), the
-#' dialog fallbacks to an alternative, non-native file browser.
-#'
 #' @source \url{https://github.com/wleepang/shiny-directory-input}
 #'
 #' @return A length one character vector, character NA if 'Cancel' was selected
@@ -31,56 +111,18 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
     } else if (isRStudioServer()) {
         stop("File browser is currently unsupported for RStudio Server")
     } else if (system == 'Darwin') {
-        directory <- ifelse(directory, "folder", "file")
-        multiple  <- ifelse(multiple, "with multiple selections allowed", "")
-
-        if (!is.null(caption) && nzchar(caption))
-            prompt <- sprintf("with prompt \\\"%s\\\"", caption)
-        else
-            prompt <- ""
-
-        # Default location
-        if (!is.null(default) && nzchar(default)) {
-            default <- sprintf("default location \\\"%s\\\"",
-                               path.expand(default))
-        } else {
-            default <- ""
-        }
-
-        app  <- "path to frontmost application as text"
-        args <- '-e "tell app (%s) to set thePaths to (choose %s %s %s %s)"'
-        # Get POSIX paths of selected files
-        args <- paste(args,
-                      '-e "repeat with eachPath in thePaths"',
-                      '-e "log POSIX path of eachPath"',
-                      '-e "end repeat"')
-        args <- sprintf(args, app, directory, multiple, prompt, default)
-
-        path <- suppressWarnings(system2("osascript", args=args, stderr=TRUE))
-
-        # Return NA if the user cancels the action
-        if (!is.null(attr(path, "status")) && attr(path, "status")) return(NA)
+        path <- chooseFilesMac(default, caption, multiple, directory)
     } else if (system == 'Linux') {
-        directory <- ifelse(directory, "--directory", "")
-        multiple  <- ifelse(multiple,  "--multiple", "")
-
-        prompt <- ""
-        if (!is.null(caption) && nzchar(caption))
-            prompt <- sprintf("--title='%s'", caption)
-
-        args <- " --file-selection %s %s %s"
-        args <- sprintf(args, directory, multiple, prompt)
-        path <- suppressWarnings(system2("zenity", args=args, stderr=TRUE))
-
-        # Return NA if user cancels the action
-        if (!is.null(attr(path, "status")) && attr(path, "status")) return(NA)
-
-        # Error: Gtk-Message: GtkDialog mapped without a transient parent
-        if(length(path) == 2) path <- path[2]
+        path <- chooseFilesLinux(default, caption, multiple, directory)
     } else if (system == "Windows") {
         if (is.null(default)) default <- ""
         if (is.null(caption)) caption <- ""
-        path <- utils::choose.files(default, caption, !directory && multiple)
+
+        if (directory) {
+            path <- utils::choose.dir(default, caption)
+        } else {
+            path <- utils::choose.files(default, caption, multiple)
+        }
     }
 
     if (identical(path, "")) path <- NULL

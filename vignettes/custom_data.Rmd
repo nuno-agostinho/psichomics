@@ -75,7 +75,7 @@ Data from SRA can be downloaded using the [fasterq-dump][fasterq-dump] command
 from [sra-tools][sra-tools]. For instance, to retrieve samples from the 
 [SRP126561][SRP126561] project:
 
-```
+```{bash, eval=FALSE}
 # List SRA samples
 samples=(SRR6368612 SRR6368613 SRR6368614 SRR6368615 SRR6368616 SRR6368617)
 
@@ -83,7 +83,7 @@ samples=(SRR6368612 SRR6368613 SRR6368614 SRR6368615 SRR6368616 SRR6368617)
 fasterq-dump --split-3 ${samples}
 ```
 
-**`--split-3`**: allows to output one or two FASTQ files for single-end or
+> **`--split-3`** allows to output one or two FASTQ files for single-end or
 paired-end sequencing, respectively (a third FASTQ file may also be returned 
 containing orphaned single-end reads obtained from paired-end sequencing data)
 
@@ -116,22 +116,14 @@ Start by downloading a FASTA file of the whole genome and a GTF file with
 annotated transcripts. This command makes use of these 
 [human FASTA and GTF files (hg19 assembly)][hg19-data].
 
-```
+```{bash eval=FALSE}
 mkdir hg19_STAR
-STAR --runThreadN 4 \
-     --runMode genomeGenerate \
-     --genomeDir hg19_STAR \
-     --genomeFastaFiles /path/to/hg19.fa \
-     --sjdbGTFfile /path/to/hg19.gtf
+STAR --runMode genomeGenerate \             # Generate the genome index
+     --genomeDir hg19_STAR \                # Path to genome index (output)
+     --genomeFastaFiles /path/to/hg19.fa \  # Path to genome FASTA file(s)
+     --sjdbGTFfile /path/to/hg19.gtf \      # Path to junction GTF annotation
+     --runThreadN 4                         # Run in parallel using 4 threads
 ```
-
-Arguments used in the previous command:
-
-- **`--runThreadN 4`**: run STAR in parallel using 4 threads
-- **`--runMode genomeGenerate`**: generate the genome index
-- **`--genomeDir`**: directory of the genome index directory (output)
-- **`--genomeFastaFiles`**: path to genome file (FASTA format)
-- **`--sjdbGTFfile`**: path to transcript annotation (GTF format)
 
 #### Align against genome index using STAR
 
@@ -141,30 +133,21 @@ prepared reference. The following commands make STAR output both gene and
 junction read counts into files ending in `ReadsPerGene.out.tab` and
 `SJ.out.tab`, respectively.
 
-```
+```{bash eval=FALSE}
 align () {
     echo "Aligning ${1} using STAR..."
-    STAR --runThreadN 16 \
-         --genomeDir hg19_STAR \
-         --quantMode GeneCounts \
-         --readFilesCommand zcat \
-         --outFileNamePrefix ${1} \
-         --readFilesIn ${1}_1.fastq ${1}_2.fastq
+    STAR --readFilesIn ${1}_1.fastq ${1}_2.fastq \  # FASTQ files to align
+         --runThreadN 16 \                # Run in parallel using 16 threads
+         --genomeDir hg19_STAR \          # Path to genome index (input)
+         --readFilesCommand zcat \        # Use zcat to extract compressed files
+         --quantMode GeneCounts \         # Return gene read counts
+         --outFileNamePrefix ${1} \       # Prefix for output files
 }
 
 for each in ${samples}; do
     align "${each}"
 done
 ```
-
-Arguments used in the previous command:
-
-- **`--runThreadN 4`**: run STAR in parallel using 4 threads
-- **`--genomeDir`**: directory of the genome index directory (input)
-- **`--quantMode GeneCounts`**: count reads aligning per gene
-- **`--readFilesCommand`**: command to extract compressed FASTQ files
-- **`--outFileNamePrefix`**: output prefix
-- **`--readFilesIn`**: FASTQ files to align
 
 ### Prepare output for psichomics
 
@@ -187,7 +170,6 @@ prepareJunctionQuant("SRR6368612SJ.out.tab", "SRR6368613SJ.out.tab",
 To load the data, move the files (including the SRA metadata) to a new folder
 and follow the instructions in
 [Load user-provided data into psichomics][loading].
-
 
 ## Prepare [VAST-TOOLS][] data
 
@@ -214,12 +196,15 @@ load the files in the visual interface. Otherwise, use function
 
 ```{r, eval=FALSE}
 library(psichomics)
-data          <- loadLocalFiles("/path/to/psichomics/input")
-junctionQuant <- data[[1]]$`Junction quantification`
-sampleInfo    <- data[[1]]$`Sample metadata`
+data <- loadLocalFiles("/path/to/psichomics/input")
+names(data)
+names(data[[1]])
+
+junctionQuant  <- data[[1]]$`Junction quantification`
+sampleInfo     <- data[[1]]$`Sample metadata`
 # Both gene read counts and cRPKMs are loaded as separate data frames
-geneReadCounts <- data$`Gene expression (read counts)`
-cRPKM          <- data$`Gene expression (cRPKM)`
+geneReadCounts <- data[[1]]$`Gene expression (read counts)`
+cRPKM          <- data[[1]]$`Gene expression (cRPKM)`
 ```
 
 ## Prepare [FireBrowse][] data
@@ -337,7 +322,7 @@ automatically scaled between 0 and 1
 | ----------------- | ------:| ------:|
 | someASevent001    |   0.71 |   0.30 |
 | anotherASevent653 |   0.63 |   0.37 |
-| yeatAnother097    |   0.38 |   0.62 |
+| yetAnother097     |   0.38 |   0.62 |
 
 To load the data, move the files to a new folder and follow the instructions in
 [Load user-provided data into psichomics][loading].
@@ -364,7 +349,10 @@ argument:
 
 ```{r, eval=FALSE}
 library(psichomics)
-data          <- loadLocalFiles("/path/to/psichomics/input")
+data <- loadLocalFiles("/path/to/psichomics/input")
+names(data)
+names(data[[1]])
+
 geneExpr      <- data[[1]]$`Gene expression`
 junctionQuant <- data[[1]]$`Junction quantification`
 sampleInfo    <- data[[1]]$`Sample metadata`

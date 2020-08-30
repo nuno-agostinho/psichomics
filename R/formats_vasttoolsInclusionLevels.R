@@ -18,8 +18,8 @@ initialiseEventData <- function(data) {
 }
 
 # Process event data based on event type
-processEventDataByType <- function(type, eventDataByType) {
-    dataType <- eventDataByType[[type]]
+processEventDataByType <- function(type, eventData) {
+    dataType <- eventData[which(eventData$type == type), ]
     if (type == "RI") { # Retained intron
         C1end   <- sapply(dataType$fullCoords, "[[", 2)
         C2start <- sapply(dataType$fullCoords, "[[", 3)
@@ -47,26 +47,30 @@ processEventDataByType <- function(type, eventDataByType) {
     return(dataType)
 }
 
-# Parse AS data information (after discarding many AS events)
+#' @importFrom stringr str_match
+#' @importFrom plyr rbind.fill
 parseEventData <- function(rowData) {
-    coordinates    <- as.character(rowData$coordinates)
+    coordinates    <- rowData$coordinates
     coordRegex     <- "^(chr){0,1}(.*):(.*)-(.*)$"
-    rowData$chrom  <- gsub(coordRegex, "\\2", coordinates)
-    rowData$start  <- as.numeric(gsub(coordRegex, "\\3", coordinates))
-    rowData$end    <- as.numeric(gsub(coordRegex, "\\4", coordinates))
+    matches        <- str_match(coordinates, coordRegex)
+    rowData$chrom  <- matches[ , 3]
+    rowData$start  <- as.numeric(matches[ , 4])
+    rowData$end    <- as.numeric(matches[ , 5])
 
     fullCoords         <- gsub("^.*?:(.*?)(:.*$){0,1}$", "\\1",
                                rowData$`full coordinates`, perl=TRUE)
     rowData$fullCoords <- strsplit(fullCoords, "[-,+=]")
     rowData$firstCoord <- sapply(rowData$fullCoords, "[[", 1)
-    rowData$lastCoord  <- sapply(rowData$fullCoords,
-                                 function(i) i[[length(i)]])
+    rowData$lastCoord  <- sapply(rowData$fullCoords, function(i) i[[length(i)]])
     rowData$strand     <- ifelse(
         as.numeric(rowData$firstCoord) < as.numeric(rowData$lastCoord),
         "+", "-")
 
+    # Convert NA event subtypes to character
+    rowData$subtype[is.na(rowData$subtype)] <- "NA"
+
     # Parse coordinates
-    SEtypes <- c("S", "C1", "C2", "C3", "ANN", "MIC", "NA")
+    SEtypes <- c("S", "C1", "C2", "C3", "ANN", "MIC")
     RItypes <- c("RI", "RI-C", "RI-S", "IR", "IR-C", "IR-S")
     types <- c(
         setNames(rep("A3SS", 2), c("Alt3", "A_Alt3")),
@@ -74,19 +78,22 @@ parseEventData <- function(rowData) {
         setNames(rep("RI", length(RItypes) * 2),
                  paste0(c("A_", ""), rep(RItypes, each=2))),
         setNames(rep("SE", length(SEtypes) * 2),
-                 paste0(c("A_", ""), rep(SEtypes, each=2))))
-    eventTypes <- types[rowData$subtype]
-    rowData$type <- ifelse(!is.na(eventTypes), eventTypes,
-                           rowData$subtype)
+                 paste0(c("A_", ""), rep(SEtypes, each=2))),
+        "NA"="NA")
+    eventTypes   <- types[rowData$subtype]
+    rowData$type <- ifelse(!is.na(eventTypes), eventTypes, rowData$subtype)
 
-    rowDataByType <- split(rowData, rowData$type)
-    rowDataByType <- lapply(names(rowDataByType),
-                            processEventDataByType, rowDataByType)
-    rowData       <- unsplit(rowDataByType, rowData$type)
+    # Process AS event data by event type
+    types         <- unique(rowData$type)
+    rowDataByType <- lapply(unique(rowData$type), processEventDataByType,
+                            rowData)
+    allRowData    <- rbind.fill(rowDataByType)
+    rowData       <- allRowData[match(rownames(rowData), allRowData$id), ]
 
     rowData$firstCoord <- NULL
     rowData$lastCoord  <- NULL
     rowData$fullCoords <- NULL
+    rownames(rowData) <- rowData$id
     return(rowData)
 }
 
@@ -102,9 +109,19 @@ processVastToolsPSItable <- function(data) {
     psi <- data[seq(6, ncol(data), 2)]
     attr(psi, "rowData") <- initialiseEventData(data)
     psi <- preserveAttributes(psi)
-    psi <- psi[rowSums(!is.na(psi)) > 0, ]
+
+    validEvents <- rowSums(!is.na(psi)) > 0
+    invalid     <- sum(!validEvents)
+    total       <- length(validEvents)
+    perc        <- round(invalid / total * 100)
+    message(sprintf(
+        "Discarding %s of %s events (%s%%) containing only missing values...",
+        invalid, total, perc))
+    psi <- psi[validEvents, ]
     if (nrow(psi) == 0) return(NULL)
 
+    # Parse AS data information (after discarding many AS events)
+    message("Parsing alternative splicing event information...")
     rowData <- attr(psi, "rowData")
     rowData <- parseEventData(rowData)
     class(rowData) <- c("eventData", class(rowData))
@@ -139,7 +156,8 @@ vasttoolsInclusionLevelsFormat <- function() {
         commentChar = NULL, # Ignore lines starting with this string
 
         # Remove duplicated rows
-        unique = FALSE,
+        unique           = FALSE,
+        stringsAsFactors = FALSE,
 
         # Identity of rows and columns
         rows    = "alternative splicing events",
@@ -149,9 +167,6 @@ vasttoolsInclusionLevelsFormat <- function() {
             # VAST-TOOLS tables with "Raw_reads" should be ignored
             if (any(grepl("Raw_reads", colnames(data)))) return(NULL)
 
-            for (col in which(sapply(data, class) == "factor")) {
-                data[ , col] <- as.character(data[ , col])
-            }
             psi <- processVastToolsPSItable(data)
             if (is.null(psi)) return(NULL)
 

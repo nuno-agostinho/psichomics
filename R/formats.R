@@ -80,22 +80,29 @@ addFileAttrs <- function(loaded, file, format) {
 #' @keywords internal
 parseFile <- function(format, file, ..., verbose=FALSE) {
     ## TODO(NunoA): account for the comment character
-    delim <- ifelse(!is.null(format$delim), format$delim, "\t")
-    skip <- ifelse(!is.null(format$skip), format$skip, 0)
+    delim            <- ifelse(!is.null(format$delim), format$delim, "\t")
+    skip             <- ifelse(!is.null(format$skip), format$skip, 0)
+    transpose        <- isTRUE(format$transpose)
+    stringsAsFactors <- ifelse(!is.null(format$stringsAsFactors),
+                               format$stringsAsFactors, TRUE)
 
-    transpose <- !is.null(format$transpose) && format$transpose
+    # Read file
+    time <- Sys.time()
     if (verbose) message("Reading file...")
-    loaded <- fread(file, sep=delim, header=FALSE, stringsAsFactors=!transpose,
-                    data.table=FALSE, skip=skip, ...)
+    loaded <- fread(file, sep=delim, header=FALSE, data.table=FALSE, skip=skip,
+                    stringsAsFactors=!transpose && stringsAsFactors, ...)
+    if (verbose) message("File read in ", format(Sys.time() - time))
     if (is.null(loaded)) {
         if (verbose) message("NULL returned while reading file")
         return(NULL)
     }
 
+    time <- Sys.time()
     # Transpose data
     if (transpose) {
         if (verbose) message("Transposing data...")
-        loaded <- data.frame(t(loaded), stringsAsFactors=TRUE, row.names=NULL)
+        loaded <- data.frame(t(loaded), stringsAsFactors=stringsAsFactors,
+                             row.names=NULL)
     }
 
     if (verbose) message("Processing data...")
@@ -172,6 +179,7 @@ parseFile <- function(format, file, ..., verbose=FALSE) {
     } else {
         loaded <- addFileAttrs(loaded, file, format)
     }
+    if (verbose) message("Data processed in ", format(Sys.time() - time))
     return(loaded)
 }
 
@@ -217,6 +225,7 @@ loadFileFormats <- function() {
 #'
 #' @importFrom utils read.delim
 #' @importFrom data.table fread
+#' @importFrom R.utils decompressFile
 #'
 #' @return Data frame with the contents of the given file if the file format is
 #' recognised; otherwise, returns \code{NULL}
@@ -225,26 +234,42 @@ loadFile <- function(file, formats=loadFileFormats(), ..., verbose=FALSE,
                      multiple=FALSE) {
     if (!is.list(formats[[1]])) formats <- list(formats)
 
+    if (verbose) cat("\n")
     # The maximum number of rows to check a file is the maximum value asked by
     # the selected file formats; the default is 6
     headRows <- lapply(formats, "[[", "header_rows")
     headRows <- unlist(rm.null(headRows))
     headRows <- ifelse(!is.null(headRows), max(headRows), 6)
 
+    # If file is compressed, decompress first (based on data.table::fread)
+    ext <- file_ext(file)
+    if (ext %in% c("gz", "bz2")) {
+        time <- Sys.time()
+        if (verbose) message("Decompressing to temporary file...")
+        FUN <- switch(ext, "gz"=gzfile, "bz2"=bzfile)
+        decompressFile(file, decompFile <- tempfile(tmpdir=tempdir()), ext=NULL,
+                       FUN=FUN, remove=FALSE)
+        file <- decompFile
+        on.exit(unlink(decompFile), add=TRUE)
+        if (verbose) message("Decompressed in ", format(Sys.time() - time))
+    }
     head <- fread(file, header=FALSE, nrows=headRows, stringsAsFactors=FALSE,
                   data.table=FALSE)
 
     # Check if the file is recognised by at least one file format
+    if (verbose) message("Checking file format...")
     recognised <- lapply(formats, checkFileFormat, head, file)
     recognised <- unlist(recognised)
 
+    if (verbose) {
+        message("Recognised format: ",
+                paste(names(recognised[recognised]), collapse=", "))
+    }
+
     if (sum(recognised) > 1) {
-        ## TODO(NunoA): still a conflict? Ask the user which file format to use
+        ## TODO(NunoA): ask the user which file format to use
         stop("Error: more than one file format was recognised.")
     } else if (sum(recognised) == 1) {
-        if (verbose) {
-            message("Recognised format: ", names(recognised[recognised]))
-        }
         format <- formats[recognised][[1]]
         loaded <- parseFile(format, file, ..., verbose=verbose)
         # Avoid returning more than one dataset when not expected
