@@ -9,3 +9,7 @@ psiFastCalc2 <- function(mat, inc, exc, minReads = 10L) {
     .Call(`_psichomics_psiFastCalc2`, mat, inc, exc, minReads)
 }
 
+discardVastToolsByCvg <- function(psi, eventData, qualityCol, scoresToDiscard) {
+    .Call(`_psichomics_discardVastToolsByCvg`, psi, eventData, qualityCol, scoresToDiscard)
+}
+

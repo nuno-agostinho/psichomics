@@ -35,10 +35,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// discardVastToolsByCvg
+DataFrame discardVastToolsByCvg(DataFrame psi, DataFrame eventData, int qualityCol, CharacterVector scoresToDiscard);
+RcppExport SEXP _psichomics_discardVastToolsByCvg(SEXP psiSEXP, SEXP eventDataSEXP, SEXP qualityColSEXP, SEXP scoresToDiscardSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< DataFrame >::type psi(psiSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type eventData(eventDataSEXP);
+    Rcpp::traits::input_parameter< int >::type qualityCol(qualityColSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type scoresToDiscard(scoresToDiscardSEXP);
+    rcpp_result_gen = Rcpp::wrap(discardVastToolsByCvg(psi, eventData, qualityCol, scoresToDiscard));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_psichomics_psiFastCalc", (DL_FUNC) &_psichomics_psiFastCalc, 6},
     {"_psichomics_psiFastCalc2", (DL_FUNC) &_psichomics_psiFastCalc2, 4},
+    {"_psichomics_discardVastToolsByCvg", (DL_FUNC) &_psichomics_discardVastToolsByCvg, 4},
     {NULL, NULL, 0}
 };
 

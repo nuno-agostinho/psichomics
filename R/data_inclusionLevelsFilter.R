@@ -154,16 +154,9 @@ discardLowCoveragePSIvalues <- function(
 
     isVastTools <- isTRUE(unique(eventData$source) == "vast-tools")
     if (!is.null(vasttoolsScoresToDiscard) && isVastTools) {
-        quality     <- eventData[ , endsWith(colnames(eventData), "-Q")]
-        qualityVals <- unlist(quality)
-        if ("OK" %in% vasttoolsScoresToDiscard) {
-            # Ignore OK from score 4
-            qualityVals <- gsub("OK@", "@", qualityVals)
-        }
-        scores <- sprintf(",%s,", vasttoolsScoresToDiscard)
-        lowCvg <- Reduce(`|`, lapply(scores, grepl, qualityVals, fixed=TRUE))
-        lowCvg <- matrix(lowCvg, ncol=ncol(quality))
-        psi[lowCvg] <- NA
+        qualityCol <- max(which(!endsWith(colnames(eventData), "-Q")))
+        psi <- discardVastToolsByCvg(psi, eventData, qualityCol,
+                                     vasttoolsScoresToDiscard)
         psi <- removeNAonlyEvents(psi)
         attr(psi, "filtered") <- c(
             "VAST-TOOLS coverage"=paste(vasttoolsScoresToDiscard,
