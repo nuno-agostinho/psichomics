@@ -2,7 +2,7 @@
 
 * `discardLowCoveragePSIvalues()`: improve performance (2x faster)
 
-# psichomics 1.14.4 (29 August, 2020)
+# psichomics 1.14.4 (30 August, 2020)
 
 * Improve file browser dialog:
     - Now correctly allows to select a single file in macOS
