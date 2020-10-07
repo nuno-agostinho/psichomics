@@ -16,7 +16,7 @@ calculateInclusionLevels(
 \arguments{
 \item{eventType}{Character: type of the alternative event to calculate}
 
-\item{junctionQuant}{Matrix: junction quantification with samples as columns 
+\item{junctionQuant}{Matrix: junction quantification with samples as columns
 and junctions as rows}
 
 \item{annotation}{Data.frame: alternative splicing annotation related to

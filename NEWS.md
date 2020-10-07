@@ -1,6 +1,15 @@
-# psichomics 1.14.5 (25 September, 2020)
+# psichomics 1.14.5 (7 October, 2020)
 
 * `discardLowCoveragePSIvalues()`: improve performance (2x faster)
+* `loadLocalFiles()`: print elapsed time after loading local files
+* When quantifying or loading PSI values, psichomics discards splicing events
+whose junctions:
+    - (1) are not present in junction quantification data or
+    - (2) have low numbers of reads across all samples.
+
+    The number of discarded events is now displayed during PSI quantification.
+
+* Improve tutorials
 
 # psichomics 1.14.4 (30 August, 2020)
 

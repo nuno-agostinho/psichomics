@@ -53,11 +53,11 @@ Plot survival curves
 # Plot Kaplan-Meier curves
 require("survival")
 require("highcharter")
-leukemia.surv <- survfit(Surv(time, status) ~ x, data = aml) 
+leukemia.surv <- survfit(Surv(time, status) ~ x, data = aml)
 hchart(leukemia.surv)
 
 # Plot the cumulative hazard function
-lsurv2 <- survfit(Surv(time, status) ~ x, aml, type='fleming') 
+lsurv2 <- survfit(Surv(time, status) ~ x, aml, type='fleming')
 hchart(lsurv2, fun="cumhaz")
 
 # Plot the fit of a Cox proportional hazards regression model

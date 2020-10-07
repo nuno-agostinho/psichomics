@@ -394,6 +394,7 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."),
                            name="Data", verbose=FALSE) {
     if (!dir.exists(folder)) stop("Folder does not exist.")
 
+    time <- Sys.time()
     # Get all files in the specified directory and subdirectories
     files <- list.files(folder, recursive=TRUE, full.names=TRUE)
 
@@ -443,6 +444,7 @@ loadLocalFiles <- function(folder, ignore=c(".aux.", ".mage-tab."),
 
         data <- setNames(loaded, name)
         data <- processDatasetNames(data)
+        message("Files loaded in ", format(round(Sys.time() - time, 2)))
     }
     return(data)
 }

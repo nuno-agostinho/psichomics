@@ -20,12 +20,11 @@ splicing event type}
 
 \item{eventType}{Character: splicing event types to quantify}
 
-\item{minReads}{Integer: discard alternative splicing quantified using a
-number of reads below this threshold}
+\item{minReads}{Integer: values whose number of total supporting read counts
+is below \code{minReads} are returned as \code{NA}}
 
-\item{genes}{Character: gene symbols for which the splicing quantification
-of associated splicing events is performed (by default, splicing events from
-all genes are selected)}
+\item{genes}{Character: gene symbols for which to quantify splicing events
+(if \code{NULL}, events from all genes are quantified)}
 }
 \value{
 Data frame with the quantification of the alternative splicing events

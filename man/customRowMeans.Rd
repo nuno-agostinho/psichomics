@@ -29,7 +29,7 @@ customColMedians(mat, na.rm = FALSE, fast = FALSE)
 
 \item{na.rm}{Boolean: remove missing values (\code{NA})?}
 
-\item{fast}{Boolean: use \code{Rfast} functions? They may return different 
+\item{fast}{Boolean: use \code{Rfast} functions? They may return different
 results from R built-in functions}
 }
 \value{
@@ -39,7 +39,7 @@ Vector of selected statistic
 Calculate statistics for each row or column of a matrix
 }
 \examples{
-df <- rbind("Gene 1"=c(3, 5, 7), "Gene 2"=c(8, 2, 4), "Gene 3"=c(9:11)) 
+df <- rbind("Gene 1"=c(3, 5, 7), "Gene 2"=c(8, 2, 4), "Gene 3"=c(9:11))
 psichomics:::customRowMeans(df)
 psichomics:::customRowVars(df, fast=TRUE)
 }

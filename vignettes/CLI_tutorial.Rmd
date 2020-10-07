@@ -685,8 +685,7 @@ metadata). psichomics supports automatic downloading and loading of [SRA][] data
 from recount, as exemplified below:
 
 ```{r load recount, eval=FALSE}
-library(recount)
-View(recount_abstract)
+View(recount::recount_abstract)
 sra <- loadSRAproject("SRP053101")
 names(sra)
 names(sra[[1]])

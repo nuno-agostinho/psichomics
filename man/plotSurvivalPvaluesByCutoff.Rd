@@ -51,7 +51,7 @@ clinical <- read.table(text = "2549   NA ii  female
                                  NA 1204 iv    male
                                  NA  383 iv  female
                                1293   NA iii   male")
-names(clinical) <- c("patient.days_to_last_followup", 
+names(clinical) <- c("patient.days_to_last_followup",
                      "patient.days_to_death",
                      "patient.stage_event.pathologic_stage",
                      "patient.gender")
@@ -73,7 +73,7 @@ eventData <- assignValuePerSubject(psi[3, ], match)
 
 event      <- "days_to_death"
 timeStart  <- "days_to_death"
-plotSurvivalPvaluesByCutoff(clinical, eventData, censoring="right", 
+plotSurvivalPvaluesByCutoff(clinical, eventData, censoring="right",
                             event=event, timeStart=timeStart)
 }
 \seealso{

@@ -17,7 +17,7 @@ Trims whitespace from a word
 }
 \examples{
 psichomics:::trimWhitespace("    hey   there     ")
-psichomics:::trimWhitespace(c("pineapple    ", "one two three", 
+psichomics:::trimWhitespace(c("pineapple    ", "one two three",
                               " sunken    ship   "))
 }
 \keyword{internal}
