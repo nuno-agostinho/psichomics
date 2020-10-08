@@ -1,6 +1,6 @@
 context("Discard low coverage PSI values")
 
-createVastToolsPSIdataset <- function(samples=20, events=50) {
+createPSIdataset <- function(samples=20, events=50) {
     size <- samples * events
     num  <- sample(seq(100), size, replace=TRUE)
     num[sample(size, size / 10)] <- NA
