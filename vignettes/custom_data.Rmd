@@ -118,11 +118,18 @@ annotated transcripts. This command makes use of these
 
 ```{bash eval=FALSE}
 mkdir hg19_STAR
-STAR --runMode genomeGenerate \             # Generate the genome index
-     --genomeDir hg19_STAR \                # Path to genome index (output)
-     --genomeFastaFiles /path/to/hg19.fa \  # Path to genome FASTA file(s)
-     --sjdbGTFfile /path/to/hg19.gtf \      # Path to junction GTF annotation
-     --runThreadN 4                         # Run in parallel using 4 threads
+STAR --runMode genomeGenerate \
+     --genomeDir hg19_STAR \
+     --genomeFastaFiles /path/to/hg19.fa \
+     --sjdbGTFfile /path/to/hg19.gtf \
+     --runThreadN 4
+
+# Arguments:
+#     --runMode             Generate the genome index
+#     --genomeDir           Path to genome index (output)
+#     --genomeFastaFiles    Path to genome FASTA file(s)
+#     --sjdbGTFfile         Path to junction GTF annotation
+#     --runThreadN 4        Run in parallel using 4 threads
 ```
 
 #### Align against genome index using STAR
@@ -136,14 +143,21 @@ junction read counts into files ending in `ReadsPerGene.out.tab` and
 ```{bash eval=FALSE}
 align () {
     echo "Aligning ${1} using STAR..."
-    STAR --readFilesIn ${1}_1.fastq ${1}_2.fastq \  # FASTQ files to align
-         --runThreadN 16 \                # Run in parallel using 16 threads
-         --genomeDir hg19_STAR \          # Path to genome index (input)
-         --readFilesCommand zcat \        # Use zcat to extract compressed files
-         --quantMode GeneCounts \         # Return gene read counts
-         --outFileNamePrefix ${1} \       # Prefix for output files
+    STAR --readFilesIn ${1}_1.fastq ${1}_2.fastq \
+         --runThreadN 16 \
+         --genomeDir hg19_STAR \
+         --readFilesCommand zcat \
+         --quantMode GeneCounts \
+         --outFileNamePrefix ${1}
 }
-
+# Arguments:
+#     --readFilesIn              FASTQ files to align
+#     --runThreadN 16            Run in parallel using 16 threads
+#     --genomeDir                Path to genome index (input)
+#     --readFilesCommand zcat    Use zcat to extract compressed files
+#     --quantMode                Return gene read counts
+#     --outFileNamePrefix        Prefix for output files
+         
 for each in ${samples}; do
     align "${each}"
 done
