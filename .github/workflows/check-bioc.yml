@@ -51,12 +51,31 @@ jobs:
 
       - name: Find R version to run
         run: |
-          # Define R version to use
+          # Get R version to use for this Bioconductor release
+          regex="([0-9]*)\.([0-9]*)\.[0-9]*"
           config="https://bioconductor.org/config.yaml"
           rversion=$(curl ${config} | \
-            grep r_version_associated_with_${BIOCVERSION} | \
-            grep -o "[0-9]*\.[0-9]*\.[0-9]*")
-          echo "Using R ${rversion}..."
+                     grep r_version_associated_with_${BIOCVERSION} | \
+                     grep -oE ${regex})
+          rversion_major=$(echo $rversion | sed -E "s/$regex/\1/")
+          rversion_minor=$(echo $rversion | sed -E "s/$regex/\2/")
+          
+          # Check version of latest R release
+          rrelease_url="https://rversions.r-pkg.org/r-release"
+          rrelease=$(curl ${rrelease_url} | grep -oE ${regex})
+          rrelease_major=$(echo $rrelease | sed -E "s/$regex/\1/")
+          rrelease_minor=$(echo $rrelease | sed -E "s/$regex/\2/")
+          
+          # If requested version is above latest release, flag as R devel
+          if [ $rversion_major -gt $rrelease_major ] || \
+          	[ $rversion_minor -gt $rrelease_minor ]
+          then
+          	echo "Using R devel (${rversion})..."
+          	rversion="devel"
+          else
+          	echo "Using R ${rversion}..."
+          fi
+          
           echo "::set-output name=rversion::${rversion}"
         shell:
           bash {0}
