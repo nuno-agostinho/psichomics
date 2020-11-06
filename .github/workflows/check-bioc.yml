@@ -80,7 +80,7 @@ jobs:
         shell:
           bash {0}
 
-      - uses: r-lib/actions/setup-r@master
+      - uses: r-lib/actions/setup-r@r-devel-linux
         with:
           r-version: ${{ env.rversion }}
 
