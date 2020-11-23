@@ -163,11 +163,11 @@
     <p>Parameters obtained via <a href='http://firebrowse.org/api-docs/'>Firebrowse</a></p>
     </div>
 
-    <pre class="usage"><span class='fu'>getTCGAdataTypes</span>()
+    <pre class="usage"><span class='fu'>getTCGAdataTypes</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>getTCGAdates</span>()
+<span class='fu'>getTCGAdates</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>getTCGAcohorts</span>(<span class='kw'>cohort</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+<span class='fu'>getTCGAcohorts</span><span class='op'>(</span>cohort <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -187,19 +187,22 @@
 <code><a href='getDownloadsFolder.html'>getDownloadsFolder</a>()</code>,
 <code><a href='isFirebrowseUp.html'>isFirebrowseUp</a>()</code>,
 <code><a href='loadTCGAdata.html'>loadTCGAdata</a>()</code>,
-<code><a href='parseTcgaSampleInfo.html'>parseTCGAsampleTypes</a>()</code></p></div>
+<code><a href='parseTCGAsampleTypes.html'>parseTCGAsampleTypes</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>getTCGAdataTypes</span>()</div><div class='output co'>#&gt; $`RNA sequencing`
+    <pre class="examples"><div class='input'><span class='fu'>getTCGAdataTypes</span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $`RNA sequencing`
 #&gt;   Junction quantification       Exon quantification           Exon expression 
 #&gt; "junction_quantification"     "exon_quantification"         "exon_expression" 
 #&gt;       Junction expression                RSEM genes     RSEM genes normalized 
 #&gt;     "junction_expression"              "RSEM_genes"   "RSEM_genes_normalized" 
 #&gt;             RSEM isoforms                Preprocess 
 #&gt;           "RSEM_isoforms"              "Preprocess" 
-#&gt; </div><div class='input'><span class='kw'>if</span> (<span class='fu'><a href='isFirebrowseUp.html'>isFirebrowseUp</a></span>()) <span class='fu'>getTCGAdates</span>()</div><div class='output co'>#&gt;  [1] "2016-01-28" "2015-11-01" "2015-08-21" "2015-06-01" "2015-04-02"
+#&gt; </div><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='isFirebrowseUp.html'>isFirebrowseUp</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='fu'>getTCGAdates</span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;  [1] "2016-01-28" "2015-11-01" "2015-08-21" "2015-06-01" "2015-04-02"
 #&gt;  [6] "2015-02-04" "2014-12-06" "2014-10-17" "2014-09-02" "2014-07-15"
-#&gt; [11] "2014-05-18" "2014-04-16" "2014-03-16"</div><div class='input'><span class='kw'>if</span> (<span class='fu'><a href='isFirebrowseUp.html'>isFirebrowseUp</a></span>()) <span class='fu'>getTCGAcohorts</span>()</div><div class='output co'>#&gt;                                                                ACC 
+#&gt; [11] "2014-05-18" "2014-04-16" "2014-03-16"</div><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='isFirebrowseUp.html'>isFirebrowseUp</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='fu'>getTCGAcohorts</span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;                                                                ACC 
 #&gt;                                         "Adrenocortical carcinoma" 
 #&gt;                                                               BLCA 
 #&gt;                                     "Bladder Urothelial Carcinoma" 
@@ -290,7 +293,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

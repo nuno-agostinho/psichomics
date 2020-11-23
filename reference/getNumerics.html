@@ -168,7 +168,7 @@ of lists</h1>
 of lists</p>
     </div>
 
-    <pre class="usage"><span class='fu'>getNumerics</span>(<span class='no'>table</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>toNumeric</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>getNumerics</span><span class='op'>(</span><span class='va'>table</span>, by <span class='op'>=</span> <span class='cn'>NULL</span>, toNumeric <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -192,18 +192,20 @@ of lists</p>
     <p>Processed data matrix</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>event</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='st'>"ABC123 + 250 300 350
-                            DEF456 - 900 800 700"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='no'>event</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Event ID"</span>, <span class='st'>"Strand"</span>, <span class='st'>"C1.end"</span>, <span class='st'>"A1.end"</span>, <span class='st'>"A1.start"</span>)
+    <pre class="examples"><div class='input'><span class='va'>event</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"ABC123 + 250 300 350
+                            DEF456 - 900 800 700"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Event ID"</span>, <span class='st'>"Strand"</span>, <span class='st'>"C1.end"</span>, <span class='st'>"A1.end"</span>, <span class='st'>"A1.start"</span><span class='op'>)</span>
 
 <span class='co'># Let's change one column to character</span>
-<span class='no'>event</span>[ , <span class='st'>"C1.end"</span>] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span>(<span class='no'>event</span>[ , <span class='st'>"C1.end"</span>])
-<span class='fu'><a href='https://rdrr.io/r/base/character.html'>is.character</a></span>(<span class='no'>event</span>[ , <span class='st'>"C1.end"</span>])</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
-<span class='no'>event</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>getNumerics</span>(<span class='no'>event</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Strand"</span>, <span class='st'>"C1.end"</span>, <span class='st'>"A1.end"</span>,
-                                  <span class='st'>"A1.start"</span>),
-                                  <span class='kw'>toNumeric</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>FALSE</span>, <span class='fl'>TRUE</span>, <span class='fl'>TRUE</span>, <span class='fl'>TRUE</span>))
+<span class='va'>event</span><span class='op'>[</span> , <span class='st'>"C1.end"</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='va'>event</span><span class='op'>[</span> , <span class='st'>"C1.end"</span><span class='op'>]</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/character.html'>is.character</a></span><span class='op'>(</span><span class='va'>event</span><span class='op'>[</span> , <span class='st'>"C1.end"</span><span class='op'>]</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
+<span class='va'>event</span> <span class='op'>&lt;-</span> <span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>getNumerics</span><span class='op'>(</span><span class='va'>event</span>, by <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Strand"</span>, <span class='st'>"C1.end"</span>, <span class='st'>"A1.end"</span>,
+                                  <span class='st'>"A1.start"</span><span class='op'>)</span>,
+                                  toNumeric <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='cn'>FALSE</span>, <span class='cn'>TRUE</span>, <span class='cn'>TRUE</span>, <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span>
 <span class='co'># Let's check if the same column is now integer</span>
-<span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>is.numeric</a></span>(<span class='no'>event</span>[ , <span class='st'>"C1.end"</span>])</div><div class='output co'>#&gt; [1] TRUE</div></pre>
+<span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>is.numeric</a></span><span class='op'>(</span><span class='va'>event</span><span class='op'>[</span> , <span class='st'>"C1.end"</span><span class='op'>]</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] TRUE</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -219,7 +221,7 @@ of lists</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

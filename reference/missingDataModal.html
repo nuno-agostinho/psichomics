@@ -163,11 +163,11 @@
     <p>Missing information modal template</p>
     </div>
 
-    <pre class="usage"><span class='fu'>loadRequiredData</span>(<span class='kw'>modal</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+    <pre class="usage"><span class='fu'>loadRequiredData</span><span class='op'>(</span>modal <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>missingDataModal</span>(<span class='no'>session</span>, <span class='no'>dataType</span>, <span class='no'>buttonId</span>)
+<span class='fu'>missingDataModal</span><span class='op'>(</span><span class='va'>session</span>, <span class='va'>dataType</span>, <span class='va'>buttonId</span><span class='op'>)</span>
 
-<span class='fu'>missingDataGuide</span>(<span class='no'>dataType</span>)</pre>
+<span class='fu'>missingDataGuide</span><span class='op'>(</span><span class='va'>dataType</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -197,16 +197,17 @@ data</p></td>
 state or internal variables)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='kw'>if</span> (<span class='kw pkg'>shiny</span><span class='kw ns'>::</span><span class='fu'><a href='https://shiny.rstudio.com/reference/shiny/latest/isRunning.html'>isRunning</a></span>()) {
-    <span class='no'>session</span> <span class='kw'>&lt;-</span> <span class='no'>session</span>$<span class='no'>ns</span>
-    <span class='no'>buttonInput</span> <span class='kw'>&lt;-</span> <span class='st'>"takeMeThere"</span>
-    <span class='no'>buttonId</span> <span class='kw'>&lt;-</span> <span class='fu'>ns</span>(<span class='no'>buttonInput</span>)
-    <span class='no'>dataType</span> <span class='kw'>&lt;-</span> <span class='st'>"Inclusion levels"</span>
-    <span class='fu'>missingDataModal</span>(<span class='no'>session</span>, <span class='no'>buttonId</span>, <span class='no'>dataType</span>)
-    <span class='fu'>observeEvent</span>(<span class='no'>input</span><span class='kw'>[[</span><span class='no'>buttonInput</span>]], <span class='fu'>missingDataGuide</span>(<span class='no'>dataType</span>))
-}
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='fu'>shiny</span><span class='fu'>::</span><span class='fu'><a href='https://shiny.rstudio.com/reference/shiny/latest/isRunning.html'>isRunning</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='va'>session</span> <span class='op'>&lt;-</span> <span class='va'>session</span><span class='op'>$</span><span class='va'>ns</span>
+    <span class='va'>buttonInput</span> <span class='op'>&lt;-</span> <span class='st'>"takeMeThere"</span>
+    <span class='va'>buttonId</span> <span class='op'>&lt;-</span> <span class='fu'>ns</span><span class='op'>(</span><span class='va'>buttonInput</span><span class='op'>)</span>
+    <span class='va'>dataType</span> <span class='op'>&lt;-</span> <span class='st'>"Inclusion levels"</span>
+    <span class='fu'>missingDataModal</span><span class='op'>(</span><span class='va'>session</span>, <span class='va'>buttonId</span>, <span class='va'>dataType</span><span class='op'>)</span>
+    <span class='fu'>observeEvent</span><span class='op'>(</span><span class='va'>input</span><span class='op'>[[</span><span class='va'>buttonInput</span><span class='op'>]</span><span class='op'>]</span>, <span class='fu'>missingDataGuide</span><span class='op'>(</span><span class='va'>dataType</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>}</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -222,7 +223,7 @@ state or internal variables)</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

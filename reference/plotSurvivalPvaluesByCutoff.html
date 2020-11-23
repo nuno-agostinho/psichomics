@@ -163,17 +163,17 @@
     <p>Plot p-values of survival difference between groups based on multiple cutoffs</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plotSurvivalPvaluesByCutoff</span>(
-  <span class='no'>clinical</span>,
-  <span class='no'>data</span>,
-  <span class='no'>censoring</span>,
-  <span class='no'>event</span>,
-  <span class='no'>timeStart</span>,
-  <span class='kw'>timeStop</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>followup</span> <span class='kw'>=</span> <span class='st'>"days_to_last_followup"</span>,
-  <span class='kw'>significance</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
-  <span class='kw'>cutoffs</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>0.99</span>, <span class='fl'>0.01</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>plotSurvivalPvaluesByCutoff</span><span class='op'>(</span>
+  <span class='va'>clinical</span>,
+  <span class='va'>data</span>,
+  <span class='va'>censoring</span>,
+  <span class='va'>event</span>,
+  <span class='va'>timeStart</span>,
+  timeStop <span class='op'>=</span> <span class='cn'>NULL</span>,
+  followup <span class='op'>=</span> <span class='st'>"days_to_last_followup"</span>,
+  significance <span class='op'>=</span> <span class='fl'>0.05</span>,
+  cutoffs <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0.99</span>, <span class='fl'>0.01</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -237,35 +237,37 @@ interval (only relevant for interval censoring)</p></td>
 <code><a href='testSurvival.html'>testSurvival</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>clinical</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='st'>"2549   NA ii  female
+    <pre class="examples"><div class='input'><span class='va'>clinical</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"2549   NA ii  female
                                 840   NA i   female
                                  NA 1204 iv    male
                                  NA  383 iv  female
-                               1293   NA iii   male"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='no'>clinical</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"patient.days_to_last_followup"</span>,
+                               1293   NA iii   male"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>clinical</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"patient.days_to_last_followup"</span>, 
                      <span class='st'>"patient.days_to_death"</span>,
                      <span class='st'>"patient.stage_event.pathologic_stage"</span>,
-                     <span class='st'>"patient.gender"</span>)
-<span class='no'>clinical</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/do.call.html'>do.call</a></span>(<span class='no'>rbind</span>, <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>clinical</span>), <span class='fl'>5</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span>(<span class='no'>clinical</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='st'>"Subject"</span>, <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>clinical</span>)))
+                     <span class='st'>"patient.gender"</span><span class='op'>)</span>
+<span class='va'>clinical</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/do.call.html'>do.call</a></span><span class='op'>(</span><span class='va'>rbind</span>, <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='va'>clinical</span><span class='op'>)</span>, <span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span><span class='op'>(</span><span class='va'>clinical</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"Subject"</span>, <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>clinical</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='co'># Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events</span>
-<span class='no'>annot</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span>(<span class='st'>"ex_splicing_annotation.RDS"</span>)
-<span class='no'>junctionQuant</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span>(<span class='st'>"ex_junctionQuant.RDS"</span>)
+<span class='va'>annot</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_splicing_annotation.RDS"</span><span class='op'>)</span>
+<span class='va'>junctionQuant</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_junctionQuant.RDS"</span><span class='op'>)</span>
 
-<span class='no'>psi</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='quantifySplicing.html'>quantifySplicing</a></span>(<span class='no'>annot</span>, <span class='no'>junctionQuant</span>, <span class='kw'>eventType</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SE"</span>, <span class='st'>"MXE"</span>))</div><div class='output co'>#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% 
+<span class='va'>psi</span> <span class='op'>&lt;-</span> <span class='fu'><a href='quantifySplicing.html'>quantifySplicing</a></span><span class='op'>(</span><span class='va'>annot</span>, <span class='va'>junctionQuant</span>, eventType<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SE"</span>, <span class='st'>"MXE"</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% 
 #&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </div><div class='input'>
 <span class='co'># Match between subjects and samples</span>
-<span class='no'>match</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Cancer 1"</span><span class='kw'>=</span><span class='st'>"Subject 3"</span>,
-           <span class='st'>"Cancer 2"</span><span class='kw'>=</span><span class='st'>"Subject 17"</span>,
-           <span class='st'>"Cancer 3"</span><span class='kw'>=</span><span class='st'>"Subject 21"</span>)
+<span class='va'>match</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Cancer 1"</span><span class='op'>=</span><span class='st'>"Subject 3"</span>,
+           <span class='st'>"Cancer 2"</span><span class='op'>=</span><span class='st'>"Subject 17"</span>,
+           <span class='st'>"Cancer 3"</span><span class='op'>=</span><span class='st'>"Subject 21"</span><span class='op'>)</span>
 
-<span class='no'>eventData</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='assignValuePerSubject.html'>assignValuePerSubject</a></span>(<span class='no'>psi</span>[<span class='fl'>3</span>, ], <span class='no'>match</span>)
+<span class='va'>eventData</span> <span class='op'>&lt;-</span> <span class='fu'><a href='assignValuePerSubject.html'>assignValuePerSubject</a></span><span class='op'>(</span><span class='va'>psi</span><span class='op'>[</span><span class='fl'>3</span>, <span class='op'>]</span>, <span class='va'>match</span><span class='op'>)</span>
 
-<span class='no'>event</span>      <span class='kw'>&lt;-</span> <span class='st'>"days_to_death"</span>
-<span class='no'>timeStart</span>  <span class='kw'>&lt;-</span> <span class='st'>"days_to_death"</span>
-<span class='fu'>plotSurvivalPvaluesByCutoff</span>(<span class='no'>clinical</span>, <span class='no'>eventData</span>, <span class='kw'>censoring</span><span class='kw'>=</span><span class='st'>"right"</span>,
-                            <span class='kw'>event</span><span class='kw'>=</span><span class='no'>event</span>, <span class='kw'>timeStart</span><span class='kw'>=</span><span class='no'>timeStart</span>)</div></pre>
+<span class='va'>event</span>      <span class='op'>&lt;-</span> <span class='st'>"days_to_death"</span>
+<span class='va'>timeStart</span>  <span class='op'>&lt;-</span> <span class='st'>"days_to_death"</span>
+<span class='fu'>plotSurvivalPvaluesByCutoff</span><span class='op'>(</span><span class='va'>clinical</span>, <span class='va'>eventData</span>, censoring<span class='op'>=</span><span class='st'>"right"</span>, 
+                            event<span class='op'>=</span><span class='va'>event</span>, timeStart<span class='op'>=</span><span class='va'>timeStart</span><span class='op'>)</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -281,7 +283,7 @@ interval (only relevant for interval censoring)</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

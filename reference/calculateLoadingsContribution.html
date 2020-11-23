@@ -180,7 +180,7 @@ components</h1>
 
     </div>
 
-    <pre class="usage"><span class='fu'>calculateLoadingsContribution</span>(<span class='no'>pca</span>, <span class='kw'>pcX</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>pcY</span> <span class='kw'>=</span> <span class='fl'>2</span>)</pre>
+    <pre class="usage"><span class='fu'>calculateLoadingsContribution</span><span class='op'>(</span><span class='va'>pca</span>, pcX <span class='op'>=</span> <span class='fl'>1</span>, pcY <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -215,8 +215,9 @@ principal components (both individual and total contribution)</p>
 <code><a href='plotPCA.html'>plotPCA</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>pca</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='performPCA.html'>performPCA</a></span>(<span class='no'>USArrests</span>)
-<span class='fu'>calculateLoadingsContribution</span>(<span class='no'>pca</span>)</div><div class='output co'>#&gt;          Rank     Gene PC1 loading PC2 loading Contribution to PC1 (%)
+    <pre class="examples"><div class='input'><span class='va'>pca</span> <span class='op'>&lt;-</span> <span class='fu'><a href='performPCA.html'>performPCA</a></span><span class='op'>(</span><span class='va'>USArrests</span><span class='op'>)</span>
+<span class='fu'>calculateLoadingsContribution</span><span class='op'>(</span><span class='va'>pca</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;          Rank     Gene PC1 loading PC2 loading Contribution to PC1 (%)
 #&gt; Assault     1  Assault  0.99522128 -0.05876003              99.0465399
 #&gt; UrbanPop    2 UrbanPop  0.04633575  0.97685748               0.2147001
 #&gt; Rape        3     Rape  0.07515550  0.20071807               0.5648349
@@ -241,7 +242,7 @@ principal components (both individual and total contribution)</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

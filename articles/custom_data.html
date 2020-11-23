@@ -102,13 +102,14 @@
 
       
 
-      </header><script src="custom_data_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><script src="custom_data_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="custom_data_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
+<script src="custom_data_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Loading SRA, VAST-TOOLS and user-provided RNA-seq data</h1>
                         <h4 class="author">Nuno Saraiva-Agostinho</h4>
             
-            <h4 class="date">2020-08-30</h4>
+            <h4 class="date">2020-11-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/psichomics/blob/master/vignettes/custom_data.Rmd"><code>vignettes/custom_data.Rmd</code></a></small>
       <div class="hidden name"><code>custom_data.Rmd</code></div>
@@ -274,17 +275,18 @@
 <h3 class="hasAnchor">
 <a href="#prepare-output-for-psichomics" class="anchor"></a>Prepare output for psichomics</h3>
 <p>To process the resulting data files, type in R:</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="co"># Change working directory to where the STAR output is</span>
-<span class="fu"><a href="https://rdrr.io/r/base/getwd.html">setwd</a></span>(<span class="st">"/path/to/aligned/output/"</span>)
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Change working directory to where the STAR output is</span>
+<span class="fu"><a href="https://rdrr.io/r/base/getwd.html">setwd</a></span><span class="op">(</span><span class="st">"/path/to/aligned/output/"</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">psichomics</span>)
-<span class="fu"><a href="../reference/prepareSRAmetadata.html">prepareGeneQuant</a></span>(
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://nuno-agostinho.github.io/psichomics/">psichomics</a></span><span class="op">)</span>
+<span class="fu"><a href="../reference/prepareSRAmetadata.html">prepareGeneQuant</a></span><span class="op">(</span>
     <span class="st">"SRR6368612ReadsPerGene.out.tab"</span>, <span class="st">"SRR6368613ReadsPerGene.out.tab"</span>,
     <span class="st">"SRR6368614ReadsPerGene.out.tab"</span>, <span class="st">"SRR6368615ReadsPerGene.out.tab"</span>,
-    <span class="st">"SRR6368616ReadsPerGene.out.tab"</span>, <span class="st">"SRR6368617ReadsPerGene.out.tab"</span>)
-<span class="fu"><a href="../reference/prepareSRAmetadata.html">prepareJunctionQuant</a></span>(<span class="st">"SRR6368612SJ.out.tab"</span>, <span class="st">"SRR6368613SJ.out.tab"</span>,
+    <span class="st">"SRR6368616ReadsPerGene.out.tab"</span>, <span class="st">"SRR6368617ReadsPerGene.out.tab"</span><span class="op">)</span>
+<span class="fu"><a href="../reference/prepareSRAmetadata.html">prepareJunctionQuant</a></span><span class="op">(</span><span class="st">"SRR6368612SJ.out.tab"</span>, <span class="st">"SRR6368613SJ.out.tab"</span>, 
                      <span class="st">"SRR6368614SJ.out.tab"</span>, <span class="st">"SRR6368615SJ.out.tab"</span>,
-                     <span class="st">"SRR6368616SJ.out.tab"</span>, <span class="st">"SRR6368617SJ.out.tab"</span>)</pre></body></html></div>
+                     <span class="st">"SRR6368616SJ.out.tab"</span>, <span class="st">"SRR6368617SJ.out.tab"</span><span class="op">)</span></code></pre></div>
 <p>To load the data, move the files (including the SRA metadata) to a new folder and follow the instructions in <a href="#load-user-provided-data-into-psichomics">Load user-provided data into psichomics</a>.</p>
 </div>
 </div>
@@ -298,17 +300,18 @@
 </ul>
 <p>Any sample and/or subject information may also be useful to load. Unless the sample metadata comes from <a href="https://www.ncbi.nlm.nih.gov/Traces/study/">SRA Run Selector</a>, please ensure that the table is recognised by psichomics: read <a href="#prepare-data-from-any-source">Prepare generic data</a>.</p>
 <p>To load the data and move all files to a new folder (VAST-TOOLS alternative splicing quantification and gene expression tables and sample/subject-associated information).</p>
-<p>Follow the instructions in <a href="#load-user-provided-data-into-psichomics">Load user-provided data into psichomics</a> to load the files in the visual interface. Otherwise, use function <a href="https://nuno-agostinho.github.io/psichomics/reference/loadLocalFiles"><code><a href="../reference/loadLocalFiles.html">loadLocalFiles()</a></code></a> with the folder path as an argument:</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">psichomics</span>)
-<span class="no">data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/loadLocalFiles.html">loadLocalFiles</a></span>(<span class="st">"/path/to/psichomics/input"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">data</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]])
+<p>Follow the instructions in <a href="#load-user-provided-data-into-psichomics">Load user-provided data into psichomics</a> to load the files in the visual interface. Otherwise, use function <a href="https://nuno-agostinho.github.io/psichomics/reference/loadLocalFiles"><code>loadLocalFiles()</code></a> with the folder path as an argument:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://nuno-agostinho.github.io/psichomics/">psichomics</a></span><span class="op">)</span>
+<span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/loadLocalFiles.html">loadLocalFiles</a></span><span class="op">(</span><span class="st">"/path/to/psichomics/input"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
 
-<span class="no">junctionQuant</span>  <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Junction quantification`</span>
-<span class="no">sampleInfo</span>     <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Sample metadata`</span>
+<span class="va">junctionQuant</span>  <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">`Junction quantification`</span>
+<span class="va">sampleInfo</span>     <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">`Sample metadata`</span>
 <span class="co"># Both gene read counts and cRPKMs are loaded as separate data frames</span>
-<span class="no">geneReadCounts</span> <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Gene expression (read counts)`</span>
-<span class="no">cRPKM</span>          <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Gene expression (cRPKM)`</span></pre></body></html></div>
+<span class="va">geneReadCounts</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">`Gene expression (read counts)`</span>
+<span class="va">cRPKM</span>          <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">`Gene expression (cRPKM)`</span></code></pre></div>
 </div>
 <div id="prepare-firebrowse-data" class="section level2">
 <h2 class="hasAnchor">
@@ -552,22 +555,24 @@
 <h2 class="hasAnchor">
 <a href="#load-using-the-visual-interface" class="anchor"></a>Load using the visual interface</h2>
 <p>Start psichomics with the following commands in an R console or RStudio:</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">psichomics</span>)
-<span class="fu"><a href="../reference/psichomics.html">psichomics</a></span>()</pre></body></html></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://nuno-agostinho.github.io/psichomics/">psichomics</a></span><span class="op">)</span>
+<span class="fu"><a href="../reference/psichomics.html">psichomics</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>Then, click <strong>Load user files</strong>. Click the <strong>Folder input</strong> tab and select the appropriate folder. Finally, click <strong>Load files</strong> to automatically scan and load all supported files from that folder.</p>
 </div>
 <div id="load-using-the-command-line-interface-cli" class="section level2">
 <h2 class="hasAnchor">
 <a href="#load-using-the-command-line-interface-cli" class="anchor"></a>Load using the command-line interface (CLI)</h2>
-<p>Use function <a href="https://nuno-agostinho.github.io/psichomics/reference/loadLocalFiles"><code><a href="../reference/loadLocalFiles.html">loadLocalFiles()</a></code></a> with the folder path as an argument:</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">psichomics</span>)
-<span class="no">data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/loadLocalFiles.html">loadLocalFiles</a></span>(<span class="st">"/path/to/psichomics/input"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">data</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]])
+<p>Use function <a href="https://nuno-agostinho.github.io/psichomics/reference/loadLocalFiles"><code>loadLocalFiles()</code></a> with the folder path as an argument:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://nuno-agostinho.github.io/psichomics/">psichomics</a></span><span class="op">)</span>
+<span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/loadLocalFiles.html">loadLocalFiles</a></span><span class="op">(</span><span class="st">"/path/to/psichomics/input"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
 
-<span class="no">geneExpr</span>      <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Gene expression`</span>
-<span class="no">junctionQuant</span> <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Junction quantification`</span>
-<span class="no">sampleInfo</span>    <span class="kw">&lt;-</span> <span class="no">data</span><span class="kw">[[</span><span class="fl">1</span>]]$<span class="no">`Sample metadata`</span></pre></body></html></div>
+<span class="va">geneExpr</span>      <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">`Gene expression`</span>
+<span class="va">junctionQuant</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">`Junction quantification`</span>
+<span class="va">sampleInfo</span>    <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">`Sample metadata`</span></code></pre></div>
 </div>
 </div>
 <div id="feedback" class="section level1">
@@ -605,7 +610,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

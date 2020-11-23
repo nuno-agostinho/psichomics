@@ -163,20 +163,20 @@
     <p>Start graphical interface of psichomics</p>
     </div>
 
-    <pre class="usage"><span class='fu'>psichomics</span>(
-  <span class='no'>...</span>,
-  <span class='kw'>launch.browser</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>reset</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>testData</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>unparsableEvents</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>psichomics</span><span class='op'>(</span>
+  <span class='va'>...</span>,
+  launch.browser <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  reset <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  testData <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  unparsableEvents <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>...</th>
-      <td><p>Arguments passed on to <code><a href='https://shiny.rstudio.com/reference/shiny/latest/runApp.html'>shiny::runApp</a></code></p><dl'>
+      <td><p>Arguments passed on to <code><a href='https://shiny.rstudio.com/reference/shiny/latest/runApp.html'>shiny::runApp</a></code></p><dl>
     <dt><code>port</code></dt><dd><p>The TCP port that the application should listen on. If the
 <code>port</code> is not specified, and the <code>shiny.port</code> option is set (with
 <code><a href='https://rdrr.io/r/base/options.html'>options(shiny.port = XX)</a></code>), then that port will be used. Otherwise,
@@ -227,9 +227,10 @@ quantification events that cannot be parsed?</p></td>
 state or internal variables)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'>psichomics</span>()
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'>psichomics</span><span class='op'>(</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -245,7 +246,7 @@ state or internal variables)</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

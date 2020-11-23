@@ -165,7 +165,7 @@ of interest) and alternative splicing quantification." />
 of interest) and alternative splicing quantification.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>correlateGEandAS</span>(<span class='no'>geneExpr</span>, <span class='no'>psi</span>, <span class='no'>gene</span>, <span class='kw'>ASevents</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>correlateGEandAS</span><span class='op'>(</span><span class='va'>geneExpr</span>, <span class='va'>psi</span>, <span class='va'>gene</span>, ASevents <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -207,15 +207,17 @@ splicing event</p></dd>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other functions to correlate gene expression and alternative splicing: 
-<code><a href='plot.GEandAScorrelation.html'>[.GEandAScorrelation</a>()</code></p></div>
+<code><a href='[.GEandAScorrelation.html'>[.GEandAScorrelation</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>annot</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span>(<span class='st'>"ex_splicing_annotation.RDS"</span>)
-<span class='no'>junctionQuant</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span>(<span class='st'>"ex_junctionQuant.RDS"</span>)
-<span class='no'>psi</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='quantifySplicing.html'>quantifySplicing</a></span>(<span class='no'>annot</span>, <span class='no'>junctionQuant</span>, <span class='kw'>eventType</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SE"</span>, <span class='st'>"MXE"</span>))</div><div class='output co'>#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% 
+    <pre class="examples"><div class='input'><span class='va'>annot</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_splicing_annotation.RDS"</span><span class='op'>)</span>
+<span class='va'>junctionQuant</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_junctionQuant.RDS"</span><span class='op'>)</span>
+<span class='va'>psi</span> <span class='op'>&lt;-</span> <span class='fu'><a href='quantifySplicing.html'>quantifySplicing</a></span><span class='op'>(</span><span class='va'>annot</span>, <span class='va'>junctionQuant</span>, eventType<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SE"</span>, <span class='st'>"MXE"</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% 
 #&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </div><div class='input'>
-<span class='no'>geneExpr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span>(<span class='st'>"ex_gene_expression.RDS"</span>)
-<span class='fu'>correlateGEandAS</span>(<span class='no'>geneExpr</span>, <span class='no'>psi</span>, <span class='st'>"ALDOA"</span>)</div><div class='output co'>#&gt; ================================================================================
+<span class='va'>geneExpr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_gene_expression.RDS"</span><span class='op'>)</span>
+<span class='fu'>correlateGEandAS</span><span class='op'>(</span><span class='va'>geneExpr</span>, <span class='va'>psi</span>, <span class='st'>"ALDOA"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; ================================================================================
 #&gt; SE_2_+_32_35_37_38_ALDOA splicing event
 #&gt; ALDOA|226 gene expression
 #&gt; 
@@ -260,7 +262,7 @@ splicing event</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

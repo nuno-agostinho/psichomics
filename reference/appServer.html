@@ -163,55 +163,55 @@
     <p>Instructions to build the Shiny app</p>
     </div>
 
-    <pre class="usage"><span class='fu'>appServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+    <pre class="usage"><span class='fu'>appServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>analysesServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>analysesServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>correlationServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>correlationServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>diffExpressionServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>diffExpressionServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>diffExpressionEventServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>diffExpressionEventServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>diffExpressionTableServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>diffExpressionTableServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>diffSplicingServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>diffSplicingServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>diffSplicingEventServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>diffSplicingEventServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>diffSplicingTableServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>diffSplicingTableServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>dimReductionServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>dimReductionServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>icaServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>icaServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>pcaServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>pcaServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>infoServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>infoServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>survivalServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>survivalServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>templateServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>templateServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>dataServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>dataServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>firebrowseServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>firebrowseServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>geNormalisationFilteringServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>geNormalisationFilteringServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>gtexDataServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>gtexDataServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>inclusionLevelsServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>inclusionLevelsServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>inclusionLevelsFilterServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>inclusionLevelsFilterServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>localDataServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>localDataServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>recountDataServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>recountDataServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>groupsServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)
+<span class='fu'>groupsServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span>
 
-<span class='fu'>helpServer</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>)</pre>
+<span class='fu'>helpServer</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>output</span>, <span class='va'>session</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -250,7 +250,7 @@ state or internal variables)</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

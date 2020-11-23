@@ -163,7 +163,7 @@
     <p>Elements are identified by their respective row name.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>createGroupByAttribute</span>(<span class='no'>col</span>, <span class='no'>dataset</span>)</pre>
+    <pre class="usage"><span class='fu'>createGroupByAttribute</span><span class='op'>(</span><span class='va'>col</span>, <span class='va'>dataset</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -193,10 +193,11 @@ elements</p>
 <code><a href='testGroupIndependence.html'>testGroupIndependence</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>df</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>gender</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"male"</span>, <span class='st'>"female"</span>),
-                 <span class='kw'>stage</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='st'>"stage"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>4</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>2</span>, <span class='fl'>2</span>)))
-<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span>(<span class='no'>df</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='st'>"subject-"</span>, <span class='no'>LETTERS</span>[<span class='fl'>1</span>:<span class='fl'>8</span>])
-<span class='fu'>createGroupByAttribute</span>(<span class='kw'>col</span><span class='kw'>=</span><span class='st'>"stage"</span>, <span class='kw'>dataset</span><span class='kw'>=</span><span class='no'>df</span>)</div><div class='output co'>#&gt; $`stage 1`
+    <pre class="examples"><div class='input'><span class='va'>df</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>gender<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"male"</span>, <span class='st'>"female"</span><span class='op'>)</span>,
+                 stage<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"stage"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>4</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>2</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span><span class='op'>(</span><span class='va'>df</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"subject-"</span>, <span class='va'>LETTERS</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>8</span><span class='op'>]</span><span class='op'>)</span>
+<span class='fu'>createGroupByAttribute</span><span class='op'>(</span>col<span class='op'>=</span><span class='st'>"stage"</span>, dataset<span class='op'>=</span><span class='va'>df</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $`stage 1`
 #&gt; [1] "subject-A" "subject-C"
 #&gt; 
 #&gt; $`stage 2`
@@ -223,7 +224,7 @@ elements</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

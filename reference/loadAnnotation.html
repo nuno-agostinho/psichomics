@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Load alternative splicing annotation from <code>AnnotationHub</code> — loadAnnotation • psichomics</title>
+<title>Load alternative splicing annotation from AnnotationHub — loadAnnotation • psichomics</title>
 
 
 <!-- jquery -->
@@ -45,7 +45,7 @@
 
 
 
-<meta property="og:title" content="Load alternative splicing annotation from <code>AnnotationHub</code> — loadAnnotation" />
+<meta property="og:title" content="Load alternative splicing annotation from AnnotationHub — loadAnnotation" />
 <meta property="og:description" content="Load alternative splicing annotation from AnnotationHub" />
 
 
@@ -163,7 +163,7 @@
     <p>Load alternative splicing annotation from <code>AnnotationHub</code></p>
     </div>
 
-    <pre class="usage"><span class='fu'>loadAnnotation</span>(<span class='no'>annotation</span>, <span class='kw'>cache</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>loadAnnotation</span><span class='op'>(</span><span class='va'>annotation</span>, cache <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -193,10 +193,11 @@ per event type</p>
 <code><a href='quantifySplicing.html'>quantifySplicing</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>human</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='listSplicingAnnotations.html'>listSplicingAnnotations</a></span>()<span class='kw'>[[</span><span class='fl'>1</span>]]
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='no'>annot</span> <span class='kw'>&lt;-</span> <span class='fu'>loadAnnotation</span>(<span class='no'>human</span>)
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='va'>human</span> <span class='op'>&lt;-</span> <span class='fu'><a href='listSplicingAnnotations.html'>listSplicingAnnotations</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>annot</span> <span class='op'>&lt;-</span> <span class='fu'>loadAnnotation</span><span class='op'>(</span><span class='va'>human</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -212,7 +213,7 @@ per event type</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -163,7 +163,7 @@
     <p>Query the Firebrowse API for metadata</p>
     </div>
 
-    <pre class="usage"><span class='fu'>parseFirebrowseMetadata</span>(<span class='no'>type</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>parseFirebrowseMetadata</span><span class='op'>(</span><span class='va'>type</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -183,11 +183,13 @@
     <p>List with parsed response</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>parseFirebrowseMetadata</span>(<span class='st'>"Dates"</span>)</div><div class='output co'>#&gt; $Dates
+    <pre class="examples"><div class='input'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseFirebrowseMetadata</span><span class='op'>(</span><span class='st'>"Dates"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $Dates
 #&gt;  [1] "2016_01_28" "2015_11_01" "2015_08_21" "2015_06_01" "2015_04_02"
 #&gt;  [6] "2015_02_04" "2014_12_06" "2014_10_17" "2014_09_02" "2014_07_15"
 #&gt; [11] "2014_05_18" "2014_04_16" "2014_03_16"
-#&gt; </div><div class='input'><span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>parseFirebrowseMetadata</span>(<span class='st'>"Centers"</span>)</div><div class='output co'>#&gt; $Centers
+#&gt; </div><div class='input'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseFirebrowseMetadata</span><span class='op'>(</span><span class='st'>"Centers"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $Centers
 #&gt;                     center center_type code
 #&gt; 1           vanderbilt.edu        CGCC   27
 #&gt; 2                  jhu.edu        CGCC   28
@@ -254,14 +256,16 @@
 #&gt; 30       MD Anderson - Pathology/Lab Medicine Hamilton        MDA
 #&gt; 31                University of California, Santa Cruz       UCSC
 #&gt; 32  MD Anderson - Institute for Applied Cancer Science        MDA
-#&gt; </div><div class='input'><span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>parseFirebrowseMetadata</span>(<span class='st'>"HeartBeat"</span>)</div><div class='output co'>#&gt; $HeartBeat
+#&gt; </div><div class='input'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseFirebrowseMetadata</span><span class='op'>(</span><span class='st'>"HeartBeat"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $HeartBeat
 #&gt; [1] "FireBrowse API at firebrowse.org:8000 is alive"                
 #&gt; [2] "Version: 1.1.40 (2019-10-13 13:15:04 c66e6f910b6a89397a4de26c)"
 #&gt; [3] "Root Dir: /local/firebrowse/firebrowse_1.1.40"                 
-#&gt; [4] "Launched On: 2020_08_13 15:18:18 EDT\n"                        
+#&gt; [4] "Launched On: 2020_09_13 18:20:47 EDT\n"                        
 #&gt; </div><div class='input'>
 <span class='co'># Get the abbreviation and description of all cohorts available</span>
-<span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>parseFirebrowseMetadata</span>(<span class='st'>"Cohorts"</span>)</div><div class='output co'>#&gt; $Cohorts
+<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseFirebrowseMetadata</span><span class='op'>(</span><span class='st'>"Cohorts"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $Cohorts
 #&gt;      cohort                                                      description
 #&gt; 1       ACC                                         Adrenocortical carcinoma
 #&gt; 2      BLCA                                     Bladder Urothelial Carcinoma
@@ -302,7 +306,8 @@
 #&gt; 37      UCS                                           Uterine Carcinosarcoma
 #&gt; 38      UVM                                                   Uveal Melanoma
 #&gt; </div><div class='input'><span class='co'># Get the abbreviation and description of the selected cohorts</span>
-<span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>parseFirebrowseMetadata</span>(<span class='st'>"Cohorts"</span>, <span class='kw'>cohort</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"ACC"</span>, <span class='st'>"BRCA"</span>))</div><div class='output co'>#&gt; $Cohorts
+<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseFirebrowseMetadata</span><span class='op'>(</span><span class='st'>"Cohorts"</span>, cohort <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ACC"</span>, <span class='st'>"BRCA"</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $Cohorts
 #&gt;   cohort               description
 #&gt; 1    ACC  Adrenocortical carcinoma
 #&gt; 2   BRCA Breast invasive carcinoma
@@ -322,7 +327,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

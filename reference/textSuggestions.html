@@ -163,7 +163,7 @@
     <p>Uses the JavaScript library <code>jquery.textcomplete</code></p>
     </div>
 
-    <pre class="usage"><span class='fu'>textSuggestions</span>(<span class='no'>id</span>, <span class='no'>words</span>, <span class='kw'>novalue</span> <span class='kw'>=</span> <span class='st'>"No matching value"</span>, <span class='kw'>char</span> <span class='kw'>=</span> <span class='st'>" "</span>)</pre>
+    <pre class="usage"><span class='fu'>textSuggestions</span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>words</span>, novalue <span class='op'>=</span> <span class='st'>"No matching value"</span>, char <span class='op'>=</span> <span class='st'>" "</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -191,8 +191,9 @@
     <p>HTML string with the JavaScript script prepared to run</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>words</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"tumor_stage"</span>, <span class='st'>"age"</span>, <span class='st'>"gender"</span>)
-<span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>textSuggestions</span>(<span class='st'>"textareaid"</span>, <span class='no'>words</span>)</div><div class='output co'>#&gt; &lt;script&gt; textareaid_words = ["tumor_stage", "age", "gender"]; $("#textareaid").textcomplete([{
+    <pre class="examples"><div class='input'><span class='va'>words</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"tumor_stage"</span>, <span class='st'>"age"</span>, <span class='st'>"gender"</span><span class='op'>)</span>
+<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>textSuggestions</span><span class='op'>(</span><span class='st'>"textareaid"</span>, <span class='va'>words</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; &lt;script&gt; textareaid_words = ["tumor_stage", "age", "gender"]; $("#textareaid").textcomplete([{
 #&gt;             match: /([a-zA-Z0-9_\.]{1,})$/,
 #&gt;             search: function(term, callback) {
 #&gt;                 var words = textareaid_words, sorted = [];
@@ -223,7 +224,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

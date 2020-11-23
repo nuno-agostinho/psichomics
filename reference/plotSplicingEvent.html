@@ -163,25 +163,25 @@
     <p>Plot diagram of alternative splicing events</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plotSplicingEvent</span>(
-  <span class='no'>ASevent</span>,
-  <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>showText</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>showPath</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>showAlternative1</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>showAlternative2</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>constitutiveWidth</span> <span class='kw'>=</span> <span class='fl'>60</span>,
-  <span class='kw'>alternativeWidth</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>intronWidth</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>constitutiveFill</span> <span class='kw'>=</span> <span class='st'>"lightgray"</span>,
-  <span class='kw'>constitutiveStroke</span> <span class='kw'>=</span> <span class='st'>"darkgray"</span>,
-  <span class='kw'>alternative1Fill</span> <span class='kw'>=</span> <span class='st'>"#ffb153"</span>,
-  <span class='kw'>alternative1Stroke</span> <span class='kw'>=</span> <span class='st'>"#faa000"</span>,
-  <span class='kw'>alternative2Fill</span> <span class='kw'>=</span> <span class='st'>"#caa06c"</span>,
-  <span class='kw'>alternative2Stroke</span> <span class='kw'>=</span> <span class='st'>"#9d7039"</span>,
-  <span class='kw'>class</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>style</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
-)</pre>
+    <pre class="usage"><span class='fu'>plotSplicingEvent</span><span class='op'>(</span>
+  <span class='va'>ASevent</span>,
+  data <span class='op'>=</span> <span class='cn'>NULL</span>,
+  showText <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  showPath <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  showAlternative1 <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  showAlternative2 <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  constitutiveWidth <span class='op'>=</span> <span class='fl'>60</span>,
+  alternativeWidth <span class='op'>=</span> <span class='cn'>NULL</span>,
+  intronWidth <span class='op'>=</span> <span class='cn'>NULL</span>,
+  constitutiveFill <span class='op'>=</span> <span class='st'>"lightgray"</span>,
+  constitutiveStroke <span class='op'>=</span> <span class='st'>"darkgray"</span>,
+  alternative1Fill <span class='op'>=</span> <span class='st'>"#ffb153"</span>,
+  alternative1Stroke <span class='op'>=</span> <span class='st'>"#faa000"</span>,
+  alternative2Fill <span class='op'>=</span> <span class='st'>"#caa06c"</span>,
+  alternative2Stroke <span class='op'>=</span> <span class='st'>"#9d7039"</span>,
+  class <span class='op'>=</span> <span class='cn'>NULL</span>,
+  style <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -263,19 +263,20 @@ splicing junctions and text? (only related with mutually exclusive exons)</p></t
     <p>List of SVG (one for each alternative splicing event)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>ASevent</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(
+    <pre class="examples"><div class='input'><span class='va'>ASevent</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>
     <span class='st'>"SE_9_+_6486925_6492303_6492401_6493826_UHRF2"</span>,
     <span class='st'>"SE_11_+_86925_92303_92401_93826_TESTING/MHG2"</span>,
     <span class='st'>"A5SS_15_+_63353472_63353987_63354414_TPM1"</span>,
     <span class='st'>"A3SS_3_-_145796903_145794682_145795711_PLOD2"</span>,
     <span class='st'>"AFE_17_-_15165746_15168471_15164078_PMP22"</span>,
     <span class='st'>"ALE_18_-_5395066_5394792_5393477_EPB41L3"</span>,
-    <span class='st'>"MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1"</span>)
-<span class='no'>diagram</span> <span class='kw'>&lt;-</span> <span class='fu'>plotSplicingEvent</span>(<span class='no'>ASevent</span>)
+    <span class='st'>"MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1"</span><span class='op'>)</span>
+<span class='va'>diagram</span> <span class='op'>&lt;-</span> <span class='fu'>plotSplicingEvent</span><span class='op'>(</span><span class='va'>ASevent</span><span class='op'>)</span>
 
-<span class='no'>diagram</span><span class='kw'>[[</span><span class='st'>"A3SS_3_-_145796903_145794682_145795711_PLOD2"</span>]]
-<span class='no'>diagram</span><span class='kw'>[[</span><span class='fl'>6</span>]]
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) <span class='no'>diagram</span></div></pre>
+<span class='va'>diagram</span><span class='op'>[[</span><span class='st'>"A3SS_3_-_145796903_145794682_145795711_PLOD2"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>diagram</span><span class='op'>[[</span><span class='fl'>6</span><span class='op'>]</span><span class='op'>]</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='va'>diagram</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -291,7 +292,7 @@ splicing junctions and text? (only related with mutually exclusive exons)</p></t
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

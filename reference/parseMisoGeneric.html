@@ -163,23 +163,23 @@
     <p>Parse junctions of an event from MISO according to event type</p>
     </div>
 
-    <pre class="usage"><span class='fu'>parseMisoGeneric</span>(<span class='no'>event</span>, <span class='no'>validator</span>, <span class='no'>eventType</span>, <span class='no'>coord</span>, <span class='no'>plusIndex</span>, <span class='no'>minusIndex</span>)
+    <pre class="usage"><span class='fu'>parseMisoGeneric</span><span class='op'>(</span><span class='va'>event</span>, <span class='va'>validator</span>, <span class='va'>eventType</span>, <span class='va'>coord</span>, <span class='va'>plusIndex</span>, <span class='va'>minusIndex</span><span class='op'>)</span>
 
-<span class='fu'>parseMisoSE</span>(<span class='no'>event</span>)
+<span class='fu'>parseMisoSE</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span>
 
-<span class='fu'>parseMisoMXE</span>(<span class='no'>event</span>)
+<span class='fu'>parseMisoMXE</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span>
 
-<span class='fu'>parseMisoRI</span>(<span class='no'>event</span>, <span class='no'>strand</span>)
+<span class='fu'>parseMisoRI</span><span class='op'>(</span><span class='va'>event</span>, <span class='va'>strand</span><span class='op'>)</span>
 
-<span class='fu'>parseMisoA5SS</span>(<span class='no'>event</span>)
+<span class='fu'>parseMisoA5SS</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span>
 
-<span class='fu'>parseMisoA3SS</span>(<span class='no'>event</span>, <span class='no'>plusIndex</span>, <span class='no'>minusIndex</span>)
+<span class='fu'>parseMisoA3SS</span><span class='op'>(</span><span class='va'>event</span>, <span class='va'>plusIndex</span>, <span class='va'>minusIndex</span><span class='op'>)</span>
 
-<span class='fu'>parseMisoTandemUTR</span>(<span class='no'>event</span>, <span class='no'>minusIndex</span>)
+<span class='fu'>parseMisoTandemUTR</span><span class='op'>(</span><span class='va'>event</span>, <span class='va'>minusIndex</span><span class='op'>)</span>
 
-<span class='fu'>parseMisoAFE</span>(<span class='no'>event</span>)
+<span class='fu'>parseMisoAFE</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span>
 
-<span class='fu'>parseMisoALE</span>(<span class='no'>event</span>)</pre>
+<span class='fu'>parseMisoALE</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -212,7 +212,7 @@ files)</p></td>
     </tr>
     <tr>
       <th>strand</th>
-      <td><p>Character: positive-sense (<code>+</code>) or negative-sense <code>-</code>
+      <td><p>Character: positive-sense (<code><a href='https://rdrr.io/r/base/Arithmetic.html'>+</a></code>) or negative-sense <code><a href='https://rdrr.io/r/base/Arithmetic.html'>-</a></code>
 strand</p></td>
     </tr>
     </table>
@@ -239,7 +239,7 @@ strand</p></td>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># skipped exon event (SE)</span>
-<span class='no'>event</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='st'>"
+<span class='va'>event</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"
   chr1 SE gene 16854 18061 . - .
   chr1 SE mRNA 16854 18061 . - .
   chr1 SE exon 16854 17055 . - .
@@ -247,13 +247,14 @@ strand</p></td>
   chr1 SE exon 17915 18061 . - .
   chr1 SE mRNA 16854 18061 . - .
   chr1 SE exon 16854 17955 . - .
-  chr1 SE exon 17915 18061 . - ."</span>)
-<span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>parseMisoSE</span>(<span class='no'>event</span>)</div><div class='output co'>#&gt;   C1.start C1.end A1.start A1.end A2.start A2.end C2.start C2.end Program
+  chr1 SE exon 17915 18061 . - ."</span><span class='op'>)</span>
+<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMisoSE</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   C1.start C1.end A1.start A1.end A2.start A2.end C2.start C2.end Program
 #&gt; 1    18061  17915    17742  17233       NA     NA    17055  16854    MISO
 #&gt;   Event.type Chromosome Strand
 #&gt; 1         SE       chr1      -</div><div class='input'>
 <span class='co'># mutually exclusive exon (MXE) event</span>
-<span class='no'>event</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='st'>"
+<span class='va'>event</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"
  chr1 MXE gene 764383 788090 . + .
  chr1 MXE mRNA 764383 788090 . + .
  chr1 MXE exon 764383 764484 . + .
@@ -262,81 +263,88 @@ strand</p></td>
  chr1 MXE mRNA 764383 788090 . + .
  chr1 MXE exon 764383 764484 . + .
  chr1 MXE exon 783034 783186 . + .
- chr1 MXE exon 787307 788090 . + ."</span>)
-<span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>parseMisoMXE</span>(<span class='no'>event</span>)</div><div class='output co'>#&gt;   C1.start C1.end A1.start A1.end A2.start A2.end C2.start C2.end Program
+ chr1 MXE exon 787307 788090 . + ."</span><span class='op'>)</span>
+<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMisoMXE</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   C1.start C1.end A1.start A1.end A2.start A2.end C2.start C2.end Program
 #&gt; 1   764383 764484   776580 776753   783034 783186   787307 788090    MISO
 #&gt;   Event.type Chromosome Strand
 #&gt; 1        MXE       chr1      +</div><div class='input'>
 <span class='co'># retained intron (RI) event</span>
-<span class='no'>event</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='st'>"
+<span class='va'>event</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"
  chr1 RI gene 17233 17742 . - .
  chr1 RI mRNA 17233 17742 . - .
  chr1 RI exon 17233 17742 . - .
  chr1 RI mRNA 17233 17742 . - .
  chr1 RI exon 17233 17364 . - .
- chr1 RI exon 17601 17742 . - ."</span>)
-<span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>parseMisoRI</span>(<span class='no'>event</span>)</div><div class='output co'>#&gt;   C1.start C1.end A1.start A1.end A2.start A2.end C2.start C2.end Program
+ chr1 RI exon 17601 17742 . - ."</span><span class='op'>)</span>
+<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMisoRI</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   C1.start C1.end A1.start A1.end A2.start A2.end C2.start C2.end Program
 #&gt; 1    17742  17601       NA     NA       NA     NA    17364  17233    MISO
 #&gt;   Event.type Chromosome Strand
 #&gt; 1         RI       chr1      -</div><div class='input'>
 <span class='co'># alternative 5' splice site (A5SS) event</span>
-<span class='no'>event</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='st'>"
+<span class='va'>event</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"
  chr1 A5SS gene 17233 17742 . - .
  chr1 A5SS mRNA 17233 17742 . - .
  chr1 A5SS exon 17233 17368 . - .
  chr1 A5SS exon 17526 17742 . - .
  chr1 A5SS mRNA 17233 17742 . - .
  chr1 A5SS exon 17233 17368 . - .
- chr1 A5SS exon 17606 17742 . - ."</span>)
-<span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>parseMisoA5SS</span>(<span class='no'>event</span>)</div><div class='output co'>#&gt;   C1.start C1.end A1.start A1.end A2.start A2.end C2.start C2.end Program
+ chr1 A5SS exon 17606 17742 . - ."</span><span class='op'>)</span>
+<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMisoA5SS</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   C1.start C1.end A1.start A1.end A2.start A2.end C2.start C2.end Program
 #&gt; 1       NA     NA    17742  17526    17742  17606    17368  17233    MISO
 #&gt;   Event.type Chromosome Strand
 #&gt; 1       A5SS       chr1      -</div><div class='input'>
 <span class='co'># alternative 3' splice site (A3SS) event</span>
-<span class='no'>event</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='st'>"
+<span class='va'>event</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"
  chr1 A3SS gene 15796 16765 . - .
  chr1 A3SS mRNA 15796 16765 . - .
  chr1 A3SS exon 15796 15947 . - .
  chr1 A3SS exon 16607 16765 . - .
  chr1 A3SS mRNA 15796 16765 . - .
  chr1 A3SS exon 15796 15942 . - .
- chr1 A3SS exon 16607 16765 . - ."</span>)
-<span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>parseMisoA3SS</span>(<span class='no'>event</span>)</div><div class='output co'>#&gt;   C1.start C1.end A1.start A1.end A2.start A2.end C2.start C2.end Program
+ chr1 A3SS exon 16607 16765 . - ."</span><span class='op'>)</span>
+<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMisoA3SS</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   C1.start C1.end A1.start A1.end A2.start A2.end C2.start C2.end Program
 #&gt; 1    16765  16607    15947  15796    15942  15796       NA     NA    MISO
 #&gt;   Event.type Chromosome Strand
 #&gt; 1       A3SS       chr1      -</div><div class='input'>
 <span class='co'># Tandem UTR event</span>
-<span class='no'>event</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='st'>"
+<span class='va'>event</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"
  chr19 TandemUTR gene  10663759  10664625  .  -  .
  chr19 TandemUTR mRNA  10663759  10664625  .  -  .
  chr19 TandemUTR exon  10663759  10664625  .  -  .
  chr19 TandemUTR mRNA  10664223  10664625  .  -  .
- chr19 TandemUTR exon  10664223  10664625  .  -  ."</span>)
-<span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>parseMisoTandemUTR</span>(<span class='no'>event</span>)</div><div class='output co'>#&gt;   C1.start C1.end A1.start   A1.end A2.start   A2.end C2.start C2.end Program
+ chr19 TandemUTR exon  10664223  10664625  .  -  ."</span><span class='op'>)</span>
+<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMisoTandemUTR</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   C1.start C1.end A1.start   A1.end A2.start   A2.end C2.start C2.end Program
 #&gt; 1       NA     NA 10664625 10664223 10664625 10663759       NA     NA    MISO
 #&gt;   Event.type Chromosome Strand
 #&gt; 1  TandemUTR      chr19      -</div><div class='input'>
 <span class='co'># alternative first exon (AFE) event</span>
-<span class='no'>event</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='st'>"
+<span class='va'>event</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"
  chr12 AFE gene 57916659 57920171  .  +  .
  chr12 AFE mRNA 57919131 57920171  .  +  .
  chr12 AFE exon 57919131 57920171  .  +  .
  chr12 AFE mRNA 57916659 57918199  .  +  .
  chr12 AFE exon 57916659 57916794  .  +  .
  chr12 AFE exon 57917812 57917875  .  +  .
- chr12 AFE exon 57918063 57918199  .  +  ."</span>)
-<span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>parseMisoAFE</span>(<span class='no'>event</span>)</div><div class='output co'>#&gt;   C1.start C1.end A1.start   A1.end A2.start   A2.end C2.start C2.end Program
+ chr12 AFE exon 57918063 57918199  .  +  ."</span><span class='op'>)</span>
+<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMisoAFE</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   C1.start C1.end A1.start   A1.end A2.start   A2.end C2.start C2.end Program
 #&gt; 1       NA     NA 57919131 57920171 57918063 57918199       NA     NA    MISO
 #&gt;   Event.type Chromosome Strand
 #&gt; 1        AFE      chr12      +</div><div class='input'>
 <span class='co'># alternative last exon (ALE) event</span>
-<span class='no'>event</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='st'>"
+<span class='va'>event</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"
  chr6 ALE gene 30620579 30822593  .  +  .
  chr6 ALE mRNA 30822190 30822593  .  +  .
  chr6 ALE exon 30822190 30822593  .  +  .
  chr6 ALE mRNA 30620579 30620982  .  +  .
- chr6 ALE exon 30620579 30620982  .  +  ."</span>)
-<span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>parseMisoALE</span>(<span class='no'>event</span>)</div><div class='output co'>#&gt;   C1.start C1.end A1.start   A1.end A2.start   A2.end C2.start C2.end Program
+ chr6 ALE exon 30620579 30620982  .  +  ."</span><span class='op'>)</span>
+<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMisoALE</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   C1.start C1.end A1.start   A1.end A2.start   A2.end C2.start C2.end Program
 #&gt; 1       NA     NA 30822190 30822593 30620579 30620982       NA     NA    MISO
 #&gt;   Event.type Chromosome Strand
 #&gt; 1        ALE       chr6      +</div></pre>
@@ -355,7 +363,7 @@ strand</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

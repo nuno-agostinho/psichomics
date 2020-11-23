@@ -163,7 +163,7 @@
     <p>Get subjects from given samples</p>
     </div>
 
-    <pre class="usage"><span class='fu'>getSubjectFromSample</span>(<span class='no'>sampleId</span>, <span class='kw'>patientId</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>na</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>sampleInfo</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>getSubjectFromSample</span><span class='op'>(</span><span class='va'>sampleId</span>, patientId <span class='op'>=</span> <span class='cn'>NULL</span>, na <span class='op'>=</span> <span class='cn'>FALSE</span>, sampleInfo <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -204,12 +204,14 @@ respective subject identifiers</p></td>
 <code><a href='testGroupIndependence.html'>testGroupIndependence</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>samples</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='st'>"GTEX-"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"ABC"</span>, <span class='st'>"DEF"</span>, <span class='st'>"GHI"</span>, <span class='st'>"JKL"</span>, <span class='st'>"MNO"</span>), <span class='st'>"-sample"</span>)
-<span class='fu'>getSubjectFromSample</span>(<span class='no'>samples</span>)</div><div class='output co'>#&gt; GTEX-ABC-sample GTEX-DEF-sample GTEX-GHI-sample GTEX-JKL-sample GTEX-MNO-sample 
+    <pre class="examples"><div class='input'><span class='va'>samples</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"GTEX-"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ABC"</span>, <span class='st'>"DEF"</span>, <span class='st'>"GHI"</span>, <span class='st'>"JKL"</span>, <span class='st'>"MNO"</span><span class='op'>)</span>, <span class='st'>"-sample"</span><span class='op'>)</span>
+<span class='fu'>getSubjectFromSample</span><span class='op'>(</span><span class='va'>samples</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; GTEX-ABC-sample GTEX-DEF-sample GTEX-GHI-sample GTEX-JKL-sample GTEX-MNO-sample 
 #&gt;      "GTEX-ABC"      "GTEX-DEF"      "GTEX-GHI"      "GTEX-JKL"      "GTEX-MNO" </div><div class='input'>
 <span class='co'># Filter returned samples based on available subjects</span>
-<span class='no'>subjects</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='st'>"GTEX-"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"DEF"</span>, <span class='st'>"MNO"</span>))
-<span class='fu'>getSubjectFromSample</span>(<span class='no'>samples</span>, <span class='no'>subjects</span>)</div><div class='output co'>#&gt; GTEX-DEF-sample GTEX-MNO-sample 
+<span class='va'>subjects</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"GTEX-"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"DEF"</span>, <span class='st'>"MNO"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'>getSubjectFromSample</span><span class='op'>(</span><span class='va'>samples</span>, <span class='va'>subjects</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; GTEX-DEF-sample GTEX-MNO-sample 
 #&gt;      "GTEX-DEF"      "GTEX-MNO" </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -226,7 +228,7 @@ respective subject identifiers</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -163,7 +163,7 @@
     <p>Query the Ensembl REST API</p>
     </div>
 
-    <pre class="usage"><span class='fu'>queryEnsembl</span>(<span class='no'>path</span>, <span class='no'>query</span>, <span class='kw'>grch37</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>queryEnsembl</span><span class='op'>(</span><span class='va'>path</span>, <span class='va'>query</span>, grch37 <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -188,117 +188,122 @@ the most recent API</p></td>
     <p>Parsed response or <code>NULL</code> if no response</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>path</span>  <span class='kw'>&lt;-</span> <span class='st'>"overlap/region/human/7:140424943-140624564"</span>
-<span class='no'>query</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>feature</span> <span class='kw'>=</span> <span class='st'>"gene"</span>)
-<span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>queryEnsembl</span>(<span class='no'>path</span>, <span class='no'>query</span>, <span class='kw'>grch37</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt;                id         source external_name
-#&gt; 1 ENSG00000157764 ensembl_havana          BRAF
-#&gt; 2 ENSG00000271932        ensembl            U6
-#&gt;                            logic_name     start feature_type assembly_name
-#&gt; 1 ensembl_havana_gene_homo_sapiens_37 140419127         gene        GRCh37
-#&gt; 2               ncrna_homo_sapiens_37 140583872         gene        GRCh37
+    <pre class="examples"><div class='input'><span class='va'>path</span>  <span class='op'>&lt;-</span> <span class='st'>"overlap/region/human/7:140424943-140624564"</span>
+<span class='va'>query</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>feature <span class='op'>=</span> <span class='st'>"gene"</span><span class='op'>)</span>
+<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>queryEnsembl</span><span class='op'>(</span><span class='va'>path</span>, <span class='va'>query</span>, grch37 <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   version                          logic_name strand       end feature_type
+#&gt; 1       8 ensembl_havana_gene_homo_sapiens_37     -1 140624564         gene
+#&gt; 2       1               ncrna_homo_sapiens_37      1 140583978         gene
+#&gt;   assembly_name external_name        biotype         gene_id     start
+#&gt; 1        GRCh37          BRAF protein_coding ENSG00000157764 140419127
+#&gt; 2        GRCh37            U6          snRNA ENSG00000271932 140583872
+#&gt;           source              id
+#&gt; 1 ensembl_havana ENSG00000157764
+#&gt; 2        ensembl ENSG00000271932
 #&gt;                                                                   description
 #&gt; 1 v-raf murine sarcoma viral oncogene homolog B [Source:HGNC Symbol;Acc:1097]
 #&gt; 2                               U6 spliceosomal RNA [Source:RFAM;Acc:RF00026]
-#&gt;   strand seq_region_name version       end        biotype         gene_id
-#&gt; 1     -1               7       8 140624564 protein_coding ENSG00000157764
-#&gt; 2      1               7       1 140583978          snRNA ENSG00000271932</div><div class='input'>
-<span class='no'>path</span>  <span class='kw'>&lt;-</span> <span class='st'>"lookup/symbol/human/BRCA2"</span>
-<span class='no'>query</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>expand</span><span class='kw'>=</span><span class='fl'>1</span>)
-<span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>queryEnsembl</span>(<span class='no'>path</span>, <span class='no'>query</span>, <span class='kw'>grch37</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; $id
-#&gt; [1] "ENSG00000139618"
-#&gt; 
-#&gt; $db_type
-#&gt; [1] "core"
-#&gt; 
-#&gt; $strand
+#&gt;   seq_region_name
+#&gt; 1               7
+#&gt; 2               7</div><div class='input'>
+<span class='va'>path</span>  <span class='op'>&lt;-</span> <span class='st'>"lookup/symbol/human/BRCA2"</span>
+<span class='va'>query</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>expand<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>queryEnsembl</span><span class='op'>(</span><span class='va'>path</span>, <span class='va'>query</span>, grch37 <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $strand
 #&gt; [1] 1
 #&gt; 
 #&gt; $end
 #&gt; [1] 32973805
 #&gt; 
-#&gt; $display_name
-#&gt; [1] "BRCA2"
-#&gt; 
-#&gt; $source
-#&gt; [1] "ensembl_havana"
-#&gt; 
-#&gt; $biotype
-#&gt; [1] "protein_coding"
+#&gt; $version
+#&gt; [1] 10
 #&gt; 
 #&gt; $assembly_name
 #&gt; [1] "GRCh37"
 #&gt; 
-#&gt; $version
-#&gt; [1] 10
+#&gt; $id
+#&gt; [1] "ENSG00000139618"
+#&gt; 
+#&gt; $display_name
+#&gt; [1] "BRCA2"
 #&gt; 
 #&gt; $species
 #&gt; [1] "human"
 #&gt; 
-#&gt; $Transcript
-#&gt;   Translation.species Translation.length  Translation.id Translation.start
-#&gt; 1               human               3418 ENSP00000369497          32890598
-#&gt; 2               human                481 ENSP00000435699          32899266
-#&gt; 3               human                 64 ENSP00000433168          32945108
-#&gt; 4               human                186 ENSP00000434898          32953977
-#&gt; 5                &lt;NA&gt;                 NA            &lt;NA&gt;                NA
-#&gt; 6               human               3418 ENSP00000439902          32890598
-#&gt;   Translation.Parent Translation.end Translation.db_type
-#&gt; 1    ENST00000380152        32972907                core
-#&gt; 2    ENST00000530893        32907428                core
-#&gt; 3    ENST00000528762        32950807                core
-#&gt; 4    ENST00000470094        32970229                core
-#&gt; 5               &lt;NA&gt;              NA                &lt;NA&gt;
-#&gt; 6    ENST00000544455        32972907                core
-#&gt;   Translation.object_type              id         source db_type strand
-#&gt; 1             Translation ENST00000380152 ensembl_havana    core      1
-#&gt; 2             Translation ENST00000530893         havana    core      1
-#&gt; 3             Translation ENST00000528762         havana    core      1
-#&gt; 4             Translation ENST00000470094         havana    core      1
-#&gt; 5                    &lt;NA&gt; ENST00000533776         havana    core      1
-#&gt; 6             Translation ENST00000544455        ensembl    core      1
-#&gt;        end display_name is_canonical species version
-#&gt; 1 32973347    BRCA2-001            0   human       3
-#&gt; 2 32907428    BRCA2-003            0   human       2
-#&gt; 3 32953632    BRCA2-005            0   human       1
-#&gt; 4 32972409    BRCA2-002            0   human       1
-#&gt; 5 32972585    BRCA2-006            0   human       1
-#&gt; 6 32973805    BRCA2-201            1   human       1
-#&gt;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     Exon
-#&gt; 1                                                                           1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 32889804, 32890664, 32893462, 32899321, 32900287, 32900419, 32900750, 32903629, 32905167, 32907524, 32915333, 32918790, 32921033, 32929425, 32930746, 32932066, 32936830, 32937670, 32944694, 32945237, 32950928, 32953652, 32954050, 32954282, 32969070, 32971181, 32973347, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, 32889611, 32890559, 32893214, 32899213, 32900238, 32900379, 32900636, 32903580, 32905056, 32906409, 32910402, 32918695, 32920964, 32928998, 32930565, 32931879, 32936660, 32937316, 32944539, 32945093, 32950807, 32953454, 32953887, 32954144, 32968826, 32971035, 32972299, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, ENSE00001184784, ENSE00001484009, ENSE00003666217, ENSE00003659301, ENSE00000939162, ENSE00000939163, ENSE00000939164, ENSE00000939165, ENSE00000939166, ENSE00000939167, ENSE00000939168, ENSE00000939169, ENSE00000939171, ENSE00000939173, ENSE00000939174, ENSE00000939175, ENSE00001394102, ENSE00000939177, ENSE00000939178, ENSE00000939180, ENSE00003461148, ENSE00000939183, ENSE00000939185, ENSE00000939187, ENSE00000939189, ENSE00003560258, ENSE00001184789, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human
-#&gt; 2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     human, human, human, human, human, human, human, human, human, human, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, ENSE00002143308, ENSE00003339705, ENSE00003563161, ENSE00003616014, ENSE00000939162, ENSE00000939163, ENSE00000939164, ENSE00000939165, ENSE00000939166, ENSE00002163180, 32889642, 32890559, 32893214, 32899213, 32900238, 32900379, 32900636, 32903580, 32905056, 32906409, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 32889804, 32890660, 32893462, 32899321, 32900287, 32900419, 32900750, 32903629, 32905167, 32907428, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, core, core, core, core, core, core, core, core, core, core, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon
-#&gt; 3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 GRCh37, GRCh37, GRCh37, GRCh37, ENSE00002145385, ENSE00002167182, ENSE00003672885, ENSE00002191428, human, human, human, human, 1, 1, 1, 1, core, core, core, core, Exon, Exon, Exon, Exon, 1, 1, 1, 1, 32945237, 32949543, 32950928, 32953632, 13, 13, 13, 13, 32945108, 32949480, 32950807, 32953454
-#&gt; 4                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ENSE00001930817, ENSE00000939187, ENSE00000939189, ENSE00001926117, ENSE00003655009, ENSE00001907105, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, 1, 1, 1, 1, 1, 1, human, human, human, human, human, human, 1, 1, 1, 1, 1, 1, 32954050, 32954282, 32969070, 32970253, 32971181, 32972409, 13, 13, 13, 13, 13, 13, core, core, core, core, core, core, Exon, Exon, Exon, Exon, Exon, Exon, 32953977, 32954144, 32968826, 32970128, 32971035, 32972299
-#&gt; 5                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     core, core, Exon, Exon, 13, 13, 1, 1, 32971181, 32972585, 32970946, 32972299, GRCh37, GRCh37, ENSE00002187690, ENSE00002140263, 1, 1, human, human
-#&gt; 6 32889617, 32890559, 32893214, 32899213, 32900238, 32900379, 32900636, 32903580, 32905056, 32906409, 32910402, 32918695, 32920964, 32928998, 32930565, 32931879, 32936660, 32937316, 32944539, 32945093, 32950807, 32953454, 32953887, 32954144, 32968826, 32971035, 32972299, 32973746, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 32889804, 32890664, 32893462, 32899321, 32900287, 32900419, 32900750, 32903629, 32905167, 32907524, 32915333, 32918790, 32921033, 32929425, 32930746, 32932066, 32936830, 32937670, 32944694, 32945237, 32950928, 32953652, 32954050, 32954282, 32969070, 32971181, 32973347, 32973805, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 1, ENSE00002209788, ENSE00001484009, ENSE00003666217, ENSE00003659301, ENSE00000939162, ENSE00000939163, ENSE00000939164, ENSE00000939165, ENSE00000939166, ENSE00000939167, ENSE00000939168, ENSE00000939169, ENSE00000939171, ENSE00000939173, ENSE00000939174, ENSE00000939175, ENSE00001394102, ENSE00000939177, ENSE00000939178, ENSE00000939180, ENSE00003461148, ENSE00000939183, ENSE00000939185, ENSE00000939187, ENSE00000939189, ENSE00003560258, ENSE00001184789, ENSE00002264869, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37
-#&gt;   assembly_name                 biotype    start          Parent
-#&gt; 1        GRCh37          protein_coding 32889611 ENSG00000139618
-#&gt; 2        GRCh37          protein_coding 32889642 ENSG00000139618
-#&gt; 3        GRCh37 nonsense_mediated_decay 32945108 ENSG00000139618
-#&gt; 4        GRCh37 nonsense_mediated_decay 32953977 ENSG00000139618
-#&gt; 5        GRCh37         retained_intron 32970946 ENSG00000139618
-#&gt; 6        GRCh37          protein_coding 32889617 ENSG00000139618
-#&gt;                  logic_name object_type seq_region_name
-#&gt; 1 ensembl_havana_transcript  Transcript              13
-#&gt; 2    havana_homo_sapiens_37  Transcript              13
-#&gt; 3    havana_homo_sapiens_37  Transcript              13
-#&gt; 4    havana_homo_sapiens_37  Transcript              13
-#&gt; 5    havana_homo_sapiens_37  Transcript              13
-#&gt; 6   ensembl_homo_sapiens_37  Transcript              13
-#&gt; 
-#&gt; $object_type
-#&gt; [1] "Gene"
-#&gt; 
-#&gt; $seq_region_name
-#&gt; [1] "13"
+#&gt; $biotype
+#&gt; [1] "protein_coding"
 #&gt; 
 #&gt; $logic_name
 #&gt; [1] "ensembl_havana_gene_homo_sapiens_37"
 #&gt; 
+#&gt; $description
+#&gt; [1] "breast cancer 2, early onset [Source:HGNC Symbol;Acc:1101]"
+#&gt; 
+#&gt; $source
+#&gt; [1] "ensembl_havana"
+#&gt; 
+#&gt; $Transcript
+#&gt;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     Exon
+#&gt; 1                                                                           1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 32889804, 32890664, 32893462, 32899321, 32900287, 32900419, 32900750, 32903629, 32905167, 32907524, 32915333, 32918790, 32921033, 32929425, 32930746, 32932066, 32936830, 32937670, 32944694, 32945237, 32950928, 32953652, 32954050, 32954282, 32969070, 32971181, 32973347, ENSE00001184784, ENSE00001484009, ENSE00003666217, ENSE00003659301, ENSE00000939162, ENSE00000939163, ENSE00000939164, ENSE00000939165, ENSE00000939166, ENSE00000939167, ENSE00000939168, ENSE00000939169, ENSE00000939171, ENSE00000939173, ENSE00000939174, ENSE00000939175, ENSE00001394102, ENSE00000939177, ENSE00000939178, ENSE00000939180, ENSE00003461148, ENSE00000939183, ENSE00000939185, ENSE00000939187, ENSE00000939189, ENSE00003560258, ENSE00001184789, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, 32889611, 32890559, 32893214, 32899213, 32900238, 32900379, 32900636, 32903580, 32905056, 32906409, 32910402, 32918695, 32920964, 32928998, 32930565, 32931879, 32936660, 32937316, 32944539, 32945093, 32950807, 32953454, 32953887, 32954144, 32968826, 32971035, 32972299, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human
+#&gt; 2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     32889804, 32890660, 32893462, 32899321, 32900287, 32900419, 32900750, 32903629, 32905167, 32907428, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, ENSE00002143308, ENSE00003339705, ENSE00003563161, ENSE00003616014, ENSE00000939162, ENSE00000939163, ENSE00000939164, ENSE00000939165, ENSE00000939166, ENSE00002163180, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, core, core, core, core, core, core, core, core, core, core, human, human, human, human, human, human, human, human, human, human, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 32889642, 32890559, 32893214, 32899213, 32900238, 32900379, 32900636, 32903580, 32905056, 32906409, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon
+#&gt; 3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 core, core, core, core, human, human, human, human, 13, 13, 13, 13, 32945108, 32949480, 32950807, 32953454, Exon, Exon, Exon, Exon, 32945237, 32949543, 32950928, 32953632, 1, 1, 1, 1, GRCh37, GRCh37, GRCh37, GRCh37, ENSE00002145385, ENSE00002167182, ENSE00003672885, ENSE00002191428, 1, 1, 1, 1
+#&gt; 4                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             core, core, core, core, core, core, human, human, human, human, human, human, 13, 13, 13, 13, 13, 13, 32953977, 32954144, 32968826, 32970128, 32971035, 32972299, Exon, Exon, Exon, Exon, Exon, Exon, 32954050, 32954282, 32969070, 32970253, 32971181, 32972409, 1, 1, 1, 1, 1, 1, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, ENSE00001930817, ENSE00000939187, ENSE00000939189, ENSE00001926117, ENSE00003655009, ENSE00001907105, 1, 1, 1, 1, 1, 1
+#&gt; 5                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     1, 1, 32971181, 32972585, ENSE00002187690, ENSE00002140263, GRCh37, GRCh37, 1, 1, core, core, 13, 13, human, human, 32970946, 32972299, Exon, Exon
+#&gt; 6 core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, core, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, human, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 32889617, 32890559, 32893214, 32899213, 32900238, 32900379, 32900636, 32903580, 32905056, 32906409, 32910402, 32918695, 32920964, 32928998, 32930565, 32931879, 32936660, 32937316, 32944539, 32945093, 32950807, 32953454, 32953887, 32954144, 32968826, 32971035, 32972299, 32973746, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, Exon, 32889804, 32890664, 32893462, 32899321, 32900287, 32900419, 32900750, 32903629, 32905167, 32907524, 32915333, 32918790, 32921033, 32929425, 32930746, 32932066, 32936830, 32937670, 32944694, 32945237, 32950928, 32953652, 32954050, 32954282, 32969070, 32971181, 32973347, 32973805, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 1, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, GRCh37, ENSE00002209788, ENSE00001484009, ENSE00003666217, ENSE00003659301, ENSE00000939162, ENSE00000939163, ENSE00000939164, ENSE00000939165, ENSE00000939166, ENSE00000939167, ENSE00000939168, ENSE00000939169, ENSE00000939171, ENSE00000939173, ENSE00000939174, ENSE00000939175, ENSE00001394102, ENSE00000939177, ENSE00000939178, ENSE00000939180, ENSE00003461148, ENSE00000939183, ENSE00000939185, ENSE00000939187, ENSE00000939189, ENSE00003560258, ENSE00001184789, ENSE00002264869, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+#&gt;           source is_canonical db_type seq_region_name    start object_type
+#&gt; 1 ensembl_havana            0    core              13 32889611  Transcript
+#&gt; 2         havana            0    core              13 32889642  Transcript
+#&gt; 3         havana            0    core              13 32945108  Transcript
+#&gt; 4         havana            0    core              13 32953977  Transcript
+#&gt; 5         havana            0    core              13 32970946  Transcript
+#&gt; 6        ensembl            1    core              13 32889617  Transcript
+#&gt;        end version assembly_name              id          Parent strand
+#&gt; 1 32973347       3        GRCh37 ENST00000380152 ENSG00000139618      1
+#&gt; 2 32907428       2        GRCh37 ENST00000530893 ENSG00000139618      1
+#&gt; 3 32953632       1        GRCh37 ENST00000528762 ENSG00000139618      1
+#&gt; 4 32972409       1        GRCh37 ENST00000470094 ENSG00000139618      1
+#&gt; 5 32972585       1        GRCh37 ENST00000533776 ENSG00000139618      1
+#&gt; 6 32973805       1        GRCh37 ENST00000544455 ENSG00000139618      1
+#&gt;   Translation.species Translation.length Translation.db_type
+#&gt; 1               human               3418                core
+#&gt; 2               human                481                core
+#&gt; 3               human                 64                core
+#&gt; 4               human                186                core
+#&gt; 5                &lt;NA&gt;                 NA                &lt;NA&gt;
+#&gt; 6               human               3418                core
+#&gt;   Translation.object_type Translation.start  Translation.id Translation.end
+#&gt; 1             Translation          32890598 ENSP00000369497        32972907
+#&gt; 2             Translation          32899266 ENSP00000435699        32907428
+#&gt; 3             Translation          32945108 ENSP00000433168        32950807
+#&gt; 4             Translation          32953977 ENSP00000434898        32970229
+#&gt; 5                    &lt;NA&gt;                NA            &lt;NA&gt;              NA
+#&gt; 6             Translation          32890598 ENSP00000439902        32972907
+#&gt;   Translation.Parent                 biotype                logic_name species
+#&gt; 1    ENST00000380152          protein_coding ensembl_havana_transcript   human
+#&gt; 2    ENST00000530893          protein_coding    havana_homo_sapiens_37   human
+#&gt; 3    ENST00000528762 nonsense_mediated_decay    havana_homo_sapiens_37   human
+#&gt; 4    ENST00000470094 nonsense_mediated_decay    havana_homo_sapiens_37   human
+#&gt; 5               &lt;NA&gt;         retained_intron    havana_homo_sapiens_37   human
+#&gt; 6    ENST00000544455          protein_coding   ensembl_homo_sapiens_37   human
+#&gt;   display_name
+#&gt; 1    BRCA2-001
+#&gt; 2    BRCA2-003
+#&gt; 3    BRCA2-005
+#&gt; 4    BRCA2-002
+#&gt; 5    BRCA2-006
+#&gt; 6    BRCA2-201
+#&gt; 
 #&gt; $start
 #&gt; [1] 32889611
 #&gt; 
-#&gt; $description
-#&gt; [1] "breast cancer 2, early onset [Source:HGNC Symbol;Acc:1101]"
+#&gt; $object_type
+#&gt; [1] "Gene"
+#&gt; 
+#&gt; $db_type
+#&gt; [1] "core"
+#&gt; 
+#&gt; $seq_region_name
+#&gt; [1] "13"
 #&gt; </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -315,7 +320,7 @@ the most recent API</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

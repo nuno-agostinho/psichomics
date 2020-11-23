@@ -163,14 +163,14 @@
     <p>Perform statistical analyses</p>
     </div>
 
-    <pre class="usage"><span class='fu'>diffAnalyses</span>(
-  <span class='no'>data</span>,
-  <span class='kw'>groups</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>analyses</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"wilcoxRankSum"</span>, <span class='st'>"ttest"</span>, <span class='st'>"kruskal"</span>, <span class='st'>"levene"</span>, <span class='st'>"fligner"</span>),
-  <span class='kw'>pvalueAdjust</span> <span class='kw'>=</span> <span class='st'>"BH"</span>,
-  <span class='kw'>geneExpr</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>inputID</span> <span class='kw'>=</span> <span class='st'>"sparklineInput"</span>
-)</pre>
+    <pre class="usage"><span class='fu'>diffAnalyses</span><span class='op'>(</span>
+  <span class='va'>data</span>,
+  groups <span class='op'>=</span> <span class='cn'>NULL</span>,
+  analyses <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"wilcoxRankSum"</span>, <span class='st'>"ttest"</span>, <span class='st'>"kruskal"</span>, <span class='st'>"levene"</span>, <span class='st'>"fligner"</span><span class='op'>)</span>,
+  pvalueAdjust <span class='op'>=</span> <span class='st'>"BH"</span>,
+  geneExpr <span class='op'>=</span> <span class='cn'>NULL</span>,
+  inputID <span class='op'>=</span> <span class='st'>"sparklineInput"</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -241,13 +241,15 @@ event (Shiny only)</p></td>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events</span>
-<span class='no'>eventType</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SE"</span>, <span class='st'>"MXE"</span>)
-<span class='no'>annot</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span>(<span class='st'>"ex_splicing_annotation.RDS"</span>)
-<span class='no'>junctionQuant</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span>(<span class='st'>"ex_junctionQuant.RDS"</span>)
+<span class='va'>eventType</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SE"</span>, <span class='st'>"MXE"</span><span class='op'>)</span>
+<span class='va'>annot</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_splicing_annotation.RDS"</span><span class='op'>)</span>
+<span class='va'>junctionQuant</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_junctionQuant.RDS"</span><span class='op'>)</span>
 
-<span class='no'>psi</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='quantifySplicing.html'>quantifySplicing</a></span>(<span class='no'>annot</span>, <span class='no'>junctionQuant</span>, <span class='kw'>eventType</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SE"</span>, <span class='st'>"MXE"</span>))</div><div class='output co'>#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% 
-#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </div><div class='input'><span class='no'>group</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='st'>"Normal"</span>, <span class='fl'>3</span>), <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='st'>"Tumour"</span>, <span class='fl'>3</span>))
-<span class='fu'>diffAnalyses</span>(<span class='no'>psi</span>, <span class='no'>group</span>)</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.0375 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.0125 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.000478 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.00147 secs</span></div><div class='output co'>#&gt;                                                    Event type Chromosome Strand
+<span class='va'>psi</span> <span class='op'>&lt;-</span> <span class='fu'><a href='quantifySplicing.html'>quantifySplicing</a></span><span class='op'>(</span><span class='va'>annot</span>, <span class='va'>junctionQuant</span>, eventType<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SE"</span>, <span class='st'>"MXE"</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% 
+#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </div><div class='input'><span class='va'>group</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>"Normal"</span>, <span class='fl'>3</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>"Tumour"</span>, <span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'>diffAnalyses</span><span class='op'>(</span><span class='va'>psi</span>, <span class='va'>group</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.0372 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.0133 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.000479 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.00153 secs</span></div><div class='output co'>#&gt;                                                    Event type Chromosome Strand
 #&gt; SE_1_+_32_35_37_38_ACTN1                    Skipped exon (SE)          1      +
 #&gt; MXE_1_+_32_35_37_38_40_42_ACTN1 Mutually exclusive exon (MXE)          1      +
 #&gt; SE_2_+_32_35_37_38_ALDOA                    Skipped exon (SE)          2      +
@@ -472,7 +474,7 @@ event (Shiny only)</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

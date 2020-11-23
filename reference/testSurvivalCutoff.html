@@ -163,15 +163,15 @@
     <p>Test the survival difference between two survival groups given a cutoff</p>
     </div>
 
-    <pre class="usage"><span class='fu'>testSurvivalCutoff</span>(
-  <span class='no'>cutoff</span>,
-  <span class='no'>data</span>,
-  <span class='kw'>filter</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='no'>clinical</span>,
-  <span class='no'>...</span>,
-  <span class='kw'>session</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>survivalInfo</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>testSurvivalCutoff</span><span class='op'>(</span>
+  <span class='va'>cutoff</span>,
+  <span class='va'>data</span>,
+  filter <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  <span class='va'>clinical</span>,
+  <span class='va'>...</span>,
+  session <span class='op'>=</span> <span class='cn'>NULL</span>,
+  survivalInfo <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -194,7 +194,7 @@
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Arguments passed on to <code><a href='processSurvTerms.html'>processSurvTerms</a></code></p><dl'>
+      <td><p>Arguments passed on to <code><a href='processSurvTerms.html'>processSurvTerms</a></code></p><dl>
     <dt><code>censoring</code></dt><dd><p>Character: censor using <code>left</code>, <code>right</code>,
 <code>interval</code> or <code>interval2</code></p></dd>
     <dt><code>scale</code></dt><dd><p>Character: rescale the survival time to <code>days</code>,
@@ -242,7 +242,7 @@ interval (only relevant for interval censoring)</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

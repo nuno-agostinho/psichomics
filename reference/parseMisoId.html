@@ -163,7 +163,7 @@
     <p>Parse MISO's alternative splicing event identifier</p>
     </div>
 
-    <pre class="usage"><span class='fu'>parseMisoId</span>(<span class='no'>id</span>)</pre>
+    <pre class="usage"><span class='fu'>parseMisoId</span><span class='op'>(</span><span class='va'>id</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -179,11 +179,12 @@
     <p>Character with the parsed ID</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>id</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(
+    <pre class="examples"><div class='input'><span class='va'>id</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span>
     <span class='st'>"ID=ENSMUSG00000026150.chr1:82723803:82723911:+@chr1:82724642:82724813:"</span>,
     <span class='st'>"+@chr1:82725791:82726011:+.B;Parent=ENSMUSG00000026150.chr1:82723803:"</span>,
-    <span class='st'>"82723911:+@chr1:82724642:82724813:+@chr1:82725791:82726011:+"</span>)
-<span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>parseMisoId</span>(<span class='no'>id</span>)</div><div class='output co'>#&gt; [1] "ENSMUSG00000026150.chr1:82723803:82723911:+@chr1:82724642:82724813:+@chr1:82725791:82726011:+.B"</div></pre>
+    <span class='st'>"82723911:+@chr1:82724642:82724813:+@chr1:82725791:82726011:+"</span><span class='op'>)</span>
+<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMisoId</span><span class='op'>(</span><span class='va'>id</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "ENSMUSG00000026150.chr1:82723803:82723911:+@chr1:82724642:82724813:+@chr1:82725791:82726011:+.B"</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -199,7 +200,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

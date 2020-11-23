@@ -163,15 +163,15 @@
     <p>Plot survival curves</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plotSurvivalCurves</span>(
-  <span class='no'>surv</span>,
-  <span class='kw'>mark</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>interval</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>pvalue</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"Survival analysis"</span>,
-  <span class='kw'>scale</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>auto</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>plotSurvivalCurves</span><span class='op'>(</span>
+  <span class='va'>surv</span>,
+  mark <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  interval <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  pvalue <span class='op'>=</span> <span class='cn'>NULL</span>,
+  title <span class='op'>=</span> <span class='st'>"Survival analysis"</span>,
+  scale <span class='op'>=</span> <span class='cn'>NULL</span>,
+  auto <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -224,9 +224,10 @@ only the bare minimum (<code>FALSE</code>)?</p></td>
 <code><a href='testSurvival.html'>testSurvival</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='st'>"survival"</span>)
-<span class='no'>fit</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/survival/man/survfit.html'>survfit</a></span>(<span class='fu'><a href='https://rdrr.io/pkg/survival/man/Surv.html'>Surv</a></span>(<span class='no'>time</span>, <span class='no'>status</span>) ~ <span class='no'>x</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>aml</span>)
-<span class='fu'>plotSurvivalCurves</span>(<span class='no'>fit</span>)</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='st'><a href='https://github.com/therneau/survival'>"survival"</a></span><span class='op'>)</span>
+<span class='va'>fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/survival/man/survfit.html'>survfit</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/survival/man/Surv.html'>Surv</a></span><span class='op'>(</span><span class='va'>time</span>, <span class='va'>status</span><span class='op'>)</span> <span class='op'>~</span> <span class='va'>x</span>, data <span class='op'>=</span> <span class='va'>aml</span><span class='op'>)</span>
+<span class='fu'>plotSurvivalCurves</span><span class='op'>(</span><span class='va'>fit</span><span class='op'>)</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -242,7 +243,7 @@ only the bare minimum (<code>FALSE</code>)?</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

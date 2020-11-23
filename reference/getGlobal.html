@@ -163,113 +163,113 @@
     <p>Get or set globally accessible elements</p>
     </div>
 
-    <pre class="usage"><span class='fu'>getGlobal</span>(<span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>(), <span class='no'>...</span>, <span class='kw'>sep</span> <span class='kw'>=</span> <span class='st'>"_"</span>)
+    <pre class="usage"><span class='fu'>getGlobal</span><span class='op'>(</span>category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span>, <span class='va'>...</span>, sep <span class='op'>=</span> <span class='st'>"_"</span><span class='op'>)</span>
 
-<span class='fu'>setGlobal</span>(<span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>(), <span class='no'>...</span>, <span class='no'>value</span>, <span class='kw'>sep</span> <span class='kw'>=</span> <span class='st'>"_"</span>)
+<span class='fu'>setGlobal</span><span class='op'>(</span>category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span>, <span class='va'>...</span>, <span class='va'>value</span>, sep <span class='op'>=</span> <span class='st'>"_"</span><span class='op'>)</span>
 
-<span class='fu'>setData</span>(<span class='no'>data</span>)
+<span class='fu'>setData</span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span>
 
-<span class='fu'>setDataTable</span>(<span class='no'>name</span>, <span class='no'>value</span>, <span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>setDataTable</span><span class='op'>(</span><span class='va'>name</span>, <span class='va'>value</span>, category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>getAutoNavigation</span>()
+<span class='fu'>getAutoNavigation</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>setAutoNavigation</span>(<span class='no'>auto</span>)
+<span class='fu'>setAutoNavigation</span><span class='op'>(</span><span class='va'>auto</span><span class='op'>)</span>
 
-<span class='fu'>getCores</span>()
+<span class='fu'>getCores</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>setCores</span>(<span class='no'>integer</span>)
+<span class='fu'>setCores</span><span class='op'>(</span><span class='va'>integer</span><span class='op'>)</span>
 
-<span class='fu'>getSignificant</span>()
+<span class='fu'>getSignificant</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>setSignificant</span>(<span class='no'>integer</span>)
+<span class='fu'>setSignificant</span><span class='op'>(</span><span class='va'>integer</span><span class='op'>)</span>
 
-<span class='fu'>getPrecision</span>()
+<span class='fu'>getPrecision</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>setPrecision</span>(<span class='no'>integer</span>)
+<span class='fu'>setPrecision</span><span class='op'>(</span><span class='va'>integer</span><span class='op'>)</span>
 
-<span class='fu'>getASevents</span>()
+<span class='fu'>getASevents</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>getASevent</span>()
+<span class='fu'>getASevent</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>setASevent</span>(<span class='no'>event</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+<span class='fu'>setASevent</span><span class='op'>(</span><span class='va'>event</span>, data <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>getEvent</span>()
+<span class='fu'>getEvent</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>setEvent</span>(<span class='no'>event</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+<span class='fu'>setEvent</span><span class='op'>(</span><span class='va'>event</span>, data <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>getGenes</span>()
+<span class='fu'>getGenes</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>getCategories</span>()
+<span class='fu'>getCategories</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>getCategory</span>()
+<span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>setCategory</span>(<span class='no'>category</span>)
+<span class='fu'>setCategory</span><span class='op'>(</span><span class='va'>category</span><span class='op'>)</span>
 
-<span class='fu'>getCategoryData</span>()
+<span class='fu'>getCategoryData</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>getActiveDataset</span>()
+<span class='fu'>getActiveDataset</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>setActiveDataset</span>(<span class='no'>dataset</span>)
+<span class='fu'>setActiveDataset</span><span class='op'>(</span><span class='va'>dataset</span><span class='op'>)</span>
 
-<span class='fu'>getClinicalData</span>(<span class='kw'>attrs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+<span class='fu'>getClinicalData</span><span class='op'>(</span>attrs <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>getSubjectId</span>()
+<span class='fu'>getSubjectId</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>getSubjectAttributes</span>()
+<span class='fu'>getSubjectAttributes</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>getSampleInfo</span>()
+<span class='fu'>getSampleInfo</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>setSampleInfo</span>(<span class='no'>value</span>, <span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>setSampleInfo</span><span class='op'>(</span><span class='va'>value</span>, category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>getSampleId</span>()
+<span class='fu'>getSampleId</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>getSampleAttributes</span>()
+<span class='fu'>getSampleAttributes</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>getJunctionQuantification</span>(<span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>getJunctionQuantification</span><span class='op'>(</span>category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>getGeneExpression</span>(<span class='kw'>item</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>(), <span class='kw'>EList</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+<span class='fu'>getGeneExpression</span><span class='op'>(</span>item <span class='op'>=</span> <span class='cn'>NULL</span>, category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span>, EList <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 
-<span class='fu'>setNormalisedGeneExpression</span>(<span class='no'>geneExpr</span>, <span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>setNormalisedGeneExpression</span><span class='op'>(</span><span class='va'>geneExpr</span>, category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>getInclusionLevels</span>()
+<span class='fu'>getInclusionLevels</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>setInclusionLevels</span>(<span class='no'>incLevels</span>, <span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>setInclusionLevels</span><span class='op'>(</span><span class='va'>incLevels</span>, category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>getInclusionLevelsSummaryStatsCache</span>(<span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>getInclusionLevelsSummaryStatsCache</span><span class='op'>(</span>category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>setInclusionLevelsSummaryStatsCache</span>(<span class='no'>cache</span>, <span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>setInclusionLevelsSummaryStatsCache</span><span class='op'>(</span><span class='va'>cache</span>, category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>getPCA</span>(<span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>getPCA</span><span class='op'>(</span>category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>setPCA</span>(<span class='no'>pca</span>, <span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>setPCA</span><span class='op'>(</span><span class='va'>pca</span>, category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>getICA</span>(<span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>getICA</span><span class='op'>(</span>category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>setICA</span>(<span class='no'>ica</span>, <span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>setICA</span><span class='op'>(</span><span class='va'>ica</span>, category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>getCorrelation</span>(<span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>getCorrelation</span><span class='op'>(</span>category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>setCorrelation</span>(<span class='no'>correlation</span>, <span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>setCorrelation</span><span class='op'>(</span><span class='va'>correlation</span>, category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>getGroupIndependenceTesting</span>(<span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>getGroupIndependenceTesting</span><span class='op'>(</span>category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>setGroupIndependenceTesting</span>(<span class='no'>groupIndependenceTesting</span>, <span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>setGroupIndependenceTesting</span><span class='op'>(</span><span class='va'>groupIndependenceTesting</span>, category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>getSpecies</span>(<span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>getSpecies</span><span class='op'>(</span>category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>setSpecies</span>(<span class='no'>species</span>, <span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>setSpecies</span><span class='op'>(</span><span class='va'>species</span>, category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>getAssemblyVersion</span>(<span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>getAssemblyVersion</span><span class='op'>(</span>category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>setAssemblyVersion</span>(<span class='no'>assembly</span>, <span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>setAssemblyVersion</span><span class='op'>(</span><span class='va'>assembly</span>, category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>getAnnotationName</span>(<span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>getAnnotationName</span><span class='op'>(</span>category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>setAnnotationName</span>(<span class='no'>annotName</span>, <span class='kw'>category</span> <span class='kw'>=</span> <span class='fu'>getCategory</span>())
+<span class='fu'>setAnnotationName</span><span class='op'>(</span><span class='va'>annotName</span>, category <span class='op'>=</span> <span class='fu'>getCategory</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>getURLtoDownload</span>()
+<span class='fu'>getURLtoDownload</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>setURLtoDownload</span>(<span class='no'>url</span>)</pre>
+<span class='fu'>setURLtoDownload</span><span class='op'>(</span><span class='va'>url</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -407,7 +407,7 @@ results</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

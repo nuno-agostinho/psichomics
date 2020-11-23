@@ -163,19 +163,19 @@
     <p>Process survival curves terms to calculate survival curves</p>
     </div>
 
-    <pre class="usage"><span class='fu'>processSurvTerms</span>(
-  <span class='no'>clinical</span>,
-  <span class='no'>censoring</span>,
-  <span class='no'>event</span>,
-  <span class='no'>timeStart</span>,
-  <span class='kw'>timeStop</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>formulaStr</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>coxph</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>scale</span> <span class='kw'>=</span> <span class='st'>"days"</span>,
-  <span class='kw'>followup</span> <span class='kw'>=</span> <span class='st'>"days_to_last_followup"</span>,
-  <span class='kw'>survTime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
-)</pre>
+    <pre class="usage"><span class='fu'>processSurvTerms</span><span class='op'>(</span>
+  <span class='va'>clinical</span>,
+  <span class='va'>censoring</span>,
+  <span class='va'>event</span>,
+  <span class='va'>timeStart</span>,
+  timeStop <span class='op'>=</span> <span class='cn'>NULL</span>,
+  group <span class='op'>=</span> <span class='cn'>NULL</span>,
+  formulaStr <span class='op'>=</span> <span class='cn'>NULL</span>,
+  coxph <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  scale <span class='op'>=</span> <span class='st'>"days"</span>,
+  followup <span class='op'>=</span> <span class='st'>"days_to_last_followup"</span>,
+  survTime <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -260,29 +260,30 @@ the <code>survTime</code> argument of this function (see Examples).</p>
 <code><a href='testSurvival.html'>testSurvival</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>clinical</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='st'>"2549   NA ii  female
+    <pre class="examples"><div class='input'><span class='va'>clinical</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"2549   NA ii  female
                                 840   NA i   female
                                  NA 1204 iv    male
                                  NA  383 iv  female
                                1293   NA iii   male
-                                 NA 1355 ii    male"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='no'>clinical</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"patient.days_to_last_followup"</span>,
+                                 NA 1355 ii    male"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>clinical</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"patient.days_to_last_followup"</span>,
                      <span class='st'>"patient.days_to_death"</span>,
                      <span class='st'>"patient.stage_event.pathologic_stage"</span>,
-                     <span class='st'>"patient.gender"</span>)
-<span class='no'>timeStart</span>  <span class='kw'>&lt;-</span> <span class='st'>"days_to_death"</span>
-<span class='no'>event</span>      <span class='kw'>&lt;-</span> <span class='st'>"days_to_death"</span>
-<span class='no'>formulaStr</span> <span class='kw'>&lt;-</span> <span class='st'>"patient.stage_event.pathologic_stage + patient.gender"</span>
-<span class='no'>survTerms</span>  <span class='kw'>&lt;-</span> <span class='fu'>processSurvTerms</span>(<span class='no'>clinical</span>, <span class='kw'>censoring</span><span class='kw'>=</span><span class='st'>"right"</span>, <span class='no'>event</span>, <span class='no'>timeStart</span>,
-                               <span class='kw'>formulaStr</span><span class='kw'>=</span><span class='no'>formulaStr</span>)
+                     <span class='st'>"patient.gender"</span><span class='op'>)</span>
+<span class='va'>timeStart</span>  <span class='op'>&lt;-</span> <span class='st'>"days_to_death"</span>
+<span class='va'>event</span>      <span class='op'>&lt;-</span> <span class='st'>"days_to_death"</span>
+<span class='va'>formulaStr</span> <span class='op'>&lt;-</span> <span class='st'>"patient.stage_event.pathologic_stage + patient.gender"</span>
+<span class='va'>survTerms</span>  <span class='op'>&lt;-</span> <span class='fu'>processSurvTerms</span><span class='op'>(</span><span class='va'>clinical</span>, censoring<span class='op'>=</span><span class='st'>"right"</span>, <span class='va'>event</span>, <span class='va'>timeStart</span>,
+                               formulaStr<span class='op'>=</span><span class='va'>formulaStr</span><span class='op'>)</span>
 
 <span class='co'># If running multiple times, consider calculating survTime only once</span>
-<span class='no'>survTime</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='getAttributesTime.html'>getAttributesTime</a></span>(<span class='no'>clinical</span>, <span class='no'>event</span>, <span class='no'>timeStart</span>)
-<span class='kw'>for</span> (<span class='no'>i</span> <span class='kw'>in</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>5</span>)) {
-  <span class='no'>survTerms</span> <span class='kw'>&lt;-</span> <span class='fu'>processSurvTerms</span>(<span class='no'>clinical</span>, <span class='kw'>censoring</span><span class='kw'>=</span><span class='st'>"right"</span>, <span class='no'>event</span>,
-                                <span class='no'>timeStart</span>, <span class='kw'>formulaStr</span><span class='kw'>=</span><span class='no'>formulaStr</span>,
-                                <span class='kw'>survTime</span><span class='kw'>=</span><span class='no'>survTime</span>)
-}</div></pre>
+<span class='va'>survTime</span> <span class='op'>&lt;-</span> <span class='fu'><a href='getAttributesTime.html'>getAttributesTime</a></span><span class='op'>(</span><span class='va'>clinical</span>, <span class='va'>event</span>, <span class='va'>timeStart</span><span class='op'>)</span>
+<span class='kw'>for</span> <span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>survTerms</span> <span class='op'>&lt;-</span> <span class='fu'>processSurvTerms</span><span class='op'>(</span><span class='va'>clinical</span>, censoring<span class='op'>=</span><span class='st'>"right"</span>, <span class='va'>event</span>,
+                                <span class='va'>timeStart</span>, formulaStr<span class='op'>=</span><span class='va'>formulaStr</span>,
+                                survTime<span class='op'>=</span><span class='va'>survTime</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -298,7 +299,7 @@ the <code>survTime</code> argument of this function (see Examples).</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

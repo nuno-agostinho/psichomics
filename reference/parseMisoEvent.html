@@ -163,7 +163,7 @@
     <p>Parse an alternative splicing event from MISO</p>
     </div>
 
-    <pre class="usage"><span class='fu'>parseMisoEvent</span>(<span class='no'>event</span>)</pre>
+    <pre class="usage"><span class='fu'>parseMisoEvent</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -187,7 +187,7 @@ files)</p></td>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># example of alternative splicing event: skipped exon (SE)</span>
-<span class='no'>event</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='st'>"
+<span class='va'>event</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"
   chr1 SE gene 16854 18061 . - .
   chr1 SE mRNA 16854 18061 . - .
   chr1 SE exon 16854 17055 . - .
@@ -195,8 +195,9 @@ files)</p></td>
   chr1 SE exon 17915 18061 . - .
   chr1 SE mRNA 16854 18061 . - .
   chr1 SE exon 16854 17955 . - .
-  chr1 SE exon 17915 18061 . - ."</span>)
-<span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>parseMisoEvent</span>(<span class='no'>event</span>)</div><div class='output co'>#&gt;   C1.start C1.end A1.start A1.end A2.start A2.end C2.start C2.end Program
+  chr1 SE exon 17915 18061 . - ."</span><span class='op'>)</span>
+<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMisoEvent</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   C1.start C1.end A1.start A1.end A2.start A2.end C2.start C2.end Program
 #&gt; 1    18061  17915    17742  17233       NA     NA    17055  16854    MISO
 #&gt;   Event.type Chromosome Strand
 #&gt; 1         SE       chr1      -</div></pre>
@@ -215,7 +216,7 @@ files)</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

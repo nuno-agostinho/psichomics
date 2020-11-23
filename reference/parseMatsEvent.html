@@ -163,7 +163,7 @@
     <p>Parse alternative splicing events from MATS</p>
     </div>
 
-    <pre class="usage"><span class='fu'>parseMatsEvent</span>(<span class='no'>event</span>, <span class='no'>event_type</span>)</pre>
+    <pre class="usage"><span class='fu'>parseMatsEvent</span><span class='op'>(</span><span class='va'>event</span>, <span class='va'>event_type</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -194,12 +194,13 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># MATS event (alternative 3' splice site)</span>
-<span class='no'>event</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='st'>"
+<span class='va'>event</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"
      2 ENSG00000166012 TAF1D chr11 - 93466515 93466671 93466515 93466563 93467790 93467826
      5 ENSG00000166012 TAF1D chr11 - 93466515 93466671 93466515 93466585 93467790 93467826
      6 ENSG00000166012 TAF1D chr11 - 93466515 93466585 93466515 93466563 93467790 93467826
-"</span>)
-<span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>parseMatsEvent</span>(<span class='no'>event</span>, <span class='st'>"A3SS"</span>)</div><div class='output co'>#&gt;   Program  Gene Chromosome Strand Event.type      Event.ID C1.start   C1.end
+"</span><span class='op'>)</span>
+<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMatsEvent</span><span class='op'>(</span><span class='va'>event</span>, <span class='st'>"A3SS"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   Program  Gene Chromosome Strand Event.type      Event.ID C1.start   C1.end
 #&gt; 1    MATS TAF1D      chr11      -       A3SS unassigned_id 93467826 93467790
 #&gt; 2    MATS TAF1D      chr11      -       A3SS unassigned_id 93467826 93467790
 #&gt; 3    MATS TAF1D      chr11      -       A3SS unassigned_id 93467826 93467790
@@ -222,7 +223,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

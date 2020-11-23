@@ -167,19 +167,19 @@ samples of each data series (if <code>data</code> contains names or column names
 those will be used as sample names and also appear in the tooltip).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plotDistribution</span>(
-  <span class='no'>data</span>,
-  <span class='kw'>groups</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>rug</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>vLine</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='no'>...</span>,
-  <span class='kw'>title</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>psi</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>rugLabels</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>rugLabelsRotation</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>legend</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>valueLabel</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
-)</pre>
+    <pre class="usage"><span class='fu'>plotDistribution</span><span class='op'>(</span>
+  <span class='va'>data</span>,
+  groups <span class='op'>=</span> <span class='cn'>NULL</span>,
+  rug <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  vLine <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  <span class='va'>...</span>,
+  title <span class='op'>=</span> <span class='cn'>NULL</span>,
+  psi <span class='op'>=</span> <span class='cn'>NULL</span>,
+  rugLabels <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  rugLabelsRotation <span class='op'>=</span> <span class='fl'>0</span>,
+  legend <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  valueLabel <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -207,7 +207,7 @@ for each group)?</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Arguments passed on to <code><a href='https://rdrr.io/r/stats/density.html'>stats::density.default</a></code></p><dl'>
+      <td><p>Arguments passed on to <code><a href='https://rdrr.io/r/stats/density.html'>stats::density.default</a></code></p><dl>
     <dt><code>bw</code></dt><dd><p>the smoothing bandwidth to be used.  The kernels are scaled
     such that this is the standard deviation of the smoothing kernel.
     (Note this differs from the reference books cited below, and from S-PLUS.)    <code>bw</code> can also be a character string giving a rule to choose the
@@ -312,14 +312,15 @@ of <code>data</code> values</p></td>
 <code><a href='diffAnalyses.html'>diffAnalyses</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>data</span>   <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>20</span>, <span class='kw'>rep</span><span class='kw'>=</span><span class='fl'>TRUE</span>)/<span class='fl'>20</span>
-<span class='no'>groups</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='st'>"Group"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='st'>"A"</span>, <span class='fl'>10</span>), <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='st'>"B"</span>, <span class='fl'>10</span>)))
-<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='no'>data</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='st'>"Sample"</span>, <span class='fl'>1</span>:<span class='fl'>20</span>)
-<span class='fu'>plotDistribution</span>(<span class='no'>data</span>, <span class='no'>groups</span>)
+    <pre class="examples"><div class='input'><span class='va'>data</span>   <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='op'>(</span><span class='fl'>20</span>, rep<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>/</span><span class='fl'>20</span>
+<span class='va'>groups</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"Group"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>"A"</span>, <span class='fl'>10</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>"B"</span>, <span class='fl'>10</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"Sample"</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>20</span><span class='op'>)</span>
+<span class='fu'>plotDistribution</span><span class='op'>(</span><span class='va'>data</span>, <span class='va'>groups</span><span class='op'>)</span>
 
 <span class='co'># Using colours</span>
-<span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>groups</span>, <span class='st'>"Colour"</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Group A"</span><span class='kw'>=</span><span class='st'>"pink"</span>, <span class='st'>"Group B"</span><span class='kw'>=</span><span class='st'>"orange"</span>)
-<span class='fu'>plotDistribution</span>(<span class='no'>data</span>, <span class='no'>groups</span>)</div></pre>
+<span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span><span class='va'>groups</span>, <span class='st'>"Colour"</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Group A"</span><span class='op'>=</span><span class='st'>"pink"</span>, <span class='st'>"Group B"</span><span class='op'>=</span><span class='st'>"orange"</span><span class='op'>)</span>
+<span class='fu'>plotDistribution</span><span class='op'>(</span><span class='va'>data</span>, <span class='va'>groups</span><span class='op'>)</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -335,7 +336,7 @@ of <code>data</code> values</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

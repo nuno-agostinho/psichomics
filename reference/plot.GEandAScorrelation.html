@@ -258,7 +258,7 @@ least-squares, and if <code>symmetric</code>, a re-descending M estimator is use
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Arguments passed on to <code><a href='https://rdrr.io/r/stats/scatter.smooth.html'>stats::loess.smooth</a></code></p><dl'>
+      <td><p>Arguments passed on to <code><a href='https://rdrr.io/r/stats/scatter.smooth.html'>stats::loess.smooth</a></code></p><dl>
     <dt><code>span</code></dt><dd><p>smoothness parameter for <code>loess</code>.</p></dd>
     <dt><code>degree</code></dt><dd><p>degree of local polynomial used.</p></dd>
     <dt><code>evaluation</code></dt><dd><p>number of points at which to evaluate the smooth
@@ -321,15 +321,17 @@ respective string in the <code>pvalueAdjust</code> argument:</p><ul>
 <code><a href='correlateGEandAS.html'>correlateGEandAS</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>annot</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span>(<span class='st'>"ex_splicing_annotation.RDS"</span>)
-<span class='no'>junctionQuant</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span>(<span class='st'>"ex_junctionQuant.RDS"</span>)
-<span class='no'>psi</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='quantifySplicing.html'>quantifySplicing</a></span>(<span class='no'>annot</span>, <span class='no'>junctionQuant</span>, <span class='kw'>eventType</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SE"</span>, <span class='st'>"MXE"</span>))</div><div class='output co'>#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% 
+    <pre class="examples"><div class='input'><span class='va'>annot</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_splicing_annotation.RDS"</span><span class='op'>)</span>
+<span class='va'>junctionQuant</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_junctionQuant.RDS"</span><span class='op'>)</span>
+<span class='va'>psi</span> <span class='op'>&lt;-</span> <span class='fu'><a href='quantifySplicing.html'>quantifySplicing</a></span><span class='op'>(</span><span class='va'>annot</span>, <span class='va'>junctionQuant</span>, eventType<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SE"</span>, <span class='st'>"MXE"</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% 
 #&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </div><div class='input'>
-<span class='no'>geneExpr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span>(<span class='st'>"ex_gene_expression.RDS"</span>)
-<span class='no'>corr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='correlateGEandAS.html'>correlateGEandAS</a></span>(<span class='no'>geneExpr</span>, <span class='no'>psi</span>, <span class='st'>"ALDOA"</span>)
+<span class='va'>geneExpr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_gene_expression.RDS"</span><span class='op'>)</span>
+<span class='va'>corr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='correlateGEandAS.html'>correlateGEandAS</a></span><span class='op'>(</span><span class='va'>geneExpr</span>, <span class='va'>psi</span>, <span class='st'>"ALDOA"</span><span class='op'>)</span>
 
 <span class='co'># Quick display of the correlation results per splicing event and gene</span>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>corr</span>)</div><div class='output co'>#&gt; ================================================================================
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>corr</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; ================================================================================
 #&gt; SE_2_+_32_35_37_38_ALDOA splicing event
 #&gt; ALDOA|226 gene expression
 #&gt; 
@@ -360,17 +362,19 @@ respective string in the <code>pvalueAdjust</code> argument:</p><ul>
 #&gt; -0.1320457 
 #&gt; </div><div class='input'>
 <span class='co'># Table summarising the correlation analysis results</span>
-<span class='fu'><a href='https://rdrr.io/r/base/table.html'>as.table</a></span>(<span class='no'>corr</span>)</div><div class='output co'>#&gt;        Alternative splicing event      Gene
+<span class='fu'><a href='https://rdrr.io/r/base/table.html'>as.table</a></span><span class='op'>(</span><span class='va'>corr</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;        Alternative splicing event      Gene
 #&gt; 1        SE 2 + 32 35 37 38 ALDOA ALDOA|226
 #&gt; 2 MXE 2 + 32 35 37 38 40 42 ALDOA ALDOA|226
 #&gt;   Pearson's product-moment correlation   p-value p-value (BH adjusted)
 #&gt; 1                           -0.3528456 0.4926962             0.8030827
 #&gt; 2                           -0.1320457 0.8030827             0.8030827</div><div class='input'>
 <span class='co'># Correlation analysis plots</span>
-<span class='no'>colourGroups</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>Normal</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='st'>"Normal"</span>, <span class='fl'>1</span>:<span class='fl'>3</span>),
-                     <span class='kw'>Tumour</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='st'>"Cancer"</span>, <span class='fl'>1</span>:<span class='fl'>3</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>colourGroups</span>, <span class='st'>"Colour"</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='kw'>Normal</span><span class='kw'>=</span><span class='st'>"#00C65A"</span>, <span class='kw'>Tumour</span><span class='kw'>=</span><span class='st'>"#EEE273"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>corr</span>, <span class='kw'>colourGroups</span><span class='kw'>=</span><span class='no'>colourGroups</span>, <span class='kw'>alpha</span><span class='kw'>=</span><span class='fl'>1</span>)</div><div class='output co'>#&gt; $`SE_2_+_32_35_37_38_ALDOA`
+<span class='va'>colourGroups</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>Normal<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"Normal"</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span>,
+                     Tumour<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"Cancer"</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span><span class='va'>colourGroups</span>, <span class='st'>"Colour"</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>Normal<span class='op'>=</span><span class='st'>"#00C65A"</span>, Tumour<span class='op'>=</span><span class='st'>"#EEE273"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>corr</span>, colourGroups<span class='op'>=</span><span class='va'>colourGroups</span>, alpha<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $`SE_2_+_32_35_37_38_ALDOA`
 #&gt; $`SE_2_+_32_35_37_38_ALDOA`$`ALDOA|226`</div><div class='img'><img src='plot.GEandAScorrelation-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
 #&gt; 
 #&gt; $`MXE_2_+_32_35_37_38_40_42_ALDOA`
@@ -391,7 +395,7 @@ respective string in the <code>pvalueAdjust</code> argument:</p><ul>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

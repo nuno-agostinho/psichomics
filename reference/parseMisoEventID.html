@@ -168,7 +168,7 @@ splicing annotation file and get events in a data frame</h1>
 splicing annotation file and get events in a data frame</p>
     </div>
 
-    <pre class="usage"><span class='fu'>parseMisoEventID</span>(<span class='no'>eventID</span>, <span class='no'>annotation</span>, <span class='no'>IDcolumn</span>)</pre>
+    <pre class="usage"><span class='fu'>parseMisoEventID</span><span class='op'>(</span><span class='va'>eventID</span>, <span class='va'>annotation</span>, <span class='va'>IDcolumn</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -203,13 +203,14 @@ trying to match only skipped exons event IDs, only use the annotation of
 skipped exons instead of using a mega annotation with all event types.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>eventID</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"114785@uc001sok.1@uc001soj.1"</span>, <span class='st'>"114784@uc001bxm.1@uc001bxn.1"</span>)
+    <pre class="examples"><div class='input'><span class='va'>eventID</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"114785@uc001sok.1@uc001soj.1"</span>, <span class='st'>"114784@uc001bxm.1@uc001bxn.1"</span><span class='op'>)</span>
 <span class='co'># the annotation is one of the GFF3 files needed to run MISO</span>
-<span class='no'>gff3</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"miso_AS_annot_example.gff3"</span>,
-                    <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"psichomics"</span>)
-<span class='no'>annotation</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.delim</a></span>(<span class='no'>gff3</span>, <span class='kw'>header</span><span class='kw'>=</span><span class='fl'>FALSE</span>, <span class='kw'>comment.char</span><span class='kw'>=</span><span class='st'>"#"</span>)
-<span class='no'>IDcolumn</span> <span class='kw'>&lt;-</span> <span class='fl'>9</span>
-<span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>parseMisoEventID</span>(<span class='no'>eventID</span>, <span class='no'>annotation</span>, <span class='no'>IDcolumn</span>)</div><div class='output co'>#&gt; [[1]]
+<span class='va'>gff3</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"miso_AS_annot_example.gff3"</span>, 
+                    package<span class='op'>=</span><span class='st'>"psichomics"</span><span class='op'>)</span>
+<span class='va'>annotation</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.delim</a></span><span class='op'>(</span><span class='va'>gff3</span>, header<span class='op'>=</span><span class='cn'>FALSE</span>, comment.char<span class='op'>=</span><span class='st'>"#"</span><span class='op'>)</span>
+<span class='va'>IDcolumn</span> <span class='op'>&lt;-</span> <span class='fl'>9</span>
+<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMisoEventID</span><span class='op'>(</span><span class='va'>eventID</span>, <span class='va'>annotation</span>, <span class='va'>IDcolumn</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [[1]]
 #&gt;      V1  V2   V3       V4       V5 V6 V7 V8
 #&gt; 1 chr12 AFE gene 57916659 57920171  .  +  .
 #&gt; 2 chr12 AFE mRNA 57919131 57920171  .  +  .
@@ -242,7 +243,7 @@ skipped exons instead of using a mega annotation with all event types.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

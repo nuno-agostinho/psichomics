@@ -163,20 +163,20 @@
     <p>Prepare user-provided files to be loaded into psichomics</p>
     </div>
 
-    <pre class="usage"><span class='fu'>prepareSRAmetadata</span>(<span class='no'>file</span>, <span class='kw'>output</span> <span class='kw'>=</span> <span class='st'>"psichomics_metadata.txt"</span>)
+    <pre class="usage"><span class='fu'>prepareSRAmetadata</span><span class='op'>(</span><span class='va'>file</span>, output <span class='op'>=</span> <span class='st'>"psichomics_metadata.txt"</span><span class='op'>)</span>
 
-<span class='fu'>prepareJunctionQuant</span>(
-  <span class='no'>...</span>,
-  <span class='kw'>output</span> <span class='kw'>=</span> <span class='st'>"psichomics_junctions.txt"</span>,
-  <span class='kw'>startOffset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>endOffset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
-)
+<span class='fu'>prepareJunctionQuant</span><span class='op'>(</span>
+  <span class='va'>...</span>,
+  output <span class='op'>=</span> <span class='st'>"psichomics_junctions.txt"</span>,
+  startOffset <span class='op'>=</span> <span class='cn'>NULL</span>,
+  endOffset <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span>
 
-<span class='fu'>prepareGeneQuant</span>(
-  <span class='no'>...</span>,
-  <span class='kw'>output</span> <span class='kw'>=</span> <span class='st'>"psichomics_gene_counts.txt"</span>,
-  <span class='kw'>strandedness</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"unstranded"</span>, <span class='st'>"stranded"</span>, <span class='st'>"stranded (reverse)"</span>)
-)</pre>
+<span class='fu'>prepareGeneQuant</span><span class='op'>(</span>
+  <span class='va'>...</span>,
+  output <span class='op'>=</span> <span class='st'>"psichomics_gene_counts.txt"</span>,
+  strandedness <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"unstranded"</span>, <span class='st'>"stranded"</span>, <span class='st'>"stranded (reverse)"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -215,18 +215,19 @@ of the following: <code>unstraded</code>, <code>stranded</code> or
     <p>Prepared file (if <code>output != NULL</code>) and object</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'>prepareJunctionQuant</span>(<span class='st'>"Control rep1"</span><span class='kw'>=</span><span class='no'>junctionFile1</span>,
-                     <span class='st'>"Control rep2"</span><span class='kw'>=</span><span class='no'>junctionFile2</span>,
-                     <span class='st'>"KD rep1"</span><span class='kw'>=</span><span class='no'>junctionFile3</span>,
-                     <span class='st'>"KD rep2"</span><span class='kw'>=</span><span class='no'>junctionFile4</span>)
-}
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'>prepareGeneQuant</span>(<span class='st'>"Control rep1"</span><span class='kw'>=</span><span class='no'>geneCountFile1</span>,
-                 <span class='st'>"Control rep2"</span><span class='kw'>=</span><span class='no'>geneCountFile2</span>,
-                 <span class='st'>"KD rep1"</span><span class='kw'>=</span><span class='no'>geneCountFile3</span>,
-                 <span class='st'>"KD rep2"</span><span class='kw'>=</span><span class='no'>geneCountFile4</span>)
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'>prepareJunctionQuant</span><span class='op'>(</span><span class='st'>"Control rep1"</span><span class='op'>=</span><span class='va'>junctionFile1</span>,
+                     <span class='st'>"Control rep2"</span><span class='op'>=</span><span class='va'>junctionFile2</span>,
+                     <span class='st'>"KD rep1"</span><span class='op'>=</span><span class='va'>junctionFile3</span>,
+                     <span class='st'>"KD rep2"</span><span class='op'>=</span><span class='va'>junctionFile4</span><span class='op'>)</span>
+<span class='op'>}</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'>prepareGeneQuant</span><span class='op'>(</span><span class='st'>"Control rep1"</span><span class='op'>=</span><span class='va'>geneCountFile1</span>,
+                 <span class='st'>"Control rep2"</span><span class='op'>=</span><span class='va'>geneCountFile2</span>,
+                 <span class='st'>"KD rep1"</span><span class='op'>=</span><span class='va'>geneCountFile3</span>,
+                 <span class='st'>"KD rep2"</span><span class='op'>=</span><span class='va'>geneCountFile4</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -242,7 +243,7 @@ of the following: <code>unstraded</code>, <code>stranded</code> or
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

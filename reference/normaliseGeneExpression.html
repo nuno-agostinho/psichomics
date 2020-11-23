@@ -185,25 +185,25 @@ mean-variance relationship to calculate observation-level weights.</p></li>
 
     </div>
 
-    <pre class="usage"><span class='fu'>normaliseGeneExpression</span>(
-  <span class='no'>geneExpr</span>,
-  <span class='kw'>geneFilter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"TMM"</span>,
-  <span class='kw'>p</span> <span class='kw'>=</span> <span class='fl'>0.75</span>,
-  <span class='kw'>log2transform</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>priorCount</span> <span class='kw'>=</span> <span class='fl'>0.25</span>,
-  <span class='kw'>performVoom</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
-)
+    <pre class="usage"><span class='fu'>normaliseGeneExpression</span><span class='op'>(</span>
+  <span class='va'>geneExpr</span>,
+  geneFilter <span class='op'>=</span> <span class='cn'>NULL</span>,
+  method <span class='op'>=</span> <span class='st'>"TMM"</span>,
+  p <span class='op'>=</span> <span class='fl'>0.75</span>,
+  log2transform <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  priorCount <span class='op'>=</span> <span class='fl'>0.25</span>,
+  performVoom <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
 
-<span class='fu'>normalizeGeneExpression</span>(
-  <span class='no'>geneExpr</span>,
-  <span class='kw'>geneFilter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"TMM"</span>,
-  <span class='kw'>p</span> <span class='kw'>=</span> <span class='fl'>0.75</span>,
-  <span class='kw'>log2transform</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>priorCount</span> <span class='kw'>=</span> <span class='fl'>0.25</span>,
-  <span class='kw'>performVoom</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
-)</pre>
+<span class='fu'>normalizeGeneExpression</span><span class='op'>(</span>
+  <span class='va'>geneExpr</span>,
+  geneFilter <span class='op'>=</span> <span class='cn'>NULL</span>,
+  method <span class='op'>=</span> <span class='st'>"TMM"</span>,
+  p <span class='op'>=</span> <span class='fl'>0.75</span>,
+  log2transform <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  priorCount <span class='op'>=</span> <span class='fl'>0.25</span>,
+  performVoom <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -275,8 +275,9 @@ column to be identical (only performed if <code>performVoom = TRUE</code>).</p><
 <code><a href='plotRowStats.html'>plotRowStats</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>geneExpr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span>(<span class='st'>"ex_gene_expression.RDS"</span>)
-<span class='fu'>normaliseGeneExpression</span>(<span class='no'>geneExpr</span>)</div><div class='output co'>#&gt;                Normal 1 Normal 2 Normal 3 Normal 4 Normal 5 Cancer 1 Cancer 2
+    <pre class="examples"><div class='input'><span class='va'>geneExpr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_gene_expression.RDS"</span><span class='op'>)</span>
+<span class='fu'>normaliseGeneExpression</span><span class='op'>(</span><span class='va'>geneExpr</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;                Normal 1 Normal 2 Normal 3 Normal 4 Normal 5 Cancer 1 Cancer 2
 #&gt; ACTN1|87       16.44383 16.78304 16.48223 17.24207 17.07503 17.10327 16.49269
 #&gt; ADAM15|8751    16.70099 16.09395 16.28898 15.96189 15.31259 15.63044 15.97064
 #&gt; AKAP8L|26993   14.14424 14.80911 14.24193 14.41006 15.30310 14.58999 14.11916
@@ -313,7 +314,7 @@ column to be identical (only performed if <code>performVoom = TRUE</code>).</p><
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

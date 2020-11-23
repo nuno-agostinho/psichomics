@@ -163,7 +163,7 @@
     <p>Parses splicing events of a specific event type from SUPPA</p>
     </div>
 
-    <pre class="usage"><span class='fu'>parseSuppaEvent</span>(<span class='no'>event</span>)</pre>
+    <pre class="usage"><span class='fu'>parseSuppaEvent</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -198,8 +198,9 @@ the position of the exon boundaries)</p>
     <p>It only allows to parse one event type at once.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>event</span> <span class='kw'>&lt;-</span> <span class='st'>"ENSG00000000419;A3:20:49557492-49557642:49557470-49557642:-"</span>
-<span class='kw pkg'>psichomics</span><span class='kw ns'>:::</span><span class='fu'>parseSuppaEvent</span>(<span class='no'>event</span>)</div><div class='output co'>#&gt;   Program            Gene
+    <pre class="examples"><div class='input'><span class='va'>event</span> <span class='op'>&lt;-</span> <span class='st'>"ENSG00000000419;A3:20:49557492-49557642:49557470-49557642:-"</span>
+<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaEvent</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   Program            Gene
 #&gt; 1   SUPPA ENSG00000000419
 #&gt;                                                      Event.ID Chromosome
 #&gt; 1 ENSG00000000419;A3:20:49557492-49557642:49557470-49557642:-         20
@@ -222,7 +223,7 @@ the position of the exon boundaries)</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

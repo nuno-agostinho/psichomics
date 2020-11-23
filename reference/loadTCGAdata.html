@@ -163,13 +163,13 @@
     <p>TCGA data obtained via <a href='http://firebrowse.org/api-docs/'>Firebrowse</a></p>
     </div>
 
-    <pre class="usage"><span class='fu'>loadTCGAdata</span>(
-  <span class='kw'>folder</span> <span class='kw'>=</span> <span class='fu'><a href='getDownloadsFolder.html'>getDownloadsFolder</a></span>(),
-  <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"clinical"</span>, <span class='st'>"junction_quantification"</span>, <span class='st'>"RSEM_genes"</span>),
-  <span class='kw'>exclude</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>".aux."</span>, <span class='st'>".mage-tab."</span>, <span class='st'>"MANIFEST.txt"</span>),
-  <span class='no'>...</span>,
-  <span class='kw'>download</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>loadTCGAdata</span><span class='op'>(</span>
+  folder <span class='op'>=</span> <span class='fu'><a href='getDownloadsFolder.html'>getDownloadsFolder</a></span><span class='op'>(</span><span class='op'>)</span>,
+  data <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"clinical"</span>, <span class='st'>"junction_quantification"</span>, <span class='st'>"RSEM_genes"</span><span class='op'>)</span>,
+  exclude <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>".aux."</span>, <span class='st'>".mage-tab."</span>, <span class='st'>"MANIFEST.txt"</span><span class='op'>)</span>,
+  <span class='va'>...</span>,
+  download <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -191,7 +191,7 @@ from loading into R (by default, exclude files containing <code>.aux.</code>,
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Arguments passed on to <code><a href='queryFirebrowseData.html'>queryFirebrowseData</a></code></p><dl'>
+      <td><p>Arguments passed on to <code><a href='queryFirebrowseData.html'>queryFirebrowseData</a></code></p><dl>
     <dt><code>date</code></dt><dd><p>Character: dates of the data retrieval by Firebrowse (by default,
 it uses the most recent data available)</p></dd>
     <dt><code>cohort</code></dt><dd><p>Character: abbreviation of the cohorts (by default, returns
@@ -226,14 +226,15 @@ and <code>download = FALSE</code> (if so, it returns the URL of files to downloa
 <code><a href='getDownloadsFolder.html'>getDownloadsFolder</a>()</code>,
 <code><a href='getTCGAdataTypes.html'>getTCGAdataTypes</a>()</code>,
 <code><a href='isFirebrowseUp.html'>isFirebrowseUp</a>()</code>,
-<code><a href='parseTcgaSampleInfo.html'>parseTCGAsampleTypes</a>()</code></p>
+<code><a href='parseTCGAsampleTypes.html'>parseTCGAsampleTypes</a>()</code></p>
 <p>Other functions to load data: 
 <code><a href='loadGtexData.html'>loadGtexData</a>()</code>,
 <code><a href='loadLocalFiles.html'>loadLocalFiles</a>()</code>,
 <code><a href='loadSRAproject.html'>loadSRAproject</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='getTCGAdataTypes.html'>getTCGAcohorts</a></span>()</div><div class='output co'>#&gt;                                                                ACC 
+    <pre class="examples"><div class='input'><span class='fu'><a href='getTCGAdataTypes.html'>getTCGAcohorts</a></span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;                                                                ACC 
 #&gt;                                         "Adrenocortical carcinoma" 
 #&gt;                                                               BLCA 
 #&gt;                                     "Bladder Urothelial Carcinoma" 
@@ -308,16 +309,18 @@ and <code>download = FALSE</code> (if so, it returns the URL of files to downloa
 #&gt;                                                                UCS 
 #&gt;                                           "Uterine Carcinosarcoma" 
 #&gt;                                                                UVM 
-#&gt;                                                   "Uveal Melanoma" </div><div class='input'><span class='fu'><a href='getTCGAdataTypes.html'>getTCGAdataTypes</a></span>()</div><div class='output co'>#&gt; $`RNA sequencing`
+#&gt;                                                   "Uveal Melanoma" </div><div class='input'><span class='fu'><a href='getTCGAdataTypes.html'>getTCGAdataTypes</a></span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $`RNA sequencing`
 #&gt;   Junction quantification       Exon quantification           Exon expression 
 #&gt; "junction_quantification"     "exon_quantification"         "exon_expression" 
 #&gt;       Junction expression                RSEM genes     RSEM genes normalized 
 #&gt;     "junction_expression"              "RSEM_genes"   "RSEM_genes_normalized" 
 #&gt;             RSEM isoforms                Preprocess 
 #&gt;           "RSEM_isoforms"              "Preprocess" 
-#&gt; </div><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'>loadTCGAdata</span>(<span class='kw'>cohort</span> <span class='kw'>=</span> <span class='st'>"ACC"</span>, <span class='kw'>data_type</span> <span class='kw'>=</span> <span class='st'>"Clinical"</span>)
-}</div></pre>
+#&gt; </div><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'>loadTCGAdata</span><span class='op'>(</span>cohort <span class='op'>=</span> <span class='st'>"ACC"</span>, data_type <span class='op'>=</span> <span class='st'>"Clinical"</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -333,7 +336,7 @@ and <code>download = FALSE</code> (if so, it returns the URL of files to downloa
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

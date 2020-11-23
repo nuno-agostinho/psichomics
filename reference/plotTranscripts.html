@@ -163,13 +163,13 @@
     <p>Plot transcripts</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plotTranscripts</span>(
-  <span class='no'>info</span>,
-  <span class='kw'>eventPosition</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>event</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>eventData</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>shiny</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>plotTranscripts</span><span class='op'>(</span>
+  <span class='va'>info</span>,
+  eventPosition <span class='op'>=</span> <span class='cn'>NULL</span>,
+  event <span class='op'>=</span> <span class='cn'>NULL</span>,
+  eventData <span class='op'>=</span> <span class='cn'>NULL</span>,
+  shiny <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -209,11 +209,12 @@ state or internal variables)</p>
 <code><a href='queryEnsemblByGene.html'>queryEnsemblByGene</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>event</span> <span class='kw'>&lt;-</span> <span class='st'>"SE_12_-_7985318_7984360_7984200_7982602_SLC2A14"</span>
-<span class='no'>info</span>  <span class='kw'>&lt;-</span> <span class='fu'><a href='queryEnsemblByGene.html'>queryEnsemblByEvent</a></span>(<span class='no'>event</span>, <span class='kw'>species</span><span class='kw'>=</span><span class='st'>"human"</span>, <span class='kw'>assembly</span><span class='kw'>=</span><span class='st'>"hg19"</span>)
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'>plotTranscripts</span>(<span class='no'>info</span>, <span class='kw'>event</span><span class='kw'>=</span><span class='no'>event</span>)
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='va'>event</span> <span class='op'>&lt;-</span> <span class='st'>"SE_12_-_7985318_7984360_7984200_7982602_SLC2A14"</span>
+<span class='va'>info</span>  <span class='op'>&lt;-</span> <span class='fu'><a href='queryEnsemblByGene.html'>queryEnsemblByEvent</a></span><span class='op'>(</span><span class='va'>event</span>, species<span class='op'>=</span><span class='st'>"human"</span>, assembly<span class='op'>=</span><span class='st'>"hg19"</span><span class='op'>)</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'>plotTranscripts</span><span class='op'>(</span><span class='va'>info</span>, event<span class='op'>=</span><span class='va'>event</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -229,7 +230,7 @@ state or internal variables)</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
