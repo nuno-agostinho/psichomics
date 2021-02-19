@@ -1,4 +1,4 @@
-# psichomics 1.14.5 (7 October, 2020)
+# psichomics 1.14.5 (23 February, 2020)
 
 * `discardLowCoveragePSIvalues()`: improve performance (2x faster)
 * `loadLocalFiles()`: print elapsed time after loading local files
@@ -9,6 +9,19 @@ whose junctions:
 
     The number of discarded events is now displayed during PSI quantification.
 
+* Distribution plots (`plotDistribution()`):
+    - Plot sample distributions in density, violin or box plots (use argument
+    `type` in the command-line interface)
+    - Hide rug plot when showing 500 or more values (by default) to avoid
+    performance issues
+    - Add jitter to rug plot (helps to discern numerous points)
+    - Display interquantile range (IQR) per group in the tooltip
+    - In the command-line, add subtitles via argument `subtitle`
+* `filterGroups()` was modified to return a character vector whose names are
+original names (instead of groups) and include an attribute *Groups* with the
+respective group of each value (together with their colour, if available):
+    - Distribution plots in the graphical interface now show sample name in the
+    tooltip for each sample
 * Improve tutorials
 
 # psichomics 1.14.4 (30 August, 2020)

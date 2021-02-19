@@ -5,87 +5,40 @@
 #' actionButton sidebarPanel
 diffExpressionEventUI <- function(id) {
     ns <- NS(id)
-    
-    card <- function(id) {
-        div(class="col-sm-6 col-md-4",
-            div(class="thumbnail", style="background:#eee;",
-                div(class="caption", uiOutput(ns(id)))))
-    }
-    
-    # Take user to the survival analysis by GE cutoff
-    survival <- div(
-        id=ns("survivalButton"), hr(),
-        actionButton(ns("optimalSurv1"),
-                     onclick="showSurvCutoff(null, psi=false)",
-                     icon=icon("heartbeat"), "Survival analysis by GE cutoff", 
-                     class="btn-info btn-md btn-block",
-                     class="visible-lg visible-md"),
-        actionButton(ns("optimalSurv2"), 
-                     onclick="showSurvCutoff(null, psi=false)",
-                     "Survival analysis by GE cutoff", 
-                     class="btn-info btn-xs btn-block",
-                     class="visible-sm visible-xs"))
-    
-    singleGeneOptions <- div(
-        id=ns("singleGeneOptions"),
-        selectizeInput(ns("geneExpr"), "Gene expression", choices=NULL),
-        selectizeGeneInput(ns("gene")),
-        selectGroupsUI(ns("diffGroups"), type="Samples",
-                       label="Groups of samples to compare",
-                       noGroupsLabel="All samples as one group",
-                       groupsLabel="Samples by selected groups"),
-        actionButton(ns("analyse"), "Perform analyses",
-                     class="btn-primary"),
-        uiOutput(ns("basicStats")),
-        uiOutput(ns("diffStats")),
-        hidden(survival))
-    
-    singleGeneInfo <- div(
-        id=ns("singleGeneInfo"),
-        highchartOutput(ns("density")),
-        h4("Parametric tests"),
-        div(class="row", card("ttest"), card("levene")),
-        h4("Non-parametric tests"), 
-        div(class="row", card("wilcox"), card("kruskal"), card("fligner")))
-    
-    tagList(
-        uiOutput(ns("modal")),
-        sidebarLayout(
-            sidebarPanel(
-                errorDialog(
-                    "Gene expression is required for differential expression.",
-                    id=ns("missingGeneExpr"),
-                    buttonLabel="Load gene expression",
-                    buttonIcon="plus-circle",
-                    buttonId=ns("missingGeneExprButton")),
-                hidden(singleGeneOptions)),
-            mainPanel(
-                hidden(singleGeneInfo) )))
+    return(diffEventUI(id, ns, psi=FALSE))
 }
 
 #' @rdname appServer
-#' 
+#'
 #' @importFrom highcharter renderHighchart
 #' @importFrom shinyjs show hide
 diffExpressionEventServer <- function(input, output, session) {
     ns <- session$ns
-    
+
     selectGroupsServer(session, "diffGroups", "Samples")
-    
+
+    observe({
+        geneExpr <- getGeneExpression(input$geneExpr)
+        gene <- input$gene
+        if (is.null(geneExpr) || is.null(gene) || gene == "") return(NULL)
+        data <- as.numeric(geneExpr[gene, ])
+        updateCheckboxInput(session, "rug", value=length(data) < 500)
+    })
+
     observeEvent(input$analyse, {
         geneExpr <- getGeneExpression(input$geneExpr)
         if (is.null(geneExpr)) {
             missingDataModal(session, "Gene expression", ns("missingGeneExpr"))
             return(NULL)
         }
-        
+
         gene <- input$gene
         if (is.null(gene) || gene == "") {
             errorModal(session, "No gene selected", "Please select a gene.",
                        caller="Differential expression analysis")
             return(NULL)
         }
-        
+
         # Prepare groups of samples to analyse
         groups <- getSelectedGroups(input, "diffGroups", "Samples",
                                     filter=colnames(geneExpr))
@@ -98,14 +51,14 @@ diffExpressionEventServer <- function(input, output, session) {
             attrGroups <- "All samples"
             groups <- rep(attrGroups, ncol(geneExpr))
         }
-        
+
         # Check if analyses were already performed
         stats <- getDifferentialExpression()
         if (!is.null(stats) && identical(attrGroups, attr(stats, "groups"))) {
             stat  <- stats[gene, ]
             adjustedPvalue <- grep("p-value (", names(stats), fixed=TRUE,
                                    value=TRUE)
-            
+
             logFC      <- signifDigits(stat$"log2 Fold-Change")
             logFCconf1 <- signifDigits(stat$"conf. int1")
             logFCconf2 <- signifDigits(stat$"conf. int2")
@@ -113,30 +66,32 @@ diffExpressionEventServer <- function(input, output, session) {
             modTpvalue <- signifDigits(stat$"p-value")
             modTadjustedPvalue <- signifDigits(stat[[adjustedPvalue]])
             bStats     <- signifDigits(stat$"B-statistics")
-            
+
             diffStats <- tagList(
                 hr(), h4("Differential expression summary"),
-                tags$b("log2 Fold-Change: "), 
+                tags$b("log2 Fold-Change: "),
                 sprintf("%s (%s to %s)", logFC, logFCconf1, logFCconf2), br(),
                 tags$b("Moderated t-statistics: "), modTstats, br(),
                 tags$b("p-value: "), modTpvalue, br(),
-                tags$b(paste0(adjustedPvalue, ": ")), modTadjustedPvalue, br(), 
+                tags$b(paste0(adjustedPvalue, ": ")), modTadjustedPvalue, br(),
                 tags$b("B-statistics: "), bStats)
         } else {
             stat  <- NULL
             diffStats <- NULL
         }
-        
+
         # Separate samples by their groups
         eventGE <- as.numeric(geneExpr[gene, ])
+        names(eventGE) <- colnames(geneExpr)
         eventGE <- filterGroups(eventGE, groups, 2)
-        groups <- names(eventGE)
+        groups  <- attr(eventGE, "Groups")
         attr(groups, "Colour") <- colour
-        
+
         plot <- plotDistribution(eventGE, groups, psi=FALSE,
-                                 title=paste(gene, "gene expression"))
+                                 title=paste(gene, "gene expression"),
+                                 type=isolate(input$plotType), rug=input$rug)
         output$density <- renderHighchart(plot)
-        
+
         output$basicStats <- renderUI(basicStats(eventGE, groups))
         output$diffStats  <- renderUI(diffStats)
         output$ttest      <- renderUI(ttest(eventGE, groups, stat))
@@ -146,16 +101,16 @@ diffExpressionEventServer <- function(input, output, session) {
         output$fligner    <- renderUI(fligner(eventGE, groups, stat))
         # output$fisher   <- renderUI(fisher(eventGE, groups))
         # output$spearman <- renderUI(spearman(eventGE, groups))
-        
+
         show("survivalButton")
-        show("singleGeneInfo")
+        show("singleEventInfo")
     })
-    
-    observeEvent(input$missingGeneExpr, 
+
+    observeEvent(input$missingGeneExpr,
                  missingDataGuide("Gene expression"))
-    observeEvent(input$missingGeneExprButton, 
+    observeEvent(input$missingGeneExprButton,
                  missingDataGuide("Gene expression"))
-    
+
     # Update available gene choices depending on gene expression data loaded
     # Reactive avoids updating if the input remains the same
     updateGeneChoices <- reactive({
@@ -163,7 +118,7 @@ diffExpressionEventServer <- function(input, output, session) {
         genes <- rownames(geneExpr)
         updateSelectizeInput(session, "gene", choices=genes, server=TRUE)
     })
-    
+
     observe({
         geneExpr <- getGeneExpression()
         if (is.null(geneExpr)) {
@@ -174,19 +129,19 @@ diffExpressionEventServer <- function(input, output, session) {
             hide("missingGeneExpr")
         }
     })
-    
+
     # Show options if gene expression data is available, update available gene
     # expression data choices and update available genes for selection
     observe({
         geneExpr <- getGeneExpression(input$geneExpr)
         if (is.null(geneExpr)) {
-            hide("singleGeneOptions")
+            hide("singleEventOptions")
             hide("survivalButton")
-            hide("singleGeneInfo")
+            hide("singleEventInfo")
             # Gene-related tasks
             hide("gene")
         } else {
-            show("singleGeneOptions")
+            show("singleEventOptions")
             # Gene-related tasks
             hide("gene")
             updateGeneChoices()

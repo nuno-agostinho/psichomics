@@ -7,15 +7,15 @@
 filterGroups(vector, group, threshold = 1)
 }
 \arguments{
-\item{vector}{Unnamed elements}
+\item{vector}{Character: elements}
 
-\item{group}{Character: group of the elements}
+\item{group}{Character: respective group of each elements}
 
 \item{threshold}{Integer: number of valid non-missing values by group}
 }
 \value{
 Named vector with filtered elements from valid groups. The group of
-the respective element is given in the name.
+the respective element is given as an attribute.
 }
 \description{
 Groups containing a number of non-missing values less than the threshold are
@@ -23,5 +23,7 @@ discarded.
 }
 \examples{
 # Removes groups with less than two elements
-filterGroups(1:4, c("A", "B", "B", "D"), threshold=2)
+vec <- 1:6
+names(vec) <- paste("sample", letters[1:6])
+filterGroups(vec, c("A", "B", "B", "C", "D", "D"), threshold=2)
 }

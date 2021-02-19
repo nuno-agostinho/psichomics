@@ -12,6 +12,7 @@
 \name{appUI}
 \alias{appUI}
 \alias{analysesUI}
+\alias{diffEventUI}
 \alias{correlationUI}
 \alias{diffExpressionUI}
 \alias{diffExpressionEventUI}
@@ -40,6 +41,8 @@
 appUI()
 
 analysesUI(id, tab)
+
+diffEventUI(id, ns, psi = TRUE)
 
 correlationUI(id)
 

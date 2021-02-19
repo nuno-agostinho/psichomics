@@ -2,15 +2,17 @@
 % Please edit documentation in R/analysis.R
 \name{plotDistribution}
 \alias{plotDistribution}
-\title{Plot distribution using a density plot}
+\title{Plot sample distribution}
 \usage{
 plotDistribution(
   data,
   groups = NULL,
-  rug = TRUE,
+  rug = length(data) < 500,
   vLine = TRUE,
   ...,
   title = NULL,
+  subtitle = NULL,
+  type = c("density", "boxplot", "violin"),
   psi = NULL,
   rugLabels = FALSE,
   rugLabelsRotation = 0,
@@ -104,6 +106,10 @@ for each group)?}
 
 \item{title}{Character: plot title}
 
+\item{subtitle}{Character: plot subtitle}
+
+\item{type}{Character: \code{density}, \code{boxplot} or \code{violin} plot}
+
 \item{psi}{Boolean: are \code{data} composed of PSI values? If \code{NULL},
 \code{psi = TRUE} if all \code{data} values are between 0 and 1}
 
@@ -123,8 +129,7 @@ of \code{data} values}
 }
 \description{
 The tooltip shows the median, variance, maximum, minimum and number of non-NA
-samples of each data series (if \code{data} contains names or column names,
-those will be used as sample names and also appear in the tooltip).
+samples of each data series, as well as sample names if available.
 }
 \details{
 Argument \code{groups} can be either:
@@ -138,7 +143,7 @@ Argument \code{groups} can be either:
 \examples{
 data   <- sample(20, rep=TRUE)/20
 groups <- paste("Group", c(rep("A", 10), rep("B", 10)))
-names(data) <- paste("Sample", 1:20)
+names(data) <- paste("Sample", seq(data))
 plotDistribution(data, groups)
 
 # Using colours
