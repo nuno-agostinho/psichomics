@@ -22,6 +22,8 @@ original names (instead of groups) and include an attribute *Groups* with the
 respective group of each value (together with their colour, if available):
     - Distribution plots in the graphical interface now show sample name in the
     tooltip for each sample
+* Fix parsing of VAST-TOOLS intron retention events as skipped exon for certain
+annotations (including Hs2)
 * Improve tutorials
 
 # psichomics 1.14.4 (30 August, 2020)

@@ -254,10 +254,10 @@ quantifySplicing <- function(annotation, junctionQuant,
         eventTypes <- getSplicingEventTypes()
         type <- names(eventTypes)[[match(acronym, eventTypes)]]
         thisAnnot <- annotation[[type]]
-        updateProgress("Calculating inclusion levels", type, value=acronym,
-                       max=length(eventType))
-
+        
         if (!is.null(thisAnnot) && nrow(thisAnnot) > 0) {
+            updateProgress("Calculating inclusion levels", type, value=acronym,
+                           max=length(eventType))
             incLevels <- calculateInclusionLevels(acronym, mJunctionQuant,
                                                   thisAnnot, minReads)
             eventData <- rbind(eventData, attr(incLevels, "eventData"))
