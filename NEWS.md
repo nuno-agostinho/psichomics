@@ -1,4 +1,4 @@
-# psichomics 1.14.5 (23 February, 2020)
+# psichomics 1.16.1 (8 April, 2020)
 
 * `discardLowCoveragePSIvalues()`: improve performance (2x faster)
 * `loadLocalFiles()`: print elapsed time after loading local files
@@ -6,9 +6,7 @@
 whose junctions:
     - (1) are not present in junction quantification data or
     - (2) have low numbers of reads across all samples.
-
     The number of discarded events is now displayed during PSI quantification.
-
 * Distribution plots (`plotDistribution()`):
     - Plot sample distributions in density, violin or box plots (use argument
     `type` in the command-line interface)
