@@ -71,8 +71,7 @@ Imports:
     utils,
     XML,
     xtable,
-    methods,
-    org.Hs.eg.db
+    methods
 Suggests:
     testthat,
     knitr,

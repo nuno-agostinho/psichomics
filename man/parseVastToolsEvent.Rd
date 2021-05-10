@@ -25,7 +25,7 @@ Junctions are parsed from
 Only supports to parse one event at a time.
 }
 \examples{
-event <- read.table(text = 
+event <- read.table(text =
 "NFYA HsaEX0042823 chr6:41046768-41046903 136 chr6:41040823,41046768-41046903,41051785 C2 0 N 0 N"
 )
 psichomics:::parseVastToolsEvent(event)

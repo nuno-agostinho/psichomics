@@ -13,7 +13,7 @@ checkIntegrity(filesToCheck, md5file)
 \item{md5file}{Character: file containing correct \code{MD5} hashes}
 }
 \value{
-Logical vector showing TRUE for files with matching \code{md5sums} 
+Logical vector showing TRUE for files with matching \code{md5sums}
 and \code{FALSE} for files with non-matching \code{md5sums}
 }
 \description{
