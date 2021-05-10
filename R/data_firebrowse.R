@@ -1,22 +1,22 @@
 # Get Firebrowse parameters ----------------------------------------------------
 
 #' Get available parameters for TCGA data
-#' 
+#'
 #' Parameters obtained via \href{http://firebrowse.org/api-docs/}{Firebrowse}
-#' 
+#'
 #' @family functions associated with TCGA data retrieval
 #' @return Parsed response
-#' 
+#'
 #' @importFrom R.utils capitalize
-#' 
+#'
 #' @aliases getFirebrowseDataTypes
 #' @export
-#' 
+#'
 #' @examples
 #' getTCGAdataTypes()
 getTCGAdataTypes <- function() {
     choices <- list("RNA sequencing"=c(
-        "junction_quantification", "exon_quantification", 
+        "junction_quantification", "exon_quantification",
         "exon_expression", "junction_expression",
         "RSEM_genes", "RSEM_genes_normalized", "RSEM_isoforms", "Preprocess"))
     names(choices[[1]]) <- capitalize(gsub("_", " ", choices[[1]], fixed=TRUE))
@@ -29,7 +29,7 @@ getFirebrowseDataTypes <- getTCGAdataTypes
 #' @rdname getTCGAdataTypes
 #' @aliases getFirebrowseDates
 #' @export
-#' 
+#'
 #' @examples
 #' if (isFirebrowseUp()) getTCGAdates()
 getTCGAdates <- function() {
@@ -43,9 +43,9 @@ getTCGAdates <- function() {
 getFirebrowseDates <- getTCGAdates
 
 #' @rdname getTCGAdataTypes
-#' 
+#'
 #' @param cohort Character: filter results by cohorts (optional)
-#' 
+#'
 #' @aliases getFirebrowseCohorts
 #' @export
 #'
@@ -65,13 +65,13 @@ getFirebrowseCohorts <- getTCGAcohorts
 # Process and manipulate Firebrowse data ---------------------------------------
 
 #' @rdname parseTCGAsampleInfo
-#' 
+#'
 #' @param filename Character: path to RDS file containing corresponding types
-#' 
+#'
 #' @aliases parseSampleGroups
 #' @export
-#' 
-#' @examples 
+#'
+#' @examples
 #' parseTCGAsampleTypes(c("TCGA-01A-Tumour", "TCGA-10B-Normal"))
 parseTCGAsampleTypes <- function(samples, filename = system.file(
     "extdata", "TCGAsampleType.RDS", package="psichomics")) {
@@ -84,34 +84,34 @@ parseTCGAsampleTypes <- function(samples, filename = system.file(
 parseSampleGroups <- parseTCGAsampleTypes
 
 #' Parse sample information from TCGA sample identifiers
-#' 
+#'
 #' @param samples Character: sample identifiers
 #' @param match Integer: match between samples and subjects (\code{NULL} by
 #' default; performs the match)
-#' 
+#'
 #' @aliases parseTcgaSampleInfo
 #' @family functions associated with TCGA data retrieval
-#' 
+#'
 #' @return Metadata associated with each TCGA sample
 #' @export
-#' 
+#'
 #' @examples
 #' samples <- c("TCGA-3C-AAAU-01A-11R-A41B-07", "TCGA-3C-AALI-01A-11R-A41B-07",
-#'              "TCGA-3C-AALJ-01A-31R-A41B-07", "TCGA-3C-AALK-01A-11R-A41B-07", 
+#'              "TCGA-3C-AALJ-01A-31R-A41B-07", "TCGA-3C-AALK-01A-11R-A41B-07",
 #'              "TCGA-4H-AAAK-01A-12R-A41B-07", "TCGA-5L-AAT0-01A-12R-A41B-07")
-#' 
+#'
 #' parseTCGAsampleInfo(samples)
 parseTCGAsampleInfo <- function(samples, match=NULL) {
     parsed <- parseTCGAsampleTypes(samples)
     if ( all(is.na(parsed)) ) return(NULL)
-    
+
     info <- data.frame(parsed)
     colnames(info) <- "Sample types"
     rownames(info) <- samples
-    
+
     if (is.null(match)) match <- getSubjectFromSample(samples)
     info <- cbind(info, "Patient ID"=match)
-    
+
     # Metadata
     attr(info, "rowNames")    <- TRUE
     attr(info, "description") <- "Metadata for TCGA samples"
@@ -128,7 +128,7 @@ parseTcgaSampleInfo <- parseTCGAsampleInfo
 #' Retrieve URLs from a response to a Firebrowse data query
 #'
 #' @param res Response from \code{httr::GET} to a Firebrowse data query
-#' 
+#'
 #' @importFrom jsonlite fromJSON
 #' @importFrom httr content
 #'
@@ -143,11 +143,11 @@ parseUrlsFromFirebrowseResponse <- function(res) {
     parsed <- content(res, "text", encoding = "UTF8")
     parsed <- fromJSON(parsed)[[1]]
     parsed$date <- parseDateResponse(parsed$date)
-    
+
     # Get cohort names
     cohort <- getTCGAcohorts()
     cohort <- cohort[parsed$cohort]
-    
+
     ## TODO(NunoA): maybe this could be simplified?
     # Split URLs from response by cohort and datestamp
     url <- split(parsed$url, paste(cohort, format(parsed$date, "%Y-%m-%d")))
@@ -164,22 +164,22 @@ parseUrlsFromFirebrowseResponse <- function(res) {
 #'
 #' @examples
 #' format <- psichomics:::getFirebrowseDateFormat()
-#' 
+#'
 #' # date format to use in a query to Firebrowse API
 #' format$query
-#' 
+#'
 #' # date format to parse a date in a response from Firebrowse API
 #' format$response
 getFirebrowseDateFormat <- function() {
     query <- "%Y_%m_%d"
-    response <- "%d %b %Y" 
+    response <- "%d %b %Y"
     return(list(query=query, response=response))
 }
 
 #' Parse the date from a response
-#' 
+#'
 #' @param string Character: dates
-#' 
+#'
 #' @return Parsed date
 #' @keywords internal
 parseDateResponse <- function(string) {
@@ -194,10 +194,10 @@ parseDateResponse <- function(string) {
 #'
 #' @param type Character: metadata to retrieve
 #' @param ... Character: parameters to pass to query (optional)
-#' 
+#'
 #' @importFrom httr GET content
 #' @importFrom jsonlite fromJSON
-#' 
+#'
 #' @return List with parsed response
 #' @keywords internal
 #'
@@ -205,7 +205,7 @@ parseDateResponse <- function(string) {
 #' psichomics:::parseFirebrowseMetadata("Dates")
 #' psichomics:::parseFirebrowseMetadata("Centers")
 #' psichomics:::parseFirebrowseMetadata("HeartBeat")
-#' 
+#'
 #' # Get the abbreviation and description of all cohorts available
 #' psichomics:::parseFirebrowseMetadata("Cohorts")
 #' # Get the abbreviation and description of the selected cohorts
@@ -213,11 +213,11 @@ parseDateResponse <- function(string) {
 parseFirebrowseMetadata <- function(type, ...) {
     # Remove NULL arguments
     args <- Filter(Negate(is.null), list(...))
-    
+
     # Query multiple items by collapsing them with a comma
     if (length(args) > 0)
         args <- lapply(args, paste, collapse = ",")
-    
+
     # Query the given link and parse the response
     link <- paste0("http://firebrowse.org/api/v1/Metadata/", type)
     response <- GET(link, query = c(format = "json", args))
@@ -254,11 +254,11 @@ isFirebrowseUp <- function() {
 }
 
 #' Prepare TCGA sample metadata from loaded datasets
-#' 
+#'
 #' If no TCGA datasets apply, the input is returned
-#' 
+#'
 #' @param data List of list of data frames
-#' 
+#'
 #' @return List of list of data frames
 #' @keywords internal
 loadTCGAsampleMetadata <- function(data) {
@@ -277,7 +277,7 @@ loadTCGAsampleMetadata <- function(data) {
                 }
             }
         }
-        
+
         # Retrieve sample metadata from gene expression
         match <- sapply(data[[i]], attr, "dataType") == "Gene expression"
         if (any(match)) {
@@ -315,7 +315,7 @@ loadTCGAsampleMetadata <- function(data) {
 #' cohort)
 #'
 #' @importFrom httr GET
-#' 
+#'
 #' @return Response from the Firebrowse API (it needs to be parsed)
 #' @keywords internal
 #'
@@ -323,23 +323,23 @@ loadTCGAsampleMetadata <- function(data) {
 #' cohort <- getTCGAcohorts()[1]
 #' psichomics:::queryFirebrowseData(cohort = names(cohort),
 #'                                  data_type = "mRNASeq")
-#' 
+#'
 #' # Querying for data from a specific date
 #' dates <- getTCGAdates()
 #' dates <- format(dates, psichomics:::getFirebrowseDateFormat()$query)
-#' 
+#'
 #' psichomics:::queryFirebrowseData(date = dates[2], cohort = names(cohort))
-queryFirebrowseData <- function(format = "json", date = NULL, cohort = NULL, 
+queryFirebrowseData <- function(format = "json", date = NULL, cohort = NULL,
                                 data_type = NULL, tool = NULL, platform = NULL,
                                 center = NULL, level = NULL, protocol = NULL,
                                 page = NULL, page_size = NULL, sort_by = NULL) {
     # Only allow these response formats
     format <- match.arg(format, c("json", "csv", "tsv"))
-    
+
     # Use most recent date by default
     if (is.null(date)) date <- getTCGAdates()[[1]]
     date <- gsub("-", "_", date, fixed=TRUE)
-    
+
     # Process the parameters of the query
     labels <- list("format", "date", "cohort", "data_type", "tool", "platform",
                    "center", "level", "protocol", "page", "page_size",
@@ -347,10 +347,10 @@ queryFirebrowseData <- function(format = "json", date = NULL, cohort = NULL,
     query <- lapply(labels, dynGet)
     names(query) <- labels
     query <- Filter(Negate(is.null), query)
-    
+
     # Collapse items with a comma to query for multiple items
-    query <- lapply(query, paste, collapse = ",") 
-    
+    query <- lapply(query, paste, collapse = ",")
+
     # Query the API
     response <- GET("http://firebrowse.org", query = query,
                     path = "api/v1/Archives/StandardData")
@@ -363,24 +363,24 @@ queryFirebrowseData <- function(format = "json", date = NULL, cohort = NULL,
 #' @param folder Character: directory to store the downloaded archives
 #' @param ... Extra parameters passed to the download function
 #' @param download Function to use to download files
-#' 
+#'
 #' @importFrom utils download.file
-#' 
+#'
 #' @return Invisible TRUE if every file was successfully downloaded
 #' @keywords internal
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' url <- paste0("https://unsplash.it/400/300/?image=", 570:572)
 #' psichomics:::downloadFiles(url, "~/Pictures")
-#' 
+#'
 #' # Download without printing to console
 #' psichomics:::downloadFiles(url, "~/Pictures", quiet = TRUE)
 #' }
 downloadFiles <- function(url, folder, download = download.file, ...) {
     destination <- file.path(folder, basename(url))
     for (i in seq_along(url)) {
-        updateProgress("Downloading file", detail = basename(url[i]), i, 
+        updateProgress("Downloading file", detail = basename(url[i]), i,
                        length(url))
         download(url[i], destination[i], ...)
     }
@@ -397,7 +397,7 @@ downloadFiles <- function(url, folder, download = download.file, ...) {
 #' @importFrom digest digest
 #' @importFrom utils read.table
 #'
-#' @return Logical vector showing TRUE for files with matching \code{md5sums} 
+#' @return Logical vector showing TRUE for files with matching \code{md5sums}
 #' and \code{FALSE} for files with non-matching \code{md5sums}
 #' @keywords internal
 checkIntegrity <- function(filesToCheck, md5file) {
@@ -409,18 +409,18 @@ checkIntegrity <- function(filesToCheck, md5file) {
 
 #' Prepares Firebrowse archives in a given directory
 #'
-#' Checks Firebrowse archives' integrity using the MD5 files, extracts the 
-#' content of the archives, moves the content to newly-created folders and 
+#' Checks Firebrowse archives' integrity using the MD5 files, extracts the
+#' content of the archives, moves the content to newly-created folders and
 #' removes the original downloaded archives.
 #'
 #' @param archive Character: path to downloaded archives
 #' @param md5 Character: path to MD5 files of each archive
-#' @param folder Character: master directory where every archive will be 
+#' @param folder Character: master directory where every archive will be
 #' extracted
 #' @param outdir Character: subdirectories where to move the extracted content
-#' 
+#'
 #' @importFrom utils untar
-#' 
+#'
 #' @return Invisible TRUE if successful
 #' @keywords internal
 #'
@@ -436,40 +436,40 @@ checkIntegrity <- function(filesToCheck, md5file) {
 prepareFirebrowseArchives <- function(archive, md5, folder, outdir) {
     # Check integrety of the downloaded archives with the MD5 files
     validFiles <- simplify2array(Map(checkIntegrity, archive, md5))
-    
+
     ## TODO(NunoA): Should we try to download the invalid archives again?
     ## What if they're constantly invalid? Only try n times before giving up?
     if (!all(validFiles)) {
         warning("The MD5 hashes failed when checking the following files:\n",
                 paste(archive[!validFiles], collapse = "\n\t"))
     }
-    
+
     # Extract the contents of the archives to the same folder
     invisible(lapply(archive, function(arc) untar(arc, exdir=dirname(arc))))
-    
+
     # Remove the original downloaded files
     invisible(file.remove(archive, md5))
-    
+
     # Create folders for these data
     directory <- file.path(folder, names(outdir))
     existing <- dir.exists(directory)
     lapply(directory[!existing], dir.create)
-    
+
     # Move the files to the newly-created folders
     arc <- file_path_sans_ext(archive, compression=TRUE)
     basen <- basename(arc)
-    
+
     ns <- sapply(basen, function(k) {
         m <- sapply(outdir, function(p) basename(p) == k)
         names(outdir)[col(m)[m]]
     })
-    
-    tmpNames <- file.path(dirname(arc), 
+
+    tmpNames <- file.path(dirname(arc),
                           paste0("PSIchomics_TMP", seq(length(arc))))
     # Rename folder name first and revert it afterwards to avoid reaching
     # the Windows' character limit (260 for paths)
     file.rename(arc, tmpNames)
-    
+
     # Rename file names
     filenames <- list.files(tmpNames, full.names = TRUE)
     basenames <- basename(filenames)
@@ -479,7 +479,7 @@ prepareFirebrowseArchives <- function(archive, md5, folder, outdir) {
     renamed <- renamed[basenames != renamed]
     file.rename(toRename, file.path(dirname(toRename), renamed))
     file.rename(tmpNames, arc)
-    
+
     # Organise downloaded folders
     file.rename(arc, file.path(dirname(arc), ns, basen))
     return(invisible(TRUE))
@@ -488,32 +488,32 @@ prepareFirebrowseArchives <- function(archive, md5, folder, outdir) {
 #' Load Firebrowse folders
 #'
 #' Loads the files present in each folder as a data.frame.
-#' 
+#'
 #' @note For faster execution, this function uses the \code{readr} library. This
-#' function ignores subfolders of the given folder (which means that files 
+#' function ignores subfolders of the given folder (which means that files
 #' inside subfolders are NOT loaded).
 #'
 #' @include formats.R
 #'
 #' @param folder Character: folder(s) in which to look for Firebrowse files
 #' @param exclude Character: files to exclude from the loading
-#' 
+#'
 #' @return List with loaded data.frames
 #' @keywords internal
 loadFirebrowseFolders <- function(folder, exclude="") {
     # Retrieve full path of the files inside the given folders
     files <- dir(folder, full.names=TRUE)
-    
+
     # Exclude subdirectories and undesired files
     files <- files[!dir.exists(files)]
     exclude <- paste(exclude, collapse = "|")
     if (exclude != "") files <- files[!grepl(exclude, files)]
-    
+
     # Try to load files and remove those with 0 rows
     loaded <- list()
     formats <- loadFileFormats()
     for (each in seq_along(files)) {
-        updateProgress("Processing file", detail = basename(files[each]), each, 
+        updateProgress("Processing file", detail = basename(files[each]), each,
                        length(files))
         loaded[[each]] <- loadFile(files[each], formats)
     }
@@ -523,9 +523,9 @@ loadFirebrowseFolders <- function(folder, exclude="") {
 }
 
 #' Download and process TCGA data
-#' 
+#'
 #' TCGA data obtained via \href{http://firebrowse.org/api-docs/}{Firebrowse}
-#' 
+#'
 #' @param folder Character: directory to store the downloaded archives (by
 #' default, saves to \code{\link{getDownloadsFolder}()})
 #' @param data Character: data to load (see \code{\link{getTCGAdataTypes}()})
@@ -534,74 +534,74 @@ loadFirebrowseFolders <- function(folder, exclude="") {
 #' \code{.mage-tab.} and \code{MANIFEST.TXT})
 #' @inheritDotParams queryFirebrowseData -format
 #' @param download Boolean: download missing files
-#' 
+#'
 #' @include formats.R
 #' @importFrom tools file_ext file_path_sans_ext
 #' @importFrom httr stop_for_status
 #' @importFrom utils download.file
-#' 
+#'
 #' @aliases loadFirebrowseData
 #' @family functions associated with TCGA data retrieval
 #' @family functions to load data
 #' @return A list with the loaded data, unless required files are unavailable
 #' and \code{download = FALSE} (if so, it returns the URL of files to download)
 #' @export
-#' 
+#'
 #' @examples
 #' getTCGAcohorts()
 #' getTCGAdataTypes()
 #' \dontrun{
 #' loadTCGAdata(cohort = "ACC", data_type = "Clinical")
 #' }
-loadTCGAdata <- function(folder=getDownloadsFolder(), 
+loadTCGAdata <- function(folder=getDownloadsFolder(),
                          data=c("clinical", "junction_quantification",
-                                "RSEM_genes"), 
+                                "RSEM_genes"),
                          exclude=c(".aux.", ".mage-tab.", "MANIFEST.txt"),
                          ..., download=TRUE) {
     args <- list(...)
-    
+
     datasets <- unlist(getTCGAdataTypes())
     # Data types to load
     args$data_type <- c(data[!data %in% datasets], "mRNASeq")
     # Datasets to ignore
     exclude <- c(exclude, datasets[!datasets %in% data])
-    
+
     # Ask for maximum number of records
     args$page_size <- 2000
-    
+
     # Query Firebrowse and get URLs for archives
     res <- do.call(queryFirebrowseData, args)
     stop_for_status(res)
     url <- parseUrlsFromFirebrowseResponse(res)
-    
+
     # "RSEM_genes" would match both "RSEM_genes" and "RSEM_genes_normalized"
     exclude[exclude=="RSEM_genes"] <- "RSEM_genes__"
-    
+
     # Do not download specific items
     exclude <- paste(escape(exclude), collapse = "|")
     url <- url[!grepl(exclude, url)]
-    
+
     # Get the file names without extensions
     md5  <- file_ext(url) == "md5"
     base <- basename(url)
     base[!md5] <- file_path_sans_ext(base[!md5], compression = TRUE)
-    
+
     # Check which files are missing from the given directory
-    downloadedFiles <- list.files(folder, recursive=TRUE, full.names=TRUE, 
+    downloadedFiles <- list.files(folder, recursive=TRUE, full.names=TRUE,
                                   include.dirs=TRUE)
     downloadedMD5   <- file_ext(downloadedFiles) == "md5"
     fullPath <- function(files)
         downloadedFiles[match(files, basename(downloadedFiles))]
-    
+
     # Downloaded files may be archived
     possibleExtensions <- lapply(base[!md5], paste0, c("", ".tar", ".tar.gz"))
-    
+
     missing <- logical(length(base))
     missing[md5]  <- !base[md5] %in% basename(downloadedFiles[downloadedMD5])
     missing[!md5] <- vapply(possibleExtensions, function (i)
-        !any(i %in% basename(downloadedFiles[!downloadedMD5])), 
+        !any(i %in% basename(downloadedFiles[!downloadedMD5])),
         FUN.VALUE = logical(1))
-    
+
     if (any(missing[!md5])) {
         missingFiles <- url[missing]
         class(missingFiles) <- c("missing", class(missingFiles))
@@ -610,7 +610,7 @@ loadTCGAdata <- function(folder=getDownloadsFolder(),
             # Download missing files
             updateProgress(divisions = 1)
             display("Downloading files...")
-            
+
             if (identical(getOption("download.file.method"), "libcurl")) {
                 dl <- download.file(missingFiles, destfile=file.path(
                     folder, basename(missingFiles)))
@@ -621,48 +621,48 @@ loadTCGAdata <- function(folder=getDownloadsFolder(),
                         f, destfile=file.path(folder, basename(f)))
                 }
             }
-            
+
             # Check again the files in the given directory
-            downloadedFiles <- list.files(folder, recursive=TRUE, 
+            downloadedFiles <- list.files(folder, recursive=TRUE,
                                           full.names=TRUE, include.dirs=TRUE)
             downloadedMD5   <- file_ext(downloadedFiles) == "md5"
         } else {
             return(missingFiles)
         }
     }
-    
+
     # Split folders by the cohort type and date
     categories <- names(url[!md5])
     folders <- base[!md5]
     folders <- split(folders, categories)
-    
+
     # Check for folders to unarchive
     archives <- unlist(lapply(possibleExtensions, function (item)
         item[item %in% basename(downloadedFiles[!downloadedMD5])]))
     tar <- grepl(".tar", archives, fixed = TRUE)
-    
+
     if (length(archives[tar]) > 0) {
         # Extract the content, check intergrity, move archives to newly-created
         # folders and remove original archives
         updateProgress("Extracting archives...", divisions=1 + length(folders))
-        prepareFirebrowseArchives(fullPath(archives[tar]), 
+        prepareFirebrowseArchives(fullPath(archives[tar]),
                                   fullPath(base[md5][tar]), folder, folders)
         updateProgress("Archives prepared")
     } else {
         # Set the progress bar to the number of folders to load
-        updateProgress("Loading data...", divisions = length(folders))   
+        updateProgress("Loading data...", divisions = length(folders))
     }
-    
+
     # Get the full path of the files
-    downloadedFiles <- list.files(folder, recursive=TRUE, full.names=TRUE, 
+    downloadedFiles <- list.files(folder, recursive=TRUE, full.names=TRUE,
                                   include.dirs=TRUE)
     folders <- fullPath(base[!md5])
     folders <- split(folders, categories)
-    
+
     # Load the files (but discard empty files with no rows)
     loaded <- lapply(folders, loadFirebrowseFolders, exclude)
     loaded <- lapply(loaded, function(i) Filter(nrow, i))
-    
+
     loaded <- loadTCGAsampleMetadata(loaded)
     loaded <- processDatasetNames(loaded)
     return(loaded)
@@ -675,30 +675,30 @@ loadFirebrowseData <- loadTCGAdata
 
 #' Creates a UI set with options to add data from TCGA/Firebrowse
 #' @param ns Namespace function
-#' 
+#'
 #' @importFrom shiny tagList uiOutput selectizeInput actionButton textAreaInput
-#' 
+#'
 #' @return A UI set that can be added to a UI definition
 #' @keywords internal
 addTCGAdata <- function(ns) {
     cohorts <- getTCGAcohorts()
     acronyms <- names(cohorts)
     names(acronyms) <- sprintf("%s (%s)", cohorts, names(cohorts))
-    
+
     dates <- as.character(getTCGAdates())
     names(dates) <- dates
     names(dates)[1] <- paste(names(dates)[1], "(most recent)")
-    
+
     dataTypes <- getTCGAdataTypes()
     dataList <- dataTypes[[1]]
     names(dataList)[dataList == "RSEM_genes"] <- "Gene expression (RSEM)"
-    names(dataList)[dataList == "RSEM_genes_normalized"] <- 
+    names(dataList)[dataList == "RSEM_genes_normalized"] <-
         "Gene expression (normalised by RSEM)"
-    dataList <- dataList[dataList %in% c("junction_quantification", 
+    dataList <- dataList[dataList %in% c("junction_quantification",
                                          "RSEM_genes", "RSEM_genes_normalized")]
     dataTypes[[1]] <- dataList
     dataTypes <- c("Clinical data"="Clinical", dataTypes)
-    
+
     tagList(
         uiOutput(ns("firebrowseDataModal")),
         uiOutput(ns("iframeDownload")),
@@ -712,7 +712,7 @@ addTCGAdata <- function(ns) {
                            plugins=list("remove_button"))),
         selectizeInput(ns("firebrowseData"), "Data type", multiple = TRUE,
                        width = "100%", dataTypes,
-                       selected=c("Clinical", "junction_quantification", 
+                       selected=c("Clinical", "junction_quantification",
                                   "RSEM_genes"),
                        options = list(
                            placeholder = "Select data types",
@@ -729,11 +729,11 @@ addTCGAdata <- function(ns) {
 
 #' @rdname appUI
 #' @param panel Function to enclose interface
-#' 
+#'
 #' @importFrom shiny NS helpText icon a
 firebrowseUI <- function(id, panel) {
     ns <- NS(id)
-    
+
     panel(style="info",
           title=list(icon("plus-circle"), "TCGA data loading"),
           value="Load TCGA/Firebrowse data",
@@ -747,65 +747,65 @@ firebrowseUI <- function(id, panel) {
 }
 
 #' Return an user interface depending on the status of the Firebrowse API
-#' 
+#'
 #' If the API is working, it'll be loaded. Else, a message will appear warning
-#' the user that the API is down and that will let check again if the API is 
+#' the user that the API is down and that will let check again if the API is
 #' back online.
-#' 
+#'
 #' @param ns Namespace function
-#' 
+#'
 #' @importFrom shiny br icon tagList actionButton
 #' @importFrom shinyjs hide
-#' 
+#'
 #' @return HTML elements
 #' @keywords internal
 checkFirebrowse <- function(ns) {
-    startProgress("Checking Firebrowse API to retrieve TCGA data...", 1)
+    # startProgress("Checking Firebrowse API to retrieve TCGA data...", 1)
     if (isFirebrowseUp()) {
-        updateProgress("Loading Firebrowse interface...")
+        # updateProgress("Loading Firebrowse interface...")
         ui <- addTCGAdata(ns)
     } else {
         ui <- errorDialog("Firebrowse API appears to be offline at the moment.",
-                          buttonId=ns("refreshFirebrowse"), 
+                          buttonId=ns("refreshFirebrowse"),
                           buttonLabel="Check Firebrowse again",
                           buttonIcon="refresh")
     }
-    closeProgress("Firebrowse interface loaded")
+    # closeProgress("Firebrowse interface loaded")
     hide("firebrowseLoading")
     return(ui)
 }
 
 #' Set data from Firebrowse
-#' 
+#'
 #' @inheritParams appServer
 #' @param replace Boolean: replace loaded data?
-#' 
+#'
 #' @importFrom shinyjs disable enable
 #' @importFrom shiny div fluidRow column icon tags
 #' @importFrom shinyBS bsTooltip
-#' 
+#'
 #' @inherit psichomics return
 #' @keywords internal
 setFirebrowseData <- function(input, output, session, replace=TRUE) {
     ns <- session$ns
     time <- startProcess("getFirebrowseData")
-    
+
     # Load data from Firebrowse
     data <- loadFirebrowseData(folder = input$dataFolder,
                                cohort = input$firebrowseCohort,
                                date = gsub("-", "_", input$firebrowseDate),
                                data = input$firebrowseData, download = FALSE)
-    
+
     areDataMissing <- any(is(data, "missing"))
     if (areDataMissing) {
         updateProgress(divisions = 1)
         setURLtoDownload(data)
-        
+
         infoModal(
             session, "Confirm data download",
             "Do you wish to download the selected TCGA data? When the",
             "downloads finish, click", tags$b("Load data"), "with the exact",
-            "same options to automatically load the data into", 
+            "same options to automatically load the data into",
             tags$i("psichomics."), tags$br(), tags$br(), tags$div(
                 class="alert", class="alert-warning", role="alert",
                 tags$i("psichomics"), "will check for downloaded files in",
@@ -833,17 +833,17 @@ setFirebrowseData <- function(input, output, session, replace=TRUE) {
 #' @rdname appServer
 firebrowseServer <- function(input, output, session) {
     ns <- session$ns
-    
+
     prepareFileBrowser(session, input, "dataFolder", directory=TRUE)
-    
+
     # If Firebrowse is unaccessible, allow user to try again
     output$checkFirebrowse <- renderUI(isolate(checkFirebrowse(ns)))
     observeEvent(input$refreshFirebrowse,
                  output$checkFirebrowse <- renderUI(checkFirebrowse(ns)))
-    
+
     # # The button is only enabled if it meets the conditions that follow
     # observe(toggleState("acceptFile", input$species != ""))
-    
+
     # Check if data is already loaded and ask the user if it should be replaced
     observeEvent(input$getFirebrowseData, {
         if (length(isolate(input$firebrowseCohort)) == 0) {
@@ -860,7 +860,7 @@ firebrowseServer <- function(input, output, session) {
                        caller="Load TCGA data", modalId="firebrowseDataModal")
         } else if (!dir.exists(input$dataFolder)) {
             errorModal(
-                session, "Folder not found", "The selected folder", 
+                session, "Folder not found", "The selected folder",
                 tags$kbd(prepareWordBreak(input$dataFolder)), "was not found.",
                 caller="Load TCGA data", modalId="firebrowseDataModal")
         } else if (!is.null(getData())) {
@@ -870,22 +870,22 @@ firebrowseServer <- function(input, output, session) {
             setFirebrowseData(input, output, session)
         }
     })
-    
+
     # Load data when the user presses to replace data
     observeEvent(input$firebrowseReplace,
                  setFirebrowseData(input, output, session, replace=TRUE))
-    
+
     # Load data when the user presses to load new data (keep previously loaded)
     observeEvent(input$firebrowseAppend,
                  setFirebrowseData(input, output, session, replace=FALSE))
-    
+
     # Download data through the browser
     observeEvent(input$acceptDownload, {
         url <- getURLtoDownload()
         if (!is.null(url)) {
             display("Triggered file downloads")
             # Download missing files through the browser
-            iframe <- function(url) 
+            iframe <- function(url)
                 tags$iframe(width=1, height=1, frameborder=0, src=url)
             output$iframeDownload <- renderUI(lapply(url, iframe))
             setURLtoDownload(NULL)

@@ -1,7 +1,6 @@
 # psichomics 1.16.1 (10 May, 2020)
 
 * `discardLowCoveragePSIvalues()`: improve performance (2x faster)
-* `loadLocalFiles()`: print elapsed time after loading local files
 * When quantifying or loading PSI values, psichomics discards splicing events
 whose junctions:
     - (1) are not present in junction quantification data or
@@ -17,6 +16,10 @@ symbol names for any species with `OrgDb` data
     - Add jitter to rug plot (helps to discern numerous points)
     - Display interquantile range (IQR) per group in the tooltip
     - In the command-line, add subtitles via argument `subtitle`
+
+## Bug fixes and minor changes
+
+* `loadLocalFiles()`: print elapsed time after loading local files
 * `filterGroups()` was modified to return a character vector whose names are
 original names (instead of groups) and include an attribute *Groups* with the
 respective group of each value (together with their colour, if available):
@@ -24,6 +27,10 @@ respective group of each value (together with their colour, if available):
     tooltip for each sample
 * Fix parsing of VAST-TOOLS intron retention events as skipped exon for certain
 annotations (including Hs2)
+* Graphical user interface improvements:
+    - Avoid "Matching subjects to their samples/Matching process concluded" loop
+    - Timeout GTEx data retrieval after 3 seconds without server response
+    - Avoid unnecessary messages when loading Firebrowse interface
 * Improve tutorials
 
 # psichomics 1.14.4 (30 August, 2020)

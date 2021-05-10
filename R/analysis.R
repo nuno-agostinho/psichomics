@@ -3216,8 +3216,8 @@ diffEventUI <- function(id, ns, psi=TRUE) {
 
     singleEventInfo <- div(
         id=ns("singleEventInfo"),
-        highchartOutput(ns("density")),
         if (psi) uiOutput(ns("eventDiagrams")),
+        highchartOutput(ns("density")),
         h4("Parametric tests"),
         div(class="row", card("ttest"), card("levene")),
         h4("Non-parametric tests"),
