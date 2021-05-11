@@ -13,6 +13,7 @@ plotDistribution(
   title = NULL,
   subtitle = NULL,
   type = c("density", "boxplot", "violin"),
+  invertAxes = FALSE,
   psi = NULL,
   rugLabels = FALSE,
   rugLabelsRotation = 0,
@@ -109,6 +110,8 @@ for each group)?}
 \item{subtitle}{Character: plot subtitle}
 
 \item{type}{Character: \code{density}, \code{boxplot} or \code{violin} plot}
+
+\item{invertAxes}{Boolean: plot X axis as Y and vice-versa?}
 
 \item{psi}{Boolean: are \code{data} composed of PSI values? If \code{NULL},
 \code{psi = TRUE} if all \code{data} values are between 0 and 1}

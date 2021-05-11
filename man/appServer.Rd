@@ -12,6 +12,7 @@
 \name{appServer}
 \alias{appServer}
 \alias{analysesServer}
+\alias{diffEventServer}
 \alias{correlationServer}
 \alias{diffExpressionServer}
 \alias{diffExpressionEventServer}
@@ -40,6 +41,8 @@
 appServer(input, output, session)
 
 analysesServer(input, output, session)
+
+diffEventServer(ns, input, output, session, psi)
 
 correlationServer(input, output, session)
 

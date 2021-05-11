@@ -9,13 +9,14 @@ whose junctions:
 * When normalizing gene expression, support converting gene identifiers to gene
 symbol names for any species with `OrgDb` data
 * Distribution plots (`plotDistribution()`):
-    - Plot sample distributions in density, violin or box plots (use argument
-    `type` in the command-line interface)
+    - Plot sample distributions in density, violin or box plots (argument `type`
+    in command-line interface)
     - Hide rug plot when showing 500 or more values (by default) to avoid
     performance issues
     - Add jitter to rug plot (helps to discern numerous points)
     - Display interquantile range (IQR) per group in the tooltip
-    - In the command-line, add subtitles via argument `subtitle`
+    - Add subtitles (argument `subtitle` in command-line interface)
+    - Allow to invert axes (argument `invertAxes` in command-line interface)
 
 ## Bug fixes and minor changes
 

@@ -1807,7 +1807,7 @@ prepareBoxPlotData <- function(groupStats) {
 }
 
 #' @importFrom highcharter hc_add_series hc_chart
-hc_addViolinPlot <- function(hc, groupStats, legend) {
+hc_addViolinPlot <- function(hc, groupStats, legend, invertAxes=TRUE) {
     scaleBetween <- function(x, min=min(x), max=max(x), newMin=0, newMax=1) {
         (x - min(x)) / (max(x) - min(x)) * (newMax - newMin) + newMin
     }
@@ -1842,7 +1842,7 @@ hc_addViolinPlot <- function(hc, groupStats, legend) {
         }
     }
     hc <- hc %>%
-        hc_chart(inverted=TRUE) %>%
+        hc_chart(inverted=invertAxes) %>%
         hc_xAxis(reversed=FALSE)
     return(hc)
 }
@@ -1865,6 +1865,7 @@ hc_addViolinPlot <- function(hc, groupStats, legend) {
 #' @param title Character: plot title
 #' @param subtitle Character: plot subtitle
 #' @param type Character: \code{density}, \code{boxplot} or \code{violin} plot
+#' @param invertAxes Boolean: plot X axis as Y and vice-versa?
 #' @param psi Boolean: are \code{data} composed of PSI values? If \code{NULL},
 #'   \code{psi = TRUE} if all \code{data} values are between 0 and 1
 #' @param rugLabels Boolean: plot sample names in the rug?
@@ -1903,7 +1904,8 @@ hc_addViolinPlot <- function(hc, groupStats, legend) {
 #' plotDistribution(data, groups)
 plotDistribution <- function(data, groups=NULL, rug=length(data) < 500,
                              vLine=TRUE, ..., title=NULL, subtitle=NULL,
-                             type=c("density", "boxplot", "violin"), psi=NULL,
+                             type=c("density", "boxplot", "violin"),
+                             invertAxes=FALSE, psi=NULL,
                              rugLabels=FALSE, rugLabelsRotation=0,
                              legend=TRUE, valueLabel=NULL) {
     type <- match.arg(type)
@@ -1945,8 +1947,9 @@ plotDistribution <- function(data, groups=NULL, rug=length(data) < 500,
         axis <- "x"
         category <- FALSE
         hc <- hc %>%
-            hc_chart(zoomType="x") %>%
-            hc_xAxis(min=mini, max=maxi, title=list(text=label)) %>%
+            hc_chart(zoomType="x", inverted=invertAxes) %>%
+            hc_xAxis(min=mini, max=maxi, title=list(text=label),
+                     reversed=FALSE) %>%
             hc_plotOptions(series=list(fillOpacity=0.3,
                                        marker=list(enabled=FALSE))) %>%
             hc_addDensityPlot(groupStats, legend)
@@ -1958,7 +1961,7 @@ plotDistribution <- function(data, groups=NULL, rug=length(data) < 500,
         category <- TRUE
         boxplotData <- prepareBoxPlotData(groupStats)
         hc <- hc %>%
-            hc_chart(zoomType="xy") %>%
+            hc_chart(zoomType="xy", inverted=invertAxes) %>%
             hc_add_series_list(boxplotData) %>%
             hc_xAxis(visible=FALSE, type="category") %>%
             hc_yAxis(min=mini, max=maxi, title=list(text=label)) %>%
@@ -1970,12 +1973,13 @@ plotDistribution <- function(data, groups=NULL, rug=length(data) < 500,
         category <- TRUE
         hc <- hc %>%
             hc_chart(zoomType="xy") %>%
-            hc_addViolinPlot(groupStats, legend=legend) %>%
+            hc_addViolinPlot(groupStats, legend=legend,
+                             invertAxes=!invertAxes) %>%
             hc_yAxis(visible=FALSE) %>%
             hc_xAxis(min=mini, max=maxi, title=list(text=label)) %>%
             hc_plotOptions(series=list(fillOpacity=0.3,
                                        marker=list(enabled=FALSE)))
-        if (vLine)  hc <- hc %>% hc_addBasicStatsPlotLines(groupStats)
+        if (vLine) hc <- hc %>% hc_addBasicStatsPlotLines(groupStats)
     }
     hc <- hc %>%
         hc_tooltip(headerFormat="",
@@ -3209,6 +3213,7 @@ diffEventUI <- function(id, ns, psi=TRUE) {
                          "Boxplot"="boxplot",
                          "Violin plot"="violin")),
         checkboxInput(ns("rug"), "Show individual values", FALSE),
+        checkboxInput(ns("invertAxes"), "Invert axes", FALSE),
         actionButton(ns("analyse"), "Perform analyses", class="btn-primary"),
         uiOutput(ns("basicStats")),
         if (!psi) uiOutput(ns("diffStats")),
@@ -3227,15 +3232,15 @@ diffEventUI <- function(id, ns, psi=TRUE) {
         errorMsg <- errorDialog(
             paste("Alternative splicing quantification is required for",
                   "differential splicing analysis."),
-            id=ns("missingIncLevels"), buttonIcon="calculator",
+            id=ns("missingData"), buttonIcon="calculator",
             buttonLabel="Alternative splicing quantification",
-            buttonId=ns("missingIncLevelsButton"))
+            buttonId=ns("missingDataButton"))
     } else {
         errorMsg <- errorDialog(
             "Gene expression is required for differential expression.",
-            id=ns("missingGeneExpr"), buttonIcon="plus-circle",
+            id=ns("missingData"), buttonIcon="plus-circle",
             buttonLabel="Load gene expression",
-            buttonId=ns("missingGeneExprButton"))
+            buttonId=ns("missingDataButton"))
     }
 
     ui <- tagList(
@@ -3245,6 +3250,173 @@ diffEventUI <- function(id, ns, psi=TRUE) {
             mainPanel(
                 hidden(singleEventInfo) )))
     return(ui)
+}
+
+toggleRugBasedOnDataLength <- function(session, table, row, npoints=500) {
+    if (is.null(table) || is.null(row) || row == "") return(NULL)
+    values <- as.numeric(table[row, ])
+    updateCheckboxInput(session, "rug", value=length(values) < npoints)
+}
+
+prepareDiffExprStats <- function(stat, cols) {
+    adjustedPvalue     <- grep("p-value (", cols, fixed=TRUE, value=TRUE)
+    logFC              <- signifDigits(stat$"log2 Fold-Change")
+    logFCconf1         <- signifDigits(stat$"conf. int1")
+    logFCconf2         <- signifDigits(stat$"conf. int2")
+    modTstats          <- signifDigits(stat$"moderated t-statistics")
+    modTpvalue         <- signifDigits(stat$"p-value")
+    modTadjustedPvalue <- signifDigits(stat[[adjustedPvalue]])
+    bStats             <- signifDigits(stat$"B-statistics")
+
+    diffStats <- tagList(
+        hr(), h4("Differential expression summary"),
+        tags$b("log2 Fold-Change: "),
+        sprintf("%s (%s to %s)", logFC, logFCconf1, logFCconf2), br(),
+        tags$b("Moderated t-statistics: "), modTstats, br(),
+        tags$b("p-value: "), modTpvalue, br(),
+        tags$b(paste0(adjustedPvalue, ": ")), modTadjustedPvalue, br(),
+        tags$b("B-statistics: "), bStats)
+    return(diffStats)
+}
+
+renderEventDiagram <- function(event, xAxis=TRUE, isDensityPlot=TRUE) {
+    parsed <- parseSplicingEvent(event)
+    if (is.null(parsed$type)) return(NULL)
+    isMXE <- parsed$type == "MXE"
+
+    if (xAxis) {
+        left <- ifelse(isDensityPlot, 46, 25)
+        constitutiveStyle <- sprintf(
+            "position: absolute; top: 321px; left:  %spx;", left)
+        alternativeStyle  <- "position: absolute; top: 321px; right: 24px;"
+    } else {
+        transform <- "transform: rotate(270deg) scale(0.4)"
+        left <- ifelse(isMXE, -10, 10)
+        top  <- ifelse(isDensityPlot, 286, 307)
+        constitutiveStyle <- sprintf(
+            "position: absolute; top: %spx; left: %spx; %s",
+            top, left, transform)
+        alternativeStyle  <- paste(
+            "position: absolute; top: 44px; left: -10px;", transform)
+    }
+
+    constitutive <- suppressWarnings(
+        plotSplicingEvent(
+            style=constitutiveStyle,
+            constitutiveWidth=40, alternativeWidth=40, intronWidth=0,
+            event, class=NULL, showPath=FALSE, showText=FALSE,
+            showAlternative1=FALSE, showAlternative2=TRUE)[[1]])
+    alternative <- suppressWarnings(
+        plotSplicingEvent(
+            style=alternativeStyle,
+            constitutiveWidth=40, alternativeWidth=40, intronWidth=0,
+            event, class=NULL, showPath=FALSE, showText=FALSE,
+            showAlternative1=TRUE, showAlternative2=!isMXE)[[1]])
+    return(tagList(HTML(constitutive), HTML(alternative)))
+}
+
+analyseSingleEvent <- function(psi, input, output, session) {
+    if (psi) {
+        data  <- getInclusionLevels()
+        row   <- getEvent()
+        stats <- getDifferentialSplicing()
+        type  <- "Inclusion levels"
+    } else {
+        data  <- getGeneExpression(input$geneExpr)
+        row   <- input$gene
+        stats <- getDifferentialExpression()
+        type  <- "Gene expression"
+    }
+
+    if (is.null(data)) {
+        missingDataModal(session, type, ns("missingData"))
+        return(NULL)
+    } else if (is.null(row) || row == "") {
+        if (psi) {
+            errorModal(session, "No event selected",
+                       "Please, select an alternative splicing event.",
+                       caller="Differential splicing analysis")
+        } else {
+            errorModal(session, "No gene selected", "Please select a gene.",
+                       caller="Differential expression analysis")
+        }
+        return(NULL)
+    }
+
+    # Prepare groups of samples to analyse
+    groups <- getSelectedGroups(input, "diffGroups", "Samples",
+                                filter=colnames(data))
+    colour <- attr(groups, "Colour")
+    if ( !is.null(groups) ) {
+        attrGroups <- groups
+        data <- data[ , unlist(groups), drop=FALSE]
+        groups <- rep(names(groups), sapply(groups, length))
+    } else {
+        attrGroups <- "All samples"
+        groups <- rep(attrGroups, ncol(data))
+    }
+
+    # Check if analyses were already performed
+    diffStats <- NULL
+    if (!is.null(stats) && identical(attrGroups, attr(stats, "groups"))) {
+        stat <- stats[row, ]
+        if (!psi) diffStats <- prepareDiffExprStats(stat, names(stats))
+    } else {
+        stat <- NULL
+    }
+
+    # Separate samples by their groups
+    eventData <- as.numeric(data[row, ])
+    names(eventData) <- colnames(data)
+    eventData <- filterGroups(eventData, groups, 2)
+    groups    <- attr(eventData, "Groups")
+    attr(groups, "Colour") <- colour
+
+    if (psi) {
+        title <- parseSplicingEvent(row, char=TRUE, pretty=TRUE)
+    } else {
+        title <- paste(row, "gene expression")
+    }
+    invertAxes <- input$invertAxes
+    plot <- plotDistribution(eventData, groups, psi=psi, title=title,
+                             type=input$plotType, rug=input$rug,
+                             invertAxes=invertAxes)
+    output$density <- renderHighchart(plot)
+
+    if (psi) {
+        # XNOR(non-invert, density plot)
+        isDensityPlot <- input$plotType == "density"
+        xAxis <- !invertAxes == (isDensityPlot)
+        output$eventDiagrams <- renderUI({
+            renderEventDiagram(row, xAxis=xAxis, isDensityPlot=isDensityPlot)
+        })
+    }
+
+    output$basicStats <- renderUI(basicStats(eventData, groups))
+    if (!psi) output$diffStats <- renderUI(diffStats)
+    output$ttest      <- renderUI(ttest(eventData, groups, stat))
+    output$wilcox     <- renderUI(wilcox(eventData, groups, stat))
+    output$kruskal    <- renderUI(kruskal(eventData, groups, stat))
+    output$levene     <- renderUI(levene(eventData, groups, stat))
+    output$fligner    <- renderUI(fligner(eventData, groups, stat))
+    # output$fisher   <- renderUI(fisher(eventData, groups))
+    # output$spearman <- renderUI(spearman(eventData, groups))
+
+    show("survivalButton")
+    show("singleEventInfo")
+}
+
+#' @rdname appServer
+#'
+#' @importFrom highcharter renderHighchart
+#' @importFrom shinyjs show hide
+diffEventServer <- function(ns, input, output, session, psi) {
+    selectGroupsServer(session, "diffGroups", "Samples")
+
+    data <- ifelse(psi, "Inclusion levels", "Gene expression")
+    observeEvent(input$missingData, missingDataGuide(data))
+    observeEvent(input$missingDataButton, missingDataGuide(data))
+    observeEvent(input$analyse, analyseSingleEvent(psi, input, output, session))
 }
 
 attr(analysesUI, "loader") <- "app"
