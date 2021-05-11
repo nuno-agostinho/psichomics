@@ -858,7 +858,9 @@ geNormalisationFilteringServer <- function(input, output, session) {
 
     # Update OrgDb choices for gene symbol conversion
     observe({
-        orgDb <- unique(query(AnnotationHub(), "OrgDb")$species)
+        # Suppress snapshot date message
+        orgDb <- suppressMessages(query(AnnotationHub(), "OrgDb")$species)
+        orgDb <- unique(orgDb)
         if (is.null(orgDb)) orgDb <- "Homo sapiens"
         updateSelectizeInput(session, "orgDb", choices=orgDb,
                              selected="Homo sapiens")
