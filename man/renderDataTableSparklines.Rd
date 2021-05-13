@@ -15,7 +15,7 @@ renderDataTableSparklines(..., options = NULL)
 frequent search requests).}
     \item{\code{callback}}{A JavaScript function to be applied to the DataTable object.
 This is useful for DataTables plug-ins, which often require the DataTable
-instance to be available (\url{http://datatables.net/extensions/}).}
+instance to be available (\url{https://datatables.net/extensions/}).}
     \item{\code{quoted}}{Is \code{expr} a quoted expression (with \code{quote()})? This
 is useful if you want to save an expression in a variable.}
     \item{\code{outputArgs}}{A list of arguments to be passed through to the implicit

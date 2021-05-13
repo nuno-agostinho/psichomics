@@ -8,7 +8,7 @@ output:
     rmarkdown::html_vignette:
         toc: true
 vignette: >
-    %\VignetteIndexEntry{Case study: visual interface}
+    %\VignetteIndexEntry{Case study: visual interface tutorial}
     %\VignetteEngine{knitr::rmarkdown}
     \usepackage[utf8]{inputenc}
 ---
