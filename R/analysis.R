@@ -3317,7 +3317,7 @@ renderEventDiagram <- function(event, xAxis=TRUE, isDensityPlot=TRUE) {
     return(tagList(HTML(constitutive), HTML(alternative)))
 }
 
-analyseSingleEvent <- function(psi, input, output, session) {
+analyseSingleEvent <- function(psi, input, output, session, ns) {
     if (psi) {
         data  <- getInclusionLevels()
         row   <- getEvent()
@@ -3418,7 +3418,8 @@ diffEventServer <- function(ns, input, output, session, psi) {
     data <- ifelse(psi, "Inclusion levels", "Gene expression")
     observeEvent(input$missingData, missingDataGuide(data))
     observeEvent(input$missingDataButton, missingDataGuide(data))
-    observeEvent(input$analyse, analyseSingleEvent(psi, input, output, session))
+    observeEvent(input$analyse,
+                 analyseSingleEvent(psi, input, output, session, ns))
 }
 
 attr(analysesUI, "loader") <- "app"

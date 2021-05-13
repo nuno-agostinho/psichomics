@@ -4,7 +4,7 @@ vector <- 1:12
 group  <- c("yellow", "yellow", rep(c("red", "blue"), 5))
 
 col2hex <- function(col) rgb(t(col2rgb(col)), maxColorValue=255)
-attr(group, "Colours") <- setNames(col2hex(unique(group)), unique(group))
+attr(group, "Colour") <- setNames(col2hex(unique(group)), unique(group))
 
 test_that("Groups are ignored with less elements than the threshold", {
     # Discard yellow for having low number of values
@@ -13,7 +13,7 @@ test_that("Groups are ignored with less elements than the threshold", {
     res <- vector[-c(1:2)]
 
     g <- group[-c(1:2)]
-    attr(g, "Colours") <- attr(group, "Colours")
+    attr(g, "Colour") <- attr(group, "Colour")
     attr(res, "Groups") <- g
     expect_identical(filtered, res)
 })

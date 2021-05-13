@@ -371,6 +371,8 @@ loadGeneExpressionSet <- function(session, input, output) {
 #' @examples
 #' # Use species name to automatically look for a OrgDb database
 #' sp <- "Homo sapiens"
+#' genes <- c("ENSG00000012048", "ENSG00000083093", "ENSG00000141510",
+#'            "ENSG00000051180")
 #' convertGeneIdentifiers(sp, genes)
 #' convertGeneIdentifiers(sp, genes, key="ENSEMBL", target="UNIPROT")
 #'
@@ -379,8 +381,6 @@ loadGeneExpressionSet <- function(session, input, output) {
 #' sp <- AnnotationHub::query(ah, c("OrgDb", "Homo sapiens"))[[1]]
 #' columns(sp) # these attributes can be used to change the attributes
 #'
-#' genes <- c("ENSG00000012048", "ENSG00000083093", "ENSG00000141510",
-#'            "ENSG00000051180")
 #' convertGeneIdentifiers(sp, genes)
 #' convertGeneIdentifiers(sp, genes, key="ENSEMBL", target="UNIPROT")
 convertGeneIdentifiers <- function(annotation, genes, key="ENSEMBL",
