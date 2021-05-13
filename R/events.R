@@ -68,6 +68,7 @@ getSplicingEventCoordinates <- function(type, sorting=FALSE) {
                          "A5SS" = c("A2.end", "A1.end"),
                          "AFE"  = c("A1.start", "A1.end", "A2.start", "A2.end"),
                          "ALE"  = c("A1.start", "A1.end", "A2.start", "A2.end"),
+                         "RI"   = c("C1.end", "C2.start"),
                          "MXE"  = c("A1.start", "A1.end", "A2.start", "A2.end"),
                          "TandemUTR" = c("A1.end", "A2.end"))
     }

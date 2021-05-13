@@ -58,6 +58,9 @@ getCoordPosByEventType <- function(type) {
         alt1 <- 2
         alt2 <- 1
         con2 <- 3
+    } else if (type %in% "RI") {
+        con1 <- c(1, 2)
+        con2 <- c(3, 4)
     }
     return(list(con1=con1, alt1=alt1, alt2=alt2, con2=con2))
 }

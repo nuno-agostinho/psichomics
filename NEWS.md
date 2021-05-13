@@ -8,6 +8,8 @@ whose junctions:
     The number of discarded events is now displayed during PSI quantification.
 * When normalizing gene expression, support converting gene identifiers to gene
 symbol names for any species with `OrgDb` data
+* Allow to use `plotSplicingEvent()` directly with a PSI table to plot diagrams
+of the alternative splicing events within
 * Distribution plots (`plotDistribution()`):
     - Plot sample distributions in density, violin or box plots (argument `type`
     in command-line interface)
@@ -26,12 +28,17 @@ original names (instead of groups) and include an attribute *Groups* with the
 respective group of each value (together with their colour, if available):
     - Distribution plots in the graphical interface now show sample name in the
     tooltip for each sample
-* Fix parsing of VAST-TOOLS intron retention events as skipped exon for certain
-annotations (including Hs2)
+* Importing VAST-TOOLS annotation:
+    - Fix parsing of VAST-TOOLS intron retention events as skipped exon for
+    certain annotations (including Hs2)
+    - Support diagrams for intron retention events with full exon coordinates
 * Graphical user interface improvements:
     - Avoid "Matching subjects to their samples/Matching process concluded" loop
     - Timeout GTEx data retrieval after 3 seconds without server response
     - Avoid unnecessary messages when loading Firebrowse interface
+    - Fix intron retention diagrams in distribution plots not displaying introns
+    - When searching for specific splicing events, fix results based on the
+    wrong genomic coordinates
 * Improve tutorials
 
 # psichomics 1.14.4 (30 August, 2020)

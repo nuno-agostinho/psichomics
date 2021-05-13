@@ -13,7 +13,7 @@ diagramSplicingEvent(
   showPath = TRUE,
   showAlternative1 = TRUE,
   showAlternative2 = TRUE,
-  constitutiveWidth = 60,
+  constitutiveWidth = NULL,
   alternativeWidth = NULL,
   intronWidth = NULL,
   constitutiveFill = "lightgray",

@@ -3222,7 +3222,7 @@ diffEventUI <- function(id, ns, psi=TRUE) {
     singleEventInfo <- div(
         id=ns("singleEventInfo"),
         if (psi) uiOutput(ns("eventDiagrams")),
-        highchartOutput(ns("density")),
+        highchartOutput(ns("distributionPlot")),
         h4("Parametric tests"),
         div(class="row", card("ttest"), card("levene")),
         h4("Non-parametric tests"),
@@ -3283,6 +3283,7 @@ renderEventDiagram <- function(event, xAxis=TRUE, isDensityPlot=TRUE) {
     parsed <- parseSplicingEvent(event)
     if (is.null(parsed$type)) return(NULL)
     isMXE <- parsed$type == "MXE"
+    isRI  <- parsed$type == "RI"
 
     if (xAxis) {
         left <- ifelse(isDensityPlot, 46, 25)
@@ -3291,13 +3292,15 @@ renderEventDiagram <- function(event, xAxis=TRUE, isDensityPlot=TRUE) {
         alternativeStyle  <- "position: absolute; top: 321px; right: 24px;"
     } else {
         transform <- "transform: rotate(270deg) scale(0.4)"
-        left <- ifelse(isMXE, -10, 10)
+        left <- ifelse(isMXE, -24, -4)
         top  <- ifelse(isDensityPlot, 286, 307)
         constitutiveStyle <- sprintf(
             "position: absolute; top: %spx; left: %spx; %s",
             top, left, transform)
-        alternativeStyle  <- paste(
-            "position: absolute; top: 44px; left: -10px;", transform)
+
+        left <- ifelse(isRI, -34, -24)
+        alternativeStyle  <- sprintf(
+            "position: absolute; top: 44px; left: %spx; %s", left, transform)
     }
 
     constitutive <- suppressWarnings(
@@ -3306,10 +3309,12 @@ renderEventDiagram <- function(event, xAxis=TRUE, isDensityPlot=TRUE) {
             constitutiveWidth=40, alternativeWidth=40, intronWidth=0,
             event, class=NULL, showPath=FALSE, showText=FALSE,
             showAlternative1=FALSE, showAlternative2=TRUE)[[1]])
+
+    intronWidth <- ifelse(isRI, 60, 0)
     alternative <- suppressWarnings(
         plotSplicingEvent(
             style=alternativeStyle,
-            constitutiveWidth=40, alternativeWidth=40, intronWidth=0,
+            constitutiveWidth=40, alternativeWidth=40, intronWidth=intronWidth,
             event, class=NULL, showPath=FALSE, showText=FALSE,
             showAlternative1=TRUE, showAlternative2=!isMXE)[[1]])
     return(tagList(HTML(constitutive), HTML(alternative)))
@@ -3381,10 +3386,10 @@ analyseSingleEvent <- function(psi, input, output, session) {
     plot <- plotDistribution(eventData, groups, psi=psi, title=title,
                              type=input$plotType, rug=input$rug,
                              invertAxes=invertAxes)
-    output$density <- renderHighchart(plot)
+    output$distributionPlot <- renderHighchart(plot)
 
     if (psi) {
-        # XNOR(non-invert, density plot)
+        # XNOR(non-invert, distribution plot)
         isDensityPlot <- input$plotType == "density"
         xAxis <- !invertAxes == (isDensityPlot)
         output$eventDiagrams <- renderUI({

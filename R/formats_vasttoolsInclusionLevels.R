@@ -87,7 +87,7 @@ parseEventData <- function(rowData) {
     types         <- unique(rowData$type)
     rowDataByType <- lapply(unique(rowData$type), processEventDataByType,
                             rowData)
-    allRowData    <- rbind.fill(rowDataByType)
+    allRowData    <- Reduce(rbind, rowDataByType)
     rowData       <- allRowData[match(rownames(rowData), allRowData$id), ]
 
     rowData$firstCoord <- NULL
