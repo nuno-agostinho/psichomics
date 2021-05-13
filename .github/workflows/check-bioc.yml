@@ -19,7 +19,7 @@ name: R-CMD-check-bioc
 
 # Increment to clear the cache or include "/nocache" in commit message
 env:
-  cache-version: v3
+  cache-version: v4
 
 jobs:
   R-CMD-check-r-lib:
@@ -31,11 +31,11 @@ jobs:
       matrix:
         config:
           - {os: windows-latest, biocversion: "release"}
-          - {os: windows-latest, biocversion: "devel"}
+          # - {os: windows-latest, biocversion: "devel"}
           - {os: macOS-latest,   biocversion: "release"}
-          - {os: macOS-latest,   biocversion: "devel"}
+          # - {os: macOS-latest,   biocversion: "devel"}
           - {os: ubuntu-latest,  biocversion: "release"}
-          - {os: ubuntu-latest,  biocversion: "devel"}
+          # - {os: ubuntu-latest,  biocversion: "devel"}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
