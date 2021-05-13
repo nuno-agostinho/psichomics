@@ -1573,10 +1573,16 @@ hc_autoHideYaxis <- function(hc) {
 
 #' @importFrom stats IQR
 calcGroupStats <- function(data, groups, rugLabels=FALSE, ...) {
+    if (is.null(groups)) {
+        ns <- groups <- "All samples"
+    } else if (is.list(groups)) {
+        ns <- names(groups)
+    } else {
+        ns <- groups
+    }
     count <- 1
     stats <- list()
-    ns <- unique(groups)
-    for (group in ns) {
+    for (group in unique(ns)) {
         if (is.list(groups)) {
             filter <- groups[[group]]
         } else {
@@ -1924,18 +1930,9 @@ plotDistribution <- function(data, groups=NULL, rug=length(data) < 500,
         label <- "Distribution of gene expression"
         id    <- "Gene expression: "
     }
-
     if (!is.null(valueLabel)) {
         id <- paste0(valueLabel, ": ")
         label <- paste("Distribution of", valueLabel)
-    }
-
-    if (is.null(groups)) {
-        ns <- groups <- "All samples"
-    } else if (is.list(groups)) {
-        ns <- names(groups)
-    } else {
-        ns <- groups
     }
     groupStats <- calcGroupStats(data, groups, rugLabels, ...)
 

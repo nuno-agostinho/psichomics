@@ -103,7 +103,7 @@ test_that("Plot distribution of multiple values per group", {
     nGroups <- length(unique(group))
     expect_length(plot$x$hc_opts$series, nGroups * 2)
     expect_identical(sapply(plot$x$hc_opts$series, "[[", "type"),
-                     rep(c("area", "scatter"), nGroups))
+                     rep(c("area", "scatter"), each=nGroups))
 
     # If values are within 0 and 1, assume data to be PSI values
     expect_equivalent(plot$x$hc_opts$xAxis[c("min", "max")], c(0, 1))
@@ -128,8 +128,18 @@ test_that("Plot distribution based on different types of groups", {
     # If values are named, groups can also be a list of names
     names(eventPSI) <- paste("Sample", seq(eventPSI))
     group2          <- split(names(eventPSI), group)
-    expect_identical(plotDistribution(eventPSI, group),
-                     plotDistribution(eventPSI, group2))
+    p1 <- plotDistribution(eventPSI, group)
+    p2 <- plotDistribution(eventPSI, group2)
+
+    # Y values are randomly assigned: use same Y values to compare the two
+    scatter <- which(sapply(p1$x$hc_opts$series, "[[", "type") == "scatter")
+    for (i in scatter) {
+        data <- p1$x$hc_opts$series[[i]]$data
+        for (j in seq(data)) {
+            p2$x$hc_opts$series[[i]]$data[[j]]$y <- data[[j]]$y
+        }
+    }
+    expect_identical(p1, p2)
 })
 
 test_that("Plot distribution of a single value", {
