@@ -7,7 +7,7 @@
 sortCoordinates(events)
 }
 \arguments{
-\item{events}{List of data frames with alternative splicing events for a 
+\item{events}{List of data frames with alternative splicing events for a
 given program}
 }
 \value{

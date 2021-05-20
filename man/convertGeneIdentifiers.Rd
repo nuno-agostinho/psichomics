@@ -13,8 +13,9 @@ convertGeneIdentifiers(
 )
 }
 \arguments{
-\item{annotation}{\code{OrgDb}: genome wide annotation for an organism, e.g.
-\code{org.Hs.eg.db}}
+\item{annotation}{\code{OrgDb} with genome wide annotation for an organism or
+\code{character} with species name to query \code{OrgDb}, e.g.
+\code{"Homo sapiens"}}
 
 \item{genes}{Character: genes to be converted}
 
@@ -36,14 +37,20 @@ previous identifiers remain other identifiers have the same target (in case
 Convert gene identifiers
 }
 \examples{
-if ( require("org.Hs.eg.db") ) {
-    columns(org.Hs.eg.db)
+# Use species name to automatically look for a OrgDb database
+sp <- "Homo sapiens"
+genes <- c("ENSG00000012048", "ENSG00000083093", "ENSG00000141510",
+           "ENSG00000051180")
+convertGeneIdentifiers(sp, genes)
+convertGeneIdentifiers(sp, genes, key="ENSEMBL", target="UNIPROT")
 
-    genes <- c("ENSG00000012048", "ENSG00000083093", "ENSG00000141510",
-               "ENSG00000051180")
-    convertGeneIdentifiers(org.Hs.eg.db, genes,
-                           key="ENSEMBL", target="SYMBOL")
-}
+# Alternatively, set the annotation database directly
+ah <- AnnotationHub::AnnotationHub()
+sp <- AnnotationHub::query(ah, c("OrgDb", "Homo sapiens"))[[1]]
+columns(sp) # these attributes can be used to change the attributes
+
+convertGeneIdentifiers(sp, genes)
+convertGeneIdentifiers(sp, genes, key="ENSEMBL", target="UNIPROT")
 }
 \seealso{
 Other functions for gene expression pre-processing: 

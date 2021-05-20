@@ -31,7 +31,7 @@ Parse sample information from TCGA sample identifiers
 \examples{
 parseTCGAsampleTypes(c("TCGA-01A-Tumour", "TCGA-10B-Normal"))
 samples <- c("TCGA-3C-AAAU-01A-11R-A41B-07", "TCGA-3C-AALI-01A-11R-A41B-07",
-             "TCGA-3C-AALJ-01A-31R-A41B-07", "TCGA-3C-AALK-01A-11R-A41B-07", 
+             "TCGA-3C-AALJ-01A-31R-A41B-07", "TCGA-3C-AALK-01A-11R-A41B-07",
              "TCGA-4H-AAAK-01A-12R-A41B-07", "TCGA-5L-AAT0-01A-12R-A41B-07")
 
 parseTCGAsampleInfo(samples)

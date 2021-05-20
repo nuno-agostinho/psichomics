@@ -20,6 +20,14 @@ List with loaded projects
 Download and load SRA projects via
 \href{https://jhubiostatistics.shinyapps.io/recount/}{recount2}
 }
+\examples{
+\dontrun{
+View(recount::recount_abstract)
+sra <- loadSRAproject("SRP053101")
+names(sra)
+names(sra[[1]])
+}
+}
 \seealso{
 Other functions associated with SRA data retrieval: 
 \code{\link{getDownloadsFolder}()}

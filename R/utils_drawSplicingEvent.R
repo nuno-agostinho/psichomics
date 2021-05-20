@@ -89,7 +89,7 @@ prepareSVG <- function(exon, path, class=NULL, style=NULL, width=NULL) {
 diagramSplicingEvent <- function(
     parsed, type, class="pull-right", style=NULL,
     showText=TRUE, showPath=TRUE, showAlternative1=TRUE, showAlternative2=TRUE,
-    constitutiveWidth=60, alternativeWidth=NULL, intronWidth=NULL,
+    constitutiveWidth=NULL, alternativeWidth=NULL, intronWidth=NULL,
     constitutiveFill="lightgray", constitutiveStroke="darkgray",
     alternative1Fill="#ffb153", alternative1Stroke="#faa000",
     alternative2Fill="#caa06c", alternative2Stroke="#9d7039") {
@@ -119,6 +119,10 @@ diagramSplicingEvent <- function(
     if (is.null(intronWidth)) {
         intronWidth <- 15
         if (isRI && showAlternative1) intronWidth <- 110
+    }
+    if (is.null(constitutiveWidth)) {
+        constitutiveWidth <- 60
+        if (isRI) constitutiveWidth <- 110
     }
 
     pos_C1s <- pos_C1e <- pos_A1s <- pos_A1e <- pos_A2s <- pos_A2e <-
@@ -329,8 +333,10 @@ diagramSplicingEvent <- function(
             ifelse(isA1ref, constitutiveFill, alternative1Fill),
             ifelse(isA1ref, constitutiveStroke, alternative1Stroke))
     } else if (isRI) {
+        pos_C1s  <- as.numeric(sapply(parsed$constitutive1, "[[", 1))
         pos_C1e  <- as.numeric(sapply(parsed$constitutive1, "[[", 2))
         pos_C2s  <- as.numeric(sapply(parsed$constitutive2, "[[", 1))
+        pos_C2e  <- as.numeric(sapply(parsed$constitutive2, "[[", 2))
         A1len    <- paste(abs(pos_C1e - pos_C2s), "nts")
 
         C1s <- safeAreaWidth
@@ -341,12 +347,14 @@ diagramSplicingEvent <- function(
         C2e <- C2s + constitutiveWidth
         diagramWidth <- C2e + safeAreaWidth
 
-        exon$C1 <- drawRect(C1s, C1e, text2="%1$s", showText=showText,
+        exon$C1 <- drawRect(C1s, C1e, text1="%1$s", text2="%2$s",
+                            showText=showText,
                             fill=constitutiveFill, stroke=constitutiveStroke)
-        exon$A1 <- drawRect(A1s, A1e, textLen="%2$s", showText=showText,
+        exon$A1 <- drawRect(A1s, A1e, textLen="%3$s", showText=showText,
                             fill=alternative1Fill, stroke=alternative1Stroke,
                             height=12, y=14)
-        exon$C2 <- drawRect(C2s, C2e, text1="%3$s", showText=showText,
+        exon$C2 <- drawRect(C2s, C2e, text1="%4$s", text2="%5$s",
+                            showText=showText,
                             fill=constitutiveFill, stroke=constitutiveStroke)
 
         path$C1e_C2s <- drawCurve(C1e, C2s, stroke=constitutiveStroke)
@@ -356,7 +364,7 @@ diagramSplicingEvent <- function(
 
         # Replace with genomic positions per event
         svg      <- prepareSVG(exon, path, class, style, diagramWidth)
-        svgFinal <- sprintf(svg, pos_C1e, A1len, pos_C2s)
+        svgFinal <- sprintf(svg, pos_C1s, pos_C1e, A1len, pos_C2s, pos_C2e)
     }
     names(svgFinal) <- rownames(parsed)
 
@@ -385,15 +393,20 @@ diagramSplicingEvent <- function(
 #' @export
 #'
 #' @examples
-#' ASevent <- c(
-#'     "SE_9_+_6486925_6492303_6492401_6493826_UHRF2",
-#'     "SE_11_+_86925_92303_92401_93826_TESTING/MHG2",
-#'     "A5SS_15_+_63353472_63353987_63354414_TPM1",
-#'     "A3SS_3_-_145796903_145794682_145795711_PLOD2",
-#'     "AFE_17_-_15165746_15168471_15164078_PMP22",
-#'     "ALE_18_-_5395066_5394792_5393477_EPB41L3",
-#'     "MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1")
-#' diagram <- plotSplicingEvent(ASevent)
+#' events <- c(
+#'   "A3SS_15_+_63353138_63353912_63353397_TPM1",
+#'   "A3SS_11_-_61118463_61117115_61117894_CYB561A3",
+#'   "A5SS_21_+_48055675_48056459_48056808_PRMT2",
+#'   "A5SS_1_-_1274742_1274667_1274033_DVL1",
+#'   "AFE_9_+_131902430_131901928_131904724_PPP2R4",
+#'   "AFE_5_-_134686513_134688636_134681747_H2AFY",
+#'   "ALE_12_+_56554104_56554410_56555171_MYL6",
+#'   "ALE_8_-_38314874_38287466_38285953_FGFR1",
+#'   "SE_9_+_6486925_6492303_6492401_6493826_UHRF2",
+#'   "SE_19_-_5218431_5216778_5216731_5215606_PTPRS",
+#'   "MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1",
+#'   "MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7")
+#' diagram <- plotSplicingEvent(events)
 #'
 #' diagram[["A3SS_3_-_145796903_145794682_145795711_PLOD2"]]
 #' diagram[[6]]
@@ -401,11 +414,16 @@ diagramSplicingEvent <- function(
 plotSplicingEvent <- function(
     ASevent, data=NULL, showText=TRUE, showPath=TRUE,
     showAlternative1=TRUE, showAlternative2=TRUE,
-    constitutiveWidth=60, alternativeWidth=NULL, intronWidth=NULL,
+    constitutiveWidth=NULL, alternativeWidth=NULL, intronWidth=NULL,
     constitutiveFill="lightgray", constitutiveStroke="darkgray",
     alternative1Fill="#ffb153", alternative1Stroke="#faa000",
     alternative2Fill="#caa06c", alternative2Stroke="#9d7039",
     class=NULL, style=NULL) {
+
+    if (is.data.frame(ASevent)) {
+        if (is.null(data)) data <- getSplicingEventData(ASevent)
+        ASevent <- rownames(ASevent)
+    }
 
     parsed <- parseSplicingEvent(ASevent, coords=TRUE, data=data)
     if (!is.null(parsed$type)) {
@@ -452,15 +470,17 @@ plotSplicingEvent <- function(
         svg <- c(svg, diagram)
         positions <- c(positions, attr(diagram, "positions"))
     }
-    svg <- svg[ASevent] # Order results based on original input
+    # Order results based on original input
+    ord <- match(names(svg), ASevent)
+    svg <- svg[ord]
     class(svg) <- c("splicingEventPlotList", class(svg))
+    attr(svg, "positions") <- positions[ord]
 
     if (showWarning) {
         msg <- paste("Diagrams could not be rendered for one or more",
                      "alternative splicing event types.")
         warning(msg)
     }
-    attr(svg, "positions") <- positions
     return(svg)
 }
 
@@ -477,9 +497,10 @@ print.splicingEventPlotList <- function(x, ..., browse=TRUE) {
         prepareData <- reactive(
             data.frame(cbind(names(x), x), stringsAsFactors=FALSE))
         output$eventsTable <- renderDataTable(
-            prepareData(), rownames=FALSE, class="compat display",
+            prepareData(), rownames=FALSE, class="compact display",
             colnames=c("Alternative splicing event", "Diagram"),
-            style="bootstrap", caption="Diagram of alternative splicing events")
+            style="bootstrap",
+            caption="Diagrams of alternative splicing events")
     }
 
     if (length(x) == 1) {

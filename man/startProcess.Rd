@@ -18,7 +18,7 @@ time (if \code{NULL}, the time interval is not displayed)}
 \item{closeProgressBar}{Boolean: close progress bar?}
 }
 \value{
-\code{startProcess} returns the start time of the process (may be 
+\code{startProcess} returns the start time of the process (may be
 used as the \code{time} argument to \code{endProcess}), whereas
 \code{endProcess} returns the difference between current time and \code{time}
 (or \code{NULL} if \code{time} is not specified)
@@ -26,8 +26,8 @@ used as the \code{time} argument to \code{endProcess}), whereas
 \description{
 \itemize{
   \item{\code{startProcess}: Style button to show a process is in progress}
-  \item{\code{endProcess}: Style button to show a process finished; also, 
-  closes the progress bar (if \code{closeProgressbar = TRUE}) and 
+  \item{\code{endProcess}: Style button to show a process finished; also,
+  closes the progress bar (if \code{closeProgressbar = TRUE}) and
   prints the difference between the current time and \code{time}}
 }
 }

@@ -206,11 +206,10 @@ inclusionLevelsUI <- function(id, panel) {
 #' splicing event type
 #' @param junctionQuant Data frame: junction quantification
 #' @param eventType Character: splicing event types to quantify
-#' @param minReads Integer: discard alternative splicing quantified using a
-#' number of reads below this threshold
-#' @param genes Character: gene symbols for which the splicing quantification
-#' of associated splicing events is performed (by default, splicing events from
-#' all genes are selected)
+#' @param minReads Integer: values whose number of total supporting read counts
+#' is below \code{minReads} are returned as \code{NA}
+#' @param genes Character: gene symbols for which to quantify splicing events
+#' (if \code{NULL}, events from all genes are quantified)
 #'
 #' @importFrom fastmatch %fin%
 #'
@@ -255,10 +254,10 @@ quantifySplicing <- function(annotation, junctionQuant,
         eventTypes <- getSplicingEventTypes()
         type <- names(eventTypes)[[match(acronym, eventTypes)]]
         thisAnnot <- annotation[[type]]
-        updateProgress("Calculating inclusion levels", type, value=acronym,
-                       max=length(eventType))
-
+        
         if (!is.null(thisAnnot) && nrow(thisAnnot) > 0) {
+            updateProgress("Calculating inclusion levels", type, value=acronym,
+                           max=length(eventType))
             incLevels <- calculateInclusionLevels(acronym, mJunctionQuant,
                                                   thisAnnot, minReads)
             eventData <- rbind(eventData, attr(incLevels, "eventData"))

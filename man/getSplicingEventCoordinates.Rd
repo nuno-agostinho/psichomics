@@ -9,7 +9,7 @@ getSplicingEventCoordinates(type, sorting = FALSE)
 \arguments{
 \item{type}{Character: alternative splicing event type}
 
-\item{sorting}{Boolean: get coordinates used for sorting and comparison 
+\item{sorting}{Boolean: get coordinates used for sorting and comparison
 between different programs?}
 }
 \value{

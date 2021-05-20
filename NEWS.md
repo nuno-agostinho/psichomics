@@ -1,3 +1,46 @@
+# psichomics 1.18.0 (18 May, 2021)
+
+* `discardLowCoveragePSIvalues()`: improve performance (2x faster)
+* When quantifying or loading PSI values, psichomics discards splicing events
+whose junctions:
+    - (1) are not present in junction quantification data or
+    - (2) have low numbers of reads across all samples.
+    The number of discarded events is now displayed during PSI quantification.
+* When normalizing gene expression, support converting gene identifiers to gene
+symbol names for any species with `OrgDb` data
+* Allow to use `plotSplicingEvent()` directly with a PSI table to plot diagrams
+of the alternative splicing events within
+* Distribution plots (`plotDistribution()`):
+    - Plot sample distributions in density, violin or box plots (argument `type`
+    in command-line interface)
+    - Hide rug plot when showing 500 or more values (by default) to avoid
+    performance issues
+    - Add jitter to rug plot (helps to discern numerous points)
+    - Display interquantile range (IQR) per group in the tooltip
+    - Add subtitles (argument `subtitle` in command-line interface)
+    - Allow to invert axes (argument `invertAxes` in command-line interface)
+
+## Bug fixes and minor changes
+
+* `loadLocalFiles()`: print elapsed time after loading local files
+* `filterGroups()` was modified to return a character vector whose names are
+original names (instead of groups) and include an attribute *Groups* with the
+respective group of each value (together with their colour, if available):
+    - Distribution plots in the graphical interface now show sample name in the
+    tooltip for each sample
+* Importing VAST-TOOLS annotation:
+    - Fix parsing of VAST-TOOLS intron retention events as skipped exon for
+    certain annotations (including Hs2)
+    - Support diagrams for intron retention events with full exon coordinates
+* Graphical user interface improvements:
+    - Avoid "Matching subjects to their samples/Matching process concluded" loop
+    - Timeout GTEx data retrieval after 3 seconds without server response
+    - Avoid unnecessary messages when loading Firebrowse interface
+    - Fix intron retention diagrams in distribution plots not displaying introns
+    - When searching for specific splicing events, fix results based on the
+    wrong genomic coordinates
+* Improve tutorials
+
 # psichomics 1.14.4 (30 August, 2020)
 
 * Improve file browser dialog:

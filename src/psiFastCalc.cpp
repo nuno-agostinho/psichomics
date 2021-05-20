@@ -1,21 +1,6 @@
 #include <Rcpp.h>
+#include "progressBar.h"
 using namespace Rcpp;
-
-void progressBar (double progress) {
-    // Source: https://lists.r-forge.r-project.org/pipermail/rcpp-devel/2010-August/000964.html
-    
-    // Create progress bar
-    int barWidth=40;
-    Rprintf("  |");
-    
-    // Print completed progress
-    int complete = round(progress * barWidth);
-    for (int i = 0; i < complete; i++) Rprintf("=");
-    // Print remaining progress
-    for (int i = complete; i < barWidth; i++) Rprintf(" ");
-    Rprintf("| %3.0f%% \r", progress * 100);
-    if (progress == 1) Rprintf("\n");
-}
 
 double calculatePSI (double inc, double exc, double minReads) {
     double psi, total = inc + exc;
@@ -29,15 +14,15 @@ double calculatePSI (double inc, double exc, double minReads) {
 
 // [[Rcpp::export]]
 NumericMatrix psiFastCalc(const NumericMatrix& mat,
-                          const NumericVector incA=0, 
+                          const NumericVector incA=0,
                           const NumericVector incB=0,
-                          const NumericVector excA=0, 
+                          const NumericVector excA=0,
                           const NumericVector excB=0,
                           const int minReads=10) {
     double incReads, excReads;
     int ncol = mat.ncol(), incLen = incA.length();
     NumericMatrix out(incLen, ncol);
-    
+
     for (int col = 0; col < ncol; col++) {
         for (int idx = 0; idx < incLen; idx++) {
             incReads = mat(incA[idx] - 1, col);
@@ -58,13 +43,13 @@ NumericMatrix psiFastCalc(const NumericMatrix& mat,
 
 // [[Rcpp::export]]
 NumericMatrix psiFastCalc2(const NumericMatrix& mat,
-                           const List& inc, const List& exc, 
+                           const List& inc, const List& exc,
                            const int minReads=10) {
     double incReads, excReads;
     int ncol = mat.ncol(), incLen = inc.length();
     NumericMatrix out(incLen, ncol);
     NumericVector incIdx, excIdx;
-    
+
     for (int col = 0; col < ncol; col++) {
         for (int idx = 0; idx < incLen; idx++) {
             incIdx = as<NumericVector>(inc[idx]);

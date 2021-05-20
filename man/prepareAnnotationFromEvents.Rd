@@ -16,7 +16,7 @@ joined by event type
 }
 \description{
 In case more than one data frame with alternative splicing events is given,
-the events are cross-referenced according to the chromosome, strand and 
+the events are cross-referenced according to the chromosome, strand and
 relevant coordinates per event type (see details).
 }
 \details{
@@ -28,7 +28,7 @@ event type:
      and end) and constitutive exon 2 start
      \item Mutually exclusive exon: constitutive exon 1 end, alternative exon
      1 and 2 (start and end) and constitutive exon 2 start
-     \item Alternative 5' splice site: constitutive exon 1 end, alternative 
+     \item Alternative 5' splice site: constitutive exon 1 end, alternative
      exon 1 end and constitutive exon 2 start
      \item Alternative first exon: same as alternative 5' splice site
      \item Alternative 3' splice site: constitutive exon 1 end, alternative

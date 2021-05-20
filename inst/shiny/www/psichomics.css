@@ -37,9 +37,9 @@ mark {
 /* Style progress bar */
 .progress-text { width: auto; }
 .shiny-notification-close { display: none; }
-#shiny-notification-panel { 
-    top: 50px; 
-    width: auto; 
+#shiny-notification-panel {
+    top: 50px;
+    width: auto;
     min-width: 250px;
 }
 #shiny-notification-panel .progress-bar {
@@ -49,7 +49,7 @@ mark {
     background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
     -webkit-background-size: 40px 40px;
     background-size: 40px 40px;
-  
+
     -moz-animation: progress-bar-stripes 2s linear infinite;
     -webkit-animation: progress-bar-stripes 2s linear infinite;
     -o-animation: progress-bar-stripes 2s linear infinite;
@@ -88,7 +88,7 @@ mark {
     width: auto !important;
 }
 
-/* Add error style to modal headers 
+/* Add error style to modal headers
 Adapted from: http://bootsnipp.com/snippets/featured/colored-modal-headings */
 .modal-content .error {
     color:#fff;
@@ -171,7 +171,7 @@ https://blog.endeos.com/lleva-las-listas-html-al-siguiente-nivel-con-css */
     line-height: 1;
     font-weight: bold;
     text-align: right;
-     
+
     content: counter(li-counter);
     counter-increment: li-counter;
 }
@@ -259,19 +259,10 @@ tr.active > td > a:hover { font-weight: bold; }
 #selectizeEvent div.active rect.diagram { stroke: white !important; }
 
 #selectizeEvent .selectize-control::before {
-    -o-transition: opacity 0.2s;
-    -moz-transition: opacity 0.2s;
-    -webkit-transition: opacity 0.2s;
-    transition: opacity 0.2s;
-    
     content: '\f863';
     font-weight: 900;
     font-family: "Font Awesome 5 Free";
-    
-    -moz-animation: fa-spin 2s infinite linear;
-    -webkit-animation: fa-spin 2s infinite linear;
-    animation: fa-spin 2s infinite linear;
-    
+
     z-index: 2;
     position: absolute;
     display: block;
@@ -281,7 +272,18 @@ tr.active > td > a:hover { font-weight: bold; }
     opacity: 0;
 }
 
-#selectizeEvent .selectize-control.loading::before { opacity: 0.4; }
+#selectizeEvent .selectize-control.loading::before {
+  -o-transition: opacity 0.2s;
+  -moz-transition: opacity 0.2s;
+  -webkit-transition: opacity 0.2s;
+  transition: opacity 0.2s;
+
+  -moz-animation: fa-spin 2s infinite linear;
+  -webkit-animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear;
+
+  opacity: 0.4;
+}
 
 /* Groups */
 .editGroups { color: #9A9A9A; }

@@ -11,7 +11,7 @@ groupPerElem(groups, elem = NULL, outerGroupName = NA)
 
 \item{elem}{Character: all elements available}
 
-\item{outerGroupName}{Character: name to give to outer group (if \code{NULL}, 
+\item{outerGroupName}{Character: name to give to outer group (if \code{NULL},
 only show elements matched to their respective groups)}
 }
 \value{

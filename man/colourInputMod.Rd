@@ -21,12 +21,16 @@ user to choose any colour, while \code{limited} only gives the user a
 predefined list of colours to choose from.}
     \item{\code{allowedCols}}{A list of colours that the user can choose from. Only
 applicable when \code{palette == "limited"}. The \code{limited} palette
-uses a default list of 40 colours if \code{allowedCols} is not defined.}
+uses a default list of 40 colours if \code{allowedCols} is not defined. If
+the colour specified in \code{value} is not in the list, the default colour
+will revert to black.}
     \item{\code{allowTransparent}}{If \code{TRUE}, enables a slider to choose an alpha
 (transparency) value for the colour. When a colour with opacity is
 chosen, the return value is an 8-digit HEX code.}
     \item{\code{returnName}}{If \code{TRUE}, then return the name of an R colour instead
 of a HEX value when possible.}
+    \item{\code{closeOnClick}}{If \code{TRUE}, then the colour selection panel will close
+immediately after selecting a colour.}
   }}
 }
 \value{

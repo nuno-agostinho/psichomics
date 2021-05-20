@@ -87,7 +87,7 @@ parseEventData <- function(rowData) {
     types         <- unique(rowData$type)
     rowDataByType <- lapply(unique(rowData$type), processEventDataByType,
                             rowData)
-    allRowData    <- rbind.fill(rowDataByType)
+    allRowData    <- Reduce(rbind, rowDataByType)
     rowData       <- allRowData[match(rownames(rowData), allRowData$id), ]
 
     rowData$firstCoord <- NULL
@@ -114,10 +114,14 @@ processVastToolsPSItable <- function(data) {
     invalid     <- sum(!validEvents)
     total       <- length(validEvents)
     perc        <- round(invalid / total * 100)
-    message(sprintf(
-        "Discarding %s of %s events (%s%%) containing only missing values...",
-        invalid, total, perc))
-    psi <- psi[validEvents, ]
+
+    if (invalid > 0) {
+        message(sprintf(
+            paste("Discarding %s of %s events (%s%%) containing missing values",
+                  "across all samples..."),
+            invalid, total, perc))
+        psi <- psi[validEvents, ]
+    }
     if (nrow(psi) == 0) return(NULL)
 
     # Parse AS data information (after discarding many AS events)

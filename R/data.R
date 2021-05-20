@@ -697,9 +697,7 @@ dataServer <- function(input, output, session) {
     # Match clinical data with sample information
     observe({
         if ( !is.null(getSubjectId()) && !is.null(getSampleId()) ) {
-            startProgress("Matching subjects to their samples...", 1)
             prepareSubjectSampleMatch()
-            closeProgress("Matching process concluded")
         }
     })
 

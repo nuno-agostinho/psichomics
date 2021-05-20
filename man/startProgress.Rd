@@ -50,7 +50,7 @@ state or internal variables)
 Create, set and terminate a progress object
 }
 \details{
-If \code{divisions} is not \code{NULL}, a progress bar starts with 
+If \code{divisions} is not \code{NULL}, a progress bar starts with
 the given divisions. If \code{value = NULL}, the progress bar increments one
 unit; otherwise, the progress bar increments \code{value}.
 }

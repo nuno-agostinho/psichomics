@@ -14,7 +14,7 @@ blendColours(colour1, colour2, colour1Percentage = 0.5)
 
 \item{colour2}{Character: HEX colour}
 
-\item{colour1Percentage}{Character: percentage of colour 1 mixed in blended 
+\item{colour1Percentage}{Character: percentage of colour 1 mixed in blended
 colour}
 }
 \value{

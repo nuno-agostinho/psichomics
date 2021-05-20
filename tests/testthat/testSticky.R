@@ -119,6 +119,7 @@ test_that("Sticky matrices preserve attributes", {
 })
 
 test_that("Subset rowData and colData based on extracted sticky data", {
+    skip_on_bioc()
     df1 <- data.frame(1:5, 5:9, 45:49, 54:58, 62:66)
     colnames(df1) <- paste0("sample", 1:5)
     rownames(df1) <- paste0("event", 6:10)
@@ -170,6 +171,7 @@ test_that("Transposing a sticky object preserves their attributes", {
     compareAttrs(df2, df, c("colour", "animal"))
     expect_equal(attr(df2, "dimnames")[[1]], colnames(df))
     
+    skip_on_bioc()
     # Transpose rowData and colData
     colnames(df) <- paste0("sample", 1:5)
     rownames(df) <- paste0("event", 6:10)

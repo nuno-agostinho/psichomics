@@ -14,7 +14,7 @@ HTML elements
 }
 \description{
 If the API is working, it'll be loaded. Else, a message will appear warning
-the user that the API is down and that will let check again if the API is 
+the user that the API is down and that will let check again if the API is
 back online.
 }
 \keyword{internal}

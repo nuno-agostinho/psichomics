@@ -34,7 +34,7 @@ normalizeGeneExpression(
 \code{RLE}, \code{upperquartile}, \code{none} or \code{quantile} (see
 Details)}
 
-\item{p}{percentile (between 0 and 1) of the counts that is aligned when \code{method="upperquartile"}}
+\item{p}{numeric value between 0 and 1 specifying which quantile of the counts should be used by \code{method="upperquartile"}.}
 
 \item{log2transform}{Boolean: perform log2-transformation?}
 

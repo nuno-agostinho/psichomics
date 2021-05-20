@@ -189,9 +189,9 @@ downloadGtexFiles <- function(link, folder) {
 getGtexDataURL <- function(release, domain="https://storage.googleapis.com",
                            offline=FALSE) {
     path <- paste0("gtex_analysis_v", release)
-    resp <- GET(domain, path=path)
+    resp <- try(GET(domain, path=path, timeout(3)))
     date <- NULL
-    if (!http_error(resp) && !offline) {
+    if (!is(resp, "try-error") && !http_error(resp) && !offline) {
         doc <- xmlParse(resp)
         df  <- xmlToDataFrame(doc, nodes=xmlRoot(doc)[-c(seq(4))],
                               stringsAsFactors=FALSE)

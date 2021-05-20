@@ -89,7 +89,7 @@ geNormalisationFilteringInterface <- function(ns) {
                          tags$code("limma::voom()"), "should be more powerful",
                          "and preferred.")),
             bsCollapsePanel(
-                tagList(icon("retweet"), "CPM and log2 transformation",
+                tagList(icon("retweet"), "CPM and log2",
                         contextUI(ns("logTransformText"))),
                 value="Log-transformation",
                 helpText("Compute log2-transformed counts per million",
@@ -98,12 +98,18 @@ geNormalisationFilteringInterface <- function(ns) {
                 numericInput(
                     ns("priorCount"), value=0.25, step=0.25, width="100%",
                     paste("Average count to add to each observation to avoid",
-                          "zeroes after log-transformation")),
-                helpText())),
-        checkboxInput(
-            ns("convertToGeneSymbol"), width="100%",
-            paste("Replace unambiguous ENSEMBL gene identifiers with their",
-                  "gene symbols"), value=TRUE))
+                          "zeroes after log-transformation"))),
+            bsCollapsePanel(
+                tagList(icon("address-book"), "Convert to gene symbol",
+                        contextUI(ns("geneSymbolConversionText"))),
+                value="Convert to gene symbol",
+                checkboxInput(
+                    ns("convertToGeneSymbol"), width="100%",
+                    paste("Replace unambiguous ENSEMBL gene identifiers with",
+                          "their gene symbols"), value=TRUE),
+                selectizeInput(ns("orgDb"), "Gene database for conversion",
+                               width="100%", choices=NULL,
+                               options=list(highlight=FALSE)))))
 
     tagList(
         uiOutput(ns("modal")),
@@ -341,8 +347,9 @@ loadGeneExpressionSet <- function(session, input, output) {
 
 #' Convert gene identifiers
 #'
-#' @param annotation \code{OrgDb}: genome wide annotation for an organism, e.g.
-#' \code{org.Hs.eg.db}
+#' @param annotation \code{OrgDb} with genome wide annotation for an organism or
+#'   \code{character} with species name to query \code{OrgDb}, e.g.
+#'   \code{"Homo sapiens"}
 #' @param genes Character: genes to be converted
 #' @param key Character: type of identifier used, e.g. \code{ENSEMBL}; read
 #' \code{?AnnotationDbi::columns}
@@ -353,7 +360,7 @@ loadGeneExpressionSet <- function(session, input, output) {
 #'
 #' @importFrom AnnotationDbi select
 #' @importFrom data.table data.table
-#' @importFrom org.Hs.eg.db org.Hs.eg.db
+#' @importFrom AnnotationHub AnnotationHub query
 #'
 #' @family functions for gene expression pre-processing
 #' @return Character vector of the respective targets of gene identifiers. The
@@ -362,18 +369,32 @@ loadGeneExpressionSet <- function(session, input, output) {
 #' @export
 #'
 #' @examples
-#' if ( require("org.Hs.eg.db") ) {
-#'     columns(org.Hs.eg.db)
+#' # Use species name to automatically look for a OrgDb database
+#' sp <- "Homo sapiens"
+#' genes <- c("ENSG00000012048", "ENSG00000083093", "ENSG00000141510",
+#'            "ENSG00000051180")
+#' convertGeneIdentifiers(sp, genes)
+#' convertGeneIdentifiers(sp, genes, key="ENSEMBL", target="UNIPROT")
 #'
-#'     genes <- c("ENSG00000012048", "ENSG00000083093", "ENSG00000141510",
-#'                "ENSG00000051180")
-#'     convertGeneIdentifiers(org.Hs.eg.db, genes,
-#'                            key="ENSEMBL", target="SYMBOL")
-#' }
+#' # Alternatively, set the annotation database directly
+#' ah <- AnnotationHub::AnnotationHub()
+#' sp <- AnnotationHub::query(ah, c("OrgDb", "Homo sapiens"))[[1]]
+#' columns(sp) # these attributes can be used to change the attributes
+#'
+#' convertGeneIdentifiers(sp, genes)
+#' convertGeneIdentifiers(sp, genes, key="ENSEMBL", target="UNIPROT")
 convertGeneIdentifiers <- function(annotation, genes, key="ENSEMBL",
                                    target="SYMBOL",
                                    ignoreDuplicatedTargets=TRUE) {
-    stopifnot(is(annotation, "OrgDb"))
+    if (is.character(annotation)) {
+        ah <- AnnotationHub()
+        annotation <- query(ah, c("OrgDb", annotation))[[1]]
+        if (length(annotation) == 0) {
+            stop(sprintf("No query found for species '%s'", annotation))
+        }
+    } else if (!is(annotation, "OrgDb")) {
+        stop("Annotation needs to be a 'character' or 'OrgDb' object")
+    }
 
     if (key == "ENSEMBL") {
         # Remove ENSEMBL identifiers
@@ -707,6 +728,7 @@ geNormalisationFilteringServer <- function(input, output, session) {
             priorCount          <- input$priorCount
             voom                <- input$voom
             convertToGeneSymbol <- input$convertToGeneSymbol
+            orgDb               <- input$orgDb
         })
 
         # Filter samples
@@ -727,12 +749,18 @@ geNormalisationFilteringServer <- function(input, output, session) {
             priorCount, performVoom=voom)
 
         # Convert ENSEMBL gene id to gene symbols
+        convertToGeneSymbolText <- "No"
         if (convertToGeneSymbol) {
-            rownames(geneExprNorm) <- convertGeneIdentifiers(
-                org.Hs.eg.db, rownames(geneExprNorm))
-            convertToGeneSymbolText <- "Yes"
-        } else {
-            convertToGeneSymbolText <- "No"
+            sp <- query(AnnotationHub(), c("OrgDb", orgDb))
+            if (length(sp) >= 1) {
+                db <- sp[1]
+                genes <- rownames(geneExprNorm)
+                rownames(geneExprNorm) <- convertGeneIdentifiers(db[[1]], genes)
+                convertToGeneSymbolText <- sprintf("Yes, using %s (%s)",
+                                                   db$title, db$species)
+            } else {
+                warning("Database for species not found")
+            }
         }
         names(convertToGeneSymbolText) <- paste(
             "Replace unambiguous ENSEMBL gene identifiers with their gene",
@@ -809,8 +837,33 @@ geNormalisationFilteringServer <- function(input, output, session) {
         return(text)
     })
 
+    observe({
+        if (input$normalisation == "quantile") {
+            updateCheckboxInput(session, "voom", value=TRUE)
+            disable("voom")
+        } else {
+            enable("voom")
+        }
+    })
+
     output$logTransformText <- renderText({
         paste("Prior count:", input$priorCount)
+    })
+
+    output$geneSymbolConversionText <- renderText({
+        ifelse(input$convertToGeneSymbol, "Enabled", "Disabled")
+    })
+
+    observe(toggleState("orgDb", input$convertToGeneSymbol))
+
+    # Update OrgDb choices for gene symbol conversion
+    observe({
+        # Suppress snapshot date message
+        orgDb <- suppressMessages(query(AnnotationHub(), "OrgDb")$species)
+        orgDb <- unique(orgDb)
+        if (is.null(orgDb)) orgDb <- "Homo sapiens"
+        updateSelectizeInput(session, "orgDb", choices=orgDb,
+                             selected="Homo sapiens")
     })
 }
 

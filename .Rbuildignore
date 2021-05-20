@@ -10,3 +10,4 @@ rsconnect
 ^pkgdown$
 ^Dockerfile
 ^\.github$
+^dev$

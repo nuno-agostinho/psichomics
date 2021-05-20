@@ -11,7 +11,7 @@ prepareFirebrowseArchives(archive, md5, folder, outdir)
 
 \item{md5}{Character: path to MD5 files of each archive}
 
-\item{folder}{Character: master directory where every archive will be 
+\item{folder}{Character: master directory where every archive will be
 extracted}
 
 \item{outdir}{Character: subdirectories where to move the extracted content}
@@ -20,8 +20,8 @@ extracted}
 Invisible TRUE if successful
 }
 \description{
-Checks Firebrowse archives' integrity using the MD5 files, extracts the 
-content of the archives, moves the content to newly-created folders and 
+Checks Firebrowse archives' integrity using the MD5 files, extracts the
+content of the archives, moves the content to newly-created folders and
 removes the original downloaded archives.
 }
 \examples{

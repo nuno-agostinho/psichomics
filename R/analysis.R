@@ -1,48 +1,6 @@
 #' @include app.R
 NULL
 
-#' Missing information modal template
-#'
-#' @param session Shiny session
-#' @param dataType Character: type of data missing
-#' @param buttonId Character: identifier of button to take user to load missing
-#' data
-#'
-#' @inherit psichomics return
-#' @keywords internal
-#'
-#' @examples
-#' \dontrun{
-#' if (shiny::isRunning()) {
-#'     session <- session$ns
-#'     buttonInput <- "takeMeThere"
-#'     buttonId <- ns(buttonInput)
-#'     dataType <- "Inclusion levels"
-#'     missingDataModal(session, buttonId, dataType)
-#'     observeEvent(input[[buttonInput]], missingDataGuide(dataType))
-#' }
-#' }
-missingDataModal <- function(session, dataType, buttonId) {
-    template <- function(buttonLabel) {
-        errorModal(
-            session, paste("Load", tolower(dataType)),
-            "This analysis requires", tolower(dataType), "to proceed.",
-            footer=actionButton(buttonId, buttonLabel, "data-dismiss"="modal",
-                                class="btn-danger"),
-            caller="Data analysis")
-    }
-
-    switch(dataType,
-           "Inclusion levels"=template("Load or calculate"),
-           template("Load"))
-}
-
-#' @rdname missingDataModal
-missingDataGuide <- function(dataType) {
-    js <- loadRequiredData(dataType)
-    runjs(js)
-}
-
 #' Create input to select a gene
 #'
 #' @param id Character: identifier
@@ -1368,25 +1326,37 @@ basicStats <- function(data, groups) {
 #' Groups containing a number of non-missing values less than the threshold are
 #' discarded.
 #'
-#' @param vector Unnamed elements
-#' @param group Character: group of the elements
+#' @param vector Character: elements
+#' @param group Character: respective group of each elements
 #' @param threshold Integer: number of valid non-missing values by group
 #'
 #' @return Named vector with filtered elements from valid groups. The group of
-#' the respective element is given in the name.
+#' the respective element is given as an attribute.
 #' @export
 #'
 #' @examples
 #' # Removes groups with less than two elements
-#' filterGroups(1:4, c("A", "B", "B", "D"), threshold=2)
+#' vec <- 1:6
+#' names(vec) <- paste("sample", letters[1:6])
+#' filterGroups(vec, c("A", "B", "B", "C", "D", "D"), threshold=2)
 filterGroups <- function(vector, group, threshold=1) {
-    names(vector) <- group
-    vector <- lapply(unique(group), function(t) {
-        vector <- vector[group == t]
-        if ( sum(!is.na(vector)) >= threshold )
-            return(vector)
-    })
-    return(unlist(vector))
+    isNamed <- !is.null(names(vector))
+    if (isNamed) {
+        df <- data.frame(name=names(vector), vector, group)
+    } else {
+        df <- data.frame(vector, group)
+    }
+
+    filter   <- table(df[!is.na(df$vector), , drop=FALSE]$group) >= threshold
+    valid    <- names(filter)[filter]
+    dfFilter <- df[df$group %in% valid, ]
+
+    res <- dfFilter$vector
+    if (isNamed) names(res) <- dfFilter$name
+    groupFilter <- dfFilter$group
+    attr(groupFilter, "Colour") <- attr(group, "Colour")
+    attr(res, "Groups") <- groupFilter
+    return(res)
 }
 
 #' Create plot for events
@@ -1584,119 +1554,25 @@ plotPointsStyle <- function(ns, id, description, help=NULL, size=2,
     )
 }
 
-#' Plot distribution using a density plot
-#'
-#' The tooltip shows the median, variance, maximum, minimum and number of non-NA
-#' samples of each data series (if \code{data} contains names or column names,
-#' those will be used as sample names and also appear in the tooltip).
-#'
-#' @param data Numeric, data frame or matrix: gene expression data or
-#' alternative splicing event quantification values (sample names are based on
-#' their \code{names} or \code{colnames})
-#' @param groups List of sample names or vector containing the group name per
-#' \code{data} value (read Details); if \code{NULL} or a character vector of
-#' length 1, \code{data} values are considered from the same group
-#' @param rug Boolean: show rug plot?
-#' @param vLine Boolean: plot vertical lines (including descriptive statistics
-#' for each group)?
-#' @inheritDotParams stats::density.default -x -na.rm
-#' @param title Character: plot title
-#' @param psi Boolean: are \code{data} composed of PSI values? If \code{NULL},
-#'   \code{psi = TRUE} if all \code{data} values are between 0 and 1
-#' @param rugLabels Boolean: plot sample names in the rug?
-#' @param rugLabelsRotation Numeric: rotation (in degrees) of rug labels; this
-#'   may present issues at different zoom levels and depending on the proximity
-#'   of \code{data} values
-#' @param legend Boolean: show legend?
-#' @param valueLabel Character: label for the value (by default, either
-#' \code{Inclusion levels} or \code{Gene expression})
-#'
-#' @details Argument \code{groups} can be either:
-#' \itemize{
-#' \item{a list of sample names, e.g.
-#' \code{list("Group 1"=c("Sample A", "Sample B"), "Group 2"=c("Sample C")))}}
-#' \item{a character vector with the same length as \code{data}, e.g.
-#' \code{c("Sample A", "Sample C", "Sample B")}.}
-#' }
-#'
-#' @importFrom highcharter highchart hc_chart hc_xAxis hc_plotOptions hc_tooltip
-#' JS
-#' @importFrom stats median var density
-#'
-#' @family functions to perform and plot differential analyses
-#' @return \code{highchart} object with density plot
-#' @export
-#'
-#' @examples
-#' data   <- sample(20, rep=TRUE)/20
-#' groups <- paste("Group", c(rep("A", 10), rep("B", 10)))
-#' names(data) <- paste("Sample", 1:20)
-#' plotDistribution(data, groups)
-#'
-#' # Using colours
-#' attr(groups, "Colour") <- c("Group A"="pink", "Group B"="orange")
-#' plotDistribution(data, groups)
-plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
-                             title=NULL, psi=NULL, rugLabels=FALSE,
-                             rugLabelsRotation=0, legend=TRUE,
-                             valueLabel=NULL) {
-    if (is.null(psi)) {
-        psi <- min(data, na.rm=TRUE) >= 0 && max(data, na.rm=TRUE) <= 1
-    }
+hc_autoHideYaxis <- function(hc) {
+    script <- paste("
+        function() {
+            function isInvisible(el) { return !el.visible; }
+            var groups = this.chart.legend.allItems,
+                areAllSeriesHidden = groups.map(isInvisible).every(Boolean);
+            if (!areAllSeriesHidden) {
+                this.chart.yAxis[0].options.gridLineWidth = 1;
+                return this.value;
+            } else {
+                this.chart.yAxis[0].options.gridLineWidth = 0;
+            }
+        }")
+    hc <- hc %>% hc_yAxis(labels=list(formatter=JS(script)))
+    return(hc)
+}
 
-    if (psi) {
-        xMin   <- 0
-        xMax   <- 1
-        xLabel <- "Distribution of PSI values"
-        id     <- "Inclusion level: "
-    } else {
-        xMin   <- NULL
-        xMax   <- NULL
-        xLabel <- "Distribution of gene expression"
-        id     <- "Gene expression: "
-    }
-    if (!is.null(valueLabel)) id <- paste0(valueLabel, ": ")
-
-    # Include X-axis zoom and hide markers
-    hc <- highchart() %>%
-        hc_chart(zoomType="x") %>%
-        hc_xAxis(min=xMin, max=xMax, title=list(text=xLabel))
-
-    if (legend) {
-        autohideYaxis <- paste("
-            function() {
-                function isInvisible(el) { return !el.visible; }
-                var groups = this.chart.legend.allItems,
-                    areAllSeriesHidden = groups.map(isInvisible).every(Boolean);
-                if (!areAllSeriesHidden) {
-                    this.chart.yAxis[0].options.gridLineWidth = 1;
-                    return this.value;
-                } else {
-                    this.chart.yAxis[0].options.gridLineWidth = 0;
-                }
-            }")
-        hc <- hc %>% hc_yAxis(labels=list(formatter=JS(autohideYaxis)))
-    }
-
-    hc <- hc %>%
-        hc_legend(enabled=legend) %>%
-        hc_plotOptions(series = list(fillOpacity=0.3,
-                                     marker=list(enabled=FALSE))) %>%
-        hc_tooltip(
-            headerFormat=NULL,
-            pointFormat=paste(
-                "{point.tooltipLabel}", br(),
-                span(style="color:{point.color}", "\u25CF "),
-                id, "{point.x:.2f}", br(),
-                tags$b("{series.name}"), br(),
-                "Number of samples: {series.options.samples}", br(),
-                "Median: {series.options.median}", br(),
-                "Variance: {series.options.var}", br(),
-                "Range: {series.options.min} - {series.options.max}")) %>%
-        export_highcharts()
-
-    if (!is.null(title)) hc <- hc %>% hc_title(text=unname(title))
-
+#' @importFrom stats IQR
+calcGroupStats <- function(data, groups, rugLabels=FALSE, ...) {
     if (is.null(groups)) {
         ns <- groups <- "All samples"
     } else if (is.list(groups)) {
@@ -1704,9 +1580,8 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
     } else {
         ns <- groups
     }
-
-    count <- 0
-    plotLines <- list()
+    count <- 1
+    stats <- list()
     for (group in unique(ns)) {
         if (is.list(groups)) {
             filter <- groups[[group]]
@@ -1714,13 +1589,14 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
             filter <- groups == group
         }
 
+        attr(data, "Groups") <- NULL
         if (is.vector(data)) {
-            row      <- data[filter]
+            row <- data[filter]
         } else if (isTRUE(filter)) {
-            row      <- data
+            row <- data
         } else {
-            filter   <- filter[filter %in% colnames(data)]
-            row      <- data[ , filter]
+            filter <- filter[filter %in% colnames(data)]
+            row    <- data[ , filter]
         }
 
         # Prepare labels based on sample names (or the values themselves)
@@ -1744,7 +1620,8 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
         vari <- roundDigits(var(row, na.rm=TRUE))
         max  <- roundDigits(max(row, na.rm=TRUE))
         min  <- roundDigits(min(row, na.rm=TRUE))
-        samples <- sum(!is.na(row))
+        iqr  <- roundDigits(IQR(row, na.rm=TRUE))
+        size <- sum(!is.na(row))
 
         colour <- unname(attr(groups, "Colour")[group])
         if (is.null(colour)) {
@@ -1761,11 +1638,35 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
             den <- NULL
         }
 
-        if (!is.null(den)) {
-            hc <- hc %>% hc_add_series(den, type="area", name=group, median=med,
-                                       var=vari, samples=samples, max=max,
-                                       color=colour, min=min)
-            if (length(row) == 1) {
+        res <- list()
+        res$index        <- count
+        res$name         <- group
+        res$data         <- row
+        res$size         <- size
+        res$min          <- min
+        res$max          <- max
+        res$med          <- med
+        res$iqr          <- iqr
+        res$var          <- vari
+        res$colour       <- colour
+        res$rugLabel     <- rugLabel
+        res$tooltipLabel <- tooltipLabel
+        res$den          <- den
+        stats[[count]]   <- res
+        count <- count + 1
+    }
+    names(stats) <- lapply(stats, "[[", "name")
+    return(stats)
+}
+
+hc_addDensityPlot <- function(hc, groupStats, legend) {
+    for (group in groupStats) {
+        if (!is.null(group$den)) {
+            hc <- hc %>% hc_add_series(
+                group$den, type="area", name=group$name, median=group$med,
+                var=group$var, samples=group$size, max=group$max,
+                color=group$colour, min=group$min, iqr=group$iqr)
+            if (length(group$data) == 1) {
                 len <- length(hc$x$hc_opts$series)
                 hc$x$hc_opts$series[[len]]$visible <- FALSE
                 if (legend) {
@@ -1774,67 +1675,19 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
                 }
             }
         }
-        # Rug plot
-        if (rug) {
-            isHexColour <- function(string) {
-                # Explicitely ignores HEX colour codes with opacity
-                grepl("^#{0,1}([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", string)
-            }
-
-            convertOpacityToHex <- function(opacity) {
-                sprintf("%02x", round(opacity/100 * 255))
-            }
-            opacity <- convertOpacityToHex(60) # Opacity in percentage
-
-            if (is(colour, "JS_EVAL")) {
-                fill <- JS(sprintf("%s + \"%s\"", colour, opacity))
-            } else if (isHexColour(colour)) {
-                fill <- sprintf("%s%s", colour, opacity)
-            } else {
-                fill <- colour
-            }
-
-            # Add different, arbitrary y values per group (useful when only
-            # displaying the rug plot)
-            maxi <- ifelse("y" %in% names(den), max(den$y), max(den))
-            y <- match(group, unique(ns)) * maxi / 1000
-            hc <- hc %>%
-                hc_scatter(
-                    row, rep(y, length(row)), name=group, color=fill,
-                    rugLabel=rugLabel, tooltipLabel=tooltipLabel,
-                    marker=list(enabled=TRUE, radius=4, fillColor=fill),
-                    median=med, var=vari, samples=samples, max=max, min=min)
-            if (length(row) == 1) {
-                len <- length(hc$x$hc_opts$series)
-                hc$x$hc_opts$series[[len]] <- c(
-                    hc$x$hc_opts$series[[len]],
-                    median=med, var=vari, samples=samples, max=max, min=min)
-            }
-        }
-        # Plot line with basic statistics
-        if (vLine) {
-            plotLines[[count + 1]] <- list(
-                label=list(text=paste("Median:", med, "/ Variance:", vari)),
-                color=colour, dashStyle="shortdash", width=2, value=med,
-                zIndex=7)
-        }
-        count <- count + 1
     }
+    return(hc)
+}
 
-    # Add plotLines with information
-    if (vLine) hc <- hc %>% hc_xAxis(plotLines = plotLines)
-
-    # Show or hide rug labels
-    rugSeries <- which(sapply(hc$x$hc_opts$series, "[[", "type") == "scatter")
+hc_addRugLabels <- function(hc, rugLabels, rugLabelsRotation) {
+    rugSeries <- which(sapply(hc$x$hc_opts$series,
+                              "[[", "type") == "scatter")
     for (k in rugSeries) {
         hc$x$hc_opts$series[[k]]$dataLabels <- list(
-            enabled=rugLabels,
-            format="{point.rugLabel}",
+            enabled=rugLabels, format="{point.rugLabel}",
             rotation=rugLabelsRotation)
-
         if (rugLabelsRotation != 0) {
             rugLabelsRotation <- rugLabelsRotation %% 360
-
             hc$x$hc_opts$series[[k]]$dataLabels$crop  <- FALSE
             if (rugLabelsRotation > 0 && rugLabelsRotation < 180) {
                 align <- "right"
@@ -1846,6 +1699,304 @@ plotDistribution <- function(data, groups=NULL, rug=TRUE, vLine=TRUE, ...,
             hc$x$hc_opts$series[[k]]$dataLabels$align <- align
         }
     }
+    return(hc)
+}
+
+hc_addBasicStatsPlotLines <- function(hc, groupStats) {
+    plotLines <- NULL
+    for (group in groupStats) {
+        med    <- group$med
+        vari   <- group$var
+        colour <- group$colour
+        plotLines[[group$index]] <- list(
+            label=list(text=paste("Median:", med, "/ Variance:", vari)),
+            color=colour, dashStyle="shortdash", width=2, value=med, zIndex=7)
+    }
+    hc <- hc %>% hc_xAxis(plotLines=plotLines)
+    return(hc)
+}
+
+hc_addRugPlot <- function(hc, groupStats, rugLabels, rugLabelsRotation,
+                          axis="x", category=FALSE) {
+    isHexColour <- function(string) {
+        # Explicitly ignores HEX colour codes with opacity
+        grepl("^#{0,1}([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", string)
+    }
+
+    convertOpacityToHex <- function(opacity) {
+        sprintf("%02x", round(opacity/100 * 255))
+    }
+
+    for (group in groupStats) {
+        opacity <- convertOpacityToHex(60) # Opacity in percentage
+        colour  <- group$colour
+        if (is(colour, "JS_EVAL")) {
+            fill <- JS(sprintf("%s + \"%s\"", colour, opacity))
+        } else if (isHexColour(colour)) {
+            fill <- sprintf("%s%s", colour, opacity)
+        } else {
+            fill <- colour
+        }
+
+        # Add different, arbitrary Y values per group (helps discerning values
+        # when only showing rug plot)
+        den   <- group$den
+        maxi  <- ifelse("y" %in% names(den), max(den$y), max(den))
+        value <- match(group$name, names(groupStats))
+
+        if (category) {
+            value <- value - 1
+            if (axis == "x") {
+                x <- group$data
+                y <- value
+                jitter <- list(y=0.24)
+            } else if (axis == "y") {
+                x <- value
+                y <- group$data
+                jitter <- list(x=0.24)
+            }
+        } else {
+            value <- value * maxi / 1000
+            value <- jitter(rep(value, length(group$data)))
+            if (axis == "x") {
+                x <- group$data
+                y <- value
+            } else if (axis == "y") {
+                x <- value
+                y <- group$data
+            }
+            jitter <- NULL
+        }
+        hc <- hc %>% hc_scatter(
+            x, y, color=fill, jitter=jitter,
+            marker=list(enabled=TRUE, radius=4, fillColor=fill))
+
+        last <- length(hc$x$hc_opts$series)
+        hc$x$hc_opts$series[[last]] <- c(
+            hc$x$hc_opts$series[[last]], name=group$name, group=group$name,
+            median=group$med, var=group$var, samples=group$size,
+            max=group$max, min=group$min, iqr=group$iqr)
+
+        for (point in seq(hc$x$hc_opts$series[[last]]$data)) {
+            tLabel <- group$tooltipLabel[[point]]
+            rLabel <- group$rugLabel[[point]]
+            hc$x$hc_opts$series[[last]]$data[[point]]$tooltipLabel <- tLabel
+            hc$x$hc_opts$series[[last]]$data[[point]]$rugLabel <- rLabel
+        }
+    }
+    hc <- hc %>% hc_addRugLabels(rugLabels, rugLabelsRotation)
+    return(hc)
+}
+
+#' @importFrom reshape2 melt
+prepareBoxPlotData <- function(groupStats) {
+    points <- lapply(groupStats, "[[", "data")
+    points <- data.frame(group=rep(names(points), lapply(points, length)),
+                         value=unlist(points))
+    group  <- value <- NULL
+    data   <- data_to_boxplot(points, value, group, group,
+                              add_outliers=TRUE)
+    id <- data$id
+    id[is.na(id)] <- data$linkedTo[is.na(id)]
+    data <- cbind(data,
+                  color=I(lapply(groupStats, "[[", "colour")[id]),
+                  median=I(lapply(groupStats, "[[", "med")[id]),
+                  samples=I(lapply(groupStats, "[[", "size")[id]),
+                  min=I(lapply(groupStats, "[[", "min")[id]),
+                  max=I(lapply(groupStats, "[[", "max")[id]),
+                  var=I(lapply(groupStats, "[[", "var")[id]),
+                  iqr=I(lapply(groupStats, "[[", "iqr")[id]))
+    # Sort boxplots by original group order
+    data[data$type == "boxplot", ] <- data[match(names(groupStats)[
+        names(groupStats) %in% data$name], data$name), ]
+    return(data)
+}
+
+#' @importFrom highcharter hc_add_series hc_chart
+hc_addViolinPlot <- function(hc, groupStats, legend, invertAxes=TRUE) {
+    scaleBetween <- function(x, min=min(x), max=max(x), newMin=0, newMax=1) {
+        (x - min(x)) / (max(x) - min(x)) * (newMax - newMin) + newMin
+    }
+    mini <- 0
+    maxi <- max(sapply(groupStats, function(x)
+        ifelse("y" %in% names(x$den), max(x$den$y), max(x$den))))
+
+    for (group in groupStats) {
+        den <- group$den
+        if (!is.null(den)) {
+            k    <- group$index - 1
+            if (!"y" %in% names(den)) next # skip if no density was calculated
+            high <- scaleBetween(den$y, min=mini, max=maxi,
+                                 newMin=0, newMax=0.4) + k
+            low  <- scaleBetween(-den$y, min=-maxi, max=-mini,
+                                 newMin=-0.4, newMax=0) + k
+            df   <- data.frame(cbind(x=den$x, low=low, high=high))
+            hc   <- hc %>%
+                hc_add_series(data=apply(df, 1, as.list),
+                              type="arearange", group=group$colour,
+                              name=group$name, median=group$med,
+                              var=group$var, samples=group$size, max=group$max,
+                              color=group$colour, min=group$min, iqr=group$iqr)
+            if (length(group$data) == 1) {
+                len <- length(hc$x$hc_opts$series)
+                hc$x$hc_opts$series[[len]]$visible <- FALSE
+                if (legend) {
+                    hc$x$hc_opts$series[[len]]$events$legendItemClick <- JS(
+                        "function(e) { e.preventDefault() }")
+                }
+            }
+        }
+    }
+    hc <- hc %>%
+        hc_chart(inverted=invertAxes) %>%
+        hc_xAxis(reversed=FALSE)
+    return(hc)
+}
+
+#' Plot sample distribution
+#'
+#' The tooltip shows the median, variance, maximum, minimum and number of non-NA
+#' samples of each data series, as well as sample names if available.
+#'
+#' @param data Numeric, data frame or matrix: gene expression data or
+#' alternative splicing event quantification values (sample names are based on
+#' their \code{names} or \code{colnames})
+#' @param groups List of sample names or vector containing the group name per
+#' \code{data} value (read Details); if \code{NULL} or a character vector of
+#' length 1, \code{data} values are considered from the same group
+#' @param rug Boolean: show rug plot?
+#' @param vLine Boolean: plot vertical lines (including descriptive statistics
+#' for each group)?
+#' @inheritDotParams stats::density.default -x -na.rm
+#' @param title Character: plot title
+#' @param subtitle Character: plot subtitle
+#' @param type Character: \code{density}, \code{boxplot} or \code{violin} plot
+#' @param invertAxes Boolean: plot X axis as Y and vice-versa?
+#' @param psi Boolean: are \code{data} composed of PSI values? If \code{NULL},
+#'   \code{psi = TRUE} if all \code{data} values are between 0 and 1
+#' @param rugLabels Boolean: plot sample names in the rug?
+#' @param rugLabelsRotation Numeric: rotation (in degrees) of rug labels; this
+#'   may present issues at different zoom levels and depending on the proximity
+#'   of \code{data} values
+#' @param legend Boolean: show legend?
+#' @param valueLabel Character: label for the value (by default, either
+#' \code{Inclusion levels} or \code{Gene expression})
+#'
+#' @details Argument \code{groups} can be either:
+#' \itemize{
+#' \item{a list of sample names, e.g.
+#' \code{list("Group 1"=c("Sample A", "Sample B"), "Group 2"=c("Sample C")))}}
+#' \item{a character vector with the same length as \code{data}, e.g.
+#' \code{c("Sample A", "Sample C", "Sample B")}.}
+#' }
+#'
+#' @importFrom highcharter highchart hc_chart hc_xAxis hc_plotOptions hc_tooltip
+#' JS data_to_boxplot
+#' @importFrom stats median var density
+#' @importFrom reshape2 melt
+#'
+#' @family functions to perform and plot differential analyses
+#' @return \code{highchart} object with density plot
+#' @export
+#'
+#' @examples
+#' data   <- sample(20, rep=TRUE)/20
+#' groups <- paste("Group", c(rep("A", 10), rep("B", 10)))
+#' names(data) <- paste("Sample", seq(data))
+#' plotDistribution(data, groups)
+#'
+#' # Using colours
+#' attr(groups, "Colour") <- c("Group A"="pink", "Group B"="orange")
+#' plotDistribution(data, groups)
+plotDistribution <- function(data, groups=NULL, rug=length(data) < 500,
+                             vLine=TRUE, ..., title=NULL, subtitle=NULL,
+                             type=c("density", "boxplot", "violin"),
+                             invertAxes=FALSE, psi=NULL,
+                             rugLabels=FALSE, rugLabelsRotation=0,
+                             legend=TRUE, valueLabel=NULL) {
+    type <- match.arg(type)
+    if (is.null(psi)) {
+        psi <- min(data, na.rm=TRUE) >= 0 && max(data, na.rm=TRUE) <= 1
+    }
+
+    if (psi) {
+        mini  <- 0
+        maxi  <- 1
+        label <- "Distribution of PSI values"
+        id    <- "Inclusion level: "
+    } else {
+        mini  <- NULL
+        maxi  <- NULL
+        label <- "Distribution of gene expression"
+        id    <- "Gene expression: "
+    }
+    if (!is.null(valueLabel)) {
+        id <- paste0(valueLabel, ": ")
+        label <- paste("Distribution of", valueLabel)
+    }
+    groupStats <- calcGroupStats(data, groups, rugLabels, ...)
+
+    hc <- highchart() %>%
+        hc_legend(enabled=legend) %>%
+        export_highcharts()
+
+    if (type == "density") {
+        axis <- "x"
+        category <- FALSE
+        hc <- hc %>%
+            hc_chart(zoomType="x", inverted=invertAxes) %>%
+            hc_xAxis(min=mini, max=maxi, title=list(text=label),
+                     reversed=FALSE) %>%
+            hc_plotOptions(series=list(fillOpacity=0.3,
+                                       marker=list(enabled=FALSE))) %>%
+            hc_addDensityPlot(groupStats, legend)
+
+        if (vLine)  hc <- hc %>% hc_addBasicStatsPlotLines(groupStats)
+        if (legend) hc <- hc %>% hc_autoHideYaxis()
+    } else if (type == "boxplot") {
+        axis <- "y"
+        category <- TRUE
+        boxplotData <- prepareBoxPlotData(groupStats)
+        hc <- hc %>%
+            hc_chart(zoomType="xy", inverted=invertAxes) %>%
+            hc_add_series_list(boxplotData) %>%
+            hc_xAxis(visible=FALSE, type="category") %>%
+            hc_yAxis(min=mini, max=maxi, title=list(text=label)) %>%
+            hc_tooltip(followPointer=TRUE) %>%
+            hc_plotOptions(boxplot=list(grouping=FALSE),
+                           scatter=list(marker=list(radius=4, lineWidth=1)))
+    } else if (type == "violin") {
+        axis <- "x"
+        category <- TRUE
+        hc <- hc %>%
+            hc_chart(zoomType="xy") %>%
+            hc_addViolinPlot(groupStats, legend=legend,
+                             invertAxes=!invertAxes) %>%
+            hc_yAxis(visible=FALSE) %>%
+            hc_xAxis(min=mini, max=maxi, title=list(text=label)) %>%
+            hc_plotOptions(series=list(fillOpacity=0.3,
+                                       marker=list(enabled=FALSE)))
+        if (vLine) hc <- hc %>% hc_addBasicStatsPlotLines(groupStats)
+    }
+    hc <- hc %>%
+        hc_tooltip(headerFormat="",
+                   pointFormat=paste(
+                       "{point.tooltipLabel}", br(),
+                       span(style="color:{point.color}", "\u25CF "),
+                       id, sprintf("{point.%s:.2f}", axis), br(),
+                       tags$b("{series.name}"), br(),
+                       "Number of samples: {series.options.samples}", br(),
+                       "Median: {series.options.median}", br(),
+                       "Variance: {series.options.var}", br(),
+                       "Range: {series.options.min} - {series.options.max}",
+                       br(), "Interquartile range (IQR): {series.options.iqr}"))
+
+    if (rug) {
+        hc <- hc_addRugPlot(hc, groupStats, rugLabels, rugLabelsRotation,
+                            axis=axis, category=category)
+    }
+    if (!is.null(title)) hc <- hc %>% hc_title(text=unname(title))
+    if (!is.null(subtitle)) hc <- hc %>% hc_subtitle(text=unname(subtitle))
     return(hc)
 }
 
@@ -3013,6 +3164,262 @@ analysesPlotSet <- function(session, input, output, analysesType, analysesID,
     })
 
     ggplotAuxServer(input, output, analysesID)
+}
+
+# Single-event-specific interface
+
+#' @rdname appUI
+#'
+#' @importFrom highcharter highchartOutput
+#' @importFrom shiny tagList uiOutput NS sidebarLayout numericInput h3 mainPanel
+#' actionButton sidebarPanel
+diffEventUI <- function(id, ns, psi=TRUE) {
+    card <- function(id) {
+        div(class="col-sm-6 col-md-4",
+            div(class="thumbnail", style="background:#eee;",
+                div(class="caption", uiOutput(ns(id)))))
+    }
+
+    # Take user to the survival analysis by cutoff
+    onClickSurvival <- ifelse(psi, "showSurvCutoff(null)",
+                              "showSurvCutoff(null, psi=false)")
+    survButtonLabel <- sprintf("Survival analysis by %s cutoff",
+                               ifelse(psi, "PSI", "GE"))
+    survival <- div(
+        id=ns("survivalButton"), hr(),
+        actionButton(
+            ns("optimalSurv1"), onclick=onClickSurvival,  survButtonLabel,
+            icon=icon("heartbeat"),
+            class="btn-info btn-md btn-block", class="visible-lg visible-md"),
+        actionButton(
+            ns("optimalSurv2"), onclick=onClickSurvival, survButtonLabel,
+            class="btn-info btn-xs btn-block", class="visible-sm visible-xs"))
+
+    singleEventOptions <- div(
+        id=ns("singleEventOptions"),
+        if (!psi)
+            selectizeInput(ns("geneExpr"), "Gene expression", choices=NULL),
+        if (!psi) selectizeGeneInput(ns("gene")),
+        selectGroupsUI(ns("diffGroups"), type="Samples",
+                       label="Groups of samples to analyse",
+                       noGroupsLabel="All samples as one group",
+                       groupsLabel="Samples by selected groups"),
+        hr(),
+        selectizeInput(ns("plotType"), "Plot type",
+                       c("Density plot"="density",
+                         "Boxplot"="boxplot",
+                         "Violin plot"="violin")),
+        checkboxInput(ns("rug"), "Show individual values", FALSE),
+        checkboxInput(ns("invertAxes"), "Invert axes", FALSE),
+        actionButton(ns("analyse"), "Perform analyses", class="btn-primary"),
+        uiOutput(ns("basicStats")),
+        if (!psi) uiOutput(ns("diffStats")),
+        hidden(survival))
+
+    singleEventInfo <- div(
+        id=ns("singleEventInfo"),
+        if (psi) uiOutput(ns("eventDiagrams")),
+        highchartOutput(ns("distributionPlot")),
+        h4("Parametric tests"),
+        div(class="row", card("ttest"), card("levene")),
+        h4("Non-parametric tests"),
+        div(class="row", card("wilcox"), card("kruskal"), card("fligner")))
+
+    if (psi) {
+        errorMsg <- errorDialog(
+            paste("Alternative splicing quantification is required for",
+                  "differential splicing analysis."),
+            id=ns("missingData"), buttonIcon="calculator",
+            buttonLabel="Alternative splicing quantification",
+            buttonId=ns("missingDataButton"))
+    } else {
+        errorMsg <- errorDialog(
+            "Gene expression is required for differential expression.",
+            id=ns("missingData"), buttonIcon="plus-circle",
+            buttonLabel="Load gene expression",
+            buttonId=ns("missingDataButton"))
+    }
+
+    ui <- tagList(
+        uiOutput(ns("modal")),
+        sidebarLayout(
+            sidebarPanel(errorMsg, hidden(singleEventOptions)),
+            mainPanel(
+                hidden(singleEventInfo) )))
+    return(ui)
+}
+
+toggleRugBasedOnDataLength <- function(session, table, row, npoints=500) {
+    if (is.null(table) || is.null(row) || row == "") return(NULL)
+    values <- as.numeric(table[row, ])
+    updateCheckboxInput(session, "rug", value=length(values) < npoints)
+}
+
+prepareDiffExprStats <- function(stat, cols) {
+    adjustedPvalue     <- grep("p-value (", cols, fixed=TRUE, value=TRUE)
+    logFC              <- signifDigits(stat$"log2 Fold-Change")
+    logFCconf1         <- signifDigits(stat$"conf. int1")
+    logFCconf2         <- signifDigits(stat$"conf. int2")
+    modTstats          <- signifDigits(stat$"moderated t-statistics")
+    modTpvalue         <- signifDigits(stat$"p-value")
+    modTadjustedPvalue <- signifDigits(stat[[adjustedPvalue]])
+    bStats             <- signifDigits(stat$"B-statistics")
+
+    diffStats <- tagList(
+        hr(), h4("Differential expression summary"),
+        tags$b("log2 Fold-Change: "),
+        sprintf("%s (%s to %s)", logFC, logFCconf1, logFCconf2), br(),
+        tags$b("Moderated t-statistics: "), modTstats, br(),
+        tags$b("p-value: "), modTpvalue, br(),
+        tags$b(paste0(adjustedPvalue, ": ")), modTadjustedPvalue, br(),
+        tags$b("B-statistics: "), bStats)
+    return(diffStats)
+}
+
+renderEventDiagram <- function(event, xAxis=TRUE, isDensityPlot=TRUE) {
+    parsed <- parseSplicingEvent(event)
+    if (is.null(parsed$type)) return(NULL)
+    isMXE <- parsed$type == "MXE"
+    isRI  <- parsed$type == "RI"
+
+    if (xAxis) {
+        left <- ifelse(isDensityPlot, 46, 25)
+        constitutiveStyle <- sprintf(
+            "position: absolute; top: 321px; left:  %spx;", left)
+        alternativeStyle  <- "position: absolute; top: 321px; right: 24px;"
+    } else {
+        transform <- "transform: rotate(270deg) scale(0.4)"
+        left <- ifelse(isMXE, -24, -4)
+        top  <- ifelse(isDensityPlot, 286, 307)
+        constitutiveStyle <- sprintf(
+            "position: absolute; top: %spx; left: %spx; %s",
+            top, left, transform)
+
+        left <- ifelse(isRI, -34, -24)
+        alternativeStyle  <- sprintf(
+            "position: absolute; top: 44px; left: %spx; %s", left, transform)
+    }
+
+    constitutive <- suppressWarnings(
+        plotSplicingEvent(
+            style=constitutiveStyle,
+            constitutiveWidth=40, alternativeWidth=40, intronWidth=0,
+            event, class=NULL, showPath=FALSE, showText=FALSE,
+            showAlternative1=FALSE, showAlternative2=TRUE)[[1]])
+
+    intronWidth <- ifelse(isRI, 60, 0)
+    alternative <- suppressWarnings(
+        plotSplicingEvent(
+            style=alternativeStyle,
+            constitutiveWidth=40, alternativeWidth=40, intronWidth=intronWidth,
+            event, class=NULL, showPath=FALSE, showText=FALSE,
+            showAlternative1=TRUE, showAlternative2=!isMXE)[[1]])
+    return(tagList(HTML(constitutive), HTML(alternative)))
+}
+
+analyseSingleEvent <- function(psi, input, output, session, ns) {
+    if (psi) {
+        data  <- getInclusionLevels()
+        row   <- getEvent()
+        stats <- getDifferentialSplicing()
+        type  <- "Inclusion levels"
+    } else {
+        data  <- getGeneExpression(input$geneExpr)
+        row   <- input$gene
+        stats <- getDifferentialExpression()
+        type  <- "Gene expression"
+    }
+
+    if (is.null(data)) {
+        missingDataModal(session, type, ns("missingData"))
+        return(NULL)
+    } else if (is.null(row) || row == "") {
+        if (psi) {
+            errorModal(session, "No event selected",
+                       "Please, select an alternative splicing event.",
+                       caller="Differential splicing analysis")
+        } else {
+            errorModal(session, "No gene selected", "Please select a gene.",
+                       caller="Differential expression analysis")
+        }
+        return(NULL)
+    }
+
+    # Prepare groups of samples to analyse
+    groups <- getSelectedGroups(input, "diffGroups", "Samples",
+                                filter=colnames(data))
+    colour <- attr(groups, "Colour")
+    if ( !is.null(groups) ) {
+        attrGroups <- groups
+        data <- data[ , unlist(groups), drop=FALSE]
+        groups <- rep(names(groups), sapply(groups, length))
+    } else {
+        attrGroups <- "All samples"
+        groups <- rep(attrGroups, ncol(data))
+    }
+
+    # Check if analyses were already performed
+    diffStats <- NULL
+    if (!is.null(stats) && identical(attrGroups, attr(stats, "groups"))) {
+        stat <- stats[row, ]
+        if (!psi) diffStats <- prepareDiffExprStats(stat, names(stats))
+    } else {
+        stat <- NULL
+    }
+
+    # Separate samples by their groups
+    eventData <- as.numeric(data[row, ])
+    names(eventData) <- colnames(data)
+    eventData <- filterGroups(eventData, groups, 2)
+    groups    <- attr(eventData, "Groups")
+    attr(groups, "Colour") <- colour
+
+    if (psi) {
+        title <- parseSplicingEvent(row, char=TRUE, pretty=TRUE)
+    } else {
+        title <- paste(row, "gene expression")
+    }
+    invertAxes <- input$invertAxes
+    plot <- plotDistribution(eventData, groups, psi=psi, title=title,
+                             type=input$plotType, rug=input$rug,
+                             invertAxes=invertAxes)
+    output$distributionPlot <- renderHighchart(plot)
+
+    if (psi) {
+        # XNOR(non-invert, distribution plot)
+        isDensityPlot <- input$plotType == "density"
+        xAxis <- !invertAxes == (isDensityPlot)
+        output$eventDiagrams <- renderUI({
+            renderEventDiagram(row, xAxis=xAxis, isDensityPlot=isDensityPlot)
+        })
+    }
+
+    output$basicStats <- renderUI(basicStats(eventData, groups))
+    if (!psi) output$diffStats <- renderUI(diffStats)
+    output$ttest      <- renderUI(ttest(eventData, groups, stat))
+    output$wilcox     <- renderUI(wilcox(eventData, groups, stat))
+    output$kruskal    <- renderUI(kruskal(eventData, groups, stat))
+    output$levene     <- renderUI(levene(eventData, groups, stat))
+    output$fligner    <- renderUI(fligner(eventData, groups, stat))
+    # output$fisher   <- renderUI(fisher(eventData, groups))
+    # output$spearman <- renderUI(spearman(eventData, groups))
+
+    show("survivalButton")
+    show("singleEventInfo")
+}
+
+#' @rdname appServer
+#'
+#' @importFrom highcharter renderHighchart
+#' @importFrom shinyjs show hide
+diffEventServer <- function(ns, input, output, session, psi) {
+    selectGroupsServer(session, "diffGroups", "Samples")
+
+    data <- ifelse(psi, "Inclusion levels", "Gene expression")
+    observeEvent(input$missingData, missingDataGuide(data))
+    observeEvent(input$missingDataButton, missingDataGuide(data))
+    observeEvent(input$analyse,
+                 analyseSingleEvent(psi, input, output, session, ns))
 }
 
 attr(analysesUI, "loader") <- "app"
