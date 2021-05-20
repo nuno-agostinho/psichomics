@@ -57,7 +57,7 @@ jobs:
             grep r_version_associated_with_${BIOCVERSION} | \
             grep -o "[0-9]*\.[0-9]*\.[0-9]*")
           echo "Using R ${rversion}..."
-          echo "::set-output name=rversion::${rversion}"
+          echo "rversion=${rversion}" >> $GITHUB_ENV
         shell:
           bash {0}
 
