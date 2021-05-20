@@ -88,7 +88,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.0</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -131,7 +131,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/nuno-agostinho/psichomics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -170,7 +170,7 @@
   showPath <span class='op'>=</span> <span class='cn'>TRUE</span>,
   showAlternative1 <span class='op'>=</span> <span class='cn'>TRUE</span>,
   showAlternative2 <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  constitutiveWidth <span class='op'>=</span> <span class='fl'>60</span>,
+  constitutiveWidth <span class='op'>=</span> <span class='cn'>NULL</span>,
   alternativeWidth <span class='op'>=</span> <span class='cn'>NULL</span>,
   intronWidth <span class='op'>=</span> <span class='cn'>NULL</span>,
   constitutiveFill <span class='op'>=</span> <span class='st'>"lightgray"</span>,
@@ -263,18 +263,23 @@ splicing junctions and text? (only related with mutually exclusive exons)</p></t
     <p>List of SVG (one for each alternative splicing event)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>ASevent</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>
-    <span class='st'>"SE_9_+_6486925_6492303_6492401_6493826_UHRF2"</span>,
-    <span class='st'>"SE_11_+_86925_92303_92401_93826_TESTING/MHG2"</span>,
-    <span class='st'>"A5SS_15_+_63353472_63353987_63354414_TPM1"</span>,
-    <span class='st'>"A3SS_3_-_145796903_145794682_145795711_PLOD2"</span>,
-    <span class='st'>"AFE_17_-_15165746_15168471_15164078_PMP22"</span>,
-    <span class='st'>"ALE_18_-_5395066_5394792_5393477_EPB41L3"</span>,
-    <span class='st'>"MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1"</span><span class='op'>)</span>
-<span class='va'>diagram</span> <span class='op'>&lt;-</span> <span class='fu'>plotSplicingEvent</span><span class='op'>(</span><span class='va'>ASevent</span><span class='op'>)</span>
+    <pre class="examples"><div class='input'><span class='va'>events</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>
+  <span class='st'>"A3SS_15_+_63353138_63353912_63353397_TPM1"</span>,
+  <span class='st'>"A3SS_11_-_61118463_61117115_61117894_CYB561A3"</span>,
+  <span class='st'>"A5SS_21_+_48055675_48056459_48056808_PRMT2"</span>,
+  <span class='st'>"A5SS_1_-_1274742_1274667_1274033_DVL1"</span>,
+  <span class='st'>"AFE_9_+_131902430_131901928_131904724_PPP2R4"</span>,
+  <span class='st'>"AFE_5_-_134686513_134688636_134681747_H2AFY"</span>,
+  <span class='st'>"ALE_12_+_56554104_56554410_56555171_MYL6"</span>,
+  <span class='st'>"ALE_8_-_38314874_38287466_38285953_FGFR1"</span>,
+  <span class='st'>"SE_9_+_6486925_6492303_6492401_6493826_UHRF2"</span>,
+  <span class='st'>"SE_19_-_5218431_5216778_5216731_5215606_PTPRS"</span>,
+  <span class='st'>"MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1"</span>,
+  <span class='st'>"MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7"</span><span class='op'>)</span>
+<span class='va'>diagram</span> <span class='op'>&lt;-</span> <span class='fu'>plotSplicingEvent</span><span class='op'>(</span><span class='va'>events</span><span class='op'>)</span>
 
 <span class='va'>diagram</span><span class='op'>[[</span><span class='st'>"A3SS_3_-_145796903_145794682_145795711_PLOD2"</span><span class='op'>]</span><span class='op'>]</span>
-<span class='va'>diagram</span><span class='op'>[[</span><span class='fl'>6</span><span class='op'>]</span><span class='op'>]</span>
+</div><div class='output co'>#&gt; NULL</div><div class='input'><span class='va'>diagram</span><span class='op'>[[</span><span class='fl'>6</span><span class='op'>]</span><span class='op'>]</span>
 <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='va'>diagram</span>
 </div></pre>
   </div>

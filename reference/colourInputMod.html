@@ -88,7 +88,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.0</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -131,7 +131,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/nuno-agostinho/psichomics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -182,12 +182,16 @@ user to choose any colour, while <code>limited</code> only gives the user a
 predefined list of colours to choose from.</p></dd>
     <dt><code>allowedCols</code></dt><dd><p>A list of colours that the user can choose from. Only
 applicable when <code>palette == "limited"</code>. The <code>limited</code> palette
-uses a default list of 40 colours if <code>allowedCols</code> is not defined.</p></dd>
+uses a default list of 40 colours if <code>allowedCols</code> is not defined. If
+the colour specified in <code>value</code> is not in the list, the default colour
+will revert to black.</p></dd>
     <dt><code>allowTransparent</code></dt><dd><p>If <code>TRUE</code>, enables a slider to choose an alpha
 (transparency) value for the colour. When a colour with opacity is
 chosen, the return value is an 8-digit HEX code.</p></dd>
     <dt><code>returnName</code></dt><dd><p>If <code>TRUE</code>, then return the name of an R colour instead
 of a HEX value when possible.</p></dd>
+    <dt><code>closeOnClick</code></dt><dd><p>If <code>TRUE</code>, then the colour selection panel will close
+immediately after selecting a colour.</p></dd>
   
 </dl></td>
     </tr>

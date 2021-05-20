@@ -89,7 +89,7 @@ of interest) and alternative splicing quantification." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.0</span>
       </span>
     </div>
 
@@ -97,7 +97,7 @@ of interest) and alternative splicing quantification." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -132,7 +132,7 @@ of interest) and alternative splicing quantification." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/nuno-agostinho/psichomics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -213,8 +213,7 @@ splicing event</p></dd>
     <pre class="examples"><div class='input'><span class='va'>annot</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_splicing_annotation.RDS"</span><span class='op'>)</span>
 <span class='va'>junctionQuant</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_junctionQuant.RDS"</span><span class='op'>)</span>
 <span class='va'>psi</span> <span class='op'>&lt;-</span> <span class='fu'><a href='quantifySplicing.html'>quantifySplicing</a></span><span class='op'>(</span><span class='va'>annot</span>, <span class='va'>junctionQuant</span>, eventType<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SE"</span>, <span class='st'>"MXE"</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% 
-#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </div><div class='input'>
+</div><div class='output co'>#&gt; <span class='message'>Using 3 of 3 events (100%) whose junctions are present in junction quantification data...</span></div><div class='output co'>#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </div><div class='output co'>#&gt; <span class='message'>Using 3 of 3 events (100%) whose junctions are present in junction quantification data...</span></div><div class='output co'>#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </div><div class='input'>
 <span class='va'>geneExpr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_gene_expression.RDS"</span><span class='op'>)</span>
 <span class='fu'>correlateGEandAS</span><span class='op'>(</span><span class='va'>geneExpr</span>, <span class='va'>psi</span>, <span class='st'>"ALDOA"</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; ================================================================================

@@ -88,7 +88,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.0</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -131,7 +131,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/nuno-agostinho/psichomics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -197,13 +197,13 @@
 #&gt;             match: /([a-zA-Z0-9_\.]{1,})$/,
 #&gt;             search: function(term, callback) {
 #&gt;                 var words = textareaid_words, sorted = [];
-#&gt;                 for (i = 0; i &lt; words.length; i++) { 
+#&gt;                 for (i = 0; i &lt; words.length; i++) {
 #&gt;                     sorted[i] = fuzzy(words[i], term);
 #&gt;                 }
 #&gt;                 sorted.sort(fuzzy.matchComparator);
 #&gt;                 sorted = sorted.map(function(i) { return i.term; });
 #&gt;                 callback(sorted);
-#&gt;             }, 
+#&gt;             },
 #&gt;             index: 1,
 #&gt;             cache: true,
 #&gt;             replace: function(word) {

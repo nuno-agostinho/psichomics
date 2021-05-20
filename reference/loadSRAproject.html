@@ -91,7 +91,7 @@ recount2" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.0</span>
       </span>
     </div>
 
@@ -99,7 +99,7 @@ recount2" />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -134,7 +134,7 @@ recount2" />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/nuno-agostinho/psichomics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -196,6 +196,14 @@ recount2" />
 <code><a href='loadLocalFiles.html'>loadLocalFiles</a>()</code>,
 <code><a href='loadTCGAdata.html'>loadTCGAdata</a>()</code></p></div>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/View.html'>View</a></span><span class='op'>(</span><span class='fu'>recount</span><span class='fu'>::</span><span class='va'><a href='https://rdrr.io/pkg/recount/man/recount_abstract.html'>recount_abstract</a></span><span class='op'>)</span>
+<span class='va'>sra</span> <span class='op'>&lt;-</span> <span class='fu'>loadSRAproject</span><span class='op'>(</span><span class='st'>"SRP053101"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>sra</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>sra</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

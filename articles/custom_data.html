@@ -39,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.0</span>
       </span>
     </div>
 
@@ -47,7 +47,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -82,7 +82,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/nuno-agostinho/psichomics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -102,14 +102,13 @@
 
       
 
-      </header><script src="custom_data_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="custom_data_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="custom_data_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="custom_data_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Loading SRA, VAST-TOOLS and user-provided RNA-seq data</h1>
                         <h4 class="author">Nuno Saraiva-Agostinho</h4>
             
-            <h4 class="date">2020-11-23</h4>
+            <h4 class="date">2021-05-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/psichomics/blob/master/vignettes/custom_data.Rmd"><code>vignettes/custom_data.Rmd</code></a></small>
       <div class="hidden name"><code>custom_data.Rmd</code></div>
@@ -246,11 +245,18 @@
 <p>Before aligning FASTQ samples against a genome of reference, an index needs to be prepared.</p>
 <p>Start by downloading a FASTA file of the whole genome and a GTF file with annotated transcripts. This command makes use of these <a href="https://grch37.ensembl.org/info/data/ftp/">human FASTA and GTF files (hg19 assembly)</a>.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">mkdir</span> hg19_STAR</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="ex">STAR</span> --runMode genomeGenerate <span class="dt">\ </span>            <span class="co"># Generate the genome index</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a>     <span class="ex">--genomeDir</span> hg19_STAR <span class="dt">\ </span>               <span class="co"># Path to genome index (output)</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>     <span class="ex">--genomeFastaFiles</span> /path/to/hg19.fa <span class="dt">\ </span> <span class="co"># Path to genome FASTA file(s)</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a>     <span class="ex">--sjdbGTFfile</span> /path/to/hg19.gtf <span class="dt">\ </span>     <span class="co"># Path to junction GTF annotation</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a>     <span class="ex">--runThreadN</span> 4                         <span class="co"># Run in parallel using 4 threads</span></span></code></pre></div>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="ex">STAR</span> --runMode genomeGenerate \</span>
+<span id="cb2-3"><a href="#cb2-3"></a>     --genomeDir hg19_STAR \</span>
+<span id="cb2-4"><a href="#cb2-4"></a>     --genomeFastaFiles /path/to/hg19.fa \</span>
+<span id="cb2-5"><a href="#cb2-5"></a>     --sjdbGTFfile /path/to/hg19.gtf \</span>
+<span id="cb2-6"><a href="#cb2-6"></a>     --runThreadN 4</span>
+<span id="cb2-7"><a href="#cb2-7"></a></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="co"># Arguments:</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="co">#     --runMode             Generate the genome index</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="co">#     --genomeDir           Path to genome index (output)</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="co">#     --genomeFastaFiles    Path to genome FASTA file(s)</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a><span class="co">#     --sjdbGTFfile         Path to junction GTF annotation</span></span>
+<span id="cb2-13"><a href="#cb2-13"></a><span class="co">#     --runThreadN 4        Run in parallel using 4 threads</span></span></code></pre></div>
 </div>
 <div id="align-against-genome-index-using-star" class="section level4">
 <h4 class="hasAnchor">
@@ -258,17 +264,24 @@
 <p>After the genome index is generated, the sequences in the FASTQ files need to be aligned against the annotated gene and splice junctions from the previously prepared reference. The following commands make STAR output both gene and junction read counts into files ending in <code>ReadsPerGene.out.tab</code> and <code>SJ.out.tab</code>, respectively.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">align ()</span> <span class="kw">{</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a>    <span class="bu">echo</span> <span class="st">"Aligning </span><span class="va">${1}</span><span class="st"> using STAR..."</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a>    <span class="ex">STAR</span> --readFilesIn <span class="va">${1}</span>_1.fastq <span class="va">${1}</span>_2.fastq <span class="dt">\ </span> <span class="co"># FASTQ files to align</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a>         <span class="ex">--runThreadN</span> 16 <span class="dt">\ </span>               <span class="co"># Run in parallel using 16 threads</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a>         <span class="ex">--genomeDir</span> hg19_STAR <span class="dt">\ </span>         <span class="co"># Path to genome index (input)</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a>         <span class="ex">--readFilesCommand</span> zcat <span class="dt">\ </span>       <span class="co"># Use zcat to extract compressed files</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a>         <span class="ex">--quantMode</span> GeneCounts <span class="dt">\ </span>        <span class="co"># Return gene read counts</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a>         <span class="ex">--outFileNamePrefix</span> <span class="va">${1}</span> <span class="dt">\ </span>      <span class="co"># Prefix for output files</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>    <span class="ex">STAR</span> --readFilesIn <span class="va">${1}</span>_1.fastq <span class="va">${1}</span>_2.fastq \</span>
+<span id="cb3-4"><a href="#cb3-4"></a>         --runThreadN 16 \</span>
+<span id="cb3-5"><a href="#cb3-5"></a>         --genomeDir hg19_STAR \</span>
+<span id="cb3-6"><a href="#cb3-6"></a>         --readFilesCommand zcat \</span>
+<span id="cb3-7"><a href="#cb3-7"></a>         --quantMode GeneCounts \</span>
+<span id="cb3-8"><a href="#cb3-8"></a>         --outFileNamePrefix <span class="va">${1}</span></span>
 <span id="cb3-9"><a href="#cb3-9"></a><span class="kw">}</span></span>
-<span id="cb3-10"><a href="#cb3-10"></a></span>
-<span id="cb3-11"><a href="#cb3-11"></a><span class="kw">for</span> <span class="ex">each</span> in <span class="va">${samples}</span><span class="kw">;</span> <span class="kw">do</span></span>
-<span id="cb3-12"><a href="#cb3-12"></a>    <span class="ex">align</span> <span class="st">"</span><span class="va">${each}</span><span class="st">"</span></span>
-<span id="cb3-13"><a href="#cb3-13"></a><span class="kw">done</span></span></code></pre></div>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="co"># Arguments:</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="co">#     --readFilesIn              FASTQ files to align</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="co">#     --runThreadN 16            Run in parallel using 16 threads</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="co">#     --genomeDir                Path to genome index (input)</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="co">#     --readFilesCommand zcat    Use zcat to extract compressed files</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a><span class="co">#     --quantMode                Return gene read counts</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a><span class="co">#     --outFileNamePrefix        Prefix for output files</span></span>
+<span id="cb3-17"><a href="#cb3-17"></a>         </span>
+<span id="cb3-18"><a href="#cb3-18"></a><span class="kw">for</span> <span class="ex">each</span> in <span class="va">${samples}</span><span class="kw">;</span> <span class="kw">do</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a>    <span class="ex">align</span> <span class="st">"</span><span class="va">${each}</span><span class="st">"</span></span>
+<span id="cb3-20"><a href="#cb3-20"></a><span class="kw">done</span></span></code></pre></div>
 </div>
 </div>
 <div id="prepare-output-for-psichomics" class="section level3">

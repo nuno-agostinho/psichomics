@@ -47,7 +47,7 @@
 
 <meta property="og:title" content="Prepare annotation from alternative splicing events — prepareAnnotationFromEvents" />
 <meta property="og:description" content="In case more than one data frame with alternative splicing events is given,
-the events are cross-referenced according to the chromosome, strand and 
+the events are cross-referenced according to the chromosome, strand and
 relevant coordinates per event type (see details)." />
 
 
@@ -90,7 +90,7 @@ relevant coordinates per event type (see details)." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.14.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.0</span>
       </span>
     </div>
 
@@ -98,7 +98,7 @@ relevant coordinates per event type (see details)." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -133,7 +133,7 @@ relevant coordinates per event type (see details)." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/nuno-agostinho/psichomics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -163,7 +163,7 @@ relevant coordinates per event type (see details)." />
 
     <div class="ref-description">
     <p>In case more than one data frame with alternative splicing events is given,
-the events are cross-referenced according to the chromosome, strand and 
+the events are cross-referenced according to the chromosome, strand and
 relevant coordinates per event type (see details).</p>
     </div>
 
@@ -192,7 +192,7 @@ event type:</p><ul>
      and end) and constitutive exon 2 start</p></li>
 <li><p>Mutually exclusive exon: constitutive exon 1 end, alternative exon
      1 and 2 (start and end) and constitutive exon 2 start</p></li>
-<li><p>Alternative 5' splice site: constitutive exon 1 end, alternative 
+<li><p>Alternative 5' splice site: constitutive exon 1 end, alternative
      exon 1 end and constitutive exon 2 start</p></li>
 <li><p>Alternative first exon: same as alternative 5' splice site</p></li>
 <li><p>Alternative 3' splice site: constitutive exon 1 end, alternative
@@ -237,7 +237,7 @@ event type:</p><ul>
 #&gt; Parsing rMATS annotation...</div><div class='input'><span class='va'>annot</span> <span class='op'>&lt;-</span> <span class='fu'>prepareAnnotationFromEvents</span><span class='op'>(</span><span class='va'>suppa</span>, <span class='va'>mats</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; 
 #&gt; Sorting coordinates...
-#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |=====                                                                 |   7%  |                                                                              |==========                                                            |  14%  |                                                                              |===============                                                       |  21%  |                                                                              |====================                                                  |  29%  |                                                                              |=========================                                             |  36%  |                                                                              |==============================                                        |  43%  |                                                                              |===================================                                   |  50%  |                                                                              |========================================                              |  57%  |                                                                              |=============================================                         |  64%  |                                                                              |==================================================                    |  71%  |                                                                              |============================================================          |  86%  |                                                                              |======================================================================| 100%
+#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |=====                                                                 |   7%  |                                                                              |==========                                                            |  14%  |                                                                              |===============                                                       |  21%  |                                                                              |====================                                                  |  29%  |                                                                              |=========================                                             |  36%  |                                                                              |==============================                                        |  43%  |                                                                              |===================================                                   |  50%  |                                                                              |========================================                              |  57%  |                                                                              |=============================================                         |  64%  |                                                                              |==================================================                    |  71%  |                                                                              |=======================================================               |  79%  |                                                                              |============================================================          |  86%  |                                                                              |======================================================================| 100%
 #&gt; Joining events per event type...
 #&gt;   |                                                                              |                                                                      |   0%  |                                                                              |==========                                                            |  14%  |                                                                              |====================                                                  |  29%  |                                                                              |==============================                                        |  43%  |                                                                              |========================================                              |  57%  |                                                                              |==================================================                    |  71%  |                                                                              |============================================================          |  86%  |                                                                              |======================================================================| 100%
 #&gt; Cleaning the annotation...</div></pre>

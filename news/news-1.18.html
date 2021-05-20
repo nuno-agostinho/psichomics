@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>HTML code to plot a X-ranges series — plottableXranges • psichomics</title>
+<title>Version 1.18 • psichomics</title>
 
 
 <!-- jquery -->
@@ -45,8 +45,7 @@
 
 
 
-<meta property="og:title" content="HTML code to plot a X-ranges series — plottableXranges" />
-<meta property="og:description" content="HTML code to plot a X-ranges series" />
+<meta property="og:title" content="Version 1.18" />
 
 
 
@@ -75,7 +74,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-topic">
+    <div class="container template-news">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -154,40 +153,74 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>HTML code to plot a X-ranges series</h1>
-    <small class="dont-index">Source: <a href='https://github.com/nuno-agostinho/psichomics/blob/master/R/analysis_information.R'><code>R/analysis_information.R</code></a></small>
-    <div class="hidden name"><code>plottableXranges.Rd</code></div>
+      <h1 data-toc-skip>Changelog <small>1.18</small></h1>
+      
     </div>
 
-    <div class="ref-description">
-    <p>HTML code to plot a X-ranges series</p>
-    </div>
-
-    <pre class="usage"><span class='fu'>plottableXranges</span><span class='op'>(</span><span class='va'>hc</span>, shiny <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>hc</th>
-      <td><p><code>highcharter</code> object</p></td>
-    </tr>
-    <tr>
-      <th>shiny</th>
-      <td><p>Boolean: is the function running in a Shiny session?</p></td>
-    </tr>
-    </table>
-
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>HTML elements</p>
-
+    <div id="psichomics-1180-18-may-2021" class="section level1">
+<h1 class="page-header" data-toc-text="1.18.0">
+<a href="#psichomics-1180-18-may-2021" class="anchor"></a>psichomics 1.18.0 (18 May, 2021)</h1>
+<ul>
+<li>
+<code><a href="../reference/discardLowCoveragePSIvalues.html">discardLowCoveragePSIvalues()</a></code>: improve performance (2x faster)</li>
+<li>When quantifying or loading PSI values, psichomics discards splicing events whose junctions:
+<ul>
+<li>(1) are not present in junction quantification data or</li>
+<li>(2) have low numbers of reads across all samples. The number of discarded events is now displayed during PSI quantification.</li>
+</ul>
+</li>
+<li>When normalizing gene expression, support converting gene identifiers to gene symbol names for any species with <code>OrgDb</code> data</li>
+<li>Allow to use <code><a href="../reference/plotSplicingEvent.html">plotSplicingEvent()</a></code> directly with a PSI table to plot diagrams of the alternative splicing events within</li>
+<li>Distribution plots (<code><a href="../reference/plotDistribution.html">plotDistribution()</a></code>):
+<ul>
+<li>Plot sample distributions in density, violin or box plots (argument <code>type</code> in command-line interface)</li>
+<li>Hide rug plot when showing 500 or more values (by default) to avoid performance issues</li>
+<li>Add jitter to rug plot (helps to discern numerous points)</li>
+<li>Display interquantile range (IQR) per group in the tooltip</li>
+<li>Add subtitles (argument <code>subtitle</code> in command-line interface)</li>
+<li>Allow to invert axes (argument <code>invertAxes</code> in command-line interface)</li>
+</ul>
+</li>
+</ul>
+<div id="bug-fixes-and-minor-changes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bug-fixes-and-minor-changes" class="anchor"></a>Bug fixes and minor changes</h2>
+<ul>
+<li>
+<code><a href="../reference/loadLocalFiles.html">loadLocalFiles()</a></code>: print elapsed time after loading local files</li>
+<li>
+<code><a href="../reference/filterGroups.html">filterGroups()</a></code> was modified to return a character vector whose names are original names (instead of groups) and include an attribute <em>Groups</em> with the respective group of each value (together with their colour, if available):
+<ul>
+<li>Distribution plots in the graphical interface now show sample name in the tooltip for each sample</li>
+</ul>
+</li>
+<li>Importing VAST-TOOLS annotation:
+<ul>
+<li>Fix parsing of VAST-TOOLS intron retention events as skipped exon for certain annotations (including Hs2)</li>
+<li>Support diagrams for intron retention events with full exon coordinates</li>
+</ul>
+</li>
+<li>Graphical user interface improvements:
+<ul>
+<li>Avoid “Matching subjects to their samples/Matching process concluded” loop</li>
+<li>Timeout GTEx data retrieval after 3 seconds without server response</li>
+<li>Avoid unnecessary messages when loading Firebrowse interface</li>
+<li>Fix intron retention diagrams in distribution plots not displaying introns</li>
+<li>When searching for specific splicing events, fix results based on the wrong genomic coordinates</li>
+</ul>
+</li>
+<li>Improve tutorials</li>
+</ul>
+</div>
+</div>
   </div>
+
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
     </nav>
   </div>
+
 </div>
 
 
