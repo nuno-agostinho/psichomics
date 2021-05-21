@@ -68,7 +68,7 @@ annotation and junction quantification are required. While alternative splicing
 annotation is provided by the package, junction quantification may be retrieved
 from [TCGA][], [GTEx][], [SRA][] or user-provided files.
 
-Data is downloaded from [Firebrowse][Firebrowse], a service that hosts processed
+Data is downloaded from [FireBrowse][FireBrowse], a service that hosts processed
 data from [TCGA][], as required to run the downstream analyses. Before
 downloading data, check the following options:
 
@@ -94,7 +94,7 @@ follows:
 folder <- getDownloadsFolder()
 
 # Download and load most recent junction quantification and clinical data from
-# TCGA/Firebrowse for Breast Cancer
+# TCGA/FireBrowse for Breast Cancer
 data <- loadFirebrowseData(folder=folder,
                            cohort="BRCA",
                            data=c("clinical", "junction_quantification",
@@ -748,7 +748,7 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 [article]: https://doi.org/10.1093/nar/gky888
 [chapter]: https://doi.org/10.1007/978-1-0716-0301-7_10
 [chapter-code]: https://github.com/nuno-agostinho/stem-cell-analysis-in-psichomics
-[Firebrowse]: http://firebrowse.org
+[FireBrowse]: http://firebrowse.org
 [SRA]: https://www.ncbi.nlm.nih.gov/sra
 [recount]: https://jhubiostatistics.shinyapps.io/recount/
 [tutorial-custom-data]: https://nuno-agostinho.github.io/psichomics/articles/custom_data.html

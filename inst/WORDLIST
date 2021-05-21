@@ -17,7 +17,6 @@ centered
 codecov
 CPM
 cRPKMs
-Cutoff
 cutoff
 cutoffs
 DataTable
@@ -28,14 +27,10 @@ dropdown
 Ensembl
 etc
 exon's
-fallbacks
-fasrq
 FASTA
 fasterq
-FASTQ
 fastq
 FireBrowse
-Firebrowse
 Firehose
 Fligner
 FontAwesome
@@ -49,11 +44,12 @@ Haenszel
 hg
 Hochberg's
 Hommel's
+Hs
 Humana
 ia
 ib
 ICA
-Instituto
+Instituto de Medicina Molecular
 intron's
 IPv
 isoform
@@ -65,7 +61,6 @@ loess
 Luo
 macOS
 Mayr
-Medicina
 MISO
 MISO's
 Morais
@@ -89,7 +84,6 @@ Saraiva
 Schroth
 SE
 Sebestyen
-Seq
 seq
 Shiny's
 someASevent

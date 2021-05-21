@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{queryFirebrowseData}
 \alias{queryFirebrowseData}
-\title{Query the Firebrowse API for TCGA data}
+\title{Query the FireBrowse API for TCGA data}
 \usage{
 queryFirebrowseData(
   format = "json",
@@ -23,7 +23,7 @@ queryFirebrowseData(
 \item{format}{Character: response format as \code{JSON}, \code{CSV} or
 \code{TSV}}
 
-\item{date}{Character: dates of the data retrieval by Firebrowse (by default,
+\item{date}{Character: dates of the data retrieval by FireBrowse (by default,
 it uses the most recent data available)}
 
 \item{cohort}{Character: abbreviation of the cohorts (by default, returns
@@ -31,7 +31,7 @@ data for all cohorts)}
 
 \item{data_type}{Character: data types (optional)}
 
-\item{tool}{Character: data produced by the selected Firebrowse tools
+\item{tool}{Character: data produced by the selected FireBrowse tools
 (optional)}
 
 \item{platform}{Character: data generation platforms (optional)}
@@ -50,10 +50,10 @@ data for all cohorts)}
 cohort)}
 }
 \value{
-Response from the Firebrowse API (it needs to be parsed)
+Response from the FireBrowse API (it needs to be parsed)
 }
 \description{
-Query the Firebrowse API for TCGA data
+Query the FireBrowse API for TCGA data
 }
 \examples{
 cohort <- getTCGAcohorts()[1]

@@ -93,7 +93,7 @@ chooseFilesMac <- function(default, caption, multiple, directory) {
 #' \itemize{
 #'  \item{\strong{Windows}: calls the \code{utils::choose.files} R function.}
 #'  \item{\strong{macOS}: uses AppleScript to display a folder selection
-#'  dialogue. If \code{default = NA}, folder selection fallbacks to the
+#'  dialogue. If \code{default = NA}, folder selection falls back to the
 #'  default behaviour of the \code{choose folder} AppleScript command.
 #'  Otherwise, paths are expanded with \code{\link{path.expand}()}.}
 #'  \item{\strong{Linux}: calls the \code{zenity} system command.}

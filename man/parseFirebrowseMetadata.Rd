@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{parseFirebrowseMetadata}
 \alias{parseFirebrowseMetadata}
-\title{Query the Firebrowse API for metadata}
+\title{Query the FireBrowse API for metadata}
 \usage{
 parseFirebrowseMetadata(type, ...)
 }
@@ -15,7 +15,7 @@ parseFirebrowseMetadata(type, ...)
 List with parsed response
 }
 \description{
-Query the Firebrowse API for metadata
+Query the FireBrowse API for metadata
 }
 \examples{
 psichomics:::parseFirebrowseMetadata("Dates")

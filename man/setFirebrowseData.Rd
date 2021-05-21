@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{setFirebrowseData}
 \alias{setFirebrowseData}
-\title{Set data from Firebrowse}
+\title{Set data from FireBrowse}
 \usage{
 setFirebrowseData(input, output, session, replace = TRUE)
 }
@@ -20,6 +20,6 @@ setFirebrowseData(input, output, session, replace = TRUE)
 state or internal variables)
 }
 \description{
-Set data from Firebrowse
+Set data from FireBrowse
 }
 \keyword{internal}

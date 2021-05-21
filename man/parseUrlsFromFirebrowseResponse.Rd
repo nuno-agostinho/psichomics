@@ -2,18 +2,18 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{parseUrlsFromFirebrowseResponse}
 \alias{parseUrlsFromFirebrowseResponse}
-\title{Retrieve URLs from a response to a Firebrowse data query}
+\title{Retrieve URLs from a response to a FireBrowse data query}
 \usage{
 parseUrlsFromFirebrowseResponse(res)
 }
 \arguments{
-\item{res}{Response from \code{httr::GET} to a Firebrowse data query}
+\item{res}{Response from \code{httr::GET} to a FireBrowse data query}
 }
 \value{
 Named character with URLs
 }
 \description{
-Retrieve URLs from a response to a Firebrowse data query
+Retrieve URLs from a response to a FireBrowse data query
 }
 \examples{
 res <- psichomics:::queryFirebrowseData(cohort = "ACC")
