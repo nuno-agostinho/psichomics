@@ -1,4 +1,4 @@
-# psichomics 1.18.0 (18 May, 2020)
+# psichomics 1.18.0 (18 May, 2021)
 
 * `discardLowCoveragePSIvalues()`: improve performance (2x faster)
 * When quantifying or loading PSI values, psichomics discards splicing events

@@ -57,7 +57,7 @@ jobs:
             grep r_version_associated_with_${BIOCVERSION} | \
             grep -o "[0-9]*\.[0-9]*\.[0-9]*")
           echo "Using R ${rversion}..."
-          echo "::set-output name=rversion::${rversion}"
+          echo "rversion=${rversion}" >> $GITHUB_ENV
         shell:
           bash {0}
 
@@ -75,7 +75,7 @@ jobs:
 
       - name: Cache R packages
         if: "!contains(github.event.head_commit.message, '/nocache')"
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ env.cache-version }}-${{ runner.os }}-bioc-${{ matrix.config.biocversion }}-r-${{ env.rversion }}-${{ hashFiles('.github/depends.Rds') }}
@@ -100,12 +100,6 @@ jobs:
           # Required to install magick as noted at
           # https://github.com/r-lib/usethis/commit/f1f1e0d10c1ebc75fd4c18fa7e2de4551fd9978f#diff-9bfee71065492f63457918efcd912cf2
           brew install imagemagick@6
-
-      - name: Install Windows system dependencies
-        if: runner.os == 'Windows'
-        run: |
-          # Edit below any Windows system dependencies
-        shell: Rscript {0}
 
       - name: Install BiocManager
         run: |
@@ -182,7 +176,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Deploy package
-        if: runner.os == 'macOS' && matrix.config.biocversion == 'release' && github.ref == 'refs/heads/master' && github.event_name == 'push'
+        if: runner.os == 'macOS' && matrix.config.biocversion == 'release' && github.ref == 'refs/heads/master'
         run: |
           R CMD INSTALL .
           git config --local user.email "actions@github.com"
