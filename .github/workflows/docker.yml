@@ -22,7 +22,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: nuno-agostinho/psichomics
+          images: nuno-agostinho/psichomics/psichomics
         
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
