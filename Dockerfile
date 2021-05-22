@@ -11,7 +11,7 @@ WORKDIR psichomics
 ADD . .
 
 # Install R package from source
-RUN Rscript -e "remotes::install_local()"
+#RUN Rscript -e "remotes::install_local()"
 RUN rm -rf *
 
 # # To start an R session with this version installed:
