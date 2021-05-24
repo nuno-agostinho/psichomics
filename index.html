@@ -190,19 +190,19 @@
 <div id="docker" class="section level3">
 <h3 class="hasAnchor">
 <a href="#docker" class="anchor"></a>Docker</h3>
-<p>The Docker images are based on <a href="https://github.com/Bioconductor/bioconductor_docker">Bioconductor Docker</a> and contain psichomics and its dependencies.</p>
+<p>The Docker images are based on [Bioconductor Docker][biocDocker] and contain psichomics and its dependencies.</p>
 <ol>
-<li>Pull the latest Docker image with <code>docker pull ghcr.io/nuno-agostinho/psichomics:latest</code>
-</li>
-<li>Start running RStudio (<a href="https://github.com/Bioconductor/bioconductor_docker">see here for more information</a>):</li>
+<li>Pull the latest Docker image:</li>
 </ol>
-<pre><code>docker run -e PASSWORD=bioc \
-    -p 8787:8787 \
-    nuno-agostinho/psichomics/psichomics:1.14.2</code></pre>
+<pre><code>docker pull ghcr.io/nuno-agostinho/psichomics:latest</code></pre>
 <ol>
-<li>RStudio is now accessible via the web browser at <a href="https://localhost:8787" class="uri">https://localhost:8787</a>
+<li>Start RStudio Web from the Docker image:</li>
+</ol>
+<pre><code>docker run -e PASSWORD=bioc -p 8787:8787 ghcr.io/nuno-agostinho/psichomics:latest</code></pre>
+<ol>
+<li>Go to RStudio Web via the web browser at <a href="https://localhost:8787" class="uri">https://localhost:8787</a>
 </li>
-<li>Enter RStudio with user <code>rstudio</code> and password <code>bioc</code>
+<li>Log in RStudio with user <code>rstudio</code> and password <code>bioc</code>
 </li>
 <li>Load psichomics using <code><a href="https://nuno-agostinho.github.io/psichomics/">library(psichomics)</a></code>
 </li>
