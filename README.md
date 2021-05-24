@@ -73,17 +73,20 @@ Start the visual interface of psichomics with `psichomics()`
 
 ### Docker
 
-The Docker images are based on [Bioconductor Docker](https://github.com/Bioconductor/bioconductor_docker) and contain psichomics and its dependencies.
+The Docker images are based on [Bioconductor Docker][biocDocker] and contain psichomics and its dependencies.
 
-1. Pull the latest Docker image with `docker pull ghcr.io/nuno-agostinho/psichomics:latest`
-2. Start running RStudio ([see here for more information](https://github.com/Bioconductor/bioconductor_docker)):
+1. Pull the latest Docker image:
 ```
-docker run -e PASSWORD=bioc \
-	-p 8787:8787 \
-	nuno-agostinho/psichomics/psichomics:1.14.2
+docker pull ghcr.io/nuno-agostinho/psichomics:latest
 ```
-3. RStudio is now accessible via the web browser at https://localhost:8787
-4. Enter RStudio with user `rstudio` and password `bioc`
+
+2. Start RStudio Web from the Docker image:
+```
+docker run -e PASSWORD=bioc -p 8787:8787 ghcr.io/nuno-agostinho/psichomics:latest
+```
+
+3. Go to RStudio Web via the web browser at https://localhost:8787
+4. Log in RStudio with user `rstudio` and password `bioc`
 5. Load psichomics using `library(psichomics)`
 6. Start the visual interface of psichomics with `psichomics()`
 
