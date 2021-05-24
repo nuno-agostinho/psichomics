@@ -221,7 +221,7 @@ previous identifiers remain other identifiers have the same target (in case
 <span class='va'>genes</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ENSG00000012048"</span>, <span class='st'>"ENSG00000083093"</span>, <span class='st'>"ENSG00000141510"</span>,
            <span class='st'>"ENSG00000051180"</span><span class='op'>)</span>
 <span class='fu'>convertGeneIdentifiers</span><span class='op'>(</span><span class='va'>sp</span>, <span class='va'>genes</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>using temporary cache /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmphxZXhJ/BiocFileCache</span></div><div class='output co'>#&gt; <span class='message'>snapshotDate(): 2020-10-27</span></div><div class='output co'>#&gt; <span class='message'>downloading 1 resources</span></div><div class='output co'>#&gt; <span class='message'>retrieving 1 resource</span></div><div class='output co'>#&gt; <span class='message'>loading from cache</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: AnnotationDbi</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: stats4</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: BiocGenerics</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: parallel</span></div><div class='output co'>#&gt; <span class='message'></span>
+</div><div class='output co'>#&gt; <span class='message'>snapshotDate(): 2021-05-18</span></div><div class='output co'>#&gt; <span class='message'>loading from cache</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: AnnotationDbi</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: stats4</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: BiocGenerics</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: parallel</span></div><div class='output co'>#&gt; <span class='message'></span>
 #&gt; <span class='message'>Attaching package: ‘BiocGenerics’</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:parallel’:</span>
 #&gt; <span class='message'></span>
 #&gt; <span class='message'>    clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,</span>
@@ -242,11 +242,11 @@ previous identifiers remain other identifiers have the same target (in case
 #&gt; <span class='message'>    Vignettes contain introductory material; view with</span>
 #&gt; <span class='message'>    'browseVignettes()'. To cite Bioconductor, see</span>
 #&gt; <span class='message'>    'citation("Biobase")', and for packages 'citation("pkgname")'.</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: IRanges</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: S4Vectors</span></div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Attaching package: ‘S4Vectors’</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from ‘package:base’:</span>
+#&gt; <span class='message'>Attaching package: ‘S4Vectors’</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:base’:</span>
 #&gt; <span class='message'></span>
-#&gt; <span class='message'>    expand.grid</span></div><div class='output co'>#&gt; ENSG00000012048 ENSG00000083093 ENSG00000141510 ENSG00000051180 
+#&gt; <span class='message'>    expand.grid, I, unname</span></div><div class='output co'>#&gt; ENSG00000012048 ENSG00000083093 ENSG00000141510 ENSG00000051180 
 #&gt;         "BRCA1"         "PALB2"          "TP53"         "RAD51" </div><div class='input'><span class='fu'>convertGeneIdentifiers</span><span class='op'>(</span><span class='va'>sp</span>, <span class='va'>genes</span>, key<span class='op'>=</span><span class='st'>"ENSEMBL"</span>, target<span class='op'>=</span><span class='st'>"UNIPROT"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>snapshotDate(): 2020-10-27</span></div><div class='output co'>#&gt; <span class='message'>loading from cache</span></div><div class='output co'>#&gt;                                                ENSG00000012048 
+</div><div class='output co'>#&gt; <span class='message'>snapshotDate(): 2021-05-18</span></div><div class='output co'>#&gt; <span class='message'>loading from cache</span></div><div class='output co'>#&gt;                                                ENSG00000012048 
 #&gt;                                            "P38398/A0A024R1V0" 
 #&gt;                                                ENSG00000083093 
 #&gt;                                                "Q86YC2/H3BN63" 
@@ -256,13 +256,13 @@ previous identifiers remain other identifiers have the same target (in case
 #&gt;                                                       "Q06609" </div><div class='input'>
 <span class='co'># Alternatively, set the annotation database directly</span>
 <span class='va'>ah</span> <span class='op'>&lt;-</span> <span class='fu'>AnnotationHub</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/AnnotationHub/man/AnnotationHub-class.html'>AnnotationHub</a></span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>snapshotDate(): 2020-10-27</span></div><div class='input'><span class='va'>sp</span> <span class='op'>&lt;-</span> <span class='fu'>AnnotationHub</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/AnnotationHub/man/AnnotationHub-class.html'>query</a></span><span class='op'>(</span><span class='va'>ah</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"OrgDb"</span>, <span class='st'>"Homo sapiens"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>
+</div><div class='output co'>#&gt; <span class='message'>snapshotDate(): 2021-05-18</span></div><div class='input'><span class='va'>sp</span> <span class='op'>&lt;-</span> <span class='fu'>AnnotationHub</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/AnnotationHub/man/AnnotationHub-class.html'>query</a></span><span class='op'>(</span><span class='va'>ah</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"OrgDb"</span>, <span class='st'>"Homo sapiens"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>
 </div><div class='output co'>#&gt; <span class='message'>loading from cache</span></div><div class='input'><span class='fu'>columns</span><span class='op'>(</span><span class='va'>sp</span><span class='op'>)</span> <span class='co'># these attributes can be used to change the attributes</span>
 </div><div class='output co'>#&gt;  [1] "ACCNUM"       "ALIAS"        "ENSEMBL"      "ENSEMBLPROT"  "ENSEMBLTRANS"
 #&gt;  [6] "ENTREZID"     "ENZYME"       "EVIDENCE"     "EVIDENCEALL"  "GENENAME"    
-#&gt; [11] "GO"           "GOALL"        "IPI"          "MAP"          "OMIM"        
-#&gt; [16] "ONTOLOGY"     "ONTOLOGYALL"  "PATH"         "PFAM"         "PMID"        
-#&gt; [21] "PROSITE"      "REFSEQ"       "SYMBOL"       "UCSCKG"       "UNIGENE"     
+#&gt; [11] "GENETYPE"     "GO"           "GOALL"        "IPI"          "MAP"         
+#&gt; [16] "OMIM"         "ONTOLOGY"     "ONTOLOGYALL"  "PATH"         "PFAM"        
+#&gt; [21] "PMID"         "PROSITE"      "REFSEQ"       "SYMBOL"       "UCSCKG"      
 #&gt; [26] "UNIPROT"     </div><div class='input'>
 <span class='fu'>convertGeneIdentifiers</span><span class='op'>(</span><span class='va'>sp</span>, <span class='va'>genes</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; ENSG00000012048 ENSG00000083093 ENSG00000141510 ENSG00000051180 

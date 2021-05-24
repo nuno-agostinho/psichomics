@@ -137,7 +137,14 @@
 <h2 class="hasAnchor">
 <a href="#table-of-contents" class="anchor"></a>Table of Contents</h2>
 <ul>
-<li><a href="#install-and-start-running">Install and start running</a></li>
+<li>
+<a href="#install-and-start-running">Install and start running</a>
+<ul>
+<li><a href="#bioconductor">Bioconductor</a></li>
+<li><a href="#github">GitHub</a></li>
+<li><a href="#docker">Docker</a></li>
+</ul>
+</li>
 <li><a href="#tutorials">Tutorials</a></li>
 <li>
 <a href="#workflow">Workflow</a>
@@ -160,10 +167,49 @@
 <div id="install-and-start-running" class="section level2">
 <h2 class="hasAnchor">
 <a href="#install-and-start-running" class="anchor"></a>Install and start running</h2>
+<div id="bioconductor" class="section level3">
+<h3 class="hasAnchor">
+<a href="#bioconductor" class="anchor"></a>Bioconductor</h3>
 <p>To install the package from <a href="https://www.bioconductor.org">Bioconductor</a>, type the following in <a href="https://www.rstudio.com/products/rstudio">RStudio</a> or in an R console:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
-<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"psichomics"</span><span class="op">)</span></code></pre></div>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"psichomics"</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://nuno-agostinho.github.io/psichomics/">"psichomics"</a></span><span class="op">)</span></code></pre></div>
+<p>Start the visual interface of psichomics with <code><a href="reference/psichomics.html">psichomics()</a></code></p>
+</div>
+<div id="github" class="section level3">
+<h3 class="hasAnchor">
+<a href="#github" class="anchor"></a>GitHub</h3>
+<p>Install from GitHub (specify a branch or tag via the <code>ref</code> argument):</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"nuno_agostinho/psichomics"</span>, ref<span class="op">=</span><span class="st">"master"</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://nuno-agostinho.github.io/psichomics/">"psichomics"</a></span><span class="op">)</span></code></pre></div>
+<p>Start the visual interface of psichomics with <code><a href="reference/psichomics.html">psichomics()</a></code></p>
+</div>
+<div id="docker" class="section level3">
+<h3 class="hasAnchor">
+<a href="#docker" class="anchor"></a>Docker</h3>
+<p>The Docker images are based on <a href="https://github.com/Bioconductor/bioconductor_docker">Bioconductor Docker</a> and contain psichomics and its dependencies.</p>
+<ol>
+<li>Pull the latest Docker image with <code>docker pull ghcr.io/nuno-agostinho/psichomics:latest</code>
+</li>
+<li>Start running RStudio (<a href="https://github.com/Bioconductor/bioconductor_docker">see here for more information</a>):</li>
+</ol>
+<pre><code>docker run -e PASSWORD=bioc \
+    -p 8787:8787 \
+    nuno-agostinho/psichomics/psichomics:1.14.2</code></pre>
+<ol>
+<li>RStudio is now accessible via the web browser at <a href="https://localhost:8787" class="uri">https://localhost:8787</a>
+</li>
+<li>Enter RStudio with user <code>rstudio</code> and password <code>bioc</code>
+</li>
+<li>Load psichomics using <code><a href="https://nuno-agostinho.github.io/psichomics/">library(psichomics)</a></code>
+</li>
+<li>Start the visual interface of psichomics with <code><a href="reference/psichomics.html">psichomics()</a></code>
+</li>
+</ol>
+</div>
 </div>
 <div id="tutorials" class="section level2">
 <h2 class="hasAnchor">
