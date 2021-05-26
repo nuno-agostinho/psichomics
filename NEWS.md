@@ -1,3 +1,14 @@
+# psichomics 1.18.1 (26 May, 2021)
+
+* Fix issues with unit tests in Bioconductor
+* Improve Docker images:
+    - Simplify Dockerfile
+    - Store Docker images in GitHub Container Registry
+    - Automatically build `latest` Docker image based on last release version
+* Improve README with install instructions for GitHub and Docker
+* Minor copy-editing of user-provided data tutorial
+* Fix minor spelling issues
+
 # psichomics 1.18.0 (18 May, 2021)
 
 * `discardLowCoveragePSIvalues()`: improve performance (2x faster)
