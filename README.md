@@ -58,7 +58,7 @@ The following case studies and tutorials are available and were based on our
 
 * [Visual interface][tutorial-gui]
 * [Command-line interface][tutorial-cli]
-* [Loading SRA, VAST-TOOLS and user-provided RNA-seq data][tutorial-custom-data]
+* [Loading user-provided data][tutorial-custom-data]
 * [Preparing alternative splicing annotations][tutorial-prep-AS-annotation]
 
 Another tutorial was published as part of the Methods in Molecular Biology book
@@ -80,9 +80,8 @@ information, junction quantification and gene expression data
 * [SRA][] data from select SRA projects via the [recount][] package
 
 Other SRA, [VAST-TOOLS][] and user-provided data can also be manually loaded.
-Please read
-[Loading SRA, VAST-TOOLS and user-provided RNA-seq data][tutorial-custom-data]
-for more information.
+Please read [Loading user-provided data][tutorial-custom-data] for more
+information.
 
 #### Alternative splicing quantification
 
