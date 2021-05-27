@@ -215,3 +215,4 @@ Nature 456 (7221): 470–76.
 [tutorial-custom-data]: https://nuno-agostinho.github.io/psichomics/articles/custom_data.html
 [tutorial-prep-AS-annotation]: https://nuno-agostinho.github.io/psichomics/articles/AS_events_preparation.html
 [recount]: https://jhubiostatistics.shinyapps.io/recount/
+[biocDocker]: https://www.bioconductor.org/help/docker/
