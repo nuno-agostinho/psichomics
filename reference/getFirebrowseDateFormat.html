@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Returns the date format used by the Firebrowse API — getFirebrowseDateFormat • psichomics</title>
+<title>Returns the date format used by the FireBrowse API — getFirebrowseDateFormat • psichomics</title>
 
 
 <!-- jquery -->
@@ -45,8 +45,8 @@
 
 
 
-<meta property="og:title" content="Returns the date format used by the Firebrowse API — getFirebrowseDateFormat" />
-<meta property="og:description" content="Returns the date format used by the Firebrowse API" />
+<meta property="og:title" content="Returns the date format used by the FireBrowse API — getFirebrowseDateFormat" />
+<meta property="og:description" content="Returns the date format used by the FireBrowse API" />
 
 
 
@@ -88,7 +88,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.1</span>
       </span>
     </div>
 
@@ -117,7 +117,7 @@
       <a href="../articles/CLI_tutorial.html">Command-line interface (CLI) tutorial</a>
     </li>
     <li>
-      <a href="../articles/custom_data.html">Loading SRA, VAST-TOOLS and user-provided RNA-seq data</a>
+      <a href="../articles/custom_data.html">Loading user-provided data</a>
     </li>
     <li>
       <a href="../articles/AS_events_preparation.html">Preparing custom alternative splicing annotations</a>
@@ -154,13 +154,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Returns the date format used by the Firebrowse API</h1>
+    <h1>Returns the date format used by the FireBrowse API</h1>
     <small class="dont-index">Source: <a href='https://github.com/nuno-agostinho/psichomics/blob/master/R/data_firebrowse.R'><code>R/data_firebrowse.R</code></a></small>
     <div class="hidden name"><code>getFirebrowseDateFormat.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Returns the date format used by the Firebrowse API</p>
+    <p>Returns the date format used by the FireBrowse API</p>
     </div>
 
     <pre class="usage"><span class='fu'>getFirebrowseDateFormat</span><span class='op'>(</span><span class='op'>)</span></pre>
@@ -168,15 +168,15 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Named list with date formats from Firebrowse API</p>
+    <p>Named list with date formats from FireBrowse API</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>format</span> <span class='op'>&lt;-</span> <span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>getFirebrowseDateFormat</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='co'># date format to use in a query to Firebrowse API</span>
+<span class='co'># date format to use in a query to FireBrowse API</span>
 <span class='va'>format</span><span class='op'>$</span><span class='va'>query</span>
 </div><div class='output co'>#&gt; [1] "%Y_%m_%d"</div><div class='input'>
-<span class='co'># date format to parse a date in a response from Firebrowse API</span>
+<span class='co'># date format to parse a date in a response from FireBrowse API</span>
 <span class='va'>format</span><span class='op'>$</span><span class='va'>response</span>
 </div><div class='output co'>#&gt; [1] "%d %b %Y"</div></pre>
   </div>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Query the Firebrowse API for metadata — parseFirebrowseMetadata • psichomics</title>
+<title>Query the FireBrowse API for metadata — parseFirebrowseMetadata • psichomics</title>
 
 
 <!-- jquery -->
@@ -45,8 +45,8 @@
 
 
 
-<meta property="og:title" content="Query the Firebrowse API for metadata — parseFirebrowseMetadata" />
-<meta property="og:description" content="Query the Firebrowse API for metadata" />
+<meta property="og:title" content="Query the FireBrowse API for metadata — parseFirebrowseMetadata" />
+<meta property="og:description" content="Query the FireBrowse API for metadata" />
 
 
 
@@ -88,7 +88,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.1</span>
       </span>
     </div>
 
@@ -117,7 +117,7 @@
       <a href="../articles/CLI_tutorial.html">Command-line interface (CLI) tutorial</a>
     </li>
     <li>
-      <a href="../articles/custom_data.html">Loading SRA, VAST-TOOLS and user-provided RNA-seq data</a>
+      <a href="../articles/custom_data.html">Loading user-provided data</a>
     </li>
     <li>
       <a href="../articles/AS_events_preparation.html">Preparing custom alternative splicing annotations</a>
@@ -154,13 +154,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Query the Firebrowse API for metadata</h1>
+    <h1>Query the FireBrowse API for metadata</h1>
     <small class="dont-index">Source: <a href='https://github.com/nuno-agostinho/psichomics/blob/master/R/data_firebrowse.R'><code>R/data_firebrowse.R</code></a></small>
     <div class="hidden name"><code>parseFirebrowseMetadata.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Query the Firebrowse API for metadata</p>
+    <p>Query the FireBrowse API for metadata</p>
     </div>
 
     <pre class="usage"><span class='fu'>parseFirebrowseMetadata</span><span class='op'>(</span><span class='va'>type</span>, <span class='va'>...</span><span class='op'>)</span></pre>
@@ -261,7 +261,7 @@
 #&gt; [1] "FireBrowse API at firebrowse.org:8000 is alive"                
 #&gt; [2] "Version: 1.1.40 (2019-10-13 13:15:04 c66e6f910b6a89397a4de26c)"
 #&gt; [3] "Root Dir: /local/firebrowse/firebrowse_1.1.40"                 
-#&gt; [4] "Launched On: 2021_04_21 03:09:20 EDT\n"                        
+#&gt; [4] "Launched On: 2021_05_20 16:35:04 EDT\n"                        
 #&gt; </div><div class='input'>
 <span class='co'># Get the abbreviation and description of all cohorts available</span>
 <span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseFirebrowseMetadata</span><span class='op'>(</span><span class='st'>"Cohorts"</span><span class='op'>)</span>

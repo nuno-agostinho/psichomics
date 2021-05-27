@@ -87,7 +87,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.1</span>
       </span>
     </div>
 
@@ -116,7 +116,7 @@
       <a href="../articles/CLI_tutorial.html">Command-line interface (CLI) tutorial</a>
     </li>
     <li>
-      <a href="../articles/custom_data.html">Loading SRA, VAST-TOOLS and user-provided RNA-seq data</a>
+      <a href="../articles/custom_data.html">Loading user-provided data</a>
     </li>
     <li>
       <a href="../articles/AS_events_preparation.html">Preparing custom alternative splicing annotations</a>
@@ -176,7 +176,7 @@
 <li>Plot sample distributions in density, violin or box plots (argument <code>type</code> in command-line interface)</li>
 <li>Hide rug plot when showing 500 or more values (by default) to avoid performance issues</li>
 <li>Add jitter to rug plot (helps to discern numerous points)</li>
-<li>Display interquantile range (IQR) per group in the tooltip</li>
+<li>Display interquartile range (IQR) per group in the tooltip</li>
 <li>Add subtitles (argument <code>subtitle</code> in command-line interface)</li>
 <li>Allow to invert axes (argument <code>invertAxes</code> in command-line interface)</li>
 </ul>
@@ -204,7 +204,7 @@
 <ul>
 <li>Avoid “Matching subjects to their samples/Matching process concluded” loop</li>
 <li>Timeout GTEx data retrieval after 3 seconds without server response</li>
-<li>Avoid unnecessary messages when loading Firebrowse interface</li>
+<li>Avoid unnecessary messages when loading FireBrowse interface</li>
 <li>Fix intron retention diagrams in distribution plots not displaying introns</li>
 <li>When searching for specific splicing events, fix results based on the wrong genomic coordinates</li>
 </ul>
@@ -212,6 +212,23 @@
 <li>Improve tutorials</li>
 </ul>
 </div>
+</div>
+    <div id="psichomics-1181-26-may-2021" class="section level1">
+<h1 class="page-header" data-toc-text="1.18.1">
+<a href="#psichomics-1181-26-may-2021" class="anchor"></a>psichomics 1.18.1 (26 May, 2021)</h1>
+<ul>
+<li>Fix issues with unit tests in Bioconductor</li>
+<li>Improve Docker images:
+<ul>
+<li>Simplify Dockerfile</li>
+<li>Store Docker images in GitHub Container Registry</li>
+<li>Automatically build <code>latest</code> Docker image based on last release version</li>
+</ul>
+</li>
+<li>Improve README with install instructions for GitHub and Docker</li>
+<li>Minor copy-editing of user-provided data tutorial</li>
+<li>Fix minor spelling issues</li>
+</ul>
 </div>
   </div>
 

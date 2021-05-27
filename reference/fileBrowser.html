@@ -88,7 +88,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.1</span>
       </span>
     </div>
 
@@ -117,7 +117,7 @@
       <a href="../articles/CLI_tutorial.html">Command-line interface (CLI) tutorial</a>
     </li>
     <li>
-      <a href="../articles/custom_data.html">Loading SRA, VAST-TOOLS and user-provided RNA-seq data</a>
+      <a href="../articles/custom_data.html">Loading user-provided data</a>
     </li>
     <li>
       <a href="../articles/AS_events_preparation.html">Preparing custom alternative splicing annotations</a>
@@ -202,7 +202,7 @@
     <p>Platform-dependent implementation:</p><ul>
 <li><p><strong>Windows</strong>: calls the <code><a href='https://rdrr.io/r/utils/choose.files.html'>utils::choose.files</a></code> R function.</p></li>
 <li><p><strong>macOS</strong>: uses AppleScript to display a folder selection
- dialogue. If <code>default = NA</code>, folder selection fallbacks to the
+ dialogue. If <code>default = NA</code>, folder selection falls back to the
  default behaviour of the <code>choose folder</code> AppleScript command.
  Otherwise, paths are expanded with <code><a href='https://rdrr.io/r/base/path.expand.html'>path.expand</a>()</code>.</p></li>
 <li><p><strong>Linux</strong>: calls the <code>zenity</code> system command.</p></li>

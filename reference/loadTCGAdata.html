@@ -46,7 +46,7 @@
 
 
 <meta property="og:title" content="Download and process TCGA data — loadTCGAdata" />
-<meta property="og:description" content="TCGA data obtained via Firebrowse" />
+<meta property="og:description" content="TCGA data obtained via FireBrowse" />
 
 
 
@@ -88,7 +88,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.1</span>
       </span>
     </div>
 
@@ -117,7 +117,7 @@
       <a href="../articles/CLI_tutorial.html">Command-line interface (CLI) tutorial</a>
     </li>
     <li>
-      <a href="../articles/custom_data.html">Loading SRA, VAST-TOOLS and user-provided RNA-seq data</a>
+      <a href="../articles/custom_data.html">Loading user-provided data</a>
     </li>
     <li>
       <a href="../articles/AS_events_preparation.html">Preparing custom alternative splicing annotations</a>
@@ -160,7 +160,7 @@
     </div>
 
     <div class="ref-description">
-    <p>TCGA data obtained via <a href='http://firebrowse.org/api-docs/'>Firebrowse</a></p>
+    <p>TCGA data obtained via <a href='http://firebrowse.org/api-docs/'>FireBrowse</a></p>
     </div>
 
     <pre class="usage"><span class='fu'>loadTCGAdata</span><span class='op'>(</span>
@@ -192,12 +192,12 @@ from loading into R (by default, exclude files containing <code>.aux.</code>,
     <tr>
       <th>...</th>
       <td><p>Arguments passed on to <code><a href='queryFirebrowseData.html'>queryFirebrowseData</a></code></p><dl>
-    <dt><code>date</code></dt><dd><p>Character: dates of the data retrieval by Firebrowse (by default,
+    <dt><code>date</code></dt><dd><p>Character: dates of the data retrieval by FireBrowse (by default,
 it uses the most recent data available)</p></dd>
     <dt><code>cohort</code></dt><dd><p>Character: abbreviation of the cohorts (by default, returns
 data for all cohorts)</p></dd>
     <dt><code>data_type</code></dt><dd><p>Character: data types (optional)</p></dd>
-    <dt><code>tool</code></dt><dd><p>Character: data produced by the selected Firebrowse tools
+    <dt><code>tool</code></dt><dd><p>Character: data produced by the selected FireBrowse tools
 (optional)</p></dd>
     <dt><code>platform</code></dt><dd><p>Character: data generation platforms (optional)</p></dd>
     <dt><code>center</code></dt><dd><p>Character: data generation centres (optional)</p></dd>

@@ -48,7 +48,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.1</span>
       </span>
     </div>
 
@@ -77,7 +77,7 @@
       <a href="articles/CLI_tutorial.html">Command-line interface (CLI) tutorial</a>
     </li>
     <li>
-      <a href="articles/custom_data.html">Loading SRA, VAST-TOOLS and user-provided RNA-seq data</a>
+      <a href="articles/custom_data.html">Loading user-provided data</a>
     </li>
     <li>
       <a href="articles/AS_events_preparation.html">Preparing custom alternative splicing annotations</a>
@@ -175,6 +175,16 @@
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
 <span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"psichomics"</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://nuno-agostinho.github.io/psichomics/">"psichomics"</a></span><span class="op">)</span></code></pre></div>
+<ol>
+<li>RStudio is now accessible via the web browser at <a href="https://localhost:8787" class="uri">https://localhost:8787</a>
+</li>
+<li>Enter RStudio with user <code>rstudio</code> and password <code>bioc</code>
+</li>
+<li>Load psichomics using <code><a href="https://nuno-agostinho.github.io/psichomics/">library(psichomics)</a></code>
+</li>
+<li>Start the visual interface of psichomics with <code><a href="reference/psichomics.html">psichomics()</a></code>
+</li>
+</ol>
 <p>Start the visual interface of psichomics with <code><a href="reference/psichomics.html">psichomics()</a></code></p>
 </div>
 <div id="github" class="section level3">
@@ -218,7 +228,7 @@
 <ul>
 <li><a href="https://nuno-agostinho.github.io/psichomics/articles/GUI_tutorial.html">Visual interface</a></li>
 <li><a href="https://nuno-agostinho.github.io/psichomics/articles/CLI_tutorial.html">Command-line interface</a></li>
-<li><a href="https://nuno-agostinho.github.io/psichomics/articles/custom_data.html">Loading SRA, VAST-TOOLS and user-provided RNA-seq data</a></li>
+<li><a href="https://nuno-agostinho.github.io/psichomics/articles/custom_data.html">Loading user-provided data</a></li>
 <li><a href="https://nuno-agostinho.github.io/psichomics/articles/AS_events_preparation.html">Preparing alternative splicing annotations</a></li>
 </ul>
 <p>Another tutorial was published as part of the Methods in Molecular Biology book series (the code for performing the analysis can be found <a href="https://github.com/nuno-agostinho/stem-cell-analysis-in-psichomics">here</a>):</p>
@@ -241,7 +251,7 @@
 <li>
 <a href="https://www.ncbi.nlm.nih.gov/sra">SRA</a> data from select SRA projects via the <a href="https://jhubiostatistics.shinyapps.io/recount/">recount</a> package</li>
 </ul>
-<p>Other SRA, <a href="https://github.com/vastgroup/vast-tools">VAST-TOOLS</a> and user-provided data can also be manually loaded. Please read <a href="https://nuno-agostinho.github.io/psichomics/articles/custom_data.html">Loading SRA, VAST-TOOLS and user-provided RNA-seq data</a> for more information.</p>
+<p>Other SRA, <a href="https://github.com/vastgroup/vast-tools">VAST-TOOLS</a> and user-provided data can also be manually loaded. Please read <a href="https://nuno-agostinho.github.io/psichomics/articles/custom_data.html">Loading user-provided data</a> for more information.</p>
 <div id="alternative-splicing-quantification" class="section level4">
 <h4 class="hasAnchor">
 <a href="#alternative-splicing-quantification" class="anchor"></a>Alternative splicing quantification</h4>
