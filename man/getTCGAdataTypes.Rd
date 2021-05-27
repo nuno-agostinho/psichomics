@@ -22,7 +22,7 @@ getTCGAcohorts(cohort = NULL)
 Parsed response
 }
 \description{
-Parameters obtained via \href{http://firebrowse.org/api-docs/}{Firebrowse}
+Parameters obtained via \href{http://firebrowse.org/api-docs/}{FireBrowse}
 }
 \examples{
 getTCGAdataTypes()

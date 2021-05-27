@@ -2,12 +2,12 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{loadFirebrowseFolders}
 \alias{loadFirebrowseFolders}
-\title{Load Firebrowse folders}
+\title{Load FireBrowse folders}
 \usage{
 loadFirebrowseFolders(folder, exclude = "")
 }
 \arguments{
-\item{folder}{Character: folder(s) in which to look for Firebrowse files}
+\item{folder}{Character: folder(s) in which to look for FireBrowse files}
 
 \item{exclude}{Character: files to exclude from the loading}
 }

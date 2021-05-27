@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{prepareFirebrowseArchives}
 \alias{prepareFirebrowseArchives}
-\title{Prepares Firebrowse archives in a given directory}
+\title{Prepares FireBrowse archives in a given directory}
 \usage{
 prepareFirebrowseArchives(archive, md5, folder, outdir)
 }
@@ -20,7 +20,7 @@ extracted}
 Invisible TRUE if successful
 }
 \description{
-Checks Firebrowse archives' integrity using the MD5 files, extracts the
+Checks FireBrowse archives' integrity using the MD5 files, extracts the
 content of the archives, moves the content to newly-created folders and
 removes the original downloaded archives.
 }

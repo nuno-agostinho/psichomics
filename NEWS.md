@@ -1,3 +1,14 @@
+# psichomics 1.18.1 (26 May, 2021)
+
+* Fix issues with unit tests in Bioconductor
+* Improve Docker images:
+    - Simplify Dockerfile
+    - Store Docker images in GitHub Container Registry
+    - Automatically build `latest` Docker image based on last release version
+* Improve README with install instructions for GitHub and Docker
+* Minor copy-editing of user-provided data tutorial
+* Fix minor spelling issues
+
 # psichomics 1.18.0 (18 May, 2021)
 
 * `discardLowCoveragePSIvalues()`: improve performance (2x faster)
@@ -16,7 +27,7 @@ of the alternative splicing events within
     - Hide rug plot when showing 500 or more values (by default) to avoid
     performance issues
     - Add jitter to rug plot (helps to discern numerous points)
-    - Display interquantile range (IQR) per group in the tooltip
+    - Display interquartile range (IQR) per group in the tooltip
     - Add subtitles (argument `subtitle` in command-line interface)
     - Allow to invert axes (argument `invertAxes` in command-line interface)
 
@@ -35,7 +46,7 @@ respective group of each value (together with their colour, if available):
 * Graphical user interface improvements:
     - Avoid "Matching subjects to their samples/Matching process concluded" loop
     - Timeout GTEx data retrieval after 3 seconds without server response
-    - Avoid unnecessary messages when loading Firebrowse interface
+    - Avoid unnecessary messages when loading FireBrowse interface
     - Fix intron retention diagrams in distribution plots not displaying introns
     - When searching for specific splicing events, fix results based on the
     wrong genomic coordinates
@@ -737,7 +748,7 @@ and a quick reference for functions
 appropriate analyses will now be automatically rendered with the respective
 options
 * Fix buggy browser history when the user is directed to a different tab
-* Consistently use Firebrowse and Firehose across the package
+* Consistently use FireBrowse and Firehose across the package
 * Update documentation
 
 # psichomics 1.0.8 (21 Feb, 2017)

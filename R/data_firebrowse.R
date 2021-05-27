@@ -1,8 +1,8 @@
-# Get Firebrowse parameters ----------------------------------------------------
+# Get FireBrowse parameters ----------------------------------------------------
 
 #' Get available parameters for TCGA data
 #'
-#' Parameters obtained via \href{http://firebrowse.org/api-docs/}{Firebrowse}
+#' Parameters obtained via \href{http://firebrowse.org/api-docs/}{FireBrowse}
 #'
 #' @family functions associated with TCGA data retrieval
 #' @return Parsed response
@@ -62,7 +62,7 @@ getTCGAcohorts <- function(cohort = NULL) {
 getFirebrowseCohorts <- getTCGAcohorts
 
 
-# Process and manipulate Firebrowse data ---------------------------------------
+# Process and manipulate FireBrowse data ---------------------------------------
 
 #' @rdname parseTCGAsampleInfo
 #'
@@ -125,9 +125,9 @@ parseTCGAsampleInfo <- function(samples, match=NULL) {
 #' @export
 parseTcgaSampleInfo <- parseTCGAsampleInfo
 
-#' Retrieve URLs from a response to a Firebrowse data query
+#' Retrieve URLs from a response to a FireBrowse data query
 #'
-#' @param res Response from \code{httr::GET} to a Firebrowse data query
+#' @param res Response from \code{httr::GET} to a FireBrowse data query
 #'
 #' @importFrom jsonlite fromJSON
 #' @importFrom httr content
@@ -157,18 +157,18 @@ parseUrlsFromFirebrowseResponse <- function(res) {
     return(link)
 }
 
-#' Returns the date format used by the Firebrowse API
+#' Returns the date format used by the FireBrowse API
 #'
-#' @return Named list with date formats from Firebrowse API
+#' @return Named list with date formats from FireBrowse API
 #' @keywords internal
 #'
 #' @examples
 #' format <- psichomics:::getFirebrowseDateFormat()
 #'
-#' # date format to use in a query to Firebrowse API
+#' # date format to use in a query to FireBrowse API
 #' format$query
 #'
-#' # date format to parse a date in a response from Firebrowse API
+#' # date format to parse a date in a response from FireBrowse API
 #' format$response
 getFirebrowseDateFormat <- function() {
     query <- "%Y_%m_%d"
@@ -190,7 +190,7 @@ parseDateResponse <- function(string) {
     return(date)
 }
 
-#' Query the Firebrowse API for metadata
+#' Query the FireBrowse API for metadata
 #'
 #' @param type Character: metadata to retrieve
 #' @param ... Character: parameters to pass to query (optional)
@@ -225,16 +225,16 @@ parseFirebrowseMetadata <- function(type, ...) {
     return(response)
 }
 
-# Download and load Firebrowse data --------------------------------------------
+# Download and load FireBrowse data --------------------------------------------
 
-#' Check if \href{http://firebrowse.org/api-docs/}{Firebrowse API} is running
+#' Check if \href{http://firebrowse.org/api-docs/}{FireBrowse API} is running
 #'
 #' @importFrom httr GET warn_for_status http_error
 #' @importFrom methods is
 #'
 #' @family functions associated with TCGA data retrieval
 #' @return Invisible \code{TRUE} if the
-#' \href{http://firebrowse.org/api-docs/}{Firebrowse API} is working; otherwise,
+#' \href{http://firebrowse.org/api-docs/}{FireBrowse API} is working; otherwise,
 #' raises a warning with the status code and a brief explanation.
 #' @export
 #'
@@ -246,7 +246,7 @@ isFirebrowseUp <- function() {
     if (is(heartbeat, "error")) {
         return(FALSE)
     } else if (http_error(heartbeat)) {
-        warn_for_status(heartbeat, "reach Firebrowse API")
+        warn_for_status(heartbeat, "reach FireBrowse API")
         return(FALSE)
     } else {
         return(TRUE)
@@ -294,16 +294,16 @@ loadTCGAsampleMetadata <- function(data) {
     return(data)
 }
 
-#' Query the Firebrowse API for TCGA data
+#' Query the FireBrowse API for TCGA data
 #'
 #' @param format Character: response format as \code{JSON}, \code{CSV} or
 #' \code{TSV}
-#' @param date Character: dates of the data retrieval by Firebrowse (by default,
+#' @param date Character: dates of the data retrieval by FireBrowse (by default,
 #' it uses the most recent data available)
 #' @param cohort Character: abbreviation of the cohorts (by default, returns
 #' data for all cohorts)
 #' @param data_type Character: data types (optional)
-#' @param tool Character: data produced by the selected Firebrowse tools
+#' @param tool Character: data produced by the selected FireBrowse tools
 #' (optional)
 #' @param platform Character: data generation platforms (optional)
 #' @param center Character: data generation centres (optional)
@@ -316,7 +316,7 @@ loadTCGAsampleMetadata <- function(data) {
 #'
 #' @importFrom httr GET
 #'
-#' @return Response from the Firebrowse API (it needs to be parsed)
+#' @return Response from the FireBrowse API (it needs to be parsed)
 #' @keywords internal
 #'
 #' @examples
@@ -407,9 +407,9 @@ checkIntegrity <- function(filesToCheck, md5file) {
     return(md5sums %in% md5table)
 }
 
-#' Prepares Firebrowse archives in a given directory
+#' Prepares FireBrowse archives in a given directory
 #'
-#' Checks Firebrowse archives' integrity using the MD5 files, extracts the
+#' Checks FireBrowse archives' integrity using the MD5 files, extracts the
 #' content of the archives, moves the content to newly-created folders and
 #' removes the original downloaded archives.
 #'
@@ -485,7 +485,7 @@ prepareFirebrowseArchives <- function(archive, md5, folder, outdir) {
     return(invisible(TRUE))
 }
 
-#' Load Firebrowse folders
+#' Load FireBrowse folders
 #'
 #' Loads the files present in each folder as a data.frame.
 #'
@@ -495,7 +495,7 @@ prepareFirebrowseArchives <- function(archive, md5, folder, outdir) {
 #'
 #' @include formats.R
 #'
-#' @param folder Character: folder(s) in which to look for Firebrowse files
+#' @param folder Character: folder(s) in which to look for FireBrowse files
 #' @param exclude Character: files to exclude from the loading
 #'
 #' @return List with loaded data.frames
@@ -524,7 +524,7 @@ loadFirebrowseFolders <- function(folder, exclude="") {
 
 #' Download and process TCGA data
 #'
-#' TCGA data obtained via \href{http://firebrowse.org/api-docs/}{Firebrowse}
+#' TCGA data obtained via \href{http://firebrowse.org/api-docs/}{FireBrowse}
 #'
 #' @param folder Character: directory to store the downloaded archives (by
 #' default, saves to \code{\link{getDownloadsFolder}()})
@@ -569,7 +569,7 @@ loadTCGAdata <- function(folder=getDownloadsFolder(),
     # Ask for maximum number of records
     args$page_size <- 2000
 
-    # Query Firebrowse and get URLs for archives
+    # Query FireBrowse and get URLs for archives
     res <- do.call(queryFirebrowseData, args)
     stop_for_status(res)
     url <- parseUrlsFromFirebrowseResponse(res)
@@ -671,9 +671,9 @@ loadTCGAdata <- function(folder=getDownloadsFolder(),
 #' @export
 loadFirebrowseData <- loadTCGAdata
 
-# Shiny-specific Firebrowse functions ------------------------------------------
+# Shiny-specific FireBrowse functions ------------------------------------------
 
-#' Creates a UI set with options to add data from TCGA/Firebrowse
+#' Creates a UI set with options to add data from TCGA/FireBrowse
 #' @param ns Namespace function
 #'
 #' @importFrom shiny tagList uiOutput selectizeInput actionButton textAreaInput
@@ -736,17 +736,17 @@ firebrowseUI <- function(id, panel) {
 
     panel(style="info",
           title=list(icon("plus-circle"), "TCGA data loading"),
-          value="Load TCGA/Firebrowse data",
+          value="Load TCGA/FireBrowse data",
           helpText("TCGA data are downloaded using the",
                    a(href="http://firebrowse.org", target="_blank",
-                     "Firebrowse"), "API."),
+                     "FireBrowse"), "API."),
           div(id=ns("firebrowseLoading"), class="progress",
               div(class="progress-bar progress-bar-striped active",
                   role="progressbar", style="width: 100%", "Loading...")),
           uiOutput(ns("checkFirebrowse")))
 }
 
-#' Return an user interface depending on the status of the Firebrowse API
+#' Return an user interface depending on the status of the FireBrowse API
 #'
 #' If the API is working, it'll be loaded. Else, a message will appear warning
 #' the user that the API is down and that will let check again if the API is
@@ -760,22 +760,22 @@ firebrowseUI <- function(id, panel) {
 #' @return HTML elements
 #' @keywords internal
 checkFirebrowse <- function(ns) {
-    # startProgress("Checking Firebrowse API to retrieve TCGA data...", 1)
+    # startProgress("Checking FireBrowse API to retrieve TCGA data...", 1)
     if (isFirebrowseUp()) {
-        # updateProgress("Loading Firebrowse interface...")
+        # updateProgress("Loading FireBrowse interface...")
         ui <- addTCGAdata(ns)
     } else {
-        ui <- errorDialog("Firebrowse API appears to be offline at the moment.",
-                          buttonId=ns("refreshFirebrowse"),
-                          buttonLabel="Check Firebrowse again",
+        ui <- errorDialog("FireBrowse API appears to be offline at the moment.",
+                          buttonId=ns("refreshFireBrowse"),
+                          buttonLabel="Check FireBrowse again",
                           buttonIcon="refresh")
     }
-    # closeProgress("Firebrowse interface loaded")
+    # closeProgress("FireBrowse interface loaded")
     hide("firebrowseLoading")
     return(ui)
 }
 
-#' Set data from Firebrowse
+#' Set data from FireBrowse
 #'
 #' @inheritParams appServer
 #' @param replace Boolean: replace loaded data?
@@ -790,7 +790,7 @@ setFirebrowseData <- function(input, output, session, replace=TRUE) {
     ns <- session$ns
     time <- startProcess("getFirebrowseData")
 
-    # Load data from Firebrowse
+    # Load data from FireBrowse
     data <- loadFirebrowseData(folder = input$dataFolder,
                                cohort = input$firebrowseCohort,
                                date = gsub("-", "_", input$firebrowseDate),
@@ -836,7 +836,7 @@ firebrowseServer <- function(input, output, session) {
 
     prepareFileBrowser(session, input, "dataFolder", directory=TRUE)
 
-    # If Firebrowse is unaccessible, allow user to try again
+    # If FireBrowse is unaccessible, allow user to try again
     output$checkFirebrowse <- renderUI(isolate(checkFirebrowse(ns)))
     observeEvent(input$refreshFirebrowse,
                  output$checkFirebrowse <- renderUI(checkFirebrowse(ns)))
