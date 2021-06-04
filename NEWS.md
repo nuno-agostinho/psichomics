@@ -1,3 +1,7 @@
+# psichomcis 1.18.2 (2 June, 2021)
+
+* Fix issues with unit tests in Bioconductor
+
 # psichomics 1.18.1 (26 May, 2021)
 
 * Fix issues with unit tests in Bioconductor
