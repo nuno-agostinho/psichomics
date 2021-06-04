@@ -52,6 +52,7 @@ checkDiscardCvgPSIvalues <- function(vals, samples=100, events=60) {
 }
 
 test_that("Discard low coverage VAST-TOOLS' PSI values", {
+    skip_on_bioc()
     # Test one coverage value
     checkDiscardCvgPSIvalues("N")
     checkDiscardCvgPSIvalues("VLOW")
