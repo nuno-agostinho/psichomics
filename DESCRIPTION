@@ -1,7 +1,7 @@
 Package: psichomics
 Title: Graphical Interface for Alternative Splicing Quantification, Analysis and
     Visualisation
-Version: 1.18.2
+Version: 1.18.3
 Encoding: UTF-8
 Authors@R: c(
         person("Nuno", "Saraiva-Agostinho",

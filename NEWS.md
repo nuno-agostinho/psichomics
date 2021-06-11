@@ -1,3 +1,9 @@
+# psichomics 1.18.3 (11 June, 2021)
+
+* `plotSplicingEvent()`: avoid opening browser window in non-interactive
+contexts
+* Fix Bioconductor build report's timeout when creating vignettes on Windows
+
 # psichomcis 1.18.2 (2 June, 2021)
 
 * Fix issues with unit tests in Bioconductor
