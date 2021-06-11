@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{checkFirebrowse}
 \alias{checkFirebrowse}
-\title{Return an user interface depending on the status of the Firebrowse API}
+\title{Return an user interface depending on the status of the FireBrowse API}
 \usage{
 checkFirebrowse(ns)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{addTCGAdata}
 \alias{addTCGAdata}
-\title{Creates a UI set with options to add data from TCGA/Firebrowse}
+\title{Creates a UI set with options to add data from TCGA/FireBrowse}
 \usage{
 addTCGAdata(ns)
 }
@@ -13,6 +13,6 @@ addTCGAdata(ns)
 A UI set that can be added to a UI definition
 }
 \description{
-Creates a UI set with options to add data from TCGA/Firebrowse
+Creates a UI set with options to add data from TCGA/FireBrowse
 }
 \keyword{internal}

@@ -125,7 +125,7 @@ navbar:
         href: articles/GUI_tutorial.html
       - text: 'Command-line interface (CLI) tutorial'
         href: articles/CLI_tutorial.html
-      - text: 'Loading SRA, VAST-TOOLS and user-provided RNA-seq data'
+      - text: 'Loading user-provided data'
         href: articles/custom_data.html
       - text: 'Preparing custom alternative splicing annotations'
         href: articles/AS_events_preparation.html

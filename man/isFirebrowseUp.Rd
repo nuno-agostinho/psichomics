@@ -2,17 +2,17 @@
 % Please edit documentation in R/data_firebrowse.R
 \name{isFirebrowseUp}
 \alias{isFirebrowseUp}
-\title{Check if \href{http://firebrowse.org/api-docs/}{Firebrowse API} is running}
+\title{Check if \href{http://firebrowse.org/api-docs/}{FireBrowse API} is running}
 \usage{
 isFirebrowseUp()
 }
 \value{
 Invisible \code{TRUE} if the
-\href{http://firebrowse.org/api-docs/}{Firebrowse API} is working; otherwise,
+\href{http://firebrowse.org/api-docs/}{FireBrowse API} is working; otherwise,
 raises a warning with the status code and a brief explanation.
 }
 \description{
-Check if \href{http://firebrowse.org/api-docs/}{Firebrowse API} is running
+Check if \href{http://firebrowse.org/api-docs/}{FireBrowse API} is running
 }
 \examples{
 isFirebrowseUp()

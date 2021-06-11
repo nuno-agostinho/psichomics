@@ -56,6 +56,10 @@ install.packages("BiocManager")
 BiocManager::install("psichomics")
 library("psichomics")
 ```
+3. RStudio is now accessible via the web browser at https://localhost:8787
+4. Enter RStudio with user `rstudio` and password `bioc`
+5. Load psichomics using `library(psichomics)`
+6. Start the visual interface of psichomics with `psichomics()`
 
 Start the visual interface of psichomics with `psichomics()`
 
@@ -97,7 +101,7 @@ The following case studies and tutorials are available and were based on our
 
 * [Visual interface][tutorial-gui]
 * [Command-line interface][tutorial-cli]
-* [Loading SRA, VAST-TOOLS and user-provided RNA-seq data][tutorial-custom-data]
+* [Loading user-provided data][tutorial-custom-data]
 * [Preparing alternative splicing annotations][tutorial-prep-AS-annotation]
 
 Another tutorial was published as part of the Methods in Molecular Biology book
@@ -119,9 +123,8 @@ information, junction quantification and gene expression data
 * [SRA][] data from select SRA projects via the [recount][] package
 
 Other SRA, [VAST-TOOLS][] and user-provided data can also be manually loaded.
-Please read
-[Loading SRA, VAST-TOOLS and user-provided RNA-seq data][tutorial-custom-data]
-for more information.
+Please read [Loading user-provided data][tutorial-custom-data] for more
+information.
 
 #### Alternative splicing quantification
 
@@ -212,3 +215,4 @@ Nature 456 (7221): 470–76.
 [tutorial-custom-data]: https://nuno-agostinho.github.io/psichomics/articles/custom_data.html
 [tutorial-prep-AS-annotation]: https://nuno-agostinho.github.io/psichomics/articles/AS_events_preparation.html
 [recount]: https://jhubiostatistics.shinyapps.io/recount/
+[biocDocker]: https://www.bioconductor.org/help/docker/

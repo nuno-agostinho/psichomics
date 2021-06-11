@@ -46,11 +46,13 @@ checkDiscardCvgPSIvalues <- function(vals, samples=100, events=60) {
     psi  <- psi[rowSums(!is.na(psi)) > 0, ]
     toNA <- toNA[rowSums(!toNA) > 0, ]
 
-    expect_true(nrow(filter) == 0 || is.na(unique(filter[toNA])))
+    noNAs <- nrow(toNA) == 1 && !any(toNA)
+    expect_true(nrow(filter) == 0 || noNAs || is.na(unique(filter[toNA])))
     expect_equivalent(psi, filter)
 }
 
 test_that("Discard low coverage VAST-TOOLS' PSI values", {
+    skip_on_bioc()
     # Test one coverage value
     checkDiscardCvgPSIvalues("N")
     checkDiscardCvgPSIvalues("VLOW")

@@ -1,5 +1,5 @@
 ---
-title: 'Loading SRA, VAST-TOOLS and user-provided RNA-seq data'
+title: 'Loading user-provided data'
 author: "Nuno Saraiva-Agostinho"
 date: "`r Sys.Date()`"
 bibliography: refs.bib
@@ -8,25 +8,22 @@ output:
     rmarkdown::html_vignette:
         toc: true
 vignette: >
-  %\VignetteIndexEntry{Loading SRA, VAST-TOOLS and user-provided RNA-seq data}
+  %\VignetteIndexEntry{Loading user-provided data}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
 
 *psichomics* is an interactive R package for integrative analyses of alternative
-splicing and gene expression based on [The Cancer Genome Atlas (TCGA)][TCGA]
-(containing molecular data associated with 34 tumour types), the
-[Genotype-Tissue Expression (GTEx)][GTEx] project (containing data for multiple
-normal human tissues), [Sequence Read Archive (SRA)][SRA] and user-provided
-data.
+splicing and gene expression based on data from multiple sources, including
+user-provided data.
 
-# Supported file formats in psichomics
+# Supported file formats
 
-The following file formats are supported by psichomics. The links in the table
-redirect to instructions on how to load data from each source.
+psichomics supports the following data sources. Each source has a link with 
+instructions for data loading.
 
-| Source | Sample information | Subject information | Gene expression | Exon-exon junction quantification | Alternative splicing quantification | How to load |
-| -------------------------------------- |:---:|:---:|:---:|:---:|:--------:|
+| Source | Sample information | Subject information | Gene expression | Exon-exon junction quantification | Alternative splicing quantification |
+|:---------------------------------------|:---:|:---:|:---:|:---:|:--------:|
 | [SRA Run Selector][sra-run-tutorial]   | Yes |     |     |     |          |
 | [STAR][star-tutorial]                  |     |     | Yes | Yes |          |
 | [VAST-TOOLS][vast-tutorial]            |     |     | Yes |     | Yes      |
@@ -39,6 +36,7 @@ redirect to instructions on how to load data from each source.
 identify the cognate gene and coordinates) based on tables from these sources.
 
 ## Prepare [SRA Run Selector][] data
+
 The [SRA Run Selector][] contains sample metadata that can be downloaded for all
 or selected samples from a SRA project. To download sample information, click
 the **Metadata** button in the **Download** columns. The output file is usually

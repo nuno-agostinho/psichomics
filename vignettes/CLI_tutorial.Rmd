@@ -68,7 +68,7 @@ annotation and junction quantification are required. While alternative splicing
 annotation is provided by the package, junction quantification may be retrieved
 from [TCGA][], [GTEx][], [SRA][] or user-provided files.
 
-Data is downloaded from [Firebrowse][Firebrowse], a service that hosts processed
+Data is downloaded from [FireBrowse][FireBrowse], a service that hosts processed
 data from [TCGA][], as required to run the downstream analyses. Before
 downloading data, check the following options:
 
@@ -94,7 +94,7 @@ follows:
 folder <- getDownloadsFolder()
 
 # Download and load most recent junction quantification and clinical data from
-# TCGA/Firebrowse for Breast Cancer
+# TCGA/FireBrowse for Breast Cancer
 data <- loadFirebrowseData(folder=folder,
                            cohort="BRCA",
                            data=c("clinical", "junction_quantification",
@@ -697,11 +697,11 @@ performing the analysis can be found at [GitHub][chapter-code]):
 > Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2020). 
 **[Interactive Alternative Splicing Analysis of Human Stem Cells Using psichomics][chapter]**. In: Kidder B. (eds) Stem Cell Transcriptional Networks. *Methods in Molecular Biology*, vol 2117. Humana, New York, NY
 
-## Load other SRA, VAST-TOOLS and user-provided data
+## Load user-provided data
 
 > Any FASTQ files can be manually aligned using a splice-aware aligner and
 loaded by following the instructions in
-[Loading SRA, VAST-TOOLS and user-provided RNA-seq data][tutorial-custom-data]. 
+[Loading user-provided data][tutorial-custom-data]. 
 
 Local files can be loaded by indicating their containing folder. Any files
 located in this folder and sub-folders will be loaded.
@@ -748,7 +748,7 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 [article]: https://doi.org/10.1093/nar/gky888
 [chapter]: https://doi.org/10.1007/978-1-0716-0301-7_10
 [chapter-code]: https://github.com/nuno-agostinho/stem-cell-analysis-in-psichomics
-[Firebrowse]: http://firebrowse.org
+[FireBrowse]: http://firebrowse.org
 [SRA]: https://www.ncbi.nlm.nih.gov/sra
 [recount]: https://jhubiostatistics.shinyapps.io/recount/
 [tutorial-custom-data]: https://nuno-agostinho.github.io/psichomics/articles/custom_data.html

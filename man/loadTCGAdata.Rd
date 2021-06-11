@@ -26,12 +26,12 @@ from loading into R (by default, exclude files containing \code{.aux.},
 \item{...}{
   Arguments passed on to \code{\link[=queryFirebrowseData]{queryFirebrowseData}}
   \describe{
-    \item{\code{date}}{Character: dates of the data retrieval by Firebrowse (by default,
+    \item{\code{date}}{Character: dates of the data retrieval by FireBrowse (by default,
 it uses the most recent data available)}
     \item{\code{cohort}}{Character: abbreviation of the cohorts (by default, returns
 data for all cohorts)}
     \item{\code{data_type}}{Character: data types (optional)}
-    \item{\code{tool}}{Character: data produced by the selected Firebrowse tools
+    \item{\code{tool}}{Character: data produced by the selected FireBrowse tools
 (optional)}
     \item{\code{platform}}{Character: data generation platforms (optional)}
     \item{\code{center}}{Character: data generation centres (optional)}
@@ -50,7 +50,7 @@ A list with the loaded data, unless required files are unavailable
 and \code{download = FALSE} (if so, it returns the URL of files to download)
 }
 \description{
-TCGA data obtained via \href{http://firebrowse.org/api-docs/}{Firebrowse}
+TCGA data obtained via \href{http://firebrowse.org/api-docs/}{FireBrowse}
 }
 \examples{
 getTCGAcohorts()
