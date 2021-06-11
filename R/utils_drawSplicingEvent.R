@@ -484,15 +484,22 @@ plotSplicingEvent <- function(
     return(svg)
 }
 
+#' @importFrom htmltools knit_print.html
 #' @export
-print.splicingEventPlot <- function(x, ..., browse=TRUE) {
-    return(print(HTML(x), ..., browse=browse))
+print.splicingEventPlot <- function(x, ..., browse=interactive()) {
+    x <- HTML(x)
+    if (!browse) {
+        return(knit_print.html(x))
+    } else {
+        print(x, ..., browse=browse)
+        return(invisible(x))
+    }
 }
 
 #' @importFrom DT dataTableOutput renderDataTable
 #' @importFrom shiny fluidPage
 #' @export
-print.splicingEventPlotList <- function(x, ..., browse=TRUE) {
+print.splicingEventPlotList <- function(x, ..., browse=interactive()) {
     server <- function(input, output) {
         prepareData <- reactive(
             data.frame(cbind(names(x), x), stringsAsFactors=FALSE))
