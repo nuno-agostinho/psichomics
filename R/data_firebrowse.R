@@ -437,13 +437,6 @@ prepareFirebrowseArchives <- function(archive, md5, folder, outdir) {
     # Check integrety of the downloaded archives with the MD5 files
     validFiles <- simplify2array(Map(checkIntegrity, archive, md5))
 
-    ## TODO(NunoA): Should we try to download the invalid archives again?
-    ## What if they're constantly invalid? Only try n times before giving up?
-    if (!all(validFiles)) {
-        warning("The MD5 hashes failed when checking the following files:\n",
-                paste(archive[!validFiles], collapse = "\n\t"))
-    }
-
     # Extract the contents of the archives to the same folder
     invisible(lapply(archive, function(arc) untar(arc, exdir=dirname(arc))))
 

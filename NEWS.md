@@ -1,3 +1,7 @@
+# psichomics 1.18.4 (22 July, 2021)
+
+* Remove warning related with TCGA data when MD5 checks fail
+
 # psichomics 1.18.3 (11 June, 2021)
 
 * `plotSplicingEvent()`: avoid opening browser window in non-interactive
