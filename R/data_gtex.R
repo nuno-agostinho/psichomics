@@ -200,6 +200,7 @@ getGtexDataURL <- function(release, domain="https://storage.googleapis.com",
                     "rna_seq_data/.*_gene_reads\\.gct\\.gz",
                     "rna_seq_data/.*junction.*\\.gz")
         index <- sapply(files, grep, df[[1]])
+        if (length(Filter(length, index)) == 0) return(NULL)
         res   <- df[index, "Key"]
         date  <- max(as.Date(df[index, "LastModified"]))
     } else if (release == 8) {

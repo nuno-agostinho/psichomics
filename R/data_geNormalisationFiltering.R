@@ -857,13 +857,19 @@ geNormalisationFilteringServer <- function(input, output, session) {
     observe(toggleState("orgDb", input$convertToGeneSymbol))
 
     # Update OrgDb choices for gene symbol conversion
-    observe({
+    updateOrgDb <- reactive({
         # Suppress snapshot date message
         orgDb <- suppressMessages(query(AnnotationHub(), "OrgDb")$species)
         orgDb <- unique(orgDb)
         if (is.null(orgDb)) orgDb <- "Homo sapiens"
         updateSelectizeInput(session, "orgDb", choices=orgDb,
-                             selected="Homo sapiens")
+                             selected="Homo sapiens", server=TRUE)
+    })
+
+    observe({
+        geneExpr <- input$geneExpr
+        if (is.null(geneExpr) || geneExpr == "") return(NULL)
+        updateOrgDb()
     })
 }
 

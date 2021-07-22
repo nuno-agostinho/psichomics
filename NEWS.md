@@ -1,3 +1,10 @@
+# psichomics 1.18.4 (22 July, 2021)
+
+* `psichomics()`: fix visual interface not launching
+    - `getGtexReleases()` not properly retrieving whether future GTEx
+    releases (9 and higher) are available
+* Remove warning related with TCGA data when MD5 checks fail
+
 # psichomics 1.18.3 (11 June, 2021)
 
 * `plotSplicingEvent()`: avoid opening browser window in non-interactive
