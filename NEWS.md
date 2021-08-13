@@ -1,3 +1,10 @@
+# psichomics 1.18.5 (13 August, 202)
+
+* Improve psichomics to run in ShinyProxy
+    - Avoid automatically closing app
+    - Replace custom file browsers with shiny's versions
+    - Fix issues with progress bar
+
 # psichomics 1.18.4 (22 July, 2021)
 
 * `psichomics()`: fix visual interface not launching

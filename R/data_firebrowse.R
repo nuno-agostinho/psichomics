@@ -710,13 +710,7 @@ addTCGAdata <- function(ns) {
                        options = list(
                            placeholder = "Select data types",
                            plugins=list("remove_button"))),
-        fileBrowserInput(
-            ns("dataFolder"), "Folder where data is stored",
-            value=getDownloadsFolder(),
-            placeholder="No folder selected",
-            info=TRUE, infoFUN=bsTooltip,
-            infoTitle=paste("Data will be downloaded if not available in this",
-                            "folder.")),
+        browseDownloadFolderInput(ns("dataFolder")),
         processButton(ns("getFirebrowseData"), "Load data"))
 }
 

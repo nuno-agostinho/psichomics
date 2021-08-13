@@ -8,6 +8,7 @@ psichomics(
   ...,
   launch.browser = TRUE,
   reset = FALSE,
+  shinyproxy = FALSE,
   testData = FALSE,
   unparsableEvents = FALSE
 )

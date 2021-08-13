@@ -5,112 +5,42 @@
 localDataUI <- function(id, panel) {
     ns <- NS(id)
 
-    sampleInfoBrowser <- fileBrowserInput(
-        ns("sampleInfo"), "Sample information",
-        placeholder="No file selected", clearable=TRUE,
-        info=TRUE, infoFUN=bsPopover, infoTitle="Sample information",
-        infoContent=paste(
-            tags$ul(
-                class="popover-list",
-                tags$li("Tab-separated values (TSV)"),
-                tags$li(
-                    "Sample identifiers (rows) and their attributes (columns)"),
-                tags$li("The first column must contain sample identifiers",
-                        "and be named", tags$kbd("Sample ID")),
-                tags$li("Optionally, indicate the subject associated to",
-                        "each sample in a column named",
-                        tags$kbd("Subject ID"))),
-            tags$hr(), helpText("Example:"), tags$table(
-                class="table table-condensed",
-                tags$thead(
-                    tableRow("Sample ID", "Type", "Tissue", "Subject ID",
-                             th=TRUE)),
-                tags$tbody(
-                    tableRow("SMP-01", "Tumour", "Lung", "SUBJ-03"),
-                    tableRow("SMP-02", "Normal", "Blood", "SUBJ-12"),
-                    tableRow("SMP-03", "Normal", "Blood", "SUBJ-25")))))
-    subjectInfoBrowser <- fileBrowserInput(
-        ns("subjectInfo"), "Subject information",
-        placeholder="No file selected", clearable=TRUE,
-        info=TRUE, infoFUN=bsPopover, infoTitle="Subject information",
-        infoContent=paste(
-            tags$ul(
-                class="popover-list",
-                tags$li("Tab-separated values (TSV)"),
-                tags$li("Subject identifiers (rows) and their attributes",
-                        "(columns)"),
-                tags$li("The first column must contain subject identifiers and",
-                        "be named", tags$kbd("Subject ID"))),
-            tags$hr(),
-            helpText("Example:"), tags$table(
-                class="table table-condensed",
-                tags$thead(
-                    tableRow("Subject ID", "Age", "Gender", "Race",
-                             th=TRUE)),
-                tags$tbody(
-                    tableRow("SUBJ-01", "34", "Female", "Black"),
-                    tableRow("SUBJ-02", "22", "Male", "Black"),
-                    tableRow("SUBJ-03", "58", "Female", "Asian")))))
-    junctionQuantBrowser <- fileBrowserInput(
-        ns("junctionQuant"), "Exon-exon junction read counts",
-        placeholder="No file selected", clearable=TRUE,
-        info=TRUE, infoFUN=bsPopover,
-        infoTitle="Exon-exon junction read counts",
-        infoContent=paste(
-            tags$ul(
-                class="popover-list",
-                tags$li("Tab-separated values (TSV)"),
-                tags$li("Read counts of exon-exon junctions (rows) across",
-                        "samples (columns)"),
-                tags$li(
-                    "The first column must contain junction identifiers",
-                    "and be named", tags$kbd("Junction ID")),
-                tags$li(
-                    "Only chromosome number and capital letters X, Y, Z, W",
-                    "and M, followed by the genomic regions are supported;",
-                    "acceptable junction identifiers include:",
-                    tags$kbd("10_18748_21822"), ",",
-                    tags$kbd("chromosome 10 (18748 to 21822)"), "and",
-                    tags$kbd("chr10:18748-21822")),
-                tags$li(
-                    "Optionally, indicate the strand with", tags$kbd("+"),
-                    "or", tags$kbd("-"),
-                    "at the end of the junction identifier; e.g.",
-                    tags$kbd("10:3213:9402:+"), "and",
-                    tags$kbd("chr10:3213-9402 -")),
-                tags$li(
-                    "Rows whose junction identifiers contain",
-                    tags$kbd("alt"), ",", tags$kbd("random"), "or",
-                    tags$kbd("Un"), "in chromosome names are discarded")),
-            tags$hr(), helpText("Example:"), tags$table(
-                class="table table-condensed",
-                tags$thead(
-                    tableRow("Junction ID", "SMP-18", "SMP-03", th=TRUE)),
-                tags$tbody(
-                    tableRow("10:6752-7393", "4", "0"),
-                    tableRow("10:18748-21822", "8", "46"),
-                    tableRow("10:24257-25325", "83", "65")))))
     addMultipleFiles <- tagList(
         helpText("All fields below are optional."),
+
         h3(icon("vial"), "Metadata"),
-        sampleInfoBrowser,
-        subjectInfoBrowser,
+        sampleInfoFileInput(ns("sampleInfo"), clearable=TRUE),
+        subjectInfoFileInput(ns("subjectInfo"), clearable=TRUE),
         tags$hr(),
+
         h3(icon("dna"), "Molecular data"),
         geneExprFileInput(ns("geneExpr"), clearable=TRUE),
-        junctionQuantBrowser,
+        junctionQuantFileInput(ns("junctionQuant"), clearable=TRUE),
         ASquantFileInput(ns("ASquant"), clearable=TRUE),
         tags$hr(),
+
         textInput(ns("userFilesCategory"), label="Dataset name", width = "100%",
                   value="User dataset", placeholder="Name to identify dataset"),
         processButton(ns("loadMultipleFiles"), "Load files"))
 
+    if (getOption("shinyproxy", FALSE)) {
+        helper <- helpText(
+            "For your convenience, move all files to a single folder",
+            "and compress it into a ZIP archive.",
+            "Only files supported by psichomics will be loaded.")
+        fileBrowser <- fileInput(ns("localFolder"), "ZIP archive",
+                                 placeholder="No ZIP archive selected", accept=".zip")
+    } else {
+        helper <- helpText(
+            "For your convenience, move all files to a single folder.",
+            "Only files supported by psichomics will be loaded.")
+        fileBrowser <- fileBrowserInput(ns("localFolder"),
+                                        "Folder where data is stored",
+                                        placeholder="No folder selected",
+                                        value=getDownloadsFolder())
+    }
     addFolder <- tagList(
-        helpText("For your convenience, move all files to a single folder.",
-                 "Only files supported by psichomics will be loaded."),
-        fileBrowserInput(ns("localFolder"), "Folder where data is stored",
-                         placeholder="No folder selected",
-                         value=getDownloadsFolder()),
+        helper, fileBrowser,
         textInput(ns("localCategory"), label="Dataset name",
                   placeholder="Name to identify dataset", width = "100%"),
         selectizeInput(ns("localIgnore"), "Files/directories to ignore",
@@ -584,8 +514,12 @@ localDataServer <- function(input, output, session) {
     # Update category name input based on given folder
     observe({
         folder <- input$localFolder
-        if (!is.null(folder))
+        if (getOption("shinyproxy", FALSE)) {
+            folder <- file_path_sans_ext(folder$name)
+        }
+        if (!is.null(folder)) {
             updateTextInput(session, "localCategory", value=basename(folder))
+        }
     })
 
     # If data is loaded, let user replace or append to loaded data

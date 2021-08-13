@@ -197,10 +197,11 @@ closeProgress <- function(message=NULL,
     if (!is.null(message)) display(message)
 
     isGUIversion <- isRunning()
-    if (isGUIversion)
+    if (isGUIversion && !getOption(shinyproxy, FALSE)) {
         global$progress$close()
-    else if (is(global$progress, "txtProgressBar"))
+    } else if (is(global$progress, "txtProgressBar")) {
         close(global$progress)
+    }
 }
 
 #' Style button used to initiate a process
@@ -657,4 +658,23 @@ setOperationIcon <- function (name, class=NULL, ...) {
         "set-operations", "1.0",
         c(href="set-operations"), stylesheet = "css/set-operations.css")
     return(iconTag)
+}
+
+#' Browse download folder input
+#'
+#' @param id Character: element identifier
+#'
+#' @importFrom shinyjs hidden
+#' @importFrom shinyBS bsTooltip
+#'
+#' @return HTML element in character
+#' @keywords internal
+browseDownloadFolderInput <- function(id) {
+    info <- "Data will be downloaded if not available in this folder."
+    folder <- fileBrowserInput(id, "Folder where data is stored",
+                               value=getDownloadsFolder(),
+                               placeholder="No folder selected",
+                               info=TRUE, infoFUN=bsTooltip, infoTitle=info)
+    if (getOption("shinyproxy", FALSE)) folder <- hidden(folder)
+    return(folder)
 }

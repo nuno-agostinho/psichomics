@@ -176,12 +176,7 @@ recountDataServer <- function(input, output, session) {
                 width="100%", multiple=TRUE, options=list(
                     placeholder="Select SRA project(s)",
                     plugins=list("remove_button"))),
-            fileBrowserInput(
-                ns("dataFolder"), "Folder where data is stored",
-                value=getDownloadsFolder(), placeholder="No folder selected",
-                info=TRUE, infoFUN=bsTooltip,
-                infoTitle=paste("Data will be downloaded if not available in",
-                                "this folder.")),
+            browseDownloadFolderInput(ns("dataFolder")),
             tags$a(href="https://jhubiostatistics.shinyapps.io/recount/",
                    class="btn btn-default", role="button", target="_blank",
                    tags$i(class="fa fa-external-link"),

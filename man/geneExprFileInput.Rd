@@ -2,12 +2,24 @@
 % Please edit documentation in R/data.R
 \name{geneExprFileInput}
 \alias{geneExprFileInput}
-\title{File input for gene expression}
+\alias{ASquantFileInput}
+\alias{junctionQuantFileInput}
+\alias{sampleInfoFileInput}
+\alias{subjectInfoFileInput}
+\title{File input for molecular data}
 \usage{
-geneExprFileInput(geneExprFileId, clearable = FALSE)
+geneExprFileInput(id, clearable = FALSE)
+
+ASquantFileInput(id, clearable = FALSE)
+
+junctionQuantFileInput(id, clearable = FALSE)
+
+sampleInfoFileInput(id, clearable = FALSE)
+
+subjectInfoFileInput(id, clearable = FALSE)
 }
 \arguments{
-\item{geneExprFileId}{Character: identifier for gene expression input}
+\item{id}{Character: identifier for gene expression input}
 
 \item{clearable}{Boolean: allow to clear selected file or directory?}
 }
@@ -15,6 +27,6 @@ geneExprFileInput(geneExprFileId, clearable = FALSE)
 HTML elements
 }
 \description{
-File input for gene expression
+File input for molecular data
 }
 \keyword{internal}

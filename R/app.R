@@ -444,11 +444,13 @@ appServer <- function(input, output, session) {
         }
     })
 
-    session$onSessionEnded(function() {
-        # Stop app and print message to console
-        message("\n-- psichomics was closed --")
-        suppressMessages(stopApp())
-    })
+    if (!getOption("shinyproxy", FALSE)) {
+        session$onSessionEnded(function() {
+            # Stop app and print message to console
+            message("\n-- psichomics was closed --")
+            suppressMessages(stopApp())
+        })
+    }
 }
 
 #' Start graphical interface of psichomics
@@ -470,8 +472,9 @@ appServer <- function(input, output, session) {
 #' \dontrun{
 #' psichomics()
 #' }
-psichomics <- function(..., launch.browser=TRUE, reset=FALSE, testData=FALSE,
-                       unparsableEvents=FALSE) {
+psichomics <- function(..., launch.browser=TRUE, reset=FALSE, shinyproxy=FALSE,
+                       testData=FALSE, unparsableEvents=FALSE) {
+    options(shinyproxy=shinyproxy)
     # Add icons related to set operations
     addResourcePath("set-operations",
                     insideFile("shiny", "www", "set-operations"))
