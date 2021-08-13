@@ -1,6 +1,6 @@
 # psichomics 1.18.5 (13 August, 202)
 
-* Improve psichomics to run in ShinyProxy
+* Add support to run in ShinyProxy
     - Avoid automatically closing app
     - Replace custom file browsers with shiny's versions
     - Fix issues with progress bar
