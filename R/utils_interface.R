@@ -197,7 +197,7 @@ closeProgress <- function(message=NULL,
     if (!is.null(message)) display(message)
 
     isGUIversion <- isRunning()
-    if (isGUIversion && !getOption(shinyproxy, FALSE)) {
+    if (isGUIversion && !getOption("shinyproxy", FALSE)) {
         global$progress$close()
     } else if (is(global$progress, "txtProgressBar")) {
         close(global$progress)
