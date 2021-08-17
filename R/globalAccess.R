@@ -529,6 +529,7 @@ getGroups <- function(type=c("Patients", "Samples", "ASevents", "Genes"),
     # Return colour lookup table for groups
     if ("Colour" %in% colnames(groups)) {
         colour <- groups[ , "Colour", drop=TRUE]
+        if (is.null(names(colour))) names(colour) <- rownames(groups)
         colour <- setNames(unlist(colour), names(colour))
         attr(g, "Colour") <- colour
     }

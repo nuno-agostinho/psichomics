@@ -103,7 +103,12 @@ plotSingleICA <- function(ica, icX=1, icY=2, groups=NULL) {
         # Colour data based on the selected groups
         for (group in names(groups)) {
             rows <- groups[[group]]
-            colour <- attr(groups, "Colour")[[group]]
+            colour <- attr(groups, "Colour")
+            if (group %in% names(colour)) {
+                colour <- colour[[group]]
+            } else {
+                colour <- NA
+            }
             values <- df[rows, ]
             if (!all(is.na(values))) {
                 hc <- hc_scatter(
