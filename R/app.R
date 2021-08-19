@@ -244,13 +244,14 @@ appUI <- function() {
 
     header <- tagList(
         # Include CSS files
-        includeCSS(insideFile("shiny", "www", "animate.min.css")),
+        includeCSS(insideFile("shiny", "www", "animate.compat.css")),
         includeCSS(insideFile("shiny", "www", "psichomics.css")),
         # Include JavaScript files
         includeScript(insideFile("shiny", "www", "jquery.mark.min.js")),
         includeScript(insideFile("shiny", "www", "highcharts.ext.js")),
         includeScript(insideFile("shiny", "www", "fuzzy.min.js")),
         includeScript(insideFile("shiny", "www", "jquery.textcomplete.min.js")),
+        includeScript(insideFile("shiny", "www", "shinyBS.min.js")),
         includeScript(insideFile("shiny", "www", "psichomics.js")),
         conditionalPanel(
             condition="$('html').hasClass('shiny-busy')",

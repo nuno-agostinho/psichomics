@@ -4,6 +4,7 @@
     - Avoid automatically closing app
     - Replace custom file browsers with shiny's versions
     - Fix issues with progress bar
+    - Add ShinyBS JavaScript library
 * Fix specific errors related with PCA analysis of only one group
 
 # psichomics 1.18.4 (22 July, 2021)
