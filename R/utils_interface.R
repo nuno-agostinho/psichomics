@@ -144,7 +144,7 @@ updateProgress <- function(message="Loading...", value=NULL, max=NULL,
                            global=if (isRunning()) sharedData else getHidden(),
                            console=TRUE) {
     isGUIversion <- isRunning()
-    if (!interactive()) return(NULL)
+    if (!interactive() && !getOption("shinyproxy", FALSE)) return(NULL)
     if (!is.null(divisions)) {
         if (!isGUIversion) {
             setHidden(startProgress(message, divisions, new.env()))
