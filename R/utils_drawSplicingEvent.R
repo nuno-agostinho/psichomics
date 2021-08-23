@@ -278,10 +278,10 @@ diagramSplicingEvent <- function(
             ifelse(isA2ref, pos_A2e, pos_A1e),
             ifelse(isA2ref, pos_A1e, pos_A2e),
             pos_C2s,
-            ifelse(isA2ref, alternative1Fill, constitutiveFill),
-            ifelse(isA2ref, alternative1Stroke, constitutiveStroke),
             ifelse(isA2ref, constitutiveFill, alternative1Fill),
-            ifelse(isA2ref, constitutiveStroke, alternative1Stroke))
+            ifelse(isA2ref, constitutiveStroke, alternative1Stroke),
+            ifelse(isA2ref, alternative1Fill, constitutiveFill),
+            ifelse(isA2ref, alternative1Stroke, constitutiveStroke))
     } else if (isALE || isA3SS) {
         pos_C1s  <- as.numeric(parsed$constitutive1)
         pos_A1e  <- as.numeric(parsed$alternative1)
