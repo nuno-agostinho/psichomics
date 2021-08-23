@@ -11,11 +11,10 @@ options to viably run in ShinyProxy
 
 ## Bug fixes
 
-* Load recount data:
-    - Improve responsiveness of project selection (visual interface)
-* Splicing annotation improvements:
-    - Load annotation only when opening the splicing quantification tab (visual
-    interface)
+* Load recount data (visual interface):
+    - Improve responsiveness of project selection
+* Splicing annotation (visual interface):
+    - Load annotation only when opening the splicing quantification tab
 * PCA plot (visual interface):
     - Automatically plot PCA after calculating PCA scores
     - Copy-edit text
