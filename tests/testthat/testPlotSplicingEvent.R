@@ -1,10 +1,5 @@
 context("Diagram alternative splicing event")
 
-plotEventTranscripts <- function(e, species="human", assembly="hg19") {
-    info <- queryEnsemblByEvent(e, species=species, assembly=assembly)
-    plotTranscripts(info, event=e)
-}
-
 test_that("Plot alternative splicing events", {
     events <- c(
         "A3SS_15_+_63353138_63353912_63353397_TPM1",
