@@ -6,6 +6,7 @@
     - Fix issues with progress bar
     - Add ShinyBS JavaScript library
 * Fix specific errors related with PCA analysis of only one group
+* Load recount data: improve responsiveness of project selection
 
 # psichomics 1.18.4 (22 July, 2021)
 
