@@ -12,10 +12,10 @@ queryEnsemblByEvent(event, species = NULL, assembly = NULL, data = NULL)
 \arguments{
 \item{gene}{Character: gene}
 
-\item{species}{Character: species (may be \code{NULL} for an Ensembl 
+\item{species}{Character: species (may be \code{NULL} for an Ensembl
 identifier)}
 
-\item{assembly}{Character: assembly version (may be NULL for an Ensembl 
+\item{assembly}{Character: assembly version (may be NULL for an Ensembl
 identifier)}
 
 \item{event}{Character: alternative splicing event}
