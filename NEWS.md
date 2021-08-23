@@ -1,14 +1,27 @@
 # psichomics 1.18.5 (13 August, 202)
+    
+## ShinyProxy support
 
-* Add support to run in ShinyProxy
-    - Avoid automatically closing app
-    - Replace custom file browsers with shiny's versions
-    - Fix issues with progress bar
-    - Add ShinyBS JavaScript library
-* Fix specific errors related with PCA analysis of only one group
-* Load recount data: improve responsiveness of project selection
+* `psichomics()`: add argument `shinyproxy`; when set to `TRUE`, change set of
+options to viably run in ShinyProxy
+* Avoid automatically closing the app
+* Replace custom file browsers with shiny's versions
+* Fix issues with progress bar
+* Include ShinyBS JavaScript library
+
+## Bug fixes
+
+* Load recount data:
+    - Improve responsiveness of project selection
 * Splicing annotation improvements:
     - Load annotation only when opening the splicing quantification tab
+* PCA:
+    - Fix specific errors related with PCA analysis of only one group
+* Diagrams of alternative splicing events:
+    - Fix wrong coloring of reference exon used for AFE and A5SS events
+* Transcript plot:
+    - Orange region (the reference exon) is now on top of blue region
+    - Fix loading twice when selecting a new event
 
 # psichomics 1.18.4 (22 July, 2021)
 
