@@ -12,16 +12,19 @@ options to viably run in ShinyProxy
 ## Bug fixes
 
 * Load recount data:
-    - Improve responsiveness of project selection
+    - Improve responsiveness of project selection (visual interface)
 * Splicing annotation improvements:
-    - Load annotation only when opening the splicing quantification tab
-* PCA:
+    - Load annotation only when opening the splicing quantification tab (visual
+    interface)
+* PCA plot (visual interface):
+    - Automatically plot PCA after calculating PCA scores
+    - Copy-edit text
     - Fix specific errors related with PCA analysis of only one group
 * Diagrams of alternative splicing events:
     - Fix wrong coloring of reference exon used for AFE and A5SS events
 * Transcript plot:
     - Orange region (the reference exon) is now on top of blue region
-    - Fix loading twice when selecting a new event
+    - Fix loading twice when selecting a new event (visual interface)
 
 # psichomics 1.18.4 (22 July, 2021)
 
