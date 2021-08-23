@@ -41,7 +41,8 @@ Other functions to get and set global variables:
 \code{\link{getDifferentialExpression}()},
 \code{\link{getDifferentialSplicing}()},
 \code{\link{getGlobal}()},
-\code{\link{getHighlightedPoints}()}
+\code{\link{getHighlightedPoints}()},
+\code{\link{getSelectedDataPanel}()}
 }
 \concept{functions to get and set global variables}
 \keyword{internal}

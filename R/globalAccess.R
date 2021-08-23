@@ -106,6 +106,8 @@ getASevents <- reactive({
     }
 })
 
+# General data -----------------------------------------------------------------
+
 #' @rdname getGlobal
 #' @keywords internal
 getASevent <- reactive(sharedData$event)
@@ -697,3 +699,16 @@ getDifferentialSplicingColumns <- function(category=getCategory())
 #' @param columns Character: differential analyses' column names
 setDifferentialSplicingColumns <- function(columns, category=getCategory())
     setGlobal(category, "diffSplicingCols", value=columns)
+
+# Interface elements -----------------------------------------------------------
+
+#' Get or set selected panel in data section
+#'
+#' @inherit getGlobal
+#'
+#' @family functions to get and set global variables
+#' @keywords internal
+getSelectedDataPanel <- function() getGlobal("selectedDataPanel")
+
+#' @rdname getSelectedDataPanel
+setSelectedDataPanel <- function(id) setGlobal("selectedDataPanel", value=id)

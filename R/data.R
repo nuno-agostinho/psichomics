@@ -799,6 +799,8 @@ dataServer <- function(input, output, session) {
         }
     })
 
+    observe(setSelectedDataPanel(input$accordion))
+
     # Run server logic from the scripts
     getServerFunctions("data", priority=paste0(
         c("localData", "firebrowse", "gtexData",
