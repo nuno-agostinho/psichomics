@@ -1,4 +1,4 @@
-# psichomics 1.18.5 (13 August, 202)
+# psichomics 1.18.6 (25 August, 2021)
     
 ## ShinyProxy support
 
@@ -23,6 +23,13 @@ options to viably run in ShinyProxy
     - Fix wrong coloring of reference exon used for AFE and A5SS events
 * Transcript plot:
     - Orange region (the reference exon) is now on top of blue region
+
+# psichomics 1.18.5 (24 August, 2021)
+
+* Diagrams of alternative splicing events:
+    - Fix wrong coloring of reference exon used for AFE and A5SS events
+* Transcript plot:
+    - Avoid alternative regions from overlapping
     - Fix loading twice when selecting a new event (visual interface)
 
 # psichomics 1.18.4 (22 July, 2021)

@@ -83,7 +83,9 @@ events <- c(
   "MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7")
 diagram <- plotSplicingEvent(events)
 
+\dontrun{
 diagram[["A3SS_3_-_145796903_145794682_145795711_PLOD2"]]
 diagram[[6]]
-\dontrun{diagram}
+diagram
+}
 }

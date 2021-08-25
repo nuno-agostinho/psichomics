@@ -473,8 +473,8 @@ plotASeventRegion <- function(hc, event, data=NULL) {
         text <- paste(pretty, "(alternative region in orange)")
     }
 
-    orange <- "#ffb15380"
-    blue   <- "#7db6ec80"
+    orange <- "#ffb153cc"
+    blue   <- "#7db6eccc"
     grey   <- "#d3d3d388"
     orangeBand <- blueBand <- greyBand <- NULL
 
@@ -500,16 +500,16 @@ plotASeventRegion <- function(hc, event, data=NULL) {
         upstreamPlus    <- type %in% c("A5SS", "AFE") && plusStrand
         upstreamMinus   <- type %in% c("A5SS", "AFE") && !plusStrand
 
+        shiftBy <- min(abs(alt1 - alt2), 200)
         if (downstreamPlus || upstreamMinus) {
             gradient   <- "normal"
-            orangePos <- c(alt1, shift(alt1, `+`))
-            bluePos   <- c(alt2, shift(alt2, `+`))
+            orangePos <- c(alt1, shift(alt1, `+`, by=shiftBy))
+            bluePos   <- c(alt2, shift(alt2, `+`, by=shiftBy))
         } else if (upstreamPlus || downstreamMinus) {
             gradient   <- "invert"
-            orangePos <- c(shift(alt1, `-`), alt1)
-            bluePos   <- c(shift(alt2, `-`), alt2)
+            orangePos <- c(shift(alt1, `-`, by=shiftBy), alt1)
+            bluePos   <- c(shift(alt2, `-`, by=shiftBy), alt2)
         }
-
         greyBand   <- plotBand(grey, greyPos[[1]], greyPos[[2]], text=text)
         orangeBand <- plotBand(orange, orangePos[[1]], orangePos[[2]], gradient)
         blueBand   <- plotBand(blue, bluePos[[1]], bluePos[[2]], gradient)
