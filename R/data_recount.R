@@ -34,7 +34,7 @@ recountDataUI <- function(id, panel) {
                   browseDownloadFolderInput(ns("dataFolder")),
                   tags$a(href="https://jhubiostatistics.shinyapps.io/recount/",
                          class="btn btn-default", role="button",
-                         target="_blank", tags$i(class="fa fa-external-link"),
+                         target="_blank", icon("external-link-alt"),
                          "Check available datasets"),
                   processButton(ns("loadRecountData"), "Load data"))))
 }

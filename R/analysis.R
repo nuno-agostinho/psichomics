@@ -785,7 +785,7 @@ prepareEventPlotOptions <- function(id, ns, labelsPanel=NULL) {
                            sprintf("Data transformation of %s values", upper),
                            transformOptions(axis), width="100%"),
             bsCollapse(bsCollapsePanel(
-                list(icon("thumb-tack"), highlightLabel),
+                list(icon("thumbtack"), highlightLabel),
                 value=paste0(axis, "AxisHighlightPanel"),
                 checkboxInput(idAxis("Highlight"), width="100%",
                               label=highlightLabel),

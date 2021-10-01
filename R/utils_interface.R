@@ -46,7 +46,7 @@ tableRow <- function (..., th=FALSE) {
 #' @keywords internal
 colourInputMod <- function(...) {
     colourSelector <- colourInput(...)
-    colourSelector[[2]][["style"]] <- "width: 100%;"
+    colourSelector <- tagAppendAttributes(colourSelector, style="width: 100%;")
     return(colourSelector)
 }
 
@@ -299,9 +299,9 @@ styleModal <- function(session, title, ..., style=NULL,
                          footer=footer, easyClose=FALSE)
     if (!is.null(style)) {
         style <- match.arg(style, c("info", "warning", "error"))
-        modal[[3]][[1]][[3]][[1]][[3]][[1]] <-
-            tagAppendAttributes(modal[[3]][[1]][[3]][[1]][[3]][[1]],
-                                class=style)
+        modal <- tagAppendAttributes(modal, class=style,
+                                     .cssSelector=".modal-header")
+
     }
     showModal(modal, session)
     if (echo) {

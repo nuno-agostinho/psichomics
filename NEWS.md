@@ -11,6 +11,9 @@ options to viably run in ShinyProxy
 
 ## Bug fixes
 
+* Fix issues with Shiny 1.7.0:
+    - Change icon names as required by newest versions of font-awesome
+    - Avoid modifying Shiny tags using generic positions
 * Load recount data (visual interface):
     - Improve responsiveness of project selection
 * Splicing annotation (visual interface):

@@ -480,7 +480,7 @@ dataUI <- function(id, tab) {
           tags$a(href="http://imm.medicina.ulisboa.pt/group/distrans/",
                  target="_blank", "Disease Transcriptomics Lab, iMM"),
           "(", tags$a(href="mailto:nunodanielagostinho@gmail.com",
-                      "Nuno Saraiva-Agostinho", icon("envelope-o")),
+                      "Nuno Saraiva-Agostinho", icon("envelope")),
           ", 2015-2020)",
           br(), "Special thanks to my lab colleagues for their work-related",
           br(), "support and supporting chatter."))
@@ -562,7 +562,7 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
         bsCollapsePanel(tagList(icon("table"), "Data table"),
                         value="Data table", visibleColumns, hr(),
                         dataTableOutput(tablename)),
-        bsCollapsePanel(tagList(icon("pie-chart"), "Summary"), value="Summary",
+        bsCollapsePanel(tagList(icon("chart-pie"), "Summary"), value="Summary",
                         multiHighchartsPlots)))
 }
 

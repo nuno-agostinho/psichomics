@@ -110,7 +110,7 @@ survivalUI <- function(id) {
         bsCollapse(open=c("survivalTimeOptions", "survivalGroups", "KMoptions"),
                    multiple=TRUE,
                    bsCollapsePanel(
-                       tagList(icon("calendar-times-o"),
+                       tagList(icon("calendar-times"),
                                "Selection of time features"),
                        value="survivalTimeOptions", style="info",
                        survivalTimeOptions),

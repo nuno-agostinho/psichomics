@@ -228,6 +228,30 @@ modTabPanel <- function(title, ..., icon=NULL, menu=FALSE) {
         tabPanel(display, ..., value=title)
 }
 
+#' Replace a string with another in a list
+#' @keywords internal
+replaceStrInList <- function(tag, old, new) {
+    FUN <- function(x) {
+        res <- x
+        if (grepl(old, x)) res <- gsub(old, new, x, fixed=TRUE)
+        return(res)
+    }
+    rapply(tag, FUN, how="replace", classes="character")
+}
+
+#' Find an item in list of lists and return its coordinates
+#' @keywords internal
+traceInList <- function(ll, item) {
+    if (is.list(ll)) {
+        for (elem in seq(ll)) {
+            res <- traceInList(ll[[elem]], item)
+            if (!is.null(res)) return(c(elem, res))
+        }
+    } else if (is.character(ll)) {
+        if (any(grepl(item, ll, fixed=TRUE))) return(numeric(0))
+    }
+}
+
 #' User interface
 #'
 #' The user interface (UI) controls the layout and appearance of the app. All
@@ -236,6 +260,7 @@ modTabPanel <- function(title, ..., icon=NULL, menu=FALSE) {
 #' @importFrom shinyjs useShinyjs
 #' @importFrom shiny includeCSS includeScript conditionalPanel div h4 icon
 #' shinyUI navbarPage tagAppendChild tagAppendAttributes
+#' @importFrom purrr pluck pluck<-
 #'
 #' @return HTML elements
 appUI <- function() {
@@ -265,18 +290,18 @@ appUI <- function() {
         uiList))
 
     # Hide the header from the navigation bar if the viewport is small
-    nav[[3]][[1]][[3]][[1]][[3]][[1]] <- tagAppendAttributes(
-        nav[[3]][[1]][[3]][[1]][[3]][[1]], class="hidden-sm")
+    nav <- replaceStrInList(nav, "navbar-header", "navbar-header hidden-sm")
 
     # Add global selectize input elements to navigation bar
-    nav[[3]][[1]][[3]][[1]][[3]][[2]] <- tagAppendChild(
-        nav[[3]][[1]][[3]][[1]][[3]][[2]],
-        tags$ul(class="nav navbar-nav navbar-right",
-                navSelectize("selectizeCategory", "Selected dataset",
-                             "Select dataset"),
-                navSelectize("selectizeEvent", "Selected splicing event",
-                             "Search by gene and coordinates...",
-                             ASevent=TRUE)))
+    globalSelectizeElems <- tags$ul(
+        class="nav navbar-nav navbar-right",
+        navSelectize("selectizeCategory", "Selected dataset", "Select dataset"),
+        navSelectize("selectizeEvent", "Selected splicing event",
+                     "Search by gene and coordinates...", ASevent=TRUE))
+
+    pos <- traceInList(nav, "navbar-nav")
+    pos <- head(pos, -3)
+    pluck(nav, !!!pos) <- tagList(pluck(nav, !!!pos, 1), globalSelectizeElems)
     shinyUI(nav)
 }
 

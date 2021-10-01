@@ -175,11 +175,12 @@ numericInputWithCheckbox <- function(ns, id, label, ..., check=FALSE) {
     checkbox <- checkboxInput(ns(paste0("enable", capitalize(id))), label,
                               value=check, width="100%")
     # Adjust margins
-    checkbox[[2]][["style"]] <- paste(checkbox[[2]][["style"]],
-                                      "margin-bottom: 5px;")
-    checkbox[[3]][[1]][[2]]$style <- "margin-top: 0; margin-bottom: 0;"
+    checkbox <- tagAppendAttributes(checkbox, style="margin-bottom: 5px;")
+    checkbox <- tagAppendAttributes(checkbox, .cssSelector=".checkbox",
+                                    style="margin-top: 0; margin-bottom: 0;")
     # Change label to bold
-    checkbox[[3]][[1]][[3]][[1]][[3]][[2]][[2]]$style <- "font-weight: bold"
+    checkbox <- tagAppendAttributes(checkbox, style="font-weight: bold;",
+                                    .cssSelector="span")
 
     checkbox <- span(id=ns(paste0("element", capitalize(id))), checkbox)
     column(6, checkbox, numericInput(ns(id), label=NULL, ..., width="100%"))

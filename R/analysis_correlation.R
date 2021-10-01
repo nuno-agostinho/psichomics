@@ -79,7 +79,7 @@ correlationUI <- function(id) {
                 "blue", allowTransparent=TRUE, returnName=TRUE)))
 
     scatterParams <- bsCollapsePanel(
-        tagList(icon("sliders"), "Scatterplot options"),
+        tagList(icon("sliders-h"), "Scatterplot options"),
         value="scatterplotOptions", style="info",
         radioButtons(
             ns("genesToPlot"), "Genes to plot", width="100%",

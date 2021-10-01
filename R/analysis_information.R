@@ -747,11 +747,11 @@ renderProteinInfo <- function(protein, transcript, species, assembly) {
     grch37      <- if (assembly == "hg19") "grch37." else ""
     href        <- sprintf("http://%sensembl.org/%s/Transcript/Summary?t=%s",
                            grch37, species, transcript)
-    ensemblLink <- tags$a("Ensembl", icon("external-link"), href=href,
+    ensemblLink <- tags$a("Ensembl", icon("external-link-alt"), href=href,
                           target="_blank")
 
     href        <- paste0("http://www.uniprot.org/uniprot/?query=", transcript)
-    uniprotLink <- tags$a("UniProt", icon("external-link"), href=href,
+    uniprotLink <- tags$a("UniProt", icon("external-link-alt"), href=href,
                           target="_blank")
 
     links <- column(2, tags$label("External links"),
@@ -768,7 +768,7 @@ renderProteinInfo <- function(protein, transcript, species, assembly) {
 
 prepareExternalLinks <- function(info, species, assembly, grch37, gene) {
     linkTo <- function(title, href) {
-        tags$a(title, icon("external-link"), target="_blank", href=href)
+        tags$a(title, icon("external-link-alt"), target="_blank", href=href)
     }
 
     url <- list()
@@ -896,7 +896,7 @@ infoServer <- function(input, output, session) {
         search <- gsub("[Abstract]", "[Title/Abstract]", search, fixed=TRUE)
         search <- paste0("http://www.ncbi.nlm.nih.gov/pubmed/?term=", search)
         link <- tags$a(href=search, target="_blank", class="pull-right",
-                       "Show more articles", icon("external-link"))
+                       "Show more articles", icon("external-link-alt"))
         output$articleSearch <- renderUI(link)
     })
 
