@@ -462,7 +462,7 @@ renderGroupInterface <- function(ns, multiFisherTests=TRUE) {
         hidden(singleGroupSelectedInterface),
         plotOutput(ns(groupTestId), height="200px",
                    hover=hoverOpts(ns(paste0(groupTestId, "-hover")),
-                                   delay=50, delayType="throttle")),
+                                   delay=100, delayType="throttle")),
         uiOutput(ns(paste0(groupTestId, "-tooltip"))))
 }
 

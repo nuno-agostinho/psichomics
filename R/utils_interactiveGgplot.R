@@ -1,49 +1,49 @@
 #' Create HTML table from data frame or matrix
-#' 
+#'
 #' @param data Data frame or matrix
 #' @param rownames Boolean: print row names?
 #' @param colnames Boolean: print column names?
 #' @param class Character: table class
 #' @param style Character: table style
 #' @param thead Boolean: add a \code{thead} tag to the first row?
-#' 
+#'
 #' @importFrom xtable xtable print.xtable
 #' @importFrom shiny HTML
-#' 
+#'
 #' @return HTML elements
 #' @keywords internal
-table2html <- function(data, rownames=TRUE, colnames=TRUE, class=NULL, 
+table2html <- function(data, rownames=TRUE, colnames=TRUE, class=NULL,
                        style=NULL, thead=FALSE) {
     table <- xtable(data)
     table <- print(table, type="html", print.results=FALSE,
                    include.rownames=rownames, include.colnames=colnames)
     html <- HTML(table)
-    
+
     if (thead)
         html <- gsub("(<tr>[[:space:]]*<th>.*</th>[[:space:]]*</tr>)",
                      "<thead>\\1</thead>", html)
-    
+
     if (!is.null(class))
         class <- sprintf('class="%s"', paste(class, collapse=" "))
-    
+
     if (!is.null(style))
         style <- sprintf('style="%s"', paste(style, collapse=" "))
-    
+
     rep <- paste(class, style)
-    if (length(rep) > 0) 
+    if (length(rep) > 0)
         html <- gsub("border=1", rep, html, fixed=TRUE)
-    
+
     return(html)
 }
 
 #' Interface for interactive \code{\link[ggplot2]{ggplot}}
-#' 
+#'
 #' @param id Character: identifier
-#' 
-#' @importFrom shiny tagList plotOutput brushOpts hoverOpts uiOutput 
+#'
+#' @importFrom shiny tagList plotOutput brushOpts hoverOpts uiOutput
 #' actionButton
 #' @importFrom shinyjs hidden
-#' 
+#'
 #' @return HTML elements
 #' @keywords internal
 ggplotUI <- function(id) {
@@ -67,29 +67,29 @@ ggplotUI <- function(id) {
         uiOutput(tooltipId),
         plotOutput(plotId,
                    brush=brushOpts(brushId, resetOnNew=TRUE),
-                   hover=hoverOpts(hoverId, delay=50, delayType="throttle")))
+                   hover=hoverOpts(hoverId, delay=100, delayType="throttle")))
 }
 
 #' Create the interface for the tooltip of a plot
-#' 
+#'
 #' @param df Data frame
 #' @param hover Mouse hover information for a given plot as retrieved from
 #' \code{\link[shiny]{hoverOpts}}
 #' @param x Character: name of the variable used for the X axis
 #' @param y Character: name of the variable used for the Y axis
 #' @param eventData Alternative splicing event information (if available)
-#' 
+#'
 #' @importFrom shiny tags nearPoints wellPanel
-#' 
+#'
 #' @return HTML elements
 #' @keywords internal
 ggplotTooltip <- function(df, hover, x, y, eventData=NULL) {
     point <- nearPoints(df, hover, threshold=10, maxpoints=1, addDist=TRUE,
                         xvar=x, yvar=y)
     if (nrow(point) == 0) return(NULL)
-    
+
     trItem <- function(key, value) tags$tr(tags$td(tags$b(key)), tags$td(value))
-    
+
     thisPoint <- rownames(point)
     if ( areSplicingEvents(thisPoint, data=eventData) ) {
         res  <- prepareEventInfoTooltip(thisPoint, data=eventData)
@@ -108,7 +108,7 @@ ggplotTooltip <- function(df, hover, x, y, eventData=NULL) {
         head   <- tags$thead(trItem("Gene", thisPoint))
         params <- NULL
     }
-    
+
     left <- hover$coords_css$x + 10
     top  <- hover$coords_css$y + 5
     tooltipStyle <- paste0("position: absolute; z-index: 100;",
@@ -124,22 +124,22 @@ ggplotTooltip <- function(df, hover, x, y, eventData=NULL) {
 }
 
 #' Logic set to create an interactive \code{\link[ggplot2]{ggplot}}
-#' 
+#'
 #' @inheritParams appServer
 #' @param id Character: identifier
 #' @param plot Character: plot expression (if \code{NULL}, no plots are
 #' rendered)
 #' @inheritParams ggplotTooltip
-#' 
+#'
 #' @importFrom shiny renderPlot renderUI
-#' 
+#'
 #' @inherit psichomics return
 #' @keywords internal
-ggplotServer <- function(input, output, id, plot=NULL, df=NULL, x=NULL, 
+ggplotServer <- function(input, output, id, plot=NULL, df=NULL, x=NULL,
                          y=NULL, eventData=NULL) {
     idd <- function(str) paste(id, str, sep="-")
     output[[idd("plot")]] <- renderPlot(plot)
-    
+
     if (is.null(plot)) {
         output[[idd("tooltip")]] <- renderUI(NULL)
     } else {
@@ -149,12 +149,12 @@ ggplotServer <- function(input, output, id, plot=NULL, df=NULL, x=NULL,
 }
 
 #' @rdname ggplotServer
-#' 
-#' @note Insert \code{ggplotAuxSet} outside any observer (so it is only run 
+#'
+#' @note Insert \code{ggplotAuxSet} outside any observer (so it is only run
 #' once)
 ggplotAuxServer <- function(input, output, id) {
     idd <- function(str) paste(id, str, sep="-")
-    
+
     # Save zoom coordinates according to brushed area of the plot
     observe({
         brush <- input[[idd("brush")]]
@@ -163,7 +163,7 @@ ggplotAuxServer <- function(input, output, id) {
             setSelectedPoints(id, NULL)
         }
     })
-    
+
     # Toggle visibility of reset zoom button
     observe({
         zoom <- getZoom(id)
@@ -173,7 +173,7 @@ ggplotAuxServer <- function(input, output, id) {
             show(idd("resetZoom"))
         }
     })
-    
+
     # Reset zoom when clicking the respective button
     observeEvent(input[[idd("resetZoom")]], {
         setZoom(id, NULL)

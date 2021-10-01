@@ -44,7 +44,7 @@ state or internal variables)
 Logic set to create an interactive \code{\link[ggplot2]{ggplot}}
 }
 \note{
-Insert \code{ggplotAuxSet} outside any observer (so it is only run 
+Insert \code{ggplotAuxSet} outside any observer (so it is only run
 once)
 }
 \keyword{internal}

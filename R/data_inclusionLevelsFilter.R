@@ -654,20 +654,9 @@ inclusionLevelsFilterServer <- function(input, output, session) {
         if (input$preview) {
             x <- input$plotX
             y <- input$plotY
-
             if (x == "none") return(NULL)
-            stats  <- getPSIsummaryStats()
-            xLabel <- names(stats[stats == x])
-
-            if (y == "none") {
-                y <- NULL
-                yLabel <- "Density"
-            } else {
-                yLabel <- names(stats[stats == y])
-            }
 
             data  <- getInclusionLevels()
-            cache <- isolate(getInclusionLevelsSummaryStatsCache())
             data2 <- filterSplicingBasedOnInput()
 
             if (is.null(data2)) {
@@ -688,20 +677,7 @@ inclusionLevelsFilterServer <- function(input, output, session) {
                     keep, total, perc)
                 output$summary <- renderText(msg)
             }
-
-            legendLabels <- c("Original", "Filtered in")
-            res <- plotRowStats(data, x, y, data2=data2, cache=cache,
-                                legend=TRUE, legendLabels=legendLabels,
-                                verbose=TRUE) +
-                theme_light(14) +
-                theme(legend.position="bottom") +
-                labs(x=xLabel, y=yLabel)
-
-            cache <- attr(res, "cache")
-            if (!is.null(cache)) {
-                setInclusionLevelsSummaryStatsCache(cache)
-            }
-            return(res)
+            return(plotRowStatsShiny(x, y, data, data2))
         }
     })
 }

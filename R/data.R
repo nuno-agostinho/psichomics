@@ -136,7 +136,7 @@ plotRowStats <- function(data, x, y=NULL, subset=NULL, xmin=NULL, xmax=NULL,
 
     subsetCol <- "orange"
     remainCol <- ifelse(!is.null(subset) || !is.null(data2),
-                        "darkgrey", "black")
+                        "darkgrey", "orange")
     res   <- calculateAxisStats(data, x, y, stats, cache=cache, verbose=verbose)
     cache <- res$cache
 
@@ -179,6 +179,31 @@ plotRowStats <- function(data, x, y=NULL, subset=NULL, xmin=NULL, xmax=NULL,
 
     attr(plot, "cache") <- cache
     return(plot)
+}
+
+plotRowStatsShiny <- function(x, y, data, data2) {
+    stats  <- getPSIsummaryStats()
+    xLabel <- names(stats[stats == x])
+
+    if (y == "none") {
+        y <- NULL
+        yLabel <- "Density"
+    } else {
+        yLabel <- names(stats[stats == y])
+    }
+
+    legendLabels <- c("Original", "Filtered in")
+    cache <- isolate(getInclusionLevelsSummaryStatsCache())
+    res <- plotRowStats(data, x, y, data2=data2, cache=cache,
+                        legend=TRUE, legendLabels=legendLabels,
+                        verbose=TRUE) +
+        theme_light(14) +
+        theme(legend.position="bottom") +
+        labs(x=xLabel, y=yLabel)
+
+    cache <- attr(res, "cache")
+    if (!is.null(cache)) setInclusionLevelsSummaryStatsCache(cache)
+    return(res)
 }
 
 #' Warn user about loaded data
@@ -780,8 +805,18 @@ dataServer <- function(input, output, session) {
                 if (is.null(visCols) && ncol(data) > 100)
                     visCols <- colnames(data)[seq(100)]
 
+                name <- names(categoryData)[i]
+                if (grepl("Gene expression", name)) {
+                    attr(data, "icon") <- list(symbol="dna", colour="orange")
+                } else if (grepl("Junction quantification", name)) {
+                    attr(data, "icon") <- list(symbol="dna", colour="orange")
+                } else if (grepl("Sample metadata", name)) {
+                    attr(data, "icon") <- list(symbol="vial", colour="blue")
+                } else if (grepl("Clinical data", name)) {
+                    attr(data, "icon") <- list(symbol="vial", colour="blue")
+                }
                 tabDataset(
-                    ns, names(categoryData)[i], icon=attr(data, "icon"),
+                    ns, name, icon=attr(data, "icon"),
                     paste(category, i, sep="-"), colnames(data), visCols, data,
                     description=attr(data, "description"))
             }
