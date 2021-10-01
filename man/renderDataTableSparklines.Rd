@@ -15,11 +15,13 @@ renderDataTableSparklines(..., options = NULL)
 frequent search requests).}
     \item{\code{callback}}{A JavaScript function to be applied to the DataTable object.
 This is useful for DataTables plug-ins, which often require the DataTable
-instance to be available (\url{https://datatables.net/extensions/}).}
-    \item{\code{quoted}}{Is \code{expr} a quoted expression (with \code{quote()})? This
-is useful if you want to save an expression in a variable.}
+instance to be available.}
+    \item{\code{quoted}}{If it is \code{TRUE}, then the \code{\link[=quote]{quote()}}ed value of \code{expr}
+will be used when \code{expr} is evaluated. If \code{expr} is a quosure and you
+would like to use its expression as a value for \code{expr}, then you must set
+\code{quoted} to \code{TRUE}.}
     \item{\code{outputArgs}}{A list of arguments to be passed through to the implicit
-call to \code{\link[shiny:tableOutput]{dataTableOutput()}} when \code{renderDataTable} is used
+call to \code{dataTableOutput()} when \code{renderDataTable()} is used
 in an interactive R Markdown document.}
   }}
 
