@@ -18,6 +18,7 @@ options to viably run in ShinyProxy
     - Improve responsiveness of project selection
 * Splicing annotation (visual interface):
     - Load annotation only when opening the splicing quantification tab
+    - Automatically select hg38 if using GTEx v8 data
 * PCA plot (visual interface):
     - Automatically plot PCA after calculating PCA scores
     - Copy-edit text

@@ -765,15 +765,21 @@ inclusionLevelsServer <- function(input, output, session) {
     })
 
     updateDefaultASannotChoice <- function(data) {
-        # Select default genome for annotation
-        isRecountData <- !is.null(data) && !is.null(attr(data, "source")) &&
-            attr(data, "source") == "recount"
-        if (isRecountData) {
-            genome <- "hg38"
+        source <- attr(data, "source")
+
+        hasDataSource <- !is.null(data) && !is.null(source)
+        # Select default assembly for annotation
+        isRecountData <- hasDataSource && source == "recount"
+        # Match GTEx v8 or higher
+        isRecentGtexData <- hasDataSource &&
+            grepl("GTEx v([8-9]|\\d{2,})", source)
+
+        if (isRecountData || isRecentGtexData) {
+            assembly <- "hg38"
         } else {
-            genome <- "hg19"
+            assembly <- "hg19"
         }
-        selected <- grep(genome, listSplicingAnnotations(), value=TRUE)[[1]]
+        selected <- listSplicingAnnotations(assembly=assembly)[[1]]
         return(selected)
     }
 

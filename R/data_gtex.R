@@ -337,6 +337,7 @@ loadGtexData <- function(folder=getDownloadsFolder(), data=getGtexDataTypes(),
     }
     names(loaded) <- sapply(loaded, attr, "tablename")
     loaded <- Filter(length, loaded)
+    attr(loaded, "source") <- paste0("GTEx v", release)
 
     gtex <- setNames(list(loaded), paste0("GTEx_V", release))
     gtex <- processDatasetNames(gtex)
