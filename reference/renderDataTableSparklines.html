@@ -88,7 +88,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.6</span>
       </span>
     </div>
 
@@ -176,11 +176,13 @@
 frequent search requests).</p></dd>
     <dt><code>callback</code></dt><dd><p>A JavaScript function to be applied to the DataTable object.
 This is useful for DataTables plug-ins, which often require the DataTable
-instance to be available (<a href='https://datatables.net/extensions/'>https://datatables.net/extensions/</a>).</p></dd>
-    <dt><code>quoted</code></dt><dd><p>Is <code>expr</code> a quoted expression (with <code><a href='https://rdrr.io/r/base/substitute.html'>quote()</a></code>)? This
-is useful if you want to save an expression in a variable.</p></dd>
+instance to be available.</p></dd>
+    <dt><code>quoted</code></dt><dd><p>If it is <code>TRUE</code>, then the <code><a href='https://rdrr.io/r/base/substitute.html'>quote()</a></code>ed value of <code>expr</code>
+will be used when <code>expr</code> is evaluated. If <code>expr</code> is a quosure and you
+would like to use its expression as a value for <code>expr</code>, then you must set
+<code>quoted</code> to <code>TRUE</code>.</p></dd>
     <dt><code>outputArgs</code></dt><dd><p>A list of arguments to be passed through to the implicit
-call to <code><a href='https://rdrr.io/pkg/shiny/man/renderTable.html'>dataTableOutput()</a></code> when <code>renderDataTable</code> is used
+call to <code>dataTableOutput()</code> when <code>renderDataTable()</code> is used
 in an interactive R Markdown document.</p></dd>
   
 </dl></td>

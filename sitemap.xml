@@ -4,9 +4,6 @@
     <loc>https://nuno-agostinho.github.io/psichomics//index.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/psichomics//reference/ASquantFileInput.html</loc>
-  </url>
-  <url>
     <loc>https://nuno-agostinho.github.io/psichomics//reference/HTMLfast.html</loc>
   </url>
   <url>
@@ -44,6 +41,9 @@
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/psichomics//reference/blendColours.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/psichomics//reference/browseDownloadFolderInput.html</loc>
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/psichomics//reference/browserHistory.html</loc>
@@ -251,6 +251,9 @@
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/psichomics//reference/getSampleFromSubject.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/psichomics//reference/getSelectedDataPanel.html</loc>
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/psichomics//reference/getServerFunctions.html</loc>
@@ -664,6 +667,9 @@
     <loc>https://nuno-agostinho.github.io/psichomics//reference/renderProteinInfo.html</loc>
   </url>
   <url>
+    <loc>https://nuno-agostinho.github.io/psichomics//reference/replaceStrInList.html</loc>
+  </url>
+  <url>
     <loc>https://nuno-agostinho.github.io/psichomics//reference/rm.null.html</loc>
   </url>
   <url>
@@ -764,6 +770,9 @@
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/psichomics//reference/toJSarray.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/psichomics//reference/traceInList.html</loc>
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/psichomics//reference/transformData.html</loc>

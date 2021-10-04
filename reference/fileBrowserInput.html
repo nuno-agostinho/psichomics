@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>File browser input — fileBrowserInput • psichomics</title>
+<title>File browser input — fileBrowserInfoInput • psichomics</title>
 
 
 <!-- jquery -->
@@ -45,7 +45,7 @@
 
 
 
-<meta property="og:title" content="File browser input — fileBrowserInput" />
+<meta property="og:title" content="File browser input — fileBrowserInfoInput" />
 <meta property="og:description" content="Input to interactively select a file or directory on the server" />
 
 
@@ -88,7 +88,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.6</span>
       </span>
     </div>
 
@@ -155,7 +155,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>File browser input</h1>
-    <small class="dont-index">Source: <a href='https://github.com/nuno-agostinho/psichomics/blob/master/R/utils_fileBrowserDialog.R'><code>R/utils_fileBrowserDialog.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/nuno-agostinho/psichomics/blob/master/R/data.R'><code>R/data.R</code></a>, <a href='https://github.com/nuno-agostinho/psichomics/blob/master/R/utils_fileBrowserDialog.R'><code>R/utils_fileBrowserDialog.R</code></a></small>
     <div class="hidden name"><code>fileBrowserInput.Rd</code></div>
     </div>
 
@@ -163,7 +163,9 @@
     <p>Input to interactively select a file or directory on the server</p>
     </div>
 
-    <pre class="usage"><span class='fu'>fileBrowserInput</span><span class='op'>(</span>
+    <pre class="usage"><span class='fu'>fileBrowserInfoInput</span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>label</span>, infoContent <span class='op'>=</span> <span class='cn'>NULL</span>, clearable <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+
+<span class='fu'>fileBrowserInput</span><span class='op'>(</span>
   <span class='va'>id</span>,
   <span class='va'>label</span>,
   value <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -186,6 +188,14 @@
     <tr>
       <th>label</th>
       <td><p>Character: input label (if <code>NULL</code>, no labels are displayed)</p></td>
+    </tr>
+    <tr>
+      <th>infoContent</th>
+      <td><p>Character: text to show as content of information</p></td>
+    </tr>
+    <tr>
+      <th>clearable</th>
+      <td><p>Boolean: allow to clear selected file or directory?</p></td>
     </tr>
     <tr>
       <th>value</th>
@@ -213,14 +223,6 @@ right or left)</p></td>
     <tr>
       <th>infoTitle</th>
       <td><p>Character: text to show as title of information</p></td>
-    </tr>
-    <tr>
-      <th>infoContent</th>
-      <td><p>Character: text to show as content of information</p></td>
-    </tr>
-    <tr>
-      <th>clearable</th>
-      <td><p>Boolean: allow to clear selected file or directory?</p></td>
     </tr>
     </table>
 

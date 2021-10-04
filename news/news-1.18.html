@@ -87,7 +87,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.6</span>
       </span>
     </div>
 
@@ -276,6 +276,63 @@
 </ul>
 </li>
 </ul>
+</div>
+    <div id="psichomics-1186-4-october-2021" class="section level1">
+<h1 class="page-header" data-toc-text="1.18.6">
+<a href="#psichomics-1186-4-october-2021" class="anchor"></a>psichomics 1.18.6 (4 October, 2021)</h1>
+<div id="shinyproxy-support" class="section level2">
+<h2 class="hasAnchor">
+<a href="#shinyproxy-support" class="anchor"></a>ShinyProxy support</h2>
+<ul>
+<li>
+<code><a href="../reference/psichomics.html">psichomics()</a></code>: add argument <code>shinyproxy</code>; when set to <code>TRUE</code>, change set of options to viably run in ShinyProxy</li>
+<li>Avoid automatically closing the app</li>
+<li>Replace custom file browsers with shiny’s versions</li>
+<li>Fix issues with progress bar</li>
+<li>Include ShinyBS JavaScript library</li>
+<li>Upload files using default file browser input and allow to upload a ZIP folder instead of a folder</li>
+</ul>
+</div>
+<div id="bug-fixes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bug-fixes" class="anchor"></a>Bug fixes</h2>
+<ul>
+<li>Fix issues with Shiny 1.7.0:
+<ul>
+<li>Change icon names as required by newest versions of font-awesome</li>
+<li>Avoid modifying Shiny tags using generic positions</li>
+</ul>
+</li>
+<li>Load recount data (visual interface):
+<ul>
+<li>Improve responsiveness of project selection</li>
+</ul>
+</li>
+<li>Splicing annotation (visual interface):
+<ul>
+<li>Load annotation only when opening the splicing quantification tab</li>
+<li>Automatically select hg38 if using GTEx v8 data</li>
+</ul>
+</li>
+<li>PCA plot (visual interface):
+<ul>
+<li>Automatically plot PCA after calculating PCA scores</li>
+<li>Copy-edit text</li>
+<li>Fix specific errors related with PCA analysis of only one group</li>
+</ul>
+</li>
+<li>Diagrams of alternative splicing events:
+<ul>
+<li>Fix wrong coloring of reference exon used for AFE and A5SS events</li>
+</ul>
+</li>
+<li>Transcript plot:
+<ul>
+<li>Orange region (the reference exon) is now on top of blue region</li>
+</ul>
+</li>
+</ul>
+</div>
 </div>
   </div>
 

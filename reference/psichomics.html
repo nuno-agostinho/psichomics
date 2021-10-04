@@ -88,7 +88,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.6</span>
       </span>
     </div>
 
@@ -167,6 +167,7 @@
   <span class='va'>...</span>,
   launch.browser <span class='op'>=</span> <span class='cn'>TRUE</span>,
   reset <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  shinyproxy <span class='op'>=</span> <span class='cn'>FALSE</span>,
   testData <span class='op'>=</span> <span class='cn'>FALSE</span>,
   unparsableEvents <span class='op'>=</span> <span class='cn'>FALSE</span>
 <span class='op'>)</span></pre>
@@ -180,7 +181,10 @@
     <dt><code>port</code></dt><dd><p>The TCP port that the application should listen on. If the
 <code>port</code> is not specified, and the <code>shiny.port</code> option is set (with
 <code><a href='https://rdrr.io/r/base/options.html'>options(shiny.port = XX)</a></code>), then that port will be used. Otherwise,
-use a random port.</p></dd>
+use a random port between 3000:8000, excluding ports that are blocked
+by Google Chrome for being considered unsafe: 3659, 4045, 5060,
+5061, 6000, 6566, 6665:6669 and 6697. Up to twenty random
+ports will be tried.</p></dd>
     <dt><code>host</code></dt><dd><p>The IPv4 address that the application should listen on. Defaults
 to the <code>shiny.host</code> option, if set, or <code>"127.0.0.1"</code> if not. See
 Details.</p></dd>
@@ -209,6 +213,10 @@ function to call with the application's URL.</p></td>
     <tr>
       <th>reset</th>
       <td><p>Boolean: reset Shiny session? Requires package <code>devtools</code></p></td>
+    </tr>
+    <tr>
+      <th>shinyproxy</th>
+      <td><p>Boolean: prepare visual interface to run in Shinyproxy?</p></td>
     </tr>
     <tr>
       <th>testData</th>
