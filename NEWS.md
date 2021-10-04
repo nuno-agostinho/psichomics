@@ -8,6 +8,8 @@ options to viably run in ShinyProxy
 * Replace custom file browsers with shiny's versions
 * Fix issues with progress bar
 * Include ShinyBS JavaScript library
+* Upload files using default file browser input and allow to upload a ZIP folder
+instead of a folder
 
 ## Bug fixes
 

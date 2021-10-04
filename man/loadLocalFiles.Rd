@@ -12,13 +12,13 @@ loadLocalFiles(
 )
 }
 \arguments{
-\item{folder}{Character: path to folder containing files of interest}
+\item{folder}{Character: path to folder or ZIP archive}
 
 \item{ignore}{Character: skip folders and filenames that match the expression}
 
-\item{name}{Character: name of the category containing all loaded datasets}
+\item{name}{Character: name}
 
-\item{verbose}{Boolean: detail steps while parsing?}
+\item{verbose}{Boolean: print steps?}
 }
 \value{
 List of data frames from valid files

@@ -282,7 +282,9 @@ fileBrowserInfoInput <- function(id, label, infoContent=NULL, clearable=FALSE) {
             info=TRUE, infoFUN=bsPopover, infoTitle=label,
             infoContent=infoContent)
     } else {
-        input <- fileInput(id, label)
+        input <- fileBrowserShinyproxyInput(
+            id, label, clearable=FALSE, info=TRUE, infoFUN=bsPopover,
+            infoTitle=label, infoContent=infoContent)
     }
     return(input)
 }
