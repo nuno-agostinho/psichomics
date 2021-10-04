@@ -1,7 +1,7 @@
 Package: psichomics
 Title: Graphical Interface for Alternative Splicing Quantification, Analysis and
     Visualisation
-Version: 1.18.5
+Version: 1.18.6
 Encoding: UTF-8
 Authors@R: c(
         person("Nuno", "Saraiva-Agostinho",
@@ -28,11 +28,11 @@ Description: Interactive R package with an intuitive Shiny-based graphical
     annotation of selected alternative splicing events is also included.
 Depends:
     R (>= 4.0),
-    shiny (>= 1.5.0),
+    shiny (>= 1.7.0),
     shinyBS
 License: MIT + file LICENSE
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Imports:
     AnnotationDbi,
     AnnotationHub,
@@ -57,6 +57,7 @@ Imports:
     limma,
     pairsD3,
     plyr,
+    purrr,
     Rcpp (>= 0.12.14),
     recount,
     Rfast,

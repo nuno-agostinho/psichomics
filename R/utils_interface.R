@@ -46,7 +46,7 @@ tableRow <- function (..., th=FALSE) {
 #' @keywords internal
 colourInputMod <- function(...) {
     colourSelector <- colourInput(...)
-    colourSelector[[2]][["style"]] <- "width: 100%;"
+    colourSelector <- tagAppendAttributes(colourSelector, style="width: 100%;")
     return(colourSelector)
 }
 
@@ -144,7 +144,7 @@ updateProgress <- function(message="Loading...", value=NULL, max=NULL,
                            global=if (isRunning()) sharedData else getHidden(),
                            console=TRUE) {
     isGUIversion <- isRunning()
-    if (!interactive()) return(NULL)
+    if (!interactive() && !getOption("shinyproxy", FALSE)) return(NULL)
     if (!is.null(divisions)) {
         if (!isGUIversion) {
             setHidden(startProgress(message, divisions, new.env()))
@@ -197,10 +197,11 @@ closeProgress <- function(message=NULL,
     if (!is.null(message)) display(message)
 
     isGUIversion <- isRunning()
-    if (isGUIversion)
-        global$progress$close()
-    else if (is(global$progress, "txtProgressBar"))
+    if (isGUIversion) {
+        tryCatch(global$progress$close(), error=return)
+    } else if (is(global$progress, "txtProgressBar")) {
         close(global$progress)
+    }
 }
 
 #' Style button used to initiate a process
@@ -298,9 +299,9 @@ styleModal <- function(session, title, ..., style=NULL,
                          footer=footer, easyClose=FALSE)
     if (!is.null(style)) {
         style <- match.arg(style, c("info", "warning", "error"))
-        modal[[3]][[1]][[3]][[1]][[3]][[1]] <-
-            tagAppendAttributes(modal[[3]][[1]][[3]][[1]][[3]][[1]],
-                                class=style)
+        modal <- tagAppendAttributes(modal, class=style,
+                                     .cssSelector=".modal-header")
+
     }
     showModal(modal, session)
     if (echo) {
@@ -657,4 +658,23 @@ setOperationIcon <- function (name, class=NULL, ...) {
         "set-operations", "1.0",
         c(href="set-operations"), stylesheet = "css/set-operations.css")
     return(iconTag)
+}
+
+#' Browse download folder input
+#'
+#' @param id Character: element identifier
+#'
+#' @importFrom shinyjs hidden
+#' @importFrom shinyBS bsTooltip
+#'
+#' @return HTML element in character
+#' @keywords internal
+browseDownloadFolderInput <- function(id) {
+    info <- "Data will be downloaded if not available in this folder."
+    folder <- fileBrowserInput(id, "Folder where data is stored",
+                               value=getDownloadsFolder(),
+                               placeholder="No folder selected",
+                               info=TRUE, infoFUN=bsTooltip, infoTitle=info)
+    if (getOption("shinyproxy", FALSE)) folder <- hidden(folder)
+    return(folder)
 }

@@ -103,7 +103,12 @@ plotSingleICA <- function(ica, icX=1, icY=2, groups=NULL) {
         # Colour data based on the selected groups
         for (group in names(groups)) {
             rows <- groups[[group]]
-            colour <- attr(groups, "Colour")[[group]]
+            colour <- attr(groups, "Colour")
+            if (group %in% names(colour)) {
+                colour <- colour[[group]]
+            } else {
+                colour <- NA
+            }
             values <- df[rows, ]
             if (!all(is.na(values))) {
                 hc <- hc_scatter(
@@ -214,10 +219,9 @@ icaUI <- function(id) {
             min=10, max=1000, value=50, step=10, width="100%"))
 
     clusteringCollapse <- bsCollapsePanel(
-        list(icon("th-large"), "Partitioning clustering"),
-        value="Partitioning clustering", style="info",
-        errorDialog("ICA has not yet been plotted.",
-                    id=ns("noClusteringUI")),
+        list(icon("th-large"), "Clustering"),
+        value="Clustering", style="info",
+        errorDialog("ICA has not yet been plotted.", id=ns("noClusteringUI")),
         hidden(
             div(id=ns("clusteringUI"),
                 selectizeInput(
@@ -228,9 +232,9 @@ icaUI <- function(id) {
                         plugins=list('remove_button', 'drag_drop'))),
                 selectizeInput(
                     ns("clusteringMethod"),
-                    "Partitioning algorithm", width="100%", selected="clara",
+                    "Clustering algorithm", width="100%", selected="clara",
                     c("k-means"="kmeans",
-                      "Partitioning around medoids (PAM)"="pam",
+                      "Partitioning Around Medoids (PAM)"="pam",
                       "Clustering Large Applications (CLARA)"="clara")),
                 sliderInput(ns("clusterNumber"), "Number of clusters",
                             min=1, max=20, value=2, width="100%"),

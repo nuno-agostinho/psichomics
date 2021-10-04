@@ -136,7 +136,7 @@ plotRowStats <- function(data, x, y=NULL, subset=NULL, xmin=NULL, xmax=NULL,
 
     subsetCol <- "orange"
     remainCol <- ifelse(!is.null(subset) || !is.null(data2),
-                        "darkgrey", "black")
+                        "darkgrey", "orange")
     res   <- calculateAxisStats(data, x, y, stats, cache=cache, verbose=verbose)
     cache <- res$cache
 
@@ -179,6 +179,31 @@ plotRowStats <- function(data, x, y=NULL, subset=NULL, xmin=NULL, xmax=NULL,
 
     attr(plot, "cache") <- cache
     return(plot)
+}
+
+plotRowStatsShiny <- function(x, y, data, data2) {
+    stats  <- getPSIsummaryStats()
+    xLabel <- names(stats[stats == x])
+
+    if (y == "none") {
+        y <- NULL
+        yLabel <- "Density"
+    } else {
+        yLabel <- names(stats[stats == y])
+    }
+
+    legendLabels <- c("Original", "Filtered in")
+    cache <- isolate(getInclusionLevelsSummaryStatsCache())
+    res <- plotRowStats(data, x, y, data2=data2, cache=cache,
+                        legend=TRUE, legendLabels=legendLabels,
+                        verbose=TRUE) +
+        theme_light(14) +
+        theme(legend.position="bottom") +
+        labs(x=xLabel, y=yLabel)
+
+    cache <- attr(res, "cache")
+    if (!is.null(cache)) setInclusionLevelsSummaryStatsCache(cache)
+    return(res)
 }
 
 #' Warn user about loaded data
@@ -245,74 +270,174 @@ processDatasetNames <- function(data) {
     return(newData)
 }
 
-#' File input for gene expression
+# Molecular data file input ----------------------------------------------------
+
+#' @rdname fileBrowserInput
+#' @importFrom shinyBS bsPopover
+#' @importFrom shiny fileInput
+fileBrowserInfoInput <- function(id, label, infoContent=NULL, clearable=FALSE) {
+    if (!getOption("shinyproxy", FALSE)) {
+        input <- fileBrowserInput(
+            id, label, placeholder="No file selected", clearable=clearable,
+            info=TRUE, infoFUN=bsPopover, infoTitle=label,
+            infoContent=infoContent)
+    } else {
+        input <- fileBrowserShinyproxyInput(
+            id, label, clearable=FALSE, info=TRUE, infoFUN=bsPopover,
+            infoTitle=label, infoContent=infoContent)
+    }
+    return(input)
+}
+
+#' File input for molecular data
 #'
-#' @param geneExprFileId Character: identifier for gene expression input
+#' @param id Character: identifier for gene expression input
 #' @inheritParams fileBrowserInput
 #'
 #' @return HTML elements
 #' @keywords internal
-geneExprFileInput <- function(geneExprFileId, clearable=FALSE) {
-    input <- fileBrowserInput(
-        geneExprFileId, "Gene expression",
-        placeholder="No file selected", clearable=clearable,
-        info=TRUE, infoFUN=bsPopover, infoTitle="Gene expression",
-        infoContent=paste(
-            tags$ul(
-                class="popover-list",
-                tags$li("Tab-separated values (TSV)"),
-                tags$li("Read counts of genes (rows) across sample (columns)"),
-                tags$li("The first column must contain gene symbols and be",
-                        "named", tags$kbd("Gene ID"))),
-            tags$hr(), helpText("Example:"), tags$table(
-                class="table table-condensed",
-                tags$thead(
-                    tableRow("Gene ID", "SMP-18", "SMP-03", "SMP-54",
-                             th=TRUE)),
-                tags$tbody(
-                    tableRow("AMP1", "24", "10", "43"),
-                    tableRow("BRCA1", "38", "46", "32"),
-                    tableRow("BRCA2", "43", "65", "21")))))
+geneExprFileInput <- function(id, clearable=FALSE) {
+    info <- paste(
+        tags$ul(
+            class="popover-list",
+            tags$li("Tab-separated values (TSV)"),
+            tags$li("Read counts of genes (rows) across sample (columns)"),
+            tags$li("The first column must contain gene symbols and be",
+                    "named", tags$kbd("Gene ID"))),
+        tags$hr(), helpText("Example:"), tags$table(
+            class="table table-condensed",
+            tags$thead(
+                tableRow("Gene ID", "SMP-18", "SMP-03", "SMP-54",
+                         th=TRUE)),
+            tags$tbody(
+                tableRow("AMP1", "24", "10", "43"),
+                tableRow("BRCA1", "38", "46", "32"),
+                tableRow("BRCA2", "43", "65", "21"))))
+    input <- fileBrowserInfoInput(id, "Gene expression", clearable=clearable,
+                                  infoContent=info)
     return(input)
 }
 
-#' File input for alternative splicing quantification
-#'
-#' @param ASquantFileId Character: identifier for alternative splicing
-#' quantification input
-#' @inheritParams fileBrowserInput
-#'
-#' @return HTML elements
-#' @keywords internal
-ASquantFileInput <- function(ASquantFileId, clearable=FALSE){
-    input <- fileBrowserInput(
-        ASquantFileId, "Alternative splicing quantification",
-        placeholder="No file selected", clearable=clearable,
-        info=TRUE, infoFUN=bsPopover,
-        infoTitle="Alternative splicing quantification",
-        infoContent=paste(
-            tags$ul(
-                class="popover-list",
-                tags$li("Tab-separated values (TSV)"),
-                tags$li("PSI values of alternative splicing events (rows)",
-                        "across samples (columns)"),
-                tags$li(
-                    "The first column must contain alternative splicing event",
-                    "identifiers and be named", tags$kbd("AS Event ID")),
-                tags$li(
-                    "PSI values must be between 0 and 1 or between 0 and 100;",
-                    "if the latter, values are scaled between 0 and 1")),
-            tags$hr(), helpText("Example:"), tags$table(
-                class="table table-condensed",
-                tags$thead(
-                    tableRow("AS Event ID", "SMP-18", "SMP-03", th=TRUE)),
-                tags$tbody(
-                    tableRow("someASevent001", "0.71", "0.30"),
-                    tableRow("anotherASevent653", "0.63", "0.37"),
-                    tableRow("yeatAnother097", "0.38", "0.62")))))
-
+#' @rdname geneExprFileInput
+#' @importFrom shiny tags
+ASquantFileInput <- function(id, clearable=FALSE){
+    info <- paste(
+        tags$ul(
+            class="popover-list",
+            tags$li("Tab-separated values (TSV)"),
+            tags$li("PSI values of alternative splicing events (rows)",
+                    "across samples (columns)"),
+            tags$li(
+                "The first column must contain alternative splicing event",
+                "identifiers and be named", tags$kbd("AS Event ID")),
+            tags$li(
+                "PSI values must be between 0 and 1 or between 0 and 100;",
+                "if the latter, values are scaled between 0 and 1")),
+        tags$hr(), helpText("Example:"), tags$table(
+            class="table table-condensed",
+            tags$thead(
+                tableRow("AS Event ID", "SMP-18", "SMP-03", th=TRUE)),
+            tags$tbody(
+                tableRow("someASevent001", "0.71", "0.30"),
+                tableRow("anotherASevent653", "0.63", "0.37"),
+                tableRow("yeatAnother097", "0.38", "0.62"))))
+    input <- fileBrowserInfoInput(id, "Alternative splicing quantification",
+                                  clearable=clearable, infoContent=info)
     return(input)
 }
+
+#' @rdname geneExprFileInput
+#' @importFrom shinyBS bsPopover
+#' @importFrom shiny tags
+junctionQuantFileInput <- function(id, clearable=FALSE) {
+    info <- paste(
+        tags$ul(
+            class="popover-list",
+            tags$li("Tab-separated values (TSV)"),
+            tags$li("Read counts of exon-exon junctions (rows) across",
+                    "samples (columns)"),
+            tags$li("The first column must contain junction identifiers",
+                    "and be named", tags$kbd("Junction ID")),
+            tags$li("Only chromosome number and capital letters X, Y, Z, W",
+                    "and M, followed by the genomic regions are supported;",
+                    "acceptable junction identifiers include:",
+                    tags$kbd("10_18748_21822"), ",",
+                    tags$kbd("chromosome 10 (18748 to 21822)"), "and",
+                    tags$kbd("chr10:18748-21822")),
+            tags$li("Optionally, indicate the strand with", tags$kbd("+"), "or",
+                    tags$kbd("-"),
+                    "at the end of the junction identifier; e.g.",
+                    tags$kbd("10:3213:9402:+"), "and",
+                    tags$kbd("chr10:3213-9402 -")),
+            tags$li("Rows whose junction identifiers contain",
+                    tags$kbd("alt"), ",", tags$kbd("random"), "or",
+                    tags$kbd("Un"), "in chromosome names are discarded")),
+        tags$hr(), helpText("Example:"), tags$table(
+            class="table table-condensed",
+            tags$thead(tableRow("Junction ID", "SMP-18", "SMP-03", th=TRUE)),
+            tags$tbody(tableRow("10:6752-7393", "4", "0"),
+                       tableRow("10:18748-21822", "8", "46"),
+                       tableRow("10:24257-25325", "83", "65"))))
+    input <- fileBrowserInfoInput(id, "Exon-exon junction read counts",
+                                  clearable=clearable, infoContent=info)
+    return(input)
+}
+
+#' @rdname geneExprFileInput
+#' @importFrom shinyBS bsPopover
+#' @importFrom shiny tags
+sampleInfoFileInput <- function(id, clearable=FALSE) {
+    info <- paste(
+        tags$ul(
+            class="popover-list",
+            tags$li("Tab-separated values (TSV)"),
+            tags$li(
+                "Sample identifiers (rows) and their attributes (columns)"),
+            tags$li("The first column must contain sample identifiers",
+                    "and be named", tags$kbd("Sample ID")),
+            tags$li("Optionally, indicate the subject associated to",
+                    "each sample in a column named",
+                    tags$kbd("Subject ID"))),
+        tags$hr(), helpText("Example:"), tags$table(
+            class="table table-condensed",
+            tags$thead(
+                tableRow("Sample ID", "Type", "Tissue", "Subject ID",
+                         th=TRUE)),
+            tags$tbody(
+                tableRow("SMP-01", "Tumour", "Lung", "SUBJ-03"),
+                tableRow("SMP-02", "Normal", "Blood", "SUBJ-12"),
+                tableRow("SMP-03", "Normal", "Blood", "SUBJ-25"))))
+    input <- fileBrowserInfoInput(id, "Sample information",
+                                  clearable=clearable, infoContent=info)
+    return(input)
+}
+
+#' @rdname geneExprFileInput
+#' @importFrom shinyBS bsPopover
+#' @importFrom shiny tags
+subjectInfoFileInput <- function(id, clearable=FALSE) {
+    info <- paste(
+        tags$ul(
+            class="popover-list",
+            tags$li("Tab-separated values (TSV)"),
+            tags$li("Subject identifiers (rows) and their attributes",
+                    "(columns)"),
+            tags$li("The first column must contain subject identifiers and",
+                    "be named", tags$kbd("Subject ID"))),
+        tags$hr(),
+        helpText("Example:"), tags$table(
+            class="table table-condensed",
+            tags$thead(tableRow("Subject ID", "Age", "Gender", "Race",
+                               th=TRUE)),
+            tags$tbody(tableRow("SUBJ-01", "34", "Female", "Black"),
+                       tableRow("SUBJ-02", "22", "Male", "Black"),
+                       tableRow("SUBJ-03", "58", "Female", "Asian"))))
+    input <- fileBrowserInfoInput(id, "Subject information",
+                                  clearable=clearable, infoContent=info)
+    return(input)
+}
+
+# Other ------------------------------------------------------------------------
 
 #' @rdname appUI
 #' @importFrom shinyjs hidden
@@ -352,16 +477,23 @@ dataUI <- function(id, tab) {
                    helpText("Check available annotation for splicing events",
                             "and genes including related research articles"))))
 
+    customDataTutorial <- paste0("https://nuno-agostinho.github.io/psichomics/",
+                                 "articles/custom_data.html")
     welcome <- div(
         id=ns("welcome"),
         linkToArticles(),
-        h1("Welcome to psichomics"), HTML(paste0(
-            "Perform integrative analyses of alternative splicing and gene ",
-            "expression based on transcriptomic and sample-associated data ",
-            "from The Cancer Genome Atlas (", tcga, "), the Genotype-Tissue ",
-            "Expression (", gtex, ") project, Sequence Read Archive (", sra,
-            ") or user-provided data.")),
-        tags$br(), tags$br(), tags$ol(
+        h1("Welcome to psichomics"),
+        "Integrative analyses of alternative splicing and gene expression",
+        "based on transcriptomic and sample-associated data from multiple",
+        "sources, including:",
+        tags$ul(
+            tags$li(tags$a(href=customDataTutorial, target="_blank",
+                           "User-provided data")),
+            tags$li("The Cancer Genome Atlas (TCGA) via Firebrowse"),
+            tags$li("Genotype-Tissue Expression (GTEx) project"),
+            tags$li("Sequence Read Archive (SRA) via recount2")),
+        tags$hr(),
+        tags$ol(
             id="list",
             tags$li(HTML(paste0(
                 "Load gene expression values, alternative splicing ",
@@ -373,19 +505,19 @@ dataUI <- function(id, tab) {
                     "metric.",
                     tags$br(), tags$small(
                         style="color: gray;",
-                        "Note: retained intron (RI) events are currently not",
-                        "measured in psichomics.")),
+                        "Note: retained intron (RI) events are not",
+                        "calculated in psichomics.")),
             tags$li("Explore statistically significant and specific genes",
                     "and alternative splicing events using:")),
-        analysesDescription, br(), br(),
-        p(style="text-align:right",
-          tags$a(href="http://imm.medicina.ulisboa.pt/group/distrans/",
-                 target="_blank", "Disease Transcriptomics Lab, iMM"),
-          "(", tags$a(href="mailto:nunodanielagostinho@gmail.com",
-                      "Nuno Saraiva-Agostinho", icon("envelope-o")),
-          ", 2015-2020)",
-          br(), "Special thanks to my lab colleagues for their work-related",
-          br(), "support and supporting chatter."))
+        analysesDescription,
+        div(style="text-align:right",
+            tags$a(href="http://imm.medicina.ulisboa.pt/group/distrans/",
+                   target="_blank", "Disease Transcriptomics Lab, iMM"),
+            tags$br(),
+            tags$a(href="mailto:nunodanielagostinho@gmail.com",
+                   "Nuno Saraiva-Agostinho", icon("envelope")),
+            tags$br(),
+            sprintf("psichomics %s, 2015-2021", packageVersion("psichomics"))))
 
     tab(title="Data", icon="table",
         sidebarLayout(
@@ -436,12 +568,12 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
     names(choices) <- sprintf("%s (%s class)", columns, colType)
 
     visColsId <- paste(tablename, "columns", sep="-")
-    visibleColumns <- selectizeInput(
+    visibleColumns <- suppressWarnings(selectizeInput(
         visColsId, label="Visible columns",  choices=choices, selected=visCols,
         multiple=TRUE, width="auto",
         options=list(plugins=list('remove_button', 'drag_drop'), render=I(
             "{ item: function(item, escape) {
-            return '<div>' + escape(item.value) + '</div>'; } }")))
+            return '<div>' + escape(item.value) + '</div>'; } }"))))
 
     # Add a common HTML container to allow for multiple Highcharts plots
     multiPlotId        <- paste(tablename, "multiPlot", sep="-")
@@ -464,7 +596,7 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
         bsCollapsePanel(tagList(icon("table"), "Data table"),
                         value="Data table", visibleColumns, hr(),
                         dataTableOutput(tablename)),
-        bsCollapsePanel(tagList(icon("pie-chart"), "Summary"), value="Summary",
+        bsCollapsePanel(tagList(icon("chart-pie"), "Summary"), value="Summary",
                         multiHighchartsPlots)))
 }
 
@@ -682,8 +814,18 @@ dataServer <- function(input, output, session) {
                 if (is.null(visCols) && ncol(data) > 100)
                     visCols <- colnames(data)[seq(100)]
 
+                name <- names(categoryData)[i]
+                if (grepl("Gene expression", name)) {
+                    attr(data, "icon") <- list(symbol="dna", colour="orange")
+                } else if (grepl("Junction quantification", name)) {
+                    attr(data, "icon") <- list(symbol="dna", colour="orange")
+                } else if (grepl("Sample metadata", name)) {
+                    attr(data, "icon") <- list(symbol="vial", colour="blue")
+                } else if (grepl("Clinical data", name)) {
+                    attr(data, "icon") <- list(symbol="vial", colour="blue")
+                }
                 tabDataset(
-                    ns, names(categoryData)[i], icon=attr(data, "icon"),
+                    ns, name, icon=attr(data, "icon"),
                     paste(category, i, sep="-"), colnames(data), visCols, data,
                     description=attr(data, "description"))
             }
@@ -700,6 +842,8 @@ dataServer <- function(input, output, session) {
             prepareSubjectSampleMatch()
         }
     })
+
+    observe(setSelectedDataPanel(input$accordion))
 
     # Run server logic from the scripts
     getServerFunctions("data", priority=paste0(

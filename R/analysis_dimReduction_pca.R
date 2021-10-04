@@ -119,17 +119,17 @@ pcaUI <- function(id) {
             min=10, max=1000, value=50, step=10, width="100%"))
 
     clusteringCollapse <- bsCollapsePanel(
-        list(icon("th-large"), "Partitioning clustering"),
-        value="Partitioning clustering", style="info",
+        list(icon("th-large"), "Clustering"),
+        value="Clustering", style="info",
         errorDialog("PCA has not yet been plotted.",
-                 id=ns("noClusteringUI")),
+                    id=ns("noClusteringUI")),
         hidden(
             div(id=ns("clusteringUI"),
                 selectizeInput(
                     ns("clusteringMethod"),
-                    "Partitioning algorithm", width="100%", selected="clara",
+                    "Clustering algorithm", width="100%", selected="clara",
                     c("k-means"="kmeans",
-                      "Partitioning around medoids (PAM)"="pam",
+                      "Partitioning Around Medoids (PAM)"="pam",
                       "Clustering Large Applications (CLARA)"="clara")),
                 sliderInput(ns("clusterNumber"), "Number of clusters",
                             min=1, max=20, value=2, width="100%"),
@@ -364,7 +364,12 @@ plotPCA <- function(pca, pcX=1, pcY=2, groups=NULL, individuals=TRUE,
             # Colour data based on the selected groups
             for (group in names(groups)) {
                 rows <- groups[[group]]
-                colour <- attr(groups, "Colour")[[group]]
+                colour <- attr(groups, "Colour")
+                if (group %in% names(colour)) {
+                    colour <- colour[[group]]
+                } else {
+                    colour <- NA
+                }
                 values <- df[rows, ]
                 if (!all(is.na(values))) {
                     hc <- hc_scatter(
@@ -704,6 +709,80 @@ pcaServer <- function(input, output, session) {
     observeEvent(input$loadData, missingDataGuide("Inclusion levels"))
     observeEvent(input$takeMeThere, missingDataGuide("Inclusion levels"))
 
+    showPCAinterface <- function(ns, output, dataForPCA, pca, pcX, pcY,
+                                 plotVariables, groups) {
+        output$scatterplot <- renderHighchart({
+            if (!is.null(pcX) && !is.null(pcY)) {
+                plotPCA(pca, pcX, pcY, groups) %>%
+                    hc_title(text="Samples (PCA scores)")
+            }
+        })
+
+        output$scatterplotLoadings <- renderHighchart({
+            if (!is.null(pcX) && !is.null(pcY)) {
+                dataType <- attr(pca, "dataType")
+                groupsJS <- toJSarray(isolate(names(groups)))
+                if (is.null(groups)) groupsJS <- "null"
+                if (dataType == "Inclusion levels") {
+                    title <- "Alternative splicing events (PCA loadings)"
+                    onClick <- sprintf(
+                        "function() {
+                            var id = '%s',
+                                event = this.options.sample.replace(/ /g, '_'),
+                                param = {event: event, groups: %s};
+                            Shiny.setInputValue(id, param, {priority: 'event'});
+                        }",
+                        ns("pca_last_clicked"), groupsJS)
+                } else if (dataType == "Gene expression") {
+                    title <- "Genes (PCA loadings)"
+                    onClick <- sprintf(
+                        "function() {
+                            var id = '%s',
+                                gene = this.options.sample,
+                                param = {gene: gene, groups: %s,
+                                          geneExpr: '%s'};
+                            Shiny.setInputValue(id, param, {priority: 'event'});
+                        }",
+                        ns("pca_last_clicked"), groupsJS, dataForPCA)
+                }
+
+                if (plotVariables == "all") nLoadings <- NULL
+                else if (plotVariables == "top100") nLoadings <- 100
+
+                plotPCA(pca, pcX, pcY, individuals=FALSE, loadings=TRUE,
+                        nLoadings=nLoadings) %>%
+                    hc_title(text=unname(title)) %>%
+                    hc_plotOptions(series=list(cursor="pointer",
+                                               point=list(events=list(
+                                                   click=JS(onClick)))))
+            }
+        })
+
+        if (is.character(pcX)) pcX <- as.numeric(gsub("[A-Z]", "", pcX))
+        if (is.character(pcY)) pcY <- as.numeric(gsub("[A-Z]", "", pcY))
+        data <- calculateLoadingsContribution(pca, pcX, pcY)
+
+        show("varContrTable")
+        output$varContrTable <- renderDataTable(
+            data, style="bootstrap", server=TRUE, rownames=FALSE,
+            selection="none", options=list(scrollX=TRUE))
+
+        show("saveVarContr")
+        output$saveVarContr <- downloadHandler(
+            filename=function() {
+                paste(getCategory(), "PCA variable contribution")
+            }, content=function(con) {
+                write.table(data, con, quote=FALSE, sep="\t", row.names=FALSE)
+            }
+        )
+
+        hide("noClusteringUI", animType="fade")
+        show("clusteringUI", animType="fade")
+
+        updateSliderInput(session, "kmeansNstart", max=nrow(pca$x), value=100)
+        updateSliderInput(session, "claraSamples", max=nrow(pca$x), value=50)
+    }
+
     # Perform principal component analysis (PCA)
     observeEvent(input$calculate, {
         selectedDataForPCA <- input$dataForPCA
@@ -808,6 +887,9 @@ pcaServer <- function(input, output, session) {
         updateSelectizeInput(session, "pcX", choices=choices)
         updateSelectizeInput(session, "pcY", choices=choices,
                              selected=choices[[2]])
+
+        showPCAinterface(ns, output, isolate(input$dataForPCA),
+                         pca, pcX=1, pcY=2, plotVariables="top100", NULL)
     })
 
     # Show variance plot
@@ -837,84 +919,16 @@ pcaServer <- function(input, output, session) {
             pcY <- input$pcY
             plotVariables <- input$plotVariables
 
-            if ( !is.null(pca$x) )
+            if ( !is.null(pca$x) ) {
                 groups <- getSelectedGroups(input, "colourGroups", "Samples",
                                             filter=rownames(pca$x))
-            else
+            } else {
                 groups <- NULL
-        })
-
-        output$scatterplot <- renderHighchart({
-            if (!is.null(pcX) && !is.null(pcY)) {
-                plotPCA(pca, pcX, pcY, groups) %>%
-                    hc_title(text="Samples (PCA scores)")
             }
+            dataForPCA <- input$dataForPCA
         })
-
-        output$scatterplotLoadings <- renderHighchart({
-            if (!is.null(pcX) && !is.null(pcY)) {
-                dataType <- attr(pca, "dataType")
-                groupsJS <- toJSarray(isolate(names(groups)))
-                if (is.null(groups)) groupsJS <- "null"
-                if (dataType == "Inclusion levels") {
-                    title <- "Alternative splicing events (PCA loadings)"
-                    onClick <- sprintf(
-                        "function() {
-                            var id = '%s',
-                                event = this.options.sample.replace(/ /g, '_'),
-                                param = {event: event, groups: %s};
-                            Shiny.setInputValue(id, param, {priority: 'event'});
-                        }",
-                        ns("pca_last_clicked"), groupsJS)
-                } else if (dataType == "Gene expression") {
-                    title <- "Genes (PCA loadings)"
-                    onClick <- sprintf(
-                        "function() {
-                            var id = '%s',
-                                gene = this.options.sample,
-                                param = {gene: gene, groups: %s,
-                                          geneExpr: '%s'};
-                            Shiny.setInputValue(id, param, {priority: 'event'});
-                        }",
-                        ns("pca_last_clicked"), groupsJS,
-                        isolate(input$dataForPCA))
-                }
-
-                if (plotVariables == "all") nLoadings <- NULL
-                else if (plotVariables == "top100") nLoadings <- 100
-
-                plotPCA(pca, pcX, pcY, individuals=FALSE, loadings=TRUE,
-                        nLoadings=nLoadings) %>%
-                    hc_title(text=unname(title)) %>%
-                    hc_plotOptions(series=list(cursor="pointer",
-                                               point=list(events=list(
-                                                   click=JS(onClick)))))
-            }
-        })
-
-        if (is.character(pcX)) pcX <- as.numeric(gsub("[A-Z]", "", pcX))
-        if (is.character(pcY)) pcY <- as.numeric(gsub("[A-Z]", "", pcY))
-        data <- calculateLoadingsContribution(pca, pcX, pcY)
-
-        show("varContrTable")
-        output$varContrTable <- renderDataTable(
-            data, style="bootstrap", server=TRUE, rownames=FALSE,
-            selection="none", options=list(scrollX=TRUE))
-
-        show("saveVarContr")
-        output$saveVarContr <- downloadHandler(
-            filename=function() {
-                paste(getCategory(), "PCA variable contribution")
-            }, content=function(con) {
-                write.table(data, con, quote=FALSE, sep="\t", row.names=FALSE)
-            }
-        )
-
-        hide("noClusteringUI", animType="fade")
-        show("clusteringUI", animType="fade")
-
-        updateSliderInput(session, "kmeansNstart", max=nrow(pca$x), value=100)
-        updateSliderInput(session, "claraSamples", max=nrow(pca$x), value=50)
+        showPCAinterface(ns, output, dataForPCA,
+                         pca, pcX, pcY, plotVariables, groups)
     })
 
     # Show differential analysis when clicking on PCA loadings

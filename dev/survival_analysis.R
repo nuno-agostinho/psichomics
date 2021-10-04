@@ -1,8 +1,10 @@
 # Load BRCA data from TCGA
-data          <- loadTCGAdata(cohort="BRCA")[[1]]
-clinical      <- data$`Clinical data`
-sampleInfo    <- data$`Sample metadata`
-junctionQuant <- data$`Junction quantification (Illumina HiSeq)`
+data               <- loadTCGAdata(cohort="BRCA")[[1]]
+
+brca               <- list()
+brca$clinical      <- data$`Clinical data`
+brca$sampleInfo    <- data$`Sample metadata`
+brca$junctionQuant <- data$`Junction quantification (Illumina HiSeq)`
 
 # Quantify alternative splicing
 annot <- loadAnnotation(listSplicingAnnotations(assembly="hg19")[[1]])
@@ -19,11 +21,9 @@ match <- getSubjectFromSample(colnames(psi), clinical, sampleInfo=sampleInfo)
 eventData <- lapply(events, function(k) assignValuePerPatient(psi[k, ], match))
 names(eventData) <- events
 
-censoring          <- "right"
 event <- timeStart <- "days_to_death"
-optm  <- optimalSurvivalCutoff(
-    clinical, eventData[[1]],
-    timeStart=timeStart, event=event, censoring=censoring)
+optm  <- optimalSurvivalCutoff(clinical, eventData[[1]], censoring="right",
+                               timeStart=timeStart, event=event)
 testSurvivalCutoff(0.305, eventData[[2]], clinical=clinical,
                    timeStart=timeStart, event=event, censoring=censoring)
 

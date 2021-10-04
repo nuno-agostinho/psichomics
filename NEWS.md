@@ -1,3 +1,35 @@
+# psichomics 1.18.6 (4 October, 2021)
+    
+## ShinyProxy support
+
+* `psichomics()`: add argument `shinyproxy`; when set to `TRUE`, change set of
+options to viably run in ShinyProxy
+* Avoid automatically closing the app
+* Replace custom file browsers with shiny's versions
+* Fix issues with progress bar
+* Include ShinyBS JavaScript library
+* Upload files using default file browser input and allow to upload a ZIP folder
+instead of a folder
+
+## Bug fixes
+
+* Fix issues with Shiny 1.7.0:
+    - Change icon names as required by newest versions of font-awesome
+    - Avoid modifying Shiny tags using generic positions
+* Load recount data (visual interface):
+    - Improve responsiveness of project selection
+* Splicing annotation (visual interface):
+    - Load annotation only when opening the splicing quantification tab
+    - Automatically select hg38 if using GTEx v8 data
+* PCA plot (visual interface):
+    - Automatically plot PCA after calculating PCA scores
+    - Copy-edit text
+    - Fix specific errors related with PCA analysis of only one group
+* Diagrams of alternative splicing events:
+    - Fix wrong coloring of reference exon used for AFE and A5SS events
+* Transcript plot:
+    - Orange region (the reference exon) is now on top of blue region
+
 # psichomics 1.18.5 (24 August, 2021)
 
 * Diagrams of alternative splicing events:

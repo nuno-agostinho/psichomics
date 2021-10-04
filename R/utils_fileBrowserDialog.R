@@ -130,6 +130,66 @@ fileBrowser <- function(default=NULL, caption=NULL, multiple=FALSE,
     return(path)
 }
 
+#' @importFrom shinyBS bsPopover
+bsPopoverMod <- function(...) {
+    showInfo <- bsPopover(...)
+    constructor <- paste(sprintf(
+        "$.fn.popover.Constructor.DEFAULTS.whiteList.%s = [];",
+        c("kbd", "table", "tr", "td", "th", "thead", "tbody")), collapse=" ")
+    showInfo[[3]][[1]] <- gsub(
+        "$(document).ready(function() {",
+        paste("$(document).ready(function() {", constructor),
+        showInfo[[3]][[1]], fixed=TRUE)
+    return(showInfo)
+}
+
+createInfoAndClearButtons <- function(id, info=FALSE, clearable=FALSE) {
+    if (info) {
+        infoId   <- paste0(id, "-info")
+        infoElem <- actionButton(inputId=infoId, label=NULL,
+                                 style="background: #eee",
+                                 icon=icon("question-circle"))
+    } else {
+        infoId   <- id
+        infoElem <- NULL
+    }
+
+    if (clearable) {
+        clearId   <- paste0(id, "-clear")
+        clearElem <- actionButton(inputId=clearId, label=NULL,
+                                  style="background: #eee",
+                                  icon=icon("times-circle"))
+    } else {
+        clearId   <- id
+        clearElem <- NULL
+    }
+
+    if (info || clearable) {
+        buttonsElem <- div(class="input-group-btn", clearElem, infoElem)
+    } else {
+        buttonsElem <- NULL
+    }
+    return(buttonsElem)
+}
+
+#' @importFrom htmltools tagQuery
+showExtraInfo <- function(id, FUN, title, content, placement) {
+    id      <- paste0(id, "-info")
+    title   <- gsub("\n", "", as.character(title),   fixed=TRUE)
+    content <- gsub("\n", "", as.character(content), fixed=TRUE)
+    if (identical(FUN, bsPopover)) {
+        showInfo <- bsPopoverMod(id, placement=placement,
+                                 options=list(container="body"),
+                                 title=title, content=content)
+    } else if (identical(FUN, bsTooltip)) {
+        showInfo <- FUN(id, placement=placement,
+                        options=list(container="body"), title=title)
+    } else {
+        showInfo <- NULL
+    }
+    return(showInfo)
+}
+
 #' File browser input
 #'
 #' Input to interactively select a file or directory on the server
@@ -173,57 +233,10 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
     if (!is.null(value) && !is.na(value)) value <- path.expand(value)
     if (is.null(placeholder)) placeholder <- ""
 
-    check <- function (x, y) {
-        # Based on shiny:::`%AND%`
-        if (!is.null(x) && !is.na(x))
-            if (!is.null(y) && !is.na(y))
-                return(y)
-        return(NULL)
-    }
-
+    buttonsElem <- createInfoAndClearButtons(id, info, clearable)
     if (info) {
-        infoId   <- paste0(id, "-info")
-        infoElem <- actionButton(inputId=infoId, label=NULL,
-                                 style="background: #eee",
-                                 icon=icon("question-circle"))
-    } else {
-        infoId   <- id
-        infoElem <- NULL
-    }
-
-    if (clearable) {
-        clearId   <- paste0(id, "-clear")
-        clearElem <- actionButton(inputId=clearId, label=NULL,
-                                  style="background: #eee",
-                                  icon=icon("times-circle"))
-    } else {
-        clearId   <- id
-        clearElem <- NULL
-    }
-
-    if (info || clearable) {
-        buttonsElem <- div(class="input-group-btn", clearElem, infoElem)
-    } else {
-        buttonsElem <- NULL
-    }
-
-    infoTitle   <- gsub("\n", "", as.character(infoTitle),   fixed=TRUE)
-    infoContent <- gsub("\n", "", as.character(infoContent), fixed=TRUE)
-    if (identical(infoFUN, bsPopover)) {
-        showInfo <- infoFUN(infoId, placement=infoPlacement,
-                            options=list(container="body"),
-                            title=infoTitle, content=infoContent)
-        constructor <- paste(sprintf(
-            "$.fn.popover.Constructor.DEFAULTS.whiteList.%s = [];",
-            c("kbd", "table", "tr", "td", "th", "thead", "tbody")),
-            collapse=" ")
-        showInfo[[3]][[1]] <- gsub(
-            "$(document).ready(function() {",
-            paste("$(document).ready(function() {", constructor),
-            showInfo[[3]][[1]], fixed=TRUE)
-    } else if (identical(infoFUN, bsTooltip)) {
-        showInfo <- infoFUN(infoId, placement=infoPlacement,
-                            options=list(container="body"), title=infoTitle)
+        showInfo <- showExtraInfo(id, infoFUN, infoTitle, infoContent,
+                                  infoPlacement)
     } else {
         showInfo <- NULL
     }
@@ -237,12 +250,38 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
         # readonly = if (!isRStudioServer()) 'readonly' else NULL,
         class='form-control fileBrowser-input-chosen-dir')
 
+    check <- function (x, y) {
+        # Based on shiny:::`%AND%`
+        if (!is.null(x) && !is.na(x))
+            if (!is.null(y) && !is.na(y))
+                return(y)
+        return(NULL)
+    }
+
     tagList(
         div(class='form-group fileBrowser-input-container',
             check(label, tags$label(label)),
             div(class='input-group shiny-input-container', style='width:100%;',
                 fileBrowserButton, filepathInput, buttonsElem)),
         showInfo)
+}
+
+fileBrowserShinyproxyInput <- function(id, label, info=FALSE, infoFUN=NULL,
+                                       infoPlacement="right", infoTitle="",
+                                       infoContent="", clearable=FALSE) {
+    buttonsElem <- createInfoAndClearButtons(id, info, clearable)
+    if (info) {
+        showInfo <- showExtraInfo(id, infoFUN, infoTitle, infoContent,
+                                  infoPlacement)
+    } else {
+        showInfo <- NULL
+    }
+
+    input <- fileInput(id, label)
+    input <- replaceStrInList(input, "btn-default", "btn-info")
+
+    input <- tagQuery(input)$find(".input-group")$append(buttonsElem)$allTags()
+    return(tagList(input, showInfo))
 }
 
 #' Change the value of a \code{\link{fileBrowserInput}()} on the client

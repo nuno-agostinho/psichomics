@@ -23,7 +23,20 @@ recountDataUI <- function(id, panel) {
           div(id=ns("loading"), class="progress",
               div(class="progress-bar progress-bar-striped active",
                   role="progressbar", style="width: 100%", "Loading")),
-          uiOutput(ns("sraInterface")))
+          hidden(
+              span(
+                  id=ns("recountLoadedUI"),
+                  selectizeInput(
+                      ns("project"), "SRA project", NULL, choices=NULL,
+                      width="100%", multiple=TRUE, options=list(
+                          placeholder="Select SRA project(s)",
+                          plugins=list("remove_button"))),
+                  browseDownloadFolderInput(ns("dataFolder")),
+                  tags$a(href="https://jhubiostatistics.shinyapps.io/recount/",
+                         class="btn btn-default", role="button",
+                         target="_blank", icon("external-link-alt"),
+                         "Check available datasets"),
+                  processButton(ns("loadRecountData"), "Load data"))))
 }
 
 loadRecountGeneExpression <- function(file, env=new.env()) {
@@ -164,31 +177,22 @@ loadSRAproject <- function(project, outdir=getDownloadsFolder()) {
 recountDataServer <- function(input, output, session) {
     ns <- session$ns
 
-    output$sraInterface <- renderUI({
-        data           <- recount::recount_abstract
-        choices        <- data$project
-        names(choices) <- sprintf("%s (%s samples)", data$project,
-                                  data$number_samples)
+    observe({
+        panel <- getSelectedDataPanel()
+        if (is.null(panel) || panel != "SRA data loading") return(NULL)
 
-        ui <- tagList(
-            selectizeInput(
-                ns("project"), "SRA project", NULL, choices=choices,
-                width="100%", multiple=TRUE, options=list(
-                    placeholder="Select SRA project(s)",
-                    plugins=list("remove_button"))),
-            fileBrowserInput(
-                ns("dataFolder"), "Folder where data is stored",
-                value=getDownloadsFolder(), placeholder="No folder selected",
-                info=TRUE, infoFUN=bsTooltip,
-                infoTitle=paste("Data will be downloaded if not available in",
-                                "this folder.")),
-            tags$a(href="https://jhubiostatistics.shinyapps.io/recount/",
-                   class="btn btn-default", role="button", target="_blank",
-                   tags$i(class="fa fa-external-link"),
-                   "Check available datasets"),
-            processButton(ns("loadRecountData"), "Load data"))
-        hide("loading")
-        return(ui)
+        project <- isolate(input$project)
+        if (is.null(project) || project == "") {
+            data           <- recount::recount_abstract
+            choices        <- data$project
+            plural         <- ifelse(data$number_samples != 1, "s", "")
+            names(choices) <- sprintf("%s (%s sample%s)", data$project,
+                                      data$number_samples, plural)
+            updateSelectizeInput(session, "project", choices=choices,
+                                 server=TRUE)
+            hide("loading")
+            show("recountLoadedUI")
+        }
     })
 
     prepareFileBrowser(session, input, "dataFolder", directory=TRUE)

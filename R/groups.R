@@ -363,7 +363,7 @@ renderGroupInterface <- function(ns, multiFisherTests=TRUE) {
     saveLoadGroups <- tags$div(
         class="btn-group", role="group",
         style="margin-top: 4px; margin-bottom: 4px;",
-        tags$button("Save and load", icon("folder-open"), id=ns(saveLoadId),
+        tags$button(icon("folder-open"), "Save and load", id=ns(saveLoadId),
                     tags$span(class="caret"),
                     class="btn btn-default dropdown-toggle",
                     "data-toggle"="dropdown", "aria-haspopup"="true",
@@ -406,19 +406,20 @@ renderGroupInterface <- function(ns, multiFisherTests=TRUE) {
 
     # Rename interface
     renameButton <- operationButton("Rename", id=ns(renameId),
-                                    class="pull-right", icon=icon("pencil"))
+                                    class="pull-right", icon=icon("pencil-alt"))
     nameField <- textInput(ns("groupName"), label=NULL,
                            placeholder="Rename selected group")
-    nameField$children[[1]] <- NULL
-    nameField$attribs$style <- "margin: 0; width: auto;"
-    nameField$children[[1]][[2]]$style <- "border-radius: 4px 0 0 4px;"
+    # Remove label
+    pluck(nameField, !!!head(traceInList(nameField, "label"), -1)) <- NULL
+    nameField <- tagAppendAttributes(nameField, style="margin: 0; width: auto;")
+    nameField <- tagAppendAttributes(nameField, .cssSelector="input",
+                                     style="border-radius: 4px 0 0 4px;")
 
     # Colour selection interface
     colourSelector <- colourInput(ns("groupColour"), label=NULL)
-    colourSelector[[2]][["class"]] <- paste(colourSelector[[2]][["class"]],
-                                            "groups-colourpicker")
-    colourSelector[[2]][["style"]] <- paste("margin-bottom: 0px !important;",
-                                            "width: auto;")
+    colourSelector <- tagAppendAttributes(
+        colourSelector, class="groups-colourpicker",
+        style="margin-bottom: 0px !important; width: auto;")
     setColourButton <- operationButton("Set colour", id=ns(setColourId),
                                        class="pull-right", disable=FALSE,
                                        icon=icon("paint-brush"))
@@ -461,7 +462,7 @@ renderGroupInterface <- function(ns, multiFisherTests=TRUE) {
         hidden(singleGroupSelectedInterface),
         plotOutput(ns(groupTestId), height="200px",
                    hover=hoverOpts(ns(paste0(groupTestId, "-hover")),
-                                   delay=50, delayType="throttle")),
+                                   delay=100, delayType="throttle")),
         uiOutput(ns(paste0(groupTestId, "-tooltip"))))
 }
 

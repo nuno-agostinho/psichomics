@@ -165,7 +165,7 @@ inclusionLevelsInterface <- function(ns) {
         id=ns("options"),
         selectizeInput(ns("junctionQuant"), choices=NULL, width = "100%",
                        "Alternative splicing junction quantification"),
-        selectizeInput(ns("annotation"), choices=listAllAnnotations(),
+        selectizeInput(ns("annotation"), choices=NULL,
                        "Alternative splicing event annotation", width = "100%"),
         selectizeInput(ns("eventType"), "Event types to quantify",
                        selected = c("SE", "MXE", "A5SS", "A3SS", "AFE", "ALE"),
@@ -254,7 +254,7 @@ quantifySplicing <- function(annotation, junctionQuant,
         eventTypes <- getSplicingEventTypes()
         type <- names(eventTypes)[[match(acronym, eventTypes)]]
         thisAnnot <- annotation[[type]]
-        
+
         if (!is.null(thisAnnot) && nrow(thisAnnot) > 0) {
             updateProgress("Calculating inclusion levels", type, value=acronym,
                            max=length(eventType))
@@ -764,16 +764,47 @@ inclusionLevelsServer <- function(input, output, session) {
         }
     })
 
-    # Update default AS event annotation based on selected dataset
+    updateDefaultASannotChoice <- function(data) {
+        source <- attr(data, "source")
+
+        hasDataSource <- !is.null(data) && !is.null(source)
+        # Select default assembly for annotation
+        isRecountData <- hasDataSource && source == "recount"
+        # Match GTEx v8 or higher
+        isRecentGtexData <- hasDataSource &&
+            grepl("GTEx v([8-9]|\\d{2,})", source)
+
+        if (isRecountData || isRecentGtexData) {
+            assembly <- "hg38"
+        } else {
+            assembly <- "hg19"
+        }
+        selected <- listSplicingAnnotations(assembly=assembly)[[1]]
+        return(selected)
+    }
+
+    # Update AS event annotation list first time
     observe({
         data <- getCategoryData()
-        isRecountData <- !is.null(data) && !is.null(attr(data, "source")) &&
-            attr(data, "source") == "recount"
-        if (isRecountData) {
-            selected <- grep("hg38", listSplicingAnnotations(), value=TRUE)[[1]]
-        } else {
-            selected <- grep("hg19", listSplicingAnnotations(), value=TRUE)[[1]]
+        if (is.null(data)) return(NULL)
+
+        # Get annotation listings
+        panel <- getSelectedDataPanel()
+        title <- "Alternative splicing quantification"
+        isASQuantPanel <- !is.null(panel) && panel == title
+        if (isASQuantPanel && isolate(input$annotation) == "") {
+            choices  <- listAllAnnotations()
+            selected <- updateDefaultASannotChoice(data)
+            updateSelectizeInput(session, "annotation", selected=selected,
+                                 choices=choices)
         }
+    })
+
+    # Update default AS event annotation when changing dataset
+    observe({
+        data <- getCategoryData()
+        if (is.null(data) || isolate(input$annotation) == "") return(NULL)
+        selected <- updateDefaultASannotChoice(data)
         updateSelectizeInput(session, "annotation", selected=selected)
     })
 

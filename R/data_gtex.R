@@ -46,13 +46,7 @@ gtexDataUI <- function(id, panel) {
                          selected=getGtexDataTypes(), options=list(
                              placeholder="Select data types",
                              plugins=list("remove_button"))),
-          fileBrowserInput(
-              ns("folder"), "Folder where data is stored",
-              value=getDownloadsFolder(),
-              placeholder="No folder selected",
-              info=TRUE, infoFUN=bsTooltip,
-              infoTitle=paste("Data will be downloaded if not available in",
-                              "this folder.")),
+          browseDownloadFolderInput(ns("folder")),
           bsCollapse(
               id=ns("filterCollapse"),
               bsCollapsePanel(
@@ -343,6 +337,7 @@ loadGtexData <- function(folder=getDownloadsFolder(), data=getGtexDataTypes(),
     }
     names(loaded) <- sapply(loaded, attr, "tablename")
     loaded <- Filter(length, loaded)
+    attr(loaded, "source") <- paste0("GTEx v", release)
 
     gtex <- setNames(list(loaded), paste0("GTEx_V", release))
     gtex <- processDatasetNames(gtex)
