@@ -477,16 +477,23 @@ dataUI <- function(id, tab) {
                    helpText("Check available annotation for splicing events",
                             "and genes including related research articles"))))
 
+    customDataTutorial <- paste0("https://nuno-agostinho.github.io/psichomics/",
+                                 "articles/custom_data.html")
     welcome <- div(
         id=ns("welcome"),
         linkToArticles(),
-        h1("Welcome to psichomics"), HTML(paste0(
-            "Perform integrative analyses of alternative splicing and gene ",
-            "expression based on transcriptomic and sample-associated data ",
-            "from The Cancer Genome Atlas (", tcga, "), the Genotype-Tissue ",
-            "Expression (", gtex, ") project, Sequence Read Archive (", sra,
-            ") or user-provided data.")),
-        tags$br(), tags$br(), tags$ol(
+        h1("Welcome to psichomics"),
+        "Integrative analyses of alternative splicing and gene expression",
+        "based on transcriptomic and sample-associated data from multiple",
+        "sources, including:",
+        tags$ul(
+            tags$li(tags$a(href=customDataTutorial, target="_blank",
+                           "User-provided data")),
+            tags$li("The Cancer Genome Atlas (TCGA) via Firebrowse"),
+            tags$li("Genotype-Tissue Expression (GTEx) project"),
+            tags$li("Sequence Read Archive (SRA) via recount2")),
+        tags$hr(),
+        tags$ol(
             id="list",
             tags$li(HTML(paste0(
                 "Load gene expression values, alternative splicing ",
@@ -498,19 +505,19 @@ dataUI <- function(id, tab) {
                     "metric.",
                     tags$br(), tags$small(
                         style="color: gray;",
-                        "Note: retained intron (RI) events are currently not",
-                        "measured in psichomics.")),
+                        "Note: retained intron (RI) events are not",
+                        "calculated in psichomics.")),
             tags$li("Explore statistically significant and specific genes",
                     "and alternative splicing events using:")),
-        analysesDescription, br(), br(),
-        p(style="text-align:right",
-          tags$a(href="http://imm.medicina.ulisboa.pt/group/distrans/",
-                 target="_blank", "Disease Transcriptomics Lab, iMM"),
-          "(", tags$a(href="mailto:nunodanielagostinho@gmail.com",
-                      "Nuno Saraiva-Agostinho", icon("envelope")),
-          ", 2015-2020)",
-          br(), "Special thanks to my lab colleagues for their work-related",
-          br(), "support and supporting chatter."))
+        analysesDescription,
+        div(style="text-align:right",
+            tags$a(href="http://imm.medicina.ulisboa.pt/group/distrans/",
+                   target="_blank", "Disease Transcriptomics Lab, iMM"),
+            tags$br(),
+            tags$a(href="mailto:nunodanielagostinho@gmail.com",
+                   "Nuno Saraiva-Agostinho", icon("envelope")),
+            tags$br(),
+            sprintf("psichomics %s, 2015-2021", packageVersion("psichomics"))))
 
     tab(title="Data", icon="table",
         sidebarLayout(

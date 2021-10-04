@@ -9,7 +9,7 @@
 #'
 #' @return Startup message
 .onAttach <- function(libname, pkgname) {
-    version <- utils::packageVersion(pkgname, libname)
+    version <- packageVersion(pkgname, libname)
     msg <- sprintf(
         "psichomics %s: start the visual interface by running psichomics()",
         version)

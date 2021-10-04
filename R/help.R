@@ -40,8 +40,7 @@ helpUI <- function(id, tab) {
             class="list-group",
             linkItem(guiLink, "Visual interface tutorial"),
             linkItem(cliLink, "Command-line interface (CLI) tutorial"),
-            linkItem(customDataLink,
-                     "Loading SRA and user-provided RNA-seq data"),
+            linkItem(customDataLink, "Loading user-provided data"),
             linkItem(customAnnotLink,
                      "Preparing custom alternative splicing annotations")))
 
@@ -56,6 +55,10 @@ helpUI <- function(id, tab) {
 
     groupSite <- "http://imm.medicina.ulisboa.pt/group/distrans/"
     immSite   <- "http://imm.medicina.ulisboa.pt"
+
+    copyright <- sprintf("psichomics %s, 2015-2021",
+                         packageVersion("psichomics"))
+
     about <- div(
         class="panel", class="panel-default",
         div(class="panel-heading",
@@ -81,7 +84,7 @@ helpUI <- function(id, tab) {
                 linkItem(immSite, "Instituto de Medicina Molecular"),
                 tags$li(class="list-group-item",
                         tags$small(class="help-block", style="margin: 0;",
-                                   style="text-align: right;", "2015-2020"))))
+                                   style="text-align: right;", copyright))))
 
     credits <- c("Lina Gallego", "Marie Bordone", "Mariana Ferreira",
                  "Teresa Maia", "Carolina Leote", "Juan Carlos Verjan",

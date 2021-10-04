@@ -363,7 +363,7 @@ renderGroupInterface <- function(ns, multiFisherTests=TRUE) {
     saveLoadGroups <- tags$div(
         class="btn-group", role="group",
         style="margin-top: 4px; margin-bottom: 4px;",
-        tags$button("Save and load", icon("folder-open"), id=ns(saveLoadId),
+        tags$button(icon("folder-open"), "Save and load", id=ns(saveLoadId),
                     tags$span(class="caret"),
                     class="btn btn-default dropdown-toggle",
                     "data-toggle"="dropdown", "aria-haspopup"="true",
