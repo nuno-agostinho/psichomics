@@ -559,12 +559,12 @@ tabDataset <- function(ns, title, tableId, columns, visCols, data,
     names(choices) <- sprintf("%s (%s class)", columns, colType)
 
     visColsId <- paste(tablename, "columns", sep="-")
-    visibleColumns <- selectizeInput(
+    visibleColumns <- suppressWarnings(selectizeInput(
         visColsId, label="Visible columns",  choices=choices, selected=visCols,
         multiple=TRUE, width="auto",
         options=list(plugins=list('remove_button', 'drag_drop'), render=I(
             "{ item: function(item, escape) {
-            return '<div>' + escape(item.value) + '</div>'; } }")))
+            return '<div>' + escape(item.value) + '</div>'; } }"))))
 
     # Add a common HTML container to allow for multiple Highcharts plots
     multiPlotId        <- paste(tablename, "multiPlot", sep="-")
