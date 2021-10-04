@@ -1,4 +1,4 @@
-# psichomics 1.18.6 (25 August, 2021)
+# psichomics 1.18.6 (4 October, 2021)
     
 ## ShinyProxy support
 

@@ -48,6 +48,8 @@ function to call with the application's URL.}
 
 \item{reset}{Boolean: reset Shiny session? Requires package \code{devtools}}
 
+\item{shinyproxy}{Boolean: prepare visual interface to run in Shinyproxy?}
+
 \item{testData}{Boolean: load with test data}
 
 \item{unparsableEvents}{Boolean: when testing data, load alternative splicing

@@ -484,6 +484,7 @@ appServer <- function(input, output, session) {
 #' @inheritParams shiny::runApp
 #' @inheritDotParams shiny::runApp -appDir -launch.browser
 #' @param reset Boolean: reset Shiny session? Requires package \code{devtools}
+#' @param shinyproxy Boolean: prepare visual interface to run in Shinyproxy?
 #' @param testData Boolean: load with test data
 #' @param unparsableEvents Boolean: when testing data, load alternative splicing
 #' quantification events that cannot be parsed?
