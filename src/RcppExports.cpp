@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // psiFastCalc
 NumericMatrix psiFastCalc(const NumericMatrix& mat, const NumericVector incA, const NumericVector incB, const NumericVector excA, const NumericVector excB, const int minReads);
 RcppExport SEXP _psichomics_psiFastCalc(SEXP matSEXP, SEXP incASEXP, SEXP incBSEXP, SEXP excASEXP, SEXP excBSEXP, SEXP minReadsSEXP) {
