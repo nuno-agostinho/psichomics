@@ -470,7 +470,7 @@ appServer <- function(input, output, session) {
         }
     })
 
-    if (!getOption("shinyproxy", FALSE)) {
+    if (!getOption("psichomics.shinyproxy", FALSE)) {
         session$onSessionEnded(function() {
             # Stop app and print message to console
             message("\n-- psichomics was closed --")
@@ -479,17 +479,47 @@ appServer <- function(input, output, session) {
     }
 }
 
+loadTestData <- function(unparsableEvents) {
+    loadFile <- function(file) {
+        if (!file.exists(file)) {
+            # Fetch file online if not locally available
+            link <- file.path("https://github.com/nuno-agostinho/psichomics",
+                              "raw/master", file)
+            file <- url(link)
+        }
+        readRDS(file)
+    }
+    data <- NULL
+    data[["Clinical data"]]    <- loadFile("vignettes/BRCA_clinical.RDS")
+    data[["Gene expression"]]  <- loadFile("vignettes/BRCA_geneExpr.RDS")
+    psi                        <- loadFile("vignettes/BRCA_psi.RDS")
+
+    # Test events with ID that cannot be parsed
+    if (unparsableEvents) {
+        rownames(psi) <- paste0("undefASevent", seq(nrow(psi)))
+    }
+    data[["Inclusion levels"]] <- psi
+    data[["Sample metadata"]]  <- parseTCGAsampleInfo(colnames(psi))
+
+    eventData <- suppressWarnings(
+        parseSplicingEvent(rownames(psi), coords=TRUE))
+    if (!is.null(eventData)) {
+        class(eventData) <- c("eventData", class(eventData))
+        attr(data[["Inclusion levels"]], "rowData") <- eventData
+    }
+    return(data)
+}
+
 #' Start graphical interface of psichomics
 #'
 #' @inheritParams shiny::runApp
 #' @inheritDotParams shiny::runApp -appDir -launch.browser
-#' @param reset Boolean: reset Shiny session? Requires package \code{devtools}
 #' @param shinyproxy Boolean: prepare visual interface to run in Shinyproxy?
 #' @param testData Boolean: load with test data
-#' @param unparsableEvents Boolean: when testing data, load alternative splicing
-#' quantification events that cannot be parsed?
+#' @inheritParams loadAnnotationHub
 #'
 #' @importFrom shiny shinyApp runApp addResourcePath
+#' @importFrom AnnotationHub getAnnotationHubOption setAnnotationHubOption
 #'
 #' @return \code{NULL} (function is only used to modify the Shiny session's
 #' state or internal variables)
@@ -499,42 +529,16 @@ appServer <- function(input, output, session) {
 #' \dontrun{
 #' psichomics()
 #' }
-psichomics <- function(..., launch.browser=TRUE, reset=FALSE, shinyproxy=FALSE,
-                       testData=FALSE, unparsableEvents=FALSE) {
-    options(shinyproxy=shinyproxy)
-    # Add icons related to set operations
+psichomics <- function(..., launch.browser=TRUE, shinyproxy=FALSE,
+                       testData=FALSE, cache=getAnnotationHubOption("CACHE")) {
+    options("psichomics.shinyproxy"=shinyproxy)
+    setAnnotationHubOption("CACHE", cache)
+
+    # Load icons related to set operations
     addResourcePath("set-operations",
                     insideFile("shiny", "www", "set-operations"))
-    if (reset) devtools::load_all()
-
     if (testData) {
-        loadFile <- function(file) {
-            if (!file.exists(file)) {
-                # Fetch file online if not locally available
-                link <- paste0("https://github.com/",
-                               "nuno-agostinho/psichomics/raw/master/",
-                               file)
-                file <- url(link)
-            }
-            readRDS(file)
-        }
-        data <- NULL
-        data[["Clinical data"]]    <- loadFile("vignettes/BRCA_clinical.RDS")
-        data[["Gene expression"]]  <- loadFile("vignettes/BRCA_geneExpr.RDS")
-        psi                        <- loadFile("vignettes/BRCA_psi.RDS")
-
-        if (unparsableEvents) {
-            rownames(psi) <- paste0("undefASevent", seq(nrow(psi)))
-        }
-        data[["Inclusion levels"]] <- psi
-        data[["Sample metadata"]]  <- parseTCGAsampleInfo(colnames(psi))
-
-        eventData <- suppressWarnings(
-            parseSplicingEvent(rownames(psi), coords=TRUE))
-        if (!is.null(eventData)) {
-            class(eventData) <- c("eventData", class(eventData))
-            attr(data[["Inclusion levels"]], "rowData") <- eventData
-        }
+        data <- loadTestData(unparsableEvents=FALSE)
         setData(list("Test data"=data))
     }
     app <- shinyApp(appUI(), appServer)

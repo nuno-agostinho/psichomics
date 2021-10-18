@@ -14,6 +14,8 @@
 \alias{getPrecision}
 \alias{setPrecision}
 \alias{getASevents}
+\alias{getAnnotationHub}
+\alias{setAnnotationHub}
 \alias{getASevent}
 \alias{setASevent}
 \alias{getEvent}
@@ -82,6 +84,10 @@ getPrecision()
 setPrecision(integer)
 
 getASevents()
+
+getAnnotationHub()
+
+setAnnotationHub(ah)
 
 getASevent()
 
@@ -181,6 +187,8 @@ setURLtoDownload(url)
 \item{auto}{Boolean: enable automatic navigation of browser history?}
 
 \item{integer}{Integer: value of the setting}
+
+\item{ah}{AnnotationHub}
 
 \item{event}{Character: alternative splicing event}
 

@@ -4,13 +4,13 @@
 \alias{loadAnnotation}
 \title{Load alternative splicing annotation from \code{AnnotationHub}}
 \usage{
-loadAnnotation(annotation, cache = NULL)
+loadAnnotation(annotation, cache = getAnnotationHubOption("CACHE"))
 }
 \arguments{
 \item{annotation}{Character: annotation to load}
 
-\item{cache}{Character: directory path of cache (if \code{NULL}, default
-location is \code{AnnotationHub::getAnnotationHubOption("CACHE")})}
+\item{cache}{Character: path to \code{AnnotationHub} cache (used to load
+alternative splicing event annotation)}
 }
 \value{
 List of data frames containing the alternative splicing annotation
@@ -20,7 +20,7 @@ per event type
 Load alternative splicing annotation from \code{AnnotationHub}
 }
 \examples{
-human <- listSplicingAnnotations()[[1]]
+human <- listSplicingAnnotations(species="Homo sapiens")[[1]]
 \dontrun{
 annot <- loadAnnotation(human)
 }

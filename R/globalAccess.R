@@ -106,6 +106,20 @@ getASevents <- reactive({
     }
 })
 
+#' @rdname getGlobal
+getAnnotationHub <- function() {
+    ah <- isolate(sharedData[["annotationHub"]])
+    if (is.null(ah)) {
+        ah <- loadAnnotationHub()
+        setAnnotationHub(ah)
+    }
+    return(ah)
+}
+
+#' @rdname getGlobal
+#' @param ah AnnotationHub
+setAnnotationHub <- function(ah) setGlobal("annotationHub", value=ah)
+
 # General data -----------------------------------------------------------------
 
 #' @rdname getGlobal
