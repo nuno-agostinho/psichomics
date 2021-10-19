@@ -1,4 +1,4 @@
-# psichomics 1.20.0 (18 October, 2021)
+# psichomics 1.20.0 (27 October, 2021)
 
 * Alternative splicing event annotations:
     - Support new annotations from VAST-TOOLS for multiple species, including
