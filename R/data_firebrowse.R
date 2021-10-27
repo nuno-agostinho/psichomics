@@ -246,7 +246,7 @@ isFirebrowseUp <- function() {
     if (is(heartbeat, "error")) {
         return(FALSE)
     } else if (http_error(heartbeat)) {
-        warn_for_status(heartbeat, "reach FireBrowse API")
+        warn_for_status(heartbeat, "reach FireBrowse")
         return(FALSE)
     } else {
         return(TRUE)
@@ -724,9 +724,9 @@ firebrowseUI <- function(id, panel) {
     panel(style="info",
           title=list(icon("plus-circle"), "TCGA data loading"),
           value="Load TCGA/FireBrowse data",
-          helpText("TCGA data are downloaded using the",
+          helpText("TCGA data downloaded from",
                    a(href="http://firebrowse.org", target="_blank",
-                     "FireBrowse"), "API."),
+                     "FireBrowse")),
           div(id=ns("firebrowseLoading"), class="progress",
               div(class="progress-bar progress-bar-striped active",
                   role="progressbar", style="width: 100%", "Loading...")),

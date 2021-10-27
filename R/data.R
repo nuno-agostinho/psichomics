@@ -276,7 +276,7 @@ processDatasetNames <- function(data) {
 #' @importFrom shinyBS bsPopover
 #' @importFrom shiny fileInput
 fileBrowserInfoInput <- function(id, label, infoContent=NULL, clearable=FALSE) {
-    if (!getOption("shinyproxy", FALSE)) {
+    if (!getOption("psichomics.shinyproxy", FALSE)) {
         input <- fileBrowserInput(
             id, label, placeholder="No file selected", clearable=clearable,
             info=TRUE, infoFUN=bsPopover, infoTitle=label,

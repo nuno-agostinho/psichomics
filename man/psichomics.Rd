@@ -7,10 +7,9 @@
 psichomics(
   ...,
   launch.browser = TRUE,
-  reset = FALSE,
   shinyproxy = FALSE,
   testData = FALSE,
-  unparsableEvents = FALSE
+  cache = getAnnotationHubOption("CACHE")
 )
 }
 \arguments{
@@ -46,14 +45,12 @@ launched automatically after the app is started. Defaults to true in
 interactive sessions only. This value of this parameter can also be a
 function to call with the application's URL.}
 
-\item{reset}{Boolean: reset Shiny session? Requires package \code{devtools}}
-
 \item{shinyproxy}{Boolean: prepare visual interface to run in Shinyproxy?}
 
 \item{testData}{Boolean: load with test data}
 
-\item{unparsableEvents}{Boolean: when testing data, load alternative splicing
-quantification events that cannot be parsed?}
+\item{cache}{Character: path to \code{AnnotationHub} cache (used to load
+alternative splicing event annotation)}
 }
 \value{
 \code{NULL} (function is only used to modify the Shiny session's

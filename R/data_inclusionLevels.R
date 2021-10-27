@@ -1,72 +1,21 @@
-#' List alternative splicing annotations
+#' Load AnnotationHub
 #'
-#' @param species Character: filter results by species (regular expression)
-#' @param assembly Character: filter results by assembly (regular expression)
-#' @param date Character: filter results by date (regular expression)
-#'
-#' @family functions for PSI quantification
-#' @return Named character vector with splicing annotation names
-#'
-#' @importFrom data.table data.table
-#' @importFrom R.utils capitalize
-#' @export
-#'
-#' @examples
-#' listSplicingAnnotations() # Return all alternative splicing annotations
-#' listSplicingAnnotations(assembly="hg19") # Search for hg19 annotation
-#' listSplicingAnnotations(assembly="hg38") # Search for hg38 annotation
-#' listSplicingAnnotations(date="201(7|8)") # Search for 2017 or 2018 annotation
-listSplicingAnnotations <- function(species=NULL, assembly=NULL, date=NULL) {
-    df <- data.table(
-        species=c("human", "human", "human"),
-        assembly=c("hg19/GRCh37", "hg19/GRCh37", "hg38"),
-        date=c("2017-10-20", "2016-10-11", "2018-04-30"),
-        filename=c("annotationHub_alternativeSplicingEvents.hg19_V2.rda",
-                   "annotationHub_alternativeSplicingEvents.hg19.rda",
-                   "annotationHub_alternativeSplicingEvents.hg38_V2.rda"))
-
-    filter <- function(data, col, value) {
-        if (!is.null(value)) {
-            data <- data[grep(value, data[[col]], ignore.case=TRUE)]
-        }
-        return(data)
-    }
-    df <- filter(df, "species", species)
-    df <- filter(df, "assembly", assembly)
-    df <- filter(df, "date", date)
-
-    ns <- sprintf("%s %s (%s)", capitalize(df$species), df$assembly, df$date)
-    res <- setNames(df$filename, ns)
-    return(res)
-}
-
-
-#' Load alternative splicing annotation from \code{AnnotationHub}
-#'
-#' @param annotation Character: annotation to load
-#' @param cache Character: directory path of cache (if \code{NULL}, default
-#' location is \code{AnnotationHub::getAnnotationHubOption("CACHE")})
+#' @param cache Character: path to \code{AnnotationHub} cache (used to load
+#' alternative splicing event annotation)
 #'
 #' @importFrom BiocFileCache BiocFileCache
-#' @importFrom AnnotationHub AnnotationHub query getAnnotationHubOption
+#' @importFrom AnnotationHub AnnotationHub getAnnotationHubOption
 #'
-#' @family functions for PSI quantification
-#' @return List of data frames containing the alternative splicing annotation
-#' per event type
-#' @export
-#'
-#' @examples
-#' human <- listSplicingAnnotations()[[1]]
-#' \dontrun{
-#' annot <- loadAnnotation(human)
-#' }
-loadAnnotation <- function(annotation, cache=NULL) {
+#' @return AnnotationHub object with all entries
+#' @keywords internal
+loadAnnotationHub <- function(cache=getAnnotationHubOption("CACHE")) {
+    if (is(cache, "AnnotationHub")) return(cache)
     if (is.null(cache)) cache <- getAnnotationHubOption("CACHE")
 
     if (!dir.exists(cache)) {
         BiocFileCache(cache=cache, ask=FALSE)
         message(sprintf(
-            "The directory %s was created to store annotation data", cache))
+            "The directory '%s' was created to store annotation data", cache))
     }
     ah <- tryCatch(AnnotationHub(cache=cache), error=function(e) {
         msg <- paste("Timeout reached while contacting AnnotationHub.",
@@ -74,11 +23,79 @@ loadAnnotation <- function(annotation, cache=NULL) {
         message(msg)
         AnnotationHub(cache=cache, localHub=TRUE)
     })
-    annot <- gsub("^annotationHub_", "", annotation)
-    annot <- ah[[names(query(ah, annot))]]
-    return(annot)
+    return(ah)
 }
 
+#' List alternative splicing annotations
+#'
+#' @param species Character: filter results by species (regular expression)
+#' @param assembly Character: filter results by assembly (regular expression)
+#' @param date Character: filter results by date (regular expression)
+#' @param group Boolean: group values based on data provider?
+#' @inheritParams loadAnnotationHub
+#'
+#' @family functions for PSI quantification
+#' @return Named character vector with splicing annotation names
+#'
+#' @importFrom data.table data.table
+#' @importFrom AnnotationHub query
+#' @export
+#'
+#' @examples
+#' listSplicingAnnotations() # Return all alternative splicing annotations
+#' listSplicingAnnotations(assembly="hg19") # Search for hg19 annotation
+#' listSplicingAnnotations(assembly="hg38") # Search for hg38 annotation
+#' listSplicingAnnotations(date="201(7|8)") # Search for 2017 or 2018 annotation
+listSplicingAnnotations <- function(species=NULL, assembly=NULL, date=NULL,
+                                    cache=getAnnotationHubOption("CACHE"),
+                                    group=FALSE) {
+    ah  <- loadAnnotationHub(cache)
+    df  <- query(ah, c("alternativeSplicing", species, assembly, date))
+
+    # Replace certain species text
+    species <- c("Homo sapiens"="Human",
+                 "Saccharomyces cerevisiae"="S. cerevisiae")
+    species <- species[df$species]
+    speciesNAs <- is.na(species)
+    if (any(speciesNAs)) species[speciesNAs] <- df$species[speciesNAs]
+    species <- unname(species)
+
+    if (!group) {
+        provider <- ifelse(df$dataprovider == "VAST-TOOLS",
+                           paste(" from", df$dataprovider), "")
+    } else {
+        provider <- ""
+    }
+    ns  <- sprintf("%s %s%s (%s)", species, df$genome, provider,
+                   df$rdatadateadded)
+    res <- setNames(df$ah_id, ns)
+    if (group) res <- split(res, df$dataprovider)
+    return(res)
+}
+
+#' Load alternative splicing annotation from \code{AnnotationHub}
+#'
+#' @param annotation Character: annotation to load
+#' @inheritParams loadAnnotationHub
+#'
+#' @importFrom AnnotationHub mcols
+#'
+#' @family functions for PSI quantification
+#' @return List of data frames containing the alternative splicing annotation
+#' per event type
+#' @export
+#'
+#' @examples
+#' human <- listSplicingAnnotations(species="Homo sapiens")[[1]]
+#' \dontrun{
+#' annot <- loadAnnotation(human)
+#' }
+loadAnnotation <- function(annotation, cache=getAnnotationHubOption("CACHE")) {
+    ah    <- loadAnnotationHub(cache)
+    annot <- ah[[annotation]]
+    attr(annot, "metadata") <- unlist(mcols(ah[annotation]))
+    return(annot)
+}
 
 #' List alternative splicing annotation files available, as well as custom
 #' annotation
@@ -91,9 +108,9 @@ loadAnnotation <- function(annotation, cache=NULL) {
 #' @examples
 #' psichomics:::listAllAnnotations()
 listAllAnnotations <- function(...) {
-    list("Available annotation files"=listSplicingAnnotations(),
-         "Custom annotation"=c(
-             ..., "Load annotation from file..."="loadAnnotation"))
+    c(listSplicingAnnotations(group=TRUE, cache=getAnnotationHub()),
+      list("Custom annotation"=c(
+          ..., "Load annotation from file..."="loadAnnotation")))
 }
 
 #' Interface to quantify alternative splicing
@@ -186,6 +203,10 @@ inclusionLevelsInterface <- function(ns) {
                  "quantification using the Percent Spliced-In (PSI) metric."),
         errorDialog("Junction quantification not loaded.",
                     id=ns("missingData"), style="margin: 10px;"),
+        hidden(div(id=ns("annotLoading"), class="progress",
+                   div(class="progress-bar progress-bar-striped active",
+                       role="progressbar", style="width: 100%",
+                       "Loading list of splicing annotations..."))),
         hidden(options),
         actionButton(ns("loadIncLevels"), "Load from file..."),
         disabled(processButton(ns("calcIncLevels"),
@@ -293,11 +314,12 @@ loadCustomSplicingAnnotationSet <- function(session, input, output) {
     observe({
         ns <- session$ns
         if (input$annotation == "loadAnnotation") {
+
             url <- paste0("https://nuno-agostinho.github.io/psichomics/",
                           "articles/AS_events_preparation.html")
-
-            updateSelectizeInput(session, "annotation",
-                                 selected=listSplicingAnnotations())
+            updateSelectizeInput(
+                session, "annotation",
+                selected=listSplicingAnnotations(cache=getAnnotationHub()))
             infoModal(
                 session, "Load alternative splicing annotation",
                 helpText("To learn how to create and load custom alternative",
@@ -324,8 +346,9 @@ loadCustomSplicingAnnotationSet <- function(session, input, output) {
         } else {
             custom <- customAnnot$datapath
             names(custom) <- customAnnot$name
-            updateSelectizeInput(session, "annotation", selected=custom,
-                                 choices=listAllAnnotations(custom))
+            updateSelectizeInput(
+                session, "annotation", selected=custom,
+                choices=listAllAnnotations(custom))
             removeModal()
             removeAlert(output)
         }
@@ -469,9 +492,10 @@ psiFilteringSet <- function(session, input, output) {
         filter <- input$filter
 
         # Avoid loading if already loaded
-        if (filter == "select" && !is.null(annotation) &&
+        isNotLoaded <- filter == "select" && !is.null(annotation) &&
             !annotation %in% c("", "loadAnnotation") &&
-            !identical(annotation, getAnnotationName())) {
+            !identical(annotation, getAnnotationName())
+        if (isNotLoaded) {
             # Show loading bar
             show("geneOptionsLoading")
             hide("geneOptions")
@@ -564,16 +588,17 @@ readAnnot <- function(session, annotation, showProgress=FALSE) {
         if (showProgress)
             updateProgress("Loading alternative splicing annotation")
         annot <- readRDS(annotation)
-    } else if (grepl("^annotationHub_", annotation)) {
+    } else {
         if (showProgress)
             updateProgress("Downloading alternative splicing annotation")
-        annot <- loadAnnotation(annotation)
+        annot <- loadAnnotation(annotation, cache=getAnnotationHub())
 
         # Set species and assembly version
-        allAnnot <- listSplicingAnnotations()
-        annotID <- names(allAnnot)[match(annotation, allAnnot)]
-        if (grepl("Human", annotID)) setSpecies("Human")
-        if (grepl("hg19", annotID)) setAssemblyVersion("hg19")
+        metadata <- attr(annot, "metadata")
+        if (!is.null(metadata)) {
+            setSpecies(metadata$species)
+            setAssemblyVersion(metadata$genome)
+        }
     }
     return(annot)
 }
@@ -758,11 +783,11 @@ inclusionLevelsServer <- function(input, output, session) {
             disable("calcIncLevels")
             show("missingData")
         } else {
-            show("options")
-            enable("calcIncLevels")
             hide("missingData")
+            enable("calcIncLevels")
+            show("options")
         }
-    })
+    }, priority=1)
 
     updateDefaultASannotChoice <- function(data) {
         source <- attr(data, "source")
@@ -779,7 +804,8 @@ inclusionLevelsServer <- function(input, output, session) {
         } else {
             assembly <- "hg19"
         }
-        selected <- listSplicingAnnotations(assembly=assembly)[[1]]
+        selected <- listSplicingAnnotations(assembly=assembly,
+                                            cache=getAnnotationHub())[[1]]
         return(selected)
     }
 
@@ -793,10 +819,15 @@ inclusionLevelsServer <- function(input, output, session) {
         title <- "Alternative splicing quantification"
         isASQuantPanel <- !is.null(panel) && panel == title
         if (isASQuantPanel && isolate(input$annotation) == "") {
-            choices  <- listAllAnnotations()
-            selected <- updateDefaultASannotChoice(data)
-            updateSelectizeInput(session, "annotation", selected=selected,
-                                 choices=choices)
+            disable("calcIncLevels")
+            hide("options")
+            show("annotLoading")
+            updateSelectizeInput(session, "annotation",
+                                 selected=updateDefaultASannotChoice(data),
+                                 choices=listAllAnnotations())
+            hide("annotLoading")
+            show("options")
+            enable("calcIncLevels")
         }
     })
 
@@ -804,8 +835,8 @@ inclusionLevelsServer <- function(input, output, session) {
     observe({
         data <- getCategoryData()
         if (is.null(data) || isolate(input$annotation) == "") return(NULL)
-        selected <- updateDefaultASannotChoice(data)
-        updateSelectizeInput(session, "annotation", selected=selected)
+        updateSelectizeInput(session, "annotation",
+                             selected=updateDefaultASannotChoice(data))
     })
 
     quantifySplicingSet(session, input)

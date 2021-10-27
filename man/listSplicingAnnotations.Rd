@@ -4,7 +4,13 @@
 \alias{listSplicingAnnotations}
 \title{List alternative splicing annotations}
 \usage{
-listSplicingAnnotations(species = NULL, assembly = NULL, date = NULL)
+listSplicingAnnotations(
+  species = NULL,
+  assembly = NULL,
+  date = NULL,
+  cache = getAnnotationHubOption("CACHE"),
+  group = FALSE
+)
 }
 \arguments{
 \item{species}{Character: filter results by species (regular expression)}
@@ -12,6 +18,11 @@ listSplicingAnnotations(species = NULL, assembly = NULL, date = NULL)
 \item{assembly}{Character: filter results by assembly (regular expression)}
 
 \item{date}{Character: filter results by date (regular expression)}
+
+\item{cache}{Character: path to \code{AnnotationHub} cache (used to load
+alternative splicing event annotation)}
+
+\item{group}{Boolean: group values based on data provider?}
 }
 \value{
 Named character vector with splicing annotation names

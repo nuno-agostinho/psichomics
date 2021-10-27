@@ -23,7 +23,7 @@ localDataUI <- function(id, panel) {
                   value="User dataset", placeholder="Name to identify dataset"),
         processButton(ns("loadMultipleFiles"), "Load files"))
 
-    if (getOption("shinyproxy", FALSE)) {
+    if (getOption("psichomics.shinyproxy", FALSE)) {
         helper <- helpText(
             "For your convenience, move all files to a single folder",
             "and compress it into a ZIP archive.",
@@ -399,7 +399,7 @@ setLocalData <- function(input, output, session, replace=TRUE) {
     time <- startProcess("acceptFile")
 
     folder <- input$localFolder
-    if (getOption("shinyproxy", FALSE)) folder <- folder$datapath
+    if (getOption("psichomics.shinyproxy", FALSE)) folder <- folder$datapath
 
     category <- input$localCategory
     if (identical(category, "")) category <- "User dataset"
@@ -432,7 +432,9 @@ setMultipleFilesData <- function(input, output, session, replace=TRUE) {
                   "Gene expression"        =input$geneExpr,
                   "Junction quantification"=input$junctionQuant,
                   "Inclusion levels"       =input$ASquant)
-    if (getOption("shinyproxy", FALSE)) files <- sapply(files, "[[", "datapath")
+    if (getOption("psichomics.shinyproxy", FALSE)) {
+        files <- sapply(files, "[[", "datapath")
+    }
     files   <- unlist(files)
     files   <- files[files != ""]
     ASquant <- files[["Inclusion levels"]]
@@ -526,7 +528,7 @@ localDataServer <- function(input, output, session) {
     # Update category name input based on given folder
     observe({
         folder <- input$localFolder
-        if (getOption("shinyproxy", FALSE)) {
+        if (getOption("psichomics.shinyproxy", FALSE)) {
             folder <- file_path_sans_ext(folder$name)
         }
         if (!is.null(folder)) {
@@ -557,7 +559,9 @@ localDataServer <- function(input, output, session) {
     # If data is loaded, let user replace or append to loaded data
     observeEvent(input$acceptFile, {
         folder <- input$localFolder
-        if (getOption("shinyproxy", FALSE)) folder <- folder$datapath
+        if (getOption("psichomics.shinyproxy", FALSE)) {
+            folder <- folder$datapath
+        }
 
         isZip <- file_ext(folder) == "zip"
         if (isZip && !file.exists(folder)) {

@@ -451,3 +451,35 @@ $.fn.extend({
         .register(fileBrowserInputBinding,
             "oddhypothesis.fileBrowsernputBinding");
 })();
+
+/**
+ * Render add species help tip
+ */
+function renderAddSpecies(data, escape) {
+    var input = escape(data.input).split(" "),
+        genus = input[0],
+        species = input[1],
+        genome = input[2];
+    var text    = `${genus} ${species} (${genome} assembly)`;
+    var addText = `Search gene in <strong>${text}</strong>&hellip;`;
+    return '<div class="create">' + addText + '</div>';
+}
+
+
+/**
+ * Render add gene help tip
+ */
+function renderAddGene(data, escape) {
+    var gene = escape(data.input);
+    var addText = `Search for <strong>${gene}</strong>&hellip;`;
+    return '<div class="create">' + addText + '</div>';
+}
+
+function renderSpeciesSelection (item, escape) {
+    var parsed  = item.label.split(" "),
+        genus   = parsed[0],
+        species = parsed[1],
+        genome  = parsed[2],
+        html = `<div>${genus} ${species} <b>${genome}</b></div>`;
+    return html;
+}

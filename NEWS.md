@@ -1,3 +1,14 @@
+# psichomics 1.20.0 (27 October, 2021)
+
+* Alternative splicing event annotations:
+    - Support new annotations from VAST-TOOLS for multiple species, including
+    mouse, zebrafish, fruit fly, chicken, frog, C. elegans and A. thaliana
+    - Automatically create cache directory if downloading splicing annotations
+    for the first time
+* Gene, transcript and protein annotation (visual interface):
+    - Automatically set species/genome based on selected annotation
+    - Improve species and genome selection
+
 # psichomics 1.18.6 (4 October, 2021)
     
 ## ShinyProxy support

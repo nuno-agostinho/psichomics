@@ -144,7 +144,9 @@ updateProgress <- function(message="Loading...", value=NULL, max=NULL,
                            global=if (isRunning()) sharedData else getHidden(),
                            console=TRUE) {
     isGUIversion <- isRunning()
-    if (!interactive() && !getOption("shinyproxy", FALSE)) return(NULL)
+    if (!interactive() && !getOption("psichomics.shinyproxy", FALSE)) {
+        return(NULL)
+    }
     if (!is.null(divisions)) {
         if (!isGUIversion) {
             setHidden(startProgress(message, divisions, new.env()))
@@ -675,6 +677,6 @@ browseDownloadFolderInput <- function(id) {
                                value=getDownloadsFolder(),
                                placeholder="No folder selected",
                                info=TRUE, infoFUN=bsTooltip, infoTitle=info)
-    if (getOption("shinyproxy", FALSE)) folder <- hidden(folder)
+    if (getOption("psichomics.shinyproxy", FALSE)) folder <- hidden(folder)
     return(folder)
 }

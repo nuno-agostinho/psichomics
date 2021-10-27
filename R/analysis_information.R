@@ -54,9 +54,10 @@ queryEnsemblByGene <- function(gene, species=NULL, assembly=NULL) {
     } else {
         if (is.null(species) || is.null(assembly))
             stop("Species and assembly need to be non-NULL")
-        grch37 <- assembly == "hg19"
-        path <- paste0("lookup/symbol/", species, "/", gene)
-        info <- queryEnsembl(path, list(expand=1), grch37=grch37)
+        grch37  <- assembly == "hg19"
+        species <- gsub(" ", "_", species)
+        path    <- paste0("lookup/symbol/", species, "/", gene)
+        info    <- queryEnsembl(path, list(expand=1), grch37=grch37)
     }
     return(info)
 }
@@ -215,41 +216,37 @@ pubmedUI <- function(ns, gene, ...) {
 infoUI <- function(id) {
     ns <- NS(id)
 
-    renderSelectize <- function(option_create) {
-        render <- sprintf(
-            "{ option_create: function (data, escape) {
-                   return '<div class=\"create\">' + %s + '</div>'; }}",
-            option_create)
-        return(I(render))
-    }
-
-    species <- c(paste("human", c("hg19", "hg38")),
-                 paste("mouse", c("mm9", "mm10")),
-                 "rat rn6",
-                 "zebrafish danRer11",
-                 "Drosophila_melanogaster dm6",
-                 "Caenorhabditis_elegans ce11",
-                 "Saccharomyces_cerevisiae sacCer3")
+    species <- c(paste("Homo sapiens", c("hg19", "hg38")),
+                 paste("Mus musculus", c("mm9", "mm10")),
+                 "Rattus norvegicus rn6",
+                 "Bos taurus bosTau6",
+                 paste("Gallus gallus", c("galGal3", "galGal4")),
+                 "Xenopus tropicalis xenTro3",
+                 "Danio rerio danRer10",
+                 "Branchiostoma lanceolatum braLan2",
+                 "Strongylocentrotus purpuratus strPur4",
+                 "Drosophila melanogaster dm6",
+                 "Strigamia maritima strMar1",
+                 "Caenorhabditis elegans ce11",
+                 "Schmidtea mediterranea schMed31",
+                 "Nematostella vectensis nemVec1",
+                 "Arabidopsis thaliana araTha10")
     #setNames(paste(names(species), species),
     #         capitalize(sprintf("%s (%s assembly)", names(species), species)))
 
-    onFocus <- I('function() { this.clear(); }')
-    renderSpecies <- renderSelectize(
-        option_create=paste(
-            "'Search in <strong>' + escape(data.input).split(\" \")[0] +",
-            "' (' + escape(data.input).split(\" \")[1] + ' assembly)' +",
-            "'</strong>&hellip;'"))
+    onFocus    <- I('function() { this.clear(); }')
     selectSpecies <- selectizeInput(
         ns("selectedSpecies"), "Species", width="100%",
         choices=species, selected=species[[1]],
         options=list(placeholder="Search for a species...", highlight=FALSE,
-                     create=TRUE, onFocus=onFocus, render=renderSpecies))
+                     create=TRUE, onFocus=onFocus,
+                     render=I("{ option_create: renderAddSpecies,
+                                 option: renderSpeciesSelection,
+                                 item: renderSpeciesSelection }")))
 
-    renderGene <- renderSelectize(
-        option_create=paste(
-            "'Search for <strong>' + escape(data.input) + '</strong>&hellip;'"))
     selectGene <- selectizeGeneInput(
-        ns("selectedGene"), create=TRUE, createOnBlur=TRUE, render=renderGene,
+        ns("selectedGene"), create=TRUE, createOnBlur=TRUE,
+        render=I("{ option_create: renderAddGene }"),
         placeholder="Search for a gene symbol...")
     tagList(
         fluidRow(
@@ -797,7 +794,8 @@ prepareExternalLinks <- function(info, species, assembly, grch37, gene) {
     url$geneCards <- paste0(
         "http://www.genecards.org/cgi-bin/carddisp.pl?gene=", gene)
 
-    isHuman <- !is.null(species) && species == "human"
+    isHuman <- !is.null(species) &&
+        tolower(species) %in% c("human", "homo sapiens", "homo")
     links <- tagList(
         if (!is.null(species) && species != "")
             linkTo("Ensembl", url$ensembl),
@@ -809,11 +807,21 @@ prepareExternalLinks <- function(info, species, assembly, grch37, gene) {
 }
 
 parseSpeciesAssembly <- function(info) {
-    speciesRegex <- "(.*) (.*)"
-    species      <- tolower(gsub(speciesRegex, "\\1", info))
-    assembly     <- tolower(gsub(speciesRegex, "\\2", info))
-    if (is.null(species) || length(species) == 0 || species == "") return(NULL)
-    if (is.null(assembly)) assembly <- ""
+    info <- strsplit(info, " ")[[1]]
+    if (length(info) == 1) {
+        species <- info[[1]]
+    } else if (length(info) >= 2) {
+        species <- paste(info[[1]], info[[2]])
+    } else {
+        return(NULL)
+    }
+    species <- tolower(species)
+
+    if (length(info) >= 3) {
+        assembly <- tolower(info[[3]])
+    } else {
+        assembly <- ""
+    }
     return(list(species=species, assembly=assembly))
 }
 
@@ -843,7 +851,7 @@ infoServer <- function(input, output, session) {
         selected <- paste(species, assembly)
 
         if (is.null(selected) || selected == "" || length(selected) == 0) {
-            selected <- "human hg19"
+            selected <- "Homo sapiens hg19"
         }
         updateSelectizeInput(session, "selectedSpecies", selected=selected)
     })
