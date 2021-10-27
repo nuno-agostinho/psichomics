@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Server logic for clustering PCA data — clusterSet • psichomics</title>
+<title>Version 1.20 • psichomics</title>
 
 
 <!-- jquery -->
@@ -45,8 +45,7 @@
 
 
 
-<meta property="og:title" content="Server logic for clustering PCA data — clusterSet" />
-<meta property="og:description" content="Server logic for clustering PCA data" />
+<meta property="og:title" content="Version 1.20" />
 
 
 
@@ -75,7 +74,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-topic">
+    <div class="container template-news">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -154,45 +153,36 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Server logic for clustering PCA data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/nuno-agostinho/psichomics/blob/master/R/analysis_dimReduction_pca.R'><code>R/analysis_dimReduction_pca.R</code></a></small>
-    <div class="hidden name"><code>clusterSet.Rd</code></div>
+      <h1 data-toc-skip>Changelog <small>1.20</small></h1>
+      
     </div>
 
-    <div class="ref-description">
-    <p>Server logic for clustering PCA data</p>
-    </div>
-
-    <pre class="usage"><span class='fu'>clusterSet</span><span class='op'>(</span><span class='va'>session</span>, <span class='va'>input</span>, <span class='va'>output</span><span class='op'>)</span></pre>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>session</th>
-      <td><p>Shiny session</p></td>
-    </tr>
-    <tr>
-      <th>input</th>
-      <td><p>Shiny input</p></td>
-    </tr>
-    <tr>
-      <th>output</th>
-      <td><p>Shiny output</p></td>
-    </tr>
-    </table>
-
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p><code>NULL</code> (function is only used to modify the Shiny session's
-state or internal variables)</p>
-
+    <div id="psichomics-1200-27-october-2021" class="section level1">
+<h1 class="page-header" data-toc-text="1.20.0">
+<a href="#psichomics-1200-27-october-2021" class="anchor"></a>psichomics 1.20.0 (27 October, 2021)</h1>
+<ul>
+<li>Alternative splicing event annotations:
+<ul>
+<li>Support new annotations from VAST-TOOLS for multiple species, including mouse, zebrafish, fruit fly, chicken, frog, C. elegans and A. thaliana</li>
+<li>Automatically create cache directory if downloading splicing annotations for the first time</li>
+</ul>
+</li>
+<li>Gene, transcript and protein annotation (visual interface):
+<ul>
+<li>Automatically set species/genome based on selected annotation</li>
+<li>Improve species and genome selection</li>
+</ul>
+</li>
+</ul>
+</div>
   </div>
+
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
     </nav>
   </div>
+
 </div>
 
 

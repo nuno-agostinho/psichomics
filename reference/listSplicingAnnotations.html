@@ -88,7 +88,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.20.0</span>
       </span>
     </div>
 
@@ -163,7 +163,13 @@
     <p>List alternative splicing annotations</p>
     </div>
 
-    <pre class="usage"><span class='fu'>listSplicingAnnotations</span><span class='op'>(</span>species <span class='op'>=</span> <span class='cn'>NULL</span>, assembly <span class='op'>=</span> <span class='cn'>NULL</span>, date <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>listSplicingAnnotations</span><span class='op'>(</span>
+  species <span class='op'>=</span> <span class='cn'>NULL</span>,
+  assembly <span class='op'>=</span> <span class='cn'>NULL</span>,
+  date <span class='op'>=</span> <span class='cn'>NULL</span>,
+  cache <span class='op'>=</span> <span class='fu'>getAnnotationHubOption</span><span class='op'>(</span><span class='st'>"CACHE"</span><span class='op'>)</span>,
+  group <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -179,6 +185,15 @@
     <tr>
       <th>date</th>
       <td><p>Character: filter results by date (regular expression)</p></td>
+    </tr>
+    <tr>
+      <th>cache</th>
+      <td><p>Character: path to <code>AnnotationHub</code> cache (used to load
+alternative splicing event annotation)</p></td>
+    </tr>
+    <tr>
+      <th>group</th>
+      <td><p>Boolean: group values based on data provider?</p></td>
     </tr>
     </table>
 
@@ -196,22 +211,14 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'>listSplicingAnnotations</span><span class='op'>(</span><span class='op'>)</span> <span class='co'># Return all alternative splicing annotations</span>
-</div><div class='output co'>#&gt;                        Human hg19/GRCh37 (2017-10-20) 
-#&gt; "annotationHub_alternativeSplicingEvents.hg19_V2.rda" 
-#&gt;                        Human hg19/GRCh37 (2016-10-11) 
-#&gt;    "annotationHub_alternativeSplicingEvents.hg19.rda" 
-#&gt;                               Human hg38 (2018-04-30) 
-#&gt; "annotationHub_alternativeSplicingEvents.hg38_V2.rda" </div><div class='input'><span class='fu'>listSplicingAnnotations</span><span class='op'>(</span>assembly<span class='op'>=</span><span class='st'>"hg19"</span><span class='op'>)</span> <span class='co'># Search for hg19 annotation</span>
-</div><div class='output co'>#&gt;                        Human hg19/GRCh37 (2017-10-20) 
-#&gt; "annotationHub_alternativeSplicingEvents.hg19_V2.rda" 
-#&gt;                        Human hg19/GRCh37 (2016-10-11) 
-#&gt;    "annotationHub_alternativeSplicingEvents.hg19.rda" </div><div class='input'><span class='fu'>listSplicingAnnotations</span><span class='op'>(</span>assembly<span class='op'>=</span><span class='st'>"hg38"</span><span class='op'>)</span> <span class='co'># Search for hg38 annotation</span>
-</div><div class='output co'>#&gt;                               Human hg38 (2018-04-30) 
-#&gt; "annotationHub_alternativeSplicingEvents.hg38_V2.rda" </div><div class='input'><span class='fu'>listSplicingAnnotations</span><span class='op'>(</span>date<span class='op'>=</span><span class='st'>"201(7|8)"</span><span class='op'>)</span> <span class='co'># Search for 2017 or 2018 annotation</span>
-</div><div class='output co'>#&gt;                        Human hg19/GRCh37 (2017-10-20) 
-#&gt; "annotationHub_alternativeSplicingEvents.hg19_V2.rda" 
-#&gt;                               Human hg38 (2018-04-30) 
-#&gt; "annotationHub_alternativeSplicingEvents.hg38_V2.rda" </div></pre>
+</div><div class='output co'>#&gt; <span class='message'>snapshotDate(): 2021-05-18</span></div><div class='output co'>#&gt; Human hg19 (2016-10-11) Human hg19 (2017-10-20) Human hg38 (2018-04-30) 
+#&gt;               "AH51461"               "AH60272"               "AH63657" </div><div class='input'><span class='fu'>listSplicingAnnotations</span><span class='op'>(</span>assembly<span class='op'>=</span><span class='st'>"hg19"</span><span class='op'>)</span> <span class='co'># Search for hg19 annotation</span>
+</div><div class='output co'>#&gt; <span class='message'>snapshotDate(): 2021-05-18</span></div><div class='output co'>#&gt; Human hg19 (2016-10-11) Human hg19 (2017-10-20) 
+#&gt;               "AH51461"               "AH60272" </div><div class='input'><span class='fu'>listSplicingAnnotations</span><span class='op'>(</span>assembly<span class='op'>=</span><span class='st'>"hg38"</span><span class='op'>)</span> <span class='co'># Search for hg38 annotation</span>
+</div><div class='output co'>#&gt; <span class='message'>snapshotDate(): 2021-05-18</span></div><div class='output co'>#&gt; Human hg38 (2018-04-30) 
+#&gt;               "AH63657" </div><div class='input'><span class='fu'>listSplicingAnnotations</span><span class='op'>(</span>date<span class='op'>=</span><span class='st'>"201(7|8)"</span><span class='op'>)</span> <span class='co'># Search for 2017 or 2018 annotation</span>
+</div><div class='output co'>#&gt; <span class='message'>snapshotDate(): 2021-05-18</span></div><div class='output co'>#&gt; Human hg19 (2017-10-20) Human hg38 (2018-04-30) 
+#&gt;               "AH60272"               "AH63657" </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -88,7 +88,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.18.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.20.0</span>
       </span>
     </div>
 
@@ -166,10 +166,9 @@
     <pre class="usage"><span class='fu'>psichomics</span><span class='op'>(</span>
   <span class='va'>...</span>,
   launch.browser <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  reset <span class='op'>=</span> <span class='cn'>FALSE</span>,
   shinyproxy <span class='op'>=</span> <span class='cn'>FALSE</span>,
   testData <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  unparsableEvents <span class='op'>=</span> <span class='cn'>FALSE</span>
+  cache <span class='op'>=</span> <span class='fu'>getAnnotationHubOption</span><span class='op'>(</span><span class='st'>"CACHE"</span><span class='op'>)</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -211,10 +210,6 @@ interactive sessions only. This value of this parameter can also be a
 function to call with the application's URL.</p></td>
     </tr>
     <tr>
-      <th>reset</th>
-      <td><p>Boolean: reset Shiny session? Requires package <code>devtools</code></p></td>
-    </tr>
-    <tr>
       <th>shinyproxy</th>
       <td><p>Boolean: prepare visual interface to run in Shinyproxy?</p></td>
     </tr>
@@ -223,9 +218,9 @@ function to call with the application's URL.</p></td>
       <td><p>Boolean: load with test data</p></td>
     </tr>
     <tr>
-      <th>unparsableEvents</th>
-      <td><p>Boolean: when testing data, load alternative splicing
-quantification events that cannot be parsed?</p></td>
+      <th>cache</th>
+      <td><p>Character: path to <code>AnnotationHub</code> cache (used to load
+alternative splicing event annotation)</p></td>
     </tr>
     </table>
 
