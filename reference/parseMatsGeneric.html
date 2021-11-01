@@ -232,61 +232,69 @@ for the minus strand</p></td>
     <div class='dont-index'><p><code><a href='parseMatsEvent.html'>parseMatsEvent</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Parse generic event (in this case, an exon skipping event)</span>
-<span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text<span class='op'>=</span>
-    <span class='st'>"79685787 79685910 79685796 79685910 79679566 79679751"</span><span class='op'>)</span>
-<span class='va'>coords</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"A1.start"</span>, <span class='st'>"A1.end"</span>,
-            <span class='st'>"C1.start"</span>, <span class='st'>"C1.end"</span>,
-            <span class='st'>"C2.start"</span>, <span class='st'>"C2.end"</span><span class='op'>)</span>
-<span class='va'>plus</span>  <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>6</span><span class='op'>)</span>
-<span class='va'>minus</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span><span class='op'>:</span><span class='fl'>1</span>, <span class='fl'>6</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMatsGeneric</span><span class='op'>(</span><span class='va'>junctions</span>, strand <span class='op'>=</span> <span class='st'>"+"</span>, <span class='va'>coords</span>, <span class='va'>plus</span>, <span class='va'>minus</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   C1.start   C1.end A1.start   A1.end A2.start A2.end C2.start   C2.end
-#&gt; 1 79685796 79685910 79685787 79685910       NA     NA 79679566 79679751</div><div class='input'>
-<span class='co'># Parse exon skipping event</span>
-<span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text<span class='op'>=</span>
-    <span class='st'>"79685787 79685910 79685796 79685910 79679566 79679751"</span><span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMatsSE</span><span class='op'>(</span><span class='va'>junctions</span>, strand <span class='op'>=</span> <span class='st'>"+"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   C1.start   C1.end A1.start   A1.end A2.start A2.end C2.start   C2.end
-#&gt; 1 79685796 79685910 79685787 79685910       NA     NA 79679566 79679751</div><div class='input'>
-<span class='co'># Parse mutually exclusive exon event</span>
-<span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text<span class='op'>=</span>
-<span class='st'>"158282161 158282276 158282689 158282804 158281047 158281295 158283950 158284199"</span><span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMatsMXE</span><span class='op'>(</span><span class='va'>junctions</span>, strand <span class='op'>=</span> <span class='st'>"+"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;    C1.start    C1.end  A1.start    A1.end  A2.start    A2.end  C2.start
-#&gt; 1 158281047 158281295 158282161 158282276 158282689 158282804 158283950
-#&gt;      C2.end
-#&gt; 1 158284199</div><div class='input'>
-<span class='co'># Parse retained intron event</span>
-<span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text<span class='op'>=</span>
-    <span class='st'>"15929853 15932100 15929853 15930016 15930687 15932100"</span><span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMatsRI</span><span class='op'>(</span><span class='va'>junctions</span>, strand <span class='op'>=</span> <span class='st'>"+"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   C1.start   C1.end A1.start A1.end A2.start A2.end C2.start   C2.end
-#&gt; 1 15929853 15930016       NA     NA       NA     NA 15930687 15932100</div><div class='input'>
-<span class='co'># Parse alternative 3' splicing site event</span>
-<span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text<span class='op'>=</span>
-    <span class='st'>"79685787 79685910 79685796 79685910 79679566 79679751"</span><span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMatsA3SS</span><span class='op'>(</span><span class='va'>junctions</span>, strand <span class='op'>=</span> <span class='st'>"+"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   C1.start   C1.end A1.start A1.end A2.start   A2.end C2.start C2.end
-#&gt; 1 79679566 79679751 79685787     NA 79685796 79685910       NA     NA</div><div class='input'>
-<span class='co'># Parse alternative 5' splicing site event</span>
-<span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text<span class='op'>=</span>
-    <span class='st'>"102884421 102884501 102884421 102884489 102884812 102885881"</span><span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMatsA5SS</span><span class='op'>(</span><span class='va'>junctions</span>, strand <span class='op'>=</span> <span class='st'>"+"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   C1.start C1.end A1.start    A1.end  A2.start    A2.end  C2.start    C2.end
-#&gt; 1       NA     NA       NA 102884501 102884421 102884489 102884812 102885881</div><div class='input'>
-<span class='co'># Parse alternative first exon event</span>
-<span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text<span class='op'>=</span>
-    <span class='st'>"16308723 16308879 16308967 16309119 16314269 16314426"</span><span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMatsAFE</span><span class='op'>(</span><span class='va'>junctions</span>, strand <span class='op'>=</span> <span class='st'>"+"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   C1.start C1.end A1.start   A1.end A2.start   A2.end C2.start   C2.end
-#&gt; 1       NA     NA 16308723 16308879 16308967 16309119 16314269 16314426</div><div class='input'>
-<span class='co'># Parse alternative last exon event</span>
-<span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text<span class='op'>=</span>
-    <span class='st'>"111858645 111858828 111851063 111851921 111850441 111850543"</span><span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMatsAFE</span><span class='op'>(</span><span class='va'>junctions</span>, strand <span class='op'>=</span> <span class='st'>"+"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   C1.start C1.end  A1.start    A1.end  A2.start    A2.end  C2.start    C2.end
-#&gt; 1       NA     NA 111858645 111858828 111851063 111851921 111850441 111850543</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># Parse generic event (in this case, an exon skipping event)</span></span>
+<span class='r-in'><span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text<span class='op'>=</span></span>
+<span class='r-in'>    <span class='st'>"79685787 79685910 79685796 79685910 79679566 79679751"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>coords</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"A1.start"</span>, <span class='st'>"A1.end"</span>,</span>
+<span class='r-in'>            <span class='st'>"C1.start"</span>, <span class='st'>"C1.end"</span>,</span>
+<span class='r-in'>            <span class='st'>"C2.start"</span>, <span class='st'>"C2.end"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>plus</span>  <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>6</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>minus</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span><span class='op'>:</span><span class='fl'>1</span>, <span class='fl'>6</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMatsGeneric</span><span class='op'>(</span><span class='va'>junctions</span>, strand <span class='op'>=</span> <span class='st'>"+"</span>, <span class='va'>coords</span>, <span class='va'>plus</span>, <span class='va'>minus</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   C1.start   C1.end A1.start   A1.end A2.start A2.end C2.start   C2.end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1 79685796 79685910 79685787 79685910       NA     NA 79679566 79679751</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Parse exon skipping event</span></span>
+<span class='r-in'><span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text<span class='op'>=</span></span>
+<span class='r-in'>    <span class='st'>"79685787 79685910 79685796 79685910 79679566 79679751"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMatsSE</span><span class='op'>(</span><span class='va'>junctions</span>, strand <span class='op'>=</span> <span class='st'>"+"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   C1.start   C1.end A1.start   A1.end A2.start A2.end C2.start   C2.end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1 79685796 79685910 79685787 79685910       NA     NA 79679566 79679751</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Parse mutually exclusive exon event</span></span>
+<span class='r-in'><span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text<span class='op'>=</span></span>
+<span class='r-in'><span class='st'>"158282161 158282276 158282689 158282804 158281047 158281295 158283950 158284199"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMatsMXE</span><span class='op'>(</span><span class='va'>junctions</span>, strand <span class='op'>=</span> <span class='st'>"+"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    C1.start    C1.end  A1.start    A1.end  A2.start    A2.end  C2.start</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1 158281047 158281295 158282161 158282276 158282689 158282804 158283950</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      C2.end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1 158284199</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Parse retained intron event</span></span>
+<span class='r-in'><span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text<span class='op'>=</span></span>
+<span class='r-in'>    <span class='st'>"15929853 15932100 15929853 15930016 15930687 15932100"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMatsRI</span><span class='op'>(</span><span class='va'>junctions</span>, strand <span class='op'>=</span> <span class='st'>"+"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   C1.start   C1.end A1.start A1.end A2.start A2.end C2.start   C2.end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1 15929853 15930016       NA     NA       NA     NA 15930687 15932100</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Parse alternative 3' splicing site event</span></span>
+<span class='r-in'><span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text<span class='op'>=</span></span>
+<span class='r-in'>    <span class='st'>"79685787 79685910 79685796 79685910 79679566 79679751"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMatsA3SS</span><span class='op'>(</span><span class='va'>junctions</span>, strand <span class='op'>=</span> <span class='st'>"+"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   C1.start   C1.end A1.start A1.end A2.start   A2.end C2.start C2.end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1 79679566 79679751 79685787     NA 79685796 79685910       NA     NA</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Parse alternative 5' splicing site event</span></span>
+<span class='r-in'><span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text<span class='op'>=</span></span>
+<span class='r-in'>    <span class='st'>"102884421 102884501 102884421 102884489 102884812 102885881"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMatsA5SS</span><span class='op'>(</span><span class='va'>junctions</span>, strand <span class='op'>=</span> <span class='st'>"+"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   C1.start C1.end A1.start    A1.end  A2.start    A2.end  C2.start    C2.end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1       NA     NA       NA 102884501 102884421 102884489 102884812 102885881</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Parse alternative first exon event</span></span>
+<span class='r-in'><span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text<span class='op'>=</span></span>
+<span class='r-in'>    <span class='st'>"16308723 16308879 16308967 16309119 16314269 16314426"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMatsAFE</span><span class='op'>(</span><span class='va'>junctions</span>, strand <span class='op'>=</span> <span class='st'>"+"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   C1.start C1.end A1.start   A1.end A2.start   A2.end C2.start   C2.end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1       NA     NA 16308723 16308879 16308967 16309119 16314269 16314426</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Parse alternative last exon event</span></span>
+<span class='r-in'><span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text<span class='op'>=</span></span>
+<span class='r-in'>    <span class='st'>"111858645 111858828 111851063 111851921 111850441 111850543"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMatsAFE</span><span class='op'>(</span><span class='va'>junctions</span>, strand <span class='op'>=</span> <span class='st'>"+"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   C1.start C1.end  A1.start    A1.end  A2.start    A2.end  C2.start    C2.end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1       NA     NA 111858645 111858828 111851063 111851921 111850441 111850543</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

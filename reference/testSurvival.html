@@ -212,20 +212,21 @@ subset argument has been used.  Default is <code>options()$na.action</code>.</p>
 <code><a href='survfit.survTerms.html'>survfit.survTerms</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='st'><a href='https://github.com/therneau/survival'>"survival"</a></span><span class='op'>)</span>
-<span class='va'>data</span> <span class='op'>&lt;-</span> <span class='va'>aml</span>
-<span class='va'>timeStart</span>  <span class='op'>&lt;-</span> <span class='st'>"event"</span>
-<span class='va'>event</span>      <span class='op'>&lt;-</span> <span class='st'>"event"</span>
-<span class='va'>followup</span>   <span class='op'>&lt;-</span> <span class='st'>"time"</span>
-<span class='va'>data</span><span class='op'>$</span><span class='va'>event</span> <span class='op'>&lt;-</span> <span class='cn'>NA</span>
-<span class='va'>data</span><span class='op'>$</span><span class='va'>event</span><span class='op'>[</span><span class='va'>aml</span><span class='op'>$</span><span class='va'>status</span> <span class='op'>==</span> <span class='fl'>1</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='va'>aml</span><span class='op'>$</span><span class='va'>time</span><span class='op'>[</span><span class='va'>aml</span><span class='op'>$</span><span class='va'>status</span> <span class='op'>==</span> <span class='fl'>1</span><span class='op'>]</span>
-<span class='va'>censoring</span>  <span class='op'>&lt;-</span> <span class='st'>"right"</span>
-<span class='va'>formulaStr</span> <span class='op'>&lt;-</span> <span class='st'>"x"</span>
-<span class='va'>survTerms</span> <span class='op'>&lt;-</span> <span class='fu'><a href='processSurvTerms.html'>processSurvTerms</a></span><span class='op'>(</span><span class='va'>data</span>, censoring<span class='op'>=</span><span class='va'>censoring</span>, event<span class='op'>=</span><span class='va'>event</span>,
-                              timeStart<span class='op'>=</span><span class='va'>timeStart</span>, followup<span class='op'>=</span><span class='va'>followup</span>,
-                              formulaStr<span class='op'>=</span><span class='va'>formulaStr</span><span class='op'>)</span>
-<span class='fu'>testSurvival</span><span class='op'>(</span><span class='va'>survTerms</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] 0.0653</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='st'><a href='https://github.com/therneau/survival'>"survival"</a></span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>data</span> <span class='op'>&lt;-</span> <span class='va'>aml</span></span>
+<span class='r-in'><span class='va'>timeStart</span>  <span class='op'>&lt;-</span> <span class='st'>"event"</span></span>
+<span class='r-in'><span class='va'>event</span>      <span class='op'>&lt;-</span> <span class='st'>"event"</span></span>
+<span class='r-in'><span class='va'>followup</span>   <span class='op'>&lt;-</span> <span class='st'>"time"</span></span>
+<span class='r-in'><span class='va'>data</span><span class='op'>$</span><span class='va'>event</span> <span class='op'>&lt;-</span> <span class='cn'>NA</span></span>
+<span class='r-in'><span class='va'>data</span><span class='op'>$</span><span class='va'>event</span><span class='op'>[</span><span class='va'>aml</span><span class='op'>$</span><span class='va'>status</span> <span class='op'>==</span> <span class='fl'>1</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='va'>aml</span><span class='op'>$</span><span class='va'>time</span><span class='op'>[</span><span class='va'>aml</span><span class='op'>$</span><span class='va'>status</span> <span class='op'>==</span> <span class='fl'>1</span><span class='op'>]</span></span>
+<span class='r-in'><span class='va'>censoring</span>  <span class='op'>&lt;-</span> <span class='st'>"right"</span></span>
+<span class='r-in'><span class='va'>formulaStr</span> <span class='op'>&lt;-</span> <span class='st'>"x"</span></span>
+<span class='r-in'><span class='va'>survTerms</span> <span class='op'>&lt;-</span> <span class='fu'><a href='processSurvTerms.html'>processSurvTerms</a></span><span class='op'>(</span><span class='va'>data</span>, censoring<span class='op'>=</span><span class='va'>censoring</span>, event<span class='op'>=</span><span class='va'>event</span>,</span>
+<span class='r-in'>                              timeStart<span class='op'>=</span><span class='va'>timeStart</span>, followup<span class='op'>=</span><span class='va'>followup</span>,</span>
+<span class='r-in'>                              formulaStr<span class='op'>=</span><span class='va'>formulaStr</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>testSurvival</span><span class='op'>(</span><span class='va'>survTerms</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 0.0653</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

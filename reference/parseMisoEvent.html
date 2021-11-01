@@ -186,21 +186,22 @@ files)</p></td>
 <a href='http://miso.readthedocs.org'>http://miso.readthedocs.org</a></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># example of alternative splicing event: skipped exon (SE)</span>
-<span class='va'>event</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"
-  chr1 SE gene 16854 18061 . - .
-  chr1 SE mRNA 16854 18061 . - .
-  chr1 SE exon 16854 17055 . - .
-  chr1 SE exon 17233 17742 . - .
-  chr1 SE exon 17915 18061 . - .
-  chr1 SE mRNA 16854 18061 . - .
-  chr1 SE exon 16854 17955 . - .
-  chr1 SE exon 17915 18061 . - ."</span><span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMisoEvent</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   C1.start C1.end A1.start A1.end A2.start A2.end C2.start C2.end Program
-#&gt; 1    18061  17915    17742  17233       NA     NA    17055  16854    MISO
-#&gt;   Event.type Chromosome Strand
-#&gt; 1         SE       chr1      -</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># example of alternative splicing event: skipped exon (SE)</span></span>
+<span class='r-in'><span class='va'>event</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"</span>
+<span class='r-in'>  chr1 SE gene 16854 18061 . - .</span>
+<span class='r-in'>  chr1 SE mRNA 16854 18061 . - .</span>
+<span class='r-in'>  chr1 SE exon 16854 17055 . - .</span>
+<span class='r-in'>  chr1 SE exon 17233 17742 . - .</span>
+<span class='r-in'>  chr1 SE exon 17915 18061 . - .</span>
+<span class='r-in'>  chr1 SE mRNA 16854 18061 . - .</span>
+<span class='r-in'>  chr1 SE exon 16854 17955 . - .</span>
+<span class='r-in'>  chr1 SE exon 17915 18061 . - ."</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseMisoEvent</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   C1.start C1.end A1.start A1.end A2.start A2.end C2.start C2.end Program</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1    18061  17915    17742  17233       NA     NA    17055  16854    MISO</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   Event.type Chromosome Strand</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1         SE       chr1      -</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

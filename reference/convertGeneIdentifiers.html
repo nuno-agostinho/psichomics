@@ -216,65 +216,91 @@ previous identifiers remain other identifiers have the same target (in case
 <code><a href='plotRowStats.html'>plotRowStats</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Use species name to automatically look for a OrgDb database</span>
-<span class='va'>sp</span> <span class='op'>&lt;-</span> <span class='st'>"Homo sapiens"</span>
-<span class='va'>genes</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ENSG00000012048"</span>, <span class='st'>"ENSG00000083093"</span>, <span class='st'>"ENSG00000141510"</span>,
-           <span class='st'>"ENSG00000051180"</span><span class='op'>)</span>
-<span class='fu'>convertGeneIdentifiers</span><span class='op'>(</span><span class='va'>sp</span>, <span class='va'>genes</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>snapshotDate(): 2021-05-18</span></div><div class='output co'>#&gt; <span class='message'>loading from cache</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: AnnotationDbi</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: stats4</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: BiocGenerics</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: parallel</span></div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Attaching package: ‘BiocGenerics’</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:parallel’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,</span>
-#&gt; <span class='message'>    clusterExport, clusterMap, parApply, parCapply, parLapply,</span>
-#&gt; <span class='message'>    parLapplyLB, parRapply, parSapply, parSapplyLB</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from ‘package:psichomics’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    plotPCA</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:stats’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    IQR, mad, sd, var, xtabs</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:base’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    anyDuplicated, append, as.data.frame, basename, cbind, colnames,</span>
-#&gt; <span class='message'>    dirname, do.call, duplicated, eval, evalq, Filter, Find, get, grep,</span>
-#&gt; <span class='message'>    grepl, intersect, is.unsorted, lapply, Map, mapply, match, mget,</span>
-#&gt; <span class='message'>    order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,</span>
-#&gt; <span class='message'>    rbind, Reduce, rownames, sapply, setdiff, sort, table, tapply,</span>
-#&gt; <span class='message'>    union, unique, unsplit, which.max, which.min</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: Biobase</span></div><div class='output co'>#&gt; <span class='message'>Welcome to Bioconductor</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    Vignettes contain introductory material; view with</span>
-#&gt; <span class='message'>    'browseVignettes()'. To cite Bioconductor, see</span>
-#&gt; <span class='message'>    'citation("Biobase")', and for packages 'citation("pkgname")'.</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: IRanges</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: S4Vectors</span></div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Attaching package: ‘S4Vectors’</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:base’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    expand.grid, I, unname</span></div><div class='output co'>#&gt; ENSG00000012048 ENSG00000083093 ENSG00000141510 ENSG00000051180 
-#&gt;         "BRCA1"         "PALB2"          "TP53"         "RAD51" </div><div class='input'><span class='fu'>convertGeneIdentifiers</span><span class='op'>(</span><span class='va'>sp</span>, <span class='va'>genes</span>, key<span class='op'>=</span><span class='st'>"ENSEMBL"</span>, target<span class='op'>=</span><span class='st'>"UNIPROT"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>snapshotDate(): 2021-05-18</span></div><div class='output co'>#&gt; <span class='message'>loading from cache</span></div><div class='output co'>#&gt;                                                ENSG00000012048 
-#&gt;                                            "P38398/A0A024R1V0" 
-#&gt;                                                ENSG00000083093 
-#&gt;                                                "Q86YC2/H3BN63" 
-#&gt;                                                ENSG00000141510 
-#&gt; "K7PPA8/P04637/Q53GA5/H2EHT1/A0A087X1Q1/A0A087WXZ1/A0A087WT22" 
-#&gt;                                                ENSG00000051180 
-#&gt;                                                       "Q06609" </div><div class='input'>
-<span class='co'># Alternatively, set the annotation database directly</span>
-<span class='va'>ah</span> <span class='op'>&lt;-</span> <span class='fu'>AnnotationHub</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/AnnotationHub/man/AnnotationHub-class.html'>AnnotationHub</a></span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>snapshotDate(): 2021-05-18</span></div><div class='input'><span class='va'>sp</span> <span class='op'>&lt;-</span> <span class='fu'>AnnotationHub</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/AnnotationHub/man/AnnotationHub-class.html'>query</a></span><span class='op'>(</span><span class='va'>ah</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"OrgDb"</span>, <span class='st'>"Homo sapiens"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>
-</div><div class='output co'>#&gt; <span class='message'>loading from cache</span></div><div class='input'><span class='fu'>columns</span><span class='op'>(</span><span class='va'>sp</span><span class='op'>)</span> <span class='co'># these attributes can be used to change the attributes</span>
-</div><div class='output co'>#&gt;  [1] "ACCNUM"       "ALIAS"        "ENSEMBL"      "ENSEMBLPROT"  "ENSEMBLTRANS"
-#&gt;  [6] "ENTREZID"     "ENZYME"       "EVIDENCE"     "EVIDENCEALL"  "GENENAME"    
-#&gt; [11] "GENETYPE"     "GO"           "GOALL"        "IPI"          "MAP"         
-#&gt; [16] "OMIM"         "ONTOLOGY"     "ONTOLOGYALL"  "PATH"         "PFAM"        
-#&gt; [21] "PMID"         "PROSITE"      "REFSEQ"       "SYMBOL"       "UCSCKG"      
-#&gt; [26] "UNIPROT"     </div><div class='input'>
-<span class='fu'>convertGeneIdentifiers</span><span class='op'>(</span><span class='va'>sp</span>, <span class='va'>genes</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; ENSG00000012048 ENSG00000083093 ENSG00000141510 ENSG00000051180 
-#&gt;         "BRCA1"         "PALB2"          "TP53"         "RAD51" </div><div class='input'><span class='fu'>convertGeneIdentifiers</span><span class='op'>(</span><span class='va'>sp</span>, <span class='va'>genes</span>, key<span class='op'>=</span><span class='st'>"ENSEMBL"</span>, target<span class='op'>=</span><span class='st'>"UNIPROT"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;                                                ENSG00000012048 
-#&gt;                                            "P38398/A0A024R1V0" 
-#&gt;                                                ENSG00000083093 
-#&gt;                                                "Q86YC2/H3BN63" 
-#&gt;                                                ENSG00000141510 
-#&gt; "K7PPA8/P04637/Q53GA5/H2EHT1/A0A087X1Q1/A0A087WXZ1/A0A087WT22" 
-#&gt;                                                ENSG00000051180 
-#&gt;                                                       "Q06609" </div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># Use species name to automatically look for a OrgDb database</span></span>
+<span class='r-in'><span class='va'>sp</span> <span class='op'>&lt;-</span> <span class='st'>"Homo sapiens"</span></span>
+<span class='r-in'><span class='va'>genes</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ENSG00000012048"</span>, <span class='st'>"ENSG00000083093"</span>, <span class='st'>"ENSG00000141510"</span>,</span>
+<span class='r-in'>           <span class='st'>"ENSG00000051180"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>convertGeneIdentifiers</span><span class='op'>(</span><span class='va'>sp</span>, <span class='va'>genes</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> snapshotDate(): 2021-05-18</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> loading from cache</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Loading required package: AnnotationDbi</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Loading required package: stats4</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Loading required package: BiocGenerics</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Loading required package: parallel</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Attaching package: ‘BiocGenerics’</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> The following objects are masked from ‘package:parallel’:</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span>     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span>     clusterExport, clusterMap, parApply, parCapply, parLapply,</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span>     parLapplyLB, parRapply, parSapply, parSapplyLB</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> The following object is masked from ‘package:psichomics’:</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span>     plotPCA</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> The following objects are masked from ‘package:stats’:</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span>     IQR, mad, sd, var, xtabs</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> The following objects are masked from ‘package:base’:</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span>     anyDuplicated, append, as.data.frame, basename, cbind, colnames,</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span>     dirname, do.call, duplicated, eval, evalq, Filter, Find, get, grep,</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span>     grepl, intersect, is.unsorted, lapply, Map, mapply, match, mget,</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span>     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span>     rbind, Reduce, rownames, sapply, setdiff, sort, table, tapply,</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span>     union, unique, unsplit, which.max, which.min</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Loading required package: Biobase</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Welcome to Bioconductor</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span>     Vignettes contain introductory material; view with</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span>     'browseVignettes()'. To cite Bioconductor, see</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span>     'citation("Biobase")', and for packages 'citation("pkgname")'.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Loading required package: IRanges</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Loading required package: S4Vectors</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Attaching package: ‘S4Vectors’</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> The following objects are masked from ‘package:base’:</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span>     expand.grid, I, unname</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ENSG00000012048 ENSG00000083093 ENSG00000141510 ENSG00000051180 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         "BRCA1"         "PALB2"          "TP53"         "RAD51" </span>
+<span class='r-in'><span class='fu'>convertGeneIdentifiers</span><span class='op'>(</span><span class='va'>sp</span>, <span class='va'>genes</span>, key<span class='op'>=</span><span class='st'>"ENSEMBL"</span>, target<span class='op'>=</span><span class='st'>"UNIPROT"</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> snapshotDate(): 2021-05-18</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> loading from cache</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                ENSG00000012048 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                            "P38398/A0A024R1V0" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                ENSG00000083093 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                "Q86YC2/H3BN63" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                ENSG00000141510 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> "K7PPA8/P04637/Q53GA5/H2EHT1/A0A087X1Q1/A0A087WXZ1/A0A087WT22" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                ENSG00000051180 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                       "Q06609" </span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Alternatively, set the annotation database directly</span></span>
+<span class='r-in'><span class='va'>ah</span> <span class='op'>&lt;-</span> <span class='fu'>AnnotationHub</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/AnnotationHub/man/AnnotationHub-class.html'>AnnotationHub</a></span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> snapshotDate(): 2021-05-18</span>
+<span class='r-in'><span class='va'>sp</span> <span class='op'>&lt;-</span> <span class='fu'>AnnotationHub</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/AnnotationHub/man/AnnotationHub-class.html'>query</a></span><span class='op'>(</span><span class='va'>ah</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"OrgDb"</span>, <span class='st'>"Homo sapiens"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> loading from cache</span>
+<span class='r-in'><span class='fu'>columns</span><span class='op'>(</span><span class='va'>sp</span><span class='op'>)</span> <span class='co'># these attributes can be used to change the attributes</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [1] "ACCNUM"       "ALIAS"        "ENSEMBL"      "ENSEMBLPROT"  "ENSEMBLTRANS"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [6] "ENTREZID"     "ENZYME"       "EVIDENCE"     "EVIDENCEALL"  "GENENAME"    </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [11] "GENETYPE"     "GO"           "GOALL"        "IPI"          "MAP"         </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [16] "OMIM"         "ONTOLOGY"     "ONTOLOGYALL"  "PATH"         "PFAM"        </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [21] "PMID"         "PROSITE"      "REFSEQ"       "SYMBOL"       "UCSCKG"      </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [26] "UNIPROT"     </span>
+<span class='r-in'></span>
+<span class='r-in'><span class='fu'>convertGeneIdentifiers</span><span class='op'>(</span><span class='va'>sp</span>, <span class='va'>genes</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ENSG00000012048 ENSG00000083093 ENSG00000141510 ENSG00000051180 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         "BRCA1"         "PALB2"          "TP53"         "RAD51" </span>
+<span class='r-in'><span class='fu'>convertGeneIdentifiers</span><span class='op'>(</span><span class='va'>sp</span>, <span class='va'>genes</span>, key<span class='op'>=</span><span class='st'>"ENSEMBL"</span>, target<span class='op'>=</span><span class='st'>"UNIPROT"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                ENSG00000012048 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                            "P38398/A0A024R1V0" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                ENSG00000083093 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                "Q86YC2/H3BN63" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                ENSG00000141510 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> "K7PPA8/P04637/Q53GA5/H2EHT1/A0A087X1Q1/A0A087WXZ1/A0A087WT22" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                ENSG00000051180 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                       "Q06609" </span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

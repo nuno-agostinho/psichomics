@@ -226,22 +226,26 @@ colour of each series are used</p></td>
     <p><code>highchart</code> object to plot survival curves</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='co'># Plot Kaplan-Meier curves</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='st'><a href='https://github.com/therneau/survival'>"survival"</a></span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Loading required package: survival</span></div><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='st'><a href='http://jkunst.com/highcharter'>"highcharter"</a></span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Loading required package: highcharter</span></div><div class='output co'>#&gt; <span class='message'>Highcharts (www.highcharts.com) is a Highsoft software product which is</span></div><div class='output co'>#&gt; <span class='message'>not free for commercial and Governmental use</span></div><div class='input'><span class='va'>leukemia.surv</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/survival/man/survfit.html'>survfit</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/survival/man/Surv.html'>Surv</a></span><span class='op'>(</span><span class='va'>time</span>, <span class='va'>status</span><span class='op'>)</span> <span class='op'>~</span> <span class='va'>x</span>, data <span class='op'>=</span> <span class='va'>aml</span><span class='op'>)</span>
-<span class='fu'><a href='http://jkunst.com/highcharter/reference/hchart.html'>hchart</a></span><span class='op'>(</span><span class='va'>leukemia.surv</span><span class='op'>)</span>
-
-<span class='co'># Plot the cumulative hazard function</span>
-<span class='va'>lsurv2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/survival/man/survfit.html'>survfit</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/survival/man/Surv.html'>Surv</a></span><span class='op'>(</span><span class='va'>time</span>, <span class='va'>status</span><span class='op'>)</span> <span class='op'>~</span> <span class='va'>x</span>, <span class='va'>aml</span>, type<span class='op'>=</span><span class='st'>'fleming'</span><span class='op'>)</span>
-<span class='fu'><a href='http://jkunst.com/highcharter/reference/hchart.html'>hchart</a></span><span class='op'>(</span><span class='va'>lsurv2</span>, fun<span class='op'>=</span><span class='st'>"cumhaz"</span><span class='op'>)</span>
-
-<span class='co'># Plot the fit of a Cox proportional hazards regression model</span>
-<span class='va'>fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/survival/man/coxph.html'>coxph</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/survival/man/Surv.html'>Surv</a></span><span class='op'>(</span><span class='va'>futime</span>, <span class='va'>fustat</span><span class='op'>)</span> <span class='op'>~</span> <span class='va'>age</span>, data <span class='op'>=</span> <span class='va'>ovarian</span><span class='op'>)</span>
-<span class='va'>ovarian.surv</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/survival/man/survfit.html'>survfit</a></span><span class='op'>(</span><span class='va'>fit</span>, newdata<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>age<span class='op'>=</span><span class='fl'>60</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='http://jkunst.com/highcharter/reference/hchart.html'>hchart</a></span><span class='op'>(</span><span class='va'>ovarian.surv</span>, ranges <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'></span>
+<span class='r-in'><span class='co'># Plot Kaplan-Meier curves</span></span>
+<span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='st'><a href='https://github.com/therneau/survival'>"survival"</a></span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Loading required package: survival</span>
+<span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='st'><a href='http://jkunst.com/highcharter'>"highcharter"</a></span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Loading required package: highcharter</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Highcharts (www.highcharts.com) is a Highsoft software product which is</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> not free for commercial and Governmental use</span>
+<span class='r-in'><span class='va'>leukemia.surv</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/survival/man/survfit.html'>survfit</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/survival/man/Surv.html'>Surv</a></span><span class='op'>(</span><span class='va'>time</span>, <span class='va'>status</span><span class='op'>)</span> <span class='op'>~</span> <span class='va'>x</span>, data <span class='op'>=</span> <span class='va'>aml</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='http://jkunst.com/highcharter/reference/hchart.html'>hchart</a></span><span class='op'>(</span><span class='va'>leukemia.surv</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Plot the cumulative hazard function</span></span>
+<span class='r-in'><span class='va'>lsurv2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/survival/man/survfit.html'>survfit</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/survival/man/Surv.html'>Surv</a></span><span class='op'>(</span><span class='va'>time</span>, <span class='va'>status</span><span class='op'>)</span> <span class='op'>~</span> <span class='va'>x</span>, <span class='va'>aml</span>, type<span class='op'>=</span><span class='st'>'fleming'</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='http://jkunst.com/highcharter/reference/hchart.html'>hchart</a></span><span class='op'>(</span><span class='va'>lsurv2</span>, fun<span class='op'>=</span><span class='st'>"cumhaz"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Plot the fit of a Cox proportional hazards regression model</span></span>
+<span class='r-in'><span class='va'>fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/survival/man/coxph.html'>coxph</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/survival/man/Surv.html'>Surv</a></span><span class='op'>(</span><span class='va'>futime</span>, <span class='va'>fustat</span><span class='op'>)</span> <span class='op'>~</span> <span class='va'>age</span>, data <span class='op'>=</span> <span class='va'>ovarian</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>ovarian.surv</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/survival/man/survfit.html'>survfit</a></span><span class='op'>(</span><span class='va'>fit</span>, newdata<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>age<span class='op'>=</span><span class='fl'>60</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='http://jkunst.com/highcharter/reference/hchart.html'>hchart</a></span><span class='op'>(</span><span class='va'>ovarian.surv</span>, ranges <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

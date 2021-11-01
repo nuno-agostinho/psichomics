@@ -197,704 +197,705 @@ default)</p></td>
     <p>Parsed response</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>queryPubMed</span><span class='op'>(</span><span class='st'>"BRCA1"</span>, <span class='st'>"cancer"</span>, <span class='st'>"adrenocortical carcinoma"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; $search
-#&gt; $search$count
-#&gt; [1] "17590"
-#&gt; 
-#&gt; $search$retmax
-#&gt; [1] "3"
-#&gt; 
-#&gt; $search$retstart
-#&gt; [1] "0"
-#&gt; 
-#&gt; $search$idlist
-#&gt; [1] "32778078" "30720863" "29687286"
-#&gt; 
-#&gt; $search$translationset
-#&gt;                       from
-#&gt; 1                    BRCA1
-#&gt; 2                   cancer
-#&gt; 3 adrenocortical carcinoma
-#&gt;                                                                                                                                               to
-#&gt; 1                "genes, brca1"[MeSH Terms] OR ("genes"[All Fields] AND "brca1"[All Fields]) OR "brca1 genes"[All Fields] OR "brca1"[All Fields]
-#&gt; 2                                                                     "neoplasms"[MeSH Terms] OR "neoplasms"[All Fields] OR "cancer"[All Fields]
-#&gt; 3 "adrenocortical carcinoma"[MeSH Terms] OR ("adrenocortical"[All Fields] AND "carcinoma"[All Fields]) OR "adrenocortical carcinoma"[All Fields]
-#&gt; 
-#&gt; $search$translationstack
-#&gt; $search$translationstack[[1]]
-#&gt; $search$translationstack[[1]]$term
-#&gt; [1] "\"genes, brca1\"[MeSH Terms]"
-#&gt; 
-#&gt; $search$translationstack[[1]]$field
-#&gt; [1] "MeSH Terms"
-#&gt; 
-#&gt; $search$translationstack[[1]]$count
-#&gt; [1] "6162"
-#&gt; 
-#&gt; $search$translationstack[[1]]$explode
-#&gt; [1] "Y"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[2]]
-#&gt; $search$translationstack[[2]]$term
-#&gt; [1] "\"genes\"[All Fields]"
-#&gt; 
-#&gt; $search$translationstack[[2]]$field
-#&gt; [1] "All Fields"
-#&gt; 
-#&gt; $search$translationstack[[2]]$count
-#&gt; [1] "1366605"
-#&gt; 
-#&gt; $search$translationstack[[2]]$explode
-#&gt; [1] "N"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[3]]
-#&gt; $search$translationstack[[3]]$term
-#&gt; [1] "\"brca1\"[All Fields]"
-#&gt; 
-#&gt; $search$translationstack[[3]]$field
-#&gt; [1] "All Fields"
-#&gt; 
-#&gt; $search$translationstack[[3]]$count
-#&gt; [1] "19068"
-#&gt; 
-#&gt; $search$translationstack[[3]]$explode
-#&gt; [1] "N"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[4]]
-#&gt; [1] "AND"
-#&gt; 
-#&gt; $search$translationstack[[5]]
-#&gt; [1] "GROUP"
-#&gt; 
-#&gt; $search$translationstack[[6]]
-#&gt; [1] "OR"
-#&gt; 
-#&gt; $search$translationstack[[7]]
-#&gt; $search$translationstack[[7]]$term
-#&gt; [1] "\"brca1 genes\"[All Fields]"
-#&gt; 
-#&gt; $search$translationstack[[7]]$field
-#&gt; [1] "All Fields"
-#&gt; 
-#&gt; $search$translationstack[[7]]$count
-#&gt; [1] "6211"
-#&gt; 
-#&gt; $search$translationstack[[7]]$explode
-#&gt; [1] "N"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[8]]
-#&gt; [1] "OR"
-#&gt; 
-#&gt; $search$translationstack[[9]]
-#&gt; $search$translationstack[[9]]$term
-#&gt; [1] "\"brca1\"[All Fields]"
-#&gt; 
-#&gt; $search$translationstack[[9]]$field
-#&gt; [1] "All Fields"
-#&gt; 
-#&gt; $search$translationstack[[9]]$count
-#&gt; [1] "19068"
-#&gt; 
-#&gt; $search$translationstack[[9]]$explode
-#&gt; [1] "N"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[10]]
-#&gt; [1] "OR"
-#&gt; 
-#&gt; $search$translationstack[[11]]
-#&gt; [1] "GROUP"
-#&gt; 
-#&gt; $search$translationstack[[12]]
-#&gt; $search$translationstack[[12]]$term
-#&gt; [1] "\"neoplasms\"[MeSH Terms]"
-#&gt; 
-#&gt; $search$translationstack[[12]]$field
-#&gt; [1] "MeSH Terms"
-#&gt; 
-#&gt; $search$translationstack[[12]]$count
-#&gt; [1] "3562166"
-#&gt; 
-#&gt; $search$translationstack[[12]]$explode
-#&gt; [1] "Y"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[13]]
-#&gt; $search$translationstack[[13]]$term
-#&gt; [1] "\"neoplasms\"[All Fields]"
-#&gt; 
-#&gt; $search$translationstack[[13]]$field
-#&gt; [1] "All Fields"
-#&gt; 
-#&gt; $search$translationstack[[13]]$count
-#&gt; [1] "2866155"
-#&gt; 
-#&gt; $search$translationstack[[13]]$explode
-#&gt; [1] "N"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[14]]
-#&gt; [1] "OR"
-#&gt; 
-#&gt; $search$translationstack[[15]]
-#&gt; $search$translationstack[[15]]$term
-#&gt; [1] "\"cancer\"[All Fields]"
-#&gt; 
-#&gt; $search$translationstack[[15]]$field
-#&gt; [1] "All Fields"
-#&gt; 
-#&gt; $search$translationstack[[15]]$count
-#&gt; [1] "2567986"
-#&gt; 
-#&gt; $search$translationstack[[15]]$explode
-#&gt; [1] "N"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[16]]
-#&gt; [1] "OR"
-#&gt; 
-#&gt; $search$translationstack[[17]]
-#&gt; [1] "GROUP"
-#&gt; 
-#&gt; $search$translationstack[[18]]
-#&gt; $search$translationstack[[18]]$term
-#&gt; [1] "\"adrenocortical carcinoma\"[MeSH Terms]"
-#&gt; 
-#&gt; $search$translationstack[[18]]$field
-#&gt; [1] "MeSH Terms"
-#&gt; 
-#&gt; $search$translationstack[[18]]$count
-#&gt; [1] "1782"
-#&gt; 
-#&gt; $search$translationstack[[18]]$explode
-#&gt; [1] "Y"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[19]]
-#&gt; $search$translationstack[[19]]$term
-#&gt; [1] "\"adrenocortical\"[All Fields]"
-#&gt; 
-#&gt; $search$translationstack[[19]]$field
-#&gt; [1] "All Fields"
-#&gt; 
-#&gt; $search$translationstack[[19]]$count
-#&gt; [1] "22604"
-#&gt; 
-#&gt; $search$translationstack[[19]]$explode
-#&gt; [1] "N"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[20]]
-#&gt; $search$translationstack[[20]]$term
-#&gt; [1] "\"carcinoma\"[All Fields]"
-#&gt; 
-#&gt; $search$translationstack[[20]]$field
-#&gt; [1] "All Fields"
-#&gt; 
-#&gt; $search$translationstack[[20]]$count
-#&gt; [1] "888885"
-#&gt; 
-#&gt; $search$translationstack[[20]]$explode
-#&gt; [1] "N"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[21]]
-#&gt; [1] "AND"
-#&gt; 
-#&gt; $search$translationstack[[22]]
-#&gt; [1] "GROUP"
-#&gt; 
-#&gt; $search$translationstack[[23]]
-#&gt; [1] "OR"
-#&gt; 
-#&gt; $search$translationstack[[24]]
-#&gt; $search$translationstack[[24]]$term
-#&gt; [1] "\"adrenocortical carcinoma\"[All Fields]"
-#&gt; 
-#&gt; $search$translationstack[[24]]$field
-#&gt; [1] "All Fields"
-#&gt; 
-#&gt; $search$translationstack[[24]]$count
-#&gt; [1] "3449"
-#&gt; 
-#&gt; $search$translationstack[[24]]$explode
-#&gt; [1] "N"
-#&gt; 
-#&gt; 
-#&gt; $search$translationstack[[25]]
-#&gt; [1] "OR"
-#&gt; 
-#&gt; $search$translationstack[[26]]
-#&gt; [1] "GROUP"
-#&gt; 
-#&gt; $search$translationstack[[27]]
-#&gt; [1] "OR"
-#&gt; 
-#&gt; $search$translationstack[[28]]
-#&gt; [1] "GROUP"
-#&gt; 
-#&gt; $search$translationstack[[29]]
-#&gt; [1] "AND"
-#&gt; 
-#&gt; 
-#&gt; $search$querytranslation
-#&gt; [1] "(\"genes, brca1\"[MeSH Terms] OR (\"genes\"[All Fields] AND \"brca1\"[All Fields]) OR \"brca1 genes\"[All Fields] OR \"brca1\"[All Fields]) AND ((\"neoplasms\"[MeSH Terms] OR \"neoplasms\"[All Fields] OR \"cancer\"[All Fields]) OR (\"adrenocortical carcinoma\"[MeSH Terms] OR (\"adrenocortical\"[All Fields] AND \"carcinoma\"[All Fields]) OR \"adrenocortical carcinoma\"[All Fields]))"
-#&gt; 
-#&gt; 
-#&gt; $`32778078`
-#&gt; $`32778078`$uid
-#&gt; [1] "32778078"
-#&gt; 
-#&gt; $`32778078`$pubdate
-#&gt; [1] "2020 Aug 10"
-#&gt; 
-#&gt; $`32778078`$epubdate
-#&gt; [1] "2020 Aug 10"
-#&gt; 
-#&gt; $`32778078`$source
-#&gt; [1] "BMC Cancer"
-#&gt; 
-#&gt; $`32778078`$authors
-#&gt;           name authtype clusterid
-#&gt; 1 El Ansari FZ   Author          
-#&gt; 2     Jouali F   Author          
-#&gt; 3  Marchoudi N   Author          
-#&gt; 4   Bennani MM   Author          
-#&gt; 5  Ghailani NN   Author          
-#&gt; 6    Barakat A   Author          
-#&gt; 7     Fekkak J   Author          
-#&gt; 
-#&gt; $`32778078`$lastauthor
-#&gt; [1] "Fekkak J"
-#&gt; 
-#&gt; $`32778078`$title
-#&gt; [1] "Screening of BRCA1/2 genes mutations and copy number variations in patients with high risk for hereditary breast and ovarian cancer syndrome (HBOC)."
-#&gt; 
-#&gt; $`32778078`$sorttitle
-#&gt; [1] "screening of brca1 2 genes mutations and copy number variations in patients with high risk for hereditary breast and ovarian cancer syndrome hboc"
-#&gt; 
-#&gt; $`32778078`$volume
-#&gt; [1] "20"
-#&gt; 
-#&gt; $`32778078`$issue
-#&gt; [1] "1"
-#&gt; 
-#&gt; $`32778078`$pages
-#&gt; [1] "747"
-#&gt; 
-#&gt; $`32778078`$lang
-#&gt; [1] "eng"
-#&gt; 
-#&gt; $`32778078`$nlmuniqueid
-#&gt; [1] "100967800"
-#&gt; 
-#&gt; $`32778078`$issn
-#&gt; [1] ""
-#&gt; 
-#&gt; $`32778078`$essn
-#&gt; [1] "1471-2407"
-#&gt; 
-#&gt; $`32778078`$pubtype
-#&gt; [1] "Journal Article"
-#&gt; 
-#&gt; $`32778078`$recordstatus
-#&gt; [1] "PubMed - indexed for MEDLINE"
-#&gt; 
-#&gt; $`32778078`$pubstatus
-#&gt; [1] "3"
-#&gt; 
-#&gt; $`32778078`$articleids
-#&gt;   idtype idtypen                      value
-#&gt; 1 pubmed       1                   32778078
-#&gt; 2    doi       3 10.1186/s12885-020-07250-0
-#&gt; 3    pii       4 10.1186/s12885-020-07250-0
-#&gt; 4    pmc       8                 PMC7418307
-#&gt; 5    rid       8                   32778078
-#&gt; 6    eid       8                   32778078
-#&gt; 7  pmcid       5        pmc-id: PMC7418307;
-#&gt; 
-#&gt; $`32778078`$history
-#&gt;   pubstatus             date
-#&gt; 1  received 2020/03/02 00:00
-#&gt; 2  accepted 2020/08/03 00:00
-#&gt; 3    entrez 2020/08/12 06:00
-#&gt; 4    pubmed 2020/08/12 06:00
-#&gt; 5   medline 2021/01/16 06:00
-#&gt; 
-#&gt; $`32778078`$references
-#&gt; list()
-#&gt; 
-#&gt; $`32778078`$attributes
-#&gt; [1] "Has Abstract"
-#&gt; 
-#&gt; $`32778078`$pmcrefcount
-#&gt; [1] 1
-#&gt; 
-#&gt; $`32778078`$fulljournalname
-#&gt; [1] "BMC cancer"
-#&gt; 
-#&gt; $`32778078`$elocationid
-#&gt; [1] "doi: 10.1186/s12885-020-07250-0"
-#&gt; 
-#&gt; $`32778078`$doctype
-#&gt; [1] "citation"
-#&gt; 
-#&gt; $`32778078`$srccontriblist
-#&gt; list()
-#&gt; 
-#&gt; $`32778078`$booktitle
-#&gt; [1] ""
-#&gt; 
-#&gt; $`32778078`$medium
-#&gt; [1] ""
-#&gt; 
-#&gt; $`32778078`$edition
-#&gt; [1] ""
-#&gt; 
-#&gt; $`32778078`$publisherlocation
-#&gt; [1] ""
-#&gt; 
-#&gt; $`32778078`$publishername
-#&gt; [1] ""
-#&gt; 
-#&gt; $`32778078`$srcdate
-#&gt; [1] ""
-#&gt; 
-#&gt; $`32778078`$reportnumber
-#&gt; [1] ""
-#&gt; 
-#&gt; $`32778078`$availablefromurl
-#&gt; [1] ""
-#&gt; 
-#&gt; $`32778078`$locationlabel
-#&gt; [1] ""
-#&gt; 
-#&gt; $`32778078`$doccontriblist
-#&gt; list()
-#&gt; 
-#&gt; $`32778078`$docdate
-#&gt; [1] ""
-#&gt; 
-#&gt; $`32778078`$bookname
-#&gt; [1] ""
-#&gt; 
-#&gt; $`32778078`$chapter
-#&gt; [1] ""
-#&gt; 
-#&gt; $`32778078`$sortpubdate
-#&gt; [1] "2020/08/10 00:00"
-#&gt; 
-#&gt; $`32778078`$sortfirstauthor
-#&gt; [1] "El Ansari FZ"
-#&gt; 
-#&gt; $`32778078`$vernaculartitle
-#&gt; [1] ""
-#&gt; 
-#&gt; 
-#&gt; $`30720863`
-#&gt; $`30720863`$uid
-#&gt; [1] "30720863"
-#&gt; 
-#&gt; $`30720863`$pubdate
-#&gt; [1] "2019 Sep 15"
-#&gt; 
-#&gt; $`30720863`$epubdate
-#&gt; [1] "2019 Feb 22"
-#&gt; 
-#&gt; $`30720863`$source
-#&gt; [1] "Int J Cancer"
-#&gt; 
-#&gt; $`30720863`$authors
-#&gt;       name authtype clusterid
-#&gt; 1   Deng M   Author          
-#&gt; 2  Chen HH   Author          
-#&gt; 3    Zhu X   Author          
-#&gt; 4    Luo M   Author          
-#&gt; 5  Zhang K   Author          
-#&gt; 6    Xu CJ   Author          
-#&gt; 7    Hu KM   Author          
-#&gt; 8  Cheng P   Author          
-#&gt; 9  Zhou JJ   Author          
-#&gt; 10 Zheng S   Author          
-#&gt; 11 Chen YD   Author          
-#&gt; 
-#&gt; $`30720863`$lastauthor
-#&gt; [1] "Chen YD"
-#&gt; 
-#&gt; $`30720863`$title
-#&gt; [1] "Prevalence and clinical outcomes of germline mutations in BRCA1/2 and PALB2 genes in 2769 unselected breast cancer patients in China."
-#&gt; 
-#&gt; $`30720863`$sorttitle
-#&gt; [1] "prevalence and clinical outcomes of germline mutations in brca1 2 and palb2 genes in 2769 unselected breast cancer patients in china"
-#&gt; 
-#&gt; $`30720863`$volume
-#&gt; [1] "145"
-#&gt; 
-#&gt; $`30720863`$issue
-#&gt; [1] "6"
-#&gt; 
-#&gt; $`30720863`$pages
-#&gt; [1] "1517-1528"
-#&gt; 
-#&gt; $`30720863`$lang
-#&gt; [1] "eng"
-#&gt; 
-#&gt; $`30720863`$nlmuniqueid
-#&gt; [1] "0042124"
-#&gt; 
-#&gt; $`30720863`$issn
-#&gt; [1] "0020-7136"
-#&gt; 
-#&gt; $`30720863`$essn
-#&gt; [1] "1097-0215"
-#&gt; 
-#&gt; $`30720863`$pubtype
-#&gt; [1] "Journal Article"
-#&gt; 
-#&gt; $`30720863`$recordstatus
-#&gt; [1] "PubMed - indexed for MEDLINE"
-#&gt; 
-#&gt; $`30720863`$pubstatus
-#&gt; [1] "256"
-#&gt; 
-#&gt; $`30720863`$articleids
-#&gt;   idtype idtypen             value
-#&gt; 1 pubmed       1          30720863
-#&gt; 2    doi       3 10.1002/ijc.32184
-#&gt; 3    rid       8          30720863
-#&gt; 4    eid       8          30720863
-#&gt; 
-#&gt; $`30720863`$history
-#&gt;   pubstatus             date
-#&gt; 1  received 2018/08/17 00:00
-#&gt; 2   revised 2018/12/30 00:00
-#&gt; 3  accepted 2019/01/22 00:00
-#&gt; 4    pubmed 2019/02/06 06:00
-#&gt; 5   medline 2020/02/15 06:00
-#&gt; 6    entrez 2019/02/06 06:00
-#&gt; 
-#&gt; $`30720863`$references
-#&gt; list()
-#&gt; 
-#&gt; $`30720863`$attributes
-#&gt; [1] "Has Abstract"
-#&gt; 
-#&gt; $`30720863`$pmcrefcount
-#&gt; [1] 8
-#&gt; 
-#&gt; $`30720863`$fulljournalname
-#&gt; [1] "International journal of cancer"
-#&gt; 
-#&gt; $`30720863`$elocationid
-#&gt; [1] "doi: 10.1002/ijc.32184"
-#&gt; 
-#&gt; $`30720863`$doctype
-#&gt; [1] "citation"
-#&gt; 
-#&gt; $`30720863`$srccontriblist
-#&gt; list()
-#&gt; 
-#&gt; $`30720863`$booktitle
-#&gt; [1] ""
-#&gt; 
-#&gt; $`30720863`$medium
-#&gt; [1] ""
-#&gt; 
-#&gt; $`30720863`$edition
-#&gt; [1] ""
-#&gt; 
-#&gt; $`30720863`$publisherlocation
-#&gt; [1] ""
-#&gt; 
-#&gt; $`30720863`$publishername
-#&gt; [1] ""
-#&gt; 
-#&gt; $`30720863`$srcdate
-#&gt; [1] ""
-#&gt; 
-#&gt; $`30720863`$reportnumber
-#&gt; [1] ""
-#&gt; 
-#&gt; $`30720863`$availablefromurl
-#&gt; [1] ""
-#&gt; 
-#&gt; $`30720863`$locationlabel
-#&gt; [1] ""
-#&gt; 
-#&gt; $`30720863`$doccontriblist
-#&gt; list()
-#&gt; 
-#&gt; $`30720863`$docdate
-#&gt; [1] ""
-#&gt; 
-#&gt; $`30720863`$bookname
-#&gt; [1] ""
-#&gt; 
-#&gt; $`30720863`$chapter
-#&gt; [1] ""
-#&gt; 
-#&gt; $`30720863`$sortpubdate
-#&gt; [1] "2019/09/15 00:00"
-#&gt; 
-#&gt; $`30720863`$sortfirstauthor
-#&gt; [1] "Deng M"
-#&gt; 
-#&gt; $`30720863`$vernaculartitle
-#&gt; [1] ""
-#&gt; 
-#&gt; 
-#&gt; $`29687286`
-#&gt; $`29687286`$uid
-#&gt; [1] "29687286"
-#&gt; 
-#&gt; $`29687286`$pubdate
-#&gt; [1] "2020"
-#&gt; 
-#&gt; $`29687286`$epubdate
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29687286`$source
-#&gt; [1] "Adv Exp Med Biol"
-#&gt; 
-#&gt; $`29687286`$authors
-#&gt;         name authtype clusterid
-#&gt; 1   Saleem M   Author          
-#&gt; 2 Ghazali MB   Author          
-#&gt; 3 Wahab MAMA   Author          
-#&gt; 4  Yusoff NM   Author          
-#&gt; 5   Mahsin H   Author          
-#&gt; 6    Seng CE   Author          
-#&gt; 7  Khalid IA   Author          
-#&gt; 8 Rahman MNG   Author          
-#&gt; 9  Yahaya BH   Author          
-#&gt; 
-#&gt; $`29687286`$lastauthor
-#&gt; [1] "Yahaya BH"
-#&gt; 
-#&gt; $`29687286`$title
-#&gt; [1] "The BRCA1 and BRCA2 Genes in Early-Onset Breast Cancer Patients."
-#&gt; 
-#&gt; $`29687286`$sorttitle
-#&gt; [1] "brca1 and brca2 genes in early onset breast cancer patients"
-#&gt; 
-#&gt; $`29687286`$volume
-#&gt; [1] "1292"
-#&gt; 
-#&gt; $`29687286`$issue
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29687286`$pages
-#&gt; [1] "1-12"
-#&gt; 
-#&gt; $`29687286`$lang
-#&gt; [1] "eng"
-#&gt; 
-#&gt; $`29687286`$nlmuniqueid
-#&gt; [1] "0121103"
-#&gt; 
-#&gt; $`29687286`$issn
-#&gt; [1] "0065-2598"
-#&gt; 
-#&gt; $`29687286`$essn
-#&gt; [1] "2214-8019"
-#&gt; 
-#&gt; $`29687286`$pubtype
-#&gt; [1] "Journal Article" "Review"         
-#&gt; 
-#&gt; $`29687286`$recordstatus
-#&gt; [1] "PubMed - indexed for MEDLINE"
-#&gt; 
-#&gt; $`29687286`$pubstatus
-#&gt; [1] "4"
-#&gt; 
-#&gt; $`29687286`$articleids
-#&gt;   idtype idtypen                 value
-#&gt; 1 pubmed       1              29687286
-#&gt; 2    doi       3 10.1007/5584_2018_147
-#&gt; 3    rid       8              29687286
-#&gt; 4    eid       8              29687286
-#&gt; 
-#&gt; $`29687286`$history
-#&gt;   pubstatus             date
-#&gt; 1    pubmed 2018/04/25 06:00
-#&gt; 2   medline 2021/01/26 06:00
-#&gt; 3    entrez 2018/04/25 06:00
-#&gt; 
-#&gt; $`29687286`$references
-#&gt; list()
-#&gt; 
-#&gt; $`29687286`$attributes
-#&gt; [1] "Has Abstract"
-#&gt; 
-#&gt; $`29687286`$pmcrefcount
-#&gt; [1] 2
-#&gt; 
-#&gt; $`29687286`$fulljournalname
-#&gt; [1] "Advances in experimental medicine and biology"
-#&gt; 
-#&gt; $`29687286`$elocationid
-#&gt; [1] "doi: 10.1007/5584_2018_147"
-#&gt; 
-#&gt; $`29687286`$doctype
-#&gt; [1] "citation"
-#&gt; 
-#&gt; $`29687286`$srccontriblist
-#&gt; list()
-#&gt; 
-#&gt; $`29687286`$booktitle
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29687286`$medium
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29687286`$edition
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29687286`$publisherlocation
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29687286`$publishername
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29687286`$srcdate
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29687286`$reportnumber
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29687286`$availablefromurl
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29687286`$locationlabel
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29687286`$doccontriblist
-#&gt; list()
-#&gt; 
-#&gt; $`29687286`$docdate
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29687286`$bookname
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29687286`$chapter
-#&gt; [1] ""
-#&gt; 
-#&gt; $`29687286`$sortpubdate
-#&gt; [1] "2020/01/01 00:00"
-#&gt; 
-#&gt; $`29687286`$sortfirstauthor
-#&gt; [1] "Saleem M"
-#&gt; 
-#&gt; $`29687286`$vernaculartitle
-#&gt; [1] ""
-#&gt; 
-#&gt; </div></pre>
+    <pre class="examples"><span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>queryPubMed</span><span class='op'>(</span><span class='st'>"BRCA1"</span>, <span class='st'>"cancer"</span>, <span class='st'>"adrenocortical carcinoma"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$count</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "17595"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$retmax</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "3"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$retstart</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "0"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$idlist</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "32778078" "30720863" "29687286"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationset</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                       from</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1                    BRCA1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2                   cancer</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3 adrenocortical carcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                                                                                                               to</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1                "genes, brca1"[MeSH Terms] OR ("genes"[All Fields] AND "brca1"[All Fields]) OR "brca1 genes"[All Fields] OR "brca1"[All Fields]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2                                                                     "neoplasms"[MeSH Terms] OR "neoplasms"[All Fields] OR "cancer"[All Fields]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3 "adrenocortical carcinoma"[MeSH Terms] OR ("adrenocortical"[All Fields] AND "carcinoma"[All Fields]) OR "adrenocortical carcinoma"[All Fields]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[1]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[1]]$term</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "\"genes, brca1\"[MeSH Terms]"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[1]]$field</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "MeSH Terms"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[1]]$count</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "6162"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[1]]$explode</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Y"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[2]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[2]]$term</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "\"genes\"[All Fields]"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[2]]$field</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "All Fields"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[2]]$count</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "1366984"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[2]]$explode</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "N"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[3]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[3]]$term</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "\"brca1\"[All Fields]"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[3]]$field</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "All Fields"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[3]]$count</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "19073"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[3]]$explode</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "N"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[4]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "AND"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[5]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "GROUP"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[6]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "OR"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[7]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[7]]$term</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "\"brca1 genes\"[All Fields]"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[7]]$field</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "All Fields"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[7]]$count</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "6211"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[7]]$explode</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "N"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[8]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "OR"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[9]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[9]]$term</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "\"brca1\"[All Fields]"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[9]]$field</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "All Fields"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[9]]$count</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "19073"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[9]]$explode</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "N"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[10]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "OR"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[11]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "GROUP"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[12]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[12]]$term</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "\"neoplasms\"[MeSH Terms]"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[12]]$field</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "MeSH Terms"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[12]]$count</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "3562945"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[12]]$explode</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Y"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[13]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[13]]$term</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "\"neoplasms\"[All Fields]"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[13]]$field</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "All Fields"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[13]]$count</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "2866825"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[13]]$explode</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "N"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[14]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "OR"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[15]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[15]]$term</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "\"cancer\"[All Fields]"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[15]]$field</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "All Fields"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[15]]$count</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "2568846"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[15]]$explode</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "N"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[16]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "OR"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[17]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "GROUP"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[18]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[18]]$term</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "\"adrenocortical carcinoma\"[MeSH Terms]"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[18]]$field</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "MeSH Terms"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[18]]$count</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "1782"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[18]]$explode</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Y"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[19]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[19]]$term</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "\"adrenocortical\"[All Fields]"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[19]]$field</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "All Fields"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[19]]$count</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "22605"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[19]]$explode</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "N"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[20]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[20]]$term</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "\"carcinoma\"[All Fields]"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[20]]$field</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "All Fields"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[20]]$count</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "889095"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[20]]$explode</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "N"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[21]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "AND"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[22]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "GROUP"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[23]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "OR"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[24]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[24]]$term</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "\"adrenocortical carcinoma\"[All Fields]"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[24]]$field</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "All Fields"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[24]]$count</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "3449"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[24]]$explode</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "N"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[25]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "OR"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[26]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "GROUP"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[27]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "OR"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[28]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "GROUP"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$translationstack[[29]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "AND"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $search$querytranslation</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "(\"genes, brca1\"[MeSH Terms] OR (\"genes\"[All Fields] AND \"brca1\"[All Fields]) OR \"brca1 genes\"[All Fields] OR \"brca1\"[All Fields]) AND ((\"neoplasms\"[MeSH Terms] OR \"neoplasms\"[All Fields] OR \"cancer\"[All Fields]) OR (\"adrenocortical carcinoma\"[MeSH Terms] OR (\"adrenocortical\"[All Fields] AND \"carcinoma\"[All Fields]) OR \"adrenocortical carcinoma\"[All Fields]))"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$uid</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "32778078"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$pubdate</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "2020 Aug 10"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$epubdate</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "2020 Aug 10"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$source</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "BMC Cancer"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$authors</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>           name authtype clusterid</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1 El Ansari FZ   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2     Jouali F   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3  Marchoudi N   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4   Bennani MM   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5  Ghailani NN   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6    Barakat A   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 7     Fekkak J   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$lastauthor</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Fekkak J"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$title</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Screening of BRCA1/2 genes mutations and copy number variations in patients with high risk for hereditary breast and ovarian cancer syndrome (HBOC)."</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$sorttitle</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "screening of brca1 2 genes mutations and copy number variations in patients with high risk for hereditary breast and ovarian cancer syndrome hboc"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$volume</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "20"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$issue</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "1"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$pages</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "747"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$lang</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "eng"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$nlmuniqueid</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "100967800"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$issn</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$essn</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "1471-2407"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$pubtype</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Journal Article"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$recordstatus</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "PubMed - indexed for MEDLINE"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$pubstatus</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "3"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$articleids</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   idtype idtypen                      value</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1 pubmed       1                   32778078</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2    doi       3 10.1186/s12885-020-07250-0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3    pii       4 10.1186/s12885-020-07250-0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4    pmc       8                 PMC7418307</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5    rid       8                   32778078</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6    eid       8                   32778078</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 7  pmcid       5        pmc-id: PMC7418307;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$history</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   pubstatus             date</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1  received 2020/03/02 00:00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2  accepted 2020/08/03 00:00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3    entrez 2020/08/12 06:00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4    pubmed 2020/08/12 06:00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5   medline 2021/01/16 06:00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$references</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> list()</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$attributes</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Has Abstract"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$pmcrefcount</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$fulljournalname</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "BMC cancer"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$elocationid</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "doi: 10.1186/s12885-020-07250-0"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$doctype</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "citation"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$srccontriblist</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> list()</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$booktitle</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$medium</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$edition</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$publisherlocation</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$publishername</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$srcdate</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$reportnumber</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$availablefromurl</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$locationlabel</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$doccontriblist</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> list()</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$docdate</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$bookname</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$chapter</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$sortpubdate</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "2020/08/10 00:00"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$sortfirstauthor</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "El Ansari FZ"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`32778078`$vernaculartitle</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$uid</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "30720863"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$pubdate</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "2019 Sep 15"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$epubdate</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "2019 Feb 22"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$source</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Int J Cancer"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$authors</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       name authtype clusterid</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1   Deng M   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2  Chen HH   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3    Zhu X   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4    Luo M   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5  Zhang K   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6    Xu CJ   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 7    Hu KM   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 8  Cheng P   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 9  Zhou JJ   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10 Zheng S   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11 Chen YD   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$lastauthor</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Chen YD"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$title</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Prevalence and clinical outcomes of germline mutations in BRCA1/2 and PALB2 genes in 2769 unselected breast cancer patients in China."</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$sorttitle</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "prevalence and clinical outcomes of germline mutations in brca1 2 and palb2 genes in 2769 unselected breast cancer patients in china"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$volume</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "145"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$issue</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "6"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$pages</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "1517-1528"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$lang</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "eng"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$nlmuniqueid</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "0042124"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$issn</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "0020-7136"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$essn</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "1097-0215"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$pubtype</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Journal Article"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$recordstatus</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "PubMed - indexed for MEDLINE"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$pubstatus</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "256"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$articleids</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   idtype idtypen             value</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1 pubmed       1          30720863</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2    doi       3 10.1002/ijc.32184</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3    rid       8          30720863</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4    eid       8          30720863</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$history</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   pubstatus             date</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1  received 2018/08/17 00:00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2   revised 2018/12/30 00:00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3  accepted 2019/01/22 00:00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4    pubmed 2019/02/06 06:00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5   medline 2020/02/15 06:00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6    entrez 2019/02/06 06:00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$references</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> list()</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$attributes</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Has Abstract"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$pmcrefcount</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 8</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$fulljournalname</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "International journal of cancer"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$elocationid</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "doi: 10.1002/ijc.32184"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$doctype</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "citation"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$srccontriblist</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> list()</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$booktitle</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$medium</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$edition</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$publisherlocation</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$publishername</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$srcdate</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$reportnumber</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$availablefromurl</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$locationlabel</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$doccontriblist</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> list()</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$docdate</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$bookname</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$chapter</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$sortpubdate</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "2019/09/15 00:00"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$sortfirstauthor</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Deng M"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`30720863`$vernaculartitle</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$uid</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "29687286"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$pubdate</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "2020"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$epubdate</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$source</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Adv Exp Med Biol"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$authors</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         name authtype clusterid</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1   Saleem M   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2 Ghazali MB   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3 Wahab MAMA   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4  Yusoff NM   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5   Mahsin H   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6    Seng CE   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 7  Khalid IA   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 8 Rahman MNG   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 9  Yahaya BH   Author          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$lastauthor</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Yahaya BH"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$title</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "The BRCA1 and BRCA2 Genes in Early-Onset Breast Cancer Patients."</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$sorttitle</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "brca1 and brca2 genes in early onset breast cancer patients"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$volume</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "1292"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$issue</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$pages</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "1-12"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$lang</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "eng"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$nlmuniqueid</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "0121103"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$issn</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "0065-2598"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$essn</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "2214-8019"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$pubtype</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Journal Article" "Review"         </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$recordstatus</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "PubMed - indexed for MEDLINE"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$pubstatus</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "4"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$articleids</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   idtype idtypen                 value</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1 pubmed       1              29687286</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2    doi       3 10.1007/5584_2018_147</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3    rid       8              29687286</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4    eid       8              29687286</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$history</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   pubstatus             date</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1    pubmed 2018/04/25 06:00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2   medline 2021/01/26 06:00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3    entrez 2018/04/25 06:00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$references</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> list()</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$attributes</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Has Abstract"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$pmcrefcount</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 2</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$fulljournalname</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Advances in experimental medicine and biology"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$elocationid</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "doi: 10.1007/5584_2018_147"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$doctype</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "citation"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$srccontriblist</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> list()</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$booktitle</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$medium</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$edition</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$publisherlocation</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$publishername</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$srcdate</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$reportnumber</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$availablefromurl</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$locationlabel</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$doccontriblist</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> list()</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$docdate</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$bookname</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$chapter</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$sortpubdate</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "2020/01/01 00:00"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$sortfirstauthor</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Saleem M"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`29687286`$vernaculartitle</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

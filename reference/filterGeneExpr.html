@@ -223,39 +223,40 @@ more information)</p></td>
 <code><a href='plotRowStats.html'>plotRowStats</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>geneExpr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_gene_expression.RDS"</span><span class='op'>)</span>
-
-<span class='co'># Add some genes with low expression</span>
-<span class='va'>geneExpr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='va'>geneExpr</span>,
-                  lowReadGene1<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>4</span><span class='op'>:</span><span class='fl'>5</span>, <span class='fl'>10</span><span class='op'>)</span><span class='op'>)</span>,
-                  lowReadGene2<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>5</span><span class='op'>:</span><span class='fl'>1</span>, <span class='fl'>10</span><span class='op'>)</span><span class='op'>)</span>,
-                  lowReadGene3<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>10</span><span class='op'>:</span><span class='fl'>1</span>, <span class='fl'>10</span><span class='op'>)</span><span class='op'>)</span>,
-                  lowReadGene4<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>7</span><span class='op'>:</span><span class='fl'>8</span>, <span class='fl'>10</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='co'># Filter out genes with low reads across samples</span>
-<span class='va'>geneExpr</span><span class='op'>[</span><span class='fu'>filterGeneExpr</span><span class='op'>(</span><span class='va'>geneExpr</span><span class='op'>)</span>, <span class='op'>]</span>
-</div><div class='output co'>#&gt;                Normal 1 Normal 2 Normal 3 Normal 4 Normal 5 Cancer 1 Cancer 2
-#&gt; ACTN1|87       15810.00 10454.00  6247.00 23657.00 17107.00 13509.00  7038.00
-#&gt; ADAM15|8751    18894.97  6483.95  5463.78  9740.44  5042.07  4866.82  4901.09
-#&gt; AKAP8L|26993    3211.00  2661.00  1322.00  3322.00  5009.00  2366.00  1358.00
-#&gt; AKR1A1|10327    6413.00  3170.00  2018.00  8364.00  5797.00  4687.00  3901.00
-#&gt; ALDOA|226      69936.00 97762.00 26714.00 72208.00 47405.00 31632.00 34473.00
-#&gt; ANXA6|309      20259.00 10964.00  7139.00 16940.00 12995.00 10893.00  8817.00
-#&gt; ARAP1|116985   11774.26  4539.73  3070.90  6822.52  7186.83  6104.56  4634.95
-#&gt; ATP5C1|509      4869.00  4210.00  4822.00  5879.00  6267.00  4283.00  3530.00
-#&gt; BOLA2|552900    2978.44  3153.36  1790.55  1806.70  2535.48  2035.52  1330.20
-#&gt; C16orf13|84326  2453.00  1758.00  1144.00  2028.00  2381.00  1355.00   952.00
-#&gt;                Cancer 3 Cancer 4 Cancer 5
-#&gt; ACTN1|87        9426.00 21930.00 27954.00
-#&gt; ADAM15|8751     7038.25  3867.00  9977.15
-#&gt; AKAP8L|26993    2958.00  1946.00  1602.00
-#&gt; AKR1A1|10327    3351.00  3670.00  3807.00
-#&gt; ALDOA|226      28357.00 22264.00 53072.00
-#&gt; ANXA6|309      11703.00  5670.00 23697.00
-#&gt; ARAP1|116985    6058.86  4088.99  6724.75
-#&gt; ATP5C1|509      7696.00  5527.00  8987.00
-#&gt; BOLA2|552900    2615.29  1049.42  2471.20
-#&gt; C16orf13|84326  1214.00   904.00  1703.00</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>geneExpr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_gene_expression.RDS"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Add some genes with low expression</span></span>
+<span class='r-in'><span class='va'>geneExpr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='va'>geneExpr</span>,</span>
+<span class='r-in'>                  lowReadGene1<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>4</span><span class='op'>:</span><span class='fl'>5</span>, <span class='fl'>10</span><span class='op'>)</span><span class='op'>)</span>,</span>
+<span class='r-in'>                  lowReadGene2<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>5</span><span class='op'>:</span><span class='fl'>1</span>, <span class='fl'>10</span><span class='op'>)</span><span class='op'>)</span>,</span>
+<span class='r-in'>                  lowReadGene3<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>10</span><span class='op'>:</span><span class='fl'>1</span>, <span class='fl'>10</span><span class='op'>)</span><span class='op'>)</span>,</span>
+<span class='r-in'>                  lowReadGene4<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>7</span><span class='op'>:</span><span class='fl'>8</span>, <span class='fl'>10</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Filter out genes with low reads across samples</span></span>
+<span class='r-in'><span class='va'>geneExpr</span><span class='op'>[</span><span class='fu'>filterGeneExpr</span><span class='op'>(</span><span class='va'>geneExpr</span><span class='op'>)</span>, <span class='op'>]</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                Normal 1 Normal 2 Normal 3 Normal 4 Normal 5 Cancer 1 Cancer 2</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ACTN1|87       15810.00 10454.00  6247.00 23657.00 17107.00 13509.00  7038.00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ADAM15|8751    18894.97  6483.95  5463.78  9740.44  5042.07  4866.82  4901.09</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> AKAP8L|26993    3211.00  2661.00  1322.00  3322.00  5009.00  2366.00  1358.00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> AKR1A1|10327    6413.00  3170.00  2018.00  8364.00  5797.00  4687.00  3901.00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALDOA|226      69936.00 97762.00 26714.00 72208.00 47405.00 31632.00 34473.00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ANXA6|309      20259.00 10964.00  7139.00 16940.00 12995.00 10893.00  8817.00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ARAP1|116985   11774.26  4539.73  3070.90  6822.52  7186.83  6104.56  4634.95</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ATP5C1|509      4869.00  4210.00  4822.00  5879.00  6267.00  4283.00  3530.00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> BOLA2|552900    2978.44  3153.36  1790.55  1806.70  2535.48  2035.52  1330.20</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> C16orf13|84326  2453.00  1758.00  1144.00  2028.00  2381.00  1355.00   952.00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                Cancer 3 Cancer 4 Cancer 5</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ACTN1|87        9426.00 21930.00 27954.00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ADAM15|8751     7038.25  3867.00  9977.15</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> AKAP8L|26993    2958.00  1946.00  1602.00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> AKR1A1|10327    3351.00  3670.00  3807.00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALDOA|226      28357.00 22264.00 53072.00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ANXA6|309      11703.00  5670.00 23697.00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ARAP1|116985    6058.86  4088.99  6724.75</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ATP5C1|509      7696.00  5527.00  8987.00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> BOLA2|552900    2615.29  1049.42  2471.20</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> C16orf13|84326  1214.00   904.00  1703.00</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

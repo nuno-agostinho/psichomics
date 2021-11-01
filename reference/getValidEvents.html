@@ -194,41 +194,42 @@ comparing with the validator? Default is <code>FALSE</code> (see details)</p></t
 sequences where <code>exon</code> occurs consecutively) as valid when comparing
 based on the <code>validator</code>. For example, if <code>validator = c("gene",
 "mRNA", "exon")</code> and <code>areMultipleExonsValid = FALSE</code>, the event 
-<code><a href='https://rdrr.io/r/base/c.html'>c("gene", "mRNA", "exon", "exon")</a></code> is not valid as it has one 
+<code>c("gene", "mRNA", "exon", "exon")</code> is not valid as it has one 
 additional exon. If <code>areMultipleExonsValid = TRUE</code>, the same event would
 be valid.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>event</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"
- chr1 SE gene 17233 18061  .  -  .
- chr1 SE dkfd 00000 30000  .  -  .
- chr1 SE mRNA 17233 18061  .  -  .
- chr1 SE exon 17233 17368  .  -  .
- chr1 SE exon 17526 17742  .  -  .
- chr1 SE exon 17915 18061  .  -  .
- chr1 SE mRNA 17233 18061  .  -  .
- chr1 SE exon 17233 17368  .  -  .
- chr1 SE exon 17915 18061  .  -  .
- chr1 SE gene 17233 18061  .  -  .
- chr1 SE mRNA 17233 18061  .  -  .
- chr1 SE exon 17233 17368  .  -  .
- chr1 SE exon 17606 17742  .  -  .
- chr1 SE exon 17915 18061  .  -  .
- chr1 SE mRNA 17233 18061  .  -  .
- chr1 SE exon 17233 17368  .  -  .
- chr1 SE exon 17915 18061  .  -  .
-"</span><span class='op'>)</span>
-<span class='va'>validator</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"gene"</span>, <span class='st'>"mRNA"</span>, <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>"exon"</span>, <span class='fl'>3</span><span class='op'>)</span>, <span class='st'>"mRNA"</span>, <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>"exon"</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>getValidEvents</span><span class='op'>(</span><span class='va'>event</span>, <span class='va'>validator</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;      V1 V2   V3    V4    V5 V6 V7 V8
-#&gt; 10 chr1 SE gene 17233 18061  .  -  .
-#&gt; 11 chr1 SE mRNA 17233 18061  .  -  .
-#&gt; 12 chr1 SE exon 17233 17368  .  -  .
-#&gt; 13 chr1 SE exon 17606 17742  .  -  .
-#&gt; 14 chr1 SE exon 17915 18061  .  -  .
-#&gt; 15 chr1 SE mRNA 17233 18061  .  -  .
-#&gt; 16 chr1 SE exon 17233 17368  .  -  .
-#&gt; 17 chr1 SE exon 17915 18061  .  -  .</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>event</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"</span>
+<span class='r-in'> chr1 SE gene 17233 18061  .  -  .</span>
+<span class='r-in'> chr1 SE dkfd 00000 30000  .  -  .</span>
+<span class='r-in'> chr1 SE mRNA 17233 18061  .  -  .</span>
+<span class='r-in'> chr1 SE exon 17233 17368  .  -  .</span>
+<span class='r-in'> chr1 SE exon 17526 17742  .  -  .</span>
+<span class='r-in'> chr1 SE exon 17915 18061  .  -  .</span>
+<span class='r-in'> chr1 SE mRNA 17233 18061  .  -  .</span>
+<span class='r-in'> chr1 SE exon 17233 17368  .  -  .</span>
+<span class='r-in'> chr1 SE exon 17915 18061  .  -  .</span>
+<span class='r-in'> chr1 SE gene 17233 18061  .  -  .</span>
+<span class='r-in'> chr1 SE mRNA 17233 18061  .  -  .</span>
+<span class='r-in'> chr1 SE exon 17233 17368  .  -  .</span>
+<span class='r-in'> chr1 SE exon 17606 17742  .  -  .</span>
+<span class='r-in'> chr1 SE exon 17915 18061  .  -  .</span>
+<span class='r-in'> chr1 SE mRNA 17233 18061  .  -  .</span>
+<span class='r-in'> chr1 SE exon 17233 17368  .  -  .</span>
+<span class='r-in'> chr1 SE exon 17915 18061  .  -  .</span>
+<span class='r-in'>"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>validator</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"gene"</span>, <span class='st'>"mRNA"</span>, <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>"exon"</span>, <span class='fl'>3</span><span class='op'>)</span>, <span class='st'>"mRNA"</span>, <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>"exon"</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>getValidEvents</span><span class='op'>(</span><span class='va'>event</span>, <span class='va'>validator</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      V1 V2   V3    V4    V5 V6 V7 V8</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10 chr1 SE gene 17233 18061  .  -  .</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11 chr1 SE mRNA 17233 18061  .  -  .</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12 chr1 SE exon 17233 17368  .  -  .</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13 chr1 SE exon 17606 17742  .  -  .</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14 chr1 SE exon 17915 18061  .  -  .</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15 chr1 SE mRNA 17233 18061  .  -  .</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16 chr1 SE exon 17233 17368  .  -  .</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17 chr1 SE exon 17915 18061  .  -  .</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

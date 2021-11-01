@@ -195,47 +195,51 @@ the function in use)</p>
 <code>getSplicingEventFromGenes</code></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>ASevents</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SE_1_+_201763003_201763300_201763374_201763594_NAV1"</span>,
-              <span class='st'>"SE_1_+_183515472_183516238_183516387_183518343_SMG7"</span>,
-              <span class='st'>"SE_1_+_183441784_183471388_183471526_183481972_SMG7"</span>,
-              <span class='st'>"SE_1_+_181019422_181022709_181022813_181024361_MR1"</span>,
-              <span class='st'>"SE_1_+_181695298_181700311_181700367_181701520_CACNA1E"</span><span class='op'>)</span>
-<span class='va'>genes</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"NAV1"</span>, <span class='st'>"SMG7"</span>, <span class='st'>"MR1"</span>, <span class='st'>"HELLO"</span><span class='op'>)</span>
-
-<span class='co'># Get splicing events from genes</span>
-<span class='va'>matchedASevents</span> <span class='op'>&lt;-</span> <span class='fu'>getSplicingEventFromGenes</span><span class='op'>(</span><span class='va'>genes</span>, <span class='va'>ASevents</span><span class='op'>)</span>
-
-<span class='co'># Names of matched events are the matching input genes</span>
-<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>matchedASevents</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "NAV1" "SMG7" "SMG7" "MR1" </div><div class='input'><span class='va'>matchedASevents</span>
-</div><div class='output co'>#&gt;                                                  NAV1 
-#&gt; "SE_1_+_201763003_201763300_201763374_201763594_NAV1" 
-#&gt;                                                  SMG7 
-#&gt; "SE_1_+_183515472_183516238_183516387_183518343_SMG7" 
-#&gt;                                                  SMG7 
-#&gt; "SE_1_+_183441784_183471388_183471526_183481972_SMG7" 
-#&gt;                                                   MR1 
-#&gt;  "SE_1_+_181019422_181022709_181022813_181024361_MR1" </div><div class='input'>
-<span class='co'># Get genes from splicing events</span>
-<span class='va'>matchedGenes</span> <span class='op'>&lt;-</span> <span class='fu'>getGenesFromSplicingEvents</span> <span class='op'>(</span><span class='va'>ASevents</span><span class='op'>)</span>
-
-<span class='co'># Names of matched genes are the matching input alternative splicing events</span>
-<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>matchedGenes</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "SE_1_+_201763003_201763300_201763374_201763594_NAV1"   
-#&gt; [2] "SE_1_+_183515472_183516238_183516387_183518343_SMG7"   
-#&gt; [3] "SE_1_+_183441784_183471388_183471526_183481972_SMG7"   
-#&gt; [4] "SE_1_+_181019422_181022709_181022813_181024361_MR1"    
-#&gt; [5] "SE_1_+_181695298_181700311_181700367_181701520_CACNA1E"</div><div class='input'><span class='va'>matchedGenes</span>
-</div><div class='output co'>#&gt;    SE_1_+_201763003_201763300_201763374_201763594_NAV1 
-#&gt;                                                 "NAV1" 
-#&gt;    SE_1_+_183515472_183516238_183516387_183518343_SMG7 
-#&gt;                                                 "SMG7" 
-#&gt;    SE_1_+_183441784_183471388_183471526_183481972_SMG7 
-#&gt;                                                 "SMG7" 
-#&gt;     SE_1_+_181019422_181022709_181022813_181024361_MR1 
-#&gt;                                                  "MR1" 
-#&gt; SE_1_+_181695298_181700311_181700367_181701520_CACNA1E 
-#&gt;                                              "CACNA1E" </div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>ASevents</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SE_1_+_201763003_201763300_201763374_201763594_NAV1"</span>,</span>
+<span class='r-in'>              <span class='st'>"SE_1_+_183515472_183516238_183516387_183518343_SMG7"</span>,</span>
+<span class='r-in'>              <span class='st'>"SE_1_+_183441784_183471388_183471526_183481972_SMG7"</span>,</span>
+<span class='r-in'>              <span class='st'>"SE_1_+_181019422_181022709_181022813_181024361_MR1"</span>,</span>
+<span class='r-in'>              <span class='st'>"SE_1_+_181695298_181700311_181700367_181701520_CACNA1E"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>genes</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"NAV1"</span>, <span class='st'>"SMG7"</span>, <span class='st'>"MR1"</span>, <span class='st'>"HELLO"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Get splicing events from genes</span></span>
+<span class='r-in'><span class='va'>matchedASevents</span> <span class='op'>&lt;-</span> <span class='fu'>getSplicingEventFromGenes</span><span class='op'>(</span><span class='va'>genes</span>, <span class='va'>ASevents</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Names of matched events are the matching input genes</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>matchedASevents</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "NAV1" "SMG7" "SMG7" "MR1" </span>
+<span class='r-in'><span class='va'>matchedASevents</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                  NAV1 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> "SE_1_+_201763003_201763300_201763374_201763594_NAV1" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                  SMG7 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> "SE_1_+_183515472_183516238_183516387_183518343_SMG7" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                  SMG7 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> "SE_1_+_183441784_183471388_183471526_183481972_SMG7" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                   MR1 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  "SE_1_+_181019422_181022709_181022813_181024361_MR1" </span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Get genes from splicing events</span></span>
+<span class='r-in'><span class='va'>matchedGenes</span> <span class='op'>&lt;-</span> <span class='fu'>getGenesFromSplicingEvents</span> <span class='op'>(</span><span class='va'>ASevents</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Names of matched genes are the matching input alternative splicing events</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>matchedGenes</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "SE_1_+_201763003_201763300_201763374_201763594_NAV1"   </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [2] "SE_1_+_183515472_183516238_183516387_183518343_SMG7"   </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [3] "SE_1_+_183441784_183471388_183471526_183481972_SMG7"   </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [4] "SE_1_+_181019422_181022709_181022813_181024361_MR1"    </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [5] "SE_1_+_181695298_181700311_181700367_181701520_CACNA1E"</span>
+<span class='r-in'><span class='va'>matchedGenes</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    SE_1_+_201763003_201763300_201763374_201763594_NAV1 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                 "NAV1" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    SE_1_+_183515472_183516238_183516387_183518343_SMG7 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                 "SMG7" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    SE_1_+_183441784_183471388_183471526_183481972_SMG7 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                 "SMG7" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     SE_1_+_181019422_181022709_181022813_181024361_MR1 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                  "MR1" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_181695298_181700311_181700367_181701520_CACNA1E </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                              "CACNA1E" </span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

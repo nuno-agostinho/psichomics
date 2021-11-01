@@ -241,46 +241,48 @@ cohort)</p></td>
     <p>Response from the FireBrowse API (it needs to be parsed)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>cohort</span> <span class='op'>&lt;-</span> <span class='fu'><a href='getTCGAdataTypes.html'>getTCGAcohorts</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>queryFirebrowseData</span><span class='op'>(</span>cohort <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>cohort</span><span class='op'>)</span>,
-                                 data_type <span class='op'>=</span> <span class='st'>"mRNASeq"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; Response [http://firebrowse.org/api/v1/Archives/StandardData?format=json&amp;date=2016_01_28&amp;cohort=ACC&amp;data_type=mRNASeq]
-#&gt;   Date: 2021-10-29 07:46
-#&gt;   Status: 200
-#&gt;   Content-Type: application/json
-#&gt;   Size: 12.1 kB
-#&gt; {
-#&gt;   "StandardData": [
-#&gt;     {
-#&gt;       "active": true,
-#&gt;       "center": "unc.edu",
-#&gt;       "cohort": "ACC",
-#&gt;       "data_type": "mRNASeq",
-#&gt;       "date": "Thu, 28 Jan 2016 00:00:00 GMT",
-#&gt;       "filesize": 16560553,
-#&gt;       "level": 3,
-#&gt; ...</div><div class='input'>
-<span class='co'># Querying for data from a specific date</span>
-<span class='va'>dates</span> <span class='op'>&lt;-</span> <span class='fu'><a href='getTCGAdataTypes.html'>getTCGAdates</a></span><span class='op'>(</span><span class='op'>)</span>
-<span class='va'>dates</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/format.html'>format</a></span><span class='op'>(</span><span class='va'>dates</span>, <span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'><a href='getFirebrowseDateFormat.html'>getFirebrowseDateFormat</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>$</span><span class='va'>query</span><span class='op'>)</span>
-
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>queryFirebrowseData</span><span class='op'>(</span>date <span class='op'>=</span> <span class='va'>dates</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>]</span>, cohort <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>cohort</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; Response [http://firebrowse.org/api/v1/Archives/StandardData?format=json&amp;date=2015_11_01&amp;cohort=ACC]
-#&gt;   Date: 2021-10-29 07:46
-#&gt;   Status: 200
-#&gt;   Content-Type: application/json
-#&gt;   Size: 37.2 kB
-#&gt; {
-#&gt;   "StandardData": [
-#&gt;     {
-#&gt;       "active": true,
-#&gt;       "center": "unc.edu",
-#&gt;       "cohort": "ACC",
-#&gt;       "data_type": "mRNASeq",
-#&gt;       "date": "Sun, 01 Nov 2015 00:00:00 GMT",
-#&gt;       "level": 3,
-#&gt;       "platform": "illuminahiseq_rnaseqv2",
-#&gt; ...</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>cohort</span> <span class='op'>&lt;-</span> <span class='fu'><a href='getTCGAdataTypes.html'>getTCGAcohorts</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>queryFirebrowseData</span><span class='op'>(</span>cohort <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>cohort</span><span class='op'>)</span>,</span>
+<span class='r-in'>                                 data_type <span class='op'>=</span> <span class='st'>"mRNASeq"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Response [http://firebrowse.org/api/v1/Archives/StandardData?format=json&amp;date=2016_01_28&amp;cohort=ACC&amp;data_type=mRNASeq]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   Date: 2021-11-01 07:42</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   Status: 200</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   Content-Type: application/json</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   Size: 12.1 kB</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> {</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   "StandardData": [</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     {</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       "active": true,</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       "center": "unc.edu",</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       "cohort": "ACC",</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       "data_type": "mRNASeq",</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       "date": "Thu, 28 Jan 2016 00:00:00 GMT",</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       "filesize": 16560553,</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       "level": 3,</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ...</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Querying for data from a specific date</span></span>
+<span class='r-in'><span class='va'>dates</span> <span class='op'>&lt;-</span> <span class='fu'><a href='getTCGAdataTypes.html'>getTCGAdates</a></span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>dates</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/format.html'>format</a></span><span class='op'>(</span><span class='va'>dates</span>, <span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'><a href='getFirebrowseDateFormat.html'>getFirebrowseDateFormat</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>$</span><span class='va'>query</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>queryFirebrowseData</span><span class='op'>(</span>date <span class='op'>=</span> <span class='va'>dates</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>]</span>, cohort <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>cohort</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Response [http://firebrowse.org/api/v1/Archives/StandardData?format=json&amp;date=2015_11_01&amp;cohort=ACC]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   Date: 2021-11-01 07:42</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   Status: 200</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   Content-Type: application/json</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   Size: 37.2 kB</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> {</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   "StandardData": [</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     {</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       "active": true,</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       "center": "unc.edu",</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       "cohort": "ACC",</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       "data_type": "mRNASeq",</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       "date": "Sun, 01 Nov 2015 00:00:00 GMT",</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       "level": 3,</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       "platform": "illuminahiseq_rnaseqv2",</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ...</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

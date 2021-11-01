@@ -212,22 +212,22 @@ selection may speed up data loading</p></td>
 <code><a href='loadTCGAdata.html'>loadTCGAdata</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='co'># Download and load all available GTEx data</span>
-<span class='va'>data</span> <span class='op'>&lt;-</span> <span class='fu'>loadGtexData</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='co'># Download and load only junction quantification and sample info from GTEx</span>
-<span class='fu'><a href='getGtexDataTypes.html'>getGtexDataTypes</a></span><span class='op'>(</span><span class='op'>)</span>
-<span class='va'>data</span> <span class='op'>&lt;-</span> <span class='fu'>loadGtexData</span><span class='op'>(</span>data<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"sampleInfo"</span>, <span class='st'>"junctionQuant"</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='co'># Download and load only data for specific tissues</span>
-<span class='fu'><a href='getGtexTissues.html'>getGtexTissues</a></span><span class='op'>(</span><span class='op'>)</span>
-<span class='va'>data</span> <span class='op'>&lt;-</span> <span class='fu'>loadGtexData</span><span class='op'>(</span>tissue<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Stomach"</span>, <span class='st'>"Small Intestine"</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='co'># Download and load data from a specific GTEx data release</span>
-<span class='va'>data</span> <span class='op'>&lt;-</span> <span class='fu'>loadGtexData</span><span class='op'>(</span>tissue<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Stomach"</span>, <span class='st'>"Small Intestine"</span><span class='op'>)</span>, release<span class='op'>=</span><span class='fl'>7</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='co'># Download and load all available GTEx data</span></span>
+<span class='r-in'><span class='va'>data</span> <span class='op'>&lt;-</span> <span class='fu'>loadGtexData</span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Download and load only junction quantification and sample info from GTEx</span></span>
+<span class='r-in'><span class='fu'><a href='getGtexDataTypes.html'>getGtexDataTypes</a></span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>data</span> <span class='op'>&lt;-</span> <span class='fu'>loadGtexData</span><span class='op'>(</span>data<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"sampleInfo"</span>, <span class='st'>"junctionQuant"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Download and load only data for specific tissues</span></span>
+<span class='r-in'><span class='fu'><a href='getGtexTissues.html'>getGtexTissues</a></span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>data</span> <span class='op'>&lt;-</span> <span class='fu'>loadGtexData</span><span class='op'>(</span>tissue<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Stomach"</span>, <span class='st'>"Small Intestine"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Download and load data from a specific GTEx data release</span></span>
+<span class='r-in'><span class='va'>data</span> <span class='op'>&lt;-</span> <span class='fu'>loadGtexData</span><span class='op'>(</span>tissue<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Stomach"</span>, <span class='st'>"Small Intestine"</span><span class='op'>)</span>, release<span class='op'>=</span><span class='fl'>7</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

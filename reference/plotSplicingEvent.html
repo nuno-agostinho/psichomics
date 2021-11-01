@@ -263,27 +263,27 @@ splicing junctions and text? (only related with mutually exclusive exons)</p></t
     <p>List of SVG (one for each alternative splicing event)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>events</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>
-  <span class='st'>"A3SS_15_+_63353138_63353912_63353397_TPM1"</span>,
-  <span class='st'>"A3SS_11_-_61118463_61117115_61117894_CYB561A3"</span>,
-  <span class='st'>"A5SS_21_+_48055675_48056459_48056808_PRMT2"</span>,
-  <span class='st'>"A5SS_1_-_1274742_1274667_1274033_DVL1"</span>,
-  <span class='st'>"AFE_9_+_131902430_131901928_131904724_PPP2R4"</span>,
-  <span class='st'>"AFE_5_-_134686513_134688636_134681747_H2AFY"</span>,
-  <span class='st'>"ALE_12_+_56554104_56554410_56555171_MYL6"</span>,
-  <span class='st'>"ALE_8_-_38314874_38287466_38285953_FGFR1"</span>,
-  <span class='st'>"SE_9_+_6486925_6492303_6492401_6493826_UHRF2"</span>,
-  <span class='st'>"SE_19_-_5218431_5216778_5216731_5215606_PTPRS"</span>,
-  <span class='st'>"MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1"</span>,
-  <span class='st'>"MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7"</span><span class='op'>)</span>
-<span class='va'>diagram</span> <span class='op'>&lt;-</span> <span class='fu'>plotSplicingEvent</span><span class='op'>(</span><span class='va'>events</span><span class='op'>)</span>
-
-<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='va'>diagram</span><span class='op'>[[</span><span class='st'>"A3SS_3_-_145796903_145794682_145795711_PLOD2"</span><span class='op'>]</span><span class='op'>]</span>
-<span class='va'>diagram</span><span class='op'>[[</span><span class='fl'>6</span><span class='op'>]</span><span class='op'>]</span>
-<span class='va'>diagram</span>
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>events</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span></span>
+<span class='r-in'>  <span class='st'>"A3SS_15_+_63353138_63353912_63353397_TPM1"</span>,</span>
+<span class='r-in'>  <span class='st'>"A3SS_11_-_61118463_61117115_61117894_CYB561A3"</span>,</span>
+<span class='r-in'>  <span class='st'>"A5SS_21_+_48055675_48056459_48056808_PRMT2"</span>,</span>
+<span class='r-in'>  <span class='st'>"A5SS_1_-_1274742_1274667_1274033_DVL1"</span>,</span>
+<span class='r-in'>  <span class='st'>"AFE_9_+_131902430_131901928_131904724_PPP2R4"</span>,</span>
+<span class='r-in'>  <span class='st'>"AFE_5_-_134686513_134688636_134681747_H2AFY"</span>,</span>
+<span class='r-in'>  <span class='st'>"ALE_12_+_56554104_56554410_56555171_MYL6"</span>,</span>
+<span class='r-in'>  <span class='st'>"ALE_8_-_38314874_38287466_38285953_FGFR1"</span>,</span>
+<span class='r-in'>  <span class='st'>"SE_9_+_6486925_6492303_6492401_6493826_UHRF2"</span>,</span>
+<span class='r-in'>  <span class='st'>"SE_19_-_5218431_5216778_5216731_5215606_PTPRS"</span>,</span>
+<span class='r-in'>  <span class='st'>"MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1"</span>,</span>
+<span class='r-in'>  <span class='st'>"MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>diagram</span> <span class='op'>&lt;-</span> <span class='fu'>plotSplicingEvent</span><span class='op'>(</span><span class='va'>events</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='va'>diagram</span><span class='op'>[[</span><span class='st'>"A3SS_3_-_145796903_145794682_145795711_PLOD2"</span><span class='op'>]</span><span class='op'>]</span></span>
+<span class='r-in'><span class='va'>diagram</span><span class='op'>[[</span><span class='fl'>6</span><span class='op'>]</span><span class='op'>]</span></span>
+<span class='r-in'><span class='va'>diagram</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

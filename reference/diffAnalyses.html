@@ -240,224 +240,237 @@ event (Shiny only)</p></td>
 <code><a href='plotDistribution.html'>plotDistribution</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events</span>
-<span class='va'>eventType</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SE"</span>, <span class='st'>"MXE"</span><span class='op'>)</span>
-<span class='va'>annot</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_splicing_annotation.RDS"</span><span class='op'>)</span>
-<span class='va'>junctionQuant</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_junctionQuant.RDS"</span><span class='op'>)</span>
-
-<span class='va'>psi</span> <span class='op'>&lt;-</span> <span class='fu'><a href='quantifySplicing.html'>quantifySplicing</a></span><span class='op'>(</span><span class='va'>annot</span>, <span class='va'>junctionQuant</span>, eventType<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SE"</span>, <span class='st'>"MXE"</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Using 3 of 3 events (100%) whose junctions are present in junction quantification data...</span></div><div class='output co'>#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </div><div class='output co'>#&gt; <span class='message'>Using 3 of 3 events (100%) whose junctions are present in junction quantification data...</span></div><div class='output co'>#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </div><div class='input'><span class='va'>group</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>"Normal"</span>, <span class='fl'>3</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>"Tumour"</span>, <span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'>diffAnalyses</span><span class='op'>(</span><span class='va'>psi</span>, <span class='va'>group</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.0379 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.0112 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.000493 secs</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Time difference of 0.00143 secs</span></div><div class='output co'>#&gt;                                                    Event type Chromosome Strand
-#&gt; SE_1_+_32_35_37_38_ACTN1                    Skipped exon (SE)          1      +
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1 Mutually exclusive exon (MXE)          1      +
-#&gt; SE_2_+_32_35_37_38_ALDOA                    Skipped exon (SE)          2      +
-#&gt; SE_3_+_32_35_37_38_ANXA6                    Skipped exon (SE)          3      +
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA Mutually exclusive exon (MXE)          2      +
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6 Mutually exclusive exon (MXE)          3      +
-#&gt;                                  Gene Survival by PSI cutoff Optimal PSI cutoff
-#&gt; SE_1_+_32_35_37_38_ACTN1        ACTN1                   &lt;NA&gt;               &lt;NA&gt;
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1 ACTN1                   &lt;NA&gt;               &lt;NA&gt;
-#&gt; SE_2_+_32_35_37_38_ALDOA        ALDOA                   &lt;NA&gt;               &lt;NA&gt;
-#&gt; SE_3_+_32_35_37_38_ANXA6        ANXA6                   &lt;NA&gt;               &lt;NA&gt;
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA ALDOA                   &lt;NA&gt;               &lt;NA&gt;
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6 ANXA6                   &lt;NA&gt;               &lt;NA&gt;
-#&gt;                                 Log-rank p-value Samples (Normal)
-#&gt; SE_1_+_32_35_37_38_ACTN1                    &lt;NA&gt;                3
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1             &lt;NA&gt;                3
-#&gt; SE_2_+_32_35_37_38_ALDOA                    &lt;NA&gt;                3
-#&gt; SE_3_+_32_35_37_38_ANXA6                    &lt;NA&gt;                3
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA             &lt;NA&gt;                3
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6             &lt;NA&gt;                3
-#&gt;                                 Samples (Tumour) Wilcoxon statistic
-#&gt; SE_1_+_32_35_37_38_ACTN1                       3                4.5
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1                3                4.5
-#&gt; SE_2_+_32_35_37_38_ALDOA                       3                6.0
-#&gt; SE_3_+_32_35_37_38_ANXA6                       3                4.0
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA                3                8.0
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6                3                2.0
-#&gt;                                 Wilcoxon p-value Wilcoxon p-value (BH adjusted)
-#&gt; SE_1_+_32_35_37_38_ACTN1                     NaN                            NaN
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1              NaN                            NaN
-#&gt; SE_2_+_32_35_37_38_ALDOA                     0.7                      0.9333333
-#&gt; SE_3_+_32_35_37_38_ANXA6                     1.0                      1.0000000
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA              0.2                      0.8000000
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6              0.4                      0.8000000
-#&gt;                                 Wilcoxon null value Wilcoxon alternative
-#&gt; SE_1_+_32_35_37_38_ACTN1                          0            two.sided
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1                   0            two.sided
-#&gt; SE_2_+_32_35_37_38_ALDOA                          0            two.sided
-#&gt; SE_3_+_32_35_37_38_ANXA6                          0            two.sided
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA                   0            two.sided
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6                   0            two.sided
-#&gt;                                                                   Wilcoxon method
-#&gt; SE_1_+_32_35_37_38_ACTN1        Wilcoxon rank sum test with continuity correction
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1 Wilcoxon rank sum test with continuity correction
-#&gt; SE_2_+_32_35_37_38_ALDOA                             Wilcoxon rank sum exact test
-#&gt; SE_3_+_32_35_37_38_ANXA6                             Wilcoxon rank sum exact test
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA                      Wilcoxon rank sum exact test
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6                      Wilcoxon rank sum exact test
-#&gt;                                                   Wilcoxon data name
-#&gt; SE_1_+_32_35_37_38_ACTN1        vector[typeOne] and vector[!typeOne]
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1 vector[typeOne] and vector[!typeOne]
-#&gt; SE_2_+_32_35_37_38_ALDOA        vector[typeOne] and vector[!typeOne]
-#&gt; SE_3_+_32_35_37_38_ANXA6        vector[typeOne] and vector[!typeOne]
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA vector[typeOne] and vector[!typeOne]
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6 vector[typeOne] and vector[!typeOne]
-#&gt;                                 Kruskal statistic Kruskal parameter
-#&gt; SE_1_+_32_35_37_38_ACTN1                      NaN                 1
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1               NaN                 1
-#&gt; SE_2_+_32_35_37_38_ALDOA               0.42857143                 1
-#&gt; SE_3_+_32_35_37_38_ANXA6               0.04761905                 1
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA        2.33333333                 1
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6        1.19047619                 1
-#&gt;                                 Kruskal p-value Kruskal p-value (BH adjusted)
-#&gt; SE_1_+_32_35_37_38_ACTN1                    NaN                           NaN
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1             NaN                           NaN
-#&gt; SE_2_+_32_35_37_38_ALDOA              0.5126908                     0.6835877
-#&gt; SE_3_+_32_35_37_38_ANXA6              0.8272593                     0.8272593
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA       0.1266305                     0.5065218
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6       0.2752335                     0.5504670
-#&gt;                                               Kruskal method Kruskal data name
-#&gt; SE_1_+_32_35_37_38_ACTN1        Kruskal-Wallis rank sum test  vector and group
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1 Kruskal-Wallis rank sum test  vector and group
-#&gt; SE_2_+_32_35_37_38_ALDOA        Kruskal-Wallis rank sum test  vector and group
-#&gt; SE_3_+_32_35_37_38_ANXA6        Kruskal-Wallis rank sum test  vector and group
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA Kruskal-Wallis rank sum test  vector and group
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6 Kruskal-Wallis rank sum test  vector and group
-#&gt;                                 Levene statistic Levene p-value
-#&gt; SE_1_+_32_35_37_38_ACTN1                     NaN            NaN
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1              NaN            NaN
-#&gt; SE_2_+_32_35_37_38_ALDOA                1.534423      0.2831735
-#&gt; SE_3_+_32_35_37_38_ANXA6                1.898555      0.2403023
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA         1.102360      0.3529948
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6         1.453025      0.2944743
-#&gt;                                 Levene p-value (BH adjusted) Levene data name
-#&gt; SE_1_+_32_35_37_38_ACTN1                                 NaN vector and group
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1                          NaN vector and group
-#&gt; SE_2_+_32_35_37_38_ALDOA                           0.3529948 vector and group
-#&gt; SE_3_+_32_35_37_38_ANXA6                           0.3529948 vector and group
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA                    0.3529948 vector and group
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6                    0.3529948 vector and group
-#&gt;                                                    Levene method
-#&gt; SE_1_+_32_35_37_38_ACTN1        Levene's test (using the median)
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1 Levene's test (using the median)
-#&gt; SE_2_+_32_35_37_38_ALDOA        Levene's test (using the median)
-#&gt; SE_3_+_32_35_37_38_ANXA6        Levene's test (using the median)
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA Levene's test (using the median)
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6 Levene's test (using the median)
-#&gt;                                 Fligner-Killeen statistic
-#&gt; SE_1_+_32_35_37_38_ACTN1                              NaN
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1                       NaN
-#&gt; SE_2_+_32_35_37_38_ALDOA                         1.042057
-#&gt; SE_3_+_32_35_37_38_ANXA6                         1.042057
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA                  1.042057
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6                  1.042057
-#&gt;                                 Fligner-Killeen parameter
-#&gt; SE_1_+_32_35_37_38_ACTN1                                1
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1                         1
-#&gt; SE_2_+_32_35_37_38_ALDOA                                1
-#&gt; SE_3_+_32_35_37_38_ANXA6                                1
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA                         1
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6                         1
-#&gt;                                 Fligner-Killeen p-value
-#&gt; SE_1_+_32_35_37_38_ACTN1                            NaN
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1                     NaN
-#&gt; SE_2_+_32_35_37_38_ALDOA                      0.3073435
-#&gt; SE_3_+_32_35_37_38_ANXA6                      0.3073435
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA               0.3073435
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6               0.3073435
-#&gt;                                 Fligner-Killeen p-value (BH adjusted)
-#&gt; SE_1_+_32_35_37_38_ACTN1                                          NaN
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1                                   NaN
-#&gt; SE_2_+_32_35_37_38_ALDOA                                    0.3073435
-#&gt; SE_3_+_32_35_37_38_ANXA6                                    0.3073435
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA                             0.3073435
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6                             0.3073435
-#&gt;                                                           Fligner-Killeen method
-#&gt; SE_1_+_32_35_37_38_ACTN1        Fligner-Killeen test of homogeneity of variances
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1 Fligner-Killeen test of homogeneity of variances
-#&gt; SE_2_+_32_35_37_38_ALDOA        Fligner-Killeen test of homogeneity of variances
-#&gt; SE_3_+_32_35_37_38_ANXA6        Fligner-Killeen test of homogeneity of variances
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA Fligner-Killeen test of homogeneity of variances
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6 Fligner-Killeen test of homogeneity of variances
-#&gt;                                 Fligner-Killeen data name Variance (Normal)
-#&gt; SE_1_+_32_35_37_38_ACTN1                 vector and group       0.000000000
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1          vector and group       0.000000000
-#&gt; SE_2_+_32_35_37_38_ALDOA                 vector and group       0.026663118
-#&gt; SE_3_+_32_35_37_38_ANXA6                 vector and group       0.005240524
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA          vector and group       0.019685695
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6          vector and group       0.022583581
-#&gt;                                 Variance (Tumour) Median (Normal)
-#&gt; SE_1_+_32_35_37_38_ACTN1             0.0000000000       0.5000000
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1      0.0000000000       0.5000000
-#&gt; SE_2_+_32_35_37_38_ALDOA             0.0027119499       0.7402597
-#&gt; SE_3_+_32_35_37_38_ANXA6             0.0003158887       0.4255319
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA      0.0035641399       0.7500000
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6      0.0027577471       0.2597403
-#&gt;                                 Median (Tumour) T-test statistic
-#&gt; SE_1_+_32_35_37_38_ACTN1              0.5000000               NA
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1       0.5000000               NA
-#&gt; SE_2_+_32_35_37_38_ALDOA              0.6037736       1.04878918
-#&gt; SE_3_+_32_35_37_38_ANXA6              0.4418605      -0.02602006
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA       0.5918367       1.73393229
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6       0.3846154      -1.45806393
-#&gt;                                 T-test parameter T-test p-value
-#&gt; SE_1_+_32_35_37_38_ACTN1                      NA             NA
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1               NA             NA
-#&gt; SE_2_+_32_35_37_38_ALDOA                2.402681      0.3881661
-#&gt; SE_3_+_32_35_37_38_ANXA6                2.240239      0.9813765
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA         2.701223      0.1913725
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6         2.481275      0.2586925
-#&gt;                                 T-test p-value (BH adjusted) T-test conf int1
-#&gt; SE_1_+_32_35_37_38_ACTN1                                  NA               NA
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1                           NA               NA
-#&gt; SE_2_+_32_35_37_38_ALDOA                           0.5175548       -0.2604062
-#&gt; SE_3_+_32_35_37_38_ANXA6                           0.9813765       -0.1685048
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA                    0.5173850       -0.1458915
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6                    0.5173850       -0.4643286
-#&gt;                                 T-test conf int2 T-test estimate1
-#&gt; SE_1_+_32_35_37_38_ACTN1                      NA               NA
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1               NA               NA
-#&gt; SE_2_+_32_35_37_38_ALDOA               0.4679678        0.7217532
-#&gt; SE_3_+_32_35_37_38_ANXA6               0.1662652        0.4353827
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA        0.4511807        0.7434609
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6        0.1963126        0.2671886
-#&gt;                                 T-test estimate2 T-test null value
-#&gt; SE_1_+_32_35_37_38_ACTN1                      NA                NA
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1               NA                NA
-#&gt; SE_2_+_32_35_37_38_ALDOA               0.6179724                 0
-#&gt; SE_3_+_32_35_37_38_ANXA6               0.4365025                 0
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA        0.5908163                 0
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6        0.4011966                 0
-#&gt;                                 T-test stderr T-test alternative
-#&gt; SE_1_+_32_35_37_38_ACTN1                   NA               &lt;NA&gt;
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1            NA               &lt;NA&gt;
-#&gt; SE_2_+_32_35_37_38_ALDOA           0.09895296          two.sided
-#&gt; SE_3_+_32_35_37_38_ANXA6           0.04303647          two.sided
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA    0.08803377          two.sided
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6    0.09190816          two.sided
-#&gt;                                           T-test method
-#&gt; SE_1_+_32_35_37_38_ACTN1                           &lt;NA&gt;
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1                    &lt;NA&gt;
-#&gt; SE_2_+_32_35_37_38_ALDOA        Welch Two Sample t-test
-#&gt; SE_3_+_32_35_37_38_ANXA6        Welch Two Sample t-test
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA Welch Two Sample t-test
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6 Welch Two Sample t-test
-#&gt;                                                     T-test data name
-#&gt; SE_1_+_32_35_37_38_ACTN1                                        &lt;NA&gt;
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1                                 &lt;NA&gt;
-#&gt; SE_2_+_32_35_37_38_ALDOA        vector[typeOne] and vector[!typeOne]
-#&gt; SE_3_+_32_35_37_38_ANXA6        vector[typeOne] and vector[!typeOne]
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA vector[typeOne] and vector[!typeOne]
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6 vector[typeOne] and vector[!typeOne]
-#&gt;                                  ∆ Variance    ∆ Median
-#&gt; SE_1_+_32_35_37_38_ACTN1        0.000000000  0.00000000
-#&gt; MXE_1_+_32_35_37_38_40_42_ACTN1 0.000000000  0.00000000
-#&gt; SE_2_+_32_35_37_38_ALDOA        0.023951168  0.13648616
-#&gt; SE_3_+_32_35_37_38_ANXA6        0.004924635 -0.01632855
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA 0.016121555  0.15816327
-#&gt; MXE_3_+_32_35_37_38_40_42_ANXA6 0.019825834 -0.12487512</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># Calculate PSI for skipped exon (SE) and mutually exclusive (MXE) events</span></span>
+<span class='r-in'><span class='va'>eventType</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SE"</span>, <span class='st'>"MXE"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>annot</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_splicing_annotation.RDS"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>junctionQuant</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_junctionQuant.RDS"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>psi</span> <span class='op'>&lt;-</span> <span class='fu'><a href='quantifySplicing.html'>quantifySplicing</a></span><span class='op'>(</span><span class='va'>annot</span>, <span class='va'>junctionQuant</span>, eventType<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SE"</span>, <span class='st'>"MXE"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Using 3 of 3 events (100%) whose junctions are present in junction quantification data...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Using 3 of 3 events (100%) whose junctions are present in junction quantification data...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </span>
+<span class='r-in'><span class='va'>group</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>"Normal"</span>, <span class='fl'>3</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>"Tumour"</span>, <span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>diffAnalyses</span><span class='op'>(</span><span class='va'>psi</span>, <span class='va'>group</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Time difference of 0.0383 secs</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Time difference of 0.0113 secs</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Time difference of 0.000513 secs</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Time difference of 0.00142 secs</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                    Event type Chromosome Strand</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                    Skipped exon (SE)          1      +</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1 Mutually exclusive exon (MXE)          1      +</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA                    Skipped exon (SE)          2      +</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6                    Skipped exon (SE)          3      +</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA Mutually exclusive exon (MXE)          2      +</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6 Mutually exclusive exon (MXE)          3      +</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                  Gene Survival by PSI cutoff Optimal PSI cutoff</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1        ACTN1                   &lt;NA&gt;               &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1 ACTN1                   &lt;NA&gt;               &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA        ALDOA                   &lt;NA&gt;               &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6        ANXA6                   &lt;NA&gt;               &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA ALDOA                   &lt;NA&gt;               &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6 ANXA6                   &lt;NA&gt;               &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 Log-rank p-value Samples (Normal)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                    &lt;NA&gt;                3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1             &lt;NA&gt;                3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA                    &lt;NA&gt;                3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6                    &lt;NA&gt;                3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA             &lt;NA&gt;                3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6             &lt;NA&gt;                3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 Samples (Tumour) Wilcoxon statistic</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                       3                4.5</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1                3                4.5</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA                       3                6.0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6                       3                4.0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA                3                8.0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6                3                2.0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 Wilcoxon p-value Wilcoxon p-value (BH adjusted)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                     NaN                            NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1              NaN                            NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA                     0.7                      0.9333333</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6                     1.0                      1.0000000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA              0.2                      0.8000000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6              0.4                      0.8000000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 Wilcoxon null value Wilcoxon alternative</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                          0            two.sided</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1                   0            two.sided</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA                          0            two.sided</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6                          0            two.sided</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA                   0            two.sided</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6                   0            two.sided</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                                   Wilcoxon method</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1        Wilcoxon rank sum test with continuity correction</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1 Wilcoxon rank sum test with continuity correction</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA                             Wilcoxon rank sum exact test</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6                             Wilcoxon rank sum exact test</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA                      Wilcoxon rank sum exact test</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6                      Wilcoxon rank sum exact test</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                   Wilcoxon data name</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1        vector[typeOne] and vector[!typeOne]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1 vector[typeOne] and vector[!typeOne]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA        vector[typeOne] and vector[!typeOne]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6        vector[typeOne] and vector[!typeOne]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA vector[typeOne] and vector[!typeOne]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6 vector[typeOne] and vector[!typeOne]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 Kruskal statistic Kruskal parameter</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                      NaN                 1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1               NaN                 1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA               0.42857143                 1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6               0.04761905                 1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA        2.33333333                 1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6        1.19047619                 1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 Kruskal p-value Kruskal p-value (BH adjusted)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                    NaN                           NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1             NaN                           NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA              0.5126908                     0.6835877</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6              0.8272593                     0.8272593</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA       0.1266305                     0.5065218</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6       0.2752335                     0.5504670</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                               Kruskal method Kruskal data name</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1        Kruskal-Wallis rank sum test  vector and group</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1 Kruskal-Wallis rank sum test  vector and group</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA        Kruskal-Wallis rank sum test  vector and group</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6        Kruskal-Wallis rank sum test  vector and group</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA Kruskal-Wallis rank sum test  vector and group</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6 Kruskal-Wallis rank sum test  vector and group</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 Levene statistic Levene p-value</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                     NaN            NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1              NaN            NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA                1.534423      0.2831735</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6                1.898555      0.2403023</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA         1.102360      0.3529948</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6         1.453025      0.2944743</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 Levene p-value (BH adjusted) Levene data name</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                                 NaN vector and group</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1                          NaN vector and group</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA                           0.3529948 vector and group</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6                           0.3529948 vector and group</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA                    0.3529948 vector and group</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6                    0.3529948 vector and group</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                    Levene method</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1        Levene's test (using the median)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1 Levene's test (using the median)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA        Levene's test (using the median)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6        Levene's test (using the median)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA Levene's test (using the median)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6 Levene's test (using the median)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 Fligner-Killeen statistic</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                              NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1                       NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA                         1.042057</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6                         1.042057</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA                  1.042057</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6                  1.042057</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 Fligner-Killeen parameter</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                                1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1                         1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA                                1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6                                1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA                         1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6                         1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 Fligner-Killeen p-value</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                            NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1                     NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA                      0.3073435</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6                      0.3073435</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA               0.3073435</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6               0.3073435</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 Fligner-Killeen p-value (BH adjusted)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                                          NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1                                   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA                                    0.3073435</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6                                    0.3073435</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA                             0.3073435</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6                             0.3073435</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                           Fligner-Killeen method</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1        Fligner-Killeen test of homogeneity of variances</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1 Fligner-Killeen test of homogeneity of variances</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA        Fligner-Killeen test of homogeneity of variances</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6        Fligner-Killeen test of homogeneity of variances</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA Fligner-Killeen test of homogeneity of variances</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6 Fligner-Killeen test of homogeneity of variances</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 Fligner-Killeen data name Variance (Normal)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                 vector and group       0.000000000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1          vector and group       0.000000000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA                 vector and group       0.026663118</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6                 vector and group       0.005240524</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA          vector and group       0.019685695</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6          vector and group       0.022583581</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 Variance (Tumour) Median (Normal)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1             0.0000000000       0.5000000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1      0.0000000000       0.5000000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA             0.0027119499       0.7402597</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6             0.0003158887       0.4255319</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA      0.0035641399       0.7500000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6      0.0027577471       0.2597403</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 Median (Tumour) T-test statistic</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1              0.5000000               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1       0.5000000               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA              0.6037736       1.04878918</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6              0.4418605      -0.02602006</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA       0.5918367       1.73393229</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6       0.3846154      -1.45806393</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 T-test parameter T-test p-value</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                      NA             NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1               NA             NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA                2.402681      0.3881661</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6                2.240239      0.9813765</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA         2.701223      0.1913725</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6         2.481275      0.2586925</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 T-test p-value (BH adjusted) T-test conf int1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                                  NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1                           NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA                           0.5175548       -0.2604062</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6                           0.9813765       -0.1685048</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA                    0.5173850       -0.1458915</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6                    0.5173850       -0.4643286</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 T-test conf int2 T-test estimate1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                      NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1               NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA               0.4679678        0.7217532</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6               0.1662652        0.4353827</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA        0.4511807        0.7434609</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6        0.1963126        0.2671886</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 T-test estimate2 T-test null value</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                      NA                NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1               NA                NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA               0.6179724                 0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6               0.4365025                 0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA        0.5908163                 0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6        0.4011966                 0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 T-test stderr T-test alternative</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                   NA               &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1            NA               &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA           0.09895296          two.sided</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6           0.04303647          two.sided</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA    0.08803377          two.sided</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6    0.09190816          two.sided</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                           T-test method</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                           &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1                    &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA        Welch Two Sample t-test</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6        Welch Two Sample t-test</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA Welch Two Sample t-test</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6 Welch Two Sample t-test</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                     T-test data name</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1                                        &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1                                 &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA        vector[typeOne] and vector[!typeOne]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6        vector[typeOne] and vector[!typeOne]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA vector[typeOne] and vector[!typeOne]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6 vector[typeOne] and vector[!typeOne]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                  ∆ Variance    ∆ Median</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_1_+_32_35_37_38_ACTN1        0.000000000  0.00000000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_1_+_32_35_37_38_40_42_ACTN1 0.000000000  0.00000000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA        0.023951168  0.13648616</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_3_+_32_35_37_38_ANXA6        0.004924635 -0.01632855</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA 0.016121555  0.15816327</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_3_+_32_35_37_38_40_42_ANXA6 0.019825834 -0.12487512</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -198,16 +198,17 @@ the position of the exon boundaries)</p>
     <p>It only allows to parse one event type at once.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>event</span> <span class='op'>&lt;-</span> <span class='st'>"ENSG00000000419;A3:20:49557492-49557642:49557470-49557642:-"</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaEvent</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   Program            Gene
-#&gt; 1   SUPPA ENSG00000000419
-#&gt;                                                      Event.ID Chromosome
-#&gt; 1 ENSG00000000419;A3:20:49557492-49557642:49557470-49557642:-         20
-#&gt;   Event.type Strand C1.start   C1.end A1.start A1.end A2.start A2.end C2.start
-#&gt; 1       A3SS      -       NA 49557642 49557470     NA 49557492     NA       NA
-#&gt;   C2.end
-#&gt; 1     NA</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>event</span> <span class='op'>&lt;-</span> <span class='st'>"ENSG00000000419;A3:20:49557492-49557642:49557470-49557642:-"</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaEvent</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   Program            Gene</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1   SUPPA ENSG00000000419</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                      Event.ID Chromosome</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1 ENSG00000000419;A3:20:49557492-49557642:49557470-49557642:-         20</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   Event.type Strand C1.start   C1.end A1.start A1.end A2.start A2.end C2.start</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1       A3SS      -       NA 49557642 49557470     NA 49557492     NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   C2.end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1     NA</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

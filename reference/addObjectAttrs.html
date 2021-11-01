@@ -187,18 +187,19 @@
     <p>Object with attributes set</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>ll</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>a<span class='op'>=</span><span class='st'>"hey"</span>, b<span class='op'>=</span><span class='st'>"there"</span><span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>addObjectAttrs</span><span class='op'>(</span><span class='va'>ll</span>, <span class='st'>"words"</span><span class='op'>=</span><span class='fl'>2</span>, <span class='st'>"language"</span><span class='op'>=</span><span class='st'>"English"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; $a
-#&gt; [1] "hey"
-#&gt; 
-#&gt; $b
-#&gt; [1] "there"
-#&gt; 
-#&gt; attr(,"words")
-#&gt; [1] 2
-#&gt; attr(,"language")
-#&gt; [1] "English"</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>ll</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>a<span class='op'>=</span><span class='st'>"hey"</span>, b<span class='op'>=</span><span class='st'>"there"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>addObjectAttrs</span><span class='op'>(</span><span class='va'>ll</span>, <span class='st'>"words"</span><span class='op'>=</span><span class='fl'>2</span>, <span class='st'>"language"</span><span class='op'>=</span><span class='st'>"English"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $a</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "hey"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $b</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "there"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> attr(,"words")</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 2</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> attr(,"language")</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "English"</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

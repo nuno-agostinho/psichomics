@@ -179,7 +179,7 @@
       <td><p>an optional data frame (or similar: see
     <code><a href='https://rdrr.io/r/stats/model.frame.html'>model.frame</a></code>) containing the variables in the
     formula <code>formula</code>.  By default the variables are taken from
-    <code><a href='https://rdrr.io/r/base/environment.html'>environment(formula)</a></code>.</p></td>
+    <code>environment(formula)</code>.</p></td>
     </tr>
     <tr>
       <th>center</th>
@@ -219,16 +219,17 @@ to be replaced with the mean of the values of that same column</p></td>
 <code><a href='plotPCA.html'>plotPCA</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>performPCA</span><span class='op'>(</span><span class='va'>USArrests</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; Standard deviations (1, .., p=4):
-#&gt; [1] 83.732400 14.212402  6.489426  2.482790
-#&gt; 
-#&gt; Rotation (n x k) = (4 x 4):
-#&gt;                 PC1         PC2         PC3         PC4
-#&gt; Murder   0.04170432 -0.04482166  0.07989066 -0.99492173
-#&gt; Assault  0.99522128 -0.05876003 -0.06756974  0.03893830
-#&gt; UrbanPop 0.04633575  0.97685748 -0.20054629 -0.05816914
-#&gt; Rape     0.07515550  0.20071807  0.97408059  0.07232502</div></pre>
+    <pre class="examples"><span class='r-in'><span class='fu'>performPCA</span><span class='op'>(</span><span class='va'>USArrests</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Standard deviations (1, .., p=4):</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 83.732400 14.212402  6.489426  2.482790</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Rotation (n x k) = (4 x 4):</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                 PC1         PC2         PC3         PC4</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Murder   0.04170432 -0.04482166  0.07989066 -0.99492173</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Assault  0.99522128 -0.05876003 -0.06756974  0.03893830</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> UrbanPop 0.04633575  0.97685748 -0.20054629 -0.05816914</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Rape     0.07515550  0.20071807  0.97408059  0.07232502</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

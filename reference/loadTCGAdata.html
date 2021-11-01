@@ -233,94 +233,96 @@ and <code>download = FALSE</code> (if so, it returns the URL of files to downloa
 <code><a href='loadSRAproject.html'>loadSRAproject</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='getTCGAdataTypes.html'>getTCGAcohorts</a></span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;                                                                ACC 
-#&gt;                                         "Adrenocortical carcinoma" 
-#&gt;                                                               BLCA 
-#&gt;                                     "Bladder Urothelial Carcinoma" 
-#&gt;                                                               BRCA 
-#&gt;                                        "Breast invasive carcinoma" 
-#&gt;                                                               CESC 
-#&gt; "Cervical squamous cell carcinoma and endocervical adenocarcinoma" 
-#&gt;                                                               CHOL 
-#&gt;                                               "Cholangiocarcinoma" 
-#&gt;                                                               COAD 
-#&gt;                                             "Colon adenocarcinoma" 
-#&gt;                                                           COADREAD 
-#&gt;                                        "Colorectal adenocarcinoma" 
-#&gt;                                                               DLBC 
-#&gt;                  "Lymphoid Neoplasm Diffuse Large B-cell Lymphoma" 
-#&gt;                                                               ESCA 
-#&gt;                                            "Esophageal carcinoma " 
-#&gt;                                                               FPPP 
-#&gt;                                              "FFPE Pilot Phase II" 
-#&gt;                                                                GBM 
-#&gt;                                          "Glioblastoma multiforme" 
-#&gt;                                                             GBMLGG 
-#&gt;                                                           "Glioma" 
-#&gt;                                                               HNSC 
-#&gt;                            "Head and Neck squamous cell carcinoma" 
-#&gt;                                                               KICH 
-#&gt;                                               "Kidney Chromophobe" 
-#&gt;                                                              KIPAN 
-#&gt;                               "Pan-kidney cohort (KICH+KIRC+KIRP)" 
-#&gt;                                                               KIRC 
-#&gt;                                "Kidney renal clear cell carcinoma" 
-#&gt;                                                               KIRP 
-#&gt;                            "Kidney renal papillary cell carcinoma" 
-#&gt;                                                               LAML 
-#&gt;                                           "Acute Myeloid Leukemia" 
-#&gt;                                                                LGG 
-#&gt;                                         "Brain Lower Grade Glioma" 
-#&gt;                                                               LIHC 
-#&gt;                                   "Liver hepatocellular carcinoma" 
-#&gt;                                                               LUAD 
-#&gt;                                              "Lung adenocarcinoma" 
-#&gt;                                                               LUSC 
-#&gt;                                     "Lung squamous cell carcinoma" 
-#&gt;                                                               MESO 
-#&gt;                                                     "Mesothelioma" 
-#&gt;                                                                 OV 
-#&gt;                                "Ovarian serous cystadenocarcinoma" 
-#&gt;                                                               PAAD 
-#&gt;                                        "Pancreatic adenocarcinoma" 
-#&gt;                                                               PCPG 
-#&gt;                               "Pheochromocytoma and Paraganglioma" 
-#&gt;                                                               PRAD 
-#&gt;                                          "Prostate adenocarcinoma" 
-#&gt;                                                               READ 
-#&gt;                                            "Rectum adenocarcinoma" 
-#&gt;                                                               SARC 
-#&gt;                                                          "Sarcoma" 
-#&gt;                                                               SKCM 
-#&gt;                                          "Skin Cutaneous Melanoma" 
-#&gt;                                                               STAD 
-#&gt;                                           "Stomach adenocarcinoma" 
-#&gt;                                                               STES 
-#&gt;                                 "Stomach and Esophageal carcinoma" 
-#&gt;                                                               TGCT 
-#&gt;                                      "Testicular Germ Cell Tumors" 
-#&gt;                                                               THCA 
-#&gt;                                                "Thyroid carcinoma" 
-#&gt;                                                               THYM 
-#&gt;                                                          "Thymoma" 
-#&gt;                                                               UCEC 
-#&gt;                             "Uterine Corpus Endometrial Carcinoma" 
-#&gt;                                                                UCS 
-#&gt;                                           "Uterine Carcinosarcoma" 
-#&gt;                                                                UVM 
-#&gt;                                                   "Uveal Melanoma" </div><div class='input'><span class='fu'><a href='getTCGAdataTypes.html'>getTCGAdataTypes</a></span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; $`RNA sequencing`
-#&gt;   Junction quantification       Exon quantification           Exon expression 
-#&gt; "junction_quantification"     "exon_quantification"         "exon_expression" 
-#&gt;       Junction expression                RSEM genes     RSEM genes normalized 
-#&gt;     "junction_expression"              "RSEM_genes"   "RSEM_genes_normalized" 
-#&gt;             RSEM isoforms                Preprocess 
-#&gt;           "RSEM_isoforms"              "Preprocess" 
-#&gt; </div><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='fu'>loadTCGAdata</span><span class='op'>(</span>cohort <span class='op'>=</span> <span class='st'>"ACC"</span>, data_type <span class='op'>=</span> <span class='st'>"Clinical"</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='fu'><a href='getTCGAdataTypes.html'>getTCGAcohorts</a></span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                                ACC </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                         "Adrenocortical carcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               BLCA </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                     "Bladder Urothelial Carcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               BRCA </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                        "Breast invasive carcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               CESC </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> "Cervical squamous cell carcinoma and endocervical adenocarcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               CHOL </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                               "Cholangiocarcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               COAD </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                             "Colon adenocarcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                           COADREAD </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                        "Colorectal adenocarcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               DLBC </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                  "Lymphoid Neoplasm Diffuse Large B-cell Lymphoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               ESCA </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                            "Esophageal carcinoma " </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               FPPP </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                              "FFPE Pilot Phase II" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                                GBM </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                          "Glioblastoma multiforme" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                             GBMLGG </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                           "Glioma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               HNSC </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                            "Head and Neck squamous cell carcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               KICH </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                               "Kidney Chromophobe" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                              KIPAN </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                               "Pan-kidney cohort (KICH+KIRC+KIRP)" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               KIRC </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                "Kidney renal clear cell carcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               KIRP </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                            "Kidney renal papillary cell carcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               LAML </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                           "Acute Myeloid Leukemia" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                                LGG </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                         "Brain Lower Grade Glioma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               LIHC </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                   "Liver hepatocellular carcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               LUAD </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                              "Lung adenocarcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               LUSC </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                     "Lung squamous cell carcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               MESO </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                     "Mesothelioma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                                 OV </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                "Ovarian serous cystadenocarcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               PAAD </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                        "Pancreatic adenocarcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               PCPG </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                               "Pheochromocytoma and Paraganglioma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               PRAD </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                          "Prostate adenocarcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               READ </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                            "Rectum adenocarcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               SARC </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                          "Sarcoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               SKCM </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                          "Skin Cutaneous Melanoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               STAD </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                           "Stomach adenocarcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               STES </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                 "Stomach and Esophageal carcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               TGCT </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                      "Testicular Germ Cell Tumors" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               THCA </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                "Thyroid carcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               THYM </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                          "Thymoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                               UCEC </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                             "Uterine Corpus Endometrial Carcinoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                                UCS </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                           "Uterine Carcinosarcoma" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                                UVM </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                   "Uveal Melanoma" </span>
+<span class='r-in'><span class='fu'><a href='getTCGAdataTypes.html'>getTCGAdataTypes</a></span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`RNA sequencing`</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   Junction quantification       Exon quantification           Exon expression </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> "junction_quantification"     "exon_quantification"         "exon_expression" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       Junction expression                RSEM genes     RSEM genes normalized </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     "junction_expression"              "RSEM_genes"   "RSEM_genes_normalized" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             RSEM isoforms                Preprocess </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>           "RSEM_isoforms"              "Preprocess" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='fu'>loadTCGAdata</span><span class='op'>(</span>cohort <span class='op'>=</span> <span class='st'>"ACC"</span>, data_type <span class='op'>=</span> <span class='st'>"Clinical"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

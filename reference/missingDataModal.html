@@ -197,17 +197,17 @@ data</p></td>
 state or internal variables)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='kw'>if</span> <span class='op'>(</span><span class='fu'>shiny</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/shiny/man/isRunning.html'>isRunning</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
-    <span class='va'>session</span> <span class='op'>&lt;-</span> <span class='va'>session</span><span class='op'>$</span><span class='va'>ns</span>
-    <span class='va'>buttonInput</span> <span class='op'>&lt;-</span> <span class='st'>"takeMeThere"</span>
-    <span class='va'>buttonId</span> <span class='op'>&lt;-</span> <span class='fu'>ns</span><span class='op'>(</span><span class='va'>buttonInput</span><span class='op'>)</span>
-    <span class='va'>dataType</span> <span class='op'>&lt;-</span> <span class='st'>"Inclusion levels"</span>
-    <span class='fu'>missingDataModal</span><span class='op'>(</span><span class='va'>session</span>, <span class='va'>buttonId</span>, <span class='va'>dataType</span><span class='op'>)</span>
-    <span class='fu'>observeEvent</span><span class='op'>(</span><span class='va'>input</span><span class='op'>[[</span><span class='va'>buttonInput</span><span class='op'>]</span><span class='op'>]</span>, <span class='fu'>missingDataGuide</span><span class='op'>(</span><span class='va'>dataType</span><span class='op'>)</span><span class='op'>)</span>
-<span class='op'>}</span>
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='fu'>shiny</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/shiny/man/isRunning.html'>isRunning</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>    <span class='va'>session</span> <span class='op'>&lt;-</span> <span class='va'>session</span><span class='op'>$</span><span class='va'>ns</span></span>
+<span class='r-in'>    <span class='va'>buttonInput</span> <span class='op'>&lt;-</span> <span class='st'>"takeMeThere"</span></span>
+<span class='r-in'>    <span class='va'>buttonId</span> <span class='op'>&lt;-</span> <span class='fu'>ns</span><span class='op'>(</span><span class='va'>buttonInput</span><span class='op'>)</span></span>
+<span class='r-in'>    <span class='va'>dataType</span> <span class='op'>&lt;-</span> <span class='st'>"Inclusion levels"</span></span>
+<span class='r-in'>    <span class='fu'>missingDataModal</span><span class='op'>(</span><span class='va'>session</span>, <span class='va'>buttonId</span>, <span class='va'>dataType</span><span class='op'>)</span></span>
+<span class='r-in'>    <span class='fu'><a href='https://rdrr.io/pkg/shiny/man/observeEvent.html'>observeEvent</a></span><span class='op'>(</span><span class='va'>input</span><span class='op'>[[</span><span class='va'>buttonInput</span><span class='op'>]</span><span class='op'>]</span>, <span class='fu'>missingDataGuide</span><span class='op'>(</span><span class='va'>dataType</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

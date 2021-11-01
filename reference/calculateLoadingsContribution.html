@@ -215,18 +215,19 @@ principal components (both individual and total contribution)</p>
 <code><a href='plotPCA.html'>plotPCA</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>pca</span> <span class='op'>&lt;-</span> <span class='fu'><a href='performPCA.html'>performPCA</a></span><span class='op'>(</span><span class='va'>USArrests</span><span class='op'>)</span>
-<span class='fu'>calculateLoadingsContribution</span><span class='op'>(</span><span class='va'>pca</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;          Rank     Gene PC1 loading PC2 loading Contribution to PC1 (%)
-#&gt; Assault     1  Assault  0.99522128 -0.05876003              99.0465399
-#&gt; UrbanPop    2 UrbanPop  0.04633575  0.97685748               0.2147001
-#&gt; Rape        3     Rape  0.07515550  0.20071807               0.5648349
-#&gt; Murder      4   Murder  0.04170432 -0.04482166               0.1739250
-#&gt;          Contribution to PC2 (%) Contribution to PC1 and PC2 (%)
-#&gt; Assault                0.3452741                      96.2825574
-#&gt; UrbanPop              95.4250536                       2.8809248
-#&gt; Rape                   4.0287742                       0.6618374
-#&gt; Murder                 0.2008981                       0.1746804</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>pca</span> <span class='op'>&lt;-</span> <span class='fu'><a href='performPCA.html'>performPCA</a></span><span class='op'>(</span><span class='va'>USArrests</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>calculateLoadingsContribution</span><span class='op'>(</span><span class='va'>pca</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>          Rank     Gene PC1 loading PC2 loading Contribution to PC1 (%)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Assault     1  Assault  0.99522128 -0.05876003              99.0465399</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> UrbanPop    2 UrbanPop  0.04633575  0.97685748               0.2147001</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Rape        3     Rape  0.07515550  0.20071807               0.5648349</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Murder      4   Murder  0.04170432 -0.04482166               0.1739250</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>          Contribution to PC2 (%) Contribution to PC1 and PC2 (%)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Assault                0.3452741                      96.2825574</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> UrbanPop              95.4250536                       2.8809248</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Rape                   4.0287742                       0.6618374</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Murder                 0.2008981                       0.1746804</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

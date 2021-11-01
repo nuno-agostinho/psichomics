@@ -188,16 +188,17 @@ the position of the exon boundaries)</p>
     <p>Only supports to parse one event at a time.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>event</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span>
-<span class='st'>"NFYA HsaEX0042823 chr6:41046768-41046903 136 chr6:41040823,41046768-41046903,41051785 C2 0 N 0 N"</span>
-<span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseVastToolsEvent</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;      Program Gene.symbol     Event.ID Event.type Chromosome Inclusion.level.A
-#&gt; 1 VAST-TOOLS        NFYA HsaEX0042823         SE       chr6                 0
-#&gt;   Inclusion.level.B C1.start   C1.end A1.start   A1.end A2.start A2.end
-#&gt; 1                 0       NA 41040823 41046768 41046903       NA     NA
-#&gt;   C2.start C2.end Strand
-#&gt; 1 41051785     NA      +</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>event</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span></span>
+<span class='r-in'><span class='st'>"NFYA HsaEX0042823 chr6:41046768-41046903 136 chr6:41040823,41046768-41046903,41051785 C2 0 N 0 N"</span></span>
+<span class='r-in'><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseVastToolsEvent</span><span class='op'>(</span><span class='va'>event</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      Program Gene.symbol     Event.ID Event.type Chromosome Inclusion.level.A</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1 VAST-TOOLS        NFYA HsaEX0042823         SE       chr6                 0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   Inclusion.level.B C1.start   C1.end A1.start   A1.end A2.start A2.end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1                 0       NA 41040823 41046768 41046903       NA     NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   C2.start C2.end Strand</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1 41051785     NA      +</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

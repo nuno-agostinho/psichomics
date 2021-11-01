@@ -321,64 +321,77 @@ respective string in the <code>pvalueAdjust</code> argument:</p><ul>
 <code><a href='correlateGEandAS.html'>correlateGEandAS</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>annot</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_splicing_annotation.RDS"</span><span class='op'>)</span>
-<span class='va'>junctionQuant</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_junctionQuant.RDS"</span><span class='op'>)</span>
-<span class='va'>psi</span> <span class='op'>&lt;-</span> <span class='fu'><a href='quantifySplicing.html'>quantifySplicing</a></span><span class='op'>(</span><span class='va'>annot</span>, <span class='va'>junctionQuant</span>, eventType<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SE"</span>, <span class='st'>"MXE"</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Using 3 of 3 events (100%) whose junctions are present in junction quantification data...</span></div><div class='output co'>#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </div><div class='output co'>#&gt; <span class='message'>Using 3 of 3 events (100%) whose junctions are present in junction quantification data...</span></div><div class='output co'>#&gt;   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </div><div class='input'>
-<span class='va'>geneExpr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_gene_expression.RDS"</span><span class='op'>)</span>
-<span class='va'>corr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='correlateGEandAS.html'>correlateGEandAS</a></span><span class='op'>(</span><span class='va'>geneExpr</span>, <span class='va'>psi</span>, <span class='st'>"ALDOA"</span><span class='op'>)</span>
-
-<span class='co'># Quick display of the correlation results per splicing event and gene</span>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>corr</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; ================================================================================
-#&gt; SE_2_+_32_35_37_38_ALDOA splicing event
-#&gt; ALDOA|226 gene expression
-#&gt; 
-#&gt; 	Pearson's product-moment correlation
-#&gt; 
-#&gt; data:  exprNum and eventPSInum
-#&gt; t = -0.7542, df = 4, p-value = 0.4927
-#&gt; alternative hypothesis: true correlation is not equal to 0
-#&gt; 95 percent confidence interval:
-#&gt;  -0.9051981  0.6427793
-#&gt; sample estimates:
-#&gt;        cor 
-#&gt; -0.3528456 
-#&gt; 
-#&gt; ================================================================================
-#&gt; MXE_2_+_32_35_37_38_40_42_ALDOA splicing event
-#&gt; ALDOA|226 gene expression
-#&gt; 
-#&gt; 	Pearson's product-moment correlation
-#&gt; 
-#&gt; data:  exprNum and eventPSInum
-#&gt; t = -0.26642, df = 4, p-value = 0.8031
-#&gt; alternative hypothesis: true correlation is not equal to 0
-#&gt; 95 percent confidence interval:
-#&gt;  -0.8522745  0.7610748
-#&gt; sample estimates:
-#&gt;        cor 
-#&gt; -0.1320457 
-#&gt; </div><div class='input'>
-<span class='co'># Table summarising the correlation analysis results</span>
-<span class='fu'><a href='https://rdrr.io/r/base/table.html'>as.table</a></span><span class='op'>(</span><span class='va'>corr</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;        Alternative splicing event      Gene
-#&gt; 1        SE 2 + 32 35 37 38 ALDOA ALDOA|226
-#&gt; 2 MXE 2 + 32 35 37 38 40 42 ALDOA ALDOA|226
-#&gt;   Pearson's product-moment correlation   p-value p-value (BH adjusted)
-#&gt; 1                           -0.3528456 0.4926962             0.8030827
-#&gt; 2                           -0.1320457 0.8030827             0.8030827</div><div class='input'>
-<span class='co'># Correlation analysis plots</span>
-<span class='va'>colourGroups</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>Normal<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"Normal"</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span>,
-                     Tumour<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"Cancer"</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span><span class='va'>colourGroups</span>, <span class='st'>"Colour"</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>Normal<span class='op'>=</span><span class='st'>"#00C65A"</span>, Tumour<span class='op'>=</span><span class='st'>"#EEE273"</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>corr</span>, colourGroups<span class='op'>=</span><span class='va'>colourGroups</span>, alpha<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; $`SE_2_+_32_35_37_38_ALDOA`
-#&gt; $`SE_2_+_32_35_37_38_ALDOA`$`ALDOA|226`</div><div class='output co'>#&gt; <span class='warning'>Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please use `guide = "none"` instead.</span></div><div class='img'><img src='plot.GEandAScorrelation-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; 
-#&gt; $`MXE_2_+_32_35_37_38_40_42_ALDOA`
-#&gt; $`MXE_2_+_32_35_37_38_40_42_ALDOA`$`ALDOA|226`</div><div class='output co'>#&gt; <span class='warning'>Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please use `guide = "none"` instead.</span></div><div class='img'><img src='plot.GEandAScorrelation-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; </div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>annot</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_splicing_annotation.RDS"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>junctionQuant</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_junctionQuant.RDS"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>psi</span> <span class='op'>&lt;-</span> <span class='fu'><a href='quantifySplicing.html'>quantifySplicing</a></span><span class='op'>(</span><span class='va'>annot</span>, <span class='va'>junctionQuant</span>, eventType<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SE"</span>, <span class='st'>"MXE"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Using 3 of 3 events (100%) whose junctions are present in junction quantification data...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Using 3 of 3 events (100%) whose junctions are present in junction quantification data...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   |                                        |   0%   |========                                |  20%   |================                        |  40%   |========================                |  60%   |================================        |  80%   |========================================| 100% </span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>geneExpr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='readFile.html'>readFile</a></span><span class='op'>(</span><span class='st'>"ex_gene_expression.RDS"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>corr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='correlateGEandAS.html'>correlateGEandAS</a></span><span class='op'>(</span><span class='va'>geneExpr</span>, <span class='va'>psi</span>, <span class='st'>"ALDOA"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Quick display of the correlation results per splicing event and gene</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>corr</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ================================================================================</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_2_+_32_35_37_38_ALDOA splicing event</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALDOA|226 gene expression</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 	Pearson's product-moment correlation</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> data:  exprNum and eventPSInum</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> t = -0.7542, df = 4, p-value = 0.4927</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> alternative hypothesis: true correlation is not equal to 0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 95 percent confidence interval:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  -0.9051981  0.6427793</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> sample estimates:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>        cor </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -0.3528456 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ================================================================================</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_2_+_32_35_37_38_40_42_ALDOA splicing event</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALDOA|226 gene expression</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 	Pearson's product-moment correlation</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> data:  exprNum and eventPSInum</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> t = -0.26642, df = 4, p-value = 0.8031</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> alternative hypothesis: true correlation is not equal to 0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 95 percent confidence interval:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  -0.8522745  0.7610748</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> sample estimates:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>        cor </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -0.1320457 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Table summarising the correlation analysis results</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/table.html'>as.table</a></span><span class='op'>(</span><span class='va'>corr</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>        Alternative splicing event      Gene</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1        SE 2 + 32 35 37 38 ALDOA ALDOA|226</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2 MXE 2 + 32 35 37 38 40 42 ALDOA ALDOA|226</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   Pearson's product-moment correlation   p-value p-value (BH adjusted)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1                           -0.3528456 0.4926962             0.8030827</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2                           -0.1320457 0.8030827             0.8030827</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Correlation analysis plots</span></span>
+<span class='r-in'><span class='va'>colourGroups</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>Normal<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"Normal"</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span>,</span>
+<span class='r-in'>                     Tumour<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"Cancer"</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span><span class='va'>colourGroups</span>, <span class='st'>"Colour"</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>Normal<span class='op'>=</span><span class='st'>"#00C65A"</span>, Tumour<span class='op'>=</span><span class='st'>"#EEE273"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>corr</span>, colourGroups<span class='op'>=</span><span class='va'>colourGroups</span>, alpha<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`SE_2_+_32_35_37_38_ALDOA`</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`SE_2_+_32_35_37_38_ALDOA`$`ALDOA|226`</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>It is deprecated to specify `guide = FALSE` to remove a guide. Please use `guide = "none"` instead.</span>
+<span class='r-plt img'><img src='plot.GEandAScorrelation-1.png' alt='' width='700' height='433' /></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`MXE_2_+_32_35_37_38_40_42_ALDOA`</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`MXE_2_+_32_35_37_38_40_42_ALDOA`$`ALDOA|226`</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>It is deprecated to specify `guide = FALSE` to remove a guide. Please use `guide = "none"` instead.</span>
+<span class='r-plt img'><img src='plot.GEandAScorrelation-2.png' alt='' width='700' height='433' /></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

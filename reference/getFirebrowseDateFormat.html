@@ -171,14 +171,16 @@
     <p>Named list with date formats from FireBrowse API</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>format</span> <span class='op'>&lt;-</span> <span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>getFirebrowseDateFormat</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='co'># date format to use in a query to FireBrowse API</span>
-<span class='va'>format</span><span class='op'>$</span><span class='va'>query</span>
-</div><div class='output co'>#&gt; [1] "%Y_%m_%d"</div><div class='input'>
-<span class='co'># date format to parse a date in a response from FireBrowse API</span>
-<span class='va'>format</span><span class='op'>$</span><span class='va'>response</span>
-</div><div class='output co'>#&gt; [1] "%d %b %Y"</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>format</span> <span class='op'>&lt;-</span> <span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>getFirebrowseDateFormat</span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># date format to use in a query to FireBrowse API</span></span>
+<span class='r-in'><span class='va'>format</span><span class='op'>$</span><span class='va'>query</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "%Y_%m_%d"</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># date format to parse a date in a response from FireBrowse API</span></span>
+<span class='r-in'><span class='va'>format</span><span class='op'>$</span><span class='va'>response</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "%d %b %Y"</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -183,7 +183,7 @@
       <td><p>an optional data frame (or similar: see
     <code><a href='https://rdrr.io/r/stats/model.frame.html'>model.frame</a></code>) containing the variables in the
     formula <code>formula</code>.  By default the variables are taken from
-    <code><a href='https://rdrr.io/r/base/environment.html'>environment(formula)</a></code>.</p></td>
+    <code>environment(formula)</code>.</p></td>
     </tr>
     <tr>
       <th>n.comp</th>
@@ -241,137 +241,138 @@ to be replaced with the mean of the values of that same column</p></td>
 <code><a href='plotICA.html'>plotICA</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>performICA</span><span class='op'>(</span><span class='va'>USArrests</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; $X
-#&gt;                Murder Assault UrbanPop    Rape
-#&gt; Alabama         5.412   65.24    -7.54  -0.032
-#&gt; Alaska          2.212   92.24   -17.54  23.268
-#&gt; Arizona         0.312  123.24    14.46   9.768
-#&gt; Arkansas        1.012   19.24   -15.54  -1.732
-#&gt; California      1.212  105.24    25.46  19.368
-#&gt; Colorado        0.112   33.24    12.46  17.468
-#&gt; Connecticut    -4.488  -60.76    11.46 -10.132
-#&gt; Delaware       -1.888   67.24     6.46  -5.432
-#&gt; Florida         7.612  164.24    14.46  10.668
-#&gt; Georgia         9.612   40.24    -5.54   4.568
-#&gt; Hawaii         -2.488 -124.76    17.46  -1.032
-#&gt; Idaho          -5.188  -50.76   -11.54  -7.032
-#&gt; Illinois        2.612   78.24    17.46   2.768
-#&gt; Indiana        -0.588  -57.76    -0.54  -0.232
-#&gt; Iowa           -5.588 -114.76    -8.54  -9.932
-#&gt; Kansas         -1.788  -55.76     0.46  -3.232
-#&gt; Kentucky        1.912  -61.76   -13.54  -4.932
-#&gt; Louisiana       7.612   78.24     0.46   0.968
-#&gt; Maine          -5.688  -87.76   -14.54 -13.432
-#&gt; Maryland        3.512  129.24     1.46   6.568
-#&gt; Massachusetts  -3.388  -21.76    19.46  -4.932
-#&gt; Michigan        4.312   84.24     8.46  13.868
-#&gt; Minnesota      -5.088  -98.76     0.46  -6.332
-#&gt; Mississippi     8.312   88.24   -21.54  -4.132
-#&gt; Missouri        1.212    7.24     4.46   6.968
-#&gt; Montana        -1.788  -61.76   -12.54  -4.832
-#&gt; Nebraska       -3.488  -68.76    -3.54  -4.732
-#&gt; Nevada          4.412   81.24    15.46  24.768
-#&gt; New Hampshire  -5.688 -113.76    -9.54 -11.732
-#&gt; New Jersey     -0.388  -11.76    23.46  -2.432
-#&gt; New Mexico      3.612  114.24     4.46  10.868
-#&gt; New York        3.312   83.24    20.46   4.868
-#&gt; North Carolina  5.212  166.24   -20.54  -5.132
-#&gt; North Dakota   -6.988 -125.76   -21.54 -13.932
-#&gt; Ohio           -0.488  -50.76     9.46   0.168
-#&gt; Oklahoma       -1.188  -19.76     2.46  -1.232
-#&gt; Oregon         -2.888  -11.76     1.46   8.068
-#&gt; Pennsylvania   -1.488  -64.76     6.46  -6.332
-#&gt; Rhode Island   -4.388    3.24    21.46 -12.932
-#&gt; South Carolina  6.612  108.24   -17.54   1.268
-#&gt; South Dakota   -3.988  -84.76   -20.54  -8.432
-#&gt; Tennessee       5.412   17.24    -6.54   5.668
-#&gt; Texas           4.912   30.24    14.46   4.268
-#&gt; Utah           -4.588  -50.76    14.46   1.668
-#&gt; Vermont        -5.588 -122.76   -33.54 -10.032
-#&gt; Virginia        0.712  -14.76    -2.54  -0.532
-#&gt; Washington     -3.788  -25.76     7.46   4.968
-#&gt; West Virginia  -2.088  -89.76   -26.54 -11.932
-#&gt; Wisconsin      -5.188 -117.76     0.46 -10.432
-#&gt; Wyoming        -0.988   -9.76    -5.54  -5.632
-#&gt; attr(,"scaled:center")
-#&gt;        Murder       Assault      UrbanPop          Rape 
-#&gt; -2.842171e-16  9.094947e-15 -6.252776e-15  8.526513e-16 
-#&gt; 
-#&gt; $K
-#&gt;               [,1]         [,2]        [,3]        [,4]
-#&gt; [1,] -0.0005031233  0.003185718 -0.01243588 -0.40479570
-#&gt; [2,] -0.0120064074  0.004176394  0.01051799  0.01584251
-#&gt; [3,] -0.0005589971 -0.069430563  0.03121730 -0.02366681
-#&gt; [4,] -0.0009066803 -0.014266122 -0.15162666  0.02942629
-#&gt; 
-#&gt; $W
-#&gt;            [,1]        [,2]        [,3]        [,4]
-#&gt; [1,] -0.3272940 -0.94429966 -0.02925497 -0.01791523
-#&gt; [2,]  0.2522182 -0.07988422 -0.66871761  0.69485341
-#&gt; [3,]  0.4959778 -0.20255298  0.70075675  0.47108204
-#&gt; [4,]  0.7637216 -0.24675688 -0.24678106 -0.54308332
-#&gt; 
-#&gt; $A
-#&gt;             [,1]      [,2]      [,3]      [,4]
-#&gt; [1,] -0.83164439 27.496932 -1.679598 -1.641239
-#&gt; [2,]  3.92134419 77.722168  4.499120  7.331951
-#&gt; [3,] -0.07676045  2.141101 10.241290 -2.358271
-#&gt; [4,]  1.58637674  2.204880 -8.796661 -4.895097
-#&gt; 
-#&gt; $S
-#&gt;                        IC1         IC2         IC3          IC4
-#&gt; Alabama        -0.09449110  0.83631141 -0.00732968  1.294389562
-#&gt; Alaska          0.40717676  1.17895294 -3.42844353 -1.472300260
-#&gt; Arizona         1.81467992  0.97323601  0.21042435 -1.247542710
-#&gt; Arkansas        0.51751879  0.06841125 -0.86269229  0.698388250
-#&gt; California      0.37335669  1.28203521  0.09011010 -2.204951917
-#&gt; Colorado       -0.52095560  0.69068271 -0.84785891 -1.950820618
-#&gt; Connecticut     0.39534489 -0.95597259  1.44144313 -0.189028385
-#&gt; Delaware        2.26855195  0.03793316  0.94412073 -0.048947617
-#&gt; Florida         0.38374628  1.94884283  0.80884355  0.221349760
-#&gt; Georgia        -2.26982407  1.27146999  0.01142288  1.726777023
-#&gt; Hawaii         -2.28989784 -0.80332272  1.05337559 -0.732120046
-#&gt; Idaho           1.12285326 -1.02787566 -0.63867754 -0.171810595
-#&gt; Illinois        0.42067854  0.82452406  1.31953235 -0.107225346
-#&gt; Indiana        -1.07939230 -0.35600590 -0.12717930 -0.062665585
-#&gt; Iowa           -0.07580912 -1.44366582 -0.21560434 -0.004088263
-#&gt; Kansas         -0.50939954 -0.53997831  0.15398870 -0.051928527
-#&gt; Kentucky       -1.43215202 -0.31158418 -0.38413986  1.206082283
-#&gt; Louisiana      -0.71157202  1.19679959  0.69121407  1.500412771
-#&gt; Maine           0.87333007 -1.44250298 -0.27814040  0.424552704
-#&gt; Maryland        1.38081687  1.17730955 -0.12991985  0.021268558
-#&gt; Massachusetts   0.46849075 -0.47242248  1.63193282 -0.643342293
-#&gt; Michigan       -0.42258871  1.26091697 -0.34422904 -0.636895460
-#&gt; Minnesota      -0.25719862 -1.17099477  0.13848102 -0.440875337
-#&gt; Mississippi     0.01538190  1.06549723 -0.33767297  2.597548784
-#&gt; Missouri       -0.69882097  0.36257553 -0.27822425 -0.512054042
-#&gt; Montana        -0.29457702 -0.68316335 -0.64991598  0.375728830
-#&gt; Nebraska       -0.10116024 -0.83951298 -0.15139963 -0.183897991
-#&gt; Nevada         -1.27110597  1.57279745 -0.95228726 -1.819042227
-#&gt; New Hampshire   0.09870188 -1.50035992 -0.11054592  0.169585797
-#&gt; New Jersey     -0.47133303 -0.02892030  1.94609988 -0.326020598
-#&gt; New Mexico      0.71420128  1.23930305 -0.36079679 -0.429574662
-#&gt; New York        0.13470029  0.99139572  1.39116891 -0.224911490
-#&gt; North Carolina  2.76529846  1.11471858 -0.35615731  1.962466327
-#&gt; North Dakota    0.60208537 -1.81642144 -0.89982085  0.357080335
-#&gt; Ohio           -1.17635193 -0.24490367  0.58890363 -0.290441964
-#&gt; Oklahoma       -0.04715184 -0.23761108  0.18455113 -0.177317602
-#&gt; Oregon          0.16446492 -0.14129310 -0.99959108 -1.433388290
-#&gt; Pennsylvania   -0.75022078 -0.59920918  0.93874765  0.195317552
-#&gt; Rhode Island    1.74872549 -0.64333488  2.54826451 -0.135742538
-#&gt; South Carolina  0.61350611  1.15009861 -0.73337283  1.611213973
-#&gt; South Dakota    0.24519607 -1.15945721 -1.08838647  0.428020446
-#&gt; Tennessee      -1.50413977  0.74866363 -0.57460381  0.744599918
-#&gt; Texas          -1.39696370  0.84367322  1.09704592  0.331636005
-#&gt; Utah           -0.07116232 -0.59954293  0.43862118 -1.426205230
-#&gt; Vermont         0.24941394 -1.62570154 -2.06741533  0.526774770
-#&gt; Virginia       -0.47254364 -0.02794304 -0.08470155  0.266068117
-#&gt; Washington      0.18937013 -0.34849636 -0.32680775 -1.442925300
-#&gt; West Virginia  -0.14793289 -1.11190127 -1.00540999  1.306085915
-#&gt; Wisconsin      -0.41971477 -1.37991255  0.53639669 -0.053434541
-#&gt; Wyoming         0.51886918 -0.32413848  0.07663573  0.454151753
-#&gt; </div></pre>
+    <pre class="examples"><span class='r-in'><span class='fu'>performICA</span><span class='op'>(</span><span class='va'>USArrests</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $X</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                Murder Assault UrbanPop    Rape</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Alabama         5.412   65.24    -7.54  -0.032</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Alaska          2.212   92.24   -17.54  23.268</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Arizona         0.312  123.24    14.46   9.768</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Arkansas        1.012   19.24   -15.54  -1.732</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> California      1.212  105.24    25.46  19.368</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Colorado        0.112   33.24    12.46  17.468</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Connecticut    -4.488  -60.76    11.46 -10.132</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Delaware       -1.888   67.24     6.46  -5.432</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Florida         7.612  164.24    14.46  10.668</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Georgia         9.612   40.24    -5.54   4.568</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Hawaii         -2.488 -124.76    17.46  -1.032</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Idaho          -5.188  -50.76   -11.54  -7.032</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Illinois        2.612   78.24    17.46   2.768</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Indiana        -0.588  -57.76    -0.54  -0.232</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Iowa           -5.588 -114.76    -8.54  -9.932</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Kansas         -1.788  -55.76     0.46  -3.232</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Kentucky        1.912  -61.76   -13.54  -4.932</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Louisiana       7.612   78.24     0.46   0.968</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Maine          -5.688  -87.76   -14.54 -13.432</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Maryland        3.512  129.24     1.46   6.568</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Massachusetts  -3.388  -21.76    19.46  -4.932</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Michigan        4.312   84.24     8.46  13.868</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Minnesota      -5.088  -98.76     0.46  -6.332</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Mississippi     8.312   88.24   -21.54  -4.132</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Missouri        1.212    7.24     4.46   6.968</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Montana        -1.788  -61.76   -12.54  -4.832</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Nebraska       -3.488  -68.76    -3.54  -4.732</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Nevada          4.412   81.24    15.46  24.768</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> New Hampshire  -5.688 -113.76    -9.54 -11.732</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> New Jersey     -0.388  -11.76    23.46  -2.432</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> New Mexico      3.612  114.24     4.46  10.868</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> New York        3.312   83.24    20.46   4.868</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> North Carolina  5.212  166.24   -20.54  -5.132</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> North Dakota   -6.988 -125.76   -21.54 -13.932</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Ohio           -0.488  -50.76     9.46   0.168</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Oklahoma       -1.188  -19.76     2.46  -1.232</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Oregon         -2.888  -11.76     1.46   8.068</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Pennsylvania   -1.488  -64.76     6.46  -6.332</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Rhode Island   -4.388    3.24    21.46 -12.932</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> South Carolina  6.612  108.24   -17.54   1.268</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> South Dakota   -3.988  -84.76   -20.54  -8.432</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Tennessee       5.412   17.24    -6.54   5.668</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Texas           4.912   30.24    14.46   4.268</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Utah           -4.588  -50.76    14.46   1.668</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Vermont        -5.588 -122.76   -33.54 -10.032</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Virginia        0.712  -14.76    -2.54  -0.532</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Washington     -3.788  -25.76     7.46   4.968</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> West Virginia  -2.088  -89.76   -26.54 -11.932</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Wisconsin      -5.188 -117.76     0.46 -10.432</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Wyoming        -0.988   -9.76    -5.54  -5.632</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> attr(,"scaled:center")</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>        Murder       Assault      UrbanPop          Rape </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -2.842171e-16  9.094947e-15 -6.252776e-15  8.526513e-16 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $K</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>               [,1]         [,2]        [,3]        [,4]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1,] -0.0005031233  0.003185718 -0.01243588 -0.40479570</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [2,] -0.0120064074  0.004176394  0.01051799  0.01584251</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [3,] -0.0005589971 -0.069430563  0.03121730 -0.02366681</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [4,] -0.0009066803 -0.014266122 -0.15162666  0.02942629</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $W</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>            [,1]        [,2]        [,3]        [,4]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1,] -0.3272940 -0.94429966 -0.02925497 -0.01791523</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [2,]  0.2522182 -0.07988422 -0.66871761  0.69485341</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [3,]  0.4959778 -0.20255298  0.70075675  0.47108204</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [4,]  0.7637216 -0.24675688 -0.24678106 -0.54308332</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $A</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             [,1]      [,2]      [,3]      [,4]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1,] -0.83164439 27.496932 -1.679598 -1.641239</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [2,]  3.92134419 77.722168  4.499120  7.331951</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [3,] -0.07676045  2.141101 10.241290 -2.358271</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [4,]  1.58637674  2.204880 -8.796661 -4.895097</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $S</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                        IC1         IC2         IC3          IC4</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Alabama        -0.09449110  0.83631141 -0.00732968  1.294389562</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Alaska          0.40717676  1.17895294 -3.42844353 -1.472300260</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Arizona         1.81467992  0.97323601  0.21042435 -1.247542710</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Arkansas        0.51751879  0.06841125 -0.86269229  0.698388250</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> California      0.37335669  1.28203521  0.09011010 -2.204951917</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Colorado       -0.52095560  0.69068271 -0.84785891 -1.950820618</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Connecticut     0.39534489 -0.95597259  1.44144313 -0.189028385</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Delaware        2.26855195  0.03793316  0.94412073 -0.048947617</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Florida         0.38374628  1.94884283  0.80884355  0.221349760</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Georgia        -2.26982407  1.27146999  0.01142288  1.726777023</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Hawaii         -2.28989784 -0.80332272  1.05337559 -0.732120046</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Idaho           1.12285326 -1.02787566 -0.63867754 -0.171810595</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Illinois        0.42067854  0.82452406  1.31953235 -0.107225346</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Indiana        -1.07939230 -0.35600590 -0.12717930 -0.062665585</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Iowa           -0.07580912 -1.44366582 -0.21560434 -0.004088263</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Kansas         -0.50939954 -0.53997831  0.15398870 -0.051928527</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Kentucky       -1.43215202 -0.31158418 -0.38413986  1.206082283</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Louisiana      -0.71157202  1.19679959  0.69121407  1.500412771</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Maine           0.87333007 -1.44250298 -0.27814040  0.424552704</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Maryland        1.38081687  1.17730955 -0.12991985  0.021268558</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Massachusetts   0.46849075 -0.47242248  1.63193282 -0.643342293</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Michigan       -0.42258871  1.26091697 -0.34422904 -0.636895460</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Minnesota      -0.25719862 -1.17099477  0.13848102 -0.440875337</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Mississippi     0.01538190  1.06549723 -0.33767297  2.597548784</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Missouri       -0.69882097  0.36257553 -0.27822425 -0.512054042</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Montana        -0.29457702 -0.68316335 -0.64991598  0.375728830</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Nebraska       -0.10116024 -0.83951298 -0.15139963 -0.183897991</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Nevada         -1.27110597  1.57279745 -0.95228726 -1.819042227</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> New Hampshire   0.09870188 -1.50035992 -0.11054592  0.169585797</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> New Jersey     -0.47133303 -0.02892030  1.94609988 -0.326020598</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> New Mexico      0.71420128  1.23930305 -0.36079679 -0.429574662</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> New York        0.13470029  0.99139572  1.39116891 -0.224911490</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> North Carolina  2.76529846  1.11471858 -0.35615731  1.962466327</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> North Dakota    0.60208537 -1.81642144 -0.89982085  0.357080335</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Ohio           -1.17635193 -0.24490367  0.58890363 -0.290441964</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Oklahoma       -0.04715184 -0.23761108  0.18455113 -0.177317602</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Oregon          0.16446492 -0.14129310 -0.99959108 -1.433388290</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Pennsylvania   -0.75022078 -0.59920918  0.93874765  0.195317552</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Rhode Island    1.74872549 -0.64333488  2.54826451 -0.135742538</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> South Carolina  0.61350611  1.15009861 -0.73337283  1.611213973</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> South Dakota    0.24519607 -1.15945721 -1.08838647  0.428020446</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Tennessee      -1.50413977  0.74866363 -0.57460381  0.744599918</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Texas          -1.39696370  0.84367322  1.09704592  0.331636005</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Utah           -0.07116232 -0.59954293  0.43862118 -1.426205230</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Vermont         0.24941394 -1.62570154 -2.06741533  0.526774770</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Virginia       -0.47254364 -0.02794304 -0.08470155  0.266068117</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Washington      0.18937013 -0.34849636 -0.32680775 -1.442925300</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> West Virginia  -0.14793289 -1.11190127 -1.00540999  1.306085915</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Wisconsin      -0.41971477 -1.37991255  0.53639669 -0.053434541</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Wyoming         0.51886918 -0.32413848  0.07663573  0.454151753</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

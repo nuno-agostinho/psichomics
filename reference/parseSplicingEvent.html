@@ -212,111 +212,112 @@ position of alternative splicing events or character with that same
 information (depending on what is available)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>events</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>
-  <span class='st'>"A3SS_15_+_63353138_63353912_63353397_TPM1"</span>,
-  <span class='st'>"A3SS_11_-_61118463_61117115_61117894_CYB561A3"</span>,
-  <span class='st'>"A5SS_21_+_48055675_48056459_48056808_PRMT2"</span>,
-  <span class='st'>"A5SS_1_-_1274742_1274667_1274033_DVL1"</span>,
-  <span class='st'>"AFE_9_+_131902430_131901928_131904724_PPP2R4"</span>,
-  <span class='st'>"AFE_5_-_134686513_134688636_134681747_H2AFY"</span>,
-  <span class='st'>"ALE_12_+_56554104_56554410_56555171_MYL6"</span>,
-  <span class='st'>"ALE_8_-_38314874_38287466_38285953_FGFR1"</span>,
-  <span class='st'>"SE_9_+_6486925_6492303_6492401_6493826_UHRF2"</span>,
-  <span class='st'>"SE_19_-_5218431_5216778_5216731_5215606_PTPRS"</span>,
-  <span class='st'>"MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1"</span>,
-  <span class='st'>"MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7"</span><span class='op'>)</span>
-<span class='fu'>parseSplicingEvent</span><span class='op'>(</span><span class='va'>events</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;                                                                      type chrom
-#&gt; A3SS_15_+_63353138_63353912_63353397_TPM1                            A3SS    15
-#&gt; A3SS_11_-_61118463_61117115_61117894_CYB561A3                        A3SS    11
-#&gt; A5SS_21_+_48055675_48056459_48056808_PRMT2                           A5SS    21
-#&gt; A5SS_1_-_1274742_1274667_1274033_DVL1                                A5SS     1
-#&gt; AFE_9_+_131902430_131901928_131904724_PPP2R4                          AFE     9
-#&gt; AFE_5_-_134686513_134688636_134681747_H2AFY                           AFE     5
-#&gt; ALE_12_+_56554104_56554410_56555171_MYL6                              ALE    12
-#&gt; ALE_8_-_38314874_38287466_38285953_FGFR1                              ALE     8
-#&gt; SE_9_+_6486925_6492303_6492401_6493826_UHRF2                           SE     9
-#&gt; SE_19_-_5218431_5216778_5216731_5215606_PTPRS                          SE    19
-#&gt; MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1   MXE    15
-#&gt; MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7  MXE    17
-#&gt;                                                                      strand
-#&gt; A3SS_15_+_63353138_63353912_63353397_TPM1                                 +
-#&gt; A3SS_11_-_61118463_61117115_61117894_CYB561A3                             -
-#&gt; A5SS_21_+_48055675_48056459_48056808_PRMT2                                +
-#&gt; A5SS_1_-_1274742_1274667_1274033_DVL1                                     -
-#&gt; AFE_9_+_131902430_131901928_131904724_PPP2R4                              +
-#&gt; AFE_5_-_134686513_134688636_134681747_H2AFY                               -
-#&gt; ALE_12_+_56554104_56554410_56555171_MYL6                                  +
-#&gt; ALE_8_-_38314874_38287466_38285953_FGFR1                                  -
-#&gt; SE_9_+_6486925_6492303_6492401_6493826_UHRF2                              +
-#&gt; SE_19_-_5218431_5216778_5216731_5215606_PTPRS                             -
-#&gt; MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1       +
-#&gt; MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7      -
-#&gt;                                                                          gene
-#&gt; A3SS_15_+_63353138_63353912_63353397_TPM1                                TPM1
-#&gt; A3SS_11_-_61118463_61117115_61117894_CYB561A3                        CYB561A3
-#&gt; A5SS_21_+_48055675_48056459_48056808_PRMT2                              PRMT2
-#&gt; A5SS_1_-_1274742_1274667_1274033_DVL1                                    DVL1
-#&gt; AFE_9_+_131902430_131901928_131904724_PPP2R4                           PPP2R4
-#&gt; AFE_5_-_134686513_134688636_134681747_H2AFY                             H2AFY
-#&gt; ALE_12_+_56554104_56554410_56555171_MYL6                                 MYL6
-#&gt; ALE_8_-_38314874_38287466_38285953_FGFR1                                FGFR1
-#&gt; SE_9_+_6486925_6492303_6492401_6493826_UHRF2                            UHRF2
-#&gt; SE_19_-_5218431_5216778_5216731_5215606_PTPRS                           PTPRS
-#&gt; MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1      TPM1
-#&gt; MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7    EXOC7
-#&gt;                                                                                       pos
-#&gt; A3SS_15_+_63353138_63353912_63353397_TPM1                              63353138, 63353912
-#&gt; A3SS_11_-_61118463_61117115_61117894_CYB561A3                          61117115, 61118463
-#&gt; A5SS_21_+_48055675_48056459_48056808_PRMT2                             48055675, 48056808
-#&gt; A5SS_1_-_1274742_1274667_1274033_DVL1                                    1274033, 1274742
-#&gt; AFE_9_+_131902430_131901928_131904724_PPP2R4                         131901928, 131904724
-#&gt; AFE_5_-_134686513_134688636_134681747_H2AFY                          134681747, 134688636
-#&gt; ALE_12_+_56554104_56554410_56555171_MYL6                               56554104, 56555171
-#&gt; ALE_8_-_38314874_38287466_38285953_FGFR1                               38285953, 38314874
-#&gt; SE_9_+_6486925_6492303_6492401_6493826_UHRF2                             6486925, 6493826
-#&gt; SE_19_-_5218431_5216778_5216731_5215606_PTPRS                            5215606, 5218431
-#&gt; MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1    63335142, 63349184
-#&gt; MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7   74085401, 74090495
-#&gt;                                                                          start
-#&gt; A3SS_15_+_63353138_63353912_63353397_TPM1                             63353138
-#&gt; A3SS_11_-_61118463_61117115_61117894_CYB561A3                         61117115
-#&gt; A5SS_21_+_48055675_48056459_48056808_PRMT2                            48055675
-#&gt; A5SS_1_-_1274742_1274667_1274033_DVL1                                  1274033
-#&gt; AFE_9_+_131902430_131901928_131904724_PPP2R4                         131901928
-#&gt; AFE_5_-_134686513_134688636_134681747_H2AFY                          134681747
-#&gt; ALE_12_+_56554104_56554410_56555171_MYL6                              56554104
-#&gt; ALE_8_-_38314874_38287466_38285953_FGFR1                              38285953
-#&gt; SE_9_+_6486925_6492303_6492401_6493826_UHRF2                           6486925
-#&gt; SE_19_-_5218431_5216778_5216731_5215606_PTPRS                          5215606
-#&gt; MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1   63335142
-#&gt; MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7  74085401
-#&gt;                                                                            end
-#&gt; A3SS_15_+_63353138_63353912_63353397_TPM1                             63353912
-#&gt; A3SS_11_-_61118463_61117115_61117894_CYB561A3                         61118463
-#&gt; A5SS_21_+_48055675_48056459_48056808_PRMT2                            48056808
-#&gt; A5SS_1_-_1274742_1274667_1274033_DVL1                                  1274742
-#&gt; AFE_9_+_131902430_131901928_131904724_PPP2R4                         131904724
-#&gt; AFE_5_-_134686513_134688636_134681747_H2AFY                          134688636
-#&gt; ALE_12_+_56554104_56554410_56555171_MYL6                              56555171
-#&gt; ALE_8_-_38314874_38287466_38285953_FGFR1                              38314874
-#&gt; SE_9_+_6486925_6492303_6492401_6493826_UHRF2                           6493826
-#&gt; SE_19_-_5218431_5216778_5216731_5215606_PTPRS                          5218431
-#&gt; MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1   63349184
-#&gt; MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7  74090495
-#&gt;                                                                      subtype
-#&gt; A3SS_15_+_63353138_63353912_63353397_TPM1                               A3SS
-#&gt; A3SS_11_-_61118463_61117115_61117894_CYB561A3                           A3SS
-#&gt; A5SS_21_+_48055675_48056459_48056808_PRMT2                              A5SS
-#&gt; A5SS_1_-_1274742_1274667_1274033_DVL1                                   A5SS
-#&gt; AFE_9_+_131902430_131901928_131904724_PPP2R4                             AFE
-#&gt; AFE_5_-_134686513_134688636_134681747_H2AFY                              AFE
-#&gt; ALE_12_+_56554104_56554410_56555171_MYL6                                 ALE
-#&gt; ALE_8_-_38314874_38287466_38285953_FGFR1                                 ALE
-#&gt; SE_9_+_6486925_6492303_6492401_6493826_UHRF2                              SE
-#&gt; SE_19_-_5218431_5216778_5216731_5215606_PTPRS                             SE
-#&gt; MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1      MXE
-#&gt; MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7     MXE</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>events</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span></span>
+<span class='r-in'>  <span class='st'>"A3SS_15_+_63353138_63353912_63353397_TPM1"</span>,</span>
+<span class='r-in'>  <span class='st'>"A3SS_11_-_61118463_61117115_61117894_CYB561A3"</span>,</span>
+<span class='r-in'>  <span class='st'>"A5SS_21_+_48055675_48056459_48056808_PRMT2"</span>,</span>
+<span class='r-in'>  <span class='st'>"A5SS_1_-_1274742_1274667_1274033_DVL1"</span>,</span>
+<span class='r-in'>  <span class='st'>"AFE_9_+_131902430_131901928_131904724_PPP2R4"</span>,</span>
+<span class='r-in'>  <span class='st'>"AFE_5_-_134686513_134688636_134681747_H2AFY"</span>,</span>
+<span class='r-in'>  <span class='st'>"ALE_12_+_56554104_56554410_56555171_MYL6"</span>,</span>
+<span class='r-in'>  <span class='st'>"ALE_8_-_38314874_38287466_38285953_FGFR1"</span>,</span>
+<span class='r-in'>  <span class='st'>"SE_9_+_6486925_6492303_6492401_6493826_UHRF2"</span>,</span>
+<span class='r-in'>  <span class='st'>"SE_19_-_5218431_5216778_5216731_5215606_PTPRS"</span>,</span>
+<span class='r-in'>  <span class='st'>"MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1"</span>,</span>
+<span class='r-in'>  <span class='st'>"MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>parseSplicingEvent</span><span class='op'>(</span><span class='va'>events</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                                      type chrom</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A3SS_15_+_63353138_63353912_63353397_TPM1                            A3SS    15</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A3SS_11_-_61118463_61117115_61117894_CYB561A3                        A3SS    11</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A5SS_21_+_48055675_48056459_48056808_PRMT2                           A5SS    21</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A5SS_1_-_1274742_1274667_1274033_DVL1                                A5SS     1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> AFE_9_+_131902430_131901928_131904724_PPP2R4                          AFE     9</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> AFE_5_-_134686513_134688636_134681747_H2AFY                           AFE     5</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALE_12_+_56554104_56554410_56555171_MYL6                              ALE    12</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALE_8_-_38314874_38287466_38285953_FGFR1                              ALE     8</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_9_+_6486925_6492303_6492401_6493826_UHRF2                           SE     9</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_19_-_5218431_5216778_5216731_5215606_PTPRS                          SE    19</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1   MXE    15</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7  MXE    17</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                                      strand</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A3SS_15_+_63353138_63353912_63353397_TPM1                                 +</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A3SS_11_-_61118463_61117115_61117894_CYB561A3                             -</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A5SS_21_+_48055675_48056459_48056808_PRMT2                                +</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A5SS_1_-_1274742_1274667_1274033_DVL1                                     -</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> AFE_9_+_131902430_131901928_131904724_PPP2R4                              +</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> AFE_5_-_134686513_134688636_134681747_H2AFY                               -</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALE_12_+_56554104_56554410_56555171_MYL6                                  +</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALE_8_-_38314874_38287466_38285953_FGFR1                                  -</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_9_+_6486925_6492303_6492401_6493826_UHRF2                              +</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_19_-_5218431_5216778_5216731_5215606_PTPRS                             -</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1       +</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7      -</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                                          gene</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A3SS_15_+_63353138_63353912_63353397_TPM1                                TPM1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A3SS_11_-_61118463_61117115_61117894_CYB561A3                        CYB561A3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A5SS_21_+_48055675_48056459_48056808_PRMT2                              PRMT2</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A5SS_1_-_1274742_1274667_1274033_DVL1                                    DVL1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> AFE_9_+_131902430_131901928_131904724_PPP2R4                           PPP2R4</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> AFE_5_-_134686513_134688636_134681747_H2AFY                             H2AFY</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALE_12_+_56554104_56554410_56555171_MYL6                                 MYL6</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALE_8_-_38314874_38287466_38285953_FGFR1                                FGFR1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_9_+_6486925_6492303_6492401_6493826_UHRF2                            UHRF2</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_19_-_5218431_5216778_5216731_5215606_PTPRS                           PTPRS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1      TPM1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7    EXOC7</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                                                       pos</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A3SS_15_+_63353138_63353912_63353397_TPM1                              63353138, 63353912</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A3SS_11_-_61118463_61117115_61117894_CYB561A3                          61117115, 61118463</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A5SS_21_+_48055675_48056459_48056808_PRMT2                             48055675, 48056808</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A5SS_1_-_1274742_1274667_1274033_DVL1                                    1274033, 1274742</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> AFE_9_+_131902430_131901928_131904724_PPP2R4                         131901928, 131904724</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> AFE_5_-_134686513_134688636_134681747_H2AFY                          134681747, 134688636</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALE_12_+_56554104_56554410_56555171_MYL6                               56554104, 56555171</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALE_8_-_38314874_38287466_38285953_FGFR1                               38285953, 38314874</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_9_+_6486925_6492303_6492401_6493826_UHRF2                             6486925, 6493826</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_19_-_5218431_5216778_5216731_5215606_PTPRS                            5215606, 5218431</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1    63335142, 63349184</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7   74085401, 74090495</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                                          start</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A3SS_15_+_63353138_63353912_63353397_TPM1                             63353138</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A3SS_11_-_61118463_61117115_61117894_CYB561A3                         61117115</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A5SS_21_+_48055675_48056459_48056808_PRMT2                            48055675</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A5SS_1_-_1274742_1274667_1274033_DVL1                                  1274033</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> AFE_9_+_131902430_131901928_131904724_PPP2R4                         131901928</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> AFE_5_-_134686513_134688636_134681747_H2AFY                          134681747</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALE_12_+_56554104_56554410_56555171_MYL6                              56554104</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALE_8_-_38314874_38287466_38285953_FGFR1                              38285953</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_9_+_6486925_6492303_6492401_6493826_UHRF2                           6486925</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_19_-_5218431_5216778_5216731_5215606_PTPRS                          5215606</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1   63335142</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7  74085401</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                                            end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A3SS_15_+_63353138_63353912_63353397_TPM1                             63353912</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A3SS_11_-_61118463_61117115_61117894_CYB561A3                         61118463</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A5SS_21_+_48055675_48056459_48056808_PRMT2                            48056808</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A5SS_1_-_1274742_1274667_1274033_DVL1                                  1274742</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> AFE_9_+_131902430_131901928_131904724_PPP2R4                         131904724</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> AFE_5_-_134686513_134688636_134681747_H2AFY                          134688636</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALE_12_+_56554104_56554410_56555171_MYL6                              56555171</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALE_8_-_38314874_38287466_38285953_FGFR1                              38314874</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_9_+_6486925_6492303_6492401_6493826_UHRF2                           6493826</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_19_-_5218431_5216778_5216731_5215606_PTPRS                          5218431</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1   63349184</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7  74090495</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                                      subtype</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A3SS_15_+_63353138_63353912_63353397_TPM1                               A3SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A3SS_11_-_61118463_61117115_61117894_CYB561A3                           A3SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A5SS_21_+_48055675_48056459_48056808_PRMT2                              A5SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> A5SS_1_-_1274742_1274667_1274033_DVL1                                   A5SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> AFE_9_+_131902430_131901928_131904724_PPP2R4                             AFE</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> AFE_5_-_134686513_134688636_134681747_H2AFY                              AFE</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALE_12_+_56554104_56554410_56555171_MYL6                                 ALE</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALE_8_-_38314874_38287466_38285953_FGFR1                                 ALE</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_9_+_6486925_6492303_6492401_6493826_UHRF2                              SE</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> SE_19_-_5218431_5216778_5216731_5215606_PTPRS                             SE</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1      MXE</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7     MXE</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

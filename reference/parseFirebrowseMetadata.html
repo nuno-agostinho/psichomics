@@ -183,135 +183,140 @@
     <p>List with parsed response</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseFirebrowseMetadata</span><span class='op'>(</span><span class='st'>"Dates"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; $Dates
-#&gt;  [1] "2016_01_28" "2015_11_01" "2015_08_21" "2015_06_01" "2015_04_02"
-#&gt;  [6] "2015_02_04" "2014_12_06" "2014_10_17" "2014_09_02" "2014_07_15"
-#&gt; [11] "2014_05_18" "2014_04_16" "2014_03_16"
-#&gt; </div><div class='input'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseFirebrowseMetadata</span><span class='op'>(</span><span class='st'>"Centers"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; $Centers
-#&gt;                     center center_type code
-#&gt; 1           vanderbilt.edu        CGCC   27
-#&gt; 2                  jhu.edu        CGCC   28
-#&gt; 3                  pnl.gov        CGCC   29
-#&gt; 4         genome.wustl.edu        CGCC   30
-#&gt; 5                 bcgsc.ca        CGCC   31
-#&gt; 6             sanger.ac.uk         GSC   32
-#&gt; 7            broad.mit.edu        CGCC   01
-#&gt; 8          hms.harvard.edu        CGCC   02
-#&gt; 9                  lbl.gov        CGCC   03
-#&gt; 10               mskcc.org        CGCC   04
-#&gt; 11             jhu-usc.edu        CGCC   05
-#&gt; 12         hudsonalpha.org        CGCC   06
-#&gt; 13                 unc.edu        CGCC   07
-#&gt; 14           broad.mit.edu         GSC   08
-#&gt; 15        genome.wustl.edu         GSC   09
-#&gt; 16            hgsc.bcm.edu         GSC   10
-#&gt; 17     rubicongenomics.com         COM   11
-#&gt; 18            hgsc.bcm.edu        CGCC   12
-#&gt; 19                bcgsc.ca        CGCC   13
-#&gt; 20      broadinstitute.org        GDAC   14
-#&gt; 21      systemsbiology.org        GDAC   15
-#&gt; 22                 lbl.gov        GDAC   16
-#&gt; 23               mskcc.org        GDAC   17
-#&gt; 24                ucsc.edu        GDAC   18
-#&gt; 25          mdanderson.org        GDAC   19
-#&gt; 26          mdanderson.org        CGCC   20
-#&gt; 27        genome.wustl.edu        CGCC   21
-#&gt; 28              intgen.org        CGCC   22
-#&gt; 29 nationwidechildrens.org        CGCC   23
-#&gt; 30          mdanderson.org        CGCC   24
-#&gt; 31                ucsc.edu         GSC   25
-#&gt; 32          mdanderson.org        CGCC   26
-#&gt;                                           display_name short_name
-#&gt; 1                     Vanderbilt University Proteomics       VUMC
-#&gt; 2              The Johns Hopkins University Proteomics        JHU
-#&gt; 3                       Pacific Northwest National Lab       PNNL
-#&gt; 4  Washington University School of Medicine Proteomics       WUSM
-#&gt; 5        Canada's Michael Smith Genome Sciences Centre      BCGSC
-#&gt; 6                      Wellcome Trust Sanger Institute     SANGER
-#&gt; 7                   Broad Institute of MIT and Harvard         BI
-#&gt; 8                               Harvard Medical School        HMS
-#&gt; 9                Lawrence Berkeley National Laboratory        LBL
-#&gt; 10              Memorial Sloan-Kettering Cancer Center      MSKCC
-#&gt; 11   Johns Hopkins / University of Southern California    JHU_USC
-#&gt; 12             HudsonAlpha Institute for Biotechnology       HAIB
-#&gt; 13                        University of North Carolina        UNC
-#&gt; 14                  Broad Institute of MIT and Harvard         BI
-#&gt; 15            Washington University School of Medicine       WUSM
-#&gt; 16                          Baylor College of Medicine        BCM
-#&gt; 17                                    Rubicon Genomics         RG
-#&gt; 18                          Baylor College of Medicine        BCM
-#&gt; 19       Canada's Michael Smith Genome Sciences Centre      BCGSC
-#&gt; 20                  Broad Institute of MIT and Harvard         BI
-#&gt; 21                       Institute for Systems Biology        ISB
-#&gt; 22                Lawrence Berkely National Laboratory        LBL
-#&gt; 23              Memorial Sloan-Kettering Cancer Center      MSKCC
-#&gt; 24                University of California, Santa Cruz       UCSC
-#&gt; 25                                         MD Anderson        MDA
-#&gt; 26       MD Anderson - RPPA Core Facility (Proteomics)        MDA
-#&gt; 27            Washington University School of Medicine       WUSM
-#&gt; 28                                                 IGC        IGC
-#&gt; 29                                             NCH BCR        NCH
-#&gt; 30       MD Anderson - Pathology/Lab Medicine Hamilton        MDA
-#&gt; 31                University of California, Santa Cruz       UCSC
-#&gt; 32  MD Anderson - Institute for Applied Cancer Science        MDA
-#&gt; </div><div class='input'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseFirebrowseMetadata</span><span class='op'>(</span><span class='st'>"HeartBeat"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; $HeartBeat
-#&gt; [1] "FireBrowse API at firebrowse.org:8000 is alive"                
-#&gt; [2] "Version: 1.1.40 (2019-10-13 13:15:04 c66e6f910b6a89397a4de26c)"
-#&gt; [3] "Root Dir: /local/firebrowse/firebrowse_1.1.40"                 
-#&gt; [4] "Launched On: 2021_09_04 18:28:46 EDT\n"                        
-#&gt; </div><div class='input'>
-<span class='co'># Get the abbreviation and description of all cohorts available</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseFirebrowseMetadata</span><span class='op'>(</span><span class='st'>"Cohorts"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; $Cohorts
-#&gt;      cohort                                                      description
-#&gt; 1       ACC                                         Adrenocortical carcinoma
-#&gt; 2      BLCA                                     Bladder Urothelial Carcinoma
-#&gt; 3      BRCA                                        Breast invasive carcinoma
-#&gt; 4      CESC Cervical squamous cell carcinoma and endocervical adenocarcinoma
-#&gt; 5      CHOL                                               Cholangiocarcinoma
-#&gt; 6      COAD                                             Colon adenocarcinoma
-#&gt; 7  COADREAD                                        Colorectal adenocarcinoma
-#&gt; 8      DLBC                  Lymphoid Neoplasm Diffuse Large B-cell Lymphoma
-#&gt; 9      ESCA                                            Esophageal carcinoma 
-#&gt; 10     FPPP                                              FFPE Pilot Phase II
-#&gt; 11      GBM                                          Glioblastoma multiforme
-#&gt; 12   GBMLGG                                                           Glioma
-#&gt; 13     HNSC                            Head and Neck squamous cell carcinoma
-#&gt; 14     KICH                                               Kidney Chromophobe
-#&gt; 15    KIPAN                               Pan-kidney cohort (KICH+KIRC+KIRP)
-#&gt; 16     KIRC                                Kidney renal clear cell carcinoma
-#&gt; 17     KIRP                            Kidney renal papillary cell carcinoma
-#&gt; 18     LAML                                           Acute Myeloid Leukemia
-#&gt; 19      LGG                                         Brain Lower Grade Glioma
-#&gt; 20     LIHC                                   Liver hepatocellular carcinoma
-#&gt; 21     LUAD                                              Lung adenocarcinoma
-#&gt; 22     LUSC                                     Lung squamous cell carcinoma
-#&gt; 23     MESO                                                     Mesothelioma
-#&gt; 24       OV                                Ovarian serous cystadenocarcinoma
-#&gt; 25     PAAD                                        Pancreatic adenocarcinoma
-#&gt; 26     PCPG                               Pheochromocytoma and Paraganglioma
-#&gt; 27     PRAD                                          Prostate adenocarcinoma
-#&gt; 28     READ                                            Rectum adenocarcinoma
-#&gt; 29     SARC                                                          Sarcoma
-#&gt; 30     SKCM                                          Skin Cutaneous Melanoma
-#&gt; 31     STAD                                           Stomach adenocarcinoma
-#&gt; 32     STES                                 Stomach and Esophageal carcinoma
-#&gt; 33     TGCT                                      Testicular Germ Cell Tumors
-#&gt; 34     THCA                                                Thyroid carcinoma
-#&gt; 35     THYM                                                          Thymoma
-#&gt; 36     UCEC                             Uterine Corpus Endometrial Carcinoma
-#&gt; 37      UCS                                           Uterine Carcinosarcoma
-#&gt; 38      UVM                                                   Uveal Melanoma
-#&gt; </div><div class='input'><span class='co'># Get the abbreviation and description of the selected cohorts</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseFirebrowseMetadata</span><span class='op'>(</span><span class='st'>"Cohorts"</span>, cohort <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ACC"</span>, <span class='st'>"BRCA"</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; $Cohorts
-#&gt;   cohort               description
-#&gt; 1    ACC  Adrenocortical carcinoma
-#&gt; 2   BRCA Breast invasive carcinoma
-#&gt; </div></pre>
+    <pre class="examples"><span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseFirebrowseMetadata</span><span class='op'>(</span><span class='st'>"Dates"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $Dates</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [1] "2016_01_28" "2015_11_01" "2015_08_21" "2015_06_01" "2015_04_02"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [6] "2015_02_04" "2014_12_06" "2014_10_17" "2014_09_02" "2014_07_15"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [11] "2014_05_18" "2014_04_16" "2014_03_16"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseFirebrowseMetadata</span><span class='op'>(</span><span class='st'>"Centers"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $Centers</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                     center center_type code</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1           vanderbilt.edu        CGCC   27</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2                  jhu.edu        CGCC   28</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3                  pnl.gov        CGCC   29</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4         genome.wustl.edu        CGCC   30</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5                 bcgsc.ca        CGCC   31</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6             sanger.ac.uk         GSC   32</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 7            broad.mit.edu        CGCC   01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 8          hms.harvard.edu        CGCC   02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 9                  lbl.gov        CGCC   03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10               mskcc.org        CGCC   04</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11             jhu-usc.edu        CGCC   05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12         hudsonalpha.org        CGCC   06</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13                 unc.edu        CGCC   07</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14           broad.mit.edu         GSC   08</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15        genome.wustl.edu         GSC   09</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16            hgsc.bcm.edu         GSC   10</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17     rubicongenomics.com         COM   11</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18            hgsc.bcm.edu        CGCC   12</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19                bcgsc.ca        CGCC   13</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20      broadinstitute.org        GDAC   14</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21      systemsbiology.org        GDAC   15</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 22                 lbl.gov        GDAC   16</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 23               mskcc.org        GDAC   17</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 24                ucsc.edu        GDAC   18</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 25          mdanderson.org        GDAC   19</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 26          mdanderson.org        CGCC   20</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 27        genome.wustl.edu        CGCC   21</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 28              intgen.org        CGCC   22</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 29 nationwidechildrens.org        CGCC   23</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 30          mdanderson.org        CGCC   24</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 31                ucsc.edu         GSC   25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 32          mdanderson.org        CGCC   26</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                           display_name short_name</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1                     Vanderbilt University Proteomics       VUMC</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2              The Johns Hopkins University Proteomics        JHU</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3                       Pacific Northwest National Lab       PNNL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4  Washington University School of Medicine Proteomics       WUSM</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5        Canada's Michael Smith Genome Sciences Centre      BCGSC</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6                      Wellcome Trust Sanger Institute     SANGER</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 7                   Broad Institute of MIT and Harvard         BI</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 8                               Harvard Medical School        HMS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 9                Lawrence Berkeley National Laboratory        LBL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10              Memorial Sloan-Kettering Cancer Center      MSKCC</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11   Johns Hopkins / University of Southern California    JHU_USC</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12             HudsonAlpha Institute for Biotechnology       HAIB</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13                        University of North Carolina        UNC</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14                  Broad Institute of MIT and Harvard         BI</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15            Washington University School of Medicine       WUSM</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16                          Baylor College of Medicine        BCM</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17                                    Rubicon Genomics         RG</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18                          Baylor College of Medicine        BCM</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19       Canada's Michael Smith Genome Sciences Centre      BCGSC</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20                  Broad Institute of MIT and Harvard         BI</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21                       Institute for Systems Biology        ISB</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 22                Lawrence Berkely National Laboratory        LBL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 23              Memorial Sloan-Kettering Cancer Center      MSKCC</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 24                University of California, Santa Cruz       UCSC</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 25                                         MD Anderson        MDA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 26       MD Anderson - RPPA Core Facility (Proteomics)        MDA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 27            Washington University School of Medicine       WUSM</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 28                                                 IGC        IGC</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 29                                             NCH BCR        NCH</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 30       MD Anderson - Pathology/Lab Medicine Hamilton        MDA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 31                University of California, Santa Cruz       UCSC</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 32  MD Anderson - Institute for Applied Cancer Science        MDA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseFirebrowseMetadata</span><span class='op'>(</span><span class='st'>"HeartBeat"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $HeartBeat</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "FireBrowse API at firebrowse.org:8000 is alive"                </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [2] "Version: 1.1.40 (2019-10-13 13:15:04 c66e6f910b6a89397a4de26c)"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [3] "Root Dir: /local/firebrowse/firebrowse_1.1.40"                 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [4] "Launched On: 2021_09_26 03:31:41 EDT\n"                        </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Get the abbreviation and description of all cohorts available</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseFirebrowseMetadata</span><span class='op'>(</span><span class='st'>"Cohorts"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $Cohorts</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      cohort                                                      description</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1       ACC                                         Adrenocortical carcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2      BLCA                                     Bladder Urothelial Carcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3      BRCA                                        Breast invasive carcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4      CESC Cervical squamous cell carcinoma and endocervical adenocarcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5      CHOL                                               Cholangiocarcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6      COAD                                             Colon adenocarcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 7  COADREAD                                        Colorectal adenocarcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 8      DLBC                  Lymphoid Neoplasm Diffuse Large B-cell Lymphoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 9      ESCA                                            Esophageal carcinoma </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10     FPPP                                              FFPE Pilot Phase II</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11      GBM                                          Glioblastoma multiforme</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12   GBMLGG                                                           Glioma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13     HNSC                            Head and Neck squamous cell carcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14     KICH                                               Kidney Chromophobe</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15    KIPAN                               Pan-kidney cohort (KICH+KIRC+KIRP)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16     KIRC                                Kidney renal clear cell carcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17     KIRP                            Kidney renal papillary cell carcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18     LAML                                           Acute Myeloid Leukemia</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19      LGG                                         Brain Lower Grade Glioma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20     LIHC                                   Liver hepatocellular carcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21     LUAD                                              Lung adenocarcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 22     LUSC                                     Lung squamous cell carcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 23     MESO                                                     Mesothelioma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 24       OV                                Ovarian serous cystadenocarcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 25     PAAD                                        Pancreatic adenocarcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 26     PCPG                               Pheochromocytoma and Paraganglioma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 27     PRAD                                          Prostate adenocarcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 28     READ                                            Rectum adenocarcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 29     SARC                                                          Sarcoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 30     SKCM                                          Skin Cutaneous Melanoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 31     STAD                                           Stomach adenocarcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 32     STES                                 Stomach and Esophageal carcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 33     TGCT                                      Testicular Germ Cell Tumors</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 34     THCA                                                Thyroid carcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 35     THYM                                                          Thymoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 36     UCEC                             Uterine Corpus Endometrial Carcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 37      UCS                                           Uterine Carcinosarcoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 38      UVM                                                   Uveal Melanoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'><span class='co'># Get the abbreviation and description of the selected cohorts</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseFirebrowseMetadata</span><span class='op'>(</span><span class='st'>"Cohorts"</span>, cohort <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ACC"</span>, <span class='st'>"BRCA"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $Cohorts</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   cohort               description</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1    ACC  Adrenocortical carcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2   BRCA Breast invasive carcinoma</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

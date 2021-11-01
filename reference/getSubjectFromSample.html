@@ -204,15 +204,17 @@ respective subject identifiers</p></td>
 <code><a href='testGroupIndependence.html'>testGroupIndependence</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>samples</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"GTEX-"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ABC"</span>, <span class='st'>"DEF"</span>, <span class='st'>"GHI"</span>, <span class='st'>"JKL"</span>, <span class='st'>"MNO"</span><span class='op'>)</span>, <span class='st'>"-sample"</span><span class='op'>)</span>
-<span class='fu'>getSubjectFromSample</span><span class='op'>(</span><span class='va'>samples</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; GTEX-ABC-sample GTEX-DEF-sample GTEX-GHI-sample GTEX-JKL-sample GTEX-MNO-sample 
-#&gt;      "GTEX-ABC"      "GTEX-DEF"      "GTEX-GHI"      "GTEX-JKL"      "GTEX-MNO" </div><div class='input'>
-<span class='co'># Filter returned samples based on available subjects</span>
-<span class='va'>subjects</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"GTEX-"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"DEF"</span>, <span class='st'>"MNO"</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'>getSubjectFromSample</span><span class='op'>(</span><span class='va'>samples</span>, <span class='va'>subjects</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; GTEX-DEF-sample GTEX-MNO-sample 
-#&gt;      "GTEX-DEF"      "GTEX-MNO" </div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>samples</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"GTEX-"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ABC"</span>, <span class='st'>"DEF"</span>, <span class='st'>"GHI"</span>, <span class='st'>"JKL"</span>, <span class='st'>"MNO"</span><span class='op'>)</span>, <span class='st'>"-sample"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>getSubjectFromSample</span><span class='op'>(</span><span class='va'>samples</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> GTEX-ABC-sample GTEX-DEF-sample GTEX-GHI-sample GTEX-JKL-sample GTEX-MNO-sample </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      "GTEX-ABC"      "GTEX-DEF"      "GTEX-GHI"      "GTEX-JKL"      "GTEX-MNO" </span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Filter returned samples based on available subjects</span></span>
+<span class='r-in'><span class='va'>subjects</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"GTEX-"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"DEF"</span>, <span class='st'>"MNO"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>getSubjectFromSample</span><span class='op'>(</span><span class='va'>samples</span>, <span class='va'>subjects</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> GTEX-DEF-sample GTEX-MNO-sample </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      "GTEX-DEF"      "GTEX-MNO" </span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

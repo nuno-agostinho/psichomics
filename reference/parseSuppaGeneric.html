@@ -188,8 +188,8 @@
     </tr>
     <tr>
       <th>strand</th>
-      <td><p>Character: positive-sense (<code><a href='https://rdrr.io/r/base/Arithmetic.html'>+</a></code>) or negative-sense
-(<code><a href='https://rdrr.io/r/base/Arithmetic.html'>-</a></code>) strand</p></td>
+      <td><p>Character: positive-sense (<code>+</code>) or negative-sense
+(<code>-</code>) strand</p></td>
     </tr>
     <tr>
       <th>coords</th>
@@ -225,45 +225,53 @@
     <div class='dont-index'><p><code><a href='parseSuppaEvent.html'>parseSuppaEvent</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Parse generic event (in this case, an exon skipping event)</span>
-<span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"169768099 169770024 169770112 169771762"</span><span class='op'>)</span>
-<span class='va'>coords</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"C1.end"</span>, <span class='st'>"A1.start"</span>, <span class='st'>"A1.end"</span>, <span class='st'>"C2.start"</span><span class='op'>)</span>
-<span class='va'>plus</span>  <span class='op'>&lt;-</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span>
-<span class='va'>minus</span> <span class='op'>&lt;-</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaGeneric</span><span class='op'>(</span><span class='va'>junctions</span>, strand <span class='op'>=</span> <span class='st'>"+"</span>, <span class='va'>coords</span>, <span class='va'>plus</span>, <span class='va'>minus</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   C1.start    C1.end  A1.start    A1.end A2.start A2.end  C2.start C2.end
-#&gt; 1       NA 169768099 169770024 169770112       NA     NA 169771762     NA</div><div class='input'>
-<span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"169768099 169770024 169770112 169771762"</span><span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaSE</span><span class='op'>(</span><span class='va'>junctions</span>, <span class='st'>"+"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   C1.start    C1.end  A1.start    A1.end A2.start A2.end  C2.start C2.end
-#&gt; 1       NA 169768099 169770024 169770112       NA     NA 169771762     NA</div><div class='input'>
-<span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"196709749 196709922 196711005 196711181"</span><span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaRI</span><span class='op'>(</span><span class='va'>junctions</span>, <span class='st'>"+"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;    C1.start    C1.end A1.start A1.end A2.start A2.end  C2.start    C2.end
-#&gt; 1 196709749 196709922       NA     NA       NA     NA 196711005 196711181</div><div class='input'>
-<span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>
-    text <span class='op'>=</span> <span class='st'>"24790610 24792494 24792800 24790610 24795476 24795797"</span><span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaALE</span><span class='op'>(</span><span class='va'>junctions</span>, <span class='st'>"+"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   C1.start   C1.end A1.start   A1.end A2.start   A2.end C2.start C2.end
-#&gt; 1       NA 24790610 24792494 24792800 24795476 24795797       NA     NA</div><div class='input'>
-<span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>
-    text <span class='op'>=</span> <span class='st'>"169763871 169764046 169767998 169764550 169765124 169767998"</span><span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaAFE</span><span class='op'>(</span><span class='va'>junctions</span>, <span class='st'>"+"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   C1.start C1.end  A1.start    A1.end  A2.start    A2.end  C2.start C2.end
-#&gt; 1       NA     NA 169763871 169764046 169764550 169765124 169767998     NA</div><div class='input'>
-<span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>
-    text <span class='op'>=</span> <span class='st'>"202060671 202068453 202068489 202073793 202060671 202072798 202072906 202073793"</span><span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaMXE</span><span class='op'>(</span><span class='va'>junctions</span>, <span class='st'>"+"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   C1.start    C1.end  A1.start    A1.end  A2.start    A2.end  C2.start C2.end
-#&gt; 1       NA 202060671 202068453 202068489 202072798 202072906 202073793     NA</div><div class='input'>
-<span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"169772450 169773216 169772450 169773253"</span><span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaA3SS</span><span class='op'>(</span><span class='va'>junctions</span>, <span class='st'>"+"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   C1.start    C1.end  A1.start A1.end  A2.start A2.end C2.start C2.end
-#&gt; 1       NA 169772450 169773216     NA 169773253     NA       NA     NA</div><div class='input'>
-<span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"50193276 50197008 50192997 50197008"</span><span class='op'>)</span>
-<span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaA5SS</span><span class='op'>(</span><span class='va'>junctions</span>, <span class='st'>"+"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   C1.start C1.end A1.start   A1.end A2.start   A2.end C2.start C2.end
-#&gt; 1       NA     NA       NA 50193276       NA 50192997 50197008     NA</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># Parse generic event (in this case, an exon skipping event)</span></span>
+<span class='r-in'><span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"169768099 169770024 169770112 169771762"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>coords</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"C1.end"</span>, <span class='st'>"A1.start"</span>, <span class='st'>"A1.end"</span>, <span class='st'>"C2.start"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>plus</span>  <span class='op'>&lt;-</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span></span>
+<span class='r-in'><span class='va'>minus</span> <span class='op'>&lt;-</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaGeneric</span><span class='op'>(</span><span class='va'>junctions</span>, strand <span class='op'>=</span> <span class='st'>"+"</span>, <span class='va'>coords</span>, <span class='va'>plus</span>, <span class='va'>minus</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   C1.start    C1.end  A1.start    A1.end A2.start A2.end  C2.start C2.end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1       NA 169768099 169770024 169770112       NA     NA 169771762     NA</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"169768099 169770024 169770112 169771762"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaSE</span><span class='op'>(</span><span class='va'>junctions</span>, <span class='st'>"+"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   C1.start    C1.end  A1.start    A1.end A2.start A2.end  C2.start C2.end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1       NA 169768099 169770024 169770112       NA     NA 169771762     NA</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"196709749 196709922 196711005 196711181"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaRI</span><span class='op'>(</span><span class='va'>junctions</span>, <span class='st'>"+"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    C1.start    C1.end A1.start A1.end A2.start A2.end  C2.start    C2.end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1 196709749 196709922       NA     NA       NA     NA 196711005 196711181</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span></span>
+<span class='r-in'>    text <span class='op'>=</span> <span class='st'>"24790610 24792494 24792800 24790610 24795476 24795797"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaALE</span><span class='op'>(</span><span class='va'>junctions</span>, <span class='st'>"+"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   C1.start   C1.end A1.start   A1.end A2.start   A2.end C2.start C2.end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1       NA 24790610 24792494 24792800 24795476 24795797       NA     NA</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span></span>
+<span class='r-in'>    text <span class='op'>=</span> <span class='st'>"169763871 169764046 169767998 169764550 169765124 169767998"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaAFE</span><span class='op'>(</span><span class='va'>junctions</span>, <span class='st'>"+"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   C1.start C1.end  A1.start    A1.end  A2.start    A2.end  C2.start C2.end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1       NA     NA 169763871 169764046 169764550 169765124 169767998     NA</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span></span>
+<span class='r-in'>    text <span class='op'>=</span> <span class='st'>"202060671 202068453 202068489 202073793 202060671 202072798 202072906 202073793"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaMXE</span><span class='op'>(</span><span class='va'>junctions</span>, <span class='st'>"+"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   C1.start    C1.end  A1.start    A1.end  A2.start    A2.end  C2.start C2.end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1       NA 202060671 202068453 202068489 202072798 202072906 202073793     NA</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"169772450 169773216 169772450 169773253"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaA3SS</span><span class='op'>(</span><span class='va'>junctions</span>, <span class='st'>"+"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   C1.start    C1.end  A1.start A1.end  A2.start A2.end C2.start C2.end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1       NA 169772450 169773216     NA 169773253     NA       NA     NA</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>junctions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>"50193276 50197008 50192997 50197008"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>psichomics</span><span class='fu'>:::</span><span class='fu'>parseSuppaA5SS</span><span class='op'>(</span><span class='va'>junctions</span>, <span class='st'>"+"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   C1.start C1.end A1.start   A1.end A2.start   A2.end C2.start C2.end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1       NA     NA       NA 50193276       NA 50192997 50197008     NA</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

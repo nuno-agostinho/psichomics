@@ -240,61 +240,66 @@ annotation</p>
 <code><a href='prepareAnnotationFromEvents.html'>prepareAnnotationFromEvents</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Load sample files</span>
-<span class='va'>folder</span> <span class='op'>&lt;-</span> <span class='st'>"extdata/eventsAnnotSample/suppa_output/suppaEvents"</span>
-<span class='va'>suppaOutput</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='va'>folder</span>, package<span class='op'>=</span><span class='st'>"psichomics"</span><span class='op'>)</span>
-
-<span class='va'>suppa</span> <span class='op'>&lt;-</span> <span class='fu'>parseSuppaAnnotation</span><span class='op'>(</span><span class='va'>suppaOutput</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Retrieving SUPPA annotation...
-#&gt; 
-#&gt; Parsing SUPPA annotation...</div><div class='input'><span class='co'># Load sample files</span>
-<span class='va'>folder</span> <span class='op'>&lt;-</span> <span class='st'>"extdata/eventsAnnotSample/VASTDB/Hsa/TEMPLATES"</span>
-<span class='va'>vastToolsOutput</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='va'>folder</span>, package<span class='op'>=</span><span class='st'>"psichomics"</span><span class='op'>)</span>
-
-<span class='va'>vast</span> <span class='op'>&lt;-</span> <span class='fu'>parseVastToolsAnnotation</span><span class='op'>(</span><span class='va'>vastToolsOutput</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Retrieving VAST-TOOLS annotation...
-#&gt; 
-#&gt; Parsing VAST-TOOLS annotation...
-#&gt; 
-#&gt; ALT3
-#&gt; 
-#&gt; ALT5
-#&gt; 
-#&gt; COMBI
-#&gt; 
-#&gt; EXSK
-#&gt; 
-#&gt; IR
-#&gt; 
-#&gt; MERGE3m
-#&gt; 
-#&gt; MIC
-#&gt; 
-#&gt; MULTI</div><div class='input'><span class='co'># Load sample files</span>
-<span class='va'>folder</span> <span class='op'>&lt;-</span> <span class='st'>"extdata/eventsAnnotSample/miso_annotation"</span>
-<span class='va'>misoOutput</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='va'>folder</span>, package<span class='op'>=</span><span class='st'>"psichomics"</span><span class='op'>)</span>
-
-<span class='va'>miso</span> <span class='op'>&lt;-</span> <span class='fu'>parseMisoAnnotation</span><span class='op'>(</span><span class='va'>misoOutput</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Retrieving MISO annotation...
-#&gt; 
-#&gt; Parsing MISO annotation...</div><div class='input'><span class='co'># Load sample files</span>
-<span class='va'>folder</span> <span class='op'>&lt;-</span> <span class='st'>"extdata/eventsAnnotSample/mats_output/ASEvents"</span>
-<span class='va'>matsOutput</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='va'>folder</span>, package<span class='op'>=</span><span class='st'>"psichomics"</span><span class='op'>)</span>
-
-<span class='va'>mats</span> <span class='op'>&lt;-</span> <span class='fu'>parseMatsAnnotation</span><span class='op'>(</span><span class='va'>matsOutput</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Retrieving rMATS annotation...
-#&gt; 
-#&gt; Parsing rMATS annotation...</div><div class='input'>
-<span class='co'># Do not parse novel events</span>
-<span class='va'>mats</span> <span class='op'>&lt;-</span> <span class='fu'>parseMatsAnnotation</span><span class='op'>(</span><span class='va'>matsOutput</span>, novelEvents<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Retrieving rMATS annotation...
-#&gt; 
-#&gt; Parsing rMATS annotation...</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># Load sample files</span></span>
+<span class='r-in'><span class='va'>folder</span> <span class='op'>&lt;-</span> <span class='st'>"extdata/eventsAnnotSample/suppa_output/suppaEvents"</span></span>
+<span class='r-in'><span class='va'>suppaOutput</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='va'>folder</span>, package<span class='op'>=</span><span class='st'>"psichomics"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>suppa</span> <span class='op'>&lt;-</span> <span class='fu'>parseSuppaAnnotation</span><span class='op'>(</span><span class='va'>suppaOutput</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Retrieving SUPPA annotation...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Parsing SUPPA annotation...</span>
+<span class='r-in'><span class='co'># Load sample files</span></span>
+<span class='r-in'><span class='va'>folder</span> <span class='op'>&lt;-</span> <span class='st'>"extdata/eventsAnnotSample/VASTDB/Hsa/TEMPLATES"</span></span>
+<span class='r-in'><span class='va'>vastToolsOutput</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='va'>folder</span>, package<span class='op'>=</span><span class='st'>"psichomics"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>vast</span> <span class='op'>&lt;-</span> <span class='fu'>parseVastToolsAnnotation</span><span class='op'>(</span><span class='va'>vastToolsOutput</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Retrieving VAST-TOOLS annotation...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Parsing VAST-TOOLS annotation...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALT3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> ALT5</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> COMBI</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> EXSK</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> IR</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MERGE3m</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MIC</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> MULTI</span>
+<span class='r-in'><span class='co'># Load sample files</span></span>
+<span class='r-in'><span class='va'>folder</span> <span class='op'>&lt;-</span> <span class='st'>"extdata/eventsAnnotSample/miso_annotation"</span></span>
+<span class='r-in'><span class='va'>misoOutput</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='va'>folder</span>, package<span class='op'>=</span><span class='st'>"psichomics"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>miso</span> <span class='op'>&lt;-</span> <span class='fu'>parseMisoAnnotation</span><span class='op'>(</span><span class='va'>misoOutput</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Retrieving MISO annotation...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Parsing MISO annotation...</span>
+<span class='r-in'><span class='co'># Load sample files</span></span>
+<span class='r-in'><span class='va'>folder</span> <span class='op'>&lt;-</span> <span class='st'>"extdata/eventsAnnotSample/mats_output/ASEvents"</span></span>
+<span class='r-in'><span class='va'>matsOutput</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='va'>folder</span>, package<span class='op'>=</span><span class='st'>"psichomics"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>mats</span> <span class='op'>&lt;-</span> <span class='fu'>parseMatsAnnotation</span><span class='op'>(</span><span class='va'>matsOutput</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Retrieving rMATS annotation...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Parsing rMATS annotation...</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Do not parse novel events</span></span>
+<span class='r-in'><span class='va'>mats</span> <span class='op'>&lt;-</span> <span class='fu'>parseMatsAnnotation</span><span class='op'>(</span><span class='va'>matsOutput</span>, novelEvents<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Retrieving rMATS annotation...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Parsing rMATS annotation...</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -182,14 +182,14 @@ will be used when <code>expr</code> is evaluated. If <code>expr</code> is a quos
 would like to use its expression as a value for <code>expr</code>, then you must set
 <code>quoted</code> to <code>TRUE</code>.</p></dd>
     <dt><code>outputArgs</code></dt><dd><p>A list of arguments to be passed through to the implicit
-call to <code>dataTableOutput()</code> when <code>renderDataTable()</code> is used
+call to <code><a href='https://rdrr.io/pkg/shiny/man/renderDataTable.html'>dataTableOutput()</a></code> when <code><a href='https://rdrr.io/pkg/shiny/man/renderDataTable.html'>renderDataTable()</a></code> is used
 in an interactive R Markdown document.</p></dd>
   
 </dl></td>
     </tr>
     <tr>
       <th>options</th>
-      <td><p>List of options to pass to <code>renderDataTable()</code></p></td>
+      <td><p>List of options to pass to <code><a href='https://rdrr.io/pkg/shiny/man/renderDataTable.html'>renderDataTable</a>()</code></p></td>
     </tr>
     </table>
 
@@ -199,7 +199,7 @@ in an interactive R Markdown document.</p></dd>
 state or internal variables)</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>This slightly modified version of <code>renderDataTable()</code>
+    <p>This slightly modified version of <code><a href='https://rdrr.io/pkg/shiny/man/renderDataTable.html'>renderDataTable</a>()</code>
 calls a JavaScript function to convert the sparkline HTML elements to an
 interactive <code>highchart</code> object</p>
 
