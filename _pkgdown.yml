@@ -1,8 +1,5 @@
 url: https://nuno-agostinho.github.io/psichomics/
 
-template:
-  bootstrap: 5
-
 home:
   title: Visual interface for alternative splicing analysis and visualisation
 
@@ -133,6 +130,7 @@ navbar:
       - text: 'Preparing custom alternative splicing annotations'
         href: articles/AS_events_preparation.html
 template:
+  bootstrap: 5
   params:
     ganalytics: UA-156449666-1
     docsearch:
