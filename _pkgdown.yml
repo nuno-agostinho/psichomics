@@ -1,5 +1,8 @@
 url: https://nuno-agostinho.github.io/psichomics/
 
+template:
+  bootstrap: 5
+
 home:
   title: Visual interface for alternative splicing analysis and visualisation
 

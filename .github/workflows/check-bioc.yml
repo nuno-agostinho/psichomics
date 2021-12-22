@@ -174,11 +174,3 @@ jobs:
           remotes::install_cran("covr")
           covr::codecov()
         shell: Rscript {0}
-
-      - name: Deploy package
-        if: runner.os == 'macOS' && matrix.config.biocversion == 'release' && github.ref == 'refs/heads/master'
-        run: |
-          R CMD INSTALL .
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
-          Rscript -e 'install.packages("pkgdown"); pkgdown::deploy_to_branch(new_process = FALSE)'
