@@ -13,6 +13,8 @@ reference:
         - getSplicingEventFromGenes
         - getGenesFromSplicingEvents
         - plotSplicingEvent
+        - parseCategoricalGroups
+        - getDownloadsFolder
     - title: "TCGA data retrieval"
       desc: >
         Retrieve TCGA data using
