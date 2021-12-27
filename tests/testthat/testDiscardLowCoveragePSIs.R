@@ -52,7 +52,7 @@ checkDiscardCvgPSIvalues <- function(vals, samples=100, events=60) {
     } else if (noNAs) {
         expect_true(noNAs)
     } else {
-        expect_true( is.na(unique(filter[toNA])) )
+        expect_true( all(is.na(unique(filter[toNA]))) )
     }
     expect_equivalent(psi, filter)
 }
