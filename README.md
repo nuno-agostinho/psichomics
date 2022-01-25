@@ -69,7 +69,7 @@ Install from GitHub (specify a branch or tag via the `ref` argument):
 
 ```r
 install.packages("remotes")
-remotes::install_github("nuno_agostinho/psichomics", ref="master")
+remotes::install_github("nuno-agostinho/psichomics", ref="master")
 library("psichomics")
 ```
 
