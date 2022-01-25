@@ -1,3 +1,7 @@
+# psichomics 1.20.1 (25 January, 2022)
+
+* Bug fix: allow to perform correlation analysis after being performed once
+
 # psichomics 1.20.0 (27 October, 2021)
 
 * Alternative splicing event annotations:

@@ -622,34 +622,31 @@ correlationServer <- function(input, output, session) {
     })
 
     performCorrelationAnalyses <- reactive({
-        isolate({
-            psi         <- getInclusionLevels()
+        psi <- getInclusionLevels()
 
-            if (input$ASeventsSelection == "selectedEvent") {
-                ASevents <- getASevent()
-            } else if (input$ASeventsSelection == "byGroup") {
-                ASevents <- getSelectedGroups(input, "ASevents", "ASevents",
-                                              filter=rownames(psi))
-                ASevents <- unlist(ASevents)
-            }
-            geneExpr    <- getGeneExpression(input$geneExpr)
-            gene        <- getSelectedGroups(input, "genes", "Genes",
-                                             filter=rownames(geneExpr))
-            gene        <- unlist(gene)
+        if (input$ASeventsSelection == "selectedEvent") {
+            ASevents <- getASevent()
+        } else if (input$ASeventsSelection == "byGroup") {
+            ASevents <- getSelectedGroups(input, "ASevents", "ASevents",
+                                            filter=rownames(psi))
+            ASevents <- unlist(ASevents)
+        }
+        geneExpr    <- getGeneExpression(input$geneExpr)
+        gene        <- getSelectedGroups(input, "genes", "Genes",
+                                            filter=rownames(geneExpr))
+        gene        <- unlist(gene)
 
-            method      <- input$method
-            alternative <- input$alternative
-        })
+        method      <- input$method
+        alternative <- input$alternative
+
         # Filter samples based on groups
-        groupFilter <- isolate(getSelectedGroups(
+        groupFilter <- getSelectedGroups(
             input, "groupFilter", "Samples",
-            filter=intersect(colnames(geneExpr), colnames(psi))))
+            filter=intersect(colnames(geneExpr), colnames(psi)))
         groupFilter <- unname(unlist(groupFilter))
         if (is.null(groupFilter)) groupFilter <- TRUE
         geneExpr <- geneExpr[ , groupFilter, drop=FALSE]
         psi      <- psi[ , groupFilter, drop=FALSE]
-
-
 
         # Perform correlation analyses
         startProcess("correlate")
