@@ -56,7 +56,7 @@ helpUI <- function(id, tab) {
     groupSite <- "http://imm.medicina.ulisboa.pt/group/distrans/"
     immSite   <- "http://imm.medicina.ulisboa.pt"
 
-    copyright <- sprintf("psichomics %s, 2015-2021",
+    copyright <- sprintf("psichomics %s, 2015-2022",
                          packageVersion("psichomics"))
 
     about <- div(
