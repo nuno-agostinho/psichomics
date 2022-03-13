@@ -4,16 +4,23 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="Interactive R package with an intuitive Shiny-based graphical 
+    interface for alternative splicing quantification and integrative analyses 
+    of alternative splicing and gene expression based on The Cancer Genome Atlas
+    (TCGA), the Genotype-Tissue Expression project (GTEx), Sequence Read Archive
+    (SRA) and user-provided data. The tool interactively performs survival, 
+    dimensionality reduction and median- and variance-based differential 
+    splicing and gene expression analyses that benefit from the incorporation of
+    clinical and molecular sample-associated features (such as tumour stage or 
+    survival). Interactive visual access to genomic mapping and functional 
+    annotation of selected alternative splicing events is also included.">
 <title>Visual interface for alternative splicing analysis and visualisation • psichomics</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
-<script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="deps/bootstrap-5.1.0/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.1.0/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><!-- docsearch --><script src="docsearch.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.3/docsearch.min.css" integrity="sha256-QOSRU/ra9ActyXkIBbiIB144aDBdtvXBcNc3OTNuX/Q=" crossorigin="anonymous">
-<link href="docsearch.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script><meta property="og:title" content="Visual interface for alternative splicing analysis and visualisation">
+<!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Visual interface for alternative splicing analysis and visualisation">
 <meta property="og:description" content="Interactive R package with an intuitive Shiny-based graphical 
     interface for alternative splicing quantification and integrative analyses 
     of alternative splicing and gene expression based on The Cancer Genome Atlas
@@ -35,107 +42,74 @@
   gtag('config', 'UA-156449666-1');
 </script>
 </head>
-<body data-spy="scroll" data-target="#toc">
-    <div class="container template-home">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.20.0</span>
-      </span>
-    </div>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+    
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    
+    <a class="navbar-brand me-2" href="index.html">psichomics</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.20.2</small>
+
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item">
+  <a class="nav-link" href="reference/index.html">Reference</a>
 </li>
-<li>
-  <a href="reference/index.html">Reference</a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Tutorials
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="articles/GUI_tutorial.html">Visual interface tutorial</a>
-    </li>
-    <li>
-      <a href="articles/CLI_tutorial.html">Command-line interface (CLI) tutorial</a>
-    </li>
-    <li>
-      <a href="articles/custom_data.html">Loading user-provided data</a>
-    </li>
-    <li>
-      <a href="articles/AS_events_preparation.html">Preparing custom alternative splicing annotations</a>
-    </li>
-  </ul>
-</li>
-<li>
-  <a href="news/index.html">Changelog</a>
-</li>
-      </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/nuno-agostinho/psichomics/">
-    <span class="fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
-      </ul>
-<form class="navbar-form navbar-right hidden-xs hidden-sm" role="search">
-        <div class="form-group">
-          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
-</div>
-      </form>
-      
-    </div>
-<!--/.nav-collapse -->
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-tutorials">Tutorials</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-tutorials">
+    <a class="dropdown-item" href="articles/GUI_tutorial.html">Visual interface tutorial</a>
+    <a class="dropdown-item" href="articles/CLI_tutorial.html">Command-line interface (CLI) tutorial</a>
+    <a class="dropdown-item" href="articles/custom_data.html">Loading user-provided data</a>
+    <a class="dropdown-item" href="articles/AS_events_preparation.html">Preparing custom alternative splicing annotations</a>
   </div>
-<!--/.container -->
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="news/index.html">Changelog</a>
+</li>
+      </ul>
+<form class="form-inline my-2 my-lg-0" role="search">
+        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="search.json" id="search-input" placeholder="Search for" autocomplete="off">
+</form>
+
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/nuno-agostinho/psichomics/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
-<!--/.navbar -->
 
-      
-
-      </header><div class="row">
-  <div class="contents col-md-9">
-<div id="psichomics" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#psichomics" class="anchor"></a>psichomics</h1></div>
+    
+  </div>
+</nav><div class="container template-home">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="section level1">
+<div class="page-header"><h1 id="psichomics">psichomics<a class="anchor" aria-label="anchor" href="#psichomics"></a>
+</h1></div>
 <!-- badges: start -->
 
 <blockquote>
 <p><strong>Original article:</strong></p>
-<p>Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2019). <a href="https://doi.org/10.1093/nar/gky888">psichomics: graphical application for alternative splicing quantification and analysis</a>. <em>Nucleic Acids Research</em>. 47(2), e7.</p>
+<p>Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2019). <a href="https://doi.org/10.1093/nar/gky888" class="external-link">psichomics: graphical application for alternative splicing quantification and analysis</a>. <em>Nucleic Acids Research</em>. 47(2), e7.</p>
 </blockquote>
-<p>Interactive R package with an intuitive Shiny-based graphical interface for alternative splicing quantification and integrative analyses of alternative splicing and gene expression based on <a href="https://tcga-data.nci.nih.gov">The Cancer Genome Atlas (TCGA)</a>, the <a href="http://www.gtexportal.org">Genotype-Tissue Expression (GTEx) project</a>, <a href="https://www.ncbi.nlm.nih.gov/sra">Sequence Read Archive (SRA)</a> and user-provided data.</p>
-<p><em>psichomics</em> interactively performs:</p>
-<ul>
-<li>Dimensionality reduction</li>
-<li>Median- and variance-based differential splicing and gene expression analyses</li>
-<li>Survival analysis</li>
-<li>Correlation analysis</li>
-<li>Grouping by clinical and molecular features (such as tumour stage or survival)</li>
-<li>Genomic mapping and functional annotation of alternative splicing events and genes</li>
-</ul>
-<p><img src="reference/figures/screenshot.png" alt="Differential splicing analysis in psichomics"></p>
-<div id="table-of-contents" class="section level2">
-<h2 class="hasAnchor">
-<a href="#table-of-contents" class="anchor"></a>Table of Contents</h2>
+<p>Interactive R package with an intuitive Shiny-based graphical interface for alternative splicing quantification and integrative analyses of alternative splicing and gene expression based on <a href="https://tcga-data.nci.nih.gov" class="external-link">The Cancer Genome Atlas (TCGA)</a>, the <a href="http://www.gtexportal.org" class="external-link">Genotype-Tissue Expression (GTEx) project</a>, <a href="https://www.ncbi.nlm.nih.gov/sra" class="external-link">Sequence Read Archive (SRA)</a> and user-provided data.</p>
+<p><em>psichomics</em> interactively performs: - Dimensionality reduction - Median- and variance-based differential splicing and gene expression analyses - Survival analysis - Correlation analysis - Grouping by clinical and molecular features (such as tumour stage or survival) - Genomic mapping and functional annotation of alternative splicing events and genes</p>
+<div class="figure">
+<img src="reference/figures/screenshot.png" alt=""><p class="caption">Differential splicing analysis in <em>psichomics</em></p>
+</div>
+<div class="section level2">
+<h2 id="table-of-contents">Table of Contents<a class="anchor" aria-label="anchor" href="#table-of-contents"></a>
+</h2>
 <ul>
 <li>
 <a href="#install-and-start-running">Install and start running</a>
@@ -164,19 +138,19 @@
 <li><a href="#references">References</a></li>
 </ul>
 </div>
-<div id="install-and-start-running" class="section level2">
-<h2 class="hasAnchor">
-<a href="#install-and-start-running" class="anchor"></a>Install and start running</h2>
-<div id="bioconductor" class="section level3">
-<h3 class="hasAnchor">
-<a href="#bioconductor" class="anchor"></a>Bioconductor</h3>
-<p>To install the package from <a href="https://www.bioconductor.org">Bioconductor</a>, type the following in <a href="https://www.rstudio.com/products/rstudio">RStudio</a> or in an R console:</p>
+<div class="section level2">
+<h2 id="install-and-start-running">Install and start running<a class="anchor" aria-label="anchor" href="#install-and-start-running"></a>
+</h2>
+<div class="section level3">
+<h3 id="bioconductor">Bioconductor<a class="anchor" aria-label="anchor" href="#bioconductor"></a>
+</h3>
+<p>To install the package from <a href="https://www.bioconductor.org" class="external-link">Bioconductor</a>, type the following in <a href="https://www.rstudio.com/products/rstudio" class="external-link">RStudio</a> or in an R console:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
-<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"psichomics"</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://nuno-agostinho.github.io/psichomics/">"psichomics"</a></span><span class="op">)</span></code></pre></div>
-<ol>
-<li>RStudio is now accessible via the web browser at <a href="https://localhost:8787" class="uri">https://localhost:8787</a>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"psichomics"</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://nuno-agostinho.github.io/psichomics/">"psichomics"</a></span><span class="op">)</span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li>RStudio is now accessible via the web browser at <a href="https://localhost:8787" class="external-link uri">https://localhost:8787</a>
 </li>
 <li>Enter RStudio with user <code>rstudio</code> and password <code>bioc</code>
 </li>
@@ -187,30 +161,30 @@
 </ol>
 <p>Start the visual interface of psichomics with <code><a href="reference/psichomics.html">psichomics()</a></code></p>
 </div>
-<div id="github" class="section level3">
-<h3 class="hasAnchor">
-<a href="#github" class="anchor"></a>GitHub</h3>
+<div class="section level3">
+<h3 id="github">GitHub<a class="anchor" aria-label="anchor" href="#github"></a>
+</h3>
 <p>Install from GitHub (specify a branch or tag via the <code>ref</code> argument):</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"nuno_agostinho/psichomics"</span>, ref<span class="op">=</span><span class="st">"master"</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://nuno-agostinho.github.io/psichomics/">"psichomics"</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"nuno-agostinho/psichomics"</span>, ref<span class="op">=</span><span class="st">"master"</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://nuno-agostinho.github.io/psichomics/">"psichomics"</a></span><span class="op">)</span></code></pre></div>
 <p>Start the visual interface of psichomics with <code><a href="reference/psichomics.html">psichomics()</a></code></p>
 </div>
-<div id="docker" class="section level3">
-<h3 class="hasAnchor">
-<a href="#docker" class="anchor"></a>Docker</h3>
-<p>The Docker images are based on <a href="https://www.bioconductor.org/help/docker/">Bioconductor Docker</a> and contain psichomics and its dependencies.</p>
-<ol>
+<div class="section level3">
+<h3 id="docker">Docker<a class="anchor" aria-label="anchor" href="#docker"></a>
+</h3>
+<p>The Docker images are based on <a href="https://www.bioconductor.org/help/docker/" class="external-link">Bioconductor Docker</a> and contain psichomics and its dependencies.</p>
+<ol style="list-style-type: decimal">
 <li>Pull the latest Docker image:</li>
 </ol>
 <pre><code>docker pull ghcr.io/nuno-agostinho/psichomics:latest</code></pre>
-<ol>
+<ol start="2" style="list-style-type: decimal">
 <li>Start RStudio Web from the Docker image:</li>
 </ol>
 <pre><code>docker run -e PASSWORD=bioc -p 8787:8787 ghcr.io/nuno-agostinho/psichomics:latest</code></pre>
-<ol>
-<li>Go to RStudio Web via the web browser at <a href="https://localhost:8787" class="uri">https://localhost:8787</a>
+<ol start="3" style="list-style-type: decimal">
+<li>Go to RStudio Web via the web browser at <a href="https://localhost:8787" class="external-link uri">https://localhost:8787</a>
 </li>
 <li>Log in RStudio with user <code>rstudio</code> and password <code>bioc</code>
 </li>
@@ -221,63 +195,63 @@
 </ol>
 </div>
 </div>
-<div id="tutorials" class="section level2">
-<h2 class="hasAnchor">
-<a href="#tutorials" class="anchor"></a>Tutorials</h2>
-<p>The following case studies and tutorials are available and were based on our <a href="https://doi.org/10.1093/nar/gky888">original article</a>:</p>
+<div class="section level2">
+<h2 id="tutorials">Tutorials<a class="anchor" aria-label="anchor" href="#tutorials"></a>
+</h2>
+<p>The following case studies and tutorials are available and were based on our <a href="https://doi.org/10.1093/nar/gky888" class="external-link">original article</a>:</p>
 <ul>
 <li><a href="https://nuno-agostinho.github.io/psichomics/articles/GUI_tutorial.html">Visual interface</a></li>
 <li><a href="https://nuno-agostinho.github.io/psichomics/articles/CLI_tutorial.html">Command-line interface</a></li>
 <li><a href="https://nuno-agostinho.github.io/psichomics/articles/custom_data.html">Loading user-provided data</a></li>
 <li><a href="https://nuno-agostinho.github.io/psichomics/articles/AS_events_preparation.html">Preparing alternative splicing annotations</a></li>
 </ul>
-<p>Another tutorial was published as part of the Methods in Molecular Biology book series (the code for performing the analysis can be found <a href="https://github.com/nuno-agostinho/stem-cell-analysis-in-psichomics">here</a>):</p>
+<p>Another tutorial was published as part of the Methods in Molecular Biology book series (the code for performing the analysis can be found <a href="https://github.com/nuno-agostinho/stem-cell-analysis-in-psichomics" class="external-link">here</a>):</p>
 <blockquote>
-<p>Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2020). <strong><a href="https://doi.org/10.1007/978-1-0716-0301-7_10">Interactive Alternative Splicing Analysis of Human Stem Cells Using psichomics</a></strong>. In: Kidder B. (eds) Stem Cell Transcriptional Networks. <em>Methods in Molecular Biology</em>, vol 2117. Humana, New York, NY</p>
+<p>Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2020). <strong><a href="https://doi.org/10.1007/978-1-0716-0301-7_10" class="external-link">Interactive Alternative Splicing Analysis of Human Stem Cells Using psichomics</a></strong>. In: Kidder B. (eds) Stem Cell Transcriptional Networks. <em>Methods in Molecular Biology</em>, vol 2117. Humana, New York, NY</p>
 </blockquote>
 </div>
-<div id="workflow" class="section level2">
-<h2 class="hasAnchor">
-<a href="#workflow" class="anchor"></a>Workflow</h2>
-<div id="data-input" class="section level3">
-<h3 class="hasAnchor">
-<a href="#data-input" class="anchor"></a>Data input</h3>
+<div class="section level2">
+<h2 id="workflow">Workflow<a class="anchor" aria-label="anchor" href="#workflow"></a>
+</h2>
+<div class="section level3">
+<h3 id="data-input">Data input<a class="anchor" aria-label="anchor" href="#data-input"></a>
+</h3>
 <p>Automatic retrieval and loading of pre-processed data from the following sources:</p>
 <ul>
 <li>
-<a href="https://tcga-data.nci.nih.gov">TCGA</a> data of given tumours, including subject- and sample-associated information, junction quantification and gene expression data</li>
+<a href="https://tcga-data.nci.nih.gov" class="external-link">TCGA</a> data of given tumours, including subject- and sample-associated information, junction quantification and gene expression data</li>
 <li>
-<a href="http://www.gtexportal.org">GTEx</a> data of given tissues, including subject- and sample-associated information, junction quantification and gene expression data</li>
+<a href="http://www.gtexportal.org" class="external-link">GTEx</a> data of given tissues, including subject- and sample-associated information, junction quantification and gene expression data</li>
 <li>
-<a href="https://www.ncbi.nlm.nih.gov/sra">SRA</a> data from select SRA projects via the <a href="https://jhubiostatistics.shinyapps.io/recount/">recount</a> package</li>
+<a href="https://www.ncbi.nlm.nih.gov/sra" class="external-link">SRA</a> data from select SRA projects via the <a href="https://jhubiostatistics.shinyapps.io/recount/" class="external-link">recount</a> package</li>
 </ul>
-<p>Other SRA, <a href="https://github.com/vastgroup/vast-tools">VAST-TOOLS</a> and user-provided data can also be manually loaded. Please read <a href="https://nuno-agostinho.github.io/psichomics/articles/custom_data.html">Loading user-provided data</a> for more information.</p>
-<div id="alternative-splicing-quantification" class="section level4">
-<h4 class="hasAnchor">
-<a href="#alternative-splicing-quantification" class="anchor"></a>Alternative splicing quantification</h4>
-<p>The quantification of each alternative splicing event is based on the proportion of junction reads that support the inclusion isoform, known as percent spliced-in or PSI <a href="http://www.nature.com/nature/journal/v456/n7221/full/nature07509.html">(Wang <em>et al.</em>, 2008)</a>.</p>
+<p>Other SRA, <a href="https://github.com/vastgroup/vast-tools" class="external-link">VAST-TOOLS</a> and user-provided data can also be manually loaded. Please read <a href="https://nuno-agostinho.github.io/psichomics/articles/custom_data.html">Loading user-provided data</a> for more information.</p>
+<div class="section level4">
+<h4 id="alternative-splicing-quantification">Alternative splicing quantification<a class="anchor" aria-label="anchor" href="#alternative-splicing-quantification"></a>
+</h4>
+<p>The quantification of each alternative splicing event is based on the proportion of junction reads that support the inclusion isoform, known as percent spliced-in or PSI <a href="http://www.nature.com/nature/journal/v456/n7221/full/nature07509.html" class="external-link">(Wang <em>et al.</em>, 2008)</a>.</p>
 <p>An estimate of this value is obtained based on the the proportion of reads supporting the inclusion of an exon over the reads supporting both the inclusion and exclusion of that exon. To measure this estimate, we require:</p>
-<ol>
+<ol style="list-style-type: decimal">
 <li>
 <strong>Alternative splicing annotation</strong>: human annotation is provided and custom annotations can be prepared for use in psichomics.</li>
-<li>Quantification of RNA-Seq reads aligning to exon-exon splice junctions (<strong>exon-exon junction quantification</strong>), either user-provided or retrieved from <a href="https://tcga-data.nci.nih.gov">TCGA</a>, <a href="http://www.gtexportal.org">GTEx</a> and <a href="https://www.ncbi.nlm.nih.gov/sra">SRA</a>.</li>
+<li>Quantification of RNA-Seq reads aligning to exon-exon splice junctions (<strong>exon-exon junction quantification</strong>), either user-provided or retrieved from <a href="https://tcga-data.nci.nih.gov" class="external-link">TCGA</a>, <a href="http://www.gtexportal.org" class="external-link">GTEx</a> and <a href="https://www.ncbi.nlm.nih.gov/sra" class="external-link">SRA</a>.</li>
 </ol>
 </div>
-<div id="gene-expression-processing" class="section level4">
-<h4 class="hasAnchor">
-<a href="#gene-expression-processing" class="anchor"></a>Gene expression processing</h4>
+<div class="section level4">
+<h4 id="gene-expression-processing">Gene expression processing<a class="anchor" aria-label="anchor" href="#gene-expression-processing"></a>
+</h4>
 <p>Gene expression can be normalised, filtered and log2-transformed in-app or provided by the user.</p>
 </div>
 </div>
-<div id="data-grouping" class="section level3">
-<h3 class="hasAnchor">
-<a href="#data-grouping" class="anchor"></a>Data grouping</h3>
+<div class="section level3">
+<h3 id="data-grouping">Data grouping<a class="anchor" aria-label="anchor" href="#data-grouping"></a>
+</h3>
 <p>Molecular and clinical sample-associated attributes allow to establish groups that can be explored in data analyses.</p>
-<p>For instance, <a href="https://tcga-data.nci.nih.gov">TCGA</a> data can be analysed based on smoking history, gender and race, among other attributes. Groups can also be manipulated (e.g. merged, intersected, etc.), allowing for complex attribute combinations. Groups can also be saved and loaded between different sessions.</p>
+<p>For instance, <a href="https://tcga-data.nci.nih.gov" class="external-link">TCGA</a> data can be analysed based on smoking history, gender and race, among other attributes. Groups can also be manipulated (e.g. merged, intersected, etc.), allowing for complex attribute combinations. Groups can also be saved and loaded between different sessions.</p>
 </div>
-<div id="data-analyses" class="section level3">
-<h3 class="hasAnchor">
-<a href="#data-analyses" class="anchor"></a>Data Analyses</h3>
+<div class="section level3">
+<h3 id="data-analyses">Data Analyses<a class="anchor" aria-label="anchor" href="#data-analyses"></a>
+</h3>
 <ul>
 <li><p><strong>Dimensionality reduction</strong> via principal and independent component analysis (PCA and ICA) on alternative splicing quantification and gene expression.</p></li>
 <li><p><strong>Differential splicing and gene expression analysis</strong> based on variance and median parametric and non-parametric statistical tests.</p></li>
@@ -287,95 +261,84 @@
 </ul>
 </div>
 </div>
-<div id="feedback-and-support" class="section level2">
-<h2 class="hasAnchor">
-<a href="#feedback-and-support" class="anchor"></a>Feedback and support</h2>
+<div class="section level2">
+<h2 id="feedback-and-support">Feedback and support<a class="anchor" aria-label="anchor" href="#feedback-and-support"></a>
+</h2>
 <p>Please send any feedback and questions on psichomics to:</p>
 <blockquote>
 <p>Nuno Saraiva-Agostinho (<a href="mailto:nunoagostinho@medicina.ulisboa.pt">nunoagostinho@medicina.ulisboa.pt</a>)</p>
-<p><a href="http://imm.medicina.ulisboa.pt/group/distrans/">Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)</a></p>
+<p><a href="http://imm.medicina.ulisboa.pt/group/distrans/" class="external-link">Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)</a></p>
 </blockquote>
 </div>
-<div id="references" class="section level2">
-<h2 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h2>
-<p>Wang, E. T., R. Sandberg, S. Luo, I. Khrebtukova, L. Zhang, C. Mayr, S. F. Kingsmore, G. P. Schroth, and C. B. Burge. 2008. <a href="http://www.nature.com/nature/journal/v456/n7221/full/nature07509.html"><em>Alternative isoform regulation in human tissue transcriptomes.</em></a> Nature 456 (7221): 470–76.</p>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<p>Wang, E. T., R. Sandberg, S. Luo, I. Khrebtukova, L. Zhang, C. Mayr, S. F. Kingsmore, G. P. Schroth, and C. B. Burge. 2008. <a href="http://www.nature.com/nature/journal/v456/n7221/full/nature07509.html" class="external-link"><em>Alternative isoform regulation in human tissue transcriptomes.</em></a> Nature 456 (7221): 470–76.</p>
 </div>
 </div>
-  </div>
-
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <div class="links">
-<h2>Links</h2>
+  </main><aside class="col-md-3"><div class="links">
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from BIOC at <br><a href="https://www.bioconductor.org/packages/psichomics">https://​www.bioconductor.org/​packages/​psichomics</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/nuno-agostinho/psichomics/">https://​github.com/​nuno-agostinho/​psichomics/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/nuno-agostinho/psichomics/issues">https://​github.com/​nuno-agostinho/​psichomics/​issues</a>
-</li>
+<li><a href="https://www.bioconductor.org/packages/psichomics" class="external-link">View on Bioconductor</a></li>
+<li><a href="https://github.com/nuno-agostinho/psichomics/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/nuno-agostinho/psichomics/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li>
-<a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
+<a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
 </li>
 </ul>
 </div>
+
+
 <div class="citation">
-<h2>Citation</h2>
+<h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html">Citing psichomics</a></li>
+<li><a href="authors.html#citation">Citing psichomics</a></li>
 </ul>
 </div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Nuno Saraiva-Agostinho <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-5549-105X" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Nuno Luís Barbosa-Morais <br><small class="roles"> Author, lead, thesis advisor </small> <a href="https://orcid.org/0000-0002-1215-0538" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li><a href="authors.html">All authors...</a></li>
+<li>Nuno Saraiva-Agostinho <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-5549-105X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Nuno Luís Barbosa-Morais <br><small class="roles"> Author, lead, thesis advisor </small> <a href="https://orcid.org/0000-0002-1215-0538" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/nuno-agostinho/psichomics/actions"><img src="https://github.com/nuno-agostinho/psichomics/workflows/R-CMD-check-bioc/badge.svg" alt="GitHub Actions Build status"></a></li>
-<li><a href="https://codecov.io/gh/nuno-agostinho/psichomics"><img src="https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg" alt="codecov"></a></li>
+<li><a href="https://github.com/nuno-agostinho/psichomics/actions" class="external-link"><img src="https://github.com/nuno-agostinho/psichomics/workflows/R-CMD-check-bioc/badge.svg" alt="GitHub Actions Build status"></a></li>
+<li><a href="https://codecov.io/gh/nuno-agostinho/psichomics" class="external-link"><img src="https://codecov.io/gh/nuno-agostinho/psichomics/branch/master/graph/badge.svg" alt="codecov"></a></li>
 </ul>
 </div>
-</div>
-</div>
 
-
-      <footer><div class="copyright">
-  <p>Developed by Nuno Saraiva-Agostinho, Nuno Luís Barbosa-Morais.</p>
+  </aside>
 </div>
 
-<div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+
+    <footer><div class="pkgdown-footer-left">
+  <p></p>
+<p>Developed by Nuno Saraiva-Agostinho, Nuno Luís Barbosa-Morais.</p>
 </div>
 
-      </footer>
+<div class="pkgdown-footer-right">
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+</div>
+
+    </footer>
 </div>
 
   
-<script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script><script>
-  docsearch({
-    
-    
-    apiKey: 'fa0226bf1a3df7e1c8ab8f0e70450e0a',
-    indexName: 'stem-cell-analysis-in-psichomics',
-    inputSelector: 'input#search-input.form-control',
-    transformData: function(hits) {
-      return hits.map(function (hit) {
-        hit.url = updateHitURL(hit);
-        return hit;
-      });
-    }
-  });
-</script>
-</body>
+
+  
+
+  </body>
 </html>

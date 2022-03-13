@@ -1,0 +1,69 @@
+.htmlwidget-container {
+  font: 14px Arial;
+  padding: 2px;
+  margin: 2px;
+}
+
+.pairsD3 svg {
+    font: 14px Arial;
+    padding: 0px;
+    overflow:visible;
+}
+
+.pairsD3 .axis,
+.pairsD3 .frame {
+  shape-rendering: crispEdges;
+}
+
+.pairsD3 .axis line {
+  stroke: #ddd;
+    stroke-width: 1px;
+}
+
+.pairsD3 .axis path {
+  display: none;
+}
+
+.pairsD3 rect.extent {
+  fill: #000;
+    fill-opacity: .125;
+  stroke: #fff;
+}
+
+.pairsD3 rect.frame {
+  fill: #fff;
+    fill-opacity: .7;
+  stroke: #aaa;
+}
+
+.pairsD3 .frame {
+  fill: none;
+  stroke: #aaa;
+}
+
+.pairsD3 circle {
+  fill-opacity: .7;
+}
+
+.pairsD3 circle.greyed {
+  fill: #ccc !important;
+}
+
+.pairsD3 .extent {
+  fill: #000;
+    fill-opacity: .125;
+  stroke: #fff;
+}
+
+
+.pairsD3 .tooltip {
+  position: absolute;
+  pointer-events: none;
+  padding: 2px;
+  font: 14px sans-serif;
+  background: rgba(255, 255, 255, 0.9);
+  border: 0px;
+  border-radius: 5px;
+}
+
+

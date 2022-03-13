@@ -4,16 +4,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="psichomics">
 <title>Case study: visual interface tutorial • psichomics</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
-<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.1.0/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.1.0/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><!-- docsearch --><script src="../docsearch.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.3/docsearch.min.css" integrity="sha256-QOSRU/ra9ActyXkIBbiIB144aDBdtvXBcNc3OTNuX/Q=" crossorigin="anonymous">
-<link href="../docsearch.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script><meta property="og:title" content="Case study: visual interface tutorial">
+<!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Case study: visual interface tutorial">
 <meta property="og:description" content="psichomics">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -26,121 +24,96 @@
   gtag('config', 'UA-156449666-1');
 </script>
 </head>
-<body data-spy="scroll" data-target="#toc">
-    <div class="container template-article">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">psichomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.20.0</span>
-      </span>
-    </div>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+    
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    
+    <a class="navbar-brand me-2" href="../index.html">psichomics</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.20.2</small>
+
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item">
+  <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
-<li>
-  <a href="../reference/index.html">Reference</a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Tutorials
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="../articles/GUI_tutorial.html">Visual interface tutorial</a>
-    </li>
-    <li>
-      <a href="../articles/CLI_tutorial.html">Command-line interface (CLI) tutorial</a>
-    </li>
-    <li>
-      <a href="../articles/custom_data.html">Loading user-provided data</a>
-    </li>
-    <li>
-      <a href="../articles/AS_events_preparation.html">Preparing custom alternative splicing annotations</a>
-    </li>
-  </ul>
-</li>
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
-      </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/nuno-agostinho/psichomics/">
-    <span class="fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
-      </ul>
-<form class="navbar-form navbar-right hidden-xs hidden-sm" role="search">
-        <div class="form-group">
-          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
-</div>
-      </form>
-      
-    </div>
-<!--/.nav-collapse -->
+<li class="active nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-tutorials">Tutorials</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-tutorials">
+    <a class="dropdown-item" href="../articles/GUI_tutorial.html">Visual interface tutorial</a>
+    <a class="dropdown-item" href="../articles/CLI_tutorial.html">Command-line interface (CLI) tutorial</a>
+    <a class="dropdown-item" href="../articles/custom_data.html">Loading user-provided data</a>
+    <a class="dropdown-item" href="../articles/AS_events_preparation.html">Preparing custom alternative splicing annotations</a>
   </div>
-<!--/.container -->
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="../news/index.html">Changelog</a>
+</li>
+      </ul>
+<form class="form-inline my-2 my-lg-0" role="search">
+        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
+</form>
+
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/nuno-agostinho/psichomics/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
-<!--/.navbar -->
 
-      
+    
+  </div>
+</nav><div class="container template-article">
 
-      </header><script src="GUI_tutorial_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
-  <div class="col-md-9 contents">
-    <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Case study: visual interface tutorial</h1>
-                        <h4 class="author">Nuno Saraiva-Agostinho</h4>
+
+
+<script src="GUI_tutorial_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+  <main id="main"><div class="page-header">
+      <img src="" class="logo" alt=""><h1>Case study: visual interface tutorial</h1>
+                        <h4 data-toc-skip class="author">Nuno Saraiva-Agostinho</h4>
             
-            <h4 class="date">2021-11-29</h4>
+            <h4 data-toc-skip class="date">2022-03-13</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/psichomics/blob/master/vignettes/GUI_tutorial.Rmd"><code>vignettes/GUI_tutorial.Rmd</code></a></small>
-      <div class="hidden name"><code>GUI_tutorial.Rmd</code></div>
-
+      <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/psichomics/blob/HEAD/vignettes/GUI_tutorial.Rmd" class="external-link"><code>vignettes/GUI_tutorial.Rmd</code></a></small>
+      <div class="d-none name"><code>GUI_tutorial.Rmd</code></div>
     </div>
 
     
     
-<p><em>psichomics</em> is an interactive R package for integrative analyses of alternative splicing and gene expression based on <a href="https://tcga-data.nci.nih.gov/docs/publications/tcga">The Cancer Genome Atlas (TCGA)</a> (containing molecular data associated with 34 tumour types), the <a href="http://gtexportal.org">Genotype-Tissue Expression (GTEx)</a> project (containing data for multiple normal human tissues), <a href="https://www.ncbi.nlm.nih.gov/sra">Sequence Read Archive</a> and user-provided data. The data from GTEx, TCGA and select SRA projects include subject/sample-associated information and transcriptomic data, such as the quantification of RNA-Seq reads aligning to splice junctions (henceforth called junction quantification) and exons.</p>
-<div id="installing-and-starting-the-program" class="section level1">
-<h1 class="hasAnchor">
-<a href="#installing-and-starting-the-program" class="anchor"></a>Installing and starting the program</h1>
-<p>Install <em>psichomics</em> by typing the following in an R console (the <a href="https://www.r-project.org/">R environment</a> is required):</p>
+<p><em>psichomics</em> is an interactive R package for integrative analyses of alternative splicing and gene expression based on <a href="https://tcga-data.nci.nih.gov/docs/publications/tcga" class="external-link">The Cancer Genome Atlas (TCGA)</a> (containing molecular data associated with 34 tumour types), the <a href="http://gtexportal.org" class="external-link">Genotype-Tissue Expression (GTEx)</a> project (containing data for multiple normal human tissues), <a href="https://www.ncbi.nlm.nih.gov/sra" class="external-link">Sequence Read Archive</a> and user-provided data. The data from GTEx, TCGA and select SRA projects include subject/sample-associated information and transcriptomic data, such as the quantification of RNA-Seq reads aligning to splice junctions (henceforth called junction quantification) and exons.</p>
+<div class="section level2">
+<h2 id="installing-and-starting-the-program">Installing and starting the program<a class="anchor" aria-label="anchor" href="#installing-and-starting-the-program"></a>
+</h2>
+<p>Install <em>psichomics</em> by typing the following in an R console (the <a href="https://www.r-project.org/" class="external-link">R environment</a> is required):</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
-<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"psichomics"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"psichomics"</span><span class="op">)</span></code></pre></div>
 <p>After the installation, start the visual interface of the program in your default web browser by typing:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://nuno-agostinho.github.io/psichomics/">psichomics</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://nuno-agostinho.github.io/psichomics/">psichomics</a></span><span class="op">)</span>
 <span class="fu"><a href="../reference/psichomics.html">psichomics</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="exploration-of-clinically-relevant-differentially-spliced-events-in-breast-cancer" class="section level1">
-<h1 class="hasAnchor">
-<a href="#exploration-of-clinically-relevant-differentially-spliced-events-in-breast-cancer" class="anchor"></a>Exploration of clinically-relevant, differentially spliced events in breast cancer</h1>
+<div class="section level2">
+<h2 id="exploration-of-clinically-relevant-differentially-spliced-events-in-breast-cancer">Exploration of clinically-relevant, differentially spliced events in breast cancer<a class="anchor" aria-label="anchor" href="#exploration-of-clinically-relevant-differentially-spliced-events-in-breast-cancer"></a>
+</h2>
 <blockquote>
 <p>The following case study was adapted from <em>psichomics</em>’ original article:</p>
-<p>Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2019). <strong><a href="https://doi.org/10.1093/nar/gky888">psichomics: graphical application for alternative splicing quantification and analysis</a></strong>. <em>Nucleic Acids Research</em>.</p>
+<p>Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2019). <strong><a href="https://doi.org/10.1093/nar/gky888" class="external-link">psichomics: graphical application for alternative splicing quantification and analysis</a></strong>. <em>Nucleic Acids Research</em>.</p>
 </blockquote>
 <p>Breast cancer is the cancer type with the highest incidence and mortality in women <span class="citation">(Torre <em>et al.</em>, 2015)</span> and multiple studies have suggested that transcriptome-wide analyses of alternative splicing changes in breast tumours are able to uncover tumour-specific biomarkers <span class="citation">(Tsai <em>et al.</em>, 2015; Danan-Gotthold <em>et al.</em>, 2015; Anczuków <em>et al.</em>, 2015)</span>. Given the relevance of early detection of breast cancer to patient survival, we can use <em>psichomics</em> to identify novel tumour stage-I-specific molecular signatures based on differentially spliced events.</p>
-<div id="downloading-and-loading-tcga-data" class="section level2">
-<h2 class="hasAnchor">
-<a href="#downloading-and-loading-tcga-data" class="anchor"></a>Downloading and loading TCGA data</h2>
+<div class="section level3">
+<h3 id="downloading-and-loading-tcga-data">Downloading and loading TCGA data<a class="anchor" aria-label="anchor" href="#downloading-and-loading-tcga-data"></a>
+</h3>
 <p>The quantification of each alternative splicing event is based on the proportion of junction reads that support the inclusion isoform, known as percent spliced-in or PSI <span class="citation">(Wang <em>et al.</em>, 2008)</span>.</p>
 <p>To estimate this value for each splicing event, both alternative splicing annotation and junction quantification are required. While alternative splicing annotation is provided by the package, junction quantification may be retrieved from multiple sources.</p>
 <p>Start by loading breast cancer data by following these instructions:</p>
@@ -161,7 +134,7 @@
 <p><strong>Downloading multiple files:</strong> Note that multiple files will be requested for download at once. Some web browsers (such as Google Chrome) will ask for your confirmation before allowing such behaviour. In order to proceed, please allow multiple downloads.</p>
 </blockquote>
 <blockquote>
-<p><strong>Windows limitations</strong>: If you are using <em>Windows</em>, note that the downloaded files have huge names that may be over <a href="https://msdn.microsoft.com/library/windows/desktop/aa365247.aspx#maxpath"><em>Windows</em> Maximum Path Length</a>. A workaround would be to manually rename the downloaded files to have shorter names, move all downloaded files to a single folder and load such folder by going to <strong>Load user files</strong> &gt; <strong>Folder input</strong> and selecting the newly-created folder in <strong>Folder where data is stored</strong>.</p>
+<p><strong>Windows limitations</strong>: If you are using <em>Windows</em>, note that the downloaded files have huge names that may be over <a href="https://msdn.microsoft.com/library/windows/desktop/aa365247.aspx#maxpath" class="external-link"><em>Windows</em> Maximum Path Length</a>. A workaround would be to manually rename the downloaded files to have shorter names, move all downloaded files to a single folder and load such folder by going to <strong>Load user files</strong> &gt; <strong>Folder input</strong> and selecting the newly-created folder in <strong>Folder where data is stored</strong>.</p>
 </blockquote>
 <div class="figure">
 <img src="img/1_load_data.png" alt="Options to load TCGA data." width="400pt"><p class="caption">
@@ -170,9 +143,9 @@ Options to load TCGA data.
 </div>
 <p>After the data finish loading (keep an eye on the progress bar at the top-right corner), the on-screen instructions at the right will be replaced by the loaded data, including options to view and save such data.</p>
 </div>
-<div id="filtering-and-normalising-gene-expression" class="section level2">
-<h2 class="hasAnchor">
-<a href="#filtering-and-normalising-gene-expression" class="anchor"></a>Filtering and normalising gene expression</h2>
+<div class="section level3">
+<h3 id="filtering-and-normalising-gene-expression">Filtering and normalising gene expression<a class="anchor" aria-label="anchor" href="#filtering-and-normalising-gene-expression"></a>
+</h3>
 <p>To filter and normalise gene expression, click the green panel <strong>Gene expression filtering and normalisation</strong>. Within this panel, click the different grey sections (<em>Gene filtering</em>, <em>Normalisation</em> and <em>Compute CPM and log-transform</em>) to check the settings available for processing gene expression. When you are ready to proceed, click <strong>Filter and normalise gene expression</strong>.</p>
 <div class="figure">
 <img src="img/2_normalise_gene_expression.png" alt="Options to filter and normalise gene expression." width="400pt"><p class="caption">
@@ -180,16 +153,16 @@ Options to filter and normalise gene expression.
 </p>
 </div>
 </div>
-<div id="quantifying-alternative-splicing" class="section level2">
-<h2 class="hasAnchor">
-<a href="#quantifying-alternative-splicing" class="anchor"></a>Quantifying alternative splicing</h2>
+<div class="section level3">
+<h3 id="quantifying-alternative-splicing">Quantifying alternative splicing<a class="anchor" aria-label="anchor" href="#quantifying-alternative-splicing"></a>
+</h3>
 <p>After loading the clinical and alternative splicing junction quantification data from TCGA, quantify alternative splicing by clicking the green panel <strong>Alternative splicing quantification</strong>.</p>
 <ol style="list-style-type: decimal">
 <li>From the loaded data, select the junction quantification dataset to use in <strong>Alternative splicing junction quantification</strong>. For many tumour types, only one dataset is provided.</li>
 <li>Select the alternative splicing event annotation <strong>Human hg19/GRCh37 (2017-10-20)</strong>. Note that there are other annotation files available and you can also load custom annotation files.</li>
 </ol>
 <blockquote>
-<p><strong>Custom splicing annotation:</strong> Additional alternative splicing annotations can be prepared for <em>psichomics</em> by parsing the annotation from programs like <a href="https://github.com/vastgroup/vast-tools">VAST-TOOLS</a>, <a href="http://genes.mit.edu/burgelab/miso/">MISO</a>, <a href="https://bitbucket.org/regulatorygenomicsupf/suppa">SUPPA</a> and <a href="http://rnaseq-mats.sourceforge.net">rMATS</a>. Note that SUPPA and rMATS are able to create their splicing annotation based on transcript annotation. For more information, <a href="https://nuno-agostinho.github.io/psichomics/articles/AS_events_preparation.html">read this tutorial</a>.</p>
+<p><strong>Custom splicing annotation:</strong> Additional alternative splicing annotations can be prepared for <em>psichomics</em> by parsing the annotation from programs like <a href="https://github.com/vastgroup/vast-tools" class="external-link">VAST-TOOLS</a>, <a href="http://genes.mit.edu/burgelab/miso/" class="external-link">MISO</a>, <a href="https://bitbucket.org/regulatorygenomicsupf/suppa" class="external-link">SUPPA</a> and <a href="http://rnaseq-mats.sourceforge.net" class="external-link">rMATS</a>. Note that SUPPA and rMATS are able to create their splicing annotation based on transcript annotation. For more information, <a href="https://nuno-agostinho.github.io/psichomics/articles/AS_events_preparation.html">read this tutorial</a>.</p>
 </blockquote>
 <ol start="3" style="list-style-type: decimal">
 <li>Choose the event type(s) of interest. For the purposes of following the case study, select <strong>Skipped exon (SE)</strong>, <strong>Mutually exclusive exon (MXE)</strong>, <strong>Alternative 5’ splice site (A5SS)</strong>, <strong>Alternative 3’ splice site (A3SS)</strong>, <strong>Alternative first exon (AFE)</strong> and <strong>Alternative last exon (ALE)</strong>.</li>
@@ -202,9 +175,9 @@ Options to quantify alternative splicing.
 </p>
 </div>
 </div>
-<div id="data-grouping" class="section level2">
-<h2 class="hasAnchor">
-<a href="#data-grouping" class="anchor"></a>Data grouping</h2>
+<div class="section level3">
+<h3 id="data-grouping">Data grouping<a class="anchor" aria-label="anchor" href="#data-grouping"></a>
+</h3>
 <p>In order to group data for downstream analyses, look for the navigation bar on the top and click <strong>Groups</strong>. In the displayed table, confirm that three groups are automatically present based on the available sample types: <em>Metastatic</em>, <em>Primary solid Tumor</em> and <em>Solid Tissue Normal</em>.</p>
 <p>Next, to create groups by tumour stage, click in the field <strong>Select attribute</strong> and type <em>tumor stage</em>. Select the first hit (it should be <em>patient.stage_event.pathologic_stage_tumor_stage</em>) and click <strong>Create group</strong>.</p>
 <div class="figure">
@@ -240,13 +213,13 @@ Options to save and load groups.
 </p>
 </div>
 </div>
-<div id="principal-component-analysis-pca" class="section level2">
-<h2 class="hasAnchor">
-<a href="#principal-component-analysis-pca" class="anchor"></a>Principal component analysis (PCA)</h2>
+<div class="section level3">
+<h3 id="principal-component-analysis-pca">Principal component analysis (PCA)<a class="anchor" aria-label="anchor" href="#principal-component-analysis-pca"></a>
+</h3>
 <p>PCA is a technique to reduce data dimensionality by identifying variable combinations (called principal components) that explain the variance in the data <span class="citation">(Ringnér, 2008)</span>. To analyse principal components, click on the <strong>Analyses</strong> tab located in the navigation menu at the top and select <strong>Principal component analysis (PCA)</strong>.</p>
-<div id="pca-performance" class="section level3">
-<h3 class="hasAnchor">
-<a href="#pca-performance" class="anchor"></a>PCA performance</h3>
+<div class="section level4">
+<h4 id="pca-performance">PCA performance<a class="anchor" aria-label="anchor" href="#pca-performance"></a>
+</h4>
 <p>To perform PCA on alternative splicing data using all samples:</p>
 <ol style="list-style-type: decimal">
 <li>In <strong>Data to perform PCA on</strong>, select <strong>Inclusion levels</strong>.</li>
@@ -263,9 +236,9 @@ Options to save and load groups.
 <li>Click <strong>Calculate PCA</strong>.</li>
 </ol>
 </div>
-<div id="pca-plotting" class="section level3">
-<h3 class="hasAnchor">
-<a href="#pca-plotting" class="anchor"></a>PCA plotting</h3>
+<div class="section level4">
+<h4 id="pca-plotting">PCA plotting<a class="anchor" aria-label="anchor" href="#pca-plotting"></a>
+</h4>
 <p>After PCA is performed, the <em>Plot PCA</em> panel will automatically open. Note that the explained variance of each principal component (PC) is shown next to the respective component and that PC1 explains most of the data variance, followed by PC2, then PC3, then PC4, etc. The <strong>variance plot</strong> is also available to compare the explained variance across principal components (by clicking <strong>Show variance plot</strong>). Now:</p>
 <ol style="list-style-type: decimal">
 <li>Select PC1 as the X axis.</li>
@@ -298,14 +271,15 @@ PCA score and loading plots
 <p>To perform PCA using gene expression (both using all samples and only Tumour Stage I and Normal samples), go back to principal component analysis, click in the <strong>Perform PCA</strong> panel, change <strong>Data to perform PCA on</strong> to <em>Gene expression (normalised)</em> and follow previous instructions.</p>
 </div>
 </div>
-<div id="numb-exon-12-inclusion-and-correlation-with-qki-gene-expression" class="section level2">
-<h2 class="hasAnchor">
-<a href="#numb-exon-12-inclusion-and-correlation-with-qki-gene-expression" class="anchor"></a><em>NUMB</em> exon 12 inclusion and correlation with QKI gene expression</h2>
+<div class="section level3">
+<h3 id="numb-exon-12-inclusion-and-correlation-with-qki-gene-expression">
+<em>NUMB</em> exon 12 inclusion and correlation with QKI gene expression<a class="anchor" aria-label="anchor" href="#numb-exon-12-inclusion-and-correlation-with-qki-gene-expression"></a>
+</h3>
 <p>One of the splicing events that most contribute the separation between tumour stage I and normal samples is <strong>NUMB exon 12 inclusion</strong>, whose protein is crucial for cell differentiation as a key regulator of the Notch pathway. The RNA-binding protein QKI has been shown to repress NUMB exon 12 inclusion in lung cancer cells by competing with core splicing factor SF1 for binding to the branch-point sequence, thereby repressing the Notch signalling pathway, which results in decreased cancer cell proliferation <span class="citation">(Zong <em>et al.</em>, 2014)</span>.</p>
 <p>The identifier for <em>NUMB</em> exon 12 inclusion in <em>psichomics</em> is <strong>SE 14 - 73749067 73746132 73745989 73744001 NUMB</strong>. On the top right corner, the selected alternative splicing event can be altered by clicking <strong>Change…</strong>. Click <strong>Change…</strong> and input the given identifier.</p>
-<div id="differential-inclusion-of-numb-exon-12" class="section level3">
-<h3 class="hasAnchor">
-<a href="#differential-inclusion-of-numb-exon-12" class="anchor"></a>Differential inclusion of <em>NUMB</em> exon 12</h3>
+<div class="section level4">
+<h4 id="differential-inclusion-of-numb-exon-12">Differential inclusion of <em>NUMB</em> exon 12<a class="anchor" aria-label="anchor" href="#differential-inclusion-of-numb-exon-12"></a>
+</h4>
 <p>In order to check whether a significant difference in <em>NUMB</em> exon 12 inclusion between tumour and normal TCGA breast samples. To do so, go to <strong>Analyses</strong> &gt; <strong>Individual alternative splicing event</strong> and click <strong>Samples by selected groups</strong>. In the group input element, insert the groups <em>Solid Tissue Normal</em> and <em>Primary solid Tumor</em>. Finally, click <strong>Perform analyses</strong>.</p>
 <p>Consistent with the cited article, <em>NUMB</em> exon 12 inclusion is significantly increased in cancer.</p>
 <p>Also of interest:</p>
@@ -320,9 +294,9 @@ Differential splicing of <em>NUMB</em> exon 12 between tumour and normal samples
 </p>
 </div>
 </div>
-<div id="correlation-between-numb-exon-12-inclusion-and-qki-expression" class="section level3">
-<h3 class="hasAnchor">
-<a href="#correlation-between-numb-exon-12-inclusion-and-qki-expression" class="anchor"></a>Correlation between <em>NUMB</em> exon 12 inclusion and QKI expression</h3>
+<div class="section level4">
+<h4 id="correlation-between-numb-exon-12-inclusion-and-qki-expression">Correlation between <em>NUMB</em> exon 12 inclusion and QKI expression<a class="anchor" aria-label="anchor" href="#correlation-between-numb-exon-12-inclusion-and-qki-expression"></a>
+</h4>
 <p>To check if <em>NUMB</em> exon 12 inclusion is correlated with QKI expression, go to <strong>Analyses</strong> &gt; <strong>Correlation of gene expression and alternative splicing</strong> and perform the following:</p>
 <ol style="list-style-type: decimal">
 <li>In <strong>Gene expression</strong>, select <strong>Gene expression (normalised)</strong>.</li>
@@ -341,9 +315,9 @@ Correlation between <em>NUMB</em> exon 12 inclusion and QKI expression in all TC
 </div>
 </div>
 </div>
-<div id="differential-splicing-analysis" class="section level2">
-<h2 class="hasAnchor">
-<a href="#differential-splicing-analysis" class="anchor"></a>Differential splicing analysis</h2>
+<div class="section level3">
+<h3 id="differential-splicing-analysis">Differential splicing analysis<a class="anchor" aria-label="anchor" href="#differential-splicing-analysis"></a>
+</h3>
 <p>To analyse differential splicing, click on the <strong>Analyses</strong> tab located in the navigation menu at the top and select <strong>Exploratory (multiple splicing events)</strong>. Next:</p>
 <ol style="list-style-type: decimal">
 <li>Click on the blue panel <strong>Perform statistical analyses</strong> to open it.</li>
@@ -355,9 +329,9 @@ Correlation between <em>NUMB</em> exon 12 inclusion and QKI expression in all TC
 <li>Click <strong>Perform analyses</strong>.</li>
 </ol>
 <p>When the analyses complete, the results are shown in a plot and in a filterable and sortable table.</p>
-<div id="filtering-alternative-splicing-events" class="section level3">
-<h3 class="hasAnchor">
-<a href="#filtering-alternative-splicing-events" class="anchor"></a>Filtering alternative splicing events</h3>
+<div class="section level4">
+<h4 id="filtering-alternative-splicing-events">Filtering alternative splicing events<a class="anchor" aria-label="anchor" href="#filtering-alternative-splicing-events"></a>
+</h4>
 <p>Filter events in both the plot and the table by a considerable difference in median between the selected groups (|Δ Median PSI| &gt; 0.1):</p>
 <ol style="list-style-type: decimal">
 <li>Click on the blue panel <strong>Plot options and table filtering</strong> to open it.</li>
@@ -381,9 +355,9 @@ Differentially spliced events (|Δ Median PSI| &gt; 0.1 and Wilcoxon q-value ≤
 <p>The table itself is also filterable and sortable. For instance, to sort the table by the difference in variance, click once on <strong>Δ Variance</strong>. Note that <strong>horizontal scrolling</strong> is required to visualise all available columns.</p>
 <p>The table also provides a column with a density plot of the distribution of the alternative splicing quantification for each event. By clicking on the density plot (or its respective event identifier), a page dedicated to that alternative splicing event’s statistics and exhibiting the density plot in greater detail will show up.</p>
 </div>
-<div id="performing-multiple-survival-analysis" class="section level3">
-<h3 class="hasAnchor">
-<a href="#performing-multiple-survival-analysis" class="anchor"></a>Performing multiple survival analysis</h3>
+<div class="section level4">
+<h4 id="performing-multiple-survival-analysis">Performing multiple survival analysis<a class="anchor" aria-label="anchor" href="#performing-multiple-survival-analysis"></a>
+</h4>
 <p>To study the impact of alternative splicing events on prognosis, Kaplan-Meier curves may be plotted for groups of patients separated by the optimal PSI cutoff for a given alternative splicing event that maximises the significance of group differences in survival analysis (i.e. minimises the p-value of the log-rank tests of difference in survival between individuals whose samples have their PSI below and above that threshold).</p>
 <p>Given the slow process of calculating the optimal splicing quantification cutoff for multiple events, it is recommended to perform this after filtering the table for differentially spliced events supported by statistical significance.</p>
 <ol style="list-style-type: decimal">
@@ -398,9 +372,9 @@ Differentially spliced events (|Δ Median PSI| &gt; 0.1 and Wilcoxon q-value ≤
 <p>Kaplan-Meier plots will appear in the table. Click on the plotted curves to automatically go to the <strong>Survival analyses</strong> tab, where you can manually adjust the alternative splicing quantification cutoff.</p>
 </div>
 </div>
-<div id="differential-gene-expression" class="section level2">
-<h2 class="hasAnchor">
-<a href="#differential-gene-expression" class="anchor"></a>Differential gene expression</h2>
+<div class="section level3">
+<h3 id="differential-gene-expression">Differential gene expression<a class="anchor" aria-label="anchor" href="#differential-gene-expression"></a>
+</h3>
 <p>Detected alterations in alternative splicing may simply be a reflection of changes in gene expression levels. Therefore, to disentangle these two effects, differential expression analysis between tumour stage I and normal samples should also be performed. To do so, click on the <strong>Analyses</strong> tab located in the navigation menu at the top and select <strong>Exploratory (multiple genes)</strong>. Next:</p>
 <ol style="list-style-type: decimal">
 <li>Click on the blue panel <strong>Perform differential expression analyses</strong> to open it.</li>
@@ -416,14 +390,15 @@ Differentially spliced events (|Δ Median PSI| &gt; 0.1 and Wilcoxon q-value ≤
 Differentially expressed genes (|log2(Fold-change)| &gt; 1 and FDR ≤ 0.01). Labelled genes are those with alternative splicing events with putative prognostic value.
 </p>
 </div>
-<div id="uhrf2-exon-10-inclusion" class="section level3">
-<h3 class="hasAnchor">
-<a href="#uhrf2-exon-10-inclusion" class="anchor"></a><em>UHRF2</em> exon 10 inclusion</h3>
+<div class="section level4">
+<h4 id="uhrf2-exon-10-inclusion">
+<em>UHRF2</em> exon 10 inclusion<a class="anchor" aria-label="anchor" href="#uhrf2-exon-10-inclusion"></a>
+</h4>
 <p>One splicing event with prognostic value is the alternative splicing of <em>UHRF2</em> exon 10. Cell-cycle regulator UHRF2 promotes cell proliferation and inhibits the expression of tumour suppressors in breast cancer <span class="citation">(Wu <em>et al.</em>, 2012)</span>.</p>
 <p>The identifier for <em>UHRF2</em> exon 10 inclusion in <em>psichomics</em> is <strong>SE 9 + 6486925 6492303 6492401 6493826 UHRF2</strong>. On the top right corner, the selected alternative splicing event can be altered by clicking <em>Change…</em>. Click <em>Change…</em> and input the given identifier.</p>
-<div id="differential-splicing-analysis-1" class="section level4">
-<h4 class="hasAnchor">
-<a href="#differential-splicing-analysis-1" class="anchor"></a>Differential splicing analysis</h4>
+<div class="section level5">
+<h5 id="differential-splicing-analysis-1">Differential splicing analysis<a class="anchor" aria-label="anchor" href="#differential-splicing-analysis-1"></a>
+</h5>
 <p>In order to test for a significant difference in <em>UHRF2</em> exon 10 inclusion between tumour stage I and normal samples, go to <strong>Analyses</strong> &gt; <strong>Individual alternative splicing event</strong> and click <strong>Samples by selected groups</strong>. In the group input element, insert the groups <em>Solid Tissue Normal</em> and <em>Primary solid Tumor</em>. Finally, click <strong>Perform analyses</strong>.</p>
 <p>Higher inclusion of <em>UHRF2</em> exon 10 is associated with normal samples.</p>
 <div class="figure">
@@ -432,9 +407,9 @@ Differential splicing of <em>UHRF2</em> exon 10 between tumour stage I and norma
 </p>
 </div>
 </div>
-<div id="survival-analysis" class="section level4">
-<h4 class="hasAnchor">
-<a href="#survival-analysis" class="anchor"></a>Survival analysis</h4>
+<div class="section level5">
+<h5 id="survival-analysis">Survival analysis<a class="anchor" aria-label="anchor" href="#survival-analysis"></a>
+</h5>
 <p>To study the impact of alternative splicing events on prognosis, Kaplan-Meier curves may be plotted for groups of patients separated by a given PSI cutoff for a given alternative splicing event. The optimal PSI cutoff maximises the significance of group differences in survival analysis (i.e.  minimises the p-value of the log-rank tests of difference in survival between individuals whose samples have a PSI below and above that threshold).</p>
 <p>To perform survival analysis on a specific event, go to <strong>Analyses</strong> &gt; <strong>Survival analysis</strong>.</p>
 <ol style="list-style-type: decimal">
@@ -455,9 +430,9 @@ Prognostic value of <em>UHRF2</em> exon 10 inclusion (patients separated by the 
 </p>
 </div>
 </div>
-<div id="differential-expression" class="section level4">
-<h4 class="hasAnchor">
-<a href="#differential-expression" class="anchor"></a>Differential expression</h4>
+<div class="section level5">
+<h5 id="differential-expression">Differential expression<a class="anchor" aria-label="anchor" href="#differential-expression"></a>
+</h5>
 <p>To check whether alternative splicing changes are related with gene expression alterations, let us perform differential expression analysis on UHRF2. Go to <strong>Analyses</strong> &gt; <strong>Individual gene</strong>.</p>
 <ol style="list-style-type: decimal">
 <li>Select <em>Gene expression (normalised)</em> for the <em>Gene expression</em> field.</li>
@@ -473,9 +448,9 @@ Differential expression of <em>UHRF2</em> between tumour stage I and normal samp
 </div>
 <p>It seems UHRF2 is differentially expressed between <em>Tumour Stage I</em> and <em>Solid Tissue Normal</em>. However, going back to exploratory differential gene expression (<strong>Analyses</strong> &gt; <strong>Exploratory (multiple genes)</strong>) and looking for <em>UHRF2</em> (use the <em>Search</em> field above the table), <em>UHRF2</em> has a log2(|fold-change|) ≤ 1. Following this criterium, the difference in gene expression between these conditions may not be considered biologically relevant.</p>
 </div>
-<div id="survival-analysis-1" class="section level4">
-<h4 class="hasAnchor">
-<a href="#survival-analysis-1" class="anchor"></a>Survival analysis</h4>
+<div class="section level5">
+<h5 id="survival-analysis-1">Survival analysis<a class="anchor" aria-label="anchor" href="#survival-analysis-1"></a>
+</h5>
 <p>To confirm if gene expression has an overall prognostic value, go to <strong>Analyses</strong> &gt; <strong>Survival analysis</strong> and perform the following:</p>
 <ol style="list-style-type: decimal">
 <li>In the blue <strong>Groups for survival analysis</strong> panel, select <strong>Inclusion levels cutoff from the selected splicing event</strong>.</li>
@@ -493,9 +468,9 @@ Prognostic value of <em>UHRF2</em> expression (patients separated by the optimal
 </p>
 </div>
 </div>
-<div id="literature-support-and-external-database-information" class="section level4">
-<h4 class="hasAnchor">
-<a href="#literature-support-and-external-database-information" class="anchor"></a>Literature support and external database information</h4>
+<div class="section level5">
+<h5 id="literature-support-and-external-database-information">Literature support and external database information<a class="anchor" aria-label="anchor" href="#literature-support-and-external-database-information"></a>
+</h5>
 <p>If an event is differentially spliced and has an impact on patient survival, its association with the studied disease might be already described in the literature. To check so, go to <strong>Analyses</strong> &gt; <strong>Gene, transcript and protein information</strong> where information regarding the associated gene (such as description and genomic position), transcripts and protein domain annotation are available.</p>
 <ul>
 <li>The protein plot shows the UniProt matches for the selected transcript. Hover the protein’s rendered domains to obtain more information on them. More information about each protein can be retrieved by clicking the respective <strong>UniProt</strong> link.</li>
@@ -512,39 +487,39 @@ Prognostic value of <em>UHRF2</em> expression (patients separated by the optimal
 </li>
 </ul>
 </div>
-<div id="interpretation" class="section level4">
-<h4 class="hasAnchor">
-<a href="#interpretation" class="anchor"></a>Interpretation</h4>
+<div class="section level5">
+<h5 id="interpretation">Interpretation<a class="anchor" aria-label="anchor" href="#interpretation"></a>
+</h5>
 <p>Higher inclusion of <em>UHRF2</em> exon 10 is associated with normal samples and better prognosis, and potentially disrupts UHRF2’s SRA-YDG protein domain, related to the binding affinity to epigenetic marks. Hence, exon 10 inclusion may suppress UHRF2’s oncogenic role in breast cancer by impairing its activity through the induction of a truncated protein or a non-coding isoform. Moreover, this hypothesis is independent from gene expression changes, as UHRF2 is not differentially expressed between tumour stage I and normal samples (|log2(fold-change)| &lt; 1) and there is no significant difference in survival between patient groups stratified by its expression in tumour samples (log-rank p-value = 0.279).</p>
 </div>
 </div>
 </div>
 </div>
-<div id="exploring-alternative-splicing-changes-between-human-isogenic-stem-cells-and-fibroblasts" class="section level1">
-<h1 class="hasAnchor">
-<a href="#exploring-alternative-splicing-changes-between-human-isogenic-stem-cells-and-fibroblasts" class="anchor"></a>Exploring alternative splicing changes between human isogenic stem cells and fibroblasts</h1>
+<div class="section level2">
+<h2 id="exploring-alternative-splicing-changes-between-human-isogenic-stem-cells-and-fibroblasts">Exploring alternative splicing changes between human isogenic stem cells and fibroblasts<a class="anchor" aria-label="anchor" href="#exploring-alternative-splicing-changes-between-human-isogenic-stem-cells-and-fibroblasts"></a>
+</h2>
 <p>Please refer to our methods article:</p>
 <blockquote>
-<p>Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2020). <strong><a href="https://doi.org/10.1007/978-1-0716-0301-7_10">Interactive Alternative Splicing Analysis of Human Stem Cells Using psichomics</a></strong>. In: Kidder B. (eds) Stem Cell Transcriptional Networks. <em>Methods in Molecular Biology</em>, vol 2117. Humana, New York, NY</p>
+<p>Nuno Saraiva-Agostinho and Nuno L. Barbosa-Morais (2020). <strong><a href="https://doi.org/10.1007/978-1-0716-0301-7_10" class="external-link">Interactive Alternative Splicing Analysis of Human Stem Cells Using psichomics</a></strong>. In: Kidder B. (eds) Stem Cell Transcriptional Networks. <em>Methods in Molecular Biology</em>, vol 2117. Humana, New York, NY</p>
 </blockquote>
 </div>
-<div id="load-sra-and-user-provided-local-files" class="section level1">
-<h1 class="hasAnchor">
-<a href="#load-sra-and-user-provided-local-files" class="anchor"></a>Load SRA and user-provided local files</h1>
-<p>Although only select <a href="https://www.ncbi.nlm.nih.gov/sra">SRA</a> projects are available to be automatically downloaded (based on pre-processed data from the [recount2][recount2] project), other SRA projects can be manually downloaded, aligned using a splice-aware aligner and loaded by the user, as per the instructions in <a href="https://nuno-agostinho.github.io/psichomics/articles/custom_data.html">Loading SRA and user-provided RNA-seq data</a>. Sample-associated files from SRA are also supported.</p>
+<div class="section level2">
+<h2 id="load-sra-and-user-provided-local-files">Load SRA and user-provided local files<a class="anchor" aria-label="anchor" href="#load-sra-and-user-provided-local-files"></a>
+</h2>
+<p>Although only select <a href="https://www.ncbi.nlm.nih.gov/sra" class="external-link">SRA</a> projects are available to be automatically downloaded (based on pre-processed data from the [recount2][recount2] project), other SRA projects can be manually downloaded, aligned using a splice-aware aligner and loaded by the user, as per the instructions in <a href="https://nuno-agostinho.github.io/psichomics/articles/custom_data.html">Loading SRA and user-provided RNA-seq data</a>. Sample-associated files from SRA are also supported.</p>
 </div>
-<div id="feedback" class="section level1">
-<h1 class="hasAnchor">
-<a href="#feedback" class="anchor"></a>Feedback</h1>
+<div class="section level2">
+<h2 id="feedback">Feedback<a class="anchor" aria-label="anchor" href="#feedback"></a>
+</h2>
 <p>All feedback on the program, documentation and associated material (including this tutorial) is welcome. Please send any suggestions and comments to:</p>
 <blockquote>
 <p>Nuno Saraiva-Agostinho (<a href="mailto:nunoagostinho@medicina.ulisboa.pt" class="email">nunoagostinho@medicina.ulisboa.pt</a>)</p>
-<p><a href="http://imm.medicina.ulisboa.pt/group/distrans/">Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)</a></p>
+<p><a href="http://imm.medicina.ulisboa.pt/group/distrans/" class="external-link">Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)</a></p>
 </blockquote>
 </div>
-<div id="references" class="section level1 unnumbered">
-<h1 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h1>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
 <div id="refs" class="references">
 <div id="ref-Anczukow2015">
 <p>Anczuków,O. <em>et al.</em> (2015) SRSF1-Regulated Alternative Splicing in Breast Cancer. <em>Molecular Cell</em>, <strong>60</strong>, 105–117.</p>
@@ -572,44 +547,28 @@ Prognostic value of <em>UHRF2</em> expression (patients separated by the optimal
 </div>
 </div>
 </div>
-  </div>
-
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
-
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
 
-      <footer><div class="copyright">
-  <p>Developed by Nuno Saraiva-Agostinho, Nuno Luís Barbosa-Morais.</p>
+    <footer><div class="pkgdown-footer-left">
+  <p></p>
+<p>Developed by Nuno Saraiva-Agostinho, Nuno Luís Barbosa-Morais.</p>
 </div>
 
-<div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+<div class="pkgdown-footer-right">
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
-      </footer>
+    </footer>
 </div>
 
   
-<script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script><script>
-  docsearch({
-    
-    
-    apiKey: 'fa0226bf1a3df7e1c8ab8f0e70450e0a',
-    indexName: 'stem-cell-analysis-in-psichomics',
-    inputSelector: 'input#search-input.form-control',
-    transformData: function(hits) {
-      return hits.map(function (hit) {
-        hit.url = updateHitURL(hit);
-        return hit;
-      });
-    }
-  });
-</script>
-</body>
+
+  
+
+  </body>
 </html>
