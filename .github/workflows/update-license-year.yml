@@ -28,6 +28,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           path: |
-            "R/data.R"
-            "R/help.R"
+            R/data.R
+            R/help.R
           transform: (?<=psichomics %s, )(?<from>\d{4})?-?(\d{4})?
