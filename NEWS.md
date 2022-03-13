@@ -1,3 +1,8 @@
+# psichomics 1.20.2 (13 March, 2022)
+
+* Bug fix: fix limma-trend approach when using newer versions of limma to
+calculate average gene expression
+
 # psichomics 1.20.1 (25 January, 2022)
 
 * Bug fix: allow to perform correlation analysis after being performed once

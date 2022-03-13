@@ -17,7 +17,7 @@ diffExpressionTableUI <- function(id) {
                              "Holm's method"="holm",
                              "Hochberg's method"="hochberg",
                              "Hommel's method"="hommel"))
-    
+
     statAnalysesOptions <- div(
         id=ns("statAnalysesOptions"),
         selectizeInput(ns("geneExpr"), "Gene expression dataset", choices=NULL,
@@ -34,7 +34,7 @@ diffExpressionTableUI <- function(id) {
                     ns("diffGroups"), maxItems=2, type="Samples",
                     label="Select two groups for differential expression")),
             bsCollapsePanel(
-                tagList(icon("adjust"), "Differential expression statistics"), 
+                tagList(icon("adjust"), "Differential expression statistics"),
                 value="eBayes",
                 helpText(
                     tags$code("limma::eBayes()"), "is used to compute",
@@ -50,10 +50,10 @@ diffExpressionTableUI <- function(id) {
                          "fold-changes for differentially expressed genes:"),
                 fluidRow(
                     column(6, numericInput(ns("ebayesStdevMin"), "Lower limit",
-                                           min=0, value=0.1, step=0.1, 
+                                           min=0, value=0.1, step=0.1,
                                            width="100%")),
                     column(6, numericInput(ns("ebayesStdevMax"), "Upper limit",
-                                           min=0, value=4, step=0.1, 
+                                           min=0, value=4, step=0.1,
                                            width="100%"))))),
         tags$b("Extra analyses that are performed:"),
         tags$ul(tags$li("Variance and median expression"),
@@ -61,7 +61,7 @@ diffExpressionTableUI <- function(id) {
         selectizeInput(ns("pvalueAdjust"), selected="BH", width="100%",
                        "P-value adjustment", pvalueAdjust),
         processButton(ns("startAnalyses"), "Perform analyses"))
-    
+
     labelsPanel <- tabPanel(
         "Labels",
         bsCollapse(
@@ -74,14 +74,14 @@ diffExpressionTableUI <- function(id) {
                     selectizeInput(
                         ns("labelSortBy"), choices=NULL, width="100%",
                         "Sort top differentially expressed genes by"),
-                    radioButtons(ns("labelOrder"), "Sorting order", 
+                    radioButtons(ns("labelOrder"), "Sorting order",
                                  choices=c("Decreasing order"="decreasing",
                                            "Increasing order"="increasing")),
                     sliderInput(
-                        ns("labelTop"), value=10, min=1, max=1000, 
+                        ns("labelTop"), value=10, min=1, max=1000,
                         width="100%", "Number of top genes to label"))),
             bsCollapsePanel(
-                "Label selected genes", 
+                "Label selected genes",
                 value="genes", checkboxInput(
                     ns("labelGeneEnable"), width="100%",
                     "Enable labelling of selected genes"),
@@ -91,7 +91,7 @@ diffExpressionTableUI <- function(id) {
         actionButton(ns("unlabelPoints"), "Remove labels"),
         processButton(ns("labelPoints"), "Label points"))
     eventOptions <- prepareEventPlotOptions(ns("eventOptions"), ns, labelsPanel)
-    
+
     sidebar <- sidebar(
         bsCollapse(
             id=ns("diffExpressionCollapse"), open="statAnalyses",
@@ -113,17 +113,17 @@ diffExpressionTableUI <- function(id) {
                     "Differential expression analysis not yet performed.",
                     id=ns("missingDiffAnalyses")),
                 hidden(eventOptions))))
-    
+
     downloadTable <- div(
         class="btn-group dropup",
         tags$button(class="btn btn-default dropdown-toggle", type="button",
-                    "data-toggle"="dropdown", "aria-haspopup"="true", 
-                    "aria-expanded"="false", icon("download"), 
+                    "data-toggle"="dropdown", "aria-haspopup"="true",
+                    "aria-expanded"="false", icon("download"),
                     "Save table", tags$span(class="caret")),
-        tags$ul(class="dropdown-menu", 
+        tags$ul(class="dropdown-menu",
                 tags$li(downloadLink(ns("downloadAll"), "All data")),
                 tags$li(downloadLink(ns("downloadSubset"), "Filtered data"))))
-    
+
     groupCreation <- div(
         class="btn-group dropup",
         tags$button(class="btn btn-default dropdown-toggle", type="button",
@@ -136,7 +136,7 @@ diffExpressionTableUI <- function(id) {
                                             "Selected genes"))),
                 tags$li(actionLink(ns("groupByDisplayed"),
                                    "Genes displayed in the table"))))
-    
+
     tagList(
         uiOutput(ns("modal")),
         sidebarLayout(
@@ -150,7 +150,7 @@ diffExpressionTableUI <- function(id) {
 
 performSimpleDiffExpr <- function(geneExpr, groups, pvalueAdjust="BH",
                                   ebayesProportion=0.01, ebayesStdevMin=0.1,
-                                  ebayesStdevMax=0.1, geneExprName=NULL, 
+                                  ebayesStdevMax=0.1, geneExprName=NULL,
                                   inputID="sparklineInput") {
     # Prepare groups of samples to analyse and filter samples not available in
     # the selected groups from the gene expression data
@@ -164,25 +164,27 @@ performSimpleDiffExpr <- function(geneExpr, groups, pvalueAdjust="BH",
     }
     isFromGroup1 <- colnames(geneExpr) %in% groups[[1]]
     design       <- cbind(1, ifelse(isFromGroup1, 1, 0))
-    
+
     # Fit a gene-wise linear model based on selected groups
     fit <- lmFit(geneExpr, design)
-    
+
     # Calculate moderated t-statistics and DE log-odds
+    useLimmaTrend <- !is(geneExpr, "EList")
+    if (useLimmaTrend) fit <- as.matrix(fit)
     stats <- eBayes(fit, proportion=ebayesProportion,
-                    trend=!is(geneExpr, "EList"),
+                    trend=useLimmaTrend,
                     stdev.coef.lim=c(ebayesStdevMin, ebayesStdevMax))
-    
+
     # Prepare data summary
     summary <- topTable(stats, number=nrow(fit), coef=2, sort.by="none",
                         adjust.method=pvalueAdjust, confint=TRUE)
     summary$ID <- NULL
     names(summary) <- c(
-        "log2 Fold-Change", "CI (low)", "CI (high)", 
-        "Average expression", "moderated t-statistics", "p-value", 
+        "log2 Fold-Change", "CI (low)", "CI (high)",
+        "Average expression", "moderated t-statistics", "p-value",
         paste0("p-value (", pvalueAdjust, " adjusted)"), "B-statistics")
     attr(summary, "groups") <- groups
-    
+
     # Calculate basic statistics and density plots
     stats  <- diffAnalyses(geneExpr, groups, c("basicStats", "density"),
                            pvalueAdjust=NULL, geneExpr=geneExprName,
@@ -193,16 +195,16 @@ performSimpleDiffExpr <- function(geneExpr, groups, pvalueAdjust="BH",
 }
 
 #' Set of functions to perform differential analyses
-#' 
+#'
 #' @importFrom shinyBS updateCollapse
 #' @importFrom limma eBayes lmFit topTable
-#' 
+#'
 #' @inheritParams appServer
 #' @inherit psichomics return
 #' @keywords internal
 diffExpressionSet <- function(session, input, output) {
     ns <- session$ns
-    
+
     observe({
         geneExpr <- getGeneExpression()
         if (is.null(geneExpr)) {
@@ -215,14 +217,14 @@ diffExpressionSet <- function(session, input, output) {
             show("statAnalysesOptions")
         }
     })
-    
+
     performDiffExpression <- reactive({
         totalTime <- startProcess("startAnalyses")
         geneExpr  <- getGeneExpression(input$geneExpr, EList=TRUE)
         groups    <- getSelectedGroups(input, "diffGroups", "Samples",
                                        filter=colnames(geneExpr))
         diffExpr <- performSimpleDiffExpr(
-            geneExpr, groups, 
+            geneExpr, groups,
             pvalueAdjust=input$pvalueAdjust,
             ebayesProportion=input$ebayesProportion,
             ebayesStdevMin=input$ebayesStdevMin,
@@ -234,7 +236,7 @@ diffExpressionSet <- function(session, input, output) {
         updateCollapse(session, "diffExpressionCollapse", "plotEvents")
         endProcess("startAnalyses", totalTime)
     })
-    
+
     # Perform statistical analyses
     observeEvent(input$startAnalyses, {
         isolate({
@@ -260,7 +262,7 @@ diffExpressionSet <- function(session, input, output) {
             performDiffExpression()
         }
     })
-    
+
     # Replace previously performed differential analyses
     observeEvent(input$replace, {
         performDiffExpression()
@@ -272,7 +274,7 @@ diffExpressionSet <- function(session, input, output) {
         # setDifferentialExpressionSurvival(NULL)
         setLabelledPoints("ge-volcano", NULL)
     })
-    
+
     # Go to differential analysis when clicking on density plot
     observe(processClickRedirection(input$statsTable_diffExpr_last_clicked))
 }
@@ -280,22 +282,22 @@ diffExpressionSet <- function(session, input, output) {
 #' @rdname appServer
 diffExpressionTableServer <- function(input, output, session) {
     selectGroupsServer(session, "diffGroups", "Samples")
-    
+
     observeEvent(input$loadClinical, missingDataGuide("Clinical data"))
     observeEvent(input$loadGeneExpr, missingDataGuide("Gene expression"))
     observeEvent(input$missingGeneExpr, missingDataGuide("Gene expression"))
-    
+
     diffExpressionSet(session, input, output)
     analysesPlotSet(
         session, input, output, "GE", "ge-volcano", getDifferentialExpression,
         getDifferentialExpressionFiltered, getDifferentialExpressionSurvival)
     analysesTableSet(
         session, input, output, "GE", "ge-volcano", getDifferentialExpression,
-        getDifferentialExpressionFiltered, setDifferentialExpressionFiltered, 
-        getDifferentialExpressionSurvival, getDifferentialExpressionColumns, 
+        getDifferentialExpressionFiltered, setDifferentialExpressionFiltered,
+        getDifferentialExpressionSurvival, getDifferentialExpressionColumns,
         setDifferentialExpressionColumns, getDifferentialExpressionResetPaging,
         setDifferentialExpressionResetPaging)
-    
+
     # # Optimal survival difference given a gene expression cutoff per gene
     # optimSurvDiffSet(session, input, output)
 }
