@@ -111,6 +111,12 @@ reference:
         - ensemblToUniprot
         - plotProtein
         - plotTranscripts
+    - title: internal
+      contents:
+        - colSums,EList-method
+        - .onAttach
+        - readFile
+        - t.sticky
 articles:
     - title: All vignettes
       contents:
