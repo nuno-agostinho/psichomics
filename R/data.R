@@ -517,7 +517,7 @@ dataUI <- function(id, tab) {
             tags$a(href="mailto:nunodanielagostinho@gmail.com",
                    "Nuno Saraiva-Agostinho", icon("envelope")),
             tags$br(),
-            sprintf("psichomics %s, 2015-2021", packageVersion("psichomics"))))
+            sprintf("psichomics %s, 2015-2022", packageVersion("psichomics"))))
 
     tab(title="Data", icon="table",
         sidebarLayout(
