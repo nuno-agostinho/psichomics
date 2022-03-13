@@ -27,5 +27,7 @@ jobs:
       - uses: FantasticFiasco/action-update-license-year@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          path: "R/*.R"
+          path: |
+            "R/data.R"
+            "R/help.R"
           transform: (?<=psichomics %s, )(?<from>\d{4})?-?(\d{4})?
