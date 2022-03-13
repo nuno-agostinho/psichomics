@@ -136,7 +136,7 @@ following commands to quickly filter and normalise gene expression:
 filter <- filterGeneExpr(geneExpr, minCounts=10, minTotalCounts=15)
 
 # What normaliseGeneExpression() does:
-# 1) Filter gene expression
+# 1) Filter gene expression based on its argument "geneFilter"
 # 2) Normalise gene expression with edgeR::calcNormFactors (internally) using
 #    the trimmed mean of M-values (TMM) method (by default)
 # 3) Calculate log2-counts per million (logCPM)
@@ -479,7 +479,7 @@ design       <- cbind(1, ifelse(isFromGroup1, 0, 1))
 
 # Fit a gene-wise linear model based on selected groups
 library(limma)
-fit <- lmFit(ge, design)
+fit <- lmFit(as.matrix(ge), design)
 
 # Calculate moderated t-statistics and DE log-odds using limma::eBayes
 ebayesFit <- eBayes(fit, trend=TRUE)
