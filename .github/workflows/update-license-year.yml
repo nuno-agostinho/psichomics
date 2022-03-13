@@ -15,7 +15,7 @@ jobs:
       - uses: FantasticFiasco/action-update-license-year@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          transform: (?<=YEAR: )(?<from>\d{4})?-?(\d{4})?
+          transform: (?<=YEAR:\ )(?<from>\d{4})?-?(\d{4})?
 
   update-source-year:
     needs: update-license-year
