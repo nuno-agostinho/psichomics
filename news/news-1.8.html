@@ -61,69 +61,54 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.8.1" id="psichomics-181-3-december-2018">psichomics 1.8.1 (3 December, 2018)<a class="anchor" aria-label="anchor" href="#psichomics-181-3-december-2018"></a></h2>
-<ul><li>Add tag <code>ImmunoOncology</code> to BiocViews</li>
-</ul></div>
+<ul><li>Add tag <code>ImmunoOncology</code> to BiocViews</li></ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.8.2" id="psichomics-182-26-march-2019">psichomics 1.8.2 (26 March, 2019)<a class="anchor" aria-label="anchor" href="#psichomics-182-26-march-2019"></a></h2>
-<ul><li>Data loading:
-<ul><li>GTEx data can now be automatically downloaded and loaded on-demand</li>
+<ul><li>Data loading:<ul><li>GTEx data can now be automatically downloaded and loaded on-demand</li>
 <li>By default, data table now only displays at most the first 100 columns for performance reasons</li>
 </ul></li>
-<li>Alternative splicing quantification:
-<ul><li>Allow to discard samples before alternative splicing quantification</li>
+<li>Alternative splicing quantification:<ul><li>Allow to discard samples before alternative splicing quantification</li>
 <li>In alternative splicing quantification dataset summary, plot quantification based on median, variance and range per splicing event across samples to provide tools to filter quantification (<code><a href="../reference/plotRowStats.html">plotRowStats()</a></code>)</li>
 </ul></li>
-<li>Gene expression filtering and normalisation:
-<ul><li>Allow to discard samples before filtering and normalisation</li>
+<li>Gene expression filtering and normalisation:<ul><li>Allow to discard samples before filtering and normalisation</li>
 <li>Filter low read counts using <code><a href="https://rdrr.io/pkg/edgeR/man/filterByExpr.html" class="external-link">edgeR::filterByExpr()</a></code>
 </li>
 <li>Allow to perform <code><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">limma::voom()</a></code> on gene expression data (without design matrix) and to apply its normalisation methods</li>
 <li>In gene expression dataset summary, plot distribution of gene expression per sample, distribution of library sizes and gene-wise mean and variance of gene expression across samples to provide the user tools to assess gene expression normalisation (<code><a href="../reference/plotGeneExprPerSample.html">plotGeneExprPerSample()</a></code>, <code><a href="../reference/plotDistribution.html">plotDistribution()</a></code> and <code><a href="../reference/plotRowStats.html">plotRowStats()</a></code>, respectively)</li>
 <li>Convert between different gene identifiers (the original identifier is kept in some conditions, read <code><a href="../reference/convertGeneIdentifiers.html">convertGeneIdentifiers()</a></code>); in the visual interface, when filtering and normalising gene expression, ENSEMBL identifiers are converted to gene symbols, by default</li>
 </ul></li>
-<li>Groups:
-<ul><li>By default, load pre-made lists of genes when loading gene expression or loading/performing alternative splicing quantification</li>
+<li>Groups:<ul><li>By default, load pre-made lists of genes when loading gene expression or loading/performing alternative splicing quantification</li>
 <li>Added pre-made list of genes that encode for RNA-binding proteins (Sebestyen et al. 2016), useful to postulate about the regulatory role of those proteins based on gene expression and PSI correlation analyses</li>
 </ul></li>
-<li>Correlation analyses:
-<ul><li>Allow to use groups of genes and alternative splicing events in correlation analyses</li>
+<li>Correlation analyses:<ul><li>Allow to use groups of genes and alternative splicing events in correlation analyses</li>
 <li>Plot specific combinations of gene and alternative splicing events (<code>[.GEandAScorrelation</code>())</li>
 <li>Display progress when performing correlation analyses</li>
 <li>Display correlation results in a table (<code><a href="https://rdrr.io/r/base/table.html" class="external-link">as.table()</a></code>)</li>
 </ul></li>
-<li>Survival:
-<ul><li>Render p-value plot by cutoff in command-line interface (<code><a href="../reference/plotSurvivalPvaluesByCutoff.html">plotSurvivalPvaluesByCutoff()</a></code>)</li>
-</ul></li>
-<li>Gene, transcript and protein information:
-<ul><li>Modify keywords used to search for PubMed articles</li>
-</ul></li>
+<li>Survival:<ul><li>Render p-value plot by cutoff in command-line interface (<code><a href="../reference/plotSurvivalPvaluesByCutoff.html">plotSurvivalPvaluesByCutoff()</a></code>)</li></ul></li>
+<li>Gene, transcript and protein information:<ul><li>Modify keywords used to search for PubMed articles</li></ul></li>
 </ul><div class="section level3">
 <h3 id="bug-fixes-and-minor-changes-1-8-2">Bug fixes and minor changes<a class="anchor" aria-label="anchor" href="#bug-fixes-and-minor-changes-1-8-2"></a></h3>
 <ul><li>Improve console logging of error and warning alerts</li>
 <li>Fix crash when loading psichomics with test data that is not locally available (by automatically downloading said data if not found)</li>
 <li>Allow to edit file path in file/directory browser elements</li>
-<li>Documentation:
-<ul><li>Export functions mentioned in the documentation</li>
+<li>Documentation:<ul><li>Export functions mentioned in the documentation</li>
 <li>Hide documentation of internal functions from the PDF reference manual</li>
 </ul></li>
-<li>Loading SRA data:
-<ul><li>Accept a vector of files as the first argument (easier to use with <code><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files()</a></code>)</li>
+<li>Loading SRA data:<ul><li>Accept a vector of files as the first argument (easier to use with <code><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files()</a></code>)</li>
 <li>Ask to overwrite file if one exists with the same name as the output file</li>
 </ul></li>
-<li>Groups:
-<ul><li>Automatically set dropdown width for group attribute selection</li>
+<li>Groups:<ul><li>Automatically set dropdown width for group attribute selection</li>
 <li>Minor improvements to the group creation interface</li>
 <li>Fix error when creating groups containing only samples and no matching subjects</li>
 <li>Fix warning when displaying group preview only based on subjects or samples</li>
 </ul></li>
-<li>Alternative splicing quantification:
-<ul><li>Automatically set the human genome version after loading data from TCGA (hg19), GTEx (hg19) or recount2 (hg38)</li>
+<li>Alternative splicing quantification:<ul><li>Automatically set the human genome version after loading data from TCGA (hg19), GTEx (hg19) or recount2 (hg38)</li>
 <li>Fix progress bar</li>
 <li>Decrease loading time after quantifying alternative splicing</li>
 <li>By default, quantify skipped exons, mutually exclusive exons, alternative 3’ and 5’ splice sites, and alternative first and last exons; the default option is now consistent across both the visual and command-line interfaces)</li>
 </ul></li>
-<li>Differential analyses:
-<ul><li>Allow distribution plots to show the name of the samples when hovering or when a rug plot is rendered if <code>rugLabels = TRUE</code> (function <code><a href="../reference/plotDistribution.html">plotDistribution()</a></code>)</li>
+<li>Differential analyses:<ul><li>Allow distribution plots to show the name of the samples when hovering or when a rug plot is rendered if <code>rugLabels = TRUE</code> (function <code><a href="../reference/plotDistribution.html">plotDistribution()</a></code>)</li>
 <li>Fix distribution plots requiring all samples in a group when using function <code><a href="../reference/plotDistribution.html">plotDistribution()</a></code>
 </li>
 <li>Fix group colours and opacity for rug plot points within the distribution plot (occurred in the command-line version; function <code><a href="../reference/plotDistribution.html">plotDistribution()</a></code>)</li>
@@ -131,9 +116,7 @@
 <li>Fix inconsistency when presenting median and variance differences between gene expression and alternative splicing quantification</li>
 <li>Fix error when groups contain samples outside the data being analysed</li>
 </ul></li>
-<li>Gene, transcript and protein information:
-<ul><li>Fix article title formatting (e.g. bold and italics)</li>
-</ul></li>
+<li>Gene, transcript and protein information:<ul><li>Fix article title formatting (e.g. bold and italics)</li></ul></li>
 <li>Update psichomics citation with journal publication date</li>
 </ul></div>
 </div>
@@ -150,7 +133,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
     </footer></div>

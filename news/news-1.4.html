@@ -62,13 +62,11 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.0" id="psichomics-140-22-oct-2017">psichomics 1.4.0 (22 Oct, 2017)<a class="anchor" aria-label="anchor" href="#psichomics-140-22-oct-2017"></a></h2>
 <ul><li>Support for loading new GTEx V7 data</li>
-<li>Support gene expression data:
-<ul><li>Load, filter, normalise and perform log2-transformation on gene expression data from TCGA</li>
+<li>Support gene expression data:<ul><li>Load, filter, normalise and perform log2-transformation on gene expression data from TCGA</li>
 <li>Perform principal component analysis based on gene expression data, survival analysis by gene expression cutoff and pairwise differential gene expression analysis</li>
 <li>Correlate gene expression of a given gene against PSI values of multiple alternative splicing events</li>
 </ul></li>
-<li>Data loading:
-<ul><li>Add step-wise instructions about loading of user-provided files</li>
+<li>Data loading:<ul><li>Add step-wise instructions about loading of user-provided files</li>
 <li>Filter GTEx junction quantification based on tissues of interest (all tissues are loaded by default)</li>
 <li>Quantify splicing based on a list of genes (splicing events within all genes are quantified by default)</li>
 <li>Parse sample information from TCGA samples using <code><a href="../reference/parseTcgaSampleInfo.html">parseTcgaSampleInfo()</a></code>
@@ -76,8 +74,7 @@
 <li>Generate TCGA sample metadata when loading TCGA junction quantification</li>
 <li>Present data summary after loading the data</li>
 </ul></li>
-<li>Data grouping:
-<ul><li>Redesigned group creation and selection</li>
+<li>Data grouping:<ul><li>Redesigned group creation and selection</li>
 <li>Create groups based on genes and alternative splicing events</li>
 <li>Assign a customisable colour per data group</li>
 <li>Export or import patient and sample identifiers of data groups</li>
@@ -86,21 +83,15 @@
 <li>Allow to retrieve the universe of patient and sample identifiers by performing the complement group without any group selected</li>
 <li>Statistically analyse group independence (useful to assess the overlap between a PCA cluster and groups derived from clinical and sample attributes, for instance)</li>
 </ul></li>
-<li>Differential analysis:
-<ul><li>Label points based on top differentially spliced events or genes, selected alternative splicing events and/or selected genes</li>
+<li>Differential analysis:<ul><li>Label points based on top differentially spliced events or genes, selected alternative splicing events and/or selected genes</li>
 <li>Create AS event and gene groups based on filtered or selected AS events and genes in the tables</li>
 </ul></li>
-<li>Dimensionality reduction techniques:
-<ul><li>Subset data based on groups of AS events and genes before performing dimensionality reduction</li>
+<li>Dimensionality reduction techniques:<ul><li>Subset data based on groups of AS events and genes before performing dimensionality reduction</li>
 <li>Create data groups based on the partitioning clustering of PCA scores</li>
 <li>Perform independent component analysis (ICA) on alternative splicing quantification and gene expression data</li>
 </ul></li>
-<li>Survival analysis:
-<ul><li>Add p-value plot to visually infer the significance of survival analyses based on multiple alternative splicing quantification cutoffs</li>
-</ul></li>
-<li>Gene, transcript and protein information:
-<ul><li>Information retrieval is now only dependent on a user-defined gene, instead of requiring alternative splicing quantification data to be loaded</li>
-</ul></li>
+<li>Survival analysis:<ul><li>Add p-value plot to visually infer the significance of survival analyses based on multiple alternative splicing quantification cutoffs</li></ul></li>
+<li>Gene, transcript and protein information:<ul><li>Information retrieval is now only dependent on a user-defined gene, instead of requiring alternative splicing quantification data to be loaded</li></ul></li>
 </ul><div class="section level3">
 <h3 id="bug-fixes-and-other-improvements-1-4-0">Bug fixes and other improvements<a class="anchor" aria-label="anchor" href="#bug-fixes-and-other-improvements-1-4-0"></a></h3>
 <ul><li>Show progress bar when running in the command-line interface</li>
@@ -108,24 +99,19 @@
 <li>Updated the CLI vignette with information on analysing gene expression data and a quick reference for functions</li>
 <li>Update minimum version required of shiny (1.0.3)</li>
 <li>Avoid replacing selected groups when manipulating new ones</li>
-<li>Differential splicing analysis:
-<ul><li>Fix data not being rendered in the table when zooming in the plot after data transformation was applied</li>
+<li>Differential splicing analysis:<ul><li>Fix data not being rendered in the table when zooming in the plot after data transformation was applied</li>
 <li>Return p-value of NA instead of 0 when the value of Fligner-Killeen’s Test for Homogeneity of Variance is infinite</li>
 <li>Discard value transformations that may return invalid data for the values chosen for the X and Y axes</li>
 <li>Fix point that remains highlighted in the plot after deselecting the only selected row of the table</li>
 <li>Improve readability of plot’s tooltip</li>
-<li>Improve survival curves based on the optimal alternative splicing quantification cutoff:
-<ul><li>Include the survival curve previews in 3 new columns within the differential splicing analyses table, instead of below that table; those columns consist of the survival curves, the optimal PSI cutoff and the respective log-rank test’s p-value</li>
+<li>Improve survival curves based on the optimal alternative splicing quantification cutoff:<ul><li>Include the survival curve previews in 3 new columns within the differential splicing analyses table, instead of below that table; those columns consist of the survival curves, the optimal PSI cutoff and the respective log-rank test’s p-value</li>
 <li>Allow to use survival data when plotting and table sorting</li>
 <li>Include the optimal PSI cutoff and the respective log-rank test’s p-value in exported tables</li>
 <li>Fix link to survival analyses using the previously calculated PSI cutoff</li>
 </ul></li>
 </ul></li>
-<li>Principal component analysis:
-<ul><li>When clicking on a alternative splicing event in the loadings plot, the appropriate differential splicing analyses will now be automatically rendered with the respective options, as expected</li>
-</ul></li>
-<li>Survival analysis:
-<ul><li>Properly set the title of survival curves based on the selected splicing event’s quantification</li>
+<li>Principal component analysis:<ul><li>When clicking on a alternative splicing event in the loadings plot, the appropriate differential splicing analyses will now be automatically rendered with the respective options, as expected</li></ul></li>
+<li>Survival analysis:<ul><li>Properly set the title of survival curves based on the selected splicing event’s quantification</li>
 <li>Improve readability of Cox PH models</li>
 <li>When performing survival analyses by alternative splicing cutoff, each patient is assigned the PSI value from the respective sample; for patients with more than one sample, the assigned sample is chosen based on the most frequent sample type across all patients (before, the first matched non-normal or non-control samples were used)</li>
 </ul></li>
@@ -134,50 +120,38 @@
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.1" id="psichomics-141-14-dec-2017">psichomics 1.4.1 (14 Dec, 2017)<a class="anchor" aria-label="anchor" href="#psichomics-141-14-dec-2017"></a></h2>
-<ul><li>GTEx data loading:
-<ul><li>Add input elements to allow GTEx gene expression loading in the graphical interface</li>
+<ul><li>GTEx data loading:<ul><li>Add input elements to allow GTEx gene expression loading in the graphical interface</li>
 <li>Fix bug that did not allow to select tissues to load GTEx v7 data (graphical interface)</li>
 <li>Fix splicing events not being quantified based on GTEx v7 junction reads</li>
 </ul></li>
-<li>Gene expression normalisation:
-<ul><li>Fix misleading gene expression (non-)normalisation by converting reads to counts per million (CPM) using <code><a href="https://rdrr.io/pkg/edgeR/man/cpm.html" class="external-link">edgeR::cpm()</a></code> after normalisation using <code>edgeR::calcNormFactor()</code>
-</li>
-</ul></li>
-<li>Alternative splicing quantification:
-<ul><li>Updated support to properly parse new notation of alternative splicing annotation from Bioconductor (backwards compatible with older notation)</li>
+<li>Gene expression normalisation:<ul><li>Fix misleading gene expression (non-)normalisation by converting reads to counts per million (CPM) using <code><a href="https://rdrr.io/pkg/edgeR/man/cpm.html" class="external-link">edgeR::cpm()</a></code> after normalisation using <code>edgeR::calcNormFactor()</code>
+</li></ul></li>
+<li>Alternative splicing quantification:<ul><li>Updated support to properly parse new notation of alternative splicing annotation from Bioconductor (backwards compatible with older notation)</li>
 <li>Raise error when no splicing events after quantification</li>
 <li>Fix warning following the quantification of splicing events or its loading (incorrect parsing of gene information from splicing events)</li>
 </ul></li>
-<li>Dimensionality reduction:
-<ul><li>Use the number (instead of the percentage) of tolerated missing values per sample as the argument to impute data from the remaining samples for those values before performing dimensionality reduction; by default, missing values are tolerated for 10 samples</li>
-</ul></li>
+<li>Dimensionality reduction:<ul><li>Use the number (instead of the percentage) of tolerated missing values per sample as the argument to impute data from the remaining samples for those values before performing dimensionality reduction; by default, missing values are tolerated for 10 samples</li></ul></li>
 <li>Update file description and README</li>
 <li>Minor bug fixes and improvements</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.2" id="psichomics-142-19-dec-2017">psichomics 1.4.2 (19 Dec, 2017)<a class="anchor" aria-label="anchor" href="#psichomics-142-19-dec-2017"></a></h2>
-<ul><li>Fix error when trying to load alternative splicing annotation (given updated hg19 and hg38 annotation that is now available for use with psichomics)</li>
-</ul></div>
+<ul><li>Fix error when trying to load alternative splicing annotation (given updated hg19 and hg38 annotation that is now available for use with psichomics)</li></ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.3" id="psichomics-143-12-jan-2018">psichomics 1.4.3 (12 Jan, 2018)<a class="anchor" aria-label="anchor" href="#psichomics-143-12-jan-2018"></a></h2>
-<ul><li>Alternative splicing quantification:
-<ul><li>Improve speed and memory usage when dealing with larger datasets</li>
+<ul><li>Alternative splicing quantification:<ul><li>Improve speed and memory usage when dealing with larger datasets</li>
 <li>Improve quantification of alternative first and last exons: quantify alternative first and last exons based on all exon-exon junction reads that support each of the alternative exons</li>
 <li>Print progress bar in R console</li>
 </ul></li>
-<li>Principal component analysis:
-<ul><li>Change tolerated missing values per event to 5% by default</li>
+<li>Principal component analysis:<ul><li>Change tolerated missing values per event to 5% by default</li>
 <li>Show/save table with the contribution of events (for alternative splicing quantification) or genes (for gene expression) to the selected principal components</li>
 <li>Add extra information when hovering variables in loading plot</li>
 <li>Allow to plot top 100 variables that most contribute to the selected principal components (faster rendering of and interaction with loading plots)</li>
 </ul></li>
-<li>Differential analysis:
-<ul><li>Allow to input a list of groups for the “group” argument of the functions <code><a href="../reference/diffAnalyses.html">diffAnalyses()</a></code> and <code><a href="../reference/plotDistribution.html">plotDistribution()</a></code> (command-line interface)</li>
+<li>Differential analysis:<ul><li>Allow to input a list of groups for the “group” argument of the functions <code><a href="../reference/diffAnalyses.html">diffAnalyses()</a></code> and <code><a href="../reference/plotDistribution.html">plotDistribution()</a></code> (command-line interface)</li>
 <li>Allow to input a non-numeric vector or a row of a matrix/data frame in the “data” argument of the function <code><a href="../reference/plotDistribution.html">plotDistribution()</a></code> (command-line interface)</li>
 </ul></li>
-<li>Correlation between gene expression and alternative splicing:
-<ul><li>Perform correlation between gene expression of multiple genes and quantification of multiple alternative splicing events</li>
-</ul></li>
+<li>Correlation between gene expression and alternative splicing:<ul><li>Perform correlation between gene expression of multiple genes and quantification of multiple alternative splicing events</li></ul></li>
 </ul><div class="section level3">
 <h3 id="bug-fixes-1-4-3">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-4-3"></a></h3>
 <ul><li>Fix unnamed events when only one event for a event type is returned</li>
@@ -189,35 +163,24 @@
 <ul><li>Update CITATION file to show citation to article in bioRxiv: <a href="https://www.biorxiv.org/content/early/2018/02/07/261180" class="external-link uri">https://www.biorxiv.org/content/early/2018/02/07/261180</a>
 </li>
 <li>Update vignettes to include a case study based on the aforementioned article</li>
-<li>Gene expression pipeline:
-<ul><li>Perform <code>limma-trend</code> by default</li>
-</ul></li>
-<li>Alternative splicing quantification:
-<ul><li>Quantification of alternative first and last exons: following more thorough testing, the new exon-centred method was considered to be less relevant to exploratory analysis (specially when compared with other types of events); as such, both methods are now available for quantification</li>
-</ul></li>
-<li>Dimensionality reduction:
-<ul><li>Change tolerated missing values per event to 5% by default for both PCA and ICA (in both visual and command-line interfaces)</li>
+<li>Gene expression pipeline:<ul><li>Perform <code>limma-trend</code> by default</li></ul></li>
+<li>Alternative splicing quantification:<ul><li>Quantification of alternative first and last exons: following more thorough testing, the new exon-centred method was considered to be less relevant to exploratory analysis (specially when compared with other types of events); as such, both methods are now available for quantification</li></ul></li>
+<li>Dimensionality reduction:<ul><li>Change tolerated missing values per event to 5% by default for both PCA and ICA (in both visual and command-line interfaces)</li>
 <li>PCA: In the table that shows the events that most contribute to the selected principal components, show the rank</li>
 </ul></li>
-<li>Groups:
-<ul><li>Automatically set sample type groups (i.e. normal, primary solid tumour, metastatic, etc.) for TCGA samples (visual interface only)</li>
-</ul></li>
-<li>Differential analysis:
-<ul><li>Use numeric fields instead of sliders to precisely filter data</li>
+<li>Groups:<ul><li>Automatically set sample type groups (i.e. normal, primary solid tumour, metastatic, etc.) for TCGA samples (visual interface only)</li></ul></li>
+<li>Differential analysis:<ul><li>Use numeric fields instead of sliders to precisely filter data</li>
 <li>Fix table for differential expression not being filtered based on highlighted genes</li>
 <li>Filter splicing events or genes to use when performing exploratory differential analyses</li>
 </ul></li>
-<li>Survival analysis:
-<ul><li>Allow to stratify patients based on optimal gene expression cutoff</li>
+<li>Survival analysis:<ul><li>Allow to stratify patients based on optimal gene expression cutoff</li>
 <li>Select samples to be used for survival analysis</li>
 </ul></li>
 </ul><div class="section level3">
 <h3 id="bug-fixes-1-4-4">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-4-4"></a></h3>
-<ul><li>Fix problems related with <code>DT</code> versions &gt;= 0.3:
-<ul><li>Groups displayed as having the same attributes as last created group</li>
+<ul><li>Fix problems related with <code>DT</code> versions &gt;= 0.3:<ul><li>Groups displayed as having the same attributes as last created group</li>
 <li>Table not being updated in differential analyses according to event filtering based on the volcano plot</li>
-</ul></li>
-</ul></div>
+</ul></li></ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.5" id="psichomics-145-4-apr-2018">psichomics 1.4.5 (4 Apr, 2018)<a class="anchor" aria-label="anchor" href="#psichomics-145-4-apr-2018"></a></h2>
@@ -234,7 +197,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
     </footer></div>

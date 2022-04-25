@@ -66,20 +66,16 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.1" id="psichomics-101-1-dec-2016">psichomics 1.0.1 (1 Dec, 2016)<a class="anchor" aria-label="anchor" href="#psichomics-101-1-dec-2016"></a></h2>
-<ul><li>Improve metadata (title, description, authors and vignette titles)</li>
-</ul></div>
+<ul><li>Improve metadata (title, description, authors and vignette titles)</li></ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.2" id="psichomics-102-3-dec-2016">psichomics 1.0.2 (3 Dec, 2016)<a class="anchor" aria-label="anchor" href="#psichomics-102-3-dec-2016"></a></h2>
-<ul><li>Fix UTF-8 encoding in author list</li>
-</ul></div>
+<ul><li>Fix UTF-8 encoding in author list</li></ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.3" id="psichomics-103-13-dec-2016">psichomics 1.0.3 (13 Dec, 2016)<a class="anchor" aria-label="anchor" href="#psichomics-103-13-dec-2016"></a></h2>
-<ul><li>Bug fixes regarding gene annotation:
-<ul><li>Fix disabled gene selection when choosing a splicing event associated with a single gene after selecting an event related to multiple genes</li>
+<ul><li>Bug fixes regarding gene annotation:<ul><li>Fix disabled gene selection when choosing a splicing event associated with a single gene after selecting an event related to multiple genes</li>
 <li>Fix display of PubMed articles related to previously selected gene when selecting a single-gene-associated event after selecting an event related to multiple genes</li>
 </ul></li>
-<li>Bug fixes regarding groups:
-<ul><li>Fix groups by rows not working</li>
+<li>Bug fixes regarding groups:<ul><li>Fix groups by rows not working</li>
 <li>Fix group selection not working when only one group exists</li>
 <li>Improve argument name of <code>getGroupsFrom()</code>
 </li>
@@ -97,32 +93,26 @@
 <h2 class="pkg-version" data-toc-text="1.0.5" id="psichomics-105-7-jan-2017">psichomics 1.0.5 (7 Jan, 2017)<a class="anchor" aria-label="anchor" href="#psichomics-105-7-jan-2017"></a></h2>
 <ul><li>Navigate history using the browser forward and back buttons</li>
 <li>Fix delay when displaying large data by removing columns containing missing values exclusively</li>
-<li>Principal component analysis:
-<ul><li>Improve speed when calculating total contribution of each variable to the principal components</li>
-</ul></li>
-<li>Survival analysis:
-<ul><li>Shorten calculation of optimal PSI that minimises the survival difference</li>
+<li>Principal component analysis:<ul><li>Improve speed when calculating total contribution of each variable to the principal components</li></ul></li>
+<li>Survival analysis:<ul><li>Shorten calculation of optimal PSI that minimises the survival difference</li>
 <li>Improve visual cues of optimal PSI cutoff and present p-value of selected PSI cutoff</li>
 <li>Fix ambiguous error messages</li>
 <li>Fix incorrect Cox model results for formula-based calculations</li>
 <li>Fix null Cox models crashing the program</li>
 </ul></li>
-<li>Differential splicing analysis:
-<ul><li>Select sample types for differential splicing analysis</li>
+<li>Differential splicing analysis:<ul><li>Select sample types for differential splicing analysis</li>
 <li>Fix statistical tests not displaying for individual events after differentially analysing all events using the other statistical tests</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.6" id="psichomics-106-17-jan-2017">psichomics 1.0.6 (17 Jan, 2017)<a class="anchor" aria-label="anchor" href="#psichomics-106-17-jan-2017"></a></h2>
 <ul><li>Update tutorials with more relevant and complex examples</li>
-<li>Update minimum versions required of <code>highcharter</code> (0.5.0) and shiny (1.0.0):
-<ul><li>Fix function usage as according to new version of <code>highcharter</code>
+<li>Update minimum versions required of <code>highcharter</code> (0.5.0) and shiny (1.0.0):<ul><li>Fix function usage as according to new version of <code>highcharter</code>
 </li>
 <li>More options available when exporting plots (PNG, JPEG, SVG, XLS and CSV)</li>
 </ul></li>
 <li>Faster alternative splicing quantification</li>
-<li>Differential splicing analysis:
-<ul><li>Fix major bug where samples could be placed in the wrong groups</li>
+<li>Differential splicing analysis:<ul><li>Fix major bug where samples could be placed in the wrong groups</li>
 <li>Shorten speed of the calculation for the optimal PSI cutoff that minimises the survival difference</li>
 <li>Fix not performing statistical tests for two selected sample types while analysing a single event with three or more sample types</li>
 <li>Fix differential analysis on one splicing event not working when using <code><a href="../reference/diffAnalyses.html">diffAnalyses()</a></code>
@@ -130,65 +120,48 @@
 <li>Fix differential analysis not showing for individual events before navigating to the page where the analysis is performed for all events</li>
 <li>Improve readability and information of statistical tests for single events</li>
 </ul></li>
-<li>Principal component analysis:
-<ul><li>Shorten time taken to calculate principal components and to render the loadings plot</li>
+<li>Principal component analysis:<ul><li>Shorten time taken to calculate principal components and to render the loadings plot</li>
 <li>Fix loadings plot error when rendering some principal components</li>
 </ul></li>
-<li>Survival analysis:
-<ul><li>Fix incorrect number of patients from the survival groups in the contextual information for the selected cutoff (below the slider)</li>
+<li>Survival analysis:<ul><li>Fix incorrect number of patients from the survival groups in the contextual information for the selected cutoff (below the slider)</li>
 <li>Improve how alternative splicing quantification is assigned to patients based on their samples</li>
 </ul></li>
-<li>Protein annotation:
-<ul><li>Warn user when trying to render proteins with no domains</li>
-</ul></li>
+<li>Protein annotation:<ul><li>Warn user when trying to render proteins with no domains</li></ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.7" id="psichomics-107-22-jan-2017">psichomics 1.0.7 (22 Jan, 2017)<a class="anchor" aria-label="anchor" href="#psichomics-107-22-jan-2017"></a></h2>
-<ul><li>Survival analysis:
-<ul><li>Fix error caused by some non-matched patients not being in the patient-sample matching matrix</li>
-</ul></li>
-</ul></div>
+<ul><li>Survival analysis:<ul><li>Fix error caused by some non-matched patients not being in the patient-sample matching matrix</li></ul></li></ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.8" id="psichomics-108-21-feb-2017">psichomics 1.0.8 (21 Feb, 2017)<a class="anchor" aria-label="anchor" href="#psichomics-108-21-feb-2017"></a></h2>
 <ul><li>Support GTEx data loading and analysis</li>
-<li>Fix clinical data dependency:
-<ul><li>Fix error when trying to load a file containing alternative splicing quantification without first loading clinical data</li>
+<li>Fix clinical data dependency:<ul><li>Fix error when trying to load a file containing alternative splicing quantification without first loading clinical data</li>
 <li>Fix error where samples from junction quantification were matched to clinical information even if clinical data were not loaded</li>
 <li>Inform user when clinical data is not loaded while trying to plot survival curves</li>
 </ul></li>
-<li>Improve data grouping:
-<ul><li>Create sample groups like patient groups and perform set operations between any created groups</li>
+<li>Improve data grouping:<ul><li>Create sample groups like patient groups and perform set operations between any created groups</li>
 <li>Create groups using patient and sample identifiers</li>
 <li>Check number of patients and samples per group</li>
 <li>Rename selected groups</li>
 <li>Alert user when groups cannot be created due to missing data</li>
 </ul></li>
-<li>Differential splicing analysis:
-<ul><li>Analyse all samples as one group</li>
-</ul></li>
-<li>Survival analysis:
-<ul><li>Select any clinical attribute for starting/follow up and ending times</li>
-</ul></li>
+<li>Differential splicing analysis:<ul><li>Analyse all samples as one group</li></ul></li>
+<li>Survival analysis:<ul><li>Select any clinical attribute for starting/follow up and ending times</li></ul></li>
 <li>Create table containing TCGA sample metadata when calculating or loading alternative splicing quantification</li>
 <li>Minor UI improvements</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.9" id="psichomics-109-10-apr-2017">psichomics 1.0.9 (10 Apr, 2017)<a class="anchor" aria-label="anchor" href="#psichomics-109-10-apr-2017"></a></h2>
-<ul><li>Differential splicing analyses:
-<ul><li>Add volcano plot to represent events through selected attributes, such as p-values and descriptive statistics (e.g. median and variance) between groups of interest</li>
+<ul><li>Differential splicing analyses:<ul><li>Add volcano plot to represent events through selected attributes, such as p-values and descriptive statistics (e.g. median and variance) between groups of interest</li>
 <li>Transform values of the X and Y axis in the plot using log transformed, inverted and absolute values, for instance</li>
 <li>Highlight events in the plot based on values of the X and Y axis</li>
 <li>Table of differential analyses per alternative splicing event is filtered according to highlighted and selected events in the plot</li>
 </ul></li>
-<li>Gene, protein and transcript information:
-<ul><li>Transcript plot is now interactive and zoomable</li>
+<li>Gene, protein and transcript information:<ul><li>Transcript plot is now interactive and zoomable</li>
 <li>Protein are now rendered based on selected transcript alone</li>
 <li>Faster parsing of UniProt’s web API response</li>
 <li>Improve display of article information when data is missing</li>
 </ul></li>
-<li>Principal component analysis:
-<ul><li>Improve presentation of available options</li>
-</ul></li>
+<li>Principal component analysis:<ul><li>Improve presentation of available options</li></ul></li>
 <li>When clicking on previews of differential splicing and survival analyses, the appropriate analyses will now be automatically rendered with the respective options</li>
 <li>Fix buggy browser history when the user is directed to a different tab</li>
 <li>Consistently use FireBrowse and Firehose across the package</li>
@@ -203,7 +176,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
     </footer></div>

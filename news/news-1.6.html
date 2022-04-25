@@ -61,39 +61,26 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.6.1" id="psichomics-161-5-july-2018">psichomics 1.6.1 (5 July, 2018)<a class="anchor" aria-label="anchor" href="#psichomics-161-5-july-2018"></a></h2>
-<ul><li>Improve support for analysing SRA and user-provided data:
-<ul><li>New tutorial on performing alternative splicing analysis using SRA and user-provided data from FASTQ files (other tutorials were also updated)</li>
+<ul><li>Improve support for analysing SRA and user-provided data:<ul><li>New tutorial on performing alternative splicing analysis using SRA and user-provided data from FASTQ files (other tutorials were also updated)</li>
 <li>Process gene and splice junction counts from STAR output for subsequent loading into psichomics</li>
 <li>Automatically download and load data from select SRA projects using the recount R package</li>
 </ul></li>
-<li>Data grouping:
-<ul><li>Preview groups based on selected attribute before creation</li>
-</ul></li>
-<li>Gene, transcript and protein information:
-<ul><li>Display alternative splicing events in transcript plot</li>
-</ul></li>
-<li>Correlation between gene expression and alternative splicing:
-<ul><li>Allow to change plot height and font size</li>
-</ul></li>
+<li>Data grouping:<ul><li>Preview groups based on selected attribute before creation</li></ul></li>
+<li>Gene, transcript and protein information:<ul><li>Display alternative splicing events in transcript plot</li></ul></li>
+<li>Correlation between gene expression and alternative splicing:<ul><li>Allow to change plot height and font size</li></ul></li>
 </ul><div class="section level3">
 <h3 id="bug-fixes-and-minor-changes-1-6-1">Bug fixes and minor changes<a class="anchor" aria-label="anchor" href="#bug-fixes-and-minor-changes-1-6-1"></a></h3>
 <ul><li>Support new version of Human (hg38 assembly) alternative splicing annotation (fixes wrong coordinates for many minus-strand splicing events)</li>
-<li>Fix issues with TCGA sample metadata:
-<ul><li>No sample metadata loaded when loading TCGA files from local folder</li>
+<li>Fix issues with TCGA sample metadata:<ul><li>No sample metadata loaded when loading TCGA files from local folder</li>
 <li>Not retrieving sample metadata for all TCGA samples when multiple junction quantification files are loaded</li>
 </ul></li>
-<li>Data grouping:
-<ul><li>Correctly suggest how to select variables in subset expression and give more examples on how to use this feature</li>
+<li>Data grouping:<ul><li>Correctly suggest how to select variables in subset expression and give more examples on how to use this feature</li>
 <li>Fix subject/sample attributes not being updated for selection for the <code>GREP</code> interface</li>
 <li>Fix error alerts not appearing when trying to create groups based on invalid parameters</li>
 <li>Add an error alert when trying to extract group data from an user-provided file without such information</li>
 </ul></li>
-<li>Alternative splicing quantification:
-<ul><li>Fix crash when quantifying splicing for a single sample</li>
-</ul></li>
-<li>Differential splicing analysis (exploratory):
-<ul><li>Fix crash when inputting non-numeric values or minimum larger than the maximum limit as the axes for the splicing scatter plot</li>
-</ul></li>
+<li>Alternative splicing quantification:<ul><li>Fix crash when quantifying splicing for a single sample</li></ul></li>
+<li>Differential splicing analysis (exploratory):<ul><li>Fix crash when inputting non-numeric values or minimum larger than the maximum limit as the axes for the splicing scatter plot</li></ul></li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -103,38 +90,25 @@
 <li>Copy-edit README, tutorials, DESCRIPTION, NEWS and code</li>
 <li>Update screen shot</li>
 <li>Add metadata regarding loaded datasets (for instance, path and name of files used for dataset loading, options set upon dataset creation, etc.)</li>
-<li>Differential splicing and expression analysis:
-<ul><li>Allow to input formulas when highlighting points; this is an improvement when plotting -log10(q-values), for instance, where it is now possible to highlight values &gt;= -log10(0.05), i.e. q-values &lt;= 0.5, instead of inputting an approximate value</li>
-</ul></li>
-<li>Correlation analyses:
-<ul><li>Colour samples by group</li>
+<li>Differential splicing and expression analysis:<ul><li>Allow to input formulas when highlighting points; this is an improvement when plotting -log10(q-values), for instance, where it is now possible to highlight values &gt;= -log10(0.05), i.e. q-values &lt;= 0.5, instead of inputting an approximate value</li></ul></li>
+<li>Correlation analyses:<ul><li>Colour samples by group</li>
 <li>Render contour based on a density estimate</li>
 <li>Display exportable table with correlation analyses</li>
 </ul></li>
-<li>Groups:
-<ul><li>Show group colour in group selection element</li>
-</ul></li>
+<li>Groups:<ul><li>Show group colour in group selection element</li></ul></li>
 <li>Retrieve articles from PubMed instead of PMC</li>
 </ul><div class="section level3">
 <h3 id="bug-fixes-and-minor-changes-1-6-2">Bug fixes and minor changes<a class="anchor" aria-label="anchor" href="#bug-fixes-and-minor-changes-1-6-2"></a></h3>
-<ul><li>Improve file browser input in remote servers:
-<ul><li>Allow to directly input a path without using the file browser dialog</li>
+<ul><li>Improve file browser input in remote servers:<ul><li>Allow to directly input a path without using the file browser dialog</li>
 <li>Display warning when calling the file browser dialog in RStudio Server or in an unsupported system</li>
 </ul></li>
-<li>TCGA data:
-<ul><li>Inform of sequencing technology used to obtain gene expression data</li>
-</ul></li>
-<li>GTEx data:
-<ul><li>Fix issues in downstream analyses when using GTEx data subset by tissues</li>
-</ul></li>
-<li>Differential analysis:
-<ul><li>Avoid limiting X axis of density plot when values outside 0 and 1 are provided, as in the case of gene expression (<code><a href="../reference/plotDistribution.html">plotDistribution()</a></code> function)</li>
+<li>TCGA data:<ul><li>Inform of sequencing technology used to obtain gene expression data</li></ul></li>
+<li>GTEx data:<ul><li>Fix issues in downstream analyses when using GTEx data subset by tissues</li></ul></li>
+<li>Differential analysis:<ul><li>Avoid limiting X axis of density plot when values outside 0 and 1 are provided, as in the case of gene expression (<code><a href="../reference/plotDistribution.html">plotDistribution()</a></code> function)</li>
 <li>Fix filenames of exported tables from differential expression analysis incorrectly mentioning differential splicing analysis instead</li>
 </ul></li>
-<li>Correlation analysis:
-<ul><li>When plotting correlation analysis, loess curve was performed based on gaussian fitting, independent of the “family” argument of <code><a href="../reference/plot.GEandAScorrelation.html">plotCorrelation()</a></code>
-</li>
-</ul></li>
+<li>Correlation analysis:<ul><li>When plotting correlation analysis, loess curve was performed based on gaussian fitting, independent of the “family” argument of <code><a href="../reference/plot.GEandAScorrelation.html">plotCorrelation()</a></code>
+</li></ul></li>
 <li>Improve console logging of error and warning messages</li>
 </ul></div>
 </div>
@@ -147,7 +121,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
     </footer></div>

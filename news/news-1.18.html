@@ -63,16 +63,12 @@
 <h2 class="pkg-version" data-toc-text="1.18.0" id="psichomics-1180-18-may-2021">psichomics 1.18.0 (18 May, 2021)<a class="anchor" aria-label="anchor" href="#psichomics-1180-18-may-2021"></a></h2>
 <ul><li>
 <code><a href="../reference/discardLowCoveragePSIvalues.html">discardLowCoveragePSIvalues()</a></code>: improve performance (2x faster)</li>
-<li>When quantifying or loading PSI values, psichomics discards splicing events whose junctions:
-<ul><li><ol style="list-style-type: decimal"><li>are not present in junction quantification data or</li>
-</ol></li>
-<li><ol start="2" style="list-style-type: decimal"><li>have low numbers of reads across all samples. The number of discarded events is now displayed during PSI quantification.</li>
-</ol></li>
+<li>When quantifying or loading PSI values, psichomics discards splicing events whose junctions:<ul><li><ol style="list-style-type: decimal"><li>are not present in junction quantification data or</li></ol></li>
+<li><ol start="2" style="list-style-type: decimal"><li>have low numbers of reads across all samples. The number of discarded events is now displayed during PSI quantification.</li></ol></li>
 </ul></li>
 <li>When normalizing gene expression, support converting gene identifiers to gene symbol names for any species with <code>OrgDb</code> data</li>
 <li>Allow to use <code><a href="../reference/plotSplicingEvent.html">plotSplicingEvent()</a></code> directly with a PSI table to plot diagrams of the alternative splicing events within</li>
-<li>Distribution plots (<code><a href="../reference/plotDistribution.html">plotDistribution()</a></code>):
-<ul><li>Plot sample distributions in density, violin or box plots (argument <code>type</code> in command-line interface)</li>
+<li>Distribution plots (<code><a href="../reference/plotDistribution.html">plotDistribution()</a></code>):<ul><li>Plot sample distributions in density, violin or box plots (argument <code>type</code> in command-line interface)</li>
 <li>Hide rug plot when showing 500 or more values (by default) to avoid performance issues</li>
 <li>Add jitter to rug plot (helps to discern numerous points)</li>
 <li>Display interquartile range (IQR) per group in the tooltip</li>
@@ -84,15 +80,11 @@
 <ul><li>
 <code><a href="../reference/loadLocalFiles.html">loadLocalFiles()</a></code>: print elapsed time after loading local files</li>
 <li>
-<code><a href="../reference/filterGroups.html">filterGroups()</a></code> was modified to return a character vector whose names are original names (instead of groups) and include an attribute <em>Groups</em> with the respective group of each value (together with their colour, if available):
-<ul><li>Distribution plots in the graphical interface now show sample name in the tooltip for each sample</li>
-</ul></li>
-<li>Importing VAST-TOOLS annotation:
-<ul><li>Fix parsing of VAST-TOOLS intron retention events as skipped exon for certain annotations (including Hs2)</li>
+<code><a href="../reference/filterGroups.html">filterGroups()</a></code> was modified to return a character vector whose names are original names (instead of groups) and include an attribute <em>Groups</em> with the respective group of each value (together with their colour, if available):<ul><li>Distribution plots in the graphical interface now show sample name in the tooltip for each sample</li></ul></li>
+<li>Importing VAST-TOOLS annotation:<ul><li>Fix parsing of VAST-TOOLS intron retention events as skipped exon for certain annotations (including Hs2)</li>
 <li>Support diagrams for intron retention events with full exon coordinates</li>
 </ul></li>
-<li>Graphical user interface improvements:
-<ul><li>Avoid “Matching subjects to their samples/Matching process concluded” loop</li>
+<li>Graphical user interface improvements:<ul><li>Avoid “Matching subjects to their samples/Matching process concluded” loop</li>
 <li>Timeout GTEx data retrieval after 3 seconds without server response</li>
 <li>Avoid unnecessary messages when loading FireBrowse interface</li>
 <li>Fix intron retention diagrams in distribution plots not displaying introns</li>
@@ -104,8 +96,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.18.1" id="psichomics-1181-26-may-2021">psichomics 1.18.1 (26 May, 2021)<a class="anchor" aria-label="anchor" href="#psichomics-1181-26-may-2021"></a></h2>
 <ul><li>Fix issues with unit tests in Bioconductor</li>
-<li>Improve Docker images:
-<ul><li>Simplify Dockerfile</li>
+<li>Improve Docker images:<ul><li>Simplify Dockerfile</li>
 <li>Store Docker images in GitHub Container Registry</li>
 <li>Automatically build <code>latest</code> Docker image based on last release version</li>
 </ul></li>
@@ -122,19 +113,14 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.18.4" id="psichomics-1184-22-july-2021">psichomics 1.18.4 (22 July, 2021)<a class="anchor" aria-label="anchor" href="#psichomics-1184-22-july-2021"></a></h2>
 <ul><li>
-<code><a href="../reference/psichomics.html">psichomics()</a></code>: fix visual interface not launching
-<ul><li>
-<code><a href="../reference/getGtexDataTypes.html">getGtexReleases()</a></code> not properly retrieving whether future GTEx releases (9 and higher) are available</li>
-</ul></li>
+<code><a href="../reference/psichomics.html">psichomics()</a></code>: fix visual interface not launching<ul><li>
+<code><a href="../reference/getGtexDataTypes.html">getGtexReleases()</a></code> not properly retrieving whether future GTEx releases (9 and higher) are available</li></ul></li>
 <li>Remove warning related with TCGA data when MD5 checks fail</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.18.5" id="psichomics-1185-24-august-2021">psichomics 1.18.5 (24 August, 2021)<a class="anchor" aria-label="anchor" href="#psichomics-1185-24-august-2021"></a></h2>
-<ul><li>Diagrams of alternative splicing events:
-<ul><li>Fix wrong coloring of reference exon used for AFE and A5SS events</li>
-</ul></li>
-<li>Transcript plot:
-<ul><li>Avoid alternative regions from overlapping</li>
+<ul><li>Diagrams of alternative splicing events:<ul><li>Fix wrong coloring of reference exon used for AFE and A5SS events</li></ul></li>
+<li>Transcript plot:<ul><li>Avoid alternative regions from overlapping</li>
 <li>Fix loading twice when selecting a new event (visual interface)</li>
 </ul></li>
 </ul></div>
@@ -152,28 +138,19 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-1-18-6">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-18-6"></a></h3>
-<ul><li>Fix issues with Shiny 1.7.0:
-<ul><li>Change icon names as required by newest versions of font-awesome</li>
+<ul><li>Fix issues with Shiny 1.7.0:<ul><li>Change icon names as required by newest versions of font-awesome</li>
 <li>Avoid modifying Shiny tags using generic positions</li>
 </ul></li>
-<li>Load recount data (visual interface):
-<ul><li>Improve responsiveness of project selection</li>
-</ul></li>
-<li>Splicing annotation (visual interface):
-<ul><li>Load annotation only when opening the splicing quantification tab</li>
+<li>Load recount data (visual interface):<ul><li>Improve responsiveness of project selection</li></ul></li>
+<li>Splicing annotation (visual interface):<ul><li>Load annotation only when opening the splicing quantification tab</li>
 <li>Automatically select hg38 if using GTEx v8 data</li>
 </ul></li>
-<li>PCA plot (visual interface):
-<ul><li>Automatically plot PCA after calculating PCA scores</li>
+<li>PCA plot (visual interface):<ul><li>Automatically plot PCA after calculating PCA scores</li>
 <li>Copy-edit text</li>
 <li>Fix specific errors related with PCA analysis of only one group</li>
 </ul></li>
-<li>Diagrams of alternative splicing events:
-<ul><li>Fix wrong coloring of reference exon used for AFE and A5SS events</li>
-</ul></li>
-<li>Transcript plot:
-<ul><li>Orange region (the reference exon) is now on top of blue region</li>
-</ul></li>
+<li>Diagrams of alternative splicing events:<ul><li>Fix wrong coloring of reference exon used for AFE and A5SS events</li></ul></li>
+<li>Transcript plot:<ul><li>Orange region (the reference exon) is now on top of blue region</li></ul></li>
 </ul></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -185,7 +162,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
     </footer></div>
