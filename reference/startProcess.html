@@ -93,17 +93,27 @@ endProcess: Style button to show a process finished; also,
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>id</dt>
 <dd><p>Character: button identifier</p></dd>
+
+
 <dt>time</dt>
 <dd><p><code>POSIXct</code> object: start time needed to show the interval
 time (if <code>NULL</code>, the time interval is not displayed)</p></dd>
+
+
 <dt>closeProgressBar</dt>
 <dd><p>Boolean: close progress bar?</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p><code>startProcess</code> returns the start time of the process (may be
+    
+
+<p><code>startProcess</code> returns the start time of the process (may be
 used as the <code>time</code> argument to <code>endProcess</code>), whereas
-<code>endProcess</code> returns the difference between current time and <code>time</code>(or <code>NULL</code> if <code>time</code> is not specified)</p>
+<code>endProcess</code> returns the difference between current time and <code>time</code></p>
+
+
+<p>(or <code>NULL</code> if <code>time</code> is not specified)</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -115,7 +125,7 @@ used as the <code>time</code> argument to <code>endProcess</code>), whereas
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

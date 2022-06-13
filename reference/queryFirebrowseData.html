@@ -87,36 +87,61 @@
     <dl><dt>format</dt>
 <dd><p>Character: response format as <code>JSON</code>, <code>CSV</code> or
 <code>TSV</code></p></dd>
+
+
 <dt>date</dt>
 <dd><p>Character: dates of the data retrieval by FireBrowse (by default,
 it uses the most recent data available)</p></dd>
+
+
 <dt>cohort</dt>
 <dd><p>Character: abbreviation of the cohorts (by default, returns
 data for all cohorts)</p></dd>
+
+
 <dt>data_type</dt>
 <dd><p>Character: data types (optional)</p></dd>
+
+
 <dt>tool</dt>
 <dd><p>Character: data produced by the selected FireBrowse tools
 (optional)</p></dd>
+
+
 <dt>platform</dt>
 <dd><p>Character: data generation platforms (optional)</p></dd>
+
+
 <dt>center</dt>
 <dd><p>Character: data generation centres (optional)</p></dd>
+
+
 <dt>level</dt>
 <dd><p>Integer: data levels (optional)</p></dd>
+
+
 <dt>protocol</dt>
 <dd><p>Character: sample characterization protocols (optional)</p></dd>
+
+
 <dt>page</dt>
 <dd><p>Integer: page of the results to return (optional)</p></dd>
+
+
 <dt>page_size</dt>
 <dd><p>Integer: number of records per page of results (optional)</p></dd>
+
+
 <dt>sort_by</dt>
 <dd><p>String: column used to sort the data (by default, sort by
 cohort)</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Response from the FireBrowse API (it needs to be parsed)</p>
+    
+
+<p>Response from the FireBrowse API (it needs to be parsed)</p>
     </div>
 
     <div class="section level2">
@@ -125,7 +150,7 @@ cohort)</p></dd>
 <span class="r-in"><span class="fu">psichomics</span><span class="fu">:::</span><span class="fu">queryFirebrowseData</span><span class="op">(</span>cohort <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cohort</span><span class="op">)</span>,</span>
 <span class="r-in">                                 data_type <span class="op">=</span> <span class="st">"mRNASeq"</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Response [http://firebrowse.org/api/v1/Archives/StandardData?format=json&amp;date=2016_01_28&amp;cohort=ACC&amp;data_type=mRNASeq]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Date: 2022-05-30 07:42</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Date: 2022-06-13 07:47</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Status: 200</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Content-Type: application/json</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Size: 12.1 kB</span>
@@ -147,7 +172,7 @@ cohort)</p></dd>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">psichomics</span><span class="fu">:::</span><span class="fu">queryFirebrowseData</span><span class="op">(</span>date <span class="op">=</span> <span class="va">dates</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, cohort <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cohort</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Response [http://firebrowse.org/api/v1/Archives/StandardData?format=json&amp;date=2015_11_01&amp;cohort=ACC]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Date: 2022-05-30 07:42</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Date: 2022-06-13 07:47</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Status: 200</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Content-Type: application/json</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Size: 37.2 kB</span>
@@ -173,7 +198,7 @@ cohort)</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

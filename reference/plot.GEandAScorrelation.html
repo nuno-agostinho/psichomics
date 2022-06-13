@@ -106,34 +106,60 @@ as.table(x, pvalueAdjust = "BH", ...)</code></pre></div>
     <dl><dt>x</dt>
 <dd><p><code>GEandAScorrelation</code> object obtained after running
 <code><a href="correlateGEandAS.html">correlateGEandAS</a>()</code></p></dd>
+
+
 <dt>genes</dt>
 <dd><p>Character: genes</p></dd>
+
+
 <dt>ASevents</dt>
 <dd><p>Character: AS events</p></dd>
+
+
 <dt>autoZoom</dt>
 <dd><p>Boolean: automatically set the range of PSI values based on
 available data? If <code>FALSE</code>, the axis relative to PSI values will range
 from 0 to 1</p></dd>
+
+
 <dt>loessSmooth</dt>
 <dd><p>Boolean: plot a smooth curve computed by
 <code><a href="https://rdrr.io/r/stats/scatter.smooth.html" class="external-link">stats::loess.smooth</a></code>?</p></dd>
+
+
 <dt>loessFamily</dt>
 <dd><p>Character: if <code>gaussian</code>, <code>loess</code> fitting is by
 least-squares, and if <code>symmetric</code>, a re-descending M estimator is used</p></dd>
+
+
 <dt>colour</dt>
 <dd><p>Character: points' colour</p></dd>
+
+
 <dt>alpha</dt>
 <dd><p>Numeric: points' alpha</p></dd>
+
+
 <dt>size</dt>
 <dd><p>Numeric: points' size</p></dd>
+
+
 <dt>loessColour</dt>
 <dd><p>Character: loess line's colour</p></dd>
+
+
 <dt>loessAlpha</dt>
 <dd><p>Numeric: loess line's opacity</p></dd>
+
+
 <dt>loessWidth</dt>
 <dd><p>Numeric: loess line's width</p></dd>
+
+
 <dt>fontSize</dt>
 <dd><p>Numeric: plot font size</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Arguments passed on to <code><a href="https://rdrr.io/r/stats/scatter.smooth.html" class="external-link">stats::loess.smooth</a></code></p><dl><dt><code>span</code></dt>
 <dd><p>smoothness parameter for <code>loess</code>.</p></dd>
@@ -147,25 +173,42 @@ least-squares, and if <code>symmetric</code>, a re-descending M estimator is use
 
   
 </dl></dd>
+
+
 <dt>colourGroups</dt>
 <dd><p>List of characters: sample colouring by group</p></dd>
+
+
 <dt>legend</dt>
 <dd><p>Boolean: show legend for sample colouring?</p></dd>
+
+
 <dt>showAllData</dt>
 <dd><p>Boolean: show data outside selected groups as a single
 group (coloured based on the <code>colour</code> argument)</p></dd>
+
+
 <dt>density</dt>
 <dd><p>Boolean: contour plot of a density estimate</p></dd>
+
+
 <dt>densityColour</dt>
 <dd><p>Character: line colour of contours</p></dd>
+
+
 <dt>densityWidth</dt>
 <dd><p>Numeric: line width of contours</p></dd>
+
+
 <dt>pvalueAdjust</dt>
 <dd><p>Character: method used to adjust p-values (see Details)</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Plots, summary tables or results of correlation analyses</p>
+    
+
+<p>Plots, summary tables or results of correlation analyses</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -269,7 +312,7 @@ respective string in the <code>pvalueAdjust</code> argument:</p><ul><li><p><code
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

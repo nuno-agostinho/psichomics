@@ -9,7 +9,12 @@ HTMLWidgets.widget({
     // save params for reference from resize method
     instance.xin = xin;
     // draw the graphic
-    this.drawGraphic(el, xin, el.offsetWidth, el.offsetHeight);
+    this.drawGraphic(
+      el,
+      xin,
+      el.getBoundingClientRect().width,
+      el.getBoundingClientRect().height
+    );
 
 
   },
@@ -70,8 +75,8 @@ HTMLWidgets.widget({
           .style("opacity", 0);
 
     svg = d3.select(el).append("svg")
-          .attr("width", size * p + padding*2)
-          .attr("height", size * p + padding*2)
+          .attr("width", size * p + padding*2 + xin.leftmar)
+          .attr("height", size * p + padding*2 + xin.topmar)
           .append("g")
           .attr("transform", "translate(" + xin.leftmar + "," + xin.topmar + ")");
 
@@ -179,7 +184,7 @@ HTMLWidgets.widget({
       // apply the brush needs to be done before tooltip
       cell.call(brush)
       // plot the data
-      if (p.x !== p.y){ // prevents a main diagonal being plotted
+      if(xin.settings.diag){
         cell.selectAll("circle")
           .data(alldata)
           .enter().append("circle")
@@ -203,6 +208,32 @@ HTMLWidgets.widget({
               .duration(500)
               .style("opacity", 0);
           });
+      } else {
+        if (p.x !== p.y){ // prevents a main diagonal being plotted
+        cell.selectAll("circle")
+          .data(alldata)
+          .enter().append("circle")
+          .attr("cx", function(d) { return x(d[p.x]); })
+          .attr("cy", function(d) { return y(d[p.y]); })
+          .attr("r", xin.settings.cex)
+          .style("display", function(d) { return d[p.x]==null || d[p.y]==null ? "none" : null; })
+          .style("fill", function(d) { return color[d.groupval]; })
+          .style("opacity", xin.settings.opacity)
+          .on("mouseover", function(d) {
+            tooltip.transition()
+              .duration(200)
+              .style("opacity", .9);
+            tooltip.html(d.tooltip)// + "<br/> (" + xValue(d) + ", " + yValue(d) + ")")
+              //.placement("right")
+              .style("left", (event.pageX - leftoffset + 1) + "px")
+              .style("top", (event.pageY - topoffset - 20) + "px");
+          })
+          .on("mouseout", function(d) {
+            tooltip.transition()
+              .duration(500)
+              .style("opacity", 0);
+          });
+      }
       }
     }
 
