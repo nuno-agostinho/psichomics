@@ -82,7 +82,7 @@
       <img src="" class="logo" alt=""><h1>Preparing an Alternative Splicing Annotation for psichomics</h1>
                         <h4 data-toc-skip class="author">Nuno Saraiva Agostinho</h4>
             
-            <h4 data-toc-skip class="date">2022-06-13</h4>
+            <h4 data-toc-skip class="date">2022-06-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/psichomics/blob/HEAD/vignettes/AS_events_preparation.Rmd" class="external-link"><code>vignettes/AS_events_preparation.Rmd</code></a></small>
       <div class="d-none name"><code>AS_events_preparation.Rmd</code></div>
@@ -96,17 +96,14 @@
 <p>psichomics quantifies alternative splicing based on alternative splicing event annotations from <a href="http://genes.mit.edu/burgelab/miso/" class="external-link">MISO</a>, <a href="https://bitbucket.org/regulatorygenomicsupf/suppa" class="external-link">SUPPA</a>, <a href="https://github.com/vastgroup/vast-tools" class="external-link">VAST-TOOLS</a> and <a href="http://rnaseq-mats.sourceforge.net" class="external-link">rMATS</a>. New alternative splicing annotation may be prepared and used in psichomics by parsing alternative splicing events from those tools. Please contact me if you would like to see support for other tools.</p>
 <p>This tutorial will guide you on how to parse alternative splicing events from different tools. To do so, start by loading the following packages:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://nuno-agostinho.github.io/psichomics/">psichomics</a></span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## Warning: replacing previous import 'utils::download.file' by</span>
-<span class="co">## 'restfulr::download.file' when loading 'rtracklayer'</span></code></pre>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://had.co.nz/plyr" class="external-link">plyr</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://nuno-agostinho.github.io/psichomics/">psichomics</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://had.co.nz/plyr" class="external-link">plyr</a></span><span class="op">)</span></code></pre></div>
 <div class="section level3">
 <h3 id="suppa-annotation">SUPPA annotation<a class="anchor" aria-label="anchor" href="#suppa-annotation"></a>
 </h3>
 <p><a href="https://bitbucket.org/regulatorygenomicsupf/suppa" class="external-link">SUPPA</a> generates alternative splicing events based on a transcript annotation. Start by running SUPPA’s <code>generateEvents</code> script with a transcript file (GTF format) for all event types, if desired. See <a href="https://bitbucket.org/regulatorygenomicsupf/suppa" class="external-link">SUPPA’s page</a> for more information.</p>
 <p>The resulting output will include a directory containing tab-delimited files with alternative splicing events (one file for each event type). Hand the path of this directory to the function <code><a href="../reference/parseMisoAnnotation.html">parseSuppaAnnotation()</a></code>, prepare the annotation using <code><a href="../reference/prepareAnnotationFromEvents.html">prepareAnnotationFromEvents()</a></code> and save the output to a RDS file:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># suppaOutput &lt;- "path/to/SUPPA/output"</span>
 
 <span class="co"># Replace `genome` for the string with the identifier before the first</span>
@@ -123,7 +120,7 @@
 </h3>
 <p>Just like <a href="https://bitbucket.org/regulatorygenomicsupf/suppa" class="external-link">SUPPA</a>, <a href="http://rnaseq-mats.sourceforge.net" class="external-link">rMATS</a> also allows to generate alternative splicing events based on a transcript annotation, although two BAM or FASTQ files are required to generate alternative splicing events. Read <a href="http://rnaseq-mats.sourceforge.net" class="external-link">rMATS’ page</a> for more information.</p>
 <p>The resulting output of <a href="http://rnaseq-mats.sourceforge.net" class="external-link">rMATS</a> is then handed out to the function <code><a href="../reference/parseMisoAnnotation.html">parseMatsAnnotation()</a></code>:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># matsOutput &lt;- "path/to/rMATS/output"</span>
 <span class="va">mats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parseMisoAnnotation.html">parseMatsAnnotation</a></span><span class="op">(</span>
     <span class="va">matsOutput</span>,         <span class="co"># Output directory from rMATS</span>
@@ -138,7 +135,7 @@
 <h3 id="miso-annotation">MISO annotation<a class="anchor" aria-label="anchor" href="#miso-annotation"></a>
 </h3>
 <p>Simply retrieve <a href="https://miso.readthedocs.io/en/fastmiso/annotation.html" class="external-link">MISO’s alternative splicing annotation</a> and give the path to the downloaded folder as input.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># misoAnnotation &lt;- "path/to/MISO/annotation"</span>
 <span class="va">miso</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parseMisoAnnotation.html">parseMisoAnnotation</a></span><span class="op">(</span><span class="va">misoAnnotation</span><span class="op">)</span>
 <span class="va">annot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepareAnnotationFromEvents.html">prepareAnnotationFromEvents</a></span><span class="op">(</span><span class="va">miso</span><span class="op">)</span>
@@ -150,7 +147,7 @@
 <h3 id="vast-tools-annotation">VAST-TOOLS annotation<a class="anchor" aria-label="anchor" href="#vast-tools-annotation"></a>
 </h3>
 <p>Download and extract <a href="https://github.com/vastgroup/vast-tools#vastdb-libraries" class="external-link">VAST-TOOLS’ alternative splicing annotation</a> and use the path to the <code>TEMPLATES</code> subfolder as the input of <code><a href="../reference/parseMisoAnnotation.html">parseVastToolsAnnotation()</a></code>. Complex events (i.e. alternative coordinates for the exon ends) are not currently supported.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># vastAnnotation &lt;- "path/to/VASTDB/libs/TEMPLATES"</span>
 <span class="va">vast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parseMisoAnnotation.html">parseVastToolsAnnotation</a></span><span class="op">(</span><span class="va">vastAnnotation</span>, genome<span class="op">=</span><span class="st">"Hsa"</span><span class="op">)</span>
 <span class="va">annot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepareAnnotationFromEvents.html">prepareAnnotationFromEvents</a></span><span class="op">(</span><span class="va">vast</span><span class="op">)</span>
@@ -162,7 +159,7 @@
 <h3 id="combining-annotation-from-different-sources">Combining annotation from different sources<a class="anchor" aria-label="anchor" href="#combining-annotation-from-different-sources"></a>
 </h3>
 <p>To combine the annotation from different sources, provide the parsed annotations of interest simultaneously to the function <code>prepareAnnotationFromEvents</code>:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Combine the annotation from SUPPA, MISO, rMATS and VAST-TOOLS</span>
 <span class="va">annot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepareAnnotationFromEvents.html">prepareAnnotationFromEvents</a></span><span class="op">(</span><span class="va">suppa</span>, <span class="va">vast</span>, <span class="va">mats</span>, <span class="va">miso</span><span class="op">)</span>
 
@@ -175,13 +172,13 @@
 </h2>
 <p>The created alternative splicing annotation can be used in psichomics for alternative splicing quantification. To do so, when using the GUI version of psichomics, be sure to select the <strong>Load annotation from file…</strong> option, click the button that appears below and select the recently created RDS file.</p>
 <p>Otherwise, if you are using the CLI version, perform the following steps:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">annot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">annotFile</span><span class="op">)</span> <span class="co"># "annotFile" is the path to the annotation file</span>
 <span class="va">junctionQuant</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readFile.html">readFile</a></span><span class="op">(</span><span class="st">"ex_junctionQuant.RDS"</span><span class="op">)</span> <span class="co"># example set</span>
 
 <span class="va">psi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/quantifySplicing.html">quantifySplicing</a></span><span class="op">(</span><span class="va">annot</span>, <span class="va">junctionQuant</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## Using 1 of 60 events (2%) whose junctions are present in junction quantification data...</span></code></pre>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">psi</span> <span class="co"># may have 0 rows because of the small junction quantification set</span></code></pre></div>
 <pre><code><span class="co">##                                                   Normal 1  Normal 2 Normal 3</span>
 <span class="co">## SE_1_+_23385660_23385840_23385851_23395032_KDM1A 0.7777778 0.4444444      0.6</span>
