@@ -1,3 +1,8 @@
+# psichomics 1.22.1 (20 June, 2022)
+
+* Bug fix: GTEx data now loads as expected
+* Clarify how to get survival plots in CLI tutorial
+
 # psichomics 1.20.2 (13 March, 2022)
 
 * Bug fix: fix limma-trend approach when using newer versions of limma to
