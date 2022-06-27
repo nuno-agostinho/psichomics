@@ -72,7 +72,7 @@ removes the original downloaded archives.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">prepareFirebrowseArchives</span><span class="op">(</span><span class="va">archive</span>, <span class="va">md5</span>, <span class="va">folder</span>, <span class="va">outdir</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">prepareFirebrowseArchives</span><span class="op">(</span><span class="va">archive</span>, <span class="va">md5</span>, <span class="va">folder</span>, <span class="va">outdir</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -103,14 +103,14 @@ extracted</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
-<span class="r-in">    <span class="st">"~/Downloads"</span>,</span>
-<span class="r-in">    <span class="st">"ACC/20151101/gdac.broadinstitute.org_ACC."</span>,</span>
-<span class="r-in">    <span class="st">"Merge_Clinical.Level_1.2015110100.0.0.tar.gz"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">md5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">file</span>, <span class="st">".md5"</span><span class="op">)</span></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="fu">prepareFirebrowseArchives</span><span class="op">(</span>archive <span class="op">=</span> <span class="va">file</span>, md5 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">file</span>, <span class="st">".md5"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"~/Downloads"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"ACC/20151101/gdac.broadinstitute.org_ACC."</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"Merge_Clinical.Level_1.2015110100.0.0.tar.gz"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">md5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">file</span>, <span class="st">".md5"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="fu">prepareFirebrowseArchives</span><span class="op">(</span>archive <span class="op">=</span> <span class="va">file</span>, md5 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">file</span>, <span class="st">".md5"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -122,7 +122,7 @@ extracted</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>

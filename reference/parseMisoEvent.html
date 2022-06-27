@@ -66,7 +66,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">parseMisoEvent</span><span class="op">(</span><span class="va">event</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">parseMisoEvent</span><span class="op">(</span><span class="va">event</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -92,17 +92,17 @@ files)</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># example of alternative splicing event: skipped exon (SE)</span></span>
-<span class="r-in"><span class="va">event</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"</span>
-<span class="r-in">  chr1 SE gene 16854 18061 . - .</span>
-<span class="r-in">  chr1 SE mRNA 16854 18061 . - .</span>
-<span class="r-in">  chr1 SE exon 16854 17055 . - .</span>
-<span class="r-in">  chr1 SE exon 17233 17742 . - .</span>
-<span class="r-in">  chr1 SE exon 17915 18061 . - .</span>
-<span class="r-in">  chr1 SE mRNA 16854 18061 . - .</span>
-<span class="r-in">  chr1 SE exon 16854 17955 . - .</span>
-<span class="r-in">  chr1 SE exon 17915 18061 . - ."</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">psichomics</span><span class="fu">:::</span><span class="fu">parseMisoEvent</span><span class="op">(</span><span class="va">event</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># example of alternative splicing event: skipped exon (SE)</span></span></span>
+<span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"</span></span></span>
+<span class="r-in"><span><span class="st">  chr1 SE gene 16854 18061 . - .</span></span></span>
+<span class="r-in"><span><span class="st">  chr1 SE mRNA 16854 18061 . - .</span></span></span>
+<span class="r-in"><span><span class="st">  chr1 SE exon 16854 17055 . - .</span></span></span>
+<span class="r-in"><span><span class="st">  chr1 SE exon 17233 17742 . - .</span></span></span>
+<span class="r-in"><span><span class="st">  chr1 SE exon 17915 18061 . - .</span></span></span>
+<span class="r-in"><span><span class="st">  chr1 SE mRNA 16854 18061 . - .</span></span></span>
+<span class="r-in"><span><span class="st">  chr1 SE exon 16854 17955 . - .</span></span></span>
+<span class="r-in"><span><span class="st">  chr1 SE exon 17915 18061 . - ."</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">psichomics</span><span class="fu">:::</span><span class="fu">parseMisoEvent</span><span class="op">(</span><span class="va">event</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   C1.start C1.end A1.start A1.end A2.start A2.end C2.start C2.end Program</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1    18061  17915    17742  17233       NA     NA    17055  16854    MISO</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Event.type Chromosome Strand</span>
@@ -118,7 +118,7 @@ files)</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>

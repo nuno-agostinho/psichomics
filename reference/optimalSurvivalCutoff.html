@@ -69,20 +69,20 @@ to find the minimum log-rank p-value.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">optimalSurvivalCutoff</span><span class="op">(</span>
-  <span class="va">clinical</span>,
-  <span class="va">data</span>,
-  <span class="va">censoring</span>,
-  <span class="va">event</span>,
-  <span class="va">timeStart</span>,
-  timeStop <span class="op">=</span> <span class="cn">NULL</span>,
-  followup <span class="op">=</span> <span class="st">"days_to_last_followup"</span>,
-  session <span class="op">=</span> <span class="cn">NULL</span>,
-  filter <span class="op">=</span> <span class="cn">TRUE</span>,
-  survTime <span class="op">=</span> <span class="cn">NULL</span>,
-  lower <span class="op">=</span> <span class="cn">NULL</span>,
-  upper <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">optimalSurvivalCutoff</span><span class="op">(</span></span>
+<span>  <span class="va">clinical</span>,</span>
+<span>  <span class="va">data</span>,</span>
+<span>  <span class="va">censoring</span>,</span>
+<span>  <span class="va">event</span>,</span>
+<span>  <span class="va">timeStart</span>,</span>
+<span>  timeStop <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  followup <span class="op">=</span> <span class="st">"days_to_last_followup"</span>,</span>
+<span>  session <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filter <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  survTime <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  lower <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  upper <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -162,21 +162,21 @@ p-value (<code>value</code>)</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">clinical</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"2549   NA ii  female</span>
-<span class="r-in">                                840   NA i   female</span>
-<span class="r-in">                                 NA 1204 iv    male</span>
-<span class="r-in">                                 NA  383 iv  female</span>
-<span class="r-in">                               1293   NA iii   male</span>
-<span class="r-in">                                 NA 1355 ii    male"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">clinical</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patient.days_to_last_followup"</span>,</span>
-<span class="r-in">                     <span class="st">"patient.days_to_death"</span>,</span>
-<span class="r-in">                     <span class="st">"patient.stage_event.pathologic_stage"</span>,</span>
-<span class="r-in">                     <span class="st">"patient.gender"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">timeStart</span>  <span class="op">&lt;-</span> <span class="st">"days_to_death"</span></span>
-<span class="r-in"><span class="va">event</span>      <span class="op">&lt;-</span> <span class="st">"days_to_death"</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">psi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">0.9</span>, <span class="fl">1</span>, <span class="fl">0.2</span>, <span class="fl">0.6</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">opt</span> <span class="op">&lt;-</span> <span class="fu">optimalSurvivalCutoff</span><span class="op">(</span><span class="va">clinical</span>, <span class="va">psi</span>, <span class="st">"right"</span>, <span class="va">event</span>, <span class="va">timeStart</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">clinical</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"2549   NA ii  female</span></span></span>
+<span class="r-in"><span><span class="st">                                840   NA i   female</span></span></span>
+<span class="r-in"><span><span class="st">                                 NA 1204 iv    male</span></span></span>
+<span class="r-in"><span><span class="st">                                 NA  383 iv  female</span></span></span>
+<span class="r-in"><span><span class="st">                               1293   NA iii   male</span></span></span>
+<span class="r-in"><span><span class="st">                                 NA 1355 ii    male"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">clinical</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patient.days_to_last_followup"</span>,</span></span>
+<span class="r-in"><span>                     <span class="st">"patient.days_to_death"</span>,</span></span>
+<span class="r-in"><span>                     <span class="st">"patient.stage_event.pathologic_stage"</span>,</span></span>
+<span class="r-in"><span>                     <span class="st">"patient.gender"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">timeStart</span>  <span class="op">&lt;-</span> <span class="st">"days_to_death"</span></span></span>
+<span class="r-in"><span><span class="va">event</span>      <span class="op">&lt;-</span> <span class="st">"days_to_death"</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">psi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">0.9</span>, <span class="fl">1</span>, <span class="fl">0.2</span>, <span class="fl">0.6</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">opt</span> <span class="op">&lt;-</span> <span class="fu">optimalSurvivalCutoff</span><span class="op">(</span><span class="va">clinical</span>, <span class="va">psi</span>, <span class="st">"right"</span>, <span class="va">event</span>, <span class="va">timeStart</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -188,7 +188,7 @@ p-value (<code>value</code>)</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>

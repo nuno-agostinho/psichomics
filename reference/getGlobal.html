@@ -66,117 +66,117 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">getGlobal</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span>, <span class="va">...</span>, sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span>
-
-<span class="fu">setGlobal</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span>, <span class="va">...</span>, <span class="va">value</span>, sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span>
-
-<span class="fu">setData</span><span class="op">(</span><span class="va">data</span><span class="op">)</span>
-
-<span class="fu">setDataTable</span><span class="op">(</span><span class="va">name</span>, <span class="va">value</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">getAutoNavigation</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">setAutoNavigation</span><span class="op">(</span><span class="va">auto</span><span class="op">)</span>
-
-<span class="fu">getCores</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">setCores</span><span class="op">(</span><span class="va">integer</span><span class="op">)</span>
-
-<span class="fu">getSignificant</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">setSignificant</span><span class="op">(</span><span class="va">integer</span><span class="op">)</span>
-
-<span class="fu">getPrecision</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">setPrecision</span><span class="op">(</span><span class="va">integer</span><span class="op">)</span>
-
-<span class="fu">getASevents</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">getAnnotationHub</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">setAnnotationHub</span><span class="op">(</span><span class="va">ah</span><span class="op">)</span>
-
-<span class="fu">getASevent</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">setASevent</span><span class="op">(</span><span class="va">event</span>, data <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
-
-<span class="fu">getEvent</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">setEvent</span><span class="op">(</span><span class="va">event</span>, data <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
-
-<span class="fu">getGenes</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">getCategories</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">setCategory</span><span class="op">(</span><span class="va">category</span><span class="op">)</span>
-
-<span class="fu">getCategoryData</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">getActiveDataset</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">setActiveDataset</span><span class="op">(</span><span class="va">dataset</span><span class="op">)</span>
-
-<span class="fu">getClinicalData</span><span class="op">(</span>attrs <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
-
-<span class="fu">getSubjectId</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">getSubjectAttributes</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">getSampleInfo</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">setSampleInfo</span><span class="op">(</span><span class="va">value</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">getSampleId</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">getSampleAttributes</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">getJunctionQuantification</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">getGeneExpression</span><span class="op">(</span>item <span class="op">=</span> <span class="cn">NULL</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span>, EList <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="fu">setNormalisedGeneExpression</span><span class="op">(</span><span class="va">geneExpr</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">getInclusionLevels</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">setInclusionLevels</span><span class="op">(</span><span class="va">incLevels</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">getInclusionLevelsSummaryStatsCache</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">setInclusionLevelsSummaryStatsCache</span><span class="op">(</span><span class="va">cache</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">getPCA</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">setPCA</span><span class="op">(</span><span class="va">pca</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">getICA</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">setICA</span><span class="op">(</span><span class="va">ica</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">getCorrelation</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">setCorrelation</span><span class="op">(</span><span class="va">correlation</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">getGroupIndependenceTesting</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">setGroupIndependenceTesting</span><span class="op">(</span><span class="va">groupIndependenceTesting</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">getSpecies</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">setSpecies</span><span class="op">(</span><span class="va">species</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">getAssemblyVersion</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">setAssemblyVersion</span><span class="op">(</span><span class="va">assembly</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">getAnnotationName</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">setAnnotationName</span><span class="op">(</span><span class="va">annotName</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">getURLtoDownload</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">setURLtoDownload</span><span class="op">(</span><span class="va">url</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">getGlobal</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span>, <span class="va">...</span>, sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setGlobal</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span>, <span class="va">...</span>, <span class="va">value</span>, sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setData</span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setDataTable</span><span class="op">(</span><span class="va">name</span>, <span class="va">value</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getAutoNavigation</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setAutoNavigation</span><span class="op">(</span><span class="va">auto</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getCores</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setCores</span><span class="op">(</span><span class="va">integer</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getSignificant</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setSignificant</span><span class="op">(</span><span class="va">integer</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getPrecision</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setPrecision</span><span class="op">(</span><span class="va">integer</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getASevents</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getAnnotationHub</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setAnnotationHub</span><span class="op">(</span><span class="va">ah</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getASevent</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setASevent</span><span class="op">(</span><span class="va">event</span>, data <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getEvent</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setEvent</span><span class="op">(</span><span class="va">event</span>, data <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getGenes</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getCategories</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setCategory</span><span class="op">(</span><span class="va">category</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getCategoryData</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getActiveDataset</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setActiveDataset</span><span class="op">(</span><span class="va">dataset</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getClinicalData</span><span class="op">(</span>attrs <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getSubjectId</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getSubjectAttributes</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getSampleInfo</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setSampleInfo</span><span class="op">(</span><span class="va">value</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getSampleId</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getSampleAttributes</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getJunctionQuantification</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getGeneExpression</span><span class="op">(</span>item <span class="op">=</span> <span class="cn">NULL</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span>, EList <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setNormalisedGeneExpression</span><span class="op">(</span><span class="va">geneExpr</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getInclusionLevels</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setInclusionLevels</span><span class="op">(</span><span class="va">incLevels</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getInclusionLevelsSummaryStatsCache</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setInclusionLevelsSummaryStatsCache</span><span class="op">(</span><span class="va">cache</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getPCA</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setPCA</span><span class="op">(</span><span class="va">pca</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getICA</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setICA</span><span class="op">(</span><span class="va">ica</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getCorrelation</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setCorrelation</span><span class="op">(</span><span class="va">correlation</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getGroupIndependenceTesting</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setGroupIndependenceTesting</span><span class="op">(</span><span class="va">groupIndependenceTesting</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getSpecies</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setSpecies</span><span class="op">(</span><span class="va">species</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getAssemblyVersion</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setAssemblyVersion</span><span class="op">(</span><span class="va">assembly</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getAnnotationName</span><span class="op">(</span>category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setAnnotationName</span><span class="op">(</span><span class="va">annotName</span>, category <span class="op">=</span> <span class="fu">getCategory</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getURLtoDownload</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">setURLtoDownload</span><span class="op">(</span><span class="va">url</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -316,7 +316,7 @@ results</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>

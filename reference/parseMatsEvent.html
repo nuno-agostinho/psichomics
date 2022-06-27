@@ -66,7 +66,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">parseMatsEvent</span><span class="op">(</span><span class="va">event</span>, <span class="va">event_type</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">parseMatsEvent</span><span class="op">(</span><span class="va">event</span>, <span class="va">event_type</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -96,13 +96,13 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># MATS event (alternative 3' splice site)</span></span>
-<span class="r-in"><span class="va">event</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"</span>
-<span class="r-in">     2 ENSG00000166012 TAF1D chr11 - 93466515 93466671 93466515 93466563 93467790 93467826</span>
-<span class="r-in">     5 ENSG00000166012 TAF1D chr11 - 93466515 93466671 93466515 93466585 93467790 93467826</span>
-<span class="r-in">     6 ENSG00000166012 TAF1D chr11 - 93466515 93466585 93466515 93466563 93467790 93467826</span>
-<span class="r-in">"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">psichomics</span><span class="fu">:::</span><span class="fu">parseMatsEvent</span><span class="op">(</span><span class="va">event</span>, <span class="st">"A3SS"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># MATS event (alternative 3' splice site)</span></span></span>
+<span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"</span></span></span>
+<span class="r-in"><span><span class="st">     2 ENSG00000166012 TAF1D chr11 - 93466515 93466671 93466515 93466563 93467790 93467826</span></span></span>
+<span class="r-in"><span><span class="st">     5 ENSG00000166012 TAF1D chr11 - 93466515 93466671 93466515 93466585 93467790 93467826</span></span></span>
+<span class="r-in"><span><span class="st">     6 ENSG00000166012 TAF1D chr11 - 93466515 93466585 93466515 93466563 93467790 93467826</span></span></span>
+<span class="r-in"><span><span class="st">"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">psichomics</span><span class="fu">:::</span><span class="fu">parseMatsEvent</span><span class="op">(</span><span class="va">event</span>, <span class="st">"A3SS"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Program  Gene Chromosome Strand Event.type      Event.ID C1.start   C1.end</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1    MATS TAF1D      chr11      -       A3SS unassigned_id 93467826 93467790</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2    MATS TAF1D      chr11      -       A3SS unassigned_id 93467826 93467790</span>
@@ -122,7 +122,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>

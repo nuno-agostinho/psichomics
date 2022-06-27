@@ -66,7 +66,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">parseFirebrowseMetadata</span><span class="op">(</span><span class="va">type</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">parseFirebrowseMetadata</span><span class="op">(</span><span class="va">type</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -88,13 +88,13 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu">psichomics</span><span class="fu">:::</span><span class="fu">parseFirebrowseMetadata</span><span class="op">(</span><span class="st">"Dates"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">psichomics</span><span class="fu">:::</span><span class="fu">parseFirebrowseMetadata</span><span class="op">(</span><span class="st">"Dates"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Dates</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "2016_01_28" "2015_11_01" "2015_08_21" "2015_06_01" "2015_04_02"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "2015_02_04" "2014_12_06" "2014_10_17" "2014_09_02" "2014_07_15"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [11] "2014_05_18" "2014_04_16" "2014_03_16"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span class="fu">psichomics</span><span class="fu">:::</span><span class="fu">parseFirebrowseMetadata</span><span class="op">(</span><span class="st">"Centers"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">psichomics</span><span class="fu">:::</span><span class="fu">parseFirebrowseMetadata</span><span class="op">(</span><span class="st">"Centers"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Centers</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                     center center_type code</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1           vanderbilt.edu        CGCC   27</span>
@@ -163,16 +163,16 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 31                University of California, Santa Cruz       UCSC</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 32  MD Anderson - Institute for Applied Cancer Science        MDA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span class="fu">psichomics</span><span class="fu">:::</span><span class="fu">parseFirebrowseMetadata</span><span class="op">(</span><span class="st">"HeartBeat"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">psichomics</span><span class="fu">:::</span><span class="fu">parseFirebrowseMetadata</span><span class="op">(</span><span class="st">"HeartBeat"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $HeartBeat</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "FireBrowse API at firebrowse.org:8000 is alive"                </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2] "Version: 1.1.40 (2019-10-13 13:15:04 c66e6f910b6a89397a4de26c)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [3] "Root Dir: /local/firebrowse/firebrowse_1.1.40"                 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [4] "Launched On: 2022_04_04 10:47:05 EDT\n"                        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Get the abbreviation and description of all cohorts available</span></span>
-<span class="r-in"><span class="fu">psichomics</span><span class="fu">:::</span><span class="fu">parseFirebrowseMetadata</span><span class="op">(</span><span class="st">"Cohorts"</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Get the abbreviation and description of all cohorts available</span></span></span>
+<span class="r-in"><span><span class="fu">psichomics</span><span class="fu">:::</span><span class="fu">parseFirebrowseMetadata</span><span class="op">(</span><span class="st">"Cohorts"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Cohorts</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      cohort                                                      description</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1       ACC                                         Adrenocortical carcinoma</span>
@@ -214,8 +214,8 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 37      UCS                                           Uterine Carcinosarcoma</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 38      UVM                                                   Uveal Melanoma</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span class="co"># Get the abbreviation and description of the selected cohorts</span></span>
-<span class="r-in"><span class="fu">psichomics</span><span class="fu">:::</span><span class="fu">parseFirebrowseMetadata</span><span class="op">(</span><span class="st">"Cohorts"</span>, cohort <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ACC"</span>, <span class="st">"BRCA"</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="co"># Get the abbreviation and description of the selected cohorts</span></span></span>
+<span class="r-in"><span><span class="fu">psichomics</span><span class="fu">:::</span><span class="fu">parseFirebrowseMetadata</span><span class="op">(</span><span class="st">"Cohorts"</span>, cohort <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ACC"</span>, <span class="st">"BRCA"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Cohorts</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   cohort               description</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1    ACC  Adrenocortical carcinoma</span>
@@ -232,7 +232,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>

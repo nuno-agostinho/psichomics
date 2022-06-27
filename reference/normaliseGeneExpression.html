@@ -96,25 +96,25 @@ mean-variance relationship to calculate observation-level weights.</p></li>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">normaliseGeneExpression</span><span class="op">(</span>
-  <span class="va">geneExpr</span>,
-  geneFilter <span class="op">=</span> <span class="cn">NULL</span>,
-  method <span class="op">=</span> <span class="st">"TMM"</span>,
-  p <span class="op">=</span> <span class="fl">0.75</span>,
-  log2transform <span class="op">=</span> <span class="cn">TRUE</span>,
-  priorCount <span class="op">=</span> <span class="fl">0.25</span>,
-  performVoom <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span>
-
-<span class="fu">normalizeGeneExpression</span><span class="op">(</span>
-  <span class="va">geneExpr</span>,
-  geneFilter <span class="op">=</span> <span class="cn">NULL</span>,
-  method <span class="op">=</span> <span class="st">"TMM"</span>,
-  p <span class="op">=</span> <span class="fl">0.75</span>,
-  log2transform <span class="op">=</span> <span class="cn">TRUE</span>,
-  priorCount <span class="op">=</span> <span class="fl">0.25</span>,
-  performVoom <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">normaliseGeneExpression</span><span class="op">(</span></span>
+<span>  <span class="va">geneExpr</span>,</span>
+<span>  geneFilter <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"TMM"</span>,</span>
+<span>  p <span class="op">=</span> <span class="fl">0.75</span>,</span>
+<span>  log2transform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  priorCount <span class="op">=</span> <span class="fl">0.25</span>,</span>
+<span>  performVoom <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">normalizeGeneExpression</span><span class="op">(</span></span>
+<span>  <span class="va">geneExpr</span>,</span>
+<span>  geneFilter <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"TMM"</span>,</span>
+<span>  p <span class="op">=</span> <span class="fl">0.75</span>,</span>
+<span>  log2transform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  priorCount <span class="op">=</span> <span class="fl">0.25</span>,</span>
+<span>  performVoom <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -187,8 +187,8 @@ column to be identical (only performed if <code>performVoom = TRUE</code>).</p><
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">geneExpr</span> <span class="op">&lt;-</span> <span class="fu"><a href="readFile.html">readFile</a></span><span class="op">(</span><span class="st">"ex_gene_expression.RDS"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">normaliseGeneExpression</span><span class="op">(</span><span class="va">geneExpr</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">geneExpr</span> <span class="op">&lt;-</span> <span class="fu"><a href="readFile.html">readFile</a></span><span class="op">(</span><span class="st">"ex_gene_expression.RDS"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">normaliseGeneExpression</span><span class="op">(</span><span class="va">geneExpr</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                Normal 1 Normal 2 Normal 3 Normal 4 Normal 5 Cancer 1 Cancer 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ACTN1|87       16.44383 16.78304 16.48223 17.24207 17.07503 17.10327 16.49269</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ADAM15|8751    16.70099 16.09395 16.28898 15.96189 15.31259 15.63044 15.97064</span>
@@ -222,7 +222,7 @@ column to be identical (only performed if <code>performVoom = TRUE</code>).</p><
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>

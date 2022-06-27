@@ -66,17 +66,17 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">performICA</span><span class="op">(</span>
-  <span class="va">data</span>,
-  n.comp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>,
-  center <span class="op">=</span> <span class="cn">TRUE</span>,
-  scale. <span class="op">=</span> <span class="cn">FALSE</span>,
-  missingValues <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">0.05</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>,
-  alg.typ <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"parallel"</span>, <span class="st">"defaltion"</span><span class="op">)</span>,
-  fun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"logcosh"</span>, <span class="st">"exp"</span><span class="op">)</span>,
-  alpha <span class="op">=</span> <span class="fl">1</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">performICA</span><span class="op">(</span></span>
+<span>  <span class="va">data</span>,</span>
+<span>  n.comp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  center <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  scale. <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  missingValues <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">0.05</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  alg.typ <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"parallel"</span>, <span class="st">"defaltion"</span><span class="op">)</span>,</span>
+<span>  fun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"logcosh"</span>, <span class="st">"exp"</span><span class="op">)</span>,</span>
+<span>  alpha <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -147,7 +147,7 @@ to be replaced with the mean of the values of that same column</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu">performICA</span><span class="op">(</span><span class="va">USArrests</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">performICA</span><span class="op">(</span><span class="va">USArrests</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $X</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                Murder Assault UrbanPop    Rape</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Alabama         5.412   65.24    -7.54  -0.032</span>
@@ -213,70 +213,70 @@ to be replaced with the mean of the values of that same column</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $W</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            [,1]       [,2]        [,3]        [,4]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] -0.3720493  0.1491612 -0.18955070  0.89632627</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]  0.2658273 -0.1622272 -0.94817024 -0.06317728</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]  0.4481275  0.8929459 -0.02922331  0.03123123</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]  0.7681776 -0.3925315  0.25335692  0.43775845</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] -0.1491658 -0.3719993 -0.89633115  0.18962210</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]  0.1621973  0.2658669  0.06325269  0.94815924</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] -0.8929516  0.4481208 -0.03120449  0.02918035</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]  0.3925290  0.7681921 -0.43773947 -0.25334961</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            [,1]      [,2]      [,3]      [,4]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] -0.6546854  31.17992 -1.757030 -1.100634</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] -0.1163514 -12.08909  2.863291 -6.128656</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] -0.5472263  14.86462 13.685765  4.086399</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] -4.2248608 -73.93898 -2.596662 -5.523051</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            [,1]      [,2]       [,3]      [,4]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]  0.1163573  12.08944  -2.862869  6.128805</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] -0.6548651  31.17583  -1.757776 -1.101012</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]  4.2248651  73.93946   2.595676  5.522705</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]  0.5469767 -14.87053 -13.685944 -4.086543</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $S</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                        IC1         IC2         IC3          IC4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Alabama        -0.07137788  0.48273436 -0.88287199 -1.168868338</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Alaska          0.63202556 -3.82577212 -0.48605202 -0.453189729</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Arizona         1.86845111 -0.58220117  1.31991541 -0.518312956</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Arkansas        0.54608855 -0.33802651 -1.02910350 -0.181552460</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> California      0.46491858 -1.32036437  2.08384631 -0.592465577</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Colorado       -0.42075857 -1.88647135  1.23787489 -0.069692139</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Connecticut     0.28850886  1.31735129  0.76615169  0.882060651</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Delaware        2.22600593  0.86816733  0.57680047  0.003316937</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Florida         0.44230554  0.39096029  0.65848419 -1.966313207</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Georgia        -2.22731487  0.51411326 -1.13918269 -1.796564896</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hawaii         -2.35865005  0.53933682  1.01348377  0.808267147</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Idaho           1.09879325 -0.33935920 -0.41840710  1.121240347</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Illinois        0.40636618  0.88303375  0.98512936 -0.833133454</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Indiana        -1.08836592 -0.11978870 -0.09281104  0.323149933</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iowa           -0.13828035  0.12150559 -0.40289610  1.392914082</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Kansas         -0.54089663  0.18762632  0.01965180  0.499314097</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Kentucky       -1.44587538  0.29729752 -1.25133260 -0.074614395</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Louisiana      -0.70179342  1.05773276 -0.59002365 -1.645672763</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Maine           0.80513273  0.34242635 -0.78150581  1.313347433</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Maryland        1.44150266 -0.27217596  0.14641085 -1.066113831</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Massachusetts   0.38415438  1.14074130  1.33466899  0.538102218</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Michigan       -0.33491766 -0.90451135  0.57128730 -1.017812600</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Minnesota      -0.31429062  0.12033482  0.20027299  1.223748178</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Mississippi     0.04450743  0.84252726 -2.07251707 -1.729058578</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Missouri       -0.65987297 -0.60960070  0.32878442 -0.210416963</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Montana        -0.30586763 -0.21346852 -0.80080201  0.580209488</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Nebraska       -0.13358695 -0.04800788 -0.10243070  0.860879482</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Nevada         -1.12282837 -2.13143765  1.24679116 -0.973092838</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> New Hampshire   0.02600624  0.31972402 -0.49544427  1.397654066</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> New Jersey     -0.54947704  1.42085297  1.33961397 -0.035659304</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> New Mexico      0.79589471 -0.74548714  0.39266789 -1.008601358</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> New York        0.12802730  0.83062503  1.15247428 -0.975920007</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> North Carolina  2.80081133  0.63430529 -1.55546005 -1.483661654</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> North Dakota    0.54325411 -0.14175335 -1.14769801  1.722395957</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ohio           -1.20660708  0.32541374  0.51136259  0.227286693</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Oklahoma       -0.06409317  0.10848080  0.19861285  0.262411675</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Oregon          0.22054371 -1.53078721  0.57240545  0.617413760</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pennsylvania   -0.82105077  0.96428930  0.24477875  0.421169893</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Rhode Island    1.60666772  2.26598438  1.40372619  0.545421953</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> South Carolina  0.67678582  0.01803293 -1.47909023 -1.478813909</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> South Dakota    0.22681953 -0.41912425 -1.18039453  1.073221904</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tennessee      -1.45006965 -0.32792178 -0.77507995 -0.946862515</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Texas          -1.40324967  0.82556989  0.50757132 -1.033673231</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Utah           -0.09847783 -0.25352232  1.27587809  0.942936549</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Vermont         0.24790464 -1.07829372 -1.89737148  1.559685220</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Virginia       -0.47319044  0.04861912 -0.26824094 -0.061795539</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Washington      0.20667997 -0.93428708  0.91356429  0.771970730</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> West Virginia  -0.17948904  0.07363693 -1.83395799  0.757547107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Wisconsin      -0.50941588  0.68576257  0.06746236  1.279284874</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Wyoming         0.49164202  0.39517632 -0.38699786  0.196911866</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                        IC1         IC2         IC3         IC4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Alabama        -0.48275497 -0.07140159  1.16892531  0.88278337</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Alaska          3.82575292  0.63206552  0.45323942  0.48610478</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Arizona         0.58222098  1.86837533  0.51831358 -1.32001370</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Arkansas        0.33799166  0.54612774  0.18164622  1.02907760</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> California      1.32042146  0.46481418  0.59234483 -2.08386776</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Colorado        1.88651174 -0.42079511  0.06958285 -1.23780705</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Connecticut    -1.31733538  0.28850443 -0.88209310 -0.76614337</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Delaware       -0.86817456  2.22597192 -0.00324452 -0.57692123</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Florida        -0.39093924  0.44217774  1.96629215 -0.65864537</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Georgia        -0.51411599 -2.22735826  1.79653463  1.13914436</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hawaii         -0.53928518 -2.35866037 -0.80844694 -1.01334380</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Idaho           0.33933150  1.09886922 -1.12116046  0.41844411</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Illinois       -0.88300684  0.40627391  0.83309063 -0.98522775</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Indiana         0.11979655 -1.08834499 -0.32319687  0.09288292</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iowa           -0.12152055 -0.13819683 -1.39289354  0.40299126</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Kansas         -0.18762169 -0.54087530 -0.49934095 -0.01960065</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Kentucky       -0.29731782 -1.44582822  0.07462868  1.25138142</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Louisiana      -1.05773654 -0.70185900  1.64568170  0.58991394</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Maine          -0.34246203  0.80522636 -1.31325524  0.78154863</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Maryland        0.27216844  1.44144763  1.06617295 -0.14653611</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Massachusetts  -1.14070884  0.38411068 -0.53816848 -1.33468260</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Michigan        0.90453491 -0.33498190  1.01775522 -0.57131454</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Minnesota      -0.12032993 -0.31424128 -1.22377630 -0.20018147</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mississippi    -0.84258143  0.04450403  1.72920157  2.07237581</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Missouri        0.60961796 -0.65989081  0.21036102 -0.32875241</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Montana         0.21344672 -0.30580272 -0.58017174  0.80085996</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Nebraska        0.04800337 -0.13354033 -0.86087930  0.10249514</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Nevada          2.13148895 -1.12290643  0.97294810 -1.24674611</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> New Hampshire  -0.31974341  0.02609186 -1.39761872  0.49552695</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> New Jersey     -1.42080839 -0.54955174  0.03554847 -1.33963357</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> New Mexico      0.74549342  0.79583691  1.00861118 -0.39274785</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> New York       -0.83058982  0.12792145  0.97585238 -1.15256867</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> North Carolina -0.63437493  2.80079975  1.48390299  1.55522228</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> North Dakota    0.14170851  0.54338852 -1.72229376  1.14779328</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ohio           -0.32538689 -1.20662160 -0.22737803 -0.51130481</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Oklahoma       -0.10847530 -0.06409019 -0.26242762 -0.19859575</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Oregon          1.53079920  0.22056532 -0.61744648 -0.57232978</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Pennsylvania   -0.96427493 -0.82105125 -0.42122260 -0.24474309</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Rhode Island   -2.26596304  1.60660934 -0.54542971 -1.40382442</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> South Carolina -0.01807764  0.67677778  1.47894517  1.47896211</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> South Dakota    0.41908411  0.22692688 -1.07313381  1.18046824</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tennessee       0.32791827 -1.45007857  0.94684274  0.77508891</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Texas          -0.82553667 -1.40333045  1.03357436 -0.50760337</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Utah            0.25355685 -0.09848446 -0.94302710 -1.27580379</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Vermont         1.07823101  0.24807352 -1.55955068  1.89749563</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Virginia       -0.04862157 -0.47318238  0.06179064  0.26825583</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Washington      0.93430850  0.20668797 -0.77202475 -0.91349492</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> West Virginia  -0.07369045 -0.17937407 -0.75743349  1.83401402</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Wisconsin      -0.68575961 -0.50936418 -1.27931165 -0.06737501</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Wyoming        -0.39519341  0.49166401 -0.19686093  0.38697838</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
@@ -289,7 +289,7 @@ to be replaced with the mean of the values of that same column</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>

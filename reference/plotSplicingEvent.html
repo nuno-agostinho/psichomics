@@ -66,25 +66,25 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">plotSplicingEvent</span><span class="op">(</span>
-  <span class="va">ASevent</span>,
-  data <span class="op">=</span> <span class="cn">NULL</span>,
-  showText <span class="op">=</span> <span class="cn">TRUE</span>,
-  showPath <span class="op">=</span> <span class="cn">TRUE</span>,
-  showAlternative1 <span class="op">=</span> <span class="cn">TRUE</span>,
-  showAlternative2 <span class="op">=</span> <span class="cn">TRUE</span>,
-  constitutiveWidth <span class="op">=</span> <span class="cn">NULL</span>,
-  alternativeWidth <span class="op">=</span> <span class="cn">NULL</span>,
-  intronWidth <span class="op">=</span> <span class="cn">NULL</span>,
-  constitutiveFill <span class="op">=</span> <span class="st">"lightgray"</span>,
-  constitutiveStroke <span class="op">=</span> <span class="st">"darkgray"</span>,
-  alternative1Fill <span class="op">=</span> <span class="st">"#ffb153"</span>,
-  alternative1Stroke <span class="op">=</span> <span class="st">"#faa000"</span>,
-  alternative2Fill <span class="op">=</span> <span class="st">"#caa06c"</span>,
-  alternative2Stroke <span class="op">=</span> <span class="st">"#9d7039"</span>,
-  class <span class="op">=</span> <span class="cn">NULL</span>,
-  style <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plotSplicingEvent</span><span class="op">(</span></span>
+<span>  <span class="va">ASevent</span>,</span>
+<span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  showText <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  showPath <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  showAlternative1 <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  showAlternative2 <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  constitutiveWidth <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  alternativeWidth <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  intronWidth <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  constitutiveFill <span class="op">=</span> <span class="st">"lightgray"</span>,</span>
+<span>  constitutiveStroke <span class="op">=</span> <span class="st">"darkgray"</span>,</span>
+<span>  alternative1Fill <span class="op">=</span> <span class="st">"#ffb153"</span>,</span>
+<span>  alternative1Stroke <span class="op">=</span> <span class="st">"#faa000"</span>,</span>
+<span>  alternative2Fill <span class="op">=</span> <span class="st">"#caa06c"</span>,</span>
+<span>  alternative2Stroke <span class="op">=</span> <span class="st">"#9d7039"</span>,</span>
+<span>  class <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  style <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -168,26 +168,26 @@ splicing junctions and text? (only related with mutually exclusive exons)</p></d
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span class="r-in">  <span class="st">"A3SS_15_+_63353138_63353912_63353397_TPM1"</span>,</span>
-<span class="r-in">  <span class="st">"A3SS_11_-_61118463_61117115_61117894_CYB561A3"</span>,</span>
-<span class="r-in">  <span class="st">"A5SS_21_+_48055675_48056459_48056808_PRMT2"</span>,</span>
-<span class="r-in">  <span class="st">"A5SS_1_-_1274742_1274667_1274033_DVL1"</span>,</span>
-<span class="r-in">  <span class="st">"AFE_9_+_131902430_131901928_131904724_PPP2R4"</span>,</span>
-<span class="r-in">  <span class="st">"AFE_5_-_134686513_134688636_134681747_H2AFY"</span>,</span>
-<span class="r-in">  <span class="st">"ALE_12_+_56554104_56554410_56555171_MYL6"</span>,</span>
-<span class="r-in">  <span class="st">"ALE_8_-_38314874_38287466_38285953_FGFR1"</span>,</span>
-<span class="r-in">  <span class="st">"SE_9_+_6486925_6492303_6492401_6493826_UHRF2"</span>,</span>
-<span class="r-in">  <span class="st">"SE_19_-_5218431_5216778_5216731_5215606_PTPRS"</span>,</span>
-<span class="r-in">  <span class="st">"MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1"</span>,</span>
-<span class="r-in">  <span class="st">"MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">diagram</span> <span class="op">&lt;-</span> <span class="fu">plotSplicingEvent</span><span class="op">(</span><span class="va">events</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="va">diagram</span><span class="op">[[</span><span class="st">"A3SS_3_-_145796903_145794682_145795711_PLOD2"</span><span class="op">]</span><span class="op">]</span></span>
-<span class="r-in"><span class="va">diagram</span><span class="op">[[</span><span class="fl">6</span><span class="op">]</span><span class="op">]</span></span>
-<span class="r-in"><span class="va">diagram</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="st">"A3SS_15_+_63353138_63353912_63353397_TPM1"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"A3SS_11_-_61118463_61117115_61117894_CYB561A3"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"A5SS_21_+_48055675_48056459_48056808_PRMT2"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"A5SS_1_-_1274742_1274667_1274033_DVL1"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"AFE_9_+_131902430_131901928_131904724_PPP2R4"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"AFE_5_-_134686513_134688636_134681747_H2AFY"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"ALE_12_+_56554104_56554410_56555171_MYL6"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"ALE_8_-_38314874_38287466_38285953_FGFR1"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"SE_9_+_6486925_6492303_6492401_6493826_UHRF2"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"SE_19_-_5218431_5216778_5216731_5215606_PTPRS"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">diagram</span> <span class="op">&lt;-</span> <span class="fu">plotSplicingEvent</span><span class="op">(</span><span class="va">events</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">diagram</span><span class="op">[[</span><span class="st">"A3SS_3_-_145796903_145794682_145795711_PLOD2"</span><span class="op">]</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">diagram</span><span class="op">[[</span><span class="fl">6</span><span class="op">]</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">diagram</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -199,7 +199,7 @@ splicing junctions and text? (only related with mutually exclusive exons)</p></d
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>
