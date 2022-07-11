@@ -100,7 +100,7 @@ queryEnsemblByEvent <- function(event, species=NULL, assembly=NULL, data=NULL) {
 #' psichomics:::queryUniprot(transcript, format)
 queryUniprot <- function(molecule, format="xml") {
     url <- "http://www.uniprot.org"
-    path <- paste0("uniprot/?query=", molecule, "&format=", format)
+    path <- paste0("uniprotkb/", molecule, ".", format)
     resp <- GET(url, path=path)
     warn_for_status(resp)
     r <- content(resp, "text", encoding = "UTF8")
