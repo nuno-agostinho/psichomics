@@ -1,4 +1,4 @@
-# psichomics 1.22.1 (20 June, 2022)
+# psichomics 1.22.1 (11 July, 2022)
 
 * Bug fix: GTEx data for release 8 was returning 
 * Clarify how to get survival plots in CLI tutorial
