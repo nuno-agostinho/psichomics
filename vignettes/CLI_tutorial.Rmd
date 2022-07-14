@@ -459,8 +459,11 @@ for (event in events) {
                                   group=label, scale="years")
     surv <- survfit(survTerms)
     pvalue <- testSurvival(survTerms)
-    plotSurvivalCurves(surv, pvalue=pvalue, mark=FALSE)
+    survPlots[[event]] <- plotSurvivalCurves(surv, pvalue=pvalue, mark=FALSE)
 }
+
+# Now print the survival plot of a specific event
+survPlots[[ events[[1]] ]]
 ```
 
 ## Differential gene expression

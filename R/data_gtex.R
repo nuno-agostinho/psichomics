@@ -191,9 +191,9 @@ getGtexDataURL <- function(release, domain="https://storage.googleapis.com",
                               stringsAsFactors=FALSE)
         files  <- c("annotations/.*Annotations_SampleAttributesDS\\.txt",
                     "annotations/.*Annotations_SubjectPhenotypes.*DS\\.txt",
-                    "rna_seq_data/.*_gene_reads\\.gct\\.gz",
-                    "rna_seq_data/.*junction.*\\.gz")
-        index <- sapply(files, grep, df[[1]])
+                    "rna_seq_data/GTEx.*_gene_reads\\.gct\\.gz",
+                    "rna_seq_data/GTEx.*junction.*\\.gz")
+        index <- unlist(sapply(files, grep, df[[1]]))
         if (length(Filter(length, index)) == 0) return(NULL)
         res   <- df[index, "Key"]
         date  <- max(as.Date(df[index, "LastModified"]))
