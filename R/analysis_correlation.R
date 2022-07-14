@@ -441,7 +441,7 @@ plot.GEandAScorrelation <- function(
                     geom_point(aes(colour=names(sampleColour)), na.rm=TRUE,
                                alpha=alpha, size=size) +
                     scale_colour_manual(name="", values=legendColours,
-                                        guide=if(legend) "legend" else FALSE)
+                                        guide=if(legend) "legend" else "none")
             } else {
                 plot <- plot +
                     geom_point(aes(colour=sampleColour), na.rm=TRUE,
